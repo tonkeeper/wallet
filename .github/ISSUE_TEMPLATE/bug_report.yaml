@@ -1,0 +1,108 @@
+name: Bug Report
+description: Report of critical bug such as UX inconsistencies, logical contradictions and functional shortcomings.
+labels: 'Bug Report'
+body:
+  - type: dropdown
+    id: bug_type
+    attributes:
+      label: Bug Type
+      description: Select the bug type
+      options:
+        - Functional
+        - UX
+        - UI
+        - Performance
+        - Security
+        - Localization
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Reproduction steps
+      description: Steps to reproduce a bug (you are welcome to attach screenshots here)
+      placeholder: 1. Click diamond 2. HODL
+    validations:
+      required: true
+  - type: textarea
+    id: actual-result
+    attributes:
+      label: Actual result
+      description: What was seen
+      placeholder: When action is done, something happens
+    validations:
+      required: true
+  - type: textarea
+    id: expected-result
+    attributes:
+      label: Expected result
+      description: What was expected
+      placeholder: When action is done, nothing happens
+    validations:
+      required: true
+  - type: dropdown
+    id: suggested-severity
+    attributes:
+      label: Suggested Severity
+      description: Severity of the bug
+      options:
+        - Vulnerability
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+  # - type: dropdown
+  #   id: browsers
+  #   attributes:
+  #     label: "Browsers"
+  #     description: What browsers are you seeing the problem on ?
+  #     multiple: true
+  #     options:
+  #       - Chrome
+  #       - Safari
+  #       - Firefox
+  #       - Microsoft Edge
+  #       - Brave
+  #   validations:
+  #     required: false
+  # - type: dropdown
+  #   id: os
+  #   attributes:
+  #     label: "OS"
+  #     description: What is the impacted environment ?
+  #     multiple: true
+  #     options:
+  #       - Windows
+  #       - Linux
+  #       - Mac
+  #   validations:
+  #     required: false
+  - type: textarea
+    id: device
+    attributes:
+      label: Device
+      description: Information about device
+      value: |
+        Desktop (please complete the following information):
+        - OS: [e.g. iOS]
+        - Browser [e.g. chrome, safari]
+        - Version [e.g. 22]
+
+        Smartphone (please complete the following information):
+        - Device: [e.g. iPhone6]
+        - OS: [e.g. iOS8.1]
+        - Browser [e.g. stock browser, safari]
+        - Version [e.g. 22]
+    validations:
+      required: true
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here. You can also attach any extra screenshots or screencasts here.
+      placeholder: e.g. device was rooted
+    validations:
+      required: false
