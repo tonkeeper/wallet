@@ -72,7 +72,6 @@ export class TonProvider extends BaseProvider {
       metadata: {
         ...metadata,
         decimals,
-        image: metadata?.image && proxyMedia(metadata.image, 512, 512),
       },
       walletAddress,
       balance: fromNano(jettonBalance.balance, decimals),

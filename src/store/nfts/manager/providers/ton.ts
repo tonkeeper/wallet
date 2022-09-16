@@ -133,10 +133,7 @@ export class TonProvider extends BaseProvider {
         ? nft.metadata.name.trim()
         : nft.metadata?.name;
 
-    const baseUrl =
-      (nft.previews &&
-        nft.previews.find((preview) => preview.resolution === '500x500').url) ||
-      (nft.metadata?.image && proxyMedia(nft.metadata?.image, 512, 512));
+    const baseUrl = nft.previews?.find((preview) => preview.resolution === '500x500')?.url;
 
     return {
       ...nft,
