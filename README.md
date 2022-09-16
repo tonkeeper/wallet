@@ -1,4 +1,8 @@
-## Install project
+# Tonkeeper
+
+Welcome to Tonkeeper repository. If you have questions or suggestions, please file an [Issue](https://github.com/tonkeeper/wallet/issues/new/choose)
+
+## Install dependencies
 
 ```bash
 $ yarn install
@@ -25,3 +29,7 @@ If `librsvg` not already installed, run
 ```bash
 $ brew install librsvg
 ```
+
+## License
+
+GPLv3. See [LICENSE.txt](LICENSE.txt)
