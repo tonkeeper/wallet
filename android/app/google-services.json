@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "695609596302",
+    "project_id": "tonkeeper-3b1dc",
+    "storage_bucket": "tonkeeper-3b1dc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:695609596302:android:7376b22be09bfe2409acdf",
+        "android_client_info": {
+          "package_name": "com.ton_keeper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "695609596302-uvba472bj6sl7irt3uotolhqcd9d7ukj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWWySlIVMF2-mqEUHhrRUuHDHblU2Y7cg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "695609596302-uvba472bj6sl7irt3uotolhqcd9d7ukj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "695609596302-ke0t2939c9lkrrmc42dlfgp62t2tjt6a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jbig.tonkeeper",
+                "app_store_id": "1587742107"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

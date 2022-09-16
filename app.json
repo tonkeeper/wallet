@@ -1,0 +1,28 @@
+{
+  "name": "ton_keeper",
+  "displayName": "Tonkeeper",
+  "expo": {
+    "name": "Tonkeeper",
+    "slug": "tonkeeper",
+    "version": "2.5.2",
+    "orientation": "portrait",
+    "primaryColor": "#10161F",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#10161F"
+    },
+    "ios": {
+      "bundleIdentifier": "com.jbig.tonkeeper",
+      "jsEngine": "jsc"
+    },
+    "android": {
+      "package": "com.ton_keeper",
+      "jsEngine": "hermes",
+      "versionCode": 188
+    },
+    "plugins": [
+      "@react-native-firebase/crashlytics"
+    ]
+  }
+}
