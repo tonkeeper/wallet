@@ -21,7 +21,7 @@ export class Ton {
   static mnemonic = mnemonic;
   static base64ToCell(base64?: string): Cell | undefined {
     if (base64) {
-      const bytes = Base64.decodeToBytes(fromUrlSafe_RFC4648(base64));
+      const bytes = new Uint8Array(Buffer.from(base64, 'base64'));
       return TonWeb.boc.Cell.oneFromBoc(bytes);
     }
   }
