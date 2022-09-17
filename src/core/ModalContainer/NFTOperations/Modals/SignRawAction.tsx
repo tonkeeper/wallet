@@ -118,5 +118,38 @@ export const SignRawAction = memo<Props>((props) => {
     );
   }
 
+  if (message) {
+    const recipientAddress = new TonWeb.utils.Address(
+      message.address,
+    ).toString(true, true, true);
+
+    const amount = String(message.amount);
+    const amountText = `${Ton.fromNano(amount)} TON`;
+
+    return (
+      <S.Container>
+        <S.Info>
+          <Highlight onPress={() => copyText(amountText)}>
+            <S.InfoItem>
+              <S.InfoItemLabel>{t('txActions.amount')}</S.InfoItemLabel>
+              <S.InfoItemValue>
+                <Text variant="body1">{amountText}</Text>
+              </S.InfoItemValue>
+            </S.InfoItem>
+          </Highlight>
+          <Separator />
+          <Highlight onPress={() => copyText(recipientAddress)}>
+            <S.InfoItem>
+              <S.InfoItemLabel>{t('txActions.signRaw.recipient')}</S.InfoItemLabel>
+              <S.InfoItemValueText>
+                {maskifyAddress(recipientAddress, 4)}
+              </S.InfoItemValueText>
+            </S.InfoItem>
+          </Highlight>
+        </S.Info>
+      </S.Container>
+    )
+  }
+
   return null;
 });

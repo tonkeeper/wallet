@@ -25,6 +25,7 @@ import { t } from '$translation';
 import { Ton } from '$libs/Ton';
 import { getServerConfig } from '$shared/constants';
 import { AccountEvent, Configuration, SendApi, NFTApi } from 'tonapi-sdk-js';
+import axios from 'axios';
 
 const { NftCollection, NftItem, NftSale } = TonWeb.token.nft;
 
@@ -378,7 +379,7 @@ export class NFTOperations {
           new TonWeb.utils.BN(this.toNano(message.amount)),
         ),
         Ton.base64ToCell(message.stateInit),
-        this.serializePayload(Ton.base64ToCell(message.payload)),
+        Ton.base64ToCell(message.payload),
       );
 
       signingMessage.bits.writeUint8(sendMode);
@@ -398,19 +399,22 @@ export class NFTOperations {
 
     return {
       estimateTx: async (): Promise<AccountEvent | null> => {
-        try {
-          const methods = signRawMethods();
+        const methods = signRawMethods();
 
-          const queryMsg = await methods.getQuery();
-          const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
+        const queryMsg = await methods.getQuery();
+        const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
 
-          const response = await this.sendApi.estimateTx({ sendBocRequest: { boc } });
+        const endpoint = getServerConfig('tonapiMainnetHost');
 
-          return response;
-        } catch (e) {
-          console.log(e);
-          return null;
-        }
+        const resp = await axios.post(`${endpoint}/v1/send/estimateTx`, {
+          boc: boc
+        }, {
+          headers: {
+            Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+          }
+        });
+
+        return resp.data;
       },
       estimateFee: async () => {
         const methods = signRawMethods();
@@ -595,23 +599,5 @@ export class NFTOperations {
 
   private getCurrentWallet(): WalletContract {
     return this.wallet.vault.tonWallet;
-  }
-
-  private serializePayload(payload?: Cell | Uint8Array | string): Cell {
-    const payloadCell = new TonWeb.boc.Cell();
-    if (payload) {
-      if (typeof payload === 'string') {
-        if (payload.length > 0) {
-          payloadCell.bits.writeUint(0, 32);
-          payloadCell.bits.writeString(payload);
-        }
-      } else if ((payload as Cell).refs) {
-        return payload as Cell;
-      } else {
-        payloadCell.bits.writeBytes(payload as Uint8Array);
-      }
-    }
-
-    return payloadCell;
   }
 }
