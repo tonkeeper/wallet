@@ -5,7 +5,14 @@ import { CryptoCurrencies, CryptoCurrency, getServerConfig } from '$shared/const
 import { walletActions, walletSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
 import { isValidAddress, parseLocaleNumber } from '$utils';
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SendAmount, SendProps, SendRecipient, SendSteps } from './Send.interface';
@@ -255,7 +262,7 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   useEffect(() => () => Keyboard.dismiss(), []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     fetchRecipientAccountInfo();
   }, [fetchRecipientAccountInfo]);
 
@@ -304,6 +311,7 @@ export const Send: FC<SendProps> = ({ route }) => {
               decimals={decimals}
               stepsScrollTop={stepsScrollTop}
               setRecipient={setRecipient}
+              setRecipientAccountInfo={setRecipientAccountInfo}
               setComment={setComment}
               setAmount={setAmount}
               onContinue={goToAmount}

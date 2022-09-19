@@ -1,5 +1,5 @@
 import { SuggestedAddress } from '../../../../Send.interface';
-import { List, Separator } from '$uikit';
+import { List } from '$uikit';
 import React, { FC, memo } from 'react';
 import Animated, { Keyframe, SequencedTransition } from 'react-native-reanimated';
 import { AddressSuggestCell } from '../AddressSuggestCell/AddressSuggestCell';

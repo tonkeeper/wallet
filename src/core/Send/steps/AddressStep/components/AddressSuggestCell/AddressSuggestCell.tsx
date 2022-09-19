@@ -159,6 +159,9 @@ const AddressSuggestCellComponent: FC<Props> = (props) => {
                   title
                 )}
               </S.Title>
+              {!isFavorite && !!suggest.name ? (
+                <S.AddressName>{suggest.name}</S.AddressName>
+              ) : null}
               {isFavorite ? (
                 <S.IconContainer>
                   <Icon name="ic-star-12" color="accentPrimary" />

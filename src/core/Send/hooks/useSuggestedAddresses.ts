@@ -112,6 +112,7 @@ export const useSuggestedAddresses = () => {
       })
       .map(
         (action): SuggestedAddress => ({
+          name: action.recipient.name,
           address: new TonWeb.Address(action.recipient.address).toString(
             true,
             true,
