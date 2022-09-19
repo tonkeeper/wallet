@@ -7,14 +7,16 @@ import { Icon } from '$uikit';
 import { useState } from 'react';
 import { useCallback } from 'react';
 import { NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
+import { AccountRepr } from 'tonapi-sdk-js';
 
 interface Props {
   recipient: SendRecipient | null;
+  recipientAccountInfo: AccountRepr | null;
   goToAddress: () => void;
 }
 
 const RecipientViewComponent: FC<Props> = (props) => {
-  const { recipient, goToAddress } = props;
+  const { recipient, recipientAccountInfo, goToAddress } = props;
 
   const t = useTranslator();
 
@@ -22,7 +24,7 @@ const RecipientViewComponent: FC<Props> = (props) => {
 
   const shortenedAddress = recipient ? maskifyAddress(recipient.address) : '';
 
-  const name = recipient?.name || recipient?.domain;
+  const name = recipient?.domain || recipient?.name || recipientAccountInfo?.name;
 
   const title = name ?? shortenedAddress;
 

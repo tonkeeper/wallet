@@ -1,7 +1,7 @@
-import { useFiatRate, useTranslator } from '$hooks';
+import { useFiatRate, useInstance, useTranslator } from '$hooks';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
-import { CryptoCurrencies, CryptoCurrency } from '$shared/constants';
+import { CryptoCurrencies, CryptoCurrency, getServerConfig } from '$shared/constants';
 import { walletActions, walletSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
 import { isValidAddress, parseLocaleNumber } from '$utils';
@@ -19,6 +19,7 @@ import { DoneStep } from './steps/DoneStep/DoneStep';
 import { goBack, openReminderEnableNotificationsModal } from '$navigation';
 import { favoritesActions } from '$store/favorites';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { AccountApi, AccountRepr, Configuration } from 'tonapi-sdk-js';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {
@@ -48,6 +49,17 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   const dispatch = useDispatch();
 
+  const accountApi = useInstance(() => {
+    const tonApiConfiguration = new Configuration({
+      basePath: getServerConfig('tonapiIOEndpoint'),
+      headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+      },
+    });
+
+    return new AccountApi(tonApiConfiguration);
+  });
+
   const { balances, wallet } = useSelector(walletSelector);
 
   const [currency, setCurrency] = useState(initialCurrency || CryptoCurrencies.Ton);
@@ -55,6 +67,9 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   const [recipient, setRecipient] = useState<SendRecipient | null>(
     initialAddress ? { address: initialAddress } : null,
+  );
+  const [recipientAccountInfo, setRecipientAccountInfo] = useState<AccountRepr | null>(
+    null,
   );
 
   const [amount, setAmount] = useState<SendAmount>({ value: initialAmount, all: false });
@@ -121,7 +136,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     [goToAddress],
   );
 
-  const prepareConfirmSending = useCallback(() => {
+  const prepareConfirmSending = useCallback(async () => {
     if (!recipient) {
       return;
     }
@@ -225,7 +240,24 @@ export const Send: FC<SendProps> = ({ route }) => {
     }
   }, [amount, fee, currency, wallet, balances, t, doSend]);
 
+  const fetchRecipientAccountInfo = useCallback(async () => {
+    if (!recipient) {
+      setRecipientAccountInfo(null);
+      return;
+    }
+
+    try {
+      const accountInfo = await accountApi.getAccountInfo({ account: recipient.address });
+
+      setRecipientAccountInfo(accountInfo);
+    } catch {}
+  }, [accountApi, recipient]);
+
   useEffect(() => () => Keyboard.dismiss(), []);
+
+  useEffect(() => {
+    fetchRecipientAccountInfo();
+  }, [fetchRecipientAccountInfo]);
 
   const isDoneStep = currentStep.id === SendSteps.DONE;
 
@@ -285,6 +317,7 @@ export const Send: FC<SendProps> = ({ route }) => {
             <AmountStep
               isPreparing={isPreparing}
               recipient={recipient}
+              recipientAccountInfo={recipientAccountInfo}
               decimals={decimals}
               balance={balance}
               currencyTitle={currencyTitle}
@@ -305,6 +338,7 @@ export const Send: FC<SendProps> = ({ route }) => {
               currencyTitle={currencyTitle}
               currency={currency}
               recipient={recipient}
+              recipientAccountInfo={recipientAccountInfo}
               amount={amount}
               decimals={decimals}
               isJetton={isJetton}
@@ -325,9 +359,11 @@ export const Send: FC<SendProps> = ({ route }) => {
               currencyTitle={currencyTitle}
               currency={currency}
               amount={amount}
+              comment={comment}
               decimals={decimals}
               isJetton={isJetton}
               recipient={recipient}
+              recipientAccountInfo={recipientAccountInfo}
               fee={fee}
               {...stepProps}
             />
