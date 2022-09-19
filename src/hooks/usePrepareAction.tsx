@@ -105,7 +105,9 @@ export function usePrepareAction(
     }
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
-      label = t('transaction_type_contract_deploy');
+      label = '-';
+      typeLabel = t('transaction_type_contract_deploy');
+      type = 'contract_deploy';
     }
 
     const actionProps: ActionItemBaseProps = {
@@ -143,6 +145,13 @@ export function usePrepareAction(
           maskifyTonAddress(
             new TonWeb.Address(accountToDisplay.address).toString(true, true, true),
           ),
+        value: formattedDate,
+      });
+    } else if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
+      actionProps.infoRows.push({
+        label: maskifyTonAddress(
+          new TonWeb.Address(action.address).toString(true, true, true),
+        ),
         value: formattedDate,
       });
     }
