@@ -203,7 +203,11 @@ function* loadBalancesWorker() {
     yield call(saveBalances, balances);
 
     yield put(
-      batchActions(walletActions.setBalances(balances), walletActions.endLoading()),
+      batchActions(
+        walletActions.setBalances(balances),
+        walletActions.endLoading(),
+        mainActions.dismissBadHosts(),
+      ),
     );
 
     if (wallet.ton.isV4()) {
