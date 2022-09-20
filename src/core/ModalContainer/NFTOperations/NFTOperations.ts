@@ -404,7 +404,7 @@ export class NFTOperations {
         const queryMsg = await methods.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
 
-        const endpoint = getServerConfig('tonapiMainnetHost');
+        const endpoint = getServerConfig('tonapiIOEndpoint');
 
         const resp = await axios.post(`${endpoint}/v1/send/estimateTx`, {
           boc: boc

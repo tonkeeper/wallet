@@ -1,155 +1,153 @@
-import React, { memo, useMemo } from 'react';
-import { Action, Fee } from 'tonapi-sdk-js';
-import { SignRawMessage } from '../TXRequest.types';
+import React from 'react';
+import { Action, ActionTypeEnum } from 'tonapi-sdk-js';
+import { TonTransferAction as TonTransferActionData } from 'tonapi-sdk-js';
 import * as S from '../NFTOperations.styles';
 import { Highlight, Separator, Text } from '$uikit';
 import { copyText } from '$hooks/useCopyText';
-import { maskifyAddress, truncateDecimal } from '$utils';
 import { Ton } from '$libs/Ton';
-import TonWeb from 'tonweb';
 import { t } from '$translation';
 import { ListHeader } from '$uikit';
 
 interface Props {
   action: Action;
-  message: SignRawMessage;
-  isOneMessage: boolean;
-  totalFee: Fee;
+  totalFee?: string;
+  countActions: number;
 }
 
-export const SignRawAction = memo<Props>((props) => {
-  const { action, message, isOneMessage, totalFee } = props;
+export const SignRawAction = React.memo<Props>((props) => {
+  const { action, totalFee, countActions } = props;
 
-  const title = useMemo(() => {
-    if (isOneMessage) {
-      return false;
-    }
-
-    const type = [
-      'tonTransfer',
-      'contractDeploy',
-      'jettonTransfer',
-      'nftItemTransfer',
-      'subscribe',
-      'unSubscribe',
-    ].find((type) => type in action);
-
-    return type 
-      ? t(`txActions.signRaw.types.${type}`) 
-      : t('txActions.signRaw.types.unknownTransaction');
-  }, [action, isOneMessage]);
-
-  const comment = useMemo(() => {
-    if (message.payload) {
-      try {
-        const cell = Ton.base64ToCell(message.payload);
-        return Ton.parseComment(cell!);
-      } catch (err) {
-        return null;
-      }
-    }
-  }, [message.payload]);
-
-  if (action.tonTransfer) {
-    const amount = String(action.tonTransfer.amount);
-    const amountText = `${Ton.fromNano(amount)} TON`;
-
-    const recipientAddress = new TonWeb.utils.Address(
-      action.tonTransfer.recipient.address,
-    ).toString(true, true, true);
-
-    const totalFeeText = useMemo(() => {
-      return `${truncateDecimal(Ton.fromNano(totalFee.total.toString()), 1, true)} TON`;
-    }, []);
-
+  if (action.type === ActionTypeEnum.TonTransfer) {
     return (
-      <>
-        {title && ( 
-          <ListHeader title={title} />
-        )}
-        <S.Container>
-          <S.Info>
-            <Highlight onPress={() => copyText(amountText)}>
-              <S.InfoItem>
-                <S.InfoItemLabel>{t('txActions.amount')}</S.InfoItemLabel>
-                <S.InfoItemValue>
-                  <Text variant="body1">{amountText}</Text>
-                </S.InfoItemValue>
-              </S.InfoItem>
-            </Highlight>
-            <Separator />
-            <Highlight onPress={() => copyText(recipientAddress)}>
-              <S.InfoItem>
-                <S.InfoItemLabel>{t('txActions.signRaw.recipient')}</S.InfoItemLabel>
-                <S.InfoItemValueText>
-                  {maskifyAddress(recipientAddress, 4)}
-                </S.InfoItemValueText>
-              </S.InfoItem>
-            </Highlight>
-            <Separator />
-            {isOneMessage && (
-              <Highlight onPress={() => copyText(totalFeeText)}>
-                <S.InfoItem>
-                  <S.InfoItemLabel>{t('transaction_fee')}</S.InfoItemLabel>
-                  <S.InfoItemValueText>
-                    ≈ {totalFeeText}
-                  </S.InfoItemValueText>
-                </S.InfoItem>
-              </Highlight>
-            )}
-            <Separator />
-
-            {!!comment && (
-              <>
-                <Separator />
-                <Highlight onPress={() => copyText(comment)}>
-                  <S.InfoItem>
-                    <S.InfoItemLabel>{t('txActions.signRaw.comment')}</S.InfoItemLabel>
-                    <S.InfoItemValue>
-                      <Text variant="body1">{comment}</Text>
-                    </S.InfoItemValue>
-                  </S.InfoItem>
-                </Highlight>
-              </>
-            )}
-          </S.Info>
-        </S.Container>
-      </>
+      <TonTransferAction 
+        action={action[ActionTypeEnum.TonTransfer]}
+        skipHeader={countActions === 1}
+        totalFee={totalFee}
+      /> 
     );
   }
 
-  if (message) {
-    const recipientAddress = new TonWeb.utils.Address(
-      message.address,
-    ).toString(true, true, true);
-
-    const amount = String(message.amount);
-    const amountText = `${Ton.fromNano(amount)} TON`;
-
+  if (action.type === ActionTypeEnum.Unknown) {
     return (
+      <UnknownAction 
+        action={action[ActionTypeEnum.Unknown]}
+        skipHeader={countActions === 1}
+      /> 
+    );
+  } 
+
+  return null;
+});
+
+interface TonTransferActionProps {
+  action: TonTransferActionData;
+  skipHeader?: boolean;
+  totalFee?: string;
+}
+
+const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
+  const { action, skipHeader, totalFee } = props;
+  const amount = Ton.formatAmount(action.amount);
+  const address = Ton.formatAddress(
+    action.recipient.address, 
+    { cut: true }
+  );
+
+  return (
+    <>
+      {/* {!skipHeader && (
+        <ListHeader title={t('txActions.signRaw.types.tonTransfer')} />
+      )} */}
       <S.Container>
         <S.Info>
-          <Highlight onPress={() => copyText(amountText)}>
+          <Highlight onPress={() => copyText(amount)}>
             <S.InfoItem>
               <S.InfoItemLabel>{t('txActions.amount')}</S.InfoItemLabel>
               <S.InfoItemValue>
-                <Text variant="body1">{amountText}</Text>
+                <Text variant="body1">{amount}</Text>
               </S.InfoItemValue>
             </S.InfoItem>
           </Highlight>
           <Separator />
-          <Highlight onPress={() => copyText(recipientAddress)}>
+          <Highlight onPress={() => copyText(address)}>
             <S.InfoItem>
               <S.InfoItemLabel>{t('txActions.signRaw.recipient')}</S.InfoItemLabel>
               <S.InfoItemValueText>
-                {maskifyAddress(recipientAddress, 4)}
+                {address}
+              </S.InfoItemValueText>
+            </S.InfoItem>
+          </Highlight>
+          {Boolean(action.comment) && (
+            <>
+              <Separator />
+              <Highlight onPress={() => copyText(address)}>
+                <S.InfoItem>
+                  <S.InfoItemLabel>{t('txActions.signRaw.comment')}</S.InfoItemLabel>
+                  <S.InfoItemValueText>
+                    {action.comment}
+                  </S.InfoItemValueText>
+                </S.InfoItem>
+              </Highlight>
+            </>
+          )}
+          {Boolean(totalFee) && (
+            <>
+              <Separator />
+              <Highlight onPress={() => copyText(address)}>
+                <S.InfoItem>
+                  <S.InfoItemLabel>{t('txActions.fee')}</S.InfoItemLabel>
+                  <S.InfoItemValueText>
+                    {totalFee}
+                  </S.InfoItemValueText>
+                </S.InfoItem>
+              </Highlight>
+            </>
+          )}
+        </S.Info>
+      </S.Container>
+    </>
+  );
+});
+
+
+interface UnknownActionProps {
+  skipHeader?: boolean;
+  action: {
+    address: string;
+    amount: string;
+  }
+}
+
+const UnknownAction = React.memo<UnknownActionProps>(({ action, skipHeader }) => {
+  const address = Ton.formatAddress(action.address, { cut: true });
+  const amount = Ton.formatAmount(action.amount);
+
+  return (
+    <>
+      {!skipHeader && (
+        <ListHeader title={t('txActions.signRaw.types.unknownTransaction')} />
+      )}
+      <S.Container>
+        <S.Info>
+          <Highlight onPress={() => copyText(amount)}>
+            <S.InfoItem>
+              <S.InfoItemLabel>{t('txActions.amount')}</S.InfoItemLabel>
+              <S.InfoItemValue>
+                <Text variant="body1">{amount}</Text>
+              </S.InfoItemValue>
+            </S.InfoItem>
+          </Highlight>
+          <Separator />
+          <Highlight onPress={() => copyText(address)}>
+            <S.InfoItem>
+              <S.InfoItemLabel>{t('txActions.signRaw.recipient')}</S.InfoItemLabel>
+              <S.InfoItemValueText>
+                {address}
               </S.InfoItemValueText>
             </S.InfoItem>
           </Highlight>
         </S.Info>
       </S.Container>
-    )
-  }
-
-  return null;
+    </>
+  );
 });

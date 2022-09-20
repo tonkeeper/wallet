@@ -1,17 +1,19 @@
 import React, { memo, useMemo } from 'react';
-import { Icon, Text } from '$uikit';
+import { Highlight, Icon, Text } from '$uikit';
 import { Toast } from '$uikit/Toast/new';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
-import { debugLog, ns } from '$utils';
+import { debugLog, lowerCaseFirstLetter, ns, truncateDecimal } from '$utils';
 import { t } from '$translation';
 import { AccountEvent } from 'tonapi-sdk-js';
 import { SignRawAction } from './SignRawAction';
 import { store } from '$store';
 import * as S from '../NFTOperations.styles';
 import { Modal, useNavigation } from '$libs/navigation';
+import { Ton } from '$libs/Ton';
+import { copyText } from '$hooks/useCopyText';
 
 interface SignRawModalProps {
   action: Awaited<ReturnType<NFTOperations['signRaw']>>;
@@ -43,47 +45,62 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   const actions = useMemo(() => {
     if (!accountEvent) {
       return params.messages.map((message) => ({
-        action: {
-          unknownAction: {
-            address: message.address,
-            amount: message.amount,
-          }
-        },
-        message
+        type: 'Unknown',
+        Unknown: {
+          address: message.address,
+          amount: message.amount,
+        }
       }));
     }
 
-    return accountEvent.actions.map((action, index) => ({
-      action,
-      message: params.messages[index],
-    }));
+    return accountEvent.actions;
   }, [accountEvent, params.messages]);
 
   const headerTitle = useMemo(() => {
-    if (params.messages.length > 1) {
+    if (actions.length > 1) {
       return t('txActions.signRaw.title');
     }
 
-    const action = accountEvent?.actions[0] || {};
+    const action = actions[0] ?? {};
     const type = [
-      'tonTransfer',
-      'contractDeploy',
-      'jettonTransfer',
-      'nftItemTransfer',
-      'subscribe',
-      'unSubscribe',
+      'TonTransfer',
+      'ContractDeploy',
+      'JettonTransfer',
+      'NftItemTransfer',
+      'Subscribe',
+      'UnSubscribe',
     ].find((type) => type in action);
 
     return type 
-      ? t(`txActions.signRaw.types.${type}`) 
+      ? t(`txActions.signRaw.types.${lowerCaseFirstLetter(type)}`) 
       : t('txActions.signRaw.types.unknownTransaction');
-  }, [params.messages.length, accountEvent?.actions]);
+  }, [actions]);
+
+  const totalFee = useMemo(() => {
+    const fee = accountEvent?.fee;
+
+    if (fee) {
+      return `≈ ${truncateDecimal(Ton.fromNano(fee.total.toString()), 1, true)} TON`;
+    } 
+  }, [accountEvent]);
 
   return (
     <Modal>
       <Modal.Header title={headerTitle} />
       <Modal.ScrollView>
         <S.Container>
+          {totalFee && (
+            <S.Info>
+              <Highlight onPress={() => copyText(totalFee)}>
+                <S.InfoItem>
+                  <S.InfoItemLabel>{t('txActions.signRaw.totalFee')}</S.InfoItemLabel>
+                  <S.InfoItemValue>
+                    <Text variant="body1">{totalFee}</Text>
+                  </S.InfoItemValue>
+                </S.InfoItem>
+              </Highlight>
+            </S.Info>
+          )}
           {hasWarning && (
             <S.WaringContainer>
               <S.WarningInfo>
@@ -100,12 +117,15 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
             </S.WaringContainer>
           )}
         </S.Container>
-        {actions.map(({ action, message }, index) => (
+        {actions.map((action, index) => (
           <SignRawAction
-            totalFee={accountEvent?.fee}
-            isOneMessage={params.messages.length === 1}
             key={`${action.type}-${index}`}
-            message={message}
+            countActions={actions.length}
+            totalFee={
+              actions.length === 1 
+                ? totalFee
+                : undefined
+            }
             action={action}
           />
         ))}
@@ -142,13 +162,13 @@ export const useSignRawModal = () => {
       } catch (err) {
         debugLog('[SignRaw]: estimateTx error', JSON.stringify(err));
 
-        const tonapiError = err.response.data?.error;
+        const tonapiError = err?.response?.data?.error;
         const errorMessage = tonapiError ?? `no response; status code: ${err.status};`;
 
         Toast.fail(`Emulation error: ${errorMessage}`, { duration: 5000 });
       }
         
-      nav.openModal('SignRaw', { // TODO: change for new naviagtion 
+      nav.openModal('SignRaw', {
         accountEvent,
         options,
         params,

@@ -50,6 +50,10 @@ export function debugLog(...args: any) {
   );
 }
 
+export function lowerCaseFirstLetter(string: string) {
+  return string.charAt(0).toLowerCase() + string.slice(1);
+}
+
 export const Memo: <T>(c: T) => T = memo; // Fix generic.
 
 export * from './parseTonLink';
