@@ -17,8 +17,7 @@ import { EventsMap, LoadEventsAction } from '$store/events/interface';
 import { getWalletName } from '$shared/dynamicConfig';
 import { EventsManager } from '$store/events/manager';
 import { debugLog } from '$utils';
-import { Cache } from '$store/events/manager/cache';
-import {subscriptionsActions} from "$store/subscriptions";
+import { subscriptionsActions } from '$store/subscriptions';
 
 let manager: EventsManager | null;
 
