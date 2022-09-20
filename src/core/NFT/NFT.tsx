@@ -6,7 +6,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { ImageWithTitle } from '$core/NFT/ImageWithTitle/ImageWithTitle';
-import { checkIsTonDiamondsNFT, maskifyTonAddress, ns } from '$utils';
+import { checkIsTonDiamondsNFT, compareAddresses, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslator } from '$hooks';
 import { Properties } from '$core/NFT/Properties/Properties';
@@ -57,10 +57,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
   const scrollRef = useRef<Animated.ScrollView>(null);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const canTransfer = useMemo(
-    () => {
-      console.log('nft.ownerAddress', nft.ownerAddress);
-      return nft.ownerAddress === address.ton
-    },
+    () => compareAddresses(nft.ownerAddress, address.ton),
     [nft.ownerAddress, address.ton],
   );
 
@@ -167,7 +164,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
               <Button
                 style={{ marginBottom: ns(16) }}
                 onPress={handleTransferNft}
-                // disabled={!canTransfer}
+                disabled={!canTransfer}
                 size="large"
               >
                 {isDNS ? t('nft_transfer_dns') : t('nft_transfer_nft')}
@@ -189,31 +186,6 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
                 domain={nft.dns}
               />
             )}
-          
-          <ListHeader 
-            title="Debug"
-          />
-          <SO.Details>
-            <Highlight onPress={() => copyText(nft.ownerAddress)}>
-              <SO.DetailItem>
-                <SO.DetailItemLabel>nft.ownerAddress</SO.DetailItemLabel>
-                <SO.DetailItemValueText>{nft.ownerAddress}</SO.DetailItemValueText>
-              </SO.DetailItem>
-            </Highlight>
-            <Highlight onPress={() => copyText(address.ton)}>
-              <SO.DetailItem>
-                <SO.DetailItemLabel>address.ton</SO.DetailItemLabel>
-                <SO.DetailItemValueText>{address.ton}</SO.DetailItemValueText>
-              </SO.DetailItem>
-            </Highlight>
-            <Highlight onPress={() => copyText(canTransfer)}>
-              <SO.DetailItem>
-                <SO.DetailItemLabel>canTransfer</SO.DetailItemLabel>
-                <SO.DetailItemValueText>{String(canTransfer)}</SO.DetailItemValueText>
-              </SO.DetailItem>
-            </Highlight>
-          </SO.Details>
-
             {nft.marketplaceURL && !flags.disable_nft_markets ? (
               <Button
                 style={{ marginBottom: ns(16) }}
