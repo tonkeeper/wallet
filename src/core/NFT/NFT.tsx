@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import * as S from './NFT.style';
-import {Badge, Button, Icon, NavBar, Text} from '$uikit';
+import {Badge, Button, Highlight, Icon, ListHeader, NavBar, Text} from '$uikit';
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
@@ -24,6 +24,9 @@ import { LinkingDomainButton } from './LinkingDomainButton';
 import { nftsActions } from '$store/nfts';
 import { useNavigation } from '$libs/navigation';
 import { NFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
+import { Toast } from '$uikit/Toast/new';
+import * as SO from '../ModalContainer/NFTOperations/NFTOperations.styles';
+import { copyText } from '$hooks/useCopyText';
 
 export const NFT: React.FC<NFTProps> = ({ route }) => {
   const flags = useFlags(['disable_nft_markets', 'disable_apperance']);
@@ -54,7 +57,10 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
   const scrollRef = useRef<Animated.ScrollView>(null);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const canTransfer = useMemo(
-    () => nft.ownerAddress === address.ton,
+    () => {
+      console.log('nft.ownerAddress', nft.ownerAddress);
+      return nft.ownerAddress === address.ton
+    },
     [nft.ownerAddress, address.ton],
   );
 
@@ -161,7 +167,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
               <Button
                 style={{ marginBottom: ns(16) }}
                 onPress={handleTransferNft}
-                disabled={!canTransfer}
+                // disabled={!canTransfer}
                 size="large"
               >
                 {isDNS ? t('nft_transfer_dns') : t('nft_transfer_nft')}
@@ -183,6 +189,31 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
                 domain={nft.dns}
               />
             )}
+          
+          <ListHeader 
+            title="Debug"
+          />
+          <SO.Details>
+            <Highlight onPress={() => copyText(nft.ownerAddress)}>
+              <SO.DetailItem>
+                <SO.DetailItemLabel>nft.ownerAddress</SO.DetailItemLabel>
+                <SO.DetailItemValueText>{nft.ownerAddress}</SO.DetailItemValueText>
+              </SO.DetailItem>
+            </Highlight>
+            <Highlight onPress={() => copyText(address.ton)}>
+              <SO.DetailItem>
+                <SO.DetailItemLabel>address.ton</SO.DetailItemLabel>
+                <SO.DetailItemValueText>{address.ton}</SO.DetailItemValueText>
+              </SO.DetailItem>
+            </Highlight>
+            <Highlight onPress={() => copyText(canTransfer)}>
+              <SO.DetailItem>
+                <SO.DetailItemLabel>canTransfer</SO.DetailItemLabel>
+                <SO.DetailItemValueText>{String(canTransfer)}</SO.DetailItemValueText>
+              </SO.DetailItem>
+            </Highlight>
+          </SO.Details>
+
             {nft.marketplaceURL && !flags.disable_nft_markets ? (
               <Button
                 style={{ marginBottom: ns(16) }}
