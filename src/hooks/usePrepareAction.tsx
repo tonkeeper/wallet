@@ -52,7 +52,7 @@ export function usePrepareAction(
     let currency;
     let bottomContent;
     if (ActionType.TonTransfer === ActionType[rawAction.type]) {
-      const amount = TonWeb.utils.fromNano(new BigNumber(action.amount).abs().toString());
+      const amount = TonWeb.utils.fromNano(Math.abs(action.amount).toString());
       label = prefix + ' ' + truncateDecimal(amount.toString(), 2);
       type = isReceive ? 'receive' : 'sent';
       typeLabel = t(`transaction_type_${type}`);

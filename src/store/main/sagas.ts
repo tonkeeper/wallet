@@ -100,7 +100,7 @@ function* loadServerConfig(isTestnet: boolean, canRetry = false) {
 }
 
 function* initWorker() {
-  BigNumber.config({ EXPONENTIAL_AT: 15 });
+  BigNumber.config({ EXPONENTIAL_AT: 1e9 });
 
   const isTestnet = yield call(getIsTestnet);
   yield put(mainActions.setTestnet(isTestnet));
