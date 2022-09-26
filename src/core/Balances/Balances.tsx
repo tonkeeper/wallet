@@ -7,7 +7,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 import * as S from './Balances.style';
 import { Button, Icon, InternalNotification, Loader, ScrollHandler, Text } from '$uikit';
-import { useAppStateActive, useTheme, useTranslator } from '$hooks';
+import { useAppStateActive, useJettonBalances, useTheme, useTranslator } from '$hooks';
 import { walletActions, walletSelector } from '$store/wallet';
 import { isValidAddress, maskifyTonAddress, ns, triggerImpactLight } from '$utils';
 import {
@@ -63,7 +63,8 @@ export const Balances: FC = () => {
     reachabilityShortTimeout: 3000,
     reachabilityRequestTimeout: 3000,
   });
-  const { jettonBalances, showJettons, excludedJettons } = useSelector(jettonsSelector);
+  const jettonBalances = useJettonBalances();
+  const { showJettons } = useSelector(jettonsSelector);
   const [isNoSignalDismissed, setNoSignalDismissed] = useState(false);
   const isConfigError = !isServerConfigLoaded();
   const isFocused = useIsFocused();
@@ -153,12 +154,10 @@ export const Balances: FC = () => {
 
     if (showJettons && jettonBalances.length > 0) {
       result.push({
-        data: jettonBalances
-          .filter((jetton) => !excludedJettons[jetton.jettonAddress])
-          .map((jetton) => ({
-            type: 'jetton',
-            data: jetton,
-          })),
+        data: jettonBalances.map((jetton) => ({
+          type: 'jetton',
+          data: jetton,
+        })),
       });
     }
 
@@ -179,7 +178,7 @@ export const Balances: FC = () => {
     //   data: ['add_coin_button'],
     // });
     return result;
-  }, [otherCurrencies, oldWalletBalances, jettonBalances, showJettons, excludedJettons]);
+  }, [otherCurrencies, oldWalletBalances, jettonBalances, showJettons]);
 
   const handleLoadMore = useCallback(() => {
     if (isEventsLoading || !canLoadMore) {

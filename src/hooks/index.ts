@@ -20,3 +20,4 @@ export { useJettonByWalletAddress } from './useJettonByWalletAddress';
 export { useValidateAddress } from './useValidateAddress';
 export { useCopyText } from './useCopyText';
 export { useDimensions } from './useDimensions';
+export { useJettonBalances } from './useJettonBalances';
