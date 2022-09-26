@@ -61,9 +61,8 @@ export const Settings: FC = () => {
 
   const handleRateApp = useCallback(() => {
     const options = {
-      preferInApp: true,
+      preferInApp: false,
       AppleAppID: APPLE_STORE_ID,
-      openAppStoreIfInAppFails: true,
       GooglePackageName: GOOGLE_PACKAGE_NAME,
       preferredAndroidMarket: AndroidMarket.Google,
     };
