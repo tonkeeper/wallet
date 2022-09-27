@@ -4,7 +4,7 @@ import { ExchangeItemProps } from './ExchangeItem.interface';
 import * as S from './ExchangeItem.style';
 import { useExchangeMethodInfo, useTheme } from '$hooks';
 import { openExchangeMethodModal } from '$navigation';
-import {Icon, Text} from '$uikit';
+import { Icon, Text } from '$uikit';
 
 export const ExchangeItem: FC<ExchangeItemProps> = ({
   methodId,
@@ -62,10 +62,7 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
             </Text>
           </S.Contain>
           <S.IconContain>
-            <Icon
-              name="ic-chevron-16"
-              color="foregroundSecondary"
-            />
+            <Icon name="ic-chevron-16" color="foregroundSecondary" />
           </S.IconContain>
         </S.CardIn>
       </S.Card>

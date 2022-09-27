@@ -12,3 +12,7 @@ export const Contain = styled.View`
   margin: 0 ${hNs(16)}px;
   border-radius: ${({ theme }) => ns(theme.radius.normal)}px;
 `;
+
+export const HeaderContainer = styled.View`
+  margin: 0 ${hNs(16)}px;
+`;

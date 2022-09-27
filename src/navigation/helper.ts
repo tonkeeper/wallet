@@ -19,15 +19,12 @@ import {
 } from '$navigation/navigationNames';
 import { CryptoCurrencies, CryptoCurrency } from '$shared/constants';
 import { EventKey } from '$store/events/interface';
-import { SubscriptionModel, TAction } from '$store/models';
+import { SubscriptionModel } from '$store/models';
 import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
 import { NFTKeyPair } from '$store/nfts/interface';
 import { DeployModalProps } from '$core/ModalContainer/NFTOperations/Modals/DeployModal';
 import { mergeRefs } from '$utils/mergeRefs';
-import {
-  shouldOpenReminderNotifications,
-  shouldOpenReminderNotificationsAfterUpdate,
-} from '$utils/messaging';
+import { shouldOpenReminderNotifications } from '$utils/messaging';
 import { AppearanceBottomSheetProps } from '$core/ModalContainer/AppearanceBottomSheet/AppearanceBottomSheet.interface';
 import { ExchangeDB } from '$core/ModalContainer/ExchangeMethod/ExchangeDB';
 import { TonConnectModalProps } from '$core/TonConnect/TonConnectModal';
@@ -171,32 +168,6 @@ export function openDeploy(props: DeployModalProps) {
     modalName: ModalName.DEPLOY,
     key: 'DEPLOY',
     ...props,
-  });
-}
-
-export function openConfirmSending(options: {
-  currency: CryptoCurrency;
-  amount: string;
-  address: string;
-  comment: string;
-  fee: string;
-  isInactive: boolean;
-  withGoBack: boolean;
-  isJetton?: boolean;
-  domain?: string;
-}) {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.CONFIRM_SENDING,
-    key: 'CONFIRM_SENDING',
-    currency: options.currency,
-    amount: options.amount,
-    address: options.address,
-    comment: options.comment,
-    fee: options.fee,
-    isInactive: options.isInactive,
-    withGoBack: options.withGoBack,
-    isJetton: options.isJetton,
-    domain: options.domain,
   });
 }
 

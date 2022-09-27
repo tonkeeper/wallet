@@ -31,15 +31,17 @@ export function* loadMethodsWorker() {
     const methods: ExchangeMethods = {};
     const images: string[] = [];
     for (let category of resp.data.data.categories) {
-      categories.push({
-        title: category.title,
-        subtitle: category.subtitle,
-        items: category.items.map((item: any) => item.id),
-      });
+      if (category.items.length > 0) {
+        categories.push({
+          title: category.title,
+          subtitle: category.subtitle,
+          items: category.items.map((item: any) => item.id),
+        });
 
-      for (const method of category.items) {
-        methods[method.id] = method;
-        images.push(method.icon_url);
+        for (const method of category.items) {
+          methods[method.id] = method;
+          images.push(method.icon_url);
+        }
       }
     }
 

@@ -31,12 +31,12 @@ type ConfirmFn = (options: { startLoading: () => void }) => Promise<void>;
 
 // Wrapper action footer for TxRequest
 // TODO: Rename NFTOperation -> Action
-export const useNFTOperationState = (txBody: TxBodyOptions) => {
+export const useNFTOperationState = (txBody?: TxBodyOptions) => {
   const { footerRef, onConfirm: invokeConfirm } = useActionFooter();
 
   const onConfirm = (confirm: ConfirmFn) => async () => {
     try {
-      if (txBody.expires_sec < getTimeSec()) {
+      if (txBody && txBody.expires_sec < getTimeSec()) {
         throw new NFTOperationError(t('nft_operations_expired'));
       }
 

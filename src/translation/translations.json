@@ -255,6 +255,7 @@
     "confirm_sending_inactive_warn_title": "Inactive contract",
     "confirm_sending_inactive_warn_description": "Do not proceed if you expect blockchain magic to happen. It won't.",
     "confirm_sending_inactive_warn_about": "What you should do",
+    "confirm_sending_method_title": "Send your funds to %{name}?",
 
     "info_about_inactive_title": "Inactive contract",
     "info_about_inactive_desc1": "Tonkeeper does not know if this address is a wallet or a smart contract.",
@@ -265,8 +266,6 @@
     "info_about_inactive_back": "Back",
 
     "swap_title": "Swap",
-
-    "exchange_title": "Buy TON",
 
     "settings_title": "Settings",
     "settings_primary_currency": "Primary currency",
@@ -811,6 +810,7 @@
     "confirm_sending_inactive_warn_title": "Неактивный контракт",
     "confirm_sending_inactive_warn_description": "Не продолжайте, если вы ожидаете волшебства от блокчейна. Этого не произойдет.",
     "confirm_sending_inactive_warn_about": "Что важно знать",
+    "confirm_sending_method_title": "Send your funds\nto %{name}?",
 
     "info_about_inactive_title": "Неактивный контракт",
     "info_about_inactive_desc1": "Tonkeeper не знает, является ли этот адрес кошельком или смарт-контрактом.",
@@ -821,8 +821,6 @@
     "info_about_inactive_back": "Вернуться назад",
 
     "swap_title": "Обмен",
-
-    "exchange_title": "Купить TON",
 
     "settings_title": "Настройки",
     "settings_primary_currency": "Основная валюта",
