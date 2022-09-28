@@ -84,7 +84,12 @@ export function PopupMenuComponent(props: PopupMenuProps) {
 
       <Modal animationType="none" transparent visible={visible}>
         <S.Overlay onPress={handleClose} />
-        <S.Wrap style={[{ top: offsetTop.current }, popupAnimation.style]}>
+        <S.Wrap
+          style={[
+            { top: offsetTop.current + (props.marginTop ?? 0) },
+            popupAnimation.style,
+          ]}
+        >
           <S.Content>
             {items.map((item, index, arr) => (
               <View key={index}>

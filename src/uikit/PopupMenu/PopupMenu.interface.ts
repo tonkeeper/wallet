@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 
 export interface PopupMenuProps {
+  marginTop?: number;
   children: React.ReactElement;
   items: ReactNode[];
 }

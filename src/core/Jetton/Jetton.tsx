@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useEffect, useMemo} from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
 import { Button, Icon, ScrollHandler, Text, PopupMenu, PopupMenuItem } from '$uikit';
@@ -12,8 +12,10 @@ import { CryptoCurrencies } from '$shared/constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { useJettonEvents } from '$hooks/useJettonEvents';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
-import { Linking, View } from 'react-native';
+import { Linking, RefreshControl, View } from 'react-native';
 import { eventsSelector, eventsActions } from '$store/events';
+import { walletActions, walletSelector } from '$store/wallet';
+import { useIsFocused } from '@react-navigation/native';
 
 const ActionButton: FC<ActionButtonProps> = (props) => {
   const { children, onPress, icon, isLast } = props;
@@ -42,6 +44,8 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const dispatch = useDispatch();
   const jettonEvents = useJettonEvents(jetton.jettonAddress);
   const { isLoading: isEventsLoading, canLoadMore } = useSelector(eventsSelector);
+  const isFocused = useIsFocused();
+  const { isRefreshing } = useSelector(walletSelector);
 
   const handleLoadMore = useCallback(() => {
     if (isEventsLoading || !canLoadMore) {
@@ -71,6 +75,10 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   if (!jetton) {
     return null;
   }
+
+  const handleRefresh = useCallback(() => {
+    dispatch(walletActions.refreshBalancesPage());
+  }, [dispatch]);
 
   function renderHeader() {
     return (
@@ -110,6 +118,13 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   function renderContent() {
     return (
       <TransactionsList
+        refreshControl={
+          <RefreshControl
+            onRefresh={handleRefresh}
+            refreshing={isRefreshing && isFocused}
+            tintColor={theme.colors.foregroundPrimary}
+          />
+        }
         hideJettonsSymbols
         onEndReached={isEventsLoading || !canLoadMore ? undefined : handleLoadMore}
         eventsInfo={jettonEvents}
@@ -130,16 +145,12 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         <ScrollHandler
           navBarRight={
             <PopupMenu
+              marginTop={-8}
               items={[
                 <PopupMenuItem
                   onPress={handleOpenExplorer}
                   text={t('jetton_open_explorer')}
-                  icon={
-                    <Icon
-                      name="ic-globe-16"
-                      color="accentPrimary"
-                    />
-                  }
+                  icon={<Icon name="ic-globe-16" color="accentPrimary" />}
                 />,
               ]}
             >
