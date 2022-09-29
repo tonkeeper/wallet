@@ -116,7 +116,7 @@ export function usePrepareAction(
       labelColor,
       bottomContent,
       infoRows: [],
-      comment: action.comment || '',
+      comment: (!event.isScam && action.comment) || '',
       isInProgress: event.inProgress,
       isSpam: event.isScam,
     };
