@@ -479,6 +479,7 @@
       "amount": "Amount",
 
       "signRaw": {
+        "totalFee": "Total fee",
         "title": "Confirm transaction",
         "recipient": "Recipient",
         "comment": "Comment",
@@ -1030,6 +1031,7 @@
       "amount": "Сумма",
 
       "signRaw": {
+        "totalFee": "Суммарная комиссия",
         "title": "Подтвердить транзакцию",
         "recipient": "Получатель",
         "comment": "Комментарий",

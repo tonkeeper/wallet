@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import * as S from './NFT.style';
-import {Badge, Button, Icon, NavBar, Text} from '$uikit';
+import {Badge, Button, Highlight, Icon, ListHeader, NavBar, Text} from '$uikit';
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
 import { ImageWithTitle } from '$core/NFT/ImageWithTitle/ImageWithTitle';
-import { checkIsTonDiamondsNFT, maskifyTonAddress, ns } from '$utils';
+import { checkIsTonDiamondsNFT, compareAddresses, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslator } from '$hooks';
 import { Properties } from '$core/NFT/Properties/Properties';
@@ -24,6 +24,9 @@ import { LinkingDomainButton } from './LinkingDomainButton';
 import { nftsActions } from '$store/nfts';
 import { useNavigation } from '$libs/navigation';
 import { NFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
+import { Toast } from '$uikit/Toast/new';
+import * as SO from '../ModalContainer/NFTOperations/NFTOperations.styles';
+import { copyText } from '$hooks/useCopyText';
 
 export const NFT: React.FC<NFTProps> = ({ route }) => {
   const flags = useFlags(['disable_nft_markets', 'disable_apperance']);
@@ -54,7 +57,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
   const scrollRef = useRef<Animated.ScrollView>(null);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const canTransfer = useMemo(
-    () => nft.ownerAddress === address.ton,
+    () => compareAddresses(nft.ownerAddress, address.ton),
     [nft.ownerAddress, address.ton],
   );
 
