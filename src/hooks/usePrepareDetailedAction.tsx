@@ -107,6 +107,7 @@ export function usePrepareDetailedAction(
     }
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
+      sentLabelTranslationString = 'transaction_contract_deploy_date';
       label = t('transaction_type_contract_deploy');
     }
 
