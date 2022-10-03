@@ -2136,10 +2136,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/eslint-plugin/-/eslint-plugin-1.2.0.tgz#7d6d789ae8edf73dc9bed1246cd48277edea8066"
   integrity sha512-o6aam+0Ug1xGK3ABYmBm0B1YuEKfM/5kaoZO0eHbZwSpw9UzDX4G5y4Nx/K20FHqUmJHkZmLvOUFYwN4N+HqKA==
 
-"@react-native-community/netinfo@^6.0.2":
-  version "6.2.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-6.2.1.tgz#212487d84a3476268e278f4c017ff5c7f37e69c0"
-  integrity sha512-742sh+NMbPo59MaLRXBWwkT5K6HQPrmoS0pg0z9QuXshXieQIOTkqEEDMkQZS0QnS8fPFr8MxMPw/TAxH9b8Ig==
+"@react-native-community/netinfo@^9.3.2":
+  version "9.3.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-9.3.2.tgz#b6918282ce92dcf3efe622a56f9e3ab607b9502e"
+  integrity sha512-fR7wSIhmIUX+Skzgkr2vj5xopWa0lvvEWoXP1m7//jZjEgOZnu9DgdUimLHDrMo6AtZyUNrJscsFEepihTLlPQ==
 
 "@react-native-firebase/analytics@14.7.0":
   version "14.7.0"

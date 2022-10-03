@@ -7,7 +7,13 @@ import { useIsFocused } from '@react-navigation/native';
 
 import * as S from './Balances.style';
 import { Button, Icon, InternalNotification, Loader, ScrollHandler, Text } from '$uikit';
-import { useAppStateActive, useJettonBalances, useTheme, useTranslator } from '$hooks';
+import {
+  useAppStateActive,
+  usePrevious,
+  useJettonBalances,
+  useTheme,
+  useTranslator,
+} from '$hooks';
 import { walletActions, walletSelector } from '$store/wallet';
 import { isValidAddress, maskifyTonAddress, ns, triggerImpactLight } from '$utils';
 import {
@@ -58,11 +64,10 @@ export const Balances: FC = () => {
     timeSyncedDismissedTimestamp,
     isTimeSynced,
   } = useSelector(mainSelector);
-  const netInfo = useNetInfo({
-    reachabilityLongTimeout: 6000,
-    reachabilityShortTimeout: 3000,
-    reachabilityRequestTimeout: 3000,
-  });
+
+  const netInfo = useNetInfo();
+  const prevNetInfo = usePrevious(netInfo);
+
   const jettonBalances = useJettonBalances();
   const { showJettons } = useSelector(jettonsSelector);
   const [isNoSignalDismissed, setNoSignalDismissed] = useState(false);
@@ -379,6 +384,13 @@ export const Balances: FC = () => {
       openRequireWalletModal();
     }
   }, []);
+
+  useEffect(() => {
+    if (netInfo.isConnected && prevNetInfo.isConnected === false) {
+      dispatch(mainActions.dismissBadHosts());
+      handleRefresh();
+    }
+  }, [netInfo.isConnected, prevNetInfo.isConnected, handleRefresh, dispatch]);
 
   return (
     <S.Wrap>
