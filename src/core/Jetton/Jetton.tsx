@@ -1,19 +1,28 @@
-import React, {FC, useCallback, useEffect, useMemo} from 'react';
+import React, { FC, useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
-import { Button, Icon, ScrollHandler, Text, PopupMenu, PopupMenuItem } from '$uikit';
+import {
+  Button,
+  Icon,
+  ScrollHandler,
+  Text,
+  PopupMenu,
+  PopupMenuItem,
+  Skeleton,
+} from '$uikit';
 import { formatAmount, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
-import { useTranslator } from '$hooks';
+import { useInstance, useTranslator } from '$hooks';
 import { ActionButtonProps } from '$core/Balances/BalanceItem/BalanceItem.interface';
 import { openReceive, openSend } from '$navigation';
-import { CryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { useJettonEvents } from '$hooks/useJettonEvents';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import { Linking, View } from 'react-native';
 import { eventsSelector, eventsActions } from '$store/events';
+import { Configuration, JettonApi, JettonInfo } from 'tonapi-sdk-js';
 
 const ActionButton: FC<ActionButtonProps> = (props) => {
   const { children, onPress, icon, isLast } = props;
@@ -42,6 +51,35 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const dispatch = useDispatch();
   const jettonEvents = useJettonEvents(jetton.jettonAddress);
   const { isLoading: isEventsLoading, canLoadMore } = useSelector(eventsSelector);
+  const [{ isJettonInfoLoading, jettonInfo }, setJettonDetailedInfo] = useState<{
+    isJettonInfoLoading: boolean;
+    jettonInfo?: JettonInfo;
+  }>({
+    isJettonInfoLoading: true,
+  });
+  const jettonApi = useInstance(() => {
+    const tonApiConfiguration = new Configuration({
+      basePath: getServerConfig('tonapiIOEndpoint'),
+      headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+      },
+    });
+
+    return new JettonApi(tonApiConfiguration);
+  });
+
+  const loadJettonInfo = async () => {
+    try {
+      const info = await jettonApi.getJettonInfo({ account: jetton.jettonAddress });
+      setJettonDetailedInfo({ isJettonInfoLoading: false, jettonInfo: info });
+    } catch (e) {
+      setJettonDetailedInfo({ isJettonInfoLoading: false });
+    }
+  };
+
+  useLayoutEffect(() => {
+    loadJettonInfo();
+  }, []);
 
   const handleLoadMore = useCallback(() => {
     if (isEventsLoading || !canLoadMore) {
@@ -83,9 +121,13 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
           {jetton.metadata.symbol}
         </Text>
         <S.JettonIDWrapper>
-          <Text textAlign="center" variant="body1" color="foregroundSecondary">
-            {jetton.metadata.description}
-          </Text>
+          {!isJettonInfoLoading ? (
+            <Text textAlign="center" variant="body1" color="foregroundSecondary">
+              {jettonInfo?.metadata?.description}
+            </Text>
+          ) : (
+            <Skeleton.Line style={{ marginTop: 6 }} width={120} />
+          )}
         </S.JettonIDWrapper>
         <S.ActionsContainer>
           <ActionButton onPress={handleReceive} icon="ic-tray-arrow-down-28">
@@ -110,7 +152,6 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   function renderContent() {
     return (
       <TransactionsList
-        hideJettonsSymbols
         onEndReached={isEventsLoading || !canLoadMore ? undefined : handleLoadMore}
         eventsInfo={jettonEvents}
         initialData={[]}
@@ -134,12 +175,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
                 <PopupMenuItem
                   onPress={handleOpenExplorer}
                   text={t('jetton_open_explorer')}
-                  icon={
-                    <Icon
-                      name="ic-globe-16"
-                      color="accentPrimary"
-                    />
-                  }
+                  icon={<Icon name="ic-globe-16" color="accentPrimary" />}
                 />,
               ]}
             >
