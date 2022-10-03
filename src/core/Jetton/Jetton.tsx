@@ -5,7 +5,7 @@ import { Button, Icon, ScrollHandler, Text, PopupMenu, PopupMenuItem } from '$ui
 import { formatAmount, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
-import { useTranslator } from '$hooks';
+import { useTheme, useTranslator } from '$hooks';
 import { ActionButtonProps } from '$core/Balances/BalanceItem/BalanceItem.interface';
 import { openReceive, openSend } from '$navigation';
 import { CryptoCurrencies } from '$shared/constants';
@@ -46,6 +46,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const { isLoading: isEventsLoading, canLoadMore } = useSelector(eventsSelector);
   const isFocused = useIsFocused();
   const { isRefreshing } = useSelector(walletSelector);
+  const theme = useTheme();
 
   const handleLoadMore = useCallback(() => {
     if (isEventsLoading || !canLoadMore) {
