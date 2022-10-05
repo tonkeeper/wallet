@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
 import { BottomSheet, InlineHeader, Loader } from '$uikit';
@@ -6,11 +6,23 @@ import * as S from './Exchange.style';
 import { exchangeSelector } from '$store/exchange';
 import { ExchangeItem } from './ExchangeItem/ExchangeItem';
 import { useTranslator } from '$hooks';
+import { getServerConfig, getServerConfigSafe } from '$shared/constants';
+import { Linking } from 'react-native';
 
 export const Exchange: FC = () => {
   const t = useTranslator();
 
   const { isLoading, categories } = useSelector(exchangeSelector);
+
+  const otherWaysAvailable = getServerConfigSafe('exchangePostUrl') !== 'none';
+
+  const openOtherWays = useCallback(() => {
+    try {
+      const url = getServerConfig('exchangePostUrl');
+
+      Linking.openURL(url);
+    } catch {}
+  }, []);
 
   return (
     <BottomSheet title={categories[0]?.title || t('exchange_title')}>
@@ -39,6 +51,15 @@ export const Exchange: FC = () => {
               </S.Contain>
             </React.Fragment>
           ))}
+          {otherWaysAvailable ? (
+            <S.OtherWaysButtonContainer>
+              <S.OtherWaysButton onPress={openOtherWays}>
+                <S.OtherWaysButtonLabel>
+                  {t('exchange_other_ways')}
+                </S.OtherWaysButtonLabel>
+              </S.OtherWaysButton>
+            </S.OtherWaysButtonContainer>
+          ) : null}
         </>
       )}
     </BottomSheet>

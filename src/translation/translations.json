@@ -267,6 +267,9 @@
 
     "swap_title": "Swap",
 
+    "exchange_title": "Buy TON",
+    "exchange_other_ways": "Other ways to buy or sell TON",
+
     "settings_title": "Settings",
     "settings_primary_currency": "Primary currency",
     "settings_rate": "Rate this app",
@@ -821,6 +824,9 @@
     "info_about_inactive_back": "Вернуться назад",
 
     "swap_title": "Обмен",
+
+    "exchange_title": "Купить TON",
+    "exchange_other_ways": "Другие способы покупки и продажи",
 
     "settings_title": "Настройки",
     "settings_primary_currency": "Основная валюта",

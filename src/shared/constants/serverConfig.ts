@@ -7,6 +7,7 @@ export interface ServerConfig {
   neocryptoWebView: string;
   supportLink: string;
   isExchangeEnabled: string;
+  exchangePostUrl: string;
   mercuryoSecret: string;
   appsflyerDevKey: string;
   appsflyerAppId: string;
@@ -34,6 +35,7 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     neocryptoWebView: data.neocryptoWebView,
     supportLink: data.supportLink || 'mailto:support@tonkeeper.com',
     isExchangeEnabled: data.isExchangeEnabled,
+    exchangePostUrl: data.exchangePostUrl,
     mercuryoSecret: data.mercuryoSecret,
     appsflyerDevKey: data.appsflyerDevKey,
     appsflyerAppId: data.appsflyerAppId,
