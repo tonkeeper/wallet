@@ -64,7 +64,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   }, []);
 
   const currencyUpper = useMemo(() => {
-    return currency.toUpperCase();
+    return currency?.toUpperCase();
   }, [currency]);
 
   const { amount, priceDiff, fiatInfo } = useWalletInfo(currency);
@@ -94,7 +94,6 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
       }),
     );
   }, [dispatch]);
-
 
   return (
     <S.Wrap>

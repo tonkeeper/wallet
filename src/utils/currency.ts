@@ -11,7 +11,7 @@ import {
 export function formatFiatCurrencyAmount(amount: any, currency: FiatCurrency): string {
   const conf = FiatCurrencySymbolsConfig[currency];
   if (!conf) {
-    return `${toLocaleNumber(amount)} ${currency.toUpperCase()}`;
+    return `${toLocaleNumber(amount)} ${currency?.toUpperCase()}`;
   }
 
   if (conf.side === 'start') {
@@ -38,7 +38,7 @@ export function formatCryptoCurrency(
     }
   }
 
-  return `${toLocaleNumber(amount)} ${currency.toUpperCase()}`;
+  return `${toLocaleNumber(amount)} ${currency?.toUpperCase()}`;
 }
 
 export const cryptoToFiat = (input: string, fiatRate: number, decimals: number) => {

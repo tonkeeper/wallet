@@ -21,7 +21,7 @@ export function getRate(
   }
 
   fiatCurrency = fiatCurrency.toUpperCase();
-  const currencyUpper = currency.toUpperCase();
+  const currencyUpper = currency?.toUpperCase();
   if (currencyUpper === CryptoCurrencies.Btc.toUpperCase() && rates[fiatCurrency]) {
     result = +rates[fiatCurrency];
   } else if (rates[currencyUpper]) {
