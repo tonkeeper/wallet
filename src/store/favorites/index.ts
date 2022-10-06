@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import {createSelector, createSlice} from '@reduxjs/toolkit';
 
 import { RootState } from '$store/rootReducer';
 import {
@@ -71,3 +71,11 @@ export const { actions, reducer } = createSlice({
 export { reducer as favoritesReducer, actions as favoritesActions };
 
 export const favoritesSelector = (state: RootState) => state.favorites;
+export const favoritesFavoritesSelector = createSelector(
+  favoritesSelector,
+  (state) => state.favorites,
+);
+export const favoritesHiddenRecentAddressesSelector = createSelector(
+  favoritesSelector,
+  (state) => state.hiddenRecentAddresses,
+);

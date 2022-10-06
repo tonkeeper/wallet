@@ -8,7 +8,7 @@ import { BuyFiatProps } from '$core/BuyFiat/BuyFiat.interface';
 import { Icon, Loader, NavBar } from '$uikit';
 import * as S from './BuyFiat.style';
 import { mainSelector } from '$store/main';
-import { walletSelector } from '$store/wallet';
+import { walletAddressSelector } from '$store/wallet';
 import { useExchangeMethodInfo, useTheme } from '$hooks';
 import { goBack } from '$navigation';
 import { getServerConfig } from '$shared/constants';
@@ -28,7 +28,7 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
 
   const method = useExchangeMethodInfo(methodId);
   const { fiatCurrency } = useSelector(mainSelector);
-  const { address } = useSelector(walletSelector);
+  const address = useSelector(walletAddressSelector);
   const [webViewKey, setWebViewKey] = useState(1);
 
   const handleHttpError = useCallback(() => {

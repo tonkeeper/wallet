@@ -7,9 +7,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as CreateWalletStyle from '../CreateWallet/CreateWallet.style';
-import {Button, Input, NavBar, NavBarHelper, Text} from '$uikit';
+import { Button, Input, NavBar, NavBarHelper, Text } from '$uikit';
 import { ns, parseLockupConfig } from '$utils';
-import { walletSelector } from '$store/wallet';
+import { walletGeneratedVaultSelector } from '$store/wallet';
 import * as S from './CheckSecretWords.style';
 import { useTranslator } from '$hooks';
 import { css } from '$styled';
@@ -20,7 +20,7 @@ import { toastActions } from '$store/toast';
 export const CheckSecretWords: FC = () => {
   const dispatch = useDispatch();
   const t = useTranslator();
-  const { generatedVault } = useSelector(walletSelector);
+  const generatedVault = useSelector(walletGeneratedVaultSelector);
   const word2Ref = useRef<TextInput>(null);
   const word3Ref = useRef<TextInput>(null);
   const { top: topInset, bottom: bottomInset } = useSafeAreaInsets();

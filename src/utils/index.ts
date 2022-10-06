@@ -44,7 +44,7 @@ export function debugLog(...args: any) {
   store.dispatch(
     mainActions.addLog({
       log: args.length === 1 ? args[0] : args,
-      trace: getStackTrace(),
+      trace: null,
       screen: getCurrentRoute()?.name ?? 'Unknown',
     }),
   );
