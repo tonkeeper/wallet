@@ -25,4 +25,5 @@ export type MainStackParamList = {
   };
   [MainStackRouteNames.JettonsList]: {};
   [MainStackRouteNames.DeleteAccountDone]: {};
+  [MainStackRouteNames.EditConfig]: {};
 };

@@ -56,6 +56,10 @@ export const DevMenu: FC = () => {
     nav.navigate('DevStack');
   }, []);
 
+  const handleEditConfig = useCallback(() => {
+    nav.navigate('EditConfig');
+  }, []);
+
   const handleCopyVersion = useCallback(() => {
     Clipboard.setString(DeviceInfo.getVersion() + ` (${DeviceInfo.getBuildNumber()})`);
     dispatch(toastActions.success(t('copied')));
@@ -83,11 +87,16 @@ export const DevMenu: FC = () => {
             <CellSectionItem onPress={handleLogs}>Logs</CellSectionItem>
             {__DEV__ && (
               <>
-                <CellSectionItem onPress={handleTestCrash}>Test native crash</CellSectionItem>
-                <CellSectionItem onPress={handleTestJsCrash}>Test js-crash</CellSectionItem>
+                <CellSectionItem onPress={handleTestCrash}>
+                  Test native crash
+                </CellSectionItem>
+                <CellSectionItem onPress={handleTestJsCrash}>
+                  Test js-crash
+                </CellSectionItem>
                 <CellSectionItem onPress={handleComponents}>Components</CellSectionItem>
               </>
             )}
+            <CellSectionItem onPress={handleEditConfig}>Edit config</CellSectionItem>
           </CellSection>
         </Animated.ScrollView>
       </ScrollHandler>
