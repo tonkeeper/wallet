@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import React, {FC, useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react';
 import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
 import {
@@ -23,6 +23,7 @@ import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsLi
 import { Linking, View } from 'react-native';
 import { eventsSelector, eventsActions } from '$store/events';
 import { Configuration, JettonApi, JettonInfo } from 'tonapi-sdk-js';
+import {jettonIsLoadingSelector, jettonsActions, jettonSelector, jettonsIsMetaLoadingSelector} from "$store/jettons";
 
 const ActionButton: FC<ActionButtonProps> = (props) => {
   const { children, onPress, icon, isLast } = props;
@@ -51,34 +52,22 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const dispatch = useDispatch();
   const jettonEvents = useJettonEvents(jetton.jettonAddress);
   const { isLoading: isEventsLoading, canLoadMore } = useSelector(eventsSelector);
-  const [{ isJettonInfoLoading, jettonInfo }, setJettonDetailedInfo] = useState<{
-    isJettonInfoLoading: boolean;
-    jettonInfo?: JettonInfo;
-  }>({
-    isJettonInfoLoading: true,
-  });
-  const jettonApi = useInstance(() => {
-    const tonApiConfiguration = new Configuration({
-      basePath: getServerConfig('tonapiIOEndpoint'),
-      headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-      },
-    });
-
-    return new JettonApi(tonApiConfiguration);
-  });
-
-  const loadJettonInfo = async () => {
-    try {
-      const info = await jettonApi.getJettonInfo({ account: jetton.jettonAddress });
-      setJettonDetailedInfo({ isJettonInfoLoading: false, jettonInfo: info });
-    } catch (e) {
-      setJettonDetailedInfo({ isJettonInfoLoading: false });
-    }
-  };
+  const isJettonMetaLoading = useSelector((state) =>
+    // @ts-ignore
+    jettonIsLoadingSelector(state, route.params.jettonAddress),
+  );
+  const jettonMeta = useSelector((state) =>
+    // @ts-ignore
+    jettonSelector(state, route.params.jettonAddress),
+  );
 
   useLayoutEffect(() => {
-    loadJettonInfo();
+    const loadJettonInfo = async () => {
+      dispatch(jettonsActions.loadJettonMeta(route.params.jettonAddress));
+    };
+    if (!jettonMeta) {
+      loadJettonInfo();
+    }
   }, []);
 
   const handleLoadMore = useCallback(() => {
@@ -121,9 +110,9 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
           {jetton.metadata.symbol}
         </Text>
         <S.JettonIDWrapper>
-          {!isJettonInfoLoading ? (
+          {!(isJettonMetaLoading ?? true) ? (
             <Text textAlign="center" variant="body1" color="foregroundSecondary">
-              {jettonInfo?.metadata?.description}
+              {jettonMeta?.description}
             </Text>
           ) : (
             <Skeleton.Line style={{ marginTop: 6 }} width={120} />
