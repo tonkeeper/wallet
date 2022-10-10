@@ -67,7 +67,7 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
 
   const createBoc = async (secretKey?: Uint8Array) => {
     const curWallet = wallet.vault.tonWallet;
-    const seqno = (await curWallet.methods.seqno().call()) || 0;
+    const seqno = wallet.ton.getSeqno(await wallet.ton.getAddress());
 
     const address = walletAddress && new TonWeb.Address(walletAddress);
 
