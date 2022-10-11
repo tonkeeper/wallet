@@ -90,8 +90,9 @@ export function usePrepareAction(
       [ActionType.Subscribe, ActionType.UnSubscribe].includes(ActionType[rawAction.type])
     ) {
       const isSubscription = ActionType.Subscribe === ActionType[rawAction.type];
+      const isBeneficiary = compareAddresses(action.beneficiary.address, address.ton);
       const amount = fromNano(action.amount, Decimals[CryptoCurrencies.Ton] || 9);
-      if (compareAddresses(action.beneficiary.address, address.ton)) {
+      if (isBeneficiary) {
         // Current user is beneficiary of this subscription, display it correctly
         prefix = '+';
         labelColor = 'accentPositive';
@@ -103,8 +104,8 @@ export function usePrepareAction(
           ? t('transaction_type_subscription')
           : t('transaction_type_unsubscription');
       }
+      label = isSubscription ? prefix + ' ' + truncateDecimal(amount.toString(), 2) : '-';
       type = isSubscription ? 'subscription' : 'unsubscription';
-      label = prefix + ' ' + truncateDecimal(amount.toString(), 2);
       currency = formatCryptoCurrency(
         '',
         CryptoCurrencies.Ton,

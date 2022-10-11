@@ -105,14 +105,7 @@ export function usePrepareDetailedAction(
 
     if (ActionType.UnSubscribe === ActionType[rawAction.type]) {
       sentLabelTranslationString = 'transaction_unsubscription_date';
-      const amount = TonWeb.utils.fromNano(
-        new BigNumber(event.fee.total).abs().toString(),
-      );
-      if (compareAddresses(action.beneficiary.address, address.ton)) {
-        label = '+' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
-      } else {
-        label = '-' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
-      }
+      label = '-';
     }
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
