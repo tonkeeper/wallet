@@ -4,7 +4,7 @@ import { ActionItemBaseProps } from '$shared/components/ActionItem/ActionItemBas
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
-import { format, fromNano, maskifyTonAddress, truncateDecimal } from '$utils';
+import {compareAddresses, format, fromNano, maskifyTonAddress, truncateDecimal} from '$utils';
 import BigNumber from 'bignumber.js';
 import { useTranslator } from '$hooks/useTranslator';
 import { formatCryptoCurrency } from '$utils/currency';
@@ -24,7 +24,7 @@ export function usePrepareAction(
   return useMemo(() => {
     const action = rawAction[ActionType[rawAction.type]];
 
-    if (ActionType.Unknown === ActionType[rawAction.type]) {
+    if (ActionType.Unknown === ActionType[rawAction.type] || !action) {
       return {
         type: 'Unknown',
         label: 'Unknown',
@@ -40,11 +40,10 @@ export function usePrepareAction(
     const isReceive =
       action.recipient &&
       new TonWeb.Address(action.recipient.address).toString(false, false, false) ===
-        new TonWeb.Address(address.ton).toString(false, false, false);
+      new TonWeb.Address(address.ton).toString(false, false, false);
 
-    const labelColor = isReceive ? 'accentPositive' : 'foregroundPrimary';
-
-    const prefix = isReceive ? '+' : '−';
+    let labelColor = isReceive ? 'accentPositive' : 'foregroundPrimary';
+    let prefix = isReceive ? '+' : '−';
 
     let label;
     let type;
@@ -92,11 +91,20 @@ export function usePrepareAction(
     ) {
       const isSubscription = ActionType.Subscribe === ActionType[rawAction.type];
       const amount = fromNano(action.amount, Decimals[CryptoCurrencies.Ton] || 9);
-      label = prefix + ' ' + truncateDecimal(amount.toString(), 2);
+      if (compareAddresses(action.beneficiary.address, address.ton)) {
+        // Current user is beneficiary of this subscription, display it correctly
+        prefix = '+';
+        labelColor = 'accentPositive';
+        typeLabel = isSubscription
+          ? t('transaction_type_new_subscriber')
+          : t('transaction_type_subscriber_lost');
+      } else {
+        typeLabel = isSubscription
+          ? t('transaction_type_subscription')
+          : t('transaction_type_unsubscription');
+      }
       type = isSubscription ? 'subscription' : 'unsubscription';
-      typeLabel = isSubscription
-        ? t('transaction_type_subscription')
-        : t('transaction_type_unsubscription');
+      label = prefix + ' ' + truncateDecimal(amount.toString(), 2);
       currency = formatCryptoCurrency(
         '',
         CryptoCurrencies.Ton,
@@ -157,5 +165,5 @@ export function usePrepareAction(
     }
 
     return actionProps;
-  }, [rawAction, address.ton, event.inProgress, event.isScam, event.timestamp, t, subscriptionsInfo]);
+  }, [rawAction, address.ton, event.inProgress, event.isScam, event.timestamp, t, subscriptionsInfo]) as ActionItemBaseProps;
 }

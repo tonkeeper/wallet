@@ -3,7 +3,7 @@ import { ActionType, EventModel } from '$store/models';
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
-import {format, fromNano, maskifyAddress, maskifyTonAddress} from '$utils';
+import {compareAddresses, format, fromNano, maskifyAddress, maskifyTonAddress} from '$utils';
 import BigNumber from 'bignumber.js';
 import { useTranslator } from '$hooks/useTranslator';
 import { formatCryptoCurrency } from '$utils/currency';
@@ -93,9 +93,14 @@ export function usePrepareDetailedAction(
     }
 
     if (ActionType.Subscribe === ActionType[rawAction.type]) {
-      sentLabelTranslationString = 'transaction_subscription_date';
       const amount = TonWeb.utils.fromNano(new BigNumber(action.amount).abs().toString());
-      label = '-' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+      if (compareAddresses(action.beneficiary.address, address.ton)) {
+        sentLabelTranslationString = 'transaction_receive_date';
+        label = '+' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+      } else {
+        sentLabelTranslationString = 'transaction_subscription_date';
+        label = '-' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+      }
     }
 
     if (ActionType.UnSubscribe === ActionType[rawAction.type]) {
@@ -103,7 +108,11 @@ export function usePrepareDetailedAction(
       const amount = TonWeb.utils.fromNano(
         new BigNumber(event.fee.total).abs().toString(),
       );
-      label = '-' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+      if (compareAddresses(action.beneficiary.address, address.ton)) {
+        label = '+' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+      } else {
+        label = '-' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+      }
     }
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
