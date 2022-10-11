@@ -49,10 +49,9 @@ export const NFTSalePlaceGetgemsModal = ({
   const transferToContract = React.useCallback(
     async (contractAddress: string, secretKey: Uint8Array) => {
       const info = await wallet!.ton.getWalletInfo(contractAddress);
-      console.log(info.account_state);
       console.log(contractAddress);
 
-      if (info.account_state === 'uninitialized') {
+      if (['empty', 'uninit'].includes(info.status)) {
         throw new Error('Contract uninitialized');
       }
 

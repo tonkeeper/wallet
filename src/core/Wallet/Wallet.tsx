@@ -1,16 +1,15 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import TonWeb from 'tonweb';
 
 import { WalletProps } from './Wallet.interface';
 import * as S from './Wallet.style';
 import { Button, CurrencyIcon, Icon, NavBar, Text } from '$uikit';
-import { useTheme, useTranslator, useWalletInfo } from '$hooks';
+import { useTranslator, useWalletInfo } from '$hooks';
 import { openReceive, openRequireWalletModal, openSend } from '$navigation';
 import { walletActions, walletSelector } from '$store/wallet';
 import { FlatList, View } from 'react-native';
 import { ns } from '$utils';
-import { CryptoCurrencies, getServerConfig } from '$shared/constants';
+import { CryptoCurrencies } from '$shared/constants';
 import { toastActions } from '$store/toast';
 import { IconNames } from '$uikit/Icon/generated.types';
 
@@ -18,8 +17,6 @@ const Action: FC<{
   onPress: () => void;
   icon: IconNames;
 }> = ({ children, onPress, icon }) => {
-  const theme = useTheme();
-
   return (
     <S.Action
       onPress={onPress}
@@ -43,19 +40,13 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   const t = useTranslator();
   const dispatch = useDispatch();
   const [lockupDeploy, setLockupDeploy] = useState('loading');
-  const theme = useTheme();
 
   useEffect(() => {
     if (currency === CryptoCurrencies.Ton && wallet && wallet.ton.isLockup()) {
-      const tonweb = new TonWeb(
-        new TonWeb.HttpProvider(getServerConfig('tonEndpoint'), {
-          apiKey: getServerConfig('tonEndpointAPIKey'),
-        }),
-      );
-      tonweb.provider
+      wallet.ton
         .getWalletInfo(address[currency])
         .then((info: any) => {
-          setLockupDeploy(info.account_state === 'uninitialized' ? 'deploy' : 'deployed');
+          setLockupDeploy(['empty', 'uninit'].includes(info.status) ? 'deploy' : 'deployed');
         })
         .catch((err: any) => {
           dispatch(toastActions.fail(err.message));
