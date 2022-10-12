@@ -162,7 +162,7 @@ export class TonWallet {
   ) {
     let myinfo: any;
     try {
-      myinfo = await this.tonweb.provider.getWalletInfo(await this.getAddress());
+      myinfo = await this.getWalletInfo(await this.getAddress());
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
@@ -198,7 +198,7 @@ export class TonWallet {
 
     const tx = unlockedVault.tonWallet.methods.deployAndInstallPlugin(params);
     let feeNano: BigNumber;
-    if (myinfo.account_state === 'uninitialized') {
+    if (['empty', 'uninit'].includes(myinfo.status)) {
       feeNano = new BigNumber(Ton.toNano('0.1').toString());
     } else {
       //feeNano = await this.calcFee(tx);
@@ -232,7 +232,7 @@ export class TonWallet {
     let walletAddress = await this.getAddress();
     let myinfo: any;
     try {
-      myinfo = await this.tonweb.provider.getWalletInfo(walletAddress);
+      myinfo = await this.getWalletInfo(walletAddress);
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
@@ -279,10 +279,10 @@ export class TonWallet {
   }
 
   private async prepareAddress(address: string): Promise<string> {
-    const info = await this.tonweb.provider.getWalletInfo(address);
+    const info = await this.getWalletInfo(address);
 
     let preparedAddress = address;
-    if (info.account_state === 'uninitialized') {
+    if (['empty', 'uninit'].includes(info.status)) {
       const addr = new TonWeb.utils.Address(preparedAddress);
       preparedAddress = addr.toString(true, false, false);
     }
@@ -310,8 +310,8 @@ export class TonWallet {
     // then tx is guaranteed to bounce. If the user wants to force-send
     // coins (because most wallets use EQ... bounce=true format),
     // then we display warning about "inactive contract".
-    const info = await this.tonweb.provider.getWalletInfo(address);
-    return info.account_state === 'uninitialized';
+    const info = await this.getWalletInfo(address);
+    return ['empty', 'uninit'].includes(info.status);
   }
 
   async estimateJettonFee(
@@ -383,7 +383,7 @@ export class TonWallet {
       const fromAddress = walletVersion
         ? await this.getAddressByWalletVersion(walletVersion)
         : await this.getAddress();
-      myinfo = await this.tonweb.provider.getWalletInfo(fromAddress);
+      myinfo = await this.getWalletInfo(fromAddress);
       seqno = await this.getSeqno(fromAddress);
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
@@ -412,7 +412,7 @@ export class TonWallet {
       forwardPayload: payloadCell.bits.getTopUppedArray(),
     });
 
-    const amountTon = Ton.toNano('0.10');
+    const amountTon = Ton.toNano('0.64');
 
     let tx: any;
     try {
@@ -519,7 +519,7 @@ export class TonWallet {
       const fromAddress = walletVersion
         ? await this.getAddressByWalletVersion(walletVersion)
         : await this.getAddress();
-      myinfo = await this.tonweb.provider.getWalletInfo(fromAddress);
+      myinfo = await this.getWalletInfo(fromAddress);
       seqno = await this.getSeqno(fromAddress);
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
@@ -582,13 +582,26 @@ export class TonWallet {
   }
 
   async getWalletInfo(address: string) {
-    return await this.tonweb.provider.getWalletInfo(address);
+    try {
+      const endpoint = getServerConfig('tonapiIOEndpoint');
+      const response: any = await axios.get(`${endpoint}/v1/account/getInfo`, {
+        headers: {
+          Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+        },
+        params: {
+          account: address,
+        },
+      });
+      return response.data;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async getLockupBalances() {
     const address = await this.getAddress();
-    const info = await this.tonweb.provider.getWalletInfo(address);
-    if (info.account_state === 'uninitialized') {
+    const info = await this.getWalletInfo(address);
+    if (['empty', 'uninit'].includes(info.status)) {
       try {
         const balance = (await this.rawBlockchainApi.getAccount({ account: address }))
           .balance;

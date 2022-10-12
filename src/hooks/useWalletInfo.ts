@@ -3,19 +3,19 @@ import { useSelector } from 'react-redux';
 import { useMemo } from 'react';
 
 import { CryptoCurrency, Decimals } from '$shared/constants';
-import { walletSelector } from '$store/wallet';
+import { walletBalancesSelector } from '$store/wallet';
 import { useFiatRate } from '$hooks/useFiatRate';
 import { formatAmount, toLocaleNumber } from '$utils';
 import { TonThemeColor } from '$styled';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { useTheme } from '$hooks/useTheme';
-import { mainSelector } from '$store/main';
+import { fiatCurrencySelector } from '$store/main';
 
 export function useWalletInfo(currency: CryptoCurrency) {
   const theme = useTheme();
-  const { balances } = useSelector(walletSelector);
+  const balances = useSelector(walletBalancesSelector);
   const fiatRate = useFiatRate(currency);
-  const { fiatCurrency } = useSelector(mainSelector);
+  const fiatCurrency = useSelector(fiatCurrencySelector);
 
   const amount = useMemo(() => {
     return formatAmount(balances[currency], Decimals[currency]);

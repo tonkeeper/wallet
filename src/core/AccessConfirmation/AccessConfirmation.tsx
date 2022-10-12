@@ -16,13 +16,12 @@ import {
 } from '$store/wallet/sagas';
 import { EncryptedVault } from '$blockchain';
 import { AppStackRouteNames, goBack, openResetPin, useParams } from '$navigation';
-import { walletActions, walletSelector } from '$store/wallet';
+import { walletActions, walletWalletSelector } from '$store/wallet';
 import { mainActions } from '$store/main';
 import { useTranslator } from '$hooks';
 import { toastActions } from '$store/toast';
 import { MainDB } from '$database';
 import { useNotifications } from '$hooks/useNotifications';
-import { Toast } from '$uikit/Toast/new/ToastStore';
 
 export const AccessConfirmation: FC = () => {
   const route = useRoute();
@@ -37,7 +36,7 @@ export const AccessConfirmation: FC = () => {
 
   const pinRef = useRef<PinCodeRef>(null);
   const isUnlock = route.name === AppStackRouteNames.MainAccessConfirmation;
-  const { wallet } = useSelector(walletSelector);
+  const wallet = useSelector(walletWalletSelector);
 
   useEffect(() => {
     return () => {

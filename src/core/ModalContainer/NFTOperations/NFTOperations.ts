@@ -522,7 +522,7 @@ export class NFTOperations {
         return truncateDecimal(Ton.fromNano(fee.toString()), 1, true);
       },
       send: async (secretKey: Uint8Array) => {
-        const myInfo = await wallet.provider.getWalletInfo(
+        const myInfo = await this.wallet.ton.getWalletInfo(
           (wallet.address as Address).toString(true, true, false),
         );
 
