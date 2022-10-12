@@ -24,7 +24,7 @@ export function usePrepareAction(
   return useMemo(() => {
     const action = rawAction[ActionType[rawAction.type]];
 
-    if (ActionType.Unknown === ActionType[rawAction.type]) {
+    if (ActionType.Unknown === ActionType[rawAction.type] || !action) {
       return {
         type: 'Unknown',
         label: 'Unknown',

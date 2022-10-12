@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import {createSelector, createSlice} from '@reduxjs/toolkit';
 
 import { RootState } from '$store/rootReducer';
 import {
@@ -71,3 +71,7 @@ export const { actions, reducer } = createSlice({
 export { reducer as eventsReducer, actions as eventsActions };
 
 export const eventsSelector = (state: RootState) => state.events;
+export const eventsEventsInfoSelector = createSelector(
+  eventsSelector,
+  (state) => state.eventsInfo,
+);
