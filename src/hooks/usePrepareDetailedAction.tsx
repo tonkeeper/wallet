@@ -138,7 +138,7 @@ export function usePrepareDetailedAction(
     }
 
     const info = subscriptionsInfo[action.subscription];
-    console.log(action.subscription, subscriptionsInfo);
+
     if (info) {
       shouldShowOpenSubscriptionButton = true;
       subscriptionInfo = info;
