@@ -4,8 +4,13 @@ import { ActionItemBaseProps } from '$shared/components/ActionItem/ActionItemBas
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
-import {compareAddresses, format, fromNano, maskifyTonAddress, truncateDecimal} from '$utils';
-import BigNumber from 'bignumber.js';
+import {
+  compareAddresses,
+  format,
+  fromNano,
+  maskifyTonAddress,
+  truncateDecimal,
+} from '$utils';
 import { useTranslator } from '$hooks/useTranslator';
 import { formatCryptoCurrency } from '$utils/currency';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
@@ -40,7 +45,7 @@ export function usePrepareAction(
     const isReceive =
       action.recipient &&
       new TonWeb.Address(action.recipient.address).toString(false, false, false) ===
-      new TonWeb.Address(address.ton).toString(false, false, false);
+        new TonWeb.Address(address.ton).toString(false, false, false);
 
     let labelColor = isReceive ? 'accentPositive' : 'foregroundPrimary';
     let prefix = isReceive ? '+' : '−';
@@ -95,7 +100,7 @@ export function usePrepareAction(
       if (isBeneficiary) {
         // Current user is beneficiary of this subscription, display it correctly
         prefix = '+';
-        labelColor = 'accentPositive';
+        labelColor = isSubscription ? 'accentPositive' : labelColor;
         typeLabel = isSubscription
           ? t('transaction_type_new_subscriber')
           : t('transaction_type_subscriber_lost');
@@ -106,11 +111,13 @@ export function usePrepareAction(
       }
       label = isSubscription ? prefix + ' ' + truncateDecimal(amount.toString(), 2) : '-';
       type = isSubscription ? 'subscription' : 'unsubscription';
-      currency = formatCryptoCurrency(
-        '',
-        CryptoCurrencies.Ton,
-        Decimals[CryptoCurrencies.Ton],
-      ).trim();
+      currency = isSubscription
+        ? formatCryptoCurrency(
+            '',
+            CryptoCurrencies.Ton,
+            Decimals[CryptoCurrencies.Ton],
+          ).trim()
+        : '';
     }
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
@@ -166,5 +173,13 @@ export function usePrepareAction(
     }
 
     return actionProps;
-  }, [rawAction, address.ton, event.inProgress, event.isScam, event.timestamp, t, subscriptionsInfo]) as ActionItemBaseProps;
+  }, [
+    rawAction,
+    address.ton,
+    event.inProgress,
+    event.isScam,
+    event.timestamp,
+    t,
+    subscriptionsInfo,
+  ]) as ActionItemBaseProps;
 }

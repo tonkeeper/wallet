@@ -105,7 +105,7 @@ export function usePrepareDetailedAction(
 
     if (ActionType.UnSubscribe === ActionType[rawAction.type]) {
       sentLabelTranslationString = 'transaction_unsubscription_date';
-      label = '-';
+      label = t('transaction_unsubscription');
     }
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
@@ -138,6 +138,7 @@ export function usePrepareDetailedAction(
     }
 
     const info = subscriptionsInfo[action.subscription];
+    console.log(action.subscription, subscriptionsInfo);
     if (info) {
       shouldShowOpenSubscriptionButton = true;
       subscriptionInfo = info;
