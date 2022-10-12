@@ -152,7 +152,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
           </S.Logo>
           <S.AddressConatiner>
             <S.AddressLeftGradient
-              colors={[theme.colors.backgroundPrimary, 'rgba(21, 28, 41, 0)']}
+              colors={[theme.colors.backgroundPrimary, 'rgba(16, 22, 31, 0)']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
             />
@@ -173,7 +173,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
               </S.AddressText>
             </S.Address>
             <S.AddressRightGradient
-              colors={[theme.colors.backgroundPrimary, 'rgba(21, 28, 41, 0)']}
+              colors={[theme.colors.backgroundPrimary, 'rgba(16, 22, 31, 0)']}
               start={{ x: 1, y: 0 }}
               end={{ x: 0, y: 0 }}
             />
