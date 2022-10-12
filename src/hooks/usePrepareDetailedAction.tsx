@@ -3,7 +3,7 @@ import { ActionType, EventModel } from '$store/models';
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
-import {compareAddresses, format, fromNano, maskifyAddress, maskifyTonAddress} from '$utils';
+import { compareAddresses, format, fromNano, maskifyAddress, maskifyTonAddress } from '$utils';
 import BigNumber from 'bignumber.js';
 import { useTranslator } from '$hooks/useTranslator';
 import { formatCryptoCurrency } from '$utils/currency';

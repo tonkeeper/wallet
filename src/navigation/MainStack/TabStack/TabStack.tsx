@@ -10,8 +10,7 @@ import { TabsStackRouteNames } from '$navigation';
 import { TabStackParamList } from './TabStack.interface';
 import { Icon, ScrollPositionContext } from '$uikit';
 import { useTheme } from '$hooks';
-import {isAndroid, nfs, ns} from '$utils';
-import { mainSelector } from '$store/main';
+import { isAndroid, nfs, ns } from '$utils';
 import { t } from '$translation';
 import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
 import { NFTs } from '$core/NFTs/NFTs';
@@ -26,7 +25,7 @@ const Tab = createBottomTabNavigator<TabStackParamList>();
 const useHasNfts = () => {
   const { myNfts } = useSelector(nftsSelector);
   return Object.keys(myNfts).length > 0;
-}
+};
 
 export const TabStack: FC = () => {
   const theme = useTheme();
@@ -34,27 +33,20 @@ export const TabStack: FC = () => {
   const hasNfts = useHasNfts();
   const { bottom: bottomInset } = useSafeAreaInsets();
   const { isEnd: isScrollEnd } = useContext(ScrollPositionContext);
-  useSelector(mainSelector); // need for re-render when main state changed
+  // useSelector(mainSelector); // need for re-render when main state changed
   useNotificationsSubscribe();
 
-  const isVisibleNftTab = React.useMemo(
-    () => {
-      if (flags.disable_nft_tab) {
-        return false;
-      }
+  const isVisibleNftTab = React.useMemo(() => {
+    if (flags.disable_nft_tab) {
+      return false;
+    }
 
-      if (flags.disable_nft_tab_if_no_nft && !hasNfts) {
-        return false
-      }
+    if (flags.disable_nft_tab_if_no_nft && !hasNfts) {
+      return false;
+    }
 
-      return true;
-    },
-    [
-      flags.disable_nft_tab_if_no_nft,
-      flags.disable_nft_tab, 
-      hasNfts
-    ]
-  );
+    return true;
+  }, [flags.disable_nft_tab_if_no_nft, flags.disable_nft_tab, hasNfts]);
 
   return (
     <Tab.Navigator
@@ -98,11 +90,7 @@ export const TabStack: FC = () => {
               }}
             />
           ) : (
-            <BlurView 
-              tint="dark" 
-              intensity={48} 
-              style={StyleSheet.absoluteFill} 
-            >
+            <BlurView tint="dark" intensity={48} style={StyleSheet.absoluteFill}>
               <View
                 style={{
                   flex: 1,
@@ -118,9 +106,7 @@ export const TabStack: FC = () => {
           overflow: 'hidden',
           bottom: 0,
           left: 0,
-          borderTopColor: isScrollEnd
-              ? 'transparent'
-              : theme.colors.border,
+          borderTopColor: isScrollEnd ? 'transparent' : theme.colors.border,
           paddingHorizontal: ns(16),
           backgroundColor: 'transparent',
           paddingTop: 0,

@@ -13,7 +13,7 @@ import {
 import { useTheme } from '$hooks';
 import { mainSelector } from '$store/main';
 import { isAndroid } from '$utils';
-import { walletSelector } from '$store/wallet';
+import { walletWalletSelector } from '$store/wallet';
 import { useAttachScreen } from '$navigation/AttachScreen';
 import { useNotificationsResolver } from '$hooks/useNotificationsResolver';
 import { withModalStack } from '$libs/navigation';
@@ -26,7 +26,7 @@ const Stack = createNativeStackNavigator<AppStackParamList>();
 export const AppStackComponent: FC = () => {
   const theme = useTheme();
   const { isIntroShown, isUnlocked } = useSelector(mainSelector);
-  const { wallet } = useSelector(walletSelector);
+  const wallet = useSelector(walletWalletSelector);
   const attachedScreen = useAttachScreen();
   useNotificationsResolver();
 

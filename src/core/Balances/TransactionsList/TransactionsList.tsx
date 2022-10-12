@@ -3,7 +3,8 @@ import {
   SectionList,
   SectionListProps,
   SectionListRenderItemInfo,
-  StyleProp, View,
+  StyleProp,
+  View,
   ViewStyle,
 } from 'react-native';
 import { format, formatAmount, formatDate, getLocale, ns, truncateDecimal } from '$utils';

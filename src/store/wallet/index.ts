@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 import BigNumber from 'bignumber.js';
 
 import { RootState } from '$store/rootReducer';
@@ -129,3 +129,27 @@ export const { actions, reducer } = createSlice({
 export { reducer as walletReducer, actions as walletActions };
 
 export const walletSelector = (state: RootState) => state.wallet;
+export const walletVersionSelector = createSelector(
+  walletSelector,
+  (walletState) => walletState.version,
+);
+
+export const walletWalletSelector = createSelector(
+  walletSelector,
+  (walletState) => walletState.wallet,
+);
+
+export const walletAddressSelector = createSelector(
+  walletSelector,
+  (walletState) => walletState.address,
+);
+
+export const walletBalancesSelector = createSelector(
+  walletSelector,
+  (walletState) => walletState.balances,
+);
+
+export const walletGeneratedVaultSelector = createSelector(
+  walletSelector,
+  (walletState) => walletState.generatedVault,
+);

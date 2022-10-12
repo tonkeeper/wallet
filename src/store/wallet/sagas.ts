@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 
-import { walletActions, walletSelector } from '$store/wallet/index';
+import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet/index';
 import { EncryptedVault, UnlockedVault, Vault, Wallet } from '$blockchain';
 import { mainActions } from '$store/main';
 import {
@@ -65,13 +65,15 @@ import { getTokenConfig, getWalletName } from '$shared/dynamicConfig';
 import { withRetryCtx } from '$store/retry';
 import { Cache } from '$store/events/manager/cache';
 import { destroyEventsManager } from '$store/events/sagas';
-import { debugLog, detectBiometryType, fuzzifyNumber, toNano, trackEvent } from '$utils';
+import { Base64, debugLog, detectBiometryType, fuzzifyNumber, toNano, trackEvent } from '$utils';
 import { Api } from '$api';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { Ton } from '$libs/Ton';
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
 import { AccountEvent } from 'tonapi-sdk-js';
+import { Tonapi } from '$libs/Tonapi';
+import TonWeb from 'tonweb';
 
 function* generateVaultWorker() {
   try {
@@ -242,56 +244,29 @@ function* transferCoinsWorker(action: TransferCoinsAction) {
 function* checkLegacyBalances() {
   try {
     const balances: any = [];
-    const { wallet } = yield select(walletSelector);
+    const wallet = yield select(walletWalletSelector);
 
-    const tonweb = wallet.ton.getTonWeb();
-    //for (const version in ['v3R1', 'v3R2', 'v4R1']) {
-    let version = 'v3R1';
-    let address = yield call([wallet.ton, 'getAddressByWalletVersion'], version);
-    let info = yield withRetryCtx(
-      'checkLegacyBalance' + version,
-      [tonweb.provider, 'getWalletInfo'],
-      address,
+    const pubkey = TonWeb.utils.bytesToHex(wallet.vault.tonPublicKey);
+    const wallets = yield withRetryCtx(
+      'checkLegacyBalance',
+      [Tonapi, 'findByPubkey'],
+      pubkey,
     );
 
-    if (info && +info.balance > 0) {
-      balances.push({
-        balance: info.balance,
-        version,
-      });
+    for (let wallet of wallets) {
+      const versions = ['wallet_v3R1', 'wallet_v3R2', 'wallet_v4R1'];
+      const detectedVersion = wallet.interfaces.find((version) => versions.includes(version));
+      if (detectedVersion) {
+        if (wallet.balance > 0) {
+          const version = detectedVersion.replace('wallet_', '')
+          balances.push({
+            balance: wallet.balance,
+            version,
+          });
+        }
+      }
     }
-    // -------------
-    version = 'v3R2';
-    address = yield call([wallet.ton, 'getAddressByWalletVersion'], version);
-    info = yield withRetryCtx(
-      'checkLegacyBalance' + version,
-      [tonweb.provider, 'getWalletInfo'],
-      address,
-    );
-
-    if (info && +info.balance > 0) {
-      balances.push({
-        balance: info.balance,
-        version,
-      });
-    }
-    // -------------
-    version = 'v4R1';
-    address = yield call([wallet.ton, 'getAddressByWalletVersion'], version);
-    info = yield withRetryCtx(
-      'checkLegacyBalance' + version,
-      [tonweb.provider, 'getWalletInfo'],
-      address,
-    );
-
-    if (info && +info.balance > 0) {
-      balances.push({
-        balance: info.balance,
-        version,
-      });
-    }
-
-    //}
+    
     yield put(walletActions.setOldWalletBalance(balances));
   } catch (e) {}
 }
