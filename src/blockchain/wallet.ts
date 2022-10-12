@@ -392,7 +392,7 @@ export class TonWallet {
       forwardPayload: payloadCell.bits.getTopUppedArray(),
     });
 
-    const amountTon = Ton.toNano('0.10');
+    const amountTon = Ton.toNano('0.64');
 
     let tx: any;
     try {
