@@ -94,9 +94,9 @@ export const DevMenu: FC = () => {
                   Test js-crash
                 </CellSectionItem>
                 <CellSectionItem onPress={handleComponents}>Components</CellSectionItem>
+                <CellSectionItem onPress={handleEditConfig}>Edit config</CellSectionItem>
               </>
             )}
-            <CellSectionItem onPress={handleEditConfig}>Edit config</CellSectionItem>
           </CellSection>
         </Animated.ScrollView>
       </ScrollHandler>
