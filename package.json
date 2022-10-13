@@ -105,7 +105,7 @@
     "stream-browserify": "^3.0.0",
     "styled-components": "^5.3.0",
     "text-encoding-polyfill": "^0.6.7",
-    "tonapi-sdk-js": "^0.12.0",
+    "tonapi-sdk-js": "^0.20.0",
     "tonweb": "0.0.54",
     "tweetnacl-util": "^0.15.1",
     "url": "^0.11.0",
