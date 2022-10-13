@@ -1,16 +1,26 @@
 import Foundation
 
-typealias WalletID = String
 typealias PublicKey = String
 
 class WalletInfo: Codable, JSONAble {
-  let id: WalletID
   let pubkey: PublicKey
   var label: String
   
-  init(id: WalletID, pubkey: PublicKey, label: String) {
-    self.id = id
+  init(pubkey: PublicKey, label: String) {
     self.pubkey = pubkey
     self.label = label
+  }
+}
+
+extension WalletInfo: Equatable {
+  static func == (lhs: WalletInfo, rhs: WalletInfo) -> Bool {
+    return lhs.pubkey == rhs.pubkey && lhs.label == rhs.label
+  }
+}
+
+extension WalletInfo: Hashable {
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(pubkey)
+    hasher.combine(label)
   }
 }

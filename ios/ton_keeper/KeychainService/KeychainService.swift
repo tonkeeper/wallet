@@ -22,7 +22,7 @@ struct KeychainService {
   let context: LAContext?
   init(service: String = Bundle.main.bundleIdentifier!,
        accessGroup: String? = nil,
-       accessibility: Accessibility = .afterFirstUnlock,
+       accessibility: Accessibility = .whenUnlockedThisDeviceOnly,
        accessControlFlags: SecAccessControlCreateFlags? = nil,
        context: LAContext? = nil,
        synchronizable: Bool = false,
@@ -38,7 +38,7 @@ struct KeychainService {
   #else
   init(service: String = Bundle.main.bundleIdentifier!,
        accessGroup: String? = nil,
-       accessibility: Accessibility = .afterFirstUnlock,
+       accessibility: Accessibility = .whenUnlockedThisDeviceOnly,
        accessControlFlags: SecAccessControlCreateFlags? = nil,
        synchronizable: Bool = false,
        attributes: [String: Any] = [:]) {

@@ -2,13 +2,15 @@ import Foundation
 
 enum WalletError {
   case noAvailableWallets
-  
-  private var domain: String { "com.jbig.tonkeeper" }
+  case invalidMnemonic
   
   var code: String {
     switch self {
     case .noAvailableWallets:
       return "NO_AVAILABLE_WALLETS"
+      
+    case .invalidMnemonic:
+      return "INVALID_MNEMONIC"
     }
   }
   
@@ -16,13 +18,19 @@ enum WalletError {
     switch self {
     case .noAvailableWallets:
       return "No available wallets"
+      
+    case .invalidMnemonic:
+      return "Invalid mnemonic"
     }
   }
   
   var foundationError: NSError {
     switch self {
     case .noAvailableWallets:
-      return NSError(domain: domain, code: 404)
+      return NSError(domain: Constants.bundleIdentifier, code: 404)
+      
+    case .invalidMnemonic:
+      return NSError(domain: Constants.bundleIdentifier, code: 400)
     }
   }
   

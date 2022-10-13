@@ -6,7 +6,7 @@ final class UserDefaultsService: NSObject {
   var isKeychainFirstLaunch: Bool
   
   @UserDefaultWrapper(key: "wallets", defaultValue: [])
-  var wallets: [WalletInfo]
+  var wallets: Set<WalletInfo>
   
   @UserDefaultWrapper(key: "currentWalletInfo", defaultValue: nil)
   var currentWalletInfo: WalletInfo?

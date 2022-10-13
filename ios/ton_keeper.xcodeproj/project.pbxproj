@@ -50,6 +50,7 @@
 		C404078F28D9ADF300C0080F /* UserDefaultsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C404077C28D9ADF200C0080F /* UserDefaultsService.swift */; };
 		C404079528D9B57F00C0080F /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = C404079228D9B57F00C0080F /* File.swift */; };
 		C404079628D9B57F00C0080F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C404079328D9B57F00C0080F /* GoogleService-Info.plist */; };
+		C47A563F28F7F4B40017C3EB /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47A563E28F7F4B40017C3EB /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -116,6 +117,7 @@
 		C404079228D9B57F00C0080F /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		C404079328D9B57F00C0080F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C404079728D9B5E800C0080F /* ton_keeper-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ton_keeper-Bridging-Header.h"; sourceTree = "<group>"; };
+		C47A563E28F7F4B40017C3EB /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		C6251834116392B3FC02BA37 /* Pods-ton_keeper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper.debug.xcconfig"; path = "Target Support Files/Pods-ton_keeper/Pods-ton_keeper.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ton_keeper-ton_keeperTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -230,6 +232,7 @@
 		C404075F28D9ADF200C0080F /* ton_keeper */ = {
 			isa = PBXGroup;
 			children = (
+				C47A563D28F7F4A70017C3EB /* SupportingFiles */,
 				C404076528D9ADF200C0080F /* ton_keeper.entitlements */,
 				C404076628D9ADF200C0080F /* AppDelegate.h */,
 				C404076F28D9ADF200C0080F /* TonPbkdf2.h */,
@@ -322,6 +325,14 @@
 			path = UserDefaultsService;
 			sourceTree = "<group>";
 		};
+		C47A563D28F7F4A70017C3EB /* SupportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				C47A563E28F7F4B40017C3EB /* Constants.swift */,
+			);
+			path = SupportingFiles;
+			sourceTree = "<group>";
+		};
 		C80173ED49C3443EA1F97BA9 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -400,6 +411,8 @@
 			dependencies = (
 			);
 			name = ton_keeper;
+			packageProductDependencies = (
+			);
 			productName = ton_keeper;
 			productReference = 13B07F961A680F5B00A75B9A /* ton_keeper.app */;
 			productType = "com.apple.product-type.application";
@@ -430,6 +443,8 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
+			packageReferences = (
+			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -651,6 +666,7 @@
 				C404078D28D9ADF300C0080F /* JSONAble.swift in Sources */,
 				C404078928D9ADF300C0080F /* noop-file.swift in Sources */,
 				C404078428D9ADF300C0080F /* WalletError.swift in Sources */,
+				C47A563F28F7F4B40017C3EB /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -729,7 +745,7 @@
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ton_keeper/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -762,7 +778,7 @@
 				CURRENT_PROJECT_VERSION = 216;
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				INFOPLIST_FILE = ton_keeper/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

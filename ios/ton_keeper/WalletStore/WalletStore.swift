@@ -1,10 +1,12 @@
 import Foundation
+import TonMnemonicSwift
 
 @objc(WalletStore)
 @objcMembers
 class WalletStore: NSObject {
   
-  private var userDefaultsService = UserDefaultsService()
+  private let userDefaultsService = UserDefaultsService()
+  private let keychainService = KeychainService()
   
   static func requiresMainQueueSetup() -> Bool { false }
   
@@ -19,16 +21,42 @@ class WalletStore: NSObject {
     }
   }
   
-  func importWallet(seed: String,
+  func importWallet(words: [String],
                     _ resolve: @escaping RCTPromiseResolveBlock,
                     reject: @escaping RCTPromiseRejectBlock) {
-    resolve(true)
+    guard Mnemonic.mnemonicValidate(mnemonicArray: words, password: "") else {
+      let error = WalletError.invalidMnemonic
+      reject(error.code, error.message, error.foundationError)
+      
+      return
+    }
+    
+    do {
+      let keyPair = try Mnemonic.mnemonicToPrivateKey(mnemonicArray: words, password: "")
+      let pubkey = keyPair.publicKey.hexString()
+      let walletInfo = WalletInfo(pubkey: pubkey, label: "")
+      
+      try keychainService.set(words.joined(separator: " "), forKey: pubkey)
+      userDefaultsService.wallets.insert(walletInfo)
+      
+      resolve(pubkey)
+      
+    } catch {
+      let foundationError = NSError(domain: Constants.bundleIdentifier, code: 400)
+      if let error = error as? TweetNaclError {
+        reject(error.errorDescription, error.localizedDescription, foundationError)
+      } else if let error = error as? KeychainServiceError {
+        reject("\(error.code)", error.localizedDescription, foundationError)
+      } else {
+        reject(nil, error.localizedDescription, foundationError)
+      }
+    }
   }
   
-  func getWallet(id: String,
+  func getWallet(pk: String,
                  _ resolve: @escaping RCTPromiseResolveBlock,
                  reject: @escaping RCTPromiseRejectBlock) {
-    if let wallet = userDefaultsService.wallets.first(where: {$0.id == id }) {
+    if let wallet = userDefaultsService.wallets.first(where: {$0.pubkey == pk }) {
       resolve(wallet.toDict())
     } else {
       let error = WalletError.noAvailableWallets
@@ -39,7 +67,7 @@ class WalletStore: NSObject {
   func getWalletByAddress(address: String,
                           _ resolve: @escaping RCTPromiseResolveBlock,
                           reject: @escaping RCTPromiseRejectBlock) {
-    if let wallet = userDefaultsService.wallets.first(where: {$0.id == address }) {
+    if let wallet = userDefaultsService.wallets.first(where: {$0.pubkey == address }) {
       resolve(wallet.toDict())
     } else {
       let error = WalletError.noAvailableWallets
@@ -47,10 +75,10 @@ class WalletStore: NSObject {
     }
   }
   
-  func updateWallet(id: String, label: String,
+  func updateWallet(pk: String, label: String,
                     _ resolve: @escaping RCTPromiseResolveBlock,
                     reject: @escaping RCTPromiseRejectBlock) {
-    if let index = userDefaultsService.wallets.firstIndex(where: { $0.id == id }) {
+    if let index = userDefaultsService.wallets.firstIndex(where: { $0.pubkey == pk }) {
       userDefaultsService.wallets[index].label = label
       resolve(true)
     } else {
@@ -69,10 +97,10 @@ class WalletStore: NSObject {
     }
   }
   
-  func setCurrentWallet(id: String,
+  func setCurrentWallet(pk: String,
                         _ resolve: @escaping RCTPromiseResolveBlock,
                         reject: @escaping RCTPromiseRejectBlock) {
-    if let wallet = userDefaultsService.wallets.first(where: { $0.id == id }) {
+    if let wallet = userDefaultsService.wallets.first(where: { $0.pubkey == pk }) {
       userDefaultsService.currentWalletInfo = wallet
       resolve(true)
     } else {
