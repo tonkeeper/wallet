@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React from 'react';
+import React, {useMemo} from 'react';
 import { useShouldEnableNotifications } from './useShouldEnableNotifications';
 
 type NotificationsBadgeContextValue = {
@@ -31,7 +31,7 @@ export const useNotificationsBadgeStore = () => {
     setIsVisible(false);
   }, []);
 
-  return { hide, isVisible }
+  return useMemo(() => ({ hide, isVisible }), [hide, isVisible]);
 };
 
 export const NotificationsBadgeProvider: React.FC = ({ children }) => {

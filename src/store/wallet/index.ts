@@ -153,3 +153,8 @@ export const walletGeneratedVaultSelector = createSelector(
   walletSelector,
   (walletState) => walletState.generatedVault,
 );
+
+export const walletOldBalancesSelector = createSelector(
+  walletSelector,
+  (walletState) => walletState.oldWalletBalances,
+);

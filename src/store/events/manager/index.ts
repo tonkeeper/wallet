@@ -25,11 +25,6 @@ export class EventsManager {
   }
 
   async fetch(): Promise<EventModel[]> {
-    // @ts-ignore
-    try {
-      reloadSubscriptionsFromServer(this.address);
-    } catch (e) {}
-
     let events: any = await this.provider.loadNext(this.cache);
 
     for (let event of events) {
