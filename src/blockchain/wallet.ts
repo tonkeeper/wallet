@@ -183,7 +183,8 @@ export class TonWallet {
 
     const subscriptionAddress = await subscription.getAddress();
 
-    const seqno = await this.getSeqno(walletAddress);
+    const addr = Ton.formatAddress(walletAddress);
+    const seqno = await this.getSeqno(addr);
 
     const params: any = {
       seqno: seqno || 0,
