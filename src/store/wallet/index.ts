@@ -24,6 +24,7 @@ import {
   ToggleBiometryAction,
   ChangePinAction,
   WalletGetUnlockedVaultAction,
+  RefreshBalancesPageAction,
 } from '$store/wallet/interface';
 import { SwitchVersionAction } from '$store/main/interface';
 import { SelectableVersions } from '$shared/constants';
@@ -53,7 +54,7 @@ export const { actions, reducer } = createSlice({
       state.isLoaded = false;
     },
     loadBalances() {},
-    refreshBalancesPage(state) {
+    refreshBalancesPage(state, action: RefreshBalancesPageAction) {
       state.isRefreshing = true;
     },
     endRefreshBalancesPage(state) {
