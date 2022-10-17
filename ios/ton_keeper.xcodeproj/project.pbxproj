@@ -51,6 +51,7 @@
 		C404079528D9B57F00C0080F /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = C404079228D9B57F00C0080F /* File.swift */; };
 		C404079628D9B57F00C0080F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C404079328D9B57F00C0080F /* GoogleService-Info.plist */; };
 		C47A563F28F7F4B40017C3EB /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47A563E28F7F4B40017C3EB /* Constants.swift */; };
+		C47A564A28FD7BCB0017C3EB /* AccessControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47A564928FD7BCB0017C3EB /* AccessControl.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -118,6 +119,7 @@
 		C404079328D9B57F00C0080F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C404079728D9B5E800C0080F /* ton_keeper-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ton_keeper-Bridging-Header.h"; sourceTree = "<group>"; };
 		C47A563E28F7F4B40017C3EB /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		C47A564928FD7BCB0017C3EB /* AccessControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessControl.swift; sourceTree = "<group>"; };
 		C6251834116392B3FC02BA37 /* Pods-ton_keeper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper.debug.xcconfig"; path = "Target Support Files/Pods-ton_keeper/Pods-ton_keeper.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ton_keeper-ton_keeperTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -260,6 +262,7 @@
 				C404076128D9ADF200C0080F /* KeychainServiceError.swift */,
 				C404076228D9ADF200C0080F /* KeychainService.swift */,
 				C404076328D9ADF200C0080F /* Accessibility.swift */,
+				C47A564928FD7BCB0017C3EB /* AccessControl.swift */,
 			);
 			path = KeychainService;
 			sourceTree = "<group>";
@@ -651,6 +654,7 @@
 			files = (
 				C404078828D9ADF300C0080F /* main.m in Sources */,
 				C404078628D9ADF300C0080F /* WalletStore.swift in Sources */,
+				C47A564A28FD7BCB0017C3EB /* AccessControl.swift in Sources */,
 				C404078528D9ADF300C0080F /* WalletInfo.swift in Sources */,
 				C404077E28D9ADF300C0080F /* KeychainServiceError.swift in Sources */,
 				1C610F328FB84275E2FB6D32 /* ExpoModulesProvider.swift in Sources */,

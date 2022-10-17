@@ -1,6 +1,7 @@
 import Foundation
 
 typealias PublicKey = String
+typealias SecretKey = String
 
 class WalletInfo: Codable, JSONAble {
   let pubkey: PublicKey

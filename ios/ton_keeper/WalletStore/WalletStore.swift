@@ -21,7 +21,13 @@ class WalletStore: NSObject {
     }
   }
   
-  func importWallet(words: [String],
+  func validate(words: [String],
+                _ resolve: @escaping RCTPromiseResolveBlock) {
+    let isValid = Mnemonic.mnemonicValidate(mnemonicArray: words, password: "")
+    resolve(isValid)
+  }
+  
+  func importWallet(words: [String], passcode: String,
                     _ resolve: @escaping RCTPromiseResolveBlock,
                     reject: @escaping RCTPromiseRejectBlock) {
     guard Mnemonic.mnemonicValidate(mnemonicArray: words, password: "") else {
@@ -35,8 +41,13 @@ class WalletStore: NSObject {
       let keyPair = try Mnemonic.mnemonicToPrivateKey(mnemonicArray: words, password: "")
       let pubkey = keyPair.publicKey.hexString()
       let walletInfo = WalletInfo(pubkey: pubkey, label: "")
+      let wordsJoined = words.joined(separator: " ")
       
-      try keychainService.set(words.joined(separator: " "), forKey: pubkey)
+      let context = LAContext()
+      context.setCredential(Data(passcode.utf8), type: .applicationPassword)
+      try keychainService.set(wordsJoined, forKey: "\(pubkey)-password", context: context, accessControl: .password)
+      try keychainService.set(wordsJoined, forKey: "\(pubkey)-biometry", accessControl: .biometry)
+      
       userDefaultsService.wallets.insert(walletInfo)
       
       resolve(pubkey)
@@ -106,6 +117,65 @@ class WalletStore: NSObject {
     } else {
       let error = WalletError.noAvailableWallets
       reject(error.code, error.message, error.foundationError)
+    }
+  }
+  
+  func exportWithPasscode(pk: PublicKey,
+                          passcode: String,
+                          _ resolve: @escaping RCTPromiseResolveBlock,
+                          reject: @escaping RCTPromiseRejectBlock) {
+    do {
+      let context = LAContext()
+      context.setCredential(Data(passcode.utf8), type: .applicationPassword)
+      let mnemonicArray = try keychainService.string(forKey: "\(pk)-password",
+                                                     context: context,
+                                                     accessControl: .password).components(separatedBy: " ")
+      let keyPair = try Mnemonic.mnemonicToPrivateKey(mnemonicArray: mnemonicArray, password: "")
+      resolve(keyPair.secretKey.hexString())
+      
+    } catch {
+      let foundationError = NSError(domain: Constants.bundleIdentifier, code: 404)
+      if let error = error as? TweetNaclError {
+        reject(error.errorDescription, error.localizedDescription, foundationError)
+      } else if let error = error as? KeychainServiceError {
+        reject("\(error.code)", error.localizedDescription, foundationError)
+      } else {
+        reject(nil, error.localizedDescription, foundationError)
+      }
+    }
+  }
+  
+  func exportWithBiometry(pk: PublicKey,
+                          _ resolve: @escaping RCTPromiseResolveBlock,
+                          reject: @escaping RCTPromiseRejectBlock) {
+    do {
+      if let accessControl = AccessControl.biometry.rawValue(accessibility: keychainService.accessibility) {
+        let biometryContext = LAContext()
+        biometryContext.evaluateAccessControl(accessControl,
+                                              operation: .useItem,
+                                              localizedReason: "") { success, error in
+          if success {
+            let mnemonicArray = try keychainService.string(forKey: "\(pk)-biometry",
+                                                           context: biometryContext,
+                                                           accessControl: .biometry).components(separatedBy: " ")
+            
+            let keyPair = try Mnemonic.mnemonicToPrivateKey(mnemonicArray: mnemonicArray, password: "")
+            resolve(keyPair.secretKey.hexString())
+          } else {
+            reject(nil, error.localizedDescription, NSError(domain: Constants.bundleIdentifier, code: 400))
+          }
+        }
+      }
+      
+    } catch {
+      let foundationError = NSError(domain: Constants.bundleIdentifier, code: 404)
+      if let error = error as? TweetNaclError {
+        reject(error.errorDescription, error.localizedDescription, foundationError)
+      } else if let error = error as? KeychainServiceError {
+        reject("\(error.code)", error.localizedDescription, foundationError)
+      } else {
+        reject(nil, error.localizedDescription, foundationError)
+      }
     }
   }
   
