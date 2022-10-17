@@ -1,10 +1,9 @@
 package com.ton_keeper.walletstore
 
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.*
 import com.ton_keeper.crypto.Mnemonic
+import com.ton_keeper.crypto.Wordlist
+import com.ton_keeper.crypto.toHex
 
 class WalletStoreModule(
     context: ReactApplicationContext
@@ -17,51 +16,63 @@ class WalletStoreModule(
     }
 
     @ReactMethod
-    // return WalletInfo
     fun importWallet(mnemonic: Array<String>, passcode: String, promise: Promise) {
-
+        // todo
+        val result = WalletInfo("testPubKey", "testLabel").toMap()
+        promise.resolve(result)
     }
 
     @ReactMethod
-    // return List<WalletInfo>
     fun listWallets(promise: Promise) {
-
+        // todo
+        val wallet = WalletInfo("testPubKey", "testLabel").toMap()
+        val result = WritableNativeArray()
+        result.pushMap(wallet)
+        promise.resolve(result)
     }
 
     @ReactMethod
-    // return WalletInfo
     fun getWallet(pubKey: String, promise: Promise) {
-
+        // todo
+        val result = WalletInfo("testPubKey", "testLabel").toMap()
+        promise.resolve(result)
     }
 
     @ReactMethod
-    // return WalletInfo
     fun updateWallet(pubKey: String, label: String, promise: Promise) {
-
+        // todo
+        val result = WalletInfo("testPubKey", "testLabel").toMap()
+        promise.resolve(result)
     }
 
     @ReactMethod
-    // return SecretKey
     fun exportWithPasscode(pubKey: String, passcode: String, promise: Promise) {
-
+        // todo
+        val result = ByteArray(256) { it.toByte() }.toHex()
+        promise.resolve(result)
     }
 
     @ReactMethod
-    // return SecretKey
     fun exportWithBiometry(pubKey: String, promise: Promise) {
-
+        // todo
+        val result = ByteArray(256) { it.toByte() }.toHex()
+        promise.resolve(result)
     }
 
     @ReactMethod
-    // return Mnemonic
     fun backupWithPasscode(pubKey: String, passcode: String, promise: Promise) {
-
+        // todo
+        val result = WritableNativeArray()
+        Wordlist.take(24).forEach { result.pushString(it) }
+        promise.resolve(result)
     }
 
     @ReactMethod
-    // return Mnemonic
     fun backupWithBiometry(pubKey: String, promise: Promise) {
-
+        // todo
+        val result = WritableNativeArray()
+        Wordlist.take(24).forEach { result.pushString(it) }
+        promise.resolve(result)
     }
 
     override fun getName(): String = ModuleName
