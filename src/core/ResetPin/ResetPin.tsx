@@ -111,7 +111,7 @@ export const ResetPin: FC = () => {
       <S.Steps style={stepsStyle}>
         <S.Step>
           <S.ImportWrap style={{ paddingBottom: keyboardHeight }}>
-            <ImportWalletForm onWordsFilled={handleWordsFilled} isReset />
+            <ImportWalletForm onWordsFilled={handleWordsFilled} />
           </S.ImportWrap>
         </S.Step>
         <S.Step>

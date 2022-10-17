@@ -22,7 +22,7 @@ import {
   UpdateBadHostsAction,
 } from '$store/main/interface';
 import { AccentKey } from '$styled';
-import { walletSelector } from '$store/wallet';
+import { walletWalletSelector } from '$store/wallet';
 
 const initialState: MainState = {
   isInitiating: true,
@@ -152,14 +152,31 @@ export { reducer as mainReducer, actions as mainActions };
 
 export const mainSelector = (state: RootState) => state.main;
 
-export const accentSelector = createSelector(
-  walletSelector,
+export const isInitiatingSelector = createSelector(
   mainSelector,
-  ({ wallet }, { accent }) => (wallet ? accent : AccentKey.default),
+  (state) => state.isInitiating,
+);
+
+export const fiatCurrencySelector = createSelector(
+  mainSelector,
+  (state) => state.fiatCurrency,
+);
+
+export const customIconSelector = createSelector(
+  mainSelector,
+  (state) => state.tonCustomIcon,
+);
+
+export const _accentSelector = createSelector(mainSelector, (state) => state.accent);
+
+export const accentSelector = createSelector(
+  walletWalletSelector,
+  _accentSelector,
+  (wallet, accent) => (wallet ? accent : AccentKey.default),
 );
 
 export const accentTonIconSelector = createSelector(
-  walletSelector,
-  mainSelector,
-  ({ wallet }, { tonCustomIcon }) => (wallet ? tonCustomIcon : null),
+  walletWalletSelector,
+  customIconSelector,
+  (wallet, tonCustomIcon) => (wallet ? tonCustomIcon : null),
 );

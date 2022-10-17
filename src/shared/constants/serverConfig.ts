@@ -12,6 +12,8 @@ export interface ServerConfig {
   appsflyerAppId: string;
   tonNFTsMarketplaceEndpoint: string;
   tonapiIOEndpoint: string;
+  tonapiMainnetHost: string;
+  tonapiTestnetHost: string;
   tonApiKey: string;
   cachedMediaEndpoint: string;
   cachedMediaKey: string;
@@ -38,12 +40,26 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     tonNFTsMarketplaceEndpoint: data.tonNFTsMarketplaceEndpoint,
     tonapiIOEndpoint: data.tonapiIOEndpoint || 'https://keeper.tonapi.io',
     tonApiKey: data.tonApiKey,
+    tonapiMainnetHost: data.tonapiMainnetHost || 'https://tonapi.io',
+    tonapiTestnetHost: data.tonapiTestnetHost || 'https://testnet.tonapi.io',
     cachedMediaEndpoint: data.cachedMediaEndpoint,
     cachedMediaKey: data.cachedMediaKey,
     cachedMediaSalt: data.cachedMediaSalt,
     NFTOnExplorerUrl: data.NFTOnExplorerUrl || 'https://tonscan.org/nft/%s',
     flags: data.flags || {},
   };
+}
+
+export function updateServerConfig(jsonConfig: any) {
+  if (!jsonConfig) return;
+  try {
+    Object.entries(JSON.parse(jsonConfig)).map(([key, value]) => {
+      if (config) {
+        config[key] = value;
+      }
+    });
+  } catch (e) {
+  }
 }
 
 export function isServerConfigLoaded() {

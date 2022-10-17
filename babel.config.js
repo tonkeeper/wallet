@@ -28,9 +28,9 @@ const plugins = [
   ],
 ];
 
-if (isProd) {
-  plugins.push('transform-remove-console');
-}
+// if (isProd) {
+//   plugins.push('transform-remove-console');
+// }
 
 plugins.push([
   'react-native-reanimated/plugin',

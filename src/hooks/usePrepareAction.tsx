@@ -4,8 +4,13 @@ import { ActionItemBaseProps } from '$shared/components/ActionItem/ActionItemBas
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
-import { format, fromNano, maskifyTonAddress, truncateDecimal } from '$utils';
-import BigNumber from 'bignumber.js';
+import {
+  compareAddresses,
+  format,
+  fromNano,
+  maskifyTonAddress,
+  truncateDecimal,
+} from '$utils';
 import { useTranslator } from '$hooks/useTranslator';
 import { formatCryptoCurrency } from '$utils/currency';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
@@ -24,7 +29,7 @@ export function usePrepareAction(
   return useMemo(() => {
     const action = rawAction[ActionType[rawAction.type]];
 
-    if (ActionType.Unknown === ActionType[rawAction.type]) {
+    if (ActionType.Unknown === ActionType[rawAction.type] || !action) {
       return {
         type: 'Unknown',
         label: 'Unknown',
@@ -42,9 +47,8 @@ export function usePrepareAction(
       new TonWeb.Address(action.recipient.address).toString(false, false, false) ===
         new TonWeb.Address(address.ton).toString(false, false, false);
 
-    const labelColor = isReceive ? 'accentPositive' : 'foregroundPrimary';
-
-    const prefix = isReceive ? '+' : '−';
+    let labelColor = isReceive ? 'accentPositive' : 'foregroundPrimary';
+    let prefix = isReceive ? '+' : '−';
 
     let label;
     let type;
@@ -52,7 +56,7 @@ export function usePrepareAction(
     let currency;
     let bottomContent;
     if (ActionType.TonTransfer === ActionType[rawAction.type]) {
-      const amount = TonWeb.utils.fromNano(new BigNumber(action.amount).abs().toString());
+      const amount = TonWeb.utils.fromNano(Math.abs(action.amount).toString());
       label = prefix + ' ' + truncateDecimal(amount.toString(), 2);
       type = isReceive ? 'receive' : 'sent';
       typeLabel = t(`transaction_type_${type}`);
@@ -91,21 +95,35 @@ export function usePrepareAction(
       [ActionType.Subscribe, ActionType.UnSubscribe].includes(ActionType[rawAction.type])
     ) {
       const isSubscription = ActionType.Subscribe === ActionType[rawAction.type];
+      const isBeneficiary = compareAddresses(action.beneficiary.address, address.ton);
       const amount = fromNano(action.amount, Decimals[CryptoCurrencies.Ton] || 9);
-      label = prefix + ' ' + truncateDecimal(amount.toString(), 2);
+      if (isBeneficiary) {
+        // Current user is beneficiary of this subscription, display it correctly
+        prefix = '+';
+        labelColor = isSubscription ? 'accentPositive' : labelColor;
+        typeLabel = isSubscription
+          ? t('transaction_type_new_subscriber')
+          : t('transaction_type_subscriber_lost');
+      } else {
+        typeLabel = isSubscription
+          ? t('transaction_type_subscription')
+          : t('transaction_type_unsubscription');
+      }
+      label = isSubscription ? prefix + ' ' + truncateDecimal(amount.toString(), 2) : '-';
       type = isSubscription ? 'subscription' : 'unsubscription';
-      typeLabel = isSubscription
-        ? t('transaction_type_subscription')
-        : t('transaction_type_unsubscription');
-      currency = formatCryptoCurrency(
-        '',
-        CryptoCurrencies.Ton,
-        Decimals[CryptoCurrencies.Ton],
-      ).trim();
+      currency = isSubscription
+        ? formatCryptoCurrency(
+            '',
+            CryptoCurrencies.Ton,
+            Decimals[CryptoCurrencies.Ton],
+          ).trim()
+        : '';
     }
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
-      label = t('transaction_type_contract_deploy');
+      label = '-';
+      typeLabel = t('transaction_type_contract_deploy');
+      type = 'contract_deploy';
     }
 
     const actionProps: ActionItemBaseProps = {
@@ -116,7 +134,7 @@ export function usePrepareAction(
       labelColor,
       bottomContent,
       infoRows: [],
-      comment: action.comment || '',
+      comment: (!event.isScam && action.comment) || '',
       isInProgress: event.inProgress,
       isSpam: event.isScam,
     };
@@ -145,8 +163,23 @@ export function usePrepareAction(
           ),
         value: formattedDate,
       });
+    } else if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
+      actionProps.infoRows.push({
+        label: maskifyTonAddress(
+          new TonWeb.Address(action.address).toString(true, true, true),
+        ),
+        value: formattedDate,
+      });
     }
 
     return actionProps;
-  }, [rawAction, address.ton, event.inProgress, event.isScam, event.timestamp, t, subscriptionsInfo]);
+  }, [
+    rawAction,
+    address.ton,
+    event.inProgress,
+    event.isScam,
+    event.timestamp,
+    t,
+    subscriptionsInfo,
+  ]) as ActionItemBaseProps;
 }

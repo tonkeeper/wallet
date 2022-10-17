@@ -18,7 +18,17 @@ import { DoneStepProps } from './DoneStep.interface';
 import * as S from './DoneStep.style';
 
 const DoneStepComponent: FC<DoneStepProps> = (props) => {
-  const { amount, decimals, fee, currencyTitle, currency, isJetton, recipient } = props;
+  const {
+    amount,
+    comment,
+    decimals,
+    fee,
+    currencyTitle,
+    currency,
+    isJetton,
+    recipient,
+    recipientAccountInfo,
+  } = props;
 
   const t = useTranslator();
 
@@ -72,12 +82,13 @@ const DoneStepComponent: FC<DoneStepProps> = (props) => {
     openAddFavorite({
       address: recipient.address,
       domain: recipient.domain,
+      name: recipientAccountInfo?.name,
       onSave: () => {
         dispatch(toastActions.success(t('send_screen_steps.done.favorite_saved')));
         setTimeout(handlePressDone, 350);
       },
     });
-  }, [dispatch, handlePressDone, recipient, t]);
+  }, [dispatch, handlePressDone, recipient, recipientAccountInfo, t]);
 
   if (!recipient) {
     return null;
@@ -85,7 +96,7 @@ const DoneStepComponent: FC<DoneStepProps> = (props) => {
 
   const shortAddress = maskifyAddress(recipient.address, 4);
 
-  const recipientName = recipient.domain || recipient.name;
+  const recipientName = recipient.domain || recipient.name || recipientAccountInfo?.name;
 
   return (
     <S.Container bottomInset={bottomInset}>
@@ -113,6 +124,13 @@ const DoneStepComponent: FC<DoneStepProps> = (props) => {
                   name: shortAddress,
                 })}
           </S.DetailsText>
+          {recipientAccountInfo?.memoRequired ? (
+            <S.DetailsText>
+              {t('send_screen_steps.done.comment', {
+                comment,
+              })}
+            </S.DetailsText>
+          ) : null}
           <S.DetailsText>
             {t('send_screen_steps.done.fee', {
               fee: feeValue,

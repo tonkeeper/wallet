@@ -44,10 +44,14 @@ export function debugLog(...args: any) {
   store.dispatch(
     mainActions.addLog({
       log: args.length === 1 ? args[0] : args,
-      trace: getStackTrace(),
+      trace: null,
       screen: getCurrentRoute()?.name ?? 'Unknown',
     }),
   );
+}
+
+export function lowerCaseFirstLetter(string: string) {
+  return string.charAt(0).toLowerCase() + string.slice(1);
 }
 
 export const Memo: <T>(c: T) => T = memo; // Fix generic.

@@ -35,6 +35,7 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
     isPreparing,
     active,
     recipient,
+    recipientAccountInfo,
     decimals,
     balance,
     currencyTitle,
@@ -209,7 +210,11 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
 
   return (
     <S.Container bottomInset={bottomInset} style={keyboardHeightStyle}>
-      <RecipientView recipient={recipient} goToAddress={goToAddress} />
+      <RecipientView
+        recipient={recipient}
+        recipientAccountInfo={recipientAccountInfo}
+        goToAddress={goToAddress}
+      />
       <S.InputTouchable onPress={handlePressInput}>
         <S.InputContainer>
           <S.AmountContainer

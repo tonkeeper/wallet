@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import * as S from './NFT.style';
-import {Badge, Button, Icon, NavBar, Text} from '$uikit';
+import { Button, Icon, NavBar, Text } from '$uikit';
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
 import { ImageWithTitle } from '$core/NFT/ImageWithTitle/ImageWithTitle';
-import { checkIsTonDiamondsNFT, maskifyTonAddress, ns } from '$utils';
+import { checkIsTonDiamondsNFT, compareAddresses, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslator } from '$hooks';
 import { Properties } from '$core/NFT/Properties/Properties';
@@ -17,20 +17,19 @@ import { useNFT } from '$hooks/useNFT';
 import { Linking, Platform, Share } from 'react-native';
 import { TonDiamondFeature } from './TonDiamondFeature/TonDiamondFeature';
 import { useDispatch, useSelector } from 'react-redux';
-import { walletSelector } from '$store/wallet';
+import { walletAddressSelector } from '$store/wallet';
 import { NFTModel, TonDiamondMetadata } from '$store/models';
 import { useFlags } from '$utils/flags';
 import { LinkingDomainButton } from './LinkingDomainButton';
 import { nftsActions } from '$store/nfts';
 import { useNavigation } from '$libs/navigation';
-import { NFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
 
 export const NFT: React.FC<NFTProps> = ({ route }) => {
   const flags = useFlags(['disable_nft_markets', 'disable_apperance']);
 
   const dispatch = useDispatch();
   const nav = useNavigation();
-  const { address } = useSelector(walletSelector);
+  const address = useSelector(walletAddressSelector);
   const nftFromHistory = useNFT(route.params.keyPair);
 
   const [nft, setNft] = useState(nftFromHistory);
@@ -54,7 +53,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
   const scrollRef = useRef<Animated.ScrollView>(null);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const canTransfer = useMemo(
-    () => nft.ownerAddress === address.ton,
+    () => compareAddresses(nft.ownerAddress, address.ton),
     [nft.ownerAddress, address.ton],
   );
 
@@ -72,8 +71,8 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
   }, [nft.marketplaceURL]);
 
   const handleTransferNft = useCallback(() => {
-    nav.openModal('NFTTransferInputAddress', { 
-      nftAddress: nft.address 
+    nav.openModal('NFTTransferInputAddress', {
+      nftAddress: nft.address,
     });
   }, [nft.address]);
 

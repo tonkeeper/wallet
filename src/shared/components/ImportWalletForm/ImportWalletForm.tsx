@@ -20,7 +20,7 @@ import { Keyboard } from 'react-native';
 import { wordlist } from '$libs/Ton/mnemonic/wordlist';
 
 export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
-  const { onWordsFilled, isReset = false } = props;
+  const { onWordsFilled } = props;
 
   const t = useTranslator();
   const { bottom: bottomInset } = useSafeAreaInsets();
@@ -234,7 +234,7 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
           </TapGestureHandler>
           <S.HeaderCaptionWrapper>
             <Text color="foregroundSecondary" variant="body1" textAlign="center">
-              {t(isReset ? 'import_wallet_reset_caption' : 'import_wallet_caption')}
+              {t('import_wallet_caption')}
             </Text>
           </S.HeaderCaptionWrapper>
         </S.Header>

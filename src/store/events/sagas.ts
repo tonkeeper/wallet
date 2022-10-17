@@ -17,8 +17,8 @@ import { EventsMap, LoadEventsAction } from '$store/events/interface';
 import { getWalletName } from '$shared/dynamicConfig';
 import { EventsManager } from '$store/events/manager';
 import { debugLog } from '$utils';
-import { Cache } from '$store/events/manager/cache';
-import {subscriptionsActions} from "$store/subscriptions";
+import { subscriptionsActions } from '$store/subscriptions';
+import { jettonsActions } from '$store/jettons';
 
 let manager: EventsManager | null;
 
@@ -125,6 +125,7 @@ function* pollEventsWorker() {
       });
       if (!pendingEvent) {
         yield put(subscriptionsActions.loadSubscriptions());
+        yield put(jettonsActions.loadJettons());
         yield put(walletActions.loadBalances());
         yield put(eventsActions.cancelPollEvents());
       }

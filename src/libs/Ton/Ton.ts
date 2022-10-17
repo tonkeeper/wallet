@@ -1,9 +1,9 @@
-import TonWeb from 'tonweb';
+import TonWeb, { AddressType } from 'tonweb';
 import BN from 'bn.js';
 import { Cell } from 'tonweb/dist/types/boc/cell';
-import { Base64, fromUrlSafe_RFC4648 } from '$utils/base64';
 import { BitStringReader } from '$utils/bitStringReader';
 import * as mnemonic from './mnemonic';
+import { debugLog, maskifyAddress } from '$utils';
 
 export class Ton {
   static toNano(value: number | string | BN) {
@@ -18,10 +18,39 @@ export class Ton {
     }
     return TonWeb.utils.fromNano(value);
   }
+
+  static formatAmount(amount: string | number, currency = 'TON') {
+    return `${Ton.fromNano(amount)} ${currency}`;
+  }
+  static formatAddress(
+    address: AddressType, 
+    opts: { 
+      bounce?: boolean;
+      cut?: boolean;
+    } = {}
+  ) {
+    const { bounce = true, cut } = opts;
+
+    try {
+      const addr = new TonWeb.utils.Address(address).toString(true, true, bounce);
+
+      if (cut) {
+        return maskifyAddress(addr);
+      }
+
+      return addr;
+    } catch (err) {
+      debugLog('[formatAddress]', address, err);
+      return '';
+    }
+  }
+
+
+
   static mnemonic = mnemonic;
   static base64ToCell(base64?: string): Cell | undefined {
     if (base64) {
-      const bytes = Base64.decodeToBytes(fromUrlSafe_RFC4648(base64));
+      const bytes = new Uint8Array(Buffer.from(base64, 'base64'));
       return TonWeb.boc.Cell.oneFromBoc(bytes);
     }
   }

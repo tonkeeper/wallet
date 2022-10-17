@@ -36,6 +36,14 @@ export const Title = styled(Text).attrs(() => ({
   max-width: 80%;
 `;
 
+export const AddressName = styled(Text).attrs(() => ({
+  variant: 'body1',
+  color: 'foregroundSecondary',
+}))`
+  margin-left: ${ns(2)}px;
+  margin-right: ${ns(4)}px;
+`;
+
 export const Domain = styled(Title).attrs({
   color: 'accentPrimary',
 })``;
