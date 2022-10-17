@@ -1,4 +1,4 @@
-package com.ton_keeper;
+package com.ton_keeper.pbkdf;
 
 import androidx.annotation.NonNull;
 
