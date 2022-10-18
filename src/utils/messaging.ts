@@ -2,6 +2,7 @@ import { debugLog } from '$utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import { getTimeSec } from './getTimeSec';
+import _ from "lodash";
 
 export async function getToken() {
   return await messaging().getToken();
@@ -33,40 +34,51 @@ export async function requestUserPermissionAndGetToken() {
   return await getToken();
 }
 
-let _subscribeStatus: boolean | null = null;
+export enum SUBSCRIBE_STATUS {
+  SUBSCRIBED,
+  UNSUBSCRIBED,
+  NOT_SPECIFIED,
+}
+
+let _subscribeStatus: SUBSCRIBE_STATUS = SUBSCRIBE_STATUS.NOT_SPECIFIED;
 
 export async function saveSubscribeStatus() {
   try {
     await AsyncStorage.setItem('isSubscribeNotifications', 'true');
-    _subscribeStatus = true;
+    _subscribeStatus = SUBSCRIBE_STATUS.SUBSCRIBED;
   } catch (err) {
-    _subscribeStatus = null;
+    _subscribeStatus = SUBSCRIBE_STATUS.NOT_SPECIFIED;
     debugLog('[saveSubscribeStatus]', err);
   }
 }
 
 export async function removeSubscribeStatus() {
   try {
-    await AsyncStorage.removeItem('isSubscribeNotifications');
-    _subscribeStatus = false;
+    await AsyncStorage.setItem('isSubscribeNotifications', 'false');
+    _subscribeStatus = SUBSCRIBE_STATUS.UNSUBSCRIBED;
   } catch (err) {
-    _subscribeStatus = null;
+    _subscribeStatus = SUBSCRIBE_STATUS.NOT_SPECIFIED;
     debugLog('[removeSubscribeStatus]', err);
   }
 }
 
 export async function getSubscribeStatus() {
-  if (_subscribeStatus !== null) {
+  if (_subscribeStatus !== SUBSCRIBE_STATUS.NOT_SPECIFIED) {
     return _subscribeStatus;
   }
 
   try {
     const status = await AsyncStorage.getItem('isSubscribeNotifications');
-    _subscribeStatus = Boolean(status);
-
+    if (_.isNil(status)) {
+      _subscribeStatus = SUBSCRIBE_STATUS.NOT_SPECIFIED;
+    } else if (status === 'true') {
+      _subscribeStatus = SUBSCRIBE_STATUS.SUBSCRIBED;
+    } else {
+      _subscribeStatus = SUBSCRIBE_STATUS.UNSUBSCRIBED;
+    }
     return _subscribeStatus;
   } catch (err) {
-    _subscribeStatus = null;
+    _subscribeStatus = SUBSCRIBE_STATUS.NOT_SPECIFIED;
     return false;
   }
 }
@@ -90,7 +102,7 @@ export async function shouldOpenReminderNotifications() {
     const status = await getSubscribeStatus();
     const timeToShow = await AsyncStorage.getItem('ReminderNotificationsTimestamp');
 
-    if (!status) {
+    if (status === SUBSCRIBE_STATUS.NOT_SPECIFIED) {
       if (!timeToShow) {
         return true;
       }
