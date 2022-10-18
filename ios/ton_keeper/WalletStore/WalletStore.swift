@@ -30,40 +30,44 @@ class WalletStore: NSObject {
     resolve(isValid)
   }
   
-  func importWallet(words: [String], passcode: String,
-                    _ resolve: @escaping RCTPromiseResolveBlock,
-                    reject: @escaping RCTPromiseRejectBlock) {
-    guard Mnemonic.mnemonicValidate(mnemonicArray: words, password: "") else {
-      let error = WalletError.invalidMnemonic
-      reject(error.code, error.message, error.foundationError)
-      
-      return
-    }
-    
+  func importWalletWithPasscode(words: [String],
+                                passcode: String,
+                                _ resolve: @escaping RCTPromiseResolveBlock,
+                                reject: @escaping RCTPromiseRejectBlock) {
     do {
-      let keyPair = try Mnemonic.mnemonicToPrivateKey(mnemonicArray: words, password: "")
-      let pubkey = keyPair.publicKey.hexString()
-      let walletInfo = WalletInfo(pubkey: pubkey, label: "")
-      let wordsJoined = words.joined(separator: " ")
+      let keyPair = try getKeyPair(words: words)
       
       let context = LAContext()
       context.setCredential(Data(passcode.utf8), type: .applicationPassword)
-      try keychainService.set(wordsJoined, forKey: "\(pubkey)-password", context: context, accessControl: .password)
-      try keychainService.set(wordsJoined, forKey: "\(pubkey)-biometry", accessControl: .biometry)
+      try keychainService.set(words.joined(separator: " "), forKey: "\(pubkey)-password", context: context, accessControl: .password)
       
+      let walletInfo = WalletInfo(pubkey: keyPair.publicKey.hexString(), label: "")
       userDefaultsService.wallets.insert(walletInfo)
       
       resolve(pubkey)
       
     } catch {
-      let foundationError = NSError(domain: Constants.bundleIdentifier, code: 400)
-      if let error = error as? TweetNaclError {
-        reject(error.errorDescription, error.localizedDescription, foundationError)
-      } else if let error = error as? KeychainServiceError {
-        reject("\(error.code)", error.localizedDescription, foundationError)
-      } else {
-        reject(nil, error.localizedDescription, foundationError)
-      }
+      let rejectBlock = self.rejectBlock(error: error, code: 400)
+      reject(rejectBlock.0, rejectBlock.1, rejectBlock.2)
+    }
+  }
+  
+  func importWalletWithBiometry(words: [String],
+                                _ resolve: @escaping RCTPromiseResolveBlock,
+                                reject: @escaping RCTPromiseRejectBlock) {
+    do {
+      let keyPair = try getKeyPair(words: words)
+      
+      try keychainService.set(words.joined(separator: " "), forKey: "\(pubkey)-biometry", accessControl: .biometry)
+      
+      let walletInfo = WalletInfo(pubkey: keyPair.publicKey.hexString(), label: "")
+      userDefaultsService.wallets.insert(walletInfo)
+      
+      resolve(pubkey)
+      
+    } catch {
+      let rejectBlock = self.rejectBlock(error: error, code: 400)
+      reject(rejectBlock.0, rejectBlock.1, rejectBlock.2)
     }
   }
   
@@ -191,6 +195,16 @@ class WalletStore: NSObject {
   }
   
   // MARK: - Private methods
+  
+  private func getKeyPair(words: [String]) throws -> KeyPair {
+    guard Mnemonic.mnemonicValidate(mnemonicArray: words, password: "") else {
+      throw WalletError.invalidMnemonic
+    }
+    
+    let keyPair = try Mnemonic.mnemonicToPrivateKey(mnemonicArray: words, password: "")
+    
+    return keyPair
+  }
   
   private func loadMnemonicWithPasscode(pk: PublicKey, passcode: String) throws -> [String] {
     let context = LAContext()
