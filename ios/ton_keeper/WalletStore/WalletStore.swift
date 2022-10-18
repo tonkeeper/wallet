@@ -1,5 +1,6 @@
 import Foundation
 import TonMnemonicSwift
+import LocalAuthentication
 
 @objc(WalletStore)
 @objcMembers
@@ -9,6 +10,8 @@ class WalletStore: NSObject {
   private let keychainService = KeychainService()
   
   static func requiresMainQueueSetup() -> Bool { false }
+  
+  // MARK: - Public methods
   
   func listWallets(_ resolve: @escaping RCTPromiseResolveBlock,
                    reject: @escaping RCTPromiseRejectBlock) {
@@ -125,57 +128,109 @@ class WalletStore: NSObject {
                           _ resolve: @escaping RCTPromiseResolveBlock,
                           reject: @escaping RCTPromiseRejectBlock) {
     do {
-      let context = LAContext()
-      context.setCredential(Data(passcode.utf8), type: .applicationPassword)
-      let mnemonicArray = try keychainService.string(forKey: "\(pk)-password",
-                                                     context: context,
-                                                     accessControl: .password).components(separatedBy: " ")
+      let mnemonicArray = try loadMnemonicWithPasscode(pk: pk, passcode: passcode)
       let keyPair = try Mnemonic.mnemonicToPrivateKey(mnemonicArray: mnemonicArray, password: "")
       resolve(keyPair.secretKey.hexString())
       
     } catch {
-      let foundationError = NSError(domain: Constants.bundleIdentifier, code: 404)
-      if let error = error as? TweetNaclError {
-        reject(error.errorDescription, error.localizedDescription, foundationError)
-      } else if let error = error as? KeychainServiceError {
-        reject("\(error.code)", error.localizedDescription, foundationError)
-      } else {
-        reject(nil, error.localizedDescription, foundationError)
-      }
+      let rejectBlock = self.rejectBlock(error: error, code: 400)
+      reject(rejectBlock.0, rejectBlock.1, rejectBlock.2)
     }
   }
   
   func exportWithBiometry(pk: PublicKey,
                           _ resolve: @escaping RCTPromiseResolveBlock,
                           reject: @escaping RCTPromiseRejectBlock) {
-    do {
-      if let accessControl = AccessControl.biometry.rawValue(accessibility: keychainService.accessibility) {
-        let biometryContext = LAContext()
-        biometryContext.evaluateAccessControl(accessControl,
-                                              operation: .useItem,
-                                              localizedReason: "") { success, error in
-          if success {
-            let mnemonicArray = try keychainService.string(forKey: "\(pk)-biometry",
-                                                           context: biometryContext,
-                                                           accessControl: .biometry).components(separatedBy: " ")
-            
-            let keyPair = try Mnemonic.mnemonicToPrivateKey(mnemonicArray: mnemonicArray, password: "")
-            resolve(keyPair.secretKey.hexString())
-          } else {
-            reject(nil, error.localizedDescription, NSError(domain: Constants.bundleIdentifier, code: 400))
-          }
+    loadMnemonicWithBiometry(pk: pk) { result in
+      var rejectError: Error?
+      switch result {
+      case .success(let mnemonicArray):
+        do {
+          let keyPair = try Mnemonic.mnemonicToPrivateKey(mnemonicArray: mnemonicArray, password: "")
+          resolve(keyPair.secretKey.hexString())
+        } catch {
+          rejectError = error
         }
+        
+      case .failure(let error):
+        rejectError = error
       }
       
-    } catch {
-      let foundationError = NSError(domain: Constants.bundleIdentifier, code: 404)
-      if let error = error as? TweetNaclError {
-        reject(error.errorDescription, error.localizedDescription, foundationError)
-      } else if let error = error as? KeychainServiceError {
-        reject("\(error.code)", error.localizedDescription, foundationError)
-      } else {
-        reject(nil, error.localizedDescription, foundationError)
+      if let error = rejectError {
+        let rejectBlock = self.rejectBlock(error: error, code: 400)
+        reject(rejectBlock.0, rejectBlock.1, rejectBlock.2)
       }
+    }
+  }
+  
+  func backupWithPasscode(pk: PublicKey,
+                          passcode: String,
+                          _ resolve: @escaping RCTPromiseResolveBlock,
+                          reject: @escaping RCTPromiseRejectBlock) {
+    do {
+      let mnemonicArray = try loadMnemonicWithPasscode(pk: pk, passcode: passcode)
+      resolve(mnemonicArray)
+      
+    } catch {
+      let rejectBlock = self.rejectBlock(error: error, code: 400)
+      reject(rejectBlock.0, rejectBlock.1, rejectBlock.2)
+    }
+  }
+  
+  func backupWithBiometry(pk: PublicKey,
+                          _ resolve: @escaping RCTPromiseResolveBlock,
+                          reject: @escaping RCTPromiseRejectBlock) {
+    loadMnemonicWithBiometry(pk: pk) { result in
+      switch result {
+      case .success(let mnemonicArray): resolve(mnemonicArray)
+      case .failure(let error):
+        let rejectBlock = self.rejectBlock(error: error, code: 400)
+        reject(rejectBlock.0, rejectBlock.1, rejectBlock.2)
+      }
+    }
+  }
+  
+  // MARK: - Private methods
+  
+  private func loadMnemonicWithPasscode(pk: PublicKey, passcode: String) throws -> [String] {
+    let context = LAContext()
+    context.setCredential(Data(passcode.utf8), type: .applicationPassword)
+    let mnemonic = try keychainService.string(forKey: "\(pk)-password",
+                                              context: context,
+                                              accessControl: .password)
+    return mnemonic.components(separatedBy: " ")
+  }
+  
+  private func loadMnemonicWithBiometry(pk: PublicKey, completion: @escaping (Result<[String], Error>) -> Void) {
+    if let accessControl = AccessControl.biometry.rawValue(accessibility: keychainService.accessibility) {
+      let biometryContext = LAContext()
+      biometryContext.evaluateAccessControl(accessControl,
+                                            operation: .useItem,
+                                            localizedReason: "") { success, error in
+        if success {
+          do {
+            let mnemonic = try self.keychainService.string(forKey: "\(pk)-biometry",
+                                                           context: biometryContext,
+                                                           accessControl: .biometry)
+            completion(.success(mnemonic.components(separatedBy: " ")))
+          } catch {
+            completion(.failure(error))
+          }
+        } else if let error = error {
+          completion(.failure(error))
+        }
+      }
+    }
+  }
+  
+  private func rejectBlock(error: Error, code: Int) -> (String?, String, NSError) {
+    let foundationError = NSError(domain: Constants.bundleIdentifier, code: code)
+    if let error = error as? TweetNaclError {
+      return (error.errorDescription, error.localizedDescription, foundationError)
+    } else if let error = error as? KeychainServiceError {
+      return ("\(error.code)", error.localizedDescription, foundationError)
+    } else {
+      return (nil, error.localizedDescription, foundationError)
     }
   }
   
