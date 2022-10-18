@@ -6,3 +6,7 @@ class WalletMnemonicInvalidException
 class WalletNotFoundException(
     publicKey: String
 ) : Exception("Wallet with public key not found ($publicKey)")
+
+class WalletSaveException(
+    publicKey: String
+): Exception("Saving of wallet went wrong ($publicKey)")

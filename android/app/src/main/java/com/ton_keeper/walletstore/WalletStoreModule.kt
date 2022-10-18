@@ -4,7 +4,6 @@ import androidx.fragment.app.FragmentActivity
 import com.facebook.react.bridge.*
 import com.ton_keeper.crypto.Mnemonic
 import com.ton_keeper.crypto.toHex
-import com.ton_keeper.walletstore.data.StoreSecureType
 import com.ton_keeper.walletstore.walletinfo.toBridgeMap
 import com.ton_keeper.walletstore.walletinfo.toBridgeMapArray
 
@@ -33,7 +32,7 @@ class WalletStoreModule(
         }
 
         try {
-            val result = store.import(mnemonic, StoreSecureType.Passcode(passcode)).toBridgeMap()
+            val result = store.import(mnemonic, SecureType.Passcode(passcode)).toBridgeMap()
             promise.resolve(result)
         } catch (ex: Exception) {
             promise.resolve(ex)
@@ -49,7 +48,7 @@ class WalletStoreModule(
         }
 
         try {
-            val result = store.import(mnemonic, StoreSecureType.Biometry).toBridgeMap()
+            val result = store.import(mnemonic, SecureType.Biometry).toBridgeMap()
             promise.resolve(result)
         } catch (ex: Exception) {
             promise.resolve(ex)
@@ -89,7 +88,7 @@ class WalletStoreModule(
     @ReactMethod
     fun exportWithPasscode(pubKey: String, passcode: String, promise: Promise) {
         try {
-            val result = store.exportSecretKey(pubKey, StoreSecureType.Passcode(passcode)).toHex()
+            val result = store.exportSecretKey(pubKey, SecureType.Passcode(passcode)).toHex()
             promise.resolve(result)
         } catch (ex: Exception) {
             promise.resolve(ex)
@@ -99,7 +98,7 @@ class WalletStoreModule(
     @ReactMethod
     fun exportWithBiometry(pubKey: String, promise: Promise) {
         try {
-            val result = store.exportSecretKey(pubKey, StoreSecureType.Biometry).toHex()
+            val result = store.exportSecretKey(pubKey, SecureType.Biometry).toHex()
             promise.resolve(result)
         } catch (ex: Exception) {
             promise.resolve(ex)
@@ -110,7 +109,7 @@ class WalletStoreModule(
     fun backupWithPasscode(pubKey: String, passcode: String, promise: Promise) {
         try {
             val result = WritableNativeArray()
-            val mnemonic = store.backup(pubKey, StoreSecureType.Passcode(passcode))
+            val mnemonic = store.backup(pubKey, SecureType.Passcode(passcode))
             mnemonic.forEach { result.pushString(it) }
             promise.resolve(result)
         } catch (ex: Exception) {
@@ -122,7 +121,7 @@ class WalletStoreModule(
     fun backupWithBiometry(pubKey: String, promise: Promise) {
         try {
             val result = WritableNativeArray()
-            val mnemonic = store.backup(pubKey, StoreSecureType.Biometry)
+            val mnemonic = store.backup(pubKey, SecureType.Biometry)
             mnemonic.forEach { result.pushString(it) }
             promise.resolve(result)
         } catch (ex: Exception) {
