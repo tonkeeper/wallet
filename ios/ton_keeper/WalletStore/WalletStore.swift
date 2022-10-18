@@ -36,15 +36,16 @@ class WalletStore: NSObject {
                                 reject: @escaping RCTPromiseRejectBlock) {
     do {
       let keyPair = try getKeyPair(words: words)
+      let pubkey = keyPair.publicKey.hexString()
       
       let context = LAContext()
       context.setCredential(Data(passcode.utf8), type: .applicationPassword)
       try keychainService.set(words.joined(separator: " "), forKey: "\(pubkey)-password", context: context, accessControl: .password)
       
-      let walletInfo = WalletInfo(pubkey: keyPair.publicKey.hexString(), label: "")
+      let walletInfo = WalletInfo(pubkey: pubkey, label: "")
       userDefaultsService.wallets.insert(walletInfo)
       
-      resolve(pubkey)
+      resolve(walletInfo.toDict())
       
     } catch {
       let rejectBlock = self.rejectBlock(error: error, code: 400)
@@ -57,13 +58,14 @@ class WalletStore: NSObject {
                                 reject: @escaping RCTPromiseRejectBlock) {
     do {
       let keyPair = try getKeyPair(words: words)
+      let pubkey = keyPair.publicKey.hexString()
       
       try keychainService.set(words.joined(separator: " "), forKey: "\(pubkey)-biometry", accessControl: .biometry)
       
-      let walletInfo = WalletInfo(pubkey: keyPair.publicKey.hexString(), label: "")
+      let walletInfo = WalletInfo(pubkey: pubkey, label: "")
       userDefaultsService.wallets.insert(walletInfo)
       
-      resolve(pubkey)
+      resolve(walletInfo.toDict())
       
     } catch {
       let rejectBlock = self.rejectBlock(error: error, code: 400)

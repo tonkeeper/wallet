@@ -1,6 +1,6 @@
 import Foundation
 
-enum WalletError {
+enum WalletError: LocalizedError {
   case noAvailableWallets
   case invalidMnemonic
   
