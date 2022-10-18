@@ -62,6 +62,7 @@ import { initStats } from '$utils';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { favoritesActions } from '$store/favorites';
+import { clearSubscribeStatus } from '$utils/messaging';
 
 SplashScreen.preventAutoHideAsync()
   .then((result) =>
@@ -244,6 +245,7 @@ function* completeIntroWorker() {
 export function* resetAll(isTestnet: boolean) {
   yield call(destroyEventsManager);
   yield call(Cache.clearAll, getWalletName());
+  yield call(clearSubscribeStatus);
   yield call(JettonsCache.clearAll, getWalletName());
   yield put(
     batchActions(

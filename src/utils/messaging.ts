@@ -62,6 +62,16 @@ export async function removeSubscribeStatus() {
   }
 }
 
+export async function clearSubscribeStatus() {
+  try {
+    await AsyncStorage.removeItem('isSubscribeNotifications');
+    _subscribeStatus = SUBSCRIBE_STATUS.NOT_SPECIFIED;
+  } catch (err) {
+    _subscribeStatus = SUBSCRIBE_STATUS.NOT_SPECIFIED;
+    debugLog('[removeSubscribeStatus]', err);
+  }
+}
+
 export async function getSubscribeStatus() {
   if (_subscribeStatus !== SUBSCRIBE_STATUS.NOT_SPECIFIED) {
     return _subscribeStatus;
