@@ -1,4 +1,4 @@
-package com.ton_keeper;
+package com.ton_keeper.pbkdf;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -26,20 +26,22 @@ public class TonPbkdf2 extends ReactContextBaseJavaModule {
         int secondDigit = toDigit(hexString.charAt(1));
         return (byte) ((firstDigit << 4) + secondDigit);
     }
+
     private static int toDigit(char hexChar) {
         int digit = Character.digit(hexChar, 16);
-        if(digit == -1) {
+        if (digit == -1) {
             throw new IllegalArgumentException(
-                    "Invalid Hexadecimal Character: "+ hexChar);
+                    "Invalid Hexadecimal Character: " + hexChar);
         }
         return digit;
     }
+
     public static byte[] hexToBytes(String hexString) {
         if (hexString.length() % 2 == 1) {
             throw new IllegalArgumentException(
-              "Invalid hexadecimal String supplied.");
+                    "Invalid hexadecimal String supplied.");
         }
-        
+
         byte[] bytes = new byte[hexString.length() / 2];
         for (int i = 0; i < hexString.length(); i += 2) {
             bytes[i / 2] = hexToByte(hexString.substring(i, i + 2));

@@ -15,22 +15,24 @@ import com.facebook.soloader.SoLoader;
  */
 @DoNotStrip
 public class MainComponentsRegistry {
-  static {
-    SoLoader.loadLibrary("fabricjni");
-  }
 
-  @DoNotStrip private final HybridData mHybridData;
+    static {
+        SoLoader.loadLibrary("fabricjni");
+    }
 
-  @DoNotStrip
-  private native HybridData initHybrid(ComponentFactory componentFactory);
+    @DoNotStrip
+    private final HybridData mHybridData;
 
-  @DoNotStrip
-  private MainComponentsRegistry(ComponentFactory componentFactory) {
-    mHybridData = initHybrid(componentFactory);
-  }
+    @DoNotStrip
+    private native HybridData initHybrid(ComponentFactory componentFactory);
 
-  @DoNotStrip
-  public static MainComponentsRegistry register(ComponentFactory componentFactory) {
-    return new MainComponentsRegistry(componentFactory);
-  }
+    @DoNotStrip
+    private MainComponentsRegistry(ComponentFactory componentFactory) {
+        mHybridData = initHybrid(componentFactory);
+    }
+
+    @DoNotStrip
+    public static MainComponentsRegistry register(ComponentFactory componentFactory) {
+        return new MainComponentsRegistry(componentFactory);
+    }
 }
