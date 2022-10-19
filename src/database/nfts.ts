@@ -22,4 +22,9 @@ export class NFTsDB {
     const wallet = getWalletName();
     await AsyncStorage.setItem(`${wallet}_nfts`, JSON.stringify(nfts));
   }
+
+  static async clearAll() {
+    const wallet = getWalletName();
+    await AsyncStorage.removeItem(`${wallet}_nfts`);
+  }
 }

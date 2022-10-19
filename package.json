@@ -100,6 +100,7 @@
     "react-native-tweetnacl": "^1.0.5",
     "react-native-video": "^5.2.0",
     "react-native-webview": "^11.14.0",
+    "react-native-encrypted-storage": "git+ssh://git@github.com:tonkeeper/react-native-encrypted-storage#6d2dd34fed3438364125175a32c6f4f3d018078e",
     "react-redux": "^7.2.4",
     "reanimated-bottom-sheet": "^1.0.0-alpha.22",
     "redux-saga": "^1.1.3",

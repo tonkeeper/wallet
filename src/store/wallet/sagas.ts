@@ -7,11 +7,7 @@ import * as SecureStore from 'expo-secure-store';
 import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet/index';
 import { EncryptedVault, UnlockedVault, Vault, Wallet } from '$blockchain';
 import { mainActions } from '$store/main';
-import {
-  CryptoCurrencies,
-  PrimaryCryptoCurrencies,
-  TokenConfig,
-} from '$shared/constants';
+import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
 import {
   goBack,
   openAccessConfirmation,
@@ -29,6 +25,7 @@ import {
   DeployWalletAction,
   MigrateAction,
   OpenMigrationAction,
+  RefreshBalancesPageAction,
   ReloadBalanceTwiceAction,
   RestoreWalletAction,
   SendCoinsAction,
@@ -39,11 +36,9 @@ import {
 } from '$store/wallet/interface';
 import { eventsActions } from '$store/events';
 import { ratesActions } from '$store/rates';
-import { TransactionModel } from '$store/models';
 import {
   clearHiddenNotification,
   clearPrimaryFiatCurrency,
-  EventsDB,
   getMigrationState,
   MainDB,
   saveAddedCurrencies,
@@ -289,10 +284,10 @@ function* switchVersionWorker() {
   yield put(walletActions.refreshBalancesPage());
 }
 
-function* refreshBalancesPageWorker() {
+function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
   try {
     yield put(walletActions.loadBalances());
-    yield put(eventsActions.loadEvents({ isReplace: true }));
+    yield put(eventsActions.loadEvents({ isReplace: true, ignoreCache: action.payload }));
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.getIsFeatureEnabled());
     yield put(jettonsActions.loadJettons());
