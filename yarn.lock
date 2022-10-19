@@ -9391,6 +9391,10 @@ react-native-device-info@^8.3.1:
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-8.7.1.tgz#fbb06f87dbbc4423abe713874699fb2e6e99fd15"
   integrity sha512-cVMZztFa2Qn6qpQa601W61CtUwZQ1KXfqCOeltejAWEXmgIWivC692WGSdtGudj4upSi1UgMSaGcvKjfcpdGjg==
 
+"react-native-encrypted-storage@git+ssh://git@github.com:tonkeeper/react-native-encrypted-storage#6d2dd34fed3438364125175a32c6f4f3d018078e":
+  version "4.0.2"
+  resolved "git+ssh://git@github.com:tonkeeper/react-native-encrypted-storage#6d2dd34fed3438364125175a32c6f4f3d018078e"
+
 react-native-exception-handler@^2.10.10:
   version "2.10.10"
   resolved "https://registry.yarnpkg.com/react-native-exception-handler/-/react-native-exception-handler-2.10.10.tgz#b6bfe2b7e6ea4a4deb1f518f48ce2ee1d4843497"

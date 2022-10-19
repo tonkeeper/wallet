@@ -1,3 +1,4 @@
+import EncryptedStorage from 'react-native-encrypted-storage';
 import { Buffer } from 'buffer';
 import { generateSecureRandom } from 'react-native-securerandom';
 import scrypt from 'react-native-scrypt';
@@ -138,6 +139,12 @@ export class Vault {
     return new UnlockedVault(info, phrase);
   }
 
+   // Returns true if the device has a passcode/biometric protection.
+  // If it does not, app asks user to encrypt the wallet with a password.
+  static async isDeviceProtected(): Promise<boolean> {
+    return await EncryptedStorage.isDeviceProtected();
+  }
+
   get keychainItemName(): string {
     return this.info.name;
   }
@@ -210,6 +217,8 @@ export class Vault {
     const isNewFlow = await MainDB.isNewSecurityFlow();
     if (isNewFlow) {
       await SecureStore.deleteItemAsync(this.keychainItemName);
+    } else {
+      await EncryptedStorage.removeItem(this.keychainItemName);
     }
   }
 
@@ -237,6 +246,8 @@ export class Vault {
       } catch {
         throw new Error(t('access_confirmation_update_biometry'));
       }
+    } else {
+      jsonstr = await EncryptedStorage.getItem(this.keychainItemName);
     }
 
     if (jsonstr == null) {
