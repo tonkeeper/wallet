@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { BuyTransactionModel, EventModel } from '$store/models';
+import { EventModel } from '$store/models';
 import { getWalletName } from '$shared/dynamicConfig';
 import { AccountEvent } from 'tonapi-sdk-js';
 
@@ -19,6 +19,12 @@ export class EventsDB {
   static async saveEvents(events: AccountEvent[]) {
     const wallet = getWalletName();
     await AsyncStorage.setItem(`${wallet}_events`, JSON.stringify(events));
+  }
+
+  static async clearAll() {
+    const wallet = getWalletName();
+    await AsyncStorage.removeItem(`${wallet}_events`);
+    await this.clearMempoolEvents();
   }
 
   static async addMempoolEvent(event: AccountEvent) {
@@ -52,29 +58,5 @@ export class EventsDB {
     } catch (e) {
       return [];
     }
-  }
-
-  static async getBuyFiatTransactions(): Promise<BuyTransactionModel[]> {
-    const wallet = getWalletName();
-
-    const raw = await AsyncStorage.getItem(`${wallet}_buy_transactions`);
-
-    if (!raw) {
-      return [];
-    }
-
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      return [];
-    }
-  }
-
-  static async saveBuyFiatTransactions(transactions: BuyTransactionModel[]) {
-    const wallet = getWalletName();
-    await AsyncStorage.setItem(
-      `${wallet}_buy_transactions`,
-      JSON.stringify(transactions),
-    );
   }
 }

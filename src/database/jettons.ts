@@ -21,4 +21,9 @@ export class JettonsDB {
     const wallet = getWalletName();
     await AsyncStorage.setItem(`${wallet}_jettons`, JSON.stringify(jettons));
   }
+  
+  static async clearAll() {
+    const wallet = getWalletName();
+    await AsyncStorage.removeItem(`${wallet}_jettons`);
+  }
 }
