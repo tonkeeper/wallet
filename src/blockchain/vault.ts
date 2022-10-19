@@ -117,7 +117,7 @@ export class Vault {
           const balances = await Tonapi.getBalances(pubkey);
           if (balances.length > 0) {
             balances.sort((a, b) => {
-              const balance = new BN(a.balance).cmp(b.balance);
+              const balance = new BN(a.balance).cmp(new BN(b.balance));
               return balance;
             });
             version = balances[balances.length - 1].version;
