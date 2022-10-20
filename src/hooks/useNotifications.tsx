@@ -22,9 +22,8 @@ export const useNotifications = () => {
       return false;
     }
 
-    const subscribeStatus = await getSubscribeStatus();
     const token = await requestUserPermissionAndGetToken();
-    if (!token || subscribeStatus === SUBSCRIBE_STATUS.UNSUBSCRIBED) {
+    if (!token) {
       return false;
     }
 
