@@ -1,8 +1,6 @@
 package com.ton_keeper.walletstore
 
 import android.content.Context
-import android.os.Build
-import android.security.KeyPairGeneratorSpec
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import androidx.biometric.BiometricManager
@@ -15,20 +13,15 @@ import com.ton_keeper.walletstore.walletinfo.PublicKey
 import com.ton_keeper.walletstore.walletinfo.WalletInfo
 import com.ton_keeper.walletstore.walletinfo.WalletInfoSerializer
 import java.lang.ref.WeakReference
-import java.math.BigInteger
-import java.security.KeyPairGenerator
+import java.security.Key
 import java.security.KeyStore
 import java.security.SecureRandom
-import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
-import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
-import javax.security.auth.x500.X500Principal
-import kotlin.math.abs
 
 class WalletStore(activity: FragmentActivity) {
 
@@ -116,11 +109,16 @@ class WalletStore(activity: FragmentActivity) {
             context,
             createAuthenticationCallback(
                 onSuccess = {
-
+                    val cipher = it.cipher ?: throw NullPointerException("Cipher is null")
                 }
             )
         )
-        prompt.authenticate(createAuthenticationPromptInfo())
+
+        val cipher = getCipher()
+        prompt.authenticate(
+            createAuthenticationPromptInfo(),
+            CryptoObject(cipher)
+        )
     }
 
     private fun decryptMnemonicWithBiometry(onResult: (Array<String>) -> Unit) {
@@ -166,10 +164,7 @@ class WalletStore(activity: FragmentActivity) {
         return BiometricPrompt.PromptInfo.Builder()
             .setTitle("Biometric login for my app")
             .setSubtitle("Log in using your biometric credential")
-            .setAllowedAuthenticators(
-                BiometricManager.Authenticators.BIOMETRIC_STRONG
-                        or BiometricManager.Authenticators.DEVICE_CREDENTIAL
-            )
+            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
             .build()
     }
 
@@ -193,48 +188,29 @@ class WalletStore(activity: FragmentActivity) {
         // val encrypted = cipher.doFinal(dataToEncrypt)
     }
 
-    private fun generateSecretKey(keyGenParameterSpec: KeyGenParameterSpec) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            val start: Calendar = GregorianCalendar()
-            val end: Calendar = GregorianCalendar()
-            end.add(Calendar.YEAR, 30)
-
-            val alias = "alias"
-            val spec = KeyPairGeneratorSpec.Builder(activity.get()!!)
-                .setAlias(alias)
-                .setSubject(X500Principal("CN=$alias"))
-                .setSerialNumber(BigInteger.valueOf(abs(alias.hashCode()).toLong()))
-                .setStartDate(start.time)
-                .setEndDate(end.time)
-                .build()
-
-            val keyGenerator = KeyPairGenerator.getInstance("RSA", KeyStoreType)
-            keyGenerator.initialize(spec)
-            val kp = keyGenerator.generateKeyPair()
-        } else {
-            val keyGenerator = KeyGenerator
-                .getInstance(KeyProperties.KEY_ALGORITHM_AES, KeyStoreType)
-            keyGenerator.init(keyGenParameterSpec)
-            keyGenerator.generateKey()
-        }
+    private fun generateSecretKey(
+        pk: PublicKey,
+        secure: SecureType,
+        keyGenParameterSpec: KeyGenParameterSpec
+    ) {
+        val keyGenerator = KeyGenerator
+            .getInstance(KeyProperties.KEY_ALGORITHM_AES, KeyStoreType)
+        keyGenerator.init(keyGenParameterSpec)
+        keyGenerator.generateKey()
     }
 
-    private fun getSecretKey(): SecretKey {
+    private fun getSecretKey(pk: PublicKey, secure: SecureType): Key {
         val keyStore = KeyStore.getInstance(KeyStoreType)
         keyStore.load(null)
-        return keyStore.getKey("KEY_NAME", null) as SecretKey
+        return keyStore.getKey(createKeyStoreAlias(pk, secure), null)
     }
 
     private fun getCipher(): Cipher {
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            Cipher.getInstance("AES/CBC/PKCS5Padding")
-        } else {
-            Cipher.getInstance(
-                KeyProperties.KEY_ALGORITHM_AES + "/"
-                        + KeyProperties.BLOCK_MODE_CBC + "/"
-                        + KeyProperties.ENCRYPTION_PADDING_PKCS7
-            )
-        }
+        return Cipher.getInstance(
+            KeyProperties.KEY_ALGORITHM_AES + "/"
+                    + KeyProperties.BLOCK_MODE_CBC + "/"
+                    + KeyProperties.ENCRYPTION_PADDING_PKCS7
+        )
     }
 
     private fun createKeyStoreAlias(pk: PublicKey, secure: SecureType): String {
@@ -260,5 +236,8 @@ class WalletStore(activity: FragmentActivity) {
         private const val PrefsFileName = "native-wallet-info"
         private const val PrefsMnemonicAliasPrefix = "mnemonic."
         private const val PrefsInfoAliasPrefix = "info."
+
+        private const val PrefsPasscodeSaltAlias = "passcode.salt"
+        private const val PrefsPasscodeIvAlias = "passcode.iv"
     }
 }

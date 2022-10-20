@@ -359,9 +359,6 @@ dependencies {
     implementation 'com.madgag.spongycastle:prov:1.54.0.0'
     implementation 'com.madgag.spongycastle:pkix:1.54.0.0'
     implementation 'com.madgag.spongycastle:pg:1.54.0.0'
-
-    // Secure
-    implementation "androidx.security:security-crypto-ktx:1.0.0"
 }
 
 if (isNewArchitectureEnabled()) {
