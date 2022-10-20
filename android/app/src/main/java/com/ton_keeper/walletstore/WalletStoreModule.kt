@@ -32,8 +32,11 @@ class WalletStoreModule(
         }
 
         try {
-            val result = store.import(mnemonic, SecureType.Passcode(passcode)).toBridgeMap()
-            promise.resolve(result)
+            store.import(
+                mnemonic = mnemonic,
+                secure = SecureType.Passcode(passcode),
+                onResult = { promise.resolve(it.toBridgeMap()) }
+            )
         } catch (ex: Exception) {
             promise.resolve(ex)
         }
@@ -48,8 +51,11 @@ class WalletStoreModule(
         }
 
         try {
-            val result = store.import(mnemonic, SecureType.Biometry).toBridgeMap()
-            promise.resolve(result)
+            store.import(
+                mnemonic = mnemonic,
+                secure = SecureType.Biometry,
+                onResult = { promise.resolve(it.toBridgeMap()) }
+            )
         } catch (ex: Exception) {
             promise.resolve(ex)
         }
@@ -88,8 +94,11 @@ class WalletStoreModule(
     @ReactMethod
     fun exportWithPasscode(pubKey: String, passcode: String, promise: Promise) {
         try {
-            val result = store.exportSecretKey(pubKey, SecureType.Passcode(passcode)).toHex()
-            promise.resolve(result)
+            store.exportSecretKey(
+                pk = pubKey,
+                secure = SecureType.Passcode(passcode),
+                onResult = { promise.resolve(it.toHex()) }
+            )
         } catch (ex: Exception) {
             promise.resolve(ex)
         }
@@ -98,8 +107,11 @@ class WalletStoreModule(
     @ReactMethod
     fun exportWithBiometry(pubKey: String, promise: Promise) {
         try {
-            val result = store.exportSecretKey(pubKey, SecureType.Biometry).toHex()
-            promise.resolve(result)
+            store.exportSecretKey(
+                pk = pubKey,
+                secure = SecureType.Biometry,
+                onResult = { promise.resolve(it.toHex()) }
+            )
         } catch (ex: Exception) {
             promise.resolve(ex)
         }
@@ -108,10 +120,11 @@ class WalletStoreModule(
     @ReactMethod
     fun backupWithPasscode(pubKey: String, passcode: String, promise: Promise) {
         try {
-            val result = WritableNativeArray()
-            val mnemonic = store.backup(pubKey, SecureType.Passcode(passcode))
-            mnemonic.forEach { result.pushString(it) }
-            promise.resolve(result)
+            store.backup(pubKey, SecureType.Passcode(passcode)) { mnemonic ->
+                val result = WritableNativeArray()
+                mnemonic.forEach { result.pushString(it) }
+                promise.resolve(result)
+            }
         } catch (ex: Exception) {
             promise.resolve(ex)
         }
@@ -120,10 +133,11 @@ class WalletStoreModule(
     @ReactMethod
     fun backupWithBiometry(pubKey: String, promise: Promise) {
         try {
-            val result = WritableNativeArray()
-            val mnemonic = store.backup(pubKey, SecureType.Biometry)
-            mnemonic.forEach { result.pushString(it) }
-            promise.resolve(result)
+            store.backup(pubKey, SecureType.Biometry) { mnemonic ->
+                val result = WritableNativeArray()
+                mnemonic.forEach { result.pushString(it) }
+                promise.resolve(result)
+            }
         } catch (ex: Exception) {
             promise.resolve(ex)
         }
