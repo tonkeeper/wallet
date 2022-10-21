@@ -5,45 +5,38 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
-import androidx.biometric.BiometricPrompt.CryptoObject
 import androidx.fragment.app.FragmentActivity
 import com.ton_keeper.crypto.Mnemonic
 import com.ton_keeper.crypto.toHex
+import com.ton_keeper.walletstore.passcode.PasscodeManager
 import com.ton_keeper.walletstore.walletinfo.PublicKey
 import com.ton_keeper.walletstore.walletinfo.WalletInfo
 import com.ton_keeper.walletstore.walletinfo.WalletInfoSerializer
 import java.lang.ref.WeakReference
-import java.security.Key
 import java.security.KeyStore
-import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
-import javax.crypto.SecretKeyFactory
-import javax.crypto.spec.IvParameterSpec
-import javax.crypto.spec.PBEKeySpec
-import javax.crypto.spec.SecretKeySpec
+import javax.crypto.SecretKey
 
 class WalletStore(activity: FragmentActivity) {
 
     private val activity = WeakReference(activity)
     private val prefs = activity.getSharedPreferences(PrefsFileName, Context.MODE_PRIVATE)
+    private val passcode = PasscodeManager(activity)
 
     fun import(mnemonic: Array<String>, secure: SecureType, onResult: (WalletInfo) -> Unit) {
         val keys = Mnemonic.toKeyPair(mnemonic)
         val pkHex = keys.publicKey.toHex()
 
-        when (secure) {
-            is SecureType.Biometry -> {
-                encryptMnemonicWithBiometry(mnemonic) {
+        authenticate(
+            secure = secure,
+            onAccess = {
+                encryptMnemonic(mnemonic, pkHex) {
                     onResult(WalletInfo(pk = pkHex, label = ""))
                 }
-            }
-            is SecureType.Passcode -> {
-                encryptMnemonicWithPasscode(mnemonic) {
-                    onResult(WalletInfo(pk = pkHex, label = ""))
-                }
-            }
-        }
+            },
+            onFailure = { throw WalletInvalidAuth() }
+        )
     }
 
     fun getAll(): List<WalletInfo> {
@@ -81,61 +74,59 @@ class WalletStore(activity: FragmentActivity) {
     }
 
     fun exportSecretKey(pk: PublicKey, secure: SecureType, onResult: (ByteArray) -> Unit) {
-        when (secure) {
-            is SecureType.Biometry -> decryptMnemonicWithBiometry {
-                val keys = Mnemonic.toKeyPair(it)
-                onResult(keys.secretKey)
-            }
-            is SecureType.Passcode -> decryptMnemonicWithPasscode {
-                val keys = Mnemonic.toKeyPair(it)
-                onResult(keys.secretKey)
-            }
-        }
+        authenticate(
+            secure = secure,
+            onAccess = {
+                decryptMnemonic(pk) {
+                    val keys = Mnemonic.toKeyPair(it.toTypedArray())
+                    onResult(keys.secretKey)
+                }
+            },
+            onFailure = { throw WalletInvalidAuth() }
+        )
     }
 
     fun backup(pk: PublicKey, secure: SecureType, onResult: (List<String>) -> Unit) {
+        authenticate(
+            secure = secure,
+            onAccess = { decryptMnemonic(pk) { onResult(it) } },
+            onFailure = { throw WalletInvalidAuth() }
+        )
+    }
+
+    private fun authenticate(secure: SecureType, onAccess: () -> Unit, onFailure: () -> Unit) {
         when (secure) {
-            is SecureType.Biometry ->
-                decryptMnemonicWithBiometry { onResult(it.toList()) }
-            is SecureType.Passcode ->
-                decryptMnemonicWithPasscode { onResult(it.toList()) }
+            is SecureType.Biometry -> {
+                val context = activity.get() ?: throw NullPointerException("Activity is null")
+
+                val prompt = BiometricPrompt(
+                    context,
+                    createAuthenticationCallback(
+                        onSuccess = onAccess,
+                        onFailure = onFailure,
+                        onError = onFailure
+                    )
+                )
+
+                prompt.authenticate(createAuthenticationPromptInfo())
+            }
+
+            is SecureType.Passcode -> passcode.validate(secure.value)
         }
     }
 
-    private fun encryptMnemonicWithBiometry(mnemonic: Array<String>, onResult: () -> Unit) {
-        val context = activity.get() ?: throw NullPointerException("Activity is null")
-
-        val prompt = BiometricPrompt(
-            context,
-            createAuthenticationCallback(
-                onSuccess = {
-                    val cipher = it.cipher ?: throw NullPointerException("Cipher is null")
-                }
-            )
-        )
-
+    private fun encryptMnemonic(mnemonic: Array<String>, pk: PublicKey, onResult: () -> Unit) {
         val cipher = getCipher()
-        prompt.authenticate(
-            createAuthenticationPromptInfo(),
-            CryptoObject(cipher)
-        )
+        val secretKey = getOrCreateSecretKey()
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
     }
 
-    private fun decryptMnemonicWithBiometry(onResult: (Array<String>) -> Unit) {
-        val context = activity.get() ?: throw NullPointerException("Activity is null")
-
-    }
-
-    private fun encryptMnemonicWithPasscode(mnemonic: Array<String>, onResult: () -> Unit) {
-
-    }
-
-    private fun decryptMnemonicWithPasscode(onResult: (Array<String>) -> Unit) {
+    private fun decryptMnemonic(pk: PublicKey, onResult: (List<String>) -> Unit) {
 
     }
 
     private fun createAuthenticationCallback(
-        onSuccess: (CryptoObject) -> Unit = {},
+        onSuccess: () -> Unit = {},
         onFailure: () -> Unit = {},
         onError: () -> Unit = {}
     ): BiometricPrompt.AuthenticationCallback {
@@ -148,9 +139,7 @@ class WalletStore(activity: FragmentActivity) {
 
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
-                val crypto = result.cryptoObject
-                if (crypto == null) onError()
-                else onSuccess(crypto)
+                onSuccess()
             }
 
             override fun onAuthenticationFailed() {
@@ -168,41 +157,30 @@ class WalletStore(activity: FragmentActivity) {
             .build()
     }
 
-    private fun generateKeyFromPasscode(passcode: String) {
-        val random = SecureRandom()
-        val salt = ByteArray(256)
-        random.nextBytes(salt)
-
-        val pbKeySpec = PBEKeySpec(passcode.toCharArray(), salt, 10000, 256)
-        val secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
-        val keyBytes = secretKeyFactory.generateSecret(pbKeySpec).encoded
-        val keySpec = SecretKeySpec(keyBytes, "AES")
-
-        val ivRandom = SecureRandom()
-        val iv = ByteArray(16)
-        ivRandom.nextBytes(iv)
-        val ivSpec = IvParameterSpec(iv)
-
-        val cipher = getCipher()
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec)
-        // val encrypted = cipher.doFinal(dataToEncrypt)
-    }
-
-    private fun generateSecretKey(
-        pk: PublicKey,
-        secure: SecureType,
-        keyGenParameterSpec: KeyGenParameterSpec
-    ) {
-        val keyGenerator = KeyGenerator
-            .getInstance(KeyProperties.KEY_ALGORITHM_AES, KeyStoreType)
-        keyGenerator.init(keyGenParameterSpec)
-        keyGenerator.generateKey()
-    }
-
-    private fun getSecretKey(pk: PublicKey, secure: SecureType): Key {
+    private fun getOrCreateSecretKey(): SecretKey {
         val keyStore = KeyStore.getInstance(KeyStoreType)
         keyStore.load(null)
-        return keyStore.getKey(createKeyStoreAlias(pk, secure), null)
+        return if (keyStore.containsAlias(KeyStoreAlias)) {
+            keyStore.getKey(KeyStoreAlias, null) as SecretKey
+        } else {
+            val params = createKeyGenParam()
+            generateSecretKey(params)
+        }
+    }
+
+    private fun generateSecretKey(keyGenParameterSpec: KeyGenParameterSpec): SecretKey {
+        val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, KeyStoreType)
+        keyGenerator.init(keyGenParameterSpec)
+        return keyGenerator.generateKey()
+    }
+
+    private fun createKeyGenParam(): KeyGenParameterSpec {
+        val purposes = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+        return KeyGenParameterSpec.Builder(KeyStoreAlias, purposes)
+            .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+            .setUserAuthenticationRequired(false)
+            .build()
     }
 
     private fun getCipher(): Cipher {
@@ -211,13 +189,6 @@ class WalletStore(activity: FragmentActivity) {
                     + KeyProperties.BLOCK_MODE_CBC + "/"
                     + KeyProperties.ENCRYPTION_PADDING_PKCS7
         )
-    }
-
-    private fun createKeyStoreAlias(pk: PublicKey, secure: SecureType): String {
-        return when (secure) {
-            is SecureType.Biometry -> KeyStoreBiometryAliasPrefix + pk
-            is SecureType.Passcode -> KeyStorePasscodeAliasPrefix + pk
-        }
     }
 
     private fun createMnemonicPrefsAlias(pk: PublicKey): String {
@@ -230,14 +201,10 @@ class WalletStore(activity: FragmentActivity) {
 
     companion object {
         private const val KeyStoreType = "AndroidKeyStore"
-        private const val KeyStorePasscodeAliasPrefix = "passcode."
-        private const val KeyStoreBiometryAliasPrefix = "biometry."
+        private const val KeyStoreAlias = "WalletKey"
 
         private const val PrefsFileName = "native-wallet-info"
         private const val PrefsMnemonicAliasPrefix = "mnemonic."
         private const val PrefsInfoAliasPrefix = "info."
-
-        private const val PrefsPasscodeSaltAlias = "passcode.salt"
-        private const val PrefsPasscodeIvAlias = "passcode.iv"
     }
 }

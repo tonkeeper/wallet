@@ -10,3 +10,6 @@ class WalletNotFoundException(
 class WalletSaveException(
     publicKey: String
 ): Exception("Saving of wallet went wrong ($publicKey)")
+
+class WalletInvalidAuth
+    : Exception("Passcode or Biometry invalid")
