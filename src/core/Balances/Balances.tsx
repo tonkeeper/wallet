@@ -109,7 +109,7 @@ export const Balances: FC = () => {
   }, [address]);
 
   const handleRefresh = useCallback(() => {
-    dispatch(walletActions.refreshBalancesPage());
+    dispatch(walletActions.refreshBalancesPage(true));
   }, [dispatch]);
 
   const otherCurrencies = useMemo(() => {
