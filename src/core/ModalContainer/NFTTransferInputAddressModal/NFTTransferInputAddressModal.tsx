@@ -16,7 +16,7 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
   ({ nftAddress }) => {
     const [inputValue, setInputValue] = React.useState('');
     const [address, setAddress] = useState('');
-    const [isNftAddress, setIsNftAddress] = useState<boolean>(false);
+    const [isSameAddress, setIsSameAddress] = useState<boolean>(false);
     const { isValid } = useValidateAddress(address);
     const [dnsLoading, setDnsLoading] = React.useState(false);
 
@@ -27,11 +27,11 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
     // Don't allow user to paste NFT address
     useLayoutEffect(() => {
       if (compareAddresses(nftAddress, address)) {
-        setIsNftAddress(true);
-      } else if (isNftAddress) {
-        setIsNftAddress(false);
+        setIsSameAddress(true);
+      } else if (isSameAddress) {
+        setIsSameAddress(false);
       }
-    }, [address, isNftAddress, nftAddress]);
+    }, [address, isSameAddress, nftAddress]);
 
     const handleContinue = useCallback(() => {
       nav.replaceModal('NFTTransfer', {
@@ -81,7 +81,6 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
       if (text.endsWith('.ton')) {
         setAddress('');
         const walletAddress = await getAddressByDomain(text);
-        console.log(walletAddress);
 
         if (walletAddress) {
           setAddress(walletAddress);
@@ -127,7 +126,7 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
           </S.Wrap>
           <S.Buttons>
             <Button
-              disabled={!address?.length || !isValid || isNftAddress}
+              disabled={!address?.length || !isValid || isSameAddress}
               onPress={handleContinue}
             >
               {t('continue')}
