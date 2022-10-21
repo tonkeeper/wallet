@@ -364,7 +364,7 @@
     "create_wallet_generating": "Generating wallet...",
     "create_wallet_generated": "Your wallet has\njust been created!",
     "create_wallet_title": "Grab a pen and a piece of paper",
-    "create_wallet_caption": "We strongly recommend you write down the recovery phrase because it’s the only way to have access to and recover your wallet should you lose your device. Do not send it to yourself via email or take a screenshot. It’s safer when kept offline.",
+    "create_wallet_caption": "We strongly recommend you write down the recovery phrase because it’s the only way to have access to and recover your wallet in case of loosing your device. Do not send it to yourself via email or take a screenshot. It’s safer when kept offline.",
     "create_wallet_continue_button": "Continue",
 
     "secret_words_title": "Your recovery phrase",
