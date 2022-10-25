@@ -5,7 +5,7 @@ import { useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { Base64, debugLog, isValidAddress } from '$utils';
-import { store } from '$store';
+import { store, useToastActions } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import {
   openConfirmSending,
@@ -21,7 +21,6 @@ import { getTimeSec } from '$utils/getTimeSec';
 import { TonLoginClient } from '@tonapps/tonlogin-client';
 import { useNavigation } from '$libs/navigation';
 import { useSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
-import { Toast } from '$uikit/Toast/new';
 import { isSignRawParams } from '$utils/isSignRawParams';
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 
@@ -38,6 +37,8 @@ export function useDeeplinkingResolvers() {
   const deeplinking = useDeeplinking();
   const dispatch = useDispatch();
   const nav = useNavigation();
+
+  const toast = useToastActions();
 
   deeplinking.setPrefixes([
     'ton://',
@@ -69,11 +70,11 @@ export function useDeeplinkingResolvers() {
     const comment = query.text ?? '';
 
     if (!isValidAddress(address)) {
-      return Toast.fail(t('transfer_deeplink_address_error'));
+      return toast.fail(t('transfer_deeplink_address_error'));
     }
 
     if (query.amount && Number.isNaN(Number(query.amount))) {
-      return Toast.fail(t('transfer_deeplink_amount_error'));
+      return toast.fail(t('transfer_deeplink_amount_error'));
     }
 
     if (Number(query.amount) > 0) {
@@ -188,7 +189,7 @@ export function useDeeplinkingResolvers() {
 
   deeplinking.add('/v1/txrequest-url/*', async ({ params }) => {
     try {
-      Toast.loading();
+      toast.loading();
 
       const { data } = await axios.get(`https://${params.path}`);
       if (!data) {
@@ -196,7 +197,7 @@ export function useDeeplinkingResolvers() {
       }
 
       if (data?.body?.type !== 'sign-raw-payload') {
-        Toast.hide();
+        toast.hide();
       }
 
       resolveTxType(data);
@@ -207,7 +208,7 @@ export function useDeeplinkingResolvers() {
       }
 
       debugLog('[txrequest-url]', err);
-      Toast.fail(message);
+      toast.fail(message);
     }
   });
 
@@ -221,13 +222,13 @@ export function useDeeplinkingResolvers() {
       resolveTxType(txRequest);
     } catch (err) {
       debugLog('[txrequest-url]', err);
-      Toast.fail(err?.message);
+      toast.fail(err?.message);
     }
   });
 
   deeplinking.add('/ton-login/*', async ({ params }) => {
     try {
-      Toast.loading();
+      toast.loading();
 
       const { data } = await axios.get(`https://${params.path}`);
 
@@ -237,21 +238,21 @@ export function useDeeplinkingResolvers() {
       const tonconnect = new TonLoginClient(data);
       const request = tonconnect.getRequestBody();
 
-      Toast.hide();
+      toast.hide();
       openTonConnect({
         tonconnect,
         hostname,
         request,
       });
     } catch (err) {
-      Toast.hide();
+      toast.hide();
       let message = err?.message;
       if (axios.isAxiosError(err)) {
         message = t('error_network');
       }
 
       debugLog('[TonLogin]:', err);
-      Toast.fail(message);
+      toast.fail(message);
     }
   });
 }

@@ -1,54 +1,51 @@
 import React from 'react';
 import { AttachScreenButton } from '$navigation/AttachScreen';
 import { Button, DevSeparator, Screen } from '$uikit';
-import { Toast } from '$uikit/Toast/new';
+import { ToastSize, useToastActions } from '$store';
 
 export const DevToastScreen: React.FC = () => {
+  const toastActions = useToastActions();
+
   return (
     <Screen>
-      <Screen.Header 
-        title="Typography" 
-        rightContent={
-          <AttachScreenButton />
-        } 
-      />
-      
+      <Screen.Header title="Typography" rightContent={<AttachScreenButton />} />
+
       <Screen.ScrollView>
-        <Button 
+        <Button
           onPress={() => {
-            Toast.fail('Label');
+            toastActions.fail('Label');
           }}
         >
           Show fail
         </Button>
         <DevSeparator />
-        <Button 
+        <Button
           onPress={() => {
-            Toast.fail('Label', { size: 'small' });
+            toastActions.fail('Label', { size: ToastSize.Small });
           }}
         >
           Show small fail
         </Button>
         <DevSeparator />
-        <Button 
+        <Button
           onPress={() => {
-            Toast.success('Label');
+            toastActions.success('Label');
           }}
         >
           Show success
         </Button>
         <DevSeparator />
-        <Button 
+        <Button
           onPress={() => {
-            Toast.loading();
+            toastActions.loading();
           }}
         >
           Show loading
         </Button>
         <DevSeparator />
-        <Button 
+        <Button
           onPress={() => {
-            Toast.hide();
+            toastActions.hide();
           }}
         >
           Hide

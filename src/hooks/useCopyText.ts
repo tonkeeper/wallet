@@ -1,29 +1,22 @@
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import Clipboard from '@react-native-community/clipboard';
-import { toastActions } from '$store/toast';
 import { t } from '$translation';
 import { triggerImpactLight } from '$utils';
-import { Toast } from '$uikit/Toast/new';
+import { useToastStore } from '$store';
 
 export const useCopyText = () => {
-  const dispatch = useDispatch();
-
-  return useCallback(
-    (value?: string | boolean, toastText?: string) => {
-      if (value) {
-        Clipboard.setString(String(value));
-        dispatch(toastActions.success(toastText || t('copied')));
-        triggerImpactLight();
-      }
-    },
-    [dispatch],
-  );
+  return useCallback((value?: string | boolean, toastText?: string) => {
+    if (value) {
+      Clipboard.setString(String(value));
+      useToastStore.getState().actions.success(toastText || t('copied'));
+      triggerImpactLight();
+    }
+  }, []);
 };
 
 export const copyText = (value?: string | boolean) => {
   if (value) {
     Clipboard.setString(String(value));
-    Toast.success(t('copied'));
+    useToastStore.getState().actions.success(t('copied'));
   }
 };
