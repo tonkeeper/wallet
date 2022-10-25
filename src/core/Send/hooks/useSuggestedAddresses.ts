@@ -104,7 +104,8 @@ export const useSuggestedAddresses = () => {
             compareAddresses(favorite.address, action.recipient.address),
           ) !== -1;
 
-        if (hiddenRecentAddresses.includes(action.recipient.address) || isFavorite) {
+        const friendlyAddress = new TonWeb.Address(action.recipient.address).toString(true, true, true)
+        if (hiddenRecentAddresses.includes(friendlyAddress) || isFavorite) {
           return false;
         }
 

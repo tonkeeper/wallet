@@ -15,6 +15,7 @@ export type LoadEventsAction = PayloadAction<{
   isLoadMore?: boolean;
   isReplace?: boolean;
   isSilent?: boolean;
+  ignoreCache?: boolean;
 }>;
 export type SetEventsAction = PayloadAction<{
   events: EventModel[];

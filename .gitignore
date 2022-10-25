@@ -3,6 +3,7 @@
 # OSX
 #
 .DS_Store
+.env
 
 bridge.html
 

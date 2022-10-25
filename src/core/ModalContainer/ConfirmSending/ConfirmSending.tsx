@@ -8,7 +8,7 @@ import { BottomSheet, Button, Icon, List, ListCell, Text } from '$uikit';
 import * as S from './ConfirmSending.style';
 import { useTranslator } from '$hooks';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
-import { walletActions, walletSelector } from '$store/wallet';
+import {walletActions, walletBalancesSelector, walletSelector, walletWalletSelector} from '$store/wallet';
 import { formatCryptoCurrency } from '$utils/currency';
 import { getTokenConfig } from '$shared/dynamicConfig';
 import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
@@ -19,7 +19,7 @@ import {
 } from '$navigation';
 import { ns, maskifyAddress } from '$utils';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
-import { favoritesSelector } from '$store/favorites';
+import {favoritesFavoritesSelector, favoritesSelector} from '$store/favorites';
 
 export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
   const {
@@ -42,9 +42,10 @@ export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
 
   const [isSent, setSent] = useState(false);
   const [isSending, setSending] = useState(false);
-  const { balances, wallet } = useSelector(walletSelector);
+  const balances = useSelector(walletBalancesSelector);
+  const wallet = useSelector(walletWalletSelector);
   const [isClosed, setClosed] = useState(false);
-  const { favorites } = useSelector(favoritesSelector);
+  const favorites = useSelector(favoritesFavoritesSelector);
 
   const favoriteName = useMemo(
     () => favorites.find((favorite) => favorite.address === address)?.name,

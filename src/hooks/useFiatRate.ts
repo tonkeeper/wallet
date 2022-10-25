@@ -3,9 +3,12 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import { CryptoCurrencies, CryptoCurrency } from '$shared/constants';
-import { ratesSelector } from '$store/rates';
+import {
+  ratesRatesSelector,
+  ratesYesterdayRatesSelector,
+} from '$store/rates';
 import { RatesMap } from '$store/rates/interface';
-import { mainSelector } from '$store/main';
+import { fiatCurrencySelector } from '$store/main';
 
 export function getRate(
   rates: RatesMap,
@@ -21,7 +24,7 @@ export function getRate(
   }
 
   fiatCurrency = fiatCurrency.toUpperCase();
-  const currencyUpper = currency.toUpperCase();
+  const currencyUpper = currency?.toUpperCase();
   if (currencyUpper === CryptoCurrencies.Btc.toUpperCase() && rates[fiatCurrency]) {
     result = +rates[fiatCurrency];
   } else if (rates[currencyUpper]) {
@@ -35,8 +38,9 @@ export function getRate(
 }
 
 export function useFiatRate(currency: CryptoCurrency) {
-  const { rates, yesterdayRates } = useSelector(ratesSelector);
-  const { fiatCurrency } = useSelector(mainSelector);
+  const rates = useSelector(ratesRatesSelector);
+  const yesterdayRates = useSelector(ratesYesterdayRatesSelector);
+  const fiatCurrency = useSelector(fiatCurrencySelector);
 
   return useMemo(() => {
     return {

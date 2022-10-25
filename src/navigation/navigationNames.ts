@@ -37,6 +37,7 @@ export enum MainStackRouteNames {
   SetupNotifications = 'ImportSetupNotifications',
   Jetton = 'Jetton',
   JettonsList = 'JettonsList',
+  EditConfig = 'EditConfig',
 }
 
 export enum TabsStackRouteNames {
