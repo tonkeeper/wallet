@@ -2,13 +2,13 @@ import { useCallback } from 'react';
 import Clipboard from '@react-native-community/clipboard';
 import { t } from '$translation';
 import { triggerImpactLight } from '$utils';
-import { useToastStore } from '$store';
+import { Toast } from '$store';
 
 export const useCopyText = () => {
   return useCallback((value?: string | boolean, toastText?: string) => {
     if (value) {
       Clipboard.setString(String(value));
-      useToastStore.getState().actions.success(toastText || t('copied'));
+      Toast.success(toastText || t('copied'));
       triggerImpactLight();
     }
   }, []);
@@ -17,6 +17,6 @@ export const useCopyText = () => {
 export const copyText = (value?: string | boolean) => {
   if (value) {
     Clipboard.setString(String(value));
-    useToastStore.getState().actions.success(t('copied'));
+    Toast.success(t('copied'));
   }
 };

@@ -13,7 +13,7 @@ import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { TouchableOpacity } from 'react-native';
 import { openReplaceDomainAddress } from '$navigation';
-import { useToastStore } from '$store';
+import { Toast } from '$store';
 
 const TonWeb = require('tonweb');
 
@@ -176,7 +176,7 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
             }
 
             const toastText = walletAddress ? t('dns_address_linked') : t('dns_address_unlinked');
-            useToastStore.getState().actions.success(toastText);
+            Toast.success(toastText);
           }
         } as any}
         onCloseModal={() => {

@@ -8,7 +8,7 @@ import { debugLog, lowerCaseFirstLetter, ns, truncateDecimal } from '$utils';
 import { t } from '$translation';
 import { AccountEvent } from 'tonapi-sdk-js';
 import { SignRawAction } from './SignRawAction';
-import { store, useToastActions } from '$store';
+import { store, Toast } from '$store';
 import * as S from '../NFTOperations.styles';
 import { Modal, useNavigation } from '$libs/navigation';
 import { Ton } from '$libs/Ton';
@@ -135,8 +135,6 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 export const useSignRawModal = () => {
   const nav = useNavigation();
 
-  const toast = useToastActions();
-
   const open = async (params: SignRawParams, options: TxBodyOptions) => {
     const wallet = store.getState().wallet.wallet;
     if (!wallet) {
@@ -144,7 +142,7 @@ export const useSignRawModal = () => {
     }
 
     try {
-      toast.loading();
+      Toast.loading();
 
       const operations = new NFTOperations(wallet);
       const action = await operations.signRaw(params);
@@ -152,14 +150,14 @@ export const useSignRawModal = () => {
       let accountEvent: AccountEvent | null = null;
       try {
         accountEvent = await action.estimateTx();
-        toast.hide();
+        Toast.hide();
       } catch (err) {
         debugLog('[SignRaw]: estimateTx error', JSON.stringify(err));
 
         const tonapiError = err?.response?.data?.error;
         const errorMessage = tonapiError ?? `no response; status code: ${err.status};`;
 
-        toast.fail(`Emulation error: ${errorMessage}`, { duration: 5000 });
+        Toast.fail(`Emulation error: ${errorMessage}`, { duration: 5000 });
       }
 
       nav.openModal('SignRaw', {
@@ -170,7 +168,7 @@ export const useSignRawModal = () => {
       });
     } catch (err) {
       debugLog('[SignRaw]:', err);
-      toast.fail('Operation error, please make sure the params is correct');
+      Toast.fail('Operation error, please make sure the params is correct');
     }
   };
 

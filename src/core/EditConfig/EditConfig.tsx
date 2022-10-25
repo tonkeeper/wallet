@@ -5,7 +5,7 @@ import { ns } from '$utils';
 import Animated from 'react-native-reanimated';
 import { updateServerConfig } from '$shared/constants';
 import { MainDB } from '$database';
-import { useToastStore } from '$store';
+import { Toast } from '$store';
 
 export const EditConfig: React.FC = () => {
   const [config, setConfig] = useState<string>('');
@@ -16,7 +16,7 @@ export const EditConfig: React.FC = () => {
       MainDB.setDevConfig(config);
       updateServerConfig(config);
     } catch (e) {
-      useToastStore.getState().actions.fail(e);
+      Toast.fail(e);
     }
   }, [config]);
 

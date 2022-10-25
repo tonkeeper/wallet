@@ -13,7 +13,7 @@ import { FullWindowOverlay } from 'react-native-screens';
 import { useTheme } from '$hooks';
 import { Loader, Text } from '$uikit';
 import { deviceWidth, ns } from '$utils';
-import { useToastStore } from '$store';
+import { Toast, useToastStore } from '$store';
 
 export enum ToastAnimationState {
   SHOWING = 'SHOWING',
@@ -35,7 +35,7 @@ export const ToastComponent = memo(() => {
       state.value = ToastAnimationState.HIDING;
       cancelAnimation(translate);
 
-      const clearToast = () => useToastStore.getState().actions.clear();
+      const clearToast = () => Toast.clear();
       translate.value = withTiming(0, { duration: 200 }, (isFinished) => {
         if (isFinished) {
           runOnJS(clearToast)();

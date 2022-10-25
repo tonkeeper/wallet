@@ -5,7 +5,7 @@ import { useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { Base64, debugLog, isValidAddress } from '$utils';
-import { store, useToastActions } from '$store';
+import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import {
   openConfirmSending,
@@ -38,8 +38,6 @@ export function useDeeplinkingResolvers() {
   const dispatch = useDispatch();
   const nav = useNavigation();
 
-  const toast = useToastActions();
-
   deeplinking.setPrefixes([
     'ton://',
     'tonkeeper://',
@@ -70,11 +68,11 @@ export function useDeeplinkingResolvers() {
     const comment = query.text ?? '';
 
     if (!isValidAddress(address)) {
-      return toast.fail(t('transfer_deeplink_address_error'));
+      return Toast.fail(t('transfer_deeplink_address_error'));
     }
 
     if (query.amount && Number.isNaN(Number(query.amount))) {
-      return toast.fail(t('transfer_deeplink_amount_error'));
+      return Toast.fail(t('transfer_deeplink_amount_error'));
     }
 
     if (Number(query.amount) > 0) {
@@ -189,7 +187,7 @@ export function useDeeplinkingResolvers() {
 
   deeplinking.add('/v1/txrequest-url/*', async ({ params }) => {
     try {
-      toast.loading();
+      Toast.loading();
 
       const { data } = await axios.get(`https://${params.path}`);
       if (!data) {
@@ -197,7 +195,7 @@ export function useDeeplinkingResolvers() {
       }
 
       if (data?.body?.type !== 'sign-raw-payload') {
-        toast.hide();
+        Toast.hide();
       }
 
       resolveTxType(data);
@@ -208,7 +206,7 @@ export function useDeeplinkingResolvers() {
       }
 
       debugLog('[txrequest-url]', err);
-      toast.fail(message);
+      Toast.fail(message);
     }
   });
 
@@ -222,13 +220,13 @@ export function useDeeplinkingResolvers() {
       resolveTxType(txRequest);
     } catch (err) {
       debugLog('[txrequest-url]', err);
-      toast.fail(err?.message);
+      Toast.fail(err?.message);
     }
   });
 
   deeplinking.add('/ton-login/*', async ({ params }) => {
     try {
-      toast.loading();
+      Toast.loading();
 
       const { data } = await axios.get(`https://${params.path}`);
 
@@ -238,21 +236,21 @@ export function useDeeplinkingResolvers() {
       const tonconnect = new TonLoginClient(data);
       const request = tonconnect.getRequestBody();
 
-      toast.hide();
+      Toast.hide();
       openTonConnect({
         tonconnect,
         hostname,
         request,
       });
     } catch (err) {
-      toast.hide();
+      Toast.hide();
       let message = err?.message;
       if (axios.isAxiosError(err)) {
         message = t('error_network');
       }
 
       debugLog('[TonLogin]:', err);
-      toast.fail(message);
+      Toast.fail(message);
     }
   });
 }
