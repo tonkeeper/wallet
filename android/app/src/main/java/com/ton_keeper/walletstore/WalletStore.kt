@@ -1,24 +1,21 @@
 package com.ton_keeper.walletstore
 
 import android.content.Context
-import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyProperties
 import android.util.Base64
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.FragmentActivity
 import com.ton_keeper.crypto.Mnemonic
 import com.ton_keeper.crypto.toHex
+import com.ton_keeper.walletstore.keystore.getCipher
+import com.ton_keeper.walletstore.keystore.getOrCreateSecretKey
 import com.ton_keeper.walletstore.mnemonic.MnemonicSerializer
 import com.ton_keeper.walletstore.passcode.PasscodeManager
 import com.ton_keeper.walletstore.walletinfo.PublicKey
 import com.ton_keeper.walletstore.walletinfo.WalletInfo
 import com.ton_keeper.walletstore.walletinfo.WalletInfoSerializer
 import java.lang.ref.WeakReference
-import java.security.KeyStore
 import javax.crypto.Cipher
-import javax.crypto.KeyGenerator
-import javax.crypto.SecretKey
 
 class WalletStore(activity: FragmentActivity) {
 
@@ -110,13 +107,21 @@ class WalletStore(activity: FragmentActivity) {
                 prompt.authenticate(createAuthenticationPromptInfo())
             }
 
-            is SecureType.Passcode -> passcode.validate(secure.value)
+            is SecureType.Passcode -> {
+                if (passcode.isPasscodeExist()) {
+                    passcode.validate(secure.value)
+                    onAccess()
+                } else {
+                    passcode.update(secure.value)
+                    onAccess()
+                }
+            }
         }
     }
 
     private fun encryptMnemonic(mnemonic: List<String>, pk: PublicKey) {
         val cipher = getCipher()
-        val secretKey = getOrCreateSecretKey()
+        val secretKey = getOrCreateSecretKey(KeyStoreType, KeyStoreAlias)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
 
         val mnemonicStr = MnemonicSerializer.serializeToString(mnemonic)
@@ -136,7 +141,7 @@ class WalletStore(activity: FragmentActivity) {
         val encrypted = Base64.decode(encoded, Base64.DEFAULT)
 
         val cipher = getCipher()
-        val secretKey = getOrCreateSecretKey()
+        val secretKey = getOrCreateSecretKey(KeyStoreType, KeyStoreAlias)
         cipher.init(Cipher.DECRYPT_MODE, secretKey)
 
         val mnemonicStr = String(cipher.doFinal(encrypted))
@@ -173,40 +178,6 @@ class WalletStore(activity: FragmentActivity) {
             .setSubtitle("Log in using your biometric credential")
             .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
             .build()
-    }
-
-    private fun getOrCreateSecretKey(): SecretKey {
-        val keyStore = KeyStore.getInstance(KeyStoreType)
-        keyStore.load(null)
-        return if (keyStore.containsAlias(KeyStoreAlias)) {
-            keyStore.getKey(KeyStoreAlias, null) as SecretKey
-        } else {
-            val params = createKeyGenParam()
-            generateSecretKey(params)
-        }
-    }
-
-    private fun generateSecretKey(keyGenParameterSpec: KeyGenParameterSpec): SecretKey {
-        val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, KeyStoreType)
-        keyGenerator.init(keyGenParameterSpec)
-        return keyGenerator.generateKey()
-    }
-
-    private fun createKeyGenParam(): KeyGenParameterSpec {
-        val purposes = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-        return KeyGenParameterSpec.Builder(KeyStoreAlias, purposes)
-            .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-            .setUserAuthenticationRequired(false)
-            .build()
-    }
-
-    private fun getCipher(): Cipher {
-        return Cipher.getInstance(
-            KeyProperties.KEY_ALGORITHM_AES + "/"
-                    + KeyProperties.BLOCK_MODE_CBC + "/"
-                    + KeyProperties.ENCRYPTION_PADDING_PKCS7
-        )
     }
 
     private fun createMnemonicPrefsAlias(pk: PublicKey): String {
