@@ -1,54 +1,54 @@
 package com.ton_keeper.walletstore.passcode
 
 import android.content.Context
-import android.security.keystore.KeyProperties
+import android.util.Base64
 import androidx.fragment.app.FragmentActivity
-import java.security.SecureRandom
+import com.ton_keeper.walletstore.WalletInvalidAuth
+import com.ton_keeper.walletstore.WalletSaveException
+import com.ton_keeper.walletstore.keystore.getCipher
+import com.ton_keeper.walletstore.keystore.getOrCreateSecretKey
 import javax.crypto.Cipher
-import javax.crypto.SecretKeyFactory
-import javax.crypto.spec.IvParameterSpec
-import javax.crypto.spec.PBEKeySpec
-import javax.crypto.spec.SecretKeySpec
 
 class PasscodeManager(activity: FragmentActivity) {
 
     private val prefs = activity.getSharedPreferences(PrefsFileName, Context.MODE_PRIVATE)
 
     fun validate(passcode: String): Boolean {
-        // todo
-        return true
+        val saved = decryptPasscode()
+        return passcode == saved
     }
 
     fun update(passcode: String) {
-
+        encryptPasscode(passcode)
     }
 
-    private fun getCipherFromPasscode(passcode: String): Cipher {
-        val random = SecureRandom()
-        val salt = ByteArray(256)
-        random.nextBytes(salt)
+    fun isPasscodeExist(): Boolean {
+        return prefs.contains(PrefsPasscodeAlias)
+    }
 
-        val pbKeySpec = PBEKeySpec(passcode.toCharArray(), salt, 10000, 256)
-        val secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
-        val key = secretKeyFactory.generateSecret(pbKeySpec)
-        val keySpec = SecretKeySpec(key.encoded, "AES")
+    private fun encryptPasscode(passcode: String) {
+        val cipher = getCipher()
+        val secretKey = getOrCreateSecretKey(KeyStoreType, KeyStoreAlias)
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
 
-        val ivRandom = SecureRandom()
-        val iv = ByteArray(16)
-        ivRandom.nextBytes(iv)
-        val ivSpec = IvParameterSpec(iv)
+        val encrypted = cipher.doFinal(passcode.toByteArray())
+        val encoded = Base64.encodeToString(encrypted, Base64.DEFAULT)
+
+        val result = prefs.edit().putString(PrefsPasscodeAlias, encoded).commit()
+        if (!result) throw WalletSaveException()
+    }
+
+    private fun decryptPasscode(): String {
+        if (prefs.contains(PrefsPasscodeAlias).not()) throw WalletInvalidAuth()
+
+        val encoded = prefs.getString(PrefsPasscodeAlias, null) ?: throw WalletInvalidAuth()
+        val encrypted = Base64.decode(encoded, Base64.DEFAULT)
 
         val cipher = getCipher()
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec)
-        return cipher
-    }
+        val secretKey = getOrCreateSecretKey(KeyStoreType, KeyStoreAlias)
+        cipher.init(Cipher.DECRYPT_MODE, secretKey)
 
-    private fun getCipher(): Cipher {
-        return Cipher.getInstance(
-            KeyProperties.KEY_ALGORITHM_AES + "/"
-                    + KeyProperties.BLOCK_MODE_CBC + "/"
-                    + KeyProperties.ENCRYPTION_PADDING_PKCS7
-        )
+        return String(cipher.doFinal(encrypted))
     }
 
     companion object {
@@ -56,7 +56,6 @@ class PasscodeManager(activity: FragmentActivity) {
         private const val KeyStoreAlias = "PasscodeKey"
 
         private const val PrefsFileName = "native-wallet-passcode"
-        private const val PrefsPasscodeSaltAlias = "passcode.salt"
-        private const val PrefsPasscodeIvAlias = "passcode.iv"
+        private const val PrefsPasscodeAlias = "passcode"
     }
 }
