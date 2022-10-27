@@ -132,6 +132,26 @@ export class TonWallet {
     return addresses;
   }
 
+  async getSeqno(address: string): Promise<number> {
+    try {
+      const endpoint = getServerConfig('tonapiIOEndpoint');
+      const response: any = await axios.get(`${endpoint}/v1/wallet/getSeqno`, {
+        headers: {
+          Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+        },
+        params: {
+          account: address,
+        },
+      });
+      return response.data?.seqno ?? 0;
+    } catch (err) {
+      if (err.response.status === 400) {
+        return 0;
+      }
+      throw err;
+    }
+  }
+
   async createSubscription(
     unlockedVault: UnlockedVault | Vault,
     beneficiaryAddress: string,
@@ -163,7 +183,8 @@ export class TonWallet {
 
     const subscriptionAddress = await subscription.getAddress();
 
-    const seqno = await unlockedVault.tonWallet.methods.seqno().call();
+    const addr = Ton.formatAddress(walletAddress);
+    const seqno = await this.getSeqno(addr);
 
     const params: any = {
       seqno: seqno || 0,
@@ -209,14 +230,15 @@ export class TonWallet {
       return;
     }
 
+    let walletAddress = await this.getAddress();
     let myinfo: any;
     try {
-      myinfo = await this.getWalletInfo(await this.getAddress());
+      myinfo = await this.getWalletInfo(walletAddress);
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
 
-    const seqno = await unlockedVault.tonWallet.methods.seqno().call();
+    const seqno = await this.getSeqno(walletAddress);
     const tx = await unlockedVault.tonWallet.methods.removePlugin({
       secretKey: await unlockedVault.getTonPrivateKey(),
       amount: Ton.toNano('0.007'),
@@ -300,11 +322,10 @@ export class TonWallet {
     vault: Vault,
     text: string,
   ) {
-    let myinfo: any;
+    let walletAddress = await this.getAddress();
     let seqno: number;
     try {
-      myinfo = await this.tonweb.provider.getWalletInfo(await this.getAddress());
-      seqno = myinfo.seqno ?? 0; // null for uninitialized -> 0
+      seqno = await this.getSeqno(walletAddress);
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
@@ -364,7 +385,7 @@ export class TonWallet {
         ? await this.getAddressByWalletVersion(walletVersion)
         : await this.getAddress();
       myinfo = await this.getWalletInfo(fromAddress);
-      seqno = (await wallet.methods.seqno().call()) || 0;
+      seqno = await this.getSeqno(fromAddress);
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
@@ -448,11 +469,9 @@ export class TonWallet {
   }
 
   async estimateFee(address: string, amount: string, vault: Vault, payload = '') {
-    let myinfo: any;
     let seqno: number;
     try {
-      myinfo = await this.tonweb.provider.getWalletInfo(await this.getAddress());
-      seqno = myinfo.seqno ?? 0; // null for uninitialized -> 0
+      seqno = await this.getSeqno(await this.getAddress());
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
@@ -502,7 +521,7 @@ export class TonWallet {
         ? await this.getAddressByWalletVersion(walletVersion)
         : await this.getAddress();
       myinfo = await this.getWalletInfo(fromAddress);
-      seqno = (await wallet.methods.seqno().call()) || 0;
+      seqno = await this.getSeqno(fromAddress);
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }

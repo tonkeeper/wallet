@@ -1,7 +1,7 @@
 
 import { useAllAddresses } from '$hooks/useAllAddresses';
 import { openLinkingDomain } from '$navigation';
-import { walletSelector } from '$store/wallet';
+import {walletSelector, walletVersionSelector, walletWalletSelector} from '$store/wallet';
 import { t } from '$translation';
 import { Button, Text } from '$uikit';
 import { debugLog, maskifyAddress } from '$utils';
@@ -56,10 +56,11 @@ interface LinkingDomainButtonProps {
 }
 
 export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) => {
-  const { wallet, version } = useSelector(walletSelector);
+  const wallet = useSelector(walletWalletSelector);
+  const version = useSelector(walletVersionSelector);
   const allAddesses = useAllAddresses();
   const [loading, setLoading] = React.useState(false);
-  const [record, setRecord] = React.useState<DNSRecord>({ 
+  const [record, setRecord] = React.useState<DNSRecord>({
     ownerAddress: props.ownerAddress,
   });
 

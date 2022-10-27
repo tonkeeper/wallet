@@ -1,20 +1,15 @@
 import React from 'react';
 import { AttachScreenButton } from '$navigation/AttachScreen';
 import { Button, DevSeparator, Screen } from '$uikit';
-import { Toast } from '$uikit/Toast/new';
+import { Toast, ToastSize } from '$store';
 
 export const DevToastScreen: React.FC = () => {
   return (
     <Screen>
-      <Screen.Header 
-        title="Typography" 
-        rightContent={
-          <AttachScreenButton />
-        } 
-      />
-      
+      <Screen.Header title="Typography" rightContent={<AttachScreenButton />} />
+
       <Screen.ScrollView>
-        <Button 
+        <Button
           onPress={() => {
             Toast.fail('Label');
           }}
@@ -22,15 +17,15 @@ export const DevToastScreen: React.FC = () => {
           Show fail
         </Button>
         <DevSeparator />
-        <Button 
+        <Button
           onPress={() => {
-            Toast.fail('Label', { size: 'small' });
+            Toast.fail('Label', { size: ToastSize.Small });
           }}
         >
           Show small fail
         </Button>
         <DevSeparator />
-        <Button 
+        <Button
           onPress={() => {
             Toast.success('Label');
           }}
@@ -38,7 +33,7 @@ export const DevToastScreen: React.FC = () => {
           Show success
         </Button>
         <DevSeparator />
-        <Button 
+        <Button
           onPress={() => {
             Toast.loading();
           }}
@@ -46,7 +41,7 @@ export const DevToastScreen: React.FC = () => {
           Show loading
         </Button>
         <DevSeparator />
-        <Button 
+        <Button
           onPress={() => {
             Toast.hide();
           }}

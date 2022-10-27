@@ -19,6 +19,7 @@ import {
   getServerConfig,
   ServerConfigVersion,
   setServerConfig,
+  updateServerConfig,
 } from '$shared/constants';
 import {
   getAddedCurrencies,
@@ -109,6 +110,7 @@ function* initWorker() {
 
 export function* initHandler(isTestnet: boolean, canRetry = false) {
   let serverConfig = yield call(getSavedServerConfig, isTestnet);
+  let devConfig = yield call(MainDB.getDevConfig);
   const isHasCache = !!serverConfig;
   let needRefreshConfig = true;
   if (!serverConfig || serverConfig._version !== ServerConfigVersion) {
@@ -158,6 +160,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   }
 
   setServerConfig(serverConfig, isTestnet);
+  updateServerConfig(devConfig);
 
   initStats();
 

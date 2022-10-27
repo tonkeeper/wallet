@@ -11,6 +11,7 @@ export interface JettonsState {
   excludedJettons: ExcludedJettons;
   showJettons: boolean;
   isEnabled: boolean;
+  isMetaLoading: { [key: string]: boolean };
 }
 
 export type LoadJettonsAction = PayloadAction<undefined>;

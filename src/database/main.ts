@@ -83,6 +83,18 @@ export class MainDB {
     await AsyncStorage.setItem('accent', key);
   }
 
+  static async setDevConfig(config: string) {
+    await AsyncStorage.setItem('dev_config', config);
+  }
+
+  static async removeDevConfig() {
+    await AsyncStorage.removeItem('dev_config');
+  }
+
+  static async getDevConfig() {
+    return await AsyncStorage.getItem('dev_config');
+  }
+
   static async getAccent(): Promise<AccentKey> {
     const accent = await AsyncStorage.getItem('accent');
     return (accent as AccentKey) || AccentKey.default;

@@ -50,6 +50,18 @@ export function setServerConfig(data: any, isTestnet: boolean) {
   };
 }
 
+export function updateServerConfig(jsonConfig: any) {
+  if (!jsonConfig) return;
+  try {
+    Object.entries(JSON.parse(jsonConfig)).map(([key, value]) => {
+      if (config) {
+        config[key] = value;
+      }
+    });
+  } catch (e) {
+  }
+}
+
 export function isServerConfigLoaded() {
   return !!config;
 }

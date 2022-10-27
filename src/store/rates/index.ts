@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import {createSelector, createSlice} from '@reduxjs/toolkit';
 
 import { RootState } from '$store/rootReducer';
 import { LoadRatesAction, RatesState, SetRatesAction, SetTonChartAction } from '$store/rates/interface';
@@ -40,3 +40,9 @@ export const { actions, reducer } = createSlice({
 export { reducer as ratesReducer, actions as ratesActions };
 
 export const ratesSelector = (state: RootState) => state.rates;
+export const ratesRatesSelector = createSelector(ratesSelector, (state) => state.rates);
+export const ratesChartsSelector = createSelector(ratesSelector, (state) => state.charts);
+export const ratesYesterdayRatesSelector = createSelector(
+  ratesSelector,
+  (state) => state.yesterdayRates,
+);

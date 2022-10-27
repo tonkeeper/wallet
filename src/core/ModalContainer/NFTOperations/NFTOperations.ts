@@ -81,7 +81,7 @@ export class NFTOperations {
       : await wallet.getAddress();
 
     const amount = Ton.fromNano(params.amount);
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno(ownerAddress.toString(false));
 
     let stateInit: Cell;
     let nftCollectionAddress: string;
@@ -130,7 +130,7 @@ export class NFTOperations {
       ? new TonWeb.utils.Address(params.ownerAddress)
       : await wallet.getAddress();
 
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno(ownerAddress.toString(false));
 
     const amount = this.toNano(params.amount);
     const forwardAmount = this.toNano(params.forwardAmount);
@@ -172,7 +172,7 @@ export class NFTOperations {
       wallet = await this.getWalletByAddress(ownerAddress);
     }
 
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno((await wallet.getAddress()).toString(false));
     const responseAddress = await wallet.getAddress();
 
     const forwardPayload = new TextEncoder().encode(params.text ?? '');
@@ -204,7 +204,7 @@ export class NFTOperations {
       params.nftCollectionAddress,
     );
     const wallet = await this.getWalletByAddress(ownerAddress);
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno(ownerAddress);
 
     const amount = this.toNano(params.amount);
 
@@ -234,7 +234,7 @@ export class NFTOperations {
     const sale = new NftSale(wallet.provider, {});
     const payload = await sale.createCancelBody({});
     const amount = this.toNano(params.amount);
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno(params.ownerAddress);
 
     return this.methods(wallet, {
       toAddress: saleAddress,
@@ -264,7 +264,7 @@ export class NFTOperations {
 
     const createdStateInit = await sale.createStateInit();
     const amount = this.toNano(params.amount);
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno(ownerAddress);
 
     const body = new TonWeb.boc.Cell();
     body.bits.writeUint(1, 32); // OP deploy new auction
@@ -284,7 +284,7 @@ export class NFTOperations {
   public async salePlaceGetGems(params: NftSalePlaceGetgemsParams) {
     const wallet = this.getCurrentWallet();
     const amount = this.toNano(params.deployAmount);
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno((await wallet.getAddress()).toString(false));
 
     if (Number(params.forwardAmount) < 1) {
       throw new NFTOperationError('forwardAmount must be greater than 0');
@@ -329,7 +329,7 @@ export class NFTOperations {
 
   public async deploy(params: DeployParams) {
     const wallet = this.getCurrentWallet();
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno((await wallet.getAddress()).toString(false));
 
     const stateInitCell = TonWeb.boc.Cell.oneFromBoc(params.stateInitHex);
     const hashBytes = await stateInitCell.hash();
@@ -366,7 +366,7 @@ export class NFTOperations {
 
   public async signRaw(params: SignRawParams) {
     const wallet = this.getCurrentWallet();
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno((await wallet.getAddress()).toString(false));
 
     const sendMode = 3;
     const signingMessage = (wallet as any).createSigningMessage(seqno);
@@ -494,8 +494,8 @@ export class NFTOperations {
   // Utils
   //
 
-  private async getSeqno(wallet: WalletContract) {
-    const seqno = await wallet.methods.seqno().call();
+  private async getSeqno(address: string) {
+    const seqno = await this.wallet.ton.getSeqno(address);
     return seqno ?? 0;
   }
 
@@ -594,7 +594,9 @@ export class NFTOperations {
       throw new NFTOperationError('Wrong owner address');
     }
 
-    return this.wallet.vault.tonWalletByVersion(version);
+    const wallet = this.wallet.vault.tonWalletByVersion(version);
+    await wallet.getAddress();
+    return wallet;
   }
 
   private getCurrentWallet(): WalletContract {
