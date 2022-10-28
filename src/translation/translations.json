@@ -120,6 +120,7 @@
     "nft_single_nft": "Single NFT",
     "nft_on_sale": "On sale",
     "nft_on_sale_text": "NFT is on sale at the marketplace now. For transfer, you should remove it from sale first.",
+    "dns_on_sale_text": "Domain is on sale at the marketplace now. For transfer, you should remove it from sale first.",
 
     "nft_transfer_description": "The NFT will be sent to this address. Be careful when sending an NFT to another user.",
 
@@ -667,7 +668,8 @@
     "nft_marketplaces_title": "NFT маркеты",
     "nft_single_nft": "Одиночный NFT",
     "nft_on_sale": "На продаже",
-    "nft_on_sale_text": "НФТ сейчас выставлен на продажу на маркете. Чтобы передать, необходимо сначала снять его с продажи.",
+    "nft_on_sale_text": "NFT сейчас выставлен на продажу на маркете. Чтобы передать, необходимо сначала снять его с продажи.",
+    "dns_on_sale_text": "Домен сейчас выставлен на продажу на маркете. Чтобы передать, необходимо сначала снять его с продажи.",
 
     "nft_transfer_description": "NFT будет отправлен на этот адрес. Будьте осторожны при отправке NFT, который вы отправляете другому пользователю.",
 
