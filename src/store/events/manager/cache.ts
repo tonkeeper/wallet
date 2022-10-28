@@ -20,16 +20,11 @@ export class Cache {
   }
 
   async get() {
-    const raw = await AsyncStorage.getItem(`${this.walletName}_events`);
-    try {
-      return JSON.parse(raw || '') as EventModel[];
-    } catch (e) {
-      return [];
-    }
+    return EventsDB.getEvents();
   }
 
   async save(events: EventModel[]) {
-    await AsyncStorage.setItem(`${this.walletName}_events`, JSON.stringify(events));
+    return EventsDB.saveEvents(events);
   }
 
   async getNextFromList(providerName: string): Promise<NextFromPair[]> {

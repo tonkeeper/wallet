@@ -1,30 +1,36 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { StyleSheet, View, Pressable } from 'react-native';
-import Animated, { cancelAnimation, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  cancelAnimation,
+  interpolate,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
-import { observer } from 'mobx-react-lite';
-import { reaction } from 'mobx';
 import { useTheme } from '$hooks';
 import { Loader, Text } from '$uikit';
 import { deviceWidth, ns } from '$utils';
-import { Toast } from './ToastStore';
+import { Toast, useToastStore } from '$store';
 
 export enum ToastAnimationState {
-  SHOWING = "SHOWING",
-  SHOWN = "SHOWN",
-  HIDING = "HIDING",
-  HIDDEN = "HIDDEN",
-};
+  SHOWING = 'SHOWING',
+  SHOWN = 'SHOWN',
+  HIDING = 'HIDING',
+  HIDDEN = 'HIDDEN',
+}
 
-export const ToastComponent = observer(() => {
-  const { toast } = Toast;
+export const ToastComponent = memo(() => {
   const state = useSharedValue(ToastAnimationState.HIDDEN);
   const safeArea = useSafeAreaInsets();
-  const translate = useSharedValue(0); 
+  const translate = useSharedValue(0);
   const theme = useTheme();
- 
-  const animatedHide = () => {
+
+  const toast = useToastStore(({ currentToast }) => currentToast);
+
+  const animatedHide = useCallback(() => {
     if (state.value !== ToastAnimationState.HIDDEN) {
       state.value = ToastAnimationState.HIDING;
       cancelAnimation(translate);
@@ -37,20 +43,20 @@ export const ToastComponent = observer(() => {
         }
       });
     }
-  }
+  }, [state, translate]);
 
   React.useEffect(() => {
-    const disposerHide = reaction(
-      () => Toast.shouldHide, 
+    const disposerHide = useToastStore.subscribe(
+      (s) => s.shouldHide,
       (value, prevValue) => {
         if (value && value !== prevValue) {
           animatedHide();
         }
-      }
+      },
     );
 
-    const disposerShow = reaction(
-      () => !!Toast.toast, 
+    const disposerShow = useToastStore.subscribe(
+      (s) => !!s.currentToast,
       (value, prevValue) => {
         if (value && value !== prevValue) {
           if (state.value !== ToastAnimationState.SHOWN) {
@@ -64,7 +70,7 @@ export const ToastComponent = observer(() => {
             });
           }
         }
-      }
+      },
     );
 
     return () => {
@@ -72,17 +78,15 @@ export const ToastComponent = observer(() => {
       disposerHide();
     };
   }, []);
-  
+
   const indentStyle = { top: safeArea.top };
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{
-      translateY: interpolate(
-        translate.value, 
-        [0, 1],
-        [-75, 0]
-      )
-    }],
-  }))
+    transform: [
+      {
+        translateY: interpolate(translate.value, [0, 1], [-75, 0]),
+      },
+    ],
+  }));
 
   if (!toast) {
     return null;
@@ -90,16 +94,13 @@ export const ToastComponent = observer(() => {
 
   return (
     <FullWindowOverlay style={styles.overlay}>
-      <Pressable
-        style={[styles.container, indentStyle]}
-        onPress={animatedHide} 
-      >
-        <Animated.View 
+      <Pressable style={[styles.container, indentStyle]} onPress={animatedHide}>
+        <Animated.View
           style={[
-            styles.toast, 
+            styles.toast,
             animatedStyle,
             toast.size === 'small' && styles.toastSmall,
-            { backgroundColor: theme.colors.backgroundTertiary }
+            { backgroundColor: theme.colors.backgroundTertiary },
           ]}
         >
           {toast.isLoading && (
@@ -108,19 +109,16 @@ export const ToastComponent = observer(() => {
             </View>
           )}
 
-          <Text variant="label2">
-            {toast.message}
-          </Text>
+          <Text variant="label2">{toast.message}</Text>
         </Animated.View>
       </Pressable>
     </FullWindowOverlay>
   );
 });
 
-
 const styles = StyleSheet.create({
   overlay: {
-    position: 'absolute', 
+    position: 'absolute',
     top: 0,
     left: 0,
     width: '100%',
@@ -132,7 +130,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     backgroundColor: 'transparent',
-    paddingTop: ns(5)
+    paddingTop: ns(5),
   },
   toast: {
     flexWrap: 'wrap',
@@ -144,15 +142,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: ns(24),
     paddingTop: ns(13.5),
     paddingBottom: ns(14.5),
-    
+
     maxWidth: deviceWidth - ns(16) * 2,
 
     shadowOffset: {
       width: 0,
-      height: 4
+      height: 4,
     },
     shadowRadius: 16,
-    shadowColor: "rgba(0, 0, 0, 0.16)",
+    shadowColor: 'rgba(0, 0, 0, 0.16)',
     shadowOpacity: 1,
   },
   toastSmall: {
@@ -163,6 +161,6 @@ const styles = StyleSheet.create({
     maxWidth: deviceWidth - ns(32) * 2,
   },
   loaderContainer: {
-    marginRight: 9
-  }
+    marginRight: 9,
+  },
 });
