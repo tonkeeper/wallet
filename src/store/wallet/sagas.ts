@@ -10,7 +10,6 @@ import { mainActions } from '$store/main';
 import {
   CryptoCurrencies,
   PrimaryCryptoCurrencies,
-  TokenConfig,
 } from '$shared/constants';
 import {
   goBack,
@@ -29,6 +28,7 @@ import {
   DeployWalletAction,
   MigrateAction,
   OpenMigrationAction,
+  RefreshBalancesPageAction,
   ReloadBalanceTwiceAction,
   RestoreWalletAction,
   SendCoinsAction,
@@ -39,11 +39,9 @@ import {
 } from '$store/wallet/interface';
 import { eventsActions } from '$store/events';
 import { ratesActions } from '$store/rates';
-import { TransactionModel } from '$store/models';
 import {
   clearHiddenNotification,
   clearPrimaryFiatCurrency,
-  EventsDB,
   getMigrationState,
   MainDB,
   saveAddedCurrencies,
@@ -65,15 +63,15 @@ import { getTokenConfig, getWalletName } from '$shared/dynamicConfig';
 import { withRetryCtx } from '$store/retry';
 import { Cache } from '$store/events/manager/cache';
 import { destroyEventsManager } from '$store/events/sagas';
-import { Base64, debugLog, detectBiometryType, fuzzifyNumber, toNano, trackEvent } from '$utils';
+import { debugLog, detectBiometryType, toNano, trackEvent } from '$utils';
 import { Api } from '$api';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { Ton } from '$libs/Ton';
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
-import { AccountEvent } from 'tonapi-sdk-js';
 import { Tonapi } from '$libs/Tonapi';
 import TonWeb from 'tonweb';
+import { clearSubscribeStatus } from '$utils/messaging';
 
 function* generateVaultWorker() {
   try {
@@ -289,10 +287,10 @@ function* switchVersionWorker() {
   yield put(walletActions.refreshBalancesPage());
 }
 
-function* refreshBalancesPageWorker() {
+function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
   try {
     yield put(walletActions.loadBalances());
-    yield put(eventsActions.loadEvents({ isReplace: true }));
+    yield put(eventsActions.loadEvents({ isReplace: true, ignoreCache: action.payload }));
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.getIsFeatureEnabled());
     yield put(jettonsActions.loadJettons());
@@ -396,8 +394,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       decimals,
     } = action.payload;
 
-    const sendMode = isSendAll ? 128 : 3;
-
     const featureEnabled = yield call(Api.get, '/feature/enabled', {
       params: {
         currency,
@@ -420,7 +416,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         toNano(amount, decimals),
         unlockedVault,
         comment,
-        sendMode,
       );
     } else if (currency === CryptoCurrencies.Ton) {
       yield call(
@@ -429,7 +424,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         amount,
         unlockedVault,
         comment,
-        sendMode,
+        isSendAll ? 128 : 3,
       );
     } else {
       Alert.alert('not supported');
@@ -543,6 +538,7 @@ function* cleanWalletWorker() {
 
     const walletName = getWalletName();
     yield call(Cache.clearAll, walletName);
+    yield call(clearSubscribeStatus);
     yield call(JettonsCache.clearAll, walletName);
 
     if (isNewFlow) {

@@ -2,7 +2,7 @@ import React from 'react';
 import { walletSelector } from '$store/wallet';
 import { useSelector } from 'react-redux';
 import { useNotifications } from './useNotifications';
-import { getPermission } from '$utils/messaging';
+import { getPermission, getSubscribeStatus, SUBSCRIBE_STATUS } from '$utils/messaging';
 
 export const useNotificationsSubscribe = () => {
   const { wallet } = useSelector(walletSelector);
@@ -10,13 +10,20 @@ export const useNotificationsSubscribe = () => {
 
   const isSubscribe = React.useRef(false);
   React.useEffect(() => {
-    if (wallet && !isSubscribe.current) {
-      getPermission().then((hasPermission) => {
+    async function tryToSubscribe() {
+      const subscribeStatus = await getSubscribeStatus();
+      console.log('SUBSCRIBE_STATUS', subscribeStatus);
+      if (
+        (wallet && !isSubscribe.current) &&
+        subscribeStatus !== SUBSCRIBE_STATUS.UNSUBSCRIBED
+      ) {
+        const hasPermission = await getPermission();
         if (hasPermission) {
           notifications.subscribe();
         }
-      });
-      isSubscribe.current = true;
+        isSubscribe.current = true;
+      }
     }
+    tryToSubscribe();
   }, [wallet]);
 };

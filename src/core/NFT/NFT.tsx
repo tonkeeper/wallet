@@ -23,6 +23,7 @@ import { useFlags } from '$utils/flags';
 import { LinkingDomainButton } from './LinkingDomainButton';
 import { nftsActions } from '$store/nfts';
 import { useNavigation } from '$libs/navigation';
+import { dnsToUsername } from '$utils/dnsToUsername';
 
 export const NFT: React.FC<NFTProps> = ({ route }) => {
   const flags = useFlags(['disable_nft_markets', 'disable_apperance']);
@@ -45,7 +46,8 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
     [nft],
   );
 
-  const isDNS = !!nft.dns;
+  const isTG = (nft.dns || nft.name)?.endsWith('.t.me');
+  const isDNS = !!nft.dns && !isTG;
   const isTonDiamondsNft = checkIsTonDiamondsNFT(nft);
 
   const t = useTranslator();
@@ -94,12 +96,16 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
   const videoUri = isTonDiamondsNft ? nft.metadata?.animation_url : undefined;
 
   const title = useMemo(() => {
+    if (isTG) {
+      return dnsToUsername(nft.name);
+    }
+
     if (isDNS) {
       return nft.dns;
     }
 
     return nft.name || maskifyTonAddress(nft.address);
-  }, [isDNS, nft.dns, nft.name, nft.address]);
+  }, [isDNS, isTG, nft.dns, nft.name, nft.address]);
 
   return (
     <S.Wrap>
@@ -136,10 +142,10 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
         >
           {nft.name || nft.collection?.name || nft.content.image.baseUrl ? (
             <ImageWithTitle
-              uri={isDNS ? undefined : nft.content.image.baseUrl}
+              uri={(isDNS || isTG) ? undefined : nft.content.image.baseUrl}
               lottieUri={lottieUri}
               videoUri={videoUri}
-              title={nft.dns || nft.name}
+              title={isTG ? dnsToUsername(nft.name) : (nft.dns || nft.name)}
               collection={isDNS ? 'TON DNS' : nft.collection?.name}
               isVerified={isDNS || nft.isApproved}
               description={nft.description}
@@ -169,17 +175,17 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
             {isOnSale ? (
               <S.OnSaleText>
                 <Text variant="body2" color="foregroundSecondary">
-                  {t('nft_on_sale_text')}
+                  {isDNS ? t('dns_on_sale_text') : t('nft_on_sale_text')}
                 </Text>
               </S.OnSaleText>
             ) : null}
-            {!!nft.dns && (
+            {isDNS && (
               <LinkingDomainButton
                 disabled={isOnSale}
                 onLink={setOwnerAddress}
                 ownerAddress={nft.ownerAddress}
                 domainAddress={nft.address}
-                domain={nft.dns}
+                domain={nft.dns!}
               />
             )}
             {nft.marketplaceURL && !flags.disable_nft_markets ? (

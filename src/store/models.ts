@@ -86,6 +86,7 @@ export enum ActionType {
   Subscribe = 'subscribe',
   UnSubscribe = 'unSubscribe',
   Unknown = 'unknown',
+  AuctionBid = 'auctionBid',
 }
 
 export type TAction = (

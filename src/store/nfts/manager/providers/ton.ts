@@ -141,7 +141,7 @@ export class TonProvider extends BaseProvider {
     return {
       ...nft,
       ownerAddressToDisplay: nft.sale ? this.address : undefined,
-      isApproved: collection?.getGemsModerated ?? false,
+      isApproved: !!nft.approvedBy?.length ?? false,
       internalId: `${CryptoCurrencies.Ton}_${address}`,
       currency: CryptoCurrencies.Ton,
       provider: this.name,

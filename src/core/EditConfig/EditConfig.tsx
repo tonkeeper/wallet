@@ -5,7 +5,7 @@ import { ns } from '$utils';
 import Animated from 'react-native-reanimated';
 import { updateServerConfig } from '$shared/constants';
 import { MainDB } from '$database';
-import { Toast } from '$uikit/Toast/new';
+import { Toast } from '$store';
 
 export const EditConfig: React.FC = () => {
   const [config, setConfig] = useState<string>('');

@@ -113,6 +113,22 @@ export function usePrepareDetailedAction(
       label = t('transaction_type_contract_deploy');
     }
 
+    if (ActionType.AuctionBid === ActionType[rawAction.type]) {
+      sentLabelTranslationString = 'transaction_bid_date';
+      const amount = TonWeb.utils.fromNano(new BigNumber(action.amount.value).abs().toString());
+      label = '-' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+
+      infoRows.push({
+        label: t('transaction_bid_dns'),
+        value: action.nft.dns,
+      });
+
+      infoRows.push({
+        label: t('transaction_bid_collection_name'),
+        value: action.nft.collection.name,
+      });
+    }
+
     const accountToDisplay = isReceive ? action.sender : action.recipient;
 
     if (accountToDisplay?.name) {
@@ -138,7 +154,6 @@ export function usePrepareDetailedAction(
     }
 
     const info = subscriptionsInfo[action.subscription];
-    console.log(action.subscription, subscriptionsInfo);
     if (info) {
       shouldShowOpenSubscriptionButton = true;
       subscriptionInfo = info;

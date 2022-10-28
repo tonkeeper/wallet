@@ -11,7 +11,9 @@ export const ActionItem: FC<ActionItemProps> = (props) => {
   const preparedAction = usePrepareAction(action, event);
 
   const handleOpen = useCallback(() => {
-    openAction(props.eventKey, props.action);
+    if (props.action.type !== 'Unknown') {
+      openAction(props.eventKey, props.action);
+    }
   }, [props.action, props.eventKey]);
 
   return (

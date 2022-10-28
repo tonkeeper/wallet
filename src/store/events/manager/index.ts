@@ -2,6 +2,7 @@ import { Cache } from '$store/events/manager/cache';
 import { BaseProviderInterface } from '$store/events/manager/providers/base';
 import { TonapiProvider } from '$store/events/manager/providers/tonapi';
 import { ActionType, EventModel } from '$store/models';
+import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 
 export interface EventsManagerOptions {
   walletName: string;
@@ -22,14 +23,19 @@ export class EventsManager {
     this.provider = new TonapiProvider(options.address);
   }
 
-  async fetch(): Promise<EventModel[]> {
+  async fetch(ignoreCache?: boolean): Promise<EventModel[]> {
+    // @ts-ignore
+    try {
+      reloadSubscriptionsFromServer(this.address);
+    } catch (e) {}
+
     let events: any = await this.provider.loadNext(this.cache);
 
     for (let event of events) {
       this.events[event.eventId] = event;
     }
 
-    return await this.build();
+    return await this.build(ignoreCache);
   }
 
   private getMempoolKey(event: EventModel): string {
@@ -38,10 +44,10 @@ export class EventsManager {
     return `${action?.amount}_${action?.recipient?.address}`; // _${action?.nft?.address}_${action?.jetton?.address}_${action?.subscription}
   }
 
-  async build(): Promise<EventModel[]> {
+  async build(ignoreCache?: boolean): Promise<EventModel[]> {
     this.loadSingleProvider = null;
 
-    const cached = await this.cache.get();
+    const cached = ignoreCache ? [] : await this.cache.get();
     const cacheMap: { [index: string]: EventModel } = {};
     for (let event of cached) {
       if (event.inProgress) {

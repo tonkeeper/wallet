@@ -38,7 +38,7 @@ import {
   SelectableVersionsConfig,
   IsTablet,
 } from '$shared/constants';
-import { hNs, maskifyAddress, ns, useHasDiamondsOnBalance } from '$utils';
+import {hNs, maskifyAddress, ns, trackEvent, useHasDiamondsOnBalance} from '$utils';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { MainDB } from '$database';
@@ -172,6 +172,7 @@ export const Settings: FC = () => {
         text: t('settings_delete_alert_button'),
         style: 'destructive',
         onPress: () => {
+          trackEvent('delete_wallet');
           notifications.unsubscribe();
           openDeleteAccountDone();
         },

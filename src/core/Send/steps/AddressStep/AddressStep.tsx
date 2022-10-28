@@ -107,6 +107,10 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           setComment(link.query.text as string);
         }
 
+        if (link.query.bin) {
+          return false;
+        }
+
         value = link.address;
       }
 
@@ -128,7 +132,6 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
       const domain = value.toLowerCase();
 
-      // TODO: ton dns
       if (domain.endsWith('.ton')) {
         setDnsLoading(true);
 

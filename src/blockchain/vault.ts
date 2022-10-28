@@ -1,3 +1,4 @@
+import EncryptedStorage from 'react-native-encrypted-storage';
 import { Buffer } from 'buffer';
 import { generateSecureRandom } from 'react-native-securerandom';
 import scrypt from 'react-native-scrypt';
@@ -9,6 +10,7 @@ import * as SecureStore from 'expo-secure-store';
 import { t } from '$translation';
 import { Ton } from '$libs/Ton';
 import { wordlist } from '$libs/Ton/mnemonic/wordlist';
+import { Tonapi } from '$libs/Tonapi';
 
 const { nacl } = require('react-native-tweetnacl');
 
@@ -95,9 +97,10 @@ export class Vault {
       throw new Error('Mnemonic phrase is incorrect');
     }
 
+    const tonPubkey = (await Ton.mnemonic.mnemonicToKeyPair(phrase.split(' '))).publicKey;
     const info: VaultInfo = {
       name: name,
-      tonPubkey: (await Ton.mnemonic.mnemonicToKeyPair(phrase.split(' '))).publicKey,
+      tonPubkey,
       workchain: 0,
     };
 
@@ -110,36 +113,21 @@ export class Vault {
     } else {
       if (!version) {
         try {
-          const provider = new TonWeb.HttpProvider(getServerConfig('tonEndpoint'), {
-            apiKey: getServerConfig('tonEndpointAPIKey'),
-          });
-          const ton = new TonWeb(provider);
-
-          let hasBalance: { balance: BN; version: string }[] = [];
-          for (let WalletClass of ton.wallet.list) {
-            const wallet = new WalletClass(ton.provider, {
-              publicKey: info.tonPubkey,
-              wc: 0,
+          const pubkey = TonWeb.utils.bytesToHex(tonPubkey);
+          const balances = await Tonapi.getBalances(pubkey);
+          if (balances.length > 0) {
+            balances.sort((a, b) => {
+              const balance = new BN(a.balance).cmp(new BN(b.balance));
+              return balance;
             });
-            const walletAddress = (await wallet.getAddress()).toString(true, true, true);
-            const walletInfo = await ton.provider.getWalletInfo(walletAddress);
-            const walletBalance = new BN(walletInfo.balance);
-            if (walletBalance.gt(new BN(0))) {
-              hasBalance.push({ balance: walletBalance, version: wallet.getName() });
-            }
-          }
-
-          if (hasBalance.length > 0) {
-            hasBalance.sort((a, b) => {
-              return a.balance.cmp(b.balance);
-            });
-            version = hasBalance[hasBalance.length - 1].version;
+            version = balances[balances.length - 1].version;
           } else {
             version = DEFAULT_VERSION;
           }
           console.log('version detected', version);
         } catch (e) {
-          throw new Error('Failed to get addresses balances');
+          debugLog('[restore]: Failed to get addresses balances');
+          version = DEFAULT_VERSION;
         }
       } else {
         console.log('version passed', version);
@@ -149,6 +137,12 @@ export class Vault {
     info.version = version;
 
     return new UnlockedVault(info, phrase);
+  }
+
+   // Returns true if the device has a passcode/biometric protection.
+  // If it does not, app asks user to encrypt the wallet with a password.
+  static async isDeviceProtected(): Promise<boolean> {
+    return await EncryptedStorage.isDeviceProtected();
   }
 
   get keychainItemName(): string {
@@ -223,6 +217,8 @@ export class Vault {
     const isNewFlow = await MainDB.isNewSecurityFlow();
     if (isNewFlow) {
       await SecureStore.deleteItemAsync(this.keychainItemName);
+    } else {
+      await EncryptedStorage.removeItem(this.keychainItemName);
     }
   }
 
@@ -250,6 +246,8 @@ export class Vault {
       } catch {
         throw new Error(t('access_confirmation_update_biometry'));
       }
+    } else {
+      jsonstr = await EncryptedStorage.getItem(this.keychainItemName);
     }
 
     if (jsonstr == null) {

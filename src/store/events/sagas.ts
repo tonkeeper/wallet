@@ -75,7 +75,7 @@ function* loadEventsWorker(action: LoadEventsAction) {
       yield put(
         batchActions(
           eventsActions.setEvents({
-            events: yield call([manager, 'build']),
+            events: yield call([manager, 'build'], action.payload.ignoreCache),
             isReplace: true,
             isFromCache: true,
           }),
@@ -88,7 +88,7 @@ function* loadEventsWorker(action: LoadEventsAction) {
     yield put(
       batchActions(
         eventsActions.setEvents({
-          events: yield call([manager, 'fetch']),
+          events: yield call([manager, 'fetch'], action.payload.ignoreCache),
           isReplace: true,
         }),
         eventsActions.setCanLoadMore(yield call([manager, 'canLoadMore'])),

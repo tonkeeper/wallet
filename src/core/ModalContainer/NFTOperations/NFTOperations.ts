@@ -594,7 +594,9 @@ export class NFTOperations {
       throw new NFTOperationError('Wrong owner address');
     }
 
-    return this.wallet.vault.tonWalletByVersion(version);
+    const wallet = this.wallet.vault.tonWalletByVersion(version);
+    await wallet.getAddress();
+    return wallet;
   }
 
   private getCurrentWallet(): WalletContract {

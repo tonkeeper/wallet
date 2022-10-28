@@ -17,5 +17,11 @@ export const useValidateAddress = (address) => {
 
     return false;
   }, [address]);
-  return { address, isValid };
+  return useMemo(
+    () => ({
+      address,
+      isValid,
+    }),
+    [address, isValid],
+  );
 };

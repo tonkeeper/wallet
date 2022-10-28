@@ -1,15 +1,14 @@
 import React, { memo, useMemo } from 'react';
 import { Highlight, Icon, Text } from '$uikit';
-import { Toast } from '$uikit/Toast/new';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import { debugLog, lowerCaseFirstLetter, ns, truncateDecimal } from '$utils';
 import { t } from '$translation';
-import { AccountEvent } from 'tonapi-sdk-js';
+import { AccountEvent, ActionTypeEnum } from 'tonapi-sdk-js';
 import { SignRawAction } from './SignRawAction';
-import { store } from '$store';
+import { store, Toast } from '$store';
 import * as S from '../NFTOperations.styles';
 import { Modal, useNavigation } from '$libs/navigation';
 import { Ton } from '$libs/Ton';
@@ -25,7 +24,7 @@ interface SignRawModalProps {
 export const SignRawModal = memo<SignRawModalProps>((props) => {
   const { accountEvent, options, params, action } = props;
   
-  const { footerRef, onConfirm } = useNFTOperationState(options, params);
+  const { footerRef, onConfirm } = useNFTOperationState(options);
   const unlockVault = useUnlockVault();
 
   const handleConfirm = onConfirm(async ({ startLoading }) => {
@@ -49,7 +48,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
         Unknown: {
           address: message.address,
           amount: message.amount,
-        }
+        },
       }));
     }
 
@@ -62,6 +61,19 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     }
 
     const action = actions[0] ?? {};
+
+    if (action.type === ActionTypeEnum.AuctionBid) {  
+      const data = action[ActionTypeEnum.AuctionBid];
+
+      if (data.auction_type === 'DNS.tg') {
+        return undefined;
+      }
+    }
+
+    if (action.type === ActionTypeEnum.NftItemTransfer) {  
+      return undefined;
+    }
+
     const type = [
       'TonTransfer',
       'ContractDeploy',
@@ -71,8 +83,8 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       'UnSubscribe',
     ].find((type) => type in action);
 
-    return type 
-      ? t(`txActions.signRaw.types.${lowerCaseFirstLetter(type)}`) 
+    return type
+      ? t(`txActions.signRaw.types.${lowerCaseFirstLetter(type)}`)
       : t('txActions.signRaw.types.unknownTransaction');
   }, [actions]);
 
@@ -81,7 +93,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 
     if (fee) {
       return `≈ ${truncateDecimal(Ton.fromNano(fee.total.toString()), 1, true)} TON`;
-    } 
+    }
   }, [accountEvent]);
 
   return (
@@ -89,7 +101,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       <Modal.Header title={headerTitle} />
       <Modal.ScrollView>
         <S.Container>
-          {totalFee && (
+          {actions.length > 1 && totalFee && (
             <S.Info>
               <Highlight onPress={() => copyText(totalFee)}>
                 <S.InfoItem>
@@ -121,11 +133,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
           <SignRawAction
             key={`${action.type}-${index}`}
             countActions={actions.length}
-            totalFee={
-              actions.length === 1 
-                ? totalFee
-                : undefined
-            }
+            totalFee={actions.length === 1 ? totalFee : undefined}
             action={action}
           />
         ))}
@@ -140,22 +148,19 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 export const useSignRawModal = () => {
   const nav = useNavigation();
 
-  const open = async (
-    params: SignRawParams, 
-    options: TxBodyOptions
-  ) => {
+  const open = async (params: SignRawParams, options: TxBodyOptions) => {
     const wallet = store.getState().wallet.wallet;
     if (!wallet) {
       return;
     }
-  
+
     try {
       Toast.loading();
-  
+
       const operations = new NFTOperations(wallet);
       const action = await operations.signRaw(params);
 
-      let accountEvent: AccountEvent | null = null
+      let accountEvent: AccountEvent | null = null;
       try {
         accountEvent = await action.estimateTx();
         Toast.hide();
@@ -167,7 +172,7 @@ export const useSignRawModal = () => {
 
         Toast.fail(`Emulation error: ${errorMessage}`, { duration: 5000 });
       }
-        
+
       nav.openModal('SignRaw', {
         accountEvent,
         options,
@@ -178,7 +183,7 @@ export const useSignRawModal = () => {
       debugLog('[SignRaw]:', err);
       Toast.fail('Operation error, please make sure the params is correct');
     }
-  }
+  };
 
   return { open };
-}
+};
