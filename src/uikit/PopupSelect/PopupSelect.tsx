@@ -7,6 +7,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  Dimensions,
   FlatList,
   LayoutChangeEvent,
   Modal,
@@ -27,6 +28,10 @@ import { usePopupAnimation } from './usePopupAnimation';
 import * as S from './PopupSelect.style';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
+const ScreenWidth = Dimensions.get('window').width;
+// We should add extra-width for iPhone mini and SE
+const SMALL_DEVICES_WIDTH = 375;
+
 export const PopupSelectItem = Memo(
   ({
     children,
@@ -43,7 +48,9 @@ export const PopupSelectItem = Memo(
         }
 
         onChangeWidth?.(
-          e.nativeEvent.layout.width + ns(isAndroid ? 14 : 0) + ns(checked ? 32 : 0),
+          e.nativeEvent.layout.width +
+            ns(isAndroid ? 14 : ScreenWidth <= SMALL_DEVICES_WIDTH ? 6 : 0) +
+            ns(checked ? 32 : 0),
         );
       },
       [autoWidth, checked, onChangeWidth],
