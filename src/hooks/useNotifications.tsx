@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import DeviceInfo from 'react-native-device-info';
 import I18n from 'i18n-js';
 import axios from 'axios';
+import { walletWalletSelector } from '$store/wallet';
 import {getServerConfig} from '$shared/constants';
-import {walletSelector} from '$store/wallet';
 import {
   getSubscribeStatus,
   removeSubscribeStatus,
@@ -14,7 +14,7 @@ import {
 import {useSelector} from 'react-redux';
 
 export const useNotifications = () => {  
-  const { wallet } = useSelector(walletSelector); 
+  const wallet = useSelector(walletWalletSelector);
   
   const subscribe = React.useCallback(async () => {
     console.log('[Notifications]: subscribe')
@@ -66,8 +66,5 @@ export const useNotifications = () => {
     return true;
   }, []);
 
-  return {
-    subscribe,
-    unsubscribe
-  }
+  return useMemo(() => ({ subscribe, unsubscribe }), [subscribe, unsubscribe]);
 }
