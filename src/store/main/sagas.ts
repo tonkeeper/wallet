@@ -135,7 +135,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     yield put(mainActions.setUnlocked(true));
   }
 
-  if (serverConfig) {
+  if (!serverConfig) {
     const wallet = yield call(Wallet.load);
     yield put(
       batchActions(
