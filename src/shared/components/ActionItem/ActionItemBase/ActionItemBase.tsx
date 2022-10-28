@@ -5,7 +5,7 @@ import { ns } from '$utils';
 import { useTheme, useTranslator } from '$hooks';
 import { Badge, Icon, Text } from '$uikit';
 import { ActionItemBaseProps } from './ActionItemBase.interface';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
 
 export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
   const {
@@ -50,13 +50,21 @@ export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
           <S.ContWrap>
             <S.Icon
               style={{
-                backgroundColor:
-                  theme.colors[
+                backgroundColor: type === 'tg_dns' 
+                  ? 'transparent'
+                  : theme.colors[
                     isHighlighted ? 'backgroundQuaternary' : 'backgroundTertiary'
                   ],
               }}
             >
-              <Icon name={iconName} color="foregroundSecondary" />
+              {type === 'tg_dns' ? (
+                <Image 
+                  style={{ width: 44, height: 44 }} 
+                  source={require('$assets/tg-logo.png')} 
+                />
+              ) : (
+                <Icon name={iconName} color="foregroundSecondary" />
+              )}
               {isInProgress && (
                 <S.Sending>
                   <Icon name="ic-clock-16" color="foregroundPrimary" />
