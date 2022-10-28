@@ -9,7 +9,7 @@ import BigNumber from 'bignumber.js';
 import { mainActions, mainSelector } from './index';
 import { Wallet } from '$blockchain';
 import { batchActions } from '$store';
-import { walletActions } from '$store/wallet';
+import { walletActions, walletSelector } from '$store/wallet';
 import { ratesActions } from '$store/rates';
 import * as SplashScreen from 'expo-splash-screen';
 import { eventsActions } from '$store/events';
@@ -153,9 +153,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
       ),
     );
 
-    const address = yield call(wallet.ton.getAddress);
-    yield call(reloadSubscriptionsFromServer, address);
-
     yield fork(loadRates, true);
 
     SplashScreen.hideAsync();
@@ -163,7 +160,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     yield call(initHandler, isTestnet, true);
     return;
   }
-
   setServerConfig(serverConfig, isTestnet);
   updateServerConfig(devConfig);
 
@@ -207,7 +203,8 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.loadJettons());
     yield put(subscriptionsActions.loadSubscriptions());
-    const address = yield call(wallet.ton.getAddress);
+    const { wallet: walletNew } = yield select(walletSelector);
+    const address = yield call([walletNew.ton, 'getAddress']);
     yield call(reloadSubscriptionsFromServer, address);
   } else {
     yield put(walletActions.endLoading());
