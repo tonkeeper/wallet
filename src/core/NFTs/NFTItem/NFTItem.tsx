@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { Icon, Text } from '$uikit';
 import { useTranslator } from '$hooks';
 import { useFlags } from '$utils/flags';
+import { View } from 'react-native';
 
 export const NFTItem: React.FC<NFTItemProps> = ({ item, isLastInRow }) => {
   const flags = useFlags(['disable_apperance']);
@@ -69,13 +70,18 @@ export const NFTItem: React.FC<NFTItemProps> = ({ item, isLastInRow }) => {
           <Text numberOfLines={1} fontSize={16} lineHeight={24} fontWeight="700">
             {title}
           </Text>
-          <Text numberOfLines={1} color="foregroundSecondary" variant="body2">
-            {isDNS
-              ? 'TON DNS'
-              : item?.collection
-              ? item.collection.name
-              : t('nft_single_nft')}
-          </Text>
+          <S.CollectionNameWrap withIcon={item.isApproved}>
+            <Text numberOfLines={1} color="foregroundSecondary" variant="body2">
+              {isDNS
+                ? 'TON DNS'
+                : item?.collection
+                ? item.collection.name
+                : t('nft_single_nft')}
+            </Text>
+            {item.isApproved && (
+              <Icon style={{ marginLeft: 4 }} name="ic-verification-secondary-16" />
+            )}
+          </S.CollectionNameWrap>
         </S.TextWrap>
       </S.Pressable>
     </S.Wrap>

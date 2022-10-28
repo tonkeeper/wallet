@@ -28,6 +28,7 @@ export const MobileIconsList = {
   'ic-swap-16': require('$assets/icons/png/ic-swap-16.png'),
   'ic-time-16': require('$assets/icons/png/ic-time-16.png'),
   'ic-verification-16': require('$assets/icons/png/ic-verification-16.png'),
+  'ic-verification-secondary-16': require('$assets/icons/png/ic-verification-secondary-16.png'),
   'ic-backspace-bold-24': require('$assets/icons/png/ic-backspace-bold-24.png'),
   'ic-backup-24': require('$assets/icons/png/ic-backup-24.png'),
   'ic-key-24': require('$assets/icons/png/ic-key-24.png'),

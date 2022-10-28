@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCopyText, useInstance, useWallet } from '$hooks';
-import { Highlight, Skeleton, Text } from '$uikit';
+import {Highlight, Icon, Skeleton, Text} from '$uikit';
 import { debugLog } from '$utils';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftSaleCancelParams, TxRequestBody } from '../TXRequest.types';
@@ -48,6 +48,19 @@ export const NFTSaleCancelModal = ({ params, ...options }: NFTSaleCancelModalPro
     console.log('DEPLOY', deploy);
   });
 
+  const caption = React.useMemo(() => {
+    let text = '...';
+    if (item.data?.metadata) {
+      text = `${item.data.dns || item.data.metadata.name}`;
+    }
+
+    if (item.data?.collection) {
+      text += ` · ${item?.data?.dns ? 'TON DNS' : item.data.collection.name}`;
+    }
+
+    return item.data ? text : '...';
+  }, [item.data]);
+
   return (
     <Modal>
       <Modal.Header gradient />
@@ -60,9 +73,12 @@ export const NFTSaleCancelModal = ({ params, ...options }: NFTSaleCancelModalPro
                 <S.Image uri={item.data.metadata.image} resize={512} />
               )}
             </S.NFTItemPreview>
-            <S.Caption>
-              {item.data?.dns || (item?.data?.metadata?.name ?? '...')}
-            </S.Caption>
+            <S.CaptionWrap>
+              <S.Caption>{caption}</S.Caption>
+              {item.data?.approved_by?.length ? (
+                <Icon style={{ marginLeft: 4 }} name="ic-verification-secondary-16" />
+              ) : null}
+            </S.CaptionWrap>
             <S.Title>{t('nft_sale_cancel_title')}</S.Title>
           </S.Center>
           <S.Info>

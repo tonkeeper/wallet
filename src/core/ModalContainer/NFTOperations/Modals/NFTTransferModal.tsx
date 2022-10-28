@@ -14,6 +14,7 @@ import { CryptoCurrencies } from '$shared/constants';
 import { useDispatch } from 'react-redux';
 import {nftsActions} from "$store/nfts";
 import { Modal } from '$libs/navigation';
+import {CaptionWrap} from "../NFTOperations.styles";
 
 type NFTTransferModalProps = TxRequestBody<NftTransferParams>;
 
@@ -97,7 +98,12 @@ export const NFTTransferModal = ({ params, ...options }: NFTTransferModalProps) 
                 <S.Image uri={item.data?.metadata?.image} resize={512} />
               )}
             </S.NFTItemPreview>
-            <S.Caption>{caption}</S.Caption>
+            <S.CaptionWrap>
+              <S.Caption>{caption}</S.Caption>
+              {item.data?.approved_by?.length ? (
+                <Icon style={{ marginLeft: 4 }} name="ic-verification-secondary-16" />
+              ) : null}
+            </S.CaptionWrap>
             <S.Title>{t('nft_transfer_title')}</S.Title>
           </S.Center>
           <S.Info>
