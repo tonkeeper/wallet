@@ -169,7 +169,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
             {isOnSale ? (
               <S.OnSaleText>
                 <Text variant="body2" color="foregroundSecondary">
-                  {t('nft_on_sale_text')}
+                  {isDNS ? t('dns_on_sale_text') : t('nft_on_sale_text')}
                 </Text>
               </S.OnSaleText>
             ) : null}
