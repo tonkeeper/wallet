@@ -391,8 +391,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       decimals,
     } = action.payload;
 
-    const sendMode = isSendAll ? 128 : 3;
-
     const featureEnabled = yield call(Api.get, '/feature/enabled', {
       params: {
         currency,
@@ -415,7 +413,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         toNano(amount, decimals),
         unlockedVault,
         comment,
-        sendMode,
       );
     } else if (currency === CryptoCurrencies.Ton) {
       yield call(
@@ -424,7 +421,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         amount,
         unlockedVault,
         comment,
-        sendMode,
+        isSendAll ? 128 : 3,
       );
     } else {
       Alert.alert('not supported');
