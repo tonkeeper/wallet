@@ -2,7 +2,6 @@ import { useCopyText, useInstance, useWallet } from '$hooks';
 import { getServerConfig } from '$shared/constants';
 import { t } from '$translation';
 import { BottomSheet, Highlight, Separator, Skeleton, Text } from '$uikit';
-import { Toast } from '$uikit/Toast/new';
 import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
 import { Base64, debugLog, maskifyAddress, truncateDecimal } from '$utils';
 import React from 'react';
@@ -14,6 +13,7 @@ import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { TouchableOpacity } from 'react-native';
 import { openReplaceDomainAddress } from '$navigation';
+import { Toast } from '$store';
 
 const TonWeb = require('tonweb');
 

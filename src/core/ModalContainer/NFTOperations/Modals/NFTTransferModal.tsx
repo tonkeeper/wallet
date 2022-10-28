@@ -15,6 +15,7 @@ import { useDispatch } from 'react-redux';
 import {nftsActions} from "$store/nfts";
 import { Modal } from '$libs/navigation';
 import {CaptionWrap} from "../NFTOperations.styles";
+import { dnsToUsername } from '$utils/dnsToUsername';
 
 type NFTTransferModalProps = TxRequestBody<NftTransferParams>;
 
@@ -71,20 +72,21 @@ export const NFTTransferModal = ({ params, ...options }: NFTTransferModalProps) 
     console.log('DEPLOY', deploy);
   });
 
-  const isDNS = !!item.data?.dns;
+  const isTG = (item.data?.dns || item.data?.metadata?.name)?.endsWith('.t.me');
+  const isDNS = !!item.data?.dns && !isTG;
 
   const caption = React.useMemo(() => {
     let text = '...';
     if (item.data?.metadata) {
-      text = `${item.data.dns || item.data.metadata.name}`;
+      text = `${isTG ? dnsToUsername(item.data.dns) : (item.data.dns || item.data.metadata.name)}`;
     }
 
     if (collectionMeta.data) {
-      text += ` · ${item?.data?.dns ? 'TON DNS' : collectionMeta.data.name}`;
+      text += ` · ${isDNS ? 'TON DNS' : collectionMeta.data.name}`;
     }
 
     return item.data ? text : '...';
-  }, [item.data, collectionMeta.data]);
+  }, [item.data, collectionMeta.data, isDNS, isTG]);
 
   return (
     <Modal>
@@ -94,8 +96,11 @@ export const NFTTransferModal = ({ params, ...options }: NFTTransferModalProps) 
           <S.Center>
             <S.NFTItemPreview>
               {isDNS ? <S.GlobeIcon /> : null}
-              {!isDNS && item.data?.metadata?.image && (
+              {!isDNS && !isTG && item.data?.metadata?.image && (
                 <S.Image uri={item.data?.metadata?.image} resize={512} />
+              )}
+              {isTG && (
+                <S.LocalImage source={require('$assets/tg-full-logo.png')}  />
               )}
             </S.NFTItemPreview>
             <S.CaptionWrap>

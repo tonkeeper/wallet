@@ -8,10 +8,13 @@ import _ from 'lodash';
 import { Icon, Text } from '$uikit';
 import { useTranslator } from '$hooks';
 import {View} from "react-native";
+import { dnsToUsername } from '$utils/dnsToUsername';
 
 export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
   const nft = useNFT(keyPair);
   const t = useTranslator();
+
+  // console.log(nft);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleOpenNftItem = useCallback(
@@ -23,7 +26,8 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
     return null;
   }
 
-  const isDNS = !!nft.dns;
+  const isTG = (nft.dns || nft.name)?.endsWith('.t.me');
+  const isDNS = !!nft.dns && !isTG;
 
   return (
     <S.Wrap>
@@ -47,7 +51,7 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
             <S.TextWrap>
               <S.Background withImage={!!nft.content?.image?.baseUrl} />
               <Text numberOfLines={1} variant="body2">
-                {nft.dns || nft.name || maskifyTonAddress(nft.address)}
+                {isTG ? dnsToUsername(nft.dns) : (nft.dns || nft.name || maskifyTonAddress(nft.address))}
               </Text>
               <S.CollectionNameWrap withIcon={nft.isApproved}>
                 <Text color="foregroundSecondary" numberOfLines={1} variant="body2">

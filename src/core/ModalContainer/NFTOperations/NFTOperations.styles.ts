@@ -1,4 +1,4 @@
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, Image as RNImage } from 'react-native';
 import LottieView from 'lottie-react-native';
 import styled, { RADIUS } from '$styled';
 import { Button, Text, ProxyImage, Icon } from '$uikit';
@@ -32,6 +32,16 @@ export const Image = styled(ProxyImage).attrs({
   width: 100%;
   height: 100%;
 `;
+
+
+export const LocalImage = styled(RNImage).attrs({
+  resizeMode: 'cover',
+})`
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+`;
+
 
 export const NFTItemPreview = styled(Preview)`
   border-radius: ${({ theme }) => theme.radius.large}px;

@@ -26,6 +26,7 @@ export type IconNames =
   | 'ic-share-16'
   | 'ic-sliders-16'
   | 'ic-swap-16'
+  | 'ic-telegram-16'
   | 'ic-time-16'
   | 'ic-verification-16'
   | 'ic-verification-secondary-16'
@@ -111,6 +112,7 @@ export const AllIcons = [
   'ic-share-16',
   'ic-sliders-16',
   'ic-swap-16',
+  'ic-telegram-16',
   'ic-time-16',
   'ic-verification-16',
   'ic-verification-secondary-16',
@@ -197,6 +199,7 @@ export const IconSizes = {
   'ic-share-16': 16,
   'ic-sliders-16': 16,
   'ic-swap-16': 16,
+  'ic-telegram-16': 16,
   'ic-time-16': 16,
   'ic-verification-16': 16,
   'ic-verification-secondary-16': 16,
