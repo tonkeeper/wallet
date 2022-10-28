@@ -62,6 +62,8 @@ import { initStats } from '$utils';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { favoritesActions } from '$store/favorites';
+import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
+import { clearSubscribeStatus } from '$utils/messaging';
 
 SplashScreen.preventAutoHideAsync()
   .then((result) =>
@@ -151,6 +153,9 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
       ),
     );
 
+    const address = yield call(wallet.ton.getAddress);
+    yield call(reloadSubscriptionsFromServer, address);
+
     yield fork(loadRates, true);
 
     SplashScreen.hideAsync();
@@ -202,6 +207,8 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.loadJettons());
     yield put(subscriptionsActions.loadSubscriptions());
+    const address = yield call(wallet.ton.getAddress);
+    yield call(reloadSubscriptionsFromServer, address);
   } else {
     yield put(walletActions.endLoading());
   }
@@ -244,6 +251,7 @@ function* completeIntroWorker() {
 export function* resetAll(isTestnet: boolean) {
   yield call(destroyEventsManager);
   yield call(Cache.clearAll, getWalletName());
+  yield call(clearSubscribeStatus);
   yield call(JettonsCache.clearAll, getWalletName());
   yield put(
     batchActions(

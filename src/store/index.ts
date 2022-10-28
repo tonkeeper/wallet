@@ -40,3 +40,6 @@ export function batchActions(...actions: any) {
     actions: actions,
   };
 }
+
+// new store
+export * from './zustand';

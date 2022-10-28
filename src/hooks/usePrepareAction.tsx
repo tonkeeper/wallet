@@ -17,6 +17,7 @@ import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { TransactionItemNFT } from '$shared/components/ActionItem/TransactionItemNFT/TransactionItemNFT';
 import { subscriptionsSelector } from '$store/subscriptions';
 import { Action } from 'tonapi-sdk-js';
+import { dnsToUsername } from '$utils/dnsToUsername';
 
 export function usePrepareAction(
   rawAction: Action,
@@ -120,6 +121,18 @@ export function usePrepareAction(
         : '';
     }
 
+    if (ActionType.AuctionBid === ActionType[rawAction.type] && action.auctionType === 'DNS.tg') {
+      const amount = TonWeb.utils.fromNano(Math.abs(action.amount.value).toString());
+      label = prefix + ' ' + truncateDecimal(amount.toString(), 2);
+      typeLabel = t('transaction_type_bid');
+      type = 'tg_dns';
+      currency = formatCryptoCurrency(
+        '',
+        CryptoCurrencies.Ton,
+        Decimals[CryptoCurrencies.Ton],
+      ).trim()
+    }
+
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
       label = '-';
       typeLabel = t('transaction_type_contract_deploy');
@@ -168,6 +181,11 @@ export function usePrepareAction(
         label: maskifyTonAddress(
           new TonWeb.Address(action.address).toString(true, true, true),
         ),
+        value: formattedDate,
+      });
+    } else if (ActionType.AuctionBid === ActionType[rawAction.type] && action.auctionType === 'DNS.tg') {
+      actionProps.infoRows.push({
+        label: dnsToUsername(action.nft.dns),
         value: formattedDate,
       });
     }

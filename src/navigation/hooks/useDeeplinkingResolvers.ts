@@ -5,7 +5,7 @@ import { useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { Base64, debugLog, isValidAddress } from '$utils';
-import { store } from '$store';
+import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import {
   openCreateSubscription,
@@ -20,7 +20,6 @@ import { getTimeSec } from '$utils/getTimeSec';
 import { TonLoginClient } from '@tonapps/tonlogin-client';
 import { useNavigation } from '$libs/navigation';
 import { useSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
-import { Toast } from '$uikit/Toast/new';
 import { isSignRawParams } from '$utils/isSignRawParams';
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import { AppStackRouteNames } from '$navigation/navigationNames';
@@ -189,7 +188,8 @@ export function useDeeplinkingResolvers() {
         nav.openModal('NFTSaleCancel', txBody);
         break;
       case 'sign-raw-payload':
-        signRawModal.open(txBody.params, txBody.options);
+        const { params, ...options } = txBody;
+        signRawModal.open(params, options);
         break;
       case 'deploy':
         openDeploy(txBody);

@@ -6,8 +6,8 @@ import uniqBy from 'lodash/uniqBy';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SuggestedAddress, SuggestedAddressType } from '../Send.interface';
-import { eventsSelector } from '$store/events';
-import { walletSelector } from '$store/wallet';
+import { eventsEventsInfoSelector } from '$store/events';
+import { walletAddressSelector } from '$store/wallet';
 import { CryptoCurrencies } from '$shared/constants';
 
 const TonWeb = require('tonweb');
@@ -37,10 +37,10 @@ let favoriteDnsLastUpdated = 0;
 const shouldUpdateDomains = () => favoriteDnsLastUpdated + 600 * 1000 < Date.now();
 
 export const useSuggestedAddresses = () => {
-  const { eventsInfo } = useSelector(eventsSelector);
+  const eventsInfo = useSelector(eventsEventsInfoSelector);
   const dispatch = useDispatch();
   const { favorites, hiddenRecentAddresses } = useSelector(favoritesSelector);
-  const { address } = useSelector(walletSelector);
+  const address = useSelector(walletAddressSelector);
 
   const [updatedDnsAddresses, setUpdatedDnsAddresses] = useState<Record<string, string>>(
     shouldUpdateDomains()

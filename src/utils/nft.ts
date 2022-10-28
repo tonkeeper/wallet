@@ -1,7 +1,7 @@
 import { tonDiamondCollectionAddress } from '$shared/constants';
 import { getChainName } from '$shared/dynamicConfig';
 import { MarketplaceModel, NFTModel, TonDiamondMetadata } from '$store/models';
-import { nftsSelector } from '$store/nfts';
+import { myNftsSelector } from '$store/nfts';
 import { AccentKey } from '$styled';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -28,7 +28,7 @@ export const checkIsTonDiamondsNFT = (
 };
 
 export const useHasDiamondsOnBalance = () => {
-  const { myNfts } = useSelector(nftsSelector);
+  const myNfts = useSelector(myNftsSelector);
   const diamond = useMemo(() => {
     return Object.values(myNfts).find(checkIsTonDiamondsNFT);
   }, [myNfts]);
