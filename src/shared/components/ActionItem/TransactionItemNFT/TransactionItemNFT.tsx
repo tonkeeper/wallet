@@ -7,6 +7,7 @@ import { maskifyTonAddress } from '$utils';
 import _ from 'lodash';
 import { Icon, Text } from '$uikit';
 import { useTranslator } from '$hooks';
+import {View} from "react-native";
 import { dnsToUsername } from '$utils/dnsToUsername';
 
 export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
@@ -52,13 +53,20 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
               <Text numberOfLines={1} variant="body2">
                 {isTG ? dnsToUsername(nft.dns) : (nft.dns || nft.name || maskifyTonAddress(nft.address))}
               </Text>
-              <Text color="foregroundSecondary" numberOfLines={1} variant="body2">
-                {isDNS
-                  ? 'TON DNS'
-                  : nft?.collection
-                  ? nft.collection.name
-                  : t('nft_single_nft')}
-              </Text>
+              <S.CollectionNameWrap withIcon={nft.isApproved}>
+                <Text color="foregroundSecondary" numberOfLines={1} variant="body2">
+                  {isDNS
+                    ? 'TON DNS'
+                    : nft?.collection
+                    ? nft.collection.name
+                    : t('nft_single_nft')}
+                </Text>
+                <View style={{ flex: 1 }}>
+                  {nft.isApproved && (
+                    <Icon style={{ marginLeft: 4 }} name="ic-verification-secondary-16" />
+                  )}
+                </View>
+              </S.CollectionNameWrap>
             </S.TextWrap>
           </S.Pressable>
         </S.TextContainer>

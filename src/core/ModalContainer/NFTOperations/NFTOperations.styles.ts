@@ -53,7 +53,6 @@ export const Caption = styled(Text).attrs({
   variant: 'body1',
 })`
   line-height: 24px;
-  margin-bottom: 6px;
 `;
 
 export const Title = styled(Text).attrs({ variant: 'h3' })`
@@ -194,4 +193,10 @@ export const WarningInfo = styled.View`
 export const WarningIcon = styled.View`
   padding-top: ${ns(16)}px;
   padding-right: ${ns(16)}px;
+`;
+
+export const CaptionWrap = styled.View`
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 6px;
 `;

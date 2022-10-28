@@ -29,6 +29,7 @@ export type IconNames =
   | 'ic-telegram-16'
   | 'ic-time-16'
   | 'ic-verification-16'
+  | 'ic-verification-secondary-16'
   | 'ic-backspace-bold-24'
   | 'ic-backup-24'
   | 'ic-key-24'
@@ -114,6 +115,7 @@ export const AllIcons = [
   'ic-telegram-16',
   'ic-time-16',
   'ic-verification-16',
+  'ic-verification-secondary-16',
   'ic-backspace-bold-24',
   'ic-backup-24',
   'ic-key-24',
@@ -200,6 +202,7 @@ export const IconSizes = {
   'ic-telegram-16': 16,
   'ic-time-16': 16,
   'ic-verification-16': 16,
+  'ic-verification-secondary-16': 16,
   'ic-backspace-bold-24': 24,
   'ic-backup-24': 24,
   'ic-key-24': 24,

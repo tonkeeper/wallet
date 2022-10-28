@@ -41,6 +41,9 @@ export const NFTHead: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
           <Text numberOfLines={1} color="foregroundSecondary" variant="body1">
             {isDNS ? 'TON DNS' : nft.collection.name}
           </Text>
+          {nft?.isApproved ? (
+            <Icon style={{ marginLeft: 4 }} name="ic-verification-secondary-16" />
+          ) : null}
         </S.CollectionWrapper>
       ) : null}
     </S.Wrap>
