@@ -150,8 +150,8 @@ android {
         applicationId 'com.ton_keeper'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 222
-        versionName "2.7.0"
+        versionCode 237
+        versionName "2.7.5"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         missingDimensionStrategy 'react-native-camera', 'general'
 

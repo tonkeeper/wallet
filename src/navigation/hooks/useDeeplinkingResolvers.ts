@@ -177,7 +177,8 @@ export function useDeeplinkingResolvers() {
         nav.openModal('NFTSaleCancel', txBody);
         break;
       case 'sign-raw-payload':
-        signRawModal.open(txBody.params, txBody.options);
+        const { params, ...options } = txBody;
+        signRawModal.open(params, options);
         break;
       case 'deploy':
         openDeploy(txBody);
