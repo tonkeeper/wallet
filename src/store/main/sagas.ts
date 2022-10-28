@@ -153,7 +153,8 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
       ),
     );
 
-    const address = yield call(wallet.ton.getAddress);
+    const { wallet: walletNew } = yield select(walletSelector);
+    const address = yield call([walletNew.ton, 'getAddress']);
     yield call(reloadSubscriptionsFromServer, address);
 
     yield fork(loadRates, true);
