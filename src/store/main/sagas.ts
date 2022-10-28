@@ -135,7 +135,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     yield put(mainActions.setUnlocked(true));
   }
 
-  if (!serverConfig) {
+  if (serverConfig) {
     const wallet = yield call(Wallet.load);
     yield put(
       batchActions(
@@ -152,10 +152,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
         jettonsActions.setJettonBalances({ jettonBalances }),
       ),
     );
-
-    const { wallet: walletNew } = yield select(walletSelector);
-    const address = yield call([walletNew.ton, 'getAddress']);
-    yield call(reloadSubscriptionsFromServer, address);
 
     yield fork(loadRates, true);
 
