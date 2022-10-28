@@ -7,7 +7,10 @@ import * as SecureStore from 'expo-secure-store';
 import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet/index';
 import { EncryptedVault, UnlockedVault, Vault, Wallet } from '$blockchain';
 import { mainActions } from '$store/main';
-import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
+import {
+  CryptoCurrencies,
+  PrimaryCryptoCurrencies,
+} from '$shared/constants';
 import {
   goBack,
   openAccessConfirmation,
@@ -60,15 +63,15 @@ import { getTokenConfig, getWalletName } from '$shared/dynamicConfig';
 import { withRetryCtx } from '$store/retry';
 import { Cache } from '$store/events/manager/cache';
 import { destroyEventsManager } from '$store/events/sagas';
-import { Base64, debugLog, detectBiometryType, fuzzifyNumber, toNano, trackEvent } from '$utils';
+import { debugLog, detectBiometryType, toNano, trackEvent } from '$utils';
 import { Api } from '$api';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { Ton } from '$libs/Ton';
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
-import { AccountEvent } from 'tonapi-sdk-js';
 import { Tonapi } from '$libs/Tonapi';
 import TonWeb from 'tonweb';
+import { clearSubscribeStatus } from '$utils/messaging';
 
 function* generateVaultWorker() {
   try {
@@ -535,6 +538,7 @@ function* cleanWalletWorker() {
 
     const walletName = getWalletName();
     yield call(Cache.clearAll, walletName);
+    yield call(clearSubscribeStatus);
     yield call(JettonsCache.clearAll, walletName);
 
     if (isNewFlow) {
