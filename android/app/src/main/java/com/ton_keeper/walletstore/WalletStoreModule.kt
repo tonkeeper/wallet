@@ -11,7 +11,8 @@ class WalletStoreModule(
     context: ReactApplicationContext
 ) : ReactContextBaseJavaModule(context) {
 
-    private val store = WalletStore(context.currentActivity as FragmentActivity)
+    private val store: WalletStore
+        get() = WalletStore(reactApplicationContext.currentActivity as FragmentActivity)
 
     @ReactMethod
     fun validate(mnemonic: Array<String>, promise: Promise) {
