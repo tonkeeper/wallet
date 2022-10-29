@@ -135,7 +135,7 @@ const AddressInputComponent: FC<Props> = (props) => {
   );
 
   const handleScanQR = useCallback(() => {
-    openScanQR((code: string) => {
+    openScanQR(async (code: string) => {
       const link = parseTonLink(code);
 
       if (link.match && link.operation === 'transfer' && !isValidAddress(link.address)) {
@@ -143,7 +143,7 @@ const AddressInputComponent: FC<Props> = (props) => {
         return false;
       }
 
-      return updateRecipient(code);
+      return await updateRecipient(code);
     });
   }, [dispatch, t, updateRecipient]);
 

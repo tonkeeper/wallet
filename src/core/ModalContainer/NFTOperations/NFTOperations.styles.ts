@@ -1,4 +1,4 @@
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, Image as RNImage } from 'react-native';
 import LottieView from 'lottie-react-native';
 import styled, { RADIUS } from '$styled';
 import { Button, Text, ProxyImage, Icon } from '$uikit';
@@ -33,6 +33,16 @@ export const Image = styled(ProxyImage).attrs({
   height: 100%;
 `;
 
+
+export const LocalImage = styled(RNImage).attrs({
+  resizeMode: 'cover',
+})`
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+`;
+
+
 export const NFTItemPreview = styled(Preview)`
   border-radius: ${({ theme }) => theme.radius.large}px;
 `;
@@ -43,7 +53,6 @@ export const Caption = styled(Text).attrs({
   variant: 'body1',
 })`
   line-height: 24px;
-  margin-bottom: 6px;
 `;
 
 export const Title = styled(Text).attrs({ variant: 'h3' })`
@@ -184,4 +193,10 @@ export const WarningInfo = styled.View`
 export const WarningIcon = styled.View`
   padding-top: ${ns(16)}px;
   padding-right: ${ns(16)}px;
+`;
+
+export const CaptionWrap = styled.View`
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 6px;
 `;

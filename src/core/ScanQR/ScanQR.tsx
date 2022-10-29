@@ -85,7 +85,7 @@ export const ScanQR: FC<ScanQRProps> = ({ route }) => {
   const onSuccess = async (e: any) => {
     if (e.data) {
       // ton://transfer/EQCsgTsYweyHBz3cqmo75FqRxbVUQhxG6yBS5zQNVQHa5SZT
-      const sloved = onScan(e.data);
+      const sloved = await onScan(e.data);
       if (sloved) {
         triggerNotificationSuccess();
         nav.goBack();

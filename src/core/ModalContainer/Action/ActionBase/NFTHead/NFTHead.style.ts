@@ -1,5 +1,5 @@
 import styled, { RADIUS } from '$styled';
-import { hNs, nfs, ns } from '$utils';
+import { hNs, ns } from '$utils';
 import FastImage from 'react-native-fast-image';
 import { Icon } from '$uikit';
 
@@ -13,6 +13,8 @@ export const Wrap = styled.TouchableOpacity`
 
 export const CollectionWrapper = styled.View`
   margin-bottom: ${ns(2)}px;
+  flex-direction: row;
+  align-items: center;
 `;
 
 export const Image = styled(FastImage).attrs({

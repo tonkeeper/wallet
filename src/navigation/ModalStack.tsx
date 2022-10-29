@@ -16,6 +16,8 @@ import { AppStackRouteNames } from './navigationNames';
 import { SetupWalletStack } from './SetupWalletStack/SetupWalletStack';
 import { AccessConfirmation, BuyFiat, ChangePin, Migration, Receive, ScanQR, Send } from '$core';
 import { WebView } from '$core/WebView/WebView';
+import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewConfirmSending';
+import { ProvidersWithNavigation } from './Providers';
 
 const Stack = createModalStackNavigator();
 
@@ -58,6 +60,10 @@ export const ModalStack = React.memo(() => (
         component={SignRawModal}
         path="SignRaw"
       />
+      <Stack.Modal
+        component={NewConfirmSending}
+        path="NewConfirmSending"
+      />
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal
@@ -89,7 +95,11 @@ export const ModalStack = React.memo(() => (
       />
       <Stack.Modal
         options={{ gestureEnabled: false }}
-        component={BuyFiat}
+        component={(props) => (
+          <ProvidersWithNavigation>
+            <BuyFiat {...props} />
+          </ProvidersWithNavigation>
+        )}
         path={AppStackRouteNames.BuyFiat}
       />
     </Stack.Group>

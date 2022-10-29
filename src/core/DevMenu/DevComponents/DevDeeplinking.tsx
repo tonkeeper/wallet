@@ -44,7 +44,7 @@ export const DevDeeplinking: React.FC = () => {
         >
           Two transfers (txrequest-inline)
         </Button>
-        
+
         <DevSeparator />
 
         <Text variant="h2">NFT (txrequest-url)</Text>
@@ -162,6 +162,19 @@ export const DevDeeplinking: React.FC = () => {
           }}
         >
           Open transfer with amount
+        </Button>
+
+        <DevSeparator />
+
+        <Button
+          onPress={() => {
+            deeplinking.resolve(
+              'ton://transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n?amount=100000&text=test',
+              { params: { methodId: 'mercuryo_sell' } },
+            );
+          }}
+        >
+          Open transfer with amount (mercuryo)
         </Button>
 
         <DevSeparator />

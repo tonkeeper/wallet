@@ -160,6 +160,7 @@ export const SelectableVersionsConfig = {
   },
   [SelectableVersions.V4R1]: {
     label: 'v4R1',
+    hideIfBalanceIsZero: true,
   },
   [SelectableVersions.V4R2]: {
     label: 'v4R2',

@@ -14,7 +14,6 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
 import com.ton_keeper.newarchitecture.MainApplicationReactNativeHost;
-import com.ton_keeper.pbkdf.TonPbkdf2Package;
 import com.ton_keeper.walletstore.WalletStorePackage;
 
 import java.lang.reflect.InvocationTargetException;
@@ -34,7 +33,6 @@ public class MainApplication extends Application implements ReactApplication {
         @Override
         protected List<ReactPackage> getPackages() {
             List<ReactPackage> packages = new PackageList(this).getPackages();
-            packages.add(new TonPbkdf2Package());
             packages.add(new WalletStorePackage());
             return packages;
         }

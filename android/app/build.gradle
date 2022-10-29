@@ -154,8 +154,8 @@ android {
         applicationId 'com.ton_keeper'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 222
-        versionName "2.7.0"
+        versionCode 239
+        versionName "2.7.6"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         missingDimensionStrategy 'react-native-camera', 'general'
 
@@ -353,12 +353,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-
-    // For TonPbkdf2; TODO: separate TonPbkdf2 to module
-    implementation 'com.madgag.spongycastle:core:1.58.0.0'
-    implementation 'com.madgag.spongycastle:prov:1.54.0.0'
-    implementation 'com.madgag.spongycastle:pkix:1.54.0.0'
-    implementation 'com.madgag.spongycastle:pg:1.54.0.0'
 }
 
 if (isNewArchitectureEnabled()) {

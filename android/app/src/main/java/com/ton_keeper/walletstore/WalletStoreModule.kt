@@ -11,7 +11,8 @@ class WalletStoreModule(
     context: ReactApplicationContext
 ) : ReactContextBaseJavaModule(context) {
 
-    private val store = WalletStore(context.currentActivity as FragmentActivity)
+    private val store: WalletStore
+        get() = WalletStore(reactApplicationContext.currentActivity as FragmentActivity)
 
     @ReactMethod
     fun validate(mnemonic: Array<String>, promise: Promise) {
@@ -33,7 +34,7 @@ class WalletStoreModule(
 
         try {
             store.import(
-                mnemonic = mnemonic,
+                mnemonic = mnemonic.toList(),
                 secure = SecureType.Passcode(passcode),
                 onResult = { promise.resolve(it.toBridgeMap()) }
             )
@@ -52,7 +53,7 @@ class WalletStoreModule(
 
         try {
             store.import(
-                mnemonic = mnemonic,
+                mnemonic = mnemonic.toList(),
                 secure = SecureType.Biometry,
                 onResult = { promise.resolve(it.toBridgeMap()) }
             )

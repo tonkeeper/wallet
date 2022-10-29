@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Webview from 'react-native-webview';
 import { v4 as uuidv4 } from 'uuid';
@@ -14,6 +14,7 @@ import { goBack } from '$navigation';
 import { getServerConfig } from '$shared/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { deviceWidth, isAndroid, trackEvent } from '$utils';
+import { useDeeplinking } from '$libs/deeplinking';
 
 export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
   const currency = route.params.currency;
@@ -31,6 +32,8 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
   const address = useSelector(walletAddressSelector);
   const [webViewKey, setWebViewKey] = useState(1);
 
+  const deeplinking = useDeeplinking();
+
   const handleHttpError = useCallback(() => {
     setWebViewKey(webViewKey + 1);
   }, [setWebViewKey, webViewKey]);
@@ -42,12 +45,19 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
   const webviewUrl = useMemo(() => {
     const addr = address[currency];
 
-    let result = method.action_button.url
-      .replace(/\{CUR\_FROM\}/g, fiatCurrency.toUpperCase())
-      .replace(/\{CUR\_TO\}/g, currency.toUpperCase())
-      .replace(/\{ADDRESS\}/g, addr);
+    let result = method.action_button.url.replace(/\{ADDRESS\}/g, addr);
 
-    if (method.id === 'mercuryo') {
+    if (method.id === 'mercuryo_sell') {
+      result = result
+        .replace(/\{CUR\_FROM\}/g, currency.toUpperCase())
+        .replace(/\{CUR\_TO\}/g, fiatCurrency.toUpperCase());
+    } else {
+      result = result
+        .replace(/\{CUR\_FROM\}/g, fiatCurrency.toUpperCase())
+        .replace(/\{CUR\_TO\}/g, currency.toUpperCase());
+    }
+
+    if (['mercuryo', 'mercuryo_sell'].includes(method.id)) {
       const txId = 'mercuryo_' + uuidv4();
       result = result.replace(/\{TX_ID\}/g, txId);
       result = result.replace(/\=TON\&/gi, '=TONCOIN&');
@@ -84,8 +94,17 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
           trackEvent('buy_crypto');
         }
       }
+
+      const resolver = deeplinking.getResolver(e.url, {
+        delay: 200,
+        params: { methodId: method.id },
+      });
+
+      if (resolver) {
+        resolver();
+      }
     },
-    [dispatch, method.successUrlPattern],
+    [deeplinking, method.id, method.successUrlPattern],
   );
 
   const handleBack = useCallback(() => {
@@ -101,10 +120,7 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
       return (
         <S.CloseButtonWrap style={{ top: topInset }} onPress={handleClose}>
           <S.CloseButton>
-            <Icon
-              name="ic-close-16"
-              color="foregroundPrimary"
-            />
+            <Icon name="ic-close-16" color="foregroundPrimary" />
           </S.CloseButton>
         </S.CloseButtonWrap>
       );

@@ -66,3 +66,10 @@ export const GlobeIcon = styled(Icon).attrs({
     borderTopLeftRadius: ns(RADIUS.normal),
   },
 })``;
+
+export const CollectionNameWrap = styled.View<{ withIcon?: boolean }>`
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+  padding-right: ${({ withIcon }) => (!withIcon ? 0 : ns(12))}px;
+`;
