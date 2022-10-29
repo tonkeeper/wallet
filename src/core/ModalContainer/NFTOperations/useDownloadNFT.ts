@@ -2,7 +2,6 @@ import { debugLog } from '$utils';
 import axios from 'axios';
 import React from 'react';
 import { getServerConfig } from '$shared/constants';
-import { NftItemRepr } from 'tonapi-sdk-js';
 
 export type NFTItemMeta = {
   name: string;
@@ -13,7 +12,7 @@ export type NFTItemMeta = {
 };
 
 export function useDownloadNFT(addr?: string) {
-  const [data, setNFT] = React.useState<NftItemRepr | undefined>(undefined);
+  const [data, setNFT] = React.useState<any>(undefined);
 
   const download = React.useCallback(async (address: string) => {
     try {

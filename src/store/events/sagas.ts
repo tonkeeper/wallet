@@ -11,14 +11,14 @@ import {
 import * as _ from 'lodash';
 
 import { eventsActions, eventsSelector } from '$store/events/index';
-import { walletActions, walletSelector } from '$store/wallet';
+import { walletActions, walletAddressSelector, walletSelector } from '$store/wallet';
 import { batchActions } from '$store';
 import { EventsMap, LoadEventsAction } from '$store/events/interface';
 import { getWalletName } from '$shared/dynamicConfig';
 import { EventsManager } from '$store/events/manager';
 import { debugLog } from '$utils';
-import { subscriptionsActions } from '$store/subscriptions';
 import { jettonsActions } from '$store/jettons';
+import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 
 let manager: EventsManager | null;
 
@@ -124,7 +124,8 @@ function* pollEventsWorker() {
         return transaction.inProgress;
       });
       if (!pendingEvent) {
-        yield put(subscriptionsActions.loadSubscriptions());
+        const address = yield select(walletAddressSelector);
+        yield call(reloadSubscriptionsFromServer, address.ton);
         yield put(jettonsActions.loadJettons());
         yield put(walletActions.loadBalances());
         yield put(eventsActions.cancelPollEvents());

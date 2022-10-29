@@ -3,7 +3,6 @@ import { BaseProviderInterface } from '$store/events/manager/providers/base';
 import { TonapiProvider } from '$store/events/manager/providers/tonapi';
 import { ActionType, EventModel } from '$store/models';
 import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
-import { getUnixTime } from 'date-fns';
 
 export interface EventsManagerOptions {
   walletName: string;

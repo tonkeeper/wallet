@@ -6,7 +6,7 @@ import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import { debugLog, lowerCaseFirstLetter, ns, truncateDecimal } from '$utils';
 import { t } from '$translation';
-import { AccountEvent } from 'tonapi-sdk-js';
+import { AccountEvent, ActionTypeEnum } from 'tonapi-sdk-js';
 import { SignRawAction } from './SignRawAction';
 import { store, Toast } from '$store';
 import * as S from '../NFTOperations.styles';
@@ -23,8 +23,8 @@ interface SignRawModalProps {
 
 export const SignRawModal = memo<SignRawModalProps>((props) => {
   const { accountEvent, options, params, action } = props;
-
-  const { footerRef, onConfirm } = useNFTOperationState(options, params);
+  
+  const { footerRef, onConfirm } = useNFTOperationState(options);
   const unlockVault = useUnlockVault();
 
   const handleConfirm = onConfirm(async ({ startLoading }) => {
@@ -61,6 +61,19 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     }
 
     const action = actions[0] ?? {};
+
+    if (action.type === ActionTypeEnum.AuctionBid) {  
+      const data = action[ActionTypeEnum.AuctionBid];
+
+      if (data.auction_type === 'DNS.tg') {
+        return undefined;
+      }
+    }
+
+    if (action.type === ActionTypeEnum.NftItemTransfer) {  
+      return undefined;
+    }
+
     const type = [
       'TonTransfer',
       'ContractDeploy',
@@ -88,7 +101,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       <Modal.Header title={headerTitle} />
       <Modal.ScrollView>
         <S.Container>
-          {totalFee && (
+          {actions.length > 1 && totalFee && (
             <S.Info>
               <Highlight onPress={() => copyText(totalFee)}>
                 <S.InfoItem>

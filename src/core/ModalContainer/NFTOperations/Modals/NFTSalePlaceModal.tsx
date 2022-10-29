@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import { useCopyText, useInstance, useWallet } from '$hooks';
-import { Highlight, Separator, Skeleton, Text } from '$uikit';
+import {Highlight, Icon, Separator, Skeleton, Text} from '$uikit';
 import { debugLog, maskifyAddress } from '$utils';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftSalePlaceParams, TxRequestBody } from '../TXRequest.types';
@@ -103,6 +103,19 @@ export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps
     return false;
   }, [fullPrice, feeAndRoyalties]);
 
+  const caption = React.useMemo(() => {
+    let text = '...';
+    if (item.data?.metadata) {
+      text = `${item.data.dns || item.data.metadata.name}`;
+    }
+
+    if (item.data?.collection) {
+      text += ` · ${item?.data?.dns ? 'TON DNS' : item.data.collection.name}`;
+    }
+
+    return item.data ? text : '...';
+  }, [item.data]);
+
   return (
     <Modal>
       <Modal.Header gradient />
@@ -115,9 +128,12 @@ export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps
                 <S.Image uri={item.data.metadata.image} resize={512} />
               )}
             </S.NFTItemPreview>
-            <S.Caption>
-              {item.data?.dns || (item.data?.metadata?.name ?? '...')}
-            </S.Caption>
+            <S.CaptionWrap>
+              <S.Caption>{caption}</S.Caption>
+              {item.data?.approved_by?.length ? (
+                <Icon style={{ marginLeft: 4 }} name="ic-verification-secondary-16" />
+              ) : null}
+            </S.CaptionWrap>
             <S.Title>{t('nft_sale_place_title')}</S.Title>
           </S.Center>
           <S.Info>

@@ -1,9 +1,9 @@
 import React from 'react';
-import { walletSelector } from '$store/wallet';
+import { walletWalletSelector } from '$store/wallet';
 import { useSelector } from 'react-redux';
 
 export const useAllAddresses = () => {
-  const { wallet } = useSelector(walletSelector);
+  const wallet = useSelector(walletWalletSelector);
   const [addresses, setAddresses] = React.useState<{ [key in string]: string } | null>(
     null,
   );

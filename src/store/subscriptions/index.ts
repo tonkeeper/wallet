@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '$store/rootReducer';
 import {
@@ -34,3 +34,11 @@ export const { actions, reducer } = createSlice({
 export { reducer as subscriptionsReducer, actions as subscriptionsActions };
 
 export const subscriptionsSelector = (state: RootState) => state.subscriptions;
+export const subscriptionsInfoSelector = createSelector(
+  subscriptionsSelector,
+  (subscriptionsState) => subscriptionsState.subscriptionsInfo,
+);
+export const hasSubscriptionsSelector = createSelector(
+  subscriptionsInfoSelector,
+  (subscriptionsInfo) => Object.values(subscriptionsInfo).length > 0,
+);

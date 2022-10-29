@@ -5,9 +5,9 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Animated from 'react-native-reanimated';
 import { Linking, View } from 'react-native';
 import { CellSection } from '$shared/components';
-import { getSubscribeStatus } from '$utils/messaging';
+import { getSubscribeStatus, SUBSCRIBE_STATUS } from '$utils/messaging';
 import { useDispatch } from 'react-redux';
-import { useNotificationStatus, NotificationsStatus } from '$hooks/useNotificationStatus';
+import { NotificationsStatus, useNotificationStatus } from '$hooks/useNotificationStatus';
 import messaging from '@react-native-firebase/messaging';
 import { useNotifications } from '$hooks/useNotifications';
 import { toastActions } from '$store/toast';
@@ -20,7 +20,7 @@ export const Notifications: React.FC = () => {
   const notifications = useNotifications();
   const tabBarHeight = useBottomTabBarHeight();
   const isSwitchFrozen = useRef(false);
-  
+
   const notificationStatus = useNotificationStatus();
   const notificationsBadge = useNotificationsBadge();
   const shouldEnableNotifications = notificationStatus === NotificationsStatus.DENIED;
@@ -29,14 +29,14 @@ export const Notifications: React.FC = () => {
 
   React.useEffect(() => {
     const init = async () => {
-      const isSubscribe = await getSubscribeStatus();
+      const subscribeStatus = await getSubscribeStatus();
       const status = await messaging().hasPermission();
 
-      const isGratend = 
+      const isGratend =
         status === NotificationsStatus.AUTHORIZED ||
         status === NotificationsStatus.PROVISIONAL;
 
-      const initialValue = isGratend && isSubscribe;
+      const initialValue = isGratend && subscribeStatus === SUBSCRIBE_STATUS.SUBSCRIBED;
       setIsSubscribeNotifications(initialValue);
     };
 
@@ -48,32 +48,35 @@ export const Notifications: React.FC = () => {
       notificationsBadge.hide();
     }
   }, [notificationsBadge.isVisible]);
-  
+
   const handleToggleNotifications = React.useCallback(async (value: boolean) => {
     if (isSwitchFrozen.current) {
       return;
     }
 
     try {
-      isSwitchFrozen.current = true
+      isSwitchFrozen.current = true;
       setIsSubscribeNotifications(value);
 
-      const isSuccess = value 
+      const isSuccess = value
         ? await notifications.subscribe()
         : await notifications.unsubscribe();
 
-      if (!isSuccess) { // Revert
+      if (!isSuccess) {
+        // Revert
         setIsSubscribeNotifications(!value);
       }
     } catch (err) {
-      dispatch(toastActions.fail({ type: 'small', label: t('notifications_not_supported') }));
+      dispatch(
+        toastActions.fail({ type: 'small', label: t('notifications_not_supported') }),
+      );
       debugLog('[NotificationsSettings]', err);
       setIsSubscribeNotifications(!value); // Revert
     } finally {
       isSwitchFrozen.current = false;
     }
   }, []);
-  
+
   return (
     <>
       <NavBar>{t('notifications_title')}</NavBar>

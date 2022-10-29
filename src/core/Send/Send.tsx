@@ -2,7 +2,7 @@ import { useFiatRate, useInstance, useTranslator } from '$hooks';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, getServerConfig } from '$shared/constants';
-import { walletActions, walletSelector } from '$store/wallet';
+import {walletActions, walletBalancesSelector, walletSelector, walletWalletSelector} from '$store/wallet';
 import { NavBar } from '$uikit';
 import { isValidAddress, parseLocaleNumber } from '$utils';
 import React, {
@@ -67,7 +67,8 @@ export const Send: FC<SendProps> = ({ route }) => {
     return new AccountApi(tonApiConfiguration);
   });
 
-  const { balances, wallet } = useSelector(walletSelector);
+  const balances = useSelector(walletBalancesSelector);
+  const wallet = useSelector(walletWalletSelector);
 
   const [currency, setCurrency] = useState(initialCurrency || CryptoCurrencies.Ton);
   const [isJetton, setIsJetton] = useState(!!initialIsJetton);

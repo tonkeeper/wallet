@@ -78,6 +78,13 @@
     "transaction_subscription_date": "Charged on %{date}",
     "transaction_unsubscription_date": "%{date}",
     "transaction_contract_deploy_date": "Created %{date}",
+    "transaction_bid_date": "Bid %{date}",
+    "transaction_bid_dns": "Name",
+    "transaction_bid_collection_name": "Issuer",
+    "transaction_your_bid": "Your bid",
+    "transaction_confirm_bid": "Confirm bid",
+    "transaction_transfer_name": "Transfer name",
+    "transaction_type_bid": "Bid",
     "transaction_buy_date": "Purchased on %{date}",
     "transaction_message": "Message",
     "transaction_purchase_id": "Purchase ID",
@@ -120,6 +127,7 @@
     "nft_single_nft": "Single NFT",
     "nft_on_sale": "On sale",
     "nft_on_sale_text": "NFT is on sale at the marketplace now. For transfer, you should remove it from sale first.",
+    "dns_on_sale_text": "Domain is on sale at the marketplace now. For transfer, you should remove it from sale first.",
 
     "nft_transfer_description": "The NFT will be sent to this address. Be careful when sending an NFT to another user.",
 
@@ -255,6 +263,7 @@
     "confirm_sending_inactive_warn_title": "Inactive contract",
     "confirm_sending_inactive_warn_description": "Do not proceed if you expect blockchain magic to happen. It won't.",
     "confirm_sending_inactive_warn_about": "What you should do",
+    "confirm_sending_method_title": "Send your funds to %{name}?",
 
     "info_about_inactive_title": "Inactive contract",
     "info_about_inactive_desc1": "Tonkeeper does not know if this address is a wallet or a smart contract.",
@@ -267,6 +276,7 @@
     "swap_title": "Swap",
 
     "exchange_title": "Buy TON",
+    "exchange_other_ways": "Other ways to buy or sell TON",
 
     "settings_title": "Settings",
     "settings_primary_currency": "Primary currency",
@@ -625,6 +635,13 @@
     "transaction_subscription_date": "Оплата %{date}",
     "transaction_unsubscription_date": "%{date}",
     "transaction_contract_deploy_date": "Создано %{date}",
+    "transaction_bid_date": "Ставка %{date}",
+    "transaction_bid_dns": "Имя",
+    "transaction_bid_collection_name": "Эмитент",
+    "transaction_your_bid": "Ваша ставка",
+    "transaction_confirm_bid": "Подтвердите ставку",
+    "transaction_transfer_name": "Передача имени",
+    "transaction_type_bid": "Ставка",
     "transaction_buy_date": "Покупка %{date}",
     "transaction_message": "Комментарий",
     "transaction_purchase_id": "Покупка",
@@ -667,7 +684,8 @@
     "nft_marketplaces_title": "NFT маркеты",
     "nft_single_nft": "Одиночный NFT",
     "nft_on_sale": "На продаже",
-    "nft_on_sale_text": "НФТ сейчас выставлен на продажу на маркете. Чтобы передать, необходимо сначала снять его с продажи.",
+    "nft_on_sale_text": "NFT сейчас выставлен на продажу на маркете. Чтобы передать, необходимо сначала снять его с продажи.",
+    "dns_on_sale_text": "Домен сейчас выставлен на продажу на маркете. Чтобы передать, необходимо сначала снять его с продажи.",
 
     "nft_transfer_description": "NFT будет отправлен на этот адрес. Будьте осторожны при отправке NFT, который вы отправляете другому пользователю.",
 
@@ -811,6 +829,7 @@
     "confirm_sending_inactive_warn_title": "Неактивный контракт",
     "confirm_sending_inactive_warn_description": "Не продолжайте, если вы ожидаете волшебства от блокчейна. Этого не произойдет.",
     "confirm_sending_inactive_warn_about": "Что важно знать",
+    "confirm_sending_method_title": "Send your funds\nto %{name}?",
 
     "info_about_inactive_title": "Неактивный контракт",
     "info_about_inactive_desc1": "Tonkeeper не знает, является ли этот адрес кошельком или смарт-контрактом.",
@@ -823,6 +842,7 @@
     "swap_title": "Обмен",
 
     "exchange_title": "Купить TON",
+    "exchange_other_ways": "Другие способы покупки и продажи",
 
     "settings_title": "Настройки",
     "settings_primary_currency": "Основная валюта",
