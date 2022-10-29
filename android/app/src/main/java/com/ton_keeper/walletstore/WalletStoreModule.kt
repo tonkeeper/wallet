@@ -33,7 +33,7 @@ class WalletStoreModule(
 
         try {
             store.import(
-                mnemonic = mnemonic,
+                mnemonic = mnemonic.toList(),
                 secure = SecureType.Passcode(passcode),
                 onResult = { promise.resolve(it.toBridgeMap()) }
             )
@@ -52,7 +52,7 @@ class WalletStoreModule(
 
         try {
             store.import(
-                mnemonic = mnemonic,
+                mnemonic = mnemonic.toList(),
                 secure = SecureType.Biometry,
                 onResult = { promise.resolve(it.toBridgeMap()) }
             )

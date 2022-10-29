@@ -15,22 +15,22 @@
     <application
         android:name=".MainApplication"
         android:allowBackup="false"
-        android:fullBackupContent="@xml/backup_rules"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:installLocation="internalOnly"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:fullBackupContent">
 
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
             android:exported="true"
             android:hardwareAccelerated="true"
-            android:label="@string/app_name"
             android:largeHeap="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
