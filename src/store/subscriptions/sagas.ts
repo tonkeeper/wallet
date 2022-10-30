@@ -12,14 +12,16 @@ import { CryptoCurrencies } from '$shared/constants';
 import { store } from '$store';
 import { fuzzifyNumber, trackEvent } from '$utils';
 import { Ton } from '$libs/Ton';
-import {eventsActions} from "$store/events";
+import { eventsActions } from '$store/events';
 
 export async function reloadSubscriptionsFromServer(address: string) {
-  const resp: any = await Api.get('/subscriptions', {
-    params: { address },
-  });
-  store.dispatch(subscriptionsActions.setSubscriptionsInfo(resp));
-  await saveSubscriptions(Object.values(resp));
+  try {
+    const resp: any = await Api.get('/subscriptions', {
+      params: { address },
+    });
+    store.dispatch(subscriptionsActions.setSubscriptionsInfo(resp));
+    await saveSubscriptions(Object.values(resp));
+  } catch {}
 }
 
 function* loadSubscriptionsWorker() {
