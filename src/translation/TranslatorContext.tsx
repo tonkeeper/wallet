@@ -9,7 +9,7 @@ import i18n, { Scope, TranslateOptions } from 'i18n-js';
 
 import { FALLBACK_LANGUAGE, LanguageTags } from '$shared/constants';
 import { pluralizeForRussian } from './helper';
-import translations from './translations.json';
+import * as translations from './locales'
 
 export type TranslatorFunc = (scope: Scope, options?: TranslateOptions) => string;
 

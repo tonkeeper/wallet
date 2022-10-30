@@ -6,4 +6,5 @@ export const FALLBACK_LANGUAGE = {
 export enum LanguageTags {
   en = 'en',
   ru = 'ru',
+  id = 'id'
 }
