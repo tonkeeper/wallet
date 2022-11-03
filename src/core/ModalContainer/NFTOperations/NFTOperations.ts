@@ -366,28 +366,29 @@ export class NFTOperations {
 
   public async signRaw(params: SignRawParams) {
     const wallet = this.getCurrentWallet();
-    const seqno = await this.getSeqno((await wallet.getAddress()).toString(false));
 
-    const sendMode = 3;
-    const signingMessage = (wallet as any).createSigningMessage(seqno);
+    const signRawMethods = async (secretKey?: Uint8Array) => {
+      const seqno = await this.getSeqno((await wallet.getAddress()).toString(false));
 
-    const messages = [...params.messages].splice(0, 4);
-    for (let message of messages) {
-      const order = TonWeb.Contract.createCommonMsgInfo(
-        TonWeb.Contract.createInternalMessageHeader(
-          new TonWeb.Address(message.address),
-          new TonWeb.utils.BN(this.toNano(message.amount)),
-        ),
-        Ton.base64ToCell(message.stateInit),
-        Ton.base64ToCell(message.payload),
-      );
+      const sendMode = 3;
+      const signingMessage = (wallet as any).createSigningMessage(seqno);
 
-      signingMessage.bits.writeUint8(sendMode);
-      signingMessage.refs.push(order);
-    }
+      const messages = [...params.messages].splice(0, 4);
+      for (let message of messages) {
+        const order = TonWeb.Contract.createCommonMsgInfo(
+          TonWeb.Contract.createInternalMessageHeader(
+            new TonWeb.Address(message.address),
+            new TonWeb.utils.BN(this.toNano(message.amount)),
+          ),
+          Ton.base64ToCell(message.stateInit),
+          Ton.base64ToCell(message.payload),
+        );
 
-    const signRawMethods = (secretKey?: Uint8Array) =>
-      TonWeb.Contract.createMethod(
+        signingMessage.bits.writeUint8(sendMode);
+        signingMessage.refs.push(order);
+      }
+
+      return TonWeb.Contract.createMethod(
         wallet.provider,
         (wallet as any).createExternalMessage(
           signingMessage,
@@ -396,10 +397,11 @@ export class NFTOperations {
           !secretKey,
         ),
       );
+    }
 
     return {
       estimateTx: async (): Promise<AccountEvent | null> => {
-        const methods = signRawMethods();
+        const methods = await signRawMethods();
 
         const queryMsg = await methods.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
@@ -417,7 +419,7 @@ export class NFTOperations {
         return resp.data;
       },
       estimateFee: async () => {
-        const methods = signRawMethods();
+        const methods = await signRawMethods();
         const feeInfo = await methods.estimateFee();
         const fee = new BigNumber(feeInfo.source_fees.in_fwd_fee)
           .plus(feeInfo.source_fees.storage_fee)
@@ -427,7 +429,7 @@ export class NFTOperations {
         return truncateDecimal(Ton.fromNano(fee.toString()), 1, true);
       },
       send: async (secretKey: Uint8Array) => {
-        const methods = signRawMethods(secretKey);
+        const methods = await signRawMethods(secretKey);
 
         const queryMsg = await methods.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
