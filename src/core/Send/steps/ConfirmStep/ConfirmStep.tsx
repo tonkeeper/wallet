@@ -7,12 +7,21 @@ import { getTokenConfig } from '$shared/dynamicConfig';
 import { Button, FormItem, Icon, Input, List, ListCell, Text } from '$uikit';
 import { maskifyAddress, ns, parseLocaleNumber } from '$utils';
 import { formatCryptoCurrency } from '$utils/currency';
-import React, { FC, memo, useCallback, useMemo } from 'react';
+import React, {
+  FC,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { ConfirmStepProps } from './ConfirmStep.interface';
 import * as S from './ConfirmStep.style';
 import BigNumber from 'bignumber.js';
 import { useAnimatedScrollHandler } from 'react-native-reanimated';
 import { SendSteps } from '$core/Send/Send.interface';
+import { TextInput } from 'react-native-gesture-handler';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -21,6 +30,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     currency,
     currencyTitle,
     recipient,
+    recipientAccountInfo,
     decimals,
     isJetton,
     fee,
@@ -122,6 +132,12 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     </S.WarningIconWrapper>
   ) : undefined;
 
+  const commentInputRef = useRef<TextInput>(null);
+
+  const [commentRequiredError, setCommentRequiredError] = useState(false);
+
+  const isCommentRequired = !!recipientAccountInfo?.memoRequired;
+
   const commentError = comment.length > dynamicMaxLength;
 
   const commentCharactersLeftCount = dynamicMaxLength - comment.length;
@@ -144,6 +160,11 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
 
   const commentDescription = (
     <Text color="foregroundSecondary" variant="body2">
+      {isCommentRequired ? (
+        <Text variant="body2" color="accentOrange">
+          {t('send_screen_steps.comfirm.comment_required_text')}
+        </Text>
+      ) : null}
       {t('send_screen_steps.comfirm.comment_description')}
       {commentCharactersLeftText || commentCharactersExceededText ? '\n' : null}
       {commentCharactersLeftText ? (
@@ -167,24 +188,71 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     </>
   );
 
+  const handleCommentChange = useCallback(
+    (text: string) => {
+      setCommentRequiredError(text.length === 0);
+      setComment(text);
+    },
+    [setComment],
+  );
+
+  const handleConfirm = useCallback(() => {
+    if (isCommentRequired && comment.length === 0) {
+      setCommentRequiredError(true);
+      commentInputRef.current?.focus();
+
+      return;
+    }
+
+    onConfirm();
+  }, [comment.length, isCommentRequired, onConfirm]);
+
+  useEffect(() => {
+    if (!isCommentRequired) {
+      return;
+    }
+
+    if (active) {
+      commentInputRef.current?.focus();
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      commentInputRef.current?.blur();
+      setCommentRequiredError(false);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [active, isCommentRequired]);
+
   if (!recipient) {
     return null;
   }
 
-  const recipientName = recipient.domain || recipient.name;
+  const recipientName = recipient.domain || recipient.name || recipientAccountInfo?.name;
 
   return (
     <S.Container style={keyboardHeightStyle}>
       <StepScrollView onScroll={scrollHandler} active={active}>
         <S.Form>
           <FormItem
-            title={t('send_screen_steps.comfirm.comment_label')}
+            title={
+              isCommentRequired
+                ? t('send_screen_steps.comfirm.comment_label_required')
+                : t('send_screen_steps.comfirm.comment_label')
+            }
             description={commentDescription}
           >
             <Input
+              innerRef={commentInputRef}
+              isFailed={commentRequiredError}
               value={commentInputValue}
-              onChangeText={setComment}
-              placeholder={t('send_screen_steps.comfirm.comment_placeholder')}
+              onChangeText={handleCommentChange}
+              placeholder={
+                isCommentRequired
+                  ? t('send_screen_steps.comfirm.comment_placeholder_required')
+                  : t('send_screen_steps.comfirm.comment_placeholder')
+              }
               returnKeyType="done"
               multiline
               blurOnSubmit
@@ -250,7 +318,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
       </StepScrollView>
 
       <BottomButtonWrap>
-        <Button onPress={onConfirm} disabled={commentError} isLoading={isSending}>
+        <Button onPress={handleConfirm} disabled={commentError} isLoading={isSending}>
           {t('confirm_sending_submit')}
         </Button>
       </BottomButtonWrap>

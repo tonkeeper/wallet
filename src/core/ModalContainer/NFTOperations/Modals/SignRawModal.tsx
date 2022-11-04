@@ -1,22 +1,22 @@
 import React, { memo, useMemo } from 'react';
-import { Icon, Text } from '$uikit';
-import { Toast } from '$uikit/Toast/new';
+import { Highlight, Icon, Text } from '$uikit';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
-import { debugLog, ns } from '$utils';
+import { debugLog, lowerCaseFirstLetter, ns, truncateDecimal } from '$utils';
 import { t } from '$translation';
-import { AccountEvent } from 'tonapi-sdk-js';
+import { AccountEvent, ActionTypeEnum } from 'tonapi-sdk-js';
 import { SignRawAction } from './SignRawAction';
-import { store } from '$store';
-import { Ton } from '$libs/Ton';
+import { store, Toast } from '$store';
 import * as S from '../NFTOperations.styles';
 import { Modal, useNavigation } from '$libs/navigation';
+import { Ton } from '$libs/Ton';
+import { copyText } from '$hooks/useCopyText';
 
 interface SignRawModalProps {
   action: Awaited<ReturnType<NFTOperations['signRaw']>>;
-  accountEvent: AccountEvent;
+  accountEvent?: AccountEvent;
   options: TxBodyOptions;
   params: SignRawParams;
 }
@@ -24,7 +24,7 @@ interface SignRawModalProps {
 export const SignRawModal = memo<SignRawModalProps>((props) => {
   const { accountEvent, options, params, action } = props;
   
-  const { footerRef, onConfirm } = useNFTOperationState(options, params);
+  const { footerRef, onConfirm } = useNFTOperationState(options);
   const unlockVault = useUnlockVault();
 
   const handleConfirm = onConfirm(async ({ startLoading }) => {
@@ -38,60 +38,81 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   });
 
   const hasWarning = useMemo(() => {
-    const getComment = (payload?: string) => {
-      if (!payload) {
-        return null;
-      }
-      try {
-        const cell = Ton.base64ToCell(payload);
-        return Ton.parseComment(cell!);
-      } catch (err) {
-        return null;
-      }
-    };
-
-    return params.messages.some(
-      (message) =>
-        !getComment(message.payload) && (!!message.stateInit || !!message.payload),
-    );
-  }, [action, params.messages]);
+    return !accountEvent;
+  }, [accountEvent]);
 
   const actions = useMemo(() => {
-    if (!accountEvent) {
-      return [];
+    if (!accountEvent || accountEvent?.actions?.[0]?.type === 'Unknown') {
+      return params.messages.map((message) => ({
+        type: 'Unknown',
+        Unknown: {
+          address: message.address,
+          amount: message.amount,
+        },
+      }));
     }
-
-    return accountEvent.actions.map((action, index) => ({
-      action,
-      message: params.messages[index],
-    }));
+    
+    return accountEvent.actions;
   }, [accountEvent, params.messages]);
 
   const headerTitle = useMemo(() => {
-    if (params.messages.length > 1) {
+    if (actions.length > 1) {
       return t('txActions.signRaw.title');
     }
 
-    const action = accountEvent.actions[0];
+    const action = actions[0] ?? {};
+
+    if (action.type === ActionTypeEnum.AuctionBid) {  
+      const data = action[ActionTypeEnum.AuctionBid];
+
+      if (data.auction_type === 'DNS.tg') {
+        return undefined;
+      }
+    }
+
+    if (action.type === ActionTypeEnum.NftItemTransfer) {  
+      return undefined;
+    }
+
     const type = [
-      'tonTransfer',
-      'contractDeploy',
-      'jettonTransfer',
-      'nftItemTransfer',
-      'subscribe',
-      'unSubscribe',
+      'TonTransfer',
+      'ContractDeploy',
+      'JettonTransfer',
+      'NftItemTransfer',
+      'Subscribe',
+      'UnSubscribe',
     ].find((type) => type in action);
 
-    return type 
-      ? t(`txActions.signRaw.types.${type}`) 
+    return type
+      ? t(`txActions.signRaw.types.${lowerCaseFirstLetter(type)}`)
       : t('txActions.signRaw.types.unknownTransaction');
-  }, [params.messages.length, accountEvent.actions]);
+  }, [actions]);
+
+  const totalFee = useMemo(() => {
+    const fee = accountEvent?.fee;
+
+    if (fee) {
+      return `≈ ${truncateDecimal(Ton.fromNano(fee.total.toString()), 1, true)} TON`;
+    }
+  }, [accountEvent]);
 
   return (
     <Modal>
       <Modal.Header title={headerTitle} />
       <Modal.ScrollView>
         <S.Container>
+          {actions.length > 1 && totalFee && (
+            <S.Info>
+              <Highlight onPress={() => copyText(totalFee)}>
+                <S.InfoItem>
+                  <S.InfoItemLabel>{t('txActions.signRaw.totalFee')}</S.InfoItemLabel>
+                  <S.InfoItemValue>
+                    <Text variant="body1">{totalFee}</Text>
+                  </S.InfoItemValue>
+                </S.InfoItem>
+              </Highlight>
+            </S.Info>
+          )}
           {hasWarning && (
             <S.WaringContainer>
               <S.WarningInfo>
@@ -108,13 +129,13 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
             </S.WaringContainer>
           )}
         </S.Container>
-        {actions.map(({ action, message }, index) => (
+        {actions.map((action, index) => (
           <SignRawAction
-            totalFee={accountEvent.fee}
-            isOneMessage={params.messages.length === 1}
             key={`${action.type}-${index}`}
-            message={message}
+            countActions={actions.length}
+            totalFee={actions.length === 1 ? totalFee : undefined}
             action={action}
+            params={params}
           />
         ))}
       </Modal.ScrollView>
@@ -128,42 +149,42 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 export const useSignRawModal = () => {
   const nav = useNavigation();
 
-  const open = async (
-    params: SignRawParams, 
-    options: TxBodyOptions
-  ) => {
+  const open = async (params: SignRawParams, options: TxBodyOptions) => {
     const wallet = store.getState().wallet.wallet;
     if (!wallet) {
       return;
     }
-  
+
     try {
       Toast.loading();
-  
+
       const operations = new NFTOperations(wallet);
       const action = await operations.signRaw(params);
-      const accountEvent = await action.estimateTx();
-  
-      console.log(accountEvent);
-  
-      if (accountEvent) {
+
+      let accountEvent: AccountEvent | null = null;
+      try {
+        accountEvent = await action.estimateTx();
         Toast.hide();
-        
-        nav.openModal('SignRaw', { // TODO: change for new naviagtion 
-          accountEvent,
-          options,
-          params,
-          action,
-        });
-      } else {
-        Toast.fail('Wrong stateInit or payload, actions not found.');
+      } catch (err) {
+        debugLog('[SignRaw]: estimateTx error', JSON.stringify(err));
+
+        const tonapiError = err?.response?.data?.error;
+        const errorMessage = tonapiError ?? `no response; status code: ${err.status};`;
+
+        Toast.fail(`Emulation error: ${errorMessage}`, { duration: 5000 });
       }
+
+      nav.openModal('SignRaw', {
+        accountEvent,
+        options,
+        params,
+        action,
+      });
     } catch (err) {
-      debugLog(err);   
-  
+      debugLog('[SignRaw]:', err);
       Toast.fail('Operation error, please make sure the params is correct');
     }
-  }
+  };
 
   return { open };
-}
+};

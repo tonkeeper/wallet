@@ -1,10 +1,10 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as S from './JettonsList.style';
 import { AnimatedFlatList, ScrollHandler, Separator } from '$uikit';
 import { ns, formatAmount } from '$utils';
-import { useTranslator } from '$hooks';
+import { useJettonBalances, useTranslator } from '$hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { jettonsActions, jettonsSelector } from '$store/jettons';
 import { Switch } from 'react-native';
@@ -12,7 +12,7 @@ import { JettonBalanceModel } from '$store/models';
 
 export const JettonsList: FC = () => {
   const t = useTranslator();
-  const { jettonBalances, excludedJettons } = useSelector(jettonsSelector);
+  const { excludedJettons } = useSelector(jettonsSelector);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const dispatch = useDispatch();
 
@@ -22,7 +22,7 @@ export const JettonsList: FC = () => {
     [dispatch],
   );
 
-  const data = useMemo(() => jettonBalances, [jettonBalances]);
+  const data = useJettonBalances(true);
 
   function renderJetton({
     item: jetton,

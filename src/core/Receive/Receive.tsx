@@ -10,14 +10,12 @@ import * as S from './Receive.style';
 import { CurrencyIcon, Icon, NavBar, Text } from '$uikit';
 import { walletSelector } from '$store/wallet';
 import { deviceWidth, ns, triggerImpactLight } from '$utils';
-import { useTheme, useTranslator } from '$hooks';
+import { useTranslator } from '$hooks';
 import { toastActions } from '$store/toast';
-import { CryptoCurrencies, Decimals, TabletModalsWidth } from '$shared/constants';
-import { formatCryptoCurrency } from '$utils/currency';
+import { CryptoCurrencies, TabletModalsWidth } from '$shared/constants';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 
 export const Receive: FC<ReceiveProps> = ({ route }) => {
-  const theme = useTheme();
   const t = useTranslator();
   const dispatch = useDispatch();
   const qrSize = Math.min(deviceWidth, TabletModalsWidth) - ns(64) * 2 - ns(16) - ns(12);
@@ -31,23 +29,13 @@ export const Receive: FC<ReceiveProps> = ({ route }) => {
   const [scrollTop, setScrollTop] = useState(0);
 
   // only useful for invoices (with amount included)
-  const address2url = useCallback(
-    (addr: string) => {
-      if (currency === CryptoCurrencies.Ton) {
-        return 'ton://transfer/' + addr;
-      } else {
-        return addr;
-      }
-    },
-    [currency],
-  );
+  const address2url = useCallback((addr: string) => {
+    return 'ton://transfer/' + addr;
+  }, []);
 
-  const address4copy = useCallback(
-    (addr: string) => {
-      return addr;
-    },
-    [currency],
-  );
+  const address4copy = useCallback((addr: string) => {
+    return addr;
+  }, []);
 
   const handleCopy = useCallback(() => {
     Clipboard.setString(address4copy(address[currency]));
@@ -68,12 +56,12 @@ export const Receive: FC<ReceiveProps> = ({ route }) => {
   }, []);
 
   const svgCode = useMemo(() => {
-    return vkQr.createQR(address[currency], {
+    return vkQr.createQR(address2url(address[currency]), {
       qrSize: qrSize,
       isShowLogo: false,
       foregroundColor: '#000',
     });
-  }, [address, currency, qrSize]);
+  }, [address, address2url, currency, qrSize]);
 
   function renderContent() {
     return (

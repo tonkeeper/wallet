@@ -109,3 +109,9 @@ export const textStyles = StyleSheet.create({
     opacity: 0.72,
   },
 });
+
+export const CollectionNameWrap = styled.View<{ withIcon?: boolean }>`
+  flex-direction: row;
+  align-items: center;
+  padding-right: ${({ withIcon }) => (!withIcon ? 0 : ns(12))}px;
+`;

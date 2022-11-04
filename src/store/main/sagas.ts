@@ -9,7 +9,7 @@ import BigNumber from 'bignumber.js';
 import { mainActions, mainSelector } from './index';
 import { Wallet } from '$blockchain';
 import { batchActions } from '$store';
-import { walletActions } from '$store/wallet';
+import { walletActions, walletSelector } from '$store/wallet';
 import { ratesActions } from '$store/rates';
 import * as SplashScreen from 'expo-splash-screen';
 import { eventsActions } from '$store/events';
@@ -19,6 +19,7 @@ import {
   getServerConfig,
   ServerConfigVersion,
   setServerConfig,
+  updateServerConfig,
 } from '$shared/constants';
 import {
   getAddedCurrencies,
@@ -61,6 +62,8 @@ import { initStats } from '$utils';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { favoritesActions } from '$store/favorites';
+import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
+import { clearSubscribeStatus } from '$utils/messaging';
 
 SplashScreen.preventAutoHideAsync()
   .then((result) =>
@@ -100,7 +103,7 @@ function* loadServerConfig(isTestnet: boolean, canRetry = false) {
 }
 
 function* initWorker() {
-  BigNumber.config({ EXPONENTIAL_AT: 15 });
+  BigNumber.config({ EXPONENTIAL_AT: 1e9 });
 
   const isTestnet = yield call(getIsTestnet);
   yield put(mainActions.setTestnet(isTestnet));
@@ -109,6 +112,7 @@ function* initWorker() {
 
 export function* initHandler(isTestnet: boolean, canRetry = false) {
   let serverConfig = yield call(getSavedServerConfig, isTestnet);
+  let devConfig = yield call(MainDB.getDevConfig);
   const isHasCache = !!serverConfig;
   let needRefreshConfig = true;
   if (!serverConfig || serverConfig._version !== ServerConfigVersion) {
@@ -156,8 +160,8 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     yield call(initHandler, isTestnet, true);
     return;
   }
-
   setServerConfig(serverConfig, isTestnet);
+  updateServerConfig(devConfig);
 
   initStats();
 
@@ -199,6 +203,9 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.loadJettons());
     yield put(subscriptionsActions.loadSubscriptions());
+    const { wallet: walletNew } = yield select(walletSelector);
+    const address = yield call([walletNew.ton, 'getAddress']);
+    yield call(reloadSubscriptionsFromServer, address);
   } else {
     yield put(walletActions.endLoading());
   }
@@ -241,6 +248,7 @@ function* completeIntroWorker() {
 export function* resetAll(isTestnet: boolean) {
   yield call(destroyEventsManager);
   yield call(Cache.clearAll, getWalletName());
+  yield call(clearSubscribeStatus);
   yield call(JettonsCache.clearAll, getWalletName());
   yield put(
     batchActions(

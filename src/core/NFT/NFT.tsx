@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import * as S from './NFT.style';
-import {Badge, Button, Icon, NavBar, Text} from '$uikit';
+import { Button, Icon, NavBar, Text } from '$uikit';
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
 import { ImageWithTitle } from '$core/NFT/ImageWithTitle/ImageWithTitle';
-import { checkIsTonDiamondsNFT, maskifyTonAddress, ns } from '$utils';
+import { checkIsTonDiamondsNFT, compareAddresses, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslator } from '$hooks';
 import { Properties } from '$core/NFT/Properties/Properties';
@@ -17,20 +17,20 @@ import { useNFT } from '$hooks/useNFT';
 import { Linking, Platform, Share } from 'react-native';
 import { TonDiamondFeature } from './TonDiamondFeature/TonDiamondFeature';
 import { useDispatch, useSelector } from 'react-redux';
-import { walletSelector } from '$store/wallet';
+import { walletAddressSelector } from '$store/wallet';
 import { NFTModel, TonDiamondMetadata } from '$store/models';
 import { useFlags } from '$utils/flags';
 import { LinkingDomainButton } from './LinkingDomainButton';
 import { nftsActions } from '$store/nfts';
 import { useNavigation } from '$libs/navigation';
-import { NFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
+import { dnsToUsername } from '$utils/dnsToUsername';
 
 export const NFT: React.FC<NFTProps> = ({ route }) => {
   const flags = useFlags(['disable_nft_markets', 'disable_apperance']);
 
   const dispatch = useDispatch();
   const nav = useNavigation();
-  const { address } = useSelector(walletSelector);
+  const address = useSelector(walletAddressSelector);
   const nftFromHistory = useNFT(route.params.keyPair);
 
   const [nft, setNft] = useState(nftFromHistory);
@@ -46,7 +46,8 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
     [nft],
   );
 
-  const isDNS = !!nft.dns;
+  const isTG = (nft.dns || nft.name)?.endsWith('.t.me');
+  const isDNS = !!nft.dns && !isTG;
   const isTonDiamondsNft = checkIsTonDiamondsNFT(nft);
 
   const t = useTranslator();
@@ -54,7 +55,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
   const scrollRef = useRef<Animated.ScrollView>(null);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const canTransfer = useMemo(
-    () => nft.ownerAddress === address.ton,
+    () => compareAddresses(nft.ownerAddress, address.ton),
     [nft.ownerAddress, address.ton],
   );
 
@@ -72,8 +73,8 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
   }, [nft.marketplaceURL]);
 
   const handleTransferNft = useCallback(() => {
-    nav.openModal('NFTTransferInputAddress', { 
-      nftAddress: nft.address 
+    nav.openModal('NFTTransferInputAddress', {
+      nftAddress: nft.address,
     });
   }, [nft.address]);
 
@@ -95,12 +96,16 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
   const videoUri = isTonDiamondsNft ? nft.metadata?.animation_url : undefined;
 
   const title = useMemo(() => {
+    if (isTG) {
+      return dnsToUsername(nft.name);
+    }
+
     if (isDNS) {
       return nft.dns;
     }
 
     return nft.name || maskifyTonAddress(nft.address);
-  }, [isDNS, nft.dns, nft.name, nft.address]);
+  }, [isDNS, isTG, nft.dns, nft.name, nft.address]);
 
   return (
     <S.Wrap>
@@ -137,10 +142,10 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
         >
           {nft.name || nft.collection?.name || nft.content.image.baseUrl ? (
             <ImageWithTitle
-              uri={isDNS ? undefined : nft.content.image.baseUrl}
+              uri={(isDNS || isTG) ? undefined : nft.content.image.baseUrl}
               lottieUri={lottieUri}
               videoUri={videoUri}
-              title={nft.dns || nft.name}
+              title={isTG ? dnsToUsername(nft.name) : (nft.dns || nft.name)}
               collection={isDNS ? 'TON DNS' : nft.collection?.name}
               isVerified={isDNS || nft.isApproved}
               description={nft.description}
@@ -170,17 +175,17 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
             {isOnSale ? (
               <S.OnSaleText>
                 <Text variant="body2" color="foregroundSecondary">
-                  {t('nft_on_sale_text')}
+                  {isDNS ? t('dns_on_sale_text') : t('nft_on_sale_text')}
                 </Text>
               </S.OnSaleText>
             ) : null}
-            {!!nft.dns && (
+            {isDNS && (
               <LinkingDomainButton
                 disabled={isOnSale}
                 onLink={setOwnerAddress}
                 ownerAddress={nft.ownerAddress}
                 domainAddress={nft.address}
-                domain={nft.dns}
+                domain={nft.dns!}
               />
             )}
             {nft.marketplaceURL && !flags.disable_nft_markets ? (

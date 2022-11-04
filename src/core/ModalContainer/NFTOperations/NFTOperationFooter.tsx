@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { Icon, Loader, Text, TransitionOpacity } from '$uikit';
 import {
   debugLog,
@@ -17,6 +17,7 @@ import { t } from '$translation';
 import * as S from './NFTOperations.styles';
 import { useNavigation } from '$libs/navigation';
 import {eventsActions} from "$store/events";
+import axios from 'axios';
 
 enum States {
   INITIAL,
@@ -31,21 +32,42 @@ type ConfirmFn = (options: { startLoading: () => void }) => Promise<void>;
 
 // Wrapper action footer for TxRequest
 // TODO: Rename NFTOperation -> Action
-export const useNFTOperationState = (txBody: TxBodyOptions) => {
+export const useNFTOperationState = (txBody?: TxBodyOptions) => {
   const { footerRef, onConfirm: invokeConfirm } = useActionFooter();
 
   const onConfirm = (confirm: ConfirmFn) => async () => {
     try {
-      if (txBody.expires_sec < getTimeSec()) {
+      if (txBody && txBody.expires_sec < getTimeSec()) {
         throw new NFTOperationError(t('nft_operations_expired'));
       }
 
       await invokeConfirm(confirm)();
+      if (txBody?.response_options?.callback_url) {
+        const callbackUrl = txBody.response_options.callback_url;
+
+        try {
+          await axios.get(callbackUrl);
+        } catch (err) {
+          debugLog('[NFTOperationCallback]:', err, err.response.status, err.response.data);
+        }
+      }
+
+      if (txBody?.response_options?.return_url) {
+        const returnUrl = txBody.response_options.return_url;
+        try {
+          await delay(2000);
+          await Linking.openURL(returnUrl);
+        } catch (err) {
+          debugLog(err);
+        }
+      }
     } catch (error) {
       if (error instanceof NFTOperationError) {
         if (error?.message) {
           footerRef.current?.setError(error.message);
         }
+      } else {
+        debugLog(error);
       }
     }
   };
@@ -70,6 +92,10 @@ export const useActionFooter = () => {
     } catch (error) {
       if (error instanceof UnlockVaultError) {
         dispatch(toastActions.fail(error?.message));
+      } else if (error instanceof NFTOperationError) {
+        if (error?.message) {
+          ref.current?.setError(error.message);
+        }
       } else {
         ref.current?.setError(t('error_occurred'));
         debugLog(error);

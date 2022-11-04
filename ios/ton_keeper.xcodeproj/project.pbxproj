@@ -33,11 +33,11 @@
 		20B32A5126E3B460001A78F9 /* TonPbkdf2.m in Sources */ = {isa = PBXBuildFile; fileRef = 20B32A5026E3B460001A78F9 /* TonPbkdf2.m */; };
 		30D7C1932775659F00BCF819 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D7C1922775659F00BCF819 /* File.swift */; };
 		398FCAFB2806F9C800635B71 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 398FCAFA2806F9C700635B71 /* GoogleService-Info.plist */; };
+		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		49B45BE827CA429494A060B3 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2AC12AAEC9497399E39F4D /* noop-file.swift */; };
 		76F9B0131AB7FE11009E6D10 /* libPods-ton_keeper-ton_keeperTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */; };
 		78B9AC5F426C0F28766DEC94 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7306F36185132B3874D4C /* ExpoModulesProvider.swift */; };
 		8D962335543EE7C6E1C6AB28 /* libPods-ton_keeper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 39C1C20FA83478354251FB2A /* libPods-ton_keeper.a */; };
-		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,10 +90,10 @@
 		6AFA288D04A19A6FAE554C55 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ton_keeper/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		8F2AC12AAEC9497399E39F4D /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "ton_keeper/noop-file.swift"; sourceTree = "<group>"; };
 		90508C4783A2D53FE0CB11CF /* Pods-ton_keeper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper.release.xcconfig"; path = "Target Support Files/Pods-ton_keeper/Pods-ton_keeper.release.xcconfig"; sourceTree = "<group>"; };
+		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = ton_keeper/SplashScreen.storyboard; sourceTree = "<group>"; };
 		C6251834116392B3FC02BA37 /* Pods-ton_keeper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper.debug.xcconfig"; path = "Target Support Files/Pods-ton_keeper/Pods-ton_keeper.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ton_keeper-ton_keeperTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = ton_keeper/SplashScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -611,7 +611,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ton_keeper/ton_keeper.entitlements;
-				CURRENT_PROJECT_VERSION = 216;
+				CURRENT_PROJECT_VERSION = 245;
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ton_keeper/Info.plist;
@@ -620,7 +620,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.0;
+				MARKETING_VERSION = 2.7.7;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -645,7 +645,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ton_keeper/ton_keeper.entitlements;
-				CURRENT_PROJECT_VERSION = 216;
+				CURRENT_PROJECT_VERSION = 245;
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				INFOPLIST_FILE = ton_keeper/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -653,7 +653,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.0;
+				MARKETING_VERSION = 2.7.7;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

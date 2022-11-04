@@ -20,6 +20,7 @@ import { SetupNotifications } from '$core/SetupNotifications/SetupNotifications'
 import { Jetton } from '$core/Jetton/Jetton';
 import { JettonsList } from '$core/JettonsList/JettonsList';
 import { DeleteAccountDone } from '$core/DeleteAccountDone/DeleteAccountDone';
+import { EditConfig } from '$core/EditConfig/EditConfig';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -47,15 +48,9 @@ export const MainStack: FC = () => {
       <Stack.Screen name={MainStackRouteNames.Wallet} component={Wallet} />
       <Stack.Screen name={MainStackRouteNames.BackupWords} component={BackupWords} />
       <Stack.Screen name={MainStackRouteNames.ImportWallet} component={ImportWallet} />
-      <Stack.Screen
-        name={MainStackRouteNames.Subscriptions}
-        component={Subscriptions}
-      />
+      <Stack.Screen name={MainStackRouteNames.Subscriptions} component={Subscriptions} />
       <Stack.Screen name={MainStackRouteNames.CreatePin} component={CreatePin} />
-      <Stack.Screen
-        name={MainStackRouteNames.SetupBiometry}
-        component={SetupBiometry}
-      />
+      <Stack.Screen name={MainStackRouteNames.SetupBiometry} component={SetupBiometry} />
       <Stack.Screen
         name={MainStackRouteNames.SetupNotifications}
         component={SetupNotifications}
@@ -78,10 +73,8 @@ export const MainStack: FC = () => {
         }}
       />
       <Stack.Screen name={MainStackRouteNames.DevStack} component={DevStack} />
-      <Stack.Screen
-        name={MainStackRouteNames.Jetton}
-        component={Jetton}
-      />
+      <Stack.Screen name={MainStackRouteNames.EditConfig} component={EditConfig} />
+      <Stack.Screen name={MainStackRouteNames.Jetton} component={Jetton} />
       <Stack.Screen name={MainStackRouteNames.JettonsList} component={JettonsList} />
     </Stack.Navigator>
   );

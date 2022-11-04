@@ -5,10 +5,9 @@ import { useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { Base64, debugLog, isValidAddress } from '$utils';
-import { store } from '$store';
+import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import {
-  openConfirmSending,
   openCreateSubscription,
   openDeploy,
   openRequireWalletModal,
@@ -21,9 +20,10 @@ import { getTimeSec } from '$utils/getTimeSec';
 import { TonLoginClient } from '@tonapps/tonlogin-client';
 import { useNavigation } from '$libs/navigation';
 import { useSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
-import { Toast } from '$uikit/Toast/new';
 import { isSignRawParams } from '$utils/isSignRawParams';
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
+import { AppStackRouteNames } from '$navigation/navigationNames';
+import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -115,7 +115,7 @@ export function useDeeplinkingResolvers() {
             address,
             comment,
             onNext: (details) => {
-              openConfirmSending({
+              const options = {
                 currency,
                 address,
                 comment,
@@ -123,7 +123,17 @@ export function useDeeplinkingResolvers() {
                 fee: details.fee,
                 isInactive: details.isInactive,
                 withGoBack: resolveParams.withGoBack,
-              });
+                methodId: resolveParams.methodId,
+              };
+              if (options.methodId) {
+                nav.openModal('NewConfirmSending', options);
+              } else {
+                nav.push(AppStackRouteNames.ModalContainer, {
+                  modalName: ModalName.CONFIRM_SENDING,
+                  key: 'CONFIRM_SENDING',
+                  ...options,
+                });
+              }
             },
           }),
         );
@@ -178,7 +188,8 @@ export function useDeeplinkingResolvers() {
         nav.openModal('NFTSaleCancel', txBody);
         break;
       case 'sign-raw-payload':
-        signRawModal.open(txBody.params, txBody.options);
+        const { params, ...options } = txBody;
+        signRawModal.open(params, options);
         break;
       case 'deploy':
         openDeploy(txBody);

@@ -5,7 +5,7 @@ import { ns } from '$utils';
 import { useTheme, useTranslator } from '$hooks';
 import { Badge, Icon, Text } from '$uikit';
 import { ActionItemBaseProps } from './ActionItemBase.interface';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
 
 export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
   const {
@@ -35,6 +35,8 @@ export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
       return 'ic-tray-arrow-up-28';
     } else if (type === 'return') {
       return 'ic-return-28';
+    } else if (type === 'contract_deploy') {
+      return 'ic-gear-28';
     } else {
       return 'ic-tray-arrow-down-28';
     }
@@ -48,13 +50,21 @@ export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
           <S.ContWrap>
             <S.Icon
               style={{
-                backgroundColor:
-                  theme.colors[
+                backgroundColor: type === 'tg_dns' 
+                  ? 'transparent'
+                  : theme.colors[
                     isHighlighted ? 'backgroundQuaternary' : 'backgroundTertiary'
                   ],
               }}
             >
-              <Icon name={iconName} color="foregroundSecondary" />
+              {type === 'tg_dns' ? (
+                <Image 
+                  style={{ width: 44, height: 44 }} 
+                  source={require('$assets/tg-logo.png')} 
+                />
+              ) : (
+                <Icon name={iconName} color="foregroundSecondary" />
+              )}
               {isInProgress && (
                 <S.Sending>
                   <Icon name="ic-clock-16" color="foregroundPrimary" />

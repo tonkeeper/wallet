@@ -4,13 +4,12 @@ import BigNumber from 'bignumber.js';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 
-import { walletActions, walletSelector } from '$store/wallet/index';
+import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet/index';
 import { EncryptedVault, UnlockedVault, Vault, Wallet } from '$blockchain';
 import { mainActions } from '$store/main';
 import {
   CryptoCurrencies,
   PrimaryCryptoCurrencies,
-  TokenConfig,
 } from '$shared/constants';
 import {
   goBack,
@@ -29,6 +28,7 @@ import {
   DeployWalletAction,
   MigrateAction,
   OpenMigrationAction,
+  RefreshBalancesPageAction,
   ReloadBalanceTwiceAction,
   RestoreWalletAction,
   SendCoinsAction,
@@ -39,11 +39,9 @@ import {
 } from '$store/wallet/interface';
 import { eventsActions } from '$store/events';
 import { ratesActions } from '$store/rates';
-import { TransactionModel } from '$store/models';
 import {
   clearHiddenNotification,
   clearPrimaryFiatCurrency,
-  EventsDB,
   getMigrationState,
   MainDB,
   saveAddedCurrencies,
@@ -65,13 +63,15 @@ import { getTokenConfig, getWalletName } from '$shared/dynamicConfig';
 import { withRetryCtx } from '$store/retry';
 import { Cache } from '$store/events/manager/cache';
 import { destroyEventsManager } from '$store/events/sagas';
-import { debugLog, detectBiometryType, fuzzifyNumber, toNano, trackEvent } from '$utils';
+import { debugLog, detectBiometryType, toNano, trackEvent } from '$utils';
 import { Api } from '$api';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { Ton } from '$libs/Ton';
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
-import { AccountEvent } from 'tonapi-sdk-js';
+import { Tonapi } from '$libs/Tonapi';
+import TonWeb from 'tonweb';
+import { clearSubscribeStatus } from '$utils/messaging';
 
 function* generateVaultWorker() {
   try {
@@ -203,7 +203,11 @@ function* loadBalancesWorker() {
     yield call(saveBalances, balances);
 
     yield put(
-      batchActions(walletActions.setBalances(balances), walletActions.endLoading()),
+      batchActions(
+        walletActions.setBalances(balances),
+        walletActions.endLoading(),
+        mainActions.dismissBadHosts(),
+      ),
     );
 
     if (wallet.ton.isV4()) {
@@ -238,56 +242,29 @@ function* transferCoinsWorker(action: TransferCoinsAction) {
 function* checkLegacyBalances() {
   try {
     const balances: any = [];
-    const { wallet } = yield select(walletSelector);
+    const wallet = yield select(walletWalletSelector);
 
-    const tonweb = wallet.ton.getTonWeb();
-    //for (const version in ['v3R1', 'v3R2', 'v4R1']) {
-    let version = 'v3R1';
-    let address = yield call([wallet.ton, 'getAddressByWalletVersion'], version);
-    let info = yield withRetryCtx(
-      'checkLegacyBalance' + version,
-      [tonweb.provider, 'getWalletInfo'],
-      address,
+    const pubkey = TonWeb.utils.bytesToHex(wallet.vault.tonPublicKey);
+    const wallets = yield withRetryCtx(
+      'checkLegacyBalance',
+      [Tonapi, 'findByPubkey'],
+      pubkey,
     );
 
-    if (info && +info.balance > 0) {
-      balances.push({
-        balance: info.balance,
-        version,
-      });
+    for (let wallet of wallets) {
+      const versions = ['wallet_v3R1', 'wallet_v3R2', 'wallet_v4R1'];
+      const detectedVersion = wallet.interfaces.find((version) => versions.includes(version));
+      if (detectedVersion) {
+        if (wallet.balance > 0) {
+          const version = detectedVersion.replace('wallet_', '')
+          balances.push({
+            balance: wallet.balance,
+            version,
+          });
+        }
+      }
     }
-    // -------------
-    version = 'v3R2';
-    address = yield call([wallet.ton, 'getAddressByWalletVersion'], version);
-    info = yield withRetryCtx(
-      'checkLegacyBalance' + version,
-      [tonweb.provider, 'getWalletInfo'],
-      address,
-    );
-
-    if (info && +info.balance > 0) {
-      balances.push({
-        balance: info.balance,
-        version,
-      });
-    }
-    // -------------
-    version = 'v4R1';
-    address = yield call([wallet.ton, 'getAddressByWalletVersion'], version);
-    info = yield withRetryCtx(
-      'checkLegacyBalance' + version,
-      [tonweb.provider, 'getWalletInfo'],
-      address,
-    );
-
-    if (info && +info.balance > 0) {
-      balances.push({
-        balance: info.balance,
-        version,
-      });
-    }
-
-    //}
+    
     yield put(walletActions.setOldWalletBalance(balances));
   } catch (e) {}
 }
@@ -310,10 +287,10 @@ function* switchVersionWorker() {
   yield put(walletActions.refreshBalancesPage());
 }
 
-function* refreshBalancesPageWorker() {
+function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
   try {
     yield put(walletActions.loadBalances());
-    yield put(eventsActions.loadEvents({ isReplace: true }));
+    yield put(eventsActions.loadEvents({ isReplace: true, ignoreCache: action.payload }));
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.getIsFeatureEnabled());
     yield put(jettonsActions.loadJettons());
@@ -417,8 +394,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       decimals,
     } = action.payload;
 
-    const sendMode = isSendAll ? 128 : 3;
-
     const featureEnabled = yield call(Api.get, '/feature/enabled', {
       params: {
         currency,
@@ -441,7 +416,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         toNano(amount, decimals),
         unlockedVault,
         comment,
-        sendMode,
       );
     } else if (currency === CryptoCurrencies.Ton) {
       yield call(
@@ -450,7 +424,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         amount,
         unlockedVault,
         comment,
-        sendMode,
+        isSendAll ? 128 : 3,
       );
     } else {
       Alert.alert('not supported');
@@ -564,6 +538,7 @@ function* cleanWalletWorker() {
 
     const walletName = getWalletName();
     yield call(Cache.clearAll, walletName);
+    yield call(clearSubscribeStatus);
     yield call(JettonsCache.clearAll, walletName);
 
     if (isNewFlow) {

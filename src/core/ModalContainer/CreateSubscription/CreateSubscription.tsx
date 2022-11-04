@@ -20,8 +20,8 @@ import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { formatCryptoCurrency } from '$utils/currency';
 import { useTheme, useTranslator, useWalletInfo } from '$hooks';
 import { toastActions } from '$store/toast';
-import { eventsSelector } from '$store/events';
-import { walletSelector } from '$store/wallet';
+import {eventsEventsInfoSelector, eventsSelector} from '$store/events';
+import {walletSelector, walletWalletSelector} from '$store/wallet';
 import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 
@@ -35,10 +35,10 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   const theme = useTheme();
   const t = useTranslator();
 
-  const { wallet } = useSelector(walletSelector);
+  const wallet = useSelector(walletWalletSelector);
   const { amount: balance } = useWalletInfo(CryptoCurrencies.Ton);
 
-  const { eventsInfo } = useSelector(eventsSelector);
+  const eventsInfo = useSelector(eventsEventsInfoSelector);
   const [isLoading, setLoading] = useState(!isEdit);
   const [failed, setFailed] = useState(0);
   const [fee, setFee] = useState(
@@ -50,8 +50,6 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   const [isClose, setClosed] = useState(false);
   const [totalMoreThanBalance, setTotalMoreThanBalance] = React.useState(false);
   const closeTimer = useRef<any>(null);
-
-  console.log(subscription, info, passedFee);
 
   useEffect(() => {
     if (fee !== '~') {

@@ -26,6 +26,7 @@ import {
 } from '$shared/components/ImportWalletForm/WordHintsPopup';
 import { AddressStepProps } from './AddressStep.interface';
 import { getServerConfig } from '$shared/constants';
+import { AccountRepr } from 'tonapi-sdk-js';
 
 const TonWeb = require('tonweb');
 
@@ -35,6 +36,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     decimals,
     stepsScrollTop,
     setRecipient,
+    setRecipientAccountInfo,
     setAmount,
     setComment,
     onContinue,
@@ -92,7 +94,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
   );
 
   const updateRecipient = useCallback(
-    async (value: string) => {
+    async (value: string, accountInfo?: Partial<AccountRepr>) => {
       const link = parseTonLink(value);
 
       if (link.match && link.operation === 'transfer' && isValidAddress(link.address)) {
@@ -103,6 +105,10 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
         if (link.query.text) {
           setComment(link.query.text as string);
+        }
+
+        if (link.query.bin) {
+          return false;
         }
 
         value = link.address;
@@ -126,7 +132,6 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
       const domain = value.toLowerCase();
 
-      // TODO: ton dns
       if (domain.endsWith('.ton')) {
         setDnsLoading(true);
 
@@ -143,6 +148,10 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
       }
 
       if (isValidAddress(value)) {
+        if (accountInfo) {
+          setRecipientAccountInfo(accountInfo as AccountRepr);
+        }
+
         setRecipient({ address: value });
 
         return true;
@@ -159,15 +168,17 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
       setAmount,
       setComment,
       setRecipient,
+      setRecipientAccountInfo,
     ],
   );
 
   const handlePressSuggest = useCallback(
     (suggest: SuggestedAddress) => {
-      const value =
-        suggest.type === SuggestedAddressType.FAVORITE ? suggest.name! : suggest.address;
+      const isFavorite = suggest.type === SuggestedAddressType.FAVORITE;
+      const value = isFavorite ? suggest.name! : suggest.address;
+      const accountInfo = !isFavorite ? { name: suggest.name } : undefined;
 
-      updateRecipient(value);
+      updateRecipient(value, accountInfo);
 
       onContinue();
     },

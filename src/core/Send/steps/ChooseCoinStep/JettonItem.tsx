@@ -1,5 +1,5 @@
 import { JettonBalanceModel } from '$store/models';
-import { CurrencyIcon, Separator, TokenListItem } from '$uikit';
+import { CurrencyIcon, TokenListItem } from '$uikit';
 import { formatAmount } from '$utils';
 import React, { FC, memo } from 'react';
 

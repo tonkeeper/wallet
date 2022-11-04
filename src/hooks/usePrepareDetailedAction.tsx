@@ -3,7 +3,7 @@ import { ActionType, EventModel } from '$store/models';
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
-import {format, fromNano, maskifyAddress, maskifyTonAddress} from '$utils';
+import { compareAddresses, format, fromNano, maskifyAddress, maskifyTonAddress } from '$utils';
 import BigNumber from 'bignumber.js';
 import { useTranslator } from '$hooks/useTranslator';
 import { formatCryptoCurrency } from '$utils/currency';
@@ -93,21 +93,40 @@ export function usePrepareDetailedAction(
     }
 
     if (ActionType.Subscribe === ActionType[rawAction.type]) {
-      sentLabelTranslationString = 'transaction_subscription_date';
       const amount = TonWeb.utils.fromNano(new BigNumber(action.amount).abs().toString());
-      label = '-' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+      if (compareAddresses(action.beneficiary.address, address.ton)) {
+        sentLabelTranslationString = 'transaction_receive_date';
+        label = '+' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+      } else {
+        sentLabelTranslationString = 'transaction_subscription_date';
+        label = '-' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+      }
     }
 
     if (ActionType.UnSubscribe === ActionType[rawAction.type]) {
       sentLabelTranslationString = 'transaction_unsubscription_date';
-      const amount = TonWeb.utils.fromNano(
-        new BigNumber(event.fee.total).abs().toString(),
-      );
-      label = '-' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+      label = t('transaction_unsubscription');
     }
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
+      sentLabelTranslationString = 'transaction_contract_deploy_date';
       label = t('transaction_type_contract_deploy');
+    }
+
+    if (ActionType.AuctionBid === ActionType[rawAction.type]) {
+      sentLabelTranslationString = 'transaction_bid_date';
+      const amount = TonWeb.utils.fromNano(new BigNumber(action.amount.value).abs().toString());
+      label = '-' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+
+      infoRows.push({
+        label: t('transaction_bid_dns'),
+        value: action.nft.dns,
+      });
+
+      infoRows.push({
+        label: t('transaction_bid_collection_name'),
+        value: action.nft.collection.name,
+      });
     }
 
     const accountToDisplay = isReceive ? action.sender : action.recipient;

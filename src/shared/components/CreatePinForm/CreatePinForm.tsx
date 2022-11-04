@@ -17,14 +17,14 @@ import { InlineKeyboard, PinCode } from '$uikit';
 import { PinCodeRef } from '$uikit/PinCode/PinCode.interface';
 import { deviceWidth } from '$utils';
 import { CreatePinFormProps } from './CreatePinForm.interface';
-import { walletSelector } from '$store/wallet';
+import { walletWalletSelector } from '$store/wallet';
 import { useTranslator } from '$hooks';
 
 export const CreatePinForm: FC<CreatePinFormProps> = (props) => {
   const { onPinCreated, validateOldPin = false, onVaultUnlocked } = props;
 
   const t = useTranslator();
-  const { wallet } = useSelector(walletSelector);
+  const wallet = useSelector(walletWalletSelector);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const pinRef = useRef<PinCodeRef>(null);
   const oldPinRef = useRef<PinCodeRef>(null);

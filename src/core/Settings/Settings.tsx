@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, {FC, useCallback, useEffect, useMemo} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Rate, { AndroidMarket } from 'react-native-rate';
 import { Alert, Linking, View } from 'react-native';
@@ -10,8 +10,8 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 import * as S from './Settings.style';
 import { PopupSelect, ScrollHandler, Text } from '$uikit';
 import { useNavigation, useTranslator } from '$hooks';
-import { mainSelector } from '$store/main';
-import { subscriptionsSelector } from '$store/subscriptions';
+import {fiatCurrencySelector, mainSelector} from '$store/main';
+import {hasSubscriptionsSelector, subscriptionsInfoSelector, subscriptionsSelector} from '$store/subscriptions';
 import {
   openAppearance,
   openDeleteAccountDone,
@@ -23,7 +23,12 @@ import {
   openSecurityMigration,
   openSubscriptions,
 } from '$navigation';
-import { walletActions, walletSelector } from '$store/wallet';
+import {
+  walletActions,
+  walletOldBalancesSelector,
+  walletVersionSelector,
+  walletWalletSelector,
+} from '$store/wallet';
 import {
   APPLE_STORE_ID,
   getServerConfig,
@@ -33,16 +38,16 @@ import {
   SelectableVersionsConfig,
   IsTablet,
 } from '$shared/constants';
-import { hNs, maskifyAddress, ns, useHasDiamondsOnBalance } from '$utils';
+import {hNs, maskifyAddress, ns, trackEvent, useHasDiamondsOnBalance} from '$utils';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { MainDB } from '$database';
 import { useNotifications } from '$hooks/useNotifications';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
-import { jettonsSelector } from '$store/jettons';
+import { jettonsBalancesSelector } from '$store/jettons';
 import { useAllAddresses } from '$hooks/useAllAddresses';
 import { useFlags } from '$utils/flags';
-        
+
 export const Settings: FC = () => {
   const flags = useFlags(['disable_apperance']);
 
@@ -52,18 +57,19 @@ export const Settings: FC = () => {
   const notificationsBadge = useNotificationsBadge();
   const notifications = useNotifications();
 
-  const { fiatCurrency } = useSelector(mainSelector);
+  const fiatCurrency = useSelector(fiatCurrencySelector);
   const dispatch = useDispatch();
-  const { subscriptionsInfo } = useSelector(subscriptionsSelector);
-  const { wallet, version } = useSelector(walletSelector);
-  const { jettonBalances } = useSelector(jettonsSelector);
+  const hasSubscriptions = useSelector(hasSubscriptionsSelector);
+  const wallet = useSelector(walletWalletSelector);
+  const version = useSelector(walletVersionSelector);
+  const jettonBalances = useSelector(jettonsBalancesSelector);
   const allTonAddesses = useAllAddresses();
+  const oldWalletBalances = useSelector(walletOldBalancesSelector);
 
   const handleRateApp = useCallback(() => {
     const options = {
-      preferInApp: true,
+      preferInApp: false,
       AppleAppID: APPLE_STORE_ID,
-      openAppStoreIfInAppFails: true,
       GooglePackageName: GOOGLE_PACKAGE_NAME,
       preferredAndroidMarket: AndroidMarket.Google,
     };
@@ -115,8 +121,13 @@ export const Settings: FC = () => {
   }, []);
 
   const versions = useMemo(() => {
-    return Object.keys(SelectableVersionsConfig) as SelectableVersion[];
-  }, []);
+    return Object.keys(SelectableVersionsConfig).filter((key) => {
+      if (SelectableVersionsConfig[key].hideIfBalanceIsZero) {
+        return !!oldWalletBalances.find((balance) => balance.version === key);
+      }
+      return true;
+    }) as SelectableVersion[];
+  }, [oldWalletBalances]);
 
   const handleChangeVersion = useCallback(
     (version: SelectableVersion) => {
@@ -124,10 +135,6 @@ export const Settings: FC = () => {
     },
     [dispatch],
   );
-
-  const hasSubscriptions = useMemo(() => {
-    return Object.values(subscriptionsInfo).length > 0;
-  }, [subscriptionsInfo]);
 
   const handleDevMenu = useCallback(() => {
     openDevMenu();
@@ -165,6 +172,7 @@ export const Settings: FC = () => {
         text: t('settings_delete_alert_button'),
         style: 'destructive',
         onPress: () => {
+          trackEvent('delete_wallet');
           notifications.unsubscribe();
           openDeleteAccountDone();
         },

@@ -6,8 +6,8 @@ import { Dimensions } from 'react-native';
 import { ActionButtonProps, BalanceItemProps } from './BalanceItem.interface';
 import * as S from './BalanceItem.style';
 import { CurrencyIcon, Icon, Text } from '$uikit';
-import { useTheme, useTranslator, useWalletInfo } from '$hooks';
-import { walletSelector } from '$store/wallet';
+import { useJettonBalances, useTranslator, useWalletInfo } from '$hooks';
+import { walletWalletSelector } from '$store/wallet';
 import {
   openExchangeModal,
   openReceive,
@@ -17,7 +17,7 @@ import {
 } from '$navigation';
 import { Chart } from '$shared/components';
 import { format, ns } from '$utils';
-import { ratesSelector } from '$store/rates';
+import { ratesChartsSelector, ratesRatesSelector } from '$store/rates';
 import {
   CryptoCurrencies,
   CurrencyLongName,
@@ -26,15 +26,13 @@ import {
   getServerConfigSafe,
 } from '$shared/constants';
 import { formatCryptoCurrency, formatFiatCurrencyAmount } from '$utils/currency';
-import { mainSelector } from '$store/main';
+import { fiatCurrencySelector, mainSelector } from '$store/main';
 import { getRate } from '$hooks/useFiatRate';
-import { jettonsSelector } from '$store/jettons';
 
 const ScreenWidth = Dimensions.get('window').width;
 
 const ActionButton: FC<ActionButtonProps> = (props) => {
   const { children, onPress, icon, isLast, iconStyle } = props;
-  const theme = useTheme();
 
   return (
     <S.Action isLast={isLast}>
@@ -52,7 +50,6 @@ const ActionButton: FC<ActionButtonProps> = (props) => {
 export const BalanceItem: FC<BalanceItemProps> = (props) => {
   const { currency, showActions = false, borderStart = true, borderEnd = true } = props;
   const t = useTranslator();
-  const theme = useTheme();
 
   const currencyPrepared = useMemo(() => {
     let result = currency;
@@ -65,20 +62,14 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
     return result;
   }, [currency]);
 
-  const { wallet } = useSelector(walletSelector);
-  const { charts, rates } = useSelector(ratesSelector);
-  const { fiatCurrency } = useSelector(mainSelector);
-  const { jettonBalances, excludedJettons } = useSelector(jettonsSelector);
+  const wallet = useSelector(walletWalletSelector);
+  const rates = useSelector(ratesRatesSelector);
+  const charts = useSelector(ratesChartsSelector);
+  const fiatCurrency = useSelector(fiatCurrencySelector);
 
-  const availableJettons = useMemo(
-    () =>
-      jettonBalances.filter(
-        (jetton) => jetton.balance !== '0' && !excludedJettons[jetton.jettonAddress],
-      ),
-    [excludedJettons, jettonBalances],
-  );
+  const availableJettons = useJettonBalances();
 
-  const { amount, priceDiff, fiatInfo } = useWalletInfo(currency);
+  const { amount, fiatInfo } = useWalletInfo(currency);
 
   const handleOpen = useCallback(() => {
     //openAccessConfirmation();

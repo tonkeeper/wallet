@@ -25,6 +25,7 @@ import { t } from '$translation';
 import { Ton } from '$libs/Ton';
 import { getServerConfig } from '$shared/constants';
 import { AccountEvent, Configuration, SendApi, NFTApi } from 'tonapi-sdk-js';
+import axios from 'axios';
 
 const { NftCollection, NftItem, NftSale } = TonWeb.token.nft;
 
@@ -80,7 +81,7 @@ export class NFTOperations {
       : await wallet.getAddress();
 
     const amount = Ton.fromNano(params.amount);
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno(ownerAddress.toString(false));
 
     let stateInit: Cell;
     let nftCollectionAddress: string;
@@ -129,7 +130,7 @@ export class NFTOperations {
       ? new TonWeb.utils.Address(params.ownerAddress)
       : await wallet.getAddress();
 
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno(ownerAddress.toString(false));
 
     const amount = this.toNano(params.amount);
     const forwardAmount = this.toNano(params.forwardAmount);
@@ -171,7 +172,7 @@ export class NFTOperations {
       wallet = await this.getWalletByAddress(ownerAddress);
     }
 
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno((await wallet.getAddress()).toString(false));
     const responseAddress = await wallet.getAddress();
 
     const forwardPayload = new TextEncoder().encode(params.text ?? '');
@@ -203,7 +204,7 @@ export class NFTOperations {
       params.nftCollectionAddress,
     );
     const wallet = await this.getWalletByAddress(ownerAddress);
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno(ownerAddress);
 
     const amount = this.toNano(params.amount);
 
@@ -233,7 +234,7 @@ export class NFTOperations {
     const sale = new NftSale(wallet.provider, {});
     const payload = await sale.createCancelBody({});
     const amount = this.toNano(params.amount);
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno(params.ownerAddress);
 
     return this.methods(wallet, {
       toAddress: saleAddress,
@@ -263,7 +264,7 @@ export class NFTOperations {
 
     const createdStateInit = await sale.createStateInit();
     const amount = this.toNano(params.amount);
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno(ownerAddress);
 
     const body = new TonWeb.boc.Cell();
     body.bits.writeUint(1, 32); // OP deploy new auction
@@ -283,7 +284,7 @@ export class NFTOperations {
   public async salePlaceGetGems(params: NftSalePlaceGetgemsParams) {
     const wallet = this.getCurrentWallet();
     const amount = this.toNano(params.deployAmount);
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno((await wallet.getAddress()).toString(false));
 
     if (Number(params.forwardAmount) < 1) {
       throw new NFTOperationError('forwardAmount must be greater than 0');
@@ -328,7 +329,7 @@ export class NFTOperations {
 
   public async deploy(params: DeployParams) {
     const wallet = this.getCurrentWallet();
-    const seqno = await this.getSeqno(wallet);
+    const seqno = await this.getSeqno((await wallet.getAddress()).toString(false));
 
     const stateInitCell = TonWeb.boc.Cell.oneFromBoc(params.stateInitHex);
     const hashBytes = await stateInitCell.hash();
@@ -365,28 +366,29 @@ export class NFTOperations {
 
   public async signRaw(params: SignRawParams) {
     const wallet = this.getCurrentWallet();
-    const seqno = await this.getSeqno(wallet);
 
-    const sendMode = 3;
-    const signingMessage = (wallet as any).createSigningMessage(seqno);
+    const signRawMethods = async (secretKey?: Uint8Array) => {
+      const seqno = await this.getSeqno((await wallet.getAddress()).toString(false));
 
-    const messages = [...params.messages].splice(0, 4);
-    for (let message of messages) {
-      const order = TonWeb.Contract.createCommonMsgInfo(
-        TonWeb.Contract.createInternalMessageHeader(
-          new TonWeb.Address(message.address),
-          new TonWeb.utils.BN(this.toNano(message.amount)),
-        ),
-        Ton.base64ToCell(message.stateInit),
-        this.serializePayload(Ton.base64ToCell(message.payload)),
-      );
+      const sendMode = 3;
+      const signingMessage = (wallet as any).createSigningMessage(seqno);
 
-      signingMessage.bits.writeUint8(sendMode);
-      signingMessage.refs.push(order);
-    }
+      const messages = [...params.messages].splice(0, 4);
+      for (let message of messages) {
+        const order = TonWeb.Contract.createCommonMsgInfo(
+          TonWeb.Contract.createInternalMessageHeader(
+            new TonWeb.Address(message.address),
+            new TonWeb.utils.BN(this.toNano(message.amount)),
+          ),
+          Ton.base64ToCell(message.stateInit),
+          Ton.base64ToCell(message.payload),
+        );
 
-    const signRawMethods = (secretKey?: Uint8Array) =>
-      TonWeb.Contract.createMethod(
+        signingMessage.bits.writeUint8(sendMode);
+        signingMessage.refs.push(order);
+      }
+
+      return TonWeb.Contract.createMethod(
         wallet.provider,
         (wallet as any).createExternalMessage(
           signingMessage,
@@ -395,25 +397,29 @@ export class NFTOperations {
           !secretKey,
         ),
       );
+    }
 
     return {
       estimateTx: async (): Promise<AccountEvent | null> => {
-        try {
-          const methods = signRawMethods();
+        const methods = await signRawMethods();
 
-          const queryMsg = await methods.getQuery();
-          const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
+        const queryMsg = await methods.getQuery();
+        const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
 
-          const response = await this.sendApi.estimateTx({ sendBocRequest: { boc } });
+        const endpoint = getServerConfig('tonapiIOEndpoint');
 
-          return response;
-        } catch (e) {
-          console.log(e);
-          return null;
-        }
+        const resp = await axios.post(`${endpoint}/v1/send/estimateTx`, {
+          boc: boc
+        }, {
+          headers: {
+            Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+          }
+        });
+
+        return resp.data;
       },
       estimateFee: async () => {
-        const methods = signRawMethods();
+        const methods = await signRawMethods();
         const feeInfo = await methods.estimateFee();
         const fee = new BigNumber(feeInfo.source_fees.in_fwd_fee)
           .plus(feeInfo.source_fees.storage_fee)
@@ -423,7 +429,7 @@ export class NFTOperations {
         return truncateDecimal(Ton.fromNano(fee.toString()), 1, true);
       },
       send: async (secretKey: Uint8Array) => {
-        const methods = signRawMethods(secretKey);
+        const methods = await signRawMethods(secretKey);
 
         const queryMsg = await methods.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
@@ -490,8 +496,8 @@ export class NFTOperations {
   // Utils
   //
 
-  private async getSeqno(wallet: WalletContract) {
-    const seqno = await wallet.methods.seqno().call();
+  private async getSeqno(address: string) {
+    const seqno = await this.wallet.ton.getSeqno(address);
     return seqno ?? 0;
   }
 
@@ -518,7 +524,7 @@ export class NFTOperations {
         return truncateDecimal(Ton.fromNano(fee.toString()), 1, true);
       },
       send: async (secretKey: Uint8Array) => {
-        const myInfo = await wallet.provider.getWalletInfo(
+        const myInfo = await this.wallet.ton.getWalletInfo(
           (wallet.address as Address).toString(true, true, false),
         );
 
@@ -590,28 +596,12 @@ export class NFTOperations {
       throw new NFTOperationError('Wrong owner address');
     }
 
-    return this.wallet.vault.tonWalletByVersion(version);
+    const wallet = this.wallet.vault.tonWalletByVersion(version);
+    await wallet.getAddress();
+    return wallet;
   }
 
   private getCurrentWallet(): WalletContract {
     return this.wallet.vault.tonWallet;
-  }
-
-  private serializePayload(payload?: Cell | Uint8Array | string): Cell {
-    const payloadCell = new TonWeb.boc.Cell();
-    if (payload) {
-      if (typeof payload === 'string') {
-        if (payload.length > 0) {
-          payloadCell.bits.writeUint(0, 32);
-          payloadCell.bits.writeString(payload);
-        }
-      } else if ((payload as Cell).refs) {
-        return payload as Cell;
-      } else {
-        payloadCell.bits.writeBytes(payload as Uint8Array);
-      }
-    }
-
-    return payloadCell;
   }
 }

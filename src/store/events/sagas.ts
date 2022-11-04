@@ -11,14 +11,14 @@ import {
 import * as _ from 'lodash';
 
 import { eventsActions, eventsSelector } from '$store/events/index';
-import { walletActions, walletSelector } from '$store/wallet';
+import { walletActions, walletAddressSelector, walletSelector } from '$store/wallet';
 import { batchActions } from '$store';
 import { EventsMap, LoadEventsAction } from '$store/events/interface';
 import { getWalletName } from '$shared/dynamicConfig';
 import { EventsManager } from '$store/events/manager';
 import { debugLog } from '$utils';
-import { Cache } from '$store/events/manager/cache';
-import {subscriptionsActions} from "$store/subscriptions";
+import { jettonsActions } from '$store/jettons';
+import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 
 let manager: EventsManager | null;
 
@@ -75,7 +75,7 @@ function* loadEventsWorker(action: LoadEventsAction) {
       yield put(
         batchActions(
           eventsActions.setEvents({
-            events: yield call([manager, 'build']),
+            events: yield call([manager, 'build'], action.payload.ignoreCache),
             isReplace: true,
             isFromCache: true,
           }),
@@ -88,7 +88,7 @@ function* loadEventsWorker(action: LoadEventsAction) {
     yield put(
       batchActions(
         eventsActions.setEvents({
-          events: yield call([manager, 'fetch']),
+          events: yield call([manager, 'fetch'], action.payload.ignoreCache),
           isReplace: true,
         }),
         eventsActions.setCanLoadMore(yield call([manager, 'canLoadMore'])),
@@ -124,7 +124,9 @@ function* pollEventsWorker() {
         return transaction.inProgress;
       });
       if (!pendingEvent) {
-        yield put(subscriptionsActions.loadSubscriptions());
+        const address = yield select(walletAddressSelector);
+        yield call(reloadSubscriptionsFromServer, address.ton);
+        yield put(jettonsActions.loadJettons());
         yield put(walletActions.loadBalances());
         yield put(eventsActions.cancelPollEvents());
       }
