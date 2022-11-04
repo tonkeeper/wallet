@@ -42,7 +42,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   }, [accountEvent]);
 
   const actions = useMemo(() => {
-    if (!accountEvent) {
+    if (!accountEvent || accountEvent?.actions?.[0]?.type === 'Unknown') {
       return params.messages.map((message) => ({
         type: 'Unknown',
         Unknown: {
@@ -51,7 +51,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
         },
       }));
     }
-
+    
     return accountEvent.actions;
   }, [accountEvent, params.messages]);
 
@@ -135,6 +135,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
             countActions={actions.length}
             totalFee={actions.length === 1 ? totalFee : undefined}
             action={action}
+            params={params}
           />
         ))}
       </Modal.ScrollView>

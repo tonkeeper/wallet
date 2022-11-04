@@ -59,7 +59,7 @@ export const SignRawAction = React.memo<Props>((props) => {
   }
 
   if (action.type === ActionTypeEnum.Unknown) {
-    const message = params?.messages?.[0];
+    const message = action[ActionTypeEnum.Unknown];
 
     return (
       <UnknownAction 
