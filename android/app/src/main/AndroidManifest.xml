@@ -23,7 +23,7 @@
     android:hardwareAccelerated="true"
     android:largeHeap="true"
   >
-    <activity 
+    <activity
       android:name=".MainActivity" 
       android:label="@string/app_name" 
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" 
