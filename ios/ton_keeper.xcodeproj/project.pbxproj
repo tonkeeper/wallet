@@ -52,6 +52,10 @@
 		C4B6F043291012DE0070E2BE /* JSONAble.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02B291012DE0070E2BE /* JSONAble.swift */; };
 		C4B6F044291012DE0070E2BE /* UserDefaultWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02D291012DE0070E2BE /* UserDefaultWrapper.swift */; };
 		C4B6F045291012DE0070E2BE /* UserDefaultsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02E291012DE0070E2BE /* UserDefaultsService.swift */; };
+		C4FB2EE42912AF2800CB35D0 /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4FB2EE22912AF2700CB35D0 /* OpenSSL.xcframework */; };
+		C4FB2EE52912AF2800CB35D0 /* OpenSSL.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C4FB2EE22912AF2700CB35D0 /* OpenSSL.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C4FB2EE62912AF2800CB35D0 /* TON.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4FB2EE32912AF2700CB35D0 /* TON.xcframework */; };
+		C4FB2EE72912AF2800CB35D0 /* TON.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C4FB2EE32912AF2700CB35D0 /* TON.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +67,21 @@
 			remoteInfo = ton_keeper;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C4FB2EE82912AF2800CB35D0 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C4FB2EE52912AF2800CB35D0 /* OpenSSL.xcframework in Embed Frameworks */,
+				C4FB2EE72912AF2800CB35D0 /* TON.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		00E356EE1AD99517003FC87E /* ton_keeperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ton_keeperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -120,6 +139,8 @@
 		C4B6F02D291012DE0070E2BE /* UserDefaultWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultWrapper.swift; sourceTree = "<group>"; };
 		C4B6F02E291012DE0070E2BE /* UserDefaultsService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultsService.swift; sourceTree = "<group>"; };
 		C4B6F02F291012DE0070E2BE /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C4FB2EE22912AF2700CB35D0 /* OpenSSL.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = OpenSSL.xcframework; sourceTree = "<group>"; };
+		C4FB2EE32912AF2700CB35D0 /* TON.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = TON.xcframework; sourceTree = "<group>"; };
 		C6251834116392B3FC02BA37 /* Pods-ton_keeper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper.debug.xcconfig"; path = "Target Support Files/Pods-ton_keeper/Pods-ton_keeper.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ton_keeper-ton_keeperTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -138,6 +159,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4FB2EE62912AF2800CB35D0 /* TON.xcframework in Frameworks */,
+				C4FB2EE42912AF2800CB35D0 /* OpenSSL.xcframework in Frameworks */,
 				8D962335543EE7C6E1C6AB28 /* libPods-ton_keeper.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -174,6 +197,8 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C4FB2EE22912AF2700CB35D0 /* OpenSSL.xcframework */,
+				C4FB2EE32912AF2700CB35D0 /* TON.xcframework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				39C1C20FA83478354251FB2A /* libPods-ton_keeper.a */,
 				FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */,
@@ -231,26 +256,38 @@
 			name = ton_keeperTests;
 			sourceTree = "<group>";
 		};
+		C4A563532918CDB8001DDA44 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F022291012DE0070E2BE /* Images.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		C4A563552918CE8F001DDA44 /* Legacy */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F00D291012DE0070E2BE /* AppDelegate.h */,
+				C4B6F01E291012DE0070E2BE /* TonPbkdf2.h */,
+				C4B6F023291012DE0070E2BE /* AppDelegate.m */,
+				C4B6F020291012DE0070E2BE /* main.m */,
+				C4B6F00B291012DE0070E2BE /* TonPbkdf2.m */,
+				C4B6F01D291012DE0070E2BE /* SplashScreen.storyboard */,
+				C4B6F01F291012DE0070E2BE /* File.swift */,
+				C4B6F021291012DE0070E2BE /* noop-file.swift */,
+			);
+			path = Legacy;
+			sourceTree = "<group>";
+		};
 		C4B6F005291012DE0070E2BE /* ton_keeper */ = {
 			isa = PBXGroup;
 			children = (
 				C4B6F00C291012DE0070E2BE /* ton_keeper.entitlements */,
-				C4B6F00D291012DE0070E2BE /* AppDelegate.h */,
-				C4B6F01E291012DE0070E2BE /* TonPbkdf2.h */,
-				C4B6F00E291012DE0070E2BE /* Podfile.properties.json */,
-				C4B6F023291012DE0070E2BE /* AppDelegate.m */,
-				C4B6F020291012DE0070E2BE /* main.m */,
-				C4B6F00B291012DE0070E2BE /* TonPbkdf2.m */,
-				C4B6F01C291012DE0070E2BE /* GoogleService-Info.plist */,
-				C4B6F02F291012DE0070E2BE /* Info.plist */,
-				C4B6F01D291012DE0070E2BE /* SplashScreen.storyboard */,
-				C4B6F01F291012DE0070E2BE /* File.swift */,
-				C4B6F021291012DE0070E2BE /* noop-file.swift */,
-				C4B6F022291012DE0070E2BE /* Images.xcassets */,
 				C4B6F026291012DE0070E2BE /* Helper */,
 				C4B6F006291012DE0070E2BE /* KeychainService */,
+				C4A563552918CE8F001DDA44 /* Legacy */,
+				C4A563532918CDB8001DDA44 /* Resources */,
 				C4B6F024291012DE0070E2BE /* SupportingFiles */,
-				C4B6F015291012DE0070E2BE /* TonLib */,
 				C4B6F02C291012DE0070E2BE /* UserDefaultsService */,
 				C4B6F00F291012DE0070E2BE /* WalletStore */,
 			);
@@ -287,64 +324,12 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		C4B6F015291012DE0070E2BE /* TonLib */ = {
-			isa = PBXGroup;
-			children = (
-				C4B6F016291012DE0070E2BE /* Configuration */,
-				C4B6F017291012DE0070E2BE /* Key */,
-				C4B6F018291012DE0070E2BE /* Extensions */,
-				C4B6F019291012DE0070E2BE /* TONWrapper */,
-				C4B6F01A291012DE0070E2BE /* Model */,
-				C4B6F01B291012DE0070E2BE /* Errors */,
-			);
-			path = TonLib;
-			sourceTree = "<group>";
-		};
-		C4B6F016291012DE0070E2BE /* Configuration */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Configuration;
-			sourceTree = "<group>";
-		};
-		C4B6F017291012DE0070E2BE /* Key */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Key;
-			sourceTree = "<group>";
-		};
-		C4B6F018291012DE0070E2BE /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
-		C4B6F019291012DE0070E2BE /* TONWrapper */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = TONWrapper;
-			sourceTree = "<group>";
-		};
-		C4B6F01A291012DE0070E2BE /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
-		C4B6F01B291012DE0070E2BE /* Errors */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Errors;
-			sourceTree = "<group>";
-		};
 		C4B6F024291012DE0070E2BE /* SupportingFiles */ = {
 			isa = PBXGroup;
 			children = (
+				C4B6F00E291012DE0070E2BE /* Podfile.properties.json */,
+				C4B6F01C291012DE0070E2BE /* GoogleService-Info.plist */,
+				C4B6F02F291012DE0070E2BE /* Info.plist */,
 				C4B6F025291012DE0070E2BE /* Constants.swift */,
 			);
 			path = SupportingFiles;
@@ -464,6 +449,7 @@
 				B420B642277A60EBC44F3322 /* [CP] Copy Pods Resources */,
 				6DB02C2677103C9DDFB7799F /* [CP-User] [RNFB] Core Configuration */,
 				00569AE961EA489F7FF8096D /* [CP-User] [RNFB] Crashlytics Configuration */,
+				C4FB2EE82912AF2800CB35D0 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -800,7 +786,7 @@
 				CURRENT_PROJECT_VERSION = 239;
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				ENABLE_BITCODE = NO;
-				INFOPLIST_FILE = ton_keeper/Info.plist;
+				INFOPLIST_FILE = ton_keeper/SupportingFiles/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -833,7 +819,7 @@
 				CODE_SIGN_ENTITLEMENTS = ton_keeper/ton_keeper.entitlements;
 				CURRENT_PROJECT_VERSION = 239;
 				DEVELOPMENT_TEAM = CT523DK2KC;
-				INFOPLIST_FILE = ton_keeper/Info.plist;
+				INFOPLIST_FILE = ton_keeper/SupportingFiles/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
