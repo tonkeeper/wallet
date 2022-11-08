@@ -93,7 +93,7 @@
     "react-native-safe-area-context": "^4.3.1",
     "react-native-screens": "^3.15.0",
     "react-native-scrypt": "^1.2.1",
-    "react-native-securerandom": "^1.0.0",
+    "react-native-securerandom": "^1.0.1",
     "react-native-svg": "^12.1.1",
     "react-native-svg-transformer": "^0.14.3",
     "react-native-tweetnacl": "^1.0.5",
