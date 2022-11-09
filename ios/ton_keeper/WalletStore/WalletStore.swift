@@ -24,15 +24,15 @@ class WalletStore: NSObject {
     }
   }
   
-  func validate(words: [String],
-                _ resolve: @escaping RCTPromiseResolveBlock) {
+  func validate(_ words: [String],
+                resolve: @escaping RCTPromiseResolveBlock) {
     let isValid = Mnemonic.mnemonicValidate(mnemonicArray: words, password: "")
     resolve(isValid)
   }
   
-  func importWalletWithPasscode(words: [String],
+  func importWalletWithPasscode(_ words: [String],
                                 passcode: String,
-                                _ resolve: @escaping RCTPromiseResolveBlock,
+                                resolve: @escaping RCTPromiseResolveBlock,
                                 reject: @escaping RCTPromiseRejectBlock) {
     do {
       let keyPair = try getKeyPair(words: words)
@@ -53,8 +53,8 @@ class WalletStore: NSObject {
     }
   }
   
-  func importWalletWithBiometry(words: [String],
-                                _ resolve: @escaping RCTPromiseResolveBlock,
+  func importWalletWithBiometry(_ words: [String],
+                                resolve: @escaping RCTPromiseResolveBlock,
                                 reject: @escaping RCTPromiseRejectBlock) {
     do {
       let keyPair = try getKeyPair(words: words)
@@ -73,8 +73,8 @@ class WalletStore: NSObject {
     }
   }
   
-  func getWallet(pk: String,
-                 _ resolve: @escaping RCTPromiseResolveBlock,
+  func getWallet(_ pk: String,
+                 resolve: @escaping RCTPromiseResolveBlock,
                  reject: @escaping RCTPromiseRejectBlock) {
     if let wallet = userDefaultsService.wallets.first(where: {$0.pubkey == pk }) {
       resolve(wallet.toDict())
@@ -84,8 +84,8 @@ class WalletStore: NSObject {
     }
   }
   
-  func getWalletByAddress(address: String,
-                          _ resolve: @escaping RCTPromiseResolveBlock,
+  func getWalletByAddress(_ address: String,
+                          resolve: @escaping RCTPromiseResolveBlock,
                           reject: @escaping RCTPromiseRejectBlock) {
     if let wallet = userDefaultsService.wallets.first(where: {$0.pubkey == address }) {
       resolve(wallet.toDict())
@@ -95,8 +95,8 @@ class WalletStore: NSObject {
     }
   }
   
-  func updateWallet(pk: String, label: String,
-                    _ resolve: @escaping RCTPromiseResolveBlock,
+  func updateWallet(_ pk: String, label: String,
+                    resolve: @escaping RCTPromiseResolveBlock,
                     reject: @escaping RCTPromiseRejectBlock) {
     if let index = userDefaultsService.wallets.firstIndex(where: { $0.pubkey == pk }) {
       userDefaultsService.wallets[index].label = label
@@ -117,8 +117,8 @@ class WalletStore: NSObject {
     }
   }
   
-  func setCurrentWallet(pk: String,
-                        _ resolve: @escaping RCTPromiseResolveBlock,
+  func setCurrentWallet(_ pk: String,
+                        resolve: @escaping RCTPromiseResolveBlock,
                         reject: @escaping RCTPromiseRejectBlock) {
     if let wallet = userDefaultsService.wallets.first(where: { $0.pubkey == pk }) {
       userDefaultsService.currentWalletInfo = wallet
@@ -129,9 +129,9 @@ class WalletStore: NSObject {
     }
   }
   
-  func exportWithPasscode(pk: PublicKey,
+  func exportWithPasscode(_ pk: PublicKey,
                           passcode: String,
-                          _ resolve: @escaping RCTPromiseResolveBlock,
+                          resolve: @escaping RCTPromiseResolveBlock,
                           reject: @escaping RCTPromiseRejectBlock) {
     do {
       let mnemonicArray = try loadMnemonicWithPasscode(pk: pk, passcode: passcode)
@@ -144,8 +144,8 @@ class WalletStore: NSObject {
     }
   }
   
-  func exportWithBiometry(pk: PublicKey,
-                          _ resolve: @escaping RCTPromiseResolveBlock,
+  func exportWithBiometry(_ pk: PublicKey,
+                          resolve: @escaping RCTPromiseResolveBlock,
                           reject: @escaping RCTPromiseRejectBlock) {
     loadMnemonicWithBiometry(pk: pk) { result in
       var rejectError: Error?
@@ -169,9 +169,9 @@ class WalletStore: NSObject {
     }
   }
   
-  func backupWithPasscode(pk: PublicKey,
+  func backupWithPasscode(_ pk: PublicKey,
                           passcode: String,
-                          _ resolve: @escaping RCTPromiseResolveBlock,
+                          resolve: @escaping RCTPromiseResolveBlock,
                           reject: @escaping RCTPromiseRejectBlock) {
     do {
       let mnemonicArray = try loadMnemonicWithPasscode(pk: pk, passcode: passcode)
@@ -183,8 +183,8 @@ class WalletStore: NSObject {
     }
   }
   
-  func backupWithBiometry(pk: PublicKey,
-                          _ resolve: @escaping RCTPromiseResolveBlock,
+  func backupWithBiometry(_ pk: PublicKey,
+                          resolve: @escaping RCTPromiseResolveBlock,
                           reject: @escaping RCTPromiseRejectBlock) {
     loadMnemonicWithBiometry(pk: pk) { result in
       switch result {
