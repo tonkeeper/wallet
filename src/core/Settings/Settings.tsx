@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useEffect, useMemo} from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Rate, { AndroidMarket } from 'react-native-rate';
 import { Alert, Linking, View } from 'react-native';
@@ -10,8 +10,8 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 import * as S from './Settings.style';
 import { PopupSelect, ScrollHandler, Text } from '$uikit';
 import { useNavigation, useTranslator } from '$hooks';
-import {fiatCurrencySelector, mainSelector} from '$store/main';
-import {hasSubscriptionsSelector, subscriptionsInfoSelector, subscriptionsSelector} from '$store/subscriptions';
+import {alwaysShowV4R1Selector, fiatCurrencySelector, showV4R1Selector} from '$store/main';
+import { hasSubscriptionsSelector } from '$store/subscriptions';
 import {
   openAppearance,
   openDeleteAccountDone,
@@ -37,8 +37,9 @@ import {
   SelectableVersion,
   SelectableVersionsConfig,
   IsTablet,
+  SelectableVersions,
 } from '$shared/constants';
-import {hNs, maskifyAddress, ns, trackEvent, useHasDiamondsOnBalance} from '$utils';
+import { hNs, maskifyAddress, ns, trackEvent, useHasDiamondsOnBalance } from '$utils';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { MainDB } from '$database';
@@ -64,7 +65,7 @@ export const Settings: FC = () => {
   const version = useSelector(walletVersionSelector);
   const jettonBalances = useSelector(jettonsBalancesSelector);
   const allTonAddesses = useAllAddresses();
-  const oldWalletBalances = useSelector(walletOldBalancesSelector);
+  const showV4R1 = useSelector(showV4R1Selector);
 
   const handleRateApp = useCallback(() => {
     const options = {
@@ -122,12 +123,12 @@ export const Settings: FC = () => {
 
   const versions = useMemo(() => {
     return Object.keys(SelectableVersionsConfig).filter((key) => {
-      if (SelectableVersionsConfig[key].hideIfBalanceIsZero) {
-        return !!oldWalletBalances.find((balance) => balance.version === key);
+      if (key === SelectableVersions.V4R1) {
+        return showV4R1;
       }
       return true;
     }) as SelectableVersion[];
-  }, [oldWalletBalances]);
+  }, [showV4R1]);
 
   const handleChangeVersion = useCallback(
     (version: SelectableVersion) => {
@@ -188,7 +189,7 @@ export const Settings: FC = () => {
     return null;
   }, [notificationsBadge.isVisible]);
 
-  const hasDiamods = useHasDiamondsOnBalance()
+  const hasDiamods = useHasDiamondsOnBalance();
   const isAppearanceVisible = React.useMemo(() => {
     return hasDiamods && !flags.disable_apperance;
   }, [hasDiamods, flags.disable_apperance]);
@@ -229,11 +230,10 @@ export const Settings: FC = () => {
                         <Text variant="label1" style={{ marginRight: ns(8) }}>
                           {SelectableVersionsConfig[version]?.label}
                         </Text>
-                        <Text
-                          variant="body1"
-                          color="foregroundSecondary"
-                        >
-                          {maskifyAddress(allTonAddesses[SelectableVersionsConfig[version]?.label])}
+                        <Text variant="body1" color="foregroundSecondary">
+                          {maskifyAddress(
+                            allTonAddesses[SelectableVersionsConfig[version]?.label],
+                          )}
                         </Text>
                       </S.WalletVersion>
                     )}
@@ -303,7 +303,7 @@ export const Settings: FC = () => {
                 {t('settings_legal_documents')}
               </CellSectionItem>
             </CellSection>
-              
+
             {!!wallet && (
               <CellSection>
                 <CellSectionItem onPress={handleDeleteAccount} icon="ic-trash-bin-28">

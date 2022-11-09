@@ -119,6 +119,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     serverConfig = yield call(loadServerConfig, isTestnet, canRetry);
     needRefreshConfig = false;
   }
+  const showV4R1 = yield call(MainDB.getShowV4R1);
   const currencies = yield call(getAddedCurrencies);
   const isIntroShown = yield call(getIntroShown);
   const primaryCurrency = yield call(getPrimaryFiatCurrency);
@@ -175,6 +176,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
         isHasWallet: !!wallet,
         fiatCurrency: primaryCurrency || FiatCurrencies.Usd,
       }),
+      mainActions.setShowV4R1(showV4R1),
       jettonsActions.setShowJettons(jettonsEnabled),
       jettonsActions.setExcludedJettons(excludedJettons),
       mainActions.toggleIntro(!isIntroShown),
