@@ -95,6 +95,7 @@ function* restoreWalletWorker(action: RestoreWalletAction) {
       undefined,
       config,
     );
+    yield put(walletActions.loadCurrentVersion(vault.getVersion()));
     yield put(walletActions.setGeneratedVault(vault));
     onDone();
 

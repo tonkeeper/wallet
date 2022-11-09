@@ -1,7 +1,7 @@
 
 import { useAllAddresses } from '$hooks/useAllAddresses';
 import { openLinkingDomain } from '$navigation';
-import {walletSelector, walletVersionSelector, walletWalletSelector} from '$store/wallet';
+import { walletVersionSelector, walletWalletSelector } from '$store/wallet';
 import { t } from '$translation';
 import { Button, Text } from '$uikit';
 import { debugLog, maskifyAddress } from '$utils';
