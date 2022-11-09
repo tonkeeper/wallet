@@ -3,7 +3,7 @@
 
 @interface RCT_EXTERN_MODULE(WalletStore, NSObject);
 
-RCT_EXTERN_METHOD(validate:(NSArray<NSString *> *)words resolve:(RCTPromiseResolveBlock)resolve);
+RCT_EXTERN_METHOD(validate:(NSArray<NSString *> *)words resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 
 RCT_EXTERN_METHOD(importWalletWithPasscode:(NSArray<NSString *> *)words passcode:(nonnull NSString *)passcode resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(importWalletWithBiometry:(NSArray<NSString *> *)words resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);

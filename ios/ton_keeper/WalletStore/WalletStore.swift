@@ -25,7 +25,8 @@ class WalletStore: NSObject {
   }
   
   func validate(_ words: [String],
-                resolve: @escaping RCTPromiseResolveBlock) {
+                resolve: @escaping RCTPromiseResolveBlock,
+                reject: @escaping RCTPromiseRejectBlock) {
     let isValid = Mnemonic.mnemonicValidate(mnemonicArray: words, password: "")
     resolve(isValid)
   }
