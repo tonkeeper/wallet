@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 export interface ImageWithTitleProps {
   uri?: string;
   lottieUri?: string;
@@ -7,4 +9,5 @@ export interface ImageWithTitleProps {
   isVerified?: boolean;
   description?: string;
   isOnSale: boolean;
+  bottom?: ReactNode;
 }

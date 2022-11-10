@@ -76,8 +76,8 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
     [record.walletAddress],
   );
 
-  const getDNSRecord = React.useCallback(async (domainAddress) => {
-    const dnsRecord = await Tonapi.resolveDns(domainAddress);
+  const getDNSRecord = React.useCallback(async (domain) => {
+    const dnsRecord = await Tonapi.resolveDns(domain);
 
     if (dnsRecord?.wallet?.address) {
       const walletAddress = new TonWeb.Address(dnsRecord.wallet.address).toString(
@@ -104,7 +104,7 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
         try {
           setLoading(true);
 
-          const record = await getDNSRecord(props.domainAddress);
+          const record = await getDNSRecord(props.domain);
           const state = {
             walletAddress: record.walletAddress ?? undefined,
             ownerAddress: props.ownerAddress,
@@ -166,8 +166,8 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
       return ' ' + t('nft_unlink_domain_button', { address });
     }
 
-    return t('nft_link_domain_button');
-  }, [record.walletAddress]);
+    return t(props.isTGUsername ? 'nft_link_username_button' : 'nft_link_domain_button');
+  }, [record.walletAddress, props.isTGUsername]);
 
   return (
     <View style={{ marginBottom: 8 }}>

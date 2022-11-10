@@ -14,7 +14,7 @@ import { Details } from '$core/NFT/Details/Details';
 import { About } from '$core/NFT/About/About';
 import { NFTProps } from '$core/NFT/NFT.interface';
 import { useNFT } from '$hooks/useNFT';
-import { Linking, Platform, Share } from 'react-native';
+import { Linking, Platform, Share, View, TouchableOpacity } from 'react-native';
 import { TonDiamondFeature } from './TonDiamondFeature/TonDiamondFeature';
 import { useDispatch, useSelector } from 'react-redux';
 import { walletAddressSelector } from '$store/wallet';
@@ -71,6 +71,10 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
     }
     Linking.openURL(nft.marketplaceURL);
   }, [nft.marketplaceURL]);
+
+  const handleOpenFragment = useCallback(() => {
+    Linking.openURL('https://fragment.com');
+  }, []);
 
   const handleTransferNft = useCallback(() => {
     nav.openModal('NFTTransferInputAddress', {
@@ -150,6 +154,20 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
               isVerified={isDNS || nft.isApproved}
               description={nft.description}
               isOnSale={isOnSale}
+              bottom={
+                isTG ? (
+                  <View style={{ marginTop: ns(8), flexDirection: 'row' }}>
+                    <Text variant="body2" color="foregroundSecondary">
+                      {t('username_issued_by_telegram')}
+                    </Text>
+                    <TouchableOpacity activeOpacity={0.6} onPress={handleOpenFragment}>
+                      <Text variant="body2" color="accentPrimary">
+                        {t('username_manage_name_button')}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : null
+              }
             />
           ) : null}
           {nft.collection ? (
@@ -179,16 +197,16 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
                 </Text>
               </S.OnSaleText>
             ) : null}
-            {isDNS || isTG && (
-                <LinkingDomainButton
-                  disabled={isOnSale}
-                  onLink={setOwnerAddress}
-                  ownerAddress={nft.ownerAddress}
-                  domainAddress={nft.address}
-                  domain={nft.dns! || nft.name!}
-                  isTGUsername={isTG}
-                />
-              )}
+            {(isDNS || isTG) && (
+              <LinkingDomainButton
+                disabled={isOnSale}
+                onLink={setOwnerAddress}
+                ownerAddress={nft.ownerAddress}
+                domainAddress={nft.address}
+                domain={nft.dns! || nft.name!}
+                isTGUsername={isTG}
+              />
+            )}
             {nft.marketplaceURL && !flags.disable_nft_markets ? (
               <Button
                 style={{ marginBottom: ns(16) }}
