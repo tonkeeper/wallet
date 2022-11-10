@@ -96,11 +96,12 @@ class WalletStore: NSObject {
     }
   }
   
-  func updateWallet(_ pk: String, label: String,
+  func updateWallet(pk: String, label: String,
                     resolve: @escaping RCTPromiseResolveBlock,
                     reject: @escaping RCTPromiseRejectBlock) {
-    if let index = userDefaultsService.wallets.firstIndex(where: { $0.pubkey == pk }) {
-      userDefaultsService.wallets[index].label = label
+    if let wallet = userDefaultsService.wallets.first(where: { $0.pubkey == pk }) {
+      wallet.label = label
+      userDefaultsService.wallets.insert(wallet)
       resolve(true)
     } else {
       let error = WalletError.noAvailableWallets
