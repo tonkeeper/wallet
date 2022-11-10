@@ -142,10 +142,10 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
         >
           {nft.name || nft.collection?.name || nft.content.image.baseUrl ? (
             <ImageWithTitle
-              uri={(isDNS || isTG) ? undefined : nft.content.image.baseUrl}
+              uri={isDNS || isTG ? undefined : nft.content.image.baseUrl}
               lottieUri={lottieUri}
               videoUri={videoUri}
-              title={isTG ? dnsToUsername(nft.name) : (nft.dns || nft.name)}
+              title={isTG ? dnsToUsername(nft.name) : nft.dns || nft.name}
               collection={isDNS ? 'TON DNS' : nft.collection?.name}
               isVerified={isDNS || nft.isApproved}
               description={nft.description}
@@ -179,15 +179,16 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
                 </Text>
               </S.OnSaleText>
             ) : null}
-            {isDNS && (
-              <LinkingDomainButton
-                disabled={isOnSale}
-                onLink={setOwnerAddress}
-                ownerAddress={nft.ownerAddress}
-                domainAddress={nft.address}
-                domain={nft.dns!}
-              />
-            )}
+            {isDNS || isTG && (
+                <LinkingDomainButton
+                  disabled={isOnSale}
+                  onLink={setOwnerAddress}
+                  ownerAddress={nft.ownerAddress}
+                  domainAddress={nft.address}
+                  domain={nft.dns! || nft.name!}
+                  isTGUsername={isTG}
+                />
+              )}
             {nft.marketplaceURL && !flags.disable_nft_markets ? (
               <Button
                 style={{ marginBottom: ns(16) }}

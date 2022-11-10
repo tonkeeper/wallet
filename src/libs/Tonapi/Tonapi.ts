@@ -60,9 +60,27 @@ type Balances = {
   version: string;
 };
 
+async function resolveDns(domain: string) {
+  try {
+    const endpoint = getServerConfig('tonapiIOEndpoint');
+    const response: any = await axios.get(`${endpoint}/v1/dns/resolve`, {
+      headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+      },
+      params: {
+        name: domain,
+      },
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
 async function getBalances(pubkey: string) {
   const wallets = await findByPubkey(pubkey);
-  
+
   const balances: Balances[] = [];
   for (let wallet of wallets) {
     const versions = ['wallet_v3R1', 'wallet_v3R2', 'wallet_v4R1', 'wallet_v4R2'];
@@ -86,4 +104,5 @@ export const Tonapi = {
   findByPubkey,
   getWalletInfo,
   getBalances,
-}
+  resolveDns,
+};

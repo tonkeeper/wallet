@@ -1,7 +1,9 @@
-
 import { useAllAddresses } from '$hooks/useAllAddresses';
 import { openLinkingDomain } from '$navigation';
-import {walletSelector, walletVersionSelector, walletWalletSelector} from '$store/wallet';
+import {
+  walletVersionSelector,
+  walletWalletSelector,
+} from '$store/wallet';
 import { t } from '$translation';
 import { Button, Text } from '$uikit';
 import { debugLog, maskifyAddress } from '$utils';
@@ -9,6 +11,7 @@ import { getTimeSec } from '$utils/getTimeSec';
 import * as React from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
+import { Tonapi } from '$libs/Tonapi';
 
 const TonWeb = require('tonweb'); // Fix ts types;
 
@@ -17,9 +20,11 @@ type DNSRecord = {
   ownerAddress?: string;
 };
 
-type CachedDNSRecord = DNSRecord & {
-  timestamp: number;
-} | null;
+type CachedDNSRecord =
+  | (DNSRecord & {
+      timestamp: number;
+    })
+  | null;
 
 const CacheDNSRecord: {
   cache: { [key in string]: CachedDNSRecord };
@@ -44,19 +49,19 @@ const CacheDNSRecord: {
   },
   delete(key: string) {
     delete this.cache[key];
-  }
+  },
 };
 
 interface LinkingDomainButtonProps {
-  onLink?: (options: { ownerAddress: string }) => void
+  onLink?: (options: { ownerAddress: string }) => void;
   domainAddress: string;
   ownerAddress?: string;
   domain: string;
   disabled?: boolean;
+  isTGUsername?: boolean;
 }
 
 export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) => {
-  const wallet = useSelector(walletWalletSelector);
   const version = useSelector(walletVersionSelector);
   const allAddesses = useAllAddresses();
   const [loading, setLoading] = React.useState(false);
@@ -64,26 +69,22 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
     ownerAddress: props.ownerAddress,
   });
 
-  const needClaim = React.useMemo(
-    () => !Boolean(record.ownerAddress),
-    [record.ownerAddress]
-  );
+  const needClaim = React.useMemo(() => !record.ownerAddress, [record.ownerAddress]);
 
   const isLinked = React.useMemo(
-    () =>  Boolean(record.walletAddress), 
-    [record.walletAddress]
+    () => Boolean(record.walletAddress),
+    [record.walletAddress],
   );
 
   const getDNSRecord = React.useCallback(async (domainAddress) => {
-    const dnsItem = new TonWeb.dns.DnsItem(
-      wallet!.vault.tonWallet.provider, 
-      { address: domainAddress }
-    );
+    const dnsRecord = await Tonapi.resolveDns(domainAddress);
 
-    const dnsRecordWallet = await dnsItem.resolve('.', TonWeb.dns.DNS_CATEGORY_WALLET);
-    if (dnsRecordWallet) {
-      const walletAddress = dnsRecordWallet.toString(true, true, true);
-     
+    if (dnsRecord?.wallet?.address) {
+      const walletAddress = new TonWeb.Address(dnsRecord.wallet.address).toString(
+        true,
+        true,
+        true,
+      );
       return { walletAddress };
     }
 
@@ -98,8 +99,8 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
         setRecord({
           walletAddress: cachedRecord.walletAddress,
           ownerAddress: cachedRecord.ownerAddress,
-        });        
-      } else if (Boolean(record.ownerAddress)) {
+        });
+      } else if (record.ownerAddress) {
         try {
           setLoading(true);
 
@@ -127,19 +128,18 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
     if (Boolean(record.walletAddress) && Boolean(record.ownerAddress)) {
       if (Object.values(allAddesses).length > 0) {
         const linked = Object.values(allAddesses).find((address) => {
-          return address === record.walletAddress
+          return address === record.walletAddress;
         });
 
-        return !Boolean(linked);
+        return !linked;
       }
     }
-    
+
     return false;
   }, [allAddesses, record.walletAddress, record.ownerAddress]);
-  
+
   const handlePressButton = React.useCallback(() => {
     const currentWalletAddress = allAddesses[version];
-
     openLinkingDomain({
       walletAddress: isLinked ? undefined : currentWalletAddress,
       domainAddress: props.domainAddress,
@@ -152,16 +152,16 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
 
         setRecord(record);
         CacheDNSRecord.set(props.domain, record, 20);
-        
-        props.onLink?.({ 
-          ownerAddress: record.ownerAddress 
+
+        props.onLink?.({
+          ownerAddress: record.ownerAddress,
         });
-      }
+      },
     });
   }, [isLinked, allAddesses, version]);
 
   const buttonTitle = React.useMemo(() => {
-    if (Boolean(record.walletAddress)) {
+    if (record.walletAddress) {
       const address = maskifyAddress(record.walletAddress!);
       return ' ' + t('nft_unlink_domain_button', { address });
     }
@@ -171,9 +171,9 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
 
   return (
     <View style={{ marginBottom: 8 }}>
-      <Button 
+      <Button
         style={{ marginBottom: 12 }}
-        onPress={handlePressButton} 
+        onPress={handlePressButton}
         isLoading={loading}
         disabled={props.disabled || loading}
         mode="secondary"
@@ -184,19 +184,21 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
       {!loading && (
         <>
           {needClaim && (
-            <Text
-              variant="body2"
-              color="foregroundSecondary"
-            >
-              {t('nft_link_domain_caption')}
+            <Text variant="body2" color="foregroundSecondary">
+              {t(
+                props.isTGUsername
+                  ? 'nft_link_username_caption'
+                  : 'nft_link_domain_caption',
+              )}
             </Text>
           )}
           {isLinkedOtherAddress && (
-            <Text
-              variant="body2"
-              color="accentOrange"
-            >
-              {t('nft_link_domain_mismatch_warn')}
+            <Text variant="body2" color="accentOrange">
+              {t(
+                props.isTGUsername
+                  ? 'nft_link_username_mismatch_warn'
+                  : 'nft_link_domain_mismatch_warn',
+              )}
             </Text>
           )}
         </>

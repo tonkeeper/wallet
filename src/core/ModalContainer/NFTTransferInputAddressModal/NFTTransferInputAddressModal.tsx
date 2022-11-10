@@ -6,11 +6,10 @@ import * as S from './NFTTransferInputAddressModal.style';
 import { t } from '$translation';
 import { asyncDebounce, compareAddresses, isAndroid, ns } from '$utils';
 import { NFTTransferInputAddressModalProps } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal.interface';
-import { getServerConfig } from '$shared/constants';
 import { LoaderContainer } from '$core/Send/steps/AddressStep/components/AddressInput/AddressInput.style';
 import { Modal, useNavigation } from '$libs/navigation';
-
-const TonWeb = require('tonweb'); // fix dns types
+import { Tonapi } from '$libs/Tonapi';
+import TonWeb from 'tonweb';
 
 export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalProps>(
   ({ nftAddress }) => {
@@ -19,8 +18,6 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
     const [isSameAddress, setIsSameAddress] = useState<boolean>(false);
     const { isValid } = useValidateAddress(address);
     const [dnsLoading, setDnsLoading] = React.useState(false);
-
-    console.log('@LOG');
 
     const nav = useNavigation();
 
@@ -47,21 +44,21 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
       });
     }, [address, nftAddress]);
 
+    // todo: move logic to separated hook
     const getAddressByDomain = useMemo(
       () =>
         asyncDebounce(async (value: string) => {
           try {
             setDnsLoading(true);
             const domain = value.toLowerCase();
-            const tonweb = new TonWeb(
-              new TonWeb.HttpProvider(getServerConfig('tonEndpoint'), {
-                apiKey: getServerConfig('tonEndpointAPIKey'),
-              }),
-            );
+            const resolvedDomain = await Tonapi.resolveDns(domain);
 
-            const response = await tonweb.dns.getWalletAddress(domain);
-            if (response) {
-              return response.toString(true, true, true) as string;
+            if (resolvedDomain?.wallet?.address) {
+              return new TonWeb.Address(resolvedDomain.wallet.address).toString(
+                true,
+                true,
+                true,
+              ) as string;
             }
 
             return null;
@@ -72,13 +69,13 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
           } finally {
             setDnsLoading(false);
           }
-        }, 300),
+        }, 1000),
       [],
     );
 
     const handleTextChange = React.useCallback(async (text: string) => {
       setInputValue(text);
-      if (text.endsWith('.ton')) {
+      if (!TonWeb.Address.isValid(text) && text.includes('.')) {
         setAddress('');
         const walletAddress = await getAddressByDomain(text);
 

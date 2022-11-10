@@ -70,7 +70,7 @@ const AddressSuggestCellComponent: FC<Props> = (props) => {
 
   const subtitle = isFavorite ? preparedAddress : formattedDate;
 
-  const isTonDns = !!suggest.domain && suggest.domain.endsWith('.ton');
+  const isTonDns = !!suggest.domain;
 
   const isDomainUpdating = isTonDns && !suggest.domainUpdated;
 
