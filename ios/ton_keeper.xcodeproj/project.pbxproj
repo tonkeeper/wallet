@@ -52,10 +52,6 @@
 		C4B6F043291012DE0070E2BE /* JSONAble.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02B291012DE0070E2BE /* JSONAble.swift */; };
 		C4B6F044291012DE0070E2BE /* UserDefaultWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02D291012DE0070E2BE /* UserDefaultWrapper.swift */; };
 		C4B6F045291012DE0070E2BE /* UserDefaultsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02E291012DE0070E2BE /* UserDefaultsService.swift */; };
-		C4FB2EE42912AF2800CB35D0 /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4FB2EE22912AF2700CB35D0 /* OpenSSL.xcframework */; };
-		C4FB2EE52912AF2800CB35D0 /* OpenSSL.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C4FB2EE22912AF2700CB35D0 /* OpenSSL.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C4FB2EE62912AF2800CB35D0 /* TON.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4FB2EE32912AF2700CB35D0 /* TON.xcframework */; };
-		C4FB2EE72912AF2800CB35D0 /* TON.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C4FB2EE32912AF2700CB35D0 /* TON.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,21 +63,6 @@
 			remoteInfo = ton_keeper;
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		C4FB2EE82912AF2800CB35D0 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				C4FB2EE52912AF2800CB35D0 /* OpenSSL.xcframework in Embed Frameworks */,
-				C4FB2EE72912AF2800CB35D0 /* TON.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		00E356EE1AD99517003FC87E /* ton_keeperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ton_keeperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -159,8 +140,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C4FB2EE62912AF2800CB35D0 /* TON.xcframework in Frameworks */,
-				C4FB2EE42912AF2800CB35D0 /* OpenSSL.xcframework in Frameworks */,
 				8D962335543EE7C6E1C6AB28 /* libPods-ton_keeper.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -449,7 +428,6 @@
 				B420B642277A60EBC44F3322 /* [CP] Copy Pods Resources */,
 				6DB02C2677103C9DDFB7799F /* [CP-User] [RNFB] Core Configuration */,
 				00569AE961EA489F7FF8096D /* [CP-User] [RNFB] Crashlytics Configuration */,
-				C4FB2EE82912AF2800CB35D0 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
