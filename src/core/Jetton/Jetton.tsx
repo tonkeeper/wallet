@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react';
+import React, { FC, useCallback, useEffect, useLayoutEffect } from 'react';
 import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
 import {
@@ -13,17 +13,17 @@ import {
 import { formatAmount, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
-import { useInstance, useTranslator } from '$hooks';
+import { useTranslator } from '$hooks';
 import { ActionButtonProps } from '$core/Balances/BalanceItem/BalanceItem.interface';
 import { openReceive, openSend } from '$navigation';
-import { CryptoCurrencies, getServerConfig } from '$shared/constants';
+import { CryptoCurrencies } from '$shared/constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { useJettonEvents } from '$hooks/useJettonEvents';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import { Linking, View } from 'react-native';
 import { eventsSelector, eventsActions } from '$store/events';
-import { Configuration, JettonApi, JettonInfo } from 'tonapi-sdk-js';
-import {jettonIsLoadingSelector, jettonsActions, jettonSelector, jettonsIsMetaLoadingSelector} from "$store/jettons";
+import { jettonIsLoadingSelector, jettonsActions, jettonSelector } from '$store/jettons';
+import { walletAddressSelector } from '$store/wallet';
 
 const ActionButton: FC<ActionButtonProps> = (props) => {
   const { children, onPress, icon, isLast } = props;
@@ -51,6 +51,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const t = useTranslator();
   const dispatch = useDispatch();
   const jettonEvents = useJettonEvents(jetton.jettonAddress);
+  const address = useSelector(walletAddressSelector);
   const { isLoading: isEventsLoading, canLoadMore } = useSelector(eventsSelector);
   const isJettonMetaLoading = useSelector((state) =>
     // @ts-ignore
@@ -92,8 +93,10 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   }, [jetton.jettonAddress]);
 
   const handleOpenExplorer = useCallback(() => {
-    Linking.openURL(`https://tonapi.io/jetton/${jetton.jettonAddress}`);
-  }, [jetton]);
+    Linking.openURL(
+      `https://tonapi.io/account/${address.ton}/jetton/${jetton.metadata?.symbol}`,
+    );
+  }, [address.ton, jetton.metadata?.symbol]);
 
   if (!jetton) {
     return null;
