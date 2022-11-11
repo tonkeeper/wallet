@@ -8,6 +8,7 @@ import { useAttachScreen } from '$navigation/AttachScreen';
 import { DevDeeplinking } from '$core/DevMenu/DevComponents/DevDeeplinking';
 import { DevToastScreen } from '$core/DevMenu/DevComponents/DevToastScreen';
 import { DevSignRawExamples } from '$core/DevMenu/DevComponents/DevSignRawExamples';
+import { DevWalletStoreScreen } from '$core/DevMenu/DevComponents/DevWalletStoreScreen';
 
 const Stack = createNativeStackNavigator<any>();
 
@@ -48,6 +49,10 @@ export const DevStack = () => {
       <Stack.Screen 
         name={DevComponents.DevSignRawExamples}
         component={DevSignRawExamples}
+      />
+      <Stack.Screen 
+        name={DevComponents.DevWalletStore}
+        component={DevWalletStoreScreen}
       />
     </Stack.Navigator>
   )

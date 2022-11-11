@@ -96,7 +96,7 @@ class WalletStore: NSObject {
     }
   }
   
-  func updateWallet(pk: String, label: String,
+  func updateWallet(_ pk: String, label: String,
                     resolve: @escaping RCTPromiseResolveBlock,
                     reject: @escaping RCTPromiseRejectBlock) {
     if let wallet = userDefaultsService.wallets.first(where: { $0.pubkey == pk }) {
@@ -224,7 +224,7 @@ class WalletStore: NSObject {
       let biometryContext = LAContext()
       biometryContext.evaluateAccessControl(accessControl,
                                             operation: .useItem,
-                                            localizedReason: "") { success, error in
+                                            localizedReason: "Need localized") { success, error in
         if success {
           do {
             let mnemonic = try self.keychainService.string(forKey: "\(pk)-biometry",
