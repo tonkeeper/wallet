@@ -57,7 +57,7 @@ import {
 import { batchActions } from '$store';
 import { toastActions } from '$store/toast';
 import { subscriptionsActions } from '$store/subscriptions';
-import { t } from '$translation/helper';
+import { t } from '$translation';
 import { initHandler } from '$store/main/sagas';
 import { getTokenConfig, getWalletName } from '$shared/dynamicConfig';
 import { withRetryCtx } from '$store/retry';

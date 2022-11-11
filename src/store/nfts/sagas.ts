@@ -16,7 +16,7 @@ import { getIsTestnet } from '$database';
 import { withRetry } from '$store/retry';
 import axios from 'axios';
 import { getServerConfig } from '$shared/constants';
-import i18n from 'i18n-js';
+import { i18n } from '$translation';
 import DeviceInfo from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
 
@@ -142,7 +142,7 @@ export function* loadMarketplacesWorker() {
       `${getServerConfig('tonkeeperEndpoint')}/marketplaces`,
       {
         params: {
-          lang: i18n.currentLocale(),
+          lang: i18n.locale,
           build: DeviceInfo.getReadableVersion(),
           chainName: isTestnet ? 'testnet' : 'mainnet',
         },

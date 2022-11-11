@@ -1,7 +1,7 @@
 import { all, call, put, takeLatest } from 'redux-saga/effects';
 import FastImage from 'react-native-fast-image';
 import axios from 'axios';
-import i18n from 'i18n-js';
+import { i18n } from '$translation';
 import DeviceInfo from 'react-native-device-info';
 
 import { exchangeActions } from '$store/exchange/index';
@@ -20,7 +20,7 @@ export function* loadMethodsWorker() {
       `${getServerConfig('tonkeeperEndpoint')}/fiat/methods`,
       {
         params: {
-          lang: i18n.currentLocale(),
+          lang: i18n.locale,
           build: DeviceInfo.getReadableVersion(),
           chainName: isTestnet ? 'testnet' : 'mainnet',
         },
