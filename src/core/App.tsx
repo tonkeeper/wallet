@@ -75,16 +75,16 @@ export const App: FC = () => {
   });
 
   return (
-    <SafeAreaProvider>
-      <StoreProvider {...{ store }}>
-        <TonThemeProvider>
+    <StoreProvider {...{ store }}>
+      <TonThemeProvider>
+        <SafeAreaProvider>
           <ScrollPositionProvider>
             <AppNavigator />
           </ScrollPositionProvider>
           <Toast />
           <ToastComponent />
-        </TonThemeProvider>
-      </StoreProvider>
-    </SafeAreaProvider>
+        </SafeAreaProvider>
+      </TonThemeProvider>
+    </StoreProvider>
   );
 };
