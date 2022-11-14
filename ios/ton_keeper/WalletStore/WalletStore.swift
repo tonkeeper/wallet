@@ -24,6 +24,18 @@ class WalletStore: NSObject {
     }
   }
   
+  func removeWallets(_ resolve: @escaping RCTPromiseResolveBlock,
+                     reject: @escaping RCTPromiseRejectBlock) {
+    
+    if userDefaultsService.wallets.count > 0 {
+      userDefaultsService.wallets = []
+      resolve(true)
+    } else {
+      let error = WalletError.noAvailableWallets
+      reject(error.code, error.message, error.foundationError)
+    }
+  }
+  
   func validate(_ words: [String],
                 resolve: @escaping RCTPromiseResolveBlock,
                 reject: @escaping RCTPromiseRejectBlock) {
@@ -103,6 +115,18 @@ class WalletStore: NSObject {
       let wallet = userDefaultsService.wallets[index]
       wallet.label = label
       userDefaultsService.wallets[index] = wallet
+      resolve(true)
+    } else {
+      let error = WalletError.noAvailableWallets
+      reject(error.code, error.message, error.foundationError)
+    }
+  }
+  
+  func removeWallet(_ pk: String,
+                    resolve: @escaping RCTPromiseResolveBlock,
+                    reject: @escaping RCTPromiseRejectBlock) {
+    if let index = userDefaultsService.wallets.firstIndex(where: { $0.pubkey == pk }) {
+      userDefaultsService.wallets.remove(at: index)
       resolve(true)
     } else {
       let error = WalletError.noAvailableWallets
