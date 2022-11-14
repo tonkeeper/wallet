@@ -207,6 +207,36 @@ export const DevWalletStoreScreen: React.FC = () => {
               }
             }}
           />
+
+          <ListCell 
+            label="WalletStore.removeWallets" 
+            onPress={async () => {
+              try {  
+                const result = await WalletStore.removeWallets();
+                
+                console.log(result);
+                Toast.show(JSON.stringify(result));
+              } catch (err) {
+                console.error(err);
+                Toast.show(JSON.stringify(err.message));
+              }
+            }}
+          />
+
+          <ListCell 
+            label="WalletStore.removeWallet" 
+            onPress={async () => {
+              try {  
+                const result = await WalletStore.removeWallet(pubkey);
+                
+                console.log(result);
+                Toast.show(JSON.stringify(result));
+              } catch (err) {
+                console.error(err);
+                Toast.show(JSON.stringify(err.message));
+              }
+            }}
+          />
         </List>
       </Screen.ScrollView>
     </Screen>
