@@ -77,7 +77,7 @@ class WalletStore: NSObject {
   func getWallet(_ pk: String,
                  resolve: @escaping RCTPromiseResolveBlock,
                  reject: @escaping RCTPromiseRejectBlock) {
-    if let wallet = userDefaultsService.wallets.first(where: {$0.pubkey == pk }) {
+    if let wallet = userDefaultsService.wallets.first(where: { $0.pubkey == pk }) {
       resolve(wallet.toDict())
     } else {
       let error = WalletError.noAvailableWallets
@@ -99,9 +99,10 @@ class WalletStore: NSObject {
   func updateWallet(_ pk: String, label: String,
                     resolve: @escaping RCTPromiseResolveBlock,
                     reject: @escaping RCTPromiseRejectBlock) {
-    if let wallet = userDefaultsService.wallets.first(where: { $0.pubkey == pk }) {
+    if let index = userDefaultsService.wallets.firstIndex(where: { $0.pubkey == pk }) {
+      let wallet = userDefaultsService.wallets[index]
       wallet.label = label
-      userDefaultsService.wallets.insert(wallet)
+      userDefaultsService.wallets[index] = wallet
       resolve(true)
     } else {
       let error = WalletError.noAvailableWallets
