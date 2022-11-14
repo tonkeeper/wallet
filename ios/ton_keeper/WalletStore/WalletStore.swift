@@ -44,7 +44,7 @@ class WalletStore: NSObject {
       try keychainService.set(words.joined(separator: " "), forKey: "\(pubkey)-password", context: context, accessControl: .password)
       
       let walletInfo = WalletInfo(pubkey: pubkey, label: "")
-      userDefaultsService.wallets.insert(walletInfo)
+      insertWallet(walletInfo)
       
       resolve(walletInfo.toDict())
       
@@ -64,7 +64,7 @@ class WalletStore: NSObject {
       try keychainService.set(words.joined(separator: " "), forKey: "\(pubkey)-biometry", accessControl: .biometry)
       
       let walletInfo = WalletInfo(pubkey: pubkey, label: "")
-      userDefaultsService.wallets.insert(walletInfo)
+      insertWallet(walletInfo)
       
       resolve(walletInfo.toDict())
       
@@ -240,6 +240,14 @@ class WalletStore: NSObject {
           completion(.failure(error))
         }
       }
+    }
+  }
+  
+  private func insertWallet(_ walletInfo: WalletInfo) {
+    if let index = userDefaultsService.wallets.firstIndex(where: { $0.pubkey == walletInfo.pubkey }) {
+      userDefaultsService.wallets[index] = walletInfo
+    } else {
+      userDefaultsService.wallets.append(walletInfo)
     }
   }
   
