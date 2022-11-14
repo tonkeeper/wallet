@@ -94,9 +94,9 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
 
   const handleOpenExplorer = useCallback(() => {
     Linking.openURL(
-      `https://tonapi.io/account/${address.ton}/jetton/${jetton.metadata?.symbol}`,
+      `https://tonapi.io/account/${address.ton}/jetton/${jetton.jettonAddress}`,
     );
-  }, [address.ton, jetton.metadata?.symbol]);
+  }, [address.ton, jetton.jettonAddress]);
 
   if (!jetton) {
     return null;
