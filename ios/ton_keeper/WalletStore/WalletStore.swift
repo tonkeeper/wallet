@@ -245,7 +245,9 @@ class WalletStore: NSObject {
   
   private func rejectBlock(error: Error, code: Int) -> (String?, String, NSError) {
     let foundationError = NSError(domain: Constants.bundleIdentifier, code: code)
-    if let error = error as? TweetNaclError {
+    if let error = error as? WalletError {
+      return (error.code, error.message, foundationError)
+    } else if let error = error as? TweetNaclError {
       return (error.errorDescription, error.localizedDescription, foundationError)
     } else if let error = error as? KeychainServiceError {
       return ("\(error.code)", error.localizedDescription, foundationError)
