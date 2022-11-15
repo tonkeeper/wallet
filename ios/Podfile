@@ -38,6 +38,15 @@ target 'ton_keeper' do
     installer.pods_project.build_configurations.each do |config|
       config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
     end
+    
+    development_team = installer.aggregate_targets[0].user_project.targets[0].build_configurations[0].build_settings["DEVELOPMENT_TEAM"]
+    installer.generated_projects.each do |project|
+      project.targets.each do |target|
+          target.build_configurations.each do |config|
+              config.build_settings["DEVELOPMENT_TEAM"] = development_team
+           end
+      end
+    end
   end
 
   target 'ton_keeperTests' do
