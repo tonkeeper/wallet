@@ -7,7 +7,7 @@ import { getServerConfig } from '$shared/constants';
 import { UnlockedVault, Vault } from './vault';
 import { debugLog } from '$utils';
 import { getWalletName } from '$shared/dynamicConfig';
-import { t } from '$translation/helper';
+import { t } from '$translation';
 import { Ton } from '$libs/Ton';
 
 import { AccountEvent, Configuration, RawBlockchainApi, SendApi } from 'tonapi-sdk-js';

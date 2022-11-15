@@ -1,4 +1,4 @@
-import i18n from 'i18n-js';
+import { i18n, t } from '$translation';
 import { enUS, ru, id } from 'date-fns/locale';
 import {
   addSeconds,
@@ -11,7 +11,6 @@ import {
   startOfYesterday,
 } from 'date-fns';
 
-import { t } from '$translation/helper';
 import {capitalizeFirstLetter} from "$utils/string";
 
 const dateFnsLocale: Record<string, any> = {
@@ -21,8 +20,7 @@ const dateFnsLocale: Record<string, any> = {
 };
 
 export const getLocale = () => {
-  const locale = i18n.currentLocale();
-  return dateFnsLocale[locale] ?? enUS;
+  return dateFnsLocale[i18n.locale] ?? enUS;
 };
 
 export const format = (date: number | Date, formatString: string, options?: any) =>
