@@ -28,8 +28,9 @@ class WalletStore: NSObject {
                      reject: @escaping RCTPromiseRejectBlock) {
     
     if userDefaultsService.wallets.count > 0 {
-      userDefaultsService.wallets = []
-      resolve(true)
+      userDefaultsService.wallets.forEach {
+        removeWallet($0.pubkey, resolve: resolve, reject: reject)
+      }
     } else {
       let error = WalletError.noAvailableWallets
       reject(error.code, error.message, error.foundationError)
@@ -126,6 +127,14 @@ class WalletStore: NSObject {
                     resolve: @escaping RCTPromiseResolveBlock,
                     reject: @escaping RCTPromiseRejectBlock) {
     if let index = userDefaultsService.wallets.firstIndex(where: { $0.pubkey == pk }) {
+      do {
+        try keychainService.deleteItem(forKey: userDefaultsService.wallets[index].pubkey + "-password")
+        try keychainService.deleteItem(forKey: userDefaultsService.wallets[index].pubkey + "-biometry")
+      } catch {
+        let rejectBlock = self.rejectBlock(error: error, code: 400)
+        reject(rejectBlock.0, rejectBlock.1, rejectBlock.2)
+      }
+      
       userDefaultsService.wallets.remove(at: index)
       resolve(true)
     } else {
