@@ -3,6 +3,7 @@ import Foundation
 enum WalletError: LocalizedError {
   case noAvailableWallets
   case invalidMnemonic
+  case noAvailableMethod
   
   var code: String {
     switch self {
@@ -11,6 +12,9 @@ enum WalletError: LocalizedError {
       
     case .invalidMnemonic:
       return "INVALID_MNEMONIC"
+      
+    case .noAvailableMethod:
+      return "NO_AVAILABLE_METHOD"
     }
   }
   
@@ -21,6 +25,9 @@ enum WalletError: LocalizedError {
       
     case .invalidMnemonic:
       return "Invalid mnemonic"
+      
+    case .noAvailableMethod:
+      return "No available method"
     }
   }
   
@@ -30,6 +37,9 @@ enum WalletError: LocalizedError {
       return NSError(domain: Constants.bundleIdentifier, code: 404)
       
     case .invalidMnemonic:
+      return NSError(domain: Constants.bundleIdentifier, code: 400)
+      
+    case .noAvailableMethod:
       return NSError(domain: Constants.bundleIdentifier, code: 400)
     }
   }

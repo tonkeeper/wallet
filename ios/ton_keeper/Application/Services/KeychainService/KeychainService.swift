@@ -12,6 +12,8 @@ struct KeychainService {
   let isSynchronizable: Bool
   let attributes: [String: Any]
   
+  static let passcodeKeyPath = "passcode"
+  
   var retrieve: RetrieveFunction = SecItemCopyMatching
   var remove: RemoveFunction = SecItemDelete
   

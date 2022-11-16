@@ -10,6 +10,8 @@
 
 #import <Firebase.h>
 
+#import "ton_keeper-Swift.h"
+
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -35,9 +37,9 @@
 {
   [FIRApp configure];
   RCTAppSetupPrepareApp(application);
-
+  
   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
-
+  
 #if RCT_NEW_ARCH_ENABLED
   _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
   _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
@@ -45,37 +47,15 @@
   _bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:bridge contextContainer:_contextContainer];
   bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
 #endif
-
-
+  
   UIView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"ton_keeper" initialProperties:nil];
-
   rootView.backgroundColor = [UIColor whiteColor];
-  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [self.reactDelegate createRootViewController];
-  rootViewController.view = rootView;
-  self.window.rootViewController = rootViewController;
-  [self.window makeKeyAndVisible];
+  UIViewController *reactViewController = [self.reactDelegate createRootViewController];
+  reactViewController.view = rootView;
+  reactViewController.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
 
-  // UIView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"main" initialProperties:nil];
-  // rootView.backgroundColor = [UIColor colorWithRed:21.0f/255.0f green:28.0f/255.0f blue:41.0f/255.0f alpha:1.0f];
-
-  // self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  // UIViewController *rootViewController = [self.reactDelegate createRootViewController];
-  // rootViewController.view = rootView;
-  // self.window.rootViewController = rootViewController;
-  // [self.window makeKeyAndVisible];
-
-  // self.window.tintColor = [UIColor colorWithRed:69.0f/255.0f
-  //                                   green:174.0f/255.0f
-  //                                   blue:245.0f/255.0f
-  //                                   alpha:1.0f];
-
-  // TK-65
-  if (@available(iOS 13.0, *)) {
-    rootViewController.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
-  }
-
-
+  [[ServiceLocator shared] setupServicesWithReactRootViewController:reactViewController];
+  
   [super application:application didFinishLaunchingWithOptions:launchOptions];
 
   return YES;
