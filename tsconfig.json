@@ -73,6 +73,7 @@
       "$navigation": ["navigation"],
       "$services": ["services"],
       "$translation": ["translation"],
+      "$tonconnect": ["tonconnect"],
       "$api/*": ["api/*"],
       "$core/*": ["core/*"],
       "$store/*": ["store/*"],
@@ -87,7 +88,8 @@
       "$services/*": ["services/*"],
       "$translation/*": ["translation/"],
       "$blockchain": ["blockchain/"],
-      "$database": ["database/"]
+      "$database": ["database/"],
+      "$tonconnect/*": ["tonconnect/*"]
     }
   },
   "include": ["src"],

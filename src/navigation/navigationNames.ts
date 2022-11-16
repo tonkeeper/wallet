@@ -21,6 +21,8 @@ export enum AppStackRouteNames {
   NFT = 'NFT',
   WebView = 'WebView',
   DevStack = 'DevStack',
+  DAppsSearch = 'DAppsSearch',
+  DAppBrowser = 'DAppBrowser',
 }
 
 export enum MainStackRouteNames {
@@ -43,6 +45,7 @@ export enum MainStackRouteNames {
 export enum TabsStackRouteNames {
   Balances = 'Balances',
   NFT = 'TabNFT',
+  Explore = 'Explore',
   SettingsStack = 'SettingsStack',
 }
 

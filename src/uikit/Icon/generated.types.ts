@@ -1,8 +1,9 @@
 export type IconNames =
-  | 'ic-lock-12'
   | 'ic-chevron-right-12'
+  | 'ic-dot-12'
   | 'ic-down-12'
   | 'ic-dropdown-12'
+  | 'ic-lock-12'
   | 'ic-star-12'
   | 'ic-up-12'
   | 'ic-notification-128'
@@ -21,6 +22,7 @@ export type IconNames =
   | 'ic-ellipsis-16'
   | 'ic-getgems-16'
   | 'ic-globe-16'
+  | 'ic-link-bold-16'
   | 'ic-pencil-16'
   | 'ic-sale-badge-16'
   | 'ic-share-16'
@@ -42,10 +44,13 @@ export type IconNames =
   | 'ic-donemark-thin-28'
   | 'ic-door-28'
   | 'ic-envelope-28'
+  | 'ic-explore-28'
   | 'ic-gear-28'
+  | 'ic-globe-16'
   | 'ic-home-28'
   | 'ic-jetton-28'
   | 'ic-key-28'
+  | 'ic-magnifying-glass-16'
   | 'ic-money-28'
   | 'ic-nft-collection-28'
   | 'ic-notification-28'
@@ -85,10 +90,11 @@ export type IconNames =
   | 'ic-loader-xlarge-64';
 
 export const AllIcons = [
-  'ic-lock-12',
   'ic-chevron-right-12',
+  'ic-dot-12',
   'ic-down-12',
   'ic-dropdown-12',
+  'ic-lock-12',
   'ic-star-12',
   'ic-up-12',
   'ic-notification-128',
@@ -107,6 +113,7 @@ export const AllIcons = [
   'ic-ellipsis-16',
   'ic-getgems-16',
   'ic-globe-16',
+  'ic-link-bold-16',
   'ic-pencil-16',
   'ic-sale-badge-16',
   'ic-share-16',
@@ -128,10 +135,13 @@ export const AllIcons = [
   'ic-donemark-thin-28',
   'ic-door-28',
   'ic-envelope-28',
+  'ic-explore-28',
   'ic-gear-28',
+  'ic-globe-16',
   'ic-home-28',
   'ic-jetton-28',
   'ic-key-28',
+  'ic-magnifying-glass-16',
   'ic-money-28',
   'ic-nft-collection-28',
   'ic-notification-28',
@@ -172,10 +182,11 @@ export const AllIcons = [
 ];
 
 export const IconSizes = {
-  'ic-lock-12': 12,
   'ic-chevron-right-12': 12,
+  'ic-dot-12': 12,
   'ic-down-12': 12,
   'ic-dropdown-12': 12,
+  'ic-lock-12': 12,
   'ic-star-12': 12,
   'ic-up-12': 12,
   'ic-notification-128': 128,
@@ -194,6 +205,7 @@ export const IconSizes = {
   'ic-ellipsis-16': 16,
   'ic-getgems-16': 16,
   'ic-globe-16': 16,
+  'ic-link-bold-16': 16,
   'ic-pencil-16': 16,
   'ic-sale-badge-16': 16,
   'ic-share-16': 16,
@@ -215,10 +227,13 @@ export const IconSizes = {
   'ic-donemark-thin-28': 28,
   'ic-door-28': 28,
   'ic-envelope-28': 28,
+  'ic-explore-28': 28,
   'ic-gear-28': 28,
+  'ic-globe-16': 16,
   'ic-home-28': 28,
   'ic-jetton-28': 28,
   'ic-key-28': 28,
+  'ic-magnifying-glass-16': 16,
   'ic-money-28': 28,
   'ic-nft-collection-28': 28,
   'ic-notification-28': 28,

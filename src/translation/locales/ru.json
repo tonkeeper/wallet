@@ -23,6 +23,7 @@
   "tab_wallet": "Кошелёк",
   "tab_swap": "Обмен",
   "tab_nft": "NFT",
+  "tab_browser": "Browser",
   "tab_settings": "Настройки",
 
   "intro_title": "Встречайте\n",
@@ -105,7 +106,7 @@
   "disable_nft_marketplace_banner_description": "Покупайте, продавайте, коллекционируйте и обменивайтесь.",
   "nft_browse_markets": "Исследовать маркеты",
   "nft_open_in_marketplace": "Посмотреть на NFT Маркете",
-  
+
   "nft_transfer_dns": "Отправить",
   "nft_transfer_nft": "Отправить NFT",
   "nft_about_collection": "Подробнее о {{collection}}",
@@ -282,6 +283,17 @@
   "info_about_inactive_back": "Вернуться назад",
 
   "swap_title": "Обмен",
+
+  "browser": {
+    "title": "Browser",
+    "search_label": "Search or enter address",
+    "start_typing": "Start typing or paste the link\nto find what you want",
+    "empty_search": "Your search returned no results",
+    "connected_title": "Connected",
+    "popular_title": "Popular",
+    "explore_all": "Explore all",
+    "open_link": "Open link"
+  },
 
   "exchange_title": "Купить TON",
   "exchange_other_ways": "Другие способы покупки и продажи",

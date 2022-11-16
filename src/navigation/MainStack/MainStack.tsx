@@ -21,12 +21,15 @@ import { Jetton } from '$core/Jetton/Jetton';
 import { JettonsList } from '$core/JettonsList/JettonsList';
 import { DeleteAccountDone } from '$core/DeleteAccountDone/DeleteAccountDone';
 import { EditConfig } from '$core/EditConfig/EditConfig';
+import { useRemoteBridge } from '$tonconnect';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
 export const MainStack: FC = () => {
   const attachedScreen = useAttachScreen();
   const theme = useTheme();
+
+  useRemoteBridge();
 
   const initialRouteName = !attachedScreen.pathname
     ? MainStackRouteNames.Tabs
