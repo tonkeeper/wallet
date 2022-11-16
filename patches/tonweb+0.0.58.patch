@@ -1,3 +1,16 @@
+diff --git a/node_modules/tonweb/src/contract/dns/DnsItem.js b/node_modules/tonweb/src/contract/dns/DnsItem.js
+index 9d03b42..d7ddf22 100644
+--- a/node_modules/tonweb/src/contract/dns/DnsItem.js
++++ b/node_modules/tonweb/src/contract/dns/DnsItem.js
+@@ -128,7 +128,7 @@ class DnsItem extends Contract {
+ DnsItem.createChangeContentEntryBody = async (params) => {
+     const body = new Cell();
+     body.bits.writeUint(0x4eb1f0f9, 32); // OP
+-    body.bits.writeUint(params.queryId || 0, 64); // query_id
++    // body.bits.writeUint(params.queryId || 0, 64); // query_id
+     body.bits.writeUint(await categoryToBN(params.category), 256);
+     if (params.value) {
+         body.refs[0] = params.value;
 diff --git a/node_modules/tonweb/src/contract/token/nft/NftUtils.js b/node_modules/tonweb/src/contract/token/nft/NftUtils.js
 index 30a43a0..d065b5e 100644
 --- a/node_modules/tonweb/src/contract/token/nft/NftUtils.js
