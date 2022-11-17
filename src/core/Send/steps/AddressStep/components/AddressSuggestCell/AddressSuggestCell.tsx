@@ -70,11 +70,12 @@ const AddressSuggestCellComponent: FC<Props> = (props) => {
 
   const subtitle = isFavorite ? preparedAddress : formattedDate;
 
-  const isTonDns = !!suggest.domain;
+  const isDns = !!suggest.domain;
 
-  const isDomainUpdating = isTonDns && !suggest.domainUpdated;
+  const isDomainUpdating = isDns && !suggest.domainUpdated;
 
-  const slicedDomain = suggest.domain?.slice(0, -4) || '';
+  const slicedDomain = suggest.domain?.split('.')?.[0] || '';
+  const domainZone = suggest.domain?.split('.')?.slice(1)?.join('.');
 
   const actions = useMemo((): SuggestAction[] => {
     if (isFavorite) {
@@ -150,10 +151,10 @@ const AddressSuggestCellComponent: FC<Props> = (props) => {
           <S.Content>
             <S.TitleContainer>
               <S.Title>
-                {isTonDns ? (
+                {isDns ? (
                   <>
                     {slicedDomain}
-                    <S.Domain>.ton</S.Domain>
+                    <S.Domain>.{domainZone}</S.Domain>
                   </>
                 ) : (
                   title
