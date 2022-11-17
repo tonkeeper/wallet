@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react';
 import DeviceInfo from 'react-native-device-info';
-import I18n from 'i18n-js';
+import { i18n } from '$translation';
 import axios from 'axios';
 import { walletWalletSelector } from '$store/wallet';
 import {getServerConfig} from '$shared/constants';
@@ -33,7 +33,7 @@ export const useNotifications = () => {
     const deviceId = DeviceInfo.getUniqueId();
 
     await axios.post(endpoint, {
-      locale: I18n.currentLocale(),
+      locale: i18n.locale,
       device: deviceId,
       accounts,
       token,

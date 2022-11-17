@@ -92,6 +92,10 @@ export const useActionFooter = () => {
     } catch (error) {
       if (error instanceof UnlockVaultError) {
         dispatch(toastActions.fail(error?.message));
+      } else if (error instanceof NFTOperationError) {
+        if (error?.message) {
+          ref.current?.setError(error.message);
+        }
       } else {
         ref.current?.setError(t('error_occurred'));
         debugLog(error);

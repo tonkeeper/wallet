@@ -3,7 +3,7 @@ import { RootState } from '$store/rootReducer';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { ToastActivity, ToastState, SetToastAction } from './interface';
-import { t } from '$translation/helper';
+import { t } from '$translation';
 
 const initialState: ToastState = {
   label: '',

@@ -1,9 +1,9 @@
 import axios from 'axios';
-import I18n from 'i18n-js';
+import { i18n } from '$translation';
 import { Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
-import { t } from '$translation/helper';
+import { t } from '$translation';
 import { getIsTestnet } from '$database';
 import { getServerConfigSafe } from '$shared/constants/serverConfig';
 
@@ -28,7 +28,7 @@ Api.interceptors.request.use(
       baseURL: `${tonkeeperEndpoint}/v1`,
       headers: {
         ...config.headers,
-        lang: I18n.currentLocale(),
+        lang: i18n.locale,
         platform: Platform.OS,
         build: DeviceInfo.getReadableVersion(),
         chainName: isTestnet ? 'testnet' : 'mainnet',
