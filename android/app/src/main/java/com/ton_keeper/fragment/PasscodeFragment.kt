@@ -10,13 +10,12 @@ class PasscodeFragment : Fragment(R.layout.fragment_passcode) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val button = view.findViewById<Button>(R.id.button)
+        val button = view.findViewById<Button>(R.id.btn_correct_passcode)
         button.setOnClickListener { openWallet() }
     }
 
     private fun openWallet() {
-        val activity = requireActivity()
-        activity.supportFragmentManager
+        requireActivity().supportFragmentManager
             .beginTransaction()
             .replace(R.id.root, ReactComponent.Wallet.createFragment())
             .commit()

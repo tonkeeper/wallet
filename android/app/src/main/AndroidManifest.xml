@@ -2,15 +2,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ton_keeper">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
+    <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <application
         android:name=".MainApplication"
@@ -28,7 +28,7 @@
         tools:targetApi="s">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".TonkeeperActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
             android:exported="true"
             android:hardwareAccelerated="true"
@@ -40,46 +40,46 @@
             tools:ignore="LockedOrientationActivity">
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
 
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.VIEW"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
 
-                <data android:scheme="ton" />
-                <data android:scheme="ton-subscriptions" />
-                <data android:scheme="tonkeeper" />
+                <data android:scheme="ton"/>
+                <data android:scheme="ton-subscriptions"/>
+                <data android:scheme="tonkeeper"/>
             </intent-filter>
 
             <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.VIEW"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
 
-                <data android:scheme="https" />
-                <data android:host="app.tonkeeper.com" />
+                <data android:scheme="https"/>
+                <data android:host="app.tonkeeper.com"/>
             </intent-filter>
 
         </activity>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/tonkeeper_logo_alpha" />
+            android:resource="@drawable/tonkeeper_logo_alpha"/>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/pushIcon"
-            tools:replace="android:resource" />
+            tools:replace="android:resource"/>
 
         <activity
             android:name="com.facebook.react.devsupport.DevSettingsActivity"
-            android:exported="false" />
+            android:exported="false"/>
 
     </application>
 

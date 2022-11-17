@@ -6,10 +6,21 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btn_correct_passcode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Open wallet" />
+        android:text="Correct Passcode"/>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"/>
+
+    <Button
+        android:id="@+id/btn_incorrect_passcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Incorrect Passcode"/>
 
 </LinearLayout>
