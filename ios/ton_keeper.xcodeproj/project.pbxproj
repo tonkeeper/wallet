@@ -8,9 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* ton_keeperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ton_keeperTests.m */; };
-		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
-		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1C610F328FB84275E2FB6D32 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AFA288D04A19A6FAE554C55 /* ExpoModulesProvider.swift */; };
 		203A6A0E2760BD6800817B71 /* Montserrat-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 203A69FC2760BD6700817B71 /* Montserrat-ExtraLightItalic.ttf */; };
 		203A6A0F2760BD6800817B71 /* Montserrat-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 203A69FD2760BD6700817B71 /* Montserrat-BoldItalic.ttf */; };
@@ -30,14 +27,31 @@
 		203A6A1D2760BD6800817B71 /* Montserrat-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 203A6A0B2760BD6700817B71 /* Montserrat-MediumItalic.ttf */; };
 		203A6A1E2760BD6800817B71 /* Montserrat-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 203A6A0C2760BD6800817B71 /* Montserrat-Light.ttf */; };
 		203A6A1F2760BD6800817B71 /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 203A6A0D2760BD6800817B71 /* Montserrat-Regular.ttf */; };
-		20B32A5126E3B460001A78F9 /* TonPbkdf2.m in Sources */ = {isa = PBXBuildFile; fileRef = 20B32A5026E3B460001A78F9 /* TonPbkdf2.m */; };
-		30D7C1932775659F00BCF819 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D7C1922775659F00BCF819 /* File.swift */; };
-		398FCAFB2806F9C800635B71 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 398FCAFA2806F9C700635B71 /* GoogleService-Info.plist */; };
-		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		49B45BE827CA429494A060B3 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2AC12AAEC9497399E39F4D /* noop-file.swift */; };
 		76F9B0131AB7FE11009E6D10 /* libPods-ton_keeper-ton_keeperTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */; };
 		78B9AC5F426C0F28766DEC94 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7306F36185132B3874D4C /* ExpoModulesProvider.swift */; };
 		8D962335543EE7C6E1C6AB28 /* libPods-ton_keeper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 39C1C20FA83478354251FB2A /* libPods-ton_keeper.a */; };
+		C4B6F030291012DE0070E2BE /* KeychainServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F007291012DE0070E2BE /* KeychainServiceError.swift */; };
+		C4B6F031291012DE0070E2BE /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F008291012DE0070E2BE /* KeychainService.swift */; };
+		C4B6F032291012DE0070E2BE /* Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F009291012DE0070E2BE /* Accessibility.swift */; };
+		C4B6F033291012DE0070E2BE /* AccessControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F00A291012DE0070E2BE /* AccessControl.swift */; };
+		C4B6F034291012DE0070E2BE /* TonPbkdf2.m in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F00B291012DE0070E2BE /* TonPbkdf2.m */; };
+		C4B6F035291012DE0070E2BE /* Podfile.properties.json in Resources */ = {isa = PBXBuildFile; fileRef = C4B6F00E291012DE0070E2BE /* Podfile.properties.json */; };
+		C4B6F036291012DE0070E2BE /* WalletStore.m in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F010291012DE0070E2BE /* WalletStore.m */; };
+		C4B6F037291012DE0070E2BE /* WalletError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F012291012DE0070E2BE /* WalletError.swift */; };
+		C4B6F038291012DE0070E2BE /* WalletInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F013291012DE0070E2BE /* WalletInfo.swift */; };
+		C4B6F039291012DE0070E2BE /* WalletStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F014291012DE0070E2BE /* WalletStore.swift */; };
+		C4B6F03A291012DE0070E2BE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C4B6F01C291012DE0070E2BE /* GoogleService-Info.plist */; };
+		C4B6F03B291012DE0070E2BE /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C4B6F01D291012DE0070E2BE /* SplashScreen.storyboard */; };
+		C4B6F03C291012DE0070E2BE /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F01F291012DE0070E2BE /* File.swift */; };
+		C4B6F03D291012DE0070E2BE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F020291012DE0070E2BE /* main.m */; };
+		C4B6F03E291012DE0070E2BE /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F021291012DE0070E2BE /* noop-file.swift */; };
+		C4B6F03F291012DE0070E2BE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4B6F022291012DE0070E2BE /* Images.xcassets */; };
+		C4B6F040291012DE0070E2BE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F023291012DE0070E2BE /* AppDelegate.m */; };
+		C4B6F041291012DE0070E2BE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F025291012DE0070E2BE /* Constants.swift */; };
+		C4B6F042291012DE0070E2BE /* UserDefaults+SaveStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F029291012DE0070E2BE /* UserDefaults+SaveStruct.swift */; };
+		C4B6F043291012DE0070E2BE /* JSONAble.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02B291012DE0070E2BE /* JSONAble.swift */; };
+		C4B6F044291012DE0070E2BE /* UserDefaultWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02D291012DE0070E2BE /* UserDefaultWrapper.swift */; };
+		C4B6F045291012DE0070E2BE /* UserDefaultsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02E291012DE0070E2BE /* UserDefaultsService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,13 +69,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ton_keeperTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ton_keeperTests.m; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* ton_keeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ton_keeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = ton_keeper/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = ton_keeper/AppDelegate.m; sourceTree = "<group>"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ton_keeper/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ton_keeper/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ton_keeper/main.m; sourceTree = "<group>"; };
 		13F2E6614DA413C5933FA7B3 /* Pods-ton_keeper-ton_keeperTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper-ton_keeperTests.release.xcconfig"; path = "Target Support Files/Pods-ton_keeper-ton_keeperTests/Pods-ton_keeper-ton_keeperTests.release.xcconfig"; sourceTree = "<group>"; };
-		2015F81B26E76E2200750FA3 /* ton_keeper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ton_keeper.entitlements; path = ton_keeper/ton_keeper.entitlements; sourceTree = "<group>"; };
 		203A69FC2760BD6700817B71 /* Montserrat-ExtraLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-ExtraLightItalic.ttf"; path = "../assets/fonts/Montserrat-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		203A69FD2760BD6700817B71 /* Montserrat-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-BoldItalic.ttf"; path = "../assets/fonts/Montserrat-BoldItalic.ttf"; sourceTree = "<group>"; };
 		203A69FE2760BD6700817B71 /* Montserrat-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-ExtraBoldItalic.ttf"; path = "../assets/fonts/Montserrat-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
@@ -80,17 +88,40 @@
 		203A6A0B2760BD6700817B71 /* Montserrat-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-MediumItalic.ttf"; path = "../assets/fonts/Montserrat-MediumItalic.ttf"; sourceTree = "<group>"; };
 		203A6A0C2760BD6800817B71 /* Montserrat-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-Light.ttf"; path = "../assets/fonts/Montserrat-Light.ttf"; sourceTree = "<group>"; };
 		203A6A0D2760BD6800817B71 /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-Regular.ttf"; path = "../assets/fonts/Montserrat-Regular.ttf"; sourceTree = "<group>"; };
-		20B32A4F26E3B460001A78F9 /* TonPbkdf2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TonPbkdf2.h; path = ton_keeper/TonPbkdf2.h; sourceTree = "<group>"; };
-		20B32A5026E3B460001A78F9 /* TonPbkdf2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TonPbkdf2.m; path = ton_keeper/TonPbkdf2.m; sourceTree = "<group>"; };
-		30D7C1922775659F00BCF819 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
-		398FCAFA2806F9C700635B71 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		39C1C20FA83478354251FB2A /* libPods-ton_keeper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ton_keeper.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		66B33E2FC88F6DF6B498F962 /* Pods-ton_keeper-ton_keeperTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper-ton_keeperTests.debug.xcconfig"; path = "Target Support Files/Pods-ton_keeper-ton_keeperTests/Pods-ton_keeper-ton_keeperTests.debug.xcconfig"; sourceTree = "<group>"; };
 		66D7306F36185132B3874D4C /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ton_keeper-ton_keeperTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		6AFA288D04A19A6FAE554C55 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ton_keeper/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		8F2AC12AAEC9497399E39F4D /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "ton_keeper/noop-file.swift"; sourceTree = "<group>"; };
 		90508C4783A2D53FE0CB11CF /* Pods-ton_keeper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper.release.xcconfig"; path = "Target Support Files/Pods-ton_keeper/Pods-ton_keeper.release.xcconfig"; sourceTree = "<group>"; };
-		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = ton_keeper/SplashScreen.storyboard; sourceTree = "<group>"; };
+		C4B6F004291012DD0070E2BE /* ton_keeper-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ton_keeper-Bridging-Header.h"; sourceTree = "<group>"; };
+		C4B6F007291012DE0070E2BE /* KeychainServiceError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainServiceError.swift; sourceTree = "<group>"; };
+		C4B6F008291012DE0070E2BE /* KeychainService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		C4B6F009291012DE0070E2BE /* Accessibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Accessibility.swift; sourceTree = "<group>"; };
+		C4B6F00A291012DE0070E2BE /* AccessControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessControl.swift; sourceTree = "<group>"; };
+		C4B6F00B291012DE0070E2BE /* TonPbkdf2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TonPbkdf2.m; sourceTree = "<group>"; };
+		C4B6F00C291012DE0070E2BE /* ton_keeper.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = ton_keeper.entitlements; sourceTree = "<group>"; };
+		C4B6F00D291012DE0070E2BE /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		C4B6F00E291012DE0070E2BE /* Podfile.properties.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Podfile.properties.json; sourceTree = "<group>"; };
+		C4B6F010291012DE0070E2BE /* WalletStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WalletStore.m; sourceTree = "<group>"; };
+		C4B6F012291012DE0070E2BE /* WalletError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletError.swift; sourceTree = "<group>"; };
+		C4B6F013291012DE0070E2BE /* WalletInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletInfo.swift; sourceTree = "<group>"; };
+		C4B6F014291012DE0070E2BE /* WalletStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletStore.swift; sourceTree = "<group>"; };
+		C4B6F01C291012DE0070E2BE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		C4B6F01D291012DE0070E2BE /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = SplashScreen.storyboard; sourceTree = "<group>"; };
+		C4B6F01E291012DE0070E2BE /* TonPbkdf2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TonPbkdf2.h; sourceTree = "<group>"; };
+		C4B6F01F291012DE0070E2BE /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		C4B6F020291012DE0070E2BE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C4B6F021291012DE0070E2BE /* noop-file.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "noop-file.swift"; sourceTree = "<group>"; };
+		C4B6F022291012DE0070E2BE /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		C4B6F023291012DE0070E2BE /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		C4B6F025291012DE0070E2BE /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		C4B6F029291012DE0070E2BE /* UserDefaults+SaveStruct.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UserDefaults+SaveStruct.swift"; sourceTree = "<group>"; };
+		C4B6F02B291012DE0070E2BE /* JSONAble.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAble.swift; sourceTree = "<group>"; };
+		C4B6F02D291012DE0070E2BE /* UserDefaultWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultWrapper.swift; sourceTree = "<group>"; };
+		C4B6F02E291012DE0070E2BE /* UserDefaultsService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultsService.swift; sourceTree = "<group>"; };
+		C4B6F02F291012DE0070E2BE /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C4FB2EE22912AF2700CB35D0 /* OpenSSL.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = OpenSSL.xcframework; sourceTree = "<group>"; };
+		C4FB2EE32912AF2700CB35D0 /* TON.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = TON.xcframework; sourceTree = "<group>"; };
 		C6251834116392B3FC02BA37 /* Pods-ton_keeper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper.debug.xcconfig"; path = "Target Support Files/Pods-ton_keeper/Pods-ton_keeper.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ton_keeper-ton_keeperTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -133,25 +164,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		13B07FAE1A68108700A75B9A /* ton_keeper */ = {
-			isa = PBXGroup;
-			children = (
-				398FCAFA2806F9C700635B71 /* GoogleService-Info.plist */,
-				2015F81B26E76E2200750FA3 /* ton_keeper.entitlements */,
-				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
-				13B07FB01A68108700A75B9A /* AppDelegate.m */,
-				13B07FB51A68108700A75B9A /* Images.xcassets */,
-				13B07FB61A68108700A75B9A /* Info.plist */,
-				13B07FB71A68108700A75B9A /* main.m */,
-				20B32A4F26E3B460001A78F9 /* TonPbkdf2.h */,
-				20B32A5026E3B460001A78F9 /* TonPbkdf2.m */,
-				30D7C1922775659F00BCF819 /* File.swift */,
-				8F2AC12AAEC9497399E39F4D /* noop-file.swift */,
-				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-			);
-			name = ton_keeper;
-			sourceTree = "<group>";
-		};
 		1B61C4297D2FE35A2E4E1C24 /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
@@ -164,6 +176,8 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C4FB2EE22912AF2700CB35D0 /* OpenSSL.xcframework */,
+				C4FB2EE32912AF2700CB35D0 /* TON.xcframework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				39C1C20FA83478354251FB2A /* libPods-ton_keeper.a */,
 				FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */,
@@ -189,7 +203,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* ton_keeper */,
+				C4B6F005291012DE0070E2BE /* ton_keeper */,
+				C4B6F004291012DD0070E2BE /* ton_keeper-Bridging-Header.h */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* ton_keeperTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -218,6 +233,127 @@
 				66D7306F36185132B3874D4C /* ExpoModulesProvider.swift */,
 			);
 			name = ton_keeperTests;
+			sourceTree = "<group>";
+		};
+		C4A563532918CDB8001DDA44 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F022291012DE0070E2BE /* Images.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		C4A563552918CE8F001DDA44 /* Legacy */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F00D291012DE0070E2BE /* AppDelegate.h */,
+				C4B6F01E291012DE0070E2BE /* TonPbkdf2.h */,
+				C4B6F023291012DE0070E2BE /* AppDelegate.m */,
+				C4B6F020291012DE0070E2BE /* main.m */,
+				C4B6F00B291012DE0070E2BE /* TonPbkdf2.m */,
+				C4B6F01D291012DE0070E2BE /* SplashScreen.storyboard */,
+				C4B6F01F291012DE0070E2BE /* File.swift */,
+				C4B6F021291012DE0070E2BE /* noop-file.swift */,
+			);
+			path = Legacy;
+			sourceTree = "<group>";
+		};
+		C4B6F005291012DE0070E2BE /* ton_keeper */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F00C291012DE0070E2BE /* ton_keeper.entitlements */,
+				C4B6F026291012DE0070E2BE /* Helper */,
+				C4B6F006291012DE0070E2BE /* KeychainService */,
+				C4A563552918CE8F001DDA44 /* Legacy */,
+				C4A563532918CDB8001DDA44 /* Resources */,
+				C4B6F024291012DE0070E2BE /* SupportingFiles */,
+				C4B6F02C291012DE0070E2BE /* UserDefaultsService */,
+				C4B6F00F291012DE0070E2BE /* WalletStore */,
+			);
+			path = ton_keeper;
+			sourceTree = "<group>";
+		};
+		C4B6F006291012DE0070E2BE /* KeychainService */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F007291012DE0070E2BE /* KeychainServiceError.swift */,
+				C4B6F008291012DE0070E2BE /* KeychainService.swift */,
+				C4B6F009291012DE0070E2BE /* Accessibility.swift */,
+				C4B6F00A291012DE0070E2BE /* AccessControl.swift */,
+			);
+			path = KeychainService;
+			sourceTree = "<group>";
+		};
+		C4B6F00F291012DE0070E2BE /* WalletStore */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F010291012DE0070E2BE /* WalletStore.m */,
+				C4B6F011291012DE0070E2BE /* Model */,
+				C4B6F014291012DE0070E2BE /* WalletStore.swift */,
+			);
+			path = WalletStore;
+			sourceTree = "<group>";
+		};
+		C4B6F011291012DE0070E2BE /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F012291012DE0070E2BE /* WalletError.swift */,
+				C4B6F013291012DE0070E2BE /* WalletInfo.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		C4B6F024291012DE0070E2BE /* SupportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F00E291012DE0070E2BE /* Podfile.properties.json */,
+				C4B6F01C291012DE0070E2BE /* GoogleService-Info.plist */,
+				C4B6F02F291012DE0070E2BE /* Info.plist */,
+				C4B6F025291012DE0070E2BE /* Constants.swift */,
+			);
+			path = SupportingFiles;
+			sourceTree = "<group>";
+		};
+		C4B6F026291012DE0070E2BE /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F027291012DE0070E2BE /* Extensions */,
+				C4B6F02A291012DE0070E2BE /* Model */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
+		C4B6F027291012DE0070E2BE /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F028291012DE0070E2BE /* Foundation */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		C4B6F028291012DE0070E2BE /* Foundation */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F029291012DE0070E2BE /* UserDefaults+SaveStruct.swift */,
+			);
+			path = Foundation;
+			sourceTree = "<group>";
+		};
+		C4B6F02A291012DE0070E2BE /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F02B291012DE0070E2BE /* JSONAble.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		C4B6F02C291012DE0070E2BE /* UserDefaultsService */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F02D291012DE0070E2BE /* UserDefaultWrapper.swift */,
+				C4B6F02E291012DE0070E2BE /* UserDefaultsService.swift */,
+			);
+			path = UserDefaultsService;
 			sourceTree = "<group>";
 		};
 		C80173ED49C3443EA1F97BA9 /* Resources */ = {
@@ -354,9 +490,8 @@
 				203A6A142760BD6800817B71 /* Montserrat-SemiBoldItalic.ttf in Resources */,
 				203A6A1D2760BD6800817B71 /* Montserrat-MediumItalic.ttf in Resources */,
 				203A6A1E2760BD6800817B71 /* Montserrat-Light.ttf in Resources */,
-				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				203A6A162760BD6800817B71 /* Montserrat-SemiBold.ttf in Resources */,
+				C4B6F035291012DE0070E2BE /* Podfile.properties.json in Resources */,
 				203A6A0E2760BD6800817B71 /* Montserrat-ExtraLightItalic.ttf in Resources */,
 				203A6A112760BD6800817B71 /* Montserrat-Italic.ttf in Resources */,
 				203A6A0F2760BD6800817B71 /* Montserrat-BoldItalic.ttf in Resources */,
@@ -364,11 +499,13 @@
 				203A6A1B2760BD6800817B71 /* Montserrat-Thin.ttf in Resources */,
 				203A6A1F2760BD6800817B71 /* Montserrat-Regular.ttf in Resources */,
 				203A6A152760BD6800817B71 /* Montserrat-ThinItalic.ttf in Resources */,
+				C4B6F03B291012DE0070E2BE /* SplashScreen.storyboard in Resources */,
 				203A6A192760BD6800817B71 /* Montserrat-Black.ttf in Resources */,
+				C4B6F03F291012DE0070E2BE /* Images.xcassets in Resources */,
 				203A6A122760BD6800817B71 /* Montserrat-LightItalic.ttf in Resources */,
 				203A6A1A2760BD6800817B71 /* Montserrat-ExtraLight.ttf in Resources */,
 				203A6A102760BD6800817B71 /* Montserrat-ExtraBoldItalic.ttf in Resources */,
-				398FCAFB2806F9C800635B71 /* GoogleService-Info.plist in Resources */,
+				C4B6F03A291012DE0070E2BE /* GoogleService-Info.plist in Resources */,
 				203A6A132760BD6800817B71 /* Montserrat-Medium.ttf in Resources */,
 				203A6A172760BD6800817B71 /* Montserrat-Bold.ttf in Resources */,
 			);
@@ -531,12 +668,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
-				30D7C1932775659F00BCF819 /* File.swift in Sources */,
-				20B32A5126E3B460001A78F9 /* TonPbkdf2.m in Sources */,
-				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				C4B6F030291012DE0070E2BE /* KeychainServiceError.swift in Sources */,
 				1C610F328FB84275E2FB6D32 /* ExpoModulesProvider.swift in Sources */,
-				49B45BE827CA429494A060B3 /* noop-file.swift in Sources */,
+				C4B6F036291012DE0070E2BE /* WalletStore.m in Sources */,
+				C4B6F033291012DE0070E2BE /* AccessControl.swift in Sources */,
+				C4B6F032291012DE0070E2BE /* Accessibility.swift in Sources */,
+				C4B6F043291012DE0070E2BE /* JSONAble.swift in Sources */,
+				C4B6F041291012DE0070E2BE /* Constants.swift in Sources */,
+				C4B6F034291012DE0070E2BE /* TonPbkdf2.m in Sources */,
+				C4B6F040291012DE0070E2BE /* AppDelegate.m in Sources */,
+				C4B6F03E291012DE0070E2BE /* noop-file.swift in Sources */,
+				C4B6F039291012DE0070E2BE /* WalletStore.swift in Sources */,
+				C4B6F031291012DE0070E2BE /* KeychainService.swift in Sources */,
+				C4B6F044291012DE0070E2BE /* UserDefaultWrapper.swift in Sources */,
+				C4B6F038291012DE0070E2BE /* WalletInfo.swift in Sources */,
+				C4B6F03C291012DE0070E2BE /* File.swift in Sources */,
+				C4B6F03D291012DE0070E2BE /* main.m in Sources */,
+				C4B6F045291012DE0070E2BE /* UserDefaultsService.swift in Sources */,
+				C4B6F042291012DE0070E2BE /* UserDefaults+SaveStruct.swift in Sources */,
+				C4B6F037291012DE0070E2BE /* WalletError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -572,7 +722,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ton_keeper.app/ton_keeper";
@@ -614,7 +764,7 @@
 				CURRENT_PROJECT_VERSION = 245;
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				ENABLE_BITCODE = NO;
-				INFOPLIST_FILE = ton_keeper/Info.plist;
+				INFOPLIST_FILE = ton_keeper/SupportingFiles/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -626,7 +776,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jbig.tonkeeper;
 				PRODUCT_NAME = ton_keeper;
 				SWIFT_OBJC_BRIDGING_HEADER = "ton_keeper-Bridging-Header.h";
@@ -647,7 +797,7 @@
 				CODE_SIGN_ENTITLEMENTS = ton_keeper/ton_keeper.entitlements;
 				CURRENT_PROJECT_VERSION = 245;
 				DEVELOPMENT_TEAM = CT523DK2KC;
-				INFOPLIST_FILE = ton_keeper/Info.plist;
+				INFOPLIST_FILE = ton_keeper/SupportingFiles/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
