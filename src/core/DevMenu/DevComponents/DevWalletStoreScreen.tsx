@@ -14,11 +14,14 @@ export const DevWalletStoreScreen: React.FC = () => {
       <Screen.Header title="Wallet Store" rightContent={<AttachScreenButton />} />
       <Screen.ScrollView>
         <List align="left">
-          <ListCell 
+          <ListCell
             label="WalletStore.importWalletWithPasscode"
             onPress={async () => {
               try {
-                const walletInfo = await WalletStore.importWalletWithPasscode(words, '1234');
+                const walletInfo = await WalletStore.importWalletWithPasscode(
+                  words,
+                  '1234',
+                );
 
                 console.log(walletInfo);
                 Toast.show(JSON.stringify(walletInfo));
@@ -29,7 +32,7 @@ export const DevWalletStoreScreen: React.FC = () => {
             }}
           />
 
-          <ListCell 
+          <ListCell
             label="WalletStore.importWalletWithBiometry"
             onPress={async () => {
               try {
@@ -44,7 +47,7 @@ export const DevWalletStoreScreen: React.FC = () => {
             }}
           />
 
-          <ListCell 
+          <ListCell
             label="WalletStore.validate"
             onPress={async () => {
               const isValid = await WalletStore.validate(words);
@@ -56,10 +59,10 @@ export const DevWalletStoreScreen: React.FC = () => {
             }}
           />
 
-          <ListCell 
-            label="WalletStore.listWallets" 
+          <ListCell
+            label="WalletStore.listWallets"
             onPress={async () => {
-              try {  
+              try {
                 const result = await WalletStore.listWallets();
                 console.log(result);
                 Toast.show(JSON.stringify(result));
@@ -70,10 +73,10 @@ export const DevWalletStoreScreen: React.FC = () => {
             }}
           />
 
-          <ListCell 
-            label="WalletStore.getWallet" 
+          <ListCell
+            label="WalletStore.getWallet"
             onPress={async () => {
-              try {  
+              try {
                 const result = await WalletStore.getWallet(pubkey);
                 console.log(result);
                 Toast.show(JSON.stringify(result));
@@ -84,13 +87,14 @@ export const DevWalletStoreScreen: React.FC = () => {
             }}
           />
 
-          <ListCell 
-            label="WalletStore.getWalletByAddress" 
+          <ListCell
+            label="WalletStore.getWalletByAddress"
             onPress={async () => {
-              try {  
+              try {
+                const addr = new TonWeb.Address(
+                  'EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n',
+                ).toString(false);
 
-                const addr = new TonWeb.Address('EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n').toString(false)
-                
                 console.log(addr);
                 const result = await WalletStore.getWalletByAddress(addr);
                 console.log(result);
@@ -102,12 +106,12 @@ export const DevWalletStoreScreen: React.FC = () => {
             }}
           />
 
-          <ListCell 
-            label="WalletStore.exportWithPasscode" 
+          <ListCell
+            label="WalletStore.exportWithPasscode"
             onPress={async () => {
-              try {  
+              try {
                 const result = await WalletStore.exportWithPasscode(pubkey, '1234');
-                
+
                 console.log(result);
                 Toast.show(JSON.stringify(result));
               } catch (err) {
@@ -117,12 +121,12 @@ export const DevWalletStoreScreen: React.FC = () => {
             }}
           />
 
-          <ListCell 
-            label="WalletStore.exportWithBiometry" 
+          <ListCell
+            label="WalletStore.exportWithBiometry"
             onPress={async () => {
-              try {  
+              try {
                 const result = await WalletStore.exportWithBiometry(pubkey);
-                
+
                 console.log(result);
                 Toast.show(JSON.stringify(result));
               } catch (err) {
@@ -132,12 +136,12 @@ export const DevWalletStoreScreen: React.FC = () => {
             }}
           />
 
-          <ListCell 
-            label="WalletStore.backupWithPasscode" 
+          <ListCell
+            label="WalletStore.backupWithPasscode"
             onPress={async () => {
-              try {  
+              try {
                 const result = await WalletStore.backupWithPasscode(pubkey, '1234');
-                
+
                 console.log(result);
                 Toast.show(JSON.stringify(result));
               } catch (err) {
@@ -147,12 +151,12 @@ export const DevWalletStoreScreen: React.FC = () => {
             }}
           />
 
-          <ListCell 
-            label="WalletStore.backupWithBiometry" 
+          <ListCell
+            label="WalletStore.backupWithBiometry"
             onPress={async () => {
-              try {  
+              try {
                 const result = await WalletStore.backupWithBiometry(pubkey);
-                
+
                 console.log(result);
                 Toast.show(JSON.stringify(result));
               } catch (err) {
@@ -162,13 +166,12 @@ export const DevWalletStoreScreen: React.FC = () => {
             }}
           />
 
-          
-          <ListCell 
-            label="WalletStore.currentWalletInfo" 
+          <ListCell
+            label="WalletStore.currentWalletInfo"
             onPress={async () => {
-              try {  
+              try {
                 const result = await WalletStore.currentWalletInfo();
-                
+
                 console.log(result);
                 Toast.show(JSON.stringify(result));
               } catch (err) {
@@ -176,14 +179,14 @@ export const DevWalletStoreScreen: React.FC = () => {
                 Toast.show(JSON.stringify(err.message));
               }
             }}
-          />  
+          />
 
-          <ListCell 
-            label="WalletStore.setCurrentWallet" 
+          <ListCell
+            label="WalletStore.setCurrentWallet"
             onPress={async () => {
-              try {  
+              try {
                 const result = await WalletStore.setCurrentWallet(pubkey);
-                
+
                 console.log(result);
                 Toast.show(JSON.stringify(result));
               } catch (err) {
@@ -193,12 +196,12 @@ export const DevWalletStoreScreen: React.FC = () => {
             }}
           />
 
-          <ListCell 
-            label="WalletStore.updateWallet" 
+          <ListCell
+            label="WalletStore.updateWallet"
             onPress={async () => {
-              try {  
+              try {
                 const result = await WalletStore.updateWallet(pubkey, 'label11111');
-                
+
                 console.log(result);
                 Toast.show(JSON.stringify(result));
               } catch (err) {
@@ -208,12 +211,12 @@ export const DevWalletStoreScreen: React.FC = () => {
             }}
           />
 
-          <ListCell 
-            label="WalletStore.removeWallets" 
+          <ListCell
+            label="WalletStore.removeWallets"
             onPress={async () => {
-              try {  
+              try {
                 const result = await WalletStore.removeWallets();
-                
+
                 console.log(result);
                 Toast.show(JSON.stringify(result));
               } catch (err) {
@@ -223,12 +226,12 @@ export const DevWalletStoreScreen: React.FC = () => {
             }}
           />
 
-          <ListCell 
-            label="WalletStore.removeWallet" 
+          <ListCell
+            label="WalletStore.removeWallet"
             onPress={async () => {
-              try {  
+              try {
                 const result = await WalletStore.removeWallet(pubkey);
-                
+
                 console.log(result);
                 Toast.show(JSON.stringify(result));
               } catch (err) {
