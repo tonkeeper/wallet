@@ -15,8 +15,9 @@ class WalletStoreModule(
         get() = WalletStore(reactApplicationContext.currentActivity as FragmentActivity)
 
     @ReactMethod
-    fun validate(mnemonic: Array<String>, promise: Promise) {
-        val isMnemonicCorrect = Mnemonic.isCorrect(mnemonic)
+    fun validate(mnemonic: ReadableArray, promise: Promise) {
+        val data = mnemonic.toArrayList().map { it as String }
+        val isMnemonicCorrect = Mnemonic.isCorrect(data)
         if (isMnemonicCorrect) {
             promise.resolve(true)
         } else {
@@ -25,8 +26,10 @@ class WalletStoreModule(
     }
 
     @ReactMethod
-    fun importWalletWithPasscode(mnemonic: Array<String>, passcode: String, promise: Promise) {
-        val isMnemonicCorrect = Mnemonic.isCorrect(mnemonic)
+    fun importWalletWithPasscode(mnemonic: ReadableArray, passcode: String, promise: Promise) {
+        val data = mnemonic.toArrayList().map { it as String }
+
+        val isMnemonicCorrect = Mnemonic.isCorrect(data)
         if (!isMnemonicCorrect) {
             promise.reject(WalletMnemonicInvalidException())
             return
@@ -34,7 +37,7 @@ class WalletStoreModule(
 
         try {
             store.import(
-                mnemonic = mnemonic.toList(),
+                mnemonic = data,
                 secure = SecureType.Passcode(passcode),
                 onResult = { promise.resolve(it.toBridgeMap()) }
             )
@@ -44,8 +47,10 @@ class WalletStoreModule(
     }
 
     @ReactMethod
-    fun importWalletWithBiometry(mnemonic: Array<String>, promise: Promise) {
-        val isMnemonicCorrect = Mnemonic.isCorrect(mnemonic)
+    fun importWalletWithBiometry(mnemonic: ReadableArray, promise: Promise) {
+        val data = mnemonic.toArrayList().map { it as String }
+
+        val isMnemonicCorrect = Mnemonic.isCorrect(data)
         if (!isMnemonicCorrect) {
             promise.reject(WalletMnemonicInvalidException())
             return
@@ -53,7 +58,7 @@ class WalletStoreModule(
 
         try {
             store.import(
-                mnemonic = mnemonic.toList(),
+                mnemonic = data,
                 secure = SecureType.Biometry,
                 onResult = { promise.resolve(it.toBridgeMap()) }
             )
@@ -83,6 +88,11 @@ class WalletStoreModule(
     }
 
     @ReactMethod
+    fun getWalletByAddress(pubKey: String, promise: Promise) {
+        promise.reject(NotImplementedError("Wallet by address not implemented!"))
+    }
+
+    @ReactMethod
     fun updateWallet(pubKey: String, label: String, promise: Promise) {
         try {
             val result = store.updateLabelByPublicKey(pubKey, label).toBridgeMap()
@@ -90,6 +100,11 @@ class WalletStoreModule(
         } catch (ex: Exception) {
             promise.resolve(ex)
         }
+    }
+
+    @ReactMethod
+    fun removeWallet(pubKey: String, promise: Promise) {
+
     }
 
     @ReactMethod
@@ -142,6 +157,16 @@ class WalletStoreModule(
         } catch (ex: Exception) {
             promise.resolve(ex)
         }
+    }
+
+    @ReactMethod
+    fun currentWalletInfo(promise: Promise) {
+
+    }
+
+    @ReactMethod
+    fun setCurrentWallet(pubKey: String, promise: Promise) {
+
     }
 
     override fun getName(): String = ModuleName

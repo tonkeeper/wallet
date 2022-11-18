@@ -6,7 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.facebook.react.ReactApplication
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
-import com.ton_keeper.fragment.PasscodeFragment
+import com.ton_keeper.fragment.ReactComponent
+import com.ton_keeper.fragment.createFragment
 
 class TonkeeperActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
 
@@ -26,7 +27,7 @@ class TonkeeperActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
     private fun setRootFragment() {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.root, PasscodeFragment())
+            .replace(R.id.root, ReactComponent.Wallet.createFragment())
             .commit();
     }
 

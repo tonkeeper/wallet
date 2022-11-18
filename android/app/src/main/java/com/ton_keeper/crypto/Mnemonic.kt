@@ -15,14 +15,14 @@ object Mnemonic {
     private const val PbkdfKeyLen = 64
     private const val MacAlgorithm = "HmacSHA512"
 
-    fun toKeyPair(mnemonic: Array<String>): Nacl.Signature.KeyPair {
+    fun toKeyPair(mnemonic: List<String>): Nacl.Signature.KeyPair {
         val normalized = normalize(mnemonic)
         val seed = toSeed(normalized)
         val sliced = seed.sliceArray(0 until 32)
         return Nacl.Signature.keyPair_fromSeed(sliced)
     }
 
-    fun isCorrect(mnemonic: Array<String>): Boolean {
+    fun isCorrect(mnemonic: List<String>): Boolean {
         val normalized = normalize(mnemonic)
         normalized.forEach { if (Wordlist.contains(it).not()) return false }
 
@@ -30,17 +30,17 @@ object Mnemonic {
         return isBasicSeed(entropy)
     }
 
-    private fun normalize(mnemonic: Array<String>): Array<String> {
-        return mnemonic.map { it.lowercase() }.toTypedArray()
+    private fun normalize(mnemonic: List<String>): List<String> {
+        return mnemonic.map { it.lowercase() }
     }
 
-    private fun toSeed(mnemonic: Array<String>): ByteArray {
+    private fun toSeed(mnemonic: List<String>): ByteArray {
         val entropy = toEntropy(mnemonic)
         val salt = TonDefaultSeed.toByteArray()
         return pbkdf2Sha512(entropy, salt, PbkdfIterationsCount)
     }
 
-    private fun toEntropy(mnemonic: Array<String>): ByteArray {
+    private fun toEntropy(mnemonic: List<String>): ByteArray {
         val key = mnemonic.joinToString(separator = " ").toByteArray()
         return hmacSha512(key, ByteArray(0)) ?: ByteArray(0)
     }

@@ -24,7 +24,7 @@ class WalletStore(activity: FragmentActivity) {
     private val passcode = PasscodeManager(activity)
 
     fun import(mnemonic: List<String>, secure: SecureType, onResult: (WalletInfo) -> Unit) {
-        val keys = Mnemonic.toKeyPair(mnemonic.toTypedArray())
+        val keys = Mnemonic.toKeyPair(mnemonic)
         val pkHex = keys.publicKey.toHex()
 
         authenticate(
@@ -72,7 +72,7 @@ class WalletStore(activity: FragmentActivity) {
             secure = secure,
             onAccess = {
                 val mnemonic = decryptMnemonic(pk)
-                val keys = Mnemonic.toKeyPair(mnemonic.toTypedArray())
+                val keys = Mnemonic.toKeyPair(mnemonic)
                 onResult(keys.secretKey)
             },
             onFailure = { throw WalletInvalidAuth() }
