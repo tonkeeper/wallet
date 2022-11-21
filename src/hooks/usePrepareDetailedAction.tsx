@@ -109,8 +109,13 @@ export function usePrepareDetailedAction(
     }
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
-      sentLabelTranslationString = 'transaction_contract_deploy_date';
-      label = t('transaction_type_contract_deploy');
+      if (compareAddresses(action.address, address.ton)) {
+        sentLabelTranslationString = 'transaction_contract_deploy_date';
+        label = t('transaction_type_wallet_initialized');
+      } else {
+        sentLabelTranslationString = 'transaction_contract_deploy_date';
+        label = t('transaction_type_contract_deploy');
+      }
     }
 
     if (ActionType.AuctionBid === ActionType[rawAction.type]) {

@@ -39,6 +39,7 @@ export const MobileIconsList = {
   'ic-bell-28': require('$assets/icons/png/ic-bell-28.png'),
   'ic-doc-28': require('$assets/icons/png/ic-doc-28.png'),
   'ic-done-28': require('$assets/icons/png/ic-done-28.png'),
+  'ic-donemark-28': require('$assets/icons/png/ic-donemark-28.png'),
   'ic-donemark-thin-28': require('$assets/icons/png/ic-donemark-thin-28.png'),
   'ic-door-28': require('$assets/icons/png/ic-door-28.png'),
   'ic-envelope-28': require('$assets/icons/png/ic-envelope-28.png'),

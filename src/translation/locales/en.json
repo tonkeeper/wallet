@@ -60,6 +60,7 @@
   "transaction_type_unsubscription": "Unsubscribed",
   "transaction_type_new_subscriber": "New subscriber",
   "transaction_type_subscriber_lost": "Subscriber lost",
+  "transaction_type_wallet_initialized": "Wallet initialized",
   "transaction_type_bounced": "Bounced",
   "transaction_type_from": "From",
   "transaction_type_to": "To",
