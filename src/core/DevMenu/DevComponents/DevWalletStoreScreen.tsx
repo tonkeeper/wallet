@@ -6,8 +6,10 @@ import TonWeb from 'tonweb';
 import { Toast } from '$store';
 
 export const DevWalletStoreScreen: React.FC = () => {
-  const words = [];
-  const pubkey = '';
+  const words = ['animal', 'almost', 'siege', 'tonight', 'trim', 'weather', 'strategy', 'pioneer', 'nothing', 'bird', 'waste', 'diagram', 'illness', 'release', 'now', 'buffalo', 'turn', 'federal', 'copy', 'wrap', 'rug', 'salad', 'quality', 'song'];
+  const pubkey = '1298899b1b956aac13a88065e494d20e39090a4571bf56247bca37ae8aa9a478';
+  // const words = ["victory",  "ginger",   "intact", "account",  "response", "claim", "fitness",  "park",     "educate", "achieve",  "index",    "cupboard", "give",     "spread",   "enough", "tiger",    "glove",    "target", "cupboard", "expect",   "craft", "type",     "comfort",  "speak"];
+  // const pubkey = 'ae129cdb53d09736e57d9f21ca891d4ed2c0f4f9da090936c33d7fb0d57ae42e';
 
   return (
     <Screen>

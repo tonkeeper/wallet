@@ -34,7 +34,7 @@ final class UIService: NSObject {
       openReact(animated: animated)
       return
     }
-    
+
     guard let isBiometryEnabled = userDefaultsService?.isBiometryEnabled, isBiometryEnabled else {
       openPasscode(animated: animated)
       return

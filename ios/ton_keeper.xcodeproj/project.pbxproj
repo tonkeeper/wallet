@@ -30,6 +30,35 @@
 		76F9B0131AB7FE11009E6D10 /* libPods-ton_keeper-ton_keeperTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */; };
 		78B9AC5F426C0F28766DEC94 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7306F36185132B3874D4C /* ExpoModulesProvider.swift */; };
 		8D962335543EE7C6E1C6AB28 /* libPods-ton_keeper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 39C1C20FA83478354251FB2A /* libPods-ton_keeper.a */; };
+		C42DA694291E696C000D9601 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C42DA693291E696C000D9601 /* AuthService.swift */; };
+		C4380874292BCFE600FF5669 /* R.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4380873292BCFE500FF5669 /* R.generated.swift */; };
+		C4380877292BD26A00FF5669 /* PassCode.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = C4380879292BD26A00FF5669 /* PassCode.stringsdict */; };
+		C438087C292BD3E200FF5669 /* CaseIterable+Next.swift in Sources */ = {isa = PBXBuildFile; fileRef = C438087B292BD3E200FF5669 /* CaseIterable+Next.swift */; };
+		C438087F292CDBA200FF5669 /* PassCodeBlockTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = C438087E292CDBA200FF5669 /* PassCodeBlockTime.swift */; };
+		C44A3F93291D182F00C1D830 /* BiometryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44A3F92291D182F00C1D830 /* BiometryService.swift */; };
+		C44A3F96291D1DCE00C1D830 /* UIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44A3F95291D1DCE00C1D830 /* UIService.swift */; };
+		C44A3F98291D3C2700C1D830 /* UIWindow+Transition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44A3F97291D3C2700C1D830 /* UIWindow+Transition.swift */; };
+		C4A5635B2918CFC8001DDA44 /* UIStackView+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A5635A2918CFC8001DDA44 /* UIStackView+Init.swift */; };
+		C4A5635D2918CFDB001DDA44 /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A5635C2918CFDB001DDA44 /* UIColor+Hex.swift */; };
+		C4A563602918CFF9001DDA44 /* CGSize+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A5635F2918CFF9001DDA44 /* CGSize+Init.swift */; };
+		C4A563662918D11C001DDA44 /* PassCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563642918D11C001DDA44 /* PassCodeViewController.swift */; };
+		C4A563672918D11C001DDA44 /* PassCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563652918D11C001DDA44 /* PassCodeView.swift */; };
+		C4A563992918D30B001DDA44 /* PassCodeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563982918D30B001DDA44 /* PassCodeButton.swift */; };
+		C4A5639B2918D372001DDA44 /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A5639A2918D372001DDA44 /* Palette.swift */; };
+		C4A563A22918D49C001DDA44 /* Theme+current.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A5639D2918D49C001DDA44 /* Theme+current.swift */; };
+		C4A563A32918D49C001DDA44 /* ColorTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A5639F2918D49C001DDA44 /* ColorTheme.swift */; };
+		C4A563A42918D49C001DDA44 /* ThemeStyled.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563A02918D49C001DDA44 /* ThemeStyled.swift */; };
+		C4A563A52918D49C001DDA44 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563A12918D49C001DDA44 /* Theme.swift */; };
+		C4A563A82918D4CC001DDA44 /* BaseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563A72918D4CC001DDA44 /* BaseButton.swift */; };
+		C4A563AB2918D531001DDA44 /* BaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563AA2918D531001DDA44 /* BaseView.swift */; };
+		C4A563AE2918D546001DDA44 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563AD2918D546001DDA44 /* BaseViewController.swift */; };
+		C4A563B02918D60E001DDA44 /* UIButton+BackgroundColorForState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563AF2918D60E001DDA44 /* UIButton+BackgroundColorForState.swift */; };
+		C4A563B329191E14001DDA44 /* ServiceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563B229191E14001DDA44 /* ServiceLocator.swift */; };
+		C4A563B529191E22001DDA44 /* Autowired.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563B429191E22001DDA44 /* Autowired.swift */; };
+		C4A563BC291951FA001DDA44 /* SpacerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563BB291951FA001DDA44 /* SpacerView.swift */; };
+		C4A563BE2919522D001DDA44 /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563BD2919522D001DDA44 /* CircleView.swift */; };
+		C4A563C3291A916E001DDA44 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563C2291A916E001DDA44 /* Utils.swift */; };
+		C4A563C5291A9290001DDA44 /* Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563C4291A9290001DDA44 /* Animations.swift */; };
 		C4B6F030291012DE0070E2BE /* KeychainServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F007291012DE0070E2BE /* KeychainServiceError.swift */; };
 		C4B6F031291012DE0070E2BE /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F008291012DE0070E2BE /* KeychainService.swift */; };
 		C4B6F032291012DE0070E2BE /* Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F009291012DE0070E2BE /* Accessibility.swift */; };
@@ -52,6 +81,7 @@
 		C4B6F043291012DE0070E2BE /* JSONAble.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02B291012DE0070E2BE /* JSONAble.swift */; };
 		C4B6F044291012DE0070E2BE /* UserDefaultWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02D291012DE0070E2BE /* UserDefaultWrapper.swift */; };
 		C4B6F045291012DE0070E2BE /* UserDefaultsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02E291012DE0070E2BE /* UserDefaultsService.swift */; };
+		C4F5F2052927C85B00D08D79 /* PassCode.strings in Resources */ = {isa = PBXBuildFile; fileRef = C4F5F2072927C85B00D08D79 /* PassCode.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +123,36 @@
 		66D7306F36185132B3874D4C /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ton_keeper-ton_keeperTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		6AFA288D04A19A6FAE554C55 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ton_keeper/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		90508C4783A2D53FE0CB11CF /* Pods-ton_keeper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper.release.xcconfig"; path = "Target Support Files/Pods-ton_keeper/Pods-ton_keeper.release.xcconfig"; sourceTree = "<group>"; };
+		C42DA693291E696C000D9601 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		C4380873292BCFE500FF5669 /* R.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = R.generated.swift; sourceTree = "<group>"; };
+		C4380878292BD26A00FF5669 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/PassCode.stringsdict; sourceTree = "<group>"; };
+		C438087A292BD26C00FF5669 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ru; path = ru.lproj/PassCode.stringsdict; sourceTree = "<group>"; };
+		C438087B292BD3E200FF5669 /* CaseIterable+Next.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CaseIterable+Next.swift"; sourceTree = "<group>"; };
+		C438087E292CDBA200FF5669 /* PassCodeBlockTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassCodeBlockTime.swift; sourceTree = "<group>"; };
+		C44A3F92291D182F00C1D830 /* BiometryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometryService.swift; sourceTree = "<group>"; };
+		C44A3F95291D1DCE00C1D830 /* UIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIService.swift; sourceTree = "<group>"; };
+		C44A3F97291D3C2700C1D830 /* UIWindow+Transition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+Transition.swift"; sourceTree = "<group>"; };
+		C4A5635A2918CFC8001DDA44 /* UIStackView+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStackView+Init.swift"; sourceTree = "<group>"; };
+		C4A5635C2918CFDB001DDA44 /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
+		C4A5635F2918CFF9001DDA44 /* CGSize+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGSize+Init.swift"; sourceTree = "<group>"; };
+		C4A563642918D11C001DDA44 /* PassCodeViewController.swift */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = PassCodeViewController.swift; sourceTree = "<group>"; tabWidth = 2; };
+		C4A563652918D11C001DDA44 /* PassCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassCodeView.swift; sourceTree = "<group>"; };
+		C4A563982918D30B001DDA44 /* PassCodeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassCodeButton.swift; sourceTree = "<group>"; };
+		C4A5639A2918D372001DDA44 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
+		C4A5639D2918D49C001DDA44 /* Theme+current.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Theme+current.swift"; sourceTree = "<group>"; };
+		C4A5639F2918D49C001DDA44 /* ColorTheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorTheme.swift; sourceTree = "<group>"; };
+		C4A563A02918D49C001DDA44 /* ThemeStyled.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThemeStyled.swift; sourceTree = "<group>"; };
+		C4A563A12918D49C001DDA44 /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		C4A563A72918D4CC001DDA44 /* BaseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseButton.swift; sourceTree = "<group>"; };
+		C4A563AA2918D531001DDA44 /* BaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
+		C4A563AD2918D546001DDA44 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		C4A563AF2918D60E001DDA44 /* UIButton+BackgroundColorForState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+BackgroundColorForState.swift"; sourceTree = "<group>"; };
+		C4A563B229191E14001DDA44 /* ServiceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceLocator.swift; sourceTree = "<group>"; };
+		C4A563B429191E22001DDA44 /* Autowired.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Autowired.swift; sourceTree = "<group>"; };
+		C4A563BB291951FA001DDA44 /* SpacerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacerView.swift; sourceTree = "<group>"; };
+		C4A563BD2919522D001DDA44 /* CircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleView.swift; sourceTree = "<group>"; };
+		C4A563C2291A916E001DDA44 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		C4A563C4291A9290001DDA44 /* Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Animations.swift; sourceTree = "<group>"; };
 		C4B6F004291012DD0070E2BE /* ton_keeper-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ton_keeper-Bridging-Header.h"; sourceTree = "<group>"; };
 		C4B6F007291012DE0070E2BE /* KeychainServiceError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainServiceError.swift; sourceTree = "<group>"; };
 		C4B6F008291012DE0070E2BE /* KeychainService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
@@ -120,6 +180,8 @@
 		C4B6F02D291012DE0070E2BE /* UserDefaultWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultWrapper.swift; sourceTree = "<group>"; };
 		C4B6F02E291012DE0070E2BE /* UserDefaultsService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultsService.swift; sourceTree = "<group>"; };
 		C4B6F02F291012DE0070E2BE /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C4F5F2062927C85B00D08D79 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/PassCode.strings; sourceTree = "<group>"; };
+		C4F5F2082927C88200D08D79 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/PassCode.strings; sourceTree = "<group>"; };
 		C4FB2EE22912AF2700CB35D0 /* OpenSSL.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = OpenSSL.xcframework; sourceTree = "<group>"; };
 		C4FB2EE32912AF2700CB35D0 /* TON.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = TON.xcframework; sourceTree = "<group>"; };
 		C6251834116392B3FC02BA37 /* Pods-ton_keeper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper.debug.xcconfig"; path = "Target Support Files/Pods-ton_keeper/Pods-ton_keeper.debug.xcconfig"; sourceTree = "<group>"; };
@@ -235,10 +297,45 @@
 			name = ton_keeperTests;
 			sourceTree = "<group>";
 		};
+		C42DA692291E695F000D9601 /* AuthService */ = {
+			isa = PBXGroup;
+			children = (
+				C42DA693291E696C000D9601 /* AuthService.swift */,
+			);
+			path = AuthService;
+			sourceTree = "<group>";
+		};
+		C438087D292CDB8D00FF5669 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C438087E292CDBA200FF5669 /* PassCodeBlockTime.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		C44A3F91291D181700C1D830 /* BiometryService */ = {
+			isa = PBXGroup;
+			children = (
+				C44A3F92291D182F00C1D830 /* BiometryService.swift */,
+			);
+			path = BiometryService;
+			sourceTree = "<group>";
+		};
+		C44A3F94291D1DC400C1D830 /* UIService */ = {
+			isa = PBXGroup;
+			children = (
+				C44A3F95291D1DCE00C1D830 /* UIService.swift */,
+			);
+			path = UIService;
+			sourceTree = "<group>";
+		};
 		C4A563532918CDB8001DDA44 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C4F5F20A2927C97C00D08D79 /* Generated */,
+				C4F5F2022927C81800D08D79 /* Localizable */,
 				C4B6F022291012DE0070E2BE /* Images.xcassets */,
+				C4A5639A2918D372001DDA44 /* Palette.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -246,10 +343,7 @@
 		C4A563552918CE8F001DDA44 /* Legacy */ = {
 			isa = PBXGroup;
 			children = (
-				C4B6F00D291012DE0070E2BE /* AppDelegate.h */,
 				C4B6F01E291012DE0070E2BE /* TonPbkdf2.h */,
-				C4B6F023291012DE0070E2BE /* AppDelegate.m */,
-				C4B6F020291012DE0070E2BE /* main.m */,
 				C4B6F00B291012DE0070E2BE /* TonPbkdf2.m */,
 				C4B6F01D291012DE0070E2BE /* SplashScreen.storyboard */,
 				C4B6F01F291012DE0070E2BE /* File.swift */,
@@ -258,17 +352,206 @@
 			path = Legacy;
 			sourceTree = "<group>";
 		};
+		C4A563562918CF92001DDA44 /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F00D291012DE0070E2BE /* AppDelegate.h */,
+				C4B6F023291012DE0070E2BE /* AppDelegate.m */,
+				C4B6F020291012DE0070E2BE /* main.m */,
+				C4A563B129191E07001DDA44 /* ServiceLocator */,
+				C4A563612918D04A001DDA44 /* Services */,
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
+		C4A563572918CFAA001DDA44 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563C1291A9160001DDA44 /* Helper */,
+				C4A563682918D135001DDA44 /* UI */,
+				C4B6F02A291012DE0070E2BE /* Models */,
+				C4A563582918CFB2001DDA44 /* Extension */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		C4A563582918CFB2001DDA44 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F028291012DE0070E2BE /* Foundation */,
+				C4A5635E2918CFED001DDA44 /* CoreGraphics */,
+				C4A563592918CFBC001DDA44 /* UIKit */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+		C4A563592918CFBC001DDA44 /* UIKit */ = {
+			isa = PBXGroup;
+			children = (
+				C4A5635A2918CFC8001DDA44 /* UIStackView+Init.swift */,
+				C4A5635C2918CFDB001DDA44 /* UIColor+Hex.swift */,
+				C4A563AF2918D60E001DDA44 /* UIButton+BackgroundColorForState.swift */,
+				C44A3F97291D3C2700C1D830 /* UIWindow+Transition.swift */,
+			);
+			path = UIKit;
+			sourceTree = "<group>";
+		};
+		C4A5635E2918CFED001DDA44 /* CoreGraphics */ = {
+			isa = PBXGroup;
+			children = (
+				C4A5635F2918CFF9001DDA44 /* CGSize+Init.swift */,
+			);
+			path = CoreGraphics;
+			sourceTree = "<group>";
+		};
+		C4A563612918D04A001DDA44 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				C42DA692291E695F000D9601 /* AuthService */,
+				C44A3F94291D1DC400C1D830 /* UIService */,
+				C44A3F91291D181700C1D830 /* BiometryService */,
+				C4B6F006291012DE0070E2BE /* KeychainService */,
+				C4B6F02C291012DE0070E2BE /* UserDefaultsService */,
+				C4B6F00F291012DE0070E2BE /* WalletStore */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		C4A563622918D0B0001DDA44 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563632918D0B9001DDA44 /* PassCode */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		C4A563632918D0B9001DDA44 /* PassCode */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563642918D11C001DDA44 /* PassCodeViewController.swift */,
+				C438087D292CDB8D00FF5669 /* Model */,
+				C4A563702918D224001DDA44 /* View */,
+			);
+			path = PassCode;
+			sourceTree = "<group>";
+		};
+		C4A563682918D135001DDA44 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563BA291951ED001DDA44 /* StackSpacer */,
+				C4A563692918D13B001DDA44 /* BaseClasses */,
+				C4A5639C2918D49C001DDA44 /* Theme */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		C4A563692918D13B001DDA44 /* BaseClasses */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563A62918D4C2001DDA44 /* BaseButton */,
+				C4A563A92918D52A001DDA44 /* BaseView */,
+				C4A563AC2918D53D001DDA44 /* BaseViewController */,
+			);
+			path = BaseClasses;
+			sourceTree = "<group>";
+		};
+		C4A563702918D224001DDA44 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563972918D2F1001DDA44 /* Subview */,
+				C4A563652918D11C001DDA44 /* PassCodeView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		C4A563972918D2F1001DDA44 /* Subview */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563982918D30B001DDA44 /* PassCodeButton.swift */,
+				C4A563BD2919522D001DDA44 /* CircleView.swift */,
+			);
+			path = Subview;
+			sourceTree = "<group>";
+		};
+		C4A5639C2918D49C001DDA44 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563A12918D49C001DDA44 /* Theme.swift */,
+				C4A5639D2918D49C001DDA44 /* Theme+current.swift */,
+				C4A563A02918D49C001DDA44 /* ThemeStyled.swift */,
+				C4A5639E2918D49C001DDA44 /* Color */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		C4A5639E2918D49C001DDA44 /* Color */ = {
+			isa = PBXGroup;
+			children = (
+				C4A5639F2918D49C001DDA44 /* ColorTheme.swift */,
+			);
+			path = Color;
+			sourceTree = "<group>";
+		};
+		C4A563A62918D4C2001DDA44 /* BaseButton */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563A72918D4CC001DDA44 /* BaseButton.swift */,
+			);
+			path = BaseButton;
+			sourceTree = "<group>";
+		};
+		C4A563A92918D52A001DDA44 /* BaseView */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563AA2918D531001DDA44 /* BaseView.swift */,
+			);
+			path = BaseView;
+			sourceTree = "<group>";
+		};
+		C4A563AC2918D53D001DDA44 /* BaseViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563AD2918D546001DDA44 /* BaseViewController.swift */,
+			);
+			path = BaseViewController;
+			sourceTree = "<group>";
+		};
+		C4A563B129191E07001DDA44 /* ServiceLocator */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563B229191E14001DDA44 /* ServiceLocator.swift */,
+				C4A563B429191E22001DDA44 /* Autowired.swift */,
+			);
+			path = ServiceLocator;
+			sourceTree = "<group>";
+		};
+		C4A563BA291951ED001DDA44 /* StackSpacer */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563BB291951FA001DDA44 /* SpacerView.swift */,
+			);
+			path = StackSpacer;
+			sourceTree = "<group>";
+		};
+		C4A563C1291A9160001DDA44 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563C2291A916E001DDA44 /* Utils.swift */,
+				C4A563C4291A9290001DDA44 /* Animations.swift */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
 		C4B6F005291012DE0070E2BE /* ton_keeper */ = {
 			isa = PBXGroup;
 			children = (
 				C4B6F00C291012DE0070E2BE /* ton_keeper.entitlements */,
-				C4B6F026291012DE0070E2BE /* Helper */,
-				C4B6F006291012DE0070E2BE /* KeychainService */,
+				C4A563562918CF92001DDA44 /* Application */,
+				C4A563572918CFAA001DDA44 /* Common */,
 				C4A563552918CE8F001DDA44 /* Legacy */,
+				C4A563622918D0B0001DDA44 /* Modules */,
 				C4A563532918CDB8001DDA44 /* Resources */,
 				C4B6F024291012DE0070E2BE /* SupportingFiles */,
-				C4B6F02C291012DE0070E2BE /* UserDefaultsService */,
-				C4B6F00F291012DE0070E2BE /* WalletStore */,
 			);
 			path = ton_keeper;
 			sourceTree = "<group>";
@@ -288,8 +571,8 @@
 			isa = PBXGroup;
 			children = (
 				C4B6F010291012DE0070E2BE /* WalletStore.m */,
-				C4B6F011291012DE0070E2BE /* Model */,
 				C4B6F014291012DE0070E2BE /* WalletStore.swift */,
+				C4B6F011291012DE0070E2BE /* Model */,
 			);
 			path = WalletStore;
 			sourceTree = "<group>";
@@ -314,37 +597,21 @@
 			path = SupportingFiles;
 			sourceTree = "<group>";
 		};
-		C4B6F026291012DE0070E2BE /* Helper */ = {
-			isa = PBXGroup;
-			children = (
-				C4B6F027291012DE0070E2BE /* Extensions */,
-				C4B6F02A291012DE0070E2BE /* Model */,
-			);
-			path = Helper;
-			sourceTree = "<group>";
-		};
-		C4B6F027291012DE0070E2BE /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				C4B6F028291012DE0070E2BE /* Foundation */,
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
 		C4B6F028291012DE0070E2BE /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
 				C4B6F029291012DE0070E2BE /* UserDefaults+SaveStruct.swift */,
+				C438087B292BD3E200FF5669 /* CaseIterable+Next.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
 		};
-		C4B6F02A291012DE0070E2BE /* Model */ = {
+		C4B6F02A291012DE0070E2BE /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				C4B6F02B291012DE0070E2BE /* JSONAble.swift */,
 			);
-			path = Model;
+			path = Models;
 			sourceTree = "<group>";
 		};
 		C4B6F02C291012DE0070E2BE /* UserDefaultsService */ = {
@@ -354,6 +621,23 @@
 				C4B6F02E291012DE0070E2BE /* UserDefaultsService.swift */,
 			);
 			path = UserDefaultsService;
+			sourceTree = "<group>";
+		};
+		C4F5F2022927C81800D08D79 /* Localizable */ = {
+			isa = PBXGroup;
+			children = (
+				C4F5F2072927C85B00D08D79 /* PassCode.strings */,
+				C4380879292BD26A00FF5669 /* PassCode.stringsdict */,
+			);
+			path = Localizable;
+			sourceTree = "<group>";
+		};
+		C4F5F20A2927C97C00D08D79 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				C4380873292BCFE500FF5669 /* R.generated.swift */,
+			);
+			path = Generated;
 			sourceTree = "<group>";
 		};
 		C80173ED49C3443EA1F97BA9 /* Resources */ = {
@@ -420,6 +704,7 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ton_keeper" */;
 			buildPhases = (
 				8C4EC056529EFADE0053216C /* [CP] Check Pods Manifest.lock */,
+				C4F5F2092927C96100D08D79 /* R.swift codegen */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
@@ -462,6 +747,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ru,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
@@ -494,6 +780,7 @@
 				C4B6F035291012DE0070E2BE /* Podfile.properties.json in Resources */,
 				203A6A0E2760BD6800817B71 /* Montserrat-ExtraLightItalic.ttf in Resources */,
 				203A6A112760BD6800817B71 /* Montserrat-Italic.ttf in Resources */,
+				C4F5F2052927C85B00D08D79 /* PassCode.strings in Resources */,
 				203A6A0F2760BD6800817B71 /* Montserrat-BoldItalic.ttf in Resources */,
 				203A6A182760BD6800817B71 /* Montserrat-ExtraBold.ttf in Resources */,
 				203A6A1B2760BD6800817B71 /* Montserrat-Thin.ttf in Resources */,
@@ -503,6 +790,7 @@
 				203A6A192760BD6800817B71 /* Montserrat-Black.ttf in Resources */,
 				C4B6F03F291012DE0070E2BE /* Images.xcassets in Resources */,
 				203A6A122760BD6800817B71 /* Montserrat-LightItalic.ttf in Resources */,
+				C4380877292BD26A00FF5669 /* PassCode.stringsdict in Resources */,
 				203A6A1A2760BD6800817B71 /* Montserrat-ExtraLight.ttf in Resources */,
 				203A6A102760BD6800817B71 /* Montserrat-ExtraBoldItalic.ttf in Resources */,
 				C4B6F03A291012DE0070E2BE /* GoogleService-Info.plist in Resources */,
@@ -616,6 +904,26 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ton_keeper/Pods-ton_keeper-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		C4F5F2092927C96100D08D79 /* R.swift codegen */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$TEMP_DIR/rswift-lastrun",
+			);
+			name = "R.swift codegen";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				$SRCROOT/$PROJECT_NAME/Resources/Generated/R.generated.swift,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$PODS_ROOT/R.swift/rswift\" generate \"$SRCROOT/$PROJECT_NAME/Resources/Generated/R.generated.swift\"\n";
+		};
 		F95E499949E50FBC1ECC1307 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -668,25 +976,53 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4A5635D2918CFDB001DDA44 /* UIColor+Hex.swift in Sources */,
+				C44A3F98291D3C2700C1D830 /* UIWindow+Transition.swift in Sources */,
+				C4380874292BCFE600FF5669 /* R.generated.swift in Sources */,
 				C4B6F030291012DE0070E2BE /* KeychainServiceError.swift in Sources */,
+				C4A563BE2919522D001DDA44 /* CircleView.swift in Sources */,
 				1C610F328FB84275E2FB6D32 /* ExpoModulesProvider.swift in Sources */,
+				C4A563B02918D60E001DDA44 /* UIButton+BackgroundColorForState.swift in Sources */,
+				C44A3F93291D182F00C1D830 /* BiometryService.swift in Sources */,
+				C4A563C3291A916E001DDA44 /* Utils.swift in Sources */,
+				C4A563C5291A9290001DDA44 /* Animations.swift in Sources */,
+				C438087C292BD3E200FF5669 /* CaseIterable+Next.swift in Sources */,
+				C4A563AB2918D531001DDA44 /* BaseView.swift in Sources */,
 				C4B6F036291012DE0070E2BE /* WalletStore.m in Sources */,
+				C4A563B329191E14001DDA44 /* ServiceLocator.swift in Sources */,
+				C4A563AE2918D546001DDA44 /* BaseViewController.swift in Sources */,
+				C4A5635B2918CFC8001DDA44 /* UIStackView+Init.swift in Sources */,
+				C44A3F96291D1DCE00C1D830 /* UIService.swift in Sources */,
 				C4B6F033291012DE0070E2BE /* AccessControl.swift in Sources */,
 				C4B6F032291012DE0070E2BE /* Accessibility.swift in Sources */,
+				C4A563A22918D49C001DDA44 /* Theme+current.swift in Sources */,
 				C4B6F043291012DE0070E2BE /* JSONAble.swift in Sources */,
+				C4A563A42918D49C001DDA44 /* ThemeStyled.swift in Sources */,
+				C4A563B529191E22001DDA44 /* Autowired.swift in Sources */,
 				C4B6F041291012DE0070E2BE /* Constants.swift in Sources */,
 				C4B6F034291012DE0070E2BE /* TonPbkdf2.m in Sources */,
+				C4A563662918D11C001DDA44 /* PassCodeViewController.swift in Sources */,
+				C4A563602918CFF9001DDA44 /* CGSize+Init.swift in Sources */,
+				C4A563992918D30B001DDA44 /* PassCodeButton.swift in Sources */,
 				C4B6F040291012DE0070E2BE /* AppDelegate.m in Sources */,
+				C42DA694291E696C000D9601 /* AuthService.swift in Sources */,
+				C4A563A82918D4CC001DDA44 /* BaseButton.swift in Sources */,
 				C4B6F03E291012DE0070E2BE /* noop-file.swift in Sources */,
 				C4B6F039291012DE0070E2BE /* WalletStore.swift in Sources */,
 				C4B6F031291012DE0070E2BE /* KeychainService.swift in Sources */,
 				C4B6F044291012DE0070E2BE /* UserDefaultWrapper.swift in Sources */,
+				C438087F292CDBA200FF5669 /* PassCodeBlockTime.swift in Sources */,
+				C4A563672918D11C001DDA44 /* PassCodeView.swift in Sources */,
+				C4A563A32918D49C001DDA44 /* ColorTheme.swift in Sources */,
 				C4B6F038291012DE0070E2BE /* WalletInfo.swift in Sources */,
 				C4B6F03C291012DE0070E2BE /* File.swift in Sources */,
+				C4A563A52918D49C001DDA44 /* Theme.swift in Sources */,
 				C4B6F03D291012DE0070E2BE /* main.m in Sources */,
 				C4B6F045291012DE0070E2BE /* UserDefaultsService.swift in Sources */,
 				C4B6F042291012DE0070E2BE /* UserDefaults+SaveStruct.swift in Sources */,
 				C4B6F037291012DE0070E2BE /* WalletError.swift in Sources */,
+				C4A563BC291951FA001DDA44 /* SpacerView.swift in Sources */,
+				C4A5639B2918D372001DDA44 /* Palette.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -699,6 +1035,27 @@
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		C4380879292BD26A00FF5669 /* PassCode.stringsdict */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C4380878292BD26A00FF5669 /* en */,
+				C438087A292BD26C00FF5669 /* ru */,
+			);
+			name = PassCode.stringsdict;
+			sourceTree = "<group>";
+		};
+		C4F5F2072927C85B00D08D79 /* PassCode.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C4F5F2062927C85B00D08D79 /* en */,
+				C4F5F2082927C88200D08D79 /* ru */,
+			);
+			name = PassCode.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
@@ -747,7 +1104,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ton_keeper.app/ton_keeper";
@@ -762,10 +1119,11 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ton_keeper/ton_keeper.entitlements;
 				CURRENT_PROJECT_VERSION = 239;
+				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ton_keeper/SupportingFiles/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -796,9 +1154,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ton_keeper/ton_keeper.entitlements;
 				CURRENT_PROJECT_VERSION = 239;
+				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				INFOPLIST_FILE = ton_keeper/SupportingFiles/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -809,7 +1168,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jbig.tonkeeper;
 				PRODUCT_NAME = ton_keeper;
 				SWIFT_OBJC_BRIDGING_HEADER = "ton_keeper-Bridging-Header.h";

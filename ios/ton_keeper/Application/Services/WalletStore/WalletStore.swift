@@ -54,6 +54,7 @@ final class WalletStore: NSObject {
       
       let context = LAContext()
       context.setCredential(Data(passcode.utf8), type: .applicationPassword)
+      try keychainService.set(passcode, forKey: KeychainService.passcodeKeyPath)
       try keychainService.set(words.joined(separator: " "), forKey: "\(pubkey)-password", context: context, accessControl: .password)
       
       let walletInfo = WalletInfo(pubkey: pubkey, label: "")
