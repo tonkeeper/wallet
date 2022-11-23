@@ -50,9 +50,7 @@ class TonConnectService {
   }
 
   verifyConnectRequest(request: ConnectRequest) {
-    if (
-      !(request && request.icon && request.name && request.url && request.items?.length)
-    ) {
+    if (!(request && request.name && request.url && request.items?.length)) {
       throw new ConnectEventError(
         CONNECT_EVENT_ERROR_CODES.BAD_REQUEST_ERROR,
         'Wrong request data',
@@ -72,7 +70,9 @@ class TonConnectService {
 
       this.verifyConnectRequest(request);
 
-      FastImage.preload([{ uri: request.icon }]);
+      if (request.icon) {
+        FastImage.preload([{ uri: request.icon }]);
+      }
 
       try {
         const { address, replyItems } = await new Promise<TonConnectModalResponse>(

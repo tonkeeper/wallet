@@ -31,6 +31,7 @@ export const useConnectedAppsStore = create(
                 connectedApps[chainName][walletAddress][domain] = {
                   ...alreadyConnectedApp,
                   ...appData,
+                  icon: appData.icon || alreadyConnectedApp.icon,
                   connections: connection
                     ? [...alreadyConnectedApp.connections, connection]
                     : alreadyConnectedApp.connections,

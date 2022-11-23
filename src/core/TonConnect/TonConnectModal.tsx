@@ -227,7 +227,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
             />
           </S.AddressConatiner>
           <S.Logo>
-            <S.Picture source={{ uri: appIconUri }} />
+            {appIconUri ? <S.Picture source={{ uri: appIconUri }} /> : null}
           </S.Logo>
         </S.Logos>
 
