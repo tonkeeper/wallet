@@ -11137,10 +11137,10 @@ tonapi-sdk-js@^0.23.0:
   dependencies:
     react-arborist "^1.2.0"
 
-tonweb@0.0.54:
-  version "0.0.54"
-  resolved "https://registry.yarnpkg.com/tonweb/-/tonweb-0.0.54.tgz#8e56728d504494aa1f43320051e89c4d467e313b"
-  integrity sha512-1Q8ltYA182PNJc4JvOIzhAB6JGudgal0PjTiOCiBLW/RVAFVWVVj4Is+2ZJ2gUBzX2km0F/Y+Lj/ZLybAwcx9Q==
+tonweb@^0.0.58:
+  version "0.0.58"
+  resolved "https://registry.yarnpkg.com/tonweb/-/tonweb-0.0.58.tgz#9be40f5a2c1ae3247ea843557ccc50a5ea9d4650"
+  integrity sha512-thVkyCReaVfR9u3SCwevj4kxKN9ulo20i4P0SDeBg5DZGGpNdebnMc0UfzZ+RDhgvpJSBEV7Remh8G9Y9lUa2w==
   dependencies:
     "@ledgerhq/hw-transport-web-ble" "5.48.0"
     "@ledgerhq/hw-transport-webhid" "5.48.0"

@@ -3,8 +3,7 @@ import * as S from './ImageWithTitle.style';
 import { ImageWithTitleProps } from '$core/NFT/ImageWithTitle/ImageWithTitle.interface';
 import { Badge, Icon, ShowMore, Text } from '$uikit';
 import { useTheme, useTranslator } from '$hooks';
-import {isIOS, ns} from '$utils';
-import { TitleWrap } from './ImageWithTitle.style';
+import { isIOS, ns } from '$utils';
 
 export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
   uri,
@@ -15,6 +14,7 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
   isVerified,
   description,
   isOnSale,
+  bottom,
 }) => {
   const theme = useTheme();
   const t = useTranslator();
@@ -90,6 +90,7 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
             <ShowMore maxLines={2} text={description} />
           </S.DescriptionWrap>
         ) : null}
+        {bottom}
       </S.TextWrap>
     </S.Wrap>
   );

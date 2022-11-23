@@ -63,6 +63,23 @@ type Balances = {
   version: string;
 };
 
+async function resolveDns(domain: string) {
+  try {
+    const endpoint = getServerConfig('tonapiIOEndpoint');
+    const response: any = await axios.get(`${endpoint}/v1/dns/resolve`, {
+      headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+      },
+      params: {
+        name: domain,
+      },
+    });
+    return response.data;
+  } catch (e) {
+    return false;
+  }
+}
+
 async function getBalances(pubkey: string) {
   const wallets = await findByPubkey(pubkey);
 
@@ -91,4 +108,5 @@ export const Tonapi = {
   findByPubkey,
   getWalletInfo,
   getBalances,
+  resolveDns,
 };

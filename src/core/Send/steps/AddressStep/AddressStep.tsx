@@ -27,6 +27,7 @@ import {
 import { AddressStepProps } from './AddressStep.interface';
 import { getServerConfig } from '$shared/constants';
 import { AccountRepr } from 'tonapi-sdk-js';
+import { Tonapi } from '$libs/Tonapi';
 
 const TonWeb = require('tonweb');
 
@@ -73,17 +74,20 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
   const getAddressByDomain = useMemo(
     () =>
-      asyncDebounce(async (domain: string) => {
+      asyncDebounce(async (value: string) => {
         try {
-          const tonweb = new TonWeb(
-            new TonWeb.HttpProvider(getServerConfig('tonEndpoint'), {
-              apiKey: getServerConfig('tonEndpointAPIKey'),
-            }),
-          );
+          const domain = value.toLowerCase();
+          const resolvedDomain = await Tonapi.resolveDns(domain);
 
-          const response = await tonweb.dns.getWalletAddress(domain);
+          if (resolvedDomain?.wallet?.address) {
+            return new TonWeb.Address(resolvedDomain.wallet.address).toString(
+              true,
+              true,
+              true,
+            ) as string;
+          }
 
-          return response.toString(true, true, true) as string;
+          return null;
         } catch (e) {
           console.log('err', e);
 
@@ -132,13 +136,13 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
       const domain = value.toLowerCase();
 
-      if (domain.endsWith('.ton')) {
+      if (!TonWeb.Address.isValid(domain) && domain.includes('.')) {
         setDnsLoading(true);
 
-        const address = await getAddressByDomain(domain);
+        const resolvedDomain = await getAddressByDomain(domain);
 
-        if (address) {
-          setRecipient({ address, domain });
+        if (resolvedDomain) {
+          setRecipient({ address: resolvedDomain, domain });
           setDnsLoading(false);
 
           return true;
