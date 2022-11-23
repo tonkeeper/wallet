@@ -113,21 +113,36 @@ export class Vault {
     } else {
       if (!version) {
         try {
-          const pubkey = TonWeb.utils.bytesToHex(tonPubkey);
-          const balances = await Tonapi.getBalances(pubkey);
-          if (balances.length > 0) {
-            balances.sort((a, b) => {
-              const balance = new BN(a.balance).cmp(new BN(b.balance));
-              return balance;
+          const provider = new TonWeb.HttpProvider(getServerConfig('tonEndpoint'), {
+            apiKey: getServerConfig('tonEndpointAPIKey'),
+          });
+          const ton = new TonWeb(provider);
+
+          let hasBalance: { balance: BN; version: string }[] = [];
+          for (let WalletClass of ton.wallet.list) {
+            const wallet = new WalletClass(ton.provider, {
+              publicKey: info.tonPubkey,
+              wc: 0,
             });
-            version = balances[balances.length - 1].version;
+            const walletAddress = (await wallet.getAddress()).toString(true, true, true);
+            const walletInfo = await Tonapi.getWalletInfo(walletAddress);
+            const walletBalance = new BN(walletInfo.balance);
+            if (walletBalance.gt(new BN(0))) {
+              hasBalance.push({ balance: walletBalance, version: wallet.getName() });
+            }
+          }
+
+          if (hasBalance.length > 0) {
+            hasBalance.sort((a, b) => {
+              return a.balance.cmp(b.balance);
+            });
+            version = hasBalance[hasBalance.length - 1].version;
           } else {
             version = DEFAULT_VERSION;
           }
           console.log('version detected', version);
         } catch (e) {
-          debugLog('[restore]: Failed to get addresses balances');
-          version = DEFAULT_VERSION;
+          throw new Error('Failed to get addresses balances');
         }
       } else {
         console.log('version passed', version);

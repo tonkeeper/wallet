@@ -1,13 +1,16 @@
 import React from 'react';
 import { Action, ActionTypeEnum } from 'tonapi-sdk-js';
-import { TonTransferAction as TonTransferActionData, NftItemTransferAction as NftTransferActionData, AuctionBidAction } from 'tonapi-sdk-js';
+import {
+  TonTransferAction as TonTransferActionData,
+  NftItemTransferAction as NftTransferActionData,
+  AuctionBidAction as SDKAuctionBidAction,
+} from 'tonapi-sdk-js';
 import * as S from '../NFTOperations.styles';
-import { Highlight, Separator, Text } from '$uikit';
+import { Highlight, Separator, Skeleton, Text } from '$uikit';
 import { copyText } from '$hooks/useCopyText';
 import { Ton } from '$libs/Ton';
 import { t } from '$translation';
 import { ListHeader } from '$uikit';
-import TonWeb from 'tonweb';
 import { dnsToUsername } from '$utils/dnsToUsername';
 import { useDownloadNFT } from '../useDownloadNFT';
 
@@ -32,14 +35,21 @@ export const SignRawAction = React.memo<Props>((props) => {
           totalFee={totalFee}
         />
       );
+    } else {
+      return (
+        <AuctionBidAction
+          action={data}
+          skipHeader={countActions === 1}
+          totalFee={totalFee}
+        />
+      );
     }
   }
- 
+
   if (action.type === ActionTypeEnum.NftItemTransfer) {
     const data = action[ActionTypeEnum.NftItemTransfer];
-
     return (
-      <TgNftItemTransferAction 
+      <NftItemTransferAction
         action={data}
         skipHeader={countActions === 1}
         totalFee={totalFee}
@@ -47,14 +57,13 @@ export const SignRawAction = React.memo<Props>((props) => {
     );
   }
 
-
   if (action.type === ActionTypeEnum.TonTransfer) {
     return (
-      <TonTransferAction 
+      <TonTransferAction
         action={action[ActionTypeEnum.TonTransfer]}
         skipHeader={countActions === 1}
         totalFee={totalFee}
-      /> 
+      />
     );
   }
 
@@ -62,15 +71,15 @@ export const SignRawAction = React.memo<Props>((props) => {
     const message = action[ActionTypeEnum.Unknown];
 
     return (
-      <UnknownAction 
+      <UnknownAction
         action={{
           address: message ? message.address : '',
-          amount: message ? message.amount : ''
+          amount: message ? message.amount : '',
         }}
         skipHeader={countActions === 1}
-      /> 
+      />
     );
-  } 
+  }
 
   return null;
 });
@@ -84,16 +93,11 @@ interface TonTransferActionProps {
 const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
   const { action, skipHeader, totalFee } = props;
   const amount = Ton.formatAmount(action.amount);
-  const address = Ton.formatAddress(
-    action.recipient.address, 
-    { cut: true }
-  );
+  const address = Ton.formatAddress(action.recipient.address, { cut: true });
 
   return (
     <>
-      {!skipHeader && (
-        <ListHeader title={t('txActions.signRaw.types.tonTransfer')} />
-      )}
+      {!skipHeader && <ListHeader title={t('txActions.signRaw.types.tonTransfer')} />}
       <S.Container>
         <S.Info>
           <Highlight onPress={() => copyText(amount)}>
@@ -108,9 +112,7 @@ const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
           <Highlight onPress={() => copyText(address)}>
             <S.InfoItem>
               <S.InfoItemLabel>{t('txActions.signRaw.recipient')}</S.InfoItemLabel>
-              <S.InfoItemValueText>
-                {address}
-              </S.InfoItemValueText>
+              <S.InfoItemValueText>{address}</S.InfoItemValueText>
             </S.InfoItem>
           </Highlight>
           {Boolean(action.comment) && (
@@ -119,9 +121,7 @@ const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
               <Highlight onPress={() => copyText(address)}>
                 <S.InfoItem>
                   <S.InfoItemLabel>{t('txActions.signRaw.comment')}</S.InfoItemLabel>
-                  <S.InfoItemValueText>
-                    {action.comment}
-                  </S.InfoItemValueText>
+                  <S.InfoItemValueText>{action.comment}</S.InfoItemValueText>
                 </S.InfoItem>
               </Highlight>
             </>
@@ -132,9 +132,7 @@ const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
               <Highlight onPress={() => copyText(address)}>
                 <S.InfoItem>
                   <S.InfoItemLabel>{t('txActions.fee')}</S.InfoItemLabel>
-                  <S.InfoItemValueText>
-                    {totalFee}
-                  </S.InfoItemValueText>
+                  <S.InfoItemValueText>{totalFee}</S.InfoItemValueText>
                 </S.InfoItem>
               </Highlight>
             </>
@@ -145,26 +143,26 @@ const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
   );
 });
 
-
-interface TgNftItemTransferActionProps {
+interface NftItemTransferActionProps {
   action: NftTransferActionData;
   skipHeader?: boolean;
   totalFee?: string;
 }
-const TgNftItemTransferAction = React.memo<TgNftItemTransferActionProps>((props) => {
+const NftItemTransferAction = React.memo<NftItemTransferActionProps>((props) => {
   const { action, totalFee } = props;
   const item = useDownloadNFT(action.nft);
-  const address = action.recipient 
-    ? Ton.formatAddress(
-      action.recipient.address, 
-      { cut: true }
-    )
+  const address = action.recipient
+    ? Ton.formatAddress(action.recipient.address, { cut: true })
     : '';
+
+  const isTG = (item.data?.dns || item.data?.name)?.endsWith('.t.me');
 
   const caption = React.useMemo(() => {
     let text = '...';
     if (item.data?.metadata) {
-      text = `${dnsToUsername(item.data.metadata.name)}`;
+      text = isTG
+        ? `${dnsToUsername(item.data.metadata.name)}`
+        : `${item.data.metadata.name}`;
     }
 
     if (item.data?.collection) {
@@ -178,19 +176,29 @@ const TgNftItemTransferAction = React.memo<TgNftItemTransferActionProps>((props)
     <S.Container>
       <S.Center>
         <S.NFTItemPreview>
-          <S.LocalImage source={require('$assets/tg-full-logo.png')}  />
+          {isTG ? (
+            <S.LocalImage source={require('$assets/tg-full-logo.png')} />
+          ) : (
+            <S.Image uri={item.data?.metadata?.image} resize={512} />
+          )}
         </S.NFTItemPreview>
         <S.Caption>{caption}</S.Caption>
-        <S.Title>{t('transaction_transfer_name')}</S.Title>
+        {item.data ? (
+          <S.Title>
+            {t(isTG ? 'transaction_transfer_name' : 'nft_transfer_title')}
+          </S.Title>
+        ) : (
+          <Skeleton.Line style={{ marginBottom: 24, marginTop: 8 }} width={140} />
+        )}
       </S.Center>
-      
+
       <S.Info>
         <Highlight onPress={() => copyText(address)}>
           <S.InfoItem>
             <S.InfoItemLabel>{t('txActions.signRaw.recipient')}</S.InfoItemLabel>
             <S.InfoItemValueText>{address}</S.InfoItemValueText>
           </S.InfoItem>
-        </Highlight>        
+        </Highlight>
         {Boolean(totalFee) && (
           <>
             <Separator />
@@ -208,7 +216,7 @@ const TgNftItemTransferAction = React.memo<TgNftItemTransferActionProps>((props)
 });
 
 interface TgAuctionBidActionProps {
-  action: AuctionBidAction;
+  action: SDKAuctionBidAction;
   skipHeader?: boolean;
   totalFee?: string;
 }
@@ -221,39 +229,106 @@ const TgAuctionBidAction = React.memo<TgAuctionBidActionProps>((props) => {
     <S.Container>
       <S.Center>
         <S.NFTItemPreview>
-          <S.LocalImage source={require('$assets/tg-full-logo.png')}  />
+          <S.Image uri={action.nft?.metadata?.image} resize={512} />
         </S.NFTItemPreview>
         <S.Title>{t('transaction_confirm_bid')}</S.Title>
       </S.Center>
-      
+
       <S.Info>
         {action.nft && (
           <>
             <Highlight onPress={() => copyText(action.nft?.dns)}>
               <S.InfoItem>
                 <S.InfoItemLabel>{t('transaction_bid_dns')}</S.InfoItemLabel>
-                <S.InfoItemValueText>{dnsToUsername(action.nft?.dns)}</S.InfoItemValueText>
+                <S.InfoItemValueText>
+                  {dnsToUsername(action.nft?.dns)}
+                </S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
             <Separator />
             <Highlight onPress={() => copyText(action.nft?.collection?.name)}>
               <S.InfoItem>
                 <S.InfoItemLabel>{t('transaction_bid_collection_name')}</S.InfoItemLabel>
-                <S.InfoItemValueText>
-                  {action.nft.collection?.name}
-                </S.InfoItemValueText>
+                <S.InfoItemValueText>{action.nft.collection?.name}</S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
             <Separator />
           </>
         )}
-        
+
         <Highlight onPress={() => copyText(amount)}>
           <S.InfoItem>
             <S.InfoItemLabel>{t('transaction_your_bid')}</S.InfoItemLabel>
-            <S.InfoItemValueText>
-              {amount}
-            </S.InfoItemValueText>
+            <S.InfoItemValueText>{amount}</S.InfoItemValueText>
+          </S.InfoItem>
+        </Highlight>
+        {Boolean(totalFee) && (
+          <>
+            <Separator />
+            <Highlight onPress={() => copyText(totalFee)}>
+              <S.InfoItem>
+                <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
+                <S.InfoItemValueText>{totalFee}</S.InfoItemValueText>
+              </S.InfoItem>
+            </Highlight>
+          </>
+        )}
+      </S.Info>
+    </S.Container>
+  );
+});
+
+interface AuctionBidActionProps {
+  action: SDKAuctionBidAction;
+  skipHeader?: boolean;
+  totalFee?: string;
+}
+
+const AuctionBidAction = React.memo<AuctionBidActionProps>((props) => {
+  const { action, totalFee } = props;
+  const amount = Ton.formatAmount(action.amount.value);
+
+  const caption = React.useMemo(() => {
+    let text = '...';
+    if (action.nft?.metadata) {
+      text = `${action.nft.metadata.name}`;
+    }
+
+    if (action.nft?.collection) {
+      text += ` · ${action.nft.collection.name}`;
+    }
+
+    return action.nft ? text : '...';
+  }, [action.nft]);
+
+  return (
+    <S.Container>
+      <S.Center>
+        <S.NFTItemPreview>
+          <S.Image uri={action.nft?.metadata?.image} resize={512} />
+        </S.NFTItemPreview>
+        <S.Caption>{caption}</S.Caption>
+        <S.Title>{t('transaction_confirm_bid')}</S.Title>
+      </S.Center>
+
+      <S.Info>
+        {action.nft && (
+          <>
+            <Separator />
+            <Highlight onPress={() => copyText(action.nft?.collection?.name)}>
+              <S.InfoItem>
+                <S.InfoItemLabel>{t('transaction_bid_collection_name')}</S.InfoItemLabel>
+                <S.InfoItemValueText>{action.nft.collection?.name}</S.InfoItemValueText>
+              </S.InfoItem>
+            </Highlight>
+            <Separator />
+          </>
+        )}
+
+        <Highlight onPress={() => copyText(amount)}>
+          <S.InfoItem>
+            <S.InfoItemLabel>{t('transaction_your_bid')}</S.InfoItemLabel>
+            <S.InfoItemValueText>{amount}</S.InfoItemValueText>
           </S.InfoItem>
         </Highlight>
         {Boolean(totalFee) && (
@@ -277,7 +352,7 @@ interface UnknownActionProps {
   action: {
     address: string;
     amount: string;
-  }
+  };
 }
 
 const UnknownAction = React.memo<UnknownActionProps>(({ action, skipHeader }) => {
@@ -303,9 +378,7 @@ const UnknownAction = React.memo<UnknownActionProps>(({ action, skipHeader }) =>
           <Highlight onPress={() => copyText(address)}>
             <S.InfoItem>
               <S.InfoItemLabel>{t('txActions.signRaw.recipient')}</S.InfoItemLabel>
-              <S.InfoItemValueText>
-                {address}
-              </S.InfoItemValueText>
+              <S.InfoItemValueText>{address}</S.InfoItemValueText>
             </S.InfoItem>
           </Highlight>
         </S.Info>

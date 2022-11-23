@@ -2,7 +2,7 @@ import { all, takeLatest, put, call, fork, delay, select } from 'redux-saga/effe
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import DeviceInfo from 'react-native-device-info';
-import i18n from 'i18n-js';
+import { i18n } from '$translation';
 import { Platform } from 'react-native';
 import BigNumber from 'bignumber.js';
 
@@ -78,7 +78,7 @@ function* loadServerConfig(isTestnet: boolean, canRetry = false) {
   const params = {
     token: apiToken,
     chainName: isTestnet ? 'testnet' : 'mainnet',
-    lang: i18n.currentLocale(),
+    lang: i18n.locale,
     build: DeviceInfo.getReadableVersion(),
     platform: Platform.OS,
   };
@@ -119,6 +119,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     serverConfig = yield call(loadServerConfig, isTestnet, canRetry);
     needRefreshConfig = false;
   }
+  const showV4R1 = yield call(MainDB.getShowV4R1);
   const currencies = yield call(getAddedCurrencies);
   const isIntroShown = yield call(getIntroShown);
   const primaryCurrency = yield call(getPrimaryFiatCurrency);
@@ -175,6 +176,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
         isHasWallet: !!wallet,
         fiatCurrency: primaryCurrency || FiatCurrencies.Usd,
       }),
+      mainActions.setShowV4R1(showV4R1),
       jettonsActions.setShowJettons(jettonsEnabled),
       jettonsActions.setExcludedJettons(excludedJettons),
       mainActions.toggleIntro(!isIntroShown),
@@ -299,7 +301,7 @@ function* loadNotificationsWorker() {
         params: {
           platform: Platform.OS,
           version: DeviceInfo.getReadableVersion(),
-          lang: i18n.currentLocale(),
+          lang: i18n.locale,
         },
       },
     );

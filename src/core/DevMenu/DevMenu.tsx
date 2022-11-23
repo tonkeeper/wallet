@@ -1,31 +1,34 @@
 import React, { FC, useCallback } from 'react';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Animated from 'react-native-reanimated';
-import { Alert } from 'react-native';
+import { Alert, Switch } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import Clipboard from '@react-native-community/clipboard';
 import DeviceInfo from 'react-native-device-info';
 
 import * as S from './DevMenu.style';
 import { ns } from '$utils';
-import { NavBar, ScrollHandler } from '$uikit';
+import { NavBar, ScrollHandler, Text } from '$uikit';
 import { CellSection, CellSectionItem } from '$shared/components';
-import { mainActions, mainSelector } from '$store/main';
+import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
 import { useNavigation, useTranslator } from '$hooks';
 import { openLogs } from '$navigation';
 import { toastActions } from '$store/toast';
 import crashlytics from '@react-native-firebase/crashlytics';
-import { EventsDB, JettonsDB, NFTsDB } from '$database';
+import { EventsDB, JettonsDB, MainDB, NFTsDB } from '$database';
 import { eventsActions } from '$store/events';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
+import { Switch } from 'react-native-gesture-handler';
+import { DevFeature, useDevFeaturesToggle } from '$store';
 
 export const DevMenu: FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
   const nav = useNavigation();
   const dispatch = useDispatch();
   const t = useTranslator();
-  const { isTestnet } = useSelector(mainSelector);
+  const isTestnet = useSelector(isTestnetSelector);
+  const alwaysShowV4R1 = useSelector(alwaysShowV4R1Selector);
 
   const handleToggleTestnet = useCallback(() => {
     Alert.alert(t('settings_network_alert_title'), '', [
@@ -52,6 +55,11 @@ export const DevMenu: FC = () => {
     crashlytics().crash();
   }, []);
 
+  const handleShowV4R1 = useCallback(() => {
+    dispatch(mainActions.setShowV4R1(!alwaysShowV4R1));
+    MainDB.setShowV4R1(!alwaysShowV4R1);
+  }, [alwaysShowV4R1, dispatch]);
+
   const handleClearEventsCache = useCallback(() => {
     EventsDB.clearAll();
     dispatch(eventsActions.resetEvents());
@@ -73,16 +81,25 @@ export const DevMenu: FC = () => {
 
   const handleComponents = useCallback(() => {
     nav.navigate('DevStack');
-  }, []);
+  }, [nav]);
 
   const handleEditConfig = useCallback(() => {
     nav.navigate('EditConfig');
-  }, []);
+  }, [nav]);
 
   const handleCopyVersion = useCallback(() => {
     Clipboard.setString(DeviceInfo.getVersion() + ` (${DeviceInfo.getBuildNumber()})`);
     dispatch(toastActions.success(t('copied')));
   }, [dispatch, t]);
+
+  const {
+    devFeatures,
+    actions: { toogleFeature },
+  } = useDevFeaturesToggle();
+
+  const toogleTonConnectV2Feature = useCallback(() => {
+    toogleFeature(DevFeature.TonConnectV2);
+  }, []);
 
   return (
     <S.Wrap>
@@ -104,6 +121,16 @@ export const DevMenu: FC = () => {
               {t(isTestnet ? 'settings_to_mainnet' : 'settings_to_testnet')}
             </CellSectionItem>
             <CellSectionItem onPress={handleLogs}>Logs</CellSectionItem>
+            <CellSectionItem
+              indicator={
+                <Switch
+                  value={devFeatures[DevFeature.TonConnectV2]}
+                  onChange={toogleTonConnectV2Feature}
+                />
+              }
+            >
+              Ton Connect v2 ⚠️
+            </CellSectionItem>
             {__DEV__ && (
               <>
                 <CellSectionItem onPress={handleTestCrash}>
@@ -116,6 +143,11 @@ export const DevMenu: FC = () => {
                 <CellSectionItem onPress={handleEditConfig}>Edit config</CellSectionItem>
               </>
             )}
+            <CellSectionItem
+              indicator={<Switch value={alwaysShowV4R1} onValueChange={handleShowV4R1} />}
+            >
+              Force show v4r1
+            </CellSectionItem>
           </CellSection>
           <CellSection>
             <CellSectionItem onPress={handleClearJettonsCache}>

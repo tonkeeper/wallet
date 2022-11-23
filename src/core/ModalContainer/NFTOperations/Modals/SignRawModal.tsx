@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useEffect, useMemo } from 'react';
 import { Highlight, Icon, Text } from '$uikit';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
@@ -10,20 +10,24 @@ import { AccountEvent, ActionTypeEnum } from 'tonapi-sdk-js';
 import { SignRawAction } from './SignRawAction';
 import { store, Toast } from '$store';
 import * as S from '../NFTOperations.styles';
-import { Modal, useNavigation } from '$libs/navigation';
+import { Modal } from '$libs/navigation';
 import { Ton } from '$libs/Ton';
 import { copyText } from '$hooks/useCopyText';
+import { push } from '$navigation';
+import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 
 interface SignRawModalProps {
   action: Awaited<ReturnType<NFTOperations['signRaw']>>;
   accountEvent?: AccountEvent;
   options: TxBodyOptions;
   params: SignRawParams;
+  onSuccess?: (boc: string) => void;
+  onDismiss?: () => void;
 }
 
 export const SignRawModal = memo<SignRawModalProps>((props) => {
-  const { accountEvent, options, params, action } = props;
-  
+  const { accountEvent, options, params, action, onSuccess, onDismiss } = props;
+
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const unlockVault = useUnlockVault();
 
@@ -33,8 +37,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 
     startLoading();
 
-    const result = await action.send(privateKey);
-    console.log(result);
+    await action.send(privateKey, onSuccess);
   });
 
   const hasWarning = useMemo(() => {
@@ -62,7 +65,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 
     const action = actions[0] ?? {};
 
-    if (action.type === ActionTypeEnum.AuctionBid) {  
+    if (action.type === ActionTypeEnum.AuctionBid) {
       const data = action[ActionTypeEnum.AuctionBid];
 
       if (data.auction_type === 'DNS.tg') {
@@ -70,7 +73,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       }
     }
 
-    if (action.type === ActionTypeEnum.NftItemTransfer) {  
+    if (action.type === ActionTypeEnum.NftItemTransfer) {
       return undefined;
     }
 
@@ -95,6 +98,14 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       return `≈ ${truncateDecimal(Ton.fromNano(fee.total.toString()), 1, true)} TON`;
     }
   }, [accountEvent]);
+
+  useEffect(
+    () => () => {
+      onDismiss?.();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   return (
     <Modal>
@@ -146,45 +157,55 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   );
 });
 
-export const useSignRawModal = () => {
-  const nav = useNavigation();
+export const openSignRawModal = async (
+  params: SignRawParams,
+  options: TxBodyOptions,
+  onSuccess?: (boc: string) => void,
+  onDismiss?: () => void,
+) => {
+  const wallet = store.getState().wallet.wallet;
+  if (!wallet) {
+    return false;
+  }
 
-  const open = async (params: SignRawParams, options: TxBodyOptions) => {
-    const wallet = store.getState().wallet.wallet;
-    if (!wallet) {
-      return;
+  try {
+    Toast.loading();
+
+    const operations = new NFTOperations(wallet);
+    const action = await operations.signRaw(params);
+
+    let accountEvent: AccountEvent | null = null;
+    try {
+      accountEvent = await action.estimateTx();
+      Toast.hide();
+    } catch (err) {
+      debugLog('[SignRaw]: estimateTx error', JSON.stringify(err));
+
+      const tonapiError = err?.response?.data?.error;
+      const errorMessage = tonapiError ?? `no response; status code: ${err.status};`;
+
+      Toast.fail(`Emulation error: ${errorMessage}`, { duration: 5000 });
     }
 
-    try {
-      Toast.loading();
-
-      const operations = new NFTOperations(wallet);
-      const action = await operations.signRaw(params);
-
-      let accountEvent: AccountEvent | null = null;
-      try {
-        accountEvent = await action.estimateTx();
-        Toast.hide();
-      } catch (err) {
-        debugLog('[SignRaw]: estimateTx error', JSON.stringify(err));
-
-        const tonapiError = err?.response?.data?.error;
-        const errorMessage = tonapiError ?? `no response; status code: ${err.status};`;
-
-        Toast.fail(`Emulation error: ${errorMessage}`, { duration: 5000 });
-      }
-
-      nav.openModal('SignRaw', {
+    push('SheetsProvider', {
+      $$action: SheetActions.ADD,
+      component: SignRawModal,
+      params: {
         accountEvent,
         options,
         params,
         action,
-      });
-    } catch (err) {
-      debugLog('[SignRaw]:', err);
-      Toast.fail('Operation error, please make sure the params is correct');
-    }
-  };
+        onSuccess,
+        onDismiss,
+      },
+      path: 'SignRaw',
+    });
 
-  return { open };
+    return true;
+  } catch (err) {
+    debugLog('[SignRaw]:', err);
+    Toast.fail('Operation error, please make sure the params is correct');
+
+    return false;
+  }
 };

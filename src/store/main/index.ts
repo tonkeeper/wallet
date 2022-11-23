@@ -12,6 +12,7 @@ import {
   SetHasWalletAction,
   SetLogsAction,
   SetNotificationsAction,
+  SetShowV4R1,
   SetTestnetAction,
   SetTimeSyncedAction,
   SetTimeSyncedDismissedAction,
@@ -22,7 +23,8 @@ import {
   UpdateBadHostsAction,
 } from '$store/main/interface';
 import { AccentKey } from '$styled';
-import { walletWalletSelector } from '$store/wallet';
+import { walletOldBalancesSelector, walletWalletSelector } from '$store/wallet';
+import {myNftsSelector, nftsSelector} from "$store/nfts";
 
 const initialState: MainState = {
   isInitiating: true,
@@ -40,6 +42,7 @@ const initialState: MainState = {
   isUnlocked: false,
   accent: AccentKey.default,
   tonCustomIcon: null,
+  alwaysShowV4R1: false,
 };
 
 export const { actions, reducer } = createSlice({
@@ -54,6 +57,10 @@ export const { actions, reducer } = createSlice({
       state.isInitiating = false;
       state.isHasWallet = isHasWallet;
       state.fiatCurrency = fiatCurrency;
+    },
+
+    setShowV4R1(state, action: SetShowV4R1) {
+      state.alwaysShowV4R1 = action.payload;
     },
 
     setHasWallet(state, action: SetHasWalletAction) {
@@ -179,4 +186,21 @@ export const accentTonIconSelector = createSelector(
   walletWalletSelector,
   customIconSelector,
   (wallet, tonCustomIcon) => (wallet ? tonCustomIcon : null),
+);
+
+export const alwaysShowV4R1Selector = createSelector(
+  mainSelector,
+  (state) => state.alwaysShowV4R1,
+);
+
+export const isTestnetSelector = createSelector(mainSelector, (state) => state.isTestnet);
+
+export const showV4R1Selector = createSelector(
+  mainSelector,
+  walletOldBalancesSelector,
+  (state, walletOldBalances) =>
+    state.alwaysShowV4R1 ||
+    walletOldBalances.find(
+      (oldBalance) => oldBalance.version === 'v4R1' && oldBalance.balance,
+    ),
 );

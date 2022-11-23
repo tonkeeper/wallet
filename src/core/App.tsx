@@ -4,7 +4,6 @@ import { Provider as StoreProvider, useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components/native';
 import appsFlyer from 'react-native-appsflyer';
 
-import { TranslatorProvider } from '$translation';
 import { store } from '$store';
 import { AppearanceAccents, DarkTheme, TonTheme } from '$styled';
 import { AppNavigator } from '$navigation/AppNavigator';
@@ -76,18 +75,16 @@ export const App: FC = () => {
   });
 
   return (
-    <SafeAreaProvider>
-      <TranslatorProvider>
-        <StoreProvider {...{ store }}>
-          <TonThemeProvider>
-            <ScrollPositionProvider>
-              <AppNavigator />
-            </ScrollPositionProvider>
-            <Toast />
-            <ToastComponent />
-          </TonThemeProvider>
-        </StoreProvider>
-      </TranslatorProvider>
-    </SafeAreaProvider>
+    <StoreProvider {...{ store }}>
+      <TonThemeProvider>
+        <SafeAreaProvider>
+          <ScrollPositionProvider>
+            <AppNavigator />
+          </ScrollPositionProvider>
+          <Toast />
+          <ToastComponent />
+        </SafeAreaProvider>
+      </TonThemeProvider>
+    </StoreProvider>
   );
 };

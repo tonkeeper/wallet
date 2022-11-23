@@ -13,19 +13,18 @@ import { debugLog, delay, maskifyTonAddress, triggerNotificationSuccess } from '
 import { toastActions } from '$store/toast';
 import { UnlockVaultError } from '$store/wallet/sagas';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
-import { AuthRequestBody, TonLoginClient } from '@tonapps/tonlogin-client';
-import { ADDRESS_REPEAT_COUNT, ADDRESS_TEXT_WIDTH, States, useTonConnectAnimation } from './useTonConnectAnimation';
+import {
+  ADDRESS_REPEAT_COUNT,
+  ADDRESS_TEXT_WIDTH,
+  States,
+  useTonConnectAnimation,
+} from './useTonConnectAnimation';
 import * as S from './TonConnect.style';
 import { t } from '$translation';
-
-export interface TonConnectModalProps {
-  tonconnect: TonLoginClient;
-  request: AuthRequestBody;
-  hostname: string;
-}
+import { TonConnectModalProps } from './models';
+import { useEffect } from 'react';
 
 export const TonConnectModal = (props: TonConnectModalProps) => {
-  const { hostname, request, tonconnect } = props;
   const animation = useTonConnectAnimation();
   const unlockVault = useUnlockVault();
   const dispatch = useDispatch();
@@ -33,24 +32,38 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
 
   const { version } = useSelector(walletSelector);
   const maskedAddress = maskifyTonAddress(animation.address);
- 
+
   const bottomSheetRef = React.useRef<BottomSheetRef>(null);
   const closeBottomSheet = () => bottomSheetRef.current?.close();
 
-  const sendToCallbackUrl = React.useCallback(async (response: string) => {
-      if (request.callback_url) {
-      const callbackUrl = createCallbackLink({ 
-        toHash: request.return_serverless,
-        url: request.callback_url,
-        response
-      });
+  const appName =
+    props.protocolVersion === 1 ? props.hostname : props.connectRequest.name;
+  const appIconUri =
+    props.protocolVersion === 1 ? props.request.image_url : props.connectRequest.icon;
 
-      const resp = await axios.get(callbackUrl);
-      if (resp.status !== 200) {
-        throw new Error('Failed to send response');
-      } 
-    }
-  }, []);
+  const sendToCallbackUrl = React.useCallback(
+    async (response: string) => {
+      if (props.protocolVersion !== 1) {
+        return;
+      }
+
+      const { request } = props;
+
+      if (request.callback_url) {
+        const callbackUrl = createCallbackLink({
+          toHash: request.return_serverless,
+          url: request.callback_url,
+          response,
+        });
+
+        const resp = await axios.get(callbackUrl);
+        if (resp.status !== 200) {
+          throw new Error('Failed to send response');
+        }
+      }
+    },
+    [props],
+  );
 
   const createResponse = React.useCallback(async () => {
     try {
@@ -62,48 +75,61 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
       const privateKey = await vault.getTonPrivateKey();
       const walletSeed = TonWeb.utils.bytesToBase64(privateKey);
 
-      const response = await tonconnect.createResponse({
-        service: hostname,
-        seed: walletSeed,
-        realm: 'web',
-        payload: {
-          tonAddress: () => ({ address }),
-          tonOwnership: ({ clientId }) => {
-            const pubkey = TonWeb.utils.bytesToBase64(vault.tonPublicKey);
-            const walletVersion = vault.getVersion() ?? '';
-            const walletId = vault.getWalletId();
-            
-            const signature = tonconnect.createTonOwnershipSignature({
-              secretKey: privateKey,
-              walletVersion,
-              address,
-              clientId
-            });
+      if (props.protocolVersion === 1) {
+        const { tonconnect, request, hostname } = props;
 
-            return {
-              wallet_version: walletVersion,
-              wallet_id: walletId,
-              signature,
-              address,
-              pubkey,
-            };
-          }
+        const response = await tonconnect.createResponse({
+          service: hostname,
+          seed: walletSeed,
+          realm: 'web',
+          payload: {
+            tonAddress: () => ({ address }),
+            tonOwnership: ({ clientId }) => {
+              const pubkey = TonWeb.utils.bytesToBase64(vault.tonPublicKey);
+              const walletVersion = vault.getVersion() ?? '';
+              const walletId = vault.getWalletId();
+
+              const signature = tonconnect.createTonOwnershipSignature({
+                secretKey: privateKey,
+                walletVersion,
+                address,
+                clientId,
+              });
+
+              return {
+                wallet_version: walletVersion,
+                wallet_id: walletId,
+                signature,
+                address,
+                pubkey,
+              };
+            },
+          },
+        });
+
+        if (request.callback_url) {
+          await sendToCallbackUrl(response);
         }
-      });
-
-      if (request.callback_url) {
-        await sendToCallbackUrl(response);
       }
-      
+
+      if (props.protocolVersion !== 1) {
+        const { replyBuilder, requestPromise } = props;
+
+        const replyItems = replyBuilder.createReplyItems(address, privateKey);
+
+        requestPromise.resolve({ address, replyItems });
+      }
+
       await animation.showSuccess(() => {
         triggerNotificationSuccess();
       });
 
-      if (request.return_url) {        
+      if (props.protocolVersion === 1 && props.request.return_url) {
         animation.showReturnButton();
-      } else {
-        closeBottomSheet();
-      }      
+        return;
+      }
+
+      closeBottomSheet();
     } catch (error) {
       animation.revert();
       let message = error?.message;
@@ -116,19 +142,32 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
       debugLog('[TonLogin]:', error);
       dispatch(toastActions.fail(message));
     }
-  }, []);
+  }, [animation, dispatch, props, sendToCallbackUrl, unlockVault]);
 
   const handleBackToService = React.useCallback(async () => {
+    if (props.protocolVersion !== 1) {
+      return;
+    }
+
+    const { tonconnect, request, openUrl } = props;
+
     const response = tonconnect.getResponse();
     if (request.return_url && response) {
-      const returnUrl = createCallbackLink({ 
+      const returnUrl = createCallbackLink({
         toHash: request.return_serverless,
         url: request.return_url,
-        response
+        response,
       });
+      const url = returnUrl.startsWith('http') ? returnUrl : `https://${returnUrl}`;
 
-      try { 
-        await Linking.openURL(`https://${returnUrl}`);
+      if (openUrl) {
+        openUrl(url);
+        closeBottomSheet();
+        return;
+      }
+
+      try {
+        await Linking.openURL(url);
 
         await delay(2000);
         closeBottomSheet();
@@ -136,18 +175,25 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
         debugLog(err);
       }
     }
-  }, []);
+  }, [props]);
+
+  useEffect(
+    () => () => {
+      if (props.protocolVersion !== 1) {
+        props.requestPromise.reject();
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   return (
     <BottomSheet skipHeader ref={bottomSheetRef}>
-      <S.Container> 
+      <S.Container>
         <S.Logos>
           <S.Logo>
             <S.TonLogo>
-              <Icon
-                name="ic-logo-48"
-                color="accentPrimary"
-              />
+              <Icon name="ic-logo-48" color="accentPrimary" />
             </S.TonLogo>
           </S.Logo>
           <S.AddressConatiner>
@@ -157,16 +203,18 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
               end={{ x: 1, y: 0 }}
             />
             <S.Address>
-              <S.AddressText style={[animation.ticker.textStyle, { width: ADDRESS_TEXT_WIDTH }]}>
+              <S.AddressText
+                style={[animation.ticker.textStyle, { width: ADDRESS_TEXT_WIDTH }]}
+              >
                 {animation.address.repeat(ADDRESS_REPEAT_COUNT)}
               </S.AddressText>
             </S.Address>
             <S.VerticalDivider />
             <S.Address>
-              <S.AddressText 
+              <S.AddressText
                 style={[
-                  animation.ticker.textStyle, 
-                  { paddingTop: 3, width: ADDRESS_TEXT_WIDTH }
+                  animation.ticker.textStyle,
+                  { paddingTop: 3, width: ADDRESS_TEXT_WIDTH },
                 ]}
               >
                 {'* '.repeat(animation.address.length * ADDRESS_REPEAT_COUNT)}
@@ -179,19 +227,22 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
             />
           </S.AddressConatiner>
           <S.Logo>
-            <S.Picture source={{ uri: request.image_url }} />
+            {appIconUri ? <S.Picture source={{ uri: appIconUri }} /> : null}
           </S.Logo>
         </S.Logos>
 
         <S.Content>
           <S.TitleWrapper>
             <Text variant="h2" textAlign="center">
-              {t('ton_login_title', { name: hostname })}
+              {t('ton_login_title', { name: appName })}
             </Text>
           </S.TitleWrapper>
           <Text color="foregroundSecondary" variant="body1" textAlign="center">
-            {t('ton_login_caption', { name: hostname })}
-            <Text color="foregroundTertiary" variant="body1" textAlign="center"> {maskedAddress} </Text>
+            {t('ton_login_caption', { name: appName })}
+            <Text color="foregroundTertiary" variant="body1" textAlign="center">
+              {' '}
+              {maskedAddress}{' '}
+            </Text>
             {SelectableVersionsConfig[version]
               ? SelectableVersionsConfig[version].label
               : null}
@@ -203,9 +254,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
             isVisible={animation.state === States.INITIAL}
             entranceAnimation={false}
           >
-            <Button onPress={createResponse}>
-              {t('ton_login_connect_button')}
-            </Button>
+            <Button onPress={createResponse}>{t('ton_login_connect_button')}</Button>
           </TransitionOpacity>
 
           <TransitionOpacity
@@ -222,7 +271,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
             isVisible={animation.state === States.RETURN}
           >
             <Button onPress={handleBackToService} mode="secondary">
-              {t('ton_login_back_to_button', { name: hostname })}
+              {t('ton_login_back_to_button', { name: appName })}
             </Button>
           </TransitionOpacity>
 
@@ -231,10 +280,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
             isVisible={animation.state === States.SUCCESS}
           >
             <S.Center>
-              <Icon 
-                name="ic-checkmark-circle-32"
-                color="accentPositive"
-              />
+              <Icon name="ic-checkmark-circle-32" color="accentPositive" />
               <S.SuccessText>{t('ton_login_success')}</S.SuccessText>
             </S.Center>
           </TransitionOpacity>
@@ -262,7 +308,6 @@ const styles = StyleSheet.create({
   },
 });
 
-
 type CreateAuthResponseLinkOptions = {
   url: string;
   response: string;
@@ -270,9 +315,9 @@ type CreateAuthResponseLinkOptions = {
 };
 
 function createCallbackLink(options: CreateAuthResponseLinkOptions) {
-  return queryString.stringifyUrl({ 
+  return queryString.stringifyUrl({
     ...(options.toHash && { fragmentIdentifier: 'tonlogin' }),
-    query: { tonlogin: options.response }, 
-    url: options.url
+    query: { tonlogin: options.response },
+    url: options.url,
   });
 }

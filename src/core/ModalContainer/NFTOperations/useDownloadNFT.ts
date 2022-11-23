@@ -2,6 +2,7 @@ import { debugLog } from '$utils';
 import axios from 'axios';
 import React from 'react';
 import { getServerConfig } from '$shared/constants';
+import {proxyMedia} from "$utils/proxyMedia";
 
 export type NFTItemMeta = {
   name: string;
@@ -26,7 +27,15 @@ export function useDownloadNFT(addr?: string) {
           addresses: address,
         },
       });
-      setNFT(response.data.nft_items[0]);
+      const nft = response.data.nft_items[0];
+      const image =
+        (nft.previews &&
+          nft.previews.find((preview) => preview.resolution === '500x500').url) ||
+        (nft.metadata?.image && proxyMedia(nft.metadata?.image, 512, 512));
+      if (image && nft.metadata) {
+        nft.metadata.image = image;
+      }
+      setNFT(nft);
     } catch (err) {
       debugLog('Error download nft meta', err);
     }

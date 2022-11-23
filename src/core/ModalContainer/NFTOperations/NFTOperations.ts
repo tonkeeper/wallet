@@ -397,7 +397,7 @@ export class NFTOperations {
           !secretKey,
         ),
       );
-    }
+    };
 
     return {
       estimateTx: async (): Promise<AccountEvent | null> => {
@@ -408,13 +408,17 @@ export class NFTOperations {
 
         const endpoint = getServerConfig('tonapiIOEndpoint');
 
-        const resp = await axios.post(`${endpoint}/v1/send/estimateTx`, {
-          boc: boc
-        }, {
-          headers: {
-            Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-          }
-        });
+        const resp = await axios.post(
+          `${endpoint}/v1/send/estimateTx`,
+          {
+            boc: boc,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+            },
+          },
+        );
 
         return resp.data;
       },
@@ -428,17 +432,17 @@ export class NFTOperations {
           .toNumber();
         return truncateDecimal(Ton.fromNano(fee.toString()), 1, true);
       },
-      send: async (secretKey: Uint8Array) => {
+      send: async (secretKey: Uint8Array, onDone?: (boc: string) => void) => {
         const methods = await signRawMethods(secretKey);
 
         const queryMsg = await methods.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
-        try {
-          return await this.sendApi.sendBoc({ sendBocRequest: { boc } });
-        } catch (e) {
-          console.log(e.code);
-          return Promise.resolve();
-        }
+
+        const response = await this.sendApi.sendBoc({ sendBocRequest: { boc } });
+
+        onDone?.(boc);
+
+        return response;
       },
     };
   }

@@ -27,10 +27,10 @@ import { mergeRefs } from '$utils/mergeRefs';
 import { shouldOpenReminderNotifications } from '$utils/messaging';
 import { AppearanceBottomSheetProps } from '$core/ModalContainer/AppearanceBottomSheet/AppearanceBottomSheet.interface';
 import { ExchangeDB } from '$core/ModalContainer/ExchangeMethod/ExchangeDB';
-import { TonConnectModalProps } from '$core/TonConnect/TonConnectModal';
 import { MarketplacesModalProps } from '$core/ModalContainer/Marketplaces/Marketplaces.interface';
 import { AddEditFavoriteAddressProps } from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress.interface';
 import { Action } from 'tonapi-sdk-js';
+import { TonConnectModalProps } from '$core/TonConnect/models';
 
 export const navigationRef_depreceted = createRef<NavigationContainerRef>();
 export const navigationRef = createNavigationContainerRef();
@@ -67,6 +67,10 @@ export function getCurrentRoute() {
 
 export function navigate(name: string, params?: any) {
   navigationRef_depreceted.current?.navigate(name, params);
+}
+
+export function replace(name: string, params?: any) {
+  navigationRef_depreceted.current?.dispatch(StackActions.replace(name, params));
 }
 
 export function push(routeName: string, params?: any) {
@@ -169,6 +173,23 @@ export function openDeploy(props: DeployModalProps) {
     key: 'DEPLOY',
     ...props,
   });
+}
+
+export function openDAppsSearch(
+  initialQuery?: string,
+  onOpenUrl?: (url: string) => void,
+) {
+  navigate(AppStackRouteNames.DAppsSearch, { initialQuery, onOpenUrl });
+}
+
+export function openDAppBrowser(url: string) {
+  const params = { url };
+
+  if (getCurrentRoute()?.name === AppStackRouteNames.DAppsSearch) {
+    replace(AppStackRouteNames.DAppBrowser, params);
+  } else {
+    navigate(AppStackRouteNames.DAppBrowser, params);
+  }
 }
 
 export function openScanQR(onScan: (url: string) => void) {
