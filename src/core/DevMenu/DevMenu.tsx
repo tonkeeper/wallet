@@ -1,14 +1,14 @@
 import React, { FC, useCallback } from 'react';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Animated from 'react-native-reanimated';
-import { Alert, Switch } from 'react-native';
+import { Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import Clipboard from '@react-native-community/clipboard';
 import DeviceInfo from 'react-native-device-info';
 
 import * as S from './DevMenu.style';
 import { ns } from '$utils';
-import { NavBar, ScrollHandler, Text } from '$uikit';
+import { NavBar, ScrollHandler } from '$uikit';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
 import { useNavigation, useTranslator } from '$hooks';
