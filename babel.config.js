@@ -1,7 +1,7 @@
 const isProd = process.env.NODE_ENV === 'production';
 
 const plugins = [
-  ["@babel/plugin-proposal-decorators", { "legacy": true }],
+  ['@babel/plugin-proposal-decorators', { legacy: true }],
   [
     'module-resolver',
     {
@@ -23,6 +23,7 @@ const plugins = [
         $services: './src/services',
         $blockchain: './src/blockchain',
         $database: './src/database',
+        $tonconnect: './src/tonconnect',
       },
     },
   ],

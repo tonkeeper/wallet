@@ -54,9 +54,10 @@ export const useKeyboardHeight = (): Animated.Value => {
 };
 
 export const useReanimatedKeyboardHeight = (options?: {
-  onWillShow?: (opts: { duration: number; height: number; }) => void;
+  onWillShow?: (opts: { duration: number; height: number }) => void;
   onWillHide?: () => void;
   enableOnAndroid?: boolean;
+  animated: boolean;
 }) => {
   const { bottom: bottomInset } = useSafeAreaInsets();
   let keyboardHeight = useSharedValue(0);
@@ -68,12 +69,13 @@ export const useReanimatedKeyboardHeight = (options?: {
         ? event.endCoordinates.height - bottomInset + paddingBottom
         : event.endCoordinates.height;
 
-      keyboardHeight.value = withTiming(
-        height,
-        {
+      if (options?.animated === false) {
+        keyboardHeight.value = height;
+      } else {
+        keyboardHeight.value = withTiming(height, {
           duration: event.duration,
-        },
-      );
+        });
+      }
 
       if (options?.onWillShow) {
         options.onWillShow({ duration: event.duration, height });
@@ -84,6 +86,7 @@ export const useReanimatedKeyboardHeight = (options?: {
 
   const keyboardWillHide = useCallback(
     (event) => {
+      console.log('keyboardWillHide');
       keyboardHeight.value = withTiming(0, {
         duration: event.duration,
       });
@@ -96,22 +99,14 @@ export const useReanimatedKeyboardHeight = (options?: {
   );
 
   useEffect(() => {
-    const showEventName = isAndroid && options?.enableOnAndroid 
-      ? 'keyboardDidShow'
-      : 'keyboardWillShow';
+    const showEventName =
+      isAndroid && options?.enableOnAndroid ? 'keyboardDidShow' : 'keyboardWillShow';
 
-    const hideEventName = isAndroid && options?.enableOnAndroid 
-      ? 'keyboardDidHide'
-      : 'keyboardWillHide'
+    const hideEventName =
+      isAndroid && options?.enableOnAndroid ? 'keyboardDidHide' : 'keyboardWillHide';
 
-    const keyboardWillShowSub = Keyboard.addListener(
-      showEventName,
-      keyboardWillShow,
-    );
-    const keyboardWillHideSub = Keyboard.addListener(
-      hideEventName,
-      keyboardWillHide,
-    );
+    const keyboardWillShowSub = Keyboard.addListener(showEventName, keyboardWillShow);
+    const keyboardWillHideSub = Keyboard.addListener(hideEventName, keyboardWillHide);
 
     return () => {
       keyboardWillShowSub.remove();

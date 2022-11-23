@@ -8,7 +8,7 @@ import DeviceInfo from 'react-native-device-info';
 
 import * as S from './DevMenu.style';
 import { ns } from '$utils';
-import { NavBar, ScrollHandler } from '$uikit';
+import { NavBar, ScrollHandler, Text } from '$uikit';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
 import { useNavigation, useTranslator } from '$hooks';
@@ -19,6 +19,8 @@ import { EventsDB, JettonsDB, MainDB, NFTsDB } from '$database';
 import { eventsActions } from '$store/events';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
+import { Switch } from 'react-native-gesture-handler';
+import { DevFeature, useDevFeaturesToggle } from '$store';
 
 export const DevMenu: FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
@@ -90,6 +92,15 @@ export const DevMenu: FC = () => {
     dispatch(toastActions.success(t('copied')));
   }, [dispatch, t]);
 
+  const {
+    devFeatures,
+    actions: { toogleFeature },
+  } = useDevFeaturesToggle();
+
+  const toogleTonConnectV2Feature = useCallback(() => {
+    toogleFeature(DevFeature.TonConnectV2);
+  }, []);
+
   return (
     <S.Wrap>
       <NavBar>Dev Menu</NavBar>
@@ -110,6 +121,16 @@ export const DevMenu: FC = () => {
               {t(isTestnet ? 'settings_to_mainnet' : 'settings_to_testnet')}
             </CellSectionItem>
             <CellSectionItem onPress={handleLogs}>Logs</CellSectionItem>
+            <CellSectionItem
+              indicator={
+                <Switch
+                  value={devFeatures[DevFeature.TonConnectV2]}
+                  onChange={toogleTonConnectV2Feature}
+                />
+              }
+            >
+              Ton Connect v2 ⚠️
+            </CellSectionItem>
             {__DEV__ && (
               <>
                 <CellSectionItem onPress={handleTestCrash}>

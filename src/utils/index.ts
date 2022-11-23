@@ -80,3 +80,4 @@ export { Base64 } from './base64';
 export * from './string';
 export * from './nft';
 export * from './throttle';
+export * from './url';

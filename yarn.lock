@@ -2424,6 +2424,13 @@
     tweetnacl "^1.0.3"
     tweetnacl-util "^0.15.1"
 
+"@tonconnect/protocol@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@tonconnect/protocol/-/protocol-0.0.10.tgz#27afa3d3e673cb659bee5415388ffd9515277da8"
+  integrity sha512-1jLD7sfBqUjOTzlz5vV5yN8vBxD1bXUKUK2G/ciVa3Xu9KgaHyeuINmm42kLL+T3sYYp70O6y8WyOissm/yfRg==
+  dependencies:
+    buffer "^6.0.3"
+
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
@@ -4621,6 +4628,13 @@ domain-browser@^1.1.1, domain-browser@^1.2.0:
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.2.0.tgz#3d31f50191a6749dd1375a7f522e823d42e54eda"
   integrity sha512-jnjyiM6eRyZl2H+W8Q/zLMA481hzi0eszAaBUzIVnmYVDBbnLxVNnfu1HgEBvCbL+71FrxMl3E6lpKH7Ge3OXA==
 
+domain-from-partial-url@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/domain-from-partial-url/-/domain-from-partial-url-1.1.0.tgz#c5e67ad6d8fd57fa10ac6b42086224b344c4cbb4"
+  integrity sha512-1ubSbRdkwUIg+xPf8r+8VWoX+Mtpt8G6BZSsuVR7R/KrD8jqnlI+ZEFEgnv8JJ35E6SvpDjHXB45i48OfTSk8A==
+  dependencies:
+    has-scheme "^1.0.0"
+
 domelementtype@1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/domelementtype/-/domelementtype-1.3.1.tgz#d048c44b37b0d10a7f2a3d5fee3f4333d790481f"
@@ -5885,6 +5899,11 @@ has-property-descriptors@^1.0.0:
   dependencies:
     get-intrinsic "^1.1.1"
 
+has-scheme@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/has-scheme/-/has-scheme-1.0.0.tgz#eb378c37e71e393af26bb3eeefb36facfa09afd5"
+  integrity sha512-F5jC95K5qDu1ZQpyTDiIOZKPZ/ek1X48kp+YywBjMvoNilos2nC//WhkFrl/gmGnXTCeoVaiaEzFfJukoafxJg==
+
 has-symbols@^1.0.1, has-symbols@^1.0.2, has-symbols@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/has-symbols/-/has-symbols-1.0.3.tgz#bb7b2c4349251dce87b125f7bdf874aa7c8b39f8"
@@ -6189,6 +6208,11 @@ ini@~1.3.0:
   version "1.3.8"
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
   integrity sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==
+
+int64-buffer@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/int64-buffer/-/int64-buffer-1.0.1.tgz#c78d841b444cadf036cd04f8683696c740f15dca"
+  integrity sha512-+3azY4pXrjAupJHU1V9uGERWlhoqNswJNji6aD/02xac7oxol508AsMC5lxKhEqyZeDFy3enq5OGWXF4u75hiw==
 
 internal-ip@4.3.0:
   version "4.3.0"
@@ -9554,6 +9578,11 @@ react-native-securerandom@^1.0.1:
   integrity sha512-ibuDnd3xi17HyD5CkilOXGPFpS9Z1oifjyHFwUl8NMzcQcpruM0ZX8ytr3A4rCeAsaBHjz69r78Xgd6vUswv1Q==
   dependencies:
     base64-js "*"
+
+react-native-sse@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-sse/-/react-native-sse-1.1.0.tgz#28c419f58a49d32f7f625f5862c467b3d7ac3598"
+  integrity sha512-qPhZwuVg7ry0Cw8Q2+0VH90on223obZcfB5a/2ktoD3951zWx7HXAtrqQtDfLGjv7ncSJoswd+efn2k0uoR5lw==
 
 react-native-svg-transformer@^0.14.3:
   version "0.14.3"

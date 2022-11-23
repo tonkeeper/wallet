@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { Balances } from '$core';
+import { Balances, DAppsExplore } from '$core';
 import { TabsStackRouteNames } from '$navigation';
 import { TabStackParamList } from './TabStack.interface';
 import { Icon, ScrollPositionContext } from '$uikit';
@@ -19,6 +19,7 @@ import { useNotificationsSubscribe } from '$hooks/useNotificationsSubscribe';
 import { IconNames } from '$uikit/Icon/generated.types';
 import { useFlags } from '$utils/flags';
 import { nftsSelector } from '$store/nfts';
+import { DevFeature, useDevFeatureEnabled } from '$store';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -35,6 +36,8 @@ export const TabStack: FC = () => {
   const { isEnd: isScrollEnd } = useContext(ScrollPositionContext);
   // useSelector(mainSelector); // need for re-render when main state changed
   useNotificationsSubscribe();
+
+  const isTonConnectV2Enabled = useDevFeatureEnabled(DevFeature.TonConnectV2);
 
   const isVisibleNftTab = React.useMemo(() => {
     if (flags.disable_nft_tab) {
@@ -66,6 +69,8 @@ export const TabStack: FC = () => {
             iconName = 'ic-nft-collection-28';
           } else if (route.name === TabsStackRouteNames.SettingsStack) {
             iconName = 'ic-settings-28';
+          } else if (route.name === TabsStackRouteNames.Explore) {
+            iconName = 'ic-explore-28';
           }
 
           return (
@@ -148,6 +153,15 @@ export const TabStack: FC = () => {
           name={TabsStackRouteNames.NFT}
           options={{
             tabBarLabel: t('tab_nft'),
+          }}
+        />
+      )}
+      {isTonConnectV2Enabled && (
+        <Tab.Screen
+          component={DAppsExplore}
+          name={TabsStackRouteNames.Explore}
+          options={{
+            tabBarLabel: t('tab_browser'),
           }}
         />
       )}

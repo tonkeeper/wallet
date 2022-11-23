@@ -5,7 +5,7 @@ import { useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { Base64, debugLog, isValidAddress } from '$utils';
-import { store, Toast } from '$store';
+import { DevFeature, store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import {
   openCreateSubscription,
@@ -19,11 +19,12 @@ import { t } from '$translation';
 import { getTimeSec } from '$utils/getTimeSec';
 import { TonLoginClient } from '@tonapps/tonlogin-client';
 import { useNavigation } from '$libs/navigation';
-import { useSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
+import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 import { isSignRawParams } from '$utils/isSignRawParams';
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import { AppStackRouteNames } from '$navigation/navigationNames';
 import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
+import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -34,7 +35,6 @@ const getExpiresSec = () => {
 };
 
 export function useDeeplinkingResolvers() {
-  const signRawModal = useSignRawModal();
   const deeplinking = useDeeplinking();
   const dispatch = useDispatch();
   const nav = useNavigation();
@@ -94,7 +94,7 @@ export function useDeeplinkingResolvers() {
           message.payload = query.bin;
         }
 
-        signRawModal.open(
+        openSignRawModal(
           {
             source: 'EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n',
             valid_until: getExpiresSec(),
@@ -189,7 +189,7 @@ export function useDeeplinkingResolvers() {
         break;
       case 'sign-raw-payload':
         const { params, ...options } = txBody;
-        signRawModal.open(params, options);
+        openSignRawModal(params, options);
         break;
       case 'deploy':
         openDeploy(txBody);
@@ -236,7 +236,7 @@ export function useDeeplinkingResolvers() {
     }
   });
 
-  deeplinking.add('/ton-login/*', async ({ params }) => {
+  deeplinking.add('/ton-login/*', async ({ params, resolveParams }) => {
     try {
       Toast.loading();
 
@@ -250,9 +250,11 @@ export function useDeeplinkingResolvers() {
 
       Toast.hide();
       openTonConnect({
+        protocolVersion: 1,
         tonconnect,
         hostname,
         request,
+        ...resolveParams,
       });
     } catch (err) {
       Toast.hide();
@@ -263,6 +265,18 @@ export function useDeeplinkingResolvers() {
 
       debugLog('[TonLogin]:', err);
       Toast.fail(message);
+    }
+  });
+
+  deeplinking.add('/ton-connect/*', async ({ query }) => {
+    try {
+      if (!query.r || !query.v || !query.id) {
+        return;
+      }
+
+      await TonConnectRemoteBridge.handleConnectQR(query as unknown as IConnectQrQuery);
+    } catch (err) {
+      console.log(err);
     }
   });
 }

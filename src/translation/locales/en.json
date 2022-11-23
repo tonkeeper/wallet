@@ -23,6 +23,7 @@
   "tab_wallet": "Wallet",
   "tab_swap": "Swap",
   "tab_nft": "NFTs",
+  "tab_browser": "Browser",
   "tab_settings": "Settings",
 
   "intro_title": "Welcome\nto ",
@@ -273,6 +274,17 @@
   "info_about_inactive_back": "Back",
 
   "swap_title": "Swap",
+
+  "browser": {
+    "title": "Browser",
+    "search_label": "Search or enter address",
+    "start_typing": "Start typing or paste the link\nto find what you want",
+    "empty_search": "Your search returned no results",
+    "connected_title": "Connected",
+    "popular_title": "Popular",
+    "explore_all": "Explore all",
+    "open_link": "Open link"
+  },
 
   "exchange_title": "Buy TON",
   "exchange_other_ways": "Other ways to buy or sell TON",

@@ -29,3 +29,6 @@ export { ResetPin } from './ResetPin/ResetPin';
 export { SecurityMigration } from './SecurityMigration/SecurityMigration';
 export { LegalDocuments } from './LegalDocuments/LegalDocuments';
 export { FontLicense } from './LegalDocuments/FontLicense';
+export { DAppsExplore } from './DAppsExplore/DAppsExplore';
+export { DAppsSearch } from './DAppsSearch/DAppsSearch';
+export { DAppBrowser } from './DAppBrowser/DAppBrowser';
