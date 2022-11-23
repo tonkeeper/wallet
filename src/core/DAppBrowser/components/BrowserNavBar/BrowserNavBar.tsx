@@ -99,7 +99,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
           </S.SubTitleRow>
         ) : (
           <S.SubTitleRow>
-            {!isHTTPS ? <S.SecureIcon /> : null}
+            {isHTTPS ? <S.SecureIcon /> : null}
             <S.SubTitle>{domain}</S.SubTitle>
           </S.SubTitleRow>
         )}
