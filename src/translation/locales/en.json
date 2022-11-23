@@ -134,7 +134,14 @@
   "nft_link_domain_button": "Link domain",
   "nft_unlink_domain_button": "Linked with {{address}}",
   "nft_link_domain_caption": "After you link the domain you will be able to transfer it and use as an alias for your address.",
+  "nft_link_username_caption": "After you link the name you will be able to transfer it and use as an alias for your address.",
   "nft_link_domain_mismatch_warn": "The domain is not linked to your current address. Be careful with transactions to this domain.",
+
+  "nft_link_username_button": "Link name",
+  "nft_link_username_mismatch_warn": "The name is not linked to your current address. Be careful with transactions to this name.",
+
+  "username_issued_by_telegram": "Issued by Telegram. ",
+  "username_manage_name_button": "Manage name",
 
   "dns_link_title": "Confirm transaction",
   "dns_unlink_title": "Confirm unlink",
