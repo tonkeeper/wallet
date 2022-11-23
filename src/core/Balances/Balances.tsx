@@ -165,17 +165,18 @@ export const Balances: FC = () => {
         })),
       });
     }
-
-    for (let index = 0; index < oldWalletBalances.length; index++) {
-      result.push({
-        data: [
-          {
-            type: 'old_wallet_balance',
-            data: oldWalletBalances[index],
-            index,
-          },
-        ],
-      });
+    if (wallet?.ton.isV4()) {
+      for (let index = 0; index < oldWalletBalances.length; index++) {
+        result.push({
+          data: [
+            {
+              type: 'old_wallet_balance',
+              data: oldWalletBalances[index],
+              index,
+            },
+          ],
+        });
+      }
     }
 
     //
@@ -183,7 +184,7 @@ export const Balances: FC = () => {
     //   data: ['add_coin_button'],
     // });
     return result;
-  }, [otherCurrencies, oldWalletBalances, jettonBalances, showJettons]);
+  }, [otherCurrencies, oldWalletBalances, jettonBalances, showJettons, wallet?.ton]);
 
   const handleLoadMore = useCallback(() => {
     if (isEventsLoading || !canLoadMore) {

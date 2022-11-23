@@ -7,10 +7,7 @@ import * as SecureStore from 'expo-secure-store';
 import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet/index';
 import { EncryptedVault, UnlockedVault, Vault, Wallet } from '$blockchain';
 import { mainActions } from '$store/main';
-import {
-  CryptoCurrencies,
-  PrimaryCryptoCurrencies,
-} from '$shared/constants';
+import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
 import {
   goBack,
   openAccessConfirmation,
@@ -211,9 +208,7 @@ function* loadBalancesWorker() {
       ),
     );
 
-    if (wallet.ton.isV4()) {
-      yield fork(checkLegacyBalances);
-    }
+    yield fork(checkLegacyBalances);
   } catch (e) {
     console.log('loadBalancesTask ERR', e);
     e && debugLog(e.message);
@@ -244,28 +239,23 @@ function* checkLegacyBalances() {
   try {
     const balances: any = [];
     const wallet = yield select(walletWalletSelector);
+    const wallets = yield call([wallet.ton, 'getAllAddresses']);
+    delete wallets.v4R2;
 
-    const pubkey = TonWeb.utils.bytesToHex(wallet.vault.tonPublicKey);
-    const wallets = yield withRetryCtx(
-      'checkLegacyBalance',
-      [Tonapi, 'findByPubkey'],
-      pubkey,
-    );
-
-    for (let wallet of wallets) {
-      const versions = ['wallet_v3R1', 'wallet_v3R2', 'wallet_v4R1'];
-      const detectedVersion = wallet.interfaces.find((version) => versions.includes(version));
-      if (detectedVersion) {
-        if (wallet.balance > 0) {
-          const version = detectedVersion.replace('wallet_', '')
-          balances.push({
-            balance: wallet.balance,
-            version,
-          });
-        }
+    for (let address of Object.entries(wallets)) {
+      const balance = yield withRetryCtx(
+        `checkLegacyBalance_${address[0]}`,
+        [Tonapi, 'getWalletInfo'],
+        address[1] as any,
+      );
+      if (balance.balance > 0) {
+        balances.push({
+          balance: balance.balance,
+          version: address[0],
+        });
       }
     }
-    
+
     yield put(walletActions.setOldWalletBalance(balances));
   } catch (e) {}
 }
