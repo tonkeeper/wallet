@@ -1,9 +1,9 @@
 buildscript {
     ext {
-        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '31.0.0'
+        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '33.0.0'
         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
-        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '31')
-        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '31')
+        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '33')
+        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '33')
         if (findProperty('android.kotlinVersion')) {
             kotlinVersion = findProperty('android.kotlinVersion')
         }
@@ -22,21 +22,26 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('com.android.tools.build:gradle:7.0.4')
+        classpath('com.android.tools.build:gradle:7.3.1')
         classpath('com.facebook.react:react-native-gradle-plugin')
         classpath('de.undercouch:gradle-download-task:4.1.2')
-        classpath('com.google.gms:google-services:4.3.10')
+        classpath('com.google.gms:google-services:4.3.14')
         classpath('com.google.firebase:firebase-crashlytics-gradle:2.8.1')
     }
 }
 
 plugins {
+    id 'com.android.application' version '7.3.1' apply false
+    id 'com.android.library' version '7.3.1' apply false
     id 'org.jetbrains.kotlin.android' version '1.7.10' apply false
+    id 'org.jetbrains.kotlin.jvm' version '1.7.10' apply false
 }
 
 allprojects {
     repositories {
+        google()
         mavenLocal()
+        maven { url 'https://www.jitpack.io' }
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url(new File(['node', '--print', "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), '../android'))
@@ -45,15 +50,6 @@ allprojects {
             // Android JSC is installed from npm
             url(new File(['node', '--print', "require.resolve('jsc-android/package.json')"].execute(null, rootDir).text.trim(), '../dist'))
         }
-
-        google()
-        
-        jcenter() {
-            content {
-                includeModule("com.yqritc", "android-scalablevideoview")
-            }
-        }
-
         mavenCentral {
             // We don't want to fetch react-native from Maven Central as there are
             // older versions over there.
@@ -61,6 +57,12 @@ allprojects {
                 excludeGroup 'com.facebook.react'
             }
         }
-        maven { url 'https://www.jitpack.io' }
+
+        // TODO: remove jcenter
+        jcenter() {
+            content {
+                includeModule("com.yqritc", "android-scalablevideoview")
+            }
+        }
     }
 }
