@@ -36,11 +36,24 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   const bottomSheetRef = React.useRef<BottomSheetRef>(null);
   const closeBottomSheet = () => bottomSheetRef.current?.close();
 
-  const appName =
-    props.protocolVersion === 1 ? props.hostname : props.connectRequest.name;
-  const appIconUri =
-    props.protocolVersion === 1 ? props.request.image_url : props.connectRequest.icon;
+  const isTonapi = props.protocolVersion === 1 
+    ? (props?.hostname === 'tonapi.io')
+    : false;
 
+  let appIconUri: string;
+  let appName: string;
+  if (props.protocolVersion === 1) {
+    appIconUri = props.request.image_url;
+    if (isTonapi && props.request.app_name) {
+      appName = props.request.app_name
+    } else {
+      appName = props.hostname;
+    }
+  } else {
+    appIconUri = props.connectRequest.icon;
+    appName = props.connectRequest.name;
+  }
+  
   const sendToCallbackUrl = React.useCallback(
     async (response: string) => {
       if (props.protocolVersion !== 1) {
