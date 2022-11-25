@@ -2,29 +2,37 @@ import { List } from '$uikit';
 import React, { FC, memo } from 'react';
 import { ISearchSuggest } from '../../types';
 import { SearchSuggestCell } from '../SearchSuggestCell/SearchSuggestCell';
+import * as S from './SearchSuggests.style';
 
 interface Props {
   items: ISearchSuggest[];
-  onPressSuggest: (url: string, name?: string) => void;
+  onPressSuggest: (url: string) => void;
 }
 
 export const SearchSuggestsComponent: FC<Props> = (props) => {
   const { items, onPressSuggest } = props;
 
+  if (items.length === 0) {
+    return null;
+  }
+
   return (
-    <List separator={false}>
-      {items.map((item, index) => (
-        <SearchSuggestCell
-          key={`${item.url}_${item.name}`}
-          separator={index < items.length - 1}
-          icon={item.icon}
-          name={item.name}
-          url={item.url}
-          selected={index === 0}
-          onPress={onPressSuggest}
-        />
-      ))}
-    </List>
+    <S.Container>
+      <List separator={false}>
+        {items.map((item, index) => (
+          <SearchSuggestCell
+            key={index}
+            separator={index < items.length - 1}
+            source={item.source}
+            icon={item.icon}
+            name={item.name}
+            url={item.url}
+            selected={index === 0}
+            onPress={onPressSuggest}
+          />
+        ))}
+      </List>
+    </S.Container>
   );
 };
 

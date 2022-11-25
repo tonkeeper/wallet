@@ -1,8 +1,15 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { Animated, Keyboard } from 'react-native';
+import { Animated, Easing as RNEasing, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { isAndroid } from '$utils';
+import {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { isAndroid, isIOS } from '$utils';
+
+const IOS_CUBIC_BEZIER = [0.17, 0.59, 0.3, 0.9];
 
 export const useKeyboardHeight = (): Animated.Value => {
   const { bottom: bottomInset } = useSafeAreaInsets();
@@ -14,6 +21,12 @@ export const useKeyboardHeight = (): Animated.Value => {
 
       Animated.timing(keyboardHeight, {
         duration: event.duration,
+        easing: RNEasing.bezier(
+          IOS_CUBIC_BEZIER[0],
+          IOS_CUBIC_BEZIER[1],
+          IOS_CUBIC_BEZIER[2],
+          IOS_CUBIC_BEZIER[3],
+        ),
         toValue: bottomInset
           ? event.endCoordinates.height - bottomInset + paddingBottom
           : event.endCoordinates.height,
@@ -74,6 +87,14 @@ export const useReanimatedKeyboardHeight = (options?: {
       } else {
         keyboardHeight.value = withTiming(height, {
           duration: event.duration,
+          easing: isIOS
+            ? Easing.bezier(
+                IOS_CUBIC_BEZIER[0],
+                IOS_CUBIC_BEZIER[1],
+                IOS_CUBIC_BEZIER[2],
+                IOS_CUBIC_BEZIER[3],
+              )
+            : Easing.ease,
         });
       }
 

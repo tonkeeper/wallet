@@ -9,6 +9,7 @@ export const Separator: FC<SeparatorProps> = (props) => {
     absolute = false,
     backgroundColor = 'backgroundSecondary',
     toTop = false,
+    leftOffset = 16,
   } = props;
   const theme = useTheme();
 
@@ -18,7 +19,7 @@ export const Separator: FC<SeparatorProps> = (props) => {
       toTop={toTop}
       style={{ backgroundColor: theme.colors[backgroundColor] }}
     >
-      <S.Separator />
+      <S.Separator leftOffset={leftOffset} />
     </S.Wrap>
   );
 };

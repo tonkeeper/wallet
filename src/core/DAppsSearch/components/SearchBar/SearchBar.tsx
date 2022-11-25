@@ -1,7 +1,7 @@
 import { useTheme, useTranslator } from '$hooks';
 import { Icon } from '$uikit';
 import { isIOS, isValidUrl } from '$utils';
-import React, { FC, memo, useCallback, useEffect, useRef } from 'react';
+import React, { FC, memo, useCallback, useRef } from 'react';
 import {
   NativeSyntheticEvent,
   TextInput,

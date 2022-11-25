@@ -23,7 +23,7 @@
   "tab_wallet": "Кошелёк",
   "tab_swap": "Обмен",
   "tab_nft": "NFT",
-  "tab_browser": "Browser",
+  "tab_browser": "Браузер",
   "tab_settings": "Настройки",
 
   "intro_title": "Встречайте\n",
@@ -292,16 +292,22 @@
   "swap_title": "Обмен",
 
   "browser": {
-    "title": "Browser",
-    "search_label": "Search or enter address",
-    "start_typing": "Start typing or paste the link\nto find what you want",
-    "empty_search": "Your search returned no results",
-    "connected_title": "Connected",
-    "popular_title": "Popular",
-    "explore_all": "Explore all",
-    "open_link": "Open link"
+    "title": "Браузер",
+    "search_label": "Поиск",
+    "start_typing": "Введите адрес или начните поиск",
+    "empty_search": "По вашему запросу ничего не найдено",
+    "connected_title": "Подключённые",
+    "popular_title": "Популярные",
+    "explore_all": "Другие",
+    "open_link": "Открыть ссылку",
+    "web_search_title": "Поиск в Google",
+    "actions": {
+      "refresh": "Обновить",
+      "share": "Поделиться",
+      "copy_link": "Скопировать ссылку",
+      "disconnect": "Отключить"
+    }
   },
-
   "exchange_title": "Купить TON",
   "exchange_other_ways": "Другие способы покупки и продажи",
 

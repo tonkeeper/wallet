@@ -1,9 +1,18 @@
 import { LargeNavBarHeight } from '$shared/constants';
 import styled from '$styled';
-import { hNs } from '$utils';
+import { hNs, isIOS } from '$utils';
+import { KeyboardAvoidingView } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-export const Container = styled(Animated.View)`
+export const Container = styled.View<{ bottomInset: number }>`
+  flex: 1;
+  padding-bottom: ${({ bottomInset }) => bottomInset}px;
+`;
+
+export const KeyboardAvoidView = styled(KeyboardAvoidingView).attrs({
+  behavior: 'padding',
+  enabled: isIOS,
+})`
   flex: 1;
   max-height: 100%;
   position: relative;
@@ -11,10 +20,6 @@ export const Container = styled(Animated.View)`
 
 export const Content = styled.View`
   flex: 1;
-`;
-
-export const SearchBarContainer = styled.View<{ bottomInset: number }>`
-  margin-bottom: ${({ bottomInset }) => bottomInset}px;
 `;
 
 export const EmptyContainer = styled(Animated.View)`

@@ -1,11 +1,14 @@
+import { useTranslator, copyText } from '$hooks';
 import { goBack } from '$navigation';
 import { Icon, PopupSelect, Text } from '$uikit';
 import { getDomainFromURL, maskifyAddress } from '$utils';
 import React, { FC, memo, useCallback, useMemo } from 'react';
+import { Share } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as S from './BrowserNavBar.style';
 
 enum PopupActionType {
+  REFRESH,
   SHARE,
   COPY_LINK,
   DISCONNECT,
@@ -24,6 +27,7 @@ interface Props {
   canGoBack: boolean;
   onBackPress: () => void;
   onTitlePress: () => void;
+  onRefreshPress: () => void;
   disconnect: () => Promise<void>;
 }
 
@@ -36,8 +40,11 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
     canGoBack,
     onBackPress,
     onTitlePress,
+    onRefreshPress,
     disconnect,
   } = props;
+
+  const t = useTranslator();
 
   const { top: topInset } = useSafeAreaInsets();
 
@@ -50,33 +57,43 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
   const popupItems = useMemo(() => {
     const items: PopupAction[] = [
       {
+        type: PopupActionType.REFRESH,
+        label: t('browser.actions.refresh'),
+      },
+      {
         type: PopupActionType.SHARE,
-        label: 'Share',
+        label: t('browser.actions.share'),
       },
       {
         type: PopupActionType.COPY_LINK,
-        label: 'Copy link',
+        label: t('browser.actions.copy_link'),
       },
     ];
 
     if (isConnected) {
       items.push({
         type: PopupActionType.DISCONNECT,
-        label: 'Remove',
+        label: t('browser.actions.disconnect'),
       });
     }
 
     return items;
-  }, [isConnected]);
+  }, [isConnected, t]);
 
   const handlePressAction = useCallback(
     (action: PopupAction) => {
       switch (action.type) {
+        case PopupActionType.REFRESH:
+          return onRefreshPress();
+        case PopupActionType.SHARE:
+          return Share.share({ url });
+        case PopupActionType.COPY_LINK:
+          return copyText(url);
         case PopupActionType.DISCONNECT:
           return disconnect();
       }
     },
-    [disconnect],
+    [disconnect, onRefreshPress, url],
   );
 
   return (
