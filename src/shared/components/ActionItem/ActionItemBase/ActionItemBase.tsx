@@ -37,6 +37,8 @@ export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
       return 'ic-return-28';
     } else if (type === 'contract_deploy') {
       return 'ic-gear-28';
+    } else if (type === 'wallet_initialized') {
+      return 'ic-donemark-28';
     } else {
       return 'ic-tray-arrow-down-28';
     }

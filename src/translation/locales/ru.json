@@ -61,6 +61,7 @@
   "transaction_type_unsubscription": "Отмена подписки",
   "transaction_type_new_subscriber": "Новый подписчик",
   "transaction_type_subscriber_lost": "Подписчик потерян",
+  "transaction_type_wallet_initialized": "Кошелёк инициализирован",
   "transaction_type_bounced": "Возвращено",
   "transaction_type_from": "Отправитель",
   "transaction_type_to": "Получатель",
