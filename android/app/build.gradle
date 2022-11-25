@@ -150,8 +150,8 @@ android {
         applicationId 'com.ton_keeper'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 249
-        versionName "2.8.0"
+        versionCode 250
+        versionName "2.7.8"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         missingDimensionStrategy 'react-native-camera', 'general'
 
@@ -237,12 +237,10 @@ android {
     }
     signingConfigs {
         release {
-            if (project.hasProperty('TONKEEPER_UPLOAD_STORE_FILE')) {
-                storeFile file(TONKEEPER_UPLOAD_STORE_FILE)
-                storePassword TONKEEPER_UPLOAD_STORE_PASSWORD
-                keyAlias TONKEEPER_UPLOAD_KEY_ALIAS
-                keyPassword TONKEEPER_UPLOAD_KEY_PASSWORD
-            }
+             storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
         }
         debug {
             storeFile file('debug.keystore')
