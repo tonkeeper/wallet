@@ -5,7 +5,7 @@ import { useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { Base64, debugLog, isValidAddress } from '$utils';
-import { DevFeature, store, Toast } from '$store';
+import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import {
   openCreateSubscription,
@@ -76,10 +76,10 @@ export function useDeeplinkingResolvers() {
       return Toast.fail(t('transfer_deeplink_amount_error'));
     }
 
+    
     if (Number(query.amount) > 0) {
       const amount = Ton.fromNano(query.amount.toString());
 
-      console.log(query.init, query.bin);
       if (query.init || query.bin) {
         const message: SignRawMessage = {
           amount: query.amount,
@@ -96,7 +96,7 @@ export function useDeeplinkingResolvers() {
 
         openSignRawModal(
           {
-            source: 'EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n',
+            source: '',
             valid_until: getExpiresSec(),
             messages: [message],
           },
@@ -107,6 +107,39 @@ export function useDeeplinkingResolvers() {
             },
           },
         );
+      } else if (query['jetton']) { 
+        if (!isValidAddress(query['jetton'])) {
+          return Toast.fail(t('transfer_deeplink_address_error'));
+        }
+
+        dispatch(
+          walletActions.confirmSendCoins({
+            currency,
+            amount,
+            address,
+            comment,
+            jettonWalletAddress: query['jetton'],
+            isJetton: true,
+            onNext: (details) => {
+              const options = {
+                currency: query['jetton'],
+                address,
+                comment,
+                amount,
+                fee: details.fee,
+                isInactive: details.isInactive,
+                isJetton: true,
+              };
+
+              nav.push(AppStackRouteNames.ModalContainer, {
+                modalName: ModalName.CONFIRM_SENDING,
+                key: 'CONFIRM_SENDING',
+                ...options,
+              });
+            },
+          }),
+        );
+
       } else {
         dispatch(
           walletActions.confirmSendCoins({
