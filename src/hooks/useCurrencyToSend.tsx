@@ -23,7 +23,7 @@ export function useCurrencyToSend(
   }, [currency, isJetton, jettonBalances]);
 
   const decimals = useMemo(() => {
-    return isJetton ? jetton?.metadata?.decimals : Decimals[currency];
+    return isJetton ? (jetton?.metadata?.decimals || 0) : Decimals[currency];
   }, [currency, isJetton, jetton]);
 
   const Logo = useMemo(
@@ -41,7 +41,7 @@ export function useCurrencyToSend(
   const currencyToSend = useMemo(() => {
     if (isJetton) {
       return {
-        decimals: jetton?.metadata?.decimals,
+        decimals: (jetton?.metadata?.decimals || 0),
         balance: formatAmount(jetton?.balance, decimals),
         currencyTitle:
           jetton?.metadata?.symbol?.toUpperCase() ||
