@@ -206,8 +206,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     yield put(jettonsActions.loadJettons());
     yield put(subscriptionsActions.loadSubscriptions());
     const { wallet: walletNew } = yield select(walletSelector);
-    const address = yield call([walletNew.ton, 'getAddress']);
-    yield call(reloadSubscriptionsFromServer, address);
+    yield call([walletNew.ton, 'getAddress']);
   } else {
     yield put(walletActions.endLoading());
   }
