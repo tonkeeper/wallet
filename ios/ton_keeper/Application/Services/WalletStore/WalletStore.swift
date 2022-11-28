@@ -6,8 +6,9 @@ import LocalAuthentication
 @objcMembers
 final class WalletStore: NSObject {
   
-  private let userDefaultsService = UserDefaultsService()
-  private let keychainService = KeychainService()
+  @Autowired private var userDefaultsService: UserDefaultsService?
+  @Autowired private var keychainService: KeychainService?
+  @Autowired private var uiService: UIService?
   
   static func requiresMainQueueSetup() -> Bool { false }
   
@@ -15,8 +16,7 @@ final class WalletStore: NSObject {
   
   func listWallets(_ resolve: @escaping RCTPromiseResolveBlock,
                    reject: @escaping RCTPromiseRejectBlock) {
-    let wallets = userDefaultsService.wallets
-    if wallets.count > 0 {
+    if let wallets = userDefaultsService?.wallets, wallets.count > 0 {
       resolve(wallets.map({ $0.toDict() }))
     } else {
       let error = WalletError.noAvailableWallets
@@ -27,8 +27,8 @@ final class WalletStore: NSObject {
   func removeWallets(_ resolve: @escaping RCTPromiseResolveBlock,
                      reject: @escaping RCTPromiseRejectBlock) {
     
-    if userDefaultsService.wallets.count > 0 {
-      userDefaultsService.wallets.forEach {
+    if let wallets = userDefaultsService?.wallets, wallets.count > 0 {
+      userDefaultsService?.wallets.forEach {
         removeWallet($0.pubkey, resolve: resolve, reject: reject)
       }
     } else {
@@ -54,8 +54,8 @@ final class WalletStore: NSObject {
       
       let context = LAContext()
       context.setCredential(Data(passcode.utf8), type: .applicationPassword)
-      try keychainService.set(passcode, forKey: KeychainService.passcodeKeyPath)
-      try keychainService.set(words.joined(separator: " "), forKey: "\(pubkey)-password", context: context, accessControl: .password)
+      try keychainService?.set(passcode, forKey: KeychainService.passcodeKeyPath)
+      try keychainService?.set(words.joined(separator: " "), forKey: "\(pubkey)-password", context: context, accessControl: .password)
       
       let walletInfo = WalletInfo(pubkey: pubkey, label: "")
       insertWallet(walletInfo)
@@ -75,7 +75,7 @@ final class WalletStore: NSObject {
       let keyPair = try getKeyPair(words: words)
       let pubkey = keyPair.publicKey.hexString()
       
-      try keychainService.set(words.joined(separator: " "), forKey: "\(pubkey)-biometry", accessControl: .biometry)
+      try keychainService?.set(words.joined(separator: " "), forKey: "\(pubkey)-biometry", accessControl: .biometry)
       
       let walletInfo = WalletInfo(pubkey: pubkey, label: "")
       insertWallet(walletInfo)
@@ -91,7 +91,7 @@ final class WalletStore: NSObject {
   func getWallet(_ pk: String,
                  resolve: @escaping RCTPromiseResolveBlock,
                  reject: @escaping RCTPromiseRejectBlock) {
-    if let wallet = userDefaultsService.wallets.first(where: { $0.pubkey == pk }) {
+    if let wallet = userDefaultsService?.wallets.first(where: { $0.pubkey == pk }) {
       resolve(wallet.toDict())
     } else {
       let error = WalletError.noAvailableWallets
@@ -102,7 +102,7 @@ final class WalletStore: NSObject {
   func getWalletByAddress(_ address: String,
                           resolve: @escaping RCTPromiseResolveBlock,
                           reject: @escaping RCTPromiseRejectBlock) {
-    if let wallet = userDefaultsService.wallets.first(where: {$0.pubkey == address }) {
+    if let wallet = userDefaultsService?.wallets.first(where: {$0.pubkey == address }) {
       resolve(wallet.toDict())
     } else {
       let error = WalletError.noAvailableWallets
@@ -113,10 +113,10 @@ final class WalletStore: NSObject {
   func updateWallet(_ pk: String, label: String,
                     resolve: @escaping RCTPromiseResolveBlock,
                     reject: @escaping RCTPromiseRejectBlock) {
-    if let index = userDefaultsService.wallets.firstIndex(where: { $0.pubkey == pk }) {
-      let wallet = userDefaultsService.wallets[index]
+    if let index = userDefaultsService?.wallets.firstIndex(where: { $0.pubkey == pk }),
+       let wallet = userDefaultsService?.wallets[index] {
       wallet.label = label
-      userDefaultsService.wallets[index] = wallet
+      userDefaultsService?.wallets[index] = wallet
       resolve(true)
     } else {
       let error = WalletError.noAvailableWallets
@@ -127,16 +127,16 @@ final class WalletStore: NSObject {
   func removeWallet(_ pk: String,
                     resolve: @escaping RCTPromiseResolveBlock,
                     reject: @escaping RCTPromiseRejectBlock) {
-    if let index = userDefaultsService.wallets.firstIndex(where: { $0.pubkey == pk }) {
+    if let index = userDefaultsService?.wallets.firstIndex(where: { $0.pubkey == pk }) {
       do {
-        try keychainService.deleteItem(forKey: userDefaultsService.wallets[index].pubkey + "-password")
-        try keychainService.deleteItem(forKey: userDefaultsService.wallets[index].pubkey + "-biometry")
+        try keychainService?.deleteItem(forKey: pk + "-password")
+        try keychainService?.deleteItem(forKey: pk + "-biometry")
       } catch {
         let rejectBlock = self.rejectBlock(error: error, code: 400)
         reject(rejectBlock.0, rejectBlock.1, rejectBlock.2)
       }
       
-      userDefaultsService.wallets.remove(at: index)
+      userDefaultsService?.wallets.remove(at: index)
       resolve(true)
     } else {
       let error = WalletError.noAvailableWallets
@@ -146,8 +146,8 @@ final class WalletStore: NSObject {
   
   func currentWalletInfo(_ resolve: @escaping RCTPromiseResolveBlock,
                          reject: @escaping RCTPromiseRejectBlock) {
-    if let pk = userDefaultsService.currentWalletPubkey,
-       let wallet = userDefaultsService.wallets.first(where: { $0.pubkey == pk }) {
+    if let pk = userDefaultsService?.currentWalletPubkey,
+       let wallet = userDefaultsService?.wallets.first(where: { $0.pubkey == pk }) {
       resolve(wallet.toDict())
     } else {
       let error = WalletError.noAvailableWallets
@@ -158,12 +158,27 @@ final class WalletStore: NSObject {
   func setCurrentWallet(_ pk: String,
                         resolve: @escaping RCTPromiseResolveBlock,
                         reject: @escaping RCTPromiseRejectBlock) {
-    if userDefaultsService.wallets.contains(where: { $0.pubkey == pk }) {
-      userDefaultsService.currentWalletPubkey = pk
+    if userDefaultsService?.wallets.contains(where: { $0.pubkey == pk }) == true {
+      userDefaultsService?.currentWalletPubkey = pk
       resolve(true)
     } else {
       let error = WalletError.noAvailableWallets
       reject(error.code, error.message, error.foundationError)
+    }
+  }
+  
+  func exportKey(_ pk: PublicKey,
+                 resolve: @escaping RCTPromiseResolveBlock,
+                 reject: @escaping RCTPromiseRejectBlock) {
+    if let isBiometryEnabled = userDefaultsService?.isBiometryEnabled, isBiometryEnabled {
+      exportWithBiometry(pk, resolve: resolve, reject: reject)
+    } else {
+      DispatchQueue.main.async {
+        self.uiService?.validatePasscode { [weak self] passcode in
+          guard let passcode = passcode else { return }
+          self?.exportWithPasscode(pk, passcode: passcode, resolve: resolve, reject: reject)
+        }
+      }
     }
   }
   
@@ -249,24 +264,24 @@ final class WalletStore: NSObject {
   private func loadMnemonicWithPasscode(pk: PublicKey, passcode: String) throws -> [String] {
     let context = LAContext()
     context.setCredential(Data(passcode.utf8), type: .applicationPassword)
-    let mnemonic = try keychainService.string(forKey: "\(pk)-password",
+    let mnemonic = try keychainService?.string(forKey: "\(pk)-password",
                                               context: context,
                                               accessControl: .password)
-    return mnemonic.components(separatedBy: " ")
+    return mnemonic?.components(separatedBy: " ") ?? []
   }
   
   private func loadMnemonicWithBiometry(pk: PublicKey, completion: @escaping (Result<[String], Error>) -> Void) {
-    if let accessControl = AccessControl.biometry.rawValue(accessibility: keychainService.accessibility) {
+    if let accessibility = keychainService?.accessibility, let accessControl = AccessControl.biometry.rawValue(accessibility: accessibility) {
       let biometryContext = LAContext()
       biometryContext.evaluateAccessControl(accessControl,
                                             operation: .useItem,
                                             localizedReason: "Need localized") { success, error in
         if success {
           do {
-            let mnemonic = try self.keychainService.string(forKey: "\(pk)-biometry",
+            let mnemonic = try self.keychainService?.string(forKey: "\(pk)-biometry",
                                                            context: biometryContext,
                                                            accessControl: .biometry)
-            completion(.success(mnemonic.components(separatedBy: " ")))
+            completion(.success(mnemonic?.components(separatedBy: " ") ?? []))
           } catch {
             completion(.failure(error))
           }
@@ -278,10 +293,10 @@ final class WalletStore: NSObject {
   }
   
   private func insertWallet(_ walletInfo: WalletInfo) {
-    if let index = userDefaultsService.wallets.firstIndex(where: { $0.pubkey == walletInfo.pubkey }) {
-      userDefaultsService.wallets[index] = walletInfo
+    if let index = userDefaultsService?.wallets.firstIndex(where: { $0.pubkey == walletInfo.pubkey }) {
+      userDefaultsService?.wallets[index] = walletInfo
     } else {
-      userDefaultsService.wallets.append(walletInfo)
+      userDefaultsService?.wallets.append(walletInfo)
     }
   }
   

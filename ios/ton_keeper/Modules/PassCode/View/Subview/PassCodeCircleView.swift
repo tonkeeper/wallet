@@ -1,6 +1,6 @@
 import UIKit
 
-class CircleView: BaseView {
+class PassCodeCircleView: BaseView {
   
   enum CircleType {
     case empty, filled, success, failed

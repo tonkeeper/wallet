@@ -439,12 +439,14 @@ struct R: Rswift.Validatable {
     fileprivate init() {}
   }
 
-  /// This `R.image` struct is generated, and contains static references to 5 images.
+  /// This `R.image` struct is generated, and contains static references to 6 images.
   struct image {
     /// Image `SplashScreenBackground`.
     static let splashScreenBackground = Rswift.ImageResource(bundle: R.hostingBundle, name: "SplashScreenBackground")
     /// Image `SplashScreen`.
     static let splashScreen = Rswift.ImageResource(bundle: R.hostingBundle, name: "SplashScreen")
+    /// Image `common.close16`.
+    static let commonClose16 = Rswift.ImageResource(bundle: R.hostingBundle, name: "common.close16")
     /// Image `passcode.delete`.
     static let passcodeDelete = Rswift.ImageResource(bundle: R.hostingBundle, name: "passcode.delete")
     /// Image `passcode.faceid`.
@@ -463,6 +465,13 @@ struct R: Rswift.Validatable {
     /// `UIImage(named: "SplashScreenBackground", bundle: ..., traitCollection: ...)`
     static func splashScreenBackground(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIImage? {
       return UIKit.UIImage(resource: R.image.splashScreenBackground, compatibleWith: traitCollection)
+    }
+    #endif
+
+    #if os(iOS) || os(tvOS)
+    /// `UIImage(named: "common.close16", bundle: ..., traitCollection: ...)`
+    static func commonClose16(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIImage? {
+      return UIKit.UIImage(resource: R.image.commonClose16, compatibleWith: traitCollection)
     }
     #endif
 

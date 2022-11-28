@@ -20,6 +20,7 @@ RCT_EXTERN_METHOD(removeWallet:(nonnull NSString *)id resolve:(RCTPromiseResolve
 RCT_EXTERN_METHOD(currentWalletInfo:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(setCurrentWallet:(nonnull NSString *)id resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 
+RCT_EXTERN_METHOD(exportKey:(nonnull NSString *)pk resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(exportWithPasscode:(nonnull NSString *)pk passcode:(nonnull NSString *)passcode resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(exportWithBiometry:(nonnull NSString *)pk resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 

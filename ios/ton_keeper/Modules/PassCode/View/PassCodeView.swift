@@ -2,12 +2,11 @@ import UIKit
 
 class PassCodeView: BaseView {
   
-  let logOutButton: UIButton = {
-    let button = UIButton()
-    button.titleLabel?.font = Palette.fontSemibold.withSize(14.0)
-    button.setTitle(R.string.passCode.logout(), for: .normal)
-    button.contentEdgeInsets = UIEdgeInsets(top: 6.0, left: 12.0, bottom: 6.0, right: 12.0)
-    button.layer.cornerRadius = 16.0
+  let logOutButton = ActionButton(actionType: .logOut)
+  
+  let closeButton: ActionButton = {
+    let button = ActionButton(actionType: .close)
+    button.isHidden = true
     
     return button
   }()
@@ -29,7 +28,7 @@ class PassCodeView: BaseView {
     return label
   }()
   
-  let passCodeCircles = UIStackView(views: [CircleView(), CircleView(), CircleView(), CircleView()],
+  let passCodeCircles = UIStackView(views: [PassCodeCircleView(), PassCodeCircleView(), PassCodeCircleView(), PassCodeCircleView()],
                                             axis: .horizontal,
                                             spacing: 16.0)
   
@@ -68,6 +67,7 @@ class PassCodeView: BaseView {
     
     addSubview(rootStack)
     addSubview(logOutButton)
+    addSubview(closeButton)
     
     biometricButton.alpha = 0
     deleteButton.alpha = 0
@@ -83,8 +83,6 @@ class PassCodeView: BaseView {
     
     backgroundColor = theme.color.bgPrimary
     
-    logOutButton.setTitleColor(theme.color.fgPrimary, for: .normal)
-    logOutButton.backgroundColor = theme.color.bgSecondary
     titleLabel.textColor = theme.color.fgPrimary
     attemptsCountLabel.textColor = theme.color.fgSecondary
   }
@@ -92,17 +90,23 @@ class PassCodeView: BaseView {
   private func setupConstraints() {
     logOutButton.translatesAutoresizingMaskIntoConstraints = false
     rootStack.translatesAutoresizingMaskIntoConstraints = false
+    closeButton.translatesAutoresizingMaskIntoConstraints = false
     
     NSLayoutConstraint.activate([
-      .init(item: logOutButton, attribute: .top, relatedBy: .equal, toItem: safeAreaLayoutGuide, attribute: .top, multiplier: 1.0, constant: 16.0),
-      .init(item: logOutButton, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: -16.0),
+      closeButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16.0),
+      closeButton.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 16.0),
+      closeButton.heightAnchor.constraint(equalToConstant: 32.0),
+      closeButton.widthAnchor.constraint(equalToConstant: 32.0),
       
-      .init(item: rootStack, attribute: .top, relatedBy: .equal, toItem: safeAreaLayoutGuide, attribute: .top, multiplier: 1.0, constant: 0.0),
-      .init(item: rootStack, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1.0, constant: 0.0),
-      .init(item: rootStack, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: 0.0),
-      .init(item: rootStack, attribute: .bottom, relatedBy: .equal, toItem: safeAreaLayoutGuide, attribute: .bottom, multiplier: 1.0, constant: -16.0),
+      logOutButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16.0),
+      logOutButton.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -16.0),
       
-      .init(item: bottomSpacer, attribute: .height, relatedBy: .equal, toItem: topSpacer, attribute: .height, multiplier: 1.0, constant: 1.0)
+      rootStack.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+      rootStack.leftAnchor.constraint(equalTo: self.leftAnchor),
+      rootStack.rightAnchor.constraint(equalTo: self.rightAnchor),
+      rootStack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+      
+      bottomSpacer.heightAnchor.constraint(equalTo: topSpacer.heightAnchor)
     ])
   }
   

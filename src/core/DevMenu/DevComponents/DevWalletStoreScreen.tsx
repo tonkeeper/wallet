@@ -105,6 +105,21 @@ export const DevWalletStoreScreen: React.FC = () => {
           />
 
           <ListCell 
+            label="WalletStore.exportKey" 
+            onPress={async () => {
+              try {  
+                const result = await WalletStore.exportKey(pubkey);
+                
+                console.log(result);
+                Toast.show(JSON.stringify(result));
+              } catch (err) {
+                console.error(err);
+                Toast.show(JSON.stringify(err.message));
+              }
+            }}
+          />
+
+          <ListCell 
             label="WalletStore.exportWithPasscode" 
             onPress={async () => {
               try {  
