@@ -110,7 +110,7 @@ export function usePrepareDetailedAction(
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
       if (compareAddresses(action.address, address.ton)) {
-        sentLabelTranslationString = 'transaction_contract_deploy_date';
+        sentLabelTranslationString = 'transaction_wallet_initialized_date';
         label = t('transaction_type_wallet_initialized');
       } else {
         sentLabelTranslationString = 'transaction_contract_deploy_date';
