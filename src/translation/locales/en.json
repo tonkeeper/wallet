@@ -97,6 +97,7 @@
   "transaction_confirmations": "Confirmations",
   "transaction_send_more_button": "Send more to this recipient",
   "transaction_show_subscription_button": "View subscription",
+  "transaction_copy_caution": "\n\nBe careful with external links. Never give your secret phrase to third-party resources — you can lose all your funds.",
 
   "spam_action": "Spam",
 
