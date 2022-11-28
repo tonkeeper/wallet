@@ -135,8 +135,13 @@ export function usePrepareAction(
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
       label = '-';
-      typeLabel = t('transaction_type_contract_deploy');
-      type = 'contract_deploy';
+      if (compareAddresses(action.address, address.ton)) {
+        typeLabel = t('transaction_type_wallet_initialized');
+        type = 'wallet_initialized';
+      } else {
+        typeLabel = t('transaction_type_contract_deploy');
+        type = 'contract_deploy';
+      }
     }
 
     const actionProps: ActionItemBaseProps = {

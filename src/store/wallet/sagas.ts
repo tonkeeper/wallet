@@ -305,7 +305,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
       onNext,
       isJetton,
       jettonWalletAddress,
-      decimals,
+      decimals = 0,
     } = action.payload;
 
     if (!onEnd) {

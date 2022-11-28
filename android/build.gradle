@@ -49,11 +49,23 @@ allprojects {
             // Android JSC is installed from npm
             url(new File(['node', '--print', "require.resolve('jsc-android/package.json')"].execute(null, rootDir).text.trim(), '../dist'))
         }
+
         mavenCentral {
             // We don't want to fetch react-native from Maven Central as there are
             // older versions over there.
             content {
                 excludeGroup 'com.facebook.react'
+            }
+        }
+
+        exclusiveContent {
+            filter {
+                includeGroup "com.facebook.react"
+            }
+            forRepository {
+                maven {
+                    url "$rootDir/../node_modules/react-native/android"
+                }
             }
         }
 
