@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.tonkeeper.ton.mnemonic-impl"
+    namespace = "com.tonkeeper.ton.mnemonic"
     compileSdk = 33
 
     defaultConfig {
