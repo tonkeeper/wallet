@@ -61,6 +61,9 @@ export const NFTSaleCancelModal = ({ params, ...options }: NFTSaleCancelModalPro
     return item.data ? text : '...';
   }, [item.data]);
 
+  const isTG = (item.data?.dns || item.data?.metadata?.name)?.endsWith('.t.me');
+  const isDNS = !!item.data?.dns && !isTG;
+
   return (
     <Modal>
       <Modal.Header gradient />
@@ -68,10 +71,8 @@ export const NFTSaleCancelModal = ({ params, ...options }: NFTSaleCancelModalPro
         <S.Container>
           <S.Center>
             <S.NFTItemPreview>
-              {item.data?.dns ? <S.GlobeIcon /> : null}
-              {!item.data?.dns && item.data?.metadata?.image && (
-                <S.Image uri={item.data.metadata.image} resize={512} />
-              )}
+              {isDNS ? <S.GlobeIcon /> : null}
+              {!isDNS && <S.Image uri={item.data.metadata.image} resize={512} />}
             </S.NFTItemPreview>
             <S.CaptionWrap>
               <S.Caption>{caption}</S.Caption>

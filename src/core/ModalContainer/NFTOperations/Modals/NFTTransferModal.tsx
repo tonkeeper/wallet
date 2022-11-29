@@ -96,11 +96,8 @@ export const NFTTransferModal = ({ params, ...options }: NFTTransferModalProps) 
           <S.Center>
             <S.NFTItemPreview>
               {isDNS ? <S.GlobeIcon /> : null}
-              {!isDNS && !isTG && item.data?.metadata?.image && (
+              {!isDNS && item.data?.metadata?.image && (
                 <S.Image uri={item.data?.metadata?.image} resize={512} />
-              )}
-              {isTG && (
-                <S.LocalImage source={require('$assets/tg-full-logo.png')}  />
               )}
             </S.NFTItemPreview>
             <S.CaptionWrap>
