@@ -7,6 +7,7 @@ protocol PassCodeViewOutput: AnyObject {
   func enterNum(_ num: Int)
   func deleteNum()
   func biometric()
+  func validatePasscode()
   func logOut()
   func close()
 }
@@ -111,19 +112,6 @@ extension PassCodePresenter: PassCodeViewOutput {
   
   func enterNum(_ num: Int) {
     localPasscode += "\(num)"
-    
-    if localPasscode.count >= 4 {
-      if let passcode = try? keychainService?.string(forKey: KeychainService.passcodeKeyPath),
-         passcode == localPasscode {
-        view?.successPasscodeCircle { [weak self] in
-          self?.complete()
-        }
-      } else {
-        localPasscode = ""
-        decreaseAttempts()
-        view?.resetPassodeCircles()
-      }
-    }
   }
   
   func deleteNum() {
@@ -136,6 +124,21 @@ extension PassCodePresenter: PassCodeViewOutput {
     biometryService?.callBiometric { [weak self] success in
       if success {
         self?.complete()
+      }
+    }
+  }
+  
+  func validatePasscode() {
+    if localPasscode.count >= 4 {
+      if let passcode = try? keychainService?.string(forKey: KeychainService.passcodeKeyPath),
+         passcode == localPasscode {
+        view?.successPasscodeCircle { [weak self] in
+          self?.complete()
+        }
+      } else {
+        localPasscode = ""
+        decreaseAttempts()
+        view?.resetPassodeCircles()
       }
     }
   }

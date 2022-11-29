@@ -75,6 +75,7 @@ final class WalletStore: NSObject {
       let keyPair = try getKeyPair(words: words)
       let pubkey = keyPair.publicKey.hexString()
       
+      userDefaultsService?.isBiometryEnabled = true
       try keychainService?.set(words.joined(separator: " "), forKey: "\(pubkey)-biometry", accessControl: .biometry)
       
       let walletInfo = WalletInfo(pubkey: pubkey, label: "")
@@ -171,16 +172,20 @@ final class WalletStore: NSObject {
                  resolve: @escaping RCTPromiseResolveBlock,
                  reject: @escaping RCTPromiseRejectBlock) {
     if let isBiometryEnabled = userDefaultsService?.isBiometryEnabled, isBiometryEnabled {
-      exportWithBiometry(pk, resolve: resolve, reject: reject)
-    } else {
-      DispatchQueue.main.async {
-        self.uiService?.validatePasscode { [weak self] passcode in
-          guard let passcode = passcode else { return }
-          self?.exportWithPasscode(pk, passcode: passcode, resolve: resolve, reject: reject)
+      loadKeyPairWithBiometry(pk: pk) { [weak self] result in
+        switch result {
+        case .success(let keyPair):
+          resolve(keyPair.secretKey.hexString())
+          
+        case .failure:
+          self?.validatePasscode(pk, resolve: resolve, reject: reject)
         }
       }
+    } else {
+      validatePasscode(pk, resolve: resolve, reject: reject)
     }
   }
+  
   
   func exportWithPasscode(_ pk: PublicKey,
                           passcode: String,
@@ -200,22 +205,12 @@ final class WalletStore: NSObject {
   func exportWithBiometry(_ pk: PublicKey,
                           resolve: @escaping RCTPromiseResolveBlock,
                           reject: @escaping RCTPromiseRejectBlock) {
-    loadMnemonicWithBiometry(pk: pk) { result in
-      var rejectError: Error?
+    loadKeyPairWithBiometry(pk: pk) { result in
       switch result {
-      case .success(let mnemonicArray):
-        do {
-          let keyPair = try Mnemonic.mnemonicToPrivateKey(mnemonicArray: mnemonicArray, password: "")
-          resolve(keyPair.secretKey.hexString())
-        } catch {
-          rejectError = error
-        }
+      case .success(let keyPair):
+        resolve(keyPair.secretKey.hexString())
         
       case .failure(let error):
-        rejectError = error
-      }
-      
-      if let error = rejectError {
         let rejectBlock = self.rejectBlock(error: error, code: 400)
         reject(rejectBlock.0, rejectBlock.1, rejectBlock.2)
       }
@@ -292,11 +287,44 @@ final class WalletStore: NSObject {
     }
   }
   
+  private func loadKeyPairWithBiometry(pk: PublicKey, completion: @escaping (Result<KeyPair, Error>) -> Void) {
+    loadMnemonicWithBiometry(pk: pk) { result in
+      var rejectError: Error?
+      switch result {
+      case .success(let mnemonicArray):
+        do {
+          let keyPair = try Mnemonic.mnemonicToPrivateKey(mnemonicArray: mnemonicArray, password: "")
+          completion(.success(keyPair))
+        } catch {
+          rejectError = error
+        }
+        
+      case .failure(let error):
+        rejectError = error
+      }
+      
+      if let error = rejectError {
+        completion(.failure(error))
+      }
+    }
+  }
+  
   private func insertWallet(_ walletInfo: WalletInfo) {
     if let index = userDefaultsService?.wallets.firstIndex(where: { $0.pubkey == walletInfo.pubkey }) {
       userDefaultsService?.wallets[index] = walletInfo
     } else {
       userDefaultsService?.wallets.append(walletInfo)
+    }
+  }
+  
+  private func validatePasscode(_ pk: PublicKey,
+                                resolve: @escaping RCTPromiseResolveBlock,
+                                reject: @escaping RCTPromiseRejectBlock) {
+    DispatchQueue.main.async {
+      self.uiService?.validatePasscode { [weak self] passcode in
+        guard let passcode = passcode else { return }
+        self?.exportWithPasscode(pk, passcode: passcode, resolve: resolve, reject: reject)
+      }
     }
   }
   

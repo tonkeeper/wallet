@@ -46,10 +46,12 @@ class PassCodeViewController: BaseViewController<PassCodeView> {
   private func enterNum(_ num: Int) {
     guard let passCodeCount = output?.passCodeCount, passCodeCount < passCodeCircles.count else { return }
     
+    output?.enterNum(num)
+    
     let circle = passCodeCircles[passCodeCount]
     circle.type = .filled
     circle.highlight { [weak self] in
-      self?.output?.enterNum(num)
+      self?.output?.validatePasscode()
     }
   }
   
