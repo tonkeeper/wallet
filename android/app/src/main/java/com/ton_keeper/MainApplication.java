@@ -13,9 +13,11 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
+import com.ton_keeper.legacy.TonPbkdf2Package;
 import com.ton_keeper.newarchitecture.MainApplicationReactNativeHost;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import expo.modules.ApplicationLifecycleDispatcher;
@@ -31,7 +33,9 @@ public class MainApplication extends Application implements ReactApplication {
 
         @Override
         protected List<ReactPackage> getPackages() {
-            return new PackageList(this).getPackages();
+            ArrayList<ReactPackage> packages = new PackageList(this).getPackages();
+            packages.add(new TonPbkdf2Package());
+            return packages;
         }
 
         @Override
