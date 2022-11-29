@@ -1,6 +1,5 @@
 import { ActionType, TAction } from '$store/models';
 import { compareAddresses, SearchIndexer } from '$utils';
-import { getServerConfig } from '$shared/constants';
 import { favoritesActions, favoritesSelector } from '$store/favorites';
 import uniqBy from 'lodash/uniqBy';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -9,28 +8,11 @@ import { SuggestedAddress, SuggestedAddressType } from '../Send.interface';
 import { eventsEventsInfoSelector } from '$store/events';
 import { walletAddressSelector } from '$store/wallet';
 import { CryptoCurrencies } from '$shared/constants';
+import { Tonapi } from '$libs/Tonapi';
 
 const TonWeb = require('tonweb');
 
 const DOMAIN_ADDRESS_NOT_FOUND = 'DOMAIN_ADDRESS_NOT_FOUND';
-
-const getAddressByDomain = async (domain: string) => {
-  try {
-    const tonweb = new TonWeb(
-      new TonWeb.HttpProvider(getServerConfig('tonEndpoint'), {
-        apiKey: getServerConfig('tonEndpointAPIKey'),
-      }),
-    );
-
-    const response = await tonweb.dns.getWalletAddress(domain);
-
-    return response.toString(true, true, true) as string;
-  } catch (e) {
-    console.log('err', e);
-
-    return null;
-  }
-};
 
 let favoriteDnsLastUpdated = 0;
 
@@ -104,7 +86,11 @@ export const useSuggestedAddresses = () => {
             compareAddresses(favorite.address, action.recipient.address),
           ) !== -1;
 
-        const friendlyAddress = new TonWeb.Address(action.recipient.address).toString(true, true, true)
+        const friendlyAddress = new TonWeb.Address(action.recipient.address).toString(
+          true,
+          true,
+          true,
+        );
         if (hiddenRecentAddresses.includes(friendlyAddress) || isFavorite) {
           return false;
         }
@@ -144,12 +130,16 @@ export const useSuggestedAddresses = () => {
       return;
     }
 
-    dnsFavorites.forEach(async (favorite) => {
-      const fetchedAddress = await getAddressByDomain(favorite.domain!);
+    for (const favorite of dnsFavorites) {
+      const resolved = await Tonapi.resolveDns(favorite.domain!);
+      const fetchedAddress = resolved?.wallet?.address;
 
-      if (fetchedAddress && favorite.address !== fetchedAddress) {
+      if (fetchedAddress && !compareAddresses(favorite.address, fetchedAddress)) {
         dispatch(
-          favoritesActions.updateFavorite({ ...favorite, address: fetchedAddress }),
+          favoritesActions.updateFavorite({
+            ...favorite,
+            address: new TonWeb.Address(fetchedAddress).toString(true, true, true),
+          }),
         );
       }
 
@@ -159,7 +149,7 @@ export const useSuggestedAddresses = () => {
       }));
 
       favoriteDnsLastUpdated = Date.now();
-    });
+    }
   }, [dispatch, favorites]);
 
   useEffect(() => {
@@ -170,10 +160,13 @@ export const useSuggestedAddresses = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return {
-    favoriteAddresses,
-    indexedFavoriteAddresses,
-    recentAddresses,
-    suggestedAddresses,
-  };
+  return useMemo(
+    () => ({
+      favoriteAddresses,
+      indexedFavoriteAddresses,
+      recentAddresses,
+      suggestedAddresses,
+    }),
+    [favoriteAddresses, indexedFavoriteAddresses, recentAddresses, suggestedAddresses],
+  );
 };
