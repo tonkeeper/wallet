@@ -1,6 +1,6 @@
 import { AppRequest, ConnectEvent, RpcMethod, WalletEvent } from '@tonconnect/protocol';
 import { useCallback, useMemo, useState } from 'react';
-import { TonConnect, tonConnectDeviceInfo } from '$tonconnect';
+import { CURRENT_PROTOCOL_VERSION, TonConnect, tonConnectDeviceInfo } from '$tonconnect';
 import { useWebViewBridge } from '../jsBridge';
 import { TonConnectInjectedBridge } from './models';
 import { getDomainFromURL } from '$utils';
@@ -29,7 +29,7 @@ export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
   const bridgeObject = useMemo((): TonConnectInjectedBridge => {
     return {
       deviceInfo: tonConnectDeviceInfo,
-      protocolVersion: 2,
+      protocolVersion: CURRENT_PROTOCOL_VERSION,
       isWalletBrowser: true,
       connect: async (protocolVersion, request) => {
         const event = await TonConnect.connect(

@@ -36,7 +36,7 @@
     "@react-navigation/native-stack": "^6.7.0",
     "@reduxjs/toolkit": "^1.6.1",
     "@tonapps/tonlogin-client": "0.2.5",
-    "@tonconnect/protocol": "^0.0.10",
+    "@tonconnect/protocol": "^0.0.20",
     "@vkontakte/vk-qr": "^2.0.13",
     "axios": "^0.27.2",
     "bignumber.js": "^9.0.1",

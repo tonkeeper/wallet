@@ -25,11 +25,7 @@ import {
   WalletResponse,
 } from '@tonconnect/protocol';
 import FastImage from 'react-native-fast-image';
-import {
-  CURRENT_PROTOCOL_VERSION,
-  MIN_PROTOCOL_VERSION,
-  tonConnectDeviceInfo,
-} from './config';
+import { MIN_PROTOCOL_VERSION, tonConnectDeviceInfo } from './config';
 import { ConnectEventError } from './ConnectEventError';
 import { ConnectReplyBuilder } from './ConnectReplyBuilder';
 import { SendTransactionError } from './SendTransactionError';
@@ -37,11 +33,7 @@ import { TonConnectRemoteBridge } from './TonConnectRemoteBridge';
 
 class TonConnectService {
   checkProtocolVersionCapability(protocolVersion: number) {
-    if (
-      typeof protocolVersion !== 'number' ||
-      protocolVersion > CURRENT_PROTOCOL_VERSION ||
-      protocolVersion < MIN_PROTOCOL_VERSION
-    ) {
+    if (typeof protocolVersion !== 'number' || protocolVersion < MIN_PROTOCOL_VERSION) {
       throw new ConnectEventError(
         CONNECT_EVENT_ERROR_CODES.BAD_REQUEST_ERROR,
         `Protocol version ${String(protocolVersion)} is not supported by the wallet app`,
