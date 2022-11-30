@@ -34,7 +34,6 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
   const { bottom: bottomInset } = useSafeAreaInsets();
 
   const scrollViewHeight = useSharedValue(0);
-  const contentAnimation = useSharedValue(0);
 
   const t = useTranslator();
 
@@ -69,14 +68,6 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
     height: scrollViewHeight.value,
   }));
 
-  const scrollViewContentStyle = useAnimatedStyle(() => ({
-    opacity: contentAnimation.value,
-  }));
-
-  useEffect(() => {
-    contentAnimation.value = withDelay(150, withTiming(1));
-  }, [contentAnimation]);
-
   const emptyText =
     query.trim().length === 0 ? t('browser.start_typing') : t('browser.empty_search');
 
@@ -109,24 +100,22 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
               keyboardDismissMode="none"
               keyboardShouldPersistTaps="always"
             >
-              <Animated.View style={scrollViewContentStyle}>
-                {hasSuggests ? (
-                  <>
-                    <SearchSuggests items={searchSuggests} onPressSuggest={openUrl} />
-                    <WebSearchSuggests
-                      items={webSearchSuggests}
-                      active={searchSuggests.length === 0}
-                      onPressSuggest={openUrl}
-                    />
-                  </>
-                ) : (
-                  <S.EmptyContainer style={emptyContainerStyle}>
-                    <Text color="foregroundTertiary" textAlign="center">
-                      {emptyText}
-                    </Text>
-                  </S.EmptyContainer>
-                )}
-              </Animated.View>
+              {hasSuggests ? (
+                <>
+                  <SearchSuggests items={searchSuggests} onPressSuggest={openUrl} />
+                  <WebSearchSuggests
+                    items={webSearchSuggests}
+                    active={searchSuggests.length === 0}
+                    onPressSuggest={openUrl}
+                  />
+                </>
+              ) : (
+                <S.EmptyContainer style={emptyContainerStyle}>
+                  <Text color="foregroundTertiary" textAlign="center">
+                    {emptyText}
+                  </Text>
+                </S.EmptyContainer>
+              )}
             </Animated.ScrollView>
           </ScrollHandler>
         </S.Content>
