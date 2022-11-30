@@ -82,6 +82,7 @@ class TonConnectService {
               connectRequest: request,
               replyBuilder: new ConnectReplyBuilder(request),
               requestPromise: { resolve, reject },
+              hideImmediately: !!webViewUrl,
             }),
         );
 

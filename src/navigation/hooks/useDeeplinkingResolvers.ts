@@ -301,13 +301,16 @@ export function useDeeplinkingResolvers() {
     }
   });
 
-  deeplinking.add('/ton-connect/*', async ({ query }) => {
+  deeplinking.add('/ton-connect/*', async ({ query, origin }) => {
     try {
       if (!query.r || !query.v || !query.id) {
         return;
       }
 
-      await TonConnectRemoteBridge.handleConnectQR(query as unknown as IConnectQrQuery);
+      await TonConnectRemoteBridge.handleConnectDeeplink(
+        query as unknown as IConnectQrQuery,
+        origin,
+      );
     } catch (err) {
       console.log(err);
     }

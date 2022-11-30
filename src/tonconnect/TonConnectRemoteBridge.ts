@@ -20,6 +20,8 @@ import { TonConnect } from './TonConnect';
 import { IConnectQrQuery } from './models';
 import EventSource, { EventSourceListener, MessageEvent } from 'react-native-sse';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DeeplinkOrigin } from '$libs/deeplinking';
+import Minimizer from 'react-native-minimizer';
 
 class TonConnectRemoteBridgeService {
   private readonly storeKey = 'ton-connect-http-bridge-lastEventId';
@@ -178,19 +180,29 @@ class TonConnectRemoteBridgeService {
       console.log('handleMessage response', response);
 
       await this.send(response, sessionCrypto, from);
+
+      this.redirect();
     } catch (e) {
       console.log('handleMessage error');
       console.error(e);
     }
   }
 
-  async handleConnectQR(query: IConnectQrQuery) {
+  private redirect(origin?: DeeplinkOrigin) {
+    if (origin === DeeplinkOrigin.QR_CODE) {
+      return;
+    }
+
+    Minimizer.goBack();
+  }
+
+  async handleConnectDeeplink(query: IConnectQrQuery, origin: DeeplinkOrigin) {
     try {
       const protocolVersion = Number(query.v);
       const request = Base64.decode(query.r, true).toObject() as ConnectRequest;
       const clientSessionId = query.id;
 
-      console.log('handleConnectQR request', request);
+      console.log('handleConnectDeeplink request', request);
 
       const sessionCrypto = new SessionCrypto();
 
@@ -201,11 +213,13 @@ class TonConnectRemoteBridgeService {
         clientSessionId,
       );
 
-      console.log('handleConnectQR response', response);
+      console.log('handleConnectDeeplink response', response);
 
       await this.send(response, sessionCrypto, clientSessionId);
+
+      this.redirect(origin);
     } catch {
-      console.log('handleConnectQR error');
+      console.log('handleConnectDeeplink error');
     }
   }
 

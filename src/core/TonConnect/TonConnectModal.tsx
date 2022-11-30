@@ -125,6 +125,12 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
         }
       }
 
+      const waitForAnimation = props.protocolVersion === 1 || !props.hideImmediately;
+
+      await animation.showSuccess(() => {
+        triggerNotificationSuccess();
+      }, waitForAnimation);
+
       if (props.protocolVersion !== 1) {
         const { replyBuilder, requestPromise } = props;
 
@@ -132,10 +138,6 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
 
         requestPromise.resolve({ address, replyItems });
       }
-
-      await animation.showSuccess(() => {
-        triggerNotificationSuccess();
-      });
 
       if (props.protocolVersion === 1 && props.request.return_url) {
         animation.showReturnButton();
