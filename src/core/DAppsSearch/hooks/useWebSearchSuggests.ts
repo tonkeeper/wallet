@@ -63,7 +63,7 @@ export const useWebSearchSuggests = (query: string) => {
       setResult(suggests);
     };
 
-    getSuggests(query);
+    getSuggests(query.trim());
 
     return () => {
       cancelTokenSource.cancel();
