@@ -5,11 +5,11 @@ import { ns } from '$utils';
 const MORE_ICON_SIZE = 40;
 
 export const Container = styled.View`
-  padding: 0 ${ns(16)}px;
+  padding: 0 ${ns(12)}px;
 `;
 
 export const Title = styled(Text).attrs({ variant: 'h3' })`
-  padding: ${ns(14)}px 0;
+  padding: ${ns(14)}px ${ns(4)}px;
 `;
 
 export const List = styled.View`
