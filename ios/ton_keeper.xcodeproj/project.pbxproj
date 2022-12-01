@@ -8,10 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* ton_keeperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ton_keeperTests.m */; };
-		0CE468737AC28DB0587473DA /* libPods-ton_keeper-ton_keeperTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9296441519092F930F21B06D /* libPods-ton_keeper-ton_keeperTests.a */; };
-		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
-		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1C610F328FB84275E2FB6D32 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AFA288D04A19A6FAE554C55 /* ExpoModulesProvider.swift */; };
 		203A6A0E2760BD6800817B71 /* Montserrat-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 203A69FC2760BD6700817B71 /* Montserrat-ExtraLightItalic.ttf */; };
 		203A6A0F2760BD6800817B71 /* Montserrat-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 203A69FD2760BD6700817B71 /* Montserrat-BoldItalic.ttf */; };
@@ -31,13 +27,66 @@
 		203A6A1D2760BD6800817B71 /* Montserrat-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 203A6A0B2760BD6700817B71 /* Montserrat-MediumItalic.ttf */; };
 		203A6A1E2760BD6800817B71 /* Montserrat-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 203A6A0C2760BD6800817B71 /* Montserrat-Light.ttf */; };
 		203A6A1F2760BD6800817B71 /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 203A6A0D2760BD6800817B71 /* Montserrat-Regular.ttf */; };
-		20B32A5126E3B460001A78F9 /* TonPbkdf2.m in Sources */ = {isa = PBXBuildFile; fileRef = 20B32A5026E3B460001A78F9 /* TonPbkdf2.m */; };
-		30D7C1932775659F00BCF819 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D7C1922775659F00BCF819 /* File.swift */; };
-		398FCAFB2806F9C800635B71 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 398FCAFA2806F9C700635B71 /* GoogleService-Info.plist */; };
-		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		49B45BE827CA429494A060B3 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2AC12AAEC9497399E39F4D /* noop-file.swift */; };
+		76F9B0131AB7FE11009E6D10 /* libPods-ton_keeper-ton_keeperTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */; };
 		78B9AC5F426C0F28766DEC94 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7306F36185132B3874D4C /* ExpoModulesProvider.swift */; };
-		F72D4AA51A175F7924BE948C /* libPods-ton_keeper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FF32913C536B756BD0DE94F0 /* libPods-ton_keeper.a */; };
+		8D962335543EE7C6E1C6AB28 /* libPods-ton_keeper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 39C1C20FA83478354251FB2A /* libPods-ton_keeper.a */; };
+		C42DA694291E696C000D9601 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C42DA693291E696C000D9601 /* AuthService.swift */; };
+		C4380874292BCFE600FF5669 /* R.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4380873292BCFE500FF5669 /* R.generated.swift */; };
+		C4380877292BD26A00FF5669 /* PassCode.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = C4380879292BD26A00FF5669 /* PassCode.stringsdict */; };
+		C438087C292BD3E200FF5669 /* CaseIterable+Next.swift in Sources */ = {isa = PBXBuildFile; fileRef = C438087B292BD3E200FF5669 /* CaseIterable+Next.swift */; };
+		C438087F292CDBA200FF5669 /* PassCodeBlockTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = C438087E292CDBA200FF5669 /* PassCodeBlockTime.swift */; };
+		C44A3F93291D182F00C1D830 /* BiometryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44A3F92291D182F00C1D830 /* BiometryService.swift */; };
+		C44A3F96291D1DCE00C1D830 /* UIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44A3F95291D1DCE00C1D830 /* UIService.swift */; };
+		C44A3F98291D3C2700C1D830 /* UIWindow+Transition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44A3F97291D3C2700C1D830 /* UIWindow+Transition.swift */; };
+		C47CF0DF293087F5004AB5EE /* PassCodePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47CF0DE293087F5004AB5EE /* PassCodePresenter.swift */; };
+		C47CF0E229309117004AB5EE /* PassCodeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47CF0E129309117004AB5EE /* PassCodeModule.swift */; };
+		C4A5635B2918CFC8001DDA44 /* UIStackView+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A5635A2918CFC8001DDA44 /* UIStackView+Init.swift */; };
+		C4A5635D2918CFDB001DDA44 /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A5635C2918CFDB001DDA44 /* UIColor+Hex.swift */; };
+		C4A563602918CFF9001DDA44 /* CGSize+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A5635F2918CFF9001DDA44 /* CGSize+Init.swift */; };
+		C4A563662918D11C001DDA44 /* PassCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563642918D11C001DDA44 /* PassCodeViewController.swift */; };
+		C4A563672918D11C001DDA44 /* PassCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563652918D11C001DDA44 /* PassCodeView.swift */; };
+		C4A563992918D30B001DDA44 /* PassCodeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563982918D30B001DDA44 /* PassCodeButton.swift */; };
+		C4A5639B2918D372001DDA44 /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A5639A2918D372001DDA44 /* Palette.swift */; };
+		C4A563A22918D49C001DDA44 /* Theme+current.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A5639D2918D49C001DDA44 /* Theme+current.swift */; };
+		C4A563A32918D49C001DDA44 /* ColorTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A5639F2918D49C001DDA44 /* ColorTheme.swift */; };
+		C4A563A42918D49C001DDA44 /* ThemeStyled.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563A02918D49C001DDA44 /* ThemeStyled.swift */; };
+		C4A563A52918D49C001DDA44 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563A12918D49C001DDA44 /* Theme.swift */; };
+		C4A563A82918D4CC001DDA44 /* BaseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563A72918D4CC001DDA44 /* BaseButton.swift */; };
+		C4A563AB2918D531001DDA44 /* BaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563AA2918D531001DDA44 /* BaseView.swift */; };
+		C4A563AE2918D546001DDA44 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563AD2918D546001DDA44 /* BaseViewController.swift */; };
+		C4A563B02918D60E001DDA44 /* UIButton+BackgroundColorForState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563AF2918D60E001DDA44 /* UIButton+BackgroundColorForState.swift */; };
+		C4A563B329191E14001DDA44 /* ServiceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563B229191E14001DDA44 /* ServiceLocator.swift */; };
+		C4A563B529191E22001DDA44 /* Autowired.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563B429191E22001DDA44 /* Autowired.swift */; };
+		C4A563BC291951FA001DDA44 /* SpacerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563BB291951FA001DDA44 /* SpacerView.swift */; };
+		C4A563BE2919522D001DDA44 /* PassCodeCircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563BD2919522D001DDA44 /* PassCodeCircleView.swift */; };
+		C4A563C3291A916E001DDA44 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563C2291A916E001DDA44 /* Utils.swift */; };
+		C4A563C5291A9290001DDA44 /* Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A563C4291A9290001DDA44 /* Animations.swift */; };
+		C4B6F030291012DE0070E2BE /* KeychainServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F007291012DE0070E2BE /* KeychainServiceError.swift */; };
+		C4B6F031291012DE0070E2BE /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F008291012DE0070E2BE /* KeychainService.swift */; };
+		C4B6F032291012DE0070E2BE /* Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F009291012DE0070E2BE /* Accessibility.swift */; };
+		C4B6F033291012DE0070E2BE /* AccessControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F00A291012DE0070E2BE /* AccessControl.swift */; };
+		C4B6F034291012DE0070E2BE /* TonPbkdf2.m in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F00B291012DE0070E2BE /* TonPbkdf2.m */; };
+		C4B6F035291012DE0070E2BE /* Podfile.properties.json in Resources */ = {isa = PBXBuildFile; fileRef = C4B6F00E291012DE0070E2BE /* Podfile.properties.json */; };
+		C4B6F036291012DE0070E2BE /* WalletStore.m in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F010291012DE0070E2BE /* WalletStore.m */; };
+		C4B6F037291012DE0070E2BE /* WalletError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F012291012DE0070E2BE /* WalletError.swift */; };
+		C4B6F038291012DE0070E2BE /* WalletInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F013291012DE0070E2BE /* WalletInfo.swift */; };
+		C4B6F039291012DE0070E2BE /* WalletStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F014291012DE0070E2BE /* WalletStore.swift */; };
+		C4B6F03A291012DE0070E2BE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C4B6F01C291012DE0070E2BE /* GoogleService-Info.plist */; };
+		C4B6F03B291012DE0070E2BE /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C4B6F01D291012DE0070E2BE /* SplashScreen.storyboard */; };
+		C4B6F03C291012DE0070E2BE /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F01F291012DE0070E2BE /* File.swift */; };
+		C4B6F03D291012DE0070E2BE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F020291012DE0070E2BE /* main.m */; };
+		C4B6F03E291012DE0070E2BE /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F021291012DE0070E2BE /* noop-file.swift */; };
+		C4B6F03F291012DE0070E2BE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4B6F022291012DE0070E2BE /* Images.xcassets */; };
+		C4B6F040291012DE0070E2BE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F023291012DE0070E2BE /* AppDelegate.m */; };
+		C4B6F041291012DE0070E2BE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F025291012DE0070E2BE /* Constants.swift */; };
+		C4B6F042291012DE0070E2BE /* UserDefaults+SaveStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F029291012DE0070E2BE /* UserDefaults+SaveStruct.swift */; };
+		C4B6F043291012DE0070E2BE /* JSONAble.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02B291012DE0070E2BE /* JSONAble.swift */; };
+		C4B6F044291012DE0070E2BE /* UserDefaultWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02D291012DE0070E2BE /* UserDefaultWrapper.swift */; };
+		C4B6F045291012DE0070E2BE /* UserDefaultsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6F02E291012DE0070E2BE /* UserDefaultsService.swift */; };
+		C4D3ADBC292E66D5001723FC /* ActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D3ADBB292E66D5001723FC /* ActionButton.swift */; };
+		C4D3ADBE292E6980001723FC /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D3ADBD292E6980001723FC /* AppError.swift */; };
+		C4D3ADC1292E6B6D001723FC /* RoutingErrorCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D3ADC0292E6B6D001723FC /* RoutingErrorCode.swift */; };
+		C4F5F2052927C85B00D08D79 /* PassCode.strings in Resources */ = {isa = PBXBuildFile; fileRef = C4F5F2072927C85B00D08D79 /* PassCode.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,13 +104,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ton_keeperTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ton_keeperTests.m; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* ton_keeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ton_keeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = ton_keeper/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = ton_keeper/AppDelegate.m; sourceTree = "<group>"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ton_keeper/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ton_keeper/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ton_keeper/main.m; sourceTree = "<group>"; };
-		1C5DFB5B4A69FADFB1B43356 /* Pods-ton_keeper-ton_keeperTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper-ton_keeperTests.release.xcconfig"; path = "Target Support Files/Pods-ton_keeper-ton_keeperTests/Pods-ton_keeper-ton_keeperTests.release.xcconfig"; sourceTree = "<group>"; };
-		2015F81B26E76E2200750FA3 /* ton_keeper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ton_keeper.entitlements; path = ton_keeper/ton_keeper.entitlements; sourceTree = "<group>"; };
+		13F2E6614DA413C5933FA7B3 /* Pods-ton_keeper-ton_keeperTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper-ton_keeperTests.release.xcconfig"; path = "Target Support Files/Pods-ton_keeper-ton_keeperTests/Pods-ton_keeper-ton_keeperTests.release.xcconfig"; sourceTree = "<group>"; };
 		203A69FC2760BD6700817B71 /* Montserrat-ExtraLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-ExtraLightItalic.ttf"; path = "../assets/fonts/Montserrat-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		203A69FD2760BD6700817B71 /* Montserrat-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-BoldItalic.ttf"; path = "../assets/fonts/Montserrat-BoldItalic.ttf"; sourceTree = "<group>"; };
 		203A69FE2760BD6700817B71 /* Montserrat-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-ExtraBoldItalic.ttf"; path = "../assets/fonts/Montserrat-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
@@ -80,20 +123,80 @@
 		203A6A0B2760BD6700817B71 /* Montserrat-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-MediumItalic.ttf"; path = "../assets/fonts/Montserrat-MediumItalic.ttf"; sourceTree = "<group>"; };
 		203A6A0C2760BD6800817B71 /* Montserrat-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-Light.ttf"; path = "../assets/fonts/Montserrat-Light.ttf"; sourceTree = "<group>"; };
 		203A6A0D2760BD6800817B71 /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-Regular.ttf"; path = "../assets/fonts/Montserrat-Regular.ttf"; sourceTree = "<group>"; };
-		20B32A4F26E3B460001A78F9 /* TonPbkdf2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TonPbkdf2.h; path = ton_keeper/TonPbkdf2.h; sourceTree = "<group>"; };
-		20B32A5026E3B460001A78F9 /* TonPbkdf2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TonPbkdf2.m; path = ton_keeper/TonPbkdf2.m; sourceTree = "<group>"; };
-		268006C0A11AFDAE53D6840B /* Pods-ton_keeper-ton_keeperTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper-ton_keeperTests.debug.xcconfig"; path = "Target Support Files/Pods-ton_keeper-ton_keeperTests/Pods-ton_keeper-ton_keeperTests.debug.xcconfig"; sourceTree = "<group>"; };
-		30D7C1922775659F00BCF819 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
-		398FCAFA2806F9C700635B71 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		39C1C20FA83478354251FB2A /* libPods-ton_keeper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ton_keeper.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		66B33E2FC88F6DF6B498F962 /* Pods-ton_keeper-ton_keeperTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper-ton_keeperTests.debug.xcconfig"; path = "Target Support Files/Pods-ton_keeper-ton_keeperTests/Pods-ton_keeper-ton_keeperTests.debug.xcconfig"; sourceTree = "<group>"; };
 		66D7306F36185132B3874D4C /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ton_keeper-ton_keeperTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		6AFA288D04A19A6FAE554C55 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ton_keeper/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		8F2AC12AAEC9497399E39F4D /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "ton_keeper/noop-file.swift"; sourceTree = "<group>"; };
-		9296441519092F930F21B06D /* libPods-ton_keeper-ton_keeperTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ton_keeper-ton_keeperTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = ton_keeper/SplashScreen.storyboard; sourceTree = "<group>"; };
-		C4B162C767DA61606A282BF2 /* Pods-ton_keeper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper.release.xcconfig"; path = "Target Support Files/Pods-ton_keeper/Pods-ton_keeper.release.xcconfig"; sourceTree = "<group>"; };
+		90508C4783A2D53FE0CB11CF /* Pods-ton_keeper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper.release.xcconfig"; path = "Target Support Files/Pods-ton_keeper/Pods-ton_keeper.release.xcconfig"; sourceTree = "<group>"; };
+		C42DA693291E696C000D9601 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		C4380873292BCFE500FF5669 /* R.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = R.generated.swift; sourceTree = "<group>"; };
+		C4380878292BD26A00FF5669 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/PassCode.stringsdict; sourceTree = "<group>"; };
+		C438087A292BD26C00FF5669 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ru; path = ru.lproj/PassCode.stringsdict; sourceTree = "<group>"; };
+		C438087B292BD3E200FF5669 /* CaseIterable+Next.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CaseIterable+Next.swift"; sourceTree = "<group>"; };
+		C438087E292CDBA200FF5669 /* PassCodeBlockTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassCodeBlockTime.swift; sourceTree = "<group>"; };
+		C44A3F92291D182F00C1D830 /* BiometryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometryService.swift; sourceTree = "<group>"; };
+		C44A3F95291D1DCE00C1D830 /* UIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIService.swift; sourceTree = "<group>"; };
+		C44A3F97291D3C2700C1D830 /* UIWindow+Transition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+Transition.swift"; sourceTree = "<group>"; };
+		C47CF0DE293087F5004AB5EE /* PassCodePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassCodePresenter.swift; sourceTree = "<group>"; };
+		C47CF0E129309117004AB5EE /* PassCodeModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassCodeModule.swift; sourceTree = "<group>"; };
+		C4A5635A2918CFC8001DDA44 /* UIStackView+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStackView+Init.swift"; sourceTree = "<group>"; };
+		C4A5635C2918CFDB001DDA44 /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
+		C4A5635F2918CFF9001DDA44 /* CGSize+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGSize+Init.swift"; sourceTree = "<group>"; };
+		C4A563642918D11C001DDA44 /* PassCodeViewController.swift */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = PassCodeViewController.swift; sourceTree = "<group>"; tabWidth = 2; };
+		C4A563652918D11C001DDA44 /* PassCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassCodeView.swift; sourceTree = "<group>"; };
+		C4A563982918D30B001DDA44 /* PassCodeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassCodeButton.swift; sourceTree = "<group>"; };
+		C4A5639A2918D372001DDA44 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
+		C4A5639D2918D49C001DDA44 /* Theme+current.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Theme+current.swift"; sourceTree = "<group>"; };
+		C4A5639F2918D49C001DDA44 /* ColorTheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorTheme.swift; sourceTree = "<group>"; };
+		C4A563A02918D49C001DDA44 /* ThemeStyled.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThemeStyled.swift; sourceTree = "<group>"; };
+		C4A563A12918D49C001DDA44 /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		C4A563A72918D4CC001DDA44 /* BaseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseButton.swift; sourceTree = "<group>"; };
+		C4A563AA2918D531001DDA44 /* BaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
+		C4A563AD2918D546001DDA44 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		C4A563AF2918D60E001DDA44 /* UIButton+BackgroundColorForState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+BackgroundColorForState.swift"; sourceTree = "<group>"; };
+		C4A563B229191E14001DDA44 /* ServiceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceLocator.swift; sourceTree = "<group>"; };
+		C4A563B429191E22001DDA44 /* Autowired.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Autowired.swift; sourceTree = "<group>"; };
+		C4A563BB291951FA001DDA44 /* SpacerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacerView.swift; sourceTree = "<group>"; };
+		C4A563BD2919522D001DDA44 /* PassCodeCircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassCodeCircleView.swift; sourceTree = "<group>"; };
+		C4A563C2291A916E001DDA44 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		C4A563C4291A9290001DDA44 /* Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Animations.swift; sourceTree = "<group>"; };
+		C4B6F004291012DD0070E2BE /* ton_keeper-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ton_keeper-Bridging-Header.h"; sourceTree = "<group>"; };
+		C4B6F007291012DE0070E2BE /* KeychainServiceError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainServiceError.swift; sourceTree = "<group>"; };
+		C4B6F008291012DE0070E2BE /* KeychainService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		C4B6F009291012DE0070E2BE /* Accessibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Accessibility.swift; sourceTree = "<group>"; };
+		C4B6F00A291012DE0070E2BE /* AccessControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessControl.swift; sourceTree = "<group>"; };
+		C4B6F00B291012DE0070E2BE /* TonPbkdf2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TonPbkdf2.m; sourceTree = "<group>"; };
+		C4B6F00C291012DE0070E2BE /* ton_keeper.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = ton_keeper.entitlements; sourceTree = "<group>"; };
+		C4B6F00D291012DE0070E2BE /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		C4B6F00E291012DE0070E2BE /* Podfile.properties.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Podfile.properties.json; sourceTree = "<group>"; };
+		C4B6F010291012DE0070E2BE /* WalletStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WalletStore.m; sourceTree = "<group>"; };
+		C4B6F012291012DE0070E2BE /* WalletError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletError.swift; sourceTree = "<group>"; };
+		C4B6F013291012DE0070E2BE /* WalletInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletInfo.swift; sourceTree = "<group>"; };
+		C4B6F014291012DE0070E2BE /* WalletStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletStore.swift; sourceTree = "<group>"; };
+		C4B6F01C291012DE0070E2BE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		C4B6F01D291012DE0070E2BE /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = SplashScreen.storyboard; sourceTree = "<group>"; };
+		C4B6F01E291012DE0070E2BE /* TonPbkdf2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TonPbkdf2.h; sourceTree = "<group>"; };
+		C4B6F01F291012DE0070E2BE /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		C4B6F020291012DE0070E2BE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C4B6F021291012DE0070E2BE /* noop-file.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "noop-file.swift"; sourceTree = "<group>"; };
+		C4B6F022291012DE0070E2BE /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		C4B6F023291012DE0070E2BE /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		C4B6F025291012DE0070E2BE /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		C4B6F029291012DE0070E2BE /* UserDefaults+SaveStruct.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UserDefaults+SaveStruct.swift"; sourceTree = "<group>"; };
+		C4B6F02B291012DE0070E2BE /* JSONAble.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAble.swift; sourceTree = "<group>"; };
+		C4B6F02D291012DE0070E2BE /* UserDefaultWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultWrapper.swift; sourceTree = "<group>"; };
+		C4B6F02E291012DE0070E2BE /* UserDefaultsService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultsService.swift; sourceTree = "<group>"; };
+		C4B6F02F291012DE0070E2BE /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C4D3ADBB292E66D5001723FC /* ActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButton.swift; sourceTree = "<group>"; };
+		C4D3ADBD292E6980001723FC /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
+		C4D3ADC0292E6B6D001723FC /* RoutingErrorCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutingErrorCode.swift; sourceTree = "<group>"; };
+		C4F5F2062927C85B00D08D79 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/PassCode.strings; sourceTree = "<group>"; };
+		C4F5F2082927C88200D08D79 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/PassCode.strings; sourceTree = "<group>"; };
+		C4FB2EE22912AF2700CB35D0 /* OpenSSL.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = OpenSSL.xcframework; sourceTree = "<group>"; };
+		C4FB2EE32912AF2700CB35D0 /* TON.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = TON.xcframework; sourceTree = "<group>"; };
+		C6251834116392B3FC02BA37 /* Pods-ton_keeper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper.debug.xcconfig"; path = "Target Support Files/Pods-ton_keeper/Pods-ton_keeper.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F67453F5EAFE9A73B53D20C6 /* Pods-ton_keeper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper.debug.xcconfig"; path = "Target Support Files/Pods-ton_keeper/Pods-ton_keeper.debug.xcconfig"; sourceTree = "<group>"; };
-		FF32913C536B756BD0DE94F0 /* libPods-ton_keeper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ton_keeper.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ton_keeper-ton_keeperTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,7 +204,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0CE468737AC28DB0587473DA /* libPods-ton_keeper-ton_keeperTests.a in Frameworks */,
+				76F9B0131AB7FE11009E6D10 /* libPods-ton_keeper-ton_keeperTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,7 +212,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F72D4AA51A175F7924BE948C /* libPods-ton_keeper.a in Frameworks */,
+				8D962335543EE7C6E1C6AB28 /* libPods-ton_keeper.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,25 +236,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		13B07FAE1A68108700A75B9A /* ton_keeper */ = {
-			isa = PBXGroup;
-			children = (
-				398FCAFA2806F9C700635B71 /* GoogleService-Info.plist */,
-				2015F81B26E76E2200750FA3 /* ton_keeper.entitlements */,
-				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
-				13B07FB01A68108700A75B9A /* AppDelegate.m */,
-				13B07FB51A68108700A75B9A /* Images.xcassets */,
-				13B07FB61A68108700A75B9A /* Info.plist */,
-				13B07FB71A68108700A75B9A /* main.m */,
-				20B32A4F26E3B460001A78F9 /* TonPbkdf2.h */,
-				20B32A5026E3B460001A78F9 /* TonPbkdf2.m */,
-				30D7C1922775659F00BCF819 /* File.swift */,
-				8F2AC12AAEC9497399E39F4D /* noop-file.swift */,
-				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-			);
-			name = ton_keeper;
-			sourceTree = "<group>";
-		};
 		1B61C4297D2FE35A2E4E1C24 /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
@@ -164,9 +248,11 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C4FB2EE22912AF2700CB35D0 /* OpenSSL.xcframework */,
+				C4FB2EE32912AF2700CB35D0 /* TON.xcframework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				FF32913C536B756BD0DE94F0 /* libPods-ton_keeper.a */,
-				9296441519092F930F21B06D /* libPods-ton_keeper-ton_keeperTests.a */,
+				39C1C20FA83478354251FB2A /* libPods-ton_keeper.a */,
+				FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -189,7 +275,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* ton_keeper */,
+				C4B6F005291012DE0070E2BE /* ton_keeper */,
+				C4B6F004291012DD0070E2BE /* ton_keeper-Bridging-Header.h */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* ton_keeperTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -220,6 +307,386 @@
 			name = ton_keeperTests;
 			sourceTree = "<group>";
 		};
+		C42DA692291E695F000D9601 /* AuthService */ = {
+			isa = PBXGroup;
+			children = (
+				C42DA693291E696C000D9601 /* AuthService.swift */,
+			);
+			path = AuthService;
+			sourceTree = "<group>";
+		};
+		C438087D292CDB8D00FF5669 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C438087E292CDBA200FF5669 /* PassCodeBlockTime.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		C44A3F91291D181700C1D830 /* BiometryService */ = {
+			isa = PBXGroup;
+			children = (
+				C44A3F92291D182F00C1D830 /* BiometryService.swift */,
+			);
+			path = BiometryService;
+			sourceTree = "<group>";
+		};
+		C44A3F94291D1DC400C1D830 /* UIService */ = {
+			isa = PBXGroup;
+			children = (
+				C44A3F95291D1DCE00C1D830 /* UIService.swift */,
+			);
+			path = UIService;
+			sourceTree = "<group>";
+		};
+		C47CF0DD293087E2004AB5EE /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				C47CF0DE293087F5004AB5EE /* PassCodePresenter.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		C47CF0E02930910B004AB5EE /* Module */ = {
+			isa = PBXGroup;
+			children = (
+				C47CF0E129309117004AB5EE /* PassCodeModule.swift */,
+			);
+			path = Module;
+			sourceTree = "<group>";
+		};
+		C4A563532918CDB8001DDA44 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				C4F5F20A2927C97C00D08D79 /* Generated */,
+				C4F5F2022927C81800D08D79 /* Localizable */,
+				C4B6F022291012DE0070E2BE /* Images.xcassets */,
+				C4A5639A2918D372001DDA44 /* Palette.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		C4A563552918CE8F001DDA44 /* Legacy */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F01E291012DE0070E2BE /* TonPbkdf2.h */,
+				C4B6F00B291012DE0070E2BE /* TonPbkdf2.m */,
+				C4B6F01D291012DE0070E2BE /* SplashScreen.storyboard */,
+				C4B6F01F291012DE0070E2BE /* File.swift */,
+				C4B6F021291012DE0070E2BE /* noop-file.swift */,
+			);
+			path = Legacy;
+			sourceTree = "<group>";
+		};
+		C4A563562918CF92001DDA44 /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F00D291012DE0070E2BE /* AppDelegate.h */,
+				C4B6F023291012DE0070E2BE /* AppDelegate.m */,
+				C4B6F020291012DE0070E2BE /* main.m */,
+				C4A563B129191E07001DDA44 /* ServiceLocator */,
+				C4A563612918D04A001DDA44 /* Services */,
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
+		C4A563572918CFAA001DDA44 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563C1291A9160001DDA44 /* Helper */,
+				C4A563682918D135001DDA44 /* UI */,
+				C4B6F02A291012DE0070E2BE /* Models */,
+				C4A563582918CFB2001DDA44 /* Extension */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		C4A563582918CFB2001DDA44 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F028291012DE0070E2BE /* Foundation */,
+				C4A5635E2918CFED001DDA44 /* CoreGraphics */,
+				C4A563592918CFBC001DDA44 /* UIKit */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+		C4A563592918CFBC001DDA44 /* UIKit */ = {
+			isa = PBXGroup;
+			children = (
+				C4A5635A2918CFC8001DDA44 /* UIStackView+Init.swift */,
+				C4A5635C2918CFDB001DDA44 /* UIColor+Hex.swift */,
+				C4A563AF2918D60E001DDA44 /* UIButton+BackgroundColorForState.swift */,
+				C44A3F97291D3C2700C1D830 /* UIWindow+Transition.swift */,
+			);
+			path = UIKit;
+			sourceTree = "<group>";
+		};
+		C4A5635E2918CFED001DDA44 /* CoreGraphics */ = {
+			isa = PBXGroup;
+			children = (
+				C4A5635F2918CFF9001DDA44 /* CGSize+Init.swift */,
+			);
+			path = CoreGraphics;
+			sourceTree = "<group>";
+		};
+		C4A563612918D04A001DDA44 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				C42DA692291E695F000D9601 /* AuthService */,
+				C44A3F94291D1DC400C1D830 /* UIService */,
+				C44A3F91291D181700C1D830 /* BiometryService */,
+				C4B6F006291012DE0070E2BE /* KeychainService */,
+				C4B6F02C291012DE0070E2BE /* UserDefaultsService */,
+				C4B6F00F291012DE0070E2BE /* WalletStore */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		C4A563622918D0B0001DDA44 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563632918D0B9001DDA44 /* PassCode */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		C4A563632918D0B9001DDA44 /* PassCode */ = {
+			isa = PBXGroup;
+			children = (
+				C47CF0E02930910B004AB5EE /* Module */,
+				C47CF0DD293087E2004AB5EE /* Presenter */,
+				C438087D292CDB8D00FF5669 /* Model */,
+				C4A563702918D224001DDA44 /* View */,
+			);
+			path = PassCode;
+			sourceTree = "<group>";
+		};
+		C4A563682918D135001DDA44 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				C4D3ADBA292E66C8001723FC /* Views */,
+				C4A563BA291951ED001DDA44 /* StackSpacer */,
+				C4A563692918D13B001DDA44 /* BaseClasses */,
+				C4A5639C2918D49C001DDA44 /* Theme */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		C4A563692918D13B001DDA44 /* BaseClasses */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563A62918D4C2001DDA44 /* BaseButton */,
+				C4A563A92918D52A001DDA44 /* BaseView */,
+				C4A563AC2918D53D001DDA44 /* BaseViewController */,
+			);
+			path = BaseClasses;
+			sourceTree = "<group>";
+		};
+		C4A563702918D224001DDA44 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563972918D2F1001DDA44 /* Subview */,
+				C4A563652918D11C001DDA44 /* PassCodeView.swift */,
+				C4A563642918D11C001DDA44 /* PassCodeViewController.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		C4A563972918D2F1001DDA44 /* Subview */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563982918D30B001DDA44 /* PassCodeButton.swift */,
+				C4A563BD2919522D001DDA44 /* PassCodeCircleView.swift */,
+			);
+			path = Subview;
+			sourceTree = "<group>";
+		};
+		C4A5639C2918D49C001DDA44 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563A12918D49C001DDA44 /* Theme.swift */,
+				C4A5639D2918D49C001DDA44 /* Theme+current.swift */,
+				C4A563A02918D49C001DDA44 /* ThemeStyled.swift */,
+				C4A5639E2918D49C001DDA44 /* Color */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		C4A5639E2918D49C001DDA44 /* Color */ = {
+			isa = PBXGroup;
+			children = (
+				C4A5639F2918D49C001DDA44 /* ColorTheme.swift */,
+			);
+			path = Color;
+			sourceTree = "<group>";
+		};
+		C4A563A62918D4C2001DDA44 /* BaseButton */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563A72918D4CC001DDA44 /* BaseButton.swift */,
+			);
+			path = BaseButton;
+			sourceTree = "<group>";
+		};
+		C4A563A92918D52A001DDA44 /* BaseView */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563AA2918D531001DDA44 /* BaseView.swift */,
+			);
+			path = BaseView;
+			sourceTree = "<group>";
+		};
+		C4A563AC2918D53D001DDA44 /* BaseViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563AD2918D546001DDA44 /* BaseViewController.swift */,
+			);
+			path = BaseViewController;
+			sourceTree = "<group>";
+		};
+		C4A563B129191E07001DDA44 /* ServiceLocator */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563B229191E14001DDA44 /* ServiceLocator.swift */,
+				C4A563B429191E22001DDA44 /* Autowired.swift */,
+			);
+			path = ServiceLocator;
+			sourceTree = "<group>";
+		};
+		C4A563BA291951ED001DDA44 /* StackSpacer */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563BB291951FA001DDA44 /* SpacerView.swift */,
+			);
+			path = StackSpacer;
+			sourceTree = "<group>";
+		};
+		C4A563C1291A9160001DDA44 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				C4A563C2291A916E001DDA44 /* Utils.swift */,
+				C4A563C4291A9290001DDA44 /* Animations.swift */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
+		C4B6F005291012DE0070E2BE /* ton_keeper */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F00C291012DE0070E2BE /* ton_keeper.entitlements */,
+				C4A563562918CF92001DDA44 /* Application */,
+				C4A563572918CFAA001DDA44 /* Common */,
+				C4A563552918CE8F001DDA44 /* Legacy */,
+				C4A563622918D0B0001DDA44 /* Modules */,
+				C4A563532918CDB8001DDA44 /* Resources */,
+				C4B6F024291012DE0070E2BE /* SupportingFiles */,
+			);
+			path = ton_keeper;
+			sourceTree = "<group>";
+		};
+		C4B6F006291012DE0070E2BE /* KeychainService */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F007291012DE0070E2BE /* KeychainServiceError.swift */,
+				C4B6F008291012DE0070E2BE /* KeychainService.swift */,
+				C4B6F009291012DE0070E2BE /* Accessibility.swift */,
+				C4B6F00A291012DE0070E2BE /* AccessControl.swift */,
+			);
+			path = KeychainService;
+			sourceTree = "<group>";
+		};
+		C4B6F00F291012DE0070E2BE /* WalletStore */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F010291012DE0070E2BE /* WalletStore.m */,
+				C4B6F014291012DE0070E2BE /* WalletStore.swift */,
+				C4B6F011291012DE0070E2BE /* Model */,
+			);
+			path = WalletStore;
+			sourceTree = "<group>";
+		};
+		C4B6F011291012DE0070E2BE /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F012291012DE0070E2BE /* WalletError.swift */,
+				C4B6F013291012DE0070E2BE /* WalletInfo.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		C4B6F024291012DE0070E2BE /* SupportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F00E291012DE0070E2BE /* Podfile.properties.json */,
+				C4B6F01C291012DE0070E2BE /* GoogleService-Info.plist */,
+				C4B6F02F291012DE0070E2BE /* Info.plist */,
+				C4B6F025291012DE0070E2BE /* Constants.swift */,
+			);
+			path = SupportingFiles;
+			sourceTree = "<group>";
+		};
+		C4B6F028291012DE0070E2BE /* Foundation */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F029291012DE0070E2BE /* UserDefaults+SaveStruct.swift */,
+				C438087B292BD3E200FF5669 /* CaseIterable+Next.swift */,
+			);
+			path = Foundation;
+			sourceTree = "<group>";
+		};
+		C4B6F02A291012DE0070E2BE /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				C4D3ADBF292E6B61001723FC /* Error */,
+				C4B6F02B291012DE0070E2BE /* JSONAble.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		C4B6F02C291012DE0070E2BE /* UserDefaultsService */ = {
+			isa = PBXGroup;
+			children = (
+				C4B6F02D291012DE0070E2BE /* UserDefaultWrapper.swift */,
+				C4B6F02E291012DE0070E2BE /* UserDefaultsService.swift */,
+			);
+			path = UserDefaultsService;
+			sourceTree = "<group>";
+		};
+		C4D3ADBA292E66C8001723FC /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C4D3ADBB292E66D5001723FC /* ActionButton.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		C4D3ADBF292E6B61001723FC /* Error */ = {
+			isa = PBXGroup;
+			children = (
+				C4D3ADBD292E6980001723FC /* AppError.swift */,
+				C4D3ADC0292E6B6D001723FC /* RoutingErrorCode.swift */,
+			);
+			path = Error;
+			sourceTree = "<group>";
+		};
+		C4F5F2022927C81800D08D79 /* Localizable */ = {
+			isa = PBXGroup;
+			children = (
+				C4F5F2072927C85B00D08D79 /* PassCode.strings */,
+				C4380879292BD26A00FF5669 /* PassCode.stringsdict */,
+			);
+			path = Localizable;
+			sourceTree = "<group>";
+		};
+		C4F5F20A2927C97C00D08D79 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				C4380873292BCFE500FF5669 /* R.generated.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
 		C80173ED49C3443EA1F97BA9 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -248,10 +715,10 @@
 		F725F67D0D4B970B9615D4F3 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				F67453F5EAFE9A73B53D20C6 /* Pods-ton_keeper.debug.xcconfig */,
-				C4B162C767DA61606A282BF2 /* Pods-ton_keeper.release.xcconfig */,
-				268006C0A11AFDAE53D6840B /* Pods-ton_keeper-ton_keeperTests.debug.xcconfig */,
-				1C5DFB5B4A69FADFB1B43356 /* Pods-ton_keeper-ton_keeperTests.release.xcconfig */,
+				C6251834116392B3FC02BA37 /* Pods-ton_keeper.debug.xcconfig */,
+				90508C4783A2D53FE0CB11CF /* Pods-ton_keeper.release.xcconfig */,
+				66B33E2FC88F6DF6B498F962 /* Pods-ton_keeper-ton_keeperTests.debug.xcconfig */,
+				13F2E6614DA413C5933FA7B3 /* Pods-ton_keeper-ton_keeperTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -263,11 +730,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "ton_keeperTests" */;
 			buildPhases = (
-				074B384CB1482924F1D432EC /* [CP] Check Pods Manifest.lock */,
+				027EACABF3131444CA1290DC /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				96F4D16516234AD713A35B6E /* [CP] Copy Pods Resources */,
+				F95E499949E50FBC1ECC1307 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -283,15 +750,16 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ton_keeper" */;
 			buildPhases = (
-				CF3B00C7CCC7B068D0D1106B /* [CP] Check Pods Manifest.lock */,
+				8C4EC056529EFADE0053216C /* [CP] Check Pods Manifest.lock */,
+				C4F5F2092927C96100D08D79 /* R.swift codegen */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				510151F1A46244BEFCEBA860 /* [CP] Copy Pods Resources */,
-				371B8DF11DE26D18459724D6 /* [CP-User] [RNFB] Core Configuration */,
-				516AA6D53215FCBF9E7A191E /* [CP-User] [RNFB] Crashlytics Configuration */,
+				B420B642277A60EBC44F3322 /* [CP] Copy Pods Resources */,
+				6DB02C2677103C9DDFB7799F /* [CP-User] [RNFB] Core Configuration */,
+				00569AE961EA489F7FF8096D /* [CP-User] [RNFB] Crashlytics Configuration */,
 			);
 			buildRules = (
 			);
@@ -326,6 +794,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ru,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
@@ -354,21 +823,24 @@
 				203A6A142760BD6800817B71 /* Montserrat-SemiBoldItalic.ttf in Resources */,
 				203A6A1D2760BD6800817B71 /* Montserrat-MediumItalic.ttf in Resources */,
 				203A6A1E2760BD6800817B71 /* Montserrat-Light.ttf in Resources */,
-				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				203A6A162760BD6800817B71 /* Montserrat-SemiBold.ttf in Resources */,
+				C4B6F035291012DE0070E2BE /* Podfile.properties.json in Resources */,
 				203A6A0E2760BD6800817B71 /* Montserrat-ExtraLightItalic.ttf in Resources */,
 				203A6A112760BD6800817B71 /* Montserrat-Italic.ttf in Resources */,
+				C4F5F2052927C85B00D08D79 /* PassCode.strings in Resources */,
 				203A6A0F2760BD6800817B71 /* Montserrat-BoldItalic.ttf in Resources */,
 				203A6A182760BD6800817B71 /* Montserrat-ExtraBold.ttf in Resources */,
 				203A6A1B2760BD6800817B71 /* Montserrat-Thin.ttf in Resources */,
 				203A6A1F2760BD6800817B71 /* Montserrat-Regular.ttf in Resources */,
 				203A6A152760BD6800817B71 /* Montserrat-ThinItalic.ttf in Resources */,
+				C4B6F03B291012DE0070E2BE /* SplashScreen.storyboard in Resources */,
 				203A6A192760BD6800817B71 /* Montserrat-Black.ttf in Resources */,
+				C4B6F03F291012DE0070E2BE /* Images.xcassets in Resources */,
 				203A6A122760BD6800817B71 /* Montserrat-LightItalic.ttf in Resources */,
+				C4380877292BD26A00FF5669 /* PassCode.stringsdict in Resources */,
 				203A6A1A2760BD6800817B71 /* Montserrat-ExtraLight.ttf in Resources */,
 				203A6A102760BD6800817B71 /* Montserrat-ExtraBoldItalic.ttf in Resources */,
-				398FCAFB2806F9C800635B71 /* GoogleService-Info.plist in Resources */,
+				C4B6F03A291012DE0070E2BE /* GoogleService-Info.plist in Resources */,
 				203A6A132760BD6800817B71 /* Montserrat-Medium.ttf in Resources */,
 				203A6A172760BD6800817B71 /* Montserrat-Bold.ttf in Resources */,
 			);
@@ -377,9 +849,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
+		00569AE961EA489F7FF8096D /* [CP-User] [RNFB] Crashlytics Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "[CP-User] [RNFB] Crashlytics Configuration";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\nif [[ ${PODS_ROOT} ]]; then\n  echo \"info: Exec FirebaseCrashlytics Run from Pods\"\n  \"${PODS_ROOT}/FirebaseCrashlytics/run\"\nelse\n  echo \"info: Exec FirebaseCrashlytics Run from framework\"\n  \"${PROJECT_DIR}/FirebaseCrashlytics.framework/run\"\nfi\n";
+		};
+		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
 			files = (
 			);
 			inputPaths = (
@@ -387,11 +873,11 @@
 			name = "Bundle React Native code and images";
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
-		074B384CB1482924F1D432EC /* [CP] Check Pods Manifest.lock */ = {
+		027EACABF3131444CA1290DC /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -413,7 +899,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		371B8DF11DE26D18459724D6 /* [CP-User] [RNFB] Core Configuration */ = {
+		6DB02C2677103C9DDFB7799F /* [CP-User] [RNFB] Core Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -426,55 +912,7 @@
 			shellPath = /bin/sh;
 			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_JSON_ROOT=\"'react-native'\"\n_JSON_FILE_NAME='firebase.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"info:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"info:      '$1' already exists\"\n}\n\nfunction getFirebaseJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"info: -> RNFB build script started\"\necho \"info: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"info:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | /usr/bin/head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"info:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  _RN_ROOT_EXISTS=$(ruby -e \"require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\" || echo '')\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    _JSON_OUTPUT_BASE64=$(python -c 'import json,sys,base64;print(base64.b64encode(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"').read())['${_JSON_ROOT}'])))' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.app_data_collection_default_enabled\n  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_data_collection_default_enabled\")\n  if [[ $_APP_DATA_COLLECTION_ENABLED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseDataCollectionDefaultEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_DATA_COLLECTION_ENABLED\")\")\n  fi\n\n  # config.analytics_auto_collection_enabled\n  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_auto_collection_enabled\")\n  if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_COLLECTION\")\")\n  fi\n\n  # config.analytics_collection_deactivated\n  _ANALYTICS_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_collection_deactivated\")\n  if [[ $_ANALYTICS_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_DEACTIVATED\")\")\n  fi\n\n  # config.analytics_idfv_collection_enabled\n  _ANALYTICS_IDFV_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_idfv_collection_enabled\")\n  if [[ $_ANALYTICS_IDFV_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_IDFV_COLLECTION\")\")\n  fi\n\n  # config.analytics_default_allow_ad_personalization_signals\n  _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_personalization_signals\")\n  if [[ $_ANALYTICS_PERSONALIZATION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_PERSONALIZATION\")\")\n  fi\n\n  # config.google_analytics_automatic_screen_reporting_enabled\n  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_automatic_screen_reporting_enabled\")\n  if [[ $_ANALYTICS_AUTO_SCREEN_REPORTING ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAutomaticScreenReportingEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_SCREEN_REPORTING\")\")\n  fi\n\n  # config.perf_auto_collection_enabled\n  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_auto_collection_enabled\")\n  if [[ $_PERF_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_enabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_AUTO_COLLECTION\")\")\n  fi\n\n  # config.perf_collection_deactivated\n  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_collection_deactivated\")\n  if [[ $_PERF_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_deactivated\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_DEACTIVATED\")\")\n  fi\n\n  # config.messaging_auto_init_enabled\n  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"messaging_auto_init_enabled\")\n  if [[ $_MESSAGING_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseMessagingAutoInitEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_MESSAGING_AUTO_INIT\")\")\n  fi\n\n  # config.in_app_messaging_auto_colllection_enabled\n  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"in_app_messaging_auto_collection_enabled\")\n  if [[ $_FIAM_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseInAppMessagingAutomaticDataCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_FIAM_AUTO_INIT\")\")\n  fi\n\n  # config.app_check_token_auto_refresh\n  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_check_token_auto_refresh\")\n  if [[ $_APP_CHECK_TOKEN_AUTO_REFRESH ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAppCheckTokenAutoRefreshEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_CHECK_TOKEN_AUTO_REFRESH\")\")\n  fi\n\n  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful\n  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"crashlytics_disable_auto_disabler\")\n  if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == \"true\" ]]; then\n    echo \"Disabled Crashlytics auto disabler.\" # do nothing\n  else\n    _PLIST_ENTRY_KEYS+=(\"FirebaseCrashlyticsCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"NO\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase.\"\nfi;\n\necho \"info: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally\n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"info: <- RNFB build script finished\"\n";
 		};
-		510151F1A46244BEFCEBA860 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ton_keeper/Pods-ton_keeper-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ton_keeper/Pods-ton_keeper-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ton_keeper/Pods-ton_keeper-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		516AA6D53215FCBF9E7A191E /* [CP-User] [RNFB] Crashlytics Configuration */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
-				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
-			);
-			name = "[CP-User] [RNFB] Crashlytics Configuration";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\nif [[ ${PODS_ROOT} ]]; then\n  echo \"info: Exec FirebaseCrashlytics Run from Pods\"\n  \"${PODS_ROOT}/FirebaseCrashlytics/run\"\nelse\n  echo \"info: Exec FirebaseCrashlytics Run from framework\"\n  \"${PROJECT_DIR}/FirebaseCrashlytics.framework/run\"\nfi\n";
-		};
-		96F4D16516234AD713A35B6E /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ton_keeper-ton_keeperTests/Pods-ton_keeper-ton_keeperTests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ton_keeper-ton_keeperTests/Pods-ton_keeper-ton_keeperTests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ton_keeper-ton_keeperTests/Pods-ton_keeper-ton_keeperTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		CF3B00C7CCC7B068D0D1106B /* [CP] Check Pods Manifest.lock */ = {
+		8C4EC056529EFADE0053216C /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -496,9 +934,64 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		FD10A7F022414F080027D42C /* Start Packager */ = {
+		B420B642277A60EBC44F3322 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ton_keeper/Pods-ton_keeper-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ton_keeper/Pods-ton_keeper-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ton_keeper/Pods-ton_keeper-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C4F5F2092927C96100D08D79 /* R.swift codegen */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$TEMP_DIR/rswift-lastrun",
+			);
+			name = "R.swift codegen";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				$SRCROOT/$PROJECT_NAME/Resources/Generated/R.generated.swift,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$PODS_ROOT/R.swift/rswift\" generate \"$SRCROOT/$PROJECT_NAME/Resources/Generated/R.generated.swift\"\n";
+		};
+		F95E499949E50FBC1ECC1307 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ton_keeper-ton_keeperTests/Pods-ton_keeper-ton_keeperTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ton_keeper-ton_keeperTests/Pods-ton_keeper-ton_keeperTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ton_keeper-ton_keeperTests/Pods-ton_keeper-ton_keeperTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FD10A7F022414F080027D42C /* Start Packager */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
@@ -531,12 +1024,58 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
-				30D7C1932775659F00BCF819 /* File.swift in Sources */,
-				20B32A5126E3B460001A78F9 /* TonPbkdf2.m in Sources */,
-				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				C4A5635D2918CFDB001DDA44 /* UIColor+Hex.swift in Sources */,
+				C44A3F98291D3C2700C1D830 /* UIWindow+Transition.swift in Sources */,
+				C4380874292BCFE600FF5669 /* R.generated.swift in Sources */,
+				C4B6F030291012DE0070E2BE /* KeychainServiceError.swift in Sources */,
+				C4A563BE2919522D001DDA44 /* PassCodeCircleView.swift in Sources */,
 				1C610F328FB84275E2FB6D32 /* ExpoModulesProvider.swift in Sources */,
-				49B45BE827CA429494A060B3 /* noop-file.swift in Sources */,
+				C4A563B02918D60E001DDA44 /* UIButton+BackgroundColorForState.swift in Sources */,
+				C44A3F93291D182F00C1D830 /* BiometryService.swift in Sources */,
+				C4A563C3291A916E001DDA44 /* Utils.swift in Sources */,
+				C4A563C5291A9290001DDA44 /* Animations.swift in Sources */,
+				C438087C292BD3E200FF5669 /* CaseIterable+Next.swift in Sources */,
+				C4A563AB2918D531001DDA44 /* BaseView.swift in Sources */,
+				C4B6F036291012DE0070E2BE /* WalletStore.m in Sources */,
+				C4A563B329191E14001DDA44 /* ServiceLocator.swift in Sources */,
+				C4A563AE2918D546001DDA44 /* BaseViewController.swift in Sources */,
+				C4A5635B2918CFC8001DDA44 /* UIStackView+Init.swift in Sources */,
+				C44A3F96291D1DCE00C1D830 /* UIService.swift in Sources */,
+				C4B6F033291012DE0070E2BE /* AccessControl.swift in Sources */,
+				C4B6F032291012DE0070E2BE /* Accessibility.swift in Sources */,
+				C4A563A22918D49C001DDA44 /* Theme+current.swift in Sources */,
+				C4D3ADBE292E6980001723FC /* AppError.swift in Sources */,
+				C4B6F043291012DE0070E2BE /* JSONAble.swift in Sources */,
+				C4A563A42918D49C001DDA44 /* ThemeStyled.swift in Sources */,
+				C4A563B529191E22001DDA44 /* Autowired.swift in Sources */,
+				C4D3ADBC292E66D5001723FC /* ActionButton.swift in Sources */,
+				C4B6F041291012DE0070E2BE /* Constants.swift in Sources */,
+				C4B6F034291012DE0070E2BE /* TonPbkdf2.m in Sources */,
+				C47CF0E229309117004AB5EE /* PassCodeModule.swift in Sources */,
+				C4A563662918D11C001DDA44 /* PassCodeViewController.swift in Sources */,
+				C4A563602918CFF9001DDA44 /* CGSize+Init.swift in Sources */,
+				C4A563992918D30B001DDA44 /* PassCodeButton.swift in Sources */,
+				C4B6F040291012DE0070E2BE /* AppDelegate.m in Sources */,
+				C42DA694291E696C000D9601 /* AuthService.swift in Sources */,
+				C4A563A82918D4CC001DDA44 /* BaseButton.swift in Sources */,
+				C4B6F03E291012DE0070E2BE /* noop-file.swift in Sources */,
+				C4B6F039291012DE0070E2BE /* WalletStore.swift in Sources */,
+				C4B6F031291012DE0070E2BE /* KeychainService.swift in Sources */,
+				C4B6F044291012DE0070E2BE /* UserDefaultWrapper.swift in Sources */,
+				C438087F292CDBA200FF5669 /* PassCodeBlockTime.swift in Sources */,
+				C4A563672918D11C001DDA44 /* PassCodeView.swift in Sources */,
+				C4A563A32918D49C001DDA44 /* ColorTheme.swift in Sources */,
+				C47CF0DF293087F5004AB5EE /* PassCodePresenter.swift in Sources */,
+				C4B6F038291012DE0070E2BE /* WalletInfo.swift in Sources */,
+				C4B6F03C291012DE0070E2BE /* File.swift in Sources */,
+				C4A563A52918D49C001DDA44 /* Theme.swift in Sources */,
+				C4B6F03D291012DE0070E2BE /* main.m in Sources */,
+				C4D3ADC1292E6B6D001723FC /* RoutingErrorCode.swift in Sources */,
+				C4B6F045291012DE0070E2BE /* UserDefaultsService.swift in Sources */,
+				C4B6F042291012DE0070E2BE /* UserDefaults+SaveStruct.swift in Sources */,
+				C4B6F037291012DE0070E2BE /* WalletError.swift in Sources */,
+				C4A563BC291951FA001DDA44 /* SpacerView.swift in Sources */,
+				C4A5639B2918D372001DDA44 /* Palette.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -550,10 +1089,31 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		C4380879292BD26A00FF5669 /* PassCode.stringsdict */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C4380878292BD26A00FF5669 /* en */,
+				C438087A292BD26C00FF5669 /* ru */,
+			);
+			name = PassCode.stringsdict;
+			sourceTree = "<group>";
+		};
+		C4F5F2072927C85B00D08D79 /* PassCode.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C4F5F2062927C85B00D08D79 /* en */,
+				C4F5F2082927C88200D08D79 /* ru */,
+			);
+			name = PassCode.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 268006C0A11AFDAE53D6840B /* Pods-ton_keeper-ton_keeperTests.debug.xcconfig */;
+			baseConfigurationReference = 66B33E2FC88F6DF6B498F962 /* Pods-ton_keeper-ton_keeperTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -572,7 +1132,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ton_keeper.app/ton_keeper";
@@ -581,7 +1141,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1C5DFB5B4A69FADFB1B43356 /* Pods-ton_keeper-ton_keeperTests.release.xcconfig */;
+			baseConfigurationReference = 13F2E6614DA413C5933FA7B3 /* Pods-ton_keeper-ton_keeperTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -597,7 +1157,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ton_keeper.app/ton_keeper";
@@ -606,27 +1166,28 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F67453F5EAFE9A73B53D20C6 /* Pods-ton_keeper.debug.xcconfig */;
+			baseConfigurationReference = C6251834116392B3FC02BA37 /* Pods-ton_keeper.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ton_keeper/ton_keeper.entitlements;
+				DEFINES_MODULE = YES;
 				CURRENT_PROJECT_VERSION = 252;
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				ENABLE_BITCODE = NO;
-				INFOPLIST_FILE = ton_keeper/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				INFOPLIST_FILE = ton_keeper/SupportingFiles/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.8;
+				MARKETING_VERSION = 2.7.6;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jbig.tonkeeper;
 				PRODUCT_NAME = ton_keeper;
 				SWIFT_OBJC_BRIDGING_HEADER = "ton_keeper-Bridging-Header.h";
@@ -640,26 +1201,27 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C4B162C767DA61606A282BF2 /* Pods-ton_keeper.release.xcconfig */;
+			baseConfigurationReference = 90508C4783A2D53FE0CB11CF /* Pods-ton_keeper.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ton_keeper/ton_keeper.entitlements;
+				DEFINES_MODULE = YES;
 				CURRENT_PROJECT_VERSION = 252;
 				DEVELOPMENT_TEAM = CT523DK2KC;
-				INFOPLIST_FILE = ton_keeper/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				INFOPLIST_FILE = ton_keeper/SupportingFiles/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.8;
+				MARKETING_VERSION = 2.7.6;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jbig.tonkeeper;
 				PRODUCT_NAME = ton_keeper;
 				SWIFT_OBJC_BRIDGING_HEADER = "ton_keeper-Bridging-Header.h";

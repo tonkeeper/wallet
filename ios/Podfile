@@ -32,10 +32,23 @@ target 'ton_keeper' do
 
   permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
+  
+  # Utilities
+  pod 'R.swift', '~> 6.1.0'
+  pod 'TonMnemonicSwift', :git => 'git@github.com:tonkeeper/ton-mnemonic-swift.git', :branch => 'main'
 
   post_install do |installer|
     installer.pods_project.build_configurations.each do |config|
       config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+    end
+    
+    development_team = installer.aggregate_targets[0].user_project.targets[0].build_configurations[0].build_settings["DEVELOPMENT_TEAM"]
+    installer.generated_projects.each do |project|
+      project.targets.each do |target|
+          target.build_configurations.each do |config|
+              config.build_settings["DEVELOPMENT_TEAM"] = development_team
+           end
+      end
     end
   end
 
