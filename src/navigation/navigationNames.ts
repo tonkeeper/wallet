@@ -91,6 +91,7 @@ export enum DevComponents {
   DevText = 'DevText',
   DevToast = 'DevToast',
   DevSignRawExamples = 'DevSignRawExamples',
+  DevWalletStore = 'DevWalletStore',
 }
 
 type ScreenNames =
