@@ -139,12 +139,7 @@ def reactNativeArchitectures() {
 
 android {
     ndkVersion rootProject.ext.ndkVersion
-
     compileSdkVersion rootProject.ext.compileSdkVersion
-
-    dexOptions {
-        javaMaxHeapSize "4g"
-    }
 
     defaultConfig {
         applicationId 'com.ton_keeper'
@@ -331,7 +326,7 @@ dependencies {
         }
     }
 
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
     }
@@ -350,7 +345,7 @@ dependencies {
         implementation jscFlavor
     }
 
-    // For TonPbkdf2; TODO: separate TonPbkdf2 to module
+    // For TonPbkdf2; TODO: remove
     implementation 'com.madgag.spongycastle:core:1.58.0.0'
     implementation 'com.madgag.spongycastle:prov:1.54.0.0'
     implementation 'com.madgag.spongycastle:pkix:1.54.0.0'
@@ -364,7 +359,8 @@ if (isNewArchitectureEnabled()) {
     configurations.all {
         resolutionStrategy.dependencySubstitution {
             substitute(module("com.facebook.react:react-native"))
-                    .using(project(":ReactAndroid")).because("On New Architecture we're building React Native from source")
+                    .using(project(":ReactAndroid"))
+                    .because("On New Architecture we're building React Native from source")
         }
     }
 }

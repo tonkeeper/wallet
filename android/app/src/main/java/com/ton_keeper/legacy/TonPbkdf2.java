@@ -1,4 +1,4 @@
-package com.ton_keeper;
+package com.ton_keeper.legacy;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -37,9 +37,9 @@ public class TonPbkdf2 extends ReactContextBaseJavaModule {
     public static byte[] hexToBytes(String hexString) {
         if (hexString.length() % 2 == 1) {
             throw new IllegalArgumentException(
-              "Invalid hexadecimal String supplied.");
+                    "Invalid hexadecimal String supplied.");
         }
-        
+
         byte[] bytes = new byte[hexString.length() / 2];
         for (int i = 0; i < hexString.length(); i += 2) {
             bytes[i / 2] = hexToByte(hexString.substring(i, i + 2));
