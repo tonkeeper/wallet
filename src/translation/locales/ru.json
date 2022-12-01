@@ -78,7 +78,7 @@
   "transaction_receive_date": "Получено %{date}",
   "transaction_subscription_date": "Оплата %{date}",
   "transaction_unsubscription_date": "%{date}",
-  "transaction_contract_deploy_date": "Создано %{date}",
+  "transaction_contract_deploy_date": "%{date}",
   "transaction_wallet_initialized_date": "%{date}",
   "transaction_bid_date": "Ставка %{date}",
   "transaction_bid_dns": "Имя",

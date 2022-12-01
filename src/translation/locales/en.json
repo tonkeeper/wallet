@@ -78,7 +78,7 @@
   "transaction_receive_date": "Received on %{date}",
   "transaction_subscription_date": "Charged on %{date}",
   "transaction_unsubscription_date": "%{date}",
-  "transaction_contract_deploy_date": "Created %{date}",
+  "transaction_contract_deploy_date": "%{date}",
   "transaction_wallet_initialized_date": "%{date}",
   "transaction_bid_date": "Bid %{date}",
   "transaction_bid_dns": "Name",
