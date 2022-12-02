@@ -1,4 +1,4 @@
-import { useTranslator, copyText } from '$hooks';
+import { useTranslator, useCopyText } from '$hooks';
 import { goBack } from '$navigation';
 import { Icon, PopupSelect, Text } from '$uikit';
 import { getDomainFromURL, maskifyAddress } from '$utils';
@@ -45,6 +45,8 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
   } = props;
 
   const t = useTranslator();
+
+  const copyText = useCopyText();
 
   const { top: topInset } = useSafeAreaInsets();
 
@@ -93,7 +95,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
           return disconnect();
       }
     },
-    [disconnect, onRefreshPress, url],
+    [copyText, disconnect, onRefreshPress, url],
   );
 
   return (

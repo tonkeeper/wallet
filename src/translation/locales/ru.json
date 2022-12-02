@@ -490,6 +490,7 @@
   "ton_login_connect_button": "Подключить кошелёк",
   "ton_login_back_to_button": "Вернуться в %{name}",
   "ton_login_success": "Готово",
+  "ton_login_notice": "Обязательно проверьте адрес сервиса перед подключением кошелька.",
 
   "nft_confirm_operation": "Подтвердить",
   "nft_show_details": "Подробнее",

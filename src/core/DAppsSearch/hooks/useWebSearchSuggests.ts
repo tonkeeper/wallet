@@ -6,32 +6,30 @@ const fetchGoogleSuggests = async (
   query: string,
   cancelTokenSource: CancelTokenSource,
 ) => {
-  try {
-    const url = `https://suggestqueries.google.com/complete/search?q=${encodeURIComponent(
-      query,
-    )}&client=firefox`;
+  const url = `https://suggestqueries.google.com/complete/search?q=${encodeURIComponent(
+    query,
+  )}&client=firefox`;
 
-    const response = await axios(url, { cancelToken: cancelTokenSource.token });
+  const response = await axios(url, { cancelToken: cancelTokenSource.token });
 
-    const body = response.data;
+  const body = response.data;
 
-    if (body && Array.isArray(body) && body.length > 1) {
-      let items = body[1] as string[];
+  if (body && Array.isArray(body) && body.length > 1) {
+    let items = body[1] as string[];
 
-      if (!items.includes(query)) {
-        items = [...items, query];
-      }
-
-      return items.slice(0, 4).map((title): IWebSearchSuggest => {
-        const q = !query.startsWith('=') && title.startsWith('= ') ? query : title;
-
-        return {
-          url: `https://www.google.com/search?q=${q}`,
-          title,
-        };
-      });
+    if (!items.includes(query)) {
+      items = [...items, query];
     }
-  } catch {}
+
+    return items.slice(0, 4).map((title): IWebSearchSuggest => {
+      const q = !query.startsWith('=') && title.startsWith('= ') ? query : title;
+
+      return {
+        url: `https://www.google.com/search?q=${q}`,
+        title,
+      };
+    });
+  }
 
   return [];
 };
@@ -58,9 +56,15 @@ export const useWebSearchSuggests = (query: string) => {
         return;
       }
 
-      const suggests = await fetchGoogleSuggests(q, cancelTokenSource);
+      try {
+        const suggests = await fetchGoogleSuggests(q, cancelTokenSource);
 
-      setResult(suggests);
+        setResult(suggests);
+      } catch (error) {
+        if (!axios.isCancel(error)) {
+          setResult([]);
+        }
+      }
     };
 
     getSuggests(query.trim());

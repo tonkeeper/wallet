@@ -484,6 +484,7 @@
   "ton_login_connect_button": "Connect wallet",
   "ton_login_back_to_button": "Back to %{name}",
   "ton_login_success": "Done",
+  "ton_login_notice": "Be sure to check the service address before connecting the wallet.",
 
   "nft_confirm_operation": "Сonfirm",
   "nft_show_details": "Show details",
