@@ -99,7 +99,7 @@ export type TAction = (
   type: ActionType;
 };
 
-export type EventModel = AccountEvent;
+export type EventModel = any; // TODO
 
 export interface TransactionModel {
   internalId: string;

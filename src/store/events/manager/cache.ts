@@ -13,10 +13,15 @@ export class Cache {
 
   constructor(walletName: string) {
     this.walletName = walletName;
+    Cache.migrate(walletName);
+  }
+
+  static async migrate(walletName: string) {
+    await AsyncStorage.removeItem(`${walletName}_events`);
   }
 
   static async clearAll(walletName: string) {
-    await AsyncStorage.removeItem(`${walletName}_events`);
+    await AsyncStorage.removeItem(`${walletName}_events_v2`);
   }
 
   async get() {

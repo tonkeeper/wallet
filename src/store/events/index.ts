@@ -29,7 +29,7 @@ export const { actions, reducer } = createSlice({
     setEvents(state, action: SetEventsAction) {
       const infoMap: EventsMap = action.payload.isReplace ? {} : { ...state.eventsInfo };
       for (let item of action.payload.events) {
-        infoMap[item.eventId] = item;
+        infoMap[item.event_id] = item;
       }
 
       state.eventsInfo = {

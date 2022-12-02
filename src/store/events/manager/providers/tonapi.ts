@@ -3,6 +3,7 @@ import { BaseProvider } from '$store/events/manager/providers/base';
 import { getServerConfig } from '$shared/constants';
 import { EventModel } from '$store/models';
 import { EventApi, Configuration } from 'tonapi-sdk-js';
+import { Tonapi } from '$libs/Tonapi';
 
 export class TonapiProvider extends BaseProvider {
   public readonly name = 'TonapiProvider';
@@ -33,7 +34,7 @@ export class TonapiProvider extends BaseProvider {
     if (this.nextFrom) {
       params.beforeLt = this.nextFrom;
     }
-    const resp: any = await this.api.accountEvents(params);
+    const resp: any = await Tonapi.getAccountEvents(params);
 
     let events: EventModel[] = [];
     if (resp?.events) {

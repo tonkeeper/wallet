@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ActionType, EventModel } from '$store/models';
+import { EventModel } from '$store/models';
 import { ActionItemBaseProps } from '$shared/components/ActionItem/ActionItemBase/ActionItemBase.interface';
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
@@ -16,11 +16,11 @@ import { formatCryptoCurrency } from '$utils/currency';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { TransactionItemNFT } from '$shared/components/ActionItem/TransactionItemNFT/TransactionItemNFT';
 import { subscriptionsSelector } from '$store/subscriptions';
-import { Action } from 'tonapi-sdk-js';
 import { dnsToUsername } from '$utils/dnsToUsername';
+import { ActionTypeEnum } from 'tonapi-sdk-js';
 
 export function usePrepareAction(
-  rawAction: Action,
+  rawAction: any, // TODO
   event: EventModel,
 ): ActionItemBaseProps {
   const { address } = useSelector(walletSelector);
@@ -28,9 +28,9 @@ export function usePrepareAction(
   const { subscriptionsInfo } = useSelector(subscriptionsSelector);
 
   return useMemo(() => {
-    const action = rawAction[ActionType[rawAction.type]];
+    const action = rawAction[rawAction.type];
 
-    if (ActionType.Unknown === ActionType[rawAction.type] || !action) {
+    if (ActionTypeEnum.Unknown === rawAction.type) {
       return {
         type: 'Unknown',
         label: 'Unknown',
@@ -41,6 +41,27 @@ export function usePrepareAction(
         infoRows: [],
         comment: '',
       };
+    }
+
+    if (!Object.values(ActionTypeEnum).includes(rawAction.type)) {
+      if (rawAction.simple_preview) {
+        return {
+          type: 'Unknown',
+          typeLabel: rawAction.simple_preview.name,
+          infoRows: [{ label: rawAction.simple_preview.short_description }],
+        };
+      } else {
+        return {
+          type: 'Unknown',
+          label: 'Unknown',
+          typeLabel: 'Unknown',
+          amount: 0,
+          isInProgress: false,
+          isSpam: false,
+          infoRows: [],
+          comment: '',
+        };
+      }
     }
 
     const isReceive =
@@ -56,7 +77,7 @@ export function usePrepareAction(
     let typeLabel;
     let currency;
     let bottomContent;
-    if (ActionType.TonTransfer === ActionType[rawAction.type]) {
+    if (ActionTypeEnum.TonTransfer === rawAction.type) {
       const amount = TonWeb.utils.fromNano(Math.abs(action.amount).toString());
       label = prefix + ' ' + truncateDecimal(amount.toString(), 2);
       type = isReceive ? 'receive' : 'sent';
@@ -68,7 +89,7 @@ export function usePrepareAction(
       ).trim();
     }
 
-    if (ActionType.NftItemTransfer === ActionType[rawAction.type]) {
+    if (ActionTypeEnum.NftItemTransfer === rawAction.type) {
       label = 'NFT';
       type = isReceive ? 'receive' : 'sent';
       typeLabel = t(`transaction_type_${type}`);
@@ -80,7 +101,7 @@ export function usePrepareAction(
       );
     }
 
-    if (ActionType.JettonTransfer === ActionType[rawAction.type]) {
+    if (ActionTypeEnum.JettonTransfer === rawAction.type) {
       const amount = fromNano(action.amount, action.jetton?.decimal || 9);
       label = prefix + ' ' + truncateDecimal(amount.toString(), 2);
       type = isReceive ? 'receive' : 'sent';
@@ -92,10 +113,8 @@ export function usePrepareAction(
       ).trim();
     }
 
-    if (
-      [ActionType.Subscribe, ActionType.UnSubscribe].includes(ActionType[rawAction.type])
-    ) {
-      const isSubscription = ActionType.Subscribe === ActionType[rawAction.type];
+    if ([ActionTypeEnum.Subscribe, ActionTypeEnum.UnSubscribe].includes(rawAction.type)) {
+      const isSubscription = ActionTypeEnum.Subscribe === rawAction.type;
       const isBeneficiary = compareAddresses(action.beneficiary.address, address.ton);
       const amount = fromNano(action.amount, Decimals[CryptoCurrencies.Ton] || 9);
       if (isBeneficiary) {
@@ -121,7 +140,7 @@ export function usePrepareAction(
         : '';
     }
 
-    if (ActionType.AuctionBid === ActionType[rawAction.type] && action.auctionType === 'DNS.tg') {
+    if (ActionTypeEnum.AuctionBid === rawAction.type && action.auctionType === 'DNS.tg') {
       const amount = TonWeb.utils.fromNano(Math.abs(action.amount.value).toString());
       label = prefix + ' ' + truncateDecimal(amount.toString(), 2);
       typeLabel = t('transaction_type_bid');
@@ -130,10 +149,10 @@ export function usePrepareAction(
         '',
         CryptoCurrencies.Ton,
         Decimals[CryptoCurrencies.Ton],
-      ).trim()
+      ).trim();
     }
 
-    if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
+    if (ActionTypeEnum.ContractDeploy === rawAction.type) {
       label = '-';
       if (compareAddresses(action.address, address.ton)) {
         typeLabel = t('transaction_type_wallet_initialized');
@@ -152,18 +171,16 @@ export function usePrepareAction(
       labelColor,
       bottomContent,
       infoRows: [],
-      comment: (!event.isScam && action.comment) || '',
-      isInProgress: event.inProgress,
-      isSpam: event.isScam,
+      comment: (!event.is_scam && action.comment) || '',
+      isInProgress: event.in_progress,
+      isSpam: event.is_scam,
     };
 
     const transactionDate = new Date(event.timestamp * 1000);
     let formattedDate = format(transactionDate, 'HH:mm');
 
     const accountToDisplay = isReceive ? action.sender : action.recipient;
-    if (
-      [ActionType.Subscribe, ActionType.UnSubscribe].includes(ActionType[rawAction.type])
-    ) {
+    if ([ActionTypeEnum.Subscribe, ActionTypeEnum.UnSubscribe].includes(rawAction.type)) {
       const info = subscriptionsInfo[action.subscription] || {};
       actionProps.infoRows.push({
         label: info.merchantName,
@@ -181,14 +198,17 @@ export function usePrepareAction(
           ),
         value: formattedDate,
       });
-    } else if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
+    } else if (ActionTypeEnum.ContractDeploy === rawAction.type) {
       actionProps.infoRows.push({
         label: maskifyTonAddress(
           new TonWeb.Address(action.address).toString(true, true, true),
         ),
         value: formattedDate,
       });
-    } else if (ActionType.AuctionBid === ActionType[rawAction.type] && action.auctionType === 'DNS.tg') {
+    } else if (
+      ActionTypeEnum.AuctionBid === rawAction.type &&
+      action.auctionType === 'DNS.tg'
+    ) {
       actionProps.infoRows.push({
         label: dnsToUsername(action.nft.dns),
         value: formattedDate,
@@ -199,8 +219,8 @@ export function usePrepareAction(
   }, [
     rawAction,
     address.ton,
-    event.inProgress,
-    event.isScam,
+    event.is_scam,
+    event.in_progress,
     event.timestamp,
     t,
     subscriptionsInfo,

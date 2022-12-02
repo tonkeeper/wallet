@@ -1,9 +1,15 @@
 import React, { useMemo } from 'react';
-import { ActionType, EventModel } from '$store/models';
+import { EventModel } from '$store/models';
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
-import { compareAddresses, format, fromNano, maskifyAddress, maskifyTonAddress } from '$utils';
+import {
+  compareAddresses,
+  format,
+  fromNano,
+  maskifyAddress,
+  maskifyTonAddress,
+} from '$utils';
 import BigNumber from 'bignumber.js';
 import { useTranslator } from '$hooks/useTranslator';
 import { formatCryptoCurrency } from '$utils/currency';
@@ -15,10 +21,10 @@ import {
 import { NFTHead } from '$core/ModalContainer/Action/ActionBase/NFTHead/NFTHead';
 import { differenceInCalendarYears } from 'date-fns';
 import { subscriptionsSelector } from '$store/subscriptions';
-import { Action } from 'tonapi-sdk-js';
+import { ActionTypeEnum } from 'tonapi-sdk-js';
 
 export function usePrepareDetailedAction(
-  rawAction: Action,
+  rawAction: any, // TODO
   event: EventModel,
 ): ActionBaseProps {
   const { address } = useSelector(walletSelector);
@@ -26,7 +32,7 @@ export function usePrepareDetailedAction(
   const { subscriptionsInfo } = useSelector(subscriptionsSelector);
 
   return useMemo(() => {
-    const action = rawAction[ActionType[rawAction.type]];
+    const action = rawAction[rawAction.type];
     const isReceive =
       action.recipient &&
       new TonWeb.Address(action.recipient.address).toString(false, false, false) ===
@@ -45,7 +51,7 @@ export function usePrepareDetailedAction(
     let sentLabelTranslationString = isReceive
       ? 'transaction_receive_date'
       : 'transaction_sent_date';
-    if (ActionType.TonTransfer === ActionType[rawAction.type]) {
+    if (ActionTypeEnum.TonTransfer === rawAction.type) {
       if (!isReceive) {
         shouldShowSendToRecipientButton = true;
         recipientAddress = new TonWeb.Address(action.recipient?.address).toString(
@@ -67,14 +73,14 @@ export function usePrepareDetailedAction(
         ).trim();
     }
 
-    if (ActionType.NftItemTransfer === ActionType[rawAction.type]) {
+    if (ActionTypeEnum.NftItemTransfer === rawAction.type) {
       const NftAddress = new TonWeb.Address(action.nft).toString(true, true, true);
       head = (
         <NFTHead keyPair={{ currency: CryptoCurrencies.Ton, address: NftAddress }} />
       );
     }
 
-    if (ActionType.JettonTransfer === ActionType[rawAction.type]) {
+    if (ActionTypeEnum.JettonTransfer === rawAction.type) {
       if (!isReceive) {
         shouldShowSendToRecipientButton = true;
         recipientAddress = new TonWeb.Address(action.recipient?.address).toString(
@@ -92,7 +98,7 @@ export function usePrepareDetailedAction(
       label = prefix + ' ' + amount.toString() + ' ' + action.jetton?.symbol;
     }
 
-    if (ActionType.Subscribe === ActionType[rawAction.type]) {
+    if (ActionTypeEnum.Subscribe === rawAction.type) {
       const amount = TonWeb.utils.fromNano(new BigNumber(action.amount).abs().toString());
       if (compareAddresses(action.beneficiary.address, address.ton)) {
         sentLabelTranslationString = 'transaction_receive_date';
@@ -103,12 +109,12 @@ export function usePrepareDetailedAction(
       }
     }
 
-    if (ActionType.UnSubscribe === ActionType[rawAction.type]) {
+    if (ActionTypeEnum.UnSubscribe === rawAction.type) {
       sentLabelTranslationString = 'transaction_unsubscription_date';
       label = t('transaction_unsubscription');
     }
 
-    if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
+    if (ActionTypeEnum.ContractDeploy === rawAction.type) {
       if (compareAddresses(action.address, address.ton)) {
         sentLabelTranslationString = 'transaction_contract_deploy_date';
         label = t('transaction_type_wallet_initialized');
@@ -118,9 +124,11 @@ export function usePrepareDetailedAction(
       }
     }
 
-    if (ActionType.AuctionBid === ActionType[rawAction.type]) {
+    if (ActionTypeEnum.AuctionBid === rawAction.type) {
       sentLabelTranslationString = 'transaction_bid_date';
-      const amount = TonWeb.utils.fromNano(new BigNumber(action.amount.value).abs().toString());
+      const amount = TonWeb.utils.fromNano(
+        new BigNumber(action.amount.value).abs().toString(),
+      );
       label = '-' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
 
       infoRows.push({
@@ -172,11 +180,11 @@ export function usePrepareDetailedAction(
       });
     }
 
-    if (!event.inProgress) {
+    if (!event.in_progress) {
       infoRows.push({
         label: t('transaction_hash'),
-        value: event.eventId,
-        preparedValue: maskifyAddress(event.eventId, 8),
+        value: event.event_id,
+        preparedValue: maskifyAddress(event.event_id, 8),
       });
     }
 
@@ -211,8 +219,8 @@ export function usePrepareDetailedAction(
             : 'd MMM yyyy, HH:mm',
         ),
       }),
-      isInProgress: event.inProgress,
-      isSpam: event.isScam,
+      isInProgress: event.in_progress,
+      isSpam: event.is_scam,
       comment: action.comment,
       jettonAddress,
       recipientAddress,

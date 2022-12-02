@@ -89,8 +89,8 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
 
       const eventsCopy = [...Object.values(eventsInfo)];
       eventsCopy.sort((a: EventModel, b: EventModel) => {
-        const aEvent = eventsInfo[a.eventId];
-        const bEvent = eventsInfo[b.eventId];
+        const aEvent = eventsInfo[a.event_id];
+        const bEvent = eventsInfo[b.event_id];
 
         return aEvent.timestamp > bEvent.timestamp ? -1 : 1;
       });
@@ -98,7 +98,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
       let lastDate = '';
       let chunk: any = [];
       for (let event of eventsCopy) {
-        const ev = eventsInfo[event.eventId];
+        const ev = eventsInfo[event.event_id];
         const ts = ev.timestamp * 1000;
         const now = new Date();
 
@@ -113,7 +113,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
         }
         if (date !== lastDate) {
           if (chunk.length > 0) {
-            const eventTime = eventsInfo[chunk[0].eventId].timestamp;
+            const eventTime = eventsInfo[chunk[0].event_id].timestamp;
             result.push({
               title: formatDate(new Date(eventTime * 1000)),
               data: chunk,
@@ -128,7 +128,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
       }
 
       if (chunk.length > 0) {
-        const txTime = eventsInfo[chunk[0].eventId].timestamp;
+        const txTime = eventsInfo[chunk[0].event_id].timestamp;
         result.push({
           title: formatDate(new Date(txTime * 1000)),
           data: chunk,
@@ -146,15 +146,15 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
       const borderStart = index === 0;
       const borderEnd = section.data.length - 1 === index;
       if (typeof item === 'object') {
-        if ('eventId' in item) {
+        if ('event_id' in item) {
           return (
             <S.EventActionsGroup withSpacing={!borderEnd}>
               {item.actions.map((action, idx, actions) => (
-                <View key={`${item.eventId}_${idx}`}>
+                <View key={`${item.event_id}_${idx}`}>
                   <ActionItem
                     borderStart={idx === 0}
                     borderEnd={actions.length === idx + 1}
-                    eventKey={item.eventId}
+                    eventKey={item.event_id}
                     action={action}
                   />
                   {actions.length !== idx + 1 ? <Separator /> : null}
@@ -271,8 +271,8 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
         refreshControl={refreshControl}
         sections={data}
         keyExtractor={(item) => {
-          if (typeof item === 'object' && 'eventId' in item) {
-            return item.eventId;
+          if (typeof item === 'object' && 'event_id' in item) {
+            return item.event_id;
           } else if (typeof item === 'object' && item?.data?.jettonAddress) {
             return `jetton_${item.data.jettonAddress}`;
           } else {

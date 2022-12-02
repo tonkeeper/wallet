@@ -22,7 +22,7 @@ interface Props {
 }
 
 export const SignRawAction = React.memo<Props>((props) => {
-  const { action, totalFee, params, countActions } = props;
+  const { action, totalFee, countActions } = props;
 
   if (action.type === ActionTypeEnum.AuctionBid) {
     const data = action[ActionTypeEnum.AuctionBid];
@@ -53,6 +53,15 @@ export const SignRawAction = React.memo<Props>((props) => {
         action={data}
         skipHeader={countActions === 1}
         totalFee={totalFee}
+      />
+    );
+  }
+
+  if (!Object.values(ActionTypeEnum).includes(action.type)) {
+    return (
+      <SimplePreview
+        simple_preview={action.simple_preview}
+        skipHeader={countActions === 1}
       />
     );
   }
@@ -381,6 +390,31 @@ const UnknownAction = React.memo<UnknownActionProps>(({ action, skipHeader }) =>
               <S.InfoItemValueText>{address}</S.InfoItemValueText>
             </S.InfoItem>
           </Highlight>
+        </S.Info>
+      </S.Container>
+    </>
+  );
+});
+
+interface SimplePreviewProps {
+  skipHeader?: boolean;
+  simple_preview: {
+    full_description: string;
+    name: string;
+    short_description: string;
+  };
+}
+
+const SimplePreview = React.memo<SimplePreviewProps>(({ simple_preview, skipHeader }) => {
+  return (
+    <>
+      {!skipHeader && <ListHeader title={simple_preview.name} />}
+      <S.Container>
+        <S.Info>
+          <S.InfoItem>
+            <S.InfoItemLabel>{t('txActions.signRaw.description')}</S.InfoItemLabel>
+            <S.InfoItemValueText>{simple_preview.short_description}</S.InfoItemValueText>
+          </S.InfoItem>
         </S.Info>
       </S.Container>
     </>

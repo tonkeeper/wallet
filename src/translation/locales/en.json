@@ -518,6 +518,7 @@
       "recipient": "Recipient",
       "comment": "Comment",
       "warning_title": "Warning",
+      "description": "Description",
       "warning_caption": "Tonkeeper cannot fully verify the result of this transaction. Please make sure you trust the recipient.",
       "types": {
         "unknownTransaction": "Unknown transaction",
