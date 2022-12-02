@@ -1,3 +1,4 @@
+import { getServerConfig } from '$shared/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import FastImage from 'react-native-fast-image';
@@ -8,6 +9,7 @@ import { IAppsListStore } from './types';
 const initialState: Omit<IAppsListStore, 'actions'> = {
   fetching: true,
   appsList: [],
+  moreEnabled: false,
 };
 
 export const useAppsListStore = create(
@@ -19,10 +21,10 @@ export const useAppsListStore = create(
           set({ fetching: true });
           try {
             const response = await axios.get(
-              'https://nextjs-test-brown-eta.vercel.app/api/apps',
+              `${getServerConfig('tonkeeperEndpoint')}/apps/popular`,
             );
 
-            const apps = response.data.apps;
+            const { apps, moreEnabled } = response.data.data;
 
             FastImage.preload(
               apps.map((app) => ({
@@ -30,7 +32,8 @@ export const useAppsListStore = create(
               })),
             );
 
-            set({ appsList: response.data.apps });
+            set({ appsList: apps, moreEnabled });
+          } catch {
           } finally {
             set({ fetching: false });
           }

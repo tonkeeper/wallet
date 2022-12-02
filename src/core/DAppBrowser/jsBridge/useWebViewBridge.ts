@@ -5,7 +5,7 @@ import {
   WebViewBridgeMessage,
   WebViewBridgeMessageType,
 } from './types';
-import { objectToInjection } from './utils';
+import { getInjectableJSMessage, objectToInjection } from './utils';
 
 export const useWebViewBridge = <
   BridgeObject extends object = {},
@@ -20,6 +20,10 @@ export const useWebViewBridge = <
     [bridgeObj, timeout],
   );
 
+  const postMessage = useCallback((message: any) => {
+    ref.current?.injectJavaScript(getInjectableJSMessage(JSON.stringify(message)));
+  }, []);
+
   const onMessage = useCallback(
     async (event: WebViewMessageEvent) => {
       const message = JSON.parse(event.nativeEvent.data) as WebViewBridgeMessage;
@@ -28,34 +32,31 @@ export const useWebViewBridge = <
         try {
           const result = await bridgeObj[message.name](...message.args);
 
-          ref.current?.postMessage(
-            JSON.stringify({
-              type: WebViewBridgeMessageType.functionResponse,
-              invocationId: message.invocationId,
-              status: 'fulfilled',
-              data: result,
-            }),
-          );
+          postMessage({
+            type: WebViewBridgeMessageType.functionResponse,
+            invocationId: message.invocationId,
+            status: 'fulfilled',
+            data: result,
+          });
         } catch (e) {
-          ref.current?.postMessage(
-            JSON.stringify({
-              type: WebViewBridgeMessageType.functionResponse,
-              invocationId: message.invocationId,
-              status: 'rejected',
-              data: (e as any)?.message,
-            }),
-          );
+          postMessage({
+            type: WebViewBridgeMessageType.functionResponse,
+            invocationId: message.invocationId,
+            status: 'rejected',
+            data: (e as any)?.message,
+          });
         }
       }
     },
-    [bridgeObj],
+    [bridgeObj, postMessage],
   );
 
-  const sendEvent = useCallback((event: any) => {
-    ref.current?.postMessage(
-      JSON.stringify({ type: WebViewBridgeMessageType.event, event }),
-    );
-  }, []);
+  const sendEvent = useCallback(
+    (event: any) => {
+      postMessage({ type: WebViewBridgeMessageType.event, event });
+    },
+    [postMessage],
+  );
 
   return [ref, injectedJavaScriptBeforeContentLoaded, onMessage, sendEvent];
 };

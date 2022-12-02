@@ -36,6 +36,12 @@ class TonConnectRemoteBridgeService {
 
   private activeRequests: { [from: string]: AppRequest<RpcMethod> } = {};
 
+  private origin: DeeplinkOrigin | null = null;
+
+  public setOrigin(origin: DeeplinkOrigin) {
+    this.origin = origin;
+  }
+
   async open(connections: IConnectedAppConnection[]) {
     this.close();
 
@@ -181,22 +187,22 @@ class TonConnectRemoteBridgeService {
 
       await this.send(response, sessionCrypto, from);
 
-      this.redirect();
+      this.redirectIfNeeded();
     } catch (e) {
       console.log('handleMessage error');
       console.error(e);
     }
   }
 
-  private redirect(origin?: DeeplinkOrigin) {
-    if (origin === DeeplinkOrigin.QR_CODE) {
-      return;
+  private redirectIfNeeded() {
+    if (this.origin === DeeplinkOrigin.DEEPLINK) {
+      Minimizer.goBack();
     }
 
-    Minimizer.goBack();
+    this.origin = null;
   }
 
-  async handleConnectDeeplink(query: IConnectQrQuery, origin: DeeplinkOrigin) {
+  async handleConnectDeeplink(query: IConnectQrQuery) {
     try {
       const protocolVersion = Number(query.v);
       const request = Base64.decode(query.r, true).toObject() as ConnectRequest;
@@ -217,7 +223,7 @@ class TonConnectRemoteBridgeService {
 
       await this.send(response, sessionCrypto, clientSessionId);
 
-      this.redirect(origin);
+      this.redirectIfNeeded();
     } catch {
       console.log('handleConnectDeeplink error');
     }

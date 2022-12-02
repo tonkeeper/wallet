@@ -33,15 +33,15 @@ public class ReactNativeFlipper {
       client.addPlugin(new DatabasesFlipperPlugin(context));
       client.addPlugin(new SharedPreferencesFlipperPlugin(context));
       client.addPlugin(CrashReporterPlugin.getInstance());
-      NetworkFlipperPlugin networkFlipperPlugin = new NetworkFlipperPlugin();
-      NetworkingModule.setCustomClientBuilder(
-          new NetworkingModule.CustomClientBuilder() {
-            @Override
-            public void apply(OkHttpClient.Builder builder) {
-              builder.addNetworkInterceptor(new FlipperOkhttpInterceptor(networkFlipperPlugin));
-            }
-          });
-      client.addPlugin(networkFlipperPlugin);
+      // NetworkFlipperPlugin networkFlipperPlugin = new NetworkFlipperPlugin();
+      // NetworkingModule.setCustomClientBuilder(
+      //     new NetworkingModule.CustomClientBuilder() {
+      //       @Override
+      //       public void apply(OkHttpClient.Builder builder) {
+      //         builder.addNetworkInterceptor(new FlipperOkhttpInterceptor(networkFlipperPlugin));
+      //       }
+      //     });
+      // client.addPlugin(networkFlipperPlugin);
       client.start();
       // Fresco Plugin needs to ensure that ImagePipelineFactory is initialized
       // Hence we run if after all native modules have been initialized

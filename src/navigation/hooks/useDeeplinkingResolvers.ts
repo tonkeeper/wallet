@@ -76,7 +76,6 @@ export function useDeeplinkingResolvers() {
       return Toast.fail(t('transfer_deeplink_amount_error'));
     }
 
-    
     if (Number(query.amount) > 0) {
       const amount = Ton.fromNano(query.amount.toString());
 
@@ -107,8 +106,8 @@ export function useDeeplinkingResolvers() {
             },
           },
         );
-      } else if (query['jetton']) { 
-        if (!isValidAddress(query['jetton'])) {
+      } else if (query.jetton) {
+        if (!isValidAddress(query.jetton)) {
           return Toast.fail(t('transfer_deeplink_address_error'));
         }
 
@@ -118,11 +117,11 @@ export function useDeeplinkingResolvers() {
             amount,
             address,
             comment,
-            jettonWalletAddress: query['jetton'],
+            jettonWalletAddress: query.jetton,
             isJetton: true,
             onNext: (details) => {
               const options = {
-                currency: query['jetton'],
+                currency: query.jetton,
                 address,
                 comment,
                 amount,
@@ -139,7 +138,6 @@ export function useDeeplinkingResolvers() {
             },
           }),
         );
-
       } else {
         dispatch(
           walletActions.confirmSendCoins({
@@ -303,13 +301,14 @@ export function useDeeplinkingResolvers() {
 
   deeplinking.add('/ton-connect/*', async ({ query, origin }) => {
     try {
+      TonConnectRemoteBridge.setOrigin(origin);
+
       if (!query.r || !query.v || !query.id) {
         return;
       }
 
       await TonConnectRemoteBridge.handleConnectDeeplink(
         query as unknown as IConnectQrQuery,
-        origin,
       );
     } catch (err) {
       console.log(err);

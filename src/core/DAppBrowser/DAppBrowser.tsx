@@ -109,11 +109,11 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
   }, [ref]);
 
   const handleTitlePress = useCallback(() => {
-    const initialQuery = app?.name || webViewSource.uri;
+    const initialQuery = webViewSource.uri;
     openDAppsSearch(initialQuery, (url) => {
       setWebViewSource({ uri: getCorrectUrl(url) });
     });
-  }, [app, webViewSource.uri]);
+  }, [webViewSource.uri]);
 
   return (
     <S.Container>
