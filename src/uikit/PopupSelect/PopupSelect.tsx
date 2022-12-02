@@ -96,6 +96,7 @@ export function PopupSelectComponent<T>(props: PopupSelectProps<T>) {
     keyExtractor,
     width: initialWidth = 160,
     autoWidth = false,
+    minWidth,
     scrollY,
   } = props;
   const [visible, setVisible] = useState(false);
@@ -164,9 +165,11 @@ export function PopupSelectComponent<T>(props: PopupSelectProps<T>) {
         return;
       }
 
-      setWidth((s) => Math.max(s, w));
+      const min = minWidth || 0;
+
+      setWidth((s) => Math.max(s, w, min));
     },
-    [autoWidth],
+    [autoWidth, minWidth],
   );
 
   const scrollCompensationStyle = useAnimatedStyle(() => ({
