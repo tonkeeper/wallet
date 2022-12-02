@@ -19,3 +19,5 @@ rootProject.name = "devkit"
 include(":sample")
 include(":libs-ton:mnemonic")
 include(":libs-ton:crypto")
+include(":libs-feature:localauth")
+include(":libs-feature:wallet")
