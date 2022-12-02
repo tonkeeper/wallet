@@ -41,9 +41,10 @@ export const useAppsListStore = create(
       },
     }),
     {
-      name: 'appsListStore',
+      name: 'appsList',
       getStorage: () => AsyncStorage,
-      partialize: ({ appsList }) => ({ appsList } as IAppsListStore),
+      partialize: ({ appsList, moreEnabled }) =>
+        ({ appsList, moreEnabled } as IAppsListStore),
     },
   ),
 );

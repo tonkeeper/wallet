@@ -25,4 +25,6 @@ export const IconContainer = styled.View`
 
 export const Title = styled(Text).attrs(() => ({
   numberOfLines: 1,
-}))``;
+}))`
+  flex: 1;
+`;
