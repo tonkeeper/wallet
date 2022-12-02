@@ -35,6 +35,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             ArrayList<ReactPackage> packages = new PackageList(this).getPackages();
             packages.add(new TonPbkdf2Package());
+            packages.add(new WalletStorePackage());
             return packages;
         }
 
