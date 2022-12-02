@@ -15,6 +15,7 @@ import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
 import com.ton_keeper.legacy.TonPbkdf2Package;
 import com.ton_keeper.newarchitecture.MainApplicationReactNativeHost;
+import com.ton_keeper.walletstore.WalletStorePackage;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

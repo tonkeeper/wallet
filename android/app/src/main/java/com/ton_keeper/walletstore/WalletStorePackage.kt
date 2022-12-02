@@ -1,4 +1,4 @@
-package com.ton_keeper
+package com.ton_keeper.walletstore
 
 import android.view.View
 import com.facebook.react.ReactPackage
