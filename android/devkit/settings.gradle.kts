@@ -5,6 +5,7 @@ pluginManagement {
         mavenCentral()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -14,6 +15,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "devkit"
-include ':sample'
-include ':libs-ton:mnemonic:mnemonic-api'
-include ':libs-ton:mnemonic:mnemonic-impl'
+
+include(":sample")
+include(":libs-ton:mnemonic")
+include(":libs-ton:crypto")
