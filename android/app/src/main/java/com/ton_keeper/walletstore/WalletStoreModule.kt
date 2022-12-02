@@ -1,5 +1,6 @@
 package com.ton_keeper.walletstore
 
+import android.util.Log
 import com.facebook.react.bridge.*
 
 class WalletStoreModule(
@@ -8,7 +9,7 @@ class WalletStoreModule(
 
     @ReactMethod
     fun validate(mnemonic: ReadableArray, promise: Promise) {
-
+        Log.d(ModuleName, "Correct:")
     }
 
     @ReactMethod
