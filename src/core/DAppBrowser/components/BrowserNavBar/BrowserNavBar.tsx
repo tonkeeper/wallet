@@ -1,7 +1,7 @@
 import { useTranslator, useCopyText } from '$hooks';
 import { goBack } from '$navigation';
 import { Icon, PopupSelect, Text } from '$uikit';
-import { getDomainFromURL, maskifyAddress } from '$utils';
+import { getDomainFromURL, isAndroid, maskifyAddress } from '$utils';
 import React, { FC, memo, useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -88,7 +88,15 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
         case PopupActionType.REFRESH:
           return onRefreshPress();
         case PopupActionType.SHARE:
-          return Share.share({ url });
+          setTimeout(() => {
+            Share.share({
+              url,
+              message: isAndroid ? url : undefined,
+            }).catch((err) => {
+              console.log('cant share', err);
+            });
+          }, 0);
+          return;
         case PopupActionType.COPY_LINK:
           return copyText(url);
         case PopupActionType.DISCONNECT:
