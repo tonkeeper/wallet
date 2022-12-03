@@ -72,7 +72,7 @@ export const NFTSaleCancelModal = ({ params, ...options }: NFTSaleCancelModalPro
           <S.Center>
             <S.NFTItemPreview>
               {isDNS ? <S.GlobeIcon /> : null}
-              {!isDNS && <S.Image uri={item.data.metadata.image} resize={512} />}
+              {!isDNS && <S.Image uri={item?.data?.metadata?.image} resize={512} />}
             </S.NFTItemPreview>
             <S.CaptionWrap>
               <S.Caption>{caption}</S.Caption>

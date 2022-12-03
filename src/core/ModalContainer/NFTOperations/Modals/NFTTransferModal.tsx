@@ -96,9 +96,7 @@ export const NFTTransferModal = ({ params, ...options }: NFTTransferModalProps) 
           <S.Center>
             <S.NFTItemPreview>
               {isDNS ? <S.GlobeIcon /> : null}
-              {!isDNS && item.data?.metadata?.image && (
-                <S.Image uri={item.data?.metadata?.image} resize={512} />
-              )}
+              {!isDNS && <S.Image uri={item?.data?.metadata?.image} resize={512} />}
             </S.NFTItemPreview>
             <S.CaptionWrap>
               <S.Caption>{caption}</S.Caption>
