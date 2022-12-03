@@ -54,12 +54,12 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
       appName = props.hostname;
     }
   } else {
-    appIconUri = props.connectRequest.icon;
-    appName = props.connectRequest.name;
+    appIconUri = props.manifest.iconUrl;
+    appName = props.manifest.name;
   }
 
   const domain =
-    props.protocolVersion === 1 ? appName : getDomainFromURL(props.connectRequest.url);
+    props.protocolVersion === 1 ? appName : getDomainFromURL(props.manifest.url);
 
   const isTonConnectV2 = props.protocolVersion !== 1;
 

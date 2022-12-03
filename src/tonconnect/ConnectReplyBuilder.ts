@@ -14,17 +14,21 @@ import { getDomainFromURL } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
 import { Int64LE } from 'int64-buffer';
 import { CONNECT_ITEM_ERROR_CODES } from '@tonconnect/protocol/lib/models/wallet-message/wallet-event/connect-event';
+import { DAppManifest } from './models';
 
 const { createHash } = require('react-native-crypto');
 
 export class ConnectReplyBuilder {
   request: ConnectRequest;
 
-  constructor(request: ConnectRequest) {
+  manifest: DAppManifest;
+
+  constructor(request: ConnectRequest, manifest: DAppManifest) {
     this.request = request;
+    this.manifest = manifest;
   }
 
-  private getNetwork() {
+  private static getNetwork() {
     return getChainName() === 'mainnet' ? CHAIN.MAINNET : CHAIN.TESTNET;
   }
 
@@ -37,7 +41,7 @@ export class ConnectReplyBuilder {
       const timestamp = getTimeSec();
       const timestampBuffer = new Int64LE(timestamp).toBuffer();
 
-      const domain = getDomainFromURL(this.request.url);
+      const domain = getDomainFromURL(this.manifest.url);
       const domainBuffer = Buffer.from(domain);
       const domainLengthBuffer = Buffer.allocUnsafe(4);
       domainLengthBuffer.writeInt32LE(domainBuffer.byteLength);
@@ -109,6 +113,8 @@ export class ConnectReplyBuilder {
             name: 'ton_addr',
             address,
             network: this.getNetwork(),
+            // TonConnect TODO
+            walletStateInit: '',
           };
 
         case 'ton_proof':
@@ -125,14 +131,15 @@ export class ConnectReplyBuilder {
     return replyItems;
   }
 
-  createAutoConnectReplyItems(addr: string): ConnectItemReply[] {
+  static createAutoConnectReplyItems(addr: string): ConnectItemReply[] {
     const address = new TonWeb.utils.Address(addr).toString(false, true, true);
 
     return [
       {
         name: 'ton_addr',
         address,
-        network: this.getNetwork(),
+        network: ConnectReplyBuilder.getNetwork(),
+        walletStateInit: '',
       },
     ];
   }
