@@ -4,9 +4,11 @@ import { PayloadAction } from '@reduxjs/toolkit';
 export interface FavoritesState {
   favorites: FavoriteModel[];
   hiddenRecentAddresses: string[];
+  updatedDnsAddresses: Record<string, string>;
 }
 
 export type SetFavoritesAction = PayloadAction<FavoriteModel[]>;
+export type UpdateDnsAddressesAction = PayloadAction<Record<string, string>>;
 
 export type UpdateFavoriteAction = PayloadAction<FavoriteModel>;
 

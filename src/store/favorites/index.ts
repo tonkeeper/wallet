@@ -1,4 +1,4 @@
-import {createSelector, createSlice} from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '$store/rootReducer';
 import {
@@ -7,12 +7,14 @@ import {
   HideRecentAddressAction,
   SetFavoritesAction,
   SetHiddenRecentAddressesAction,
+  UpdateDnsAddressesAction,
   UpdateFavoriteAction,
 } from './interface';
 
 const initialState: FavoritesState = {
   favorites: [],
   hiddenRecentAddresses: [],
+  updatedDnsAddresses: {},
 };
 
 export const { actions, reducer } = createSlice({
@@ -22,6 +24,9 @@ export const { actions, reducer } = createSlice({
     loadSuggests() {},
     setFavorites(state, action: SetFavoritesAction) {
       state.favorites = action.payload;
+    },
+    updateDnsAddresses(state, action: UpdateDnsAddressesAction) {
+      state.updatedDnsAddresses = action.payload;
     },
     updateFavorite(state, action: UpdateFavoriteAction) {
       const index = state.favorites.findIndex(

@@ -15,25 +15,14 @@ const TonWeb = require('tonweb');
 const DOMAIN_ADDRESS_NOT_FOUND = 'DOMAIN_ADDRESS_NOT_FOUND';
 
 let favoriteDnsLastUpdated = 0;
-
 const shouldUpdateDomains = () => favoriteDnsLastUpdated + 600 * 1000 < Date.now();
 
 export const useSuggestedAddresses = () => {
   const eventsInfo = useSelector(eventsEventsInfoSelector);
   const dispatch = useDispatch();
-  const { favorites, hiddenRecentAddresses } = useSelector(favoritesSelector);
+  const { favorites, hiddenRecentAddresses, updatedDnsAddresses } =
+    useSelector(favoritesSelector);
   const address = useSelector(walletAddressSelector);
-
-  const [updatedDnsAddresses, setUpdatedDnsAddresses] = useState<Record<string, string>>(
-    shouldUpdateDomains()
-      ? {}
-      : favorites
-          .filter((favorite) => !!favorite.domain)
-          .reduce((acc, cur) => {
-            acc[cur.domain!] = cur.address;
-            return acc;
-          }, {}),
-  );
 
   const favoriteAddresses = useMemo(
     (): SuggestedAddress[] =>
@@ -143,10 +132,12 @@ export const useSuggestedAddresses = () => {
         );
       }
 
-      setUpdatedDnsAddresses((s) => ({
-        ...s,
-        [favorite.domain!]: fetchedAddress || DOMAIN_ADDRESS_NOT_FOUND,
-      }));
+      dispatch(
+        favoritesActions.updateDnsAddresses({
+          ...updatedDnsAddresses,
+          [favorite.domain!]: fetchedAddress || DOMAIN_ADDRESS_NOT_FOUND,
+        }),
+      );
 
       favoriteDnsLastUpdated = Date.now();
     }
