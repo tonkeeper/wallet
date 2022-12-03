@@ -134,11 +134,11 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
         }
       }
 
-      const waitForAnimation = props.protocolVersion === 1 || !props.hideImmediately;
+      const withDelay = props.protocolVersion === 1 || !props.hideImmediately;
 
       await animation.showSuccess(() => {
         triggerNotificationSuccess();
-      }, waitForAnimation);
+      }, withDelay);
 
       if (props.protocolVersion !== 1) {
         const { replyBuilder, requestPromise } = props;

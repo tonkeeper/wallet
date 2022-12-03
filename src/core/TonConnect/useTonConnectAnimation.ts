@@ -38,15 +38,15 @@ export const useTonConnectAnimation = () => {
     setTimeout(() => setState(States.LOADING), 300);
   };
 
-  const showSuccess = async (onShown: () => void, waitForAnimation?: boolean) => {
-    await delay(250);
+  const showSuccess = async (onShown: () => void, withDelay?: boolean) => {
+    if (withDelay) {
+      await delay(250);
+    }
 
     setState(States.SUCCESS);
     onShown();
 
-    if (waitForAnimation) {
-      await delay(1750);
-    }
+    await delay(withDelay ? 1750 : 500);
   };
 
   const showReturnButton = () => {
