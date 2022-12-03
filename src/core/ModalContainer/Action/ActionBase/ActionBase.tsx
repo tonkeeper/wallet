@@ -32,10 +32,10 @@ export const ActionBase: FC<ActionBaseProps> = ({
 
   const handlePress = useCallback(
     (item) => () => {
-      Clipboard.setString(item.value + isSpam ? t('transaction_copy_caution') : '');
+      Clipboard.setString(item.value);
       dispatch(toastActions.success(t('copied')));
     },
-    [dispatch, t, isSpam],
+    [dispatch, t],
   );
 
   const handleOpenSubscription = useCallback(() => {
