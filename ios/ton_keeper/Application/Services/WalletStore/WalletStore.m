@@ -24,6 +24,7 @@ RCT_EXTERN_METHOD(exportKey:(nonnull NSString *)pk resolve:(RCTPromiseResolveBlo
 RCT_EXTERN_METHOD(exportWithPasscode:(nonnull NSString *)pk passcode:(nonnull NSString *)passcode resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(exportWithBiometry:(nonnull NSString *)pk resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 
+RCT_EXTERN_METHOD(backup:(nonnull NSString *)pk resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(backupWithPasscode:(nonnull NSString *)pk passcode:(nonnull NSString *)passcode resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(backupWithBiometry:(nonnull NSString *)pk resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 

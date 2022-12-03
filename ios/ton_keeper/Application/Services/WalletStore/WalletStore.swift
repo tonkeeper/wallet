@@ -178,14 +178,17 @@ final class WalletStore: NSObject {
           resolve(keyPair.secretKey.hexString())
           
         case .failure:
-          self?.validatePasscode(pk, resolve: resolve, reject: reject)
+          self?.validatePasscode(pk) { passcode in
+            self?.exportWithPasscode(pk, passcode: passcode ?? "", resolve: resolve, reject: reject)
+          }
         }
       }
     } else {
-      validatePasscode(pk, resolve: resolve, reject: reject)
+      validatePasscode(pk) { [weak self] passcode in
+        self?.exportWithPasscode(pk, passcode: passcode ?? "", resolve: resolve, reject: reject)
+      }
     }
   }
-  
   
   func exportWithPasscode(_ pk: PublicKey,
                           passcode: String,
@@ -213,6 +216,26 @@ final class WalletStore: NSObject {
       case .failure(let error):
         let rejectBlock = self.rejectBlock(error: error, code: 400)
         reject(rejectBlock.0, rejectBlock.1, rejectBlock.2)
+      }
+    }
+  }
+  
+  func backup(_ pk: PublicKey,
+              resolve: @escaping RCTPromiseResolveBlock,
+              reject: @escaping RCTPromiseRejectBlock) {
+    if let isBiometryEnabled = userDefaultsService?.isBiometryEnabled, isBiometryEnabled {
+      loadMnemonicWithBiometry(pk: pk) { [weak self] result in
+        switch result {
+        case .success(let mnemonicArray): resolve(mnemonicArray)
+        case .failure:
+          self?.validatePasscode(pk) { passcode in
+            self?.backupWithPasscode(pk, passcode: passcode ?? "", resolve: resolve, reject: reject)
+          }
+        }
+      }
+    } else {
+      validatePasscode(pk) { [weak self] passcode in
+        self?.backupWithPasscode(pk, passcode: passcode ?? "", resolve: resolve, reject: reject)
       }
     }
   }
@@ -317,14 +340,9 @@ final class WalletStore: NSObject {
     }
   }
   
-  private func validatePasscode(_ pk: PublicKey,
-                                resolve: @escaping RCTPromiseResolveBlock,
-                                reject: @escaping RCTPromiseRejectBlock) {
+  private func validatePasscode(_ pk: PublicKey, completion: @escaping (String?) -> Void) {
     DispatchQueue.main.async {
-      self.uiService?.validatePasscode { [weak self] passcode in
-        guard let passcode = passcode else { return }
-        self?.exportWithPasscode(pk, passcode: passcode, resolve: resolve, reject: reject)
-      }
+      self.uiService?.validatePasscode { completion($0) }
     }
   }
   
