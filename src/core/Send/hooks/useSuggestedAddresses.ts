@@ -12,7 +12,7 @@ import { Tonapi } from '$libs/Tonapi';
 
 const TonWeb = require('tonweb');
 
-const DOMAIN_ADDRESS_NOT_FOUND = 'DOMAIN_ADDRESS_NOT_FOUND';
+export const DOMAIN_ADDRESS_NOT_FOUND = 'DOMAIN_ADDRESS_NOT_FOUND';
 
 let favoriteDnsLastUpdated = 0;
 const shouldUpdateDomains = () => favoriteDnsLastUpdated + 600 * 1000 < Date.now();
@@ -134,7 +134,6 @@ export const useSuggestedAddresses = () => {
 
       dispatch(
         favoritesActions.updateDnsAddresses({
-          ...updatedDnsAddresses,
           [favorite.domain!]: fetchedAddress || DOMAIN_ADDRESS_NOT_FOUND,
         }),
       );

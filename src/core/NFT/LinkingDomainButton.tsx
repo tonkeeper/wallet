@@ -1,17 +1,16 @@
 import { useAllAddresses } from '$hooks/useAllAddresses';
 import { openLinkingDomain } from '$navigation';
-import {
-  walletVersionSelector,
-  walletWalletSelector,
-} from '$store/wallet';
+import { walletVersionSelector } from '$store/wallet';
 import { t } from '$translation';
 import { Button, Text } from '$uikit';
 import { debugLog, maskifyAddress } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
 import * as React from 'react';
 import { View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Tonapi } from '$libs/Tonapi';
+import { favoritesActions } from '$store/favorites';
+import { DOMAIN_ADDRESS_NOT_FOUND } from '$core/Send/hooks/useSuggestedAddresses';
 
 const TonWeb = require('tonweb'); // Fix ts types;
 
@@ -64,6 +63,7 @@ interface LinkingDomainButtonProps {
 export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) => {
   const version = useSelector(walletVersionSelector);
   const allAddesses = useAllAddresses();
+  const dispatch = useDispatch();
   const [loading, setLoading] = React.useState(false);
   const [record, setRecord] = React.useState<DNSRecord>({
     ownerAddress: props.ownerAddress,
@@ -149,6 +149,12 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
           ownerAddress: currentWalletAddress,
           walletAddress,
         };
+
+        dispatch(
+          favoritesActions.updateDnsAddresses({
+            [props.domain]: walletAddress || DOMAIN_ADDRESS_NOT_FOUND,
+          }),
+        );
 
         setRecord(record);
         CacheDNSRecord.set(props.domain, record, 20);

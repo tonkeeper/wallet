@@ -26,7 +26,7 @@ export const { actions, reducer } = createSlice({
       state.favorites = action.payload;
     },
     updateDnsAddresses(state, action: UpdateDnsAddressesAction) {
-      state.updatedDnsAddresses = action.payload;
+      state.updatedDnsAddresses = { ...state.updatedDnsAddresses, ...action.payload };
     },
     updateFavorite(state, action: UpdateFavoriteAction) {
       const index = state.favorites.findIndex(
