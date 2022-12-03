@@ -9,7 +9,7 @@ const deviceWidth = Dimensions.get('window').width;
 
 const ICON_SIZE = ns(64);
 
-const LIST_WIDTH = deviceWidth - ns(12 * 2);
+const LIST_WIDTH = deviceWidth - ns(12) * 2;
 
 const MARGIN_BETWEEN = ns(4);
 
