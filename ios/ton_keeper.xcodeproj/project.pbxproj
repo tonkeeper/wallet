@@ -1121,7 +1121,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = ton_keeperTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1135,6 +1135,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ton_keeper.app/ton_keeper";
 			};
 			name = Debug;
@@ -1146,7 +1147,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = ton_keeperTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1160,6 +1161,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ton_keeper.app/ton_keeper";
 			};
 			name = Release;
@@ -1171,8 +1173,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ton_keeper/ton_keeper.entitlements;
-				DEFINES_MODULE = YES;
 				CURRENT_PROJECT_VERSION = 252;
+				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ton_keeper/SupportingFiles/Info.plist;
@@ -1206,8 +1208,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ton_keeper/ton_keeper.entitlements;
-				DEFINES_MODULE = YES;
 				CURRENT_PROJECT_VERSION = 252;
+				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				INFOPLIST_FILE = ton_keeper/SupportingFiles/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
