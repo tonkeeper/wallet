@@ -67,6 +67,10 @@ export function formatAmount(amount: string, decimals: number) {
   return new BigNumber(amount || 0).toString(10);
 }
 
+export function formatAmountAndLocalize(amount: string, decimals: number) {
+  return toLocaleNumber(formatAmount(amount, decimals));
+}
+
 export function toNano(amount: number | string, decimals?: number) {
   BigNumber.config({ DECIMAL_PLACES: decimals });
   return new BigNumber(amount || 0).shiftedBy(decimals || 8).toString(10);

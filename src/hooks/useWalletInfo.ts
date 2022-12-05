@@ -18,7 +18,7 @@ export function useWalletInfo(currency: CryptoCurrency) {
   const fiatCurrency = useSelector(fiatCurrencySelector);
 
   const amount = useMemo(() => {
-    return formatAmount(balances[currency], Decimals[currency]);
+    return toLocaleNumber(formatAmount(balances[currency], Decimals[currency]));
   }, [balances, currency]);
 
   const priceDiff = useMemo(() => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCopyText, useInstance, useWallet } from '$hooks';
 import {Highlight, Icon, Skeleton, Text} from '$uikit';
-import { debugLog } from '$utils';
+import {debugLog, toLocaleNumber} from '$utils';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftSaleCancelParams, TxRequestBody } from '../TXRequest.types';
 import { useDownloadNFT } from '../useDownloadNFT';
@@ -83,12 +83,12 @@ export const NFTSaleCancelModal = ({ params, ...options }: NFTSaleCancelModalPro
             <S.Title>{t('nft_sale_cancel_title')}</S.Title>
           </S.Center>
           <S.Info>
-            <Highlight onPress={() => copyText(fee)}>
+            <Highlight onPress={() => copyText(toLocaleNumber(fee))}>
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
                 <S.InfoItemValue>
                   {fee ? (
-                    <Text variant="body1">{fee} TON</Text>
+                    <Text variant="body1">{toLocaleNumber(fee)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}
