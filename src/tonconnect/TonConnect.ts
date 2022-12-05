@@ -24,10 +24,12 @@ import {
   SessionCrypto,
   WalletResponse,
 } from '@tonconnect/protocol';
+import axios from 'axios';
 import FastImage from 'react-native-fast-image';
 import { MIN_PROTOCOL_VERSION, tonConnectDeviceInfo } from './config';
 import { ConnectEventError } from './ConnectEventError';
 import { ConnectReplyBuilder } from './ConnectReplyBuilder';
+import { DAppManifest } from './models';
 import { SendTransactionError } from './SendTransactionError';
 import { TonConnectRemoteBridge } from './TonConnectRemoteBridge';
 
@@ -42,11 +44,45 @@ class TonConnectService {
   }
 
   verifyConnectRequest(request: ConnectRequest) {
-    if (!(request && request.name && request.url && request.items?.length)) {
+    if (!(request && request.manifestUrl && request.items?.length)) {
       throw new ConnectEventError(
         CONNECT_EVENT_ERROR_CODES.BAD_REQUEST_ERROR,
         'Wrong request data',
       );
+    }
+  }
+
+  async getManifest(request: ConnectRequest) {
+    try {
+      const { data: manifest } = await axios.get<DAppManifest>(request.manifestUrl);
+
+      const isValid =
+        manifest &&
+        typeof manifest.url === 'string' &&
+        typeof manifest.name === 'string' &&
+        typeof manifest.iconUrl === 'string';
+
+      if (!isValid) {
+        throw new ConnectEventError(
+          CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR,
+          'Manifest is not valid',
+        );
+      }
+
+      if (manifest.iconUrl) {
+        FastImage.preload([{ uri: manifest.iconUrl }]);
+      }
+
+      return manifest;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new ConnectEventError(
+          CONNECT_EVENT_ERROR_CODES.MANIFEST_NOT_FOUND_ERROR,
+          `Can't get ${request.manifestUrl}`,
+        );
+      }
+
+      throw error;
     }
   }
 
@@ -62,17 +98,15 @@ class TonConnectService {
 
       this.verifyConnectRequest(request);
 
-      if (request.icon) {
-        FastImage.preload([{ uri: request.icon }]);
-      }
+      const manifest = await this.getManifest(request);
 
       try {
         const { address, replyItems } = await new Promise<TonConnectModalResponse>(
           (resolve, reject) =>
             openTonConnect({
               protocolVersion: protocolVersion as 2,
-              connectRequest: request,
-              replyBuilder: new ConnectReplyBuilder(request),
+              manifest,
+              replyBuilder: new ConnectReplyBuilder(request, manifest),
               requestPromise: { resolve, reject },
               hideImmediately: !!webViewUrl,
             }),
@@ -81,9 +115,9 @@ class TonConnectService {
         saveAppConnection(
           address,
           {
-            name: request.name,
-            url: request.url,
-            icon: request.icon,
+            name: manifest.name,
+            url: manifest.url,
+            icon: manifest.iconUrl,
           },
           webViewUrl
             ? { type: TonConnectBridgeType.Injected, replyItems }
@@ -138,9 +172,8 @@ class TonConnectService {
 
       const currentWalletAddress = store.getState().wallet?.address?.ton;
 
-      const replyBuilder = new ConnectReplyBuilder({} as ConnectRequest);
-
-      const replyItems = replyBuilder.createAutoConnectReplyItems(currentWalletAddress);
+      const replyItems =
+        ConnectReplyBuilder.createAutoConnectReplyItems(currentWalletAddress);
 
       return {
         event: 'connect',

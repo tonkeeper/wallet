@@ -2424,10 +2424,10 @@
     tweetnacl "^1.0.3"
     tweetnacl-util "^0.15.1"
 
-"@tonconnect/protocol@^0.0.20":
-  version "0.0.20"
-  resolved "https://registry.yarnpkg.com/@tonconnect/protocol/-/protocol-0.0.20.tgz#4126096e1282bd375929fbf80d81125e314b2cd2"
-  integrity sha512-vBKqfXjVfmtlprfGG7Xi1pY0yQRUygi/uiIhF5/U/T8HsH8MPcTGrTIBn+7BkwhRPalSPqLTzC6YrisQAHhRPA==
+"@tonconnect/protocol@^0.0.22":
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/@tonconnect/protocol/-/protocol-0.0.22.tgz#e053f185aefd330ddbdc9e904385673abde72c8d"
+  integrity sha512-ntSLnvHVHJK+Dgt1R4QNeIAiQmYMRJxoaV1Op/goKaLWL2KzO6OR5ttTncyfGkmPwtiU3XXsGX5TzoeG4dnuTA==
   dependencies:
     tweetnacl-util "^0.15.1"
 
