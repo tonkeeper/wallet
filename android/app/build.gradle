@@ -1,6 +1,9 @@
-apply plugin: "com.android.application"
-apply plugin: "com.google.gms.google-services"
-apply plugin: "com.google.firebase.crashlytics"
+plugins {
+    id "org.jetbrains.kotlin.android"
+    id "com.android.application"
+    id "com.google.gms.google-services"
+    id "com.google.firebase.crashlytics"
+}
 
 import com.android.build.OutputFile
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -350,6 +353,10 @@ dependencies {
     implementation 'com.madgag.spongycastle:prov:1.54.0.0'
     implementation 'com.madgag.spongycastle:pkix:1.54.0.0'
     implementation 'com.madgag.spongycastle:pg:1.54.0.0'
+
+    // DevKit
+    implementation(project(":libs-ton:crypto"))
+    implementation(project(":libs-ton:mnemonic"))
 }
 
 if (isNewArchitectureEnabled()) {
