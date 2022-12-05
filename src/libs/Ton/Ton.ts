@@ -4,7 +4,7 @@ import { Cell } from 'tonweb/dist/types/boc/cell';
 import { BitStringReader } from '$utils/bitStringReader';
 import * as mnemonic from './mnemonic';
 import { debugLog } from '$utils';
-import { Address } from './Address';
+import { Address, AddressFormatOptions } from './Address';
 
 export class Ton {
   static toNano(value: number | string | BN) {
@@ -23,13 +23,7 @@ export class Ton {
   static formatAmount(amount: string | number, currency = 'TON') {
     return `${Ton.fromNano(amount)} ${currency}`;
   }
-  static formatAddress(
-    address: AddressType,
-    opts: {
-      bounce?: boolean;
-      cut?: boolean;
-    } = {},
-  ) {
+  static formatAddress(address: AddressType, opts: AddressFormatOptions) {
     try {
       return new Address(address).format(opts);
     } catch (err) {

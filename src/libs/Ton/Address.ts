@@ -1,13 +1,12 @@
 import TonWeb from 'tonweb';
 import { debugLog, maskifyAddress } from '$utils';
 
+export interface AddressFormatOptions {
+  bounce?: boolean;
+  cut?: boolean;
+}
 export class Address extends TonWeb.Address {
-  format(
-    opts: {
-      bounce?: boolean;
-      cut?: boolean;
-    } = {},
-  ) {
+  format(opts: AddressFormatOptions = {}) {
     const { bounce = true, cut } = opts;
 
     try {
