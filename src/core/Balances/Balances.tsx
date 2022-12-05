@@ -32,7 +32,7 @@ import { getLastRefreshedAt, MainDB } from '$database';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { store } from '$store';
 import { jettonsSelector } from '$store/jettons';
-import { useDeeplinking } from '$libs/deeplinking';
+import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import { toastActions } from '$store/toast';
 import Clipboard from '@react-native-community/clipboard';
@@ -373,7 +373,10 @@ export const Balances: FC = () => {
           return true;
         }
 
-        const resolver = deeplinking.getResolver(str, { delay: 200 });
+        const resolver = deeplinking.getResolver(str, {
+          delay: 200,
+          origin: DeeplinkOrigin.QR_CODE,
+        });
         if (resolver) {
           resolver();
           return true;

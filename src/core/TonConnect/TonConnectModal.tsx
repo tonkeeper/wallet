@@ -9,7 +9,13 @@ import { SelectableVersionsConfig } from '$shared/constants';
 import { walletSelector } from '$store/wallet';
 import { BottomSheet, Button, Icon, Loader, Text, TransitionOpacity } from '$uikit';
 import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
-import { debugLog, delay, maskifyTonAddress, triggerNotificationSuccess } from '$utils';
+import {
+  debugLog,
+  delay,
+  getDomainFromURL,
+  maskifyTonAddress,
+  triggerNotificationSuccess,
+} from '$utils';
 import { toastActions } from '$store/toast';
 import { UnlockVaultError } from '$store/wallet/sagas';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
@@ -36,24 +42,27 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   const bottomSheetRef = React.useRef<BottomSheetRef>(null);
   const closeBottomSheet = () => bottomSheetRef.current?.close();
 
-  const isTonapi = props.protocolVersion === 1 
-    ? (props?.hostname === 'tonapi.io')
-    : false;
+  const isTonapi = props.protocolVersion === 1 ? props?.hostname === 'tonapi.io' : false;
 
   let appIconUri: string;
   let appName: string;
   if (props.protocolVersion === 1) {
     appIconUri = props.request.image_url;
     if (isTonapi && props.request.app_name) {
-      appName = props.request.app_name
+      appName = props.request.app_name;
     } else {
       appName = props.hostname;
     }
   } else {
-    appIconUri = props.connectRequest.icon;
-    appName = props.connectRequest.name;
+    appIconUri = props.manifest.iconUrl;
+    appName = props.manifest.name;
   }
-  
+
+  const domain =
+    props.protocolVersion === 1 ? appName : getDomainFromURL(props.manifest.url);
+
+  const isTonConnectV2 = props.protocolVersion !== 1;
+
   const sendToCallbackUrl = React.useCallback(
     async (response: string) => {
       if (props.protocolVersion !== 1) {
@@ -125,6 +134,12 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
         }
       }
 
+      const withDelay = props.protocolVersion === 1 || !props.hideImmediately;
+
+      await animation.showSuccess(() => {
+        triggerNotificationSuccess();
+      }, withDelay);
+
       if (props.protocolVersion !== 1) {
         const { replyBuilder, requestPromise } = props;
 
@@ -132,10 +147,6 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
 
         requestPromise.resolve({ address, replyItems });
       }
-
-      await animation.showSuccess(() => {
-        triggerNotificationSuccess();
-      });
 
       if (props.protocolVersion === 1 && props.request.return_url) {
         animation.showReturnButton();
@@ -251,7 +262,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
             </Text>
           </S.TitleWrapper>
           <Text color="foregroundSecondary" variant="body1" textAlign="center">
-            {t('ton_login_caption', { name: appName })}
+            {t('ton_login_caption', { name: domain })}
             <Text color="foregroundTertiary" variant="body1" textAlign="center">
               {' '}
               {maskedAddress}{' '}
@@ -261,20 +272,21 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
               : null}
           </Text>
         </S.Content>
-        <S.Footer>
+        <S.Footer isTonConnectV2={isTonConnectV2}>
           <TransitionOpacity
             style={styles.actionContainer}
             isVisible={animation.state === States.INITIAL}
             entranceAnimation={false}
           >
             <Button onPress={createResponse}>{t('ton_login_connect_button')}</Button>
+            {isTonConnectV2 ? <S.NoticeText>{t('ton_login_notice')}</S.NoticeText> : null}
           </TransitionOpacity>
 
           <TransitionOpacity
             style={styles.actionContainer}
             isVisible={animation.state === States.LOADING}
           >
-            <S.Center>
+            <S.Center isTonConnectV2={isTonConnectV2}>
               <Loader size="medium" />
             </S.Center>
           </TransitionOpacity>
@@ -292,7 +304,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
             style={styles.actionContainer}
             isVisible={animation.state === States.SUCCESS}
           >
-            <S.Center>
+            <S.Center isTonConnectV2={isTonConnectV2}>
               <Icon name="ic-checkmark-circle-32" color="accentPositive" />
               <S.SuccessText>{t('ton_login_success')}</S.SuccessText>
             </S.Center>

@@ -87,8 +87,8 @@ export const TitleWrapper = styled.View`
   margin-bottom: ${ns(8)}px;
 `;
 
-export const Center = styled.View`
-  height: ${ns(56)}px;
+export const Center = styled.View<{ isTonConnectV2: boolean }>`
+  height: ${({ isTonConnectV2 }) => ns(isTonConnectV2 ? 56 + 16 + 40 : 56)}px;
   justify-content: center;
   align-items: center;
 `;
@@ -102,8 +102,8 @@ export const LottieIcon = styled(LottieView)`
   margin-bottom: ${ns(-1.8)}px;
 `;
 
-export const Footer = styled.View`
-  height: ${ns(56)}px;
+export const Footer = styled.View<{ isTonConnectV2: boolean }>`
+  height: ${({ isTonConnectV2 }) => ns(isTonConnectV2 ? 56 + 16 + 40 : 56)}px;
   position: relative;
 `;
 
@@ -120,4 +120,13 @@ export const AddressText = styled(Text).attrs(() => ({
   reanimated: true,
 }))`
   height: 24px;
+`;
+
+export const NoticeText = styled(Text).attrs(() => ({
+  color: 'foregroundTertiary',
+  variant: 'body2',
+  textAlign: 'center',
+}))`
+  margin-top: ${ns(16)}px;
+  padding: 0 ${ns(16)}px;
 `;

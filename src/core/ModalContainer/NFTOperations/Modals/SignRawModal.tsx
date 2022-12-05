@@ -4,7 +4,7 @@ import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter'
 import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
-import { debugLog, lowerCaseFirstLetter, ns, truncateDecimal } from '$utils';
+import { debugLog, delay, lowerCaseFirstLetter, ns, truncateDecimal } from '$utils';
 import { t } from '$translation';
 import { AccountEvent, ActionTypeEnum } from 'tonapi-sdk-js';
 import { SignRawAction } from './SignRawAction';
@@ -37,7 +37,13 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 
     startLoading();
 
-    await action.send(privateKey, onSuccess);
+    await action.send(privateKey, async (boc) => {
+      if (onSuccess) {
+        await delay(1750);
+
+        onSuccess(boc);
+      }
+    });
   });
 
   const hasWarning = useMemo(() => {
@@ -54,7 +60,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
         },
       }));
     }
-    
+
     return accountEvent.actions;
   }, [accountEvent, params.messages]);
 

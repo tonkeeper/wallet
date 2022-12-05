@@ -3,3 +3,11 @@ export interface IConnectQrQuery {
   r: string;
   id: string;
 }
+
+export interface DAppManifest {
+  url: string;
+  name: string;
+  iconUrl: string;
+  termsOfUseUrl?: string;
+  privacyPolicyUrl?: string;
+}

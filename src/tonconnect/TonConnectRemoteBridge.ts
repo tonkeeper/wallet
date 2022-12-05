@@ -20,6 +20,8 @@ import { TonConnect } from './TonConnect';
 import { IConnectQrQuery } from './models';
 import EventSource, { EventSourceListener, MessageEvent } from 'react-native-sse';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DeeplinkOrigin } from '$libs/deeplinking';
+import Minimizer from 'react-native-minimizer';
 
 class TonConnectRemoteBridgeService {
   private readonly storeKey = 'ton-connect-http-bridge-lastEventId';
@@ -33,6 +35,12 @@ class TonConnectRemoteBridgeService {
   private connections: IConnectedAppConnectionRemote[] = [];
 
   private activeRequests: { [from: string]: AppRequest<RpcMethod> } = {};
+
+  private origin: DeeplinkOrigin | null = null;
+
+  public setOrigin(origin: DeeplinkOrigin) {
+    this.origin = origin;
+  }
 
   async open(connections: IConnectedAppConnection[]) {
     this.close();
@@ -178,19 +186,29 @@ class TonConnectRemoteBridgeService {
       console.log('handleMessage response', response);
 
       await this.send(response, sessionCrypto, from);
+
+      this.redirectIfNeeded();
     } catch (e) {
       console.log('handleMessage error');
       console.error(e);
     }
   }
 
-  async handleConnectQR(query: IConnectQrQuery) {
+  private redirectIfNeeded() {
+    if (this.origin === DeeplinkOrigin.DEEPLINK) {
+      Minimizer.goBack();
+    }
+
+    this.origin = null;
+  }
+
+  async handleConnectDeeplink(query: IConnectQrQuery) {
     try {
       const protocolVersion = Number(query.v);
       const request = Base64.decode(query.r, true).toObject() as ConnectRequest;
       const clientSessionId = query.id;
 
-      console.log('handleConnectQR request', request);
+      console.log('handleConnectDeeplink request', request);
 
       const sessionCrypto = new SessionCrypto();
 
@@ -201,11 +219,13 @@ class TonConnectRemoteBridgeService {
         clientSessionId,
       );
 
-      console.log('handleConnectQR response', response);
+      console.log('handleConnectDeeplink response', response);
 
       await this.send(response, sessionCrypto, clientSessionId);
+
+      this.redirectIfNeeded();
     } catch {
-      console.log('handleConnectQR error');
+      console.log('handleConnectDeeplink error');
     }
   }
 

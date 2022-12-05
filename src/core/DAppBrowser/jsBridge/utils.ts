@@ -70,3 +70,13 @@ export const objectToInjection = (obj: Record<string, any>, timeout: number | nu
     })();
   `;
 };
+
+export const getInjectableJSMessage = (message: any) => {
+  return `
+    (function() {
+      window.dispatchEvent(new MessageEvent('message', {
+        data: ${JSON.stringify(message)}
+      }));
+    })();
+  `;
+};

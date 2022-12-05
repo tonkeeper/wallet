@@ -1,6 +1,11 @@
 import { debugLog, delay } from '$utils';
 import React from 'react';
-import { DeepLinkingContextValue, DeeplinkingResolveOptions, DeeplinkingResolver } from './deeplinking.types';
+import {
+  DeepLinkingContextValue,
+  DeeplinkingResolveOptions,
+  DeeplinkingResolver,
+  DeeplinkOrigin,
+} from './deeplinking.types';
 import { DeepLinkingContext } from './DeepLinkingContext';
 import { useDeeplinkingListener } from './hooks/useDeeplinkingListener';
 import { applyMiddleware, matchPath, Middleware } from './utils';
@@ -40,7 +45,7 @@ export const DeepLinkingProvider: React.FC<DeepLinkingProviderProps> = (props) =
         const matchedPath = matchPath(path, pathname);
         if (matchedPath) {
           const resolver = resolvers.get(path)!;
-          
+
           return async () => {
             if (options?.delay) {
               await delay(options?.delay);
@@ -53,12 +58,13 @@ export const DeepLinkingProvider: React.FC<DeepLinkingProviderProps> = (props) =
 
             applyMiddleware(middlewares, () => {
               return resolver({
+                origin: options?.origin || DeeplinkOrigin.DEEPLINK,
                 params: matchedPath.params,
                 query: matchedPath.query,
-                resolveParams: options?.params ?? {}
+                resolveParams: options?.params ?? {},
               });
-            });          
-          }      
+            });
+          };
         }
       }
     } catch (err) {
@@ -85,7 +91,7 @@ export const DeepLinkingProvider: React.FC<DeepLinkingProviderProps> = (props) =
 
   const setPrefixes = (arr: string[]) => {
     prefixes.current = arr;
-  }
+  };
 
   const value: DeepLinkingContextValue = {
     addMiddleware,
@@ -94,7 +100,7 @@ export const DeepLinkingProvider: React.FC<DeepLinkingProviderProps> = (props) =
     resolve,
     add,
   };
-  
+
   return (
     <DeepLinkingContext.Provider value={value}>
       <DeepLinkingListener
@@ -104,10 +110,10 @@ export const DeepLinkingProvider: React.FC<DeepLinkingProviderProps> = (props) =
       {props.children}
     </DeepLinkingContext.Provider>
   );
-}
+};
 
 const DeepLinkingListener = (props: DeepLinkingProviderProps) => {
   useDeeplinkingListener(props);
-  
+
   return null;
-}
+};

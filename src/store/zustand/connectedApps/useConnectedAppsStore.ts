@@ -60,7 +60,7 @@ export const useConnectedAppsStore = create(
         },
       }),
       {
-        name: 'connectedApps16',
+        name: 'connectedAppsStore',
         getStorage: () => AsyncStorage,
         partialize: ({ connectedApps }) => ({ connectedApps } as IConnectedAppsStore),
       },

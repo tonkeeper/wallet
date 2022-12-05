@@ -2,7 +2,7 @@ import { useAppsListStore, useConnectedAppsList } from '$store';
 import { isValidUrl } from '$utils';
 import uniqBy from 'lodash/uniqBy';
 import { useCallback, useMemo, useRef } from 'react';
-import { ISearchSuggest } from '../types';
+import { ISearchSuggest, SearchSuggestSource } from '../types';
 
 export const useSearchSuggests = (query: string) => {
   const appsList = useAppsListStore((s) => s.appsList);
@@ -23,8 +23,16 @@ export const useSearchSuggests = (query: string) => {
       return [];
     }
 
+    const result: ISearchSuggest[] = [];
+
+    const isUrl = isValidUrl(trimmedQuery);
+
+    if (isUrl) {
+      result.push({ url: trimmedQuery, source: SearchSuggestSource.DIRECT_LINK });
+    }
+
     // TODO: redo as SearchIndexer
-    const items: ISearchSuggest[] = allApps
+    const appsSuggests = allApps
       .filter(
         (app) =>
           app.name.toLowerCase().includes(trimmedQuery) ||
@@ -44,15 +52,12 @@ export const useSearchSuggests = (query: string) => {
           return 1;
         }
         return 0;
-      });
+      })
+      .map((app) => ({ ...app, source: SearchSuggestSource.APP }));
 
-    const isUrl = isValidUrl(trimmedQuery);
+    result.push(...appsSuggests.slice(0, 3));
 
-    if (isUrl) {
-      items.push({ url: trimmedQuery });
-    }
-
-    return items.slice(0, 3);
+    return result;
   }, [allApps, query]);
 
   searchSuggestsRef.current = searchSuggests;

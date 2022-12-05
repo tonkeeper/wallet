@@ -1,5 +1,5 @@
 import { useTranslator } from '$hooks';
-import { useDeeplinking } from '$libs/deeplinking';
+import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import { openDAppsSearch, openRequireWalletModal, openScanQR } from '$navigation';
 import { IsTablet, LargeNavBarHeight } from '$shared/constants';
 import { store } from '$store';
@@ -24,7 +24,10 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
   const handlePressOpenScanQR = React.useCallback(() => {
     if (store.getState().wallet.wallet) {
       openScanQR((str) => {
-        const resolver = deeplinking.getResolver(str, { delay: 200 });
+        const resolver = deeplinking.getResolver(str, {
+          delay: 200,
+          origin: DeeplinkOrigin.QR_CODE,
+        });
         if (resolver) {
           resolver();
           return true;

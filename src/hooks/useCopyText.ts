@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import Clipboard from '@react-native-community/clipboard';
 import { t } from '$translation';
-import { triggerImpactLight } from '$utils';
 import { Toast } from '$store';
 
 export const useCopyText = () => {
@@ -9,7 +8,6 @@ export const useCopyText = () => {
     if (value) {
       Clipboard.setString(String(value));
       Toast.success(toastText || t('copied'));
-      triggerImpactLight();
     }
   }, []);
 };
