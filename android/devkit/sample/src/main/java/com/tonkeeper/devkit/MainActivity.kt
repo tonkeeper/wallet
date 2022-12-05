@@ -3,6 +3,8 @@ package com.tonkeeper.devkit
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.core.view.WindowCompat
+import com.tonkeeper.ton.mnemonic.Mnemonic
+import com.tonkeeper.ton.mnemonic.Wordlist
 
 class MainActivity : ComponentActivity() {
 

@@ -146,7 +146,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
         >
           {nft.name || nft.collection?.name || nft.content.image.baseUrl ? (
             <ImageWithTitle
-              uri={isDNS || isTG ? undefined : nft.content.image.baseUrl}
+              uri={isDNS ? undefined : nft.content.image.baseUrl}
               lottieUri={lottieUri}
               videoUri={videoUri}
               title={isTG ? dnsToUsername(nft.name) : nft.dns || nft.name}
