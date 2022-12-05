@@ -3,7 +3,8 @@ import BN from 'bn.js';
 import { Cell } from 'tonweb/dist/types/boc/cell';
 import { BitStringReader } from '$utils/bitStringReader';
 import * as mnemonic from './mnemonic';
-import { debugLog, maskifyAddress } from '$utils';
+import { debugLog } from '$utils';
+import { Address } from './Address';
 
 export class Ton {
   static toNano(value: number | string | BN) {
@@ -23,29 +24,19 @@ export class Ton {
     return `${Ton.fromNano(amount)} ${currency}`;
   }
   static formatAddress(
-    address: AddressType, 
-    opts: { 
+    address: AddressType,
+    opts: {
       bounce?: boolean;
       cut?: boolean;
-    } = {}
+    } = {},
   ) {
-    const { bounce = true, cut } = opts;
-
     try {
-      const addr = new TonWeb.utils.Address(address).toString(true, true, bounce);
-
-      if (cut) {
-        return maskifyAddress(addr);
-      }
-
-      return addr;
+      return new Address(address).format(opts);
     } catch (err) {
       debugLog('[formatAddress]', address, err);
       return '';
     }
   }
-
-
 
   static mnemonic = mnemonic;
   static base64ToCell(base64?: string): Cell | undefined {
