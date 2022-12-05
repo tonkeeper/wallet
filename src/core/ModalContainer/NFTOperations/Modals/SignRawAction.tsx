@@ -176,11 +176,7 @@ const NftItemTransferAction = React.memo<NftItemTransferActionProps>((props) => 
     <S.Container>
       <S.Center>
         <S.NFTItemPreview>
-          {isTG ? (
-            <S.LocalImage source={require('$assets/tg-full-logo.png')} />
-          ) : (
-            <S.Image uri={item.data?.metadata?.image} resize={512} />
-          )}
+          <S.Image uri={item.data?.metadata?.image} resize={512} />
         </S.NFTItemPreview>
         <S.Caption>{caption}</S.Caption>
         {item.data ? (
