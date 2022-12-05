@@ -112,7 +112,7 @@ export class ConnectReplyBuilder {
           return {
             name: 'ton_addr',
             address,
-            network: this.getNetwork(),
+            network: ConnectReplyBuilder.getNetwork(),
             // TonConnect TODO
             walletStateInit: '',
           };
