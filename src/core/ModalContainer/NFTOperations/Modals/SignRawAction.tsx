@@ -8,7 +8,7 @@ import {
 import * as S from '../NFTOperations.styles';
 import { Highlight, Separator, Skeleton, Text } from '$uikit';
 import { copyText } from '$hooks/useCopyText';
-import { Ton } from '$libs/Ton';
+import { Address, Ton } from '$libs/Ton';
 import { t } from '$translation';
 import { ListHeader } from '$uikit';
 import { dnsToUsername } from '$utils/dnsToUsername';
@@ -93,7 +93,7 @@ interface TonTransferActionProps {
 const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
   const { action, skipHeader, totalFee } = props;
   const amount = Ton.formatAmount(action.amount);
-  const address = Ton.formatAddress(action.recipient.address, { cut: true });
+  const address = new Address(action.recipient.address);
 
   return (
     <>
@@ -109,16 +109,16 @@ const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
             </S.InfoItem>
           </Highlight>
           <Separator />
-          <Highlight onPress={() => copyText(address)}>
+          <Highlight onPress={() => copyText(address.format())}>
             <S.InfoItem>
               <S.InfoItemLabel>{t('txActions.signRaw.recipient')}</S.InfoItemLabel>
-              <S.InfoItemValueText>{address}</S.InfoItemValueText>
+              <S.InfoItemValueText>{address.format({ cut: true })}</S.InfoItemValueText>
             </S.InfoItem>
           </Highlight>
           {Boolean(action.comment) && (
             <>
               <Separator />
-              <Highlight onPress={() => copyText(address)}>
+              <Highlight onPress={() => copyText(action.comment)}>
                 <S.InfoItem>
                   <S.InfoItemLabel>{t('txActions.signRaw.comment')}</S.InfoItemLabel>
                   <S.InfoItemValueText>{action.comment}</S.InfoItemValueText>
@@ -129,7 +129,7 @@ const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
           {Boolean(totalFee) && (
             <>
               <Separator />
-              <Highlight onPress={() => copyText(address)}>
+              <Highlight onPress={() => copyText(totalFee)}>
                 <S.InfoItem>
                   <S.InfoItemLabel>{t('txActions.fee')}</S.InfoItemLabel>
                   <S.InfoItemValueText>{totalFee}</S.InfoItemValueText>
@@ -151,9 +151,7 @@ interface NftItemTransferActionProps {
 const NftItemTransferAction = React.memo<NftItemTransferActionProps>((props) => {
   const { action, totalFee } = props;
   const item = useDownloadNFT(action.nft);
-  const address = action.recipient
-    ? Ton.formatAddress(action.recipient.address, { cut: true })
-    : '';
+  const address = action.recipient ? new Address(action.recipient.address) : '';
 
   const isTG = (item.data?.dns || item.data?.name)?.endsWith('.t.me');
 
@@ -189,10 +187,12 @@ const NftItemTransferAction = React.memo<NftItemTransferActionProps>((props) => 
       </S.Center>
 
       <S.Info>
-        <Highlight onPress={() => copyText(address)}>
+        <Highlight onPress={() => address && copyText(address.format())}>
           <S.InfoItem>
             <S.InfoItemLabel>{t('txActions.signRaw.recipient')}</S.InfoItemLabel>
-            <S.InfoItemValueText>{address}</S.InfoItemValueText>
+            <S.InfoItemValueText>
+              {address && address.format({ cut: true })}
+            </S.InfoItemValueText>
           </S.InfoItem>
         </Highlight>
         {Boolean(totalFee) && (
@@ -352,7 +352,7 @@ interface UnknownActionProps {
 }
 
 const UnknownAction = React.memo<UnknownActionProps>(({ action, skipHeader }) => {
-  const address = Ton.formatAddress(action.address, { cut: true });
+  const address = new Address(action.address);
   const amount = Ton.formatAmount(action.amount);
 
   return (
@@ -371,10 +371,10 @@ const UnknownAction = React.memo<UnknownActionProps>(({ action, skipHeader }) =>
             </S.InfoItem>
           </Highlight>
           <Separator />
-          <Highlight onPress={() => copyText(address)}>
+          <Highlight onPress={() => copyText(address.format())}>
             <S.InfoItem>
               <S.InfoItemLabel>{t('txActions.signRaw.recipient')}</S.InfoItemLabel>
-              <S.InfoItemValueText>{address}</S.InfoItemValueText>
+              <S.InfoItemValueText>{address.format({ cut: true })}</S.InfoItemValueText>
             </S.InfoItem>
           </Highlight>
         </S.Info>
