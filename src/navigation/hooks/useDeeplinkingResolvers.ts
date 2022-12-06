@@ -169,6 +169,11 @@ export function useDeeplinkingResolvers() {
           }),
         );
       }
+    } else if (query.jetton) {
+      if (!isValidAddress(query.jetton)) {
+        return Toast.fail(t('transfer_deeplink_address_error'));
+      }
+      openSend(query.jetton, address, comment, resolveParams.withGoBack, true);
     } else {
       openSend(currency, address, comment);
     }
