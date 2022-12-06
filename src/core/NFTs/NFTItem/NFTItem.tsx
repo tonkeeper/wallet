@@ -55,20 +55,6 @@ export const NFTItem: React.FC<NFTItemProps> = ({ item, isLastInRow }) => {
           </S.Badges>
         </S.DNSBackground>
       );
-    } else if (isTG) {
-      return (
-        <S.DNSBackground>
-          <Text style={S.textStyles.domainText} numberOfLines={4} ellipsizeMode="tail">
-            {dnsToUsername(item.name)}
-          </Text>
-          <S.OnSaleBadge>{isOnSale ? <S.OnSaleBadgeIcon /> : null}</S.OnSaleBadge>
-          <S.Badges>
-            <S.DNSBadge>
-              <Icon name="ic-telegram-16" color="constantLight" />
-            </S.DNSBadge>
-          </S.Badges>
-        </S.DNSBackground>
-      );
     }
 
     return (

@@ -9,9 +9,22 @@ pluginManagement {
 rootProject.name = 'tonkeeper'
 
 include ':app'
+
 includeBuild("devkit")
 
-// React Native Stuff
+include(":libs-ton:crypto")
+project(":libs-ton:crypto").projectDir = file("./devkit/libs-ton/crypto")
+
+include(":libs-ton:mnemonic")
+project(":libs-ton:mnemonic").projectDir = file("./devkit/libs-ton/mnemonic")
+
+include(":libs-feature:localauth")
+project(":libs-feature:localauth").projectDir = file("./devkit/libs-feature/localauth")
+
+include(":libs-feature:wallet")
+project(":libs-feature:wallet").projectDir = file("./devkit/libs-feature/wallet")
+
+// React Native Things
 apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle");
 useExpoModules()
 

@@ -1,6 +1,7 @@
 import { useDeeplinking } from '$libs/deeplinking';
 import { openDAppsSearch } from '$navigation';
 import { walletSelector } from '$store/wallet';
+import { getCorrectUrl } from '$utils';
 import React, { FC, memo, useCallback, useState } from 'react';
 import { Linking, useWindowDimensions } from 'react-native';
 import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -18,8 +19,6 @@ import { useDAppBridge } from './hooks/useDAppBridge';
 export interface DAppBrowserProps {
   url: string;
 }
-
-const getCorrectUrl = (url: string) => (url.startsWith('http') ? url : `http://${url}`);
 
 const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
   const { url: initialUrl } = props;
@@ -105,12 +104,16 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
     ref.current?.goBack();
   }, [ref]);
 
+  const handleRefreshPress = useCallback(() => {
+    ref.current?.reload();
+  }, [ref]);
+
   const handleTitlePress = useCallback(() => {
-    const initialQuery = app?.name || webViewSource.uri;
+    const initialQuery = webViewSource.uri;
     openDAppsSearch(initialQuery, (url) => {
       setWebViewSource({ uri: getCorrectUrl(url) });
     });
-  }, [app, webViewSource.uri]);
+  }, [webViewSource.uri]);
 
   return (
     <S.Container>
@@ -122,6 +125,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
         canGoBack={canGoBack}
         onBackPress={handleGoBackPress}
         onTitlePress={handleTitlePress}
+        onRefreshPress={handleRefreshPress}
         disconnect={disconnect}
       />
       <S.DAppContainer>

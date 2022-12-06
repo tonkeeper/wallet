@@ -4,4 +4,5 @@ export interface SeparatorProps {
   absolute?: boolean;
   toTop?: boolean;
   backgroundColor?: TonThemeColor;
+  leftOffset?: number;
 }

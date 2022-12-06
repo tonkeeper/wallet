@@ -7,6 +7,7 @@ const PopularAppsComponent: FC = () => {
   const {
     fetching,
     appsList,
+    moreEnabled,
     actions: { fetchPopularApps },
   } = useAppsListStore();
 
@@ -26,7 +27,7 @@ const PopularAppsComponent: FC = () => {
       data={appsList}
       skeleton={fetching}
       rowsLimit={2}
-      moreTitle={t('browser.explore_all')}
+      moreEnabled={moreEnabled}
     />
   );
 };

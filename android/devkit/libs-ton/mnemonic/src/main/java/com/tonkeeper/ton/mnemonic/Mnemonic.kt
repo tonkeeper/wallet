@@ -18,6 +18,8 @@ object Mnemonic {
     private const val MacAlgorithm = "HmacSHA512"
 
     fun toKeyPair(mnemonic: List<String>): Nacl.Signature.KeyPair {
+        if (mnemonic.isEmpty()) throw MnemonicEmptyException()
+
         val normalized = normalize(mnemonic)
         val seed = toSeed(normalized)
         val sliced = seed.sliceArray(0 until 32)
@@ -25,6 +27,8 @@ object Mnemonic {
     }
 
     fun isCorrect(mnemonic: List<String>): Boolean {
+        if (mnemonic.isEmpty()) throw MnemonicEmptyException()
+
         val normalized = normalize(mnemonic)
         normalized.forEach { if (Wordlist.contains(it).not()) return false }
 

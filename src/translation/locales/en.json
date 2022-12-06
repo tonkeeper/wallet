@@ -287,12 +287,19 @@
   "browser": {
     "title": "Browser",
     "search_label": "Search or enter address",
-    "start_typing": "Start typing or paste the link\nto find what you want",
+    "start_typing": "Enter an address or search the web",
     "empty_search": "Your search returned no results",
     "connected_title": "Connected",
     "popular_title": "Popular",
     "explore_all": "Explore all",
-    "open_link": "Open link"
+    "open_link": "Open link",
+    "web_search_title": "Google Search",
+    "actions": {
+      "refresh": "Refresh",
+      "share": "Share",
+      "copy_link": "Copy link",
+      "disconnect": "Remove"
+    }
   },
 
   "exchange_title": "Buy TON",
@@ -477,6 +484,7 @@
   "ton_login_connect_button": "Connect wallet",
   "ton_login_back_to_button": "Back to %{name}",
   "ton_login_success": "Done",
+  "ton_login_notice": "Be sure to check the service address before connecting the wallet.",
 
   "nft_confirm_operation": "Сonfirm",
   "nft_show_details": "Show details",

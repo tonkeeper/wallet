@@ -5,31 +5,34 @@ import * as S from './AppsList.style';
 import { APPS_ITEMS_IN_ROW } from '$core/DAppsExplore/constants';
 import { Icon } from '$uikit';
 import { AppItemSkeleton } from '../AppItem/AppItemSkeleton';
+import { useTranslator } from '$hooks';
 
 interface Props {
   title: string;
   data: { name: string; icon: string; url: string }[];
   rowsLimit?: number;
-  moreTitle?: string;
+  moreEnabled?: boolean;
   skeleton?: boolean;
   onMorePress?: () => void;
   onItemLongPress?: (url: string) => void;
 }
 
 const AppsListComponent: FC<Props> = (props) => {
-  const { title, data, rowsLimit, moreTitle, skeleton, onMorePress, onItemLongPress } =
+  const { title, data, rowsLimit, moreEnabled, skeleton, onMorePress, onItemLongPress } =
     props;
+
+  const t = useTranslator();
 
   const skeletonCount = APPS_ITEMS_IN_ROW * (rowsLimit || 1);
 
   const apps = useMemo(() => {
     if (rowsLimit) {
       const end = APPS_ITEMS_IN_ROW * rowsLimit;
-      return data.slice(0, moreTitle ? end - 1 : end);
+      return data.slice(0, moreEnabled ? end - 1 : end);
     }
 
     return data;
-  }, [data, moreTitle, rowsLimit]);
+  }, [data, moreEnabled, rowsLimit]);
 
   return (
     <S.Container>
@@ -55,9 +58,9 @@ const AppsListComponent: FC<Props> = (props) => {
                 onLongPress={() => onItemLongPress?.(app.url)}
               />
             ))}
-            {moreTitle ? (
+            {moreEnabled ? (
               <AppItem
-                name={moreTitle}
+                name={t('browser.explore_all')}
                 icon={
                   <S.MoreIconContainer>
                     <Icon name="ic-chevron-right-16" color="foregroundPrimary" />

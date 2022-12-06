@@ -7,6 +7,7 @@ export interface IAppMetadata {
 export interface IAppsListStore {
   fetching: boolean;
   appsList: IAppMetadata[];
+  moreEnabled: boolean;
   actions: {
     fetchPopularApps: () => void;
   };

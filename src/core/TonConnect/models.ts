@@ -1,6 +1,6 @@
 import { AuthRequestBody, TonLoginClient } from '@tonapps/tonlogin-client';
-import { ConnectItemReply, ConnectRequest } from '@tonconnect/protocol';
-import { ConnectReplyBuilder } from '$tonconnect';
+import { ConnectItemReply } from '@tonconnect/protocol';
+import { ConnectReplyBuilder, DAppManifest } from '$tonconnect';
 
 export interface TonConnectModalResponse {
   address: string;
@@ -17,10 +17,11 @@ export type TonConnectModalProps =
     }
   | {
       protocolVersion: 2;
-      connectRequest: ConnectRequest;
+      manifest: DAppManifest;
       replyBuilder: ConnectReplyBuilder;
       requestPromise: {
         resolve: (response: TonConnectModalResponse) => void;
         reject: () => void;
       };
+      hideImmediately: boolean;
     };

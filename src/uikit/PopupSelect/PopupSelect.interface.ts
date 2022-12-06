@@ -7,6 +7,7 @@ export interface PopupSelectProps<T> {
   children: React.ReactElement;
   width?: number;
   autoWidth?: boolean;
+  minWidth?: boolean;
   scrollY?: Animated.SharedValue<number>;
   onChange: (item: T) => void;
   renderItem: (item: T, index: number) => React.ReactNode;
