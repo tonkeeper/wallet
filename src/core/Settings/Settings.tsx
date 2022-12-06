@@ -92,10 +92,6 @@ export const Settings: FC = () => {
     Linking.openURL(t('settings_news_url')).catch((err) => console.log(err));
   }, [t]);
 
-  const handleDiscussion = useCallback(() => {
-    Linking.openURL(t('settings_discussion_url')).catch((err) => console.log(err));
-  }, [t]);
-
   const handleResetWallet = useCallback(() => {
     Alert.alert(t('settings_reset_alert_title'), t('settings_reset_alert_caption'), [
       {
@@ -295,9 +291,6 @@ export const Settings: FC = () => {
               </CellSectionItem>
               <CellSectionItem onPress={handleNews} icon="ic-telegram-28">
                 {t('settings_news')}
-              </CellSectionItem>
-              <CellSectionItem onPress={handleDiscussion} icon="ic-telegram-28">
-                {t('settings_discussion')}
               </CellSectionItem>
               <CellSectionItem onPress={handleLegal} icon="ic-doc-28">
                 {t('settings_legal_documents')}
