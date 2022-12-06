@@ -12,6 +12,10 @@ protocol PassCodeViewOutput: AnyObject {
   func close()
 }
 
+enum CreatePassCodeStep {
+  case enter, reenter
+}
+
 final class PassCodePresenter: NSObject {
   
   var didPasscodeEnter: ((String?) -> Void)? = nil
@@ -23,10 +27,20 @@ final class PassCodePresenter: NSObject {
   @Autowired private var userDefaultsService: UserDefaultsService?
   
   private var localPasscode = ""
+  private var localPasscodeRepeat = ""
   private var timer: Timer?
+  private var isCreate: Bool {
+    return (try? keychainService?.string(forKey: KeychainService.passcodeKeyPath)) == nil
+  }
+  private var createPassCodeStep: CreatePassCodeStep = .enter {
+    didSet {
+      view?.configureTitle(isCreate: isCreate, createPassCodeStep: createPassCodeStep)
+    }
+  }
   
-  override init() {
+  init(view: PassCodeViewInput?) {
     super.init()
+    self.view = view
     
     configure()
   }
@@ -39,6 +53,7 @@ final class PassCodePresenter: NSObject {
       view?.setupBiometricButton(image: nil, alpha: 0)
     }
     
+    view?.configureTitle(isCreate: isCreate, createPassCodeStep: createPassCodeStep)
     updateAttemptsState()
   }
   
@@ -99,6 +114,31 @@ final class PassCodePresenter: NSObject {
     updateAttemptsState()
   }
   
+  private func validateNewPasscode() {
+    guard passCodeCount >= 4 else { return }
+    
+    switch createPassCodeStep {
+    case .enter:
+      localPasscodeRepeat = localPasscode
+      localPasscode = ""
+      createPassCodeStep = .reenter
+      view?.resetPassodeCircles()
+      
+    case .reenter:
+      if localPasscodeRepeat == localPasscode {
+        view?.successPasscodeCircle { [weak self] in
+          self?.complete()
+        }
+      } else {
+        localPasscodeRepeat = ""
+        localPasscode = ""
+        createPassCodeStep = .enter
+        view?.errorPasscodeCircles()
+      }
+    }
+    
+  }
+  
 }
 
 // MARK: - PassCodeViewOutput
@@ -115,9 +155,9 @@ extension PassCodePresenter: PassCodeViewOutput {
   }
   
   func deleteNum() {
-    guard localPasscode.count > 0 else { return }
+    guard passCodeCount > 0 else { return }
     localPasscode.removeLast()
-    view?.updateCircle(at: localPasscode.count, type: .empty)
+    view?.updateCircle(at: passCodeCount, type: .empty)
   }
   
   func biometric() {
@@ -129,18 +169,24 @@ extension PassCodePresenter: PassCodeViewOutput {
   }
   
   func validatePasscode() {
-    if localPasscode.count >= 4 {
-      if let passcode = try? keychainService?.string(forKey: KeychainService.passcodeKeyPath),
-         passcode == localPasscode {
-        view?.successPasscodeCircle { [weak self] in
-          self?.complete()
-        }
-      } else {
-        localPasscode = ""
-        decreaseAttempts()
-        view?.resetPassodeCircles()
+    guard passCodeCount >= 4 else { return }
+    
+    if let passcode = try? keychainService?.string(forKey: KeychainService.passcodeKeyPath),
+       passcode == localPasscode {
+      view?.successPasscodeCircle { [weak self] in
+        self?.complete()
       }
+      return
     }
+    
+    if isCreate {
+      validateNewPasscode()
+      return
+    }
+    
+    localPasscode = ""
+    decreaseAttempts()
+    view?.errorPasscodeCircles()
   }
   
   func logOut() {
