@@ -11,6 +11,7 @@ export const DevWalletStoreScreen: React.FC = () => {
 
   const words = ["siege", "wasp", "pencil", "awake", "rotate", "swear", "wedding", "oblige", "region", "thunder", "pilot", "child", "rice", "huge", "tongue", "jump", "deal", "cram", "conduct", "notice", "exchange", "excite", "fog", "isolate"];
   const pubkey = 'a4a571929f1dfbe1f697d13764b96a1a168014c131d65d5c546371a5a00fd54c';
+  const password = '';
 
   return (
     <Screen>
@@ -21,7 +22,7 @@ export const DevWalletStoreScreen: React.FC = () => {
             label="WalletStore.importWalletWithPasscode"
             onPress={async () => {
               try {
-                const walletInfo = await WalletStore.importWalletWithPasscode(words, '1234');
+                const walletInfo = await WalletStore.importWalletWithPasscode(words, password);
 
                 console.log(walletInfo);
                 Toast.show(JSON.stringify(walletInfo));
@@ -124,7 +125,7 @@ export const DevWalletStoreScreen: React.FC = () => {
             label="WalletStore.exportWithPasscode" 
             onPress={async () => {
               try {  
-                const result = await WalletStore.exportWithPasscode(pubkey, '1234');
+                const result = await WalletStore.exportWithPasscode(pubkey, password);
 
                 console.log(result);
                 Toast.show(JSON.stringify(result));
@@ -169,7 +170,7 @@ export const DevWalletStoreScreen: React.FC = () => {
             label="WalletStore.backupWithPasscode" 
             onPress={async () => {
               try {  
-                const result = await WalletStore.backupWithPasscode(pubkey, '1234');
+                const result = await WalletStore.backupWithPasscode(pubkey, password);
 
                 console.log(result);
                 Toast.show(JSON.stringify(result));
