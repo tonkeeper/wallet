@@ -15,9 +15,9 @@ export const Wrap = styled.View<{ absolute: boolean; toTop: boolean }>`
   height: 0;
 `;
 
-export const Separator = styled.View<{ leftOffset: number }>`
+export const Separator = styled.View<{ leftOffset?: number }>`
   height: ${ns(0.5)}px;
   background: ${({ theme }) => theme.colors.border};
-  margin-left: ${({ leftOffset }) => ns(leftOffset)}px;
+  margin-left: ${({ leftOffset }) => ns(leftOffset ?? 16)}px;
   margin-top: ${ns(-0.5)}px;
 `;
