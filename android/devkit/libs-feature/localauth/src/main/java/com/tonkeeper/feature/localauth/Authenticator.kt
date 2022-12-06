@@ -1,9 +1,19 @@
 package com.tonkeeper.feature.localauth
 
-class Authenticator(private val config: Config) {
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.first
+
+class Authenticator(
+    private val config: Config,
+    private val datastore: DataStore<Preferences>
+) {
 
     suspend fun authWithPasscode(passcode: String) {
-
+        val prefs = datastore.data.first()
+        val saved = prefs[stringPreferencesKey(config.passcodeAlias)]
     }
 
     suspend fun authWithBiometry() {
@@ -11,7 +21,8 @@ class Authenticator(private val config: Config) {
     }
 
     suspend fun isPasscodeEnabled(): Boolean {
-        return TODO()
+        val prefs = datastore.data.first()
+        return prefs.contains(stringPreferencesKey(config.passcodeAlias))
     }
 
     suspend fun isBiometryEnabled(): Boolean {
@@ -19,7 +30,9 @@ class Authenticator(private val config: Config) {
     }
 
     suspend fun setupPasscode(value: String) {
-
+        datastore.edit {
+            it[stringPreferencesKey(config.passcodeAlias)] = value
+        }
     }
 
     suspend fun setupBiometry() {
