@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+option java_package = "com.example.application";
+option java_multiple_files = true;
+
+message Settings {
+  int32 example_counter = 1;
+}
