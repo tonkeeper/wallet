@@ -31,6 +31,7 @@ import { MarketplacesModalProps } from '$core/ModalContainer/Marketplaces/Market
 import { AddEditFavoriteAddressProps } from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress.interface';
 import { Action } from 'tonapi-sdk-js';
 import { TonConnectModalProps } from '$core/TonConnect/models';
+import { store } from '$store'
 
 export const navigationRef_depreceted = createRef<NavigationContainerRef>();
 export const navigationRef = createNavigationContainerRef();
@@ -350,10 +351,14 @@ export async function openExchangeMethodModal(methodId: string) {
 }
 
 export function openTonConnect(props: TonConnectModalProps) {
-  navigate(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.TON_LOGIN,
-    ...props,
-  });
+  if (store.getState().wallet.wallet) {
+    navigate(AppStackRouteNames.ModalContainer, {
+      modalName: ModalName.TON_LOGIN,
+      ...props,
+    });
+  } else { 
+    openRequireWalletModal();
+  }
 }
 
 export function openCreateSubscription(invoiceId: string) {
