@@ -123,8 +123,8 @@ export const FiatCurrencySymbolsConfig = {
     side: 'end',
   },
   [FiatCurrencies.Aed]: {
-    symbol: 'د.إ',
-    side: 'start',
+    symbol: 'DH',
+    side: 'end',
   },
   [FiatCurrencies.Gbp]: {
     symbol: '£',
