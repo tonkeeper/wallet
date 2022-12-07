@@ -312,6 +312,7 @@
   "settings_contact_support": "Contact support",
   "settings_legal_documents": "Legal documents",
   "settings_news": "Tonkeeper news",
+  "settings_discussion": "Support chat",
   "settings_backup_seed": "Show recovery phrase",
   "settings_reset": "Log out",
   "settings_notifications": "Notifications",
@@ -328,6 +329,7 @@
   "settings_security": "Security",
   "settings_appearance": "Theme",
   "settings_news_url": "https://t.me/tonkeeper",
+  "settings_discussion_url": "https://t.me/tonkeeper_discuss",
   "settings_jettons_list": "List of tokens",
   "settings_delete_account": "Delete account",
 
