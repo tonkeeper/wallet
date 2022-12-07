@@ -6,8 +6,12 @@ import TonWeb from 'tonweb';
 import { Toast } from '$store/zustand';
 
 export const DevWalletStoreScreen: React.FC = () => {
-  const words = [];
-  const pubkey = '';
+  //const words = ["defy", "leopard", "dutch", "exclude", "tortoise", "also", "hen", "resource", "large", "stereo", "remain", "brother", "original", "curve", "media", "valid", "summer", "impose", "expand", "rebel", "six", "loyal", "hungry", "shoe"];
+  //const pubkey = '2671942773bc7da30afd4a7dd32fdd156f4472ac3cbecde2459175c3c77d4e8c';
+
+  const words = ["siege", "wasp", "pencil", "awake", "rotate", "swear", "wedding", "oblige", "region", "thunder", "pilot", "child", "rice", "huge", "tongue", "jump", "deal", "cram", "conduct", "notice", "exchange", "excite", "fog", "isolate"];
+  const pubkey = 'a4a571929f1dfbe1f697d13764b96a1a168014c131d65d5c546371a5a00fd54c';
+  const password = '';
 
   return (
     <Screen>
@@ -18,7 +22,7 @@ export const DevWalletStoreScreen: React.FC = () => {
             label="WalletStore.importWalletWithPasscode"
             onPress={async () => {
               try {
-                const walletInfo = await WalletStore.importWalletWithPasscode(words, '1234');
+                const walletInfo = await WalletStore.importWalletWithPasscode(words, password);
 
                 console.log(walletInfo);
                 Toast.show(JSON.stringify(walletInfo));
@@ -103,10 +107,25 @@ export const DevWalletStoreScreen: React.FC = () => {
           />
 
           <ListCell 
+            label="WalletStore.exportKey" 
+            onPress={async () => {
+              try {  
+                const result = await WalletStore.exportKey(pubkey);
+
+                console.log(result);
+                Toast.show(JSON.stringify(result));
+              } catch (err) {
+                console.error(err);
+                Toast.show(JSON.stringify(err.message));
+              }
+            }}
+          />
+
+          <ListCell 
             label="WalletStore.exportWithPasscode" 
             onPress={async () => {
               try {  
-                const result = await WalletStore.exportWithPasscode(pubkey, '1234');
+                const result = await WalletStore.exportWithPasscode(pubkey, password);
 
                 console.log(result);
                 Toast.show(JSON.stringify(result));
@@ -133,10 +152,25 @@ export const DevWalletStoreScreen: React.FC = () => {
           />
 
           <ListCell 
+            label="WalletStore.backup" 
+            onPress={async () => {
+              try {  
+                const result = await WalletStore.backup(pubkey);
+
+                console.log(result);
+                Toast.show(JSON.stringify(result));
+              } catch (err) {
+                console.error(err);
+                Toast.show(JSON.stringify(err.message));
+              }
+            }}
+          />
+          
+          <ListCell 
             label="WalletStore.backupWithPasscode" 
             onPress={async () => {
               try {  
-                const result = await WalletStore.backupWithPasscode(pubkey, '1234');
+                const result = await WalletStore.backupWithPasscode(pubkey, password);
 
                 console.log(result);
                 Toast.show(JSON.stringify(result));
