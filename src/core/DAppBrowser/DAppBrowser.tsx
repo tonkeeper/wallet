@@ -139,7 +139,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
           mixedContentMode="always"
           hideKeyboardAccessoryView
           thirdPartyCookiesEnabled={true}
-          forceDarkOn
+          forceDarkOn={false}
           allowsInlineMediaPlayback
           allowsFullscreenVideo
           source={webViewSource}
