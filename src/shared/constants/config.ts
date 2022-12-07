@@ -29,6 +29,7 @@ export enum FiatCurrencies {
   Usd = 'usd',
   Eur = 'eur',
   Rub = 'rub',
+  Aed = 'aed',
   Gbp = 'gbp',
   Chf = 'chf',
   Cny = 'cny',
@@ -119,6 +120,10 @@ export const FiatCurrencySymbolsConfig = {
   },
   [FiatCurrencies.Rub]: {
     symbol: '₽',
+    side: 'end',
+  },
+  [FiatCurrencies.Aed]: {
+    symbol: 'DH',
     side: 'end',
   },
   [FiatCurrencies.Gbp]: {
