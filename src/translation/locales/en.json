@@ -522,6 +522,10 @@
     "amount": "Amount",
 
     "signRaw": {
+      "wrongTime": {
+        "title": "Error occured",
+        "description": "Turn on automatic time and date in your device settings. Then retry your operation."
+      },
       "totalFee": "Total fee",
       "title": "Confirm transaction",
       "recipient": "Recipient",

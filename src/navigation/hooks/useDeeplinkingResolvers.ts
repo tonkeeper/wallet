@@ -25,9 +25,17 @@ import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.typ
 import { AppStackRouteNames } from '$navigation/navigationNames';
 import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
 import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
+import {MainDB} from "$database";
+import {put} from "redux-saga/effects";
+import {mainActions} from "$store/main";
+import {Alert} from "react-native";
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
+};
+
+const getIsTimeSynced = () => {
+  return store.getState().main.isTimeSynced;
 };
 
 const getExpiresSec = () => {
@@ -195,6 +203,14 @@ export function useDeeplinkingResolvers() {
       txBody.expires_sec < getTimeSec() ||
       (isSignRaw && txBody.params.valid_until < getTimeSec())
     ) {
+      if (!getIsTimeSynced()) {
+        MainDB.setTimeSyncedDismissed(false);
+        dispatch(mainActions.setTimeSyncedDismissed(false));
+        Alert.alert(
+          t('send_sending_wrong_time_title'),
+          t('send_sending_wrong_time_description'),
+        );
+      }
       throw new Error(t('nft_operations_expired'));
     }
 
