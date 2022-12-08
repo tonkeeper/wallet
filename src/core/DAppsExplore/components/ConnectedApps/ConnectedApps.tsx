@@ -17,15 +17,15 @@ const ConnectedAppsComponent: FC = () => {
         data={connectedApps}
         onItemLongPress={(url) =>
           Alert.alert(
-            'Are you sure want to remove this app?',
-            'This will destroy link between your wallet and app, but you can always try to connect again.',
+            t('dapps.remove_alert_title'),
+            t('dapps.remove_alert_caption'),
             [
               {
-                text: 'Cancel',
+                text: t('cancel'),
                 style: 'cancel',
               },
               {
-                text: 'Remove',
+                text: t('dapps.remove_alert_button'),
                 style: 'destructive',
                 onPress: () => TonConnect.disconnect(url),
               },

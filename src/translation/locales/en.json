@@ -303,6 +303,12 @@
     }
   },
 
+  "dapps": {
+    "remove_alert_title": "Are you sure want to remove this app?",
+    "remove_alert_caption": "This will destroy link between your wallet and app, but you can always try to connect again.",
+    "remove_alert_button": "Remove"
+  },
+
   "exchange_title": "Buy TON",
   "exchange_other_ways": "Other ways to buy or sell TON",
 
