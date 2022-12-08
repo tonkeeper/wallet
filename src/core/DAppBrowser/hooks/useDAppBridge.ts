@@ -54,7 +54,7 @@ export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
       disconnect: () => {
         setConnectEvent(null);
 
-        return Promise.resolve();
+        return TonConnect.disconnect(webViewUrl);
       },
       send: async <T extends RpcMethod>(request: AppRequest<T>) =>
         TonConnect.handleRequestFromInjectedBridge(request, webViewUrl),
