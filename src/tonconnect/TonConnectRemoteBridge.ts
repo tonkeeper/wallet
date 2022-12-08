@@ -205,7 +205,7 @@ class TonConnectRemoteBridgeService {
   async handleConnectDeeplink(query: IConnectQrQuery) {
     try {
       const protocolVersion = Number(query.v);
-      const request = Base64.decode(query.r, true).toObject() as ConnectRequest;
+      const request = JSON.parse(decodeURIComponent(query.r)) as ConnectRequest;
       const clientSessionId = query.id;
 
       console.log('handleConnectDeeplink request', request);
@@ -224,8 +224,8 @@ class TonConnectRemoteBridgeService {
       await this.send(response, sessionCrypto, clientSessionId);
 
       this.redirectIfNeeded();
-    } catch {
-      console.log('handleConnectDeeplink error');
+    } catch (err) {
+      console.log('handleConnectDeeplink error', err);
     }
   }
 
