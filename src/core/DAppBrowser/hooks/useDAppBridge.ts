@@ -3,18 +3,15 @@ import { useCallback, useMemo, useState } from 'react';
 import { CURRENT_PROTOCOL_VERSION, TonConnect, tonConnectDeviceInfo } from '$tonconnect';
 import { useWebViewBridge } from '../jsBridge';
 import { TonConnectInjectedBridge } from './models';
-import { getDomainFromURL } from '$utils';
-import { getConnectedAppByDomain, useConnectedAppsStore } from '$store';
+import { getConnectedAppByUrl, useConnectedAppsStore } from '$store';
 
 export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
-  const domain = getDomainFromURL(webViewUrl);
-
   const [connectEvent, setConnectEvent] = useState<ConnectEvent | null>(null);
 
   const isConnected = useConnectedAppsStore(
     useCallback(
       (state) => {
-        const app = getConnectedAppByDomain(walletAddress, domain, state);
+        const app = getConnectedAppByUrl(walletAddress, webViewUrl, state);
 
         if (!app) {
           return false;
@@ -22,7 +19,7 @@ export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
 
         return Boolean(connectEvent && connectEvent.event === 'connect');
       },
-      [connectEvent, domain, walletAddress],
+      [connectEvent, webViewUrl, walletAddress],
     ),
   );
 

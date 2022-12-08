@@ -1,4 +1,3 @@
-import { getDomainFromURL } from '$utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import create from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
@@ -23,12 +22,10 @@ export const useConnectedAppsStore = create(
                 connectedApps[chainName][walletAddress] = {};
               }
 
-              const domain = getDomainFromURL(appData.url);
-
-              const alreadyConnectedApp = connectedApps[chainName][walletAddress][domain];
+              const alreadyConnectedApp = connectedApps[chainName][walletAddress][appData.url];
 
               if (alreadyConnectedApp) {
-                connectedApps[chainName][walletAddress][domain] = {
+                connectedApps[chainName][walletAddress][appData.url] = {
                   ...alreadyConnectedApp,
                   ...appData,
                   icon: appData.icon || alreadyConnectedApp.icon,
@@ -37,7 +34,7 @@ export const useConnectedAppsStore = create(
                     : alreadyConnectedApp.connections,
                 };
               } else {
-                connectedApps[chainName][walletAddress][domain] = {
+                connectedApps[chainName][walletAddress][appData.url] = {
                   ...appData,
                   connections: connection ? [connection] : [],
                 };
@@ -48,10 +45,9 @@ export const useConnectedAppsStore = create(
           },
           removeApp: (chainName, walletAddress, url) => {
             set(({ connectedApps }) => {
-              const domain = getDomainFromURL(url);
 
-              if (connectedApps[chainName][walletAddress]?.[domain]) {
-                delete connectedApps[chainName][walletAddress][domain];
+              if (connectedApps[chainName][walletAddress]?.[url]) {
+                delete connectedApps[chainName][walletAddress][url];
               }
 
               return { connectedApps };
@@ -60,7 +56,7 @@ export const useConnectedAppsStore = create(
         },
       }),
       {
-        name: 'tonConnectedApps',
+        name: 'TonConnectedApps',
         getStorage: () => AsyncStorage,
         partialize: ({ connectedApps }) => ({ connectedApps } as IConnectedAppsStore),
       },

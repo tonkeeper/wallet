@@ -1,7 +1,6 @@
 import { getChainName } from '$shared/dynamicConfig';
 import { store } from '$store';
-import { getDomainFromURL } from '$utils';
-import { getConnectedAppByDomain } from './selectors';
+import { getConnectedAppByUrl } from './selectors';
 import { IConnectedAppConnection, IConnectedApp, TonConnectBridgeType } from './types';
 import { useConnectedAppsStore } from './useConnectedAppsStore';
 
@@ -25,11 +24,10 @@ export const removeConnectedApp = (url: string) => {
 
 export const findConnectedAppByUrl = (url: string): IConnectedApp | null => {
   const currentWalletAddress = store.getState().wallet?.address?.ton;
-  const domain = getDomainFromURL(url);
 
-  return getConnectedAppByDomain(
+  return getConnectedAppByUrl(
     currentWalletAddress,
-    domain,
+    url,
     useConnectedAppsStore.getState(),
   );
 };

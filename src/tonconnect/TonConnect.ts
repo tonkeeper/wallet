@@ -331,7 +331,7 @@ class TonConnectService {
 
   async disconnect(url: string) {
     const connectedApp = findConnectedAppByUrl(url);
-
+    
     if (!connectedApp) {
       return;
     }
