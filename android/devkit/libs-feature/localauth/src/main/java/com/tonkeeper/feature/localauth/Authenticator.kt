@@ -1,6 +1,5 @@
 package com.tonkeeper.feature.localauth
 
-import android.content.Context
 import android.util.Base64
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
@@ -11,19 +10,21 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
+import kotlin.coroutines.resume
 
 class Authenticator(
-    private val context: Context,
+    private val activity: FragmentActivity,
     private val config: Config,
     private val datastore: DataStore<Preferences>
 ) {
 
-    private val biometric = BiometricManager.from(context)
-    private val executor = ContextCompat.getMainExecutor(context)
+    private val biometric = BiometricManager.from(activity)
+    private val executor = ContextCompat.getMainExecutor(activity)
 
     suspend fun authWithPasscode(passcode: String): AuthResult {
         val prefs = datastore.data.first()
@@ -33,13 +34,38 @@ class Authenticator(
         return if (decoded == passcode) AuthResult.Success else AuthResult.Failure
     }
 
-    suspend fun authWithBiometry() = suspendCancellableCoroutine<AuthResult> { continuation ->
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+    suspend fun authWithBiometry() = suspendCancellableCoroutine { continuation ->
+        val info = BiometricPrompt.PromptInfo.Builder()
             .setTitle("Biometric login for my app")
             .setSubtitle("Log in using your biometric credential")
             .setAllowedAuthenticators(BIOMETRIC_STRONG)
+            .setNegativeButtonText("Cancel")
             .build()
 
+        val callback = object : BiometricPrompt.AuthenticationCallback() {
+
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                if (continuation.isCancelled) return
+                continuation.resume(AuthResult.Success)
+            }
+
+            override fun onAuthenticationFailed() {
+                if (continuation.isCancelled) return
+                continuation.resume(AuthResult.Failure)
+            }
+
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                if (continuation.isCancelled) return
+                continuation.resume(AuthResult.Error)
+            }
+        }
+
+        val biometricPrompt = BiometricPrompt(activity, executor, callback)
+        biometricPrompt.authenticate(info)
+
+        continuation.invokeOnCancellation {
+            biometricPrompt.cancelAuthentication()
+        }
     }
 
     suspend fun isPasscodeEnabled(): Boolean {

@@ -16,19 +16,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.tonkeeper.feature.localauth.AuthResult
 import com.tonkeeper.feature.localauth.Authenticator
+import com.tonkeeper.feature.localauth.AuthenticatorBiometryError
 import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setEdgeToEdge()
 
         val authenticator = Authenticator(
-            context = this,
+            activity = this,
             config = Authenticator.Config(),
             datastore = settingsDataStore
         )
@@ -36,6 +38,10 @@ class MainActivity : ComponentActivity() {
         val passcodeStatus = mutableStateOf("?")
         val passcodeSetup = mutableStateOf("?")
         val passcodeAuth = mutableStateOf("?")
+
+        val biometryStatus = mutableStateOf("?")
+        val biometrySetup = mutableStateOf("?")
+        val biometryAuth = mutableStateOf("?")
 
         setContent {
             MaterialTheme(
@@ -45,12 +51,15 @@ class MainActivity : ComponentActivity() {
                     onPasscodeStatusClick = { updatePasscodeStatus(authenticator, passcodeStatus) },
                     onPasscodeSetupClick = { setupPasscode(authenticator, passcodeSetup) },
                     onPasscodeAuthClick = { authPasscode(authenticator, passcodeAuth) },
-                    onBiometryStatusClick = {},
-                    onBiometrySetupClick = {},
-                    onBiometryAuthClick = {},
+                    onBiometryStatusClick = { updateBiometryStatus(authenticator, biometryStatus) },
+                    onBiometrySetupClick = { setupBiometry(authenticator, biometrySetup) },
+                    onBiometryAuthClick = { authBiometry(authenticator, biometryAuth) },
                     passcodeStatusResult = passcodeStatus.value,
                     passcodeSetupResult = passcodeSetup.value,
-                    passcodeAuthResult = passcodeAuth.value
+                    passcodeAuthResult = passcodeAuth.value,
+                    biometryStatusResult = biometryStatus.value,
+                    biometrySetupResult = biometrySetup.value,
+                    biometryAuthResult = biometryAuth.value
                 )
             }
         }
@@ -96,6 +105,44 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun updateBiometryStatus(
+        authenticator: Authenticator,
+        state: MutableState<String>
+    ) {
+        lifecycleScope.launch {
+            val enabled = authenticator.isBiometryEnabled()
+            state.value = "Enabled: $enabled"
+        }
+    }
+
+    private fun setupBiometry(
+        authenticator: Authenticator,
+        state: MutableState<String>
+    ) {
+        lifecycleScope.launch {
+            try {
+                authenticator.setupBiometry()
+                state.value = "Success"
+            } catch (ex: AuthenticatorBiometryError) {
+                state.value = "Failure"
+            }
+        }
+    }
+
+    private fun authBiometry(
+        authenticator: Authenticator,
+        state: MutableState<String>
+    ) {
+        lifecycleScope.launch {
+            val result = authenticator.authWithBiometry()
+            state.value = when (result) {
+                AuthResult.Error -> "Error"
+                AuthResult.Failure -> "Failure"
+                AuthResult.Success -> "Success"
+            }
+        }
+    }
+
     @Composable
     private fun Home(
         onPasscodeStatusClick: () -> Unit,
@@ -107,6 +154,9 @@ class MainActivity : ComponentActivity() {
         passcodeStatusResult: String,
         passcodeSetupResult: String,
         passcodeAuthResult: String,
+        biometryStatusResult: String,
+        biometrySetupResult: String,
+        biometryAuthResult: String,
     ) {
         Column(
             Modifier
@@ -135,11 +185,11 @@ class MainActivity : ComponentActivity() {
                 color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(16.dp))
-            BiometryStatus(onClick = {}, result = "None")
+            BiometryStatus(onClick = onBiometryStatusClick, result = biometryStatusResult)
             Spacer(modifier = Modifier.height(8.dp))
-            BiometrySetup(onClick = {}, result = "None")
+            BiometrySetup(onClick = onBiometrySetupClick, result = biometrySetupResult)
             Spacer(modifier = Modifier.height(8.dp))
-            BiometryAuth(onClick = {}, result = "None")
+            BiometryAuth(onClick = onBiometryAuthClick, result = biometryAuthResult)
         }
     }
 
