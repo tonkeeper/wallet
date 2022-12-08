@@ -293,9 +293,6 @@ export const Settings: FC = () => {
               <CellSectionItem onPress={handleDiscussion} icon="ic-telegram-28">
                 {t('settings_discussion')}
               </CellSectionItem>
-              <CellSectionItem onPress={handleFeedback} icon="ic-envelope-28">
-                {t('settings_contact_support')}
-              </CellSectionItem>
               <CellSectionItem onPress={handleNews} icon="ic-telegram-28">
                 {t('settings_news')}
               </CellSectionItem>
