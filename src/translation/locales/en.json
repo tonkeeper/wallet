@@ -309,7 +309,7 @@
   "settings_title": "Settings",
   "settings_primary_currency": "Primary currency",
   "settings_rate": "Rate this app",
-  "settings_contact_support": "Contact support",
+  "settings_contact_support": "Contact Team",
   "settings_legal_documents": "Legal documents",
   "settings_news": "Tonkeeper news",
   "settings_discussion": "Support chat",
@@ -329,7 +329,7 @@
   "settings_security": "Security",
   "settings_appearance": "Theme",
   "settings_news_url": "https://t.me/tonkeeper",
-  "settings_discussion_url": "https://t.me/tonkeeper_discuss",
+  "settings_discussion_url": "https://t.me/tonkeeperdirect",
   "settings_jettons_list": "List of tokens",
   "settings_delete_account": "Delete account",
 
