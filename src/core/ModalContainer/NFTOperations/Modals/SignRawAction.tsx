@@ -13,6 +13,7 @@ import { t } from '$translation';
 import { ListHeader } from '$uikit';
 import { dnsToUsername } from '$utils/dnsToUsername';
 import { useDownloadNFT } from '../useDownloadNFT';
+import {knownActionTypes} from "$store/models";
 
 interface Props {
   action: Action;
@@ -57,7 +58,7 @@ export const SignRawAction = React.memo<Props>((props) => {
     );
   }
 
-  if (!Object.values(ActionTypeEnum).includes(action.type)) {
+  if (!knownActionTypes.includes(action.type)) {
     return (
       <SimplePreview
         simple_preview={action.simple_preview}

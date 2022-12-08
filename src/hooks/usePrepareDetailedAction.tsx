@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { EventModel } from '$store/models';
+import { EventModel, knownActionTypes } from '$store/models';
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
@@ -51,6 +51,12 @@ export function usePrepareDetailedAction(
     let sentLabelTranslationString = isReceive
       ? 'transaction_receive_date'
       : 'transaction_sent_date';
+
+    if (!knownActionTypes.includes(rawAction.type)) {
+      label = rawAction.simple_preview.name;
+      sentLabelTranslationString = 'transaction_contract_deploy_date';
+    }
+
     if (ActionTypeEnum.TonTransfer === rawAction.type) {
       if (!isReceive) {
         shouldShowSendToRecipientButton = true;

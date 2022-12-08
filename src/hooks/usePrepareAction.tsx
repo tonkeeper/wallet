@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { EventModel } from '$store/models';
+import { EventModel, knownActionTypes } from '$store/models';
 import { ActionItemBaseProps } from '$shared/components/ActionItem/ActionItemBase/ActionItemBase.interface';
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
@@ -18,7 +18,6 @@ import { TransactionItemNFT } from '$shared/components/ActionItem/TransactionIte
 import { subscriptionsSelector } from '$store/subscriptions';
 import { dnsToUsername } from '$utils/dnsToUsername';
 import { ActionTypeEnum } from 'tonapi-sdk-js';
-
 export function usePrepareAction(
   rawAction: any, // TODO
   event: EventModel,
@@ -29,6 +28,8 @@ export function usePrepareAction(
 
   return useMemo(() => {
     const action = rawAction[rawAction.type];
+    const transactionDate = new Date(event.timestamp * 1000);
+    let formattedDate = format(transactionDate, 'HH:mm');
 
     if (ActionTypeEnum.Unknown === rawAction.type) {
       return {
@@ -43,12 +44,14 @@ export function usePrepareAction(
       };
     }
 
-    if (!Object.values(ActionTypeEnum).includes(rawAction.type)) {
+    if (!knownActionTypes.includes(rawAction.type)) {
       if (rawAction.simple_preview) {
         return {
           type: 'Unknown',
           typeLabel: rawAction.simple_preview.name,
-          infoRows: [{ label: rawAction.simple_preview.short_description }],
+          infoRows: [
+            { label: rawAction.simple_preview.short_description, value: formattedDate },
+          ],
         };
       } else {
         return {
@@ -175,9 +178,6 @@ export function usePrepareAction(
       isInProgress: event.in_progress,
       isSpam: event.is_scam,
     };
-
-    const transactionDate = new Date(event.timestamp * 1000);
-    let formattedDate = format(transactionDate, 'HH:mm');
 
     const accountToDisplay = isReceive ? action.sender : action.recipient;
     if ([ActionTypeEnum.Subscribe, ActionTypeEnum.UnSubscribe].includes(rawAction.type)) {

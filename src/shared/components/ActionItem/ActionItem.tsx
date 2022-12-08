@@ -3,7 +3,6 @@ import { useEvent, usePrepareAction } from '$hooks';
 import { ActionItemProps } from './ActionItem.interface';
 import { ActionItemBase } from '$shared/components/ActionItem/ActionItemBase/ActionItemBase';
 import { openAction } from '$navigation';
-import { ActionTypeEnum } from 'tonapi-sdk-js';
 
 export const ActionItem: FC<ActionItemProps> = (props) => {
   const { eventKey, borderStart = true, borderEnd = true, action } = props;
@@ -12,10 +11,7 @@ export const ActionItem: FC<ActionItemProps> = (props) => {
   const preparedAction = usePrepareAction(action, event);
 
   const handleOpen = useCallback(() => {
-    if (
-      Object.values(ActionTypeEnum).includes(props.action.type) &&
-      props.action.type !== 'Unknown'
-    ) {
+    if (props.action.type !== 'Unknown') {
       openAction(props.eventKey, props.action);
     }
   }, [props.action, props.eventKey]);

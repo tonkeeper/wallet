@@ -1,5 +1,5 @@
 import { CryptoCurrency, FiatCurrency } from '$shared/constants';
-import {AccountEvent} from "tonapi-sdk-js";
+import {AccountEvent, ActionTypeEnum} from "tonapi-sdk-js";
 
 export type TransactionType =
   | 'receive'
@@ -278,3 +278,15 @@ export interface FavoriteModel {
   address: string;
   domain?: string;
 }
+
+export const knownActionTypes = [
+  ActionTypeEnum.Subscribe,
+  ActionTypeEnum.UnSubscribe,
+  ActionTypeEnum.Unknown,
+  ActionTypeEnum.AuctionBid,
+  ActionTypeEnum.JettonTransfer,
+  ActionTypeEnum.Unknown,
+  ActionTypeEnum.ContractDeploy,
+  ActionTypeEnum.NftItemTransfer,
+  ActionTypeEnum.TonTransfer,
+];
