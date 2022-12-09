@@ -12,7 +12,7 @@ import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
 
 export const RequireWallet: FC = () => {
   const t = useTranslator();
-  const bottomSheetRef = useRef<BottomSheetRef>(null)
+  const bottomSheetRef = useRef<BottomSheetRef>(null);
   const iconRef = useRef<LottieView>(null);
   const dispatch = useDispatch();
 

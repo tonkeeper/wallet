@@ -19,7 +19,10 @@ export const TimeNotSyncedModal = memo(() => {
   }, []);
 
   const handleOpenSettings = useCallback(() => {
-    Linking.openSettings();
+    if (Platform.OS === 'ios') {
+      return Linking.openSettings();
+    }
+    Linking.sendIntent('android.settings.DATE_SETTINGS');
   }, []);
 
   return (
