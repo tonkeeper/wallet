@@ -18,8 +18,7 @@ import * as S from './NFTOperations.styles';
 import { useNavigation } from '$libs/navigation';
 import { eventsActions } from '$store/events';
 import axios from 'axios';
-import { MainDB } from '$database';
-import { isTimeSyncedSelector, mainActions } from '$store/main';
+import { isTimeSyncedSelector } from '$store/main';
 
 enum States {
   INITIAL,
@@ -41,14 +40,6 @@ export const useNFTOperationState = (txBody?: TxBodyOptions) => {
   const onConfirm = (confirm: ConfirmFn) => async () => {
     try {
       if (txBody && txBody.expires_sec < getTimeSec()) {
-        if (!isTimeSynced) {
-          MainDB.setTimeSyncedDismissed(false);
-          dispatch(mainActions.setTimeSyncedDismissed(false));
-          Alert.alert(
-            t('send_sending_wrong_time_title'),
-            t('send_sending_wrong_time_description'),
-          );
-        }
         throw new NFTOperationError(t('nft_operations_expired'));
       }
 

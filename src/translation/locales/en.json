@@ -523,8 +523,9 @@
 
     "signRaw": {
       "wrongTime": {
-        "title": "Error occured",
-        "description": "Turn on automatic time and date in your device settings. Then retry your operation."
+        "title": "The clocks are not synchronized",
+        "description": "Seems like your device clock is not in sync with the network. Open device settings and enable automatic time and date.",
+        "button": "Open Settings"
       },
       "totalFee": "Total fee",
       "title": "Confirm transaction",

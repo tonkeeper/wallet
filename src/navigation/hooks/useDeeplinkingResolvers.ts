@@ -29,6 +29,7 @@ import {MainDB} from "$database";
 import {put} from "redux-saga/effects";
 import {mainActions} from "$store/main";
 import {Alert} from "react-native";
+import {openTimeNotSyncedModal} from "$core/ModalContainer/TimeNotSynced/TimeNotSynced";
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -199,18 +200,14 @@ export function useDeeplinkingResolvers() {
     const txBody = txRequest.body as any;
     const isSignRaw = isSignRawParams(txBody?.params);
 
+    if (!getIsTimeSynced()) {
+      return openTimeNotSyncedModal();
+    }
+
     if (
       txBody.expires_sec < getTimeSec() ||
       (isSignRaw && txBody.params.valid_until < getTimeSec())
     ) {
-      if (!getIsTimeSynced()) {
-        MainDB.setTimeSyncedDismissed(false);
-        dispatch(mainActions.setTimeSyncedDismissed(false));
-        Alert.alert(
-          t('send_sending_wrong_time_title'),
-          t('send_sending_wrong_time_description'),
-        );
-      }
       throw new Error(t('nft_operations_expired'));
     }
 

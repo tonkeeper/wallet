@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import LottieView from 'lottie-react-native';
 
 import * as S from './RequireWallet.style';
-import {BottomSheet, Button, Text} from '$uikit';
+import { BottomSheet, Button, Text } from '$uikit';
 import { useTranslator } from '$hooks';
 import { ns } from '$utils';
 import { openCreateWallet, openImportWallet } from '$navigation';
