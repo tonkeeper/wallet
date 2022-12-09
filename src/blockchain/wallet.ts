@@ -346,7 +346,7 @@ export class TonWallet {
       toAddress: new TonWeb.utils.Address(address),
       responseAddress: new TonWeb.utils.Address(await this.getAddress()),
       jettonAmount: new TonWeb.utils.BN(amount, 10),
-      forwardAmount: new TonWeb.utils.BN(1, 10),
+      forwardAmount: new TonWeb.utils.BN(50000000, 10),
       forwardPayload: payloadCell.bits.getTopUppedArray(),
     });
 
@@ -413,7 +413,7 @@ export class TonWallet {
       toAddress: new TonWeb.utils.Address(address),
       responseAddress: new TonWeb.utils.Address(await this.getAddress()),
       jettonAmount: jettonAmount,
-      forwardAmount: new TonWeb.utils.BN(1, 10),
+      forwardAmount: new TonWeb.utils.BN(50000000, 10),
       forwardPayload: payloadCell.bits.getTopUppedArray(),
     });
 
