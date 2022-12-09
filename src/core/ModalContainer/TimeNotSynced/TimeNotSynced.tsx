@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect } from 'react';
 import { t } from '$translation';
-import { Modal } from '$libs/navigation';
+import { Modal, useNavigation } from '$libs/navigation';
 import { push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 import { MainDB } from '$database';
@@ -9,17 +9,20 @@ import { useDispatch } from 'react-redux';
 import { Button, Icon, Text } from '$uikit';
 import * as S from './TimeNotSynced.style';
 import { Linking, Platform } from 'react-native';
-import { Base64 } from '$utils';
+import { Base64, delay } from '$utils';
 
 export const TimeNotSyncedModal = memo(() => {
   const dispatch = useDispatch();
+  const nav = useNavigation();
 
   useEffect(() => {
     MainDB.setTimeSyncedDismissed(false);
     dispatch(mainActions.setTimeSyncedDismissed(false));
   }, []);
 
-  const handleOpenSettings = useCallback(() => {
+  const handleOpenSettings = useCallback(async () => {
+    nav.goBack();
+    await delay(400);
     if (Platform.OS === 'ios') {
       return Linking.openURL(Base64.decodeToStr('QXBwLXByZWZzOnJvb3Q='));
     }
