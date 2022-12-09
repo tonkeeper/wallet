@@ -1,8 +1,8 @@
 import styled, { RADIUS } from '$styled';
 import Animated from 'react-native-reanimated';
 import FastImage from 'react-native-fast-image';
-import { nfs, ns } from '$utils';
-import { Highlight } from '$uikit';
+import { ns } from '$utils';
+import { StatelessHighlight } from '$uikit';
 
 export const Wrap = styled.View`
   flex: 1;
@@ -76,7 +76,7 @@ export const IconWrap = styled.View`
   margin-left: ${ns(-8)}px;
 `;
 
-export const ActionCont = styled(Highlight)`
+export const ActionCont = styled(StatelessHighlight)`
   ${() => borders(true, true)}
   padding: ${ns(14)}px;
 `;
