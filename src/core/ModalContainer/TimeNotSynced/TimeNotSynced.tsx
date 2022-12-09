@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useEffect} from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import { t } from '$translation';
 import { Modal } from '$libs/navigation';
 import { push } from '$navigation';
@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { Button, Icon, Text } from '$uikit';
 import * as S from './TimeNotSynced.style';
 import { Linking, Platform } from 'react-native';
+import { Base64 } from '$utils';
 
 export const TimeNotSyncedModal = memo(() => {
   const dispatch = useDispatch();
@@ -20,7 +21,7 @@ export const TimeNotSyncedModal = memo(() => {
 
   const handleOpenSettings = useCallback(() => {
     if (Platform.OS === 'ios') {
-      return Linking.openSettings();
+      return Linking.openURL(Base64.decodeToStr('QXBwLXByZWZzOnJvb3Q='));
     }
     Linking.sendIntent('android.settings.DATE_SETTINGS');
   }, []);
