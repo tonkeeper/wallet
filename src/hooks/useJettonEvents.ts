@@ -1,8 +1,9 @@
-import { ActionType, JettonBalanceModel } from '$store/models';
+import { JettonBalanceModel } from '$store/models';
 import { useSelector } from 'react-redux';
 import { eventsSelector } from '$store/events';
 import { useMemo } from 'react';
 import { compareAddresses } from '$utils';
+import { ActionTypeEnum } from 'tonapi-sdk-js';
 
 export function useJettonEvents(address: JettonBalanceModel['walletAddress']) {
   const { eventsInfo } = useSelector(eventsSelector);
@@ -17,11 +18,8 @@ export function useJettonEvents(address: JettonBalanceModel['walletAddress']) {
               ...event,
               actions: event.actions.filter(
                 (action) =>
-                  ActionType[action.type] === ActionType.JettonTransfer &&
-                  compareAddresses(
-                    action[ActionType[action.type]].jetton.address,
-                    address,
-                  ),
+                  action.type === ActionTypeEnum.JettonTransfer &&
+                  compareAddresses(action[action.type].jetton.address, address),
               ),
             },
           ])

@@ -7,7 +7,7 @@ import { AccountEvent } from 'tonapi-sdk-js';
 export class EventsDB {
   static async getEvents() {
     const wallet = getWalletName();
-    const raw = await AsyncStorage.getItem(`${wallet}_events`);
+    const raw = await AsyncStorage.getItem(`${wallet}_events_v2`);
 
     try {
       return JSON.parse(raw || '') as EventModel[];
@@ -18,12 +18,12 @@ export class EventsDB {
 
   static async saveEvents(events: AccountEvent[]) {
     const wallet = getWalletName();
-    await AsyncStorage.setItem(`${wallet}_events`, JSON.stringify(events));
+    await AsyncStorage.setItem(`${wallet}_events_v2`, JSON.stringify(events));
   }
 
   static async clearAll() {
     const wallet = getWalletName();
-    await AsyncStorage.removeItem(`${wallet}_events`);
+    await AsyncStorage.removeItem(`${wallet}_events_v2`);
     await this.clearMempoolEvents();
   }
 
@@ -36,18 +36,18 @@ export class EventsDB {
 
   static async clearMempoolEvents() {
     const wallet = getWalletName();
-    await AsyncStorage.removeItem(`${wallet}_mempool_events`);
+    await AsyncStorage.removeItem(`${wallet}_mempool_events_v2`);
   }
 
   static async saveMempoolEvents(events: AccountEvent[]) {
     const wallet = getWalletName();
-    await AsyncStorage.setItem(`${wallet}_mempool_events`, JSON.stringify(events));
+    await AsyncStorage.setItem(`${wallet}_mempool_events_v2`, JSON.stringify(events));
   }
 
   static async getMempoolEvents(): Promise<AccountEvent[]> {
     const wallet = getWalletName();
 
-    const raw = await AsyncStorage.getItem(`${wallet}_mempool_events`);
+    const raw = await AsyncStorage.getItem(`${wallet}_mempool_events_v2`);
 
     if (!raw) {
       return [];

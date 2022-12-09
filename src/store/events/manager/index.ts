@@ -32,7 +32,7 @@ export class EventsManager {
     let events: any = await this.provider.loadNext(this.cache);
 
     for (let event of events) {
-      this.events[event.eventId] = event;
+      this.events[event.event_id] = event;
     }
 
     return await this.build(ignoreCache);
@@ -53,7 +53,7 @@ export class EventsManager {
       if (event.inProgress) {
         continue;
       }
-      cacheMap[event.eventId] = event;
+      cacheMap[event.event_id] = event;
     }
 
     const allEvents: EventModel[] = Object.values({ ...cacheMap, ...this.events });

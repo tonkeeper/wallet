@@ -1,5 +1,6 @@
 import { getServerConfig } from '$shared/constants';
 import axios from 'axios';
+import {Action} from "tonapi-sdk-js";
 
 const getBulkInfo = async (addresses: string[]) => {
   const endpoint = getServerConfig('tonapiIOEndpoint');
@@ -50,6 +51,30 @@ async function getWalletInfo(address: string) {
       },
       params: {
         account: address,
+      },
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export interface AccountEventsParams {
+  limit?: number;
+  account: string;
+  beforeLt?: number;
+}
+
+async function getAccountEvents({ limit = 100, ...params }: AccountEventsParams) {
+  try {
+    const endpoint = getServerConfig('tonapiIOEndpoint');
+    const response: any = await axios.get(`${endpoint}/v1/event/getAccountEvents`, {
+      headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+      },
+      params: {
+        limit,
+        ...params,
       },
     });
     return response.data;
@@ -109,4 +134,5 @@ export const Tonapi = {
   getWalletInfo,
   getBalances,
   resolveDns,
+  getAccountEvents,
 };
