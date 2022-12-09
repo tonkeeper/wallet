@@ -5,7 +5,8 @@ import { push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 import { Button, Icon, Text } from '$uikit';
 import * as S from './AddressMismatch.style';
-import { useNavigation, useWallet } from '$hooks';
+import { useWallet } from '$hooks';
+import { useNavigation } from '$libs/navigation';
 import { Ton } from '$libs/Ton';
 import { compareAddresses, delay } from '$utils';
 import { walletActions } from '$store/wallet';
@@ -39,13 +40,13 @@ export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () =
     }, [allVersions, props.source]);
 
     const handleCloseModal = useCallback(() => nav.goBack(), [nav]);
-    const handleSwitchVersion = useCallback(() => {
+    const handleSwitchVersion = useCallback(async () => {
       if (!foundVersion) {
         return;
       }
       nav.goBack();
-      delay(300);
       dispatch(walletActions.switchVersion(foundVersion as SelectableVersion));
+      await delay(100);
       props.onSwitchAddress();
     }, [dispatch, foundVersion, nav, props]);
 
@@ -53,8 +54,6 @@ export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () =
     if (!allVersions) {
       return null;
     }
-
-    console.log(foundVersion);
 
     return (
       <Modal>
