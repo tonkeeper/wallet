@@ -37,6 +37,7 @@ export enum FiatCurrencies {
   Idr = 'idr',
   Inr = 'inr',
   Jpy = 'jpy',
+  LKR = 'lkr',
 }
 
 export type FiatCurrency = typeof FiatCurrencies[keyof typeof FiatCurrencies];
@@ -152,6 +153,10 @@ export const FiatCurrencySymbolsConfig = {
   },
   [FiatCurrencies.Jpy]: {
     symbol: '¥',
+    side: 'start',
+  },
+  [FiatCurrencies.Lkr]: {
+    symbol: 'රු',
     side: 'start',
   },
 };
