@@ -14,7 +14,10 @@ export const ActivityScreen = memo(() => {
         data={data}
         estimatedItemSize={200}
         renderItem={({ item }) => (
-          <HistoryItem item={item} />
+          <HistoryItem 
+            event={item}
+            onPress={() => {}}
+          />
         )}
       />
     </Screen>

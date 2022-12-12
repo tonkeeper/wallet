@@ -293,7 +293,9 @@
   "swap_title": "Обмен",
 
   "activity": {
-    "screen_title": "Activity"
+    "screen_title": "Activity",
+    "sent": "Sent",
+    "received": "Received"
   },
 
   "browser": {
