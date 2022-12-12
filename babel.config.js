@@ -11,6 +11,7 @@ const plugins = [
         $api: './src/api',
         $core: './src/core',
         $assets: './src/assets',
+        $styles: './src/styles',
         $store: './src/store',
         $uikit: './src/uikit',
         $utils: './src/utils',

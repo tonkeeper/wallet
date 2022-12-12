@@ -292,6 +292,10 @@
 
   "swap_title": "Обмен",
 
+  "activity": {
+    "screen_title": "Activity"
+  },
+
   "browser": {
     "title": "Браузер",
     "search_label": "Поиск",

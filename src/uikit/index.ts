@@ -38,3 +38,4 @@ export { Badge } from './Badge/Badge';
 export { ShowMore } from './ShowMore/ShowMore';
 export { TokenListItem } from './TokenListItem/TokenListItem';
 export { ListHeader } from './ListHeader';
+export * from './StyledNativeCompoenets'

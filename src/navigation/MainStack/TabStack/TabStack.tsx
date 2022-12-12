@@ -20,6 +20,7 @@ import { IconNames } from '$uikit/Icon/generated.types';
 import { useFlags } from '$utils/flags';
 import { nftsSelector } from '$store/nfts';
 import { DevFeature, useDevFeatureEnabled } from '$store';
+import { ActivityScreen } from '../../../tabs/Activity/ActivityScreen';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -71,6 +72,8 @@ export const TabStack: FC = () => {
             iconName = 'ic-settings-28';
           } else if (route.name === TabsStackRouteNames.Explore) {
             iconName = 'ic-explore-28';
+          } else if (route.name === TabsStackRouteNames.Activity) {
+            iconName = 'ic-flash-28';
           }
 
           return (
@@ -147,6 +150,16 @@ export const TabStack: FC = () => {
           tabBarLabel: t('tab_wallet'),
         }}
       />
+
+
+      <Tab.Screen
+        component={ActivityScreen}
+        name={TabsStackRouteNames.Activity}
+        options={{
+          tabBarLabel: t('activity.screen_title'),
+        }}
+      />
+
       {isVisibleNftTab && (
         <Tab.Screen
           component={NFTs}
