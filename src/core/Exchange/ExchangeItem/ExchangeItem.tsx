@@ -5,6 +5,7 @@ import * as S from './ExchangeItem.style';
 import { useExchangeMethodInfo, useTheme, useTranslator } from '$hooks';
 import { openExchangeMethodModal } from '$navigation';
 import { Icon, Text } from '$uikit';
+import { Linking } from 'react-native';
 
 export const ExchangeItem: FC<ExchangeItemProps> = ({
   methodId,
@@ -16,11 +17,17 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
 
   const t = useTranslator();
 
-  const handlePress = useCallback(() => {
-    openExchangeMethodModal(methodId);
-  }, [methodId]);
-
   const isBot = methodId.endsWith('_bot');
+
+  const handlePress = useCallback(() => {
+    if (isBot) {
+      openExchangeMethodModal(methodId, () => {
+        Linking.openURL(method.action_button.url);
+      });
+    } else {
+      openExchangeMethodModal(methodId);
+    }
+  }, [isBot, method.action_button.url, methodId]);
 
   function renderBadge() {
     if (method.badge) {
