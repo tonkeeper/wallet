@@ -1,16 +1,11 @@
 import { useTranslator } from '$hooks';
 import { goBack, openDAppBrowser } from '$navigation';
-import { IsTablet, LargeNavBarHeight } from '$shared/constants';
+import { IsTablet, NavBarHeight } from '$shared/constants';
 import { Button, ScrollHandler, Text } from '$uikit';
 import { hNs, ns } from '$utils';
-import React, { FC, memo, useCallback, useEffect, useState } from 'react';
+import React, { FC, memo, useCallback, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SearchBar, SearchSuggests } from './components';
 import { WebSearchSuggests } from './components/WebSearchSuggests/WebSearchSuggests';
@@ -81,17 +76,19 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
           <ScrollHandler
             navBarTitle={t('browser.title')}
             navBarRight={
-              <Button onPress={goBack} mode="secondary" size="navbar_small">
-                {t('cancel')}
-              </Button>
+              <S.NavBarButtonContainer>
+                <Button onPress={goBack} mode="secondary" size="navbar_small">
+                  {t('cancel')}
+                </Button>
+              </S.NavBarButtonContainer>
             }
-            isLargeNavBar
+            isLargeNavBar={false}
+            hideBackButton
           >
             <Animated.ScrollView
               showsVerticalScrollIndicator={false}
               // eslint-disable-next-line react-native/no-inline-styles
               contentContainerStyle={{
-                paddingTop: hNs(LargeNavBarHeight),
                 paddingHorizontal: ns(16),
                 alignItems: IsTablet ? 'center' : undefined,
               }}

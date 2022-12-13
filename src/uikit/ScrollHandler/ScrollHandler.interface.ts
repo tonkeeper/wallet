@@ -6,6 +6,7 @@ export interface ScrollHandlerProps {
   navBarTitle?: string;
   isLargeNavBar?: boolean;
   navBarRight?: ReactNode;
+  hideBackButton?: boolean;
   onPress?: () => void;
   hitSlop?: Insets;
   bottomComponent?: ReactNode;
