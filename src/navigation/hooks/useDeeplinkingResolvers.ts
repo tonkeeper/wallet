@@ -25,7 +25,7 @@ import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.typ
 import { AppStackRouteNames } from '$navigation/navigationNames';
 import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
 import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
-import {openAddressMismatchModal} from "$core/ModalContainer/AddressMismatch/AddressMismatch";
+import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -92,11 +92,6 @@ export function useDeeplinkingResolvers() {
 
         if (query.bin) {
           message.payload = query.bin;
-        }
-
-        console.log({ params, query, resolveParams });
-        if (query.source) {
-          return Toast.fail(t('transfer_deeplink_address_error'));
         }
 
         openSignRawModal(
@@ -210,6 +205,7 @@ export function useDeeplinkingResolvers() {
       isValidAddress(txBody.params.source) &&
       !compareAddresses(txBody.params.source, await wallet.ton.getAddress())
     ) {
+      Toast.hide();
       return openAddressMismatchModal(
         () => resolveTxType(txRequest),
         txBody.params.source,
