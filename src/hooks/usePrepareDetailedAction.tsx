@@ -194,7 +194,7 @@ export function usePrepareDetailedAction(
       });
     }
 
-    if (action.comment) {
+    if (action.comment && !event.isScam) {
       infoRows.push({
         label: t('transaction_message'),
         preparedValue: action.comment,
