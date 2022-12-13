@@ -3,8 +3,8 @@ import React, { FC, useCallback } from 'react';
 import { MarketplaceItemProps } from './MarketplaceItem.interface';
 import * as S from './MarketplaceItem.style';
 import { Icon, Text } from '$uikit';
-import { Linking } from 'react-native';
 import { trackEvent } from '$utils';
+import { openDAppBrowser } from '$navigation';
 
 export const MarketplaceItem: FC<MarketplaceItemProps> = ({
   marketplaceUrl,
@@ -18,7 +18,7 @@ export const MarketplaceItem: FC<MarketplaceItemProps> = ({
 }) => {
   const handlePress = useCallback(async () => {
     await onPress?.();
-    await Linking.openURL(marketplaceUrl);
+    openDAppBrowser(marketplaceUrl);
     trackEvent(`marketplace_open_${internalId}`, { internal_id: internalId });
   }, [marketplaceUrl, onPress, internalId]);
 
