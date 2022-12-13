@@ -9,7 +9,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FullWindowOverlay } from 'react-native-screens';
 import { useTheme } from '$hooks';
 import { Loader, Text } from '$uikit';
 import { deviceWidth, ns } from '$utils';
@@ -93,7 +92,7 @@ export const ToastComponent = memo(() => {
   }
 
   return (
-    <FullWindowOverlay style={styles.overlay}>
+    <View style={styles.overlay}>
       <Pressable style={[styles.container, indentStyle]} onPress={animatedHide}>
         <Animated.View
           style={[
@@ -112,7 +111,7 @@ export const ToastComponent = memo(() => {
           <Text variant="label2">{toast.message}</Text>
         </Animated.View>
       </Pressable>
-    </FullWindowOverlay>
+    </View>
   );
 });
 

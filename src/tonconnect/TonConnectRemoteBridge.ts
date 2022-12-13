@@ -1,6 +1,7 @@
 import {
   IConnectedAppConnection,
   IConnectedAppConnectionRemote,
+  Toast,
   TonConnectBridgeType,
 } from '$store';
 import {
@@ -226,6 +227,8 @@ class TonConnectRemoteBridgeService {
       this.redirectIfNeeded();
     } catch (err) {
       console.log('handleConnectDeeplink error', err);
+
+      Toast.hide();
     }
   }
 

@@ -1,7 +1,6 @@
 import React, { FC, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FullWindowOverlay } from 'react-native-screens';
 
 import { toastSelector } from '$store/toast';
 import { triggerNotificationError, triggerNotificationSuccess } from '$utils';
@@ -10,6 +9,7 @@ import { Loader } from '../Loader/Loader';
 import { useToastAnimation } from './hooks';
 import { isSuccessToast, isFailToast, isLoadingToast } from './Toast.utils';
 import * as S from './Toast.style';
+import { View } from 'react-native';
 
 export const Toast: FC = () => {
   const { activity, label, type } = useSelector(toastSelector);
@@ -42,7 +42,10 @@ export const Toast: FC = () => {
   const Content = type === 'small' ? S.ContentSmall : S.Content;
 
   return (
-    <FullWindowOverlay style={{ position: 'absolute', width: '100%', height: '100%' }}>
+    <View
+      pointerEvents="box-none"
+      style={{ position: 'absolute', width: '100%', height: '100%' }}
+    >
       <S.Wrap onPress={hide} activeOpacity={1} style={wrapperStyles}>
         <Content
           style={{
@@ -67,9 +70,9 @@ export const Toast: FC = () => {
             <S.LabelSmall {...{ loading }}>{label}</S.LabelSmall>
           ) : (
             <S.Label {...{ loading }}>{label}</S.Label>
-          )}  
+          )}
         </Content>
       </S.Wrap>
-    </FullWindowOverlay>
+    </View>
   );
 };

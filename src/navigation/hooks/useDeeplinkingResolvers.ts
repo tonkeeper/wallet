@@ -312,6 +312,8 @@ export function useDeeplinkingResolvers() {
         return;
       }
 
+      Toast.loading();
+
       await TonConnectRemoteBridge.handleConnectDeeplink(
         query as unknown as IConnectQrQuery,
       );

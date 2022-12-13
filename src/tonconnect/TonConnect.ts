@@ -11,6 +11,7 @@ import {
   store,
   TonConnectBridgeType,
   IConnectedAppConnectionRemote,
+  Toast,
 } from '$store';
 import { debugLog } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
@@ -83,6 +84,8 @@ class TonConnectService {
       }
 
       throw error;
+    } finally {
+      Toast.hide();
     }
   }
 
