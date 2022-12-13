@@ -201,6 +201,7 @@ export function useDeeplinkingResolvers() {
     const isSignRaw = isSignRawParams(txBody?.params);
 
     if (!getIsTimeSynced()) {
+      Toast.hide();
       return openTimeNotSyncedModal();
     }
 
