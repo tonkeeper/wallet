@@ -1,3 +1,4 @@
+import { generateAppHashFromUrl } from '$utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import create from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
@@ -22,10 +23,12 @@ export const useConnectedAppsStore = create(
                 connectedApps[chainName][walletAddress] = {};
               }
 
-              const alreadyConnectedApp = connectedApps[chainName][walletAddress][appData.url];
+              const hash = generateAppHashFromUrl(appData.url);
+
+              const alreadyConnectedApp = connectedApps[chainName][walletAddress][hash];
 
               if (alreadyConnectedApp) {
-                connectedApps[chainName][walletAddress][appData.url] = {
+                connectedApps[chainName][walletAddress][hash] = {
                   ...alreadyConnectedApp,
                   ...appData,
                   icon: appData.icon || alreadyConnectedApp.icon,
@@ -34,7 +37,7 @@ export const useConnectedAppsStore = create(
                     : alreadyConnectedApp.connections,
                 };
               } else {
-                connectedApps[chainName][walletAddress][appData.url] = {
+                connectedApps[chainName][walletAddress][hash] = {
                   ...appData,
                   connections: connection ? [connection] : [],
                 };
@@ -44,10 +47,11 @@ export const useConnectedAppsStore = create(
             });
           },
           removeApp: (chainName, walletAddress, url) => {
-            set(({ connectedApps }) => {
+            const hash = generateAppHashFromUrl(url);
 
-              if (connectedApps[chainName][walletAddress]?.[url]) {
-                delete connectedApps[chainName][walletAddress][url];
+            set(({ connectedApps }) => {
+              if (connectedApps[chainName][walletAddress]?.[hash]) {
+                delete connectedApps[chainName][walletAddress][hash];
               }
 
               return { connectedApps };
@@ -56,7 +60,7 @@ export const useConnectedAppsStore = create(
         },
       }),
       {
-        name: 'TonConnectedApps',
+        name: 'TCApps',
         getStorage: () => AsyncStorage,
         partialize: ({ connectedApps }) => ({ connectedApps } as IConnectedAppsStore),
       },

@@ -4,6 +4,7 @@ import {
   useAppsListStore,
   useConnectedAppsStore,
 } from '$store';
+import { generateAppHashFromUrl } from '$utils';
 import { useCallback, useMemo } from 'react';
 
 export const useAppInfo = (
@@ -28,7 +29,11 @@ export const useAppInfo = (
       return connectedApp;
     }
 
-    const app = appsList.find((item) => webViewUrl.startsWith(item.url));
+    const webViewUrlHash = generateAppHashFromUrl(webViewUrl);
+
+    const app = appsList.find(
+      (item) => webViewUrlHash === generateAppHashFromUrl(item.url),
+    );
 
     if (app) {
       return app;
