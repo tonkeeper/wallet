@@ -1,17 +1,27 @@
-import React, { FC, memo, useEffect } from 'react';
+import React, { FC, memo, useCallback, useEffect } from 'react';
 import { useTranslator } from '$hooks';
 import { useAppsListStore } from '$store';
 import { AppsList } from '../AppsList/AppsList';
+import { openDAppBrowser } from '$navigation';
 
 const PopularAppsComponent: FC = () => {
   const {
     fetching,
     appsList,
     moreEnabled,
+    moreUrl,
     actions: { fetchPopularApps },
   } = useAppsListStore();
 
   const t = useTranslator();
+
+  const handleMorePress = useCallback(() => {
+    if (!moreUrl || !moreEnabled) {
+      return;
+    }
+
+    openDAppBrowser(moreUrl);
+  }, [moreEnabled, moreUrl]);
 
   useEffect(() => {
     fetchPopularApps();
@@ -28,6 +38,7 @@ const PopularAppsComponent: FC = () => {
       skeleton={fetching}
       rowsLimit={2}
       moreEnabled={moreEnabled}
+      onMorePress={handleMorePress}
     />
   );
 };

@@ -3,7 +3,11 @@ import { useCallback, useMemo, useState } from 'react';
 import { CURRENT_PROTOCOL_VERSION, TonConnect, tonConnectDeviceInfo } from '$tonconnect';
 import { useWebViewBridge } from '../jsBridge';
 import { TonConnectInjectedBridge } from './models';
-import { getConnectedAppByUrl, useConnectedAppsStore } from '$store';
+import {
+  disableAppAutoConnect,
+  getConnectedAppByUrl,
+  useConnectedAppsStore,
+} from '$store';
 
 export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
   const [connectEvent, setConnectEvent] = useState<ConnectEvent | null>(null);
@@ -48,10 +52,12 @@ export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
 
         return event;
       },
-      disconnect: () => {
+      disconnect: async () => {
         setConnectEvent(null);
 
-        return TonConnect.disconnect(webViewUrl);
+        disableAppAutoConnect(webViewUrl);
+
+        return;
       },
       send: async <T extends RpcMethod>(request: AppRequest<T>) =>
         TonConnect.handleRequestFromInjectedBridge(request, webViewUrl),

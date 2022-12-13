@@ -2,7 +2,7 @@ import { useTranslator } from '$hooks';
 import { goBack, openDAppBrowser } from '$navigation';
 import { IsTablet, NavBarHeight } from '$shared/constants';
 import { Button, ScrollHandler, Text } from '$uikit';
-import { hNs, ns } from '$utils';
+import { ns } from '$utils';
 import React, { FC, memo, useCallback, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -54,7 +54,7 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
 
   const handleScrollViewLayout = useCallback(
     (event: LayoutChangeEvent) => {
-      scrollViewHeight.value = event.nativeEvent.layout.height;
+      scrollViewHeight.value = event.nativeEvent.layout.height + NavBarHeight;
     },
     [scrollViewHeight],
   );

@@ -163,7 +163,11 @@ class TonConnectService {
     try {
       const connectedApp = findConnectedAppByUrl(webViewUrl);
 
-      if (!connectedApp || connectedApp.connections.length === 0) {
+      if (
+        !connectedApp ||
+        connectedApp.connections.length === 0 ||
+        connectedApp.autoConnectDisabled
+      ) {
         throw new ConnectEventError(
           CONNECT_EVENT_ERROR_CODES.UNKNOWN_APP_ERROR,
           'Unknown app',
@@ -331,7 +335,7 @@ class TonConnectService {
 
   async disconnect(url: string) {
     const connectedApp = findConnectedAppByUrl(url);
-    
+
     if (!connectedApp) {
       return;
     }

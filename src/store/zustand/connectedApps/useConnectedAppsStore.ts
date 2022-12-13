@@ -2,7 +2,7 @@ import { generateAppHashFromUrl } from '$utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import create from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
-import { IConnectedAppsStore } from './types';
+import { IConnectedAppsStore, TonConnectBridgeType } from './types';
 
 const initialState: Omit<IConnectedAppsStore, 'actions'> = {
   connectedApps: {
@@ -32,6 +32,9 @@ export const useConnectedAppsStore = create(
                   ...alreadyConnectedApp,
                   ...appData,
                   icon: appData.icon || alreadyConnectedApp.icon,
+                  autoConnectDisabled:
+                    alreadyConnectedApp.autoConnectDisabled &&
+                    connection?.type !== TonConnectBridgeType.Injected,
                   connections: connection
                     ? [...alreadyConnectedApp.connections, connection]
                     : alreadyConnectedApp.connections,
@@ -41,6 +44,17 @@ export const useConnectedAppsStore = create(
                   ...appData,
                   connections: connection ? [connection] : [],
                 };
+              }
+
+              return { connectedApps };
+            });
+          },
+          disableAppAutoConnect: (chainName, walletAddress, url) => {
+            const hash = generateAppHashFromUrl(url);
+
+            set(({ connectedApps }) => {
+              if (connectedApps[chainName][walletAddress]?.[hash]) {
+                connectedApps[chainName][walletAddress][hash].autoConnectDisabled = true;
               }
 
               return { connectedApps };
