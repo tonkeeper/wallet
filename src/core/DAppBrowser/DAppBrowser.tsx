@@ -1,7 +1,7 @@
 import { useDeeplinking } from '$libs/deeplinking';
 import { openDAppsSearch } from '$navigation';
 import { walletSelector } from '$store/wallet';
-import { getCorrectUrl } from '$utils';
+import { getCorrectUrl, getSearchQuery } from '$utils';
 import React, { FC, memo, useCallback, useState } from 'react';
 import { Linking, useWindowDimensions } from 'react-native';
 import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -109,11 +109,11 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
   }, [ref]);
 
   const handleTitlePress = useCallback(() => {
-    const initialQuery = webViewSource.uri;
+    const initialQuery = getSearchQuery(currentUrl) || currentUrl;
     openDAppsSearch(initialQuery, (url) => {
       setWebViewSource({ uri: getCorrectUrl(url) });
     });
-  }, [webViewSource.uri]);
+  }, [currentUrl]);
 
   return (
     <S.Container>

@@ -62,3 +62,18 @@ export const generateAppHashFromUrl = (url: string) => {
 
   return hash;
 };
+
+export const getSearchQuery = (url: string) => {
+  const parsed = queryParser.parseUrl(url);
+
+  const isGoogle = [
+    'https://google.com/search',
+    'https://www.google.com/search',
+  ].includes(parsed.url);
+
+  if (isGoogle) {
+    return parsed.query.q as string;
+  }
+
+  return null;
+};
