@@ -11,6 +11,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.fragment.app.FragmentActivity
+import com.tonkeeper.feature.localauth.result.AuthResult
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.crypto.Cipher
@@ -95,7 +96,7 @@ class Authenticator(
 
     private suspend fun encrypt(value: String): String {
         val cipher = getCipher()
-        val secretKey = getOrCreateSecretKey(KeyStoreType, KeystoreAlias)
+        val secretKey = getOrCreateSecretKey(KeyStoreType, KeyStoreAlias)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
 
         saveCipherIv(cipher.iv)
@@ -110,7 +111,7 @@ class Authenticator(
         val cipher = getCipher()
         val iv = loadCipherIv()
 
-        val secretKey = getOrCreateSecretKey(KeyStoreType, KeystoreAlias)
+        val secretKey = getOrCreateSecretKey(KeyStoreType, KeyStoreAlias)
         cipher.init(Cipher.DECRYPT_MODE, secretKey, iv)
         return String(cipher.doFinal(encoded))
     }
@@ -134,18 +135,16 @@ class Authenticator(
     }
 
     data class Config(
-        val fileName: String = DefaultFileName,
         val passcodeAlias: String = DefaultPasscodeAlias,
         val biometryAlias: String = DefaultBiometryAlias,
     )
 
     companion object {
-        private const val DefaultFileName = "localauth"
         private const val DefaultPasscodeAlias = "passcode"
         private const val DefaultPasscodeIvAlias = "passcode-iv"
         private const val DefaultBiometryAlias = "biometry"
 
         private const val KeyStoreType = "AndroidKeyStore"
-        private const val KeystoreAlias = "passcodekey"
+        private const val KeyStoreAlias = "passcodekey"
     }
 }

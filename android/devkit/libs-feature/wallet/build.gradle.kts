@@ -34,6 +34,9 @@ android {
 }
 
 dependencies {
+    implementation(project(":libs-ton:crypto"))
+    implementation(project(":libs-ton:mnemonic"))
+
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.datastore:datastore:1.0.0")
     testImplementation("junit:junit:4.13.2")

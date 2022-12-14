@@ -1,4 +1,4 @@
-package com.tonkeeper.feature.localauth
+package com.tonkeeper.feature.localauth.result
 
 sealed interface AuthResult {
     object Success : AuthResult

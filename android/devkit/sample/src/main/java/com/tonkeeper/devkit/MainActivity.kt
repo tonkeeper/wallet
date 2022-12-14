@@ -1,7 +1,6 @@
 package com.tonkeeper.devkit
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -18,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
-import com.tonkeeper.feature.localauth.AuthResult
+import com.tonkeeper.feature.localauth.result.AuthResult
 import com.tonkeeper.feature.localauth.Authenticator
 import com.tonkeeper.feature.localauth.AuthenticatorBiometryError
 import kotlinx.coroutines.launch
