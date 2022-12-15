@@ -43,6 +43,14 @@ const getExpiresSec = () => {
   return getTimeSec() + 10 * 60;
 };
 
+export function checkIsTimeSynced() {
+  if (!getIsTimeSynced()) {
+    openTimeNotSyncedModal();
+    return false;
+  }
+  return true;
+};
+
 export function useDeeplinkingResolvers() {
   const deeplinking = useDeeplinking();
   const dispatch = useDispatch();
@@ -200,9 +208,8 @@ export function useDeeplinkingResolvers() {
     const txBody = txRequest.body as any;
     const isSignRaw = isSignRawParams(txBody?.params);
 
-    if (!getIsTimeSynced()) {
-      Toast.hide();
-      return openTimeNotSyncedModal();
+    if (!checkIsTimeSynced()) {
+      return Toast.hide();
     }
 
     if (

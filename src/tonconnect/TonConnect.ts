@@ -2,6 +2,7 @@ import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/Sign
 import { SignRawParams } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import { TonConnectModalResponse } from '$core/TonConnect/models';
 import { openTonConnect } from '$navigation';
+import { checkIsTimeSynced } from '$navigation/hooks/useDeeplinkingResolvers';
 import {
   findConnectedAppByClientSessionId,
   findConnectedAppByUrl,
@@ -235,6 +236,15 @@ class TonConnectService {
       };
 
       const boc = await new Promise<string>(async (resolve, reject) => {
+        if (!checkIsTimeSynced()) {
+          return reject(
+            new SendTransactionError(
+              request.id,
+              SEND_TRANSACTION_ERROR_CODES.USER_REJECTS_ERROR,
+              "Wallet declined the request",
+            ),
+          );
+        }
         const openModalResult = await openSignRawModal(
           txParams,
           {
