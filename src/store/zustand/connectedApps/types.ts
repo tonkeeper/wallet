@@ -49,7 +49,7 @@ export interface IConnectedAppsStore {
       walletAddress: string,
       url: string,
     ) => void;
-    disableAppAutoConnect: (
+    removeInjectedConnection: (
       chainName: 'mainnet' | 'testnet',
       walletAddress: string,
       url: string,

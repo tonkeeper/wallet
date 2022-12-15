@@ -12,6 +12,8 @@ import {
   TonConnectBridgeType,
   IConnectedAppConnectionRemote,
   Toast,
+  IConnectedAppConnectionInjected,
+  removeInjectedConnection,
 } from '$store';
 import { debugLog } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';

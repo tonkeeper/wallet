@@ -49,12 +49,24 @@ export const useConnectedAppsStore = create(
               return { connectedApps };
             });
           },
-          disableAppAutoConnect: (chainName, walletAddress, url) => {
+          removeInjectedConnection: (chainName, walletAddress, url) => {
             const hash = generateAppHashFromUrl(url);
 
             set(({ connectedApps }) => {
               if (connectedApps[chainName][walletAddress]?.[hash]) {
                 connectedApps[chainName][walletAddress][hash].autoConnectDisabled = true;
+
+                connectedApps[chainName][walletAddress][hash].connections = connectedApps[
+                  chainName
+                ][walletAddress][hash].connections.filter(
+                  (connection) => connection.type !== TonConnectBridgeType.Injected,
+                );
+
+                if (
+                  connectedApps[chainName][walletAddress][hash].connections.length === 0
+                ) {
+                  delete connectedApps[chainName][walletAddress][hash];
+                }
               }
 
               return { connectedApps };

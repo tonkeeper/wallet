@@ -22,12 +22,12 @@ export const removeConnectedApp = (url: string) => {
     .actions.removeApp(getChainName(), currentWalletAddress, url);
 };
 
-export const disableAppAutoConnect = (url: string) => {
+export const removeInjectedConnection = (url: string) => {
   const currentWalletAddress = store.getState().wallet.address.ton;
 
   useConnectedAppsStore
     .getState()
-    .actions.disableAppAutoConnect(getChainName(), currentWalletAddress, url);
+    .actions.removeInjectedConnection(getChainName(), currentWalletAddress, url);
 };
 
 export const findConnectedAppByUrl = (url: string): IConnectedApp | null => {

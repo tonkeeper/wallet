@@ -4,7 +4,7 @@ import { CURRENT_PROTOCOL_VERSION, TonConnect, tonConnectDeviceInfo } from '$ton
 import { useWebViewBridge } from '../jsBridge';
 import { TonConnectInjectedBridge } from './models';
 import {
-  disableAppAutoConnect,
+  removeInjectedConnection,
   getConnectedAppByUrl,
   useConnectedAppsStore,
 } from '$store';
@@ -55,7 +55,7 @@ export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
       disconnect: async () => {
         setConnectEvent(null);
 
-        disableAppAutoConnect(webViewUrl);
+        removeInjectedConnection(webViewUrl);
 
         return;
       },
