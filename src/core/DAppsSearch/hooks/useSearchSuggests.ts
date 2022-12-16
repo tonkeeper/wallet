@@ -1,5 +1,5 @@
 import { useAppsListStore, useConnectedAppsList } from '$store';
-import { isValidUrl } from '$utils';
+import { getDomainFromURL, isValidUrl } from '$utils';
 import uniqBy from 'lodash/uniqBy';
 import { useCallback, useMemo, useRef } from 'react';
 import { ISearchSuggest, SearchSuggestSource } from '../types';
@@ -35,19 +35,26 @@ export const useSearchSuggests = (query: string) => {
     const appsSuggests = allApps
       .filter(
         (app) =>
-          app.name.toLowerCase().includes(trimmedQuery) ||
-          app.url.toLowerCase().includes(trimmedQuery),
+          app.name
+            .toLowerCase()
+            .split(' ')
+            .some((word) => word.startsWith(trimmedQuery)) ||
+          getDomainFromURL(app.url).toLowerCase().startsWith(trimmedQuery),
       )
       .sort((a, b) => {
         if (
-          a.name.toLowerCase().startsWith(trimmedQuery) &&
-          !b.name.toLowerCase().startsWith(trimmedQuery)
+          (a.name.toLowerCase().startsWith(trimmedQuery) &&
+            !b.name.toLowerCase().startsWith(trimmedQuery)) ||
+          (getDomainFromURL(a.url).toLowerCase().startsWith(trimmedQuery) &&
+            !getDomainFromURL(b.url).toLowerCase().startsWith(trimmedQuery))
         ) {
           return -1;
         }
         if (
-          b.name.toLowerCase().startsWith(trimmedQuery) &&
-          !a.name.toLowerCase().startsWith(trimmedQuery)
+          (b.name.toLowerCase().startsWith(trimmedQuery) &&
+            !a.name.toLowerCase().startsWith(trimmedQuery)) ||
+          (getDomainFromURL(b.url).toLowerCase().startsWith(trimmedQuery) &&
+            !getDomainFromURL(a.url).toLowerCase().startsWith(trimmedQuery))
         ) {
           return 1;
         }

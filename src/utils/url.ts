@@ -12,14 +12,12 @@ export const isValidUrl = (value: string) =>
 
 export const getDomainFromURL = (url: string): string => domainFromPartialUrl(url);
 
-export const getCorrectUrl = (url: string, https?: boolean) => {
-  const protocol = https ? 'https' : 'http';
-
-  return url.startsWith(protocol) ? url : `${protocol}://${url}`;
+export const getCorrectUrl = (url: string) => {
+  return url.startsWith('https') ? url : `https://${url}`;
 };
 
 export const getUrlTitle = async (url: string, cancelTokenSource: CancelTokenSource) => {
-  const response = await axios.get<string>(getCorrectUrl(url, true), {
+  const response = await axios.get<string>(getCorrectUrl(url), {
     cancelToken: cancelTokenSource.token,
   });
 

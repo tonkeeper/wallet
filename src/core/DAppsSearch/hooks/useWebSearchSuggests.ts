@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { IWebSearchSuggest } from '../types';
 import axios, { CancelTokenSource } from 'axios';
+import uniq from 'lodash/uniq';
 
 const fetchGoogleSuggests = async (
   query: string,
@@ -17,11 +18,9 @@ const fetchGoogleSuggests = async (
   if (body && Array.isArray(body) && body.length > 1) {
     let items = body[1] as string[];
 
-    if (!items.includes(query)) {
-      items = [...items, query];
-    }
+    const itemsWithQuery = uniq([query, ...items]);
 
-    return items.slice(0, 4).map((title): IWebSearchSuggest => {
+    return itemsWithQuery.slice(0, 4).map((title): IWebSearchSuggest => {
       const q = !query.startsWith('=') && title.startsWith('= ') ? query : title;
 
       return {
