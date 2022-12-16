@@ -6,6 +6,7 @@ import { APPS_ITEMS_IN_ROW } from '$core/DAppsExplore/constants';
 import { Icon } from '$uikit';
 import { AppItemSkeleton } from '../AppItem/AppItemSkeleton';
 import { useTranslator } from '$hooks';
+import { trackEvent } from '$utils';
 
 interface Props {
   title: string;
@@ -54,7 +55,11 @@ const AppsListComponent: FC<Props> = (props) => {
                 index={index}
                 name={app.name}
                 iconUri={app.icon}
-                onPress={() => openDAppBrowser(app.url)}
+                onPress={() => {
+                  trackEvent('click_dapp', { url: app.url, name: app.name });
+
+                  openDAppBrowser(app.url);
+                }}
                 onLongPress={() => onItemLongPress?.(app.url, app.name)}
               />
             ))}

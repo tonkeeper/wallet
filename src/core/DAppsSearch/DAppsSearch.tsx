@@ -2,7 +2,7 @@ import { useTranslator } from '$hooks';
 import { goBack, openDAppBrowser } from '$navigation';
 import { IsTablet, NavBarHeight } from '$shared/constants';
 import { Button, ScrollHandler, Text } from '$uikit';
-import { ns } from '$utils';
+import { ns, trackEvent } from '$utils';
 import React, { FC, memo, useCallback, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -12,6 +12,7 @@ import { WebSearchSuggests } from './components/WebSearchSuggests/WebSearchSugge
 import * as S from './DAppsSearch.style';
 import { useSearchSuggests } from './hooks/useSearchSuggests';
 import { useWebSearchSuggests } from './hooks/useWebSearchSuggests';
+import { SearchSuggestSource } from './types';
 
 export interface DAppsSearchProps {
   initialQuery?: string;
@@ -45,10 +46,24 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
   );
 
   const handleSearchBarSubmit = useCallback(() => {
-    const suggest = getFirstSuggest() || getFirstWebSuggest();
+    const suggest = getFirstSuggest();
 
     if (suggest) {
+      if (
+        [SearchSuggestSource.APP, SearchSuggestSource.HISTORY].includes(suggest.source)
+      ) {
+        trackEvent('click_dapp', { url: suggest.url, name: suggest.name });
+      }
+
       openUrl(suggest.url);
+
+      return;
+    }
+
+    const webSearchSuggest = getFirstWebSuggest();
+
+    if (webSearchSuggest) {
+      openUrl(webSearchSuggest.url);
     }
   }, [getFirstSuggest, getFirstWebSuggest, openUrl]);
 

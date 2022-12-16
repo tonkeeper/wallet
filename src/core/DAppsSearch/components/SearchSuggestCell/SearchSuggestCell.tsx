@@ -1,7 +1,7 @@
 import { SearchSuggestSource } from '$core/DAppsSearch/types';
 import { useTranslator } from '$hooks';
 import { Icon, Separator } from '$uikit';
-import { getDomainFromURL, getUrlTitle } from '$utils';
+import { getDomainFromURL, getUrlTitle, trackEvent } from '$utils';
 import axios from 'axios';
 import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as S from './SearchSuggestCell.style';
@@ -26,8 +26,12 @@ const SearchSuggestCellComponent: FC<Props> = (props) => {
   const t = useTranslator();
 
   const handlePress = useCallback(() => {
+    if ([SearchSuggestSource.APP, SearchSuggestSource.HISTORY].includes(source)) {
+      trackEvent('click_dapp', { url, name });
+    }
+
     onPress?.(url);
-  }, [url, onPress]);
+  }, [source, onPress, url, name]);
 
   useEffect(() => {
     if (source === SearchSuggestSource.DIRECT_LINK) {
