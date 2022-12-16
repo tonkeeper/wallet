@@ -15,22 +15,18 @@ const ConnectedAppsComponent: FC = () => {
       <AppsList
         title={t('browser.connected_title')}
         data={connectedApps}
-        onItemLongPress={(url) =>
-          Alert.alert(
-            t('dapps.remove_alert_title'),
-            t('dapps.remove_alert_caption'),
-            [
-              {
-                text: t('cancel'),
-                style: 'cancel',
-              },
-              {
-                text: t('dapps.remove_alert_button'),
-                style: 'destructive',
-                onPress: () => TonConnect.disconnect(url),
-              },
-            ],
-          )
+        onItemLongPress={(url, name) =>
+          Alert.alert(t('browser.remove_alert.title', { name }), '', [
+            {
+              text: t('cancel'),
+              style: 'cancel',
+            },
+            {
+              text: t('browser.remove_alert.approve_button'),
+              style: 'destructive',
+              onPress: () => TonConnect.disconnect(url),
+            },
+          ])
         }
       />
     );

@@ -307,13 +307,11 @@
       "share": "Поделиться",
       "copy_link": "Скопировать ссылку",
       "disconnect": "Отключить"
+    },
+    "remove_alert": {
+      "title": "Отключить «%{name}»?",
+      "approve_button": "Отключить"
     }
-  },
-
-  "dapps": {
-    "remove_alert_title": "Вы уверены, что хотите отключить это приложение?",
-    "remove_alert_caption": "Это отключит кошелек от приложения, но вы всегда можете подключить приложение еще раз.",
-    "remove_alert_button": "Отключить"
   },
 
   "exchange_title": "Купить TON",

@@ -14,7 +14,7 @@ interface Props {
   moreEnabled?: boolean;
   skeleton?: boolean;
   onMorePress?: () => void;
-  onItemLongPress?: (url: string) => void;
+  onItemLongPress?: (url: string, name: string) => void;
 }
 
 const AppsListComponent: FC<Props> = (props) => {
@@ -55,7 +55,7 @@ const AppsListComponent: FC<Props> = (props) => {
                 name={app.name}
                 iconUri={app.icon}
                 onPress={() => openDAppBrowser(app.url)}
-                onLongPress={() => onItemLongPress?.(app.url)}
+                onLongPress={() => onItemLongPress?.(app.url, app.name)}
               />
             ))}
             {moreEnabled ? (
