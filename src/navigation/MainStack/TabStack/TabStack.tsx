@@ -19,7 +19,6 @@ import { useNotificationsSubscribe } from '$hooks/useNotificationsSubscribe';
 import { IconNames } from '$uikit/Icon/generated.types';
 import { useFlags } from '$utils/flags';
 import { nftsSelector } from '$store/nfts';
-import { DevFeature, useDevFeatureEnabled } from '$store';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -36,8 +35,6 @@ export const TabStack: FC = () => {
   const { isEnd: isScrollEnd } = useContext(ScrollPositionContext);
   // useSelector(mainSelector); // need for re-render when main state changed
   useNotificationsSubscribe();
-
-  const isTonConnectV2Enabled = useDevFeatureEnabled(DevFeature.TonConnectV2);
 
   const isVisibleNftTab = React.useMemo(() => {
     if (flags.disable_nft_tab) {
@@ -156,15 +153,13 @@ export const TabStack: FC = () => {
           }}
         />
       )}
-      {isTonConnectV2Enabled && (
-        <Tab.Screen
-          component={DAppsExplore}
-          name={TabsStackRouteNames.Explore}
-          options={{
-            tabBarLabel: t('tab_browser'),
-          }}
-        />
-      )}
+      <Tab.Screen
+        component={DAppsExplore}
+        name={TabsStackRouteNames.Explore}
+        options={{
+          tabBarLabel: t('tab_browser'),
+        }}
+      />
       <Tab.Screen
         component={SettingsStack}
         name={TabsStackRouteNames.SettingsStack}

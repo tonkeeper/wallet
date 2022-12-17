@@ -26,7 +26,8 @@ export const ScrollHandler: FC<ScrollHandlerProps> = (props) => {
     bottomComponent,
     onPress,
     isLargeNavBar = true,
-    hitSlop
+    hideBackButton,
+    hitSlop,
   } = props;
 
   const scrollRef = useRef<any>(null);
@@ -123,7 +124,7 @@ export const ScrollHandler: FC<ScrollHandlerProps> = (props) => {
         )}
         {!!navBarTitle && !shouldRenderLargeNavBar && (
           <NavBar
-            hideBackButton={isLargeNavBar && isBigScreen}
+            hideBackButton={hideBackButton || (isLargeNavBar && isBigScreen)}
             scrollTop={scrollTop}
             rightContent={navBarRight}
           >
@@ -136,5 +137,5 @@ export const ScrollHandler: FC<ScrollHandlerProps> = (props) => {
         })}
       </>
     );
-  }, [scrollTop, navBarTitle, children, scrollHandler]);
+  }, [scrollTop, hideBackButton, navBarTitle, children, scrollHandler]);
 };

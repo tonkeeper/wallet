@@ -307,8 +307,13 @@
       "share": "Поделиться",
       "copy_link": "Скопировать ссылку",
       "disconnect": "Отключить"
+    },
+    "remove_alert": {
+      "title": "Отключить «%{name}»?",
+      "approve_button": "Отключить"
     }
   },
+
   "exchange_title": "Купить TON",
   "exchange_other_ways": "Другие способы покупки и продажи",
 

@@ -1,13 +1,16 @@
 import { getChainName } from '$shared/dynamicConfig';
+import { generateAppHashFromUrl } from '$utils';
 import concat from 'lodash/concat';
 import { IConnectedApp, IConnectedAppsStore } from './types';
 
-export const getConnectedAppByDomain = (
+export const getConnectedAppByUrl = (
   walletAddress: string,
-  domain: string,
+  url: string,
   state: IConnectedAppsStore,
 ): IConnectedApp | null => {
-  const connectedApp = state.connectedApps[getChainName()][walletAddress]?.[domain];
+  const hash = generateAppHashFromUrl(url);
+
+  const connectedApp = state.connectedApps[getChainName()][walletAddress]?.[hash];
 
   return connectedApp ?? null;
 };

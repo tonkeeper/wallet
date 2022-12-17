@@ -300,6 +300,10 @@
       "share": "Share",
       "copy_link": "Copy link",
       "disconnect": "Disconnect"
+    },
+    "remove_alert": {
+      "title": "Remove “%{name}”?",
+      "approve_button": "Remove"
     }
   },
 

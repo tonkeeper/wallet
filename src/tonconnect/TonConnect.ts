@@ -11,6 +11,9 @@ import {
   store,
   TonConnectBridgeType,
   IConnectedAppConnectionRemote,
+  Toast,
+  IConnectedAppConnectionInjected,
+  removeInjectedConnection,
 } from '$store';
 import { debugLog } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
@@ -83,6 +86,8 @@ class TonConnectService {
       }
 
       throw error;
+    } finally {
+      Toast.hide();
     }
   }
 
@@ -163,7 +168,11 @@ class TonConnectService {
     try {
       const connectedApp = findConnectedAppByUrl(webViewUrl);
 
-      if (!connectedApp || connectedApp.connections.length === 0) {
+      if (
+        !connectedApp ||
+        connectedApp.connections.length === 0 ||
+        connectedApp.autoConnectDisabled
+      ) {
         throw new ConnectEventError(
           CONNECT_EVENT_ERROR_CODES.UNKNOWN_APP_ERROR,
           'Unknown app',
