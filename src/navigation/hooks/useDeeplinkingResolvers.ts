@@ -250,7 +250,8 @@ export function useDeeplinkingResolvers() {
     } catch (err) {
       let message = err?.message;
       if (axios.isAxiosError(err)) {
-        message = t('error_network');
+        const data = err.response?.data as (Record<string, any> | undefined);
+        message = data?.error ?? t('error_network');
       }
 
       debugLog('[txrequest-url]', err);
@@ -296,7 +297,8 @@ export function useDeeplinkingResolvers() {
       Toast.hide();
       let message = err?.message;
       if (axios.isAxiosError(err)) {
-        message = t('error_network');
+        const data = err.response?.data as (Record<string, any> | undefined);
+        message = data?.error ?? t('error_network');
       }
 
       debugLog('[TonLogin]:', err);
