@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
-import { Base64, debugLog, isValidAddress } from '$utils';
+import {Base64, compareAddresses, debugLog, isValidAddress} from '$utils';
 import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import {
@@ -25,6 +25,7 @@ import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.typ
 import { AppStackRouteNames } from '$navigation/navigationNames';
 import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
 import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
+import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -183,7 +184,8 @@ export function useDeeplinkingResolvers() {
     openSend(CryptoCurrencies.Ton);
   });
 
-  const resolveTxType = (txRequest: TxRequest) => {
+  const resolveTxType = async (txRequest: TxRequest) => {
+    const wallet = getWallet();
     if (txRequest?.version !== '0') {
       throw new Error('Wrong txrequest protocol');
     }
@@ -196,6 +198,18 @@ export function useDeeplinkingResolvers() {
       (isSignRaw && txBody.params.valid_until < getTimeSec())
     ) {
       throw new Error(t('nft_operations_expired'));
+    }
+
+    if (
+      txBody.params.source &&
+      isValidAddress(txBody.params.source) &&
+      !compareAddresses(txBody.params.source, await wallet.ton.getAddress())
+    ) {
+      Toast.hide();
+      return openAddressMismatchModal(
+        () => resolveTxType(txRequest),
+        txBody.params.source,
+      );
     }
 
     switch (txRequest.body.type) {
@@ -246,7 +260,7 @@ export function useDeeplinkingResolvers() {
         Toast.hide();
       }
 
-      resolveTxType(data);
+      await resolveTxType(data);
     } catch (err) {
       let message = err?.message;
       if (axios.isAxiosError(err)) {
