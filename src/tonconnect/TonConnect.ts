@@ -29,6 +29,7 @@ import {
 } from '@tonconnect/protocol';
 import axios from 'axios';
 import FastImage from 'react-native-fast-image';
+import TonWeb from 'tonweb';
 import { MIN_PROTOCOL_VERSION, tonConnectDeviceInfo } from './config';
 import { ConnectEventError } from './ConnectEventError';
 import { ConnectReplyBuilder } from './ConnectReplyBuilder';
@@ -179,10 +180,22 @@ class TonConnectService {
         );
       }
 
-      const currentWalletAddress = store.getState().wallet?.address?.ton;
+      const state = store.getState();
+      const currentWalletAddress = state.wallet?.address?.ton;
+
+      let walletStateInit = '';
+      try {
+        if (state.wallet?.wallet) {
+          const tonWallet = state.wallet.wallet.vault.tonWallet;
+          const { stateInit } = await tonWallet.createStateInit();
+          walletStateInit = TonWeb.utils.bytesToBase64(await stateInit.toBoc(false));
+        }
+      } catch (err) {
+        debugLog(err);
+      }
 
       const replyItems =
-        ConnectReplyBuilder.createAutoConnectReplyItems(currentWalletAddress);
+        ConnectReplyBuilder.createAutoConnectReplyItems(currentWalletAddress, walletStateInit);
 
       return {
         event: 'connect',
