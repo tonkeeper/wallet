@@ -570,6 +570,8 @@
   "exchange_method_open_warning": "Вы открываете внешнее приложение, которым не управляет Tonkeeper.",
   "exchange_method_dont_show_again": "Больше не показывать",
 
+  "exchange_telegram_bot": "TELEGRAM BOT",
+
   "appearance_title": "Оформление",
   "appearance_description": "TON Diamonds NFT сделает ваш кошелек более красочным и уникальным.",
   "appearance_confirm": "Применить",

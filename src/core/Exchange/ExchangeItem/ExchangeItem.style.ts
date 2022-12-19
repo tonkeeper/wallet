@@ -1,7 +1,7 @@
 import FastImage from 'react-native-fast-image';
 
 import styled, { RADIUS } from '$styled';
-import { Highlight } from '$uikit';
+import { Highlight, Badge as UIBadge } from '$uikit';
 import { hNs, nfs, ns } from '$utils';
 
 export const Wrap = styled.View`
@@ -60,6 +60,14 @@ export const Icon = styled(FastImage).attrs({
 export const Contain = styled.View`
   flex: 1;
   margin-right: ${ns(16)}px;
+`;
+
+export const LabelContainer = styled.View`
+  flex-direction: row;
+`;
+
+export const LabelBadge = styled(UIBadge)`
+  margin-left: ${ns(4)}px;
 `;
 
 export const IconContain = styled.View``;

@@ -563,6 +563,8 @@
   "exchange_method_open_warning": "You are opening an external app not operated by Tonkeeper.",
   "exchange_method_dont_show_again": "Do not show again",
 
+  "exchange_telegram_bot": "TELEGRAM BOT",
+
   "appearance_title": "Theme",
   "appearance_description": "TON Diamonds NFT will make your wallet more colorful and unique.",
   "appearance_confirm": "Set",
