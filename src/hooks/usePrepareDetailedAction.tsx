@@ -89,7 +89,7 @@ export function usePrepareDetailedAction(
         true,
       );
       const amount = fromNano(action.amount, action.jetton?.decimals ?? 9);
-      label = prefix + ' ' + amount.toString() + ' ' + action.jetton?.symbol;
+      label = prefix + ' ' + amount.toString() + ' ' + (action.jetton?.symbol || action.jetton?.name && action.jetton.name.toUpperCase().slice(0, 3));
     }
 
     if (ActionType.Subscribe === ActionType[rawAction.type]) {
