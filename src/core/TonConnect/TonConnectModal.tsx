@@ -141,9 +141,12 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
       }, withDelay);
 
       if (props.protocolVersion !== 1) {
+        const { stateInit } = await vault.tonWallet.createStateInit();
+        const walletStateInit = TonWeb.utils.bytesToBase64(await stateInit.toBoc(false));
+
         const { replyBuilder, requestPromise } = props;
 
-        const replyItems = replyBuilder.createReplyItems(address, privateKey);
+        const replyItems = replyBuilder.createReplyItems(address, privateKey, walletStateInit);
 
         requestPromise.resolve({ address, replyItems });
       }
