@@ -295,6 +295,9 @@
     "explore_all": "Explore all",
     "open_link": "Open link",
     "web_search_title": "Google Search",
+    "about_dapps_title": "Use Tonkeeper with all TON apps and services",
+    "about_dapps_caption": "Explore apps and services where you can use Tonkeeper for sign-in and payments.",
+    "about_dapps_learn_more": "Learn more",
     "actions": {
       "refresh": "Refresh",
       "share": "Share",

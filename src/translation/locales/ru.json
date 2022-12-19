@@ -302,6 +302,9 @@
     "explore_all": "Другие",
     "open_link": "Открыть ссылку",
     "web_search_title": "Поиск в Google",
+    "about_dapps_title": "Используйте Tonkeeper с приложениями и сервисами TON.",
+    "about_dapps_caption": "Исследуйте приложения и сервисы, в которых вы можете использовать Tonkeeper для входа и платежей.",
+    "about_dapps_learn_more": "Подробнее",
     "actions": {
       "refresh": "Обновить",
       "share": "Поделиться",
