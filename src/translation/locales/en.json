@@ -526,6 +526,11 @@
     "amount": "Amount",
 
     "signRaw": {
+      "wrongTime": {
+        "title": "The clocks are not synchronized",
+        "description": "Seems like your device clock is not in sync with the network. Open device settings and enable automatic time and date.",
+        "button": "Open Settings"
+      },
       "totalFee": "Total fee",
       "title": "Confirm transaction",
       "recipient": "Recipient",

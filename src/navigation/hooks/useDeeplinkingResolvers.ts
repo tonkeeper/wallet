@@ -25,14 +25,27 @@ import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.typ
 import { AppStackRouteNames } from '$navigation/navigationNames';
 import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
 import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
+import {openTimeNotSyncedModal} from "$core/ModalContainer/TimeNotSynced/TimeNotSynced";
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
 };
 
+const getIsTimeSynced = () => {
+  return store.getState().main.isTimeSynced;
+};
+
 const getExpiresSec = () => {
   return getTimeSec() + 10 * 60;
+};
+
+export function checkIsTimeSynced() {
+  if (!getIsTimeSynced()) {
+    openTimeNotSyncedModal();
+    return false;
+  }
+  return true;
 };
 
 export function useDeeplinkingResolvers() {
@@ -192,6 +205,10 @@ export function useDeeplinkingResolvers() {
 
     const txBody = txRequest.body as any;
     const isSignRaw = isSignRawParams(txBody?.params);
+
+    if (!checkIsTimeSynced()) {
+      return Toast.hide();
+    }
 
     if (
       txBody.expires_sec < getTimeSec() ||
