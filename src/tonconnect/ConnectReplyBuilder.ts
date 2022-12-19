@@ -103,7 +103,7 @@ export class ConnectReplyBuilder {
     }
   }
 
-  createReplyItems(addr: string, privateKey: Uint8Array): ConnectItemReply[] {
+  createReplyItems(addr: string, privateKey: Uint8Array, walletStateInit: string): ConnectItemReply[] {
     const address = new TonWeb.utils.Address(addr).toString(false, true, true);
 
     const replyItems = this.request.items.map((requestItem): ConnectItemReply => {
@@ -113,8 +113,7 @@ export class ConnectReplyBuilder {
             name: 'ton_addr',
             address,
             network: ConnectReplyBuilder.getNetwork(),
-            // TonConnect TODO
-            walletStateInit: '',
+            walletStateInit,
           };
 
         case 'ton_proof':
@@ -131,7 +130,7 @@ export class ConnectReplyBuilder {
     return replyItems;
   }
 
-  static createAutoConnectReplyItems(addr: string): ConnectItemReply[] {
+  static createAutoConnectReplyItems(addr: string, walletStateInit: string): ConnectItemReply[] {
     const address = new TonWeb.utils.Address(addr).toString(false, true, true);
 
     return [
@@ -139,7 +138,7 @@ export class ConnectReplyBuilder {
         name: 'ton_addr',
         address,
         network: ConnectReplyBuilder.getNetwork(),
-        walletStateInit: '',
+        walletStateInit,
       },
     ];
   }

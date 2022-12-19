@@ -88,7 +88,7 @@ export function usePrepareDetailedAction(
         true,
         true,
       );
-      const amount = fromNano(action.amount, action.jetton?.decimal || 9);
+      const amount = fromNano(action.amount, action.jetton?.decimals ?? 9);
       label = prefix + ' ' + amount.toString() + ' ' + action.jetton?.symbol;
     }
 

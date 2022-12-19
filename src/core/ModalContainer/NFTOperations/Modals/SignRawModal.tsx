@@ -72,11 +72,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     const action = actions[0] ?? {};
 
     if (action.type === ActionTypeEnum.AuctionBid) {
-      const data = action[ActionTypeEnum.AuctionBid];
-
-      if (data.auction_type === 'DNS.tg') {
-        return undefined;
-      }
+      return undefined;
     }
 
     if (action.type === ActionTypeEnum.NftItemTransfer) {

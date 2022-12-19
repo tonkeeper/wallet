@@ -307,15 +307,20 @@
       "share": "Поделиться",
       "copy_link": "Скопировать ссылку",
       "disconnect": "Отключить"
+    },
+    "remove_alert": {
+      "title": "Отключить «%{name}»?",
+      "approve_button": "Отключить"
     }
   },
+
   "exchange_title": "Купить TON",
   "exchange_other_ways": "Другие способы покупки и продажи",
 
   "settings_title": "Настройки",
   "settings_primary_currency": "Основная валюта",
   "settings_rate": "Оценить приложение",
-  "settings_contact_support": "Написать в поддержку",
+  "settings_contact_support": "Написать команде",
   "settings_legal_documents": "Юридические документы",
   "settings_news": "Новости Tonkeeper",
   "settings_discussion": "Чат поддержки",
@@ -335,7 +340,7 @@
   "settings_security": "Безопасность",
   "settings_appearance": "Оформление",
   "settings_news_url": "https://t.me/tonkeeper_ru",
-  "settings_discussion_url": "https://t.me/tonkeeper_discuss_ru",
+  "settings_discussion_url": "https://t.me/tonkeeperdirect",
   "settings_jettons_list": "Список токенов",
   "settings_delete_account": "Удалить аккаунт",
 
@@ -547,6 +552,19 @@
         "tonTransfer": "Отправка TON",
         "unSubscribe": "Отписка",
         "subscribe": "Подписка"
+      },
+      "addressMismatch": {
+        "wrongVersion": {
+          "title": "Действие для другого адреса вашего кошелька",
+          "description": "Переключите текущий адрес кошелька на %{version}, чтобы подтвердить действие.",
+          "close": "Отмена",
+          "switch": "Переключить и продолжить"
+        },
+        "wrongWallet": {
+          "title": "Действие для другого кошелька",
+          "description": "Войдите в другой кошелёк %{address} и повторите попытку.",
+          "close": "Хорошо",
+        }
       }
     }
   },
@@ -556,6 +574,8 @@
 
   "exchange_method_open_warning": "Вы открываете внешнее приложение, которым не управляет Tonkeeper.",
   "exchange_method_dont_show_again": "Больше не показывать",
+
+  "exchange_telegram_bot": "TELEGRAM BOT",
 
   "appearance_title": "Оформление",
   "appearance_description": "TON Diamonds NFT сделает ваш кошелек более красочным и уникальным.",

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
-import { Base64, debugLog, isValidAddress } from '$utils';
+import {Base64, compareAddresses, debugLog, isValidAddress} from '$utils';
 import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import {
@@ -25,11 +25,8 @@ import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.typ
 import { AppStackRouteNames } from '$navigation/navigationNames';
 import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
 import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
-import {MainDB} from "$database";
-import {put} from "redux-saga/effects";
-import {mainActions} from "$store/main";
-import {Alert} from "react-native";
 import {openTimeNotSyncedModal} from "$core/ModalContainer/TimeNotSynced/TimeNotSynced";
+import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -200,7 +197,8 @@ export function useDeeplinkingResolvers() {
     openSend(CryptoCurrencies.Ton);
   });
 
-  const resolveTxType = (txRequest: TxRequest) => {
+  const resolveTxType = async (txRequest: TxRequest) => {
+    const wallet = getWallet();
     if (txRequest?.version !== '0') {
       throw new Error('Wrong txrequest protocol');
     }
@@ -217,6 +215,18 @@ export function useDeeplinkingResolvers() {
       (isSignRaw && txBody.params.valid_until < getTimeSec())
     ) {
       throw new Error(t('nft_operations_expired'));
+    }
+
+    if (
+      txBody.params.source &&
+      isValidAddress(txBody.params.source) &&
+      !compareAddresses(txBody.params.source, await wallet.ton.getAddress())
+    ) {
+      Toast.hide();
+      return openAddressMismatchModal(
+        () => resolveTxType(txRequest),
+        txBody.params.source,
+      );
     }
 
     switch (txRequest.body.type) {
@@ -267,11 +277,12 @@ export function useDeeplinkingResolvers() {
         Toast.hide();
       }
 
-      resolveTxType(data);
+      await resolveTxType(data);
     } catch (err) {
       let message = err?.message;
       if (axios.isAxiosError(err)) {
-        message = t('error_network');
+        const data = err.response?.data as (Record<string, any> | undefined);
+        message = data?.error ?? t('error_network');
       }
 
       debugLog('[txrequest-url]', err);
@@ -317,7 +328,8 @@ export function useDeeplinkingResolvers() {
       Toast.hide();
       let message = err?.message;
       if (axios.isAxiosError(err)) {
-        message = t('error_network');
+        const data = err.response?.data as (Record<string, any> | undefined);
+        message = data?.error ?? t('error_network');
       }
 
       debugLog('[TonLogin]:', err);
@@ -332,6 +344,8 @@ export function useDeeplinkingResolvers() {
       if (!query.r || !query.v || !query.id) {
         return;
       }
+
+      Toast.loading();
 
       await TonConnectRemoteBridge.handleConnectDeeplink(
         query as unknown as IConnectQrQuery,

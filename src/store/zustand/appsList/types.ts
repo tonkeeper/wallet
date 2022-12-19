@@ -8,6 +8,7 @@ export interface IAppsListStore {
   fetching: boolean;
   appsList: IAppMetadata[];
   moreEnabled: boolean;
+  moreUrl: string;
   actions: {
     fetchPopularApps: () => void;
   };

@@ -290,14 +290,14 @@ export const Settings: FC = () => {
               <CellSectionItem onPress={handleRateApp} icon="ic-star-28">
                 {t('settings_rate')}
               </CellSectionItem>
-              <CellSectionItem onPress={handleFeedback} icon="ic-envelope-28">
-                {t('settings_contact_support')}
+              <CellSectionItem onPress={handleDiscussion} icon="ic-telegram-28">
+                {t('settings_discussion')}
               </CellSectionItem>
               <CellSectionItem onPress={handleNews} icon="ic-telegram-28">
                 {t('settings_news')}
               </CellSectionItem>
-              <CellSectionItem onPress={handleDiscussion} icon="ic-telegram-28">
-                {t('settings_discussion')}
+              <CellSectionItem onPress={handleFeedback} icon="ic-envelope-28">
+                {t('settings_contact_support')}
               </CellSectionItem>
               <CellSectionItem onPress={handleLegal} icon="ic-doc-28">
                 {t('settings_legal_documents')}

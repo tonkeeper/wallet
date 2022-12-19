@@ -1,22 +1,18 @@
 import { useTranslator } from '$hooks';
 import { goBack, openDAppBrowser } from '$navigation';
-import { IsTablet, LargeNavBarHeight } from '$shared/constants';
+import { IsTablet, NavBarHeight } from '$shared/constants';
 import { Button, ScrollHandler, Text } from '$uikit';
-import { hNs, ns } from '$utils';
-import React, { FC, memo, useCallback, useEffect, useState } from 'react';
+import { ns, trackEvent } from '$utils';
+import React, { FC, memo, useCallback, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SearchBar, SearchSuggests } from './components';
 import { WebSearchSuggests } from './components/WebSearchSuggests/WebSearchSuggests';
 import * as S from './DAppsSearch.style';
 import { useSearchSuggests } from './hooks/useSearchSuggests';
 import { useWebSearchSuggests } from './hooks/useWebSearchSuggests';
+import { SearchSuggestSource } from './types';
 
 export interface DAppsSearchProps {
   initialQuery?: string;
@@ -50,16 +46,30 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
   );
 
   const handleSearchBarSubmit = useCallback(() => {
-    const suggest = getFirstSuggest() || getFirstWebSuggest();
+    const suggest = getFirstSuggest();
 
     if (suggest) {
+      if (
+        [SearchSuggestSource.APP, SearchSuggestSource.HISTORY].includes(suggest.source)
+      ) {
+        trackEvent('click_dapp', { url: suggest.url, name: suggest.name });
+      }
+
       openUrl(suggest.url);
+
+      return;
+    }
+
+    const webSearchSuggest = getFirstWebSuggest();
+
+    if (webSearchSuggest) {
+      openUrl(webSearchSuggest.url);
     }
   }, [getFirstSuggest, getFirstWebSuggest, openUrl]);
 
   const handleScrollViewLayout = useCallback(
     (event: LayoutChangeEvent) => {
-      scrollViewHeight.value = event.nativeEvent.layout.height;
+      scrollViewHeight.value = event.nativeEvent.layout.height + NavBarHeight;
     },
     [scrollViewHeight],
   );
@@ -81,17 +91,19 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
           <ScrollHandler
             navBarTitle={t('browser.title')}
             navBarRight={
-              <Button onPress={goBack} mode="secondary" size="navbar_small">
-                {t('cancel')}
-              </Button>
+              <S.NavBarButtonContainer>
+                <Button onPress={goBack} mode="secondary" size="navbar_small">
+                  {t('cancel')}
+                </Button>
+              </S.NavBarButtonContainer>
             }
-            isLargeNavBar
+            isLargeNavBar={false}
+            hideBackButton
           >
             <Animated.ScrollView
               showsVerticalScrollIndicator={false}
               // eslint-disable-next-line react-native/no-inline-styles
               contentContainerStyle={{
-                paddingTop: hNs(LargeNavBarHeight),
                 paddingHorizontal: ns(16),
                 alignItems: IsTablet ? 'center' : undefined,
               }}

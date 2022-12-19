@@ -10,6 +10,7 @@ const initialState: Omit<IAppsListStore, 'actions'> = {
   fetching: true,
   appsList: [],
   moreEnabled: false,
+  moreUrl: '',
 };
 
 export const useAppsListStore = create(
@@ -24,7 +25,7 @@ export const useAppsListStore = create(
               `${getServerConfig('tonkeeperEndpoint')}/apps/popular`,
             );
 
-            const { apps, moreEnabled } = response.data.data;
+            const { apps, moreEnabled, moreUrl } = response.data.data;
 
             FastImage.preload(
               apps.map((app) => ({
@@ -32,7 +33,7 @@ export const useAppsListStore = create(
               })),
             );
 
-            set({ appsList: apps, moreEnabled });
+            set({ appsList: apps, moreEnabled, moreUrl });
           } catch {
           } finally {
             set({ fetching: false });
@@ -48,3 +49,5 @@ export const useAppsListStore = create(
     },
   ),
 );
+
+useAppsListStore.getState().actions.fetchPopularApps();

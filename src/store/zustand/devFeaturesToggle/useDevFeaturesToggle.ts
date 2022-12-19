@@ -5,7 +5,7 @@ import { DevFeature, IDevFeaturesToggleStore } from './types';
 
 const initialState: Omit<IDevFeaturesToggleStore, 'actions'> = {
   devFeatures: {
-    [DevFeature.TonConnectV2]: false,
+    [DevFeature.Example]: false,
   },
 };
 

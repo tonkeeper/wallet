@@ -7,8 +7,8 @@ import Clipboard from '@react-native-community/clipboard';
 import { toastActions } from '$store/toast';
 import { useDispatch } from 'react-redux';
 import { maskifyTonAddress } from '$utils';
-import { Linking } from 'react-native';
 import { getServerConfig } from '$shared/constants';
+import { openDAppBrowser } from '$navigation';
 
 export const Details: React.FC<DetailsProps> = ({
   tokenId,
@@ -21,7 +21,7 @@ export const Details: React.FC<DetailsProps> = ({
   const t = useTranslator();
 
   const handleOpenExplorer = useCallback(() => {
-    Linking.openURL(getServerConfig('NFTOnExplorerUrl').replace('%s', contractAddress));
+    openDAppBrowser(getServerConfig('NFTOnExplorerUrl').replace('%s', contractAddress));
   }, [contractAddress]);
 
   const handlePress = useCallback(

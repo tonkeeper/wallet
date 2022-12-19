@@ -1,27 +1,16 @@
 import { useAppState } from '$hooks';
-import {
-  DevFeature,
-  getAllConnections,
-  useConnectedAppsStore,
-  useDevFeatureEnabled,
-} from '$store';
+import { getAllConnections, useConnectedAppsStore } from '$store';
 import { walletSelector } from '$store/wallet';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { TonConnectRemoteBridge } from '../TonConnectRemoteBridge';
 
 export const useRemoteBridge = () => {
-  const isTonConnectV2Enabled = useDevFeatureEnabled(DevFeature.TonConnectV2);
-
   const { address } = useSelector(walletSelector);
 
   const appState = useAppState();
 
   useEffect(() => {
-    if (!isTonConnectV2Enabled) {
-      return;
-    }
-
     if (appState !== 'active') {
       return;
     }
@@ -44,5 +33,5 @@ export const useRemoteBridge = () => {
       unsubscribe();
       TonConnectRemoteBridge.close();
     };
-  }, [address.ton, appState, isTonConnectV2Enabled]);
+  }, [address.ton, appState]);
 };

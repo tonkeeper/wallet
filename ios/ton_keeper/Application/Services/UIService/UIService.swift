@@ -6,7 +6,7 @@ final class UIService: NSObject {
   var isAppUnlocked = false
   
   private let reactRootViewController: UIViewController
-  private let window: UIWindow = {
+  let window: UIWindow = {
     let window = UIWindow(frame: UIScreen.main.bounds)
     window.makeKeyAndVisible()
     
