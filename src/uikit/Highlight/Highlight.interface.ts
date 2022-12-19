@@ -16,4 +16,6 @@ export interface HighlightProps {
   children?: React.ReactNode | ChildFn;
   onPressIn?: () => void;
   onPressOut?: () => void;
+
+  withDelay?: boolean;
 }
