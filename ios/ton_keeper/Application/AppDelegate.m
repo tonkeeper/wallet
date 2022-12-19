@@ -54,7 +54,11 @@
   reactViewController.view = rootView;
   reactViewController.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
 
-  [[ServiceLocator shared] setupServicesWithReactRootViewController:reactViewController];
+  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  self.window.rootViewController = reactViewController;
+  [self.window makeKeyAndVisible];
+
+  // [[ServiceLocator shared] setupServicesWithReactRootViewController:reactViewController];
   
   [super application:application didFinishLaunchingWithOptions:launchOptions];
 
