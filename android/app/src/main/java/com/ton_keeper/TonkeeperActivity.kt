@@ -2,18 +2,17 @@ package com.ton_keeper
 
 import android.os.Build
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import androidx.fragment.app.FragmentActivity
 import com.facebook.react.ReactApplication
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 
-class TonkeeperActivity : FragmentActivity(), DefaultHardwareBackBtnHandler {
+class TonkeeperActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
-        setEdgeToEdge()
         setContentView(R.layout.activity_tonkeeper)
         setRootFragment()
     }

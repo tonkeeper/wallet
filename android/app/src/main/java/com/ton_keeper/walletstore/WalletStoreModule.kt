@@ -7,9 +7,12 @@ import com.ton_keeper.data.mnemonicDataStore
 import com.ton_keeper.data.settingsDataStore
 import com.ton_keeper.data.walletDataStore
 import com.tonkeeper.feature.localauth.Authenticator
+import com.tonkeeper.feature.localauth.AuthenticatorPasscodeError
+import com.tonkeeper.feature.localauth.AuthenticatorPasscodeInvalid
 import com.tonkeeper.feature.localauth.result.AuthResult
 import com.tonkeeper.feature.wallet.WalletStorage
 import com.tonkeeper.ton.mnemonic.Mnemonic
+import com.tonkeeper.ton.mnemonic.MnemonicInvalidException
 import kotlinx.coroutines.launch
 
 class WalletStoreModule(
@@ -54,15 +57,15 @@ class WalletStoreModule(
 
                 val isValid = Mnemonic.isCorrect(data)
                 if (!isValid) {
-                    promise.reject(Exception())
+                    promise.reject(MnemonicInvalidException())
                     return@launch
                 }
 
                 val isPasscodeExist = authenticator.isPasscodeEnabled()
                 if (isPasscodeExist) {
                     when(authenticator.authWithPasscode(passcode)) {
-                        AuthResult.Error -> promise.reject(Exception())
-                        AuthResult.Failure -> promise.reject(Exception())
+                        AuthResult.Error -> promise.reject(AuthenticatorPasscodeError())
+                        AuthResult.Failure -> promise.reject(AuthenticatorPasscodeInvalid())
                         AuthResult.Success -> {
                             wallet.import(data)
                             promise.resolve(true)
@@ -81,7 +84,35 @@ class WalletStoreModule(
 
     @ReactMethod
     fun importWalletWithBiometry(mnemonic: ReadableArray, promise: Promise) {
+        activity.lifecycleScope.launch {
+            try {
+                val data = mnemonic.toArrayList().map { it as String }
 
+                val isValid = Mnemonic.isCorrect(data)
+                if (!isValid) {
+                    promise.reject(MnemonicInvalidException())
+                    return@launch
+                }
+
+                val isBiometryExist = authenticator.isBiometryEnabled()
+                if (isBiometryExist) {
+                    when(authenticator.authWithBiometry()) {
+                        AuthResult.Error -> promise.reject(AuthenticatorPasscodeError())
+                        AuthResult.Failure -> promise.reject(AuthenticatorPasscodeInvalid())
+                        AuthResult.Success -> {
+                            wallet.import(data)
+                            promise.resolve(true)
+                        }
+                    }
+                } else {
+                    authenticator.authWithBiometry()
+                    wallet.import(data)
+                    promise.resolve(true)
+                }
+            } catch (ex: Exception) {
+                promise.reject(ex)
+            }
+        }
     }
 
     @ReactMethod
