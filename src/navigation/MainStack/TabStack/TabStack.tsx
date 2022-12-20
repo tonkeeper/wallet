@@ -38,8 +38,6 @@ export const TabStack: FC = () => {
   // useSelector(mainSelector); // need for re-render when main state changed
   useNotificationsSubscribe();
 
-  const isTonConnectV2Enabled = useDevFeatureEnabled(DevFeature.TonConnectV2);
-
   const isVisibleNftTab = React.useMemo(() => {
     if (flags.disable_nft_tab) {
       return false;
@@ -169,15 +167,13 @@ export const TabStack: FC = () => {
           }}
         />
       )}
-      {isTonConnectV2Enabled && (
-        <Tab.Screen
-          component={DAppsExplore}
-          name={TabsStackRouteNames.Explore}
-          options={{
-            tabBarLabel: t('tab_browser'),
-          }}
-        />
-      )}
+      <Tab.Screen
+        component={DAppsExplore}
+        name={TabsStackRouteNames.Explore}
+        options={{
+          tabBarLabel: t('tab_browser'),
+        }}
+      />
       <Tab.Screen
         component={SettingsStack}
         name={TabsStackRouteNames.SettingsStack}

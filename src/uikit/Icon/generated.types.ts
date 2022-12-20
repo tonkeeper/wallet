@@ -85,6 +85,7 @@ export type IconNames =
   | 'ic-globe-56'
   | 'ic-camera-84'
   | 'ic-done-84'
+  | 'ic-exclamationmark-circle-84'
   | 'ic-settings-84'
   | 'globe-96'
   | 'ic-loader-large-32'
@@ -178,6 +179,7 @@ export const AllIcons = [
   'ic-globe-56',
   'ic-camera-84',
   'ic-done-84',
+  'ic-exclamationmark-circle-84',
   'ic-settings-84',
   'globe-96',
   'ic-loader-large-32',
@@ -272,6 +274,7 @@ export const IconSizes = {
   'ic-globe-56': 56,
   'ic-camera-84': 84,
   'ic-done-84': 84,
+  'ic-exclamationmark-circle-84': 84,
   'ic-settings-84': 84,
   'globe-96': 96,
   'ic-loader-large-32': 32,

@@ -20,7 +20,7 @@ export const Marketplaces: FC<MarketplacesModalProps> = (props) => {
   const bottomSheetRef = React.useRef<BottomSheetRef>(null);
   const handleMarketplacePress = useCallback(async () => {
     bottomSheetRef.current?.close();
-    await delay(100); // Close bottom sheet before system animation
+    await delay(300); // Close bottom sheet before system animation
   }, [bottomSheetRef]);
 
   const marketplaces = useMemo(() => {

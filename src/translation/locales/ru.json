@@ -308,13 +308,21 @@
     "explore_all": "Другие",
     "open_link": "Открыть ссылку",
     "web_search_title": "Поиск в Google",
+    "about_dapps_title": "Используйте Tonkeeper с приложениями и сервисами TON.",
+    "about_dapps_caption": "Исследуйте приложения и сервисы, в которых вы можете использовать Tonkeeper для входа и платежей.",
+    "about_dapps_learn_more": "Подробнее",
     "actions": {
       "refresh": "Обновить",
       "share": "Поделиться",
       "copy_link": "Скопировать ссылку",
       "disconnect": "Отключить"
+    },
+    "remove_alert": {
+      "title": "Отключить «%{name}»?",
+      "approve_button": "Отключить"
     }
   },
+
   "exchange_title": "Купить TON",
   "exchange_other_ways": "Другие способы покупки и продажи",
 
@@ -534,6 +542,11 @@
     "amount": "Сумма",
 
     "signRaw": {
+      "wrongTime": {
+        "title": "Время выставлено неверно",
+        "description": "Похоже, часы вашего устройства не синхронизированы с сетью. Откройте настройки устройства и включите автоматическое время и дату.",
+        "button": "Открыть настройки"
+      },
       "totalFee": "Суммарная комиссия",
       "title": "Подтвердить транзакцию",
       "recipient": "Получатель",
@@ -548,6 +561,19 @@
         "tonTransfer": "Отправка TON",
         "unSubscribe": "Отписка",
         "subscribe": "Подписка"
+      },
+      "addressMismatch": {
+        "wrongVersion": {
+          "title": "Действие для другого адреса вашего кошелька",
+          "description": "Переключите текущий адрес кошелька на %{version}, чтобы подтвердить действие.",
+          "close": "Отмена",
+          "switch": "Переключить и продолжить"
+        },
+        "wrongWallet": {
+          "title": "Действие для другого кошелька",
+          "description": "Войдите в другой кошелёк %{address} и повторите попытку.",
+          "close": "Хорошо",
+        }
       }
     }
   },
@@ -557,6 +583,8 @@
 
   "exchange_method_open_warning": "Вы открываете внешнее приложение, которым не управляет Tonkeeper.",
   "exchange_method_dont_show_again": "Больше не показывать",
+
+  "exchange_telegram_bot": "TELEGRAM BOT",
 
   "appearance_title": "Оформление",
   "appearance_description": "TON Diamonds NFT сделает ваш кошелек более красочным и уникальным.",

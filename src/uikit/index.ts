@@ -39,3 +39,4 @@ export { ShowMore } from './ShowMore/ShowMore';
 export { TokenListItem } from './TokenListItem/TokenListItem';
 export { ListHeader } from './ListHeader';
 export * from './StyledNativeCompoenets'
+export { StatelessHighlight } from './StatelessHighlight/StatelessHighlight';

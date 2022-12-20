@@ -2,9 +2,10 @@ import React, { FC, useCallback } from 'react';
 
 import { ExchangeItemProps } from './ExchangeItem.interface';
 import * as S from './ExchangeItem.style';
-import { useExchangeMethodInfo, useTheme } from '$hooks';
+import { useExchangeMethodInfo, useTheme, useTranslator } from '$hooks';
 import { openExchangeMethodModal } from '$navigation';
 import { Icon, Text } from '$uikit';
+import { Linking } from 'react-native';
 
 export const ExchangeItem: FC<ExchangeItemProps> = ({
   methodId,
@@ -14,9 +15,19 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
   const method = useExchangeMethodInfo(methodId);
   const theme = useTheme();
 
+  const t = useTranslator();
+
+  const isBot = methodId.endsWith('_bot');
+
   const handlePress = useCallback(() => {
-    openExchangeMethodModal(methodId);
-  }, [methodId]);
+    if (isBot) {
+      openExchangeMethodModal(methodId, () => {
+        Linking.openURL(method.action_button.url);
+      });
+    } else {
+      openExchangeMethodModal(methodId);
+    }
+  }, [isBot, method.action_button.url, methodId]);
 
   function renderBadge() {
     if (method.badge) {
@@ -50,7 +61,10 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
         <S.CardIn>
           <S.Icon source={{ uri: method.icon_url }} />
           <S.Contain>
-            <Text variant="label1">{method.title}</Text>
+            <S.LabelContainer>
+              <Text variant="label1">{method.title}</Text>
+              {isBot ? <S.LabelBadge>{t('exchange_telegram_bot')}</S.LabelBadge> : null}
+            </S.LabelContainer>
             <Text
               style={{ overflow: 'hidden' }}
               color="foregroundSecondary"
