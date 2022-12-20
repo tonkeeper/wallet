@@ -26,7 +26,7 @@ class WalletStorage(
     private val walletDataStore: DataStore<Preferences>
 ) {
 
-    suspend fun import(mnemonic: List<String>) = coroutineScope {
+    suspend fun import(mnemonic: List<String>): Unit = coroutineScope {
         val isCorrect = Mnemonic.isCorrect(mnemonic)
         if (!isCorrect) throw WalletMnemonicInvalidException()
 
