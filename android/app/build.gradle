@@ -361,6 +361,8 @@ dependencies {
     // DevKit
     implementation(project(":libs-ton:crypto"))
     implementation(project(":libs-ton:mnemonic"))
+    implementation(project(":libs-feature:localauth"))
+    implementation(project(":libs-feature:wallet"))
 }
 
 if (isNewArchitectureEnabled()) {
