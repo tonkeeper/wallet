@@ -34,15 +34,16 @@ class WalletStorage(
         val pk = PublicKey(keys.publicKey.toHex())
         val serialized = MnemonicSerializer.serializeToString(mnemonic)
 
+        val mnemonicPrefs = mnemonicDataStore.data.first()
+        val mnemonicStoreKey = stringPreferencesKey(getMnemonicAlias(pk))
+        if (mnemonicPrefs.contains(mnemonicStoreKey)) {
+            throw WalletAlreadyExist(pk.value)
+        }
+
         val cipher = getCipher()
         val secretKey = getOrCreateSecretKey(KeyStoreType, KeyStoreAlias)
-        val iv = loadCipherIv(pk)
-        if (iv != null) {
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv)
-        } else {
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-            saveCipherIv(pk, cipher.iv)
-        }
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+        saveCipherIv(pk, cipher.iv)
 
         val encrypted = cipher.doFinal(serialized.toByteArray())
         val encoded = Base64.encodeToString(encrypted, Base64.DEFAULT)
@@ -50,8 +51,7 @@ class WalletStorage(
         val info = WalletInfo(pk)
         val infoJson = WalletInfoSerializer.serializeToString(info)
 
-        val mnemonicStoreKey = stringPreferencesKey(getMnemonicAlias(pk))
-        val walletStoreKey = stringPreferencesKey(getMnemonicAlias(pk))
+        val walletStoreKey = stringPreferencesKey(getInfoAlias(pk))
         val saveMnemonic = async { mnemonicDataStore.edit { it[mnemonicStoreKey] = encoded } }
         val saveInfo = async { walletDataStore.edit { it[walletStoreKey] = infoJson } }
 
@@ -74,12 +74,15 @@ class WalletStorage(
 
     suspend fun remove(pk: PublicKey): Unit = coroutineScope {
         val mnemonicKey = stringPreferencesKey(getMnemonicAlias(pk))
+        val mnemonicIvKey = stringPreferencesKey(getMnemonicIvAlias(pk))
         val walletKey = stringPreferencesKey(getInfoAlias(pk))
 
         val mnemonicRemove = async { mnemonicDataStore.edit { it.remove(mnemonicKey) } }
+        val mnemonicIvRemove = async { mnemonicDataStore.edit { it.remove(mnemonicIvKey) } }
         val infoRemove = async { walletDataStore.edit { it.remove(walletKey) } }
 
         mnemonicRemove.await()
+        mnemonicIvRemove.await()
         infoRemove.await()
     }
 
