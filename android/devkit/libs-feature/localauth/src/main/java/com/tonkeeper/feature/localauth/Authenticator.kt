@@ -145,6 +145,6 @@ class Authenticator(
         private const val DefaultBiometryAlias = "biometry"
 
         private const val KeyStoreType = "AndroidKeyStore"
-        private const val KeyStoreAlias = "passcodekey"
+        private const val KeyStoreAlias = "PasscodeKey"
     }
 }

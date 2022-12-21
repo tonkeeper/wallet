@@ -36,27 +36,30 @@ class WalletStorage(
 
         val cipher = getCipher()
         val secretKey = getOrCreateSecretKey(KeyStoreType, KeyStoreAlias)
-        val iv = loadCipherIv()
+        val iv = loadCipherIv(pk)
         if (iv != null) {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv)
         } else {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-            saveCipherIv(cipher.iv)
+            saveCipherIv(pk, cipher.iv)
         }
 
         val encrypted = cipher.doFinal(serialized.toByteArray())
         val encoded = Base64.encodeToString(encrypted, Base64.DEFAULT)
 
+        val info = WalletInfo(pk)
+        val infoJson = WalletInfoSerializer.serializeToString(info)
+
         val mnemonicStoreKey = stringPreferencesKey(getMnemonicAlias(pk))
         val walletStoreKey = stringPreferencesKey(getMnemonicAlias(pk))
         val saveMnemonic = async { mnemonicDataStore.edit { it[mnemonicStoreKey] = encoded } }
-        val saveInfo = async { walletDataStore.edit { it[walletStoreKey] = encoded } }
+        val saveInfo = async { walletDataStore.edit { it[walletStoreKey] = infoJson } }
 
         saveMnemonic.await()
         saveInfo.await()
     }
 
-    suspend fun update(pk: PublicKey, label: String) {
+    suspend fun update(pk: PublicKey, label: String): Unit {
         val prefs = walletDataStore.data.first()
         val key = stringPreferencesKey(getInfoAlias(pk))
         val json = prefs[key] ?: throw WalletNotFoundException(pk.value)
@@ -69,7 +72,7 @@ class WalletStorage(
         }
     }
 
-    suspend fun remove(pk: PublicKey) = coroutineScope {
+    suspend fun remove(pk: PublicKey): Unit = coroutineScope {
         val mnemonicKey = stringPreferencesKey(getMnemonicAlias(pk))
         val walletKey = stringPreferencesKey(getInfoAlias(pk))
 
@@ -94,7 +97,7 @@ class WalletStorage(
 
         val cipher = getCipher()
         val secretKey = getOrCreateSecretKey(KeyStoreType, KeyStoreAlias)
-        val iv = loadCipherIv()
+        val iv = loadCipherIv(pk)
 
         cipher.init(Cipher.DECRYPT_MODE, secretKey, iv)
         val raw = cipher.doFinal(encrypted)
@@ -124,16 +127,18 @@ class WalletStorage(
         walletClear.await()
     }
 
-    private suspend fun saveCipherIv(bytes: ByteArray) {
+    private suspend fun saveCipherIv(pk: PublicKey, bytes: ByteArray) {
         val encoded = Base64.encodeToString(bytes, Base64.DEFAULT)
+        val key = stringPreferencesKey(getMnemonicIvAlias(pk))
         mnemonicDataStore.edit {
-            it[stringPreferencesKey(DefaultMnemonicIvAlias)] = encoded
+            it[key] = encoded
         }
     }
 
-    private suspend fun loadCipherIv(): IvParameterSpec? {
+    private suspend fun loadCipherIv(pk: PublicKey): IvParameterSpec? {
         val prefs = mnemonicDataStore.data.first()
-        val encoded = prefs[stringPreferencesKey(DefaultMnemonicIvAlias)] ?: return null
+        val key = stringPreferencesKey(getMnemonicIvAlias(pk))
+        val encoded = prefs[key] ?: return null
 
         val bytes = Base64.decode(encoded, Base64.DEFAULT)
         return IvParameterSpec(bytes)
@@ -143,17 +148,21 @@ class WalletStorage(
         return DefaultMnemonicAliasPrefix + pk.value
     }
 
+    private fun getMnemonicIvAlias(pk: PublicKey): String {
+        return DefaultMnemonicIvAliasPrefix + pk.value
+    }
+
     private fun getInfoAlias(pk: PublicKey): String {
         return DefaultInfoAliasPrefix + pk.value
     }
 
     companion object {
-        private const val DefaultMnemonicAliasPrefix = "menmonic."
-        private const val DefaultMnemonicIvAlias = "mnemonic-iv"
+        private const val DefaultMnemonicAliasPrefix = "mnemonic."
+        private const val DefaultMnemonicIvAliasPrefix = "mnemonic-iv."
 
         private const val DefaultInfoAliasPrefix = "info."
 
         private const val KeyStoreType = "AndroidKeyStore"
-        private const val KeyStoreAlias = "mnemonickey"
+        private const val KeyStoreAlias = "MnemonicKey"
     }
 }
