@@ -295,6 +295,9 @@
     "explore_all": "Explore all",
     "open_link": "Open link",
     "web_search_title": "Google Search",
+    "about_dapps_title": "Use Tonkeeper with all TON apps and services",
+    "about_dapps_caption": "Explore apps and services where you can use Tonkeeper for sign-in and payments.",
+    "about_dapps_learn_more": "Learn more",
     "actions": {
       "refresh": "Refresh",
       "share": "Share",
@@ -526,6 +529,11 @@
     "amount": "Amount",
 
     "signRaw": {
+      "wrongTime": {
+        "title": "The clocks are not synchronized",
+        "description": "Seems like your device clock is not in sync with the network. Open device settings and enable automatic time and date.",
+        "button": "Open Settings"
+      },
       "totalFee": "Total fee",
       "title": "Confirm transaction",
       "recipient": "Recipient",
@@ -540,6 +548,19 @@
         "tonTransfer": "TON Transfer",
         "unSubscribe": "Unsubscription",
         "subscribe": "Subscription"
+      },
+      "addressMismatch": {
+        "wrongVersion": {
+          "title": "Action for another address of your wallet",
+          "description": "Switch your active address to %{version} to confirm the action.",
+          "close": "Cancel",
+          "switch": "Switch and continue"
+        },
+        "wrongWallet": {
+          "title": "Action for another wallet",
+          "description": "Log in to another wallet %{address} and try again.",
+          "close": "OK"
+        }
       }
     }
   },
@@ -549,6 +570,8 @@
 
   "exchange_method_open_warning": "You are opening an external app not operated by Tonkeeper.",
   "exchange_method_dont_show_again": "Do not show again",
+
+  "exchange_telegram_bot": "TELEGRAM BOT",
 
   "appearance_title": "Theme",
   "appearance_description": "TON Diamonds NFT will make your wallet more colorful and unique.",

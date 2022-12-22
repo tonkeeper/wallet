@@ -5,11 +5,12 @@ import { IsTablet, LargeNavBarHeight } from '$shared/constants';
 import { store } from '$store';
 import { Icon, ScrollHandler } from '$uikit';
 import { hNs } from '$utils';
+import { useFlags } from '$utils/flags';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import React, { FC, memo, useCallback } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import { ConnectedApps, PopularApps, SearchButton } from './components';
+import { ConnectedApps, PopularApps, SearchButton, AboutDApps } from './components';
 import * as S from './DAppsExplore.style';
 
 export interface DAppsExploreProps {}
@@ -17,6 +18,8 @@ export interface DAppsExploreProps {}
 const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
   const {} = props;
 
+  const flags = useFlags(['disable_dapps']);
+  
   const t = useTranslator();
   const tabBarHeight = useBottomTabBarHeight();
   const deeplinking = useDeeplinking();
@@ -75,8 +78,14 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
             scrollEventThrottle={16}
           >
             <S.Content>
-              <ConnectedApps />
-              <PopularApps />
+              {flags.disable_dapps ? (
+                <AboutDApps />
+              ) : (
+                <>
+                  <ConnectedApps />
+                  <PopularApps />
+                </>
+              )}
             </S.Content>
           </Animated.ScrollView>
         </ScrollHandler>

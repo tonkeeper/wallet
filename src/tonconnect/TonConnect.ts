@@ -2,6 +2,7 @@ import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/Sign
 import { SignRawParams } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import { TonConnectModalResponse } from '$core/TonConnect/models';
 import { openTonConnect } from '$navigation';
+import { checkIsTimeSynced } from '$navigation/hooks/useDeeplinkingResolvers';
 import {
   findConnectedAppByClientSessionId,
   findConnectedAppByUrl,
@@ -29,6 +30,7 @@ import {
 } from '@tonconnect/protocol';
 import axios from 'axios';
 import FastImage from 'react-native-fast-image';
+import TonWeb from 'tonweb';
 import { MIN_PROTOCOL_VERSION, tonConnectDeviceInfo } from './config';
 import { ConnectEventError } from './ConnectEventError';
 import { ConnectReplyBuilder } from './ConnectReplyBuilder';
@@ -179,10 +181,22 @@ class TonConnectService {
         );
       }
 
-      const currentWalletAddress = store.getState().wallet?.address?.ton;
+      const state = store.getState();
+      const currentWalletAddress = state.wallet?.address?.ton;
+
+      let walletStateInit = '';
+      try {
+        if (state.wallet?.wallet) {
+          const tonWallet = state.wallet.wallet.vault.tonWallet;
+          const { stateInit } = await tonWallet.createStateInit();
+          walletStateInit = TonWeb.utils.bytesToBase64(await stateInit.toBoc(false));
+        }
+      } catch (err) {
+        debugLog(err);
+      }
 
       const replyItems =
-        ConnectReplyBuilder.createAutoConnectReplyItems(currentWalletAddress);
+        ConnectReplyBuilder.createAutoConnectReplyItems(currentWalletAddress, walletStateInit);
 
       return {
         event: 'connect',
@@ -244,6 +258,15 @@ class TonConnectService {
       };
 
       const boc = await new Promise<string>(async (resolve, reject) => {
+        if (!checkIsTimeSynced()) {
+          return reject(
+            new SendTransactionError(
+              request.id,
+              SEND_TRANSACTION_ERROR_CODES.USER_REJECTS_ERROR,
+              "Wallet declined the request",
+            ),
+          );
+        }
         const openModalResult = await openSignRawModal(
           txParams,
           {

@@ -75,6 +75,13 @@ export const Button = styled(Animated.View)<{
         min-width: ${ns(48)}px;
         border-radius: ${ns(48 / 2)}px;
       `;
+    } else if (size === 'medium_rounded') {
+      return `
+        height: ${ns(36)}px;
+        min-width: ${ns(115)}px;
+        border-radius: ${ns(theme.radius.large)}px;
+        padding-horizontal: ${ns(16)}px;
+      `;
     } else {
       return `
         ${!withoutFixedHeight && `height: ${ns(56)}px`};
@@ -131,6 +138,12 @@ export const Title = styled(Text).attrs({ allowFontScaling: false })<{
         padding: 0 ${ns(withoutTextPadding ? 0 : 20)}px;
         font-size: ${nfs(16)}px;
         line-height: ${nfs(24)}px;
+      `;
+    } else if (size === 'medium_rounded') {
+      return `
+        padding: 0 ${ns(withoutTextPadding ? 16 : 0)}px;
+        font-size: ${nfs(14)}px;
+        line-height: ${nfs(20)}px;
       `;
     } else {
       return `

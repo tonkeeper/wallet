@@ -11,16 +11,15 @@ import { CryptoCurrencies } from '$shared/constants';
 import { walletSelector } from '$store/wallet';
 import { CheckmarkItem } from '$uikit/CheckmarkItem';
 import { t } from '$translation';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ExchangeDB } from './ExchangeDB';
-import {trackEvent} from "$utils";
+import { trackEvent } from '$utils';
 
-export const ExchangeMethod: FC<ExchangeMethodProps> = ({ methodId }) => {
+export const ExchangeMethod: FC<ExchangeMethodProps> = ({ methodId, onContinue }) => {
   const method = useExchangeMethodInfo(methodId);
   const { wallet } = useSelector(walletSelector);
   const [isDontShow, setIsDontShow] = React.useState(false);
   const [isClosed, setClosed] = useState(false);
-  
+
   const handleContinue = useCallback(() => {
     setClosed(true);
 
@@ -28,15 +27,22 @@ export const ExchangeMethod: FC<ExchangeMethodProps> = ({ methodId }) => {
       if (!wallet) {
         return openRequireWalletModal();
       } else {
-        openBuyFiat(CryptoCurrencies.Ton, methodId);
         trackEvent(`exchange_open_${methodId}`, { internal_id: methodId });
+
+        if (onContinue) {
+          onContinue();
+
+          return;
+        }
+
+        openBuyFiat(CryptoCurrencies.Ton, methodId);
       }
     }, 500);
 
     if (isDontShow) {
       ExchangeDB.dontShowDetails(methodId);
     }
-  }, [methodId, wallet, isDontShow]);
+  }, [isDontShow, wallet, methodId, onContinue]);
 
   const handleLinkPress = useCallback(
     (url) => () => {
@@ -50,7 +56,9 @@ export const ExchangeMethod: FC<ExchangeMethodProps> = ({ methodId }) => {
       <S.Wrap>
         <S.Icon source={{ uri: method.icon_url }} />
         <S.TitleWrapper>
-          <Text textAlign="center" variant="h3">{method.title}</Text>
+          <Text textAlign="center" variant="h3">
+            {method.title}
+          </Text>
         </S.TitleWrapper>
         <S.CaptionWrapper>
           <Text textAlign="center" color="foregroundSecondary" variant="body1">
@@ -59,9 +67,7 @@ export const ExchangeMethod: FC<ExchangeMethodProps> = ({ methodId }) => {
         </S.CaptionWrapper>
       </S.Wrap>
       <S.WarningContainer>
-        <Text variant="body1">
-          {t('exchange_method_open_warning')}
-        </Text>
+        <Text variant="body1">{t('exchange_method_open_warning')}</Text>
         <S.Links>
           {method.info_buttons.map((item) => (
             <S.Link key={item.url} onPress={handleLinkPress(item.url)}>

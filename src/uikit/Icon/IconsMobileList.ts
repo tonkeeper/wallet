@@ -84,6 +84,7 @@ export const MobileIconsList = {
   'ic-globe-56': require('$assets/icons/png/ic-globe-56.png'),
   'ic-camera-84': require('$assets/icons/png/ic-camera-84.png'),
   'ic-done-84': require('$assets/icons/png/ic-done-84.png'),
+  'ic-exclamationmark-circle-84': require('$assets/icons/png/ic-exclamationmark-circle-84.png'),
   'ic-settings-84': require('$assets/icons/png/ic-settings-84.png'),
   'globe-96': require('$assets/icons/png/globe-96.png'),
   'ic-loader-large-32': require('$assets/icons/png/ic-loader-large-32.png'),

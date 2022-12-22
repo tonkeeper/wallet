@@ -31,7 +31,7 @@ import { MarketplacesModalProps } from '$core/ModalContainer/Marketplaces/Market
 import { AddEditFavoriteAddressProps } from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress.interface';
 import { Action } from 'tonapi-sdk-js';
 import { TonConnectModalProps } from '$core/TonConnect/models';
-import { store } from '$store'
+import { store } from '$store';
 
 export const navigationRef_depreceted = createRef<NavigationContainerRef>();
 export const navigationRef = createNavigationContainerRef();
@@ -337,15 +337,22 @@ export function openExchangeModal() {
   });
 }
 
-export async function openExchangeMethodModal(methodId: string) {
+export async function openExchangeMethodModal(methodId: string, onContinue?: () => void) {
   const isShowDetails = await ExchangeDB.isShowDetails(methodId);
   if (isShowDetails) {
     push(AppStackRouteNames.ModalContainer, {
       modalName: ModalName.EXCHANGE_METHOD,
       key: 'EXCHANGE_METHOD',
       methodId,
+      onContinue,
     });
   } else {
+    if (onContinue) {
+      onContinue();
+
+      return;
+    }
+
     openBuyFiat(CryptoCurrencies.Ton, methodId);
   }
 }
@@ -356,7 +363,7 @@ export function openTonConnect(props: TonConnectModalProps) {
       modalName: ModalName.TON_LOGIN,
       ...props,
     });
-  } else { 
+  } else {
     openRequireWalletModal();
   }
 }
