@@ -12,7 +12,6 @@ import {
   openDeploy,
   openRequireWalletModal,
   openSend,
-  openTonConnect,
 } from '../helper';
 
 import { t } from '$translation';
@@ -27,6 +26,7 @@ import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
 import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
 import {openTimeNotSyncedModal} from "$core/ModalContainer/TimeNotSynced/TimeNotSynced";
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
+import { openTonConnect } from '$core/TonConnect/TonConnectModal';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;

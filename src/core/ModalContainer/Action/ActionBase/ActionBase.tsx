@@ -11,6 +11,7 @@ import { ActionBaseProps } from './ActionBase.interface';
 import { useTranslator } from '$hooks';
 import { openSend, openSubscription } from '$navigation';
 import { CryptoCurrencies } from '$shared/constants';
+import { Modal } from '$libs/navigation';
 
 export const ActionBase: FC<ActionBaseProps> = ({
   infoRows,
@@ -80,57 +81,61 @@ export const ActionBase: FC<ActionBaseProps> = ({
   }
 
   return (
-    <BottomSheet skipHeader triggerClose={isClosed}>
-      <View
-        style={{
-          padding: ns(16),
-          paddingBottom: 0,
-        }}
-      >
-        <S.InfoWrap>
-          {isSpam && (
-            <S.SpamWrap>
-              <S.SpamBadge>
-                <Text variant="label2" color="foregroundPrimary">
-                  {t('spam_action').toUpperCase()}
-                </Text>
-              </S.SpamBadge>
-            </S.SpamWrap>
-          )}
-          {head || (
-            <Text variant="h2" textAlign="center">
-              {label}
-            </Text>
-          )}
-          <S.TypeLabelWrapper>
-            <Text textAlign="center" color="foregroundSecondary" variant="body1">
-              {sentLabel}
-            </Text>
-          </S.TypeLabelWrapper>
-          {isInProgress && (
-            <S.Pending>
-              <Icon name="ic-time-16" color="foregroundSecondary" />
-              <S.PendingTextWrapper>
-                <Text color="foregroundSecondary" variant="label1">
-                  {t('transaction_type_pending')}
-                </Text>
-              </S.PendingTextWrapper>
-            </S.Pending>
-          )}
-        </S.InfoWrap>
-        <S.Table>
-          {infoRows.map((item, i) => [
-            i > 0 && <Separator key={'sep_' + item.label} />,
-            <Highlight key={item.label} onPress={handlePress(item)}>
-              <S.Item>
-                <S.ItemLabel numberOfLines={1}>{item.label}</S.ItemLabel>
-                <S.ItemValue>{item.preparedValue || item.value}</S.ItemValue>
-              </S.Item>
-            </Highlight>,
-          ])}
-        </S.Table>
-        {renderFooterButton()}
-      </View>
-    </BottomSheet>
+    <Modal>
+      <Modal.Header />
+      <Modal.Content>
+        <View
+          style={{
+            padding: ns(16),
+            paddingBottom: 0,
+          }}
+        >
+          <S.InfoWrap>
+            {isSpam && (
+              <S.SpamWrap>
+                <S.SpamBadge>
+                  <Text variant="label2" color="foregroundPrimary">
+                    {t('spam_action').toUpperCase()}
+                  </Text>
+                </S.SpamBadge>
+              </S.SpamWrap>
+            )}
+            {head || (
+              <Text variant="h2" textAlign="center">
+                {label}
+              </Text>
+            )}
+            <S.TypeLabelWrapper>
+              <Text textAlign="center" color="foregroundSecondary" variant="body1">
+                {sentLabel}
+              </Text>
+            </S.TypeLabelWrapper>
+            {isInProgress && (
+              <S.Pending>
+                <Icon name="ic-time-16" color="foregroundSecondary" />
+                <S.PendingTextWrapper>
+                  <Text color="foregroundSecondary" variant="label1">
+                    {t('transaction_type_pending')}
+                  </Text>
+                </S.PendingTextWrapper>
+              </S.Pending>
+            )}
+          </S.InfoWrap>
+          <S.Table>
+            {infoRows.map((item, i) => [
+              i > 0 && <Separator key={'sep_' + item.label} />,
+              <Highlight key={item.label} onPress={handlePress(item)}>
+                <S.Item>
+                  <S.ItemLabel numberOfLines={1}>{item.label}</S.ItemLabel>
+                  <S.ItemValue>{item.preparedValue || item.value}</S.ItemValue>
+                </S.Item>
+              </Highlight>,
+            ])}
+          </S.Table>
+          {renderFooterButton()}
+        </View>
+      </Modal.Content>
+      <Modal.Footer />
+    </Modal>
   );
 };
