@@ -20,6 +20,7 @@ import {
   ChangePin,
   DAppBrowser,
   DAppsSearch,
+  Exchange,
   Migration,
   Receive,
   ScanQR,
@@ -28,6 +29,7 @@ import {
 import { WebView } from '$core/WebView/WebView';
 import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewConfirmSending';
 import { ProvidersWithNavigation } from './Providers';
+import { ExchangeModal } from '$core/Exchange/Exchange';
 
 const Stack = createModalStackNavigator();
 
@@ -41,6 +43,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NFTSalePlaceModal} path="NFTSalePlace" />
       <Stack.Modal component={NFTSalePlaceGetgemsModal} path="NFTSalePlaceGetgems" />
       <Stack.Modal component={NFTSaleCancelModal} path="NFTSaleCancel" />
+      <Stack.Modal component={ExchangeModal} path="Exchange" />
       <Stack.Modal
         component={NFTTransferInputAddressModal}
         path="NFTTransferInputAddress"
