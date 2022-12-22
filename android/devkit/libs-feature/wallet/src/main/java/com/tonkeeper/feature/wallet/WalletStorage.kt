@@ -26,7 +26,7 @@ class WalletStorage(
     private val walletDataStore: DataStore<Preferences>
 ) {
 
-    suspend fun import(mnemonic: List<String>): Unit = coroutineScope {
+    suspend fun import(mnemonic: List<String>): WalletInfo = coroutineScope {
         val isCorrect = Mnemonic.isCorrect(mnemonic)
         if (!isCorrect) throw WalletMnemonicInvalidException()
 
@@ -57,9 +57,11 @@ class WalletStorage(
 
         saveMnemonic.await()
         saveInfo.await()
+
+        info
     }
 
-    suspend fun update(pk: PublicKey, label: String): Unit {
+    suspend fun update(pk: PublicKey, label: String): WalletInfo {
         val prefs = walletDataStore.data.first()
         val key = stringPreferencesKey(getInfoAlias(pk))
         val json = prefs[key] ?: throw WalletNotFoundException(pk.value)
@@ -70,6 +72,8 @@ class WalletStorage(
         walletDataStore.edit {
             it[key] = WalletInfoSerializer.serializeToString(new)
         }
+
+        return info
     }
 
     suspend fun remove(pk: PublicKey): Unit = coroutineScope {

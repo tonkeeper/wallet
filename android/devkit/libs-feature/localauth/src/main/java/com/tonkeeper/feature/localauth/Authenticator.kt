@@ -37,8 +37,8 @@ class Authenticator(
 
     suspend fun authWithBiometry() = suspendCancellableCoroutine { continuation ->
         val info = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Biometric login for my app")
-            .setSubtitle("Log in using your biometric credential")
+            .setTitle("Biometric authentication")
+            .setSubtitle("Verify your identity for operation")
             .setAllowedAuthenticators(BIOMETRIC_STRONG)
             .setNegativeButtonText("Cancel")
             .build()
