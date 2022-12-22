@@ -83,7 +83,7 @@ export const ActionBase: FC<ActionBaseProps> = ({
   return (
     <Modal>
       <Modal.Header />
-      <Modal.Content>
+      <Modal.Content safeArea>
         <View
           style={{
             padding: ns(16),
@@ -135,7 +135,6 @@ export const ActionBase: FC<ActionBaseProps> = ({
           {renderFooterButton()}
         </View>
       </Modal.Content>
-      <Modal.Footer />
     </Modal>
   );
 };

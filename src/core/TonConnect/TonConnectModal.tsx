@@ -220,7 +220,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   return (
     <Modal>
       <Modal.Header />
-      <Modal.Content>
+      <Modal.Content safeArea>
         <S.Container>
           <S.Logos>
             <S.Logo>
@@ -320,7 +320,6 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
           </S.Footer>
         </S.Container>
       </Modal.Content>
-      <Modal.Footer />
     </Modal>
   );
 };
