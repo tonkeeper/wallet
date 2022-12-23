@@ -11,6 +11,8 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.fragment.app.FragmentActivity
+import com.tonkeeper.feature.localauth.keystore.getCipher
+import com.tonkeeper.feature.localauth.keystore.getOrCreateSecretKey
 import com.tonkeeper.feature.localauth.result.AuthResult
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -18,7 +20,7 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import kotlin.coroutines.resume
 
-class Authenticator(
+class LocalAuthManager(
     private val activity: FragmentActivity,
     private val config: Config,
     private val datastore: DataStore<Preferences>

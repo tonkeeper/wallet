@@ -5,8 +5,8 @@ class WalletMnemonicInvalidException
 
 class WalletNotFoundException(
     publicKey: String
-) : Exception("Wallet with public key not found ($publicKey).")
+) : Exception("Wallet with public key not found (pk: $publicKey).")
 
 class WalletAlreadyExist(
     publicKey: String
-) : Exception("Wallet with public key already exist ($publicKey).")
+) : Exception("Wallet with public key already exist (pk: $publicKey).")

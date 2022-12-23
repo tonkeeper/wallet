@@ -21,7 +21,7 @@ import org.json.JSONObject
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 
-class WalletStorage(
+class WalletStoreManager(
     private val mnemonicDataStore: DataStore<Preferences>,
     private val walletDataStore: DataStore<Preferences>
 ) {

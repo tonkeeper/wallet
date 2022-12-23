@@ -8,12 +8,9 @@ import com.ton_keeper.bridge.toBridgeMapArray
 import com.ton_keeper.data.mnemonicDataStore
 import com.ton_keeper.data.settingsDataStore
 import com.ton_keeper.data.walletDataStore
-import com.tonkeeper.feature.localauth.Authenticator
-import com.tonkeeper.feature.localauth.AuthenticatorBiometryError
-import com.tonkeeper.feature.localauth.AuthenticatorPasscodeError
-import com.tonkeeper.feature.localauth.AuthenticatorPasscodeInvalid
+import com.tonkeeper.feature.localauth.*
 import com.tonkeeper.feature.localauth.result.AuthResult
-import com.tonkeeper.feature.wallet.WalletStorage
+import com.tonkeeper.feature.wallet.WalletStoreManager
 import com.tonkeeper.feature.wallet.key.PublicKey
 import com.tonkeeper.ton.crypto.toHex
 import com.tonkeeper.ton.mnemonic.Mnemonic
@@ -28,16 +25,16 @@ class WalletStoreModule(
         context.currentActivity as FragmentActivity
     }
 
-    private val authenticator by lazy {
-        Authenticator(
+    private val localAuthManager by lazy {
+        LocalAuthManager(
             activity = activity,
-            config = Authenticator.Config(),
+            config = LocalAuthManager.Config(),
             datastore = activity.settingsDataStore
         )
     }
 
-    private val wallet by lazy {
-        WalletStorage(
+    private val walletStoreManager by lazy {
+        WalletStoreManager(
             mnemonicDataStore = activity.mnemonicDataStore,
             walletDataStore = activity.walletDataStore
         )
@@ -64,13 +61,13 @@ class WalletStoreModule(
 
                 checkMnemonic(data)
 
-                if (authenticator.isPasscodeEnabled()) {
+                if (localAuthManager.isPasscodeEnabled()) {
                     localPasscodeAuth(passcode)
                 } else {
-                    authenticator.setupPasscode(passcode)
+                    localAuthManager.setupPasscode(passcode)
                 }
 
-                wallet.import(data)
+                walletStoreManager.import(data)
                 promise.resolve(true)
             } catch (ex: Exception) {
                 promise.reject(ex)
@@ -85,13 +82,13 @@ class WalletStoreModule(
                 val data = mnemonic.toArrayList().map { it as String }
                 checkMnemonic(data)
 
-                if (authenticator.isBiometryEnabled()) {
+                if (localAuthManager.isBiometryEnabled()) {
                     localBiometryAuth()
                 } else {
-                    authenticator.setupBiometry()
+                    localAuthManager.setupBiometry()
                 }
 
-                wallet.import(data)
+                walletStoreManager.import(data)
                 promise.resolve(true)
             } catch (ex: Exception) {
                 promise.reject(ex)
@@ -103,7 +100,7 @@ class WalletStoreModule(
     fun listWallets(promise: Promise) {
         activity.lifecycleScope.launch {
             try {
-                val data = wallet.wallets()
+                val data = walletStoreManager.wallets()
                 val array = data.toBridgeMapArray()
                 promise.resolve(array)
             } catch (ex: Exception) {
@@ -116,7 +113,7 @@ class WalletStoreModule(
     fun getWallet(pubKey: String, promise: Promise) {
         activity.lifecycleScope.launch {
             try {
-                val data = wallet.wallet(PublicKey(pubKey))
+                val data = walletStoreManager.wallet(PublicKey(pubKey))
                 val map = data.toBridgeMap()
                 promise.resolve(map)
             } catch (ex: Exception) {
@@ -129,7 +126,7 @@ class WalletStoreModule(
     fun updateWallet(pubKey: String, label: String, promise: Promise) {
         activity.lifecycleScope.launch {
             try {
-                val data = wallet.update(PublicKey(pubKey), label)
+                val data = walletStoreManager.update(PublicKey(pubKey), label)
                 val map = data.toBridgeMap()
                 promise.resolve(map)
             } catch (ex: Exception) {
@@ -142,7 +139,7 @@ class WalletStoreModule(
     fun removeWallet(pubKey: String, promise: Promise) {
         activity.lifecycleScope.launch {
             try {
-                wallet.remove(PublicKey(pubKey))
+                walletStoreManager.remove(PublicKey(pubKey))
                 promise.resolve(true)
             } catch (ex: Exception) {
                 promise.reject(ex)
@@ -154,7 +151,7 @@ class WalletStoreModule(
     fun removeWallets(promise: Promise) {
         activity.lifecycleScope.launch {
             try {
-                wallet.clear()
+                walletStoreManager.clear()
                 promise.resolve(true)
             } catch (ex: Exception) {
                 promise.reject(ex)
@@ -166,12 +163,12 @@ class WalletStoreModule(
     fun exportWithPasscode(pubKey: String, passcode: String, promise: Promise) {
         activity.lifecycleScope.launch {
             try {
-                if (authenticator.isPasscodeEnabled().not())
+                if (localAuthManager.isPasscodeEnabled().not())
                     throw AuthenticatorPasscodeError()
 
                 localPasscodeAuth(passcode)
 
-                val data = wallet.export(PublicKey(pubKey))
+                val data = walletStoreManager.export(PublicKey(pubKey))
                 val hex = data.toHex()
                 promise.resolve(hex)
             } catch (ex: Exception) {
@@ -184,12 +181,12 @@ class WalletStoreModule(
     fun exportWithBiometry(pubKey: String, promise: Promise) {
         activity.lifecycleScope.launch {
             try {
-                if (authenticator.isBiometryEnabled().not())
+                if (localAuthManager.isBiometryEnabled().not())
                     throw AuthenticatorBiometryError()
 
                 localBiometryAuth()
 
-                val data = wallet.export(PublicKey(pubKey))
+                val data = walletStoreManager.export(PublicKey(pubKey))
                 val hex = data.toHex()
                 promise.resolve(hex)
             } catch (ex: Exception) {
@@ -202,12 +199,12 @@ class WalletStoreModule(
     fun backupWithPasscode(pubKey: String, passcode: String, promise: Promise) {
         activity.lifecycleScope.launch {
             try {
-                if (authenticator.isPasscodeEnabled().not())
+                if (localAuthManager.isPasscodeEnabled().not())
                     throw AuthenticatorPasscodeError()
 
                 localPasscodeAuth(passcode)
 
-                val data = wallet.backup(PublicKey(pubKey))
+                val data = walletStoreManager.backup(PublicKey(pubKey))
                 val result = WritableNativeArray()
                 data.forEach { result.pushString(it) }
                 promise.resolve(result)
@@ -221,12 +218,12 @@ class WalletStoreModule(
     fun backupWithBiometry(pubKey: String, promise: Promise) {
         activity.lifecycleScope.launch {
             try {
-                if (authenticator.isBiometryEnabled().not())
+                if (localAuthManager.isBiometryEnabled().not())
                     throw AuthenticatorBiometryError()
 
                 localBiometryAuth()
 
-                val data = wallet.backup(PublicKey(pubKey))
+                val data = walletStoreManager.backup(PublicKey(pubKey))
                 val result = WritableNativeArray()
                 data.forEach { result.pushString(it) }
                 promise.resolve(result)
@@ -267,7 +264,7 @@ class WalletStoreModule(
 
     @Throws
     private suspend fun localBiometryAuth() {
-        when (authenticator.authWithBiometry()) {
+        when (localAuthManager.authWithBiometry()) {
             AuthResult.Error -> throw AuthenticatorPasscodeError()
             AuthResult.Failure -> throw AuthenticatorPasscodeInvalid()
             AuthResult.Success -> {
@@ -278,7 +275,7 @@ class WalletStoreModule(
 
     @Throws
     private suspend fun localPasscodeAuth(passcode: String) {
-        when (authenticator.authWithPasscode(passcode)) {
+        when (localAuthManager.authWithPasscode(passcode)) {
             AuthResult.Error -> throw AuthenticatorPasscodeError()
             AuthResult.Failure -> throw AuthenticatorPasscodeInvalid()
             AuthResult.Success -> {
