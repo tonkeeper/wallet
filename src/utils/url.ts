@@ -69,7 +69,16 @@ export const getSearchQuery = (url: string) => {
     'https://www.google.com/search',
   ].includes(parsed.url);
 
-  if (isGoogle) {
+  if (isGoogle && parsed.query.q) {
+    return parsed.query.q as string;
+  }
+
+  const isDuckDuckGo = [
+    'https://duckduckgo.com/',
+    'https://www.duckduckgo.com/',
+  ].includes(parsed.url);
+
+  if (isDuckDuckGo && parsed.query.q) {
     return parsed.query.q as string;
   }
 
