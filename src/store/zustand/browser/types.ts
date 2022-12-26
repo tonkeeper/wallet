@@ -1,6 +1,6 @@
 export enum SearchEngine {
-  Google = 'Google',
   DuckDuckGo = 'DuckDuckGo',
+  Google = 'Google',
 }
 
 export interface IBrowserStore {

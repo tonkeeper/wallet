@@ -346,6 +346,7 @@
   "settings_discussion_url": "https://t.me/tonkeeperdirect",
   "settings_jettons_list": "Список токенов",
   "settings_delete_account": "Удалить аккаунт",
+  "settings_search_engine": "Поисковая машина",
 
   "settings_delete_alert_title": "Вы уверены, что хотите удалить аккаунт?",
   "settings_delete_alert_caption": "Это действие приведет к удалению вашего аккаунта и всех данных из этого приложения.",

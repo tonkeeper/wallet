@@ -339,6 +339,7 @@
   "settings_discussion_url": "https://t.me/tonkeeperdirect",
   "settings_jettons_list": "List of tokens",
   "settings_delete_account": "Delete account",
+  "settings_search_engine": "Search engine",
 
   "settings_delete_alert_title": "Are you sure you want to delete your account?",
   "settings_delete_alert_caption": "This action will delete your account and all data from this application.",
