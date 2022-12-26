@@ -136,7 +136,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
       const domain = value.toLowerCase();
 
-      if (!TonWeb.Address.isValid(domain) && domain.includes('.')) {
+      if (!favorite && !TonWeb.Address.isValid(domain) && domain.includes('.')) {
         setDnsLoading(true);
 
         const resolvedDomain = await getAddressByDomain(domain);
