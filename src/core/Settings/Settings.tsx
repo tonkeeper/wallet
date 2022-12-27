@@ -301,7 +301,7 @@ export const Settings: FC = () => {
                 selected={searchEngine}
                 onChange={setSearchEngine}
                 keyExtractor={(item) => item}
-                width={220}
+                width={176}
                 renderItem={(item) => <Text variant="label1">{item}</Text>}
               >
                 <CellSectionItem
