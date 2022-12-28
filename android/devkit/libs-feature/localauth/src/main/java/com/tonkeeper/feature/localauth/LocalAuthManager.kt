@@ -1,69 +1,55 @@
 package com.tonkeeper.feature.localauth
 
-import android.util.Base64
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.fragment.app.FragmentActivity
-import com.tonkeeper.feature.localauth.keystore.getCipher
-import com.tonkeeper.feature.localauth.keystore.getOrCreateSecretKey
-import com.tonkeeper.feature.localauth.result.AuthResult
-import kotlinx.coroutines.flow.first
+import com.tonkeeper.feature.localauth.biometry.BiometryRepository
+import com.tonkeeper.feature.localauth.passcode.PasscodeRepository
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
-import javax.crypto.Cipher
-import javax.crypto.spec.IvParameterSpec
 import kotlin.coroutines.resume
 
 class LocalAuthManager(
     private val activity: FragmentActivity,
-    private val config: Config,
-    private val datastore: DataStore<Preferences>
+    private val passcodeRepository: PasscodeRepository,
+    private val biometryRepository: BiometryRepository,
 ) {
 
     private val biometric = BiometricManager.from(activity)
     private val executor = ContextCompat.getMainExecutor(activity)
 
-    suspend fun authWithPasscode(passcode: String): AuthResult {
-        val prefs = datastore.data.first()
-        val saved = prefs[stringPreferencesKey(config.passcodeAlias)] ?: return AuthResult.Error
+    suspend fun isPasscodeEnabled(): Boolean {
+        return passcodeRepository.isSaved()
+    }
 
-        val decoded = decrypt(saved)
-        return if (decoded == passcode) AuthResult.Success else AuthResult.Failure
+    suspend fun setupPasscode(value: String) {
+        passcodeRepository.save(value)
+    }
+
+    suspend fun authWithPasscode(passcode: String): LocalAuthResult {
+        return when (passcodeRepository.compare(passcode)) {
+            true -> LocalAuthResult.Success
+            false -> LocalAuthResult.Failure
+            null -> LocalAuthResult.Error
+        }
+    }
+
+    suspend fun isBiometryEnabled(): Boolean {
+        return isBiometryAvailable() && biometryRepository.isEnabled()
+    }
+
+    suspend fun setupBiometry() {
+        if (isBiometryAvailable().not()) throw AuthenticatorBiometryError()
+        biometryRepository.enable()
     }
 
     suspend fun authWithBiometry() = suspendCancellableCoroutine { continuation ->
-        val info = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Biometric authentication")
-            .setSubtitle("Verify your identity for operation")
-            .setAllowedAuthenticators(BIOMETRIC_STRONG)
-            .setNegativeButtonText("Cancel")
-            .build()
-
-        val callback = object : BiometricPrompt.AuthenticationCallback() {
-
-            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                if (continuation.isCancelled) return
-                continuation.resume(AuthResult.Success)
-            }
-
-            override fun onAuthenticationFailed() {
-                if (continuation.isCancelled) return
-                continuation.resume(AuthResult.Failure)
-            }
-
-            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                if (continuation.isCancelled) return
-                continuation.resume(AuthResult.Error)
-            }
-        }
-
+        val info = createBiometryPromptInfo()
+        val callback = createAuthenticationCallback(continuation)
         val biometricPrompt = BiometricPrompt(activity, executor, callback)
+
         biometricPrompt.authenticate(info)
 
         continuation.invokeOnCancellation {
@@ -71,82 +57,38 @@ class LocalAuthManager(
         }
     }
 
-    suspend fun isPasscodeEnabled(): Boolean {
-        val prefs = datastore.data.first()
-        return prefs.contains(stringPreferencesKey(config.passcodeAlias))
-    }
-
-    suspend fun isBiometryEnabled(): Boolean {
-        val prefs = datastore.data.first()
-        val enabled = prefs.contains(booleanPreferencesKey(config.biometryAlias))
-        return isBiometryAvailable() && enabled
-    }
-
-    suspend fun setupPasscode(value: String) {
-        val encoded = encrypt(value)
-        datastore.edit {
-            it[stringPreferencesKey(config.passcodeAlias)] = encoded
-        }
-    }
-
-    suspend fun setupBiometry() {
-        if (isBiometryAvailable().not()) throw AuthenticatorBiometryError()
-        datastore.edit {
-            it[booleanPreferencesKey(config.biometryAlias)] = true
-        }
-    }
-
-    private suspend fun encrypt(value: String): String {
-        val cipher = getCipher()
-        val secretKey = getOrCreateSecretKey(KeyStoreType, KeyStoreAlias)
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-
-        saveCipherIv(cipher.iv)
-
-        val encrypted = cipher.doFinal(value.toByteArray())
-        return Base64.encodeToString(encrypted, Base64.DEFAULT)
-    }
-
-    private suspend fun decrypt(base64: String): String {
-        val encoded = Base64.decode(base64, Base64.DEFAULT)
-
-        val cipher = getCipher()
-        val iv = loadCipherIv()
-
-        val secretKey = getOrCreateSecretKey(KeyStoreType, KeyStoreAlias)
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, iv)
-        return String(cipher.doFinal(encoded))
-    }
-
-    private suspend fun saveCipherIv(bytes: ByteArray) {
-        val encoded = Base64.encodeToString(bytes, Base64.DEFAULT)
-        datastore.edit {
-            it[stringPreferencesKey(DefaultPasscodeIvAlias)] = encoded
-        }
-    }
-
-    private suspend fun loadCipherIv(): IvParameterSpec {
-        val prefs = datastore.data.first()
-        val encoded = prefs[stringPreferencesKey(DefaultPasscodeIvAlias)]
-        val bytes = Base64.decode(encoded, Base64.DEFAULT)
-        return IvParameterSpec(bytes)
-    }
-
     private fun isBiometryAvailable(): Boolean {
         return biometric.canAuthenticate(BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS
     }
 
-    data class Config(
-        val passcodeAlias: String = DefaultPasscodeAlias,
-        val biometryAlias: String = DefaultBiometryAlias,
-    )
+    private fun createAuthenticationCallback(
+        continuation: CancellableContinuation<LocalAuthResult>
+    ): BiometricPrompt.AuthenticationCallback {
+        return object : BiometricPrompt.AuthenticationCallback() {
 
-    companion object {
-        private const val DefaultPasscodeAlias = "passcode"
-        private const val DefaultPasscodeIvAlias = "passcode-iv"
-        private const val DefaultBiometryAlias = "biometry"
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                if (continuation.isCancelled) return
+                continuation.resume(LocalAuthResult.Success)
+            }
 
-        private const val KeyStoreType = "AndroidKeyStore"
-        private const val KeyStoreAlias = "PasscodeKey"
+            override fun onAuthenticationFailed() {
+                if (continuation.isCancelled) return
+                continuation.resume(LocalAuthResult.Failure)
+            }
+
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                if (continuation.isCancelled) return
+                continuation.resume(LocalAuthResult.Error)
+            }
+        }
+    }
+
+    private fun createBiometryPromptInfo(): BiometricPrompt.PromptInfo {
+        return BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Biometric authentication")
+            .setSubtitle("Verify your identity for operation")
+            .setAllowedAuthenticators(BIOMETRIC_STRONG)
+            .setNegativeButtonText("Cancel")
+            .build()
     }
 }

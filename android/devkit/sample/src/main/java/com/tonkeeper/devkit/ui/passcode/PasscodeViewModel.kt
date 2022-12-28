@@ -5,11 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tonkeeper.feature.localauth.AuthenticatorBiometryError
 import com.tonkeeper.feature.localauth.LocalAuthManager
-import com.tonkeeper.feature.localauth.result.AuthResult
+import com.tonkeeper.feature.localauth.LocalAuthResult
 import kotlinx.coroutines.launch
 
 class PasscodeViewModel : ViewModel() {
-
 
     private fun updatePasscodeStatus(
         localAuthManager: LocalAuthManager,
@@ -40,9 +39,9 @@ class PasscodeViewModel : ViewModel() {
             val passcode = "1311"
             val result = localAuthManager.authWithPasscode(passcode)
             state.value = when (result) {
-                AuthResult.Error -> "Error"
-                AuthResult.Failure -> "Failure"
-                AuthResult.Success -> "Success"
+                LocalAuthResult.Error -> "Error"
+                LocalAuthResult.Failure -> "Failure"
+                LocalAuthResult.Success -> "Success"
             }
         }
     }
@@ -78,9 +77,9 @@ class PasscodeViewModel : ViewModel() {
         viewModelScope.launch {
             val result = localAuthManager.authWithBiometry()
             state.value = when (result) {
-                AuthResult.Error -> "Error"
-                AuthResult.Failure -> "Failure"
-                AuthResult.Success -> "Success"
+                LocalAuthResult.Error -> "Error"
+                LocalAuthResult.Failure -> "Failure"
+                LocalAuthResult.Success -> "Success"
             }
         }
     }
