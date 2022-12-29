@@ -80,8 +80,6 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
     setConnectedAppsHeight(event.nativeEvent.layout.height);
   }, []);
 
-  flags.disable_dapps = false;
-
   const navBarRight = (
     <TouchableOpacity
       onPress={handlePressOpenScanQR}
