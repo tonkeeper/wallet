@@ -9,7 +9,7 @@ import { useTranslator } from '$hooks';
 import { trackEvent } from '$utils';
 
 interface Props {
-  title: string;
+  title?: string;
   data: { name: string; icon: string; url: string }[];
   rowsLimit?: number;
   moreEnabled?: boolean;
@@ -37,7 +37,7 @@ const AppsListComponent: FC<Props> = (props) => {
 
   return (
     <S.Container>
-      <S.Title>{title}</S.Title>
+      {title ? <S.Title>{title}</S.Title> : null}
       <S.List>
         {skeleton ? (
           <>

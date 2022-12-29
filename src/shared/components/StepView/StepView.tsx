@@ -11,7 +11,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { BackHandler } from 'react-native';
+import { BackHandler, LayoutChangeEvent, LayoutRectangle } from 'react-native';
 import { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { StepViewItemProps, StepViewProps } from './StepView.interface';
 import * as S from './StepView.style';
@@ -27,11 +27,22 @@ export interface StepViewRef<T = string | number> {
 export const StepViewItem: FC<StepViewItemProps> = () => null;
 
 const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) => {
-  const { children, backDisabled, initialStepId, useBackHandler, onChangeStep } = props;
+  const {
+    children,
+    backDisabled,
+    initialStepId,
+    useBackHandler,
+    autoHeight = false,
+    onChangeStep,
+  } = props;
 
   const {
     window: { width },
   } = useDimensions();
+
+  const [layouts, setLayouts] = useState<{
+    [key: StepViewItemProps['id']]: LayoutRectangle;
+  }>({});
 
   const steps = useMemo(() => {
     const childrenArray: (ReactElement<StepViewItemProps> | null)[] = Array.isArray(
@@ -67,16 +78,32 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
     [currentIndex, width],
   );
 
-  const containerStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateX: withSpring(position.value, {
-          damping: 15,
-          mass: 0.5,
-        }),
-      },
-    ],
-  }));
+  const containerStyle = useAnimatedStyle(() => {
+    const height = layouts[currentStepId]?.height || 0;
+
+    return {
+      transform: [
+        {
+          translateX: withSpring(position.value, {
+            damping: 15,
+            mass: 0.5,
+          }),
+        },
+      ],
+      height: autoHeight && height > 0 ? height : 'auto',
+    };
+  }, [layouts, currentStepId]);
+
+  const handleStepLayout = useCallback(
+    (step: StepViewItemProps, event: LayoutChangeEvent) => {
+      const layout = event?.nativeEvent?.layout;
+
+      if (layout) {
+        setLayouts((s) => ({ ...s, [step.id]: layout }));
+      }
+    },
+    [],
+  );
 
   const goNext = useCallback(() => {
     const nextIndex = Math.min(currentIndex + 1, steps.length - 1);
@@ -132,9 +159,14 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
   );
 
   return (
-    <S.Container style={containerStyle}>
+    <S.Container autoHeight={autoHeight} style={containerStyle}>
       {steps.map((step) => (
-        <S.Step key={step.id} width={width}>
+        <S.Step
+          key={step.id}
+          width={width}
+          autoHeight={autoHeight}
+          onLayout={autoHeight ? (event) => handleStepLayout(step, event) : undefined}
+        >
           {typeof step.children === 'function'
             ? step.children({ active: step.id === currentStepId })
             : step.children}

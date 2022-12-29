@@ -14,5 +14,6 @@ export interface StepViewProps {
   backDisabled?: boolean;
   useBackHandler?: boolean;
   initialStepId?: string;
+  autoHeight?: boolean;
   onChangeStep?: (currentStepId: string | number, currentStepIndex: number) => void;
 }

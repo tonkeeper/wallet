@@ -1,13 +1,23 @@
-import React, { FC, memo, useCallback, useEffect } from 'react';
-import { useTranslator } from '$hooks';
+import React, { FC, memo, useCallback, useEffect, useRef } from 'react';
 import { useAppsListStore } from '$store';
-import { AppsList } from '../AppsList/AppsList';
 import { openDAppBrowser } from '$navigation';
+import { List } from '$uikit';
+import { PopularAppCell } from '../PopularAppCell/PopularAppCell';
+import * as S from './PopularApps.style';
+import { StepView, StepViewItem, StepViewRef } from '$shared/components';
+import { useTranslator } from '$hooks';
 
-const PopularAppsComponent: FC = () => {
+interface Props {
+  activeCategory: string;
+}
+
+const PopularAppsComponent: FC<Props> = (props) => {
+  const { activeCategory } = props;
+
+  const stepViewRef = useRef<StepViewRef>(null);
+
   const {
-    fetching,
-    appsList,
+    categories,
     moreEnabled,
     moreUrl,
     actions: { fetchPopularApps },
@@ -15,31 +25,53 @@ const PopularAppsComponent: FC = () => {
 
   const t = useTranslator();
 
-  const handleMorePress = useCallback(() => {
-    if (!moreUrl || !moreEnabled) {
-      return;
-    }
-
-    openDAppBrowser(moreUrl);
-  }, [moreEnabled, moreUrl]);
-
   useEffect(() => {
     fetchPopularApps();
   }, [fetchPopularApps]);
 
-  if (!fetching && appsList.length === 0) {
+  useEffect(() => {
+    stepViewRef.current?.go(activeCategory);
+  }, [activeCategory]);
+
+  if (categories.length === 0) {
     return null;
   }
 
   return (
-    <AppsList
-      title={t('browser.popular_title')}
-      data={appsList}
-      skeleton={fetching}
-      rowsLimit={2}
-      moreEnabled={moreEnabled}
-      onMorePress={handleMorePress}
-    />
+    <>
+      <StepView ref={stepViewRef} autoHeight={true}>
+        {categories.map((category) => (
+          <StepViewItem id={category.id} key={category.id}>
+            <S.Container>
+              <List separator={false}>
+                {category.apps.map((item, index) => (
+                  <PopularAppCell
+                    key={index}
+                    separator={index < category.apps.length - 1}
+                    icon={item.icon}
+                    url={item.url}
+                    name={item.name}
+                    description={item.description}
+                  />
+                ))}
+              </List>
+            </S.Container>
+          </StepViewItem>
+        ))}
+      </StepView>
+      {moreEnabled && moreUrl ? (
+        <S.Container>
+          <List separator={false}>
+            <PopularAppCell
+              isMore={true}
+              url={moreUrl}
+              name={t('browser.more_title')}
+              description={t('browser.more_description')}
+            />
+          </List>
+        </S.Container>
+      ) : null}
+    </>
   );
 };
 
