@@ -1,0 +1,41 @@
+platform :ios do
+    lane :increment_version do
+      latest_release = firebase_app_distribution_get_latest_release(
+        app: "1:695609596302:ios:4e313c44aca2860b09acdf",
+        firebase_cli_token: ENV['FIREBASE_TOKEN']
+      )
+      increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 })
+    end
+
+    lane :build do
+        api_key = app_store_connect_api_key(
+            key_id: ENV['KEY_ID'],
+            issuer_id: ENV['ISSUER_ID'],
+            key_filepath: "./key.p8",
+            duration: 1200,
+            in_house: false,
+        )
+        setup_ci
+        sync_code_signing(
+            type: "appstore",
+            app_identifier: 'com.jbig.tonkeeper',
+            readonly: true,
+            git_url: ENV['GIT_URL']
+        )
+        increment_version()
+        build_app(
+          scheme: "Release",
+          export_method: "app-store",
+          silent: true,
+          suppress_xcode_output: true,
+        )
+        firebase_app_distribution(
+            app: "1:695609596302:ios:4e313c44aca2860b09acdf",
+            release_notes: ENV['MESSAGE'] + "\nBranch: " + ENV['BRANCH'] + "\nSHA: " + ENV['SHA'] + "\nAuthor: " + ENV['AUTHOR'],
+            firebase_cli_token: ENV['FIREBASE_TOKEN']
+        )
+        pilot(api_key: api_key)
+
+    end
+
+end

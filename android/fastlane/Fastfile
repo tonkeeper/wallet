@@ -1,0 +1,29 @@
+platform :android do
+    lane :increment_version do
+      latest_release = firebase_app_distribution_get_latest_release(
+        app: "1:695609596302:android:7376b22be09bfe2409acdf",
+        firebase_cli_token: ENV['FIREBASE_TOKEN']
+      )
+      increment_version_code(
+        gradle_file_path: "app/build.gradle",
+        version_code: latest_release[:buildVersion].to_i + 1
+      )
+    end
+
+    lane :build do
+        increment_version()
+        build_android_app(
+          task: "assemble",
+          build_type: "Release",
+          print_command: false,
+        )
+
+        firebase_app_distribution(
+            app: "1:695609596302:android:7376b22be09bfe2409acdf",
+            release_notes: ENV['MESSAGE'] + "\nBranch: " + ENV['BRANCH'] + "\nSHA: " + ENV['SHA'] + "\nAuthor: " + ENV['AUTHOR'],
+            firebase_cli_token: ENV['FIREBASE_TOKEN']
+        )
+
+    end
+
+end

@@ -1,0 +1,49 @@
+name: build-ios-app
+on:
+  workflow_dispatch:
+    inputs:
+      about:
+        type: string
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - run: |
+          echo '::add-mask::${{ secrets.TEAM }}'
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: actions/checkout@v2
+      - name: Decode Keystore
+        id: decode_keystore
+        uses: timheuer/base64-to-file@v1.2
+        with:
+          fileDir: 'ios'
+          fileName: 'key.p8'
+          encodedString: ${{ secrets.APP_STORE_KEY }}
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
+      - name: Open ios folder
+        run: cd ios
+      - name: Set up ruby env
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2
+          bundler-cache: true
+      - run: cd ios && bundle install && bundle exec fastlane ios build
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          MESSAGE: ${{ github.event.inputs.about }}
+          BRANCH: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          AUTHOR: ${{ github.actor }}
+          KEY_ID: ${{ secrets.KEY_ID }}
+          ISSUER_ID: ${{ secrets.ISSUER_ID }}
+          GIT_URL: ${{ secrets.GIT_URL }}
+          MATCH_USERNAME: ${{ secrets.APP_STORE_USERNAME }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.GIT_BASE64 }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}

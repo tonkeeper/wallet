@@ -1,0 +1,44 @@
+name: build-android-app
+on:
+  workflow_dispatch:
+    inputs:
+      about:
+        type: string
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: actions/checkout@v2
+      - name: Decode Keystore
+        id: decode_keystore
+        uses: timheuer/base64-to-file@v1.2
+        with:
+          fileDir: 'android/app'
+          fileName: 'keystore.jks'
+          encodedString: ${{ secrets.KEYSTORE }}
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
+      - name: Open android folder
+        run: cd android
+      - name: Set up ruby env
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2
+          bundler-cache: true
+      - run: cd android && bundle install && bundle exec fastlane android build
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          MESSAGE: ${{ github.event.inputs.about }}
+          BRANCH: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          AUTHOR: ${{ github.actor }}
