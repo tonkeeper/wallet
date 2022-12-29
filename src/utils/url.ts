@@ -49,12 +49,16 @@ export const getUrlTitle = async (url: string, cancelTokenSource: CancelTokenSou
   throw new Error('title not found');
 };
 
+export const getFixedLastSlashUrl = (url: string) => {
+  return url.replace(/\/$/, '');
+};
+
 export const generateAppHashFromUrl = (url: string) => {
   // get url without query
   const { url: parsedUrl } = queryParser.parseUrl(url);
 
   // remove last slash if it exists
-  const fixedUrl = parsedUrl.replace(/\/$/, '');
+  const fixedUrl = getFixedLastSlashUrl(parsedUrl);
 
   const hash = createHash('sha256').update(Buffer.from(fixedUrl)).digest('hex');
 

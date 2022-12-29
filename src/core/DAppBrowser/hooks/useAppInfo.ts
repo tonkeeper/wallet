@@ -4,7 +4,7 @@ import {
   useAppsListStore,
   useConnectedAppsStore,
 } from '$store';
-import { generateAppHashFromUrl } from '$utils';
+import { getFixedLastSlashUrl } from '$utils';
 import { useCallback, useMemo } from 'react';
 
 export const useAppInfo = (
@@ -29,11 +29,9 @@ export const useAppInfo = (
       return connectedApp;
     }
 
-    const webViewUrlHash = generateAppHashFromUrl(webViewUrl);
+    const url = getFixedLastSlashUrl(webViewUrl);
 
-    const app = appsList.find(
-      (item) => webViewUrlHash === generateAppHashFromUrl(item.url),
-    );
+    const app = appsList.find((item) => url.startsWith(getFixedLastSlashUrl(item.url)));
 
     if (app) {
       return app;
