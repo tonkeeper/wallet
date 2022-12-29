@@ -73,8 +73,8 @@ class DataStorePasscodeRepository(
     }
 
     companion object {
-        private const val DefaultPasscodeAlias = "passcode"
-        private const val DefaultPasscodeIvAlias = "passcode-iv"
+        private const val DefaultPasscodeAlias = "passcode.encrypted"
+        private const val DefaultPasscodeIvAlias = "passcode.iv"
 
         private val PasscodeKey = stringPreferencesKey(DefaultPasscodeAlias)
         private val PasscodeIvKey = stringPreferencesKey(DefaultPasscodeIvAlias)

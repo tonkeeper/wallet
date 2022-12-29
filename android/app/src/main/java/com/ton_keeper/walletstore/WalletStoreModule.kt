@@ -5,13 +5,20 @@ import androidx.lifecycle.lifecycleScope
 import com.facebook.react.bridge.*
 import com.ton_keeper.bridge.toBridgeMap
 import com.ton_keeper.bridge.toBridgeMapArray
-import com.ton_keeper.data.mnemonicDataStore
-import com.ton_keeper.data.settingsDataStore
-import com.ton_keeper.data.walletDataStore
+import com.ton_keeper.data.*
 import com.tonkeeper.feature.localauth.*
-import com.tonkeeper.feature.localauth.result.AuthResult
+import com.tonkeeper.feature.localauth.biometry.BiometryRepository
+import com.tonkeeper.feature.localauth.biometry.DataStoreBiometryRepository
+import com.tonkeeper.feature.localauth.passcode.DataStorePasscodeRepository
+import com.tonkeeper.feature.localauth.passcode.PasscodeRepository
 import com.tonkeeper.feature.wallet.WalletStoreManager
+import com.tonkeeper.feature.wallet.info.DataStoreWalletInfoRepository
+import com.tonkeeper.feature.wallet.info.WalletInfoRepository
 import com.tonkeeper.feature.wallet.key.PublicKey
+import com.tonkeeper.feature.wallet.secret.DataStoreWalletSecretRepository
+import com.tonkeeper.feature.wallet.secret.WalletSecretRepository
+import com.tonkeeper.feature.wallet.selection.DataStoreWalletSelectionRepository
+import com.tonkeeper.feature.wallet.selection.WalletSelectionRepository
 import com.tonkeeper.ton.crypto.toHex
 import com.tonkeeper.ton.mnemonic.Mnemonic
 import com.tonkeeper.ton.mnemonic.MnemonicInvalidException
@@ -21,22 +28,40 @@ class WalletStoreModule(
     context: ReactApplicationContext
 ) : ReactContextBaseJavaModule(context) {
 
-    private val activity by lazy {
-        context.currentActivity as FragmentActivity
+    private val activity by lazy { context.currentActivity as FragmentActivity }
+
+    private val passcodeRepository: PasscodeRepository by lazy {
+        DataStorePasscodeRepository(activity.settingsDataStore)
+    }
+
+    private val biometryRepository: BiometryRepository by lazy {
+        DataStoreBiometryRepository(activity.settingsDataStore)
+    }
+
+    private val walletSelectionRepository: WalletSelectionRepository by lazy {
+        DataStoreWalletSelectionRepository(activity.settingsDataStore)
+    }
+
+    private val walletInfoRepository: WalletInfoRepository by lazy {
+        DataStoreWalletInfoRepository(activity.walletInfoDataStore)
+    }
+
+    private val walletSecretRepository: WalletSecretRepository by lazy {
+        DataStoreWalletSecretRepository(activity.walletSecretDataStore)
     }
 
     private val localAuthManager by lazy {
         LocalAuthManager(
             activity = activity,
-            config = LocalAuthManager.Config(),
-            datastore = activity.settingsDataStore
+            passcodeRepository = passcodeRepository,
+            biometryRepository = biometryRepository
         )
     }
 
     private val walletStoreManager by lazy {
         WalletStoreManager(
-            mnemonicDataStore = activity.mnemonicDataStore,
-            walletDataStore = activity.walletDataStore
+            walletSecretRepository = walletSecretRepository,
+            walletInfoRepository = walletInfoRepository
         )
     }
 
@@ -67,8 +92,10 @@ class WalletStoreModule(
                     localAuthManager.setupPasscode(passcode)
                 }
 
-                walletStoreManager.import(data)
-                promise.resolve(true)
+                val info = walletStoreManager.import(data)
+                walletSelectionRepository.select(info.pk)
+                val map = info.toBridgeMap()
+                promise.resolve(map)
             } catch (ex: Exception) {
                 promise.reject(ex)
             }
@@ -88,8 +115,10 @@ class WalletStoreModule(
                     localAuthManager.setupBiometry()
                 }
 
-                walletStoreManager.import(data)
-                promise.resolve(true)
+                val info = walletStoreManager.import(data)
+                walletSelectionRepository.select(info.pk)
+                val map = info.toBridgeMap()
+                promise.resolve(map)
             } catch (ex: Exception) {
                 promise.reject(ex)
             }
@@ -168,8 +197,7 @@ class WalletStoreModule(
 
                 localPasscodeAuth(passcode)
 
-                val data = walletStoreManager.export(PublicKey(pubKey))
-                val hex = data.toHex()
+                val hex = walletStoreManager.getSecretKeyHex(PublicKey(pubKey))
                 promise.resolve(hex)
             } catch (ex: Exception) {
                 promise.reject(ex)
@@ -186,8 +214,7 @@ class WalletStoreModule(
 
                 localBiometryAuth()
 
-                val data = walletStoreManager.export(PublicKey(pubKey))
-                val hex = data.toHex()
+                val hex = walletStoreManager.getSecretKeyHex(PublicKey(pubKey))
                 promise.resolve(hex)
             } catch (ex: Exception) {
                 promise.reject(ex)
@@ -204,7 +231,7 @@ class WalletStoreModule(
 
                 localPasscodeAuth(passcode)
 
-                val data = walletStoreManager.backup(PublicKey(pubKey))
+                val data = walletStoreManager.getMnemonic(PublicKey(pubKey))
                 val result = WritableNativeArray()
                 data.forEach { result.pushString(it) }
                 promise.resolve(result)
@@ -223,7 +250,7 @@ class WalletStoreModule(
 
                 localBiometryAuth()
 
-                val data = walletStoreManager.backup(PublicKey(pubKey))
+                val data = walletStoreManager.getMnemonic(PublicKey(pubKey))
                 val result = WritableNativeArray()
                 data.forEach { result.pushString(it) }
                 promise.resolve(result)
@@ -237,7 +264,10 @@ class WalletStoreModule(
     fun currentWalletInfo(promise: Promise) {
         activity.lifecycleScope.launch {
             try {
-
+                val pk = walletSelectionRepository.current()
+                val info = walletInfoRepository.get(pk)
+                val map = info.toBridgeMap()
+                promise.resolve(map)
             } catch (ex: Exception) {
                 promise.reject(ex)
             }
@@ -248,7 +278,8 @@ class WalletStoreModule(
     fun setCurrentWallet(pubKey: String, promise: Promise) {
         activity.lifecycleScope.launch {
             try {
-
+                val pk = PublicKey(pubKey)
+                walletSelectionRepository.select(pk)
             } catch (ex: Exception) {
                 promise.reject(ex)
             }
@@ -265,9 +296,9 @@ class WalletStoreModule(
     @Throws
     private suspend fun localBiometryAuth() {
         when (localAuthManager.authWithBiometry()) {
-            AuthResult.Error -> throw AuthenticatorPasscodeError()
-            AuthResult.Failure -> throw AuthenticatorPasscodeInvalid()
-            AuthResult.Success -> {
+            LocalAuthResult.Error -> throw AuthenticatorPasscodeError()
+            LocalAuthResult.Failure -> throw AuthenticatorPasscodeInvalid()
+            LocalAuthResult.Success -> {
                 // do nothing
             }
         }
@@ -276,9 +307,9 @@ class WalletStoreModule(
     @Throws
     private suspend fun localPasscodeAuth(passcode: String) {
         when (localAuthManager.authWithPasscode(passcode)) {
-            AuthResult.Error -> throw AuthenticatorPasscodeError()
-            AuthResult.Failure -> throw AuthenticatorPasscodeInvalid()
-            AuthResult.Success -> {
+            LocalAuthResult.Error -> throw AuthenticatorPasscodeError()
+            LocalAuthResult.Failure -> throw AuthenticatorPasscodeInvalid()
+            LocalAuthResult.Success -> {
                 // do nothing
             }
         }

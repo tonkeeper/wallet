@@ -8,7 +8,7 @@ import com.tonkeeper.feature.wallet.WalletEmptyException
 import com.tonkeeper.feature.wallet.key.PublicKey
 import kotlinx.coroutines.flow.first
 
-class PrefsWalletSelectionRepository(
+class DataStoreWalletSelectionRepository(
     private val dataStore: DataStore<Preferences>
 ): WalletSelectionRepository {
 

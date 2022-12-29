@@ -24,7 +24,7 @@ class DataStoreBiometryRepository(
     }
 
     companion object {
-        private const val DefaultBiometryAlias = "biometry"
+        private const val DefaultBiometryAlias = "biometry.enable"
         private val BiometryKey = booleanPreferencesKey(DefaultBiometryAlias)
     }
 }
