@@ -177,6 +177,7 @@ export function useDeeplinkingResolvers() {
                   modalName: ModalName.CONFIRM_SENDING,
                   key: 'CONFIRM_SENDING',
                   ...options,
+                  withGoBack: resolveParams.withGoBack ?? false
                 });
               }
             },
@@ -189,7 +190,7 @@ export function useDeeplinkingResolvers() {
       }
       openSend(query.jetton, address, comment, resolveParams.withGoBack, true);
     } else {
-      openSend(currency, address, comment);
+      openSend(currency, address, comment, false);
     }
   });
 
