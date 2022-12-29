@@ -9,6 +9,7 @@ import { DevDeeplinking } from '$core/DevMenu/DevComponents/DevDeeplinking';
 import { DevToastScreen } from '$core/DevMenu/DevComponents/DevToastScreen';
 import { DevSignRawExamples } from '$core/DevMenu/DevComponents/DevSignRawExamples';
 import { DevWalletStoreScreen } from '$core/DevMenu/DevComponents/DevWalletStoreScreen';
+import { DevListComponent } from '$core/DevMenu/DevComponents/DevListComponent';
 
 const Stack = createNativeStackNavigator<any>();
 
@@ -53,6 +54,10 @@ export const DevStack = () => {
       <Stack.Screen 
         name={DevComponents.DevWalletStore}
         component={DevWalletStoreScreen}
+      />
+      <Stack.Screen 
+        name={DevComponents.DevListComponent}
+        component={DevListComponent}
       />
     </Stack.Navigator>
   )

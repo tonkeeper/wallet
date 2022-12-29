@@ -6,7 +6,7 @@ import 'react-native-console-time-polyfill';
 import 'text-encoding-polyfill';
 
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
-import { AppRegistry } from 'react-native';
+import { AppRegistry, LogBox } from 'react-native';
 import {
   setJSExceptionHandler,
   setNativeExceptionHandler,
@@ -19,6 +19,11 @@ import { mainActions } from './src/store/main';
 import { store } from './src/store';
 import { getAttachScreenFromStorage } from '$navigation/AttachScreen';
 import crashlytics from '@react-native-firebase/crashlytics';
+
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+  'ViewPropTypes will be removed from React Native. Migrate to ViewPropTypes exported from \'deprecated-react-native-prop-types\'.'
+]);
 
 if (__DEV__) {
   getAttachScreenFromStorage();

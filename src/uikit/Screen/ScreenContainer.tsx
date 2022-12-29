@@ -1,17 +1,16 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { ScreenScrollProvider } from './context/ScreenScrollContext';
 
-interface ScreenContainerProps {
-
-}
-
-export const ScreenContainer: React.FC<ScreenContainerProps> = (props) => {
+export const ScreenContainer = memo((props) => {
   return (
-    <View style={styles.container}>
-      {props.children}
-    </View>
+    <ScreenScrollProvider>
+      <View style={styles.container}>
+        {props.children}
+      </View>
+    </ScreenScrollProvider>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

@@ -23,6 +23,7 @@
     "icons": "node scripts/generate_icons.js"
   },
   "dependencies": {
+    "@bogoslavskiy/react-native-steezy": "^1.0.2",
     "@gorhom/bottom-sheet": "^4.4.4",
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/clipboard": "^1.5.1",
@@ -35,6 +36,7 @@
     "@react-navigation/native": "^6.0.11",
     "@react-navigation/native-stack": "^6.7.0",
     "@reduxjs/toolkit": "^1.6.1",
+    "@shopify/flash-list": "^1.4.0",
     "@tonapps/tonlogin-client": "0.2.5",
     "@tonconnect/protocol": "^0.0.22",
     "@vkontakte/vk-qr": "^2.0.13",

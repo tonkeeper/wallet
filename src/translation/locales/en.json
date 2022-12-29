@@ -285,6 +285,10 @@
 
   "swap_title": "Swap",
 
+  "activity": {
+    "screen_title": "Activity"
+  },
+
   "browser": {
     "title": "Browser",
     "search_label": "Search or enter address",
