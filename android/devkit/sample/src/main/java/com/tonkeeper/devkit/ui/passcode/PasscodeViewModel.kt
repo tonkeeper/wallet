@@ -2,69 +2,67 @@ package com.tonkeeper.devkit.ui.passcode
 
 import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
-import com.tonkeeper.feature.localauth.Authenticator
 import com.tonkeeper.feature.localauth.AuthenticatorBiometryError
-import com.tonkeeper.feature.localauth.result.AuthResult
+import com.tonkeeper.feature.localauth.LocalAuthManager
+import com.tonkeeper.feature.localauth.LocalAuthResult
 import kotlinx.coroutines.launch
 
 class PasscodeViewModel : ViewModel() {
 
-
     private fun updatePasscodeStatus(
-        authenticator: Authenticator,
+        localAuthManager: LocalAuthManager,
         state: MutableState<String>
     ) {
         viewModelScope.launch {
-            val enabled = authenticator.isPasscodeEnabled()
+            val enabled = localAuthManager.isPasscodeEnabled()
             state.value = "Enabled: $enabled"
         }
     }
 
     private fun setupPasscode(
-        authenticator: Authenticator,
+        localAuthManager: LocalAuthManager,
         state: MutableState<String>
     ) {
         viewModelScope.launch {
             val passcode = "1111"
-            authenticator.setupPasscode(passcode)
+            localAuthManager.setupPasscode(passcode)
             state.value = "Success"
         }
     }
 
     private fun authPasscode(
-        authenticator: Authenticator,
+        localAuthManager: LocalAuthManager,
         state: MutableState<String>
     ) {
         viewModelScope.launch {
             val passcode = "1311"
-            val result = authenticator.authWithPasscode(passcode)
+            val result = localAuthManager.authWithPasscode(passcode)
             state.value = when (result) {
-                AuthResult.Error -> "Error"
-                AuthResult.Failure -> "Failure"
-                AuthResult.Success -> "Success"
+                LocalAuthResult.Error -> "Error"
+                LocalAuthResult.Failure -> "Failure"
+                LocalAuthResult.Success -> "Success"
             }
         }
     }
 
     private fun updateBiometryStatus(
-        authenticator: Authenticator,
+        localAuthManager: LocalAuthManager,
         state: MutableState<String>
     ) {
         viewModelScope.launch {
-            val enabled = authenticator.isBiometryEnabled()
+            val enabled = localAuthManager.isBiometryEnabled()
             state.value = "Enabled: $enabled"
         }
     }
 
     private fun setupBiometry(
-        authenticator: Authenticator,
+        localAuthManager: LocalAuthManager,
         state: MutableState<String>
     ) {
         viewModelScope.launch {
             try {
-                authenticator.setupBiometry()
+                localAuthManager.setupBiometry()
                 state.value = "Success"
             } catch (ex: AuthenticatorBiometryError) {
                 state.value = "Failure"
@@ -73,15 +71,15 @@ class PasscodeViewModel : ViewModel() {
     }
 
     private fun authBiometry(
-        authenticator: Authenticator,
+        localAuthManager: LocalAuthManager,
         state: MutableState<String>
     ) {
         viewModelScope.launch {
-            val result = authenticator.authWithBiometry()
+            val result = localAuthManager.authWithBiometry()
             state.value = when (result) {
-                AuthResult.Error -> "Error"
-                AuthResult.Failure -> "Failure"
-                AuthResult.Success -> "Success"
+                LocalAuthResult.Error -> "Error"
+                LocalAuthResult.Failure -> "Failure"
+                LocalAuthResult.Success -> "Success"
             }
         }
     }

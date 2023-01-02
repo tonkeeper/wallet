@@ -1,30 +1,36 @@
 package com.tonkeeper.devkit.ui.wallet
 
-import android.app.Application
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tonkeeper.devkit.data.mnemonicDataStore
-import com.tonkeeper.devkit.data.walletDataStore
-import com.tonkeeper.feature.wallet.WalletStorage
+import com.tonkeeper.feature.wallet.WalletStoreManager
+import com.tonkeeper.feature.wallet.info.DataStoreWalletInfoRepository
+import com.tonkeeper.feature.wallet.info.WalletInfoRepository
 import com.tonkeeper.feature.wallet.key.PublicKey
+import com.tonkeeper.feature.wallet.secret.DataStoreWalletSecretRepository
+import com.tonkeeper.feature.wallet.secret.WalletSecretRepository
 import kotlinx.coroutines.launch
 
 class WalletViewModel(
-    mnemonicDataStore: DataStore<Preferences>,
-    walletDataStore: DataStore<Preferences>,
+    secretDataStore: DataStore<Preferences>,
+    infoDataStore: DataStore<Preferences>,
 ) : ViewModel() {
 
     val importUi = mutableStateOf("?")
     val walletsUi = mutableStateOf("?")
     val mnemonicUi = mutableStateOf("?")
 
-    private val storage = WalletStorage(
-        mnemonicDataStore = mnemonicDataStore,
-        walletDataStore = walletDataStore
+    private val walletSecretRepository: WalletSecretRepository =
+        DataStoreWalletSecretRepository(secretDataStore)
+
+    private val walletInfoRepository: WalletInfoRepository =
+        DataStoreWalletInfoRepository(infoDataStore)
+
+    private val storage = WalletStoreManager(
+        walletSecretRepository = walletSecretRepository,
+        walletInfoRepository = walletInfoRepository
     )
 
     fun import() {
@@ -47,7 +53,7 @@ class WalletViewModel(
 
     fun showMnemonic() {
         viewModelScope.launch {
-            val wallets = storage.backup(PubKey)
+            val wallets = storage.getMnemonic(PubKey)
             mnemonicUi.value = wallets.joinToString()
         }
     }
