@@ -51,7 +51,13 @@ export const ModalStack = React.memo(() => (
     <Stack.Group behavior="modal">
       <Stack.Modal component={NFT} path="NFTItemDetails" />
       <Stack.Modal component={Receive} path={AppStackRouteNames.Receive} />
-      <Stack.Modal component={Send} path={AppStackRouteNames.Send} />
+      <Stack.Modal 
+        component={(props) => (
+          <ProvidersWithNavigation>
+            <Send {...props} />
+          </ProvidersWithNavigation>
+        )} path={AppStackRouteNames.Send} 
+      />
       <Stack.Modal component={ScanQR} path={AppStackRouteNames.ScanQR} />
     </Stack.Group>
     <Stack.Group behavior="fullScreenModal">
