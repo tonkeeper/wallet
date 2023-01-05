@@ -10,6 +10,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 
 import {
   AppStackRouteNames,
+  BalancesStackRouteNames,
   MainStackRouteNames,
   ResetPinStackRouteNames,
   SecurityMigrationStackRouteNames,
@@ -100,7 +101,7 @@ export function reset(screenName: string) {
 }
 
 export function openBalancesTab() {
-  navigate(TabsStackRouteNames.Balances);
+  navigate(TabsStackRouteNames.BalancesStack);
 }
 
 export function openWallet(currency: CryptoCurrency) {
@@ -455,7 +456,7 @@ export function openSecurity() {
 }
 
 export function openJettonsList() {
-  push(MainStackRouteNames.JettonsList);
+  push(BalancesStackRouteNames.JettonsList);
 }
 
 export function openJettonsListSettingsStack() {

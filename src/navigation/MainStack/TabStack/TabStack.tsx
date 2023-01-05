@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { Balances, DAppsExplore } from '$core';
+import { DAppsExplore } from '$core';
 import { TabsStackRouteNames } from '$navigation';
 import { TabStackParamList } from './TabStack.interface';
 import { Icon, ScrollPositionContext } from '$uikit';
@@ -19,6 +19,7 @@ import { useNotificationsSubscribe } from '$hooks/useNotificationsSubscribe';
 import { IconNames } from '$uikit/Icon/generated.types';
 import { useFlags } from '$utils/flags';
 import { nftsSelector } from '$store/nfts';
+import { BalancesStack } from '$navigation/BalancesStack/BalancesStack';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -50,7 +51,7 @@ export const TabStack: FC = () => {
 
   return (
     <Tab.Navigator
-      initialRouteName={TabsStackRouteNames.Balances}
+      initialRouteName={TabsStackRouteNames.BalancesStack}
       sceneContainerStyle={{
         backgroundColor: theme.colors.backgroundPrimary,
       }}
@@ -138,8 +139,8 @@ export const TabStack: FC = () => {
       })}
     >
       <Tab.Screen
-        component={Balances}
-        name={TabsStackRouteNames.Balances}
+        component={BalancesStack}
+        name={TabsStackRouteNames.BalancesStack}
         options={{
           tabBarLabel: t('tab_wallet'),
         }}

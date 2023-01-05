@@ -38,12 +38,11 @@ export enum MainStackRouteNames {
   DevStack = 'DevStack',
   SetupNotifications = 'ImportSetupNotifications',
   Jetton = 'Jetton',
-  JettonsList = 'JettonsList',
   EditConfig = 'EditConfig',
 }
 
 export enum TabsStackRouteNames {
-  Balances = 'Balances',
+  BalancesStack = 'BalancesStack',
   NFT = 'TabNFT',
   Explore = 'Explore',
   SettingsStack = 'SettingsStack',
@@ -71,6 +70,12 @@ export enum SettingsStackRouteNames {
   Notifications = 'Notifications',
   ChooseCurrency = 'ChooseCurrency',
 }
+
+export enum BalancesStackRouteNames {
+  Balances = 'Balances',
+  JettonsList = 'JettonsList',
+}
+
 
 export enum ResetPinStackRouteNames {
   ResetPin = 'ResetPin',

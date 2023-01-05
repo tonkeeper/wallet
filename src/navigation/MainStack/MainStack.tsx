@@ -18,7 +18,6 @@ import { DevStack } from '../DevStack/DevStack';
 import { useAttachScreen } from '../AttachScreen';
 import { SetupNotifications } from '$core/SetupNotifications/SetupNotifications';
 import { Jetton } from '$core/Jetton/Jetton';
-import { JettonsList } from '$core/JettonsList/JettonsList';
 import { DeleteAccountDone } from '$core/DeleteAccountDone/DeleteAccountDone';
 import { EditConfig } from '$core/EditConfig/EditConfig';
 import { useRemoteBridge } from '$tonconnect';
@@ -78,7 +77,6 @@ export const MainStack: FC = () => {
       <Stack.Screen name={MainStackRouteNames.DevStack} component={DevStack} />
       <Stack.Screen name={MainStackRouteNames.EditConfig} component={EditConfig} />
       <Stack.Screen name={MainStackRouteNames.Jetton} component={Jetton} />
-      <Stack.Screen name={MainStackRouteNames.JettonsList} component={JettonsList} />
     </Stack.Navigator>
   );
 };

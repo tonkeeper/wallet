@@ -1,8 +1,6 @@
-import styled, { css, RADIUS } from '$styled';
-import { hNs, nfs, ns } from '$utils';
-import { CurrencyIcon, Highlight } from '$uikit';
-import FastImage from 'react-native-fast-image';
-import { IsTablet, Opacity, TabletMaxWidth } from '$shared/constants';
+import styled, { css } from '$styled';
+import { hNs, ns } from '$utils';
+import { IsTablet, TabletMaxWidth } from '$shared/constants';
 import { View } from 'react-native';
 
 export const Wrap = styled.View`

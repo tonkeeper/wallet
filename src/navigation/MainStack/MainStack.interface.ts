@@ -23,7 +23,6 @@ export type MainStackParamList = {
   [MainStackRouteNames.Jetton]: {
     jettonAddress: string;
   };
-  [MainStackRouteNames.JettonsList]: {};
   [MainStackRouteNames.DeleteAccountDone]: {};
   [MainStackRouteNames.EditConfig]: {};
 };
