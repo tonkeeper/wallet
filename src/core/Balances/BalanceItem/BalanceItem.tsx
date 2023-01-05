@@ -165,6 +165,7 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
                     currencyPrepared,
                     Decimals[currencyPrepared],
                     2,
+                    true,
                   )}
                 </Text>
                 <Text color="foregroundSecondary" variant="body2">

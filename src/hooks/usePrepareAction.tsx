@@ -65,6 +65,8 @@ export function usePrepareAction(
         '',
         CryptoCurrencies.Ton,
         Decimals[CryptoCurrencies.Ton],
+        undefined,
+        true,
       ).trim();
     }
 
@@ -89,6 +91,8 @@ export function usePrepareAction(
         '',
         action.jetton?.symbol,
         Decimals[CryptoCurrencies.Ton],
+        undefined,
+        true,
       ).trim();
     }
 
@@ -117,6 +121,8 @@ export function usePrepareAction(
             '',
             CryptoCurrencies.Ton,
             Decimals[CryptoCurrencies.Ton],
+            undefined,
+            true,
           ).trim()
         : '';
     }
@@ -130,6 +136,8 @@ export function usePrepareAction(
         '',
         CryptoCurrencies.Ton,
         Decimals[CryptoCurrencies.Ton],
+        undefined,
+        true,
       ).trim()
     }
 

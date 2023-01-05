@@ -62,9 +62,12 @@ export function formatInputAmount(raw: string, decimals: number) {
   return toLocaleNumber(exp.join('.'));
 }
 
-export function formatAmount(amount: string, decimals: number) {
-  BigNumber.config({ DECIMAL_PLACES: decimals });
-  return new BigNumber(amount || 0).toString(10);
+export function formatAmount(amount: string, decimals: number, withGrouping?: boolean) {
+  BigNumber.config({ DECIMAL_PLACES: decimals, FORMAT: { groupSeparator: ' ', groupSize: 3, decimalSeparator: '.' } });
+  if (withGrouping) {
+    return new BigNumber(amount || 0).toFormat();
+  }
+  return new BigNumber(amount || 0).toString();
 }
 
 export function formatAmountAndLocalize(amount: string, decimals: number) {

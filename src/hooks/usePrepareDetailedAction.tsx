@@ -71,6 +71,8 @@ export function usePrepareDetailedAction(
           '',
           CryptoCurrencies.Ton,
           Decimals[CryptoCurrencies.Ton],
+          undefined,
+          true,
         ).trim();
     }
 
