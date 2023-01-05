@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useLayoutEffect } from 'react';
+import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
 import {
@@ -31,7 +31,7 @@ const ActionButton: FC<ActionButtonProps> = (props) => {
   return (
     <S.Action isLast={isLast}>
       <S.Background borderEnd borderStart />
-      <S.ActionCont onPress={onPress}>
+      <S.ActionCont withDelay={false} onPress={onPress}>
         <S.ActionContentWrap>
           <S.IconWrap>
             <Icon name={icon} color="accentPrimary" />
@@ -98,11 +98,10 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     );
   }, [address.ton, jetton.jettonAddress]);
 
-  if (!jetton) {
-    return null;
-  }
-
-  function renderHeader() {
+  const renderHeader = useMemo(() => {
+    if (!jetton) {
+      return null;
+    }
     return (
       <S.HeaderWrap>
         {jetton.metadata.image ? (
@@ -131,17 +130,24 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         </S.ActionsContainer>
       </S.HeaderWrap>
     );
-  }
+  }, [
+    jetton,
+    isJettonMetaLoading,
+    jettonMeta?.description,
+    handleReceive,
+    t,
+    handleSend,
+  ]);
 
   // workaround, need to paginate transactions even if content not modified
-  function renderFooter() {
+  const renderFooter = useMemo(() => {
     if (!isEventsLoading) {
       return null;
     }
     return <View style={{ height: 1, width: '100%' }} />;
-  }
+  }, [isEventsLoading]);
 
-  function renderContent() {
+  const renderContent = useCallback(() => {
     return (
       <TransactionsList
         onEndReached={isEventsLoading || !canLoadMore ? undefined : handleLoadMore}
@@ -155,6 +161,18 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         }}
       />
     );
+  }, [
+    jettonEvents,
+    isEventsLoading,
+    canLoadMore,
+    handleLoadMore,
+    renderFooter,
+    renderHeader,
+    bottomInset,
+  ]);
+
+  if (!jetton) {
+    return null;
   }
 
   return (

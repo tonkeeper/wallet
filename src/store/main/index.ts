@@ -24,7 +24,7 @@ import {
 } from '$store/main/interface';
 import { AccentKey } from '$styled';
 import { walletOldBalancesSelector, walletWalletSelector } from '$store/wallet';
-import {myNftsSelector, nftsSelector} from "$store/nfts";
+import { myNftsSelector, nftsSelector } from '$store/nfts';
 
 const initialState: MainState = {
   isInitiating: true,
@@ -203,4 +203,9 @@ export const showV4R1Selector = createSelector(
     walletOldBalances.find(
       (oldBalance) => oldBalance.version === 'v4R1' && oldBalance.balance,
     ),
+);
+
+export const isTimeSyncedSelector = createSelector(
+  mainSelector,
+  (state) => state.isTimeSynced,
 );

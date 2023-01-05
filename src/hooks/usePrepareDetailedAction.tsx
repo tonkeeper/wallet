@@ -97,8 +97,8 @@ export function usePrepareDetailedAction(
         true,
         true,
       );
-      const amount = fromNano(action.amount, action.jetton?.decimal || 9);
-      label = prefix + ' ' + toLocaleNumber(amount) + ' ' + action.jetton?.symbol;
+      const amount = fromNano(action.amount, action.jetton?.decimals ?? 9);
+      label = prefix + ' ' + toLocaleNumber(amount) + ' ' + (action.jetton?.symbol || action.jetton?.name && action.jetton.name.toUpperCase().slice(0, 3));
     }
 
     if (ActionType.Subscribe === ActionType[rawAction.type]) {
@@ -211,7 +211,10 @@ export function usePrepareDetailedAction(
     if (action.comment) {
       infoRows.push({
         label: t('transaction_message'),
-        value: action.comment,
+        preparedValue: action.comment,
+        value: event.isScam
+          ? t('transaction_copy_caution') + action.comment
+          : action.comment,
       });
     }
 

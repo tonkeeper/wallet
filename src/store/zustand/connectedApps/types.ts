@@ -25,6 +25,7 @@ export interface IConnectedApp {
   name: string;
   url: string;
   icon: string;
+  autoConnectDisabled?: boolean;
   connections: IConnectedAppConnection[];
 }
 
@@ -44,6 +45,11 @@ export interface IConnectedAppsStore {
       connection: IConnectedAppConnection,
     ) => void;
     removeApp: (
+      chainName: 'mainnet' | 'testnet',
+      walletAddress: string,
+      url: string,
+    ) => void;
+    removeInjectedConnection: (
       chainName: 'mainnet' | 'testnet',
       walletAddress: string,
       url: string,

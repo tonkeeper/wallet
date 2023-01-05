@@ -3,7 +3,7 @@ import { StyleProp, ViewStyle } from 'react-native';
 import { fontKeys } from '$styled';
 
 export interface ButtonProps {
-  size?: 'small' | 'large' | 'navbar_small' | 'navbar_icon' | 'large_rounded';
+  size?: 'small' | 'large' | 'navbar_small' | 'navbar_icon' | 'large_rounded' | 'medium_rounded';
   mode?: 'secondary' | 'primary' | 'primary_red' | 'tertiary' | 'light';
   titleFont?: fontKeys;
   before?: (({ isPressed: boolean }) => ReactElement) | ReactElement;

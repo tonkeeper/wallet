@@ -1,8 +1,8 @@
-import { getDomainFromURL } from '$utils';
+import { generateAppHashFromUrl, getFixedLastSlashUrl } from '$utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import create from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
-import { IConnectedAppsStore } from './types';
+import { IConnectedAppsStore, TonConnectBridgeType } from './types';
 
 const initialState: Omit<IConnectedAppsStore, 'actions'> = {
   connectedApps: {
@@ -23,21 +23,24 @@ export const useConnectedAppsStore = create(
                 connectedApps[chainName][walletAddress] = {};
               }
 
-              const domain = getDomainFromURL(appData.url);
+              const hash = generateAppHashFromUrl(appData.url);
 
-              const alreadyConnectedApp = connectedApps[chainName][walletAddress][domain];
+              const alreadyConnectedApp = connectedApps[chainName][walletAddress][hash];
 
               if (alreadyConnectedApp) {
-                connectedApps[chainName][walletAddress][domain] = {
+                connectedApps[chainName][walletAddress][hash] = {
                   ...alreadyConnectedApp,
                   ...appData,
                   icon: appData.icon || alreadyConnectedApp.icon,
+                  autoConnectDisabled:
+                    alreadyConnectedApp.autoConnectDisabled &&
+                    connection?.type !== TonConnectBridgeType.Injected,
                   connections: connection
                     ? [...alreadyConnectedApp.connections, connection]
                     : alreadyConnectedApp.connections,
                 };
               } else {
-                connectedApps[chainName][walletAddress][domain] = {
+                connectedApps[chainName][walletAddress][hash] = {
                   ...appData,
                   connections: connection ? [connection] : [],
                 };
@@ -46,12 +49,55 @@ export const useConnectedAppsStore = create(
               return { connectedApps };
             });
           },
-          removeApp: (chainName, walletAddress, url) => {
-            set(({ connectedApps }) => {
-              const domain = getDomainFromURL(url);
+          removeInjectedConnection: (chainName, walletAddress, url) => {
+            const fixedUrl = getFixedLastSlashUrl(url);
 
-              if (connectedApps[chainName][walletAddress]?.[domain]) {
-                delete connectedApps[chainName][walletAddress][domain];
+            set(({ connectedApps }) => {
+              const keys = Object.keys(connectedApps[chainName][walletAddress] || {});
+
+              const apps = Object.values(connectedApps[chainName][walletAddress] || {});
+
+              const index = apps.findIndex((app) =>
+                fixedUrl.startsWith(getFixedLastSlashUrl(app.url)),
+              );
+
+              const hash = keys[index];
+
+              if (connectedApps[chainName][walletAddress]?.[hash]) {
+                connectedApps[chainName][walletAddress][hash].autoConnectDisabled = true;
+
+                connectedApps[chainName][walletAddress][hash].connections = connectedApps[
+                  chainName
+                ][walletAddress][hash].connections.filter(
+                  (connection) => connection.type !== TonConnectBridgeType.Injected,
+                );
+
+                if (
+                  connectedApps[chainName][walletAddress][hash].connections.length === 0
+                ) {
+                  delete connectedApps[chainName][walletAddress][hash];
+                }
+              }
+
+              return { connectedApps };
+            });
+          },
+          removeApp: (chainName, walletAddress, url) => {
+            const fixedUrl = getFixedLastSlashUrl(url);
+
+            set(({ connectedApps }) => {
+              const keys = Object.keys(connectedApps[chainName][walletAddress] || {});
+
+              const apps = Object.values(connectedApps[chainName][walletAddress] || {});
+
+              const index = apps.findIndex((app) =>
+                fixedUrl.startsWith(getFixedLastSlashUrl(app.url)),
+              );
+
+              const hash = keys[index];
+
+              if (connectedApps[chainName][walletAddress]?.[hash]) {
+                delete connectedApps[chainName][walletAddress][hash];
               }
 
               return { connectedApps };
@@ -60,7 +106,7 @@ export const useConnectedAppsStore = create(
         },
       }),
       {
-        name: 'connectedAppsStore',
+        name: 'TCApps',
         getStorage: () => AsyncStorage,
         partialize: ({ connectedApps }) => ({ connectedApps } as IConnectedAppsStore),
       },

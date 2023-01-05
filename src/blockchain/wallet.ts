@@ -103,6 +103,10 @@ export class TonWallet {
     return store.getState().main.isTestnet;
   }
 
+  get version(): string | undefined {
+    return this.vault.getVersion();
+  }
+
   isV4() {
     return this.vault.getVersion() === 'v4R2';
   }

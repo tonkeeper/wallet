@@ -1,11 +1,13 @@
 import UIKit
 
 protocol PassCodeViewInput: AnyObject {
+  func configureTitle(isCreate: Bool, createPassCodeStep: CreatePassCodeStep)
   func updateBlockTime(minutesLeft: Int)
   func updateAttempts(count: Int)
   func updateCircle(at index: Int, type: PassCodeCircleView.CircleType)
   func setupBiometricButton(image: UIImage?, alpha: CGFloat)
   func successPasscodeCircle(completion: @escaping () -> Void)
+  func errorPasscodeCircles()
   func resetPassodeCircles()
   func close()
 }
@@ -72,6 +74,19 @@ class PassCodeViewController: BaseViewController<PassCodeView> {
 // MARK: - PassCodeViewInput
 extension PassCodeViewController: PassCodeViewInput {
   
+  func configureTitle(isCreate: Bool, createPassCodeStep: CreatePassCodeStep) {
+    if isCreate {
+      UIView.transition(with: mainView.titleLabel, duration: 0.3, options: .transitionFlipFromTop) {
+        switch createPassCodeStep {
+        case .enter: self.mainView.titleLabel.text = R.string.passCode.createNew()
+        case .reenter: self.mainView.titleLabel.text = R.string.passCode.reenter()
+        }
+      }
+    } else {
+      mainView.titleLabel.text = R.string.passCode.enter()
+    }
+  }
+  
   func updateBlockTime(minutesLeft: Int) {
     if minutesLeft > 0 {
       mainView.titleLabel.text = R.string.passCode.tryAfter(number: minutesLeft)
@@ -115,15 +130,19 @@ extension PassCodeViewController: PassCodeViewInput {
     }
   }
   
-  func resetPassodeCircles() {
+  func errorPasscodeCircles() {
     Utils.impactErrorFeedback()
     passCodeCircles.forEach { $0.type = .failed }
-    mainView.deleteButton.alpha = 0
     
     Animations.shake(view: mainView.passCodeCircles) {
-      UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseInOut) {
-        self.passCodeCircles.forEach { $0.type = .empty }
-      }
+      self.resetPassodeCircles()
+    }
+  }
+  
+  func resetPassodeCircles() {
+    mainView.deleteButton.alpha = 0
+    UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseInOut) {
+      self.passCodeCircles.forEach { $0.type = .empty }
     }
   }
   

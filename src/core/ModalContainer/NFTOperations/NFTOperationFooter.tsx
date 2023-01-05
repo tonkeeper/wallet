@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linking, View } from 'react-native';
+import { Alert, Linking, View } from 'react-native';
 import { Icon, Loader, Text, TransitionOpacity } from '$uikit';
 import {
   debugLog,
@@ -11,13 +11,14 @@ import { NFTOperationError } from './NFTOperationError';
 import { getTimeSec } from '$utils/getTimeSec';
 import { TxBodyOptions, TxResponseOptions } from './TXRequest.types';
 import { UnlockVaultError } from '$store/wallet/sagas';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toastActions } from '$store/toast';
 import { t } from '$translation';
 import * as S from './NFTOperations.styles';
 import { useNavigation } from '$libs/navigation';
 import { eventsActions } from '$store/events';
 import axios from 'axios';
+import { isTimeSyncedSelector } from '$store/main';
 
 enum States {
   INITIAL,
@@ -33,6 +34,8 @@ type ConfirmFn = (options: { startLoading: () => void }) => Promise<void>;
 // TODO: Rename NFTOperation -> Action
 export const useNFTOperationState = (txBody?: TxBodyOptions) => {
   const { footerRef, onConfirm: invokeConfirm } = useActionFooter();
+  const dispatch = useDispatch();
+  const isTimeSynced = useSelector(isTimeSyncedSelector);
 
   const onConfirm = (confirm: ConfirmFn) => async () => {
     try {

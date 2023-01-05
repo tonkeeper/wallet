@@ -14,7 +14,7 @@ import { Details } from '$core/NFT/Details/Details';
 import { About } from '$core/NFT/About/About';
 import { NFTProps } from '$core/NFT/NFT.interface';
 import { useNFT } from '$hooks/useNFT';
-import { Linking, Platform, Share, View, TouchableOpacity } from 'react-native';
+import { Platform, Share, View, TouchableOpacity } from 'react-native';
 import { TonDiamondFeature } from './TonDiamondFeature/TonDiamondFeature';
 import { useDispatch, useSelector } from 'react-redux';
 import { walletAddressSelector } from '$store/wallet';
@@ -24,6 +24,7 @@ import { LinkingDomainButton } from './LinkingDomainButton';
 import { nftsActions } from '$store/nfts';
 import { useNavigation } from '$libs/navigation';
 import { dnsToUsername } from '$utils/dnsToUsername';
+import { openDAppBrowser } from '$navigation';
 
 export const NFT: React.FC<NFTProps> = ({ route }) => {
   const flags = useFlags(['disable_nft_markets', 'disable_apperance']);
@@ -69,11 +70,11 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
     if (!nft.marketplaceURL) {
       return;
     }
-    Linking.openURL(nft.marketplaceURL);
+    openDAppBrowser(nft.marketplaceURL);
   }, [nft.marketplaceURL]);
 
   const handleOpenFragment = useCallback(() => {
-    Linking.openURL('https://fragment.com');
+    openDAppBrowser('https://fragment.com');
   }, []);
 
   const handleTransferNft = useCallback(() => {

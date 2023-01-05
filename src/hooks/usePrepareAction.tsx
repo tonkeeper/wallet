@@ -83,13 +83,13 @@ export function usePrepareAction(
     }
 
     if (ActionType.JettonTransfer === ActionType[rawAction.type]) {
-      const amount = fromNano(action.amount, action.jetton?.decimal || 9);
+      const amount = fromNano(action.amount, action.jetton?.decimals ?? 9);
       label = prefix + ' ' + truncateDecimal(amount.toString(), 2);
       type = isReceive ? 'receive' : 'sent';
       typeLabel = t(`transaction_type_${type}`);
       currency = formatCryptoCurrency(
         '',
-        action.jetton?.symbol,
+        action.jetton?.symbol || action.jetton?.name && action.jetton.name.toUpperCase().slice(0, 3),
         Decimals[CryptoCurrencies.Ton],
         undefined,
         true,

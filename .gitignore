@@ -77,3 +77,4 @@ web-build/
 dist/
 
 # @end expo-cli
+ios/ton_keeper/Resources/Generated/R.generated.swift

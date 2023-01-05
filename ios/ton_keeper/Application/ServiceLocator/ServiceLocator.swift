@@ -5,7 +5,7 @@ final class ServiceLocator: NSObject {
   
   private lazy var services: [String: Any] = [:]
   
-  func setupServices(reactRootViewController: UIViewController) {
+  func setupServices(reactRootViewController: UIViewController) -> UIWindow {
     let userDefaultsService = UserDefaultsService()
     add(service: userDefaultsService)
     
@@ -22,6 +22,8 @@ final class ServiceLocator: NSObject {
     add(service: authService)
     
     uiService.openModule(animated: true)
+    
+    return uiService.window  // Return UIWindow to fix AppDelegate bug https://github.com/software-mansion/react-native-screens/blob/02d731171cb21e11cd9f25d476bd4ec041d70d5b/ios/RNSFullWindowOverlay.mm#L124
   }
   
   func add<T>(service: T) {

@@ -1,26 +1,24 @@
 import {
-  getConnectedAppByDomain,
+  getConnectedAppByUrl,
   IAppMetadata,
   useAppsListStore,
   useConnectedAppsStore,
 } from '$store';
-import { getDomainFromURL } from '$utils';
+import { getFixedLastSlashUrl } from '$utils';
 import { useCallback, useMemo } from 'react';
 
 export const useAppInfo = (
   walletAddress: string,
   webViewUrl: string,
 ): IAppMetadata | null => {
-  const domain = getDomainFromURL(webViewUrl);
-
   const connectedApp = useConnectedAppsStore(
     useCallback(
       (state) => {
-        const app = getConnectedAppByDomain(walletAddress, domain, state);
+        const app = getConnectedAppByUrl(walletAddress, webViewUrl, state);
 
         return app ?? null;
       },
-      [domain, walletAddress],
+      [webViewUrl, walletAddress],
     ),
   );
 
@@ -31,12 +29,14 @@ export const useAppInfo = (
       return connectedApp;
     }
 
-    const app = appsList.find((item) => getDomainFromURL(item.url) === domain);
+    const url = getFixedLastSlashUrl(webViewUrl);
+
+    const app = appsList.find((item) => url.startsWith(getFixedLastSlashUrl(item.url)));
 
     if (app) {
       return app;
     }
 
     return null;
-  }, [appsList, connectedApp, domain]);
+  }, [appsList, connectedApp, webViewUrl]);
 };

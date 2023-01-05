@@ -1,5 +1,5 @@
 export enum DevFeature {
-  TonConnectV2 = 'TonConnectV2',
+  Example = 'Example',
 }
 
 export interface IDevFeaturesToggleStore {

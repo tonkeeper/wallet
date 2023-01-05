@@ -98,6 +98,7 @@
   "transaction_confirmations": "Подтверждения",
   "transaction_send_more_button": "Отправить ещё на этот адрес",
   "transaction_show_subscription_button": "Информация о подписке",
+  "transaction_copy_caution": "Будьте осторожны при переходе по внешним ссылкам. Никогда не вводите свою секретную фразу на сторонних ресурсах, вы можете потерять свои средства.\n\n- - -\n\n",
 
   "spam_action": "Спам",
 
@@ -300,21 +301,29 @@
     "popular_title": "Популярные",
     "explore_all": "Другие",
     "open_link": "Открыть ссылку",
-    "web_search_title": "Поиск в Google",
+    "web_search_title": "Поиск в %{searchEngine}",
+    "about_dapps_title": "Используйте Tonkeeper с приложениями и сервисами TON.",
+    "about_dapps_caption": "Исследуйте приложения и сервисы, в которых вы можете использовать Tonkeeper для входа и платежей.",
+    "about_dapps_learn_more": "Подробнее",
     "actions": {
       "refresh": "Обновить",
       "share": "Поделиться",
       "copy_link": "Скопировать ссылку",
       "disconnect": "Отключить"
+    },
+    "remove_alert": {
+      "title": "Отключить «%{name}»?",
+      "approve_button": "Отключить"
     }
   },
+
   "exchange_title": "Купить TON",
   "exchange_other_ways": "Другие способы покупки и продажи",
 
   "settings_title": "Настройки",
   "settings_primary_currency": "Основная валюта",
   "settings_rate": "Оценить приложение",
-  "settings_contact_support": "Написать в поддержку",
+  "settings_contact_support": "Написать команде",
   "settings_legal_documents": "Юридические документы",
   "settings_news": "Новости Tonkeeper",
   "settings_discussion": "Чат поддержки",
@@ -334,9 +343,10 @@
   "settings_security": "Безопасность",
   "settings_appearance": "Оформление",
   "settings_news_url": "https://t.me/tonkeeper_ru",
-  "settings_discussion_url": "https://t.me/tonkeeper_discuss_ru",
+  "settings_discussion_url": "https://t.me/tonkeeperdirect",
   "settings_jettons_list": "Список токенов",
   "settings_delete_account": "Удалить аккаунт",
+  "settings_search_engine": "Поисковая машина",
 
   "settings_delete_alert_title": "Вы уверены, что хотите удалить аккаунт?",
   "settings_delete_alert_caption": "Это действие приведет к удалению вашего аккаунта и всех данных из этого приложения.",
@@ -527,6 +537,11 @@
     "amount": "Сумма",
 
     "signRaw": {
+      "wrongTime": {
+        "title": "Время выставлено неверно",
+        "description": "Похоже, часы вашего устройства не синхронизированы с сетью. Откройте настройки устройства и включите автоматическое время и дату.",
+        "button": "Открыть настройки"
+      },
       "totalFee": "Суммарная комиссия",
       "title": "Подтвердить транзакцию",
       "recipient": "Получатель",
@@ -541,6 +556,19 @@
         "tonTransfer": "Отправка TON",
         "unSubscribe": "Отписка",
         "subscribe": "Подписка"
+      },
+      "addressMismatch": {
+        "wrongVersion": {
+          "title": "Действие для другого адреса вашего кошелька",
+          "description": "Переключите текущий адрес кошелька на %{version}, чтобы подтвердить действие.",
+          "close": "Отмена",
+          "switch": "Переключить и продолжить"
+        },
+        "wrongWallet": {
+          "title": "Действие для другого кошелька",
+          "description": "Войдите в другой кошелёк %{address} и повторите попытку.",
+          "close": "Хорошо"
+        }
       }
     }
   },
@@ -550,6 +578,8 @@
 
   "exchange_method_open_warning": "Вы открываете внешнее приложение, которым не управляет Tonkeeper.",
   "exchange_method_dont_show_again": "Больше не показывать",
+
+  "exchange_telegram_bot": "TELEGRAM BOT",
 
   "appearance_title": "Оформление",
   "appearance_description": "TON Diamonds NFT сделает ваш кошелек более красочным и уникальным.",
@@ -576,6 +606,7 @@
       "USD": "Доллар США",
       "EUR": "Евро",
       "RUB": "Российский рубль",
+      "AED": "Дирхам ОАЭ",
       "GBP": "Фунт стерлингов",
       "CHF": "Швейцарский франк",
       "CNY": "Китайский юань",

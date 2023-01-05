@@ -1,7 +1,7 @@
 import { useDeeplinking } from '$libs/deeplinking';
 import { openDAppsSearch } from '$navigation';
 import { walletSelector } from '$store/wallet';
-import { getCorrectUrl } from '$utils';
+import { getCorrectUrl, getSearchQuery } from '$utils';
 import React, { FC, memo, useCallback, useState } from 'react';
 import { Linking, useWindowDimensions } from 'react-native';
 import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -20,6 +20,18 @@ export interface DAppBrowserProps {
   url: string;
 }
 
+const TONKEEPER_UTM = 'utm_source=tonkeeper';
+
+const addUtmToUrl = (url: string) => {
+  const startChar = url.includes('?') ? '&' : '?';
+
+  return `${url}${startChar}${TONKEEPER_UTM}`;
+};
+
+const removeUtmFromUrl = (url: string) => {
+  return url.replace(new RegExp(`[?|&]${TONKEEPER_UTM}`), '');
+};
+
 const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
   const { url: initialUrl } = props;
 
@@ -30,7 +42,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
 
   const [currentUrl, setCurrentUrl] = useState(getCorrectUrl(initialUrl));
 
-  const [webViewSource, setWebViewSource] = useState({ uri: currentUrl });
+  const [webViewSource, setWebViewSource] = useState({ uri: addUtmToUrl(currentUrl) });
 
   const app = useAppInfo(walletAddress, currentUrl);
 
@@ -63,7 +75,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
       progress.value = withTiming(e.nativeEvent.progress);
 
       setTitle(e.nativeEvent.title);
-      setCurrentUrl(e.nativeEvent.url);
+      setCurrentUrl(removeUtmFromUrl(e.nativeEvent.url));
     },
     [progress],
   );
@@ -72,11 +84,16 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
     setCanGoBack(e.canGoBack);
   }, []);
 
+  const openUrl = useCallback(
+    (url: string) => setWebViewSource({ uri: addUtmToUrl(getCorrectUrl(url)) }),
+    [],
+  );
+
   const handleOpenExternalLink = useCallback(
     (req: ShouldStartLoadRequest): boolean => {
       const resolver = deeplinking.getResolver(req.url, {
         params: {
-          openUrl: (url: string) => setWebViewSource({ uri: getCorrectUrl(url) }),
+          openUrl,
         },
       });
 
@@ -97,7 +114,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
 
       return false;
     },
-    [deeplinking],
+    [deeplinking, openUrl],
   );
 
   const handleGoBackPress = useCallback(() => {
@@ -109,11 +126,10 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
   }, [ref]);
 
   const handleTitlePress = useCallback(() => {
-    const initialQuery = webViewSource.uri;
-    openDAppsSearch(initialQuery, (url) => {
-      setWebViewSource({ uri: getCorrectUrl(url) });
-    });
-  }, [webViewSource.uri]);
+    const initialQuery = getSearchQuery(currentUrl) || currentUrl;
+
+    openDAppsSearch(initialQuery, openUrl);
+  }, [currentUrl, openUrl]);
 
   return (
     <S.Container>
@@ -139,7 +155,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
           mixedContentMode="always"
           hideKeyboardAccessoryView
           thirdPartyCookiesEnabled={true}
-          forceDarkOn
+          forceDarkOn={false}
           allowsInlineMediaPlayback
           allowsFullscreenVideo
           source={webViewSource}

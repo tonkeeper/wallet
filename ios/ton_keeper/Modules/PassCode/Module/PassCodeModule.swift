@@ -9,10 +9,9 @@ class PassCodeModule {
     viewController.modalTransitionStyle = .crossDissolve
     viewController.modalPresentationStyle = .fullScreen
     
-    let presenter = PassCodePresenter()
+    let presenter = PassCodePresenter(view: viewController)
     
     viewController.output = presenter
-    presenter.view = viewController
     presenter.didPasscodeEnter = callback
     
     self.viewController = viewController

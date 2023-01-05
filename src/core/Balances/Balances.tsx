@@ -165,18 +165,22 @@ export const Balances: FC = () => {
         })),
       });
     }
-    if (wallet?.ton.isV4()) {
-      for (let index = 0; index < oldWalletBalances.length; index++) {
-        result.push({
-          data: [
-            {
-              type: 'old_wallet_balance',
-              data: oldWalletBalances[index],
-              index,
-            },
-          ],
-        });
+    for (let index = 0; index < oldWalletBalances.length; index++) {
+      if (
+        wallet?.ton.version &&
+        wallet?.ton.version <= oldWalletBalances[index].version
+      ) {
+        continue;
       }
+      result.push({
+        data: [
+          {
+            type: 'old_wallet_balance',
+            data: oldWalletBalances[index],
+            index,
+          },
+        ],
+      });
     }
 
     //

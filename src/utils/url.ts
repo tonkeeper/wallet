@@ -1,5 +1,9 @@
 import axios, { CancelTokenSource } from 'axios';
 import domainFromPartialUrl from 'domain-from-partial-url';
+import queryParser from 'query-string';
+import { Buffer } from 'buffer';
+
+const { createHash } = require('react-native-crypto');
 
 export const isValidUrl = (value: string) =>
   /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi.test(
@@ -8,14 +12,12 @@ export const isValidUrl = (value: string) =>
 
 export const getDomainFromURL = (url: string): string => domainFromPartialUrl(url);
 
-export const getCorrectUrl = (url: string, https?: boolean) => {
-  const protocol = https ? 'https' : 'http';
-
-  return url.startsWith(protocol) ? url : `${protocol}://${url}`;
+export const getCorrectUrl = (url: string) => {
+  return url.startsWith('https') ? url : `https://${url}`;
 };
 
 export const getUrlTitle = async (url: string, cancelTokenSource: CancelTokenSource) => {
-  const response = await axios.get<string>(getCorrectUrl(url, true), {
+  const response = await axios.get<string>(getCorrectUrl(url), {
     cancelToken: cancelTokenSource.token,
   });
 
@@ -45,4 +47,44 @@ export const getUrlTitle = async (url: string, cancelTokenSource: CancelTokenSou
   }
 
   throw new Error('title not found');
+};
+
+export const getFixedLastSlashUrl = (url: string) => {
+  return url.replace(/\/$/, '');
+};
+
+export const generateAppHashFromUrl = (url: string) => {
+  // get url without query
+  const { url: parsedUrl } = queryParser.parseUrl(url);
+
+  // remove last slash if it exists
+  const fixedUrl = getFixedLastSlashUrl(parsedUrl);
+
+  const hash = createHash('sha256').update(Buffer.from(fixedUrl)).digest('hex');
+
+  return hash;
+};
+
+export const getSearchQuery = (url: string) => {
+  const parsed = queryParser.parseUrl(url);
+
+  const isGoogle = [
+    'https://google.com/search',
+    'https://www.google.com/search',
+  ].includes(parsed.url);
+
+  if (isGoogle && parsed.query.q) {
+    return parsed.query.q as string;
+  }
+
+  const isDuckDuckGo = [
+    'https://duckduckgo.com/',
+    'https://www.duckduckgo.com/',
+  ].includes(parsed.url);
+
+  if (isDuckDuckGo && parsed.query.q) {
+    return parsed.query.q as string;
+  }
+
+  return null;
 };

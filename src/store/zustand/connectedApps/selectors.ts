@@ -1,13 +1,20 @@
 import { getChainName } from '$shared/dynamicConfig';
+import { getFixedLastSlashUrl } from '$utils';
 import concat from 'lodash/concat';
 import { IConnectedApp, IConnectedAppsStore } from './types';
 
-export const getConnectedAppByDomain = (
+export const getConnectedAppByUrl = (
   walletAddress: string,
-  domain: string,
+  url: string,
   state: IConnectedAppsStore,
 ): IConnectedApp | null => {
-  const connectedApp = state.connectedApps[getChainName()][walletAddress]?.[domain];
+  const apps = Object.values(state.connectedApps[getChainName()][walletAddress] || {});
+
+  const fixedUrl = getFixedLastSlashUrl(url);
+
+  const connectedApp = apps.find((app) =>
+    fixedUrl.startsWith(getFixedLastSlashUrl(app.url)),
+  );
 
   return connectedApp ?? null;
 };
