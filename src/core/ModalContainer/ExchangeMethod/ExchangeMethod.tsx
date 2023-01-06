@@ -27,7 +27,7 @@ export const ExchangeMethod: FC<ExchangeMethodProps> = ({ methodId, onContinue }
       if (!wallet) {
         return openRequireWalletModal();
       } else {
-        trackEvent(`exchange_open_${methodId}`, { internal_id: methodId });
+        trackEvent(`exchange_open`, { internal_id: methodId });
 
         if (onContinue) {
           onContinue();

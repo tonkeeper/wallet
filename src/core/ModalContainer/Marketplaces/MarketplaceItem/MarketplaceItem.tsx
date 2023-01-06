@@ -19,7 +19,7 @@ export const MarketplaceItem: FC<MarketplaceItemProps> = ({
   const handlePress = useCallback(async () => {
     await onPress?.();
     openDAppBrowser(marketplaceUrl);
-    trackEvent(`marketplace_open_${internalId}`, { internal_id: internalId });
+    trackEvent(`marketplace_open`, { internal_id: internalId });
   }, [marketplaceUrl, onPress, internalId]);
 
   return (

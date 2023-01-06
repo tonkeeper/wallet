@@ -7,7 +7,7 @@ import { store } from '$store';
 import { AppearanceAccents, DarkTheme, TonTheme } from '$styled';
 import { AppNavigator } from '$navigation/AppNavigator';
 import { Toast, ScrollPositionProvider } from '$uikit';
-import { trackEvent } from '$utils';
+import { trackEvent, trackFirstLaunch } from '$utils';
 import { useMemo } from 'react';
 import { accentSelector } from '$store/main';
 import { ToastComponent } from '$uikit/Toast/new/ToastComponent';
@@ -34,6 +34,8 @@ const TonThemeProvider: FC = ({ children }) => {
     </View>
   );
 };
+
+trackFirstLaunch();
 
 export const App: FC = () => {
   useEffect(() => {
