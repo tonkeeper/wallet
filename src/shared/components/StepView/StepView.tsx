@@ -79,7 +79,7 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
   );
 
   const containerStyle = useAnimatedStyle(() => {
-    const height = layouts[currentStepId]?.height || 0;
+    const maxHeight = layouts[currentStepId]?.height || 0;
 
     return {
       transform: [
@@ -90,7 +90,8 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
           }),
         },
       ],
-      height: autoHeight && height > 0 ? height : 'auto',
+      maxHeight: autoHeight && maxHeight > 0 ? maxHeight : 'auto',
+      flex: autoHeight ? undefined : 1,
     };
   }, [layouts, currentStepId]);
 
@@ -159,7 +160,7 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
   );
 
   return (
-    <S.Container autoHeight={autoHeight} style={containerStyle}>
+    <S.Container style={containerStyle}>
       {steps.map((step) => (
         <S.Step
           key={step.id}

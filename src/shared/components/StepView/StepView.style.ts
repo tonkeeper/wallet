@@ -1,8 +1,7 @@
 import styled from '$styled';
 import Animated from 'react-native-reanimated';
 
-export const Container = styled(Animated.View)<{ autoHeight: boolean }>`
-  flex: ${({ autoHeight }) => (autoHeight ? 1 : 'auto')};
+export const Container = styled(Animated.View)`
   align-items: flex-start;
   flex-direction: row;
 `;
