@@ -103,6 +103,9 @@ export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps
     return false;
   }, [fullPrice, feeAndRoyalties]);
 
+  const isTG = (item.data?.dns || item.data?.metadata?.name)?.endsWith('.t.me');
+  const isDNS = !!item.data?.dns && !isTG;
+
   const caption = React.useMemo(() => {
     let text = '...';
     if (item.data?.metadata) {
@@ -110,14 +113,11 @@ export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps
     }
 
     if (item.data?.collection) {
-      text += ` · ${item?.data?.dns ? 'TON DNS' : item.data.collection.name}`;
+      text += ` · ${isDNS ? 'TON DNS' : item.data.collection.name}`;
     }
 
     return item.data ? text : '...';
   }, [item.data]);
-
-  const isTG = (item.data?.dns || item.data?.metadata?.name)?.endsWith('.t.me');
-  const isDNS = !!item.data?.dns && !isTG;
 
   return (
     <Modal>
