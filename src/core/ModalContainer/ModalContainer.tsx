@@ -10,6 +10,7 @@ import { RequireWallet } from './RequireWallet/RequireWallet';
 import { ConfirmSending } from '$core/ModalContainer/ConfirmSending/ConfirmSending';
 import { ExchangeMethod } from '$core/ModalContainer/ExchangeMethod/ExchangeMethod';
 import { CreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
+import { TonConnectModal } from '$core/TonConnect/TonConnectModal';
 import { Exchange } from '$core/Exchange/Exchange';
 import { InfoAboutInactive } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
 import { DeployModal } from './NFTOperations/Modals/DeployModal';
@@ -53,7 +54,6 @@ export const ModalContainer: FC<ModalContainerProps> = (props) => {
         <ConfirmSending {...props} {...route.params} />
       )}
       {visibility[ModalName.DEPLOY] && <DeployModal {...props} {...route.params} />}
-      {visibility[ModalName.EXCHANGE] && <Exchange {...props} {...route.params} />}
       {visibility[ModalName.EXCHANGE_METHOD] && (
         <ExchangeMethod {...props} {...route.params} />
       )}

@@ -317,13 +317,6 @@ export function openBuyFiat(currency: CryptoCurrency, methodId: string) {
   });
 }
 
-export function openExchangeModal() {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.EXCHANGE,
-    key: 'EXCHANGE',
-  });
-}
-
 export async function openExchangeMethodModal(methodId: string, onContinue?: () => void) {
   const isShowDetails = await ExchangeDB.isShowDetails(methodId);
   if (isShowDetails) {
