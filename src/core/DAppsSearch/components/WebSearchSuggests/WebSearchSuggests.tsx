@@ -1,4 +1,5 @@
 import { useTranslator } from '$hooks';
+import { useBrowserStore } from '$store';
 import { List } from '$uikit';
 import React, { FC, memo } from 'react';
 import { IWebSearchSuggest } from '../../types';
@@ -14,11 +15,13 @@ interface Props {
 export const WebSearchSuggestsComponent: FC<Props> = (props) => {
   const { items, active, onPressSuggest } = props;
 
+  const searchEngine = useBrowserStore((state) => state.searchEngine);
+
   const t = useTranslator();
 
   return (
     <>
-      <SectionLabel>{t('browser.web_search_title')}</SectionLabel>
+      <SectionLabel>{t('browser.web_search_title', { searchEngine })}</SectionLabel>
       <List separator={false}>
         {items.map((item, index) => (
           <WebSearchSuggestCell

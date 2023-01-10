@@ -30,6 +30,7 @@ import { WebView } from '$core/WebView/WebView';
 import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewConfirmSending';
 import { ProvidersWithNavigation } from './Providers';
 import { ExchangeModal } from '$core/Exchange/Exchange';
+import { ActionModal } from '$core/ModalContainer/Action/Action';
 
 const Stack = createModalStackNavigator();
 
@@ -38,6 +39,7 @@ export const ModalStack = React.memo(() => (
     <Stack.Group behavior="sheet">
       <Stack.Modal component={NFTSingleDeployModal} path="NFTSingleDeploy" />
       <Stack.Modal component={NFTTransferModal} path="NFTTransfer" />
+      <Stack.Modal component={ActionModal} path="Action" />
       <Stack.Modal component={NFTCollectionDeployModal} path="NFTCollectionDeploy" />
       <Stack.Modal component={NFTItemDeployModal} path="NFTItemDeploy" />
       <Stack.Modal component={NFTSalePlaceModal} path="NFTSalePlace" />

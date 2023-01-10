@@ -49,12 +49,16 @@ export const getUrlTitle = async (url: string, cancelTokenSource: CancelTokenSou
   throw new Error('title not found');
 };
 
+export const getFixedLastSlashUrl = (url: string) => {
+  return url.replace(/\/$/, '');
+};
+
 export const generateAppHashFromUrl = (url: string) => {
   // get url without query
   const { url: parsedUrl } = queryParser.parseUrl(url);
 
   // remove last slash if it exists
-  const fixedUrl = parsedUrl.replace(/\/$/, '');
+  const fixedUrl = getFixedLastSlashUrl(parsedUrl);
 
   const hash = createHash('sha256').update(Buffer.from(fixedUrl)).digest('hex');
 
@@ -69,7 +73,16 @@ export const getSearchQuery = (url: string) => {
     'https://www.google.com/search',
   ].includes(parsed.url);
 
-  if (isGoogle) {
+  if (isGoogle && parsed.query.q) {
+    return parsed.query.q as string;
+  }
+
+  const isDuckDuckGo = [
+    'https://duckduckgo.com/',
+    'https://www.duckduckgo.com/',
+  ].includes(parsed.url);
+
+  if (isDuckDuckGo && parsed.query.q) {
     return parsed.query.q as string;
   }
 

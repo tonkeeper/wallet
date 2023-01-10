@@ -1,4 +1,4 @@
-import { generateAppHashFromUrl } from '$utils';
+import { generateAppHashFromUrl, getFixedLastSlashUrl } from '$utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import create from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
@@ -50,9 +50,19 @@ export const useConnectedAppsStore = create(
             });
           },
           removeInjectedConnection: (chainName, walletAddress, url) => {
-            const hash = generateAppHashFromUrl(url);
+            const fixedUrl = getFixedLastSlashUrl(url);
 
             set(({ connectedApps }) => {
+              const keys = Object.keys(connectedApps[chainName][walletAddress] || {});
+
+              const apps = Object.values(connectedApps[chainName][walletAddress] || {});
+
+              const index = apps.findIndex((app) =>
+                fixedUrl.startsWith(getFixedLastSlashUrl(app.url)),
+              );
+
+              const hash = keys[index];
+
               if (connectedApps[chainName][walletAddress]?.[hash]) {
                 connectedApps[chainName][walletAddress][hash].autoConnectDisabled = true;
 
@@ -73,9 +83,19 @@ export const useConnectedAppsStore = create(
             });
           },
           removeApp: (chainName, walletAddress, url) => {
-            const hash = generateAppHashFromUrl(url);
+            const fixedUrl = getFixedLastSlashUrl(url);
 
             set(({ connectedApps }) => {
+              const keys = Object.keys(connectedApps[chainName][walletAddress] || {});
+
+              const apps = Object.values(connectedApps[chainName][walletAddress] || {});
+
+              const index = apps.findIndex((app) =>
+                fixedUrl.startsWith(getFixedLastSlashUrl(app.url)),
+              );
+
+              const hash = keys[index];
+
               if (connectedApps[chainName][walletAddress]?.[hash]) {
                 delete connectedApps[chainName][walletAddress][hash];
               }

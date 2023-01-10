@@ -294,7 +294,7 @@
     "popular_title": "Popular",
     "explore_all": "Explore all",
     "open_link": "Open link",
-    "web_search_title": "Google Search",
+    "web_search_title": "%{searchEngine} Search",
     "about_dapps_title": "Use Tonkeeper with all TON apps and services",
     "about_dapps_caption": "Explore apps and services where you can use Tonkeeper for sign-in and payments.",
     "about_dapps_learn_more": "Learn more",
@@ -339,6 +339,7 @@
   "settings_discussion_url": "https://t.me/tonkeeperdirect",
   "settings_jettons_list": "List of tokens",
   "settings_delete_account": "Delete account",
+  "settings_search_engine": "Search engine",
 
   "settings_delete_alert_title": "Are you sure you want to delete your account?",
   "settings_delete_alert_caption": "This action will delete your account and all data from this application.",

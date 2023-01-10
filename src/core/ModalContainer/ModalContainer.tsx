@@ -11,13 +11,13 @@ import { ConfirmSending } from '$core/ModalContainer/ConfirmSending/ConfirmSendi
 import { ExchangeMethod } from '$core/ModalContainer/ExchangeMethod/ExchangeMethod';
 import { CreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
 import { TonConnectModal } from '$core/TonConnect/TonConnectModal';
+import { Exchange } from '$core/Exchange/Exchange';
 import { InfoAboutInactive } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
 import { DeployModal } from './NFTOperations/Modals/DeployModal';
 import { ReminderEnableNotificationsModal } from './ReminderEnableNotificationsModal';
 import { AppearanceBottomSheet } from './AppearanceBottomSheet';
 import { Marketplaces } from '$core/ModalContainer/Marketplaces/Marketplaces';
 import { AddEditFavoriteAddress } from './AddEditFavoriteAddress/AddEditFavoriteAddress';
-import { Action } from '$core/ModalContainer/Action/Action';
 import { LinkingDomainModal } from './LinkingDomainModal';
 import { ReplaceDomainAddressModal } from './NFTOperations/ReplaceDomainAddressModal';
 
@@ -57,12 +57,8 @@ export const ModalContainer: FC<ModalContainerProps> = (props) => {
       {visibility[ModalName.EXCHANGE_METHOD] && (
         <ExchangeMethod {...props} {...route.params} />
       )}
-      {visibility[ModalName.ACTION] && <Action {...props} {...route.params} />}
       {visibility[ModalName.CREATE_SUBSCRIPTION] && (
         <CreateSubscription {...props} {...route.params} />
-      )}
-      {visibility[ModalName.TON_LOGIN] && (
-        <TonConnectModal {...props} {...route.params} />
       )}
       {visibility[ModalName.SUBSCRIPTION] && (
         <CreateSubscription {...props} {...route.params} isEdit />

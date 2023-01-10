@@ -12,7 +12,6 @@ import {
   openDeploy,
   openRequireWalletModal,
   openSend,
-  openTonConnect,
 } from '../helper';
 
 import { t } from '$translation';
@@ -27,6 +26,7 @@ import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
 import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
 import {openTimeNotSyncedModal} from "$core/ModalContainer/TimeNotSynced/TimeNotSynced";
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
+import { openTonConnect } from '$core/TonConnect/TonConnectModal';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -177,6 +177,7 @@ export function useDeeplinkingResolvers() {
                   modalName: ModalName.CONFIRM_SENDING,
                   key: 'CONFIRM_SENDING',
                   ...options,
+                  withGoBack: resolveParams.withGoBack ?? false
                 });
               }
             },
@@ -189,7 +190,7 @@ export function useDeeplinkingResolvers() {
       }
       openSend(query.jetton, address, comment, resolveParams.withGoBack, true);
     } else {
-      openSend(currency, address, comment);
+      openSend(currency, address, comment, false);
     }
   });
 
