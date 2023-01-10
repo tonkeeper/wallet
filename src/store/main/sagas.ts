@@ -58,7 +58,7 @@ import { Cache } from '$store/events/manager/cache';
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
 import { getWalletName } from '$shared/dynamicConfig';
 import { destroyEventsManager } from '$store/events/sagas';
-import { initStats } from '$utils';
+import { initStats, trackEvent, trackFirstLaunch } from '$utils';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { favoritesActions } from '$store/favorites';
@@ -165,6 +165,10 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   updateServerConfig(devConfig);
 
   initStats();
+
+  trackFirstLaunch();
+  trackEvent('launch_app');
+
 
   yield fork(loadRates, true);
 
