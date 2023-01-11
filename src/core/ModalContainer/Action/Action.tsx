@@ -4,7 +4,7 @@ import { useEvent, usePrepareDetailedAction } from '$hooks';
 import { ActionProps } from './Action.interface';
 import { ActionBase } from '$core/ModalContainer/Action/ActionBase/ActionBase';
 
-export const Action: FC<ActionProps> = ({ eventKey, action }) => {
+export const ActionModal: FC<ActionProps> = ({ eventKey, action }) => {
   const event = useEvent(eventKey);
   const [cachedEvent] = useState(event);
 

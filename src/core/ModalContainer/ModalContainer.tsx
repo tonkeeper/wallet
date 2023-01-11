@@ -18,7 +18,6 @@ import { ReminderEnableNotificationsModal } from './ReminderEnableNotificationsM
 import { AppearanceBottomSheet } from './AppearanceBottomSheet';
 import { Marketplaces } from '$core/ModalContainer/Marketplaces/Marketplaces';
 import { AddEditFavoriteAddress } from './AddEditFavoriteAddress/AddEditFavoriteAddress';
-import { Action } from '$core/ModalContainer/Action/Action';
 import { LinkingDomainModal } from './LinkingDomainModal';
 import { ReplaceDomainAddressModal } from './NFTOperations/ReplaceDomainAddressModal';
 
@@ -55,16 +54,11 @@ export const ModalContainer: FC<ModalContainerProps> = (props) => {
         <ConfirmSending {...props} {...route.params} />
       )}
       {visibility[ModalName.DEPLOY] && <DeployModal {...props} {...route.params} />}
-      {visibility[ModalName.EXCHANGE] && <Exchange {...props} {...route.params} />}
       {visibility[ModalName.EXCHANGE_METHOD] && (
         <ExchangeMethod {...props} {...route.params} />
       )}
-      {visibility[ModalName.ACTION] && <Action {...props} {...route.params} />}
       {visibility[ModalName.CREATE_SUBSCRIPTION] && (
         <CreateSubscription {...props} {...route.params} />
-      )}
-      {visibility[ModalName.TON_LOGIN] && (
-        <TonConnectModal {...props} {...route.params} />
       )}
       {visibility[ModalName.SUBSCRIPTION] && (
         <CreateSubscription {...props} {...route.params} isEdit />

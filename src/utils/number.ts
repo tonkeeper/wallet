@@ -63,9 +63,8 @@ export function formatInputAmount(raw: string, decimals: number) {
 }
 
 export function formatAmount(amount: string, decimals: number, withGrouping?: boolean) {
-  BigNumber.config({ DECIMAL_PLACES: decimals, FORMAT: { groupSeparator: ' ', groupSize: 3, decimalSeparator: '.' } });
   if (withGrouping) {
-    return new BigNumber(amount || 0).toFormat();
+    return new BigNumber(amount || 0).toFormat(decimals, { groupSeparator: ' ', groupSize: 3, decimalSeparator: '.' });
   }
   return new BigNumber(amount || 0).toString();
 }
@@ -75,13 +74,15 @@ export function formatAmountAndLocalize(amount: string, decimals: number) {
 }
 
 export function toNano(amount: number | string, decimals?: number) {
-  BigNumber.config({ DECIMAL_PLACES: decimals });
-  return new BigNumber(amount || 0).shiftedBy(decimals ?? 8).toString(10);
+  let bn = new BigNumber(amount || 0);
+  if (decimals) {
+    bn = bn.decimalPlaces(decimals, BigNumber.ROUND_DOWN);
+  }
+  return bn.shiftedBy(decimals ?? 8).toString(10);
 }
 
 export function fromNano(amount: number | string, decimals: number) {
-  BigNumber.config({ DECIMAL_PLACES: decimals });
-  return new BigNumber(amount || 0).shiftedBy(-decimals).toString(10);
+  return new BigNumber(amount || 0).shiftedBy(-decimals).decimalPlaces(decimals, BigNumber.ROUND_DOWN).toString(10);
 }
 
 export function truncateDecimal(
