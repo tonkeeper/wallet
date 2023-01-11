@@ -63,10 +63,13 @@ export function formatInputAmount(raw: string, decimals: number) {
 }
 
 export function formatAmount(amount: string, decimals: number, withGrouping?: boolean) {
+  let number = new BigNumber(amount || 0).toString();
   if (withGrouping) {
-    return new BigNumber(amount || 0).toFormat(decimals, { groupSeparator: ' ', groupSize: 3, decimalSeparator: '.' });
+    let parts = number.split('.');
+    parts[0] = new BigNumber(parts[0]).toFormat(0, { groupSeparator: ' ', groupSize: 3, decimalSeparator: '.' });
+    number = parts.join('.');
   }
-  return new BigNumber(amount || 0).toString();
+  return number;
 }
 
 export function formatAmountAndLocalize(amount: string, decimals: number) {
