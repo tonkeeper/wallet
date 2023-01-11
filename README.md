@@ -17,6 +17,15 @@ $ yarn pods
 $ yarn ios
 ```
 
+##### For Android run
+```bash
+$ yarn adb_reverse
+$ yarn android
+```
+
+More information about android build in [android readme](android/README.md).
+
+
 ## Adding icons
 
 All icon files are named according to `ic-name-24.svg` scheme. And placed in `src/assets/icons/svg`.
@@ -34,11 +43,6 @@ If `librsvg` not already installed, run
 ```bash
 $ brew install librsvg
 ```
-
-## Android
-
-All android specific files contains in [android folder](android).
-
 
 ## License
 
