@@ -78,3 +78,6 @@ dist/
 
 # @end expo-cli
 ios/ton_keeper/Resources/Generated/R.generated.swift
+
+# Fleet
+.fleet/
