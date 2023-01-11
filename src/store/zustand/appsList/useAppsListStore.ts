@@ -5,7 +5,7 @@ import axios from 'axios';
 import FastImage from 'react-native-fast-image';
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
-import { IAppCategory, IAppMetadata, IAppsListStore } from './types';
+import { IAppCategory, IAppsListStore } from './types';
 
 const initialState: Omit<IAppsListStore, 'actions'> = {
   fetching: true,
@@ -27,12 +27,13 @@ export const useAppsListStore = create(
               `${getServerConfig('tonkeeperEndpoint')}/apps/popular?lang=${i18n.locale}`,
             );
 
-            const { categories, apps, moreEnabled, moreUrl } = response.data.data as {
+            const { categories, moreEnabled, moreUrl } = response.data.data as {
               categories: IAppCategory[];
-              apps: IAppMetadata[];
               moreEnabled: boolean;
               moreUrl: string;
             };
+
+            const apps = categories.map((c) => c.apps).flat();
 
             const sources =
               categories?.[0]?.apps.map((app) => ({
