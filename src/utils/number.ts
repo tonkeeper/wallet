@@ -89,14 +89,19 @@ export function truncateDecimal(
   nonLocalizedValue: string,
   decimal: number,
   ignoreLocaleSeparator = false,
+  withGrouping = false,
 ): string {
   if (nonLocalizedValue === null || nonLocalizedValue === undefined) {
     return '?';
   }
   const comps = nonLocalizedValue.split('.');
-  const intPart = comps[0];
+  let intPart = comps[0];
   const fractionPart = comps[1];
   let zeroOffset = 0;
+
+  if (withGrouping) {
+    intPart = formatAmount(intPart, 0, true);
+  }
 
   if (!fractionPart) {
     return intPart;
