@@ -34,7 +34,6 @@ export const IconContainer = styled.View<{ isMore?: boolean }>`
 
 export const Icon = styled(FastImage).attrs({
   resizeMode: 'cover',
-  priority: FastImage.priority.high,
 })`
   width: ${ICON_SIZE}px;
   height: ${ICON_SIZE}px;
