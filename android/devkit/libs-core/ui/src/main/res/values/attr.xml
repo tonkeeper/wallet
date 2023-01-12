@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Additional text attributes -->
     <attr name="textAppearanceBody3" format="reference"/>
     <attr name="textAppearanceBody4" format="reference"/>
     <attr name="textAppearanceBody4Caps" format="reference"/>
 
-
+    <!-- Additional shape attributes -->
     <attr name="shapeAppearanceCornerNone" format="reference"/>
     <attr name="shapeAppearanceCornerExtraExtraSmall" format="reference"/>
     <attr name="shapeAppearanceCornerFull" format="reference"/>
