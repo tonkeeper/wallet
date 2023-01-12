@@ -4,5 +4,5 @@ import com.tonkeeper.feature.wallet.key.PublicKey
 
 data class WalletInfo(
     val pk: PublicKey,
-    val label: String,
+    val label: String = "",
 )

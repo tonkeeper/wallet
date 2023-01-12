@@ -1,4 +1,4 @@
-package com.tonkeeper.feature.localauth
+package com.tonkeeper.feature.localauth.keystore
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
