@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Tonkeeper" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.Tonkeeper.Num1</item>
+        <item name="textAppearanceDisplayMedium">@style/TextAppearance.Tonkeeper.Num2</item>
+        <item name="textAppearanceHeadline1">@style/TextAppearance.Tonkeeper.H1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.Tonkeeper.H2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.Tonkeeper.H3</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.Tonkeeper.Label1</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.Tonkeeper.Label2</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Tonkeeper.Label3</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.Tonkeeper.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.Tonkeeper.Body2</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Tonkeeper.Body3</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.Tonkeeper.Body4.Caps</item>
+    </style>
+
+    <style name="Theme.Tonkeeper.Light">
+
+    </style>
+
+    <style name="Theme.Tonkeeper.Dark">
+
+    </style>
+
+</resources>

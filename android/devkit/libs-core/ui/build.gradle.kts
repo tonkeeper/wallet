@@ -34,9 +34,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("androidx.datastore:datastore:1.0.0")
-    implementation("androidx.biometric:biometric:1.1.0")
+    implementation("com.google.android.material:material:1.7.0")
 
     // Local tests
     testImplementation("junit:junit:4.13.2")

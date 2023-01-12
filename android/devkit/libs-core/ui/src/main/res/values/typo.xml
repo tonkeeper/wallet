@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TextAppearance.Tonkeeper" parent="TextAppearance.AppCompat"/>
+
+    <style name="TextAppearance.Tonkeeper.Num1" parent="TextAppearance.AppCompat.Display1">
+        <item name="fontFamily">@font/montserrat_600_semibold</item>
+        <item name="android:textSize">32sp</item>
+        <item name="lineHeight">40dp</item>
+    </style>
+
+    <style name="TextAppearance.Tonkeeper.Num2" parent="TextAppearance.AppCompat.Display2">
+        <item name="fontFamily">@font/montserrat_600_semibold</item>
+        <item name="android:textSize">28sp</item>
+        <item name="lineHeight">32dp</item>
+    </style>
+
+    <style name="TextAppearance.Tonkeeper.H1" parent="TextAppearance.AppCompat.Headline">
+        <item name="fontFamily">@font/montserrat_700_bold</item>
+        <item name="android:textSize">32sp</item>
+        <item name="lineHeight">40dp</item>
+    </style>
+
+    <style name="TextAppearance.Tonkeeper.H2" parent="TextAppearance.AppCompat.Headline">
+        <item name="fontFamily">@font/montserrat_700_bold</item>
+        <item name="android:textSize">24sp</item>
+        <item name="lineHeight">32dp</item>
+    </style>
+
+    <style name="TextAppearance.Tonkeeper.H3" parent="TextAppearance.AppCompat.Headline">
+        <item name="fontFamily">@font/montserrat_700_bold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="lineHeight">28dp</item>
+    </style>
+
+    <style name="TextAppearance.Tonkeeper.Label1">
+        <item name="fontFamily">@font/montserrat_600_semibold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="lineHeight">24dp</item>
+    </style>
+
+    <style name="TextAppearance.Tonkeeper.Label2">
+        <item name="fontFamily">@font/montserrat_600_semibold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="lineHeight">20dp</item>
+    </style>
+
+    <style name="TextAppearance.Tonkeeper.Label3">
+        <item name="fontFamily">@font/montserrat_600_semibold</item>
+        <item name="android:textSize">12sp</item>
+        <item name="lineHeight">16dp</item>
+    </style>
+
+    <style name="TextAppearance.Tonkeeper.Body1">
+        <item name="fontFamily">@font/montserrat_500_medium</item>
+        <item name="android:textSize">16sp</item>
+        <item name="lineHeight">24dp</item>
+    </style>
+
+    <style name="TextAppearance.Tonkeeper.Body2">
+        <item name="fontFamily">@font/montserrat_500_medium</item>
+        <item name="android:textSize">14sp</item>
+        <item name="lineHeight">20dp</item>
+    </style>
+
+    <style name="TextAppearance.Tonkeeper.Body3">
+        <item name="fontFamily">@font/montserrat_500_medium</item>
+        <item name="android:textSize">12sp</item>
+        <item name="lineHeight">16dp</item>
+    </style>
+
+    <style name="TextAppearance.Tonkeeper.Body4">
+        <item name="fontFamily">@font/montserrat_600_semibold</item>
+        <item name="android:textSize">10sp</item>
+        <item name="lineHeight">14dp</item>
+    </style>
+
+    <style name="TextAppearance.Tonkeeper.Body4.Caps">
+        <item name="textAllCaps">true</item>
+    </style>
+
+</resources>
