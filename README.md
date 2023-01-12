@@ -1,16 +1,34 @@
-# Tonkeeper
+# Tonkeeper Wallet
 
-Welcome to Tonkeeper repository. If you have questions or suggestions, please file an [Issue](https://github.com/tonkeeper/wallet/issues/new/choose).
+[![License](https://img.shields.io/github/license/tonkeeper/wallet)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/tonkeeper/wallet)](https://github.com/tonkeeper/wallet/releases)
+
+**[tonkeeper.com](https://tonkeeper.com)**
+
+
+Welcome to Tonkeeper repository.
+If you have questions or suggestions, please file an [Issue](https://github.com/tonkeeper/wallet/issues/new/choose).
 
 ## Install dependencies
 
 ```bash
 $ yarn install
+```
 
+##### For iOS run
+```bash
 $ yarn pods
-
 $ yarn ios
 ```
+
+##### For Android run
+```bash
+$ yarn adb_reverse
+$ yarn android
+```
+
+More information about android build in [android readme](android/README.md).
+
 
 ## Adding icons
 
@@ -32,4 +50,7 @@ $ brew install librsvg
 
 ## License
 
-GPLv3. See [LICENSE.txt](LICENSE.txt)
+The code and data files in this distribution are licensed under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+See https://www.gnu.org/licenses/ for a copy of this license.
+
+See [LICENSE](LICENSE) file.
