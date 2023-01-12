@@ -314,7 +314,9 @@
     "remove_alert": {
       "title": "Отключить «%{name}»?",
       "approve_button": "Отключить"
-    }
+    },
+    "more_title": "Исследуйте все сервисы",
+    "more_description": "Маркеты, биржи и другие"
   },
 
   "exchange_title": "Купить TON",

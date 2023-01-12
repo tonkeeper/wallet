@@ -1,14 +1,16 @@
 import { getServerConfig } from '$shared/constants';
+import { i18n } from '$translation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import FastImage from 'react-native-fast-image';
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
-import { IAppsListStore } from './types';
+import { IAppCategory, IAppsListStore } from './types';
 
 const initialState: Omit<IAppsListStore, 'actions'> = {
   fetching: true,
   appsList: [],
+  categories: [],
   moreEnabled: false,
   moreUrl: '',
 };
@@ -22,18 +24,30 @@ export const useAppsListStore = create(
           set({ fetching: true });
           try {
             const response = await axios.get(
-              `${getServerConfig('tonkeeperEndpoint')}/apps/popular`,
+              `${getServerConfig('tonkeeperEndpoint')}/apps/popular?lang=${i18n.locale}`,
             );
 
-            const { apps, moreEnabled, moreUrl } = response.data.data;
+            const { categories, moreEnabled, moreUrl } = response.data.data as {
+              categories: IAppCategory[];
+              moreEnabled: boolean;
+              moreUrl: string;
+            };
 
-            FastImage.preload(
-              apps.map((app) => ({
+            const apps = categories.map((c) => c.apps).flat();
+
+            const sources =
+              categories?.[0]?.apps.map((app) => ({
                 uri: app.icon,
-              })),
-            );
+              })) || [];
 
-            set({ appsList: apps, moreEnabled, moreUrl });
+            FastImage.preload(sources);
+
+            set({
+              appsList: apps,
+              categories,
+              moreEnabled,
+              moreUrl,
+            });
           } catch {
           } finally {
             set({ fetching: false });
@@ -44,8 +58,8 @@ export const useAppsListStore = create(
     {
       name: 'appsList',
       getStorage: () => AsyncStorage,
-      partialize: ({ appsList, moreEnabled }) =>
-        ({ appsList, moreEnabled } as IAppsListStore),
+      partialize: ({ categories, appsList, moreEnabled }) =>
+        ({ categories, appsList, moreEnabled } as IAppsListStore),
     },
   ),
 );
