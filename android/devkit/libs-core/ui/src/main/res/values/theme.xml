@@ -12,12 +12,22 @@
         <item name="textAppearanceLabelSmall">@style/TextAppearance.Tonkeeper.Label3</item>
         <item name="textAppearanceBody1">@style/TextAppearance.Tonkeeper.Body1</item>
         <item name="textAppearanceBody2">@style/TextAppearance.Tonkeeper.Body2</item>
-        <item name="textAppearanceBodyMedium">@style/TextAppearance.Tonkeeper.Body3</item>
-        <item name="textAppearanceBodySmall">@style/TextAppearance.Tonkeeper.Body4.Caps</item>
+        <item name="textAppearanceBody3">@style/TextAppearance.Tonkeeper.Body3</item>
+        <item name="textAppearanceBody4">@style/TextAppearance.Tonkeeper.Body4</item>
+        <item name="textAppearanceBody4Caps">@style/TextAppearance.Tonkeeper.Body4</item>
+
+        <item name="shapeCornerFamily">rounded</item>
+        <item name="shapeAppearanceCornerNone">@style/ShapeAppearance.Tonkeeper.Corner.None</item>
+        <item name="shapeAppearanceCornerExtraExtraSmall">@style/ShapeAppearance.Tonkeeper.Corner.ExtraExtraSmall</item>
+        <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.Tonkeeper.Corner.ExtraSmall</item>
+        <item name="shapeAppearanceCornerSmall">@style/ShapeAppearance.Tonkeeper.Corner.Small</item>
+        <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.Tonkeeper.Corner.Medium</item>
+        <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.Tonkeeper.Corner.Large</item>
+        <item name="shapeAppearanceCornerFull">@style/ShapeAppearance.Tonkeeper.Corner.Full</item>
     </style>
 
     <style name="Theme.Tonkeeper.Light">
-
+        <!-- nothing for now -->
     </style>
 
     <style name="Theme.Tonkeeper.Dark">
