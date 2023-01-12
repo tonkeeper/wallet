@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Tonkeeper" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.Tonkeeper.Core" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="textAppearanceDisplayLarge">@style/TextAppearance.Tonkeeper.Num1</item>
         <item name="textAppearanceDisplayMedium">@style/TextAppearance.Tonkeeper.Num2</item>
         <item name="textAppearanceHeadline1">@style/TextAppearance.Tonkeeper.H1</item>
@@ -26,11 +26,11 @@
         <item name="shapeAppearanceCornerFull">@style/ShapeAppearance.Tonkeeper.Corner.Full</item>
     </style>
 
-    <style name="Theme.Tonkeeper.Light">
+    <style name="Theme.Tonkeeper.Core.Light">
         <!-- nothing for now -->
     </style>
 
-    <style name="Theme.Tonkeeper.Dark">
+    <style name="Theme.Tonkeeper.Core.Dark">
 
     </style>
 
