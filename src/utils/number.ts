@@ -63,7 +63,7 @@ export function formatInputAmount(raw: string, decimals: number) {
 }
 
 export function formatAmount(amount: string, decimals: number, withGrouping?: boolean) {
-  let number = new BigNumber(amount || 0).toString();
+  let number = new BigNumber(amount || 0).decimalPlaces(decimals, BigNumber.ROUND_DOWN).toString();
   if (withGrouping) {
     let parts = number.split('.');
     parts[0] = new BigNumber(parts[0]).toFormat(0, { groupSeparator: ' ', groupSize: 3, decimalSeparator: '.' });
