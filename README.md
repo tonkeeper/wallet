@@ -1,9 +1,9 @@
 # Tonkeeper Wallet
 
-Welcome to Tonkeeper repository. If you have questions or suggestions, please file an [Issue](https://github.com/tonkeeper/wallet/issues/new/choose).
-
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![License](https://img.shields.io/github/license/tonkeeper/wallet)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/tonkeeper/wallet)](https://github.com/tonkeeper/wallet/releases)
+
+Welcome to Tonkeeper repository. If you have questions or suggestions, please file an [Issue](https://github.com/tonkeeper/wallet/issues/new/choose).
 
 ## Install dependencies
 
