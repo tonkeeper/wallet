@@ -8,7 +8,7 @@ import { useDownloadNFT } from '../useDownloadNFT';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import { debugLog, maskifyAddress } from '$utils';
+import {debugLog, maskifyAddress, toLocaleNumber} from '$utils';
 import { t } from '$translation';
 import { CryptoCurrencies } from '$shared/constants';
 import { useDispatch } from 'react-redux';
@@ -116,12 +116,12 @@ export const NFTTransferModal = ({ params, ...options }: NFTTransferModalProps) 
               </S.InfoItem>
             </Highlight>
             <Separator />
-            <Highlight onPress={() => copyText(fee)}>
+            <Highlight onPress={() => fee && copyText(toLocaleNumber(fee))}>
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
                 <S.InfoItemValue>
                   {fee ? (
-                    <Text variant="body1">{fee} TON</Text>
+                    <Text variant="body1">{toLocaleNumber(fee)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}

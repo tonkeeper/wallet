@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   cancelAnimation,
@@ -12,8 +12,8 @@ import {
 } from 'react-native-reanimated';
 
 import * as S from './Migration.style';
-import {Button, Icon, Text} from '$uikit';
-import { deviceWidth, ns, triggerNotificationSuccess } from '$utils';
+import { Button, Icon, Text } from '$uikit';
+import { deviceWidth, ns, toLocaleNumber, triggerNotificationSuccess } from '$utils';
 import { Card } from '$core/Migration/Card/Card';
 import { goBack } from '$navigation';
 import { MigrationProps } from './Migration.interface';
@@ -22,7 +22,6 @@ import { CryptoCurrencies } from '$shared/constants';
 import { useFiatRate, useTheme, useTranslator } from '$hooks';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { mainSelector } from '$store/main';
-import {StateTitleWrapper} from "./Migration.style";
 
 export const Migration: FC<MigrationProps> = ({ route }) => {
   const {
@@ -199,7 +198,7 @@ export const Migration: FC<MigrationProps> = ({ route }) => {
           </S.CardsWrap>
           <Text color="foregroundSecondary" variant="body2" textAlign="center">
             {t('migration_fee_info', {
-              tonFee: '0.01',
+              tonFee: toLocaleNumber('0.01'),
               fiatFee: `${formatFiatCurrencyAmount(
                 (feeInFiat.today * 0.01).toFixed(2),
                 fiatCurrency,

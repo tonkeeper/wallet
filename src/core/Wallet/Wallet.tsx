@@ -8,7 +8,7 @@ import { useTranslator, useWalletInfo } from '$hooks';
 import { openReceive, openRequireWalletModal, openSend } from '$navigation';
 import { walletActions, walletSelector } from '$store/wallet';
 import { FlatList, View } from 'react-native';
-import { ns } from '$utils';
+import { ns, toLocaleNumber } from '$utils';
 import { CryptoCurrencies } from '$shared/constants';
 import { toastActions } from '$store/toast';
 import { IconNames } from '$uikit/Icon/generated.types';
@@ -96,7 +96,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
               <CurrencyIcon currency={currency} size={72} />
               <S.AmountWrapper>
                 <Text variant="h2">
-                  {amount} {currencyUpper}
+                  {toLocaleNumber(amount)} {currencyUpper}
                 </Text>
               </S.AmountWrapper>
               <S.FiatInfo>

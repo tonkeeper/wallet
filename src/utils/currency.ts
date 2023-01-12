@@ -27,11 +27,12 @@ export function formatCryptoCurrency(
   currency: string,
   decimals: number,
   decimal?: number,
+  withGrouping?: boolean,
 ): string {
   if (amount) {
     amount = amount.replace(',', '.');
 
-    amount = formatAmount(amount, decimals);
+    amount = formatAmount(amount, decimals, withGrouping);
 
     if (decimal !== undefined) {
       amount = truncateDecimal(amount, decimal);

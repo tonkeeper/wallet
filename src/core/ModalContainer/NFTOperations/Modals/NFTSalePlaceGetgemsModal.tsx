@@ -2,7 +2,7 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 import { useCopyText, useInstance, useWallet } from '$hooks';
 import {Highlight, Icon, Separator, Skeleton, Text} from '$uikit';
-import { debugLog, delay, maskifyAddress, retry } from '$utils';
+import {debugLog, delay, maskifyAddress, retry, toLocaleNumber} from '$utils';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftSalePlaceGetgemsParams, TxRequestBody } from '../TXRequest.types';
 import { useDownloadNFT } from '../useDownloadNFT';
@@ -183,19 +183,19 @@ export const NFTSalePlaceGetgemsModal = ({
               </S.InfoItem>
             </Highlight>
             <Separator />
-            <Highlight onPress={() => copyText(fullPrice)}>
+            <Highlight onPress={() => copyText(toLocaleNumber(fullPrice))}>
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_price')}</S.InfoItemLabel>
-                <S.InfoItemValueText>{fullPrice} TON</S.InfoItemValueText>
+                <S.InfoItemValueText>{toLocaleNumber(fullPrice)} TON</S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
             <Separator />
-            <Highlight onPress={() => copyText(proceeds)}>
+            <Highlight onPress={() => proceeds && copyText(toLocaleNumber(proceeds))}>
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_proceeds')}</S.InfoItemLabel>
                 <S.InfoItemValue>
                   {proceeds ? (
-                    <Text variant="body1">{proceeds} TON</Text>
+                    <Text variant="body1">{toLocaleNumber(proceeds)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}
@@ -203,12 +203,12 @@ export const NFTSalePlaceGetgemsModal = ({
               </S.InfoItem>
             </Highlight>
             <Separator />
-            <Highlight onPress={() => copyText(feeAndRoyalties)}>
+            <Highlight onPress={() => feeAndRoyalties && copyText(toLocaleNumber(feeAndRoyalties))}>
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_fee_and_royalties')}</S.InfoItemLabel>
                 <S.InfoItemValue>
                   {feeAndRoyalties ? (
-                    <Text variant="body1">{feeAndRoyalties} TON</Text>
+                    <Text variant="body1">{toLocaleNumber(feeAndRoyalties)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}
@@ -226,10 +226,10 @@ export const NFTSalePlaceGetgemsModal = ({
                   </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
-              <Highlight onPress={() => copyText(marketplaceFee)}>
+              <Highlight onPress={() => copyText(toLocaleNumber(marketplaceFee))}>
                 <S.DetailItem>
                   <S.DetailItemLabel>Marketplace fee</S.DetailItemLabel>
-                  <S.DetailItemValueText>{marketplaceFee} TON</S.DetailItemValueText>
+                  <S.DetailItemValueText>{toLocaleNumber(marketplaceFee)} TON</S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
               <Highlight onPress={() => copyText(params.royaltyAddress)}>
@@ -240,21 +240,21 @@ export const NFTSalePlaceGetgemsModal = ({
                   </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
-              <Highlight onPress={() => copyText(royaltyAmount)}>
+              <Highlight onPress={() => copyText(toLocaleNumber(royaltyAmount))}>
                 <S.DetailItem>
                   <S.DetailItemLabel>Royalty</S.DetailItemLabel>
                   {royaltyAmount ? (
-                    <Text variant="body2">{royaltyAmount} TON</Text>
+                    <Text variant="body2">{toLocaleNumber(royaltyAmount)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}
                 </S.DetailItem>
               </Highlight>
-              <Highlight onPress={() => copyText(blockchainFee)}>
+              <Highlight onPress={() => blockchainFee && copyText(toLocaleNumber(blockchainFee))}>
                 <S.DetailItem>
                   <S.DetailItemLabel>Blockchain fee</S.DetailItemLabel>
                   {blockchainFee ? (
-                    <Text variant="body2">{blockchainFee} TON</Text>
+                    <Text variant="body2">{toLocaleNumber(blockchainFee)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}
