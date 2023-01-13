@@ -32,6 +32,7 @@ import { Modal, useNavigation } from '$libs/navigation';
 import { store } from '$store';
 import { openRequireWalletModal, push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
+import { mainSelector } from '$store/main';
 
 export const TonConnectModal = (props: TonConnectModalProps) => {
   const animation = useTonConnectAnimation();
@@ -41,6 +42,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   const nav = useNavigation();
 
   const { version } = useSelector(walletSelector);
+  const { isTestnet } = useSelector(mainSelector);
   const maskedAddress = maskifyTonAddress(animation.address);
 
   const closeModal = () => nav.goBack();
@@ -96,7 +98,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
 
       const vault = await unlockVault();
 
-      const address = await vault.getTonAddress();
+      const address = await vault.getTonAddress(isTestnet);
       const privateKey = await vault.getTonPrivateKey();
       const walletSeed = TonWeb.utils.bytesToBase64(privateKey);
 
@@ -149,7 +151,11 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
 
         const { replyBuilder, requestPromise } = props;
 
-        const replyItems = replyBuilder.createReplyItems(address, privateKey, walletStateInit);
+        const replyItems = replyBuilder.createReplyItems(
+          address,
+          privateKey,
+          walletStateInit,
+        );
 
         requestPromise.resolve({ address, replyItems });
       }
@@ -287,7 +293,9 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
               entranceAnimation={false}
             >
               <Button onPress={createResponse}>{t('ton_login_connect_button')}</Button>
-              {isTonConnectV2 ? <S.NoticeText>{t('ton_login_notice')}</S.NoticeText> : null}
+              {isTonConnectV2 ? (
+                <S.NoticeText>{t('ton_login_notice')}</S.NoticeText>
+              ) : null}
             </TransitionOpacity>
 
             <TransitionOpacity
