@@ -74,7 +74,7 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
       balanceInputValue: formatInputAmount(balance, decimals),
       isInsufficientBalance: !isLockup && bigNum.isGreaterThan(balanceBigNum),
       isReadyToContinue:
-        isLockup || (bigNum.isGreaterThan(0) && bigNum.isLessThanOrEqualTo(balance)),
+        bigNum.isGreaterThan(0) && (isLockup || bigNum.isLessThanOrEqualTo(balance)),
     };
   }, [amount.value, balance, currencyTitle, decimals, isLockup]);
 
