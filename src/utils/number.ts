@@ -67,17 +67,13 @@ export function formatAmount(amount: string, decimals: number, withGrouping?: bo
   let number = bn.toString();
 
   if (withGrouping) {
-    let parts = number.split('.');
-
-    parts[0] = new BigNumber(parts[0]).toFormat(0, {
-      prefix: bn.isLessThan(0) ? '-' : '',
-      groupSeparator: ' ',
+    number = new BigNumber(number).toFormat({
+      groupSeparator: NUMBER_DIVIDER,
       groupSize: 3,
       decimalSeparator: '.',
     });
-
-    number = parts.join('.');
   }
+
   return number;
 }
 
