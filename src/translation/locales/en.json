@@ -223,10 +223,10 @@
     "comfirm": {
       "comment_label": "Comment",
       "comment_label_required": "Required comment",
-      "comment_required_text": "You must include MEMO or tag when sending to an exchange. \n",
+      "comment_required_text": "You must include Memo or tag when sending to an exchange. \n",
       "comment_description": "The comment is visible to everyone.",
       "comment_placeholder": "Message or reference (optional)",
-      "comment_placeholder_required": "MEMO or tag",
+      "comment_placeholder_required": "Memo or tag",
       "details_label": "Details",
       "details_max_balance_label": "Sending max. balance of %{currency}",
       "comment_characters_left": "%{count} characters left.",
