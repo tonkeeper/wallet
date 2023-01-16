@@ -63,10 +63,8 @@ export function formatInputAmount(raw: string, decimals: number) {
 }
 
 export function formatAmount(amount: string, decimals: number, withGrouping?: boolean) {
-  const bn = new BigNumber(amount).decimalPlaces(decimals, BigNumber.ROUND_DOWN);
-  let number = new BigNumber(amount)
-    .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
-    .toString();
+  const bn = new BigNumber(amount ?? 0).decimalPlaces(decimals, BigNumber.ROUND_DOWN);
+  let number = bn.toString();
 
   if (withGrouping) {
     let parts = number.split('.');
@@ -88,7 +86,7 @@ export function formatAmountAndLocalize(amount: string, decimals: number) {
 }
 
 export function toNano(amount: number | string, decimals?: number) {
-  let bn = new BigNumber(amount || 0);
+  let bn = new BigNumber(amount ?? 0);
   if (decimals) {
     bn = bn.decimalPlaces(decimals, BigNumber.ROUND_DOWN);
   }
@@ -96,7 +94,7 @@ export function toNano(amount: number | string, decimals?: number) {
 }
 
 export function fromNano(amount: number | string, decimals: number) {
-  return new BigNumber(amount || 0)
+  return new BigNumber(amount ?? 0)
     .shiftedBy(-decimals)
     .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
     .toString(10);
