@@ -17,8 +17,8 @@ export const JettonsList: FC = () => {
   const dispatch = useDispatch();
 
   const onSwitchExcludedJetton = useCallback(
-    (jettonAddress: string) => () =>
-      dispatch(jettonsActions.switchExcludedJetton(jettonAddress)),
+    (jettonAddress: string, value: boolean) => () =>
+      dispatch(jettonsActions.switchExcludedJetton({ jetton: jettonAddress, value })),
     [dispatch],
   );
 
@@ -32,6 +32,7 @@ export const JettonsList: FC = () => {
     index: number;
   }) {
     const isWhitelisted = jetton.verification === JettonVerification.WHITELIST;
+    const isEnabled = (isWhitelisted && !excludedJettons[jetton.jettonAddress]) || excludedJettons[jetton.jettonAddress] === false;
 
     return (
       <S.JettonInner isFirst={index === 0} isLast={data.length - 1 === index}>
@@ -44,9 +45,9 @@ export const JettonsList: FC = () => {
           </S.JettonInfo>
         </S.JettonCont>
         <Switch
-          value={(isWhitelisted && !excludedJettons[jetton.jettonAddress]) || excludedJettons[jetton.jettonAddress] === false}
+          value={isEnabled}
           // @ts-ignore
-          onChange={onSwitchExcludedJetton(jetton.jettonAddress)}
+          onChange={onSwitchExcludedJetton(jetton.jettonAddress, isEnabled)}
         />
       </S.JettonInner>
     );
