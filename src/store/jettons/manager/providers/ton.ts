@@ -76,6 +76,7 @@ export class TonProvider extends BaseProvider {
         symbol: metadata?.symbol || (metadata?.name && metadata.name.toUpperCase().slice(0, 3))
       },
       walletAddress,
+      verification: jettonBalance.verification,
       balance: fromNano(jettonBalance.balance, decimals),
     };
   }
