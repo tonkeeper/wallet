@@ -62,7 +62,6 @@ function* getIsFeatureEnabledWorker() {
 function* switchExcludedJettonWorker(action: SwitchExcludedJettonAction) {
   const { excludedJettons } = yield select(jettonsSelector);
   let newExcludedJettons = _.clone(excludedJettons);
-  console.log(action.payload.jetton, action.payload.value);
   newExcludedJettons[action.payload.jetton] = action.payload.value;
   yield put(jettonsActions.setExcludedJettons(newExcludedJettons));
   yield call(MainDB.setExcludedJettons, newExcludedJettons);
