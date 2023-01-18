@@ -1,10 +1,10 @@
 export enum DevFeature {
-  Example = 'Example',
+  UseHttpProtocol = 'UseHttpProtocol',
 }
 
 export interface IDevFeaturesToggleStore {
   devFeatures: { [key in DevFeature]: boolean };
   actions: {
-    toogleFeature: (feature: DevFeature) => void;
+    toggleFeature: (feature: DevFeature) => void;
   };
 }
