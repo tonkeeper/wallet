@@ -62,33 +62,57 @@ export function formatInputAmount(raw: string, decimals: number) {
   return toLocaleNumber(exp.join('.'));
 }
 
-export function formatAmount(amount: string, decimals: number) {
-  BigNumber.config({ DECIMAL_PLACES: decimals });
-  return new BigNumber(amount || 0).toString(10);
+export function formatAmount(amount: string, decimals: number, withGrouping?: boolean) {
+  const bn = new BigNumber(amount ?? 0).decimalPlaces(decimals, BigNumber.ROUND_DOWN);
+  let number = bn.toString();
+
+  if (withGrouping) {
+    number = new BigNumber(number).toFormat({
+      groupSeparator: NUMBER_DIVIDER,
+      groupSize: 3,
+      decimalSeparator: '.',
+    });
+  }
+
+  return number;
+}
+
+export function formatAmountAndLocalize(amount: string, decimals: number) {
+  return toLocaleNumber(formatAmount(amount, decimals));
 }
 
 export function toNano(amount: number | string, decimals?: number) {
-  BigNumber.config({ DECIMAL_PLACES: decimals });
-  return new BigNumber(amount || 0).shiftedBy(decimals ?? 8).toString(10);
+  let bn = new BigNumber(amount ?? 0);
+  if (decimals) {
+    bn = bn.decimalPlaces(decimals, BigNumber.ROUND_DOWN);
+  }
+  return bn.shiftedBy(decimals ?? 8).toString(10);
 }
 
 export function fromNano(amount: number | string, decimals: number) {
-  BigNumber.config({ DECIMAL_PLACES: decimals });
-  return new BigNumber(amount || 0).shiftedBy(-decimals).toString(10);
+  return new BigNumber(amount ?? 0)
+    .shiftedBy(-decimals)
+    .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
+    .toString(10);
 }
 
 export function truncateDecimal(
   nonLocalizedValue: string,
   decimal: number,
   ignoreLocaleSeparator = false,
+  withGrouping = false,
 ): string {
   if (nonLocalizedValue === null || nonLocalizedValue === undefined) {
     return '?';
   }
   const comps = nonLocalizedValue.split('.');
-  const intPart = comps[0];
+  let intPart = comps[0];
   const fractionPart = comps[1];
   let zeroOffset = 0;
+
+  if (withGrouping) {
+    intPart = formatAmount(intPart, 0, true);
+  }
 
   if (!fractionPart) {
     return intPart;

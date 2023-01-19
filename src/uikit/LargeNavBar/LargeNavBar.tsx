@@ -12,7 +12,17 @@ import { Text } from '$uikit/Text/Text';
 export const LargeNavBarInteractiveDistance = hNs(20);
 
 export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
-  const { children, scrollTop, rightContent, bottomComponent, onPress, hitSlop } = props;
+  const {
+    children,
+    scrollTop,
+    rightContent,
+    bottomComponent,
+    onPress,
+    hitSlop,
+    position = 'relative',
+    safeArea = true,
+    border = true,
+  } = props;
   const { top: topInset } = useSafeAreaInsets();
   const theme = useTheme();
 
@@ -36,7 +46,9 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
         translateY:
           scrollTop.value > 0
             ? -Math.min(scrollTop.value, LargeNavBarInteractiveDistance)
-            : -scrollTop.value,
+            : position === 'absolute'
+            ? -scrollTop.value
+            : 0,
       },
     ],
   }));
@@ -67,7 +79,7 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
   const smallWrapStyle = useAnimatedStyle(() => {
     return {
       borderBottomColor:
-        scrollTop.value >= LargeNavBarInteractiveDistance + 1
+        border && scrollTop.value >= LargeNavBarInteractiveDistance + 1
           ? theme.colors.border
           : 'transparent',
       transform: [
@@ -90,8 +102,11 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
 
   return (
     <>
-      <S.Wrap style={{ paddingTop: topInset }} pointerEvents="box-none">
-        <S.Background style={[backgroundStyle, { top: topInset }]} />
+      <S.Wrap
+        style={{ paddingTop: safeArea ? topInset : 0, position }}
+        pointerEvents="box-none"
+      >
+        <S.Background style={[backgroundStyle, { top: safeArea ? topInset : 0 }]} />
         <S.Cont>
           <S.LargeWrap style={largeWrapStyle}>
             <S.LargeTextWrap style={largeTitleStyle}>
@@ -112,11 +127,7 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
             </S.LargeTextWrap>
           </S.LargeWrap>
           <S.SmallWrap style={smallWrapStyle}>
-            <TouchableOpacity 
-              disabled={!onPress} 
-              onPress={onPress}
-              hitSlop={hitSlop}
-            >
+            <TouchableOpacity disabled={!onPress} onPress={onPress} hitSlop={hitSlop}>
               <S.TextWrap>
                 <Text variant="h3">{children}</Text>
                 {bottomComponent ? (
@@ -130,7 +141,7 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
           </S.RightContentWrap>
         </S.Cont>
       </S.Wrap>
-      <View style={{ height: topInset }} />
+      {safeArea ? <View style={{ height: topInset }} /> : false}
     </>
   );
 };

@@ -23,6 +23,7 @@
     "icons": "node scripts/generate_icons.js"
   },
   "dependencies": {
+    "@amplitude/analytics-browser": "^1.6.7",
     "@gorhom/bottom-sheet": "^4.4.4",
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/clipboard": "^1.5.1",
@@ -75,7 +76,6 @@
     "query-string": "^7.0.1",
     "react": "17.0.2",
     "react-native": "0.68.2",
-    "react-native-appsflyer": "6.5.21",
     "react-native-camera": "^4.2.1",
     "react-native-console-time-polyfill": "^1.2.3",
     "react-native-crypto": "^2.2.0",

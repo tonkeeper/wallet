@@ -1,6 +1,6 @@
 import { JettonBalanceModel } from '$store/models';
 import { CurrencyIcon, TokenListItem } from '$uikit';
-import { formatAmount } from '$utils';
+import { formatAmountAndLocalize } from '$utils';
 import React, { FC, memo } from 'react';
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 const JettonItemComponent: FC<Props> = (props) => {
   const { jetton, borderStart, borderEnd, onPress } = props;
 
-  const balance = `${formatAmount(jetton.balance, jetton.metadata.decimals)} ${
+  const balance = `${formatAmountAndLocalize(jetton.balance, jetton.metadata.decimals)} ${
     jetton.metadata.symbol || ''
   }`;
 

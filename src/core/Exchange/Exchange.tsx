@@ -8,8 +8,9 @@ import { ExchangeItem } from './ExchangeItem/ExchangeItem';
 import { useTranslator } from '$hooks';
 import { getServerConfig, getServerConfigSafe } from '$shared/constants';
 import { Linking } from 'react-native';
+import { Modal } from '$libs/navigation';
 
-export const Exchange: FC = () => {
+export const ExchangeModal: FC = () => {
   const t = useTranslator();
 
   const { isLoading, categories } = useSelector(exchangeSelector);
@@ -25,43 +26,47 @@ export const Exchange: FC = () => {
   }, []);
 
   return (
-    <BottomSheet title={categories[0]?.title || t('exchange_title')}>
-      {isLoading ? (
-        <S.LoaderWrap>
-          <Loader size="medium" />
-        </S.LoaderWrap>
-      ) : (
-        <>
-          {categories.map((category, cIndex) => (
-            <React.Fragment key={category.title}>
-              {cIndex > 0 ? (
-                <S.HeaderContainer>
-                  <InlineHeader>{category.title}</InlineHeader>
-                </S.HeaderContainer>
+    <Modal>
+        <Modal.Header title={categories[0]?.title || t('exchange_title')} />
+        <Modal.ScrollView contentContainerStyle={{ paddingBottom: 64 }}>
+          {isLoading ? (
+            <S.LoaderWrap>
+              <Loader size="medium" />
+            </S.LoaderWrap>
+          ) : (
+            <>
+              {categories.map((category, cIndex) => (
+                <React.Fragment key={category.title}>
+                  {cIndex > 0 ? (
+                    <S.HeaderContainer>
+                      <InlineHeader>{category.title}</InlineHeader>
+                    </S.HeaderContainer>
+                  ) : null}
+                  <S.Contain>
+                    {category.items.map((item, idx, arr) => (
+                      <ExchangeItem
+                        topRadius={idx === 0}
+                        bottomRadius={idx === arr.length - 1}
+                        key={item}
+                        methodId={item}
+                      />
+                    ))}
+                  </S.Contain>
+                </React.Fragment>
+              ))}
+              {otherWaysAvailable ? (
+                <S.OtherWaysButtonContainer>
+                  <S.OtherWaysButton onPress={openOtherWays}>
+                    <S.OtherWaysButtonLabel>
+                      {t('exchange_other_ways')}
+                    </S.OtherWaysButtonLabel>
+                  </S.OtherWaysButton>
+                </S.OtherWaysButtonContainer>
               ) : null}
-              <S.Contain>
-                {category.items.map((item, idx, arr) => (
-                  <ExchangeItem
-                    topRadius={idx === 0}
-                    bottomRadius={idx === arr.length - 1}
-                    key={item}
-                    methodId={item}
-                  />
-                ))}
-              </S.Contain>
-            </React.Fragment>
-          ))}
-          {otherWaysAvailable ? (
-            <S.OtherWaysButtonContainer>
-              <S.OtherWaysButton onPress={openOtherWays}>
-                <S.OtherWaysButtonLabel>
-                  {t('exchange_other_ways')}
-                </S.OtherWaysButtonLabel>
-              </S.OtherWaysButton>
-            </S.OtherWaysButtonContainer>
-          ) : null}
-        </>
-      )}
-    </BottomSheet>
+            </>
+          )}
+        </Modal.ScrollView>
+        <Modal.Footer />
+      </Modal>
   );
 };

@@ -29,6 +29,7 @@ import { AmountStepProps } from './AmountStep.interface';
 import { SwapButton } from './components/SwapButton/SwapButton';
 import { getNumberFormatSettings } from 'react-native-localize';
 import { Switch, TextInput } from 'react-native-gesture-handler';
+import { walletWalletSelector } from '$store/wallet';
 
 const AmountStepComponent: FC<AmountStepProps> = (props) => {
   const {
@@ -47,6 +48,9 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
   } = props;
 
   const { fiatCurrency } = useSelector(mainSelector);
+  const wallet = useSelector(walletWalletSelector);
+
+  const isLockup = !!wallet?.ton.isLockup();
 
   const {
     formattedBalance,
@@ -68,10 +72,11 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
         formattedBalanceDecimals,
       ),
       balanceInputValue: formatInputAmount(balance, decimals),
-      isInsufficientBalance: bigNum.isGreaterThan(balanceBigNum),
-      isReadyToContinue: bigNum.isGreaterThan(0) && bigNum.isLessThanOrEqualTo(balance),
+      isInsufficientBalance: !isLockup && bigNum.isGreaterThan(balanceBigNum),
+      isReadyToContinue:
+        bigNum.isGreaterThan(0) && (isLockup || bigNum.isLessThanOrEqualTo(balance)),
     };
-  }, [amount.value, balance, currencyTitle, decimals]);
+  }, [amount.value, balance, currencyTitle, decimals, isLockup]);
 
   const { keyboardHeightStyle } = useReanimatedKeyboardHeight();
 
@@ -255,22 +260,24 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
           ) : null}
         </S.InputContainer>
       </S.InputTouchable>
-      <S.SendAllContainer>
-        <Switch
-          thumbColor={theme.colors.foregroundPrimary}
-          trackColor={{
-            false: theme.colors.backgroundSecondary,
-            true: theme.colors.accentPrimary,
-          }}
-          value={amount.all}
-          onChange={handleSwitchAll}
-        />
-        <S.SandAllLabel>
-          {t('send_screen_steps.amount.send_all', {
-            amount: formattedBalance,
-          })}
-        </S.SandAllLabel>
-      </S.SendAllContainer>
+      {!isLockup ? (
+        <S.SendAllContainer>
+          <Switch
+            thumbColor={theme.colors.foregroundPrimary}
+            trackColor={{
+              false: theme.colors.backgroundSecondary,
+              true: theme.colors.accentPrimary,
+            }}
+            value={amount.all}
+            onChange={handleSwitchAll}
+          />
+          <S.SandAllLabel>
+            {t('send_screen_steps.amount.send_all', {
+              amount: formattedBalance,
+            })}
+          </S.SandAllLabel>
+        </S.SendAllContainer>
+      ) : null}
       <Button disabled={!isReadyToContinue} isLoading={isPreparing} onPress={onContinue}>
         {t('continue')}
       </Button>

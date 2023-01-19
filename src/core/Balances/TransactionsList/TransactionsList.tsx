@@ -7,7 +7,14 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { format, formatAmount, formatDate, getLocale, ns, truncateDecimal } from '$utils';
+import {
+  format,
+  formatAmountAndLocalize,
+  formatDate,
+  getLocale,
+  ns,
+  truncateDecimal,
+} from '$utils';
 import { CurrencyIcon, Icon, InlineHeader, Separator, Text } from '$uikit';
 import { CryptoCurrencies, CryptoCurrency } from '$shared/constants';
 import Animated from 'react-native-reanimated';
@@ -164,9 +171,10 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
           );
         } else if (item?.type === 'jetton') {
           const data: JettonBalanceModel = item.data;
-          const balance = `${formatAmount(data.balance, data.metadata.decimals)} ${
-            data.metadata.symbol || ''
-          }`;
+          const balance = `${formatAmountAndLocalize(
+            data.balance,
+            data.metadata.decimals,
+          )} ${data.metadata.symbol || ''}`;
           const handleOpen = () => openJetton(data.jettonAddress);
           return (
             <>

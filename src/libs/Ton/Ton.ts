@@ -3,7 +3,7 @@ import BN from 'bn.js';
 import { Cell } from 'tonweb/dist/types/boc/cell';
 import { BitStringReader } from '$utils/bitStringReader';
 import * as mnemonic from './mnemonic';
-import { debugLog } from '$utils';
+import { debugLog, maskifyAddress, toLocaleNumber } from '$utils';
 import { Address, AddressFormatOptions } from './Address';
 
 export class Ton {
@@ -21,7 +21,7 @@ export class Ton {
   }
 
   static formatAmount(amount: string | number, currency = 'TON') {
-    return `${Ton.fromNano(amount)} ${currency}`;
+    return `${toLocaleNumber(Ton.fromNano(amount))} ${currency}`;
   }
   static formatAddress(address: AddressType, opts: AddressFormatOptions) {
     try {

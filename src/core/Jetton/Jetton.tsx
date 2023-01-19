@@ -10,7 +10,7 @@ import {
   PopupMenuItem,
   Skeleton,
 } from '$uikit';
-import { formatAmount, maskifyTonAddress, ns } from '$utils';
+import { formatAmountAndLocalize, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
 import { useTranslator } from '$hooks';
@@ -108,7 +108,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
           <S.Logo source={{ uri: jetton.metadata.image }} />
         ) : null}
         <Text variant="h2">
-          {formatAmount(jetton.balance, jetton.metadata.decimals)}{' '}
+          {formatAmountAndLocalize(jetton.balance, jetton.metadata.decimals)}{' '}
           {jetton.metadata.symbol}
         </Text>
         <S.JettonIDWrapper>

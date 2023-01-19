@@ -18,7 +18,6 @@ import {
   TabsStackRouteNames,
 } from '$navigation/navigationNames';
 import { CryptoCurrencies, CryptoCurrency } from '$shared/constants';
-import { EventKey } from '$store/events/interface';
 import { SubscriptionModel } from '$store/models';
 import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
 import { NFTKeyPair } from '$store/nfts/interface';
@@ -29,9 +28,6 @@ import { AppearanceBottomSheetProps } from '$core/ModalContainer/AppearanceBotto
 import { ExchangeDB } from '$core/ModalContainer/ExchangeMethod/ExchangeDB';
 import { MarketplacesModalProps } from '$core/ModalContainer/Marketplaces/Marketplaces.interface';
 import { AddEditFavoriteAddressProps } from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress.interface';
-import { Action } from 'tonapi-sdk-js';
-import { TonConnectModalProps } from '$core/TonConnect/models';
-import { store } from '$store';
 
 export const navigationRef_depreceted = createRef<NavigationContainerRef>();
 export const navigationRef = createNavigationContainerRef();
@@ -106,15 +102,6 @@ export function openBalancesTab() {
 export function openWallet(currency: CryptoCurrency) {
   push(MainStackRouteNames.Wallet, {
     currency,
-  });
-}
-
-export function openAction(eventKey: EventKey, action: Action) {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.ACTION,
-    key: 'ACTION',
-    eventKey,
-    action,
   });
 }
 
@@ -330,13 +317,6 @@ export function openBuyFiat(currency: CryptoCurrency, methodId: string) {
   });
 }
 
-export function openExchangeModal() {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.EXCHANGE,
-    key: 'EXCHANGE',
-  });
-}
-
 export async function openExchangeMethodModal(methodId: string, onContinue?: () => void) {
   const isShowDetails = await ExchangeDB.isShowDetails(methodId);
   if (isShowDetails) {
@@ -354,17 +334,6 @@ export async function openExchangeMethodModal(methodId: string, onContinue?: () 
     }
 
     openBuyFiat(CryptoCurrencies.Ton, methodId);
-  }
-}
-
-export function openTonConnect(props: TonConnectModalProps) {
-  if (store.getState().wallet.wallet) {
-    navigate(AppStackRouteNames.ModalContainer, {
-      modalName: ModalName.TON_LOGIN,
-      ...props,
-    });
-  } else {
-    openRequireWalletModal();
   }
 }
 

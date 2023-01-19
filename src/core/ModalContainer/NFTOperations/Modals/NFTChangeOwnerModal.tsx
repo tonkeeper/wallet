@@ -7,7 +7,7 @@ import { NftChangeOwnerParams, TxRequestBody } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import { debugLog, maskifyAddress } from '$utils';
+import {debugLog, maskifyAddress, toLocaleNumber} from '$utils';
 import { t } from '$translation';
 import { Modal } from '$libs/navigation';
 
@@ -72,17 +72,19 @@ export const NFTChangeOwnerModal = ({ params, ...options }: NFTChangeOwnerModalP
             <Highlight onPress={() => copyText(params.newOwnerAddress)}>
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_new_owner_address')}</S.InfoItemLabel>
-                <S.InfoItemValueText>{maskifyAddress(params.newOwnerAddress, 6)}</S.InfoItemValueText>
+                <S.InfoItemValueText>
+                  {maskifyAddress(params.newOwnerAddress, 6)}
+                </S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
             <Separator />
-            <Highlight onPress={() => copyText(fee)}>
+            <Highlight onPress={() => fee && copyText(toLocaleNumber(fee))}>
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
                 <S.InfoItemValue>
                   {!!fee ? (
                     <Text variant="body1">
-                      {fee} TON
+                      {toLocaleNumber(fee)} TON
                     </Text>
                   ) : (
                     <Skeleton.Line width={80} />

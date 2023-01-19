@@ -8,7 +8,7 @@ import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
 import { DeployParams, TxResponseOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
-import { debugLog } from '$utils';
+import {debugLog, toLocaleNumber} from '$utils';
 import { toastActions } from '$store/toast';
 import { useDispatch } from 'react-redux';
 
@@ -95,10 +95,14 @@ export const DeployModal: FC<DeployModalProps> = (props) => {
           <List align="left">
             <ListCell label={t('confirm_sending_recipient')}>{address}</ListCell>
             <ListCell label={t('confirm_sending_amount')}>
-              {formatCryptoCurrency(amount, CryptoCurrencies.Ton, Decimals[CryptoCurrencies.Ton])}
+              {formatCryptoCurrency(
+                amount,
+                CryptoCurrencies.Ton,
+                Decimals[CryptoCurrencies.Ton],
+              )}
             </ListCell>
             <ListCell label={t('confirm_sending_fee')}>
-              {fee} TON
+              {toLocaleNumber(fee)} TON
             </ListCell>
             {!!text && (
               <ListCell label={t('confirm_sending_message')}>{text}</ListCell>

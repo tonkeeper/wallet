@@ -97,7 +97,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     const fee = accountEvent?.fee;
 
     if (fee) {
-      return `≈ ${truncateDecimal(Ton.fromNano(fee.total.toString()), 1, true)} TON`;
+      return `≈ ${truncateDecimal(Ton.fromNano(fee.total.toString()), 1)} TON`;
     }
   }, [accountEvent]);
 

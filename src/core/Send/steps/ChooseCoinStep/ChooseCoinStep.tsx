@@ -15,23 +15,14 @@ const ChooseCoinStepComponent: FC<ChooseCoinStepProps> = (props) => {
 
   const t = useTranslator();
 
-  const { currencies, wallet, balances } = useSelector(walletSelector);
+  const { currencies, balances } = useSelector(walletSelector);
 
   const otherCurrencies = useMemo(() => {
     const list = [...SecondaryCryptoCurrencies];
-    if (wallet && wallet.ton.isLockup()) {
-      list.unshift(CryptoCurrencies.TonRestricted, CryptoCurrencies.TonLocked);
-    }
 
     return list.filter((item) => {
       if (item === CryptoCurrencies.Ton) {
         return false;
-      }
-
-      if (
-        [CryptoCurrencies.TonLocked, CryptoCurrencies.TonRestricted].indexOf(item) > -1
-      ) {
-        return true;
       }
 
       if (+balances[item] > 0) {
@@ -40,7 +31,7 @@ const ChooseCoinStepComponent: FC<ChooseCoinStepProps> = (props) => {
 
       return currencies.indexOf(item) > -1;
     });
-  }, [currencies, balances, wallet]);
+  }, [currencies, balances]);
 
   const jettons = useJettonBalances();
 
