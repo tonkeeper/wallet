@@ -25,13 +25,12 @@ import {
   WordHintsPopupRef,
 } from '$shared/components/ImportWalletForm/WordHintsPopup';
 import { AddressStepProps } from './AddressStep.interface';
-import { getServerConfig } from '$shared/constants';
 import { AccountRepr } from 'tonapi-sdk-js';
 import { Tonapi } from '$libs/Tonapi';
-import { reject } from 'lodash';
 
 const TonWeb = require('tonweb');
 
+let dnsAbortController: null | AbortController = null;
 const AddressStepComponent: FC<AddressStepProps> = (props) => {
   const {
     recipient,
@@ -50,7 +49,6 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
   const t = useTranslator();
 
   const { keyboardHeightStyle } = useReanimatedKeyboardHeight();
-  const [dnsAbortController, setDnsAbortController] = useState<null | AbortController>(null);
 
   const { indexedFavoriteAddresses, favoriteAddresses, suggestedAddresses } =
     useSuggestedAddresses();
@@ -80,7 +78,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
         try {
           const domain = value.toLowerCase();
           const resolvedDomain = await Tonapi.resolveDns(domain, signal);
-
+          
           if (resolvedDomain === 'aborted') {
             return 'aborted';
           }
@@ -106,10 +104,10 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     async (value: string, accountInfo?: Partial<AccountRepr>) => {
       try {
         const link = parseTonLink(value);
-        
+
         if (dnsAbortController) {
           dnsAbortController.abort();
-          setDnsAbortController(null);
+          dnsAbortController = null;
           setDnsLoading(false);
         }
 
@@ -150,24 +148,24 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
         if (!favorite && !TonWeb.Address.isValid(domain) && domain.includes('.')) {
           setDnsLoading(true);
-          const dnsAbortController = new AbortController();
-          setDnsAbortController(dnsAbortController);
+          const abortController = new AbortController();
+          dnsAbortController = abortController;
 
-          const resolvedDomain = await getAddressByDomain(domain, dnsAbortController.signal);
-
+          const resolvedDomain = await getAddressByDomain(domain, abortController.signal);
+          
           if (resolvedDomain === 'aborted') {
             setDnsLoading(false);
-            setDnsAbortController(null);
+            dnsAbortController = null;
             return true;
           }
           else if (resolvedDomain) {
             setRecipient({ address: resolvedDomain, domain });
             setDnsLoading(false);
-            setDnsAbortController(null);
+            dnsAbortController = null;
             return true;
           } else {
             setDnsLoading(false);
-            setDnsAbortController(null);
+            dnsAbortController = null;
           }
         }
 
@@ -205,7 +203,6 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
       const isFavorite = suggest.type === SuggestedAddressType.FAVORITE;
       const value = isFavorite ? suggest.name! : suggest.address;
       const accountInfo = !isFavorite ? { name: suggest.name } : undefined;
-
       updateRecipient(value, accountInfo);
 
       onContinue();
