@@ -63,7 +63,7 @@ type Balances = {
   version: string;
 };
 
-async function resolveDns(domain: string) {
+async function resolveDns(domain: string, signal?: AbortSignal) {
   try {
     const endpoint = getServerConfig('tonapiIOEndpoint');
     const response: any = await axios.get(`${endpoint}/v1/dns/resolve`, {
@@ -73,9 +73,13 @@ async function resolveDns(domain: string) {
       params: {
         name: domain,
       },
+      signal,
     });
     return response.data;
   } catch (e) {
+    if (axios.isCancel(e)) {
+      return 'aborted';
+    }    
     return false;
   }
 }

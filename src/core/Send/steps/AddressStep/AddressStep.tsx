@@ -28,6 +28,7 @@ import { AddressStepProps } from './AddressStep.interface';
 import { getServerConfig } from '$shared/constants';
 import { AccountRepr } from 'tonapi-sdk-js';
 import { Tonapi } from '$libs/Tonapi';
+import { reject } from 'lodash';
 
 const TonWeb = require('tonweb');
 
@@ -49,6 +50,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
   const t = useTranslator();
 
   const { keyboardHeightStyle } = useReanimatedKeyboardHeight();
+  const [dnsAbortController, setDnsAbortController] = useState<null | AbortController>(null);
 
   const { indexedFavoriteAddresses, favoriteAddresses, suggestedAddresses } =
     useSuggestedAddresses();
@@ -74,12 +76,15 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
   const getAddressByDomain = useMemo(
     () =>
-      asyncDebounce(async (value: string) => {
+      asyncDebounce(async (value: string, signal: AbortSignal) => {
         try {
           const domain = value.toLowerCase();
-          const resolvedDomain = await Tonapi.resolveDns(domain);
+          const resolvedDomain = await Tonapi.resolveDns(domain, signal);
 
-          if (resolvedDomain?.wallet?.address) {
+          if (resolvedDomain === 'aborted') {
+            return 'aborted';
+          }
+          else if (resolvedDomain?.wallet?.address) {
             return new TonWeb.Address(resolvedDomain.wallet.address).toString(
               true,
               true,
@@ -99,71 +104,89 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
   const updateRecipient = useCallback(
     async (value: string, accountInfo?: Partial<AccountRepr>) => {
-      const link = parseTonLink(value);
-
-      if (link.match && link.operation === 'transfer' && isValidAddress(link.address)) {
-        if (link.query.amount && !Number.isNaN(Number(link.query.amount))) {
-          const parsedAmount = Ton.fromNano(new TonWeb.utils.BN(link.query.amount));
-          setAmount({ value: formatInputAmount(parsedAmount, decimals), all: false });
-        }
-
-        if (link.query.text) {
-          setComment(link.query.text as string);
-        }
-
-        if (link.query.bin) {
-          return false;
-        }
-
-        value = link.address;
-      }
-
-      const favorite = favoriteAddresses.find(
-        (item) =>
-          item.name?.toLowerCase() === value.toLowerCase() ||
-          item.address?.toLowerCase() === value.toLowerCase(),
-      );
-
-      if (favorite) {
-        setRecipient({
-          address: favorite.address,
-          name: favorite.name,
-          domain: favorite.domain,
-        });
-
-        return true;
-      }
-
-      const domain = value.toLowerCase();
-
-      if (!favorite && !TonWeb.Address.isValid(domain) && domain.includes('.')) {
-        setDnsLoading(true);
-
-        const resolvedDomain = await getAddressByDomain(domain);
-
-        if (resolvedDomain) {
-          setRecipient({ address: resolvedDomain, domain });
+      try {
+        const link = parseTonLink(value);
+        
+        if (dnsAbortController) {
+          dnsAbortController.abort();
+          setDnsAbortController(null);
           setDnsLoading(false);
+        }
+
+        if (link.match && link.operation === 'transfer' && isValidAddress(link.address)) {
+          if (link.query.amount && !Number.isNaN(Number(link.query.amount))) {
+            const parsedAmount = Ton.fromNano(new TonWeb.utils.BN(link.query.amount));
+            setAmount({ value: formatInputAmount(parsedAmount, decimals), all: false });
+          }
+
+          if (link.query.text) {
+            setComment(link.query.text as string);
+          }
+
+          if (link.query.bin) {
+            return false;
+          }
+
+          value = link.address;
+        }
+
+        const favorite = favoriteAddresses.find(
+          (item) =>
+            item.name?.toLowerCase() === value.toLowerCase() ||
+            item.address?.toLowerCase() === value.toLowerCase(),
+        );
+
+        if (favorite) {
+          setRecipient({
+            address: favorite.address,
+            name: favorite.name,
+            domain: favorite.domain,
+          });
 
           return true;
-        } else {
-          setDnsLoading(false);
-        }
-      }
-
-      if (isValidAddress(value)) {
-        if (accountInfo) {
-          setRecipientAccountInfo(accountInfo as AccountRepr);
         }
 
-        setRecipient({ address: value });
+        const domain = value.toLowerCase();
 
-        return true;
+        if (!favorite && !TonWeb.Address.isValid(domain) && domain.includes('.')) {
+          setDnsLoading(true);
+          const dnsAbortController = new AbortController();
+          setDnsAbortController(dnsAbortController);
+
+          const resolvedDomain = await getAddressByDomain(domain, dnsAbortController.signal);
+
+          if (resolvedDomain === 'aborted') {
+            setDnsLoading(false);
+            setDnsAbortController(null);
+            return true;
+          }
+          else if (resolvedDomain) {
+            setRecipient({ address: resolvedDomain, domain });
+            setDnsLoading(false);
+            setDnsAbortController(null);
+            return true;
+          } else {
+            setDnsLoading(false);
+            setDnsAbortController(null);
+          }
+        }
+
+        if (isValidAddress(value)) {
+          if (accountInfo) {
+            setRecipientAccountInfo(accountInfo as AccountRepr);
+          }
+
+          setRecipient({ address: value });
+
+          return true;
+        }
+
+        setRecipient(null);
+
+        return false;
+      } catch (e) {
+        return false;
       }
-
-      setRecipient(null);
-
-      return false;
     },
     [
       decimals,
@@ -173,6 +196,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
       setComment,
       setRecipient,
       setRecipientAccountInfo,
+      dnsAbortController,
     ],
   );
 
