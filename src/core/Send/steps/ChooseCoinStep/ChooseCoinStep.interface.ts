@@ -6,4 +6,5 @@ import { SharedValue } from 'react-native-reanimated';
 export interface ChooseCoinStepProps extends StepComponentProps {
   stepsScrollTop: SharedValue<Record<SendSteps, number>>;
   onChangeCurrency: (currency: CryptoCurrency | string, isJetton?: boolean) => void;
+  goToAddress: () => void;
 }

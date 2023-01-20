@@ -613,5 +613,7 @@
   },
 
   "transfer_deeplink_address_error": "Incorrect recipient address",
-  "transfer_deeplink_amount_error": "Incorrect amount request"
+  "transfer_deeplink_jetton_address_error": "Incorrect token address",
+  "transfer_deeplink_amount_error": "Incorrect amount request",
+  "transfer_deeplink_unknown_jetton": "Unknown token"
 }

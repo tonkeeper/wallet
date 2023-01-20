@@ -9,7 +9,7 @@ import {
   openSettings,
 } from 'react-native-permissions';
 import { Platform } from 'react-native';
-import { ScanQRProps } from './ScanQR.interface';
+import { ScanQRMode, ScanQRProps } from './ScanQR.interface';
 import * as S from './ScanQR.style';
 import { Button, Icon, NavBar, Text } from '$uikit';
 import {
@@ -28,6 +28,7 @@ import { useNavigation } from '@react-navigation/native';
 export const ScanQR: FC<ScanQRProps> = ({ route }) => {
   const nav = useNavigation();
   const onScan = route.params.onScan;
+  const options = route.params.options || {};
   const scannerRef = useRef<QRCodeScanner>(null);
 
   const theme = useTheme();
@@ -84,8 +85,7 @@ export const ScanQR: FC<ScanQRProps> = ({ route }) => {
 
   const onSuccess = async (e: any) => {
     if (e.data) {
-      // ton://transfer/EQCsgTsYweyHBz3cqmo75FqRxbVUQhxG6yBS5zQNVQHa5SZT
-      const sloved = await onScan(e.data);
+      const sloved = await onScan(options?.debug_url || e.data);
       if (sloved) {
         triggerNotificationSuccess();
         nav.goBack();
@@ -95,6 +95,12 @@ export const ScanQR: FC<ScanQRProps> = ({ route }) => {
       }
     }
   };
+
+  useEffect(() => {
+    if(options?.mode === ScanQRMode.DEBUG_IMMEDIATELY) {
+      setTimeout(() => onSuccess({ data: '1' }), 1000);
+    }
+  }, []);
 
   function renderContent() {
     if (isCameraBlocked) {

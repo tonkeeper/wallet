@@ -1,3 +1,4 @@
+import { ScanQROptions } from '$core/ScanQR/ScanQR.interface';
 import { AppStackRouteNames } from '$navigation';
 import { CryptoCurrency } from '$shared/constants';
 import { SubscriptionModel } from '$store/models';
@@ -24,6 +25,7 @@ export type AppStackParamList = {
   };
   [AppStackRouteNames.ScanQR]: {
     onScan: (url: string) => boolean | Promise<boolean>;
+    options: ScanQROptions;
   };
   [AppStackRouteNames.Subscription]: {
     subscription: SubscriptionModel;

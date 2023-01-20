@@ -620,5 +620,7 @@
   },
 
   "transfer_deeplink_address_error": "Неверный адрес получателя",
-  "transfer_deeplink_amount_error": "Некорректный запрос суммы"
+  "transfer_deeplink_jetton_address_error": "Неверный адрес токена",
+  "transfer_deeplink_amount_error": "Некорректный запрос суммы",
+  "transfer_deeplink_unknown_jetton": "Неизвестный токен"
 }

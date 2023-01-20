@@ -138,22 +138,14 @@ export const Send: FC<SendProps> = ({ route }) => {
       setRecipient(null);
       setCurrency(nextCurrency);
       setIsJetton(!!nextIsJetton);
-
-      goToAddress();
     },
     [goToAddress],
   );
 
-  const prepareConfirmSending = useCallback(async () => {
-    if (!recipient) {
-      return;
-    }
-
-    setPreparing(true);
-
+  const confirmSendCoins = useCallback(async ({ currency, amount, recipient, isJetton, jettonWalletAddress, decimals }) => {
     dispatch(
       walletActions.confirmSendCoins({
-        currency: currency as CryptoCurrency,
+        currency: currency,
         amount: parseLocaleNumber(amount.value),
         address: recipient.address,
         isJetton,
@@ -167,6 +159,18 @@ export const Send: FC<SendProps> = ({ route }) => {
           stepViewRef.current?.go(SendSteps.CONFIRM);
         },
       }),
+    );
+  }, [setFee, setInactive]);
+
+  const prepareConfirmSending = useCallback(async () => {
+    if (!recipient) {
+      return;
+    }
+
+    setPreparing(true);
+    console.log('PREPARE', { currency, amount, recipient, isJetton, jettonWalletAddress, decimals });
+    dispatch(
+      confirmSendCoins({ currency, amount, recipient, isJetton, jettonWalletAddress, decimals })
     );
   }, [
     amount.value,
@@ -299,6 +303,7 @@ export const Send: FC<SendProps> = ({ route }) => {
               <ChooseCoinStep
                 stepsScrollTop={stepsScrollTop}
                 onChangeCurrency={onChangeCurrency}
+                goToAddress={goToAddress}
                 {...stepProps}
               />
             )}
@@ -308,6 +313,7 @@ export const Send: FC<SendProps> = ({ route }) => {
         <StepViewItem id={SendSteps.ADDRESS}>
           {(stepProps) => (
             <AddressStep
+              onChangeStep={(step) => stepViewRef.current?.go(step)}
               recipient={recipient}
               decimals={decimals}
               stepsScrollTop={stepsScrollTop}
@@ -315,6 +321,8 @@ export const Send: FC<SendProps> = ({ route }) => {
               setRecipientAccountInfo={setRecipientAccountInfo}
               setComment={setComment}
               setAmount={setAmount}
+              onConfirmSending={confirmSendCoins}
+              onChangeCurrency={onChangeCurrency}
               onContinue={goToAmount}
               {...stepProps}
             />

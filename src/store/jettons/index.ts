@@ -91,3 +91,7 @@ export const jettonSelector = createSelector(
   [jettonsMetaSelector, (jettons, jettonAddress: string) => jettonAddress],
   (jettons, jettonAddress) => jettons[jettonAddress],
 );
+export const jettonBalanceSelector = createSelector(
+  [jettonsBalancesSelector, (jettonBalances, jettonAddress: string) => jettonAddress],
+  (jettonBalances, jettonAddress) => jettonBalances.find(jetton => jetton.jettonAddress === jettonAddress),
+)

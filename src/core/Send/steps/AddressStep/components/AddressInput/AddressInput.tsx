@@ -1,9 +1,9 @@
-import { SendRecipient } from '../../../../Send.interface';
+import { SendRecipient, SendSteps } from '../../../../Send.interface';
 import { useTranslator } from '$hooks';
 import { openScanQR } from '$navigation';
 import { WordHintsPopupRef } from '$shared/components/ImportWalletForm/WordHintsPopup';
 import { Icon, Input, Loader, Text } from '$uikit';
-import { isAndroid, isValidAddress, maskifyAddress, ns, parseTonLink } from '$utils';
+import { fromNano, isAndroid, isValidAddress, maskifyAddress, ns } from '$utils';
 import React, {
   FC,
   memo,
@@ -19,6 +19,11 @@ import * as S from './AddressInput.style';
 import { useDispatch } from 'react-redux';
 import { InputContentSize } from '$uikit/Input/Input.interface';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
+import { ScanQRMode } from '$core/ScanQR/ScanQR.interface';
+import { AddressStepProps } from '../../AddressStep.interface';
+import { store, Toast } from '$store';
+import { CryptoCurrencies } from '$shared/constants';
+import { jettonBalanceSelector } from '$store/jettons';
 
 interface Props {
   wordHintsRef: RefObject<WordHintsPopupRef>;
@@ -26,7 +31,13 @@ interface Props {
   recipient: SendRecipient | null;
   dnsLoading: boolean;
   editable: boolean;
+  decimals: number;
   updateRecipient: (value: string) => Promise<boolean>;
+  updateAmount: AddressStepProps['setAmount'];
+  updateComment: AddressStepProps['setComment'];
+  onChangeStep: AddressStepProps['onChangeStep'];
+  onConfirmSending: AddressStepProps['onConfirmSending'];
+  onChangeCurrency: AddressStepProps['onChangeCurrency'];
   onSubmit: () => void;
 }
 
@@ -38,6 +49,12 @@ const AddressInputComponent: FC<Props> = (props) => {
     dnsLoading,
     editable,
     updateRecipient,
+    updateAmount,
+    updateComment,
+    onChangeStep,
+    onConfirmSending,
+    onChangeCurrency,
+    decimals,
     onSubmit,
   } = props;
 
@@ -148,6 +165,41 @@ const AddressInputComponent: FC<Props> = (props) => {
       const resolver = deeplinking.getResolver(code, {
         delay: 200,
         origin: DeeplinkOrigin.QR_CODE,
+        params: {
+          onTransferResolve: async (query) => {
+            let stepToReplace: SendSteps | null = null;
+            let decimals = 9;
+            Toast.loading();
+            if (query.jetton) {
+              const state = store.getState();
+              console.log(state.jettons);
+              const jetton = jettonBalanceSelector(state, query.jetton);
+              if (!jetton) {
+                return Toast.fail(t('transfer_deeplink_unknown_jetton'));
+              }
+              decimals = jetton.metadata.decimals ?? 9;
+              onChangeCurrency(query.jetton, true);
+            } else {
+              onChangeCurrency(CryptoCurrencies.Ton);
+            }
+            if (query.address) {
+              updateRecipient(query.address);
+            }
+            if (query.amount) {
+              stepToReplace = SendSteps.AMOUNT;
+              updateAmount({ value: fromNano(query.amount, decimals), all: false });
+            }
+            if (query.text) {
+              stepToReplace = null;
+              updateComment(query.text);
+              await onConfirmSending({ currency: query.jetton ?? CryptoCurrencies.Ton, amount: query.amount && { value: fromNano(query.amount, decimals), all: false }, recipient: { address: query.address }, isJetton: !!query.jetton, jettonWalletAddress: query.jetton, decimals });
+            }
+            if (stepToReplace) {
+              onChangeStep?.(stepToReplace);
+            }
+            Toast.hide();
+          },
+        }
       });
       if (resolver) {
         resolver();

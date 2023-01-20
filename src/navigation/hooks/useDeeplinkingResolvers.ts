@@ -122,7 +122,11 @@ export function useDeeplinkingResolvers() {
         );
       } else if (query.jetton) {
         if (!isValidAddress(query.jetton)) {
-          return Toast.fail(t('transfer_deeplink_address_error'));
+          return Toast.fail(t('transfer_deeplink_jetton_address_error'));
+        }
+
+        if (resolveParams.onTransferResolve) {
+          return resolveParams.onTransferResolve({...query, address});
         }
 
         dispatch(
@@ -153,6 +157,9 @@ export function useDeeplinkingResolvers() {
           }),
         );
       } else {
+        if (resolveParams.onTransferResolve) {
+          return resolveParams.onTransferResolve({...query, address});
+        }
         dispatch(
           walletActions.confirmSendCoins({
             currency,

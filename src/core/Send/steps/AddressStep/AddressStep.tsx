@@ -41,6 +41,9 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     setAmount,
     setComment,
     onContinue,
+    onChangeStep,
+    onChangeCurrency,
+    onConfirmSending,
     active,
   } = props;
 
@@ -220,8 +223,14 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
               shouldFocus={active}
               dnsLoading={dnsLoading}
               editable={active}
+              decimals={decimals}
+              onChangeStep={onChangeStep}
+              updateAmount={setAmount}
+              updateComment={setComment}
               updateRecipient={updateRecipient}
+              onChangeCurrency={onChangeCurrency}
               onSubmit={handleAddressSubmit}
+              onConfirmSending={onConfirmSending}
             />
           </FormItem>
           {suggestedAddresses.length > 0 ? (

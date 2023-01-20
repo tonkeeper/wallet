@@ -3,6 +3,7 @@ import { StepComponentProps } from '$shared/components/StepView/StepView.interfa
 import React from 'react';
 import { SharedValue } from 'react-native-reanimated';
 import { AccountRepr } from 'tonapi-sdk-js';
+import { CryptoCurrency } from '$shared/constants';
 
 export interface AddressStepProps extends StepComponentProps {
   recipient: SendRecipient | null;
@@ -12,5 +13,8 @@ export interface AddressStepProps extends StepComponentProps {
   setRecipientAccountInfo: React.Dispatch<React.SetStateAction<AccountRepr | null>>;
   setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;
   setComment: React.Dispatch<React.SetStateAction<string>>;
+  onConfirmSending: ({ currency, amount, recipient, isJetton, jettonWalletAddress, decimals }) => Promise<void>;
+  onChangeStep?: (id: SendSteps) => void;
+  onChangeCurrency: (nextCurrency: CryptoCurrency | string, nextIsJetton?: boolean) => void;
   onContinue: () => void;
 }

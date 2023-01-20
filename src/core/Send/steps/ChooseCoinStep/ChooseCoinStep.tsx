@@ -2,7 +2,7 @@ import { SendSteps } from '$core/Send/Send.interface';
 import { useJettonBalances, useTranslator } from '$hooks';
 import { CryptoCurrencies, SecondaryCryptoCurrencies } from '$shared/constants';
 import { walletSelector } from '$store/wallet';
-import React, { FC, memo, useMemo } from 'react';
+import React, { FC, memo, useCallback, useMemo } from 'react';
 import { useAnimatedScrollHandler } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import { ChooseCoinStepProps } from './ChooseCoinStep.interface';
@@ -11,7 +11,7 @@ import { CurrencyItem } from './CurrencyItem';
 import { JettonItem } from './JettonItem';
 
 const ChooseCoinStepComponent: FC<ChooseCoinStepProps> = (props) => {
-  const { active, stepsScrollTop, onChangeCurrency } = props;
+  const { active, stepsScrollTop, onChangeCurrency, goToAddress } = props;
 
   const t = useTranslator();
 
@@ -33,6 +33,11 @@ const ChooseCoinStepComponent: FC<ChooseCoinStepProps> = (props) => {
     });
   }, [currencies, balances]);
 
+  const handleChangeCurrency = useCallback((currency: string, isJetton?: boolean) => {
+    onChangeCurrency(currency, isJetton);
+    goToAddress();
+  }, [onChangeCurrency, goToAddress]);
+
   const jettons = useJettonBalances();
 
   const scrollHandler = useAnimatedScrollHandler((event) => {
@@ -50,7 +55,7 @@ const ChooseCoinStepComponent: FC<ChooseCoinStepProps> = (props) => {
       </S.TitleContainer>
       <CurrencyItem
         currency={CryptoCurrencies.Ton}
-        onPress={() => onChangeCurrency(CryptoCurrencies.Ton)}
+        onPress={() => handleChangeCurrency(CryptoCurrencies.Ton)}
         borderEnd={otherCurrencies.length === 0}
       />
       {otherCurrencies.map((currency, index) => (
@@ -65,7 +70,7 @@ const ChooseCoinStepComponent: FC<ChooseCoinStepProps> = (props) => {
         <JettonItem
           key={jetton.jettonAddress}
           jetton={jetton}
-          onPress={() => onChangeCurrency(jetton.jettonAddress, true)}
+          onPress={() => handleChangeCurrency(jetton.jettonAddress, true)}
           borderStart={index === 0}
           borderEnd={jettons.length - 1 === index}
         />
