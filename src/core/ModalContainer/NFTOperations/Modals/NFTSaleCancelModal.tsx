@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCopyText, useInstance, useWallet } from '$hooks';
 import {Highlight, Icon, Skeleton, Text} from '$uikit';
-import { debugLog } from '$utils';
+import {debugLog, toLocaleNumber} from '$utils';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftSaleCancelParams, TxRequestBody } from '../TXRequest.types';
 import { useDownloadNFT } from '../useDownloadNFT';
@@ -48,6 +48,9 @@ export const NFTSaleCancelModal = ({ params, ...options }: NFTSaleCancelModalPro
     console.log('DEPLOY', deploy);
   });
 
+  const isTG = (item.data?.dns || item.data?.metadata?.name)?.endsWith('.t.me');
+  const isDNS = !!item.data?.dns && !isTG;
+
   const caption = React.useMemo(() => {
     let text = '...';
     if (item.data?.metadata) {
@@ -55,14 +58,11 @@ export const NFTSaleCancelModal = ({ params, ...options }: NFTSaleCancelModalPro
     }
 
     if (item.data?.collection) {
-      text += ` · ${item?.data?.dns ? 'TON DNS' : item.data.collection.name}`;
+      text += ` · ${isDNS ? 'TON DNS' : item.data.collection.name}`;
     }
 
     return item.data ? text : '...';
   }, [item.data]);
-
-  const isTG = (item.data?.dns || item.data?.metadata?.name)?.endsWith('.t.me');
-  const isDNS = !!item.data?.dns && !isTG;
 
   return (
     <Modal>
@@ -83,12 +83,12 @@ export const NFTSaleCancelModal = ({ params, ...options }: NFTSaleCancelModalPro
             <S.Title>{t('nft_sale_cancel_title')}</S.Title>
           </S.Center>
           <S.Info>
-            <Highlight onPress={() => copyText(fee)}>
+            <Highlight onPress={() => copyText(toLocaleNumber(fee))}>
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
                 <S.InfoItemValue>
                   {fee ? (
-                    <Text variant="body1">{fee} TON</Text>
+                    <Text variant="body1">{toLocaleNumber(fee)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}

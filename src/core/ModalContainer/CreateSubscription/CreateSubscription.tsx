@@ -12,7 +12,7 @@ import { ActionType, SubscriptionModel, TransactionType } from '$store/models';
 import {
   compareAddresses,
   format,
-  formatSubscriptionPeriod,
+  formatSubscriptionPeriod, toLocaleNumber,
   triggerNotificationSuccess,
 } from '$utils';
 import { subscriptionsActions } from '$store/subscriptions';
@@ -343,7 +343,7 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
           <List>
             <ListCell label={t('subscription_price')}>{priceFormatted}</ListCell>
             <ListCell label={t('subscription_period')}>{periodFormatted}</ListCell>
-            <ListCell label={t('subscription_fee')}>{fee} TON</ListCell>
+            <ListCell label={t('subscription_fee')}>{toLocaleNumber(fee)} TON</ListCell>
             {info.isActive && (
               <ListCell label={t('subscription_next_bill')}>{nextBill}</ListCell>
             )}

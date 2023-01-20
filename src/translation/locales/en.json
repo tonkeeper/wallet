@@ -223,10 +223,10 @@
     "comfirm": {
       "comment_label": "Comment",
       "comment_label_required": "Required comment",
-      "comment_required_text": "You must include the note when sending to an exchange. ",
+      "comment_required_text": "You must include Memo or tag when sending to an exchange. \n",
       "comment_description": "The comment is visible to everyone.",
       "comment_placeholder": "Message or reference (optional)",
-      "comment_placeholder_required": "Message or reference",
+      "comment_placeholder_required": "Memo or tag",
       "details_label": "Details",
       "details_max_balance_label": "Sending max. balance of %{currency}",
       "comment_characters_left": "%{count} characters left.",
@@ -294,7 +294,7 @@
     "popular_title": "Popular",
     "explore_all": "Explore all",
     "open_link": "Open link",
-    "web_search_title": "Google Search",
+    "web_search_title": "%{searchEngine} Search",
     "about_dapps_title": "Use Tonkeeper with all TON apps and services",
     "about_dapps_caption": "Explore apps and services where you can use Tonkeeper for sign-in and payments.",
     "about_dapps_learn_more": "Learn more",
@@ -307,7 +307,9 @@
     "remove_alert": {
       "title": "Remove “%{name}”?",
       "approve_button": "Remove"
-    }
+    },
+    "more_title": "Explore all services",
+    "more_description": "Markets, exchanges and more"
   },
 
   "exchange_title": "Buy TON",
@@ -339,6 +341,7 @@
   "settings_discussion_url": "https://t.me/tonkeeperdirect",
   "settings_jettons_list": "List of tokens",
   "settings_delete_account": "Delete account",
+  "settings_search_engine": "Search engine",
 
   "settings_delete_alert_title": "Are you sure you want to delete your account?",
   "settings_delete_alert_caption": "This action will delete your account and all data from this application.",

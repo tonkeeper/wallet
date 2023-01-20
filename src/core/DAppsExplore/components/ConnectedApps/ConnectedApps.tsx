@@ -13,7 +13,6 @@ const ConnectedAppsComponent: FC = () => {
   if (connectedApps.length > 0) {
     return (
       <AppsList
-        title={t('browser.connected_title')}
         data={connectedApps}
         onItemLongPress={(url, name) =>
           Alert.alert(t('browser.remove_alert.title', { name }), '', [

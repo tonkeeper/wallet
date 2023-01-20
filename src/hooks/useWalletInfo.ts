@@ -35,7 +35,7 @@ export function useWalletInfo(currency: CryptoCurrency) {
     if (fiatRate && +fiatRate.today > 0) {
       return new BigNumber(balances[currency] || 0)
         .multipliedBy(fiatRate.today)
-        .toFormat(2, undefined, { decimalSeparator: '.', groupSeparator: '' });
+        .toFormat(2, { decimalSeparator: '.', groupSeparator: '' });
     } else {
       return '-';
     }

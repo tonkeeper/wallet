@@ -1,7 +1,7 @@
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 import { SignRawParams } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import { TonConnectModalResponse } from '$core/TonConnect/models';
-import { openTonConnect } from '$navigation';
+import { openTonConnect } from '$core/TonConnect/TonConnectModal';
 import { checkIsTimeSynced } from '$navigation/hooks/useDeeplinkingResolvers';
 import {
   findConnectedAppByClientSessionId,

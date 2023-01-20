@@ -58,13 +58,15 @@ export function usePrepareAction(
     let bottomContent;
     if (ActionType.TonTransfer === ActionType[rawAction.type]) {
       const amount = TonWeb.utils.fromNano(Math.abs(action.amount).toString());
-      label = prefix + ' ' + truncateDecimal(amount.toString(), 2);
+      label = prefix + ' ' + truncateDecimal(amount.toString(), 2, false, true);
       type = isReceive ? 'receive' : 'sent';
       typeLabel = t(`transaction_type_${type}`);
       currency = formatCryptoCurrency(
         '',
         CryptoCurrencies.Ton,
         Decimals[CryptoCurrencies.Ton],
+        undefined,
+        true,
       ).trim();
     }
 
@@ -82,13 +84,15 @@ export function usePrepareAction(
 
     if (ActionType.JettonTransfer === ActionType[rawAction.type]) {
       const amount = fromNano(action.amount, action.jetton?.decimals ?? 9);
-      label = prefix + ' ' + truncateDecimal(amount.toString(), 2);
+      label = prefix + ' ' + truncateDecimal(amount.toString(), 2, false, true);
       type = isReceive ? 'receive' : 'sent';
       typeLabel = t(`transaction_type_${type}`);
       currency = formatCryptoCurrency(
         '',
         action.jetton?.symbol || action.jetton?.name && action.jetton.name.toUpperCase().slice(0, 3),
         Decimals[CryptoCurrencies.Ton],
+        undefined,
+        true,
       ).trim();
     }
 
@@ -110,26 +114,30 @@ export function usePrepareAction(
           ? t('transaction_type_subscription')
           : t('transaction_type_unsubscription');
       }
-      label = isSubscription ? prefix + ' ' + truncateDecimal(amount.toString(), 2) : '-';
+      label = isSubscription ? prefix + ' ' + truncateDecimal(amount.toString(), 2, false, true) : '-';
       type = isSubscription ? 'subscription' : 'unsubscription';
       currency = isSubscription
         ? formatCryptoCurrency(
             '',
             CryptoCurrencies.Ton,
             Decimals[CryptoCurrencies.Ton],
+            undefined,
+            true,
           ).trim()
         : '';
     }
 
     if (ActionType.AuctionBid === ActionType[rawAction.type] && action.auctionType === 'DNS.tg') {
       const amount = TonWeb.utils.fromNano(Math.abs(action.amount.value).toString());
-      label = prefix + ' ' + truncateDecimal(amount.toString(), 2);
+      label = prefix + ' ' + truncateDecimal(amount.toString(), 2, false, true);
       typeLabel = t('transaction_type_bid');
       type = 'tg_dns';
       currency = formatCryptoCurrency(
         '',
         CryptoCurrencies.Ton,
         Decimals[CryptoCurrencies.Ton],
+        undefined,
+        true,
       ).trim()
     }
 

@@ -9,7 +9,6 @@ import { CurrencyIcon, Icon, Text } from '$uikit';
 import { useJettonBalances, useTranslator, useWalletInfo } from '$hooks';
 import { walletWalletSelector } from '$store/wallet';
 import {
-  openExchangeModal,
   openReceive,
   openRequireWalletModal,
   openSend,
@@ -28,6 +27,7 @@ import {
 import { formatCryptoCurrency, formatFiatCurrencyAmount } from '$utils/currency';
 import { fiatCurrencySelector, mainSelector } from '$store/main';
 import { getRate } from '$hooks/useFiatRate';
+import { useNavigation } from '$libs/navigation';
 
 const ScreenWidth = Dimensions.get('window').width;
 
@@ -66,6 +66,7 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
   const rates = useSelector(ratesRatesSelector);
   const charts = useSelector(ratesChartsSelector);
   const fiatCurrency = useSelector(fiatCurrencySelector);
+  const nav = useNavigation();
 
   const availableJettons = useJettonBalances();
 
@@ -88,7 +89,7 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
     if (!wallet) {
       return openRequireWalletModal();
     }
-    openExchangeModal();
+    nav.openModal('Exchange');
   }, [wallet]);
 
   const handleSend = useCallback(() => {
@@ -165,6 +166,7 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
                     currencyPrepared,
                     Decimals[currencyPrepared],
                     2,
+                    true,
                   )}
                 </Text>
                 <Text color="foregroundSecondary" variant="body2">
