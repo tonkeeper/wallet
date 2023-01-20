@@ -172,7 +172,6 @@ const AddressInputComponent: FC<Props> = (props) => {
             Toast.loading();
             if (query.jetton) {
               const state = store.getState();
-              console.log(state.jettons);
               const jetton = jettonBalanceSelector(state, query.jetton);
               if (!jetton) {
                 return Toast.fail(t('transfer_deeplink_unknown_jetton'));
