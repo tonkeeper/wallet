@@ -167,7 +167,6 @@ const AddressInputComponent: FC<Props> = (props) => {
         origin: DeeplinkOrigin.QR_CODE,
         params: {
           onTransferResolve: async (query) => {
-            let stepToReplace: SendSteps | null = null;
             let decimals = 9;
             Toast.loading();
             if (query.jetton) {
@@ -185,16 +184,15 @@ const AddressInputComponent: FC<Props> = (props) => {
               updateRecipient(query.address);
             }
             if (query.amount) {
-              stepToReplace = SendSteps.AMOUNT;
               updateAmount({ value: fromNano(query.amount, decimals), all: false });
             }
             if (query.text) {
-              stepToReplace = null;
               updateComment(query.text);
-              await onConfirmSending({ currency: query.jetton ?? CryptoCurrencies.Ton, amount: query.amount && { value: fromNano(query.amount, decimals), all: false }, recipient: { address: query.address }, isJetton: !!query.jetton, jettonWalletAddress: query.jetton, decimals });
             }
-            if (stepToReplace) {
-              onChangeStep?.(stepToReplace);
+            if (query.text && query.amount && query.address) {
+              await onConfirmSending({ currency: query.jetton ?? CryptoCurrencies.Ton, amount: query.amount && { value: fromNano(query.amount, decimals), all: false }, recipient: { address: query.address }, isJetton: !!query.jetton, jettonWalletAddress: query.jetton, decimals });
+            } else {
+              onChangeStep?.(SendSteps.AMOUNT);
             }
             Toast.hide();
           },
