@@ -168,7 +168,6 @@ export const Send: FC<SendProps> = ({ route }) => {
     }
 
     setPreparing(true);
-    console.log('PREPARE', { currency, amount, recipient, isJetton, jettonWalletAddress, decimals });
     dispatch(
       confirmSendCoins({ currency, amount, recipient, isJetton, jettonWalletAddress, decimals })
     );
