@@ -33,3 +33,5 @@ $ brew install librsvg
 ## License
 
 GPLv3. See [LICENSE.txt](LICENSE.txt)
+
+this project is tested with [Browserstack](https://browserstack.com)
