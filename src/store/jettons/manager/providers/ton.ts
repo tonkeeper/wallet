@@ -7,6 +7,7 @@ import { JettonBalanceModel, JettonMetadata } from '$store/models';
 import _ from 'lodash';
 import { fromNano } from '$utils';
 import { proxyMedia } from '$utils/proxyMedia';
+import DeviceInfo from 'react-native-device-info';
 
 export class TonProvider extends BaseProvider {
   public readonly name = 'TonProvider';
@@ -37,6 +38,7 @@ export class TonProvider extends BaseProvider {
       const resp: any = await axios.get(`${endpoint}/v1/jetton/getBalances`, {
         headers: {
           Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+          Build: DeviceInfo.getBuildNumber(),
         },
         params: {
           account: this.address,
