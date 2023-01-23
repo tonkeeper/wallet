@@ -1,7 +1,5 @@
 # Tonkeeper
 
-*this project is tested with [Browserstack](https://browserstack.com)*
-
 Welcome to Tonkeeper repository. If you have questions or suggestions, please file an [Issue](https://github.com/tonkeeper/wallet/issues/new/choose).
 
 ## Install dependencies
@@ -35,3 +33,5 @@ $ brew install librsvg
 ## License
 
 GPLv3. See [LICENSE.txt](LICENSE.txt)
+
+this project is tested with [Browserstack](https://browserstack.com)
