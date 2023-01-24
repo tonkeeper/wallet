@@ -205,19 +205,16 @@ class TonConnectRemoteBridgeService {
   }
 
   private redirectIfNeeded() {
+    console.log('returnStrategy', this.returnStrategy);
     if (this.origin === DeeplinkOrigin.DEEPLINK) {
       if (this.returnStrategy === 'back') {
         Minimizer.goBack();
       } else if (this.returnStrategy !== null && this.returnStrategy !== 'none') {
         const url = this.returnStrategy;
 
-        Linking.canOpenURL(url)
-          .then((canOpen) => {
-            if (canOpen) {
-              return Linking.openURL(url);
-            }
-          })
-          .catch(() => {});
+        Linking.openURL(url).catch((error) =>
+          console.log('returnStrategy link error', error),
+        );
       }
     }
 
