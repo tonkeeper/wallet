@@ -13,4 +13,4 @@ export interface DAppManifest {
   privacyPolicyUrl?: string;
 }
 
-export type ReturnStrategy = 'back' | 'none' | string | null;
+export type ReturnStrategy = 'back' | 'none' | string;

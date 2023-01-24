@@ -40,7 +40,7 @@ class TonConnectRemoteBridgeService {
 
   private origin: DeeplinkOrigin | null = null;
 
-  private returnStrategy: ReturnStrategy = null;
+  private returnStrategy: ReturnStrategy = 'back';
 
   public setOrigin(origin: DeeplinkOrigin) {
     this.origin = origin;
@@ -209,7 +209,7 @@ class TonConnectRemoteBridgeService {
     if (this.origin === DeeplinkOrigin.DEEPLINK) {
       if (this.returnStrategy === 'back') {
         Minimizer.goBack();
-      } else if (this.returnStrategy !== null && this.returnStrategy !== 'none') {
+      } else if (this.returnStrategy !== 'none') {
         const url = this.returnStrategy;
 
         Linking.openURL(url).catch((error) =>
@@ -219,7 +219,7 @@ class TonConnectRemoteBridgeService {
     }
 
     this.origin = null;
-    this.returnStrategy = null;
+    this.returnStrategy = 'back';
   }
 
   async handleConnectDeeplink(query: IConnectQrQuery) {
