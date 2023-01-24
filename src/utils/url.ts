@@ -2,6 +2,7 @@ import axios, { CancelTokenSource } from 'axios';
 import domainFromPartialUrl from 'domain-from-partial-url';
 import queryParser from 'query-string';
 import { Buffer } from 'buffer';
+import { DevFeature, useDevFeaturesToggle } from '$store';
 
 const { createHash } = require('react-native-crypto');
 
@@ -13,7 +14,16 @@ export const isValidUrl = (value: string) =>
 export const getDomainFromURL = (url: string): string => domainFromPartialUrl(url);
 
 export const getCorrectUrl = (url: string) => {
-  return url.startsWith('https') ? url : `https://${url}`;
+  const httpEnabled =
+    useDevFeaturesToggle.getState().devFeatures[DevFeature.UseHttpProtocol];
+
+  const protocol = httpEnabled ? 'http://' : 'https://';
+
+  const protocolToReplace = httpEnabled ? 'https://' : 'http://';
+
+  const fixedUrl = url.replace(protocolToReplace, protocol);
+
+  return fixedUrl.startsWith(protocol) ? fixedUrl : `${protocol}${url}`;
 };
 
 export const getUrlTitle = async (url: string, cancelTokenSource: CancelTokenSource) => {

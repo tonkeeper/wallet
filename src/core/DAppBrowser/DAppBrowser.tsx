@@ -126,10 +126,11 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
   }, [ref]);
 
   const handleTitlePress = useCallback(() => {
-    const initialQuery = getSearchQuery(currentUrl) || currentUrl;
+    const initialQuery =
+      getSearchQuery(currentUrl) || currentUrl || getCorrectUrl(initialUrl);
 
     openDAppsSearch(initialQuery, openUrl);
-  }, [currentUrl, openUrl]);
+  }, [currentUrl, initialUrl, openUrl]);
 
   return (
     <S.Container>
