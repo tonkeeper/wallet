@@ -13,8 +13,6 @@ import {
   TonConnectBridgeType,
   IConnectedAppConnectionRemote,
   Toast,
-  IConnectedAppConnectionInjected,
-  removeInjectedConnection,
 } from '$store';
 import { debugLog } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
@@ -195,8 +193,10 @@ class TonConnectService {
         debugLog(err);
       }
 
-      const replyItems =
-        ConnectReplyBuilder.createAutoConnectReplyItems(currentWalletAddress, walletStateInit);
+      const replyItems = ConnectReplyBuilder.createAutoConnectReplyItems(
+        currentWalletAddress,
+        walletStateInit,
+      );
 
       return {
         event: 'connect',
@@ -263,7 +263,7 @@ class TonConnectService {
             new SendTransactionError(
               request.id,
               SEND_TRANSACTION_ERROR_CODES.USER_REJECTS_ERROR,
-              "Wallet declined the request",
+              'Wallet declined the request',
             ),
           );
         }

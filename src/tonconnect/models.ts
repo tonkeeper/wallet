@@ -2,6 +2,7 @@ export interface IConnectQrQuery {
   v: string;
   r: string;
   id: string;
+  ret: ReturnStrategy;
 }
 
 export interface DAppManifest {
@@ -11,3 +12,5 @@ export interface DAppManifest {
   termsOfUseUrl?: string;
   privacyPolicyUrl?: string;
 }
+
+export type ReturnStrategy = 'back' | 'none' | string | null;

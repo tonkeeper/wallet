@@ -18,11 +18,12 @@ import {
 } from '@tonconnect/protocol';
 import debounce from 'lodash/debounce';
 import { TonConnect } from './TonConnect';
-import { IConnectQrQuery } from './models';
+import { IConnectQrQuery, ReturnStrategy } from './models';
 import EventSource, { EventSourceListener, MessageEvent } from 'react-native-sse';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DeeplinkOrigin } from '$libs/deeplinking';
 import Minimizer from 'react-native-minimizer';
+import { Linking } from 'react-native';
 
 class TonConnectRemoteBridgeService {
   private readonly storeKey = 'ton-connect-http-bridge-lastEventId';
@@ -39,8 +40,16 @@ class TonConnectRemoteBridgeService {
 
   private origin: DeeplinkOrigin | null = null;
 
+  private returnStrategy: ReturnStrategy = null;
+
   public setOrigin(origin: DeeplinkOrigin) {
     this.origin = origin;
+  }
+
+  public setReturnStrategy(returnStrategy: ReturnStrategy) {
+    if (returnStrategy) {
+      this.returnStrategy = returnStrategy;
+    }
   }
 
   async open(connections: IConnectedAppConnection[]) {
@@ -197,10 +206,23 @@ class TonConnectRemoteBridgeService {
 
   private redirectIfNeeded() {
     if (this.origin === DeeplinkOrigin.DEEPLINK) {
-      Minimizer.goBack();
+      if (this.returnStrategy === 'back') {
+        Minimizer.goBack();
+      } else if (this.returnStrategy !== null && this.returnStrategy !== 'none') {
+        const url = this.returnStrategy;
+
+        Linking.canOpenURL(url)
+          .then((canOpen) => {
+            if (canOpen) {
+              return Linking.openURL(url);
+            }
+          })
+          .catch(() => {});
+      }
     }
 
     this.origin = null;
+    this.returnStrategy = null;
   }
 
   async handleConnectDeeplink(query: IConnectQrQuery) {
