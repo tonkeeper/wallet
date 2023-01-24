@@ -17,13 +17,13 @@ export const getCorrectUrl = (url: string) => {
   const httpEnabled =
     useDevFeaturesToggle.getState().devFeatures[DevFeature.UseHttpProtocol];
 
-  const protocol = httpEnabled ? 'http' : 'https';
+  const protocol = httpEnabled ? 'http://' : 'https://';
 
-  const protocolToReplace = httpEnabled ? 'https' : 'http';
+  const protocolToReplace = httpEnabled ? 'https://' : 'http://';
 
   const fixedUrl = url.replace(protocolToReplace, protocol);
 
-  return fixedUrl.startsWith(protocol) ? fixedUrl : `${protocol}://${url}`;
+  return fixedUrl.startsWith(protocol) ? fixedUrl : `${protocol}${url}`;
 };
 
 export const getUrlTitle = async (url: string, cancelTokenSource: CancelTokenSource) => {
