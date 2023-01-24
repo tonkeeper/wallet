@@ -153,6 +153,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
           originWhitelist={['*']}
           javaScriptCanOpenWindowsAutomatically
           mixedContentMode="always"
+          decelerationRate="normal"
           hideKeyboardAccessoryView
           thirdPartyCookiesEnabled={true}
           forceDarkOn={false}
