@@ -564,6 +564,11 @@
           "description": "Log in to another wallet %{address} and try again.",
           "close": "OK"
         }
+      },
+      "insufficientFunds": {
+        "toBePaid": "To be paid: %{amount} %{currency}.\nYour balance: %{balance} %{currency}",
+        "rechargeWallet": "Recharge wallet",
+        "title": "Insufficient funds"
       }
     }
   },

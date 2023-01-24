@@ -104,6 +104,31 @@ export const DevSignRawExamples: React.FC = () => {
         >
           One transfer with payload
         </Button>
+
+        <DevSeparator />
+
+        <Button
+          onPress={() => {
+            openSignRawModal(
+              {
+                source: 'EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n',
+                valid_until: getExpiresSec(),
+                messages: [
+                  {
+                    address: 'EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n',
+                    amount: '100000000000000',
+                  },
+                ],
+              },
+              {
+                expires_sec: getExpiresSec(),
+                response_options,
+              },
+            );
+          }}
+        >
+          Transfer with huge amount
+        </Button>
       </Screen.ScrollView>
     </Screen>
   );

@@ -27,6 +27,7 @@ import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
 import {openTimeNotSyncedModal} from "$core/ModalContainer/TimeNotSynced/TimeNotSynced";
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 import { openTonConnect } from '$core/TonConnect/TonConnectModal';
+import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;

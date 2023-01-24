@@ -6,7 +6,7 @@ import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import { debugLog, delay, lowerCaseFirstLetter, ns, truncateDecimal } from '$utils';
 import { t } from '$translation';
-import { AccountEvent, ActionTypeEnum } from 'tonapi-sdk-js';
+import { AccountAddress, AccountEvent, Action, ActionTypeEnum } from 'tonapi-sdk-js';
 import { SignRawAction } from './SignRawAction';
 import { store, Toast } from '$store';
 import * as S from '../NFTOperations.styles';
@@ -15,6 +15,9 @@ import { Ton } from '$libs/Ton';
 import { copyText } from '$hooks/useCopyText';
 import { push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
+import BigNumber from 'bignumber.js';
+import { Tonapi } from '$libs/Tonapi';
+import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 
 interface SignRawModalProps {
   action: Awaited<ReturnType<NFTOperations['signRaw']>>;
@@ -159,6 +162,13 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   );
 });
 
+function calculateTotalTransferAmount(messages) {
+  if (!messages) {
+    return 0;
+  }
+  return messages.reduce((acc, message) => new BigNumber(acc).plus(new BigNumber(message.amount)).toString(), '0');
+}
+
 export const openSignRawModal = async (
   params: SignRawParams,
   options: TxBodyOptions,
@@ -185,6 +195,17 @@ export const openSignRawModal = async (
 
       const tonapiError = err?.response?.data?.error;
       const errorMessage = tonapiError ?? `no response; status code: ${err.status};`;
+
+      // in case of error we should check current TON balance and show "insufficient funds" modal
+      const totalAmount = calculateTotalTransferAmount(params.messages);
+      const address = await wallet.ton.getAddress();
+      const tonBalance = await Tonapi.getWalletInfo(address);
+      if (
+        new BigNumber(totalAmount).gt(new BigNumber(tonBalance.balance))
+      ) {
+        Toast.hide();
+        return openInsufficientFundsModal({ totalAmount, balance: tonBalance.balance });
+      }
 
       Toast.fail(`Emulation error: ${errorMessage}`, { duration: 5000 });
     }
