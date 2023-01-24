@@ -19,7 +19,11 @@ export const getCorrectUrl = (url: string) => {
 
   const protocol = httpEnabled ? 'http' : 'https';
 
-  return url.startsWith(protocol) ? url : `${protocol}://${url}`;
+  const protocolToReplace = httpEnabled ? 'https' : 'http';
+
+  const fixedUrl = url.replace(protocolToReplace, protocol);
+
+  return fixedUrl.startsWith(protocol) ? fixedUrl : `${protocol}://${url}`;
 };
 
 export const getUrlTitle = async (url: string, cancelTokenSource: CancelTokenSource) => {
