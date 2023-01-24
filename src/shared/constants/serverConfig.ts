@@ -21,6 +21,7 @@ export interface ServerConfig {
   cachedMediaSalt: string;
   NFTOnExplorerUrl: string;
   flags: Record<string, boolean>;
+  directSupportUrl: string;
   amplitudeKey: string;
 }
 
@@ -49,6 +50,7 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     cachedMediaKey: data.cachedMediaKey,
     cachedMediaSalt: data.cachedMediaSalt,
     NFTOnExplorerUrl: data.NFTOnExplorerUrl || 'https://tonscan.org/nft/%s',
+    directSupportUrl: data.directSupportUrl,
     flags: data.flags || {},
     amplitudeKey: data.amplitudeKey,
   };
