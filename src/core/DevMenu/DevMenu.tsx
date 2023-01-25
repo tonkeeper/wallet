@@ -20,6 +20,7 @@ import { eventsActions } from '$store/events';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { Switch } from 'react-native-gesture-handler';
+import { DevFeature, useDevFeaturesToggle } from '$store';
 
 export const DevMenu: FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
@@ -91,10 +92,14 @@ export const DevMenu: FC = () => {
     dispatch(toastActions.success(t('copied')));
   }, [dispatch, t]);
 
-  // const {
-  //   devFeatures,
-  //   actions: { toogleFeature },
-  // } = useDevFeaturesToggle();
+  const {
+    devFeatures,
+    actions: { toggleFeature },
+  } = useDevFeaturesToggle();
+
+  const toggleHttpProtocol = useCallback(() => {
+    toggleFeature(DevFeature.UseHttpProtocol);
+  }, [toggleFeature]);
 
   return (
     <S.Wrap>
@@ -116,6 +121,16 @@ export const DevMenu: FC = () => {
               {t(isTestnet ? 'settings_to_mainnet' : 'settings_to_testnet')}
             </CellSectionItem>
             <CellSectionItem onPress={handleLogs}>Logs</CellSectionItem>
+            <CellSectionItem
+              indicator={
+                <Switch
+                  value={devFeatures[DevFeature.UseHttpProtocol]}
+                  onChange={toggleHttpProtocol}
+                />
+              }
+            >
+              Use HTTP protocol in browser
+            </CellSectionItem>
             {__DEV__ && (
               <>
                 <CellSectionItem onPress={handleTestCrash}>

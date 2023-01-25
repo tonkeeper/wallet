@@ -8,7 +8,7 @@ import { useJettonBalances, useTranslator } from '$hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { jettonsActions, jettonsSelector } from '$store/jettons';
 import { Switch } from 'react-native';
-import { JettonBalanceModel } from '$store/models';
+import { JettonBalanceModel, JettonVerification } from '$store/models';
 
 export const JettonsList: FC = () => {
   const t = useTranslator();
@@ -17,8 +17,8 @@ export const JettonsList: FC = () => {
   const dispatch = useDispatch();
 
   const onSwitchExcludedJetton = useCallback(
-    (jettonAddress: string) => () =>
-      dispatch(jettonsActions.switchExcludedJetton(jettonAddress)),
+    (jettonAddress: string, value: boolean) => () =>
+      dispatch(jettonsActions.switchExcludedJetton({ jetton: jettonAddress, value })),
     [dispatch],
   );
 
@@ -31,6 +31,9 @@ export const JettonsList: FC = () => {
     item: JettonBalanceModel;
     index: number;
   }) {
+    const isWhitelisted = jetton.verification === JettonVerification.WHITELIST;
+    const isEnabled = (isWhitelisted && !excludedJettons[jetton.jettonAddress]) || excludedJettons[jetton.jettonAddress] === false;
+
     return (
       <S.JettonInner isFirst={index === 0} isLast={data.length - 1 === index}>
         <S.JettonLogo source={{ uri: jetton.metadata.image }} />
@@ -42,9 +45,9 @@ export const JettonsList: FC = () => {
           </S.JettonInfo>
         </S.JettonCont>
         <Switch
-          value={!excludedJettons[jetton.jettonAddress]}
+          value={isEnabled}
           // @ts-ignore
-          onChange={onSwitchExcludedJetton(jetton.jettonAddress)}
+          onChange={onSwitchExcludedJetton(jetton.jettonAddress, isEnabled)}
         />
       </S.JettonInner>
     );

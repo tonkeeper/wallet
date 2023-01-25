@@ -11189,10 +11189,10 @@ toidentifier@1.0.1:
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.1.tgz#3be34321a88a820ed1bd80dfaa33e479fbb8dd35"
   integrity sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==
 
-tonapi-sdk-js@^0.23.0:
-  version "0.23.0"
-  resolved "https://registry.yarnpkg.com/tonapi-sdk-js/-/tonapi-sdk-js-0.23.0.tgz#7d0b58c40f8c040f9552c5d1966dd048dc8c02aa"
-  integrity sha512-j/qSlR/mwZcHT3049yYy2E2p9VmIccbbQXxbFCEK1kI1fK6IfBQWLZzYLFhH+1T9HfIXfZ64mRFfB9sMb9lDqw==
+tonapi-sdk-js@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/tonapi-sdk-js/-/tonapi-sdk-js-0.24.0.tgz#b00d4364e4849429ecc9252d200b44ad7e2e1651"
+  integrity sha512-biaAiHc2tnVf0AdGXOEptBNVU9TR6LvJBUR0eAS8tfrW5KarnMNaxGXY5dIzBVPCbmaCB7SHP0cG/0iM9SDb0w==
   dependencies:
     react-arborist "^1.2.0"
 

@@ -5,7 +5,7 @@ import { DevFeature, IDevFeaturesToggleStore } from './types';
 
 const initialState: Omit<IDevFeaturesToggleStore, 'actions'> = {
   devFeatures: {
-    [DevFeature.Example]: false,
+    [DevFeature.UseHttpProtocol]: false,
   },
 };
 
@@ -14,7 +14,7 @@ export const useDevFeaturesToggle = create(
     (set) => ({
       ...initialState,
       actions: {
-        toogleFeature: async (name: DevFeature) => {
+        toggleFeature: async (name: DevFeature) => {
           set((state) => {
             const devFeatures = state.devFeatures;
             devFeatures[name] = !devFeatures[name];

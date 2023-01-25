@@ -55,7 +55,7 @@ import { useFlags } from '$utils/flags';
 import { SearchEngine, useBrowserStore } from '$store';
 
 export const Settings: FC = () => {
-  const flags = useFlags(['disable_apperance']);
+  const flags = useFlags(['disable_apperance', 'disable_support_button', 'disable_feedback_button']);
 
   const t = useTranslator();
   const nav = useNavigation();
@@ -100,8 +100,8 @@ export const Settings: FC = () => {
     Linking.openURL(t('settings_news_url')).catch((err) => console.log(err));
   }, [t]);
 
-  const handleDiscussion = useCallback(() => {
-    Linking.openURL(t('settings_discussion_url')).catch((err) => console.log(err));
+  const handleSupport = useCallback(() => {
+    Linking.openURL(getServerConfig('directSupportUrl')).catch((err) => console.log(err));
   }, [t]);
 
   const handleResetWallet = useCallback(() => {
@@ -319,15 +319,19 @@ export const Settings: FC = () => {
               <CellSectionItem onPress={handleRateApp} icon="ic-star-28">
                 {t('settings_rate')}
               </CellSectionItem>
-              <CellSectionItem onPress={handleDiscussion} icon="ic-telegram-28">
-                {t('settings_discussion')}
-              </CellSectionItem>
+              {!flags.disable_support_button ? (
+                <CellSectionItem onPress={handleSupport} icon="ic-telegram-28">
+                  {t('settings_support')}
+                </CellSectionItem>
+              ): null}
               <CellSectionItem onPress={handleNews} icon="ic-telegram-28">
                 {t('settings_news')}
               </CellSectionItem>
-              <CellSectionItem onPress={handleFeedback} icon="ic-envelope-28">
-                {t('settings_contact_support')}
-              </CellSectionItem>
+              {!flags.disable_feedback_button ? (
+                <CellSectionItem onPress={handleFeedback} icon="ic-envelope-28">
+                  {t('settings_contact_support')}
+                </CellSectionItem>
+              ): null}
               <CellSectionItem onPress={handleLegal} icon="ic-doc-28">
                 {t('settings_legal_documents')}
               </CellSectionItem>
