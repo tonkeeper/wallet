@@ -84,6 +84,40 @@ async function resolveDns(domain: string, signal?: AbortSignal) {
   }
 }
 
+async function estimateTx(boc: string) {
+  try {
+    const endpoint = getServerConfig('tonapiIOEndpoint');
+    const response: any = await axios.get(`${endpoint}/v1/send/estimateTx`, {
+      headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+      },
+      params: {
+        boc,
+      },
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function sendBoc(boc: string) {
+  try {
+    const endpoint = getServerConfig('tonapiIOEndpoint');
+    const response: any = await axios.get(`${endpoint}/v1/send/boc`, {
+      headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+      },
+      params: {
+        boc,
+      },
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 async function getBalances(pubkey: string) {
   const wallets = await findByPubkey(pubkey);
 
@@ -113,4 +147,6 @@ export const Tonapi = {
   getWalletInfo,
   getBalances,
   resolveDns,
+  estimateTx,
+  sendBoc,
 };
