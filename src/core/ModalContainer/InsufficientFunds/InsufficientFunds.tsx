@@ -6,10 +6,12 @@ import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProv
 import { Button, Icon, Text } from '$uikit';
 import * as S from './InsufficientFunds.style';
 import { useNavigation } from '$libs/navigation';
-import { delay, formatAmountAndLocalize } from '$utils';
+import { debugLog, delay, formatAmountAndLocalize } from '$utils';
 import BigNumber from 'bignumber.js';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { Ton } from '$libs/Ton';
+import { Tonapi } from '$libs/Tonapi';
+import { store } from '$store';
 
 export interface InsufficientFundsParams {
     /**
@@ -67,6 +69,22 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>(
     );
   },
 );
+
+export async function checkIsInsufficient(amount: string | number) {
+  try {
+    const wallet = store.getState().wallet.wallet;
+    const address = await wallet.ton.getAddress();
+    const { balance } = await Tonapi.getWalletInfo(address);
+    if (
+      new BigNumber(amount).gt(new BigNumber(balance))
+    ) {
+        return { insufficient: true, balance };
+      }
+  } catch (e) {
+    debugLog('[checkIsInsufficient]: error', e);
+  }
+  return { insufficient: false };
+}
 
 export const openInsufficientFundsModal = async (params: InsufficientFundsParams) => {
   push('SheetsProvider', {

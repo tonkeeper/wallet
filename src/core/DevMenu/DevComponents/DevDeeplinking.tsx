@@ -166,6 +166,20 @@ export const DevDeeplinking: React.FC = () => {
 
         <DevSeparator />
 
+
+        <Button
+          onPress={() => {
+            deeplinking.resolve(
+              'https://app.tonkeeper.com/transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n?amount=100000000000000&text=test',
+            );
+          }}
+        >
+          Open transfer with huge amount
+        </Button>
+
+
+        <DevSeparator />
+
         <Button
           onPress={() => {
             deeplinking.resolve(

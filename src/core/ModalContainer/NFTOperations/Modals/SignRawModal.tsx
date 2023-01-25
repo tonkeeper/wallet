@@ -4,7 +4,7 @@ import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter'
 import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
-import { debugLog, delay, lowerCaseFirstLetter, ns, truncateDecimal } from '$utils';
+import { compareAddresses, debugLog, delay, lowerCaseFirstLetter, ns, truncateDecimal } from '$utils';
 import { t } from '$translation';
 import { AccountAddress, AccountEvent, Action, ActionTypeEnum } from 'tonapi-sdk-js';
 import { SignRawAction } from './SignRawAction';
@@ -17,7 +17,7 @@ import { push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 import BigNumber from 'bignumber.js';
 import { Tonapi } from '$libs/Tonapi';
-import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { checkIsInsufficient, openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 
 interface SignRawModalProps {
   action: Awaited<ReturnType<NFTOperations['signRaw']>>;
@@ -162,11 +162,23 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   );
 });
 
-function calculateTotalTransferAmount(messages) {
+function calculateMessageTransferAmount(messages) {
   if (!messages) {
     return 0;
   }
   return messages.reduce((acc, message) => new BigNumber(acc).plus(new BigNumber(message.amount)).toString(), '0');
+}
+
+function calculateActionsTotalAmount(address: string, actions: Action[]) {
+  if (!actions.length) {
+    return 0;
+  }
+  return actions.reduce((acc, action) => {
+    if (action[ActionTypeEnum.TonTransfer] && compareAddresses(address, action[ActionTypeEnum.TonTransfer].sender.address)) {
+      return new BigNumber(acc).plus(new BigNumber(action[ActionTypeEnum.TonTransfer].amount)).toString();
+    }
+    return acc;
+  }, '0');
 }
 
 export const openSignRawModal = async (
@@ -197,17 +209,25 @@ export const openSignRawModal = async (
       const errorMessage = tonapiError ?? `no response; status code: ${err.status};`;
 
       // in case of error we should check current TON balance and show "insufficient funds" modal
-      const totalAmount = calculateTotalTransferAmount(params.messages);
-      const address = await wallet.ton.getAddress();
-      const tonBalance = await Tonapi.getWalletInfo(address);
-      if (
-        new BigNumber(totalAmount).gt(new BigNumber(tonBalance.balance))
-      ) {
+      const totalAmount = calculateMessageTransferAmount(params.messages);
+      const checkResult = await checkIsInsufficient(totalAmount);
+      if (checkResult.insufficient) {
         Toast.hide();
-        return openInsufficientFundsModal({ totalAmount, balance: tonBalance.balance });
+        return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
       }
-
+     
       Toast.fail(`Emulation error: ${errorMessage}`, { duration: 5000 });
+    }
+
+    // failed event, check balance
+    if (accountEvent?.fee.total === 0) {
+      const address = await wallet.ton.getAddress();
+      const totalAmount = calculateActionsTotalAmount(address, accountEvent.actions);
+      const checkResult = await checkIsInsufficient(totalAmount);
+      if (checkResult.insufficient) {
+        Toast.hide();
+        return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
+      }
     }
 
     push('SheetsProvider', {

@@ -134,6 +134,7 @@ export function useDeeplinkingResolvers() {
             comment,
             jettonWalletAddress: query.jetton,
             isJetton: true,
+            onInsufficientFunds: openInsufficientFundsModal,
             onNext: (details) => {
               const options = {
                 currency: query.jetton,
@@ -160,6 +161,7 @@ export function useDeeplinkingResolvers() {
             amount,
             address,
             comment,
+            onInsufficientFunds: openInsufficientFundsModal,
             onNext: (details) => {
               const options = {
                 currency,
