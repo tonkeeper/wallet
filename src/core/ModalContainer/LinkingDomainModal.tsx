@@ -26,19 +26,19 @@ interface LinkingDomainModalProps {
 }
 
 export class LinkingDomainActions {
-    /**
+  /**
    * Wallet instance
    */
-  public wallet: Wallet;
+  private wallet: Wallet;
   /**
    * Transfer amount in nanocoins. Will be attached to transfer
    */
   public transferAmount: string = Ton.toNano('0.05').toString();
-    /**
+  /**
    * Domain address in any valid format
    */
   public domainAddress: string;
-    /**
+  /**
    * Wallet address to link domain. If not set - domain will be unlinked
    */
   public walletAddress: string | undefined;
@@ -49,6 +49,9 @@ export class LinkingDomainActions {
     this.walletAddress = walletAddress;
   }
 
+  /**
+   * Calculates fee. Returns human-readable string or 0 in case of error
+   */
   public async calculateFee() {
     try {
       const boc = await this.createBoc();
@@ -62,6 +65,9 @@ export class LinkingDomainActions {
     }
   }
 
+  /**
+   * Creates boc with DNS-record
+   */
   public async createBoc(secretKey?: Uint8Array) {
     const curWallet = this.wallet.vault.tonWallet;
     const seqno = await this.wallet.ton.getSeqno(await this.wallet.ton.getAddress());
