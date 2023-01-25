@@ -28,6 +28,7 @@ import { openTimeNotSyncedModal } from '$core/ModalContainer/TimeNotSynced/TimeN
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 import { openTonConnect } from '$core/TonConnect/TonConnectModal';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { jettonsBalancesSelector } from '$store/jettons';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -126,8 +127,14 @@ export function useDeeplinkingResolvers() {
           return Toast.fail(t('transfer_deeplink_address_error'));
         }
 
+        const jettonBalances = jettonsBalancesSelector(store.getState());
+        const jettonBalance = jettonBalances.find(balance => compareAddresses(balance.jettonAddress, query.jetton));
+
+        let decimals = jettonBalance?.metadata?.decimals ?? 9;
+        
         dispatch(
           walletActions.confirmSendCoins({
+            decimals,
             currency,
             amount,
             address,

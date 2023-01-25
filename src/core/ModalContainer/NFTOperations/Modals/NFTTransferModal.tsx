@@ -19,7 +19,7 @@ import { dnsToUsername } from '$utils/dnsToUsername';
 
 type NFTTransferModalProps = TxRequestBody<NftTransferParams>;
 
-export const NFTTransferModal = ({ params, ...options }: NFTTransferModalProps) => {
+export const NFTTransferModal = ({ params, fee: precalculatedFee, ...options }: NFTTransferModalProps) => {
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const item = useDownloadNFT(params.nftItemAddress);
   const collectionMeta = useDownloadCollectionMeta();
@@ -27,7 +27,7 @@ export const NFTTransferModal = ({ params, ...options }: NFTTransferModalProps) 
   const dispatch = useDispatch();
 
   const [isShownDetails, setIsShownDetails] = React.useState(false);
-  const [fee, setFee] = React.useState('');
+  const [fee, setFee] = React.useState(precalculatedFee);
 
   const wallet = useWallet();
   const unlockVault = useUnlockVault();
@@ -47,12 +47,14 @@ export const NFTTransferModal = ({ params, ...options }: NFTTransferModalProps) 
       })
       .catch((err) => debugLog('[NFT getCollectionUriByItem]', err));
 
-    operations
+    if (!precalculatedFee) {
+      operations
       .transfer(params)
       .then((operation) => operation.estimateFee())
       .then((fee) => setFee(fee))
       .catch((err) => debugLog('[nft estimate fee]:', err));
-  }, []);
+    }
+  }, [precalculatedFee]);
 
   const handleConfirm = onConfirm(async ({ startLoading }) => {
     const vault = await unlockVault();

@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BigNumber from 'bignumber.js';
 import { getUnixTime } from 'date-fns';
 
-import { store } from '$store';
+import { store, Toast } from '$store';
 import { getServerConfig } from '$shared/constants';
 import { UnlockedVault, Vault } from './vault';
 import { debugLog } from '$utils';
@@ -14,6 +14,8 @@ import { AccountEvent, Configuration, RawBlockchainApi, SendApi } from 'tonapi-s
 import axios from 'axios';
 
 const TonWeb = require('tonweb');
+
+export const jettonTransferForwardAmount = Ton.toNano('0.64');
 
 export class Wallet {
   readonly name: string;
@@ -352,7 +354,7 @@ export class TonWallet {
 
     const tx = vault.tonWallet.methods.transfer({
       toAddress: jettonWalletAddress,
-      amount: Ton.toNano('0.10'),
+      amount: jettonTransferForwardAmount,
       seqno,
       payload,
       sendMode: 3,
@@ -417,14 +419,12 @@ export class TonWallet {
       forwardPayload: payloadCell.bits.getTopUppedArray(),
     });
 
-    const amountTon = Ton.toNano('0.64');
-
     let tx: any;
     try {
       tx = wallet.methods.transfer({
         secretKey,
         toAddress: jettonWalletAddress,
-        amount: amountTon,
+        amount: jettonTransferForwardAmount,
         seqno: seqno,
         payload,
         sendMode,
@@ -447,7 +447,7 @@ export class TonWallet {
       }
     } else {
       if (
-        new BigNumber(amountTon.toString())
+        new BigNumber(jettonTransferForwardAmount.toString())
           .plus(sendMode === 128 ? 0 : feeNano)
           .isGreaterThan(myinfo.balance)
       ) {

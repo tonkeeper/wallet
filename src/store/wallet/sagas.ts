@@ -5,7 +5,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 
 import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet/index';
-import { EncryptedVault, UnlockedVault, Vault, Wallet } from '$blockchain';
+import { EncryptedVault, jettonTransferForwardAmount, UnlockedVault, Vault, Wallet } from '$blockchain';
 import { mainActions } from '$store/main';
 import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
 import {
@@ -328,19 +328,19 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
           wallet.vault,
           comment,
         );
-      }
-      if (currency === CryptoCurrencies.Ton) {
-        fee = yield call(
-          [wallet.ton, 'estimateFee'],
-          address,
-          amount,
-          wallet.vault,
-          comment,
-        );
-        isUninit = yield call([wallet.ton, 'isInactiveAddress'], address);
+      } else {
+        if (currency === CryptoCurrencies.Ton) {
+          fee = yield call(
+            [wallet.ton, 'estimateFee'],
+            address,
+            amount,
+            wallet.vault,
+            comment,
+          );
+          isUninit = yield call([wallet.ton, 'isInactiveAddress'], address);
+        }
       }
     } catch (e) {
-      console.log(e);
       e && debugLog(e.message);
     } finally {
       if (fee === '0') {
@@ -358,7 +358,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
 
     if (onNext) {
       if (isEstimateFeeError && onInsufficientFunds) {
-        const amountNano = toNano(amount);
+        const amountNano = isJetton ? jettonTransferForwardAmount : toNano(amount);
         const address = yield call([wallet.ton, 'getAddress']);
         const { balance } = yield call(Tonapi.getWalletInfo, address);
         if (

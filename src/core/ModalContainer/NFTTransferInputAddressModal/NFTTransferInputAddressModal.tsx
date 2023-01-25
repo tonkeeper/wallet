@@ -4,12 +4,16 @@ import { useValidateAddress } from '$hooks';
 import { Button, Input, Loader, Text } from '$uikit';
 import * as S from './NFTTransferInputAddressModal.style';
 import { t } from '$translation';
-import { asyncDebounce, compareAddresses, isAndroid, ns } from '$utils';
+import { asyncDebounce, compareAddresses, isAndroid, ns, toNano } from '$utils';
 import { NFTTransferInputAddressModalProps } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal.interface';
 import { LoaderContainer } from '$core/Send/steps/AddressStep/components/AddressInput/AddressInput.style';
 import { Modal, useNavigation } from '$libs/navigation';
 import { Tonapi } from '$libs/Tonapi';
 import TonWeb from 'tonweb';
+import { NFTOperations } from '../NFTOperations/NFTOperations';
+import { store, Toast } from '$store';
+import { walletWalletSelector } from '$store/wallet';
+import { checkIsInsufficient, openInsufficientFundsModal } from '../InsufficientFunds/InsufficientFunds';
 
 export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalProps>(
   ({ nftAddress }) => {
@@ -30,17 +34,48 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
       }
     }, [address, isSameAddress, nftAddress]);
 
-    const handleContinue = useCallback(() => {
+    const handleContinue = useCallback(async () => {
+      const transferParams = {
+          newOwnerAddress: address,
+          nftItemAddress: nftAddress,
+          amount: toNano('0.5'),
+          forwardAmount: toNano('0.02'),
+      };
+
+      const wallet = walletWalletSelector(store.getState());
+
+      if (!wallet) {
+        console.log('no wallet');
+        return;
+      }
+
+      Toast.loading();
+
+      let fee = '0';
+      try {
+        const operations = new NFTOperations(wallet);
+        fee = await operations
+          .transfer(transferParams as any)
+          .then((operation) => operation.estimateFee());
+      } catch (e) {}
+
+      // compare balance and transfer amount, because transfer will fail
+      if (fee === '0') {
+        const checkResult = await checkIsInsufficient(transferParams.amount);
+        if (checkResult.insufficient) {
+          Toast.hide();
+          return openInsufficientFundsModal({ totalAmount: transferParams.amount, balance: checkResult.balance });
+        }
+      }
+
+      Toast.hide();
+
       nav.replaceModal('NFTTransfer', {
         response_options: {
           onDone: () => setTimeout(nav.globalGoBack, 850),
         } as any,
-        params: {
-          newOwnerAddress: address,
-          nftItemAddress: nftAddress,
-          amount: '50000000',
-          forwardAmount: '20000000',
-        },
+        params: transferParams,
+        fee,
       });
     }, [address, nftAddress]);
 
