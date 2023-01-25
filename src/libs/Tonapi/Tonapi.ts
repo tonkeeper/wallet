@@ -87,12 +87,11 @@ async function resolveDns(domain: string, signal?: AbortSignal) {
 async function estimateTx(boc: string) {
   try {
     const endpoint = getServerConfig('tonapiIOEndpoint');
-    const response: any = await axios.get(`${endpoint}/v1/send/estimateTx`, {
+    const response: any = await axios.post(`${endpoint}/v1/send/estimateTx`, {
+      boc,
+    }, {
       headers: {
         Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-      },
-      params: {
-        boc,
       },
     });
     return response.data;
@@ -104,12 +103,11 @@ async function estimateTx(boc: string) {
 async function sendBoc(boc: string) {
   try {
     const endpoint = getServerConfig('tonapiIOEndpoint');
-    const response: any = await axios.get(`${endpoint}/v1/send/boc`, {
+    const response: any = await axios.post(`${endpoint}/v1/send/boc`, {
+      boc,
+    }, {
       headers: {
         Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-      },
-      params: {
-        boc,
       },
     });
     return response.data;

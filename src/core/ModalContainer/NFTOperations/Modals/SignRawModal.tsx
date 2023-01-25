@@ -16,7 +16,6 @@ import { copyText } from '$hooks/useCopyText';
 import { push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 import BigNumber from 'bignumber.js';
-import { Tonapi } from '$libs/Tonapi';
 import { checkIsInsufficient, openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 
 interface SignRawModalProps {

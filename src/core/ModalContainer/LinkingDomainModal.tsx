@@ -22,12 +22,25 @@ interface LinkingDomainModalProps {
   domainAddress: string;
   walletAddress?: string;
   domain: string;
+  fee: string;
 }
 
 export class LinkingDomainActions {
+    /**
+   * Wallet instance
+   */
   public wallet: Wallet;
-  public transferAmount = Ton.toNano('0.05').toString();
+  /**
+   * Transfer amount in nanocoins. Will be attached to transfer
+   */
+  public transferAmount: string = Ton.toNano('0.05').toString();
+    /**
+   * Domain address in any valid format
+   */
   public domainAddress: string;
+    /**
+   * Wallet address to link domain. If not set - domain will be unlinked
+   */
   public walletAddress: string | undefined;
 
   constructor(domainAddress: string, walletAddress?: string) {
@@ -45,7 +58,7 @@ export class LinkingDomainActions {
       return truncateDecimal(Ton.fromNano(feeNano.toString()), 1);
     } catch (err) {
       debugLog(err);
-      return '0.04';
+      return '0';
     }
   }
 
@@ -80,11 +93,12 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
   walletAddress: defaultWalletAddress,
   domainAddress, 
   domain,
+  fee: initialFee,
   onDone 
 }) => {
   const [walletAddress, setWalletAddress] = React.useState(defaultWalletAddress);
   const bottomSheetRef = React.useRef<BottomSheetRef>(null);
-  const [fee, setFee] = React.useState('');
+  const [fee] = React.useState(initialFee);
   const copyText = useCopyText();  
 
   const { footerRef, onConfirm } = useActionFooter();
@@ -92,13 +106,6 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
   const linkingActions = useInstance(() => {
     return new LinkingDomainActions(domainAddress, walletAddress);
   });
-
-  React.useEffect(() => {
-    (async () => {
-      const fee = await linkingActions.calculateFee();
-      setFee(fee);
-    })();
-  }, []);
 
   const unlockVault = useUnlockVault();
   const handleConfirm = onConfirm(async ({ startLoading }) => {
