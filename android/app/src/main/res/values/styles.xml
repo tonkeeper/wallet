@@ -6,11 +6,16 @@
         <item name="android:statusBarColor">#10161F</item>
         <item name="android:navigationBarColor">#10161F</item>
         <item name="android:forceDarkAllowed">false</item>
-
+        <item name="android:alertDialogTheme">@style/AlertDialogTheme</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     </style>
     <style name="Theme.App.SplashScreen" parent="AppTheme">
         <item name="android:windowBackground">@drawable/splashscreen</item>
+    </style>
+    <style name="AlertDialogTheme" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@color/alert_background</item>
+        <item name="android:textColor">@color/alert_text</item>
+        <item name="android:textColorPrimary">@color/alert_text</item>
     </style>
 </resources>
