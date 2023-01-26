@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="alert_background">#1D2633</color>
-    <color name="alert_text">#ffffff</color>
+    <color name="alert_text">#45AEF5</color>
+    <color name="alert_text_primary">#FFFFFF</color>
 </resources>
