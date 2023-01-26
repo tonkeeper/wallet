@@ -6,7 +6,7 @@ import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProv
 import { Button, Icon, Text } from '$uikit';
 import * as S from './InsufficientFunds.style';
 import { useNavigation } from '$libs/navigation';
-import { debugLog, delay, formatAmountAndLocalize } from '$utils';
+import { debugLog, delay, formatAmountAndLocalize, truncateDecimal } from '$utils';
 import BigNumber from 'bignumber.js';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { Ton } from '$libs/Ton';
@@ -27,8 +27,8 @@ export interface InsufficientFundsParams {
 export const InsufficientFundsModal = memo<InsufficientFundsParams>(
   (props) => {
     const nav = useNavigation();
-    const formattedAmount = useMemo(() => formatAmountAndLocalize(new BigNumber(Ton.fromNano(props.totalAmount)).toString(), Decimals[CryptoCurrencies.Ton]), [props.totalAmount]);
-    const formattedBalance = useMemo(() => formatAmountAndLocalize(new BigNumber(Ton.fromNano(props.balance)).toString(), Decimals[CryptoCurrencies.Ton]), [props.balance]);
+    const formattedAmount = useMemo(() => truncateDecimal(new BigNumber(Ton.fromNano(props.totalAmount)).toString(), 2, false, true), [props.totalAmount]);
+    const formattedBalance = useMemo(() => truncateDecimal(new BigNumber(Ton.fromNano(props.balance)).toString(), 2, false, true), [props.balance]);
 
     const handleOpenRechargeWallet = useCallback(async () => {
         nav.goBack();
