@@ -20,7 +20,7 @@ export const SheetScrollView = React.forwardRef<
   SheetScrollViewProps
 >((props, ref) => {
   const { children, ...rest } = props;
-  const { measureContent, contentHeight, footerHeight } = useSheetInternal();
+  const { measureContent, contentHeight, footerHeight, headerHeight } = useSheetInternal();
   const safeArea = useSafeAreaInsets();
 
   const containerStyle = useAnimatedStyle(() => {
@@ -29,11 +29,19 @@ export const SheetScrollView = React.forwardRef<
 
     return { height: Math.min(contentHeight.value, maxHeight) };
   });
-  
+
+  const contentContainerStyle = useAnimatedStyle(() => {
+    const topOffset = isAndroid ? statusBarHeight : safeArea.top;
+    const heightToAddSpacing = (screenHeight - topOffset) - footerHeight.value - headerHeight.value;
+
+    // adds padding to compensate header height
+    return { paddingBottom: contentHeight.value >= heightToAddSpacing ? headerHeight.value : 0 };
+  })
+    
   return (
     <Animated.View style={containerStyle}>
       <DefaultSheetScrollView ref={ref} {...rest}> 
-        <Animated.View onLayout={measureContent}>
+        <Animated.View style={contentContainerStyle} onLayout={measureContent}>
           {children}
         </Animated.View>
       </DefaultSheetScrollView>
