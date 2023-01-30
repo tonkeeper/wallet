@@ -1,10 +1,14 @@
 import React, { forwardRef, useCallback, useMemo, useState } from 'react';
-import { TouchableHighlight, TouchableNativeFeedback, View } from 'react-native';
+import { View } from 'react-native';
 
 import { useTheme } from '$hooks';
 import { isAndroid, ns } from '$utils';
 
 import { HighlightProps } from './Highlight.interface';
+import {
+  TouchableHighlight,
+  TouchableNativeFeedback,
+} from 'react-native-gesture-handler';
 
 export const Highlight = forwardRef<any, HighlightProps>((props, ref) => {
   const {
