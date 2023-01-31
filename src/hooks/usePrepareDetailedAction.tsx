@@ -87,7 +87,7 @@ export function usePrepareDetailedAction(
           true,
         );
       }
-      jettonAddress = new TonWeb.Address(action.jetton.address).toString(
+      jettonAddress = action.jetton.address && new TonWeb.Address(action.jetton.address).toString(
         true,
         true,
         true,
@@ -98,7 +98,7 @@ export function usePrepareDetailedAction(
         ' ' + 
         truncateDecimal(amount.toString(), action.jetton.decimals ?? 9, false, true) + 
         ' ' + 
-        (action.jetton?.symbol || action.jetton?.name && action.jetton.name.toUpperCase().slice(0, 3));
+        (action.jetton?.symbol || (action.jetton?.name && action.jetton.name.toUpperCase().slice(0, 3)) || '');
     }
 
     if (ActionType.Subscribe === ActionType[rawAction.type]) {
