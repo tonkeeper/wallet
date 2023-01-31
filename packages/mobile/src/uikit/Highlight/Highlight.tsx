@@ -60,7 +60,7 @@ export const Highlight = forwardRef<any, HighlightProps>((props, ref) => {
   if (isAndroid) {
     return (
       <TouchableNativeFeedbackComponent
-        delayPressIn={useRNGHComponent ? 0 : 85}
+        delayPressIn={85}
         ref={ref}
         disabled={isDisabled}
         useForeground
