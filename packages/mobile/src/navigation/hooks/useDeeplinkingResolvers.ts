@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Ton } from '$libs/Ton';
 import { useDispatch } from 'react-redux';
-import { useDeeplinking } from '$libs/deeplinking';
+import { DeeplinkingResolver, useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { Base64, compareAddresses, debugLog, isValidAddress } from '$utils';
@@ -27,6 +27,7 @@ import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
 import { openTimeNotSyncedModal } from '$core/ModalContainer/TimeNotSynced/TimeNotSynced';
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 import { openTonConnect } from '$core/TonConnect/TonConnectModal';
+import { useCallback } from 'react';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -54,6 +55,7 @@ export function useDeeplinkingResolvers() {
   const nav = useNavigation();
 
   deeplinking.setPrefixes([
+    'tc://',
     'ton://',
     'tonkeeper://',
     'https://app.tonkeeper.com',
@@ -66,6 +68,36 @@ export function useDeeplinkingResolvers() {
     }
 
     next();
+  });
+
+  const tonConnectResolver: DeeplinkingResolver = useCallback(
+    async ({ query, origin }) => {
+      try {
+        TonConnectRemoteBridge.setOrigin(origin);
+        TonConnectRemoteBridge.setReturnStrategy(query.ret);
+
+        if (!query.r || !query.v || !query.id) {
+          return;
+        }
+
+        Toast.loading();
+
+        await TonConnectRemoteBridge.handleConnectDeeplink(
+          query as unknown as IConnectQrQuery,
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [],
+  );
+
+  deeplinking.add('/', (options) => {
+    if (options.prefix !== 'tc://') {
+      return;
+    }
+
+    return tonConnectResolver(options);
   });
 
   deeplinking.add('/subscribe/:invoiceId', ({ params }) => {
@@ -338,22 +370,5 @@ export function useDeeplinkingResolvers() {
     }
   });
 
-  deeplinking.add('/ton-connect/*', async ({ query, origin }) => {
-    try {
-      TonConnectRemoteBridge.setOrigin(origin);
-      TonConnectRemoteBridge.setReturnStrategy(query.ret);
-
-      if (!query.r || !query.v || !query.id) {
-        return;
-      }
-
-      Toast.loading();
-
-      await TonConnectRemoteBridge.handleConnectDeeplink(
-        query as unknown as IConnectQrQuery,
-      );
-    } catch (err) {
-      console.log(err);
-    }
-  });
+  deeplinking.add('/ton-connect/*', tonConnectResolver);
 }
