@@ -83,6 +83,10 @@ export const DevMenu: FC = () => {
     nav.navigate('DevStack');
   }, [nav]);
 
+  const handleTonConnectBridge = useCallback(() => {
+    nav.navigate('DevStack', { screen: 'DevTonConnectBridge' });
+  }, [nav]);
+
   const handleEditConfig = useCallback(() => {
     nav.navigate('EditConfig');
   }, [nav]);
@@ -130,6 +134,9 @@ export const DevMenu: FC = () => {
               }
             >
               Use HTTP protocol in browser
+            </CellSectionItem>
+            <CellSectionItem onPress={handleTonConnectBridge}>
+              Change Ton Connect bridge
             </CellSectionItem>
             {__DEV__ && (
               <>

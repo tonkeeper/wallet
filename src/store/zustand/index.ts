@@ -3,3 +3,4 @@ export * from './connectedApps';
 export * from './appsList';
 export * from './devFeaturesToggle';
 export * from './browser';
+export * from './remoteBridge';

@@ -87,6 +87,7 @@ export enum SecurityMigrationStackRouteNames {
 
 export enum DevComponents {
   DevComponentList = 'DevComponentList',
+  DevTonConnectBridge = 'DevTonConnectBridge',
   DevDeeplinking = 'DevDeeplinking',
   DevText = 'DevText',
   DevToast = 'DevToast',

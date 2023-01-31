@@ -28,7 +28,7 @@ import { Linking } from 'react-native';
 class TonConnectRemoteBridgeService {
   private readonly storeKey = 'ton-connect-http-bridge-lastEventId';
 
-  private readonly bridgeUrl = 'https://bridge.tonapi.io/bridge';
+  public bridgeUrl = 'https://bridge.tonapi.io/bridge';
 
   private readonly defaultTtl = 300;
 
@@ -50,6 +50,10 @@ class TonConnectRemoteBridgeService {
     if (returnStrategy) {
       this.returnStrategy = returnStrategy;
     }
+  }
+
+  public setBridge(bridgeUrl: string) {
+    this.bridgeUrl = bridgeUrl;
   }
 
   async open(connections: IConnectedAppConnection[]) {
