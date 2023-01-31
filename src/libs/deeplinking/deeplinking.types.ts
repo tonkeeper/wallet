@@ -11,6 +11,7 @@ export type Params<Key extends string = string> = {
 };
 
 export type DeeplinkingResolverOptions = {
+  prefix: string;
   origin: DeeplinkOrigin;
   query: Params;
   params: Params;

@@ -58,6 +58,7 @@ export const DeepLinkingProvider: React.FC<DeepLinkingProviderProps> = (props) =
 
             applyMiddleware(middlewares, () => {
               return resolver({
+                prefix,
                 origin: options?.origin || DeeplinkOrigin.DEEPLINK,
                 params: matchedPath.params,
                 query: matchedPath.query,
