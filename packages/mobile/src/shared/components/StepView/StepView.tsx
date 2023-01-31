@@ -40,6 +40,7 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
     initialStepId,
     useBackHandler,
     autoHeight = false,
+    swipeEnabled = false,
     onChangeStep,
   } = props;
 
@@ -162,6 +163,10 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
   const stepsLastIndex = steps.length - 1;
 
   const gesture = Gesture.Pan()
+    .failOffsetY(90)
+    .failOffsetY(-90)
+    .minDistance(50)
+    .enabled(swipeEnabled)
     .onBegin(() => {
       startPosition.value = position.value;
     })
@@ -175,21 +180,19 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
         diff = 2 + 0.456 * diff - 0.000124 * diff ** 2;
       }
 
-      console.log('diff2', diff);
-
       position.value = startPosition.value + diff;
     })
     .onEnd((e) => {
       const velocity = Math.abs(e.velocityX) > 200 ? e.velocityX : 0;
-      console.log('velocity', velocity);
+      const pos = Math.abs(e.translationX) > 200 ? e.translationX : 0;
 
       let direction = 0;
 
-      if (velocity < 0 && currentIndex !== stepsLastIndex) {
+      if ((velocity < 0 || pos < 0) && currentIndex !== stepsLastIndex) {
         direction = 1;
       }
 
-      if (velocity > 0 && currentIndex > 0) {
+      if ((velocity > 0 || pos > 0) && currentIndex > 0) {
         direction = -1;
       }
 

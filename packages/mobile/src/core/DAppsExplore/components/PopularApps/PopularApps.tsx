@@ -47,7 +47,7 @@ const PopularAppsComponent: FC<Props> = (props) => {
 
   return (
     <>
-      <StepView ref={stepViewRef} autoHeight={true} onChangeStep={handleChangeStep}>
+      <StepView swipeEnabled ref={stepViewRef} autoHeight={true} onChangeStep={handleChangeStep}>
         {categories.map((category) => (
           <StepViewItem id={category.id} key={category.id}>
             <S.Container>

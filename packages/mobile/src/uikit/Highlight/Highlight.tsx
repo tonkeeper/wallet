@@ -1,13 +1,13 @@
 import React, { forwardRef, useCallback, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { View, TouchableNativeFeedback, TouchableHighlight } from 'react-native';
 
 import { useTheme } from '$hooks';
 import { isAndroid, ns } from '$utils';
 
 import { HighlightProps } from './Highlight.interface';
 import {
-  TouchableHighlight,
-  TouchableNativeFeedback,
+  TouchableHighlight as RNGHTouchableHighlight,
+  TouchableNativeFeedback as RNGHTouchableFeedback,
 } from 'react-native-gesture-handler';
 
 export const Highlight = forwardRef<any, HighlightProps>((props, ref) => {
@@ -20,10 +20,14 @@ export const Highlight = forwardRef<any, HighlightProps>((props, ref) => {
     contentViewStyle = {},
     isDisabled = false,
     onPressIn,
+    useRNGHComponent = false,
     onPressOut,
   } = props;
   const theme = useTheme();
   const [isHighlighted, setHighlighted] = useState(false);
+  const TouchableNativeFeedbackComponent = useMemo(() => useRNGHComponent ? RNGHTouchableFeedback : TouchableNativeFeedback, [useRNGHComponent]);
+  const TouchableHighlightComponent = useMemo(() => useRNGHComponent ? RNGHTouchableHighlight : TouchableHighlight, [useRNGHComponent]);
+
 
   const preparedStyle = typeof style === 'object' ? [style] : style;
 
@@ -55,8 +59,8 @@ export const Highlight = forwardRef<any, HighlightProps>((props, ref) => {
 
   if (isAndroid) {
     return (
-      <TouchableNativeFeedback
-        delayPressIn={65}
+      <TouchableNativeFeedbackComponent
+        delayPressIn={useRNGHComponent ? 0 : 85}
         ref={ref}
         disabled={isDisabled}
         useForeground
@@ -67,13 +71,13 @@ export const Highlight = forwardRef<any, HighlightProps>((props, ref) => {
         onPressOut={handlePressOut}
       >
         <View style={style}>{content}</View>
-      </TouchableNativeFeedback>
+      </TouchableNativeFeedbackComponent>
     );
   }
 
   return (
-    <TouchableHighlight
-      delayPressIn={65}
+    <TouchableHighlightComponent
+      delayPressIn={useRNGHComponent ? 0 : 85}
       ref={ref}
       disabled={isDisabled}
       style={preparedStyle}
@@ -84,6 +88,6 @@ export const Highlight = forwardRef<any, HighlightProps>((props, ref) => {
       onHideUnderlay={handlePressOut}
     >
       <View style={contentViewStyle}>{content}</View>
-    </TouchableHighlight>
+    </TouchableHighlightComponent>
   );
 });
