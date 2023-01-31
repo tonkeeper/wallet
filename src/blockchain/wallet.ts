@@ -5,13 +5,14 @@ import { getUnixTime } from 'date-fns';
 import { store, Toast } from '$store';
 import { getServerConfig } from '$shared/constants';
 import { UnlockedVault, Vault } from './vault';
-import { debugLog } from '$utils';
+import { compareAddresses, debugLog } from '$utils';
 import { getWalletName } from '$shared/dynamicConfig';
 import { t } from '$translation';
 import { Ton } from '$libs/Ton';
 
 import { AccountEvent, Configuration, RawBlockchainApi, SendApi } from 'tonapi-sdk-js';
 import axios from 'axios';
+import { Tonapi } from '$libs/Tonapi';
 
 const TonWeb = require('tonweb');
 
@@ -401,9 +402,11 @@ export class TonWallet {
     });
 
     const jettonAmount = new TonWeb.utils.BN(amount, 10);
-    const { balance } = await jettonWallet.getData();
 
-    if (balance.lt(jettonAmount)) {
+    const { balances } = await Tonapi.getJettonBalances(myinfo.address.raw);
+    const balance = balances.find((jettonBalance) => compareAddresses(jettonBalance.wallet_address.address, jettonWalletAddress));
+
+    if (new BigNumber(balance.balance).lt(new BigNumber(amount))) {
       throw new Error(t('send_insufficient_funds'));
     }
 

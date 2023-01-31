@@ -1,5 +1,15 @@
+import { Ton } from '$libs/Ton/Ton';
 import { getServerConfig } from '$shared/constants';
 import axios from 'axios';
+import DeviceInfo from 'react-native-device-info';
+
+const prepareHeaders = (restHeaders?: { [key: string]: string }) => {
+  return {
+    Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+    Build: DeviceInfo.getBuildNumber(),
+    ...(restHeaders ?? {}),
+  }
+}
 
 const getBulkInfo = async (addresses: string[]) => {
   const endpoint = getServerConfig('tonapiIOEndpoint');
@@ -10,9 +20,7 @@ const getBulkInfo = async (addresses: string[]) => {
       addresses: addresses.join(','),
     },
     {
-      headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-      },
+      headers: prepareHeaders(),
     },
   );
 };
@@ -25,9 +33,7 @@ const findByPubkey = async (pubkey: string) => {
       params: {
         public_key: pubkey,
       },
-      headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-      },
+      headers: prepareHeaders(),
     });
 
     if (!resp.data.wallets) {
@@ -41,13 +47,30 @@ const findByPubkey = async (pubkey: string) => {
   }
 };
 
+async function getJettonBalances(address: string) {
+  try {
+    if (!Ton.isValidAddress(address)) {
+      throw new Error('Wrong address');
+    }
+    const endpoint = getServerConfig('tonapiIOEndpoint');
+
+    const resp: any = await axios.get(`${endpoint}/v1/jetton/getBalances`, {
+      headers: prepareHeaders(),
+      params: {
+        account: address,
+      },
+    });
+    return resp.data;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 async function getWalletInfo(address: string) {
   try {
     const endpoint = getServerConfig('tonapiIOEndpoint');
     const response: any = await axios.get(`${endpoint}/v1/account/getInfo`, {
-      headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-      },
+      headers: prepareHeaders(),
       params: {
         account: address,
       },
@@ -67,9 +90,7 @@ async function resolveDns(domain: string, signal?: AbortSignal) {
   try {
     const endpoint = getServerConfig('tonapiIOEndpoint');
     const response: any = await axios.get(`${endpoint}/v1/dns/resolve`, {
-      headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-      },
+      headers: prepareHeaders(),
       params: {
         name: domain,
       },
@@ -90,9 +111,7 @@ async function estimateTx(boc: string) {
     const response: any = await axios.post(`${endpoint}/v1/send/estimateTx`, {
       boc,
     }, {
-      headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-      },
+      headers: prepareHeaders(),
     });
     return response.data;
   } catch (e) {
@@ -106,9 +125,7 @@ async function sendBoc(boc: string) {
     const response: any = await axios.post(`${endpoint}/v1/send/boc`, {
       boc,
     }, {
-      headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-      },
+      headers: prepareHeaders(),
     });
     return response.data;
   } catch (e) {
@@ -144,6 +161,7 @@ export const Tonapi = {
   findByPubkey,
   getWalletInfo,
   getBalances,
+  getJettonBalances,
   resolveDns,
   estimateTx,
   sendBoc,

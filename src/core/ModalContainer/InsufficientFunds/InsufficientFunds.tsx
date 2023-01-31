@@ -6,7 +6,7 @@ import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProv
 import { Button, Icon, Text } from '$uikit';
 import * as S from './InsufficientFunds.style';
 import { useNavigation } from '$libs/navigation';
-import { debugLog, delay, formatAmountAndLocalize, truncateDecimal } from '$utils';
+import { debugLog, delay, formatAmountAndLocalize, fromNano, truncateDecimal } from '$utils';
 import BigNumber from 'bignumber.js';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { Ton } from '$libs/Ton';
@@ -22,13 +22,27 @@ export interface InsufficientFundsParams {
      * Current wallet balance (in nanotons). Required to render description
      */
     balance: string | number;
+    /**
+     * Token's decimals
+     */
+    decimals?: number;
+     /**
+     * Token's ticker
+     */
+     currency?: string;
 }
 
 export const InsufficientFundsModal = memo<InsufficientFundsParams>(
   (props) => {
+    const { 
+      totalAmount,
+      balance,
+      currency = 'TON',
+      decimals = 9,
+    } = props;
     const nav = useNavigation();
-    const formattedAmount = useMemo(() => truncateDecimal(new BigNumber(Ton.fromNano(props.totalAmount)).toString(), 2, false, true), [props.totalAmount]);
-    const formattedBalance = useMemo(() => truncateDecimal(new BigNumber(Ton.fromNano(props.balance)).toString(), 2, false, true), [props.balance]);
+    const formattedAmount = useMemo(() => truncateDecimal(new BigNumber(fromNano(totalAmount, decimals)).toString(), 2, false, true), [totalAmount, decimals]);
+    const formattedBalance = useMemo(() => truncateDecimal(new BigNumber(fromNano(balance, decimals)).toString(), 2, false, true), [balance, decimals]);
 
     const handleOpenRechargeWallet = useCallback(async () => {
         nav.goBack();
@@ -48,21 +62,27 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>(
             <Text variant="body1" color="foregroundSecondary" textAlign="center">
                 {t('txActions.signRaw.insufficientFunds.toBePaid', {
                     amount: formattedAmount,
+                    currency,
+                })}
+                {currency === 'TON' && (
+                  t('txActions.signRaw.insufficientFunds.withFees')
+                )}
+                {t('txActions.signRaw.insufficientFunds.yourBalance', {
                     balance: formattedBalance,
-                    currency: 'TON',
+                    currency,
                 })}
             </Text>
           </S.Wrap>
         </Modal.Content>
         <Modal.Footer>
           <S.FooterWrap>
-                <Button
+                {currency === 'TON' && (<Button
                     style={{ marginBottom: 16 }}
                     mode="primary"
                     onPress={handleOpenRechargeWallet}
                 >
                 {t('txActions.signRaw.insufficientFunds.rechargeWallet')}
-              </Button>
+              </Button>)}
           </S.FooterWrap>
         </Modal.Footer>
       </Modal>

@@ -39,6 +39,9 @@ export class Ton {
       return TonWeb.boc.Cell.oneFromBoc(bytes);
     }
   }
+  static isValidAddress(address: AddressType): boolean {
+    return Address.isValid(address);
+  }
   static parseComment(cell: Cell): string | null {
     if (Buffer.isBuffer(cell)) {
       const arr = new Uint8Array(
