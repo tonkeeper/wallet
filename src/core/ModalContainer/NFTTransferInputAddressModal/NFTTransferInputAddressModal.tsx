@@ -4,7 +4,7 @@ import { useValidateAddress } from '$hooks';
 import { Button, Input, Loader, Text } from '$uikit';
 import * as S from './NFTTransferInputAddressModal.style';
 import { t } from '$translation';
-import { asyncDebounce, compareAddresses, isAndroid, ns, toNano } from '$utils';
+import { asyncDebounce, compareAddresses, isAndroid, ns } from '$utils';
 import { NFTTransferInputAddressModalProps } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal.interface';
 import { LoaderContainer } from '$core/Send/steps/AddressStep/components/AddressInput/AddressInput.style';
 import { Modal, useNavigation } from '$libs/navigation';
@@ -14,6 +14,7 @@ import { NFTOperations } from '../NFTOperations/NFTOperations';
 import { store, Toast } from '$store';
 import { walletWalletSelector } from '$store/wallet';
 import { checkIsInsufficient, openInsufficientFundsModal } from '../InsufficientFunds/InsufficientFunds';
+import { Ton } from '$libs/Ton';
 
 export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalProps>(
   ({ nftAddress }) => {
@@ -38,8 +39,8 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
       const transferParams = {
           newOwnerAddress: address,
           nftItemAddress: nftAddress,
-          amount: toNano('0.5'),
-          forwardAmount: toNano('0.02'),
+          amount: Ton.toNano('1'),
+          forwardAmount: '1',
       };
 
       const wallet = walletWalletSelector(store.getState());
@@ -66,6 +67,12 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
           Toast.hide();
           return openInsufficientFundsModal({ totalAmount: transferParams.amount, balance: checkResult.balance });
         }
+      }
+      
+      if (parseFloat(fee) < 0) {
+        transferParams.amount = Ton.toNano('0.1');
+      } else {
+        transferParams.amount = Ton.toNano(fee).add(Ton.toNano('0.01'));
       }
 
       Toast.hide();
