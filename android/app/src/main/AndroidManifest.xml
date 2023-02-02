@@ -28,7 +28,7 @@
         tools:targetApi="32">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".TonkeeperActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
             android:exported="true"
             android:hardwareAccelerated="true"
