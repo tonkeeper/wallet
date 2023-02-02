@@ -34,6 +34,7 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
   const [walletAddress, setWalletAddress] = React.useState(defaultWalletAddress);
   const bottomSheetRef = React.useRef<BottomSheetRef>(null);
   const [fee, setFee] = React.useState('');
+  const [isDisabled, setIsDisabled] = React.useState(false);
   const wallet = useWallet();
   const copyText = useCopyText();  
 
@@ -97,6 +98,7 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
     const privateKey = await vault.getTonPrivateKey();
     
     startLoading();
+    setIsDisabled(true);
     
     const boc = await createBoc(privateKey);
     await sendApi.sendBoc({ sendBocRequest: { boc } });
@@ -131,6 +133,7 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
                 </S.InfoItemLabel>
                 <S.InfoItemValue>
                   <TouchableOpacity 
+                    disabled={isDisabled}
                     style={{ alignItems: 'flex-end' }}
                     onPress={handleReplace}
                     activeOpacity={0.6}
@@ -140,7 +143,7 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
                     </Text>
                     <Text 
                       variant="body2"
-                      color="accentPrimary"
+                      color={isDisabled ? "foregroundTertiary" : "accentPrimary"}
                     >
                       {t('dns_replace_button')}
                     </Text>
