@@ -54,3 +54,6 @@ The code and data files in this distribution are licensed under the terms of the
 See https://www.gnu.org/licenses/ for a copy of this license.
 
 See [LICENSE](LICENSE) file.
+
+
+This project is tested with [Browserstack](https://browserstack.com).

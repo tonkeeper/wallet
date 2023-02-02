@@ -3,7 +3,15 @@ import { ActionType, EventModel } from '$store/models';
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
-import { compareAddresses, format, fromNano, maskifyAddress, maskifyTonAddress } from '$utils';
+import {
+  compareAddresses,
+  format,
+  fromNano,
+  maskifyAddress,
+  maskifyTonAddress,
+  toLocaleNumber,
+  truncateDecimal,
+} from '$utils';
 import BigNumber from 'bignumber.js';
 import { useTranslator } from '$hooks/useTranslator';
 import { formatCryptoCurrency } from '$utils/currency';
@@ -58,13 +66,9 @@ export function usePrepareDetailedAction(
       label =
         prefix +
         ' ' +
-        amount.toString() +
+        truncateDecimal(amount.toString(), Decimals[CryptoCurrencies.Ton], false, true) +
         ' ' +
-        formatCryptoCurrency(
-          '',
-          CryptoCurrencies.Ton,
-          Decimals[CryptoCurrencies.Ton],
-        ).trim();
+        CryptoCurrencies.Ton.toUpperCase();
     }
 
     if (ActionType.NftItemTransfer === ActionType[rawAction.type]) {
@@ -89,17 +93,24 @@ export function usePrepareDetailedAction(
         true,
       );
       const amount = fromNano(action.amount, action.jetton?.decimals ?? 9);
-      label = prefix + ' ' + amount.toString() + ' ' + (action.jetton?.symbol || action.jetton?.name && action.jetton.name.toUpperCase().slice(0, 3));
+      label = 
+        prefix + 
+        ' ' + 
+        truncateDecimal(amount.toString(), action.jetton.decimals ?? 9, false, true) + 
+        ' ' + 
+        (action.jetton?.symbol || action.jetton?.name && action.jetton.name.toUpperCase().slice(0, 3));
     }
 
     if (ActionType.Subscribe === ActionType[rawAction.type]) {
       const amount = TonWeb.utils.fromNano(new BigNumber(action.amount).abs().toString());
       if (compareAddresses(action.beneficiary.address, address.ton)) {
         sentLabelTranslationString = 'transaction_receive_date';
-        label = '+' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+        label =
+          '+' + ' ' + truncateDecimal(amount.toString(), Decimals[CryptoCurrencies.Ton], false, true) + ' ' + CryptoCurrencies.Ton.toUpperCase();
       } else {
         sentLabelTranslationString = 'transaction_subscription_date';
-        label = '-' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+        label =
+          '-' + ' ' + truncateDecimal(amount.toString(), Decimals[CryptoCurrencies.Ton], false, true) + ' ' + CryptoCurrencies.Ton.toUpperCase();
       }
     }
 
@@ -120,8 +131,11 @@ export function usePrepareDetailedAction(
 
     if (ActionType.AuctionBid === ActionType[rawAction.type]) {
       sentLabelTranslationString = 'transaction_bid_date';
-      const amount = TonWeb.utils.fromNano(new BigNumber(action.amount.value).abs().toString());
-      label = '-' + ' ' + amount.toString() + ' ' + CryptoCurrencies.Ton.toUpperCase();
+      const amount = TonWeb.utils.fromNano(
+        new BigNumber(action.amount.value).abs().toString(),
+      );
+      label =
+        '-' + ' ' + truncateDecimal(amount.toString(), Decimals[CryptoCurrencies.Ton], false, true) + ' ' + CryptoCurrencies.Ton.toUpperCase();
 
       infoRows.push({
         label: t('transaction_bid_dns'),

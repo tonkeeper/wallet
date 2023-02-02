@@ -57,7 +57,7 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
         const estimatedFee = await sendApi.estimateTx({ sendBocRequest: { boc } });
         const feeNano = new BigNumber(estimatedFee.fee.total.toString());
   
-        setFee(truncateDecimal(Ton.fromNano(feeNano.toString()), 1, true));
+        setFee(truncateDecimal(Ton.fromNano(feeNano.toString()), 1));
       } catch (err) {
         debugLog(err);
         setFee('0.04');

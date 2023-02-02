@@ -8,7 +8,7 @@ import { NftCollectionDeployParams, TxRequestBody } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import { debugLog, maskifyAddress } from '$utils';
+import {debugLog, maskifyAddress, toLocaleNumber} from '$utils';
 import { t } from '$translation';
 import { Modal } from '$libs/navigation';
 
@@ -94,10 +94,10 @@ export const NFTCollectionDeployModal = ({ params, ...options }: NFTCollectionDe
               </S.InfoItem>
             </Highlight>
             <Separator />
-            <Highlight onPress={() => copyText(String(fee))}>
+            <Highlight onPress={() => copyText(toLocaleNumber(String(fee)))}>
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
-                <S.InfoItemValueText>{fee} TON</S.InfoItemValueText>
+                <S.InfoItemValueText>{toLocaleNumber(fee)} TON</S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
           </S.Info>

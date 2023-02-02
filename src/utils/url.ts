@@ -2,6 +2,7 @@ import axios, { CancelTokenSource } from 'axios';
 import domainFromPartialUrl from 'domain-from-partial-url';
 import queryParser from 'query-string';
 import { Buffer } from 'buffer';
+import { DevFeature, useDevFeaturesToggle } from '$store';
 
 const { createHash } = require('react-native-crypto');
 
@@ -13,7 +14,16 @@ export const isValidUrl = (value: string) =>
 export const getDomainFromURL = (url: string): string => domainFromPartialUrl(url);
 
 export const getCorrectUrl = (url: string) => {
-  return url.startsWith('https') ? url : `https://${url}`;
+  const httpEnabled =
+    useDevFeaturesToggle.getState().devFeatures[DevFeature.UseHttpProtocol];
+
+  const protocol = httpEnabled ? 'http://' : 'https://';
+
+  const protocolToReplace = httpEnabled ? 'https://' : 'http://';
+
+  const fixedUrl = url.replace(protocolToReplace, protocol);
+
+  return fixedUrl.startsWith(protocol) ? fixedUrl : `${protocol}${url}`;
 };
 
 export const getUrlTitle = async (url: string, cancelTokenSource: CancelTokenSource) => {
@@ -49,12 +59,16 @@ export const getUrlTitle = async (url: string, cancelTokenSource: CancelTokenSou
   throw new Error('title not found');
 };
 
+export const getFixedLastSlashUrl = (url: string) => {
+  return url.replace(/\/$/, '');
+};
+
 export const generateAppHashFromUrl = (url: string) => {
   // get url without query
   const { url: parsedUrl } = queryParser.parseUrl(url);
 
   // remove last slash if it exists
-  const fixedUrl = parsedUrl.replace(/\/$/, '');
+  const fixedUrl = getFixedLastSlashUrl(parsedUrl);
 
   const hash = createHash('sha256').update(Buffer.from(fixedUrl)).digest('hex');
 
@@ -69,7 +83,16 @@ export const getSearchQuery = (url: string) => {
     'https://www.google.com/search',
   ].includes(parsed.url);
 
-  if (isGoogle) {
+  if (isGoogle && parsed.query.q) {
+    return parsed.query.q as string;
+  }
+
+  const isDuckDuckGo = [
+    'https://duckduckgo.com/',
+    'https://www.duckduckgo.com/',
+  ].includes(parsed.url);
+
+  if (isDuckDuckGo && parsed.query.q) {
     return parsed.query.q as string;
   }
 

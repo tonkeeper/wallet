@@ -8,4 +8,7 @@ export interface LargeNavBarProps {
   bottomComponent?: React.ReactNode;
   onPress?: () => void;
   hitSlop?: Insets;
+  position?: 'absolute' | 'relative';
+  safeArea?: boolean;
+  border?: boolean;
 }

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
-import {Base64, compareAddresses, debugLog, isValidAddress} from '$utils';
+import { Base64, compareAddresses, debugLog, isValidAddress } from '$utils';
 import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import {
@@ -12,7 +12,6 @@ import {
   openDeploy,
   openRequireWalletModal,
   openSend,
-  openTonConnect,
 } from '../helper';
 
 import { t } from '$translation';
@@ -25,8 +24,9 @@ import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.typ
 import { AppStackRouteNames } from '$navigation/navigationNames';
 import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
 import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
-import {openTimeNotSyncedModal} from "$core/ModalContainer/TimeNotSynced/TimeNotSynced";
+import { openTimeNotSyncedModal } from '$core/ModalContainer/TimeNotSynced/TimeNotSynced';
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
+import { openTonConnect } from '$core/TonConnect/TonConnectModal';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -46,7 +46,7 @@ export function checkIsTimeSynced() {
     return false;
   }
   return true;
-};
+}
 
 export function useDeeplinkingResolvers() {
   const deeplinking = useDeeplinking();
@@ -177,6 +177,7 @@ export function useDeeplinkingResolvers() {
                   modalName: ModalName.CONFIRM_SENDING,
                   key: 'CONFIRM_SENDING',
                   ...options,
+                  withGoBack: resolveParams.withGoBack ?? false,
                 });
               }
             },
@@ -189,7 +190,7 @@ export function useDeeplinkingResolvers() {
       }
       openSend(query.jetton, address, comment, resolveParams.withGoBack, true);
     } else {
-      openSend(currency, address, comment);
+      openSend(currency, address, comment, false);
     }
   });
 
@@ -281,7 +282,7 @@ export function useDeeplinkingResolvers() {
     } catch (err) {
       let message = err?.message;
       if (axios.isAxiosError(err)) {
-        const data = err.response?.data as (Record<string, any> | undefined);
+        const data = err.response?.data as Record<string, any> | undefined;
         message = data?.error ?? t('error_network');
       }
 
@@ -328,7 +329,7 @@ export function useDeeplinkingResolvers() {
       Toast.hide();
       let message = err?.message;
       if (axios.isAxiosError(err)) {
-        const data = err.response?.data as (Record<string, any> | undefined);
+        const data = err.response?.data as Record<string, any> | undefined;
         message = data?.error ?? t('error_network');
       }
 
@@ -340,6 +341,7 @@ export function useDeeplinkingResolvers() {
   deeplinking.add('/ton-connect/*', async ({ query, origin }) => {
     try {
       TonConnectRemoteBridge.setOrigin(origin);
+      TonConnectRemoteBridge.setReturnStrategy(query.ret);
 
       if (!query.r || !query.v || !query.id) {
         return;

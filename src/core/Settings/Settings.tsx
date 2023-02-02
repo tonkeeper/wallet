@@ -10,7 +10,11 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 import * as S from './Settings.style';
 import { PopupSelect, ScrollHandler, Text } from '$uikit';
 import { useNavigation, useTranslator } from '$hooks';
-import {alwaysShowV4R1Selector, fiatCurrencySelector, showV4R1Selector} from '$store/main';
+import {
+  alwaysShowV4R1Selector,
+  fiatCurrencySelector,
+  showV4R1Selector,
+} from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
 import {
   openAppearance,
@@ -48,9 +52,10 @@ import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
 import { jettonsBalancesSelector } from '$store/jettons';
 import { useAllAddresses } from '$hooks/useAllAddresses';
 import { useFlags } from '$utils/flags';
+import { SearchEngine, useBrowserStore } from '$store';
 
 export const Settings: FC = () => {
-  const flags = useFlags(['disable_apperance']);
+  const flags = useFlags(['disable_apperance', 'disable_support_button', 'disable_feedback_button']);
 
   const t = useTranslator();
   const nav = useNavigation();
@@ -66,6 +71,9 @@ export const Settings: FC = () => {
   const jettonBalances = useSelector(jettonsBalancesSelector);
   const allTonAddesses = useAllAddresses();
   const showV4R1 = useSelector(showV4R1Selector);
+
+  const searchEngine = useBrowserStore((state) => state.searchEngine);
+  const setSearchEngine = useBrowserStore((state) => state.actions.setSearchEngine);
 
   const handleRateApp = useCallback(() => {
     const options = {
@@ -92,8 +100,8 @@ export const Settings: FC = () => {
     Linking.openURL(t('settings_news_url')).catch((err) => console.log(err));
   }, [t]);
 
-  const handleDiscussion = useCallback(() => {
-    Linking.openURL(t('settings_discussion_url')).catch((err) => console.log(err));
+  const handleSupport = useCallback(() => {
+    Linking.openURL(getServerConfig('directSupportUrl')).catch((err) => console.log(err));
   }, [t]);
 
   const handleResetWallet = useCallback(() => {
@@ -129,6 +137,8 @@ export const Settings: FC = () => {
       return true;
     }) as SelectableVersion[];
   }, [showV4R1]);
+
+  const searchEngineVariants = Object.values(SearchEngine);
 
   const handleChangeVersion = useCallback(
     (version: SelectableVersion) => {
@@ -285,20 +295,43 @@ export const Settings: FC = () => {
                   {t('settings_notifications')}
                 </CellSectionItem>
               )}
+
+              <PopupSelect
+                items={searchEngineVariants}
+                selected={searchEngine}
+                onChange={setSearchEngine}
+                keyExtractor={(item) => item}
+                width={176}
+                renderItem={(item) => <Text variant="label1">{item}</Text>}
+              >
+                <CellSectionItem
+                  indicator={
+                    <Text variant="label1" color="accentPrimary">
+                      {searchEngine}
+                    </Text>
+                  }
+                >
+                  {t('settings_search_engine')}
+                </CellSectionItem>
+              </PopupSelect>
             </CellSection>
             <CellSection>
               <CellSectionItem onPress={handleRateApp} icon="ic-star-28">
                 {t('settings_rate')}
               </CellSectionItem>
-              <CellSectionItem onPress={handleDiscussion} icon="ic-telegram-28">
-                {t('settings_discussion')}
-              </CellSectionItem>
+              {!flags.disable_support_button ? (
+                <CellSectionItem onPress={handleSupport} icon="ic-telegram-28">
+                  {t('settings_support')}
+                </CellSectionItem>
+              ): null}
               <CellSectionItem onPress={handleNews} icon="ic-telegram-28">
                 {t('settings_news')}
               </CellSectionItem>
-              <CellSectionItem onPress={handleFeedback} icon="ic-envelope-28">
-                {t('settings_contact_support')}
-              </CellSectionItem>
+              {!flags.disable_feedback_button ? (
+                <CellSectionItem onPress={handleFeedback} icon="ic-envelope-28">
+                  {t('settings_contact_support')}
+                </CellSectionItem>
+              ): null}
               <CellSectionItem onPress={handleLegal} icon="ic-doc-28">
                 {t('settings_legal_documents')}
               </CellSectionItem>

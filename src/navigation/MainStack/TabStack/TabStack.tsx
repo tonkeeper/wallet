@@ -10,7 +10,7 @@ import { TabsStackRouteNames } from '$navigation';
 import { TabStackParamList } from './TabStack.interface';
 import { Icon, ScrollPositionContext } from '$uikit';
 import { useTheme } from '$hooks';
-import { isAndroid, nfs, ns } from '$utils';
+import { isAndroid, nfs, ns, trackEvent } from '$utils';
 import { t } from '$translation';
 import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
 import { NFTs } from '$core/NFTs/NFTs';
@@ -158,6 +158,11 @@ export const TabStack: FC = () => {
         name={TabsStackRouteNames.Explore}
         options={{
           tabBarLabel: t('tab_browser'),
+        }}
+        listeners={{
+          tabPress: e => {
+            trackEvent('browser_open')
+          },
         }}
       />
       <Tab.Screen

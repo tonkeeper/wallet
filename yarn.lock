@@ -2,6 +2,52 @@
 # yarn lockfile v1
 
 
+"@amplitude/analytics-browser@^1.6.7":
+  version "1.6.7"
+  resolved "https://registry.yarnpkg.com/@amplitude/analytics-browser/-/analytics-browser-1.6.7.tgz#2d42db6e7c628ad7a5b0abe7323e045dda43ed67"
+  integrity sha512-XbiSH01hMpNrS7ymv5u5GB5Fwk1EO2EgWV3SZ0ck3ajKQZQg1/Q1p0TggrB79pSG047xYIdVQjoD0XzAtPdOug==
+  dependencies:
+    "@amplitude/analytics-client-common" "^0.5.1"
+    "@amplitude/analytics-core" "^0.11.1"
+    "@amplitude/analytics-types" "^0.14.0"
+    "@amplitude/ua-parser-js" "^0.7.31"
+    tslib "^2.4.1"
+
+"@amplitude/analytics-client-common@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@amplitude/analytics-client-common/-/analytics-client-common-0.5.1.tgz#8ecf6db65fc59c53b624ddeda02573452b5f9271"
+  integrity sha512-RmIRJ1JG7Kre1bNY6x+mSp/LjnWNZngwL50zI9DsLuYw5fOmHCzJHn1Ntte+rQDlQ7dTr3jMg1zeP6+76CMw2Q==
+  dependencies:
+    "@amplitude/analytics-connector" "^1.4.5"
+    "@amplitude/analytics-core" "^0.11.1"
+    "@amplitude/analytics-types" "^0.14.0"
+    tslib "^2.4.1"
+
+"@amplitude/analytics-connector@^1.4.5":
+  version "1.4.6"
+  resolved "https://registry.yarnpkg.com/@amplitude/analytics-connector/-/analytics-connector-1.4.6.tgz#60a66eaf0bcdcd17db4f414ff340c69e63116a72"
+  integrity sha512-6jD2pOosRD4y8DT8StUCz7yTd5ZDkdOU9/AWnlWKM5qk90Mz7sdZrdZ9H7sA/L3yOJEpQOYZgQplQdWWUzyWug==
+  dependencies:
+    "@amplitude/ua-parser-js" "0.7.31"
+
+"@amplitude/analytics-core@^0.11.1":
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/@amplitude/analytics-core/-/analytics-core-0.11.1.tgz#faa801c1566dff9136091d6c9171b23ce4e18ef9"
+  integrity sha512-G+GgYFwxhD5DjYDKuC6jRcsO/kqJw4hLTlJ0x2mwppxVuMqQ44wRvdQ1hhzMRY02AGnmr0OR1xDtft8CabiIag==
+  dependencies:
+    "@amplitude/analytics-types" "^0.14.0"
+    tslib "^2.4.1"
+
+"@amplitude/analytics-types@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@amplitude/analytics-types/-/analytics-types-0.14.0.tgz#06848235e52fe1d46a6e04bbc5d14090bdde15e3"
+  integrity sha512-O3E/KHyWCb4HAlYevqgCzqQdS+0LhbJV2IeVGox2eyCge+/lGwtGdJV2rJNWcoGf3p+BhnbqJBlhkPMs12iniA==
+
+"@amplitude/ua-parser-js@0.7.31", "@amplitude/ua-parser-js@^0.7.31":
+  version "0.7.31"
+  resolved "https://registry.yarnpkg.com/@amplitude/ua-parser-js/-/ua-parser-js-0.7.31.tgz#749bf7cb633cfcc7ff3c10805bad7c5f6fbdbc61"
+  integrity sha512-+z8UGRaj13Pt5NDzOnkTBy49HE2CX64jeL0ArB86HAtilpnfkPB7oqkigN7Lf2LxscMg4QhFD7mmCfedh3rqTg==
+
 "@ampproject/remapping@^2.1.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@ampproject/remapping/-/remapping-2.2.0.tgz#56c133824780de3174aed5ab6834f3026790154d"
@@ -9368,11 +9414,6 @@ react-is@^16.13.0, react-is@^16.13.1, react-is@^16.7.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-native-appsflyer@6.5.21:
-  version "6.5.21"
-  resolved "https://registry.yarnpkg.com/react-native-appsflyer/-/react-native-appsflyer-6.5.21.tgz#ab67214f05e29d8ff20a662d6ee2fd41d4ed9f2b"
-  integrity sha512-9xokVnTRYszhBdBLrwNH9poeQnH0p1wA9ojHACWkZgDjCUypnIIq+5DFqD5oTTE3jPS9alU0AyLGL7zpZZoT7Q==
-
 react-native-camera@^4.2.1:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-4.2.1.tgz#caf74081f055e89d7e9b0cd5108965d808c60e90"
@@ -11148,10 +11189,10 @@ toidentifier@1.0.1:
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.1.tgz#3be34321a88a820ed1bd80dfaa33e479fbb8dd35"
   integrity sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==
 
-tonapi-sdk-js@^0.23.0:
-  version "0.23.0"
-  resolved "https://registry.yarnpkg.com/tonapi-sdk-js/-/tonapi-sdk-js-0.23.0.tgz#7d0b58c40f8c040f9552c5d1966dd048dc8c02aa"
-  integrity sha512-j/qSlR/mwZcHT3049yYy2E2p9VmIccbbQXxbFCEK1kI1fK6IfBQWLZzYLFhH+1T9HfIXfZ64mRFfB9sMb9lDqw==
+tonapi-sdk-js@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/tonapi-sdk-js/-/tonapi-sdk-js-0.24.0.tgz#b00d4364e4849429ecc9252d200b44ad7e2e1651"
+  integrity sha512-biaAiHc2tnVf0AdGXOEptBNVU9TR6LvJBUR0eAS8tfrW5KarnMNaxGXY5dIzBVPCbmaCB7SHP0cG/0iM9SDb0w==
   dependencies:
     react-arborist "^1.2.0"
 
@@ -11209,6 +11250,11 @@ tslib@^2.0.0, tslib@^2.0.1, tslib@^2.1.0, tslib@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
   integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
+
+tslib@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.1.tgz#0d0bfbaac2880b91e22df0768e55be9753a5b17e"
+  integrity sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==
 
 tsutils@^3.17.1:
   version "3.21.0"

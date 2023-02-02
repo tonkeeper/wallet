@@ -265,12 +265,19 @@ export interface JettonMetadata {
   name?: string;
 }
 
+export enum JettonVerification {
+  WHITELIST = 'whitelist',
+  NONE = 'none',
+  BLACKLIST = 'blacklist',
+}
+
 export interface JettonBalanceModel {
   currency: CryptoCurrency;
   metadata: JettonMetadata;
   balance: string;
   jettonAddress: string;
   walletAddress: string;
+  verification: JettonVerification;
 }
 
 export interface FavoriteModel {

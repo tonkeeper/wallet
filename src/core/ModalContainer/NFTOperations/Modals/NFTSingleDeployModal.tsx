@@ -8,7 +8,7 @@ import { NFTItemMeta } from '../useDownloadNFT';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import { debugLog } from '$utils';
+import {debugLog, toLocaleNumber} from '$utils';
 import { t } from '$translation';
 import { Modal } from '$libs/navigation';
 
@@ -88,13 +88,13 @@ export const NFTSingleDeployModal = ({ params, ...options }: NFTSingleDeployModa
               </S.InfoItem>
             </Highlight>
             <Separator />
-            <Highlight onPress={() => copyText(fee)}>
+            <Highlight onPress={() => fee && copyText(toLocaleNumber(fee))}>
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
                 <S.InfoItemValue>
                   {!!fee ? (
                     <Text variant="body1">
-                      {fee} TON
+                      {toLocaleNumber(fee)} TON
                     </Text>
                   ) : (
                     <Skeleton.Line width={80} />
