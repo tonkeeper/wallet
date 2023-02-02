@@ -70,7 +70,7 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
       }
       
       if (parseFloat(fee) < 0) {
-        transferParams.amount = Ton.toNano('0.1');
+        transferParams.amount = Ton.toNano('0.05');
       } else {
         transferParams.amount = Ton.toNano(fee).add(Ton.toNano('0.01'));
       }
