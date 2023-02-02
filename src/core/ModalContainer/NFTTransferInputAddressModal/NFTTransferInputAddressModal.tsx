@@ -1,15 +1,18 @@
 import React, { memo, useCallback, useLayoutEffect, useMemo, useState } from 'react';
 
 import { useValidateAddress } from '$hooks';
-import { Button, Input, Loader, Text } from '$uikit';
+import { Button, Icon, Input, Loader, Text } from '$uikit';
 import * as S from './NFTTransferInputAddressModal.style';
 import { t } from '$translation';
-import { asyncDebounce, compareAddresses, isAndroid, ns } from '$utils';
+import { asyncDebounce, compareAddresses, isAndroid, isValidAddress, ns, parseTonLink } from '$utils';
 import { NFTTransferInputAddressModalProps } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal.interface';
 import { LoaderContainer } from '$core/Send/steps/AddressStep/components/AddressInput/AddressInput.style';
 import { Modal, useNavigation } from '$libs/navigation';
 import { Tonapi } from '$libs/Tonapi';
 import TonWeb from 'tonweb';
+import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { openScanQR } from '$navigation';
+import { Toast } from '$store';
 
 export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalProps>(
   ({ nftAddress }) => {
@@ -88,6 +91,35 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
       setAddress(text);
     }, []);
 
+    const canScanQR = inputValue.length === 0;
+
+    const handleScanQR = useCallback(() => {
+      openScanQR(async (code: string) => {
+        const link = parseTonLink(code);
+        const isTransferOperation = link.match && link.operation === 'transfer';
+  
+        if (isTransferOperation && !isValidAddress(link.address)) {
+          Toast.fail(t('transfer_deeplink_address_error'));
+          return false;
+        } else if (isTransferOperation && isValidAddress(link.address)) {
+          handleTextChange(link.address);
+          return true;
+        } else if (isValidAddress(code)) {
+          handleTextChange(code);
+          return true;
+        }
+        return false;
+      });
+    }, [t, handleTextChange]);
+
+    const scanQRContainerStyle = useAnimatedStyle(
+      () => ({
+        opacity: withTiming(canScanQR ? 1 : 0, { duration: 150 }),
+        zIndex: canScanQR ? 1 : -1,
+      }),
+      [canScanQR],
+    );
+
     return (
       <Modal android_keyboardInputMode="adjustResize">
         <Modal.Header title={t('nft_transfer_nft')} />
@@ -119,6 +151,11 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
                   <Loader size="medium" />
                 </LoaderContainer>
               )}
+              <S.ScanQRContainer style={scanQRContainerStyle}>
+                <S.ScanQRTouchable disabled={!canScanQR} onPress={handleScanQR}>
+                  <Icon name="ic-viewfinder-28" color="accentPrimary" />
+                </S.ScanQRTouchable>
+              </S.ScanQRContainer>
             </S.InputWrapper>
           </S.Wrap>
           <S.Buttons>
