@@ -28,7 +28,7 @@ export const ExchangeModal: FC = () => {
   return (
     <Modal>
         <Modal.Header title={categories[0]?.title || t('exchange_title')} />
-        <Modal.ScrollView contentContainerStyle={{ paddingBottom: 64 }}>
+        <Modal.ScrollView>
           {isLoading ? (
             <S.LoaderWrap>
               <Loader size="medium" />
