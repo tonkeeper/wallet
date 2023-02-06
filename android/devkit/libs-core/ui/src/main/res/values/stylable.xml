@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="PasscodeIndicator">
+        <attr name="defaultSize" format="dimension|reference"/>
+        <attr name="activeSize" format="dimension|reference"/>
+        <attr name="defaultColor" format="color|reference"/>
+        <attr name="inputColor" format="color|reference"/>
+        <attr name="correctColor" format="color|reference"/>
+        <attr name="errorColor" format="color|reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="PasscodeNumPad">
+        <attr name="numSize" format="dimension|reference"/>
+        <attr name="contentColor" format="color|reference"/>
+    </declare-styleable>
+
+</resources>

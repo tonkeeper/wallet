@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<font-family xmlns:app="http://schemas.android.com/apk/res-auto">
+    <font app:fontStyle="normal" app:fontWeight="800" app:font="@font/montserrat_extra_bold" />
+    <font app:fontStyle="italic" app:fontWeight="800" app:font="@font/montserrat_extra_bold_italic" />
+</font-family>

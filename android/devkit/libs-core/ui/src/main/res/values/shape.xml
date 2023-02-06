@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ShapeAppearance.Tonkeeper.Corner.None" parent="ShapeAppearance.Material3.Corner.None"/>
+
+    <style name="ShapeAppearance.Tonkeeper.Corner.ExtraExtraSmall" parent="ShapeAppearance.Material3.Corner.ExtraSmall">
+        <item name="cornerSize">4dp</item>
+    </style>
+
+    <style name="ShapeAppearance.Tonkeeper.Corner.ExtraSmall" parent="ShapeAppearance.Material3.Corner.ExtraSmall">
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.Tonkeeper.Corner.Small" parent="ShapeAppearance.Material3.Corner.Small">
+        <item name="cornerSize">12dp</item>
+    </style>
+
+    <style name="ShapeAppearance.Tonkeeper.Corner.Medium" parent="ShapeAppearance.Material3.Corner.Medium">
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="ShapeAppearance.Tonkeeper.Corner.Large" parent="ShapeAppearance.Material3.Corner.Large">
+        <item name="cornerSize">20dp</item>
+    </style>
+
+    <style name="ShapeAppearance.Tonkeeper.Corner.Full" parent="ShapeAppearance.Material3.Corner.Full">
+        <item name="cornerSize">1</item>
+    </style>
+</resources>

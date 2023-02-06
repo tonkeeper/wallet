@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFFFF</color>
+    <color name="white04">#0AFFFFFF</color>
+    <color name="white06">#0FFFFFFF</color>
+
+    <color name="black">#FF000000</color>
+    <color name="black48">#7A000000</color>
+    <color name="black24">#3D000000</color>
+    <color name="black72">#B8000000</color>
+
+    <color name="regentGray">#FF8994A3</color>
+    <color name="shuttleGray">#FF556170</color>
+    <color name="brightGrey">#FF364052</color>
+
+    <color name="pictonBlue">#FF45AEF5</color>
+    <color name="silkBlue">#FF378AC2</color>
+    <color name="crystalBlue">#FF5BB8F6</color>
+    <color name="brightBlue">#FF0077FF</color>
+
+    <color name="strawberry">#FFFF3B30</color>
+    <color name="watermelon">#FFFF4766</color>
+    <color name="watermelon08">#14FF4766</color>
+    <color name="parisGreen">#FF39CC83</color>
+    <color name="neonCarrot">#FFF5A73B</color>
+    <color name="mediumPurple">#FF7665E5</color>
+
+    <color name="cinder">#FF10161F</color>
+    <color name="cinder96">#F510161F</color>
+    <color name="dark">#FF1D2633</color>
+    <color name="tuna">#FF2E3847</color>
+    <color name="comet24">#3D4F5A70</color>
+    <color name="mirage">#FF171F29</color>
+    <color name="gunmetal">#FF28303D</color>
+    <color name="ebonyClay">#FF222C3B</color>
+
+</resources>
