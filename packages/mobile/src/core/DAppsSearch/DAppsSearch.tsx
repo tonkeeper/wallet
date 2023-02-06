@@ -104,8 +104,8 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
               showsVerticalScrollIndicator={false}
               // eslint-disable-next-line react-native/no-inline-styles
               contentContainerStyle={{
-                paddingHorizontal: ns(16),
-                alignItems: IsTablet ? 'center' : undefined,
+                paddingHorizontal: IsTablet ? 0 : ns(16),
+                paddingTop: IsTablet ? ns(48) : 0,
               }}
               scrollEventThrottle={16}
               onLayout={handleScrollViewLayout}
@@ -131,7 +131,15 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
             </Animated.ScrollView>
           </ScrollHandler>
         </S.Content>
-        <SearchBar query={query} setQuery={setQuery} onSubmit={handleSearchBarSubmit} />
+        <S.SearchBarWrapper>
+          <S.SearchBarContent>
+            <SearchBar
+              query={query}
+              setQuery={setQuery}
+              onSubmit={handleSearchBarSubmit}
+            />
+          </S.SearchBarContent>
+        </S.SearchBarWrapper>
       </S.KeyboardAvoidView>
     </S.Container>
   );
