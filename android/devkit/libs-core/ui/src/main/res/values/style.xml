@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget.Tonkeeper.Core.PasscodeIndicator" parent="">
+        <item name="defaultSize">12dp</item>
+        <item name="activeSize">16dp</item>
+        <item name="defaultColor">?attr/backgroundContent</item>
+        <item name="inputColor">?attr/accentBlue</item>
+        <item name="correctColor">?attr/accentGreen</item>
+        <item name="errorColor">?attr/accentRed</item>
+    </style>
+
+    <style name="Widget.Tonkeeper.Core.PasscodeNumPad" parent="">
+        <item name="numSize">40dp</item>
+        <item name="contentColor">?attr/textPrimary</item>
+    </style>
+
+</resources>

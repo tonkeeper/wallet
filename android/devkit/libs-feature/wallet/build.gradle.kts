@@ -39,6 +39,10 @@ dependencies {
 
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.datastore:datastore:1.0.0")
+
+    // Local tests
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.4")
+
+    // Instrumented test
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
 }

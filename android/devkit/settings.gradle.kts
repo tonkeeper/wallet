@@ -17,6 +17,7 @@ dependencyResolutionManagement {
 rootProject.name = "devkit"
 
 include(":sample")
+include(":libs-core:ui")
 include(":libs-ton:crypto")
 include(":libs-ton:mnemonic")
 include(":libs-feature:localauth")

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Additional text attributes -->
+    <attr name="textAppearanceBody3" format="reference"/>
+    <attr name="textAppearanceBody4" format="reference"/>
+    <attr name="textAppearanceBody4Caps" format="reference"/>
+
+    <!-- Additional shape attributes -->
+    <attr name="shapeAppearanceCornerNone" format="reference"/>
+    <attr name="shapeAppearanceCornerExtraExtraSmall" format="reference"/>
+    <attr name="shapeAppearanceCornerFull" format="reference"/>
+    
+    <!-- Colors -->
+    <attr name="textPrimary" format="color" />
+    <attr name="textSecondary" format="color" />
+    <attr name="textTertiary" format="color" />
+    <attr name="textAccent" format="color" />
+    <attr name="textPrimaryAlternate" format="color" />
+
+    <attr name="backgroundPage" format="color" />
+    <attr name="backgroundTransparent" format="color" />
+    <attr name="backgroundContent" format="color" />
+    <attr name="backgroundContentTint" format="color" />
+    <attr name="backgroundHighlighted" format="color" />
+    <attr name="backgroundOverlayStrong" format="color" />
+    <attr name="backgroundOverlayLight" format="color" />
+    <attr name="backgroundOverlayExtraLight" format="color" />
+
+    <attr name="iconPrimary" format="color" />
+    <attr name="iconSecondary" format="color" />
+    <attr name="iconTertiary" format="color" />
+    <attr name="iconPrimaryAlternate" format="color" />
+
+    <attr name="buttonPrimaryBackground" format="color" />
+    <attr name="buttonPrimaryForeground" format="color" />
+    <attr name="buttonSecondaryBackground" format="color" />
+    <attr name="buttonSecondaryForeground" format="color" />
+    <attr name="buttonTertiaryBackground" format="color" />
+    <attr name="buttonTertiaryForeground" format="color" />
+    <attr name="buttonPrimaryBackgroundDisabled" format="color" />
+    <attr name="buttonSecondaryBackgroundDisabled" format="color" />
+    <attr name="buttonTertiaryBackgroundDisabled" format="color" />
+    <attr name="buttonPrimaryBackgroundHighlighted" format="color" />
+    <attr name="buttonSecondaryBackgroundHighlighted" format="color" />
+    <attr name="buttonTertiaryBackgroundHighlighted" format="color" />
+
+    <attr name="fieldBackground" format="color" />
+    <attr name="fieldActiveBorder" format="color" />
+    <attr name="fieldErrorBorder" format="color" />
+    <attr name="fieldErrorBackground" format="color" />
+
+    <attr name="accentBlue" format="color" />
+    <attr name="accentGreen" format="color" />
+    <attr name="accentRed" format="color" />
+    <attr name="accentOrange" format="color" />
+    <attr name="accentPurple" format="color" />
+
+    <attr name="tabBarActiveIcon" format="color" />
+    <attr name="tabBarInactiveIcon" format="color" />
+
+    <attr name="separatorCommon" format="color" />
+    <attr name="separatorAlternate" format="color" />
+
+</resources>
