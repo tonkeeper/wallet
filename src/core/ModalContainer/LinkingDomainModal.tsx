@@ -3,7 +3,7 @@ import { t } from '$translation';
 import { BottomSheet, Highlight, Separator, Skeleton, Text } from '$uikit';
 import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
 import { Base64, debugLog, maskifyAddress, truncateDecimal } from '$utils';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ActionFooter, useActionFooter } from './NFTOperations/NFTOperationFooter';
 import { useUnlockVault } from './NFTOperations/useUnlockVault';
 import * as S from './NFTOperations/NFTOperations.styles';
@@ -65,6 +65,10 @@ export class LinkingDomainActions {
     }
   }
 
+  public updateWalletAddress(address: string | undefined) {
+      this.walletAddress = address;
+  }
+
   /**
    * Creates boc with DNS-record
    */
@@ -78,7 +82,7 @@ export class LinkingDomainActions {
       category: TonWeb.dns.DNS_CATEGORY_WALLET, 
       value: address ? TonWeb.dns.createSmartContractAddressRecord(address) : null
     });
-
+    
     const tx = curWallet.methods.transfer({
       toAddress: this.domainAddress,
       amount: this.transferAmount,
@@ -113,6 +117,10 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
   const linkingActions = useInstance(() => {
     return new LinkingDomainActions(domainAddress, walletAddress);
   });
+
+  useEffect(() => {
+    linkingActions.updateWalletAddress(walletAddress);
+  }, [walletAddress]);
 
   const unlockVault = useUnlockVault();
   const handleConfirm = onConfirm(async ({ startLoading }) => {
