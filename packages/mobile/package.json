@@ -1,6 +1,5 @@
 {
   "name": "@tonkeeper/mobile",
-  "main": "__generated__/AppEntry.js",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -171,7 +170,7 @@
       "react-native-minimizer",
       "react-native-scrypt",
       "tonweb",
-      "expo-constants",
+      "expo-modules-core",
       "@unimodules/core",
       "@unimodules/react-native-adapter",
       "react-native-permissions"
