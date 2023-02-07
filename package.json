@@ -9,6 +9,7 @@
   "scripts": {
     "pods": "cd packages && cd mobile && yarn pods",
     "start:mobile": "cd packages && cd mobile && yarn start",
+    "start:web": "cd packages && cd web && yarn start",
     "run:ios": "cd packages && cd mobile && yarn ios",
     "run:android": "cd packages && cd mobile && yarn android",
     "build:android": "cd packages && cd mobile && yarn build:android",
