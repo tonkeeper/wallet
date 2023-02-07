@@ -1,6 +1,7 @@
 import { IAppSdk } from '@tonkeeper/core-js/src/AppSdk';
 import { EventEmitter } from '@tonkeeper/core-js/src/entries/eventEmitter';
 import copyToClipboard from 'copy-to-clipboard';
+import packageJson from '../../package.json';
 
 export class BrowserAppSdk implements IAppSdk {
   copyToClipboard = (value: string, notification?: string) => {
@@ -14,5 +15,5 @@ export class BrowserAppSdk implements IAppSdk {
     window.open(url, '_black');
   };
   uiEvents = new EventEmitter();
-  version = process.env.REACT_APP_VERSION ?? 'Unknown';
+  version = packageJson.version ?? 'Unknown';
 }
