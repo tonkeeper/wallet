@@ -6,10 +6,8 @@ body {
   font-family: 'Montserrat', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: ${(props) => props.theme.backgroundContent};
-  color:  ${(props) => props.theme.textPrimary};
-
-
+  background-color: #1D2633;
+  color: #FFFFFF;
 }
 
 :root {
