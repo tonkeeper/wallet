@@ -78,7 +78,7 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>(
           <S.FooterWrap>
                 {currency === 'TON' && (<Button
                     style={{ marginBottom: 16 }}
-                    mode="primary"
+                    mode="secondary"
                     onPress={handleOpenRechargeWallet}
                 >
                 {t('txActions.signRaw.insufficientFunds.rechargeWallet')}
