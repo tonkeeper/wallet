@@ -13,6 +13,7 @@ import { PriceLabel } from './PriceLabel/PriceLabel';
 import { PercentDiff } from './PercentDiff.tsx/PercentDiff';
 import { PeriodSelector } from './PeriodSelector/PeriodSelector';
 import { ChartPeriod } from './Chart.types';
+import { Rate } from './Rate/Rate';
 
 export const { width: SIZE } = Dimensions.get('window');
 
@@ -42,28 +43,26 @@ export const Chart: React.FC = () => {
         const first = charts.ton[0].y;
         return [first, latest];
     }, [charts.ton]);
-    
-    const [firstRate, latestRate] = React.useMemo(() => {
-        return [firstPoint, latestPoint].map((value) => formatFiatCurrencyAmount((value * fiatRate).toFixed(2), fiatCurrency));
-    }, [fiatCurrency, latestPoint, firstPoint]);
       
     const points = monotoneCubicInterpolation({data, range: 40});
     const theme = useTheme();
 
     return (
         <View>
-             <View style={{ paddingHorizontal: 28 }}>
-                <Text color='foregroundPrimary' variant='h3'>{latestRate}</Text>
-                <PercentDiff fiatCurrency={fiatCurrency} fiatRate={fiatRate} latestPrice={latestPoint} firstPrice={firstPoint} />
-                <PriceLabel />
-            </View>
             <View>
                 <ChartPathProvider data={{ points }}>
-                    <ChartPath hapticsEnabled strokeWidth={2} height={230} stroke={theme.colors.accentPrimaryLight} width={SIZE} />
-                    <ChartDot size={40} style={{ backgroundColor: 'rgba(69,174,245,0.24)', alignItems: 'center', justifyContent: 'center' }}>
-                        <View style={{ height: 16, width: 16, backgroundColor: theme.colors.accentPrimaryLight, borderRadius: 8 }} />
-                    </ChartDot>
-                    <CurrentPositionVerticalLine thickness={1} strokeDasharray={0} length={230} color={theme.colors.accentPrimaryLight} />
+                    <View style={{ paddingHorizontal: 28 }}>
+                        <Rate fiatCurrency={fiatCurrency} fiatRate={fiatRate} latestPoint={latestPoint} />
+                        <PercentDiff fiatCurrency={fiatCurrency} fiatRate={fiatRate} latestPoint={latestPoint} firstPoint={firstPoint} />
+                        <PriceLabel />
+                    </View>
+                    <View>
+                        <ChartPath hapticsEnabled strokeWidth={2} height={230} stroke={theme.colors.accentPrimaryLight} width={SIZE} />
+                        <ChartDot size={40} style={{ backgroundColor: 'rgba(69,174,245,0.24)', alignItems: 'center', justifyContent: 'center' }}>
+                            <View style={{ height: 16, width: 16, backgroundColor: theme.colors.accentPrimaryLight, borderRadius: 8 }} />
+                        </ChartDot>
+                        <CurrentPositionVerticalLine thickness={1} strokeDasharray={0} length={230} color={theme.colors.accentPrimaryLight} />
+                    </View>
                 </ChartPathProvider>
                 <View style={{ position: 'absolute', right: 16, bottom: 18 }}>
                     <Text variant='label3' color='foregroundSecondary'>{min}</Text>

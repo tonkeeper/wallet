@@ -134,6 +134,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
                 </Button>
               </View>
             )}
+            <View style={{ marginTop: 32 }} />
             <Chart />
           </>
       </ScrollView>
