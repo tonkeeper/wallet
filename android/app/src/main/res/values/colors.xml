@@ -4,4 +4,6 @@
   <color name="colorPrimary">#10161F</color>
   <color name="colorPrimaryDark">#10161F</color>
   <color name="pushIcon">#45AEF5</color>
+  <color name="alert_background">#1D2633</color>
+  <color name="alert_text">#FFFFFF</color>
 </resources>

@@ -220,7 +220,7 @@
     "comfirm": {
       "comment_label": "Комментарий",
       "comment_label_required": "Обязательный комментарий",
-      "comment_required_text": "Обязательно укажите Memo или тег при отправке на биржу. \n",
+      "comment_required_text": "Обязательно укажите memo или тег при отправке на биржу. ",
       "comment_description": "Комментарий виден всем.",
       "comment_placeholder": "Текст для получателя (необяз.)",
       "comment_placeholder_required": "Memo или тег",

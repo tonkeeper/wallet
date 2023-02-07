@@ -48,7 +48,7 @@ export class LinkingDomainActions {
     this.domainAddress = domainAddress;
     this.walletAddress = walletAddress;
   }
-
+  
   /**
    * Calculates fee. Returns human-readable string or 0 in case of error
    */
@@ -105,7 +105,8 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
   const [walletAddress, setWalletAddress] = React.useState(defaultWalletAddress);
   const bottomSheetRef = React.useRef<BottomSheetRef>(null);
   const [fee] = React.useState(initialFee);
-  const copyText = useCopyText();  
+  const copyText = useCopyText();
+  const [isDisabled, setIsDisabled] = React.useState(false);
 
   const { footerRef, onConfirm } = useActionFooter();
 
@@ -119,6 +120,7 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
     const privateKey = await vault.getTonPrivateKey();
     
     startLoading();
+    setIsDisabled(true);
     
     const boc = await linkingActions.createBoc(privateKey);
     await Tonapi.sendBoc(boc);
@@ -153,6 +155,7 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
                 </S.InfoItemLabel>
                 <S.InfoItemValue>
                   <TouchableOpacity 
+                    disabled={isDisabled}
                     style={{ alignItems: 'flex-end' }}
                     onPress={handleReplace}
                     activeOpacity={0.6}
@@ -162,7 +165,7 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
                     </Text>
                     <Text 
                       variant="body2"
-                      color="accentPrimary"
+                      color={isDisabled ? "foregroundTertiary" : "accentPrimary"}
                     >
                       {t('dns_replace_button')}
                     </Text>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Tonkeeper.Core" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Default Typography -->
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.Tonkeeper.Num1</item>
+        <item name="textAppearanceDisplayMedium">@style/TextAppearance.Tonkeeper.Num2</item>
+        <item name="textAppearanceHeadline1">@style/TextAppearance.Tonkeeper.H1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.Tonkeeper.H2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.Tonkeeper.H3</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.Tonkeeper.Label1</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.Tonkeeper.Label2</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Tonkeeper.Label3</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.Tonkeeper.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.Tonkeeper.Body2</item>
+        <item name="textAppearanceBody3">@style/TextAppearance.Tonkeeper.Body3</item>
+        <item name="textAppearanceBody4">@style/TextAppearance.Tonkeeper.Body4</item>
+        <item name="textAppearanceBody4Caps">@style/TextAppearance.Tonkeeper.Body4</item>
+
+        <!-- Default Shapes -->
+        <item name="shapeCornerFamily">rounded</item>
+        <item name="shapeAppearanceCornerNone">@style/ShapeAppearance.Tonkeeper.Corner.None</item>
+        <item name="shapeAppearanceCornerExtraExtraSmall">@style/ShapeAppearance.Tonkeeper.Corner.ExtraExtraSmall</item>
+        <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.Tonkeeper.Corner.ExtraSmall</item>
+        <item name="shapeAppearanceCornerSmall">@style/ShapeAppearance.Tonkeeper.Corner.Small</item>
+        <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.Tonkeeper.Corner.Medium</item>
+        <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.Tonkeeper.Corner.Large</item>
+        <item name="shapeAppearanceCornerFull">@style/ShapeAppearance.Tonkeeper.Corner.Full</item>
+
+        <!-- Default Colors -->
+        <item name="textPrimary">@color/white</item>
+        <item name="textSecondary">@color/regentGray</item>
+        <item name="textTertiary">@color/shuttleGray</item>
+        <item name="textAccent">@color/pictonBlue</item>
+        <item name="textPrimaryAlternate">@color/cinder</item>
+
+        <item name="backgroundPage">@color/cinder</item>
+        <item name="backgroundTransparent">@color/cinder96</item>
+        <item name="backgroundContent">@color/dark</item>
+        <item name="backgroundContentTint">@color/tuna</item>
+        <item name="backgroundHighlighted">@color/comet24</item>
+        <item name="backgroundOverlayStrong">@color/black72</item>
+        <item name="backgroundOverlayLight">@color/black48</item>
+        <item name="backgroundOverlayExtraLight">@color/black24</item>
+
+        <item name="iconPrimary">@color/white</item>
+        <item name="iconSecondary">@color/regentGray</item>
+        <item name="iconTertiary">@color/shuttleGray</item>
+        <item name="iconPrimaryAlternate">@color/cinder</item>
+
+        <item name="buttonPrimaryBackground">@color/pictonBlue</item>
+        <item name="buttonPrimaryForeground">@color/white</item>
+        <item name="buttonSecondaryBackground">@color/dark</item>
+        <item name="buttonSecondaryForeground">@color/white</item>
+        <item name="buttonTertiaryBackground">@color/tuna</item>
+        <item name="buttonTertiaryForeground">@color/white</item>
+        <item name="buttonPrimaryBackgroundDisabled">@color/silkBlue</item>
+        <item name="buttonSecondaryBackgroundDisabled">@color/mirage</item>
+        <item name="buttonTertiaryBackgroundDisabled">@color/gunmetal</item>
+        <item name="buttonPrimaryBackgroundHighlighted">@color/crystalBlue</item>
+        <item name="buttonSecondaryBackgroundHighlighted">@color/ebonyClay</item>
+        <item name="buttonTertiaryBackgroundHighlighted">@color/brightGrey</item>
+
+        <item name="fieldBackground">@color/dark</item>
+        <item name="fieldActiveBorder">@color/pictonBlue</item>
+        <item name="fieldErrorBorder">@color/watermelon</item>
+        <item name="fieldErrorBackground">@color/watermelon08</item>
+
+        <item name="accentBlue">@color/pictonBlue</item>
+        <item name="accentGreen">@color/parisGreen</item>
+        <item name="accentRed">@color/watermelon</item>
+        <item name="accentOrange">@color/neonCarrot</item>
+        <item name="accentPurple">@color/mediumPurple</item>
+
+        <item name="tabBarActiveIcon">@color/pictonBlue</item>
+        <item name="tabBarInactiveIcon">@color/regentGray</item>
+
+        <item name="separatorCommon">@color/comet24</item>
+        <item name="separatorAlternate">@color/white04</item>
+    </style>
+
+    <style name="Theme.Tonkeeper.Core.Light">
+        <!-- nothing for now -->
+    </style>
+
+    <style name="Theme.Tonkeeper.Core.Dark">
+
+    </style>
+
+</resources>
