@@ -11,7 +11,7 @@ const hundredYears = 100 * 355 * 24 * 60 * 60;
 export const createExpireTimestamp = (expired: number) => {
   const timestamp = Math.round(Date.now() / 1000) + expired;
   const timestampBuffer = Buffer.allocUnsafe(8);
-  timestampBuffer.writeBigInt64LE(BigInt(timestamp));
+  timestampBuffer.writeDoubleLE(timestamp);
 
   return timestampBuffer;
 };
