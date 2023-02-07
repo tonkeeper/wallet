@@ -23,6 +23,7 @@
     "icons": "node scripts/generate_icons.js"
   },
   "dependencies": {
+    "@tonkeeper/shared": "1.0.0",
     "@amplitude/analytics-browser": "^1.6.7",
     "@gorhom/bottom-sheet": "^4.4.4",
     "@react-native-async-storage/async-storage": "^1.15.5",
