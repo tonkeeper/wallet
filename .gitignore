@@ -81,3 +81,7 @@ ios/ton_keeper/Resources/Generated/R.generated.swift
 
 # Fleet
 .fleet/
+
+
+**/public/locales/*
+**/src/wallet-translation/*
