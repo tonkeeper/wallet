@@ -567,6 +567,18 @@
     }
   },
 
+  "chart": {
+    "price": "Price",
+    "periods": {
+      "1Y": "Y",
+      "3M": "3M",
+      "1M": "M",
+      "7D": "W",
+      "1D": "D",
+      "1H": "H"
+    }
+  },
+
   "deploy_contract_title": "Deploy contract",
   "deploy_contract_button": "Confirm and deploy",
 

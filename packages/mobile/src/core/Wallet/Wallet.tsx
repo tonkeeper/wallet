@@ -7,11 +7,12 @@ import { Button, CurrencyIcon, Icon, NavBar, Text } from '$uikit';
 import { useTranslator, useWalletInfo } from '$hooks';
 import { openReceive, openRequireWalletModal, openSend } from '$navigation';
 import { walletActions, walletSelector } from '$store/wallet';
-import { FlatList, View } from 'react-native';
+import { Dimensions, FlatList, ScrollView, View } from 'react-native';
 import { ns, toLocaleNumber } from '$utils';
 import { CryptoCurrencies } from '$shared/constants';
 import { toastActions } from '$store/toast';
 import { IconNames } from '$uikit/Icon/generated.types';
+import { Chart } from '$uikit/Chart/Chart';
 
 const Action: FC<{
   onPress: () => void;
@@ -89,9 +90,8 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   return (
     <S.Wrap>
       <NavBar />
-      <FlatList
-        ListHeaderComponent={
-          <>
+      <ScrollView>
+      <>
             <S.Info>
               <CurrencyIcon currency={currency} size={72} />
               <S.AmountWrapper>
@@ -134,12 +134,9 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
                 </Button>
               </View>
             )}
+            <Chart />
           </>
-        }
-        keyExtractor={(_, index) => `${index}`}
-        data={[]}
-        renderItem={() => null}
-      />
+      </ScrollView>
     </S.Wrap>
   );
 };
