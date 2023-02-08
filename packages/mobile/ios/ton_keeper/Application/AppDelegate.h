@@ -4,6 +4,6 @@
 
 #import <Expo/Expo.h>
 
-@interface AppDelegate : EXAppDelegateWrapper <UIApplicationDelegate, RCTBridgeDelegate>
+@interface AppDelegate : EXAppDelegateWrapper <RCTBridgeDelegate>
 
 @end
