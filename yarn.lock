@@ -3556,12 +3556,19 @@
     "@types/react" "*"
     "@types/react-native" "*"
 
-"@types/react-native@*", "@types/react-native@^0.70", "@types/react-native@~0.66.13":
+"@types/react-native@*", "@types/react-native@~0.66.13":
   version "0.66.26"
   resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.66.26.tgz#79b00df896db0160727d4dca0fe989d11dbacc2b"
   integrity sha512-UrpnaumuqADmvV3nba+7MGDA8cpX9AomSPo7gJfsDPRkulw6H1f9KGh5c95P61dwROsOLbWkSMx4F2dp1j/xlg==
   dependencies:
     "@types/react" "^17"
+
+"@types/react-native@^0.70":
+  version "0.70.10"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.70.10.tgz#494576e0dc20aa319003f0cdd99192124d64038d"
+  integrity sha512-m9B9hJk1w/c04zj5PCYTjJNXt+1UvKtzJj4nO/BjiS4s/zmUdkLdnbLqRQCQiTA0wuvvMbrffuPdheRtYu/M1Q==
+  dependencies:
+    "@types/react" "*"
 
 "@types/react-redux@^7.1.20":
   version "7.1.25"
@@ -15173,6 +15180,11 @@ react-native-securerandom@^1.0.1:
   integrity sha512-ibuDnd3xi17HyD5CkilOXGPFpS9Z1oifjyHFwUl8NMzcQcpruM0ZX8ytr3A4rCeAsaBHjz69r78Xgd6vUswv1Q==
   dependencies:
     base64-js "*"
+
+react-native-share@^8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-8.2.0.tgz#6ad15ca3bedca5b7d0ec2b65c78a167d712f1fc8"
+  integrity sha512-0RHeU/yntMzFsPmdSTJH7W7Y3+Fsw7qR3ufBMxodHJKzK8tBv5ZTEst8XMjTzrBUpamMaj23HCBYl9eYqntxpA==
 
 react-native-sse@^1.1.0:
   version "1.1.0"
