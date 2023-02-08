@@ -82,6 +82,41 @@ export const useConnectedAppsStore = create(
               return { connectedApps };
             });
           },
+          removeRemoteConnection: (chainName, walletAddress, url, clientSessionId) => {
+            const fixedUrl = getFixedLastSlashUrl(url);
+
+            set(({ connectedApps }) => {
+              const keys = Object.keys(connectedApps[chainName][walletAddress] || {});
+
+              const apps = Object.values(connectedApps[chainName][walletAddress] || {});
+
+              const index = apps.findIndex((app) =>
+                fixedUrl.startsWith(getFixedLastSlashUrl(app.url)),
+              );
+
+              const hash = keys[index];
+
+              if (connectedApps[chainName][walletAddress]?.[hash]) {
+                connectedApps[chainName][walletAddress][hash].connections = connectedApps[
+                  chainName
+                ][walletAddress][hash].connections.filter(
+                  (connection) =>
+                    !(
+                      connection.type === TonConnectBridgeType.Remote &&
+                      connection.clientSessionId === clientSessionId
+                    ),
+                );
+
+                if (
+                  connectedApps[chainName][walletAddress][hash].connections.length === 0
+                ) {
+                  delete connectedApps[chainName][walletAddress][hash];
+                }
+              }
+
+              return { connectedApps };
+            });
+          },
           removeApp: (chainName, walletAddress, url) => {
             const fixedUrl = getFixedLastSlashUrl(url);
 

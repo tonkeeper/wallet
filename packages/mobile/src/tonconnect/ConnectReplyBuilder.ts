@@ -13,7 +13,6 @@ import { Buffer } from 'buffer';
 import { getDomainFromURL } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
 import { Int64LE } from 'int64-buffer';
-import { CONNECT_ITEM_ERROR_CODES } from '@tonconnect/protocol/lib/models/wallet-message/wallet-event/connect-event';
 import { DAppManifest } from './models';
 
 const { createHash } = require('react-native-crypto');
@@ -96,14 +95,18 @@ export class ConnectReplyBuilder {
       return {
         name: 'ton_proof',
         error: {
-          code: CONNECT_ITEM_ERROR_CODES.UNKNOWN_ERROR,
+          code: 0,
           message: `Wallet internal error: ${e.message}`,
         },
       };
     }
   }
 
-  createReplyItems(addr: string, privateKey: Uint8Array, walletStateInit: string): ConnectItemReply[] {
+  createReplyItems(
+    addr: string,
+    privateKey: Uint8Array,
+    walletStateInit: string,
+  ): ConnectItemReply[] {
     const address = new TonWeb.utils.Address(addr).toString(false, true, true);
 
     const replyItems = this.request.items.map((requestItem): ConnectItemReply => {
@@ -122,7 +125,7 @@ export class ConnectReplyBuilder {
         default:
           return {
             name: (requestItem as ConnectItem).name,
-            error: { code: CONNECT_ITEM_ERROR_CODES.METHOD_NOT_SUPPORTED },
+            error: { code: 400 },
           } as unknown as ConnectItemReply;
       }
     });
@@ -130,7 +133,10 @@ export class ConnectReplyBuilder {
     return replyItems;
   }
 
-  static createAutoConnectReplyItems(addr: string, walletStateInit: string): ConnectItemReply[] {
+  static createAutoConnectReplyItems(
+    addr: string,
+    walletStateInit: string,
+  ): ConnectItemReply[] {
     const address = new TonWeb.utils.Address(addr).toString(false, true, true);
 
     return [

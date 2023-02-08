@@ -13,6 +13,9 @@ import {
   TonConnectBridgeType,
   IConnectedAppConnectionRemote,
   Toast,
+  IConnectedAppConnection,
+  removeInjectedConnection,
+  removeRemoteConnection,
 } from '$store';
 import { debugLog } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
@@ -198,6 +201,22 @@ class TonConnectService {
         walletStateInit,
       );
 
+      if (
+        !connectedApp.connections.some(
+          (item) => item.type === TonConnectBridgeType.Injected,
+        )
+      ) {
+        saveAppConnection(
+          currentWalletAddress,
+          {
+            name: connectedApp.name,
+            url: connectedApp.url,
+            icon: connectedApp.icon,
+          },
+          { type: TonConnectBridgeType.Injected, replyItems },
+        );
+      }
+
       return {
         event: 'connect',
         payload: {
@@ -217,6 +236,23 @@ class TonConnectService {
         error?.message,
       );
     }
+  }
+
+  async handleDisconnectRequest(
+    request: AppRequest<'disconnect'>,
+    connectedApp: IConnectedApp,
+    connection: IConnectedAppConnection,
+  ): Promise<WalletResponse<'disconnect'>> {
+    if (connection.type === TonConnectBridgeType.Injected) {
+      removeInjectedConnection(connectedApp.url);
+    } else {
+      removeRemoteConnection(connectedApp, connection);
+    }
+
+    return {
+      id: request.id,
+      result: {},
+    };
   }
 
   async sendTransaction(
@@ -319,8 +355,9 @@ class TonConnectService {
   private async handleRequest<T extends RpcMethod>(
     request: AppRequest<T>,
     connectedApp: IConnectedApp | null,
+    connection: IConnectedAppConnection | null,
   ): Promise<WalletResponse<T>> {
-    if (!connectedApp) {
+    if (!connectedApp || !connection) {
       return {
         error: {
           code: SEND_TRANSACTION_ERROR_CODES.UNKNOWN_APP_ERROR,
@@ -332,6 +369,10 @@ class TonConnectService {
 
     if (request.method === 'sendTransaction') {
       return this.sendTransaction(request);
+    }
+
+    if (request.method === 'disconnect') {
+      return this.handleDisconnectRequest(request, connectedApp, connection);
     }
 
     return {
@@ -349,16 +390,22 @@ class TonConnectService {
   ): Promise<WalletResponse<T>> {
     const connectedApp = findConnectedAppByUrl(webViewUrl);
 
-    return this.handleRequest(request, connectedApp);
+    const allConnections = connectedApp?.connections ?? [];
+
+    const connection =
+      allConnections.find((item) => item.type === TonConnectBridgeType.Injected) || null;
+
+    return this.handleRequest(request, connectedApp, connection);
   }
 
   async handleRequestFromRemoteBridge<T extends RpcMethod>(
     request: AppRequest<T>,
     clientSessionId: string,
   ): Promise<WalletResponse<T>> {
-    const { connectedApp } = findConnectedAppByClientSessionId(clientSessionId);
+    const { connectedApp, connection } =
+      findConnectedAppByClientSessionId(clientSessionId);
 
-    return this.handleRequest(request, connectedApp);
+    return this.handleRequest(request, connectedApp, connection);
   }
 
   async disconnect(url: string) {
