@@ -11,7 +11,7 @@ export interface PeriodSelectorProps {
     onSelect: (newPeriod: ChartPeriod) => void;
 }
 
-const mappedPeriods = Object.values(ChartPeriod).map(period => ({ value: period, label: t(`chart.periods.${period}`) }));
+const mappedPeriods = Object.values(ChartPeriod).map(period => ({ value: period, label: t(`chart.periods.${period}`) })).reverse();
 
 export const Period: React.FC<{ onSelect: () => void; selected?: boolean; label: string }> = (props) => {
     const theme = useTheme();

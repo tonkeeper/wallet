@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Text } from '$uikit/Text/Text';
 import { TonThemeColor } from '$styled';
 import { FiatCurrencies } from '$shared/constants';
@@ -25,6 +25,10 @@ export const PercentDiff: React.FC<PercentDiffProps> = (props) => {
             2,
           );
     }, [activePoint, props.firstPoint]);
+
+    useEffect(() => {
+      setActivePoint(props.latestPoint);
+    }, [props.latestPoint]);
     
       const fiatInfo = React.useMemo(() => {
         let percent = '0.0%';
@@ -61,7 +65,7 @@ export const PercentDiff: React.FC<PercentDiffProps> = (props) => {
           if (result !== previous) {
             runOnJS(formatPriceWrapper)(result);
           }
-      }, []);
+      }, [props.latestPoint]);
     
 
     return (
