@@ -31,7 +31,9 @@ export const JettonNameWrapper = styled.View`
   margin-bottom: ${ns(12)}px;
 `;
 
-export const JettonIDWrapper = styled.View``;
+export const JettonIDWrapper = styled.View`
+  margin-top: ${ns(12)}px;
+`;
 
 export const FlexRow = styled.View`
   flex-direction: row;

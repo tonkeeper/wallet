@@ -11,7 +11,7 @@ import {
   Skeleton,
   ShowMore,
 } from '$uikit';
-import { formatAmountAndLocalize, maskifyTonAddress, ns } from '$utils';
+import { formatAmountAndLocalize, fromNano, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
 import { useTheme, useTranslator } from '$hooks';
@@ -25,6 +25,7 @@ import { Linking, View } from 'react-native';
 import { eventsSelector, eventsActions } from '$store/events';
 import { jettonIsLoadingSelector, jettonsActions, jettonSelector } from '$store/jettons';
 import { walletAddressSelector } from '$store/wallet';
+import { useJettonPrice } from '$hooks/useJettonPrice';
 
 const ActionButton: FC<ActionButtonProps> = (props) => {
   const { children, onPress, icon, isLast } = props;
@@ -47,6 +48,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const dispatch = useDispatch();
   const jettonEvents = useJettonEvents(jetton.jettonAddress);
   const address = useSelector(walletAddressSelector);
+  const { price, total } = useJettonPrice(jetton.jettonAddress, jetton.balance);
   const { isLoading: isEventsLoading, canLoadMore } = useSelector(eventsSelector);
   const isJettonMetaLoading = useSelector((state) =>
     // @ts-ignore
@@ -101,10 +103,20 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
       <S.HeaderWrap>
         <S.FlexRow>
           <S.JettonAmountWrapper>
-            <Text style={{ marginBottom: 12 }} variant="h2">
+            <Text variant="h2">
               {formatAmountAndLocalize(jetton.balance, jetton.metadata.decimals)}{' '}
               {jetton.metadata.symbol}
             </Text>
+            {total ? (
+              <Text style={{ marginTop: 2 }} variant='body2' color='foregroundSecondary'>
+                {total}
+              </Text>
+            ) : null}
+            {price ? (
+              <Text style={{ marginTop: 12 }} variant='body2' color='foregroundSecondary'>
+                {price}
+              </Text>
+            ) : null}
             <S.JettonIDWrapper>
               {!(isJettonMetaLoading ?? true) ? (
                 <ShowMore backgroundColor={theme.colors.backgroundPrimary} maxLines={2} text={jettonMeta?.description} />
