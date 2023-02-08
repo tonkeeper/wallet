@@ -53,6 +53,8 @@ class TonConnectRemoteBridgeService {
   }
 
   public setBridge(bridgeUrl: string) {
+    this.setLastEventId('');
+
     this.bridgeUrl = bridgeUrl;
   }
 
