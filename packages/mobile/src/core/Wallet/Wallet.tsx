@@ -3,38 +3,34 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { WalletProps } from './Wallet.interface';
 import * as S from './Wallet.style';
-import { Button, CurrencyIcon, Icon, NavBar, Text } from '$uikit';
-import { useTranslator, useWalletInfo } from '$hooks';
+import { Button, CurrencyIcon, Icon, NavBar, ShowMore, Text } from '$uikit';
+import { useTheme, useTranslator, useWalletInfo } from '$hooks';
 import { openReceive, openRequireWalletModal, openSend } from '$navigation';
 import { walletActions, walletSelector } from '$store/wallet';
 import { FlatList, View } from 'react-native';
 import { ns, toLocaleNumber } from '$utils';
 import { CryptoCurrencies } from '$shared/constants';
 import { toastActions } from '$store/toast';
-import { IconNames } from '$uikit/Icon/generated.types';
+import { ActionButtonProps } from '$core/Balances/BalanceItem/BalanceItem.interface';
 
-const Action: FC<{
-  onPress: () => void;
-  icon: IconNames;
-}> = ({ children, onPress, icon }) => {
+const ActionButton: FC<ActionButtonProps> = (props) => {
+  const { children, onPress, icon, isLast, iconStyle } = props;
+
   return (
-    <S.Action
-      onPress={onPress}
-      contentViewStyle={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Icon name={icon} color="foregroundPrimary" />
-      <S.ActionLabelWrapper>
-        <Text variant="label2">{children}</Text>
-      </S.ActionLabelWrapper>
-    </S.Action>
+    <S.ActionWrapper isLast={isLast}>
+      <S.Action>
+        <S.Background borderEnd borderStart />
+        <S.ActionCont withDelay={false} onPress={onPress}>
+          <Icon name={icon} color="constantLight" />
+        </S.ActionCont>
+      </S.Action>
+      <Text variant="label3" color='foregroundSecondary'>{children}</Text>
+    </S.ActionWrapper>
   );
 };
 
 export const Wallet: FC<WalletProps> = ({ route }) => {
+  const theme = useTheme();
   const currency = route.params.currency;
   const { wallet, address } = useSelector(walletSelector);
   const t = useTranslator();
@@ -58,7 +54,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     return currency?.toUpperCase();
   }, [currency]);
 
-  const { amount, priceDiff, fiatInfo } = useWalletInfo(currency);
+  const { amount, priceDiff, rate, fiatInfo } = useWalletInfo(currency);
 
   const handleReceive = useCallback(() => {
     if (!wallet) {
@@ -88,41 +84,59 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
 
   return (
     <S.Wrap>
-      <NavBar />
+      <NavBar>
+        Toncoin
+      </NavBar>
       <FlatList
         ListHeaderComponent={
           <>
-            <S.Info>
-              <CurrencyIcon currency={currency} size={72} />
-              <S.AmountWrapper>
-                <Text variant="h2">
-                  {toLocaleNumber(amount)} {currencyUpper}
-                </Text>
-              </S.AmountWrapper>
-              <S.FiatInfo>
-                <S.FiatAmountWrapper>
-                  <Text color={fiatInfo.color} variant="body1">
-                    {fiatInfo.amount}
-                    &nbsp;&nbsp;{'·'}&nbsp;&nbsp;
-                    {fiatInfo.percentAbs}
+                <S.HeaderWrap>
+                  <S.FlexRow>
+                    <S.AmountWrapper>
+                      <Text variant="h2">
+                        {toLocaleNumber(amount)} {currencyUpper}
+                      </Text>
+                      <Text style={{ marginTop: 2 }} variant='body2' color='foregroundSecondary'>
+                        {fiatInfo.amount}
+                      </Text>
+                      <S.Price>
+                        <Text color='foregroundSecondary' variant='body2'>
+                          {rate}
+                        </Text>
+                        <Text style={{ marginLeft: 6 }} variant='body2' color={fiatInfo.color}>
+                          {fiatInfo.percent}&nbsp;&nbsp;24{t('wallet_hours_symbol')}
+                        </Text>
+                      </S.Price>
+                      <S.AboutWrapper>
+                        <ShowMore backgroundColor={theme.colors.backgroundPrimary} maxLines={2} text={t('about_ton')} />
+                      </S.AboutWrapper>
+                    </S.AmountWrapper>
+                    <S.IconWrapper>
+                      <Icon size={40} name='ic-ton-28' color="constantLight" />
+                    </S.IconWrapper>
+                  </S.FlexRow>
+                  <S.Divider />
+                  <S.ActionsContainer>
+                    <ActionButton onPress={handleSend} icon="ic-arrow-up-28">
+                      {t('wallet_buy')}
+                    </ActionButton>
+                    <ActionButton onPress={handleSend} icon="ic-arrow-up-28">
+                      {t('wallet_send')}
+                    </ActionButton>
+                    <ActionButton onPress={handleReceive} icon="ic-arrow-down-28">
+                      {t('wallet_receive')}
+                    </ActionButton>
+                    <ActionButton isLast onPress={handleSend} icon="ic-arrow-up-28">
+                      {t('wallet_sell')}
+                    </ActionButton>
+                  </S.ActionsContainer>
+                  <S.Divider />
+                </S.HeaderWrap>
+                <S.ExploreWrap>
+                  <Text variant='h3' color='foregroundPrimary'>
+                    {t('wallet_about')}
                   </Text>
-                </S.FiatAmountWrapper>
-                {!!priceDiff && +amount > 0 && (
-                  <Icon
-                    name={+priceDiff > 0 ? 'ic-up-12' : 'ic-down-12'}
-                    color={fiatInfo.color}
-                  />
-                )}
-              </S.FiatInfo>
-            </S.Info>
-            <S.Actions>
-              <Action icon="ic-arrow-down-16" onPress={handleReceive}>
-                {t('wallet_receive')}
-              </Action>
-              <Action icon="ic-arrow-up-16" onPress={handleSend}>
-                {t('wallet_send')}
-              </Action>
-            </S.Actions>
+                </S.ExploreWrap>
             {wallet && wallet.ton.isLockup() && (
               <View style={{ padding: ns(16) }}>
                 <Button

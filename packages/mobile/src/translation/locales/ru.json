@@ -39,6 +39,8 @@
   "wallet_receive": "Получить",
   "wallet_send": "Отправить",
   "wallet_buy": "Купить",
+  "wallet_sell": "Продать",
+  "wallet_about": "Подробнее",
   "wallet_swap": "Обменять",
   "wallet_old_balance": "Старый кошелёк:",
   "wallet_hours_symbol": "ч",

@@ -9,11 +9,12 @@ import {
   PopupMenu,
   PopupMenuItem,
   Skeleton,
+  ShowMore,
 } from '$uikit';
 import { formatAmountAndLocalize, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
-import { useTranslator } from '$hooks';
+import { useTheme, useTranslator } from '$hooks';
 import { ActionButtonProps } from '$core/Balances/BalanceItem/BalanceItem.interface';
 import { openReceive, openSend } from '$navigation';
 import { CryptoCurrencies } from '$shared/constants';
@@ -29,23 +30,20 @@ const ActionButton: FC<ActionButtonProps> = (props) => {
   const { children, onPress, icon, isLast } = props;
 
   return (
-    <S.Action isLast={isLast}>
-      <S.Background borderEnd borderStart />
-      <S.ActionCont withDelay={false} onPress={onPress}>
-        <S.ActionContentWrap>
-          <S.IconWrap>
-            <Icon name={icon} color="accentPrimary" />
-          </S.IconWrap>
-          <S.ActionLabelWrapper>
-            <Text variant="label2">{children}</Text>
-          </S.ActionLabelWrapper>
-        </S.ActionContentWrap>
-      </S.ActionCont>
-    </S.Action>
+    <S.ActionWrapper isLast={isLast}>
+      <S.Action>
+        <S.Background borderEnd borderStart />
+        <S.ActionCont withDelay={false} onPress={onPress}>
+          <Icon name={icon} color="constantLight" />
+        </S.ActionCont>
+      </S.Action>
+      <Text variant="label3" color='foregroundSecondary'>{children}</Text>
+    </S.ActionWrapper>
   );
 };
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
+  const theme = useTheme();
   const { bottom: bottomInset } = useSafeAreaInsets();
   const jetton = useJetton(route.params.jettonAddress);
   const t = useTranslator();
@@ -104,30 +102,36 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     }
     return (
       <S.HeaderWrap>
-        {jetton.metadata.image ? (
-          <S.Logo source={{ uri: jetton.metadata.image }} />
-        ) : null}
-        <Text variant="h2">
-          {formatAmountAndLocalize(jetton.balance, jetton.metadata.decimals)}{' '}
-          {jetton.metadata.symbol}
-        </Text>
-        <S.JettonIDWrapper>
-          {!(isJettonMetaLoading ?? true) ? (
-            <Text textAlign="center" variant="body1" color="foregroundSecondary">
-              {jettonMeta?.description}
+        <S.FlexRow>
+          <S.JettonAmountWrapper>
+            <Text style={{ marginBottom: 12 }} variant="h2">
+              {formatAmountAndLocalize(jetton.balance, jetton.metadata.decimals)}{' '}
+              {jetton.metadata.symbol}
             </Text>
-          ) : (
-            <Skeleton.Line style={{ marginTop: 6 }} width={120} />
-          )}
-        </S.JettonIDWrapper>
+            <S.JettonIDWrapper>
+              {!(isJettonMetaLoading ?? true) ? (
+                <ShowMore backgroundColor={theme.colors.backgroundPrimary} maxLines={2} text={jettonMeta?.description} />
+              ) : (
+                <>
+                  <Skeleton.Line style={{ marginTop: 6 }} width={240} />
+                </>
+              )}
+            </S.JettonIDWrapper>
+          </S.JettonAmountWrapper>
+          {jetton.metadata.image ? (
+            <S.Logo source={{ uri: jetton.metadata.image }} />
+          ) : null}
+        </S.FlexRow>
+        <S.Divider />
         <S.ActionsContainer>
-          <ActionButton onPress={handleReceive} icon="ic-tray-arrow-down-28">
-            {t('wallet_receive')}
-          </ActionButton>
-          <ActionButton isLast onPress={handleSend} icon="ic-tray-arrow-up-28">
+          <ActionButton onPress={handleSend} icon="ic-arrow-up-28">
             {t('wallet_send')}
           </ActionButton>
+          <ActionButton isLast onPress={handleReceive} icon="ic-arrow-down-28">
+            {t('wallet_receive')}
+          </ActionButton>
         </S.ActionsContainer>
+        <S.Divider />
       </S.HeaderWrap>
     );
   }, [
@@ -197,6 +201,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
               />
             </PopupMenu>
           }
+          titleProps={{ numberOfLines: 1 }}
           isLargeNavBar={false}
           navBarTitle={jetton.metadata?.name || maskifyTonAddress(jetton.jettonAddress)}
         >

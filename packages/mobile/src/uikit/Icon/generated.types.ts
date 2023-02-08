@@ -38,6 +38,8 @@ export type IconNames =
   | 'ic-reset-24'
   | 'ic-ton-disabled-24'
   | 'ic-appearance-28'
+  | 'ic-arrow-down-28'
+  | 'ic-arrow-up-28'
   | 'ic-bell-28'
   | 'ic-doc-28'
   | 'ic-done-28'
@@ -65,6 +67,7 @@ export type IconNames =
   | 'ic-swap-28'
   | 'ic-telegram-28'
   | 'ic-ticket-28'
+  | 'ic-ton-28'
   | 'ic-trash-bin-28'
   | 'ic-tray-arrow-down-28'
   | 'ic-tray-arrow-up-28'
@@ -131,6 +134,8 @@ export const AllIcons = [
   'ic-reset-24',
   'ic-ton-disabled-24',
   'ic-appearance-28',
+  'ic-arrow-down-28',
+  'ic-arrow-up-28',
   'ic-bell-28',
   'ic-doc-28',
   'ic-done-28',
@@ -158,6 +163,7 @@ export const AllIcons = [
   'ic-swap-28',
   'ic-telegram-28',
   'ic-ticket-28',
+  'ic-ton-28',
   'ic-trash-bin-28',
   'ic-tray-arrow-down-28',
   'ic-tray-arrow-up-28',
@@ -225,6 +231,8 @@ export const IconSizes = {
   'ic-reset-24': 24,
   'ic-ton-disabled-24': 24,
   'ic-appearance-28': 28,
+  'ic-arrow-down-28': 28,
+  'ic-arrow-up-28': 28,
   'ic-bell-28': 28,
   'ic-doc-28': 28,
   'ic-done-28': 28,
@@ -252,6 +260,7 @@ export const IconSizes = {
   'ic-swap-28': 28,
   'ic-telegram-28': 28,
   'ic-ticket-28': 28,
+  'ic-ton-28': 28,
   'ic-trash-bin-28': 28,
   'ic-tray-arrow-down-28': 28,
   'ic-tray-arrow-up-28': 28,

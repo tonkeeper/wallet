@@ -1,7 +1,7 @@
 import styled, { RADIUS } from '$styled';
 import Animated from 'react-native-reanimated';
 import FastImage from 'react-native-fast-image';
-import { ns } from '$utils';
+import { deviceWidth, ns } from '$utils';
 import { StatelessHighlight } from '$uikit';
 
 export const Wrap = styled.View`
@@ -11,6 +11,7 @@ export const Wrap = styled.View`
 export const HeaderWrap = styled.View`
   align-items: center;
   margin-bottom: ${ns(16)}px;
+  padding-horizontal: ${ns(12)}px;
 `;
 
 export const ContentWrap = styled(Animated.View)`
@@ -20,19 +21,27 @@ export const ContentWrap = styled(Animated.View)`
 `;
 
 export const Logo = styled(FastImage)`
-  border-radius: ${ns(72 / 2)}px;
-  width: ${ns(72)}px;
-  height: ${ns(72)}px;
-  margin-bottom: ${ns(16)}px;
-  margin-top: ${ns(24)}px;
+  border-radius: ${ns(64 / 2)}px;
+  width: ${ns(64)}px;
+  height: ${ns(64)}px;
+  margin-left: ${ns(16)}px;
 `;
 
 export const JettonNameWrapper = styled.View`
   margin-bottom: ${ns(12)}px;
 `;
 
-export const JettonIDWrapper = styled.View`
-  margin-bottom: ${ns(24)}px;
+export const JettonIDWrapper = styled.View``;
+
+export const FlexRow = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: ${ns(16)}px;
+  margin-bottom: ${ns(28)}px;
+`;
+
+export const JettonAmountWrapper = styled.View`
+  flex: 1;
 `;
 
 const borders = (borderStart: boolean, borderEnd: boolean) => {
@@ -56,38 +65,43 @@ const borders = (borderStart: boolean, borderEnd: boolean) => {
   `;
 };
 
-export const Action = styled.View<{ isLast?: boolean }>`
-  margin-right: ${({ isLast }) => (!isLast ? ns(16) : 0)}px;
-  flex: 1;
+export const ActionWrapper = styled.View<{ isLast?: boolean }>`
+  margin-right: ${({ isLast }) => (!isLast ? ns(25.5) : 0)}px;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const Divider = styled.View`
+  height: ${ns(0.5)}px;
+  width: ${deviceWidth}px;
+  background: rgba(79, 90, 112, 0.24);
+  margin-bottom: ${ns(24)}px;
+`
+
+export const Action = styled.View`
+  margin-bottom: ${ns(8)}px;
+  width: ${ns(44)}px;
+  height: ${ns(44)}px;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const ActionsContainer = styled.View`
-  justify-content: space-between;
-  flex-direction: row;
-`;
-
-export const ActionContentWrap = styled.View`
   justify-content: center;
   flex-direction: row;
-  align-items: center;
+  margin-bottom: ${ns(20)}px;
 `;
 
 export const IconWrap = styled.View`
-  margin-left: ${ns(-8)}px;
 `;
 
 export const ActionCont = styled(StatelessHighlight)`
-  ${() => borders(true, true)}
-  padding: ${ns(14)}px;
-`;
-
-export const ActionLabelWrapper = styled.View`
-  margin-left: ${ns(12)}px;
+  border-radius: ${ns(48 /2)}px;
 `;
 
 export const Background = styled.View<{ borderStart: boolean; borderEnd: boolean }>`
-  background: ${({ theme }) => theme.colors.backgroundSecondary};
-  ${({ borderStart, borderEnd }) => borders(borderStart, borderEnd)}
+  background: ${({ theme }) => theme.colors.backgroundTertiary};
+  border-radius: ${ns(48 /2)}px;
   position: absolute;
   z-index: 0;
   top: 0;

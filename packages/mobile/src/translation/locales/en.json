@@ -35,10 +35,13 @@
   "intro_item3_caption": "-",
   "intro_continue_btn": "Get started",
 
+  "about_ton": "TON is a fully decentralized layer-1 blockchain designed by Telegram to onboard billions of users. It boasts ultra-fast transactions, tiny fees, easy-to-use apps, and is environmentally friendly.",
   "wallet_title": "Wallet",
   "wallet_receive": "Receive",
   "wallet_send": "Send",
   "wallet_buy": "Buy",
+  "wallet_sell": "Sell",
+  "wallet_about": "About",
   "wallet_swap": "Swap",
   "wallet_old_balance": "Old wallet:",
   "wallet_hours_symbol": "h",

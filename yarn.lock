@@ -3556,12 +3556,19 @@
     "@types/react" "*"
     "@types/react-native" "*"
 
-"@types/react-native@*", "@types/react-native@^0.70", "@types/react-native@~0.66.13":
+"@types/react-native@*", "@types/react-native@~0.66.13":
   version "0.66.26"
   resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.66.26.tgz#79b00df896db0160727d4dca0fe989d11dbacc2b"
   integrity sha512-UrpnaumuqADmvV3nba+7MGDA8cpX9AomSPo7gJfsDPRkulw6H1f9KGh5c95P61dwROsOLbWkSMx4F2dp1j/xlg==
   dependencies:
     "@types/react" "^17"
+
+"@types/react-native@^0.70":
+  version "0.70.10"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.70.10.tgz#494576e0dc20aa319003f0cdd99192124d64038d"
+  integrity sha512-m9B9hJk1w/c04zj5PCYTjJNXt+1UvKtzJj4nO/BjiS4s/zmUdkLdnbLqRQCQiTA0wuvvMbrffuPdheRtYu/M1Q==
+  dependencies:
+    "@types/react" "*"
 
 "@types/react-redux@^7.1.20":
   version "7.1.25"
