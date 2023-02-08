@@ -13,17 +13,15 @@ import { CryptoCurrencies } from '$shared/constants';
 import { toastActions } from '$store/toast';
 import { ActionButtonProps } from '$core/Balances/BalanceItem/BalanceItem.interface';
 import { t } from '$translation';
+import { useNavigation } from '$libs/navigation';
 
 const ActionButton: FC<ActionButtonProps> = (props) => {
   const { children, onPress, icon, isLast, iconStyle } = props;
 
   return (
     <S.ActionWrapper isLast={isLast}>
-      <S.Action>
-        <S.Background borderEnd borderStart />
-        <S.ActionCont withDelay={false} onPress={onPress}>
-          <Icon name={icon} color="constantLight" />
-        </S.ActionCont>
+      <S.Action onPress={onPress}>
+        <Icon name={icon} color="constantLight" />
       </S.Action>
       <Text variant="label3" color='foregroundSecondary'>{children}</Text>
     </S.ActionWrapper>
@@ -76,6 +74,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   const t = useTranslator();
   const dispatch = useDispatch();
   const [lockupDeploy, setLockupDeploy] = useState('loading');
+  const nav = useNavigation();
 
   useEffect(() => {
     if (currency === CryptoCurrencies.Ton && wallet && wallet.ton.isLockup()) {
@@ -111,6 +110,13 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
 
     openSend(currency);
   }, [currency, wallet]);
+
+  const handleOpenExchange = useCallback(() => {
+    if (!wallet) {
+      return openRequireWalletModal();
+    }
+    nav.openModal('Exchange');
+  }, [wallet]);
 
   const handleDeploy = useCallback(() => {
     setLockupDeploy('loading');
@@ -182,7 +188,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
                   </S.FlexRow>
                   <S.Divider />
                   <S.ActionsContainer>
-                    <ActionButton onPress={handleSend} icon="ic-arrow-up-28">
+                    <ActionButton onPress={handleOpenExchange} icon="ic-plus-28">
                       {t('wallet_buy')}
                     </ActionButton>
                     <ActionButton onPress={handleSend} icon="ic-arrow-up-28">
@@ -191,7 +197,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
                     <ActionButton onPress={handleReceive} icon="ic-arrow-down-28">
                       {t('wallet_receive')}
                     </ActionButton>
-                    <ActionButton isLast onPress={handleSend} icon="ic-arrow-up-28">
+                    <ActionButton isLast onPress={handleOpenExchange} icon="ic-minus-28">
                       {t('wallet_sell')}
                     </ActionButton>
                   </S.ActionsContainer>

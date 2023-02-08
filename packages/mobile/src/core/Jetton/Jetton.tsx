@@ -31,11 +31,8 @@ const ActionButton: FC<ActionButtonProps> = (props) => {
 
   return (
     <S.ActionWrapper isLast={isLast}>
-      <S.Action>
-        <S.Background borderEnd borderStart />
-        <S.ActionCont withDelay={false} onPress={onPress}>
-          <Icon name={icon} color="constantLight" />
-        </S.ActionCont>
+      <S.Action onPress={onPress}>
+        <Icon name={icon} color="constantLight" />
       </S.Action>
       <Text variant="label3" color='foregroundSecondary'>{children}</Text>
     </S.ActionWrapper>
