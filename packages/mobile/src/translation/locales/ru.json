@@ -39,6 +39,8 @@
   "wallet_receive": "Получить",
   "wallet_send": "Отправить",
   "wallet_buy": "Купить",
+  "wallet_toncommunity_link": "https://t.me/toncoin_rus",
+  "wallet_toncommunity_chat_link": "https://t.me/toncoin_rus_chat",
   "wallet_sell": "Продать",
   "wallet_about": "Подробнее",
   "wallet_swap": "Обменять",

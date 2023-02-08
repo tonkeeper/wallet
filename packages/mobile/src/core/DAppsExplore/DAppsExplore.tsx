@@ -144,12 +144,12 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
               }}
             />
           ) : null}
-          {!flags.disable_dapps ? (
+          {flags.disable_dapps ? (
             <S.Content>
               <PopularApps activeCategory={activeCategory} />
             </S.Content>
           ) : null}
-          {flags.disable_dapps ? (
+          {!flags.disable_dapps ? (
             <S.Content>
               <AboutDApps />
             </S.Content>

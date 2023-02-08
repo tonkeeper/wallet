@@ -3,15 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { WalletProps } from './Wallet.interface';
 import * as S from './Wallet.style';
-import { Button, CurrencyIcon, Icon, NavBar, ShowMore, Text } from '$uikit';
+import { Button, Icon, NavBar, ShowMore, Text } from '$uikit';
 import { useTheme, useTranslator, useWalletInfo } from '$hooks';
 import { openReceive, openRequireWalletModal, openSend } from '$navigation';
 import { walletActions, walletSelector } from '$store/wallet';
-import { FlatList, View } from 'react-native';
+import { FlatList, Linking, View } from 'react-native';
 import { ns, toLocaleNumber } from '$utils';
 import { CryptoCurrencies } from '$shared/constants';
 import { toastActions } from '$store/toast';
 import { ActionButtonProps } from '$core/Balances/BalanceItem/BalanceItem.interface';
+import { t } from '$translation';
 
 const ActionButton: FC<ActionButtonProps> = (props) => {
   const { children, onPress, icon, isLast, iconStyle } = props;
@@ -28,6 +29,44 @@ const ActionButton: FC<ActionButtonProps> = (props) => {
     </S.ActionWrapper>
   );
 };
+
+const exploreActions = [
+  {
+    icon: 'ic-globe-16',
+    text: 'ton.org',
+    url: 'https://ton.org',
+  },
+  {
+    icon: 'ic-twitter-16',
+    text: 'Twitter',
+    url: 'https://twitter.com/ton_blockchain',
+  },
+  {
+    icon: 'ic-telegram-16',
+    text: 'Chat',
+    url: t('wallet_toncommunity_chat_link'),
+  },
+  {
+    icon: 'ic-telegram-16',
+    text: 'Community',
+    url: t('wallet_toncommunity_link'),
+  },
+  {
+    icon: 'ic-doc-16',
+    text: 'Whitepaper',
+    url: 'https://ton.org/whitepaper.pdf',
+  },
+  {
+    icon: 'ic-magnifying-glass-16',
+    text: 'ton.api',
+    url: 'https://tonapi.io',
+  },
+  {
+    icon: 'ic-code-16',
+    text: 'Source code',
+    url: 'https://github.com/ton-blockchain/ton',
+  }
+];
 
 export const Wallet: FC<WalletProps> = ({ route }) => {
   const theme = useTheme();
@@ -133,9 +172,24 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
                   <S.Divider />
                 </S.HeaderWrap>
                 <S.ExploreWrap>
-                  <Text variant='h3' color='foregroundPrimary'>
+                  <Text style={{ marginBottom: 14 }} variant='h3' color='foregroundPrimary'>
                     {t('wallet_about')}
                   </Text>
+                  <S.ExploreButtons>
+                    {exploreActions.map(action => (
+                      <Button 
+                        onPress={() => Linking.openURL(action.url)}
+                        key={action.text}
+                        before={
+                          <Icon name={action.icon} color="foregroundPrimary" style={{ marginRight: 8 }} 
+                          />
+                        }
+                        style={{ marginRight: 8, marginBottom: 8 }} mode="secondary" size='medium_rounded'
+                      >
+                        {action.text}
+                      </Button>
+                    ))}
+                  </S.ExploreButtons>
                 </S.ExploreWrap>
             {wallet && wallet.ton.isLockup() && (
               <View style={{ padding: ns(16) }}>

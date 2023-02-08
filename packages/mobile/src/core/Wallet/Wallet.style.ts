@@ -19,6 +19,11 @@ export const FlexRow = styled.View`
   margin-bottom: ${ns(28)}px;
 `;
 
+export const ExploreButtons = styled.View`
+  flex-direction: row;
+  flex-wrap: wrap;
+`
+
 export const Info = styled.View`
   align-items: center;
   padding-horizontal: ${ns(32)}px;
