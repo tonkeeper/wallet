@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { WalletProps } from './Wallet.interface';
 import * as S from './Wallet.style';
-import { Button, Icon, NavBar, ShowMore, Text } from '$uikit';
+import { Button, Icon, NavBar, PopupMenu, PopupMenuItem, ShowMore, Text } from '$uikit';
 import { useTheme, useTranslator, useWalletInfo } from '$hooks';
 import { openReceive, openRequireWalletModal, openSend } from '$navigation';
-import { walletActions, walletSelector } from '$store/wallet';
+import { walletActions, walletAddressSelector, walletSelector, walletWalletSelector } from '$store/wallet';
 import { FlatList, Linking, View } from 'react-native';
 import { ns, toLocaleNumber } from '$utils';
 import { CryptoCurrencies } from '$shared/constants';
@@ -71,7 +71,8 @@ const exploreActions = [
 export const Wallet: FC<WalletProps> = ({ route }) => {
   const theme = useTheme();
   const currency = route.params.currency;
-  const { wallet, address } = useSelector(walletSelector);
+  const wallet = useSelector(walletWalletSelector);
+  const address = useSelector(walletAddressSelector);
   const t = useTranslator();
   const dispatch = useDispatch();
   const [lockupDeploy, setLockupDeploy] = useState('loading');
@@ -93,7 +94,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     return currency?.toUpperCase();
   }, [currency]);
 
-  const { amount, priceDiff, rate, fiatInfo } = useWalletInfo(currency);
+  const { amount, rate, fiatInfo } = useWalletInfo(currency);
 
   const handleReceive = useCallback(() => {
     if (!wallet) {
@@ -121,9 +122,34 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     );
   }, [dispatch]);
 
+  const handleOpenExplorer = useCallback(() => {
+    Linking.openURL(
+      `https://tonapi.io/account/${address.ton}`,
+    );
+  }, [address.ton]);
+
   return (
     <S.Wrap>
-      <NavBar>
+      <NavBar
+        rightContent={
+          <PopupMenu
+            items={[
+              <PopupMenuItem
+                onPress={handleOpenExplorer}
+                text={t('jetton_open_explorer')}
+                icon={<Icon name="ic-globe-16" color="accentPrimary" />}
+              />,
+            ]}
+          >
+            <Button
+              onPress={() => null}
+              size="navbar_icon"
+              mode="secondary"
+              before={<Icon name="ic-ellipsis-16" color="foregroundPrimary" />}
+            />
+          </PopupMenu>
+        }
+      >
         Toncoin
       </NavBar>
       <FlatList
