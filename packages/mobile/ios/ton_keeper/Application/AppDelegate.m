@@ -22,6 +22,8 @@
 
 #import <react/config/ReactNativeConfig.h>
 
+static NSString *const kRNConcurrentRoot = @"concurrentRoot";
+
 @interface AppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate> {
   RCTTurboModuleManager *_turboModuleManager;
   RCTSurfacePresenterBridgeAdapter *_bridgeAdapter;
@@ -48,7 +50,8 @@
   bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
 #endif
   
-  UIView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"ton_keeper" initialProperties:nil];
+  NSDictionary *initProps = [self prepareInitialProps];
+  UIView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"ton_keeper" initialProperties:initProps];
   rootView.backgroundColor = [UIColor whiteColor];
   UIViewController *reactViewController = [self.reactDelegate createRootViewController];
   reactViewController.view = rootView;
@@ -69,6 +72,27 @@
 {
   // If you'd like to export some custom RCTBridgeModules, add them here!
   return @[];
+}
+
+
+/// This method controls whether the `concurrentRoot`feature of React18 is turned on or off.
+///
+/// @see: https://reactjs.org/blog/2022/03/29/react-v18.html
+/// @note: This requires to be rendering on Fabric (i.e. on the New Architecture).
+/// @return: `true` if the `concurrentRoot` feture is enabled. Otherwise, it returns `false`.
+- (BOOL)concurrentRootEnabled
+{
+  // Switch this bool to turn on and off the concurrent root
+  return true;
+}
+
+- (NSDictionary *)prepareInitialProps
+{
+  NSMutableDictionary *initProps = [NSMutableDictionary new];
+#if RCT_NEW_ARCH_ENABLED
+  initProps[kRNConcurrentRoot] = @([self concurrentRootEnabled]);
+#endif
+  return initProps;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
@@ -119,20 +143,15 @@
 
 #endif
 
-// Deeplinking
-- (BOOL)application:(UIApplication *)application
-   openURL:(NSURL *)url
-   options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
-{
-  return [RCTLinkingManager application:application openURL:url options:options];
+// Linking API
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+  return [super application:application openURL:url options:options] || [RCTLinkingManager application:application openURL:url options:options];
 }
 
-- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity
- restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler
-{
- return [RCTLinkingManager application:application
-                  continueUserActivity:userActivity
-                    restorationHandler:restorationHandler];
+// Universal Links
+- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
+  BOOL result = [RCTLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+  return [super application:application continueUserActivity:userActivity restorationHandler:restorationHandler] || result;
 }
 
 @end

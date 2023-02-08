@@ -23,11 +23,14 @@ target 'ton_keeper' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # to enable hermes on iOS, change `false` to `true` and then install pods
-    :hermes_enabled => flags[:hermes_enabled],
+    :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes',
     :fabric_enabled => flags[:fabric_enabled],
     # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    #
+    # Uncomment to opt-in to using Flipper
+    # Note that if you have use_frameworks! enabled, Flipper will not work
+    # :flipper_configuration => !ENV['CI'] ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
   )
 
   permissions_path = '../node_modules/react-native-permissions/ios'
@@ -38,6 +41,13 @@ target 'ton_keeper' do
   pod 'TonMnemonicSwift', :git => 'git@github.com:tonkeeper/ton-mnemonic-swift.git', :branch => 'main'
 
   post_install do |installer|
+    react_native_post_install(
+      installer,
+      # Set `mac_catalyst_enabled` to `true` in order to apply patches
+      # necessary for Mac Catalyst builds
+      :mac_catalyst_enabled => false
+    )
+    
     installer.pods_project.build_configurations.each do |config|
       config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
     end
@@ -57,14 +67,4 @@ target 'ton_keeper' do
     # Pods for testing
   end
 
-  # Enables Flipper.
-  #
-  # Note that if you have use_frameworks! enabled, Flipper will not work and
-  # you should disable the next line.
-#   use_flipper!()
-#
-#   post_install do |installer|
-#     react_native_post_install(installer)
-#     __apply_Xcode_12_5_M1_post_install_workaround(installer)
-#   end
 end
