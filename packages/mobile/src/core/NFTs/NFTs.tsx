@@ -86,7 +86,7 @@ export const NFTs: FC = () => {
           maxToRenderPerBatch={8}
           style={{ alignSelf: IsTablet ? 'center' : 'auto' }}
           contentContainerStyle={{
-            paddingTop: IsTablet ? ns(48) : hNs(LargeNavBarHeight - 4),
+            paddingTop: IsTablet ? ns(8) : hNs(LargeNavBarHeight - 4),
             paddingHorizontal: ns(16),
             paddingBottom: tabBarHeight,
           }}

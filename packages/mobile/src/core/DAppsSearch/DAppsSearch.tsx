@@ -105,7 +105,7 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
               // eslint-disable-next-line react-native/no-inline-styles
               contentContainerStyle={{
                 paddingHorizontal: IsTablet ? 0 : ns(16),
-                paddingTop: IsTablet ? ns(48) : 0,
+                paddingTop: IsTablet ? ns(8) : 0,
               }}
               scrollEventThrottle={16}
               onLayout={handleScrollViewLayout}

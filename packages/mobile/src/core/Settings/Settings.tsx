@@ -209,7 +209,7 @@ export const Settings: FC = () => {
         <Animated.ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            paddingTop: IsTablet ? ns(48) : hNs(LargeNavBarHeight),
+            paddingTop: IsTablet ? ns(8) : hNs(LargeNavBarHeight),
             paddingHorizontal: ns(16),
             paddingBottom: tabBarHeight,
             alignItems: IsTablet ? 'center' : undefined,

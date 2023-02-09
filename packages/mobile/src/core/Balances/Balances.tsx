@@ -359,7 +359,7 @@ export const Balances: FC = () => {
         contentContainerStyle={{
           maxWidth: ns(TabletMaxWidth),
           alignSelf: 'center',
-          paddingTop: IsTablet ? ns(48) : ns(LargeNavBarHeight),
+          paddingTop: IsTablet ? ns(8) : ns(LargeNavBarHeight),
           paddingHorizontal: ns(16),
           paddingBottom: tabBarHeight - ns(20),
         }}

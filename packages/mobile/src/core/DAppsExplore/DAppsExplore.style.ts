@@ -38,5 +38,5 @@ export const NavBarSmallSpacer = styled.View`
 `;
 
 export const NavBarSpacer = styled.View`
-  height: ${IsTablet ? ns(48) : ns(28)}px;
+  height: ${IsTablet ? ns(8) : ns(28)}px;
 `;
