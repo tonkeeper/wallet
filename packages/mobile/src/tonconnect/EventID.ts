@@ -18,8 +18,6 @@ class EventIdService {
 
     AsyncStorage.setItem(this.eventIdStoreKey, String(this.eventId)).catch(() => {});
 
-    console.log('new id', this.eventId);
-
     return this.eventId;
   }
 }
