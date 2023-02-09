@@ -27,7 +27,7 @@ export const PriceLabel: React.FC = () => {
     }, []);
 
     return (
-        <Text variant='label3' color='foregroundSecondary' >
+        <Text variant='label2' fontWeight="500" color='foregroundSecondary' >
             {state}
         </Text>
     )

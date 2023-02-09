@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ChartDot, ChartPath, ChartPathProvider, monotoneCubicInterpolation, CurrentPositionVerticalLine } from '@rainbow-me/animated-charts';
 import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks';
@@ -16,6 +16,7 @@ import { ChartPeriod } from './Chart.types';
 import { Rate } from './Rate/Rate';
 import { useQuery } from 'react-query';
 import { loadChartData } from './Chart.api';
+import { throttle } from '$utils';
 
 export const { width: SIZE } = Dimensions.get('window');
 export const DEFAULT_CHART_PERIOD = ChartPeriod.ONE_MONTH;
@@ -27,6 +28,7 @@ export const Chart: React.FC = () => {
     const { isLoading, data } = useQuery(['chartFetch', selectedPeriod], () => loadChartData(selectedPeriod));
 
     const [cachedData, setCachedData] = useState([]);
+    const setSelectedPeriodWithThrottle = useCallback(throttle(setSelectedPeriod, 1200), []);
 
     useEffect(() => {
         if (data) {
@@ -68,32 +70,34 @@ export const Chart: React.FC = () => {
                         <PercentDiff fiatCurrency={fiatCurrency} fiatRate={fiatRate} latestPoint={latestPoint} firstPoint={firstPoint} />
                         <PriceLabel />
                     </View>
-                    <View style={{ paddingVertical: 10 }}>
-                        <ChartPath 
-                            gradientEnabled 
-                            longPressGestureHandlerProps={{ minDurationMs: 250 }} 
-                            hapticsEnabled 
-                            strokeWidth={2} 
-                            selectedStrokeWidth={2}
-                            height={200} 
-                            stroke={theme.colors.accentPrimaryLight}
-                            width={SIZE}
-                            selectedOpacity={1}
-                        />
-                        <ChartDot size={40} style={{ backgroundColor: 'rgba(69,174,245,0.24)', alignItems: 'center', justifyContent: 'center' }}>
-                            <View style={{ height: 16, width: 16, backgroundColor: theme.colors.accentPrimaryLight, borderRadius: 8 }} />
-                        </ChartDot>
-                        <CurrentPositionVerticalLine thickness={2} strokeDasharray={0} length={230} color={theme.colors.accentPrimaryLight} />
+                    <View style={{ paddingVertical: 15 }}>
+                        <View>
+                            <ChartPath 
+                                gradientEnabled 
+                                longPressGestureHandlerProps={{ minDurationMs: 250 }} 
+                                hapticsEnabled 
+                                strokeWidth={2} 
+                                selectedStrokeWidth={2}
+                                height={190} 
+                                stroke={theme.colors.accentPrimaryLight}
+                                width={SIZE}
+                                selectedOpacity={1}
+                            />
+                            <ChartDot size={40} style={{ backgroundColor: 'rgba(69,174,245,0.24)', alignItems: 'center', justifyContent: 'center' }}>
+                                <View style={{ height: 16, width: 16, backgroundColor: theme.colors.accentPrimaryLight, borderRadius: 8 }} />
+                            </ChartDot>
+                            <CurrentPositionVerticalLine thickness={2} strokeDasharray={0} length={230} color={theme.colors.accentPrimaryLight} />
+                        </View>
                     </View>
                 </ChartPathProvider>
-                <View style={{ position: 'absolute', right: 16, bottom: 18 }}>
+                <View style={{ position: 'absolute', right: 16, bottom: 24 }}>
                     <Text variant='label3' color='foregroundSecondary'>{min}</Text>
                 </View>
-                <View style={{ position: 'absolute', right: 16, top: 60 }}>
+                <View style={{ position: 'absolute', right: 16, top: 68 }}>
                     <Text variant='label3' color='foregroundSecondary'>{max}</Text>
                 </View>
             </View>
-            <PeriodSelector selectedPeriod={selectedPeriod} onSelect={setSelectedPeriod} />
+            <PeriodSelector selectedPeriod={selectedPeriod} onSelect={setSelectedPeriodWithThrottle} />
         </View>
     )
 }
