@@ -72,7 +72,17 @@ export const Chart: React.FC = () => {
                         <PriceLabel />
                     </View>
                     <View>
-                        <ChartPath longPressGestureHandlerProps={{ minDurationMs: 200 }} hapticsEnabled strokeWidth={2} height={230} stroke={theme.colors.accentPrimaryLight} width={SIZE} />
+                        <ChartPath 
+                            gradientEnabled 
+                            longPressGestureHandlerProps={{ minDurationMs: 200 }} 
+                            hapticsEnabled 
+                            strokeWidth={2} 
+                            selectedStrokeWidth={2}
+                            height={230} 
+                            stroke="#45AEF5" 
+                            width={SIZE}
+                            selectedOpacity={1}
+                        />
                         <ChartDot size={40} style={{ backgroundColor: 'rgba(69,174,245,0.24)', alignItems: 'center', justifyContent: 'center' }}>
                             <View style={{ height: 16, width: 16, backgroundColor: theme.colors.accentPrimaryLight, borderRadius: 8 }} />
                         </ChartDot>

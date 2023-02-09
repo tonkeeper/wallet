@@ -1,6 +1,6 @@
 export enum ChartPeriod {
     ONE_YEAR = '1Y',
-    THREE_MONTHS = '3M',
+    SIX_MONTHS = '6M',
     ONE_MONTH = '1M',
     SEVEN_DAYS = '7D',
     ONE_DAY = '1D',
