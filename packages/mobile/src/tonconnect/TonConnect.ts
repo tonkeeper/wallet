@@ -35,6 +35,7 @@ import TonWeb from 'tonweb';
 import { MIN_PROTOCOL_VERSION, tonConnectDeviceInfo } from './config';
 import { ConnectEventError } from './ConnectEventError';
 import { ConnectReplyBuilder } from './ConnectReplyBuilder';
+import { TCEventID } from './EventID';
 import { DAppManifest } from './models';
 import { SendTransactionError } from './SendTransactionError';
 import { TonConnectRemoteBridge } from './TonConnectRemoteBridge';
@@ -138,6 +139,7 @@ class TonConnectService {
         );
 
         return {
+          id: TCEventID.getId(),
           event: 'connect',
           payload: {
             items: replyItems,
@@ -218,6 +220,7 @@ class TonConnectService {
       }
 
       return {
+        id: TCEventID.getId(),
         event: 'connect',
         payload: {
           items: replyItems,
