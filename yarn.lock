@@ -2517,6 +2517,10 @@
     tslib "^2.4.1"
     webcrypto-core "^1.7.4"
 
+"@rainbow-me/animated-charts@git+ssh://git@github.com:tonkeeper/react-native-animated-charts#4289daa9c5ac900b355ed0cc96316d106dbfaa5c":
+  version "1.0.0-alpha.6"
+  resolved "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#4289daa9c5ac900b355ed0cc96316d106dbfaa5c"
+
 "@react-dnd/asap@^4.0.0":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@react-dnd/asap/-/asap-4.0.1.tgz#5291850a6b58ce6f2da25352a64f1b0674871aab"
@@ -15006,17 +15010,6 @@ react-native-gesture-handler@^2.5.0:
     lodash "^4.17.21"
     prop-types "^15.7.2"
 
-react-native-gesture-handler@^1.7.0:
-  version "1.10.3"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.10.3.tgz#942bbf2963bbf49fa79593600ee9d7b5dab3cfc0"
-  integrity sha512-cBGMi1IEsIVMgoox4RvMx7V2r6bNKw0uR1Mu1o7NbuHS6BRSVLq0dP34l2ecnPlC+jpWd3le6Yg1nrdCjby2Mw==
-  dependencies:
-    "@egjs/hammerjs" "^2.0.17"
-    fbjs "^3.0.0"
-    hoist-non-react-statics "^3.3.0"
-    invariant "^2.2.4"
-    prop-types "^15.7.2"
-
 react-native-get-random-values@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/react-native-get-random-values/-/react-native-get-random-values-1.8.0.tgz#1cb4bd4bd3966a356e59697b8f372999fe97cb16"
@@ -15029,7 +15022,7 @@ react-native-gradle-plugin@^0.0.6:
   resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.0.6.tgz#b61a9234ad2f61430937911003cddd7e15c72b45"
   integrity sha512-eIlgtsmDp1jLC24dRn43hB3kEcZVqx6DUQbR0N1ABXGnMEafm9I3V3dUUeD1vh+Dy5WqijSoEwLNUPLgu5zDMg==
 
-react-native-haptic-feedback@^1.10.0, react-native-haptic-feedback@^1.11.0:
+react-native-haptic-feedback@^1.11.0:
   version "1.14.0"
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.14.0.tgz#b50f49dedda4980b3c37c5780823f753cf3ee717"
   integrity sha512-dSXZ6gAzl+W/L7BPjOpnT0bx0cgQiSr0sB3DjyDJbGIdVr4ISaktZC6gC9xYFTv2kMq0+KtbKi+dpd0WtxYZMw==
@@ -15107,19 +15100,6 @@ react-native-rate@^1.2.6:
   resolved "https://registry.yarnpkg.com/react-native-rate/-/react-native-rate-1.2.12.tgz#d4307b2994f9c849b987eb65599ec467db4aee04"
   integrity sha512-A/z3s7Zth08aXcJnru6S4p71NG8acx2w5LhIfItwTJUbQruNJugk8WrN51dLBCSDv8W33kbS5YoUT4M9jOP5gA==
 
-react-native-reanimated@^2.0.0-alpha.5:
-  version "2.14.4"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.14.4.tgz#3fa3da4e7b99f5dfb28f86bcf24d9d1024d38836"
-  integrity sha512-DquSbl7P8j4SAmc+kRdd75Ianm8G+IYQ9T4AQ6lrpLVeDkhZmjWI0wkutKWnp6L7c5XNVUrFDUf69dwETLCItQ==
-  dependencies:
-    "@babel/plugin-transform-object-assign" "^7.16.7"
-    "@babel/preset-typescript" "^7.16.7"
-    convert-source-map "^1.7.0"
-    invariant "^2.2.4"
-    lodash.isequal "^4.5.0"
-    setimmediate "^1.0.5"
-    string-hash-64 "^1.0.3"
-
 react-native-reanimated@^2.9.1:
   version "2.14.4"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.14.4.tgz#3fa3da4e7b99f5dfb28f86bcf24d9d1024d38836"
@@ -15194,14 +15174,6 @@ react-native-svg-transformer@^0.14.3:
     "@svgr/plugin-svgo" "^4.3.1"
     path-dirname "^1.0.2"
     semver "^5.6.0"
-
-react-native-svg@^12.1.0:
-  version "12.5.1"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-12.5.1.tgz#7dfd9daf2f8ed7843c0f3e7a16af193bd5f9b287"
-  integrity sha512-c374ENsq2MWCfr+7jC7TGwSeOAuC1Dp0osh2pw8PjpYFxmmB/toFIwcnCLz+SgBd6iLJClRhbATealqM05HOGg==
-  dependencies:
-    css-select "^5.1.0"
-    css-tree "^1.1.3"
 
 react-native-svg@^12.1.1:
   version "12.5.1"

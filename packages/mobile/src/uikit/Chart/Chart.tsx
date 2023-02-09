@@ -15,18 +15,16 @@ import { PeriodSelector } from './PeriodSelector/PeriodSelector';
 import { ChartPeriod } from './Chart.types';
 import { Rate } from './Rate/Rate';
 import { useQuery } from 'react-query';
+import { loadChartData } from './Chart.api';
 
 export const { width: SIZE } = Dimensions.get('window');
+export const DEFAULT_CHART_PERIOD = ChartPeriod.ONE_MONTH;
 
 export const Chart: React.FC = () => {
     const theme = useTheme();
-    const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>(ChartPeriod.ONE_MONTH);
+    const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>(DEFAULT_CHART_PERIOD);
 
-    const { isLoading, data } = useQuery(['chartFetch', selectedPeriod], () =>
-        fetch(`${getServerConfig('tonkeeperEndpoint')}/stock/chart?period=${selectedPeriod}`).then(res =>
-            res.json()
-        )
-    );
+    const { isLoading, data } = useQuery(['chartFetch', selectedPeriod], () => loadChartData(selectedPeriod));
 
     const [cachedData, setCachedData] = useState([]);
 
@@ -36,7 +34,6 @@ export const Chart: React.FC = () => {
         }
     }, [data])
 
-    const charts = useSelector(ratesChartsSelector);
     const rates = useSelector(ratesRatesSelector);
     const fiatCurrency = useSelector(fiatCurrencySelector);
 
@@ -71,14 +68,14 @@ export const Chart: React.FC = () => {
                         <PercentDiff fiatCurrency={fiatCurrency} fiatRate={fiatRate} latestPoint={latestPoint} firstPoint={firstPoint} />
                         <PriceLabel />
                     </View>
-                    <View>
+                    <View style={{ paddingVertical: 10 }}>
                         <ChartPath 
                             gradientEnabled 
-                            longPressGestureHandlerProps={{ minDurationMs: 200 }} 
+                            longPressGestureHandlerProps={{ minDurationMs: 250 }} 
                             hapticsEnabled 
                             strokeWidth={2} 
                             selectedStrokeWidth={2}
-                            height={230} 
+                            height={200} 
                             stroke={theme.colors.accentPrimaryLight}
                             width={SIZE}
                             selectedOpacity={1}
@@ -92,7 +89,7 @@ export const Chart: React.FC = () => {
                 <View style={{ position: 'absolute', right: 16, bottom: 18 }}>
                     <Text variant='label3' color='foregroundSecondary'>{min}</Text>
                 </View>
-                <View style={{ position: 'absolute', right: 16, top: 18 }}>
+                <View style={{ position: 'absolute', right: 16, top: 60 }}>
                     <Text variant='label3' color='foregroundSecondary'>{max}</Text>
                 </View>
             </View>
