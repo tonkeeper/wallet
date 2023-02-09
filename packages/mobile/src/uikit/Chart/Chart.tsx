@@ -79,7 +79,7 @@ export const Chart: React.FC = () => {
                             strokeWidth={2} 
                             selectedStrokeWidth={2}
                             height={230} 
-                            stroke="#45AEF5" 
+                            stroke={theme.colors.accentPrimaryLight}
                             width={SIZE}
                             selectedOpacity={1}
                         />
