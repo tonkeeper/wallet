@@ -68,7 +68,7 @@ export const ListItem = memo<ListItemProps>((props) => {
             </SText>
           ) : props.subtitle}
         </View>
-        <View>
+        <View style={styles.valueContainer}>
           {typeof props.value === 'string' ? (
             <SText variant="label1" style={[styles.valueText, props.valueStyle]}>
               {props.value}
@@ -100,6 +100,9 @@ const styles = Steezy.create(({ colors }) => ({
   title: {
     flex: 1,
     paddingRight: 16,
+  },
+  valueContainer: {
+    alignItems: 'flex-end'
   },
   subtitleText: {
     color: colors.textSecondary,

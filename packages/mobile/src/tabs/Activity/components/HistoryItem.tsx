@@ -14,7 +14,7 @@ interface TransactionItemProps {
 export const HistoryItem = memo<TransactionItemProps>((props) => {
   const { event, onPress } = props;
   if (typeof event === 'string') {
-    return <List.Header title={'qwe'} />
+    return <List.Header title={event} />
   }
 
   return (
