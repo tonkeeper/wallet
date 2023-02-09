@@ -41,7 +41,7 @@ const exploreActions = [
   },
   {
     icon: 'ic-telegram-16',
-    text: 'Chat',
+    text: t('wallet_chat'),
     url: t('wallet_toncommunity_chat_link'),
   },
   {
@@ -61,7 +61,7 @@ const exploreActions = [
   },
   {
     icon: 'ic-code-16',
-    text: 'Source code',
+    text: t('wallet_source_code'),
     url: 'https://github.com/ton-blockchain/ton',
   }
 ];
