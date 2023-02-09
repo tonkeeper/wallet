@@ -1,15 +1,17 @@
 import { ns } from '$utils';
-import React from 'react';
+import React, { memo } from 'react';
 import { View } from 'react-native';
 import { NavBar } from '../NavBar/NavBar';
+import { ScreenLargeHeader } from './ScreenLagreHeader';
 
 interface ScreenHeaderProps {
   title?: string;
   rightContent?: React.ReactNode;
   hideBackButton?: boolean;
+  large?: boolean;
 }
 
-export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
+export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
   const { rightContent, hideBackButton } = props;
 
   const rightContentContainer = React.useMemo(() => {
@@ -24,6 +26,16 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
     return null;
   }, [rightContent]);
 
+
+  if (props.large) {
+    return (
+      <ScreenLargeHeader 
+        navBarTitle={props.title}
+        
+      />
+    )
+  }
+
   return (
     <NavBar 
       rightContent={rightContentContainer} 
@@ -32,4 +44,4 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
       {props.title}
     </NavBar>
   );
-};
+});

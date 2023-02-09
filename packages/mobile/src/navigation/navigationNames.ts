@@ -47,6 +47,7 @@ export enum TabsStackRouteNames {
   NFT = 'TabNFT',
   Explore = 'Explore',
   SettingsStack = 'SettingsStack',
+  Activity = 'Activity',
 }
 
 export enum SetupWalletStackRouteNames {
@@ -92,6 +93,7 @@ export enum DevComponents {
   DevToast = 'DevToast',
   DevSignRawExamples = 'DevSignRawExamples',
   DevWalletStore = 'DevWalletStore',
+  DevListComponent = 'DevListComponent',
 }
 
 type ScreenNames =

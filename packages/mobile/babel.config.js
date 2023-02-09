@@ -17,6 +17,7 @@ const plugins = [
         $hooks: './src/hooks',
         $libs: './src/libs',
         $styled: './src/styled',
+        $styles: './src/styles',
         $shared: './src/shared',
         $navigation: './src/navigation',
         $translation: './src/translation',

@@ -292,6 +292,12 @@
 
   "swap_title": "Обмен",
 
+  "activity": {
+    "screen_title": "Activity",
+    "sent": "Sent",
+    "received": "Received"
+  },
+
   "browser": {
     "title": "Браузер",
     "search_label": "Поиск",

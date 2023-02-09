@@ -7,13 +7,7 @@ import { setNavigationRef, onNavigationReady } from './helper';
 import { AppStack } from './AppStack';
 import { mainSelector } from '$store/main';
 import { useTheme } from '$hooks';
-import { LogBox } from 'react-native';
 import { ProvidersWithoutNavigation } from './Providers';
-
-LogBox.ignoreLogs([
-  // Ignore warn passing functions to navigation params
-  'Non-serializable values were found in the navigation state',
-]);
 
 export const AppNavigator: FC = () => {
   const theme = useTheme();
