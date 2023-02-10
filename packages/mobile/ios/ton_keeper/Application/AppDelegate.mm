@@ -11,6 +11,7 @@
 #import <Firebase.h>
 
 #import "ExpoModulesCore-Swift.h"
+#import "ton_keeper-Swift.h"
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
@@ -57,11 +58,11 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   reactViewController.view = rootView;
   reactViewController.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
 
- self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
- self.window.rootViewController = reactViewController;
- [self.window makeKeyAndVisible];
+// self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+// self.window.rootViewController = reactViewController;
+// [self.window makeKeyAndVisible];
 
-  // self.window = [[ServiceLocator shared] setupServicesWithReactRootViewController:reactViewController];
+  self.window = [[ServiceLocator shared] setupServicesWithReactRootViewController:reactViewController];
   
   [super application:application didFinishLaunchingWithOptions:launchOptions];
 
