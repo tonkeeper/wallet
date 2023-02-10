@@ -4,6 +4,7 @@ import { Text } from '$uikit/Text/Text';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { format, subMonths } from 'date-fns';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import { getLocale } from '$utils';
 
 export const PriceLabel: React.FC = () => {
     const chartData = useChartData();
@@ -15,7 +16,7 @@ export const PriceLabel: React.FC = () => {
             return;
         }
         const subbedText = subMonths(new Date(parseInt(text) * 1000), 1);
-        setState(format(subbedText, 'ccc, dd MMM H:mm'));
+        setState(format(subbedText, 'ccc, dd MMM H:mm', { locale: getLocale() }));
     };
 
     useAnimatedReaction(() => {

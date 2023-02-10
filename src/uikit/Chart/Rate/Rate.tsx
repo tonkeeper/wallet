@@ -10,7 +10,6 @@ export const Rate: React.FC<{ latestPoint: number; fiatRate: number; fiatCurrenc
     const [activePoint, setActivePoint] = useState(props.latestPoint);
     const formattedLatestPrice = useMemo(() => formatFiatCurrencyAmount((activePoint * props.fiatRate).toFixed(2), props.fiatCurrency), [props.fiatCurrency, props.fiatRate, activePoint]);
     
-
     const formatPriceWrapper = useCallback((point: number) => {
         if (!point) {
             setActivePoint(props.latestPoint);

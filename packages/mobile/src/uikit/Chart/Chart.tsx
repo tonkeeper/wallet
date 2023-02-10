@@ -3,7 +3,7 @@ import { ChartDot, ChartPath, ChartPathProvider, monotoneCubicInterpolation, Cur
 import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks';
 import { useSelector } from 'react-redux';
-import { ratesChartsSelector, ratesRatesSelector } from '$store/rates';
+import { ratesRatesSelector } from '$store/rates';
 import { Text } from '$uikit/Text/Text';
 import { fiatCurrencySelector } from '$store/main';
 import { CryptoCurrencies, FiatCurrencies, getServerConfig } from '$shared/constants';
@@ -16,7 +16,7 @@ import { ChartPeriod } from './Chart.types';
 import { Rate } from './Rate/Rate';
 import { useQuery } from 'react-query';
 import { loadChartData } from './Chart.api';
-import { throttle } from '$utils';
+import { debounce } from 'lodash';
 
 export const { width: SIZE } = Dimensions.get('window');
 export const DEFAULT_CHART_PERIOD = ChartPeriod.ONE_MONTH;
@@ -25,10 +25,9 @@ export const Chart: React.FC = () => {
     const theme = useTheme();
     const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>(DEFAULT_CHART_PERIOD);
 
-    const { isLoading, data } = useQuery(['chartFetch', selectedPeriod], () => loadChartData(selectedPeriod));
+    const { isLoading, isFetching, data } = useQuery(['chartFetch', selectedPeriod], () => loadChartData(selectedPeriod));
 
     const [cachedData, setCachedData] = useState([]);
-    const setSelectedPeriodWithThrottle = useCallback(throttle(setSelectedPeriod, 1200), []);
 
     useEffect(() => {
         if (data) {
@@ -66,15 +65,15 @@ export const Chart: React.FC = () => {
             <View>
                 <ChartPathProvider data={{ points: cachedData }}>
                     <View style={{ paddingHorizontal: 28 }}>
-                        <Rate fiatCurrency={fiatCurrency} fiatRate={fiatRate} latestPoint={latestPoint} />
-                        <PercentDiff fiatCurrency={fiatCurrency} fiatRate={fiatRate} latestPoint={latestPoint} firstPoint={firstPoint} />
+                        {latestPoint ? <Rate fiatCurrency={fiatCurrency} fiatRate={fiatRate} latestPoint={latestPoint} /> : null}
+                        {latestPoint ? <PercentDiff fiatCurrency={fiatCurrency} fiatRate={fiatRate} latestPoint={latestPoint} firstPoint={firstPoint} /> : null}
                         <PriceLabel />
                     </View>
                     <View style={{ paddingVertical: 15 }}>
                         <View>
                             <ChartPath 
                                 gradientEnabled 
-                                longPressGestureHandlerProps={{ minDurationMs: 250 }} 
+                                longPressGestureHandlerProps={{ minDurationMs: 90 }} 
                                 hapticsEnabled 
                                 strokeWidth={2} 
                                 selectedStrokeWidth={2}
@@ -97,7 +96,7 @@ export const Chart: React.FC = () => {
                     <Text variant='label3' color='foregroundSecondary'>{max}</Text>
                 </View>
             </View>
-            <PeriodSelector selectedPeriod={selectedPeriod} onSelect={setSelectedPeriodWithThrottle} />
+            <PeriodSelector disabled={isLoading || isFetching} selectedPeriod={selectedPeriod} onSelect={setSelectedPeriod} />
         </View>
     )
 }
