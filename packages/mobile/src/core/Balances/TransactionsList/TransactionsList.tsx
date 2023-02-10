@@ -261,14 +261,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
         );
       }
 
-      return (
-        <BalanceItem
-          borderStart={borderStart}
-          borderEnd={borderEnd}
-          currency={item as CryptoCurrency}
-          showActions={item === CryptoCurrencies.Ton}
-        />
-      );
+      return null;
     }
 
     return (

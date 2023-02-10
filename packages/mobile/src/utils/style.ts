@@ -47,7 +47,7 @@ function scaleOnMiniDevices(scaledPixelSize, pixelSizeFromMockup) {
  * @param pixelSizeFromMockup element size from mockup
  * @param dimension height or width of device we relate to
  */
-export function ns(pixelSizeFromMockup: number | string, dimension: Dimension = Width) {
+export function ns(pixelSizeFromMockup: number | string, dimension: Dimension = Width): number {
   if (typeof pixelSizeFromMockup === 'number') {
     return scaleOnMiniDevices(
       dimension === Height

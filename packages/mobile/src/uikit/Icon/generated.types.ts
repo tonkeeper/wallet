@@ -70,6 +70,7 @@ export type IconNames =
   | 'ic-tray-arrow-down-28'
   | 'ic-tray-arrow-up-28'
   | 'ic-viewfinder-28'
+  | 'ic-wallet-28'
   | 'ic-warning-28'
   | 'ic-xmark-28'
   | 'ic-checkmark-circle-32'
@@ -164,6 +165,7 @@ export const AllIcons = [
   'ic-tray-arrow-down-28',
   'ic-tray-arrow-up-28',
   'ic-viewfinder-28',
+  'ic-wallet-28',
   'ic-warning-28',
   'ic-xmark-28',
   'ic-checkmark-circle-32',
@@ -259,6 +261,7 @@ export const IconSizes = {
   'ic-tray-arrow-down-28': 28,
   'ic-tray-arrow-up-28': 28,
   'ic-viewfinder-28': 28,
+  'ic-wallet-28': 28,
   'ic-warning-28': 28,
   'ic-xmark-28': 28,
   'ic-checkmark-circle-32': 32,

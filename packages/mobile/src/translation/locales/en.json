@@ -285,6 +285,10 @@
 
   "swap_title": "Swap",
 
+  "wallet": {
+    "screen_title": "Wallet"
+  },
+
   "activity": {
     "screen_title": "Activity",
     "sent": "Sent",

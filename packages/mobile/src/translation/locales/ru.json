@@ -292,6 +292,10 @@
 
   "swap_title": "Обмен",
 
+  "wallet": {
+    "screen_title": "Кошелек"
+  },
+
   "activity": {
     "screen_title": "Activity",
     "sent": "Sent",

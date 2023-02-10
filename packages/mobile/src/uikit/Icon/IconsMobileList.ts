@@ -70,6 +70,7 @@ export const MobileIconsList = {
   'ic-tray-arrow-down-28': require('$assets/icons/png/ic-tray-arrow-down-28.png'),
   'ic-tray-arrow-up-28': require('$assets/icons/png/ic-tray-arrow-up-28.png'),
   'ic-viewfinder-28': require('$assets/icons/png/ic-viewfinder-28.png'),
+  'ic-wallet-28': require('$assets/icons/png/ic-wallet-28.png'),
   'ic-warning-28': require('$assets/icons/png/ic-warning-28.png'),
   'ic-xmark-28': require('$assets/icons/png/ic-xmark-28.png'),
   'ic-checkmark-circle-32': require('$assets/icons/png/ic-checkmark-circle-32.png'),

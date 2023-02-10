@@ -20,6 +20,7 @@ import { IconNames } from '$uikit/Icon/generated.types';
 import { useFlags } from '$utils/flags';
 import { nftsSelector } from '$store/nfts';
 import { ActivityScreen } from '../../../tabs/Activity/ActivityScreen';
+import { WalletScreen } from '../../../tabs/Wallet/WalletScreen';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -62,7 +63,7 @@ export const TabStack: FC = () => {
         detachPreviousScreen: false,
         enableScreens: true,
         tabBarIcon: ({ color }) => {
-          let iconName: IconNames = 'ic-home-28';
+          let iconName: IconNames = 'ic-wallet-28';
           if (route.name === TabsStackRouteNames.NFT) {
             iconName = 'ic-nft-collection-28';
           } else if (route.name === TabsStackRouteNames.SettingsStack) {
@@ -141,10 +142,10 @@ export const TabStack: FC = () => {
       })}
     >
       <Tab.Screen
-        component={Balances}
+        component={WalletScreen}
         name={TabsStackRouteNames.Balances}
         options={{
-          tabBarLabel: t('tab_wallet'),
+          tabBarLabel: t('wallet.screen_title'),
         }}
       />
       <Tab.Screen
@@ -154,7 +155,7 @@ export const TabStack: FC = () => {
           tabBarLabel: t('activity.screen_title'),
         }}
       />
-      {isVisibleNftTab && (
+      {/* {isVisibleNftTab && (
         <Tab.Screen
           component={NFTs}
           name={TabsStackRouteNames.NFT}
@@ -162,7 +163,7 @@ export const TabStack: FC = () => {
             tabBarLabel: t('tab_nft'),
           }}
         />
-      )}
+      )} */}
       <Tab.Screen
         component={DAppsExplore}
         name={TabsStackRouteNames.Explore}
