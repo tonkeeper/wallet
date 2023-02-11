@@ -134,6 +134,12 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
             </Text>
             <S.InputWrapper>
               <Input
+                autoComplete="off"
+                returnKeyType="next"
+                autoCapitalize="none"
+                textContentType="none"
+                autoCorrect={false}
+                spellCheck={false}
                 placeholder={t('send_address_placeholder')}
                 isFailed={!!address.length && !isValid}
                 onChangeText={handleTextChange}
