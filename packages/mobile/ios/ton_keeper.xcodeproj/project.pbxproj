@@ -38,6 +38,8 @@
 		C44A3F93291D182F00C1D830 /* BiometryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44A3F92291D182F00C1D830 /* BiometryService.swift */; };
 		C44A3F96291D1DCE00C1D830 /* UIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44A3F95291D1DCE00C1D830 /* UIService.swift */; };
 		C44A3F98291D3C2700C1D830 /* UIWindow+Transition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44A3F97291D3C2700C1D830 /* UIWindow+Transition.swift */; };
+		C45AE3A9299BA0D600DB2613 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C45AE3A8299BA0D600DB2613 /* TabBarController.swift */; };
+		C45AE3C7299D225B00DB2613 /* TabBar.strings in Resources */ = {isa = PBXBuildFile; fileRef = C45AE3C9299D225B00DB2613 /* TabBar.strings */; };
 		C47CF0DF293087F5004AB5EE /* PassCodePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47CF0DE293087F5004AB5EE /* PassCodePresenter.swift */; };
 		C47CF0E229309117004AB5EE /* PassCodeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47CF0E129309117004AB5EE /* PassCodeModule.swift */; };
 		C4A5635B2918CFC8001DDA44 /* UIStackView+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A5635A2918CFC8001DDA44 /* UIStackView+Init.swift */; };
@@ -137,6 +139,9 @@
 		C44A3F92291D182F00C1D830 /* BiometryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometryService.swift; sourceTree = "<group>"; };
 		C44A3F95291D1DCE00C1D830 /* UIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIService.swift; sourceTree = "<group>"; };
 		C44A3F97291D3C2700C1D830 /* UIWindow+Transition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+Transition.swift"; sourceTree = "<group>"; };
+		C45AE3A8299BA0D600DB2613 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
+		C45AE3C8299D225B00DB2613 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/TabBar.strings; sourceTree = "<group>"; };
+		C45AE3CA299D225F00DB2613 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/TabBar.strings; sourceTree = "<group>"; };
 		C47CF0DE293087F5004AB5EE /* PassCodePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassCodePresenter.swift; sourceTree = "<group>"; };
 		C47CF0E129309117004AB5EE /* PassCodeModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassCodeModule.swift; sourceTree = "<group>"; };
 		C4A5635A2918CFC8001DDA44 /* UIStackView+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStackView+Init.swift"; sourceTree = "<group>"; };
@@ -339,6 +344,14 @@
 			path = UIService;
 			sourceTree = "<group>";
 		};
+		C45AE3A7299BA0BE00DB2613 /* TabBar */ = {
+			isa = PBXGroup;
+			children = (
+				C45AE3A8299BA0D600DB2613 /* TabBarController.swift */,
+			);
+			path = TabBar;
+			sourceTree = "<group>";
+		};
 		C47CF0DD293087E2004AB5EE /* Presenter */ = {
 			isa = PBXGroup;
 			children = (
@@ -446,6 +459,7 @@
 		C4A563622918D0B0001DDA44 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				C45AE3A7299BA0BE00DB2613 /* TabBar */,
 				C4A563632918D0B9001DDA44 /* PassCode */,
 			);
 			path = Modules;
@@ -675,6 +689,7 @@
 			children = (
 				C4F5F2072927C85B00D08D79 /* PassCode.strings */,
 				C4380879292BD26A00FF5669 /* PassCode.stringsdict */,
+				C45AE3C9299D225B00DB2613 /* TabBar.strings */,
 			);
 			path = Localizable;
 			sourceTree = "<group>";
@@ -821,6 +836,7 @@
 			files = (
 				203A6A1C2760BD6800817B71 /* Montserrat-BlackItalic.ttf in Resources */,
 				203A6A142760BD6800817B71 /* Montserrat-SemiBoldItalic.ttf in Resources */,
+				C45AE3C7299D225B00DB2613 /* TabBar.strings in Resources */,
 				203A6A1D2760BD6800817B71 /* Montserrat-MediumItalic.ttf in Resources */,
 				203A6A1E2760BD6800817B71 /* Montserrat-Light.ttf in Resources */,
 				203A6A162760BD6800817B71 /* Montserrat-SemiBold.ttf in Resources */,
@@ -1028,6 +1044,7 @@
 				C4A5635D2918CFDB001DDA44 /* UIColor+Hex.swift in Sources */,
 				C44A3F98291D3C2700C1D830 /* UIWindow+Transition.swift in Sources */,
 				C4380874292BCFE600FF5669 /* R.generated.swift in Sources */,
+				C45AE3A9299BA0D600DB2613 /* TabBarController.swift in Sources */,
 				C4B6F030291012DE0070E2BE /* KeychainServiceError.swift in Sources */,
 				C4A563BE2919522D001DDA44 /* PassCodeCircleView.swift in Sources */,
 				1C610F328FB84275E2FB6D32 /* ExpoModulesProvider.swift in Sources */,
@@ -1098,6 +1115,15 @@
 				C438087A292BD26C00FF5669 /* ru */,
 			);
 			name = PassCode.stringsdict;
+			sourceTree = "<group>";
+		};
+		C45AE3C9299D225B00DB2613 /* TabBar.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C45AE3C8299D225B00DB2613 /* en */,
+				C45AE3CA299D225F00DB2613 /* ru */,
+			);
+			name = TabBar.strings;
 			sourceTree = "<group>";
 		};
 		C4F5F2072927C85B00D08D79 /* PassCode.strings */ = {

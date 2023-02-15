@@ -30,25 +30,26 @@ final class UIService: NSObject {
   }
   
   func openModule(animated: Bool = false) {
-    guard !isAppUnlocked, (try? keychainService?.string(forKey: KeychainService.passcodeKeyPath)) != nil else {
-      openReact(animated: animated)
-      return
-    }
-    
-    guard let isBiometryEnabled = userDefaultsService?.isBiometryEnabled, isBiometryEnabled else {
-      openPasscode(animated: animated)
-      return
-    }
-    
-    openSplash(animated: false)
-    biometryService?.callBiometric { [weak self] success in
-      if success {
-        self?.isAppUnlocked = true
-        self?.openReact(animated: animated)
-      } else {
-        self?.openPasscode(animated: animated)
-      }
-    }
+    setRootViewController(TabBarController())
+//    guard !isAppUnlocked, (try? keychainService?.string(forKey: KeychainService.passcodeKeyPath)) != nil else {
+//      openReact(animated: animated)
+//      return
+//    }
+//
+//    guard let isBiometryEnabled = userDefaultsService?.isBiometryEnabled, isBiometryEnabled else {
+//      openPasscode(animated: animated)
+//      return
+//    }
+//
+//    openSplash(animated: false)
+//    biometryService?.callBiometric { [weak self] success in
+//      if success {
+//        self?.isAppUnlocked = true
+//        self?.openReact(animated: animated)
+//      } else {
+//        self?.openPasscode(animated: animated)
+//      }
+//    }
   }
   
   func validatePasscode(callback: @escaping (String?) -> Void) {
