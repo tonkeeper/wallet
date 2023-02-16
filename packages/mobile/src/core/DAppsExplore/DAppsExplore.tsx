@@ -1,14 +1,14 @@
 import { useTranslator } from '$hooks';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import { openDAppsSearch, openRequireWalletModal, openScanQR } from '$navigation';
-import { IsTablet, LargeNavBarHeight } from '$shared/constants';
+import { IsTablet, LargeNavBarHeight, TabletMaxWidth } from '$shared/constants';
 import { store, useAppsListStore } from '$store';
-import { Icon, LargeNavBar, ScrollHandler } from '$uikit';
+import { Icon, LargeNavBar, NavBar } from '$uikit';
 import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
-import { hNs, ns } from '$utils';
+import { deviceWidth } from '$utils';
 import { useFlags } from '$utils/flags';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import React, { FC, memo, useCallback, useMemo, useState } from 'react';
+import React, { FC, memo, useCallback, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
@@ -96,6 +96,8 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
     </TouchableOpacity>
   );
 
+  const isBigScreen = deviceWidth > TabletMaxWidth;
+
   return (
     <S.Wrap>
       <S.ScrollViewContainer topInset={topInset}>
@@ -106,8 +108,6 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
           showsVerticalScrollIndicator={false}
           // eslint-disable-next-line react-native/no-inline-styles
           contentContainerStyle={{
-            // paddingTop: hNs(LargeNavBarHeight),
-            alignItems: IsTablet ? 'center' : undefined,
             minHeight:
               !flags.disable_dapps && scrollViewHeight > 0
                 ? scrollViewHeight + tabsSnapOffset
@@ -117,48 +117,73 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
           stickyHeaderIndices={[0, 3]}
           // snapToOffsets={isSnapPointReached ? undefined : [tabsSnapOffset]}
         >
-          <LargeNavBar
-            scrollTop={scrollTop}
-            rightContent={navBarRight}
-            safeArea={false}
-            border={false}
-          >
-            {t('browser.title')}
-          </LargeNavBar>
+          {isBigScreen ? (
+            <NavBar
+              hideBackButton
+              scrollTop={scrollTop}
+              rightContent={navBarRight}
+              withBackground={IsTablet}
+            >
+              {t('browser.title')}
+            </NavBar>
+          ) : (
+            <LargeNavBar
+              scrollTop={scrollTop}
+              rightContent={navBarRight}
+              safeArea={false}
+              border={false}
+            >
+              {t('browser.title')}
+            </LargeNavBar>
+          )}
           <S.NavBarSpacer />
           {!flags.disable_dapps ? (
-            <S.Content onLayout={handleConnectedAppsLayout}>
-              <ConnectedApps />
-            </S.Content>
+            <S.ContentWrapper>
+              <S.Content onLayout={handleConnectedAppsLayout}>
+                <ConnectedApps />
+              </S.Content>
+            </S.ContentWrapper>
           ) : null}
           {!flags.disable_dapps ? (
-            <TopTabs
-              tabs={categories}
-              selectedId={activeCategory}
-              onChange={(value) => {
-                scrollRef.current?.scrollTo({
-                  y: Math.min(scrollTop.value, tabsSnapOffset),
-                  animated: false,
-                });
-                setActiveCategory(value);
-              }}
-            />
+            <S.ContentWrapper>
+              <S.Content>
+                <TopTabs
+                  tabs={categories}
+                  selectedId={activeCategory}
+                  onChange={(value) => {
+                    scrollRef.current?.scrollTo({
+                      y: Math.min(scrollTop.value, tabsSnapOffset),
+                      animated: false,
+                    });
+                    setActiveCategory(value);
+                  }}
+                />
+              </S.Content>
+            </S.ContentWrapper>
           ) : null}
           {!flags.disable_dapps ? (
-            <S.Content>
-              <PopularApps activeCategory={activeCategory} />
-            </S.Content>
+            <S.ContentWrapper>
+              <S.Content>
+                <PopularApps activeCategory={activeCategory} />
+              </S.Content>
+            </S.ContentWrapper>
           ) : null}
           {flags.disable_dapps ? (
-            <S.Content>
-              <AboutDApps />
-            </S.Content>
+            <S.ContentWrapper>
+              <S.Content>
+                <AboutDApps />
+              </S.Content>
+            </S.ContentWrapper>
           ) : null}
         </Animated.ScrollView>
       </S.ScrollViewContainer>
-      <S.SearchBarContainer tabBarHeight={tabBarHeight}>
-        <SearchButton onPress={handleSearchPress} />
-      </S.SearchBarContainer>
+      <S.ContentWrapper>
+        <S.Content>
+          <S.SearchBarContainer tabBarHeight={tabBarHeight}>
+            <SearchButton onPress={handleSearchPress} />
+          </S.SearchBarContainer>
+        </S.Content>
+      </S.ContentWrapper>
     </S.Wrap>
   );
 };

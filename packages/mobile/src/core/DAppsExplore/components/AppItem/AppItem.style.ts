@@ -1,11 +1,12 @@
 import { APPS_ITEMS_IN_ROW } from '$core/DAppsExplore/constants';
+import { IsTablet, TabletMaxWidth } from '$shared/constants';
 import styled, { RADIUS } from '$styled';
 import { Text } from '$uikit';
 import { ns } from '$utils';
 import { Dimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
-const deviceWidth = Dimensions.get('window').width;
+const deviceWidth = IsTablet ? TabletMaxWidth : Dimensions.get('window').width;
 
 const ICON_SIZE = ns(64);
 

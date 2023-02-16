@@ -43,18 +43,20 @@ const PopularAppsComponent: FC<Props> = (props) => {
         {categories.map((category) => (
           <StepViewItem id={category.id} key={category.id}>
             <S.Container>
-              <List separator={false}>
-                {category.apps.map((item, index) => (
-                  <PopularAppCell
-                    key={index}
-                    separator={index < category.apps.length - 1}
-                    icon={item.icon}
-                    url={item.url}
-                    name={item.name}
-                    description={item.description}
-                  />
-                ))}
-              </List>
+              <S.Content>
+                <List separator={false}>
+                  {category.apps.map((item, index) => (
+                    <PopularAppCell
+                      key={index}
+                      separator={index < category.apps.length - 1}
+                      icon={item.icon}
+                      url={item.url}
+                      name={item.name}
+                      description={item.description}
+                    />
+                  ))}
+                </List>
+              </S.Content>
             </S.Container>
           </StepViewItem>
         ))}
