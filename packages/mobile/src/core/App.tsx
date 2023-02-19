@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider as StoreProvider, useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components/native';
-
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { store } from '$store';
 import { AppearanceAccents, DarkTheme, TonTheme } from '$styled';
 import { AppNavigator } from '$navigation/AppNavigator';
@@ -36,16 +36,18 @@ const TonThemeProvider: FC = ({ children }) => {
 
 export const App: FC = () => {
   return (
-    <StoreProvider {...{ store }}>
-      <TonThemeProvider>
-        <SafeAreaProvider>
-          <ScrollPositionProvider>
-            <AppNavigator />
-          </ScrollPositionProvider>
-          <Toast />
-          <ToastComponent />
-        </SafeAreaProvider>
-      </TonThemeProvider>
-    </StoreProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <StoreProvider {...{ store }}>
+        <TonThemeProvider>
+          <SafeAreaProvider>
+            <ScrollPositionProvider>
+              <AppNavigator />
+            </ScrollPositionProvider>
+            <Toast />
+            <ToastComponent />
+          </SafeAreaProvider>
+        </TonThemeProvider>
+      </StoreProvider>
+    </GestureHandlerRootView>
   );
 };

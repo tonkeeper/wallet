@@ -9,7 +9,14 @@ export const CellContainer = styled.View`
   background: ${({ theme }) => theme.colors.backgroundSecondary};
 `;
 
-export const Cell = styled(Highlight)`
+export const Cell = styled(Highlight).attrs({
+  contentViewStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: ns(16),
+    overflow: 'hidden'
+  }
+})`
   position: relative;
 `;
 

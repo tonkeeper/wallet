@@ -35,4 +35,4 @@ setNativeExceptionHandler((exceptionString) => {
 
 store.dispatch(mainActions.init());
 
-AppRegistry.registerComponent(appName, () => gestureHandlerRootHOC(App));
+AppRegistry.registerComponent(appName, () => App);
