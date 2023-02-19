@@ -7,12 +7,12 @@ import { ScreenLargeHeader } from './ScreenLagreHeader';
 interface ScreenHeaderProps {
   title?: string;
   rightContent?: React.ReactNode;
-  hideBackButton?: boolean;
+  backButton?: boolean;
   large?: boolean;
 }
 
 export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
-  const { rightContent, hideBackButton } = props;
+  const { rightContent, backButton = true } = props;
 
   const rightContentContainer = React.useMemo(() => {
     if (rightContent) {
@@ -31,7 +31,6 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
     return (
       <ScreenLargeHeader 
         navBarTitle={props.title}
-        
       />
     )
   }
@@ -39,7 +38,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
   return (
     <NavBar 
       rightContent={rightContentContainer} 
-      hideBackButton={hideBackButton}
+      hideBackButton={!backButton}
     >
       {props.title}
     </NavBar>

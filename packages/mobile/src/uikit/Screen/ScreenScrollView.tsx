@@ -4,7 +4,7 @@ import { ScrollViewProps } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ns } from '$utils';
 import { useScreenScroll } from './context/ScreenScrollContext';
-import { LargeNavBarHeight } from '$shared/constants';
+import { LargeNavBarHeight, NavBarHeight } from '$shared/constants';
 
 const useWrapBottomTabBarHeight = () => {
   try { // Fix crash 
@@ -22,7 +22,7 @@ export const ScreenScrollView = memo(forwardRef<Animated.ScrollView, ScrollViewP
     {
       paddingHorizontal: ns(16),
       paddingBottom: tabBarHeight,
-      paddingTop: ns(LargeNavBarHeight),
+      // paddingTop: ns(NavBarHeight),
     }, 
     props.style
   ];
