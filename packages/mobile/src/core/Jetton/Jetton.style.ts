@@ -80,7 +80,15 @@ export const Divider = styled.View`
   margin-bottom: ${ns(24)}px;
 `
 
-export const Action = styled(TouchableOpacity).attrs({ activeOpacity: 0.8 })`
+export const Action = styled(TouchableOpacity).attrs({
+  activeOpacity: 0.8,
+  hitSlop: {
+    top: 12,
+    bottom: 12,
+    left: 12,
+    right: 12,
+  },
+})`
   border-radius: ${ns(48 /2)}px;
   background: ${({ theme }) => theme.colors.backgroundTertiary};
   margin-bottom: ${ns(8)}px;

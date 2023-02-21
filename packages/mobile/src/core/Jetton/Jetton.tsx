@@ -11,7 +11,7 @@ import {
   Skeleton,
   ShowMore,
 } from '$uikit';
-import { formatAmountAndLocalize, fromNano, maskifyTonAddress, ns } from '$utils';
+import { formatAmountAndLocalize, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
 import { useTheme, useTranslator } from '$hooks';
@@ -35,7 +35,9 @@ const ActionButton: FC<ActionButtonProps> = (props) => {
       <S.Action onPress={onPress}>
         <Icon name={icon} color="constantLight" />
       </S.Action>
-      <Text variant="label3" color='foregroundSecondary'>{children}</Text>
+      <Text variant="label3" color="foregroundSecondary">
+        {children}
+      </Text>
     </S.ActionWrapper>
   );
 };
@@ -108,12 +110,12 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
               {jetton.metadata.symbol}
             </Text>
             {total ? (
-              <Text style={{ marginTop: 2 }} variant='body2' color='foregroundSecondary'>
+              <Text style={{ marginTop: 2 }} variant="body2" color="foregroundSecondary">
                 {total}
               </Text>
             ) : null}
             {price ? (
-              <Text style={{ marginTop: 12 }} variant='body2' color='foregroundSecondary'>
+              <Text style={{ marginTop: 12 }} variant="body2" color="foregroundSecondary">
                 {price}
               </Text>
             ) : null}
