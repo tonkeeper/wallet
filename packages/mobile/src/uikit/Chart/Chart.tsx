@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { ChartDot, ChartPath, ChartPathProvider, monotoneCubicInterpolation, CurrentPositionVerticalLine } from '@rainbow-me/animated-charts';
+import React, { useEffect, useState } from 'react';
+import { ChartDot, ChartPath, ChartPathProvider, CurrentPositionVerticalLine } from '@rainbow-me/animated-charts';
 import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks';
 import { useSelector } from 'react-redux';
 import { ratesRatesSelector } from '$store/rates';
 import { Text } from '$uikit/Text/Text';
 import { fiatCurrencySelector } from '$store/main';
-import { CryptoCurrencies, FiatCurrencies, getServerConfig } from '$shared/constants';
+import { CryptoCurrencies, FiatCurrencies } from '$shared/constants';
 import { getRate } from '$hooks/useFiatRate';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { PriceLabel } from './PriceLabel/PriceLabel';
@@ -16,10 +16,9 @@ import { ChartPeriod } from './Chart.types';
 import { Rate } from './Rate/Rate';
 import { useQuery } from 'react-query';
 import { loadChartData } from './Chart.api';
-import { debounce } from 'lodash';
 
 export const { width: SIZE } = Dimensions.get('window');
-export const DEFAULT_CHART_PERIOD = ChartPeriod.ONE_MONTH;
+export const DEFAULT_CHART_PERIOD = ChartPeriod.ONE_DAY;
 
 export const Chart: React.FC = () => {
     const theme = useTheme();
@@ -67,7 +66,7 @@ export const Chart: React.FC = () => {
                     <View style={{ paddingHorizontal: 28 }}>
                         {latestPoint ? <Rate fiatCurrency={fiatCurrency} fiatRate={fiatRate} latestPoint={latestPoint} /> : null}
                         {latestPoint ? <PercentDiff fiatCurrency={fiatCurrency} fiatRate={fiatRate} latestPoint={latestPoint} firstPoint={firstPoint} /> : null}
-                        <PriceLabel />
+                        <PriceLabel selectedPeriod={selectedPeriod} />
                     </View>
                     <View style={{ paddingVertical: 15 }}>
                         <View>
@@ -89,11 +88,11 @@ export const Chart: React.FC = () => {
                         </View>
                     </View>
                 </ChartPathProvider>
-                <View style={{ position: 'absolute', right: 16, bottom: 24 }}>
-                    <Text variant='label3' color='foregroundSecondary'>{min}</Text>
+                <View style={{ position: 'absolute', right: 18, bottom: 24 }}>
+                    <Text style={{ fontFamily: 'SFMono-Medium' }} variant='label3' color='foregroundSecondary'>{min}</Text>
                 </View>
-                <View style={{ position: 'absolute', right: 16, top: 68 }}>
-                    <Text variant='label3' color='foregroundSecondary'>{max}</Text>
+                <View style={{ position: 'absolute', right: 18, top: 68 }}>
+                    <Text style={{ fontFamily: 'SFMono-Medium' }} variant='label3' color='foregroundSecondary'>{max}</Text>
                 </View>
             </View>
             <PeriodSelector disabled={isLoading || isFetching} selectedPeriod={selectedPeriod} onSelect={setSelectedPeriod} />

@@ -19,7 +19,7 @@ export const Period: React.FC<{ onSelect: () => void; selected?: boolean; label:
     const backgroundColor = props.selected ? theme.colors.backgroundSecondary : 'transparent';
 
     return (
-        <TouchableOpacity activeOpacity={1} disabled={props.selected || props.disabled} onPress={props.onSelect} style={{ paddingVertical: 7.5, borderRadius: 18, flex: 1, backgroundColor }}>
+        <TouchableOpacity activeOpacity={1} disabled={props.selected || props.disabled} onPress={props.onSelect} style={{ paddingVertical: 6, borderRadius: 18, flex: 1, backgroundColor }}>
             <Text textAlign='center'>{props.label}</Text>
         </TouchableOpacity>
     )

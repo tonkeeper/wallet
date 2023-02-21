@@ -4,6 +4,13 @@ import { useChartData } from '@rainbow-me/animated-charts';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { FiatCurrencies } from '$shared/constants';
+import { Platform } from 'react-native';
+
+const fontFamily = Platform.select({
+    ios: 'SFMono-Bold',
+    android: 'RobotoMono-Bold',
+  });
+  
 
 export const Rate: React.FC<{ latestPoint: number; fiatRate: number; fiatCurrency: FiatCurrencies }> = (props) => {
     const chartData = useChartData();
@@ -31,6 +38,6 @@ export const Rate: React.FC<{ latestPoint: number; fiatRate: number; fiatCurrenc
     }, [formatPriceWrapper]);
 
     return (
-        <Text color='foregroundPrimary' variant='h3'>{formattedLatestPrice}</Text>
+        <Text style={{ fontFamily }} color='foregroundPrimary' variant='h3'>{formattedLatestPrice}</Text>
     )
 }

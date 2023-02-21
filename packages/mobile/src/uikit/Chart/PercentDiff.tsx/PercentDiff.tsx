@@ -7,6 +7,7 @@ import { toLocaleNumber } from '$utils';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useChartData } from '@rainbow-me/animated-charts';
+import { Platform } from 'react-native';
 
 export interface PercentDiffProps {
     latestPoint: number;
@@ -14,6 +15,11 @@ export interface PercentDiffProps {
     fiatRate: number;
     fiatCurrency: FiatCurrencies;
 }
+
+const fontFamily = Platform.select({
+  ios: 'SFMono-Medium',
+  android: 'RobotoMono-Medium',
+});
 
 export const PercentDiff: React.FC<PercentDiffProps> = (props) => {
     const chartData = useChartData();
@@ -35,9 +41,9 @@ export const PercentDiff: React.FC<PercentDiffProps> = (props) => {
         let color: TonThemeColor = 'foregroundSecondary';
         let amountResult: string;
 
-        const diffInFiat = formatFiatCurrencyAmount(((activePoint * parseFloat(priceDiff) / 100) * props.fiatRate).toFixed(2), props.fiatCurrency)
+        const diffInFiat = formatFiatCurrencyAmount(Math.abs(((activePoint * parseFloat(priceDiff) / 100) * props.fiatRate)).toFixed(2), props.fiatCurrency);
     
-        percent = priceDiff === null ? '-' : (+priceDiff > 0 ? '+ ' : '– ') + Math.abs(Number(priceDiff)) + '%';
+        percent = priceDiff === null ? '-' : (+priceDiff > 0 ? '+ ' : '-') + Math.abs(Number(priceDiff)) + '%';
         if (priceDiff !== null) {
           color = +priceDiff > 0 ? 'accentPositive' : 'accentNegative';
         }
@@ -69,9 +75,9 @@ export const PercentDiff: React.FC<PercentDiffProps> = (props) => {
     
 
     return (
-        <Text variant='body2' color={fiatInfo.color} >
+        <Text variant='body2' color={fiatInfo.color} style={{ fontFamily }}>
             {fiatInfo.percent}{' '}
-            <Text variant='body2' color={fiatInfo.color} style={{ opacity: 0.42 }}>
+            <Text variant='body2' color={fiatInfo.color} style={{ opacity: 0.42, fontFamily, marginLeft: 8 }}>
                 {fiatInfo.diffInFiat}
             </Text>
         </Text>
