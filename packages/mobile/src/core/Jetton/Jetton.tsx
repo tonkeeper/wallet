@@ -116,12 +116,16 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             ) : null}
             {price ? (
               <Text style={{ marginTop: 12 }} variant="body2" color="foregroundSecondary">
-                {price}
+                {t('jetton_price')} {price}
               </Text>
             ) : null}
             <S.JettonIDWrapper>
               {!(isJettonMetaLoading ?? true) ? (
-                <ShowMore backgroundColor={theme.colors.backgroundPrimary} maxLines={2} text={jettonMeta?.description} />
+                <ShowMore
+                  backgroundColor={theme.colors.backgroundPrimary}
+                  maxLines={2}
+                  text={jettonMeta?.description}
+                />
               ) : (
                 <>
                   <Skeleton.Line style={{ marginTop: 6 }} width={240} />
@@ -165,6 +169,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const renderContent = useCallback(() => {
     return (
       <TransactionsList
+        withoutMarginForFirstHeader
         onEndReached={isEventsLoading || !canLoadMore ? undefined : handleLoadMore}
         eventsInfo={jettonEvents}
         initialData={[]}

@@ -78,7 +78,7 @@ export const Divider = styled.View`
   width: ${deviceWidth}px;
   background: rgba(79, 90, 112, 0.24);
   margin-bottom: ${ns(24)}px;
-`
+`;
 
 export const Action = styled(TouchableOpacity).attrs({
   activeOpacity: 0.8,
