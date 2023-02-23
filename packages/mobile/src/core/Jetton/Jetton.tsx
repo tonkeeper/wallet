@@ -146,7 +146,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             {t('wallet_receive')}
           </ActionButton>
         </S.ActionsContainer>
-        <S.Divider />
+        <S.Divider style={{ marginBottom: 10 }} />
       </S.HeaderWrap>
     );
   }, [

@@ -10,7 +10,6 @@ export const Wrap = styled.View`
 
 export const HeaderWrap = styled.View`
   align-items: center;
-  margin-bottom: ${ns(16)}px;
   padding-horizontal: ${ns(12)}px;
 `;
 

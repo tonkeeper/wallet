@@ -168,7 +168,7 @@
 
   "jetton_name": "%{name} Token",
   "jetton_id": "Token ID: %{jettonAddress}",
-  "jetton_proce": "Price:",
+  "jetton_price": "Price:",
   "jetton_id_copied": "Token ID copied",
   "jetton_open_explorer": "View details",
   "jettons_manage_tokens": "Manage tokens",
