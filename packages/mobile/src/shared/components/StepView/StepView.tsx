@@ -16,12 +16,12 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
   runOnJS,
   useAnimatedStyle,
-  useDerivedValue,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
 import { StepViewItemProps, StepViewProps } from './StepView.interface';
 import * as S from './StepView.style';
+import { deviceHeight } from '$utils';
 
 export interface StepViewRef<T = string | number> {
   goNext: () => void;
@@ -232,7 +232,7 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
       <S.Container style={containerStyle}>
         {steps.map((step) => (
           <S.Step
-            hitSlop={{ bottom: 500 }}
+            hitSlop={{ bottom: deviceHeight }}
             key={step.id}
             width={width}
             autoHeight={autoHeight}
