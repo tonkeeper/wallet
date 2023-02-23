@@ -232,6 +232,7 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
       <S.Container style={containerStyle}>
         {steps.map((step) => (
           <S.Step
+            hitSlop={{ bottom: 500 }}
             key={step.id}
             width={width}
             autoHeight={autoHeight}
