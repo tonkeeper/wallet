@@ -203,6 +203,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             <PopupMenu
               items={[
                 <PopupMenuItem
+                  shouldCloseMenu
                   onPress={handleOpenExplorer}
                   text={t('jetton_open_explorer')}
                   icon={<Icon name="ic-globe-16" color="accentPrimary" />}

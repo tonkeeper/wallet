@@ -298,7 +298,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
             return null;
           }
           return (
-            <InlineHeader skipMargin={withoutMarginForFirstHeader || !!isFirst}>
+            <InlineHeader skipMargin={withoutMarginForFirstHeader && !!isFirst}>
               {title}
             </InlineHeader>
           );
