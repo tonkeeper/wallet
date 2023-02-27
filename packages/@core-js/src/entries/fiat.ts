@@ -42,7 +42,7 @@ export const FiatCurrencySymbolsConfig: Record<FiatCurrency, CurrencyState> = {
   },
   [FiatCurrencies.AED]: {
     numberFormat: 'en-US',
-    symbol: 'Rp',
+    symbol: 'DH',
     side: 'end',
     maximumFractionDigits: 2,
   },
