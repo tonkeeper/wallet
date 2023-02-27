@@ -21,7 +21,7 @@ const RateComponent: React.FC<{
   const formattedLatestPrice = useMemo(
     () =>
       formatFiatCurrencyAmount(
-        (activePoint * props.fiatRate).toFixed(2),
+        (activePoint * props.fiatRate).toFixed(4),
         props.fiatCurrency,
         true,
       ),
