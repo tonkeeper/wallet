@@ -19,7 +19,7 @@ export const ChartYLabelsComponent: React.FC<ChartYLabelsProps> = (props) => {
 
   const labelStyle = useAnimatedStyle(() => {
     return {
-      opacity: withTiming([0, 5].includes(chartData?.state.value) ? 1 : 0, {
+      opacity: withTiming([0, 5, 1].includes(chartData?.state.value) ? 1 : 0, {
         duration: 200,
       }),
     };
