@@ -7,37 +7,59 @@ import { FiatCurrencies } from '$shared/constants';
 import { Platform } from 'react-native';
 
 const fontFamily = Platform.select({
-    ios: 'SFMono-Bold',
-    android: 'RobotoMono-Bold',
-  });
-  
+  ios: 'SFMono-Bold',
+  android: 'RobotoMono-Bold',
+});
 
-export const Rate: React.FC<{ latestPoint: number; fiatRate: number; fiatCurrency: FiatCurrencies }> = (props) => {
-    const chartData = useChartData();
-    const [activePoint, setActivePoint] = useState(props.latestPoint);
-    const formattedLatestPrice = useMemo(() => formatFiatCurrencyAmount((activePoint * props.fiatRate).toFixed(2), props.fiatCurrency), [props.fiatCurrency, props.fiatRate, activePoint]);
-    
-    const formatPriceWrapper = useCallback((point: number) => {
-        if (!point) {
-            setActivePoint(props.latestPoint);
-            return;
-        }
-        setActivePoint(point);
-    }, [props.latestPoint]);
+const RateComponent: React.FC<{
+  latestPoint: number;
+  fiatRate: number;
+  fiatCurrency: FiatCurrencies;
+}> = (props) => {
+  const chartData = useChartData();
+  const [activePoint, setActivePoint] = useState(props.latestPoint);
+  const formattedLatestPrice = useMemo(
+    () =>
+      formatFiatCurrencyAmount(
+        (activePoint * props.fiatRate).toFixed(2),
+        props.fiatCurrency,
+        true,
+      ),
+    [props.fiatCurrency, props.fiatRate, activePoint],
+  );
 
-    useEffect(() => {
+  const formatPriceWrapper = useCallback(
+    (point: number) => {
+      if (!point) {
         setActivePoint(props.latestPoint);
-    }, [props.latestPoint]);
+        return;
+      }
+      setActivePoint(point);
+    },
+    [props.latestPoint],
+  );
 
-    useAnimatedReaction(() => {
-        return chartData?.originalY.value;
-    }, (result, previous) => {
-        if (result !== previous) {
-           runOnJS(formatPriceWrapper)(result);
-        }
-    }, [formatPriceWrapper]);
+  useEffect(() => {
+    setActivePoint(props.latestPoint);
+  }, [props.latestPoint]);
 
-    return (
-        <Text style={{ fontFamily }} color='foregroundPrimary' variant='h3'>{formattedLatestPrice}</Text>
-    )
-}
+  useAnimatedReaction(
+    () => {
+      return chartData?.originalY.value;
+    },
+    (result, previous) => {
+      if (result !== previous) {
+        runOnJS(formatPriceWrapper)(result);
+      }
+    },
+    [formatPriceWrapper],
+  );
+
+  return (
+    <Text style={{ fontFamily }} color="foregroundPrimary" variant="h3">
+      {formattedLatestPrice}
+    </Text>
+  );
+};
+
+export const Rate = React.memo(RateComponent);

@@ -21,7 +21,7 @@ const fontFamily = Platform.select({
   android: 'RobotoMono-Medium',
 });
 
-export const PercentDiff: React.FC<PercentDiffProps> = (props) => {
+const PercentDiffComponent: React.FC<PercentDiffProps> = (props) => {
   const chartData = useChartData();
   const theme = useTheme();
   const [activePoint, setActivePoint] = React.useState(props.latestPoint);
@@ -42,12 +42,13 @@ export const PercentDiff: React.FC<PercentDiffProps> = (props) => {
     const diffInFiat = formatFiatCurrencyAmount(
       Math.abs(((activePoint * parseFloat(priceDiff)) / 100) * props.fiatRate).toFixed(2),
       props.fiatCurrency,
+      true,
     );
 
     percent =
       priceDiff === null
         ? '-'
-        : (+priceDiff > 0 ? '+ ' : '- ') + Math.abs(Number(priceDiff)) + '%';
+        : (+priceDiff > 0 ? '+ ' : '- ') + Math.abs(Number(priceDiff)) + ' %';
     if (priceDiff !== null) {
       color = +priceDiff > 0 ? 'accentPositive' : 'accentNegative';
     }
@@ -94,3 +95,5 @@ export const PercentDiff: React.FC<PercentDiffProps> = (props) => {
     </Text>
   );
 };
+
+export const PercentDiff = React.memo(PercentDiffComponent);

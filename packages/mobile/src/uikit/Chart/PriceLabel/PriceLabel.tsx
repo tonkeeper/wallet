@@ -35,7 +35,7 @@ export const PriceLabel: React.FC<{ selectedPeriod: ChartPeriod }> = (props) => 
         format(
           subbedText,
           `${getLocale().code === 'ru' ? 'cccccc' : 'ccc'}, dd MMM ${
-            shouldShowHoursLabel ? 'H:mm' : ''
+            shouldShowHoursLabel ? 'HH:mm' : ''
           }`,
           { locale: getLocale() },
         ),

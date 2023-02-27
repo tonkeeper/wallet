@@ -9,23 +9,23 @@ import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks';
 import { useSelector } from 'react-redux';
 import { ratesRatesSelector } from '$store/rates';
-import { Text } from '$uikit/Text/Text';
 import { fiatCurrencySelector } from '$store/main';
 import { CryptoCurrencies, FiatCurrencies } from '$shared/constants';
 import { getRate } from '$hooks/useFiatRate';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { PriceLabel } from './PriceLabel/PriceLabel';
-import { PercentDiff } from './PercentDiff.tsx/PercentDiff';
+import { PercentDiff } from './PercentDiff/PercentDiff';
 import { PeriodSelector } from './PeriodSelector/PeriodSelector';
 import { ChartPeriod } from './Chart.types';
 import { Rate } from './Rate/Rate';
 import { useQuery } from 'react-query';
 import { loadChartData } from './Chart.api';
+import { ChartYLabels } from './ChartYLabels/ChartYLabels';
 
 export const { width: SIZE } = Dimensions.get('window');
 export const DEFAULT_CHART_PERIOD = ChartPeriod.ONE_DAY;
 
-export const Chart: React.FC = () => {
+const ChartComponent: React.FC = () => {
   const theme = useTheme();
   const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>(DEFAULT_CHART_PERIOD);
 
@@ -49,15 +49,15 @@ export const Chart: React.FC = () => {
       ? 1
       : getRate(rates, CryptoCurrencies.Usdt, fiatCurrency);
 
-  const [max, min] = React.useMemo(() => {
+  const [maxPrice, minPrice] = React.useMemo(() => {
     if (!cachedData.length) {
-      return [0, 0];
+      return ['0', '0'];
     }
     const mappedPoints = cachedData.map((o) => o.y);
     return [Math.max(...mappedPoints), Math.min(...mappedPoints)].map((value) =>
-      formatFiatCurrencyAmount((value * fiatRate).toFixed(2), fiatCurrency),
+      formatFiatCurrencyAmount((value * fiatRate).toFixed(2), fiatCurrency, true),
     );
-  }, [fiatCurrency, cachedData]);
+  }, [cachedData, fiatRate, fiatCurrency]);
 
   const [firstPoint, latestPoint] = React.useMemo(() => {
     if (!cachedData.length) {
@@ -127,30 +127,13 @@ export const Chart: React.FC = () => {
               <CurrentPositionVerticalLine
                 thickness={2}
                 strokeDasharray={0}
-                length={230}
+                length={170}
                 color={theme.colors.accentPrimaryLight}
               />
             </View>
           </View>
+          <ChartYLabels maxPrice={maxPrice} minPrice={minPrice} />
         </ChartPathProvider>
-        <View style={{ position: 'absolute', right: 18, bottom: 2 }}>
-          <Text
-            style={{ fontFamily: 'SFMono-Medium' }}
-            variant="label3"
-            color="foregroundSecondary"
-          >
-            {min}
-          </Text>
-        </View>
-        <View style={{ position: 'absolute', right: 18, top: 68 }}>
-          <Text
-            style={{ fontFamily: 'SFMono-Medium' }}
-            variant="label3"
-            color="foregroundSecondary"
-          >
-            {max}
-          </Text>
-        </View>
       </View>
       <PeriodSelector
         disabled={isLoading || isFetching}
@@ -160,3 +143,5 @@ export const Chart: React.FC = () => {
     </View>
   );
 };
+
+export const Chart = React.memo(ChartComponent);
