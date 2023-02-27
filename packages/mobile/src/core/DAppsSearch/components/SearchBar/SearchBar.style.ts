@@ -1,3 +1,4 @@
+import { IsTablet } from '$shared/constants';
 import styled, { RADIUS } from '$styled';
 import { ns } from '$utils';
 import { TextInput } from 'react-native';
@@ -5,7 +6,7 @@ import { TextInput } from 'react-native';
 const INPUT_HEIGHT = 48;
 
 export const Container = styled.View`
-  padding: ${ns(16)}px;
+  padding: ${ns(16)}px ${ns(IsTablet ? 0 : 16)}px;
   flex-direction: row;
   align-items: center;
 `;

@@ -3,6 +3,7 @@ import { ns } from '$utils';
 import Animated from 'react-native-reanimated';
 
 export const Container = styled.View`
+  width: 100%;
   height: ${ns(64)}px;
   background: ${({ theme }) => theme.colors.backgroundPrimary};
   padding: 0 ${ns(8)}px;
