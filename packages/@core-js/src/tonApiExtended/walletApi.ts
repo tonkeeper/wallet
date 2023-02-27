@@ -7,8 +7,8 @@ import {
   JettonBalance,
   JettonsBalances,
   WalletApi,
-} from '../tonApi';
-import { Configuration } from '../tonApi/runtime';
+} from '../tonApiV1';
+import { Configuration } from '../tonApiV1/runtime';
 
 export const getWalletActiveAddresses = async (
   tonApi: Configuration,
