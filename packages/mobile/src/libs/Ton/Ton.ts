@@ -23,7 +23,7 @@ export class Ton {
   static formatAmount(amount: string | number, currency = 'TON') {
     return `${toLocaleNumber(Ton.fromNano(amount))} ${currency}`;
   }
-  static formatAddress(address: AddressType, opts: AddressFormatOptions) {
+  static formatAddress(address: AddressType, opts?: AddressFormatOptions) {
     try {
       return new Address(address).format(opts);
     } catch (err) {
@@ -38,6 +38,9 @@ export class Ton {
       const bytes = new Uint8Array(Buffer.from(base64, 'base64'));
       return TonWeb.boc.Cell.oneFromBoc(bytes);
     }
+  }
+  static isValidAddress(address: AddressType): boolean {
+    return Address.isValid(address);
   }
   static parseComment(cell: Cell): string | null {
     if (Buffer.isBuffer(cell)) {

@@ -1,6 +1,7 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { UnlockedVault, Wallet } from '$blockchain';
 import { CryptoCurrency, SelectableVersion } from '$shared/constants';
+import { InsufficientFundsParams } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 
 export type OldWalletBalanceItem = {
   version: string;
@@ -39,6 +40,7 @@ export type ConfirmSendCoinsAction = PayloadAction<{
   address: string;
   comment?: string;
   onEnd?: () => void;
+  onInsufficientFunds?: (params: InsufficientFundsParams) => void;
   onNext: (info: { fee: string; isInactive: boolean }) => void;
   isJetton?: boolean;
   decimals?: number;

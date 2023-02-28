@@ -169,6 +169,30 @@ export const DevDeeplinking: React.FC = () => {
         <Button
           onPress={() => {
             deeplinking.resolve(
+              'https://app.tonkeeper.com/transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n?amount=100000000000000&text=test',
+            );
+          }}
+        >
+          Open transfer with huge amount
+        </Button>
+
+        <DevSeparator />
+
+        <Button
+          onPress={() => {
+            deeplinking.resolve(
+              'https://app.tonkeeper.com/transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n?amount=2000000000000000&jetton=EQDlBqGI2r44jpnhYfEiJahU8b7Zoo3no13l6Q9H-AIJbAgo&text=test'
+            );
+          }}
+        >
+          Open transfer with santa tokens
+        </Button>
+
+        <DevSeparator />
+
+        <Button
+          onPress={() => {
+            deeplinking.resolve(
               'ton://transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n?amount=100000&text=test',
               { params: { methodId: 'mercuryo_sell' } },
             );

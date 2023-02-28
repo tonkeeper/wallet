@@ -28,6 +28,10 @@ import { openTimeNotSyncedModal } from '$core/ModalContainer/TimeNotSynced/TimeN
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 import { openTonConnect } from '$core/TonConnect/TonConnectModal';
 import { useCallback } from 'react';
+import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { jettonsBalancesSelector } from '$store/jettons';
+import BigNumber from 'bignumber.js';
+import { Tonapi } from '$libs/Tonapi';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -109,7 +113,7 @@ export function useDeeplinkingResolvers() {
     }
   });
 
-  deeplinking.add('/transfer/:address', ({ params, query, resolveParams }) => {
+  deeplinking.add('/transfer/:address', async ({ params, query, resolveParams }) => {
     const currency = CryptoCurrencies.Ton;
     const address = params.address;
     const comment = query.text ?? '';
@@ -157,14 +161,31 @@ export function useDeeplinkingResolvers() {
           return Toast.fail(t('transfer_deeplink_address_error'));
         }
 
+        const address = await (getWallet().ton.getAddress());
+        const { balances } = await Tonapi.getJettonBalances(address);
+        const jettonBalance = balances.find(balance => compareAddresses(balance.jetton_address, query.jetton));
+
+        if (!jettonBalance) {
+          return Toast.fail(t('transfer_deeplink_address_error'));
+        }
+
+        let decimals = jettonBalance.metadata?.decimals ?? 9;
+
+        if (new BigNumber(jettonBalance.balance ?? 0).lt(query.amount)) {
+          openInsufficientFundsModal({ balance: jettonBalance.balance ?? 0, totalAmount: query.amount, decimals, currency: jettonBalance.metadata?.symbol });
+          return;
+        }
+
         dispatch(
           walletActions.confirmSendCoins({
+            decimals,
             currency,
             amount,
             address,
             comment,
             jettonWalletAddress: query.jetton,
             isJetton: true,
+            onInsufficientFunds: openInsufficientFundsModal,
             onNext: (details) => {
               const options = {
                 currency: query.jetton,
@@ -191,6 +212,7 @@ export function useDeeplinkingResolvers() {
             amount,
             address,
             comment,
+            onInsufficientFunds: openInsufficientFundsModal,
             onNext: (details) => {
               const options = {
                 currency,

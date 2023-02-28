@@ -499,6 +499,7 @@ export function openLinkingDomain(params: {
   walletAddress?: string;
   domainAddress: string;
   domain: string;
+  fee?: string;
   onDone?: (options: { walletAddress?: string }) => void;
 }) {
   navigate(AppStackRouteNames.ModalContainer, {
