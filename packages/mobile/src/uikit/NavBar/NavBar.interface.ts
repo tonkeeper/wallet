@@ -14,6 +14,7 @@ export interface NavBarProps {
   isTransparent?: boolean;
   isForceBackIcon?: boolean;
   isCancelButton?: boolean;
+  withBackground?: boolean;
   scrollTop?: SharedValue<number>;
   titleProps?: AnimateProps<TextProps>;
 }

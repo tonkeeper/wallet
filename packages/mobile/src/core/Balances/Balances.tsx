@@ -19,6 +19,7 @@ import { isValidAddress, maskifyTonAddress, ns, triggerImpactLight } from '$util
 import {
   CryptoCurrencies,
   isServerConfigLoaded,
+  IsTablet,
   LargeNavBarHeight,
   SecondaryCryptoCurrencies,
   TabletMaxWidth,
@@ -366,7 +367,7 @@ export const Balances: FC = () => {
         contentContainerStyle={{
           maxWidth: ns(TabletMaxWidth),
           alignSelf: 'center',
-          paddingTop: ns(LargeNavBarHeight),
+          paddingTop: IsTablet ? ns(8) : ns(LargeNavBarHeight),
           paddingHorizontal: ns(16),
           paddingBottom: tabBarHeight - ns(20),
         }}

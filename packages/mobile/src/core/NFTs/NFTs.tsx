@@ -6,7 +6,7 @@ import { useTheme, useTranslator } from '$hooks';
 import { RefreshControl } from 'react-native';
 import { MarketplaceBanner } from '$core/NFTs/MarketplaceBanner/MarketplaceBanner';
 import { hNs, ns } from '$utils';
-import {IsTablet, LargeNavBarHeight} from '$shared/constants';
+import { IsTablet, LargeNavBarHeight } from '$shared/constants';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { NFTItem } from '$core/NFTs/NFTItem/NFTItem';
 import { useDispatch, useSelector } from 'react-redux';
@@ -47,9 +47,11 @@ export const NFTs: FC = () => {
   function renderRightButton() {
     if (!flags.disable_nft_markets) {
       return (
-        <Button onPress={handleOpenMarketplace} mode="secondary" size="navbar_small">
-          {t('nft_marketplaces')}
-        </Button>
+        <S.RightButtonContainer>
+          <Button onPress={handleOpenMarketplace} mode="secondary" size="navbar_small">
+            {t('nft_marketplaces')}
+          </Button>
+        </S.RightButtonContainer>
       );
     }
   }
@@ -84,7 +86,7 @@ export const NFTs: FC = () => {
           maxToRenderPerBatch={8}
           style={{ alignSelf: IsTablet ? 'center' : 'auto' }}
           contentContainerStyle={{
-            paddingTop: hNs(LargeNavBarHeight - 4),
+            paddingTop: IsTablet ? ns(8) : hNs(LargeNavBarHeight - 4),
             paddingHorizontal: ns(16),
             paddingBottom: tabBarHeight,
           }}

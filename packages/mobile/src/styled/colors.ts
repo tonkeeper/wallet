@@ -9,6 +9,7 @@ export enum DARK_COLORS {
   backgroundQuaternary = '#3E4A5C',
   backgroundCamera = '#0c121f',
   border = 'rgba(255, 255, 255, 0.08)',
+  separatorCommon = 'rgba(79, 90, 112, 0.24)',
 }
 
 export enum CONSTANT_COLORS {

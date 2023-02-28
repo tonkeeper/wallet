@@ -2,11 +2,12 @@ import { Image } from 'react-native';
 import { BlurView } from 'expo-blur';
 
 import styled, { css } from '$styled';
-import { deviceWidth, nfs, ns } from '$utils';
-import { Opacity } from '$shared/constants';
+import { deviceWidth, ns } from '$utils';
+import { IsTablet, Opacity, TabletMaxWidth } from '$shared/constants';
 
 const BorderHorizontalWidth = ns(48);
-const RectSize = deviceWidth - BorderHorizontalWidth * 2;
+const RectSize =
+  (IsTablet ? TabletMaxWidth / 1.5 : deviceWidth) - BorderHorizontalWidth * 2;
 
 export const Wrap = styled.View`
   flex: 1;

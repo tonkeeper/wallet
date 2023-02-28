@@ -3226,10 +3226,10 @@
     tweetnacl "^1.0.3"
     tweetnacl-util "^0.15.1"
 
-"@tonconnect/protocol@^0.0.22":
-  version "0.0.22"
-  resolved "https://registry.yarnpkg.com/@tonconnect/protocol/-/protocol-0.0.22.tgz#e053f185aefd330ddbdc9e904385673abde72c8d"
-  integrity sha512-ntSLnvHVHJK+Dgt1R4QNeIAiQmYMRJxoaV1Op/goKaLWL2KzO6OR5ttTncyfGkmPwtiU3XXsGX5TzoeG4dnuTA==
+"@tonconnect/protocol@^2.2.2":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@tonconnect/protocol/-/protocol-2.2.2.tgz#5238d6f0f0a09b40320d9bf25534c31908655498"
+  integrity sha512-SlfGiNxpWvRbUM/jIbRCDc42WAcEHgLCrpsNmJ1/brxqSY6/HW2VCIjTbJnzF0m2sLKP6LD6VUq3nV/eN8Y0Uw==
   dependencies:
     tweetnacl-util "^0.15.1"
 
@@ -15082,10 +15082,10 @@ react-native-fast-image@^8.5.11:
   resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.6.3.tgz#6edc3f9190092a909d636d93eecbcc54a8822255"
   integrity sha512-Sdw4ESidXCXOmQ9EcYguNY2swyoWmx53kym2zRsvi+VeFCHEdkO+WG1DK+6W81juot40bbfLNhkc63QnWtesNg==
 
-react-native-gesture-handler@^2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.5.0.tgz#61385583570ed0a45a9ed142425e35f8fe8274fb"
-  integrity sha512-djZdcprFf08PZC332D+AeG5wcGeAPhzfCJtB3otUgOgTlvjVXmg/SLFdPJSpzLBqkRAmrC77tM79QgKbuLxkfw==
+react-native-gesture-handler@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.9.0.tgz#2f63812e523c646f25b9ad660fc6f75948e51241"
+  integrity sha512-a0BcH3Qb1tgVqUutc6d3VuWQkI1AM3+fJx8dkxzZs9t06qA27QgURYFoklpabuWpsUTzuKRpxleykp25E8m7tg==
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"

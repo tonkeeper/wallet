@@ -12,9 +12,16 @@ import React, {
   useState,
 } from 'react';
 import { BackHandler, LayoutChangeEvent, LayoutRectangle } from 'react-native';
-import { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { StepViewItemProps, StepViewProps } from './StepView.interface';
 import * as S from './StepView.style';
+import { deviceHeight } from '$utils';
 
 export interface StepViewRef<T = string | number> {
   goNext: () => void;
@@ -33,6 +40,7 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
     initialStepId,
     useBackHandler,
     autoHeight = false,
+    swipeEnabled = false,
     onChangeStep,
   } = props;
 
@@ -73,10 +81,12 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
 
   const currentIndex = steps.findIndex((step) => step.id === currentStepId);
 
-  const position = useDerivedValue(
-    () => currentIndex * width * -1,
-    [currentIndex, width],
-  );
+  // const position = useDerivedValue(
+  //   () => currentIndex * width * -1,
+  //   [currentIndex, width],
+  // );
+
+  const position = useSharedValue(currentIndex * width * -1);
 
   const containerStyle = useAnimatedStyle(() => {
     const maxHeight = layouts[currentStepId]?.height || 0;
@@ -86,7 +96,7 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
         {
           translateX: withSpring(position.value, {
             damping: 15,
-            mass: 0.5,
+            mass: 0.1,
           }),
         },
       ],
@@ -106,13 +116,26 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
     [],
   );
 
+  const setStepIdByIndex = useCallback(
+    (nextIndex: number, velocity?: number) => {
+      const nextStepId = steps[nextIndex].id;
+
+      setCurrentStepId(nextStepId);
+
+      position.value = withSpring(nextIndex * width * -1, {
+        velocity,
+        damping: 15,
+        mass: 0.5,
+      });
+    },
+    [position, steps, width],
+  );
+
   const goNext = useCallback(() => {
     const nextIndex = Math.min(currentIndex + 1, steps.length - 1);
 
-    const nextStepId = steps[nextIndex].id;
-
-    setCurrentStepId(nextStepId);
-  }, [currentIndex, steps]);
+    setStepIdByIndex(nextIndex);
+  }, [currentIndex, setStepIdByIndex, steps.length]);
 
   const goBack = useCallback(() => {
     if (backDisabled || currentIndex === 0) {
@@ -121,16 +144,64 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
 
     const prevIndex = Math.max(currentIndex - 1, 0);
 
-    const prevStepId = steps[prevIndex].id;
-
-    setCurrentStepId(prevStepId);
+    setStepIdByIndex(prevIndex);
 
     return true;
-  }, [backDisabled, currentIndex, steps]);
+  }, [backDisabled, currentIndex, setStepIdByIndex]);
 
-  const go = useCallback((nextStepId: string | number) => {
-    setCurrentStepId(nextStepId);
-  }, []);
+  const go = useCallback(
+    (nextStepId: string | number) => {
+      const index = Math.max(
+        steps.findIndex((step) => step.id === nextStepId),
+        0,
+      );
+
+      setStepIdByIndex(index);
+    },
+    [setStepIdByIndex, steps],
+  );
+
+  const startPosition = useSharedValue(position.value);
+
+  const stepsLastIndex = steps.length - 1;
+
+  const gesture = Gesture.Pan()
+    .failOffsetY(90)
+    .failOffsetY(-90)
+    .minDistance(50)
+    .enabled(swipeEnabled)
+    .onBegin(() => {
+      startPosition.value = position.value;
+    })
+    .onUpdate((e) => {
+      let diff = e.translationX;
+
+      if (
+        (currentIndex === stepsLastIndex && diff < 0) ||
+        (currentIndex === 0 && diff > 0)
+      ) {
+        diff = 2 + 0.456 * diff - 0.000124 * diff ** 2;
+      }
+
+      position.value = startPosition.value + diff;
+    })
+    .onEnd((e) => {
+      const velocity = Math.abs(e.velocityX) > 200 ? e.velocityX : 0;
+      const pos = Math.abs(e.translationX) > 200 ? e.translationX : 0;
+
+      let direction = 0;
+
+      if ((velocity < 0 || pos < 0) && currentIndex !== stepsLastIndex) {
+        direction = 1;
+      }
+
+      if ((velocity > 0 || pos > 0) && currentIndex > 0) {
+        direction = -1;
+      }
+
+      runOnJS(setStepIdByIndex)(currentIndex + direction, velocity);
+    })
+    .onFinalize(() => {});
 
   useEffect(() => {
     onChangeStep?.(currentStepId, currentIndex);
@@ -160,20 +231,23 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
   );
 
   return (
-    <S.Container style={containerStyle}>
-      {steps.map((step) => (
-        <S.Step
-          key={step.id}
-          width={width}
-          autoHeight={autoHeight}
-          onLayout={autoHeight ? (event) => handleStepLayout(step, event) : undefined}
-        >
-          {typeof step.children === 'function'
-            ? step.children({ active: step.id === currentStepId })
-            : step.children}
-        </S.Step>
-      ))}
-    </S.Container>
+    <GestureDetector gesture={gesture}>
+      <S.Container style={containerStyle}>
+        {steps.map((step) => (
+          <S.Step
+            hitSlop={{ bottom: deviceHeight }}
+            key={step.id}
+            width={width}
+            autoHeight={autoHeight}
+            onLayout={autoHeight ? (event) => handleStepLayout(step, event) : undefined}
+          >
+            {typeof step.children === 'function'
+              ? step.children({ active: step.id === currentStepId })
+              : step.children}
+          </S.Step>
+        ))}
+      </S.Container>
+    </GestureDetector>
   );
 });
 

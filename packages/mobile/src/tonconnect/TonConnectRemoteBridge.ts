@@ -24,6 +24,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DeeplinkOrigin } from '$libs/deeplinking';
 import Minimizer from 'react-native-minimizer';
 import { Linking } from 'react-native';
+import { TCEventID } from './EventID';
 
 class TonConnectRemoteBridgeService {
   private readonly storeKey = 'ton-connect-http-bridge-lastEventId';
@@ -254,7 +255,11 @@ class TonConnectRemoteBridgeService {
   sendDisconnectEvent(connection: IConnectedAppConnectionRemote) {
     const sessionCrypto = new SessionCrypto(connection.sessionKeyPair);
 
-    const event: DisconnectEvent = { event: 'disconnect', payload: {} };
+    const event: DisconnectEvent = {
+      id: TCEventID.getId(),
+      event: 'disconnect',
+      payload: {},
+    };
 
     this.send(event, sessionCrypto, connection.clientSessionId);
   }

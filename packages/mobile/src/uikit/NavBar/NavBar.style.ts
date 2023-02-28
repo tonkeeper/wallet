@@ -1,9 +1,9 @@
 import LinearGradient from 'react-native-linear-gradient';
 import Animated from 'react-native-reanimated';
 
-import styled from '$styled';
-import { ns, hNs, nfs } from '$utils';
-import { NavBarHeight, Opacity } from '$shared/constants';
+import styled, { css } from '$styled';
+import { ns, hNs } from '$utils';
+import { IsTablet, NavBarHeight, Opacity, TabletMaxWidth } from '$shared/constants';
 import { Text } from '$uikit/Text/Text';
 
 export const Wrap = styled.View<{ isTransparent: boolean }>`
@@ -32,13 +32,17 @@ export const Gradient = styled(LinearGradient)`
 `;
 
 export const Cont = styled(Animated.View)`
-  flex-direction: row;
-  padding-horizontal: ${ns(16)}px;
   height: ${hNs(NavBarHeight - 0.5)}px;
-  align-items: center;
-  position: relative;
   z-index: 2;
   border-bottom-width: ${ns(0.5)}px;
+`;
+
+export const Content = styled.View`
+  flex: 1;
+  flex-direction: row;
+  padding-horizontal: ${ns(16)}px;
+  align-items: center;
+  position: relative;
 `;
 
 export const BackButtonContainer = styled.TouchableOpacity.attrs({

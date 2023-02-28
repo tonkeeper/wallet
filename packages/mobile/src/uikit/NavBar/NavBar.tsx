@@ -37,6 +37,7 @@ export const NavBar: FC<NavBarProps> = (props) => {
     isForceBackIcon = false,
     isBottomButton = false,
     isCancelButton = false,
+    withBackground = false,
     titleProps = {},
     scrollTop,
   } = props;
@@ -70,6 +71,7 @@ export const NavBar: FC<NavBarProps> = (props) => {
     return {
       borderBottomColor:
         scrollTop && scrollTop.value > 0 ? theme.colors.border : 'transparent',
+      backgroundColor: withBackground ? theme.colors.backgroundPrimary : undefined,
     };
   });
 
@@ -120,18 +122,20 @@ export const NavBar: FC<NavBarProps> = (props) => {
         />
       )}
       <S.Cont style={borderStyle}>
-        <S.BackButtonContainer
-          onPress={onBackPress || handleBack}
-          disabled={hideBackButton}
-        >
-          <S.BackButton style={backButtonAnimatedStyle}>
-            <Icon name={iconName} color="foregroundPrimary" />
-          </S.BackButton>
-        </S.BackButtonContainer>
-        <S.Title {...titleProps} style={titleAnimatedStyle}>
-          {children}
-        </S.Title>
-        {renderRightContent()}
+        <S.Content>
+          <S.BackButtonContainer
+            onPress={onBackPress || handleBack}
+            disabled={hideBackButton}
+          >
+            <S.BackButton style={backButtonAnimatedStyle}>
+              <Icon name={iconName} color="foregroundPrimary" />
+            </S.BackButton>
+          </S.BackButtonContainer>
+          <S.Title {...titleProps} style={titleAnimatedStyle}>
+            {children}
+          </S.Title>
+          {renderRightContent()}
+        </S.Content>
       </S.Cont>
     </S.Wrap>
   );
