@@ -3,7 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { WalletProps } from './Wallet.interface';
 import * as S from './Wallet.style';
-import { Button, Icon, NavBar, PopupMenu, PopupMenuItem, ShowMore, Text } from '$uikit';
+import {
+  Button,
+  Icon,
+  PopupMenu,
+  PopupMenuItem,
+  ShowMore,
+  Text,
+  ScrollHandler,
+} from '$uikit';
 import { useTheme, useTranslator, useWalletInfo } from '$hooks';
 import { openReceive, openRequireWalletModal, openSend } from '$navigation';
 import {
@@ -19,8 +27,8 @@ import { ActionButtonProps } from '$core/Balances/BalanceItem/BalanceItem.interf
 import { t } from '$translation';
 import { useNavigation } from '$libs/navigation';
 import { Chart } from '$uikit/Chart/Chart';
-import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated from 'react-native-reanimated';
 
 const ActionButton: FC<ActionButtonProps> = (props) => {
   const { children, onPress, icon, isLast } = props;
@@ -86,7 +94,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   const dispatch = useDispatch();
   const [lockupDeploy, setLockupDeploy] = useState('loading');
   const nav = useNavigation();
-  const { bottom: bottomPadding } = useSafeAreaInsets();
+  const { bottom: paddingBottom } = useSafeAreaInsets();
 
   useEffect(() => {
     if (currency === CryptoCurrencies.Ton && wallet && wallet.ton.isLockup()) {
@@ -146,10 +154,118 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     Linking.openURL(`https://tonapi.io/account/${address.ton}`);
   }, [address.ton]);
 
+  const renderContent = useCallback(() => {
+    return (
+      <Animated.ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom }}
+      >
+        <S.HeaderWrap>
+          <S.FlexRow>
+            <S.AmountWrapper>
+              <Text variant="h2">
+                {toLocaleNumber(amount)} {currencyUpper}
+              </Text>
+              <Text style={{ marginTop: 2 }} variant="body2" color="foregroundSecondary">
+                {fiatInfo.amount}
+              </Text>
+              <S.Price>
+                <Text color="foregroundSecondary" variant="body2">
+                  {rate}
+                </Text>
+                <Text style={{ marginLeft: 6 }} variant="body2" color={fiatInfo.color}>
+                  {fiatInfo.percent}&nbsp;&nbsp;24{t('wallet_hours_symbol')}
+                </Text>
+              </S.Price>
+              <S.AboutWrapper>
+                <ShowMore
+                  backgroundColor={theme.colors.backgroundPrimary}
+                  maxLines={2}
+                  text={t('about_ton')}
+                />
+              </S.AboutWrapper>
+            </S.AmountWrapper>
+            <S.IconWrapper>
+              <Icon size={40} name="ic-ton-28" color="constantLight" />
+            </S.IconWrapper>
+          </S.FlexRow>
+          <S.Divider />
+          <S.ActionsContainer>
+            <ActionButton onPress={handleOpenExchange} icon="ic-plus-28">
+              {t('wallet_buy')}
+            </ActionButton>
+            <ActionButton onPress={handleSend} icon="ic-arrow-up-28">
+              {t('wallet_send')}
+            </ActionButton>
+            <ActionButton isLast onPress={handleReceive} icon="ic-arrow-down-28">
+              {t('wallet_receive')}
+            </ActionButton>
+          </S.ActionsContainer>
+          <S.Divider />
+        </S.HeaderWrap>
+        <S.ChartWrap>
+          <Chart />
+        </S.ChartWrap>
+        <S.ExploreWrap>
+          <Text style={{ marginBottom: 14 }} variant="h3" color="foregroundPrimary">
+            {t('wallet_about')}
+          </Text>
+          <S.ExploreButtons>
+            {exploreActions.map((action) => (
+              <Button
+                onPress={() => Linking.openURL(action.url)}
+                key={action.text}
+                before={
+                  <Icon
+                    name={action.icon}
+                    color="foregroundPrimary"
+                    style={{ marginRight: 8 }}
+                  />
+                }
+                style={{ marginRight: 8, marginBottom: 8 }}
+                mode="secondary"
+                size="medium_rounded"
+              >
+                {action.text}
+              </Button>
+            ))}
+          </S.ExploreButtons>
+        </S.ExploreWrap>
+        {wallet && wallet.ton.isLockup() && (
+          <View style={{ padding: ns(16) }}>
+            <Button
+              onPress={handleDeploy}
+              disabled={lockupDeploy === 'deployed'}
+              isLoading={lockupDeploy === 'loading'}
+            >
+              {lockupDeploy === 'deploy' ? 'Deploy Wallet' : 'Deployed'}
+            </Button>
+          </View>
+        )}
+      </Animated.ScrollView>
+    );
+  }, [
+    amount,
+    currencyUpper,
+    fiatInfo.amount,
+    fiatInfo.color,
+    fiatInfo.percent,
+    handleDeploy,
+    handleOpenExchange,
+    handleReceive,
+    handleSend,
+    lockupDeploy,
+    rate,
+    t,
+    theme.colors.backgroundPrimary,
+    wallet,
+    paddingBottom,
+  ]);
+
   return (
     <S.Wrap>
-      <NavBar
-        rightContent={
+      <ScrollHandler
+        navBarRight={
           <PopupMenu
             items={[
               <PopupMenuItem
@@ -167,102 +283,11 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
             />
           </PopupMenu>
         }
+        isLargeNavBar={false}
+        navBarTitle={'Toncoin'}
       >
-        Toncoin
-      </NavBar>
-      <Animated.ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: bottomPadding }}
-      >
-        <>
-          <S.HeaderWrap>
-            <S.FlexRow>
-              <S.AmountWrapper>
-                <Text variant="h2">
-                  {toLocaleNumber(amount)} {currencyUpper}
-                </Text>
-                <Text
-                  style={{ marginTop: 2 }}
-                  variant="body2"
-                  color="foregroundSecondary"
-                >
-                  {fiatInfo.amount}
-                </Text>
-                <S.Price>
-                  <Text color="foregroundSecondary" variant="body2">
-                    {rate}
-                  </Text>
-                  <Text style={{ marginLeft: 6 }} variant="body2" color={fiatInfo.color}>
-                    {fiatInfo.percent}&nbsp;&nbsp;24{t('wallet_hours_symbol')}
-                  </Text>
-                </S.Price>
-                <S.AboutWrapper>
-                  <ShowMore
-                    backgroundColor={theme.colors.backgroundPrimary}
-                    maxLines={2}
-                    text={t('about_ton')}
-                  />
-                </S.AboutWrapper>
-              </S.AmountWrapper>
-              <S.IconWrapper>
-                <Icon size={40} name="ic-ton-28" color="constantLight" />
-              </S.IconWrapper>
-            </S.FlexRow>
-            <S.Divider />
-            <S.ActionsContainer>
-              <ActionButton onPress={handleOpenExchange} icon="ic-plus-28">
-                {t('wallet_buy')}
-              </ActionButton>
-              <ActionButton onPress={handleSend} icon="ic-arrow-up-28">
-                {t('wallet_send')}
-              </ActionButton>
-              <ActionButton isLast onPress={handleReceive} icon="ic-arrow-down-28">
-                {t('wallet_receive')}
-              </ActionButton>
-            </S.ActionsContainer>
-            <S.Divider />
-          </S.HeaderWrap>
-          <S.ChartWrap>
-            <Chart />
-          </S.ChartWrap>
-          <S.ExploreWrap>
-            <Text style={{ marginBottom: 14 }} variant="h3" color="foregroundPrimary">
-              {t('wallet_about')}
-            </Text>
-            <S.ExploreButtons>
-              {exploreActions.map((action) => (
-                <Button
-                  onPress={() => Linking.openURL(action.url)}
-                  key={action.text}
-                  before={
-                    <Icon
-                      name={action.icon}
-                      color="foregroundPrimary"
-                      style={{ marginRight: 8 }}
-                    />
-                  }
-                  style={{ marginRight: 8, marginBottom: 8 }}
-                  mode="secondary"
-                  size="medium_rounded"
-                >
-                  {action.text}
-                </Button>
-              ))}
-            </S.ExploreButtons>
-          </S.ExploreWrap>
-          {wallet && wallet.ton.isLockup() && (
-            <View style={{ padding: ns(16) }}>
-              <Button
-                onPress={handleDeploy}
-                disabled={lockupDeploy === 'deployed'}
-                isLoading={lockupDeploy === 'loading'}
-              >
-                {lockupDeploy === 'deploy' ? 'Deploy Wallet' : 'Deployed'}
-              </Button>
-            </View>
-          )}
-        </>
-      </Animated.ScrollView>
+        {renderContent()}
+      </ScrollHandler>
     </S.Wrap>
   );
 };
