@@ -8,6 +8,8 @@ import { Base64, compareAddresses, debugLog, isValidAddress } from '$utils';
 import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import {
+  getCurrentRoute,
+  goBack,
   openCreateSubscription,
   openDeploy,
   openRequireWalletModal,
@@ -69,6 +71,14 @@ export function useDeeplinkingResolvers() {
   deeplinking.addMiddleware((next) => {
     if (!getWallet()) {
       return openRequireWalletModal();
+    }
+
+    const currentRouteName = getCurrentRoute()?.name;
+
+    if (
+      ['SheetsProvider', AppStackRouteNames.ModalContainer].includes(currentRouteName)
+    ) {
+      goBack();
     }
 
     next();
