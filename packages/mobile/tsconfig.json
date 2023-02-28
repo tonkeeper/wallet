@@ -62,6 +62,7 @@
     "paths": {
       "$api": ["api"],
       "$core": ["core"],
+      "$modals": ["modals"],
       "$store": ["store"],
       "$uikit": ["uikit"],
       "$utils": ["utils"],
@@ -77,6 +78,7 @@
       "$tonconnect": ["tonconnect"],
       "$api/*": ["api/*"],
       "$core/*": ["core/*"],
+      "$modals/*": ["modals/*"],
       "$store/*": ["store/*"],
       "$uikit/*": ["uikit/*"],
       "$utils/*": ["utils/*"],

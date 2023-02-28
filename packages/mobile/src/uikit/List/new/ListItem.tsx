@@ -89,7 +89,7 @@ export const ListItem = memo<ListItemProps>((props) => {
 const styles = Steezy.create(({ colors }) => ({
   container: {
     flexDirection: 'row',
-    // alignItems: 'center',
+    alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 16,
     minHeight: 56,

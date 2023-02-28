@@ -10,13 +10,23 @@ export const media = createMediaStyleVars({
   },
 });
 
+const corners = {
+  extraExtraSmall: 4,
+  extraSmall: 8,
+  small: 12,
+  medium: 16,
+  large: 20,
+  full: (size: number) => size / 2, 
+}
+
 export const variables = createDynamicStyleVars(() => {
   const safeArea = useSafeAreaInsets();
 
   return {
     safeArea,
     colors: DarkTheme,
-    radius: RADIUS
+    radius: corners,
+    corners
   };
 });
 

@@ -10,6 +10,7 @@ const plugins = [
         src: './src',
         $api: './src/api',
         $core: './src/core',
+        $modals: './src/modals',
         $assets: './src/assets',
         $store: './src/store',
         $uikit: './src/uikit',

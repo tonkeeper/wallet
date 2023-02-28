@@ -329,6 +329,13 @@
     "more_description": "Маркеты, биржи и другие"
   },
 
+  "exchange_modal": {
+    "sell_title": "Продать Toncoin",
+    "buy_title": "Купить Toncoin",
+    "other_ways_to_sell": "Другие способы продажи",
+    "other_ways_to_buy": "Другие способы покупки"
+  },
+
   "exchange_title": "Купить TON",
   "exchange_other_ways": "Другие способы покупки и продажи",
 

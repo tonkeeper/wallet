@@ -29,8 +29,8 @@ import {
 import { WebView } from '$core/WebView/WebView';
 import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewConfirmSending';
 import { ProvidersWithNavigation } from './Providers';
-import { ExchangeModal } from '$core/Exchange/Exchange';
 import { ActionModal } from '$core/ModalContainer/Action/Action';
+import { ExchangeModal } from '$modals/ExchangeModal';
 
 const Stack = createModalStackNavigator();
 

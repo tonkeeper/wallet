@@ -5,3 +5,4 @@ export type StaticStyles = ViewStyle | TextStyle | ImageStyle;
 export type StyleProp<T = StaticStyles> = SteezyStyleProp<T>;
 
 export { Steezy } from './Steezy';
+export { DarkTheme } from './DarkTheme';

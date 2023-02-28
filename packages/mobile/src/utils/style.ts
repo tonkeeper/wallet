@@ -57,7 +57,7 @@ export function ns(pixelSizeFromMockup: number | string, dimension: Dimension = 
     );
   }
 
-  return pixelSizeFromMockup;
+  return pixelSizeFromMockup as any;
 }
 
 export function hNs(pixelSizeFromMockup: number) {

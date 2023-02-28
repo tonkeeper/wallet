@@ -40,3 +40,5 @@ export { TokenListItem } from './TokenListItem/TokenListItem';
 export { ListHeader } from './ListHeader';
 export { StatelessHighlight } from './StatelessHighlight/StatelessHighlight';
 export * from './StyledNativeCompoenets';
+export { IconButton } from './IconButton';
+export { IconButtonList } from './IconButtonList';

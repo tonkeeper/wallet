@@ -322,6 +322,13 @@
     "more_description": "Markets, exchanges and more"
   },
 
+  "exchange_modal": {
+    "sell_title": "Sell Toncoin",
+    "buy_title": "Buy Toncoin",
+    "other_ways_to_sell": "Other ways to sell",
+    "other_ways_to_buy": "Other ways to buy"
+  },
+
   "exchange_title": "Buy TON",
   "exchange_other_ways": "Other ways to buy or sell TON",
 

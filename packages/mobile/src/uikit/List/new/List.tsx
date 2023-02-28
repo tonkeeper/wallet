@@ -9,9 +9,12 @@ interface ListProps {
   headerTitle?: string;
   children?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  indent?: boolean;
 }
 
 export const List = memo<ListProps>((props) => {
+  const { indent = true } = props;
+
   const items = useMemo(() => {
     return React.Children.map(props.children, (node, i) => {
       if (!React.isValidElement(node)) {
@@ -34,18 +37,21 @@ export const List = memo<ListProps>((props) => {
       {props.headerTitle && (
         <ListHeader title={props.headerTitle} />
       )}
-      <View style={[styles.container, props.style]}>
+      <View style={[styles.container, props.style, indent && styles.indentHorizontal]}>
         {items}
       </View>
     </>
   )
 });
 
-const styles = Steezy.create(({ radius, colors }) => ({
+const styles = Steezy.create(({ corners, colors }) => ({
   container: {
     marginBottom: 32,
     overflow: 'hidden',
-    borderRadius: radius.normal,
+    borderRadius: corners.medium,
     backgroundColor: colors.backgroundContent
+  },
+  indentHorizontal: {
+    marginHorizontal: 16
   }
 }));

@@ -14,13 +14,18 @@ const useWrapBottomTabBarHeight = () => {
   }  
 }
 
-export const ScreenScrollView = memo(forwardRef<Animated.ScrollView, ScrollViewProps>((props, ref) => {
+interface ScreenScrollView extends ScrollViewProps {
+  indent?: boolean;
+}
+
+export const ScreenScrollView = memo(forwardRef<Animated.ScrollView, ScreenScrollView>((props, ref) => {
+  const { indent } = props;
   const tabBarHeight = useWrapBottomTabBarHeight();
   const { contentScrollHandler } = useScreenScroll();
   
   const contentContainerStyle = [
     {
-      paddingHorizontal: ns(16),
+      ...(indent && { paddingHorizontal: ns(16) }),
       paddingBottom: tabBarHeight,
       // paddingTop: ns(NavBarHeight),
     }, 
