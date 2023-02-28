@@ -587,7 +587,26 @@
           "description": "Войдите в другой кошелёк %{address} и повторите попытку.",
           "close": "Хорошо"
         }
+      },
+      "insufficientFunds": {
+        "toBePaid": "Необходимо: %{amount} %{currency}\n",
+        "withFees": "+ комиссия сети.\n",
+        "yourBalance": "Ваш баланс: %{balance} %{currency}.",
+        "rechargeWallet": "Пополнить кошелёк",
+        "title": "Недостаточно средств"
       }
+    }
+  },
+
+  "chart": {
+    "price": "Стоимость",
+    "periods": {
+      "1Y": "Г",
+      "6M": "6M",
+      "1M": "М",
+      "7D": "Н",
+      "1D": "Д",
+      "1H": "Ч"
     }
   },
 

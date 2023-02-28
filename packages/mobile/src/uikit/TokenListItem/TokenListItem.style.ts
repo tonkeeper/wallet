@@ -37,7 +37,7 @@ export const Background = styled.View<{ borderStart: boolean; borderEnd: boolean
   background: ${({ theme }) => theme.colors.backgroundSecondary};
   ${({ borderStart, borderEnd }) => borders(borderStart, borderEnd)}
   position: absolute;
-  z-index: 1;
+  z-index: -1;
   top: 0;
   left: 0;
   right: 0;

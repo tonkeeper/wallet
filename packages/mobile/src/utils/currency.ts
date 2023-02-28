@@ -8,16 +8,20 @@ import {
   truncateDecimal,
 } from './number';
 
-export function formatFiatCurrencyAmount(amount: any, currency: FiatCurrency): string {
+export function formatFiatCurrencyAmount(
+  amount: any,
+  currency: FiatCurrency,
+  withThinSpace?: boolean,
+): string {
   const conf = FiatCurrencySymbolsConfig[currency];
   if (!conf) {
     return `${toLocaleNumber(amount)} ${currency?.toUpperCase()}`;
   }
 
   if (conf.side === 'start') {
-    return `${conf.symbol}${toLocaleNumber(amount)}`;
+    return `${conf.symbol}${withThinSpace ? ' ' : ''}${toLocaleNumber(amount)}`;
   } else {
-    return `${toLocaleNumber(amount)}${conf.symbol}`;
+    return `${toLocaleNumber(amount)}${withThinSpace ? ' ' : ''}${conf.symbol}`;
   }
 }
 

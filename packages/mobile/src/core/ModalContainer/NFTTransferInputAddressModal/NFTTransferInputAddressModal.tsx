@@ -10,9 +10,13 @@ import { LoaderContainer } from '$core/Send/steps/AddressStep/components/Address
 import { Modal, useNavigation } from '$libs/navigation';
 import { Tonapi } from '$libs/Tonapi';
 import TonWeb from 'tonweb';
+import { NFTOperations } from '../NFTOperations/NFTOperations';
+import { store, Toast } from '$store';
+import { walletWalletSelector } from '$store/wallet';
+import { checkIsInsufficient, openInsufficientFundsModal } from '../InsufficientFunds/InsufficientFunds';
+import { Ton } from '$libs/Ton';
 import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { openScanQR } from '$navigation';
-import { Toast } from '$store';
 
 export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalProps>(
   ({ nftAddress }) => {
@@ -33,17 +37,54 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
       }
     }, [address, isSameAddress, nftAddress]);
 
-    const handleContinue = useCallback(() => {
+    const handleContinue = useCallback(async () => {
+      const transferParams = {
+          newOwnerAddress: address,
+          nftItemAddress: nftAddress,
+          amount: Ton.toNano('1'),
+          forwardAmount: '1',
+      };
+
+      const wallet = walletWalletSelector(store.getState());
+
+      if (!wallet) {
+        console.log('no wallet');
+        return;
+      }
+
+      Toast.loading();
+
+      let fee = '0';
+      try {
+        const operations = new NFTOperations(wallet);
+        fee = await operations
+          .transfer(transferParams as any)
+          .then((operation) => operation.estimateFee());
+      } catch (e) {}
+
+      // compare balance and transfer amount, because transfer will fail
+      if (fee === '0') {
+        const checkResult = await checkIsInsufficient(transferParams.amount);
+        if (checkResult.insufficient) {
+          Toast.hide();
+          return openInsufficientFundsModal({ totalAmount: transferParams.amount, balance: checkResult.balance });
+        }
+      }
+
+      if (parseFloat(fee) < 0) {
+        transferParams.amount = Ton.toNano('0.05');
+      } else {
+        transferParams.amount = Ton.toNano(fee).add(Ton.toNano('0.01'));
+      }
+
+      Toast.hide();
+
       nav.replaceModal('NFTTransfer', {
         response_options: {
           onDone: () => setTimeout(nav.globalGoBack, 850),
         } as any,
-        params: {
-          newOwnerAddress: address,
-          nftItemAddress: nftAddress,
-          amount: '50000000',
-          forwardAmount: '20000000',
-        },
+        params: transferParams,
+        fee,
       });
     }, [address, nftAddress]);
 
@@ -134,6 +175,12 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
             </Text>
             <S.InputWrapper>
               <Input
+                autoComplete="off"
+                returnKeyType="next"
+                autoCapitalize="none"
+                textContentType="none"
+                autoCorrect={false}
+                spellCheck={false}
                 placeholder={t('send_address_placeholder')}
                 isFailed={!!address.length && !isValid}
                 onChangeText={handleTextChange}

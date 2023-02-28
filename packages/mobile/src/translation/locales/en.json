@@ -580,7 +580,26 @@
           "description": "Log in to another wallet %{address} and try again.",
           "close": "OK"
         }
+      },
+      "insufficientFunds": {
+        "toBePaid": "To be paid: %{amount} %{currency}\n",
+        "withFees": "+ blockchain fees.\n",
+        "yourBalance": "Your balance: %{balance} %{currency}.",
+        "rechargeWallet": "Recharge wallet",
+        "title": "Insufficient funds"
       }
+    }
+  },
+
+  "chart": {
+    "price": "Price",
+    "periods": {
+      "1Y": "Y",
+      "6M": "6M",
+      "1M": "M",
+      "7D": "W",
+      "1D": "D",
+      "1H": "H"
     }
   },
 

@@ -1,11 +1,9 @@
-import { useCopyText, useInstance, useWallet } from '$hooks';
-import { getServerConfig } from '$shared/constants';
+import { useCopyText, useInstance } from '$hooks';
 import { t } from '$translation';
 import { BottomSheet, Highlight, Separator, Skeleton, Text } from '$uikit';
 import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
 import { Base64, debugLog, maskifyAddress, truncateDecimal } from '$utils';
-import React from 'react';
-import { Configuration, SendApi } from 'tonapi-sdk-js';
+import React, { useEffect } from 'react';
 import { ActionFooter, useActionFooter } from './NFTOperations/NFTOperationFooter';
 import { useUnlockVault } from './NFTOperations/useUnlockVault';
 import * as S from './NFTOperations/NFTOperations.styles';
@@ -13,7 +11,9 @@ import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { TouchableOpacity } from 'react-native';
 import { openReplaceDomainAddress } from '$navigation';
-import { Toast } from '$store';
+import { store, Toast } from '$store';
+import { Wallet } from 'blockchain';
+import { Tonapi } from '$libs/Tonapi';
 
 const TonWeb = require('tonweb');
 
@@ -22,64 +22,70 @@ interface LinkingDomainModalProps {
   domainAddress: string;
   walletAddress?: string;
   domain: string;
+  fee: string;
 }
 
-// TODO: need move all logic to Actions class
-export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({ 
-  walletAddress: defaultWalletAddress,
-  domainAddress, 
-  domain,
-  onDone 
-}) => {
-  const [walletAddress, setWalletAddress] = React.useState(defaultWalletAddress);
-  const bottomSheetRef = React.useRef<BottomSheetRef>(null);
-  const [fee, setFee] = React.useState('');
-  const [isDisabled, setIsDisabled] = React.useState(false);
-  const wallet = useWallet();
-  const copyText = useCopyText();  
+export class LinkingDomainActions {
+  /**
+   * Wallet instance
+   */
+  private wallet: Wallet;
+  /**
+   * Transfer amount in nanocoins. Will be attached to transfer
+   */
+  public transferAmount: string = Ton.toNano('0.05').toString();
+  /**
+   * Domain address in any valid format
+   */
+  public domainAddress: string;
+  /**
+   * Wallet address to link domain. If not set - domain will be unlinked
+   */
+  public walletAddress: string | undefined;
 
-  const { footerRef, onConfirm } = useActionFooter();
-
-  const sendApi = useInstance(() => {
-    const tonApiConfiguration = new Configuration({
-      basePath: getServerConfig('tonapiIOEndpoint'),
-      headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-      },
-    });
-    
-    return new SendApi(tonApiConfiguration);
-  });
-
-  React.useEffect(() => {
-    (async () => {
-      try {
-        const boc = await createBoc();
-        const estimatedFee = await sendApi.estimateTx({ sendBocRequest: { boc } });
-        const feeNano = new BigNumber(estimatedFee.fee.total.toString());
+  constructor(domainAddress: string, walletAddress?: string) {
+    this.wallet = store.getState().wallet.wallet;
+    this.domainAddress = domainAddress;
+    this.walletAddress = walletAddress;
+  }
   
-        setFee(truncateDecimal(Ton.fromNano(feeNano.toString()), 1));
-      } catch (err) {
-        debugLog(err);
-        setFee('0.04');
-      }
-    })();
-  }, []);
+  /**
+   * Calculates fee. Returns human-readable string or 0 in case of error
+   */
+  public async calculateFee() {
+    try {
+      const boc = await this.createBoc();
+      const estimatedFee = await Tonapi.estimateTx(boc);
+      const feeNano = new BigNumber(estimatedFee.fee.total.toString());
 
-  const createBoc = async (secretKey?: Uint8Array) => {
-    const curWallet = wallet.vault.tonWallet;
-    const seqno = await wallet.ton.getSeqno(await wallet.ton.getAddress());
+      return truncateDecimal(Ton.fromNano(feeNano.toString()), 1);
+    } catch (err) {
+      debugLog(err);
+      return '0';
+    }
+  }
 
-    const address = walletAddress && new TonWeb.Address(walletAddress);
+  public updateWalletAddress(address: string | undefined) {
+      this.walletAddress = address;
+  }
+
+  /**
+   * Creates boc with DNS-record
+   */
+  public async createBoc(secretKey?: Uint8Array) {
+    const curWallet = this.wallet.vault.tonWallet;
+    const seqno = await this.wallet.ton.getSeqno(await this.wallet.ton.getAddress());
+
+    const address = this.walletAddress && new TonWeb.Address(this.walletAddress);
 
     const payload = await TonWeb.dns.DnsItem.createChangeContentEntryBody({
       category: TonWeb.dns.DNS_CATEGORY_WALLET, 
       value: address ? TonWeb.dns.createSmartContractAddressRecord(address) : null
     });
-
+    
     const tx = curWallet.methods.transfer({
-      toAddress: domainAddress,
-      amount: Ton.toNano('0.05').toString(),
+      toAddress: this.domainAddress,
+      amount: this.transferAmount,
       seqno: seqno,
       payload, 
       sendMode: 3,
@@ -91,6 +97,30 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
 
     return boc;
   }
+}
+
+export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({ 
+  walletAddress: defaultWalletAddress,
+  domainAddress, 
+  domain,
+  fee: initialFee,
+  onDone 
+}) => {
+  const [walletAddress, setWalletAddress] = React.useState(defaultWalletAddress);
+  const bottomSheetRef = React.useRef<BottomSheetRef>(null);
+  const [fee] = React.useState(initialFee);
+  const copyText = useCopyText();
+  const [isDisabled, setIsDisabled] = React.useState(false);
+
+  const { footerRef, onConfirm } = useActionFooter();
+
+  const linkingActions = useInstance(() => {
+    return new LinkingDomainActions(domainAddress, walletAddress);
+  });
+
+  useEffect(() => {
+    linkingActions.updateWalletAddress(walletAddress);
+  }, [walletAddress]);
 
   const unlockVault = useUnlockVault();
   const handleConfirm = onConfirm(async ({ startLoading }) => {
@@ -100,8 +130,8 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
     startLoading();
     setIsDisabled(true);
     
-    const boc = await createBoc(privateKey);
-    await sendApi.sendBoc({ sendBocRequest: { boc } });
+    const boc = await linkingActions.createBoc(privateKey);
+    await Tonapi.sendBoc(boc);
   });
 
   const handleReplace = React.useCallback(() => {

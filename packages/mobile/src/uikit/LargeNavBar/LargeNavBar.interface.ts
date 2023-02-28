@@ -1,6 +1,6 @@
 import React from 'react';
 import { Insets } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { SharedValue } from 'react-native-reanimated';
 
 export interface LargeNavBarProps {
   scrollTop: Animated.SharedValue<number>;
@@ -11,4 +11,5 @@ export interface LargeNavBarProps {
   position?: 'absolute' | 'relative';
   safeArea?: boolean;
   border?: boolean;
+  opacity?: SharedValue<number>;
 }

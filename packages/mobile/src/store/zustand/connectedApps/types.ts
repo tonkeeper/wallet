@@ -54,5 +54,11 @@ export interface IConnectedAppsStore {
       walletAddress: string,
       url: string,
     ) => void;
+    removeRemoteConnection: (
+      chainName: 'mainnet' | 'testnet',
+      walletAddress: string,
+      url: string,
+      clientSessionId: string,
+    ) => void;
   };
 }

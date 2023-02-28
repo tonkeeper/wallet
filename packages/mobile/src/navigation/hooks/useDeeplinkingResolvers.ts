@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Ton } from '$libs/Ton';
 import { useDispatch } from 'react-redux';
-import { useDeeplinking } from '$libs/deeplinking';
+import { DeeplinkingResolver, useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { Base64, compareAddresses, debugLog, isValidAddress } from '$utils';
@@ -27,6 +27,11 @@ import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
 import { openTimeNotSyncedModal } from '$core/ModalContainer/TimeNotSynced/TimeNotSynced';
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 import { openTonConnect } from '$core/TonConnect/TonConnectModal';
+import { useCallback } from 'react';
+import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { jettonsBalancesSelector } from '$store/jettons';
+import BigNumber from 'bignumber.js';
+import { Tonapi } from '$libs/Tonapi';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -54,6 +59,7 @@ export function useDeeplinkingResolvers() {
   const nav = useNavigation();
 
   deeplinking.setPrefixes([
+    'tc://',
     'ton://',
     'tonkeeper://',
     'https://app.tonkeeper.com',
@@ -68,6 +74,36 @@ export function useDeeplinkingResolvers() {
     next();
   });
 
+  const tonConnectResolver: DeeplinkingResolver = useCallback(
+    async ({ query, origin }) => {
+      try {
+        TonConnectRemoteBridge.setOrigin(origin);
+        TonConnectRemoteBridge.setReturnStrategy(query.ret);
+
+        if (!query.r || !query.v || !query.id) {
+          return;
+        }
+
+        Toast.loading();
+
+        await TonConnectRemoteBridge.handleConnectDeeplink(
+          query as unknown as IConnectQrQuery,
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [],
+  );
+
+  deeplinking.add('/', (options) => {
+    if (options.prefix !== 'tc://') {
+      return;
+    }
+
+    return tonConnectResolver(options);
+  });
+
   deeplinking.add('/subscribe/:invoiceId', ({ params }) => {
     const wallet = getWallet();
     if (!wallet.ton.isV4()) {
@@ -77,7 +113,7 @@ export function useDeeplinkingResolvers() {
     }
   });
 
-  deeplinking.add('/transfer/:address', ({ params, query, resolveParams }) => {
+  deeplinking.add('/transfer/:address', async ({ params, query, resolveParams }) => {
     const currency = CryptoCurrencies.Ton;
     const address = params.address;
     const comment = query.text ?? '';
@@ -125,14 +161,31 @@ export function useDeeplinkingResolvers() {
           return Toast.fail(t('transfer_deeplink_address_error'));
         }
 
+        const address = await (getWallet().ton.getAddress());
+        const { balances } = await Tonapi.getJettonBalances(address);
+        const jettonBalance = balances.find(balance => compareAddresses(balance.jetton_address, query.jetton));
+
+        if (!jettonBalance) {
+          return Toast.fail(t('transfer_deeplink_address_error'));
+        }
+
+        let decimals = jettonBalance.metadata?.decimals ?? 9;
+
+        if (new BigNumber(jettonBalance.balance ?? 0).lt(query.amount)) {
+          openInsufficientFundsModal({ balance: jettonBalance.balance ?? 0, totalAmount: query.amount, decimals, currency: jettonBalance.metadata?.symbol });
+          return;
+        }
+
         dispatch(
           walletActions.confirmSendCoins({
+            decimals,
             currency,
             amount,
             address,
             comment,
             jettonWalletAddress: query.jetton,
             isJetton: true,
+            onInsufficientFunds: openInsufficientFundsModal,
             onNext: (details) => {
               const options = {
                 currency: query.jetton,
@@ -159,6 +212,7 @@ export function useDeeplinkingResolvers() {
             amount,
             address,
             comment,
+            onInsufficientFunds: openInsufficientFundsModal,
             onNext: (details) => {
               const options = {
                 currency,
@@ -338,22 +392,5 @@ export function useDeeplinkingResolvers() {
     }
   });
 
-  deeplinking.add('/ton-connect/*', async ({ query, origin }) => {
-    try {
-      TonConnectRemoteBridge.setOrigin(origin);
-      TonConnectRemoteBridge.setReturnStrategy(query.ret);
-
-      if (!query.r || !query.v || !query.id) {
-        return;
-      }
-
-      Toast.loading();
-
-      await TonConnectRemoteBridge.handleConnectDeeplink(
-        query as unknown as IConnectQrQuery,
-      );
-    } catch (err) {
-      console.log(err);
-    }
-  });
+  deeplinking.add('/ton-connect/*', tonConnectResolver);
 }

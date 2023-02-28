@@ -11,6 +11,7 @@ import { useMemo } from 'react';
 import { accentSelector } from '$store/main';
 import { ToastComponent } from '$uikit/Toast/new/ToastComponent';
 import { View } from 'react-native';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 const TonThemeProvider: FC = ({ children }) => {
   const accent = useSelector(accentSelector);
@@ -34,18 +35,22 @@ const TonThemeProvider: FC = ({ children }) => {
   );
 };
 
+const queryClient = new QueryClient();
+
 export const App: FC = () => {
   return (
     <StoreProvider {...{ store }}>
-      <TonThemeProvider>
-        <SafeAreaProvider>
-          <ScrollPositionProvider>
-            <AppNavigator />
-          </ScrollPositionProvider>
-          <Toast />
-          <ToastComponent />
-        </SafeAreaProvider>
-      </TonThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <TonThemeProvider>
+          <SafeAreaProvider>
+            <ScrollPositionProvider>
+              <AppNavigator />
+            </ScrollPositionProvider>
+            <Toast />
+            <ToastComponent />
+          </SafeAreaProvider>
+        </TonThemeProvider>
+      </QueryClientProvider>
     </StoreProvider>
   );
 };

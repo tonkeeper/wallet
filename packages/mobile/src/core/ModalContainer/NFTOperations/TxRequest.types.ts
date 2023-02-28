@@ -137,6 +137,7 @@ export type TxRequestBody<TParams = TxParams> = {
   expires_sec: number;
   response_options: TxResponseOptions;
   params: TParams;
+  fee?: string;
 };
 
 export type TxBodyOptions = Omit<TxRequestBody, 'params' | 'type'>;

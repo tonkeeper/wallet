@@ -19,6 +19,7 @@ import { isValidAddress, maskifyTonAddress, ns, triggerImpactLight } from '$util
 import {
   CryptoCurrencies,
   isServerConfigLoaded,
+  IsTablet,
   LargeNavBarHeight,
   SecondaryCryptoCurrencies,
   TabletMaxWidth,
@@ -36,6 +37,9 @@ import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import { toastActions } from '$store/toast';
 import Clipboard from '@react-native-community/clipboard';
+import { QueryClient, useQueryClient } from 'react-query';
+import { loadChartData } from '$uikit/Chart/Chart.api';
+import { DEFAULT_CHART_PERIOD } from '$uikit/Chart/Chart';
 
 export const Balances: FC = () => {
   const deeplinking = useDeeplinking();
@@ -73,6 +77,7 @@ export const Balances: FC = () => {
   const [isNoSignalDismissed, setNoSignalDismissed] = useState(false);
   const isConfigError = !isServerConfigLoaded();
   const isFocused = useIsFocused();
+  const queryClient = useQueryClient();
 
   const isEventsLoadingMore = !isRefreshing && isEventsLoading && !!wallet;
 
@@ -82,6 +87,10 @@ export const Balances: FC = () => {
     }, 1000);
     return () => clearTimeout(timer);
   }, [dispatch]);
+
+  useEffect(() => {
+    queryClient.prefetchQuery(['chartFetch', DEFAULT_CHART_PERIOD], () => loadChartData(DEFAULT_CHART_PERIOD));
+  }, []);
 
   useAppStateActive(() => {
     dispatch(mainActions.getTimeSynced());
@@ -358,7 +367,7 @@ export const Balances: FC = () => {
         contentContainerStyle={{
           maxWidth: ns(TabletMaxWidth),
           alignSelf: 'center',
-          paddingTop: ns(LargeNavBarHeight),
+          paddingTop: IsTablet ? ns(8) : ns(LargeNavBarHeight),
           paddingHorizontal: ns(16),
           paddingBottom: tabBarHeight - ns(20),
         }}
