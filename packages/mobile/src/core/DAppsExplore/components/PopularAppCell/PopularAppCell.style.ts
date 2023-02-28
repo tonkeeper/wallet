@@ -9,7 +9,7 @@ export const CellContainer = styled.View`
   background: ${({ theme }) => theme.colors.backgroundSecondary};
 `;
 
-export const Cell = styled(Highlight)`
+export const Cell = styled(Highlight).attrs({ useRNGHComponent: true })`
   position: relative;
 `;
 

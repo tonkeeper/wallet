@@ -1,6 +1,6 @@
 import styled, { css } from '$styled';
 import { nfs, ns } from '$utils';
-import { Highlight } from '$uikit';
+import { Highlight, StatelessHighlight } from '$uikit';
 import { TabletModalsWidth, IsTablet } from '$shared/constants';
 
 export const Wrap = styled.View`
@@ -105,7 +105,7 @@ export const Actions = styled.View`
   margin-top: ${ns(15.5)}px;
 `;
 
-export const Action = styled(Highlight).attrs({
+export const Action = styled(StatelessHighlight).attrs({
   contentViewStyle: {
     flexDirection: 'row',
     alignItems: 'center',

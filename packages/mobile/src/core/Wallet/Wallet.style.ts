@@ -1,6 +1,6 @@
 import styled from '$styled';
 import { ns } from '$utils';
-import { Highlight } from '$uikit';
+import { Highlight, StatelessHighlight } from '$uikit';
 
 export const Wrap = styled.View`
   flex: 1;
@@ -31,7 +31,7 @@ export const Actions = styled.View`
   padding-right: ${ns(16)}px;
 `;
 
-export const Action = styled(Highlight)`
+export const Action = styled(StatelessHighlight)`
   flex: 1;
   margin-left: 16px;
   align-items: center;

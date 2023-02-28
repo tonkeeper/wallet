@@ -1,7 +1,12 @@
 import { getChainName } from '$shared/dynamicConfig';
 import { store } from '$store';
 import { getConnectedAppByUrl } from './selectors';
-import { IConnectedAppConnection, IConnectedApp, TonConnectBridgeType } from './types';
+import {
+  IConnectedAppConnection,
+  IConnectedApp,
+  TonConnectBridgeType,
+  IConnectedAppConnectionRemote,
+} from './types';
 import { useConnectedAppsStore } from './useConnectedAppsStore';
 
 export const saveAppConnection = (
@@ -28,6 +33,22 @@ export const removeInjectedConnection = (url: string) => {
   useConnectedAppsStore
     .getState()
     .actions.removeInjectedConnection(getChainName(), currentWalletAddress, url);
+};
+
+export const removeRemoteConnection = (
+  connectedApp: IConnectedApp,
+  connection: IConnectedAppConnectionRemote,
+) => {
+  const currentWalletAddress = store.getState().wallet.address.ton;
+
+  useConnectedAppsStore
+    .getState()
+    .actions.removeRemoteConnection(
+      getChainName(),
+      currentWalletAddress,
+      connectedApp.url,
+      connection.clientSessionId,
+    );
 };
 
 export const findConnectedAppByUrl = (url: string): IConnectedApp | null => {
