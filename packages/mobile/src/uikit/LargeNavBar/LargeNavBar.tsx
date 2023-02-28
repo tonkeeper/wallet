@@ -80,10 +80,6 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
 
   const smallWrapStyle = useAnimatedStyle(() => {
     return {
-      borderBottomColor:
-        border && scrollTop.value >= LargeNavBarInteractiveDistance + 1
-          ? theme.colors.border
-          : 'transparent',
       transform: [
         {
           translateY: interpolate(
@@ -105,6 +101,18 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
   const smallTitleStyle = useAnimatedStyle(() => ({
     opacity: opacity ? opacity.value : 1,
   }));
+
+  const dividerStyle = useAnimatedStyle(() => {
+    if (!border || scrollTop.value < LargeNavBarInteractiveDistance + 1) {
+      return {
+        opacity: 0,
+      };
+    }
+
+    return {
+      opacity: opacity ? opacity.value : 1,
+    };
+  });
 
   return (
     <>
@@ -141,6 +149,7 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
                 ) : null}
               </S.TextWrap>
             </TouchableOpacity>
+            <S.NavBarDivider style={dividerStyle} />
           </S.SmallWrap>
           <S.RightContentWrap style={largeWrapStyle}>
             {renderRightContent()}

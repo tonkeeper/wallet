@@ -1,4 +1,4 @@
-import { useTranslator } from '$hooks';
+import { useTheme, useTranslator } from '$hooks';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import { openDAppsSearch, openRequireWalletModal, openScanQR } from '$navigation';
 import { IsTablet, LargeNavBarHeight, TabletMaxWidth } from '$shared/constants';
@@ -12,6 +12,7 @@ import React, { FC, memo, useCallback, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Animated, {
+  Extrapolation,
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
@@ -40,6 +41,8 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
   const t = useTranslator();
   const tabBarHeight = useBottomTabBarHeight();
   const deeplinking = useDeeplinking();
+
+  const theme = useTheme();
 
   const { categories } = useAppsListStore();
 
@@ -108,11 +111,17 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
       scrollTop.value,
       [
         connectedAppsHeight + NavBarSpacerHeight,
-        connectedAppsHeight + NavBarSpacerHeight + LargeNavBarHeight / 3,
+        connectedAppsHeight + NavBarSpacerHeight + LargeNavBarHeight / 3.5,
       ],
       [1, 0],
+      Extrapolation.CLAMP,
     ),
   );
+
+  const topTabsContainerStyle = useAnimatedStyle(() => ({
+    backgroundColor:
+      navBarOpacity.value === 0 ? theme.colors.backgroundPrimary : 'transparent',
+  }));
 
   const navBarRight = (
     <TouchableOpacity
@@ -149,11 +158,11 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
           }}
           scrollEventThrottle={16}
           stickyHeaderIndices={[0, 3]}
-          snapToOffsets={
-            isSnapPointReached || tabsSnapOffset > scrollViewHeight / 2
-              ? undefined
-              : [tabsSnapOffset]
-          }
+          // snapToOffsets={
+          //   isSnapPointReached || tabsSnapOffset > scrollViewHeight / 2
+          //     ? undefined
+          //     : [tabsSnapOffset]
+          // }
         >
           {isBigScreen ? (
             <NavBar
@@ -169,7 +178,6 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
               scrollTop={scrollTop}
               rightContent={navBarRight}
               safeArea={false}
-              border={false}
               opacity={navBarOpacity}
             >
               {t('browser.title')}
@@ -186,17 +194,19 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
           {!flags.disable_dapps ? (
             <S.ContentWrapper>
               <S.Content>
-                <TopTabs
-                  tabs={categories}
-                  selectedId={activeCategory}
-                  onChange={(value) => {
-                    scrollRef.current?.scrollTo({
-                      y: Math.min(scrollTop.value, tabsSnapOffset),
-                      animated: false,
-                    });
-                    setActiveCategory(value);
-                  }}
-                />
+                <Animated.View style={topTabsContainerStyle}>
+                  <TopTabs
+                    tabs={categories}
+                    selectedId={activeCategory}
+                    onChange={(value) => {
+                      scrollRef.current?.scrollTo({
+                        y: Math.min(scrollTop.value, tabsSnapOffset),
+                        animated: false,
+                      });
+                      setActiveCategory(value);
+                    }}
+                  />
+                </Animated.View>
                 <S.TopTabsDivider style={topTabsDividerStyle} />
               </S.Content>
             </S.ContentWrapper>

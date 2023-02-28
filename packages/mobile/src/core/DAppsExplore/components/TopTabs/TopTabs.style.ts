@@ -7,7 +7,6 @@ export const TopTabsHeight = ns(64);
 export const Container = styled.View`
   width: 100%;
   height: ${TopTabsHeight}px;
-  background: ${({ theme }) => theme.colors.backgroundPrimary};
   padding: 0 ${ns(8)}px;
   flex-direction: row;
   position: relative;
