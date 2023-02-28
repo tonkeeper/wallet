@@ -25,6 +25,7 @@
   "dependencies": {
     "@amplitude/analytics-browser": "^1.6.7",
     "@gorhom/bottom-sheet": "^4.4.4",
+    "@rainbow-me/animated-charts": "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#e150474c47a2c348cf1b7095b1304dc533007d3d",
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/clipboard": "^1.5.1",
     "@react-native-community/netinfo": "^9.3.2",
@@ -107,6 +108,7 @@
     "react-native-tweetnacl": "^1.0.5",
     "react-native-video": "^5.2.0",
     "react-native-webview": "^11.14.0",
+    "react-query": "^3.39.3",
     "react-redux": "^7.2.4",
     "reanimated-bottom-sheet": "^1.0.0-alpha.22",
     "redux-saga": "^1.1.3",

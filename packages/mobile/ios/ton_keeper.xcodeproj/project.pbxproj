@@ -27,6 +27,8 @@
 		203A6A1D2760BD6800817B71 /* Montserrat-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 203A6A0B2760BD6700817B71 /* Montserrat-MediumItalic.ttf */; };
 		203A6A1E2760BD6800817B71 /* Montserrat-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 203A6A0C2760BD6800817B71 /* Montserrat-Light.ttf */; };
 		203A6A1F2760BD6800817B71 /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 203A6A0D2760BD6800817B71 /* Montserrat-Regular.ttf */; };
+		5008E612299F9D1400D4850B /* SFMono-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 5008E610299F9D1400D4850B /* SFMono-Bold.otf */; };
+		5008E614299F9D1400D4850B /* SFMono-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 5008E611299F9D1400D4850B /* SFMono-Medium.otf */; };
 		76F9B0131AB7FE11009E6D10 /* libPods-ton_keeper-ton_keeperTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */; };
 		78B9AC5F426C0F28766DEC94 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7306F36185132B3874D4C /* ExpoModulesProvider.swift */; };
 		8D962335543EE7C6E1C6AB28 /* libPods-ton_keeper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 39C1C20FA83478354251FB2A /* libPods-ton_keeper.a */; };
@@ -124,6 +126,8 @@
 		203A6A0C2760BD6800817B71 /* Montserrat-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-Light.ttf"; path = "../assets/fonts/Montserrat-Light.ttf"; sourceTree = "<group>"; };
 		203A6A0D2760BD6800817B71 /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-Regular.ttf"; path = "../assets/fonts/Montserrat-Regular.ttf"; sourceTree = "<group>"; };
 		39C1C20FA83478354251FB2A /* libPods-ton_keeper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ton_keeper.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5008E610299F9D1400D4850B /* SFMono-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SFMono-Bold.otf"; path = "../assets/fonts/SFMono-Bold.otf"; sourceTree = "<group>"; };
+		5008E611299F9D1400D4850B /* SFMono-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SFMono-Medium.otf"; path = "../assets/fonts/SFMono-Medium.otf"; sourceTree = "<group>"; };
 		66B33E2FC88F6DF6B498F962 /* Pods-ton_keeper-ton_keeperTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper-ton_keeperTests.debug.xcconfig"; path = "Target Support Files/Pods-ton_keeper-ton_keeperTests/Pods-ton_keeper-ton_keeperTests.debug.xcconfig"; sourceTree = "<group>"; };
 		66D7306F36185132B3874D4C /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ton_keeper-ton_keeperTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		6AFA288D04A19A6FAE554C55 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ton_keeper/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
@@ -690,6 +694,8 @@
 		C80173ED49C3443EA1F97BA9 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5008E610299F9D1400D4850B /* SFMono-Bold.otf */,
+				5008E611299F9D1400D4850B /* SFMono-Medium.otf */,
 				203A6A072760BD6700817B71 /* Montserrat-Black.ttf */,
 				203A6A0A2760BD6700817B71 /* Montserrat-BlackItalic.ttf */,
 				203A6A052760BD6700817B71 /* Montserrat-Bold.ttf */,
@@ -819,6 +825,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5008E612299F9D1400D4850B /* SFMono-Bold.otf in Resources */,
 				203A6A1C2760BD6800817B71 /* Montserrat-BlackItalic.ttf in Resources */,
 				203A6A142760BD6800817B71 /* Montserrat-SemiBoldItalic.ttf in Resources */,
 				203A6A1D2760BD6800817B71 /* Montserrat-MediumItalic.ttf in Resources */,
@@ -830,6 +837,7 @@
 				C4F5F2052927C85B00D08D79 /* PassCode.strings in Resources */,
 				203A6A0F2760BD6800817B71 /* Montserrat-BoldItalic.ttf in Resources */,
 				203A6A182760BD6800817B71 /* Montserrat-ExtraBold.ttf in Resources */,
+				5008E614299F9D1400D4850B /* SFMono-Medium.otf in Resources */,
 				203A6A1B2760BD6800817B71 /* Montserrat-Thin.ttf in Resources */,
 				203A6A1F2760BD6800817B71 /* Montserrat-Regular.ttf in Resources */,
 				203A6A152760BD6800817B71 /* Montserrat-ThinItalic.ttf in Resources */,
@@ -1174,7 +1182,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ton_keeper/ton_keeper.entitlements;
-				CURRENT_PROJECT_VERSION = 278;
+				CURRENT_PROJECT_VERSION = 268;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				ENABLE_BITCODE = NO;
@@ -1209,7 +1217,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ton_keeper/ton_keeper.entitlements;
-				CURRENT_PROJECT_VERSION = 278;
+				CURRENT_PROJECT_VERSION = 268;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				INFOPLIST_FILE = ton_keeper/SupportingFiles/Info.plist;
