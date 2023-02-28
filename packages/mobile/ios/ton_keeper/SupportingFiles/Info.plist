@@ -52,6 +52,16 @@
 				<string>tonkeeper</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.jbig.tonkeeper</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>tc</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
@@ -113,6 +123,8 @@
 		<string>Montserrat-SemiBoldItalic.ttf</string>
 		<string>Montserrat-Thin.ttf</string>
 		<string>Montserrat-ThinItalic.ttf</string>
+		<string>SFMono-Bold.otf</string>
+		<string>SFMono-Medium.otf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>SplashScreen</string>

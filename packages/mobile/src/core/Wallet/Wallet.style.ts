@@ -8,9 +8,12 @@ export const Wrap = styled.View`
 
 export const HeaderWrap = styled.View`
   align-items: center;
-  margin-bottom: ${ns(16)}px;
-  padding-horizontal: ${ns(16)}px;
+  padding-horizontal: ${ns(28)}px;
 `;
+
+export const ChartWrap = styled.View`
+  margin-bottom: ${ns(48)}px;
+`
 
 export const FlexRow = styled.View`
   flex-direction: row;

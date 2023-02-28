@@ -10,11 +10,7 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 import * as S from './Settings.style';
 import { PopupSelect, ScrollHandler, Text } from '$uikit';
 import { useNavigation, useTranslator } from '$hooks';
-import {
-  alwaysShowV4R1Selector,
-  fiatCurrencySelector,
-  showV4R1Selector,
-} from '$store/main';
+import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
 import {
   openAppearance,
@@ -29,7 +25,6 @@ import {
 } from '$navigation';
 import {
   walletActions,
-  walletOldBalancesSelector,
   walletVersionSelector,
   walletWalletSelector,
 } from '$store/wallet';
@@ -55,7 +50,11 @@ import { useFlags } from '$utils/flags';
 import { SearchEngine, useBrowserStore } from '$store';
 
 export const Settings: FC = () => {
-  const flags = useFlags(['disable_apperance', 'disable_support_button', 'disable_feedback_button']);
+  const flags = useFlags([
+    'disable_apperance',
+    'disable_support_button',
+    'disable_feedback_button',
+  ]);
 
   const t = useTranslator();
   const nav = useNavigation();
@@ -210,7 +209,7 @@ export const Settings: FC = () => {
         <Animated.ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            paddingTop: hNs(LargeNavBarHeight),
+            paddingTop: IsTablet ? ns(8) : hNs(LargeNavBarHeight),
             paddingHorizontal: ns(16),
             paddingBottom: tabBarHeight,
             alignItems: IsTablet ? 'center' : undefined,
@@ -323,7 +322,7 @@ export const Settings: FC = () => {
                 <CellSectionItem onPress={handleSupport} icon="ic-telegram-28">
                   {t('settings_support')}
                 </CellSectionItem>
-              ): null}
+              ) : null}
               <CellSectionItem onPress={handleNews} icon="ic-telegram-28">
                 {t('settings_news')}
               </CellSectionItem>
@@ -331,7 +330,7 @@ export const Settings: FC = () => {
                 <CellSectionItem onPress={handleFeedback} icon="ic-envelope-28">
                   {t('settings_contact_support')}
                 </CellSectionItem>
-              ): null}
+              ) : null}
               <CellSectionItem onPress={handleLegal} icon="ic-doc-28">
                 {t('settings_legal_documents')}
               </CellSectionItem>

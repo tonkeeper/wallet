@@ -1,10 +1,10 @@
 import { useTranslator, useCopyText } from '$hooks';
 import { goBack } from '$navigation';
 import { Icon, PopupSelect, Text } from '$uikit';
-import { getDomainFromURL, isAndroid, maskifyAddress } from '$utils';
+import { getDomainFromURL, maskifyAddress } from '$utils';
 import React, { FC, memo, useCallback, useMemo } from 'react';
-import { Share } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Share from 'react-native-share';
 import * as S from './BrowserNavBar.style';
 
 enum PopupActionType {
@@ -89,10 +89,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
           return onRefreshPress();
         case PopupActionType.SHARE:
           setTimeout(() => {
-            Share.share({
-              url,
-              message: isAndroid ? url : undefined,
-            }).catch((err) => {
+            Share.open({ failOnCancel: false, urls: [url] }).catch((err) => {
               console.log('cant share', err);
             });
           }, 0);

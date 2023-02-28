@@ -86,53 +86,63 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
 
   return (
     <S.Container bottomInset={bottomInset}>
-      <S.KeyboardAvoidView>
-        <S.Content>
-          <ScrollHandler
-            navBarTitle={t('browser.title')}
-            navBarRight={
-              <S.NavBarButtonContainer>
-                <Button onPress={goBack} mode="secondary" size="navbar_small">
-                  {t('cancel')}
-                </Button>
-              </S.NavBarButtonContainer>
-            }
-            isLargeNavBar={false}
-            hideBackButton
-          >
-            <Animated.ScrollView
-              showsVerticalScrollIndicator={false}
-              // eslint-disable-next-line react-native/no-inline-styles
-              contentContainerStyle={{
-                paddingHorizontal: ns(16),
-                alignItems: IsTablet ? 'center' : undefined,
-              }}
-              scrollEventThrottle={16}
-              onLayout={handleScrollViewLayout}
-              keyboardDismissMode="none"
-              keyboardShouldPersistTaps="always"
+      <S.Responder onPress={goBack} accessible={false}>
+        <S.KeyboardAvoidView>
+          <S.Content>
+            <ScrollHandler
+              navBarTitle={t('browser.title')}
+              navBarRight={
+                <S.NavBarButtonContainer>
+                  <Button onPress={goBack} mode="secondary" size="navbar_small">
+                    {t('cancel')}
+                  </Button>
+                </S.NavBarButtonContainer>
+              }
+              isLargeNavBar={false}
+              hideBackButton
             >
-              {hasSuggests ? (
-                <>
-                  <SearchSuggests items={searchSuggests} onPressSuggest={openUrl} />
-                  <WebSearchSuggests
-                    items={webSearchSuggests}
-                    active={searchSuggests.length === 0}
-                    onPressSuggest={openUrl}
-                  />
-                </>
-              ) : (
-                <S.EmptyContainer style={emptyContainerStyle}>
-                  <Text color="foregroundTertiary" textAlign="center">
-                    {emptyText}
-                  </Text>
-                </S.EmptyContainer>
-              )}
-            </Animated.ScrollView>
-          </ScrollHandler>
-        </S.Content>
-        <SearchBar query={query} setQuery={setQuery} onSubmit={handleSearchBarSubmit} />
-      </S.KeyboardAvoidView>
+              <Animated.ScrollView
+                showsVerticalScrollIndicator={false}
+                // eslint-disable-next-line react-native/no-inline-styles
+                contentContainerStyle={{
+                  paddingHorizontal: IsTablet ? 0 : ns(16),
+                  paddingTop: IsTablet ? ns(8) : 0,
+                }}
+                scrollEventThrottle={16}
+                onLayout={handleScrollViewLayout}
+                keyboardDismissMode="none"
+                keyboardShouldPersistTaps="always"
+              >
+                {hasSuggests ? (
+                  <>
+                    <SearchSuggests items={searchSuggests} onPressSuggest={openUrl} />
+                    <WebSearchSuggests
+                      items={webSearchSuggests}
+                      active={searchSuggests.length === 0}
+                      onPressSuggest={openUrl}
+                    />
+                  </>
+                ) : (
+                  <S.EmptyContainer style={emptyContainerStyle}>
+                    <Text color="foregroundTertiary" textAlign="center">
+                      {emptyText}
+                    </Text>
+                  </S.EmptyContainer>
+                )}
+              </Animated.ScrollView>
+            </ScrollHandler>
+          </S.Content>
+          <S.SearchBarWrapper>
+            <S.SearchBarContent>
+              <SearchBar
+                query={query}
+                setQuery={setQuery}
+                onSubmit={handleSearchBarSubmit}
+              />
+            </S.SearchBarContent>
+          </S.SearchBarWrapper>
+        </S.KeyboardAvoidView>
+      </S.Responder>
     </S.Container>
   );
 };
