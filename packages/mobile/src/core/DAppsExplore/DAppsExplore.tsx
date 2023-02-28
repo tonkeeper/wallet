@@ -10,7 +10,11 @@ import { useFlags } from '$utils/flags';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import React, { FC, memo, useCallback, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -21,6 +25,8 @@ import {
   TopTabs,
 } from './components';
 import * as S from './DAppsExplore.style';
+
+const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
 export interface DAppsExploreProps {}
 
@@ -101,7 +107,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
   return (
     <S.Wrap>
       <S.ScrollViewContainer topInset={topInset}>
-        <Animated.ScrollView
+        <AnimatedScrollView
           ref={scrollRef}
           onLayout={handleScrollViewLayout}
           onScroll={scrollHandler}
@@ -164,7 +170,10 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
           {!flags.disable_dapps ? (
             <S.ContentWrapper>
               <S.Content>
-                <PopularApps activeCategory={activeCategory} />
+                <PopularApps 
+                  activeCategory={activeCategory}
+                  setActiveCategory={setActiveCategory}
+                />
               </S.Content>
             </S.ContentWrapper>
           ) : null}
@@ -175,7 +184,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
               </S.Content>
             </S.ContentWrapper>
           ) : null}
-        </Animated.ScrollView>
+        </AnimatedScrollView>
       </S.ScrollViewContainer>
       <S.ContentWrapper>
         <S.Content>
