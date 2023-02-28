@@ -1,8 +1,14 @@
 import { IsTablet, LargeNavBarHeight, TabletMaxWidth } from '$shared/constants';
 import styled, { css } from '$styled';
 import { hNs, isIOS, ns } from '$utils';
-import { KeyboardAvoidingView } from 'react-native';
+import { KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
 import Animated from 'react-native-reanimated';
+
+export const Responder = styled(TouchableWithoutFeedback)`
+  width: 100%;
+  height: 100%;
+  align-items: center;
+`;
 
 export const Container = styled.View<{ bottomInset: number }>`
   flex: 1;

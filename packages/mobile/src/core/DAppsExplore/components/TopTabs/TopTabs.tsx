@@ -54,7 +54,7 @@ const TopTabsComponent: FC<Props> = (props) => {
         {
           translateX: withSpring(x, {
             damping: 15,
-            mass: 0.5,
+            mass: 0.1,
           }),
         },
       ],

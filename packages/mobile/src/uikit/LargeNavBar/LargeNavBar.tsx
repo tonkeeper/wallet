@@ -22,6 +22,7 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
     position = 'relative',
     safeArea = true,
     border = true,
+    opacity,
   } = props;
   const { top: topInset } = useSafeAreaInsets();
   const theme = useTheme();
@@ -51,6 +52,7 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
             : 0,
       },
     ],
+    opacity: opacity ? opacity.value : 1,
   }));
 
   const largeTitleStyle = useAnimatedStyle(() => ({
@@ -78,10 +80,6 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
 
   const smallWrapStyle = useAnimatedStyle(() => {
     return {
-      borderBottomColor:
-        border && scrollTop.value >= LargeNavBarInteractiveDistance + 1
-          ? theme.colors.border
-          : 'transparent',
       transform: [
         {
           translateY: interpolate(
@@ -97,6 +95,22 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
         [0, LargeNavBarInteractiveDistance * 0.5, LargeNavBarInteractiveDistance],
         [0, 0, 1],
       ),
+    };
+  });
+
+  const smallTitleStyle = useAnimatedStyle(() => ({
+    opacity: opacity ? opacity.value : 1,
+  }));
+
+  const dividerStyle = useAnimatedStyle(() => {
+    if (!border || scrollTop.value < LargeNavBarInteractiveDistance + 1) {
+      return {
+        opacity: 0,
+      };
+    }
+
+    return {
+      opacity: opacity ? opacity.value : 1,
     };
   });
 
@@ -128,13 +142,14 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
           </S.LargeWrap>
           <S.SmallWrap style={smallWrapStyle}>
             <TouchableOpacity disabled={!onPress} onPress={onPress} hitSlop={hitSlop}>
-              <S.TextWrap>
+              <S.TextWrap style={smallTitleStyle}>
                 <Text variant="h3">{children}</Text>
                 {bottomComponent ? (
                   <S.BottomComponentWrap>{bottomComponent}</S.BottomComponentWrap>
                 ) : null}
               </S.TextWrap>
             </TouchableOpacity>
+            <S.NavBarDivider style={dividerStyle} />
           </S.SmallWrap>
           <S.RightContentWrap style={largeWrapStyle}>
             {renderRightContent()}

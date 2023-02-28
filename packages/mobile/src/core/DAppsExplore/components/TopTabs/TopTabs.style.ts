@@ -2,10 +2,11 @@ import styled from '$styled';
 import { ns } from '$utils';
 import Animated from 'react-native-reanimated';
 
+export const TopTabsHeight = ns(64);
+
 export const Container = styled.View`
   width: 100%;
-  height: ${ns(64)}px;
-  background: ${({ theme }) => theme.colors.backgroundPrimary};
+  height: ${TopTabsHeight}px;
   padding: 0 ${ns(8)}px;
   flex-direction: row;
   position: relative;

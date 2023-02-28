@@ -1,8 +1,9 @@
 import styled, { RADIUS } from '$styled';
-import { Highlight, Text } from '$uikit';
+import { Text } from '$uikit';
 import { ns } from '$utils';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
-export const Touchable = styled(Highlight).attrs({ background: 'backgroundTertiary' })`
+export const Touchable = styled(TouchableWithoutFeedback)`
   background-color: ${({ theme }) => theme.colors.backgroundSecondary};
   border-radius: ${ns(RADIUS.normal)}px;
 `;

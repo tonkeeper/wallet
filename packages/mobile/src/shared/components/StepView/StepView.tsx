@@ -94,7 +94,10 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
     return {
       transform: [
         {
-          translateX: position.value,
+          translateX: withSpring(position.value, {
+            damping: 15,
+            mass: 0.1,
+          }),
         },
       ],
       maxHeight: autoHeight && maxHeight > 0 ? maxHeight : 'auto',

@@ -82,9 +82,6 @@ export const SmallWrap = styled(Animated.View)`
   align-items: center;
   justify-content: center;
   padding-horizontal: ${ns(16)}px;
-  border-bottom-width: ${hNs(0.5)}px;
-  border-bottom-width: ${hNs(0.5)}px;
-  border-bottom-color: ${({ theme }) => theme.colors.border};
 `;
 
 export const LargeBottomComponentWrap = styled.View`
@@ -93,4 +90,14 @@ export const LargeBottomComponentWrap = styled.View`
 
 export const BottomComponentWrap = styled.View`
   margin-bottom: ${ns(2.5)}px;
+`;
+
+export const NavBarDivider = styled(Animated.View)`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.5px;
+  height: 0.5px;
+  z-index: 10;
+  background: ${({ theme }) => theme.colors.separatorCommon};
 `;
