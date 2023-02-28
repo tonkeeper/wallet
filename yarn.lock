@@ -3213,10 +3213,10 @@
     tweetnacl "^1.0.3"
     tweetnacl-util "^0.15.1"
 
-"@tonconnect/protocol@^0.0.22":
-  version "0.0.22"
-  resolved "https://registry.yarnpkg.com/@tonconnect/protocol/-/protocol-0.0.22.tgz#e053f185aefd330ddbdc9e904385673abde72c8d"
-  integrity sha512-ntSLnvHVHJK+Dgt1R4QNeIAiQmYMRJxoaV1Op/goKaLWL2KzO6OR5ttTncyfGkmPwtiU3XXsGX5TzoeG4dnuTA==
+"@tonconnect/protocol@^2.2.2":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@tonconnect/protocol/-/protocol-2.2.2.tgz#5238d6f0f0a09b40320d9bf25534c31908655498"
+  integrity sha512-SlfGiNxpWvRbUM/jIbRCDc42WAcEHgLCrpsNmJ1/brxqSY6/HW2VCIjTbJnzF0m2sLKP6LD6VUq3nV/eN8Y0Uw==
   dependencies:
     tweetnacl-util "^0.15.1"
 
