@@ -86,7 +86,7 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
         {
           translateX: withSpring(position.value, {
             damping: 15,
-            mass: 0.5,
+            mass: 0.1,
           }),
         },
       ],

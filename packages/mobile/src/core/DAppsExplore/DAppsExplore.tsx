@@ -5,13 +5,17 @@ import { IsTablet, LargeNavBarHeight, TabletMaxWidth } from '$shared/constants';
 import { store, useAppsListStore } from '$store';
 import { Icon, LargeNavBar, NavBar } from '$uikit';
 import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
-import { deviceWidth } from '$utils';
+import { deviceWidth, ns } from '$utils';
 import { useFlags } from '$utils/flags';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import React, { FC, memo, useCallback, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import Animated from 'react-native-reanimated';
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useDerivedValue,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   ConnectedApps,
@@ -19,8 +23,12 @@ import {
   SearchButton,
   AboutDApps,
   TopTabs,
+  TopTabsHeight,
 } from './components';
 import * as S from './DAppsExplore.style';
+import { NavBarSpacerHeight } from './DAppsExplore.style';
+
+const OFFSET = ns(16);
 
 export interface DAppsExploreProps {}
 
@@ -37,6 +45,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
 
   const [connectedAppsHeight, setConnectedAppsHeight] = useState(0);
   const [scrollViewHeight, setScrollViewHeight] = useState(0);
+  const [popularAppsHeight, setPopularAppsHeight] = useState(0);
 
   const tabsSnapOffset = connectedAppsHeight + LargeNavBarHeight + 4;
 
@@ -80,6 +89,31 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
     setConnectedAppsHeight(event.nativeEvent.layout.height);
   }, []);
 
+  const contentHeight = popularAppsHeight + tabsSnapOffset + TopTabsHeight - OFFSET;
+
+  const bottomDividerStyle = useAnimatedStyle(() => ({
+    opacity:
+      contentHeight > scrollViewHeight &&
+      scrollTop.value + scrollViewHeight < contentHeight
+        ? 1
+        : 0,
+  }));
+
+  const topTabsDividerStyle = useAnimatedStyle(() => ({
+    opacity: scrollTop.value > tabsSnapOffset ? 1 : 0,
+  }));
+
+  const navBarOpacity = useDerivedValue(() =>
+    interpolate(
+      scrollTop.value,
+      [
+        connectedAppsHeight + NavBarSpacerHeight,
+        connectedAppsHeight + NavBarSpacerHeight + LargeNavBarHeight / 3,
+      ],
+      [1, 0],
+    ),
+  );
+
   const navBarRight = (
     <TouchableOpacity
       onPress={handlePressOpenScanQR}
@@ -115,7 +149,11 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
           }}
           scrollEventThrottle={16}
           stickyHeaderIndices={[0, 3]}
-          // snapToOffsets={isSnapPointReached ? undefined : [tabsSnapOffset]}
+          snapToOffsets={
+            isSnapPointReached || tabsSnapOffset > scrollViewHeight / 2
+              ? undefined
+              : [tabsSnapOffset]
+          }
         >
           {isBigScreen ? (
             <NavBar
@@ -132,6 +170,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
               rightContent={navBarRight}
               safeArea={false}
               border={false}
+              opacity={navBarOpacity}
             >
               {t('browser.title')}
             </LargeNavBar>
@@ -158,12 +197,17 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
                     setActiveCategory(value);
                   }}
                 />
+                <S.TopTabsDivider style={topTabsDividerStyle} />
               </S.Content>
             </S.ContentWrapper>
           ) : null}
           {!flags.disable_dapps ? (
             <S.ContentWrapper>
-              <S.Content>
+              <S.Content
+                onLayout={(event) =>
+                  setPopularAppsHeight(event.nativeEvent.layout.height)
+                }
+              >
                 <PopularApps activeCategory={activeCategory} />
               </S.Content>
             </S.ContentWrapper>
@@ -180,6 +224,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
       <S.ContentWrapper>
         <S.Content>
           <S.SearchBarContainer tabBarHeight={tabBarHeight}>
+            <S.SearchBarDivider style={bottomDividerStyle} />
             <SearchButton onPress={handleSearchPress} />
           </S.SearchBarContainer>
         </S.Content>

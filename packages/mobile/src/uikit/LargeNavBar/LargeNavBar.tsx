@@ -22,6 +22,7 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
     position = 'relative',
     safeArea = true,
     border = true,
+    opacity,
   } = props;
   const { top: topInset } = useSafeAreaInsets();
   const theme = useTheme();
@@ -51,6 +52,7 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
             : 0,
       },
     ],
+    opacity: opacity ? opacity.value : 1,
   }));
 
   const largeTitleStyle = useAnimatedStyle(() => ({
@@ -100,6 +102,10 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
     };
   });
 
+  const smallTitleStyle = useAnimatedStyle(() => ({
+    opacity: opacity ? opacity.value : 1,
+  }));
+
   return (
     <>
       <S.Wrap
@@ -128,7 +134,7 @@ export const LargeNavBar: FC<LargeNavBarProps> = (props) => {
           </S.LargeWrap>
           <S.SmallWrap style={smallWrapStyle}>
             <TouchableOpacity disabled={!onPress} onPress={onPress} hitSlop={hitSlop}>
-              <S.TextWrap>
+              <S.TextWrap style={smallTitleStyle}>
                 <Text variant="h3">{children}</Text>
                 {bottomComponent ? (
                   <S.BottomComponentWrap>{bottomComponent}</S.BottomComponentWrap>
