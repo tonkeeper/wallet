@@ -28,7 +28,7 @@ export const ChartYLabelsComponent: React.FC<ChartYLabelsProps> = (props) => {
   return (
     <>
       <Animated.View
-        style={[labelStyle, { position: 'absolute', right: 15.5, bottom: 2 }]}
+        style={[labelStyle, { position: 'absolute', right: 15.5, bottom: 23 }]}
       >
         <Text style={{ fontFamily }} variant="label3" color="foregroundSecondary">
           {props.minPrice}

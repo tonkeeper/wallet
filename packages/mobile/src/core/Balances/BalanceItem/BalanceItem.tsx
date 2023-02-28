@@ -8,7 +8,12 @@ import * as S from './BalanceItem.style';
 import { CurrencyIcon, Icon, Text } from '$uikit';
 import { useJettonBalances, useTranslator, useWalletInfo } from '$hooks';
 import { walletWalletSelector } from '$store/wallet';
-import { openReceive, openRequireWalletModal, openSend, openWallet } from '$navigation';
+import {
+  openReceive,
+  openRequireWalletModal,
+  openSend,
+  openWallet,
+} from '$navigation';
 import { Chart } from '$shared/components';
 import { format, ns } from '$utils';
 import { ratesChartsSelector, ratesRatesSelector } from '$store/rates';
@@ -20,7 +25,7 @@ import {
   getServerConfigSafe,
 } from '$shared/constants';
 import { formatCryptoCurrency, formatFiatCurrencyAmount } from '$utils/currency';
-import { fiatCurrencySelector } from '$store/main';
+import { fiatCurrencySelector, mainSelector } from '$store/main';
 import { getRate } from '$hooks/useFiatRate';
 import { useNavigation } from '$libs/navigation';
 
