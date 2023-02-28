@@ -86,7 +86,7 @@ export function toNano(amount: number | string, decimals?: number) {
   if (decimals) {
     bn = bn.decimalPlaces(decimals, BigNumber.ROUND_DOWN);
   }
-  return bn.shiftedBy(decimals ?? 8).toString(10);
+  return bn.shiftedBy(decimals ?? 9).toString(10);
 }
 
 export function fromNano(amount: number | string, decimals: number) {

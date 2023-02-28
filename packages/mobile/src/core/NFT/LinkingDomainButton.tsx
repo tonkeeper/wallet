@@ -3,7 +3,7 @@ import { openLinkingDomain } from '$navigation';
 import { walletVersionSelector } from '$store/wallet';
 import { t } from '$translation';
 import { Button, Text } from '$uikit';
-import { debugLog, maskifyAddress } from '$utils';
+import { debugLog, maskifyAddress, toNano } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
 import * as React from 'react';
 import { View } from 'react-native';
@@ -11,6 +11,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Tonapi } from '$libs/Tonapi';
 import { favoritesActions } from '$store/favorites';
 import { DOMAIN_ADDRESS_NOT_FOUND } from '$core/Send/hooks/useSuggestedAddresses';
+import { LinkingDomainActions } from '$core/ModalContainer/LinkingDomainModal';
+import { Toast } from '$store';
+import { checkIsInsufficient, openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 
 const TonWeb = require('tonweb'); // Fix ts types;
 
@@ -138,12 +141,28 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
     return false;
   }, [allAddesses, record.walletAddress, record.ownerAddress]);
 
-  const handlePressButton = React.useCallback(() => {
+  const handlePressButton = React.useCallback(async () => {
+    Toast.loading();
     const currentWalletAddress = allAddesses[version];
+    const linkingActions = new LinkingDomainActions(props.domainAddress, isLinked ? undefined : currentWalletAddress);
+    const fee = await linkingActions.calculateFee();
+
+    // compare balance and transfer amount, because transfer will fail
+    if (fee === '0') {
+      const checkResult = await checkIsInsufficient(linkingActions.transferAmount);
+      if (checkResult.insufficient) {
+        Toast.hide();
+        return openInsufficientFundsModal({ totalAmount: linkingActions.transferAmount, balance: checkResult.balance });
+      }
+    }
+
+    Toast.hide();
+
     openLinkingDomain({
       walletAddress: isLinked ? undefined : currentWalletAddress,
       domainAddress: props.domainAddress,
       domain: props.domain,
+      fee,
       onDone: ({ walletAddress }) => {
         const record = {
           ownerAddress: currentWalletAddress,

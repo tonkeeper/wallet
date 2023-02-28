@@ -5,7 +5,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 
 import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet/index';
-import { EncryptedVault, UnlockedVault, Vault, Wallet } from '$blockchain';
+import { EncryptedVault, jettonTransferForwardAmount, UnlockedVault, Vault, Wallet } from '$blockchain';
 import { mainActions } from '$store/main';
 import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
 import {
@@ -67,7 +67,6 @@ import { jettonsActions } from '$store/jettons';
 import { Ton } from '$libs/Ton';
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
 import { Tonapi } from '$libs/Tonapi';
-import TonWeb from 'tonweb';
 import { clearSubscribeStatus } from '$utils/messaging';
 
 function* generateVaultWorker() {
@@ -303,6 +302,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
       comment = '',
       onEnd,
       onNext,
+      onInsufficientFunds,
       isJetton,
       jettonWalletAddress,
       decimals = 0,
@@ -328,21 +328,25 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
           wallet.vault,
           comment,
         );
-      }
-      if (currency === CryptoCurrencies.Ton) {
-        fee = yield call(
-          [wallet.ton, 'estimateFee'],
-          address,
-          amount,
-          wallet.vault,
-          comment,
-        );
-        isUninit = yield call([wallet.ton, 'isInactiveAddress'], address);
+      } else {
+        if (currency === CryptoCurrencies.Ton) {
+          fee = yield call(
+            [wallet.ton, 'estimateFee'],
+            address,
+            amount,
+            wallet.vault,
+            comment,
+          );
+          isUninit = yield call([wallet.ton, 'isInactiveAddress'], address);
+        }
       }
     } catch (e) {
       console.log(e);
       e && debugLog(e.message);
-      isEstimateFeeError = true;
+    } finally {
+      if (fee === '0') {
+        isEstimateFeeError = true;
+      }
     }
 
     if (onEnd) {
@@ -354,7 +358,18 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
     yield delay(100);
 
     if (onNext) {
-      yield call(onNext, { fee, isInactive: isUninit });
+      if (isEstimateFeeError && onInsufficientFunds) {
+        const amountNano = isJetton ? jettonTransferForwardAmount : toNano(amount);
+        const address = yield call([wallet.ton, 'getAddress']);
+        const { balance } = yield call(Tonapi.getWalletInfo, address);
+        if (
+          new BigNumber(amountNano).gt(new BigNumber(balance))
+        ) {
+          return onInsufficientFunds({ totalAmount: amountNano, balance })
+        }
+      } else {
+        yield call(onNext, { fee, isInactive: isUninit });
+      }
     }
 
     if (isEstimateFeeError) {

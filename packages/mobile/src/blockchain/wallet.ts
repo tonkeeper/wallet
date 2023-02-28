@@ -2,18 +2,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BigNumber from 'bignumber.js';
 import { getUnixTime } from 'date-fns';
 
-import { store } from '$store';
+import { store, Toast } from '$store';
 import { getServerConfig } from '$shared/constants';
 import { UnlockedVault, Vault } from './vault';
-import { debugLog } from '$utils';
+import { compareAddresses, debugLog } from '$utils';
 import { getWalletName } from '$shared/dynamicConfig';
 import { t } from '$translation';
 import { Ton } from '$libs/Ton';
 
 import { AccountEvent, Configuration, RawBlockchainApi, SendApi } from 'tonapi-sdk-js';
 import axios from 'axios';
+import { Tonapi } from '$libs/Tonapi';
 
 const TonWeb = require('tonweb');
+
+export const jettonTransferForwardAmount = Ton.toNano('0.64');
 
 export class Wallet {
   readonly name: string;
@@ -352,7 +355,7 @@ export class TonWallet {
 
     const tx = vault.tonWallet.methods.transfer({
       toAddress: jettonWalletAddress,
-      amount: Ton.toNano('0.10'),
+      amount: jettonTransferForwardAmount,
       seqno,
       payload,
       sendMode: 3,
@@ -399,9 +402,10 @@ export class TonWallet {
     });
 
     const jettonAmount = new TonWeb.utils.BN(amount, 10);
-    const { balance } = await jettonWallet.getData();
+    const { balances } = await Tonapi.getJettonBalances(myinfo.address.raw);
+    const balance = balances.find((jettonBalance) => compareAddresses(jettonBalance.wallet_address.address, jettonWalletAddress));
 
-    if (balance.lt(jettonAmount)) {
+    if (new BigNumber(balance.balance).lt(new BigNumber(amount))) {
       throw new Error(t('send_insufficient_funds'));
     }
 
@@ -424,7 +428,7 @@ export class TonWallet {
       tx = wallet.methods.transfer({
         secretKey,
         toAddress: jettonWalletAddress,
-        amount: amountTon,
+        amount: jettonTransferForwardAmount,
         seqno: seqno,
         payload,
         sendMode,
@@ -447,7 +451,7 @@ export class TonWallet {
       }
     } else {
       if (
-        new BigNumber(amountTon.toString())
+        new BigNumber(jettonTransferForwardAmount.toString())
           .plus(sendMode === 128 ? 0 : feeNano)
           .isGreaterThan(myinfo.balance)
       ) {

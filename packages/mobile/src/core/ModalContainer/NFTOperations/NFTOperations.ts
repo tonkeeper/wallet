@@ -26,6 +26,7 @@ import { Ton } from '$libs/Ton';
 import { getServerConfig } from '$shared/constants';
 import { AccountEvent, Configuration, SendApi, NFTApi } from 'tonapi-sdk-js';
 import axios from 'axios';
+import { Tonapi } from '$libs/Tonapi';
 
 const { NftCollection, NftItem, NftSale } = TonWeb.token.nft;
 
@@ -519,13 +520,12 @@ export class NFTOperations {
       estimateFee: async () => {
         const transfer = wallet.methods.transfer as EstimateFeeTransferMethod;
         const methods = transfer(params);
-        const feeInfo = await methods.estimateFee();
-        const fee = new BigNumber(feeInfo.source_fees.in_fwd_fee)
-          .plus(feeInfo.source_fees.storage_fee)
-          .plus(feeInfo.source_fees.gas_fee)
-          .plus(feeInfo.source_fees.fwd_fee)
-          .toNumber();
-        return truncateDecimal(Ton.fromNano(fee.toString()), 1, true);
+        const queryMsg = await methods.getQuery();
+        const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
+        const feeInfo = await Tonapi.estimateTx(boc);
+        const fee = new BigNumber(feeInfo.fee.total).toNumber();
+
+        return truncateDecimal(Ton.fromNano(fee.toString()), 2, true);
       },
       send: async (secretKey: Uint8Array) => {
         const myInfo = await this.wallet.ton.getWalletInfo(
