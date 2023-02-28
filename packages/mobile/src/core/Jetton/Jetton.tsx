@@ -33,11 +33,13 @@ const ActionButton: FC<ActionButtonProps> = (props) => {
   return (
     <S.ActionWrapper isLast={isLast}>
       <S.Action onPress={onPress}>
-        <Icon name={icon} color="constantLight" />
+        <S.ActionIcon>
+          <Icon name={icon} color="constantLight" />
+        </S.ActionIcon>
+        <Text variant="label3" color="foregroundSecondary">
+          {children}
+        </Text>
       </S.Action>
-      <Text variant="label3" color="foregroundSecondary">
-        {children}
-      </Text>
     </S.ActionWrapper>
   );
 };
@@ -124,11 +126,11 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
                 <ShowMore
                   backgroundColor={theme.colors.backgroundPrimary}
                   maxLines={2}
-                  text={jettonMeta?.description}
+                  text={jettonMeta?.description ?? ''}
                 />
               ) : (
                 <>
-                  <Skeleton.Line style={{ marginTop: 6 }} width={240} />
+                  <Skeleton.Line height={ns(20)} width={240} />
                 </>
               )}
             </S.JettonIDWrapper>

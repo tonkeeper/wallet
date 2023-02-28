@@ -88,15 +88,7 @@ export const Actions = styled.View`
   padding-right: ${ns(16)}px;
 `;
 
-export const Action = styled(TouchableOpacity).attrs({
-  activeOpacity: 0.8,
-  hitSlop: {
-    top: 12,
-    bottom: 12,
-    left: 12,
-    right: 12,
-  },
-})`
+export const ActionIcon = styled.View`
   border-radius: ${ns(48 / 2)}px;
   background: ${({ theme }) => theme.colors.backgroundTertiary};
   margin-bottom: ${ns(8)}px;
@@ -104,6 +96,13 @@ export const Action = styled(TouchableOpacity).attrs({
   height: ${ns(44)}px;
   align-items: center;
   justify-content: center;
+`;
+
+export const Action = styled(TouchableOpacity).attrs({
+  activeOpacity: 0.6,
+  hitSlop: { top: 12, bottom: 12, left: 12, right: 12 },
+})`
+  align-items: center;
 `;
 
 export const ActionWrapper = styled.View<{ isLast?: boolean }>`

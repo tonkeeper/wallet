@@ -35,6 +35,7 @@
   "intro_item3_caption": "-",
   "intro_continue_btn": "Начать",
 
+  "about_ton": "TON — это полностью децентрализованный блокчейн первого уровня, разработанный Telegram для поддержки миллиарда пользователей. Он гарантирует мгновенные транзакции, низкие комиссии, удобные приложения и безопасность для окружающей среды.",
   "wallet_title": "Кошелёк",
   "wallet_receive": "Получить",
   "wallet_send": "Отправить",
@@ -42,6 +43,7 @@
   "wallet_toncommunity_link": "https://t.me/toncoin_rus",
   "wallet_toncommunity_chat_link": "https://t.me/toncoin_rus_chat",
   "wallet_source_code": "Исходный код",
+  "wallet_community": "Сообщество",
   "wallet_chat": "Чат",
   "wallet_sell": "Продать",
   "wallet_about": "Подробнее",

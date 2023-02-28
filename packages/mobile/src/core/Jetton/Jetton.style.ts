@@ -66,12 +66,6 @@ const borders = (borderStart: boolean, borderEnd: boolean) => {
   `;
 };
 
-export const ActionWrapper = styled.View<{ isLast?: boolean }>`
-  margin-right: ${({ isLast }) => (!isLast ? ns(25.5) : 0)}px;
-  align-items: center;
-  justify-content: center;
-`;
-
 export const Divider = styled.View`
   height: ${ns(0.5)}px;
   width: ${deviceWidth}px;
@@ -79,16 +73,8 @@ export const Divider = styled.View`
   margin-bottom: ${ns(24)}px;
 `;
 
-export const Action = styled(TouchableOpacity).attrs({
-  activeOpacity: 0.8,
-  hitSlop: {
-    top: 12,
-    bottom: 12,
-    left: 12,
-    right: 12,
-  },
-})`
-  border-radius: ${ns(48 /2)}px;
+export const ActionIcon = styled.View`
+  border-radius: ${ns(48 / 2)}px;
   background: ${({ theme }) => theme.colors.backgroundTertiary};
   margin-bottom: ${ns(8)}px;
   width: ${ns(44)}px;
@@ -96,6 +82,24 @@ export const Action = styled(TouchableOpacity).attrs({
   align-items: center;
   justify-content: center;
 `;
+
+export const Action = styled(TouchableOpacity).attrs({
+  activeOpacity: 0.6,
+  hitSlop: { top: 12, bottom: 12, left: 12, right: 12 },
+})`
+  align-items: center;
+`;
+
+export const ActionWrapper = styled.View<{ isLast?: boolean }>`
+  margin-right: ${({ isLast }) => (!isLast ? ns(25.5) : 0)}px;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const ActionLabelWrapper = styled.View`
+  margin-top: ${ns(2)}px;
+`;
+
 
 export const ActionsContainer = styled.View`
   justify-content: center;

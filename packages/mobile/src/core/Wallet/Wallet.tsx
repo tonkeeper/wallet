@@ -28,11 +28,13 @@ const ActionButton: FC<ActionButtonProps> = (props) => {
   return (
     <S.ActionWrapper isLast={isLast}>
       <S.Action onPress={onPress}>
-        <Icon name={icon} color="constantLight" />
+        <S.ActionIcon>
+          <Icon name={icon} color="constantLight" />
+        </S.ActionIcon>
+        <Text variant="label3" color="foregroundSecondary">
+          {children}
+        </Text>
       </S.Action>
-      <Text variant="label3" color="foregroundSecondary">
-        {children}
-      </Text>
     </S.ActionWrapper>
   );
 };
@@ -55,7 +57,7 @@ const exploreActions = [
   },
   {
     icon: 'ic-telegram-16',
-    text: 'Community',
+    text: t('wallet_community'),
     url: t('wallet_toncommunity_link'),
   },
   {
