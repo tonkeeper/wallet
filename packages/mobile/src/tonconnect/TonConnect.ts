@@ -323,6 +323,7 @@ class TonConnectService {
                 'Wallet declined the request',
               ),
             ),
+          true,
         );
 
         if (!openModalResult) {

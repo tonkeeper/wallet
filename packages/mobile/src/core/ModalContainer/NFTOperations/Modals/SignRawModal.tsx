@@ -4,9 +4,16 @@ import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter'
 import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
-import { compareAddresses, debugLog, delay, lowerCaseFirstLetter, ns, truncateDecimal } from '$utils';
+import {
+  compareAddresses,
+  debugLog,
+  delay,
+  lowerCaseFirstLetter,
+  ns,
+  truncateDecimal,
+} from '$utils';
 import { t } from '$translation';
-import { AccountAddress, AccountEvent, Action, ActionTypeEnum } from 'tonapi-sdk-js';
+import { AccountEvent, Action, ActionTypeEnum } from 'tonapi-sdk-js';
 import { SignRawAction } from './SignRawAction';
 import { store, Toast } from '$store';
 import * as S from '../NFTOperations.styles';
@@ -16,7 +23,11 @@ import { copyText } from '$hooks/useCopyText';
 import { push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 import BigNumber from 'bignumber.js';
-import { checkIsInsufficient, openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import {
+  checkIsInsufficient,
+  openInsufficientFundsModal,
+} from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { TonConnectRemoteBridge } from '$tonconnect';
 
 interface SignRawModalProps {
   action: Awaited<ReturnType<NFTOperations['signRaw']>>;
@@ -165,7 +176,10 @@ function calculateMessageTransferAmount(messages) {
   if (!messages) {
     return 0;
   }
-  return messages.reduce((acc, message) => new BigNumber(acc).plus(new BigNumber(message.amount)).toString(), '0');
+  return messages.reduce(
+    (acc, message) => new BigNumber(acc).plus(new BigNumber(message.amount)).toString(),
+    '0',
+  );
 }
 
 function calculateActionsTotalAmount(address: string, actions: Action[]) {
@@ -173,8 +187,13 @@ function calculateActionsTotalAmount(address: string, actions: Action[]) {
     return 0;
   }
   return actions.reduce((acc, action) => {
-    if (action[ActionTypeEnum.TonTransfer] && compareAddresses(address, action[ActionTypeEnum.TonTransfer].sender.address)) {
-      return new BigNumber(acc).plus(new BigNumber(action[ActionTypeEnum.TonTransfer].amount)).toString();
+    if (
+      action[ActionTypeEnum.TonTransfer] &&
+      compareAddresses(address, action[ActionTypeEnum.TonTransfer].sender.address)
+    ) {
+      return new BigNumber(acc)
+        .plus(new BigNumber(action[ActionTypeEnum.TonTransfer].amount))
+        .toString();
     }
     return acc;
   }, '0');
@@ -185,6 +204,7 @@ export const openSignRawModal = async (
   options: TxBodyOptions,
   onSuccess?: (boc: string) => void,
   onDismiss?: () => void,
+  isTonConnect?: boolean,
 ) => {
   const wallet = store.getState().wallet.wallet;
   if (!wallet) {
@@ -193,6 +213,10 @@ export const openSignRawModal = async (
 
   try {
     Toast.loading();
+
+    if (isTonConnect) {
+      await TonConnectRemoteBridge.closeOtherTransactions();
+    }
 
     const operations = new NFTOperations(wallet);
     const action = await operations.signRaw(params);
