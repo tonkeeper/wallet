@@ -12,8 +12,8 @@ export const HeaderWrap = styled.View`
 `;
 
 export const ChartWrap = styled.View`
-  margin-bottom: ${ns(48)}px;
-`
+  margin-bottom: ${ns(24.5)}px;
+`;
 
 export const FlexRow = styled.View`
   flex-direction: row;

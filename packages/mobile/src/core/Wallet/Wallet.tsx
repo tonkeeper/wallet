@@ -206,8 +206,9 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
         <S.ChartWrap>
           <Chart />
         </S.ChartWrap>
+        <S.Divider style={{ marginBottom: ns(22) }} />
         <S.ExploreWrap>
-          <Text style={{ marginBottom: 14 }} variant="h3" color="foregroundPrimary">
+          <Text style={{ marginBottom: ns(14) }} variant="h3" color="foregroundPrimary">
             {t('wallet_about')}
           </Text>
           <S.ExploreButtons>
