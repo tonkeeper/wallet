@@ -21,6 +21,7 @@ module.exports = {
       options: {
         includes: [
           resolveApp("../@shared"),
+          resolveApp("../@core-js"),
           resolveApp("../../node_modules/expo"),
         ],
         excludes: [/(node_modules)/]
