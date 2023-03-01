@@ -9,7 +9,6 @@ import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import {
   getCurrentRoute,
-  goBack,
   openCreateSubscription,
   openDeploy,
   openRequireWalletModal,
@@ -79,7 +78,7 @@ export function useDeeplinkingResolvers() {
       ['SheetsProvider', AppStackRouteNames.ModalContainer].includes(currentRouteName)
     ) {
       TonConnectRemoteBridge.setReturnStrategy('none');
-      goBack();
+      nav.goBack();
 
       await delay(1000);
     }
