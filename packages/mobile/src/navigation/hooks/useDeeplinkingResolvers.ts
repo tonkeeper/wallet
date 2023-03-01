@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { DeeplinkingResolver, useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
-import { Base64, compareAddresses, debugLog, isValidAddress } from '$utils';
+import { Base64, compareAddresses, debugLog, delay, isValidAddress } from '$utils';
 import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import {
@@ -68,7 +68,7 @@ export function useDeeplinkingResolvers() {
     'https://tonhub.com',
   ]);
 
-  deeplinking.addMiddleware((next) => {
+  deeplinking.addMiddleware(async (next) => {
     if (!getWallet()) {
       return openRequireWalletModal();
     }
@@ -78,7 +78,10 @@ export function useDeeplinkingResolvers() {
     if (
       ['SheetsProvider', AppStackRouteNames.ModalContainer].includes(currentRouteName)
     ) {
+      TonConnectRemoteBridge.setReturnStrategy('none');
       goBack();
+
+      await delay(1000);
     }
 
     next();
