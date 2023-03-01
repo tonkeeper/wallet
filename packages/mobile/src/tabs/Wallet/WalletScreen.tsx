@@ -1,25 +1,27 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '$translation';
-import { Icon, IconButton, IconButtonList, Screen, Text, TouchableHighlight, TouchableOpacity, View } from '$uikit';
+import { IconButton, IconButtonList, Screen, Text, TouchableOpacity, View } from '$uikit';
 import { List } from '$uikit/List/new';
 import { Steezy } from '$styles';
 import { useNavigation } from '$libs/navigation';
 import { ScanQRButton } from '../../components/ScanQRButton';
-import { Image } from 'react-native';
-import { useJettonBalances, useWalletInfo } from '$hooks';
+import { Image, RefreshControl } from 'react-native';
+import { useJettonBalances, useTheme, useWalletInfo } from '$hooks';
 import TonWeb from 'tonweb';
 import { NFTCardItem } from './NFTCardItem';
-import { useNFT } from '$hooks/useNFT';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { nftsSelector } from '$store/nfts';
-import { store } from '$store';
-import { openJetton, openScanQR, openSend, openWallet } from '$navigation';
-import { isValidAddress } from '$utils';
+import { openJetton, openWallet } from '$navigation';
+import { maskifyAddress } from '$utils';
 import { CryptoCurrencies, Decimals, FiatCurrencies } from '$shared/constants';
 import { formatCryptoCurrency, formatFiatCurrencyAmount } from '$utils/currency';
 import { ratesChartsSelector, ratesRatesSelector } from '$store/rates';
 import { fiatCurrencySelector } from '$store/main';
 import { getRate } from '$hooks/useFiatRate';
+import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet';
+import { copyText } from '$hooks/useCopyText';
+import { TonThemeColor } from '$styled';
+import { useIsFocused } from '@react-navigation/native';
 
 type TokenInfo = {
   address: WalletAddress;
@@ -42,8 +44,7 @@ type WalletVersion = 'v3R1' | 'v4R2';
 const useTonkens = (): TokenInfo[] => {
   const jettonBalances = useJettonBalances();
 
-  const t: TokenInfo[] = jettonBalances.map((item) => {
-
+  return jettonBalances.map((item) => {
     const tokenInfo: TokenInfo = {
       address: {
         friendlyAddress: new TonWeb.utils.Address(item.jettonAddress).toString(true, true, true),
@@ -59,35 +60,49 @@ const useTonkens = (): TokenInfo[] => {
     };
 
     return tokenInfo;
-  });
-
-  // console.log(t);
-
-  
-  
-  return t
+  }) as TokenInfo[];
 }
 
 const useNFTs = () => {
   const { myNfts } = useSelector(nftsSelector);
-  
 
   const nfts = Object.values(myNfts).map((item) => {
-    
-
     return item;
   });
-
-  // console.log(nfts);
 
   return nfts;
 };
 
 const useWallet = () => {
-  return { 
-    address: 'EQD2...G21n',
+  const wallet = useSelector(walletWalletSelector);
+  const [address, setAddress] = React.useState<{
+    friendlyAddress: string;
+    rawAddress: string;
+    version: string;
+  } | null>(null);
+
+  React.useEffect(() => {
+    (async () => {
+      if (wallet) {
+        const rawAddress = await wallet.vault.getRawTonAddress();
+        const friendlyAddress = await wallet.vault.getTonAddress();
+
+        setAddress({
+          friendlyAddress, 
+          rawAddress,
+          version: 'v3R1'
+        });
+      }
+    })();
+  }, []);
+
+  if (wallet && address) {
+    return { address };
   }
+
+  return null;
 };
+
 
 
 const useBalance = () => {
@@ -132,19 +147,19 @@ const useBalance = () => {
     )
   }, []);
 
-
-
   return {
     fiatValue: fiatInfo.amount,
-    fiatPrice,
-    formatedAmount,
-    amount,
     percent: fiatInfo.percent,
-    
+    trend: fiatInfo.trend,
+    formatedAmount,
+    fiatPrice,
+    amount,
   };
 }
 
 export const WalletScreen = memo((props) => {
+  const dispatch = useDispatch();
+  const theme = useTheme();
   const nav = useNavigation();
   const tokens = useTonkens();
   const nfts = useNFTs();
@@ -152,7 +167,10 @@ export const WalletScreen = memo((props) => {
 
   const balance = useBalance();
 
-  const isShowTabs = false;
+  const {
+    isRefreshing,
+  } = useSelector(walletSelector);
+  const isFocused = useIsFocused();
   
   const handlePressSell = () => nav.openModal('Exchange', { category: 'sell' });
   const handlePressBuy = () => nav.openModal('Exchange', { category: 'buy' });
@@ -162,6 +180,18 @@ export const WalletScreen = memo((props) => {
     isFromMainScreen: true
   });
 
+  
+
+  const handleRefresh = useCallback(() => {
+    dispatch(walletActions.refreshBalancesPage(true));
+  }, [dispatch]);
+
+  const trend2color: { [key: string]: TonThemeColor } = {
+    negative: 'accentNegative',
+    positive: 'accentPositive',
+    unknown: 'textSecondary'
+  };
+
   return (
     <Screen>
       <Screen.Header 
@@ -170,21 +200,33 @@ export const WalletScreen = memo((props) => {
         rightContent={<ScanQRButton />}
       />
 
-      <Screen.ScrollView>
+      <Screen.ScrollView
+        refreshControl={
+          <RefreshControl
+            onRefresh={handleRefresh}
+            refreshing={isRefreshing && isFocused}
+            tintColor={theme.colors.foregroundPrimary}
+          />
+        }
+      >
         <View style={styles.mainSection}>
           <View style={styles.amount}>
             <Text variant="num2">
               {balance.fiatValue}
             </Text>
-            <TouchableOpacity onPress={() => {}}>
-              <Text
-                color="textSecondary"
-                variant="body2"
-                style={styles.addressText.static} 
+            {wallet && (
+              <TouchableOpacity 
+                onPress={() => copyText(wallet.address.friendlyAddress)}
               >
-                {wallet.address}
-              </Text>
-            </TouchableOpacity>
+                <Text
+                  style={styles.addressText.static} 
+                  color="textSecondary"
+                  variant="body2"
+                >
+                  {maskifyAddress(wallet.address.friendlyAddress)}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
           
           <IconButtonList>
@@ -218,7 +260,24 @@ export const WalletScreen = memo((props) => {
             <List.Item
               onPress={() => openWallet(CryptoCurrencies.Ton)}
               title="Toncoin"
-              subtitle={balance.fiatPrice}
+              subtitle={
+                <View style={{ flexDirection: 'row' }}>
+                  <Text
+                    color="textSecondary"
+                    style={{ marginRight: 6 }}
+                    variant="body2"
+                  >
+                    {balance.fiatPrice}
+                  </Text>
+                  <Text
+                    color={trend2color[balance.trend]}
+                    variant="body2" 
+                  >
+                    {balance.percent}
+                  </Text>
+                </View>
+              }
+              
               value={balance.formatedAmount}
               subvalue={balance.fiatValue}
               leftContent={() => (
@@ -245,7 +304,7 @@ export const WalletScreen = memo((props) => {
                 title={item.name}
                 value={item.quantity}
                 // subtitle={item.price}
-                // subvalue={'$23'}
+                // subvalue={}
                 // label={item.symbol}
               />
             ))}
@@ -267,7 +326,7 @@ export const WalletScreen = memo((props) => {
 
 const styles = Steezy.create(({ colors }) => ({
   mainSection: {
-    paddingTop: 28,
+    paddingTop: 29,
     paddingBottom: 24,
     paddingHorizontal: 16,
   },

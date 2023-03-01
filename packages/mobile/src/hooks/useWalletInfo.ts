@@ -44,12 +44,14 @@ export function useWalletInfo(currency: CryptoCurrency) {
   const fiatInfo = useMemo(() => {
     let percent = '0.0%';
     let color: TonThemeColor = 'foregroundSecondary';
+    let trend: 'unknown' | 'positive' | 'negative' = 'unknown';
     let amountResult: string;
 
     if (+amount > 0) {
       percent = priceDiff === null ? '-' : (+priceDiff > 0 ? '+ ' : '– ') + Math.abs(Number(priceDiff)) + '%';
       if (priceDiff !== null) {
         color = +priceDiff > 0 ? 'accentPositive' : 'accentNegative';
+        trend = +priceDiff > 0 ? 'positive' : 'negative';
       }
       amountResult =
         amountInUsd === '-'
@@ -65,6 +67,7 @@ export function useWalletInfo(currency: CryptoCurrency) {
       percent,
       percentAbs: percent !== '-' ? percent.replace(/[-–]/, '') : percent,
       color,
+      trend,
       amount: amountResult,
     };
   }, [amount, priceDiff, amountInUsd, theme.colors, fiatCurrency]);
