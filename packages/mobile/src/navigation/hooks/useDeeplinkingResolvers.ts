@@ -173,9 +173,11 @@ export function useDeeplinkingResolvers() {
           return Toast.fail(t('transfer_deeplink_address_error'));
         }
 
-        const address = await (getWallet().ton.getAddress());
-        const { balances } = await Tonapi.getJettonBalances(address);
-        const jettonBalance = balances.find(balance => compareAddresses(balance.jetton_address, query.jetton));
+        const currentAddress = await getWallet().ton.getAddress();
+        const { balances } = await Tonapi.getJettonBalances(currentAddress);
+        const jettonBalance = balances.find((balance) =>
+          compareAddresses(balance.jetton_address, query.jetton),
+        );
 
         if (!jettonBalance) {
           return Toast.fail(t('transfer_deeplink_address_error'));
@@ -184,7 +186,12 @@ export function useDeeplinkingResolvers() {
         let decimals = jettonBalance.metadata?.decimals ?? 9;
 
         if (new BigNumber(jettonBalance.balance ?? 0).lt(query.amount)) {
-          openInsufficientFundsModal({ balance: jettonBalance.balance ?? 0, totalAmount: query.amount, decimals, currency: jettonBalance.metadata?.symbol });
+          openInsufficientFundsModal({
+            balance: jettonBalance.balance ?? 0,
+            totalAmount: query.amount,
+            decimals,
+            currency: jettonBalance.metadata?.symbol,
+          });
           return;
         }
 
