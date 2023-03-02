@@ -16,11 +16,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
 
   const rightContentContainer = React.useMemo(() => {
     if (rightContent) {
-      return (
-        <View style={{ marginRight: ns(16) }}>
-          {rightContent}
-        </View>
-      );
+      return rightContent;
     }
 
     return null;

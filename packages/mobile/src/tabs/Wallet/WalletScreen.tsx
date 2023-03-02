@@ -11,7 +11,7 @@ import TonWeb from 'tonweb';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { nftsSelector } from '$store/nfts';
-import { openJetton, openWallet } from '$navigation';
+import { openJetton, openNFT, openWallet } from '$navigation';
 import { maskifyAddress } from '$utils';
 import { CryptoCurrencies, Decimals, FiatCurrencies } from '$shared/constants';
 import { formatCryptoCurrency, formatFiatCurrencyAmount } from '$utils/currency';
@@ -22,6 +22,7 @@ import { walletActions, walletSelector, walletWalletSelector } from '$store/wall
 import { copyText } from '$hooks/useCopyText';
 import { TonThemeColor } from '$styled';
 import { useIsFocused } from '@react-navigation/native';
+import _ from 'lodash';
 
 type TokenInfo = {
   address: WalletAddress;
@@ -314,6 +315,10 @@ export const WalletScreen = memo((props) => {
         <View style={styles.nftElements}>
           {nfts.map((item, key) => (
             <NFTCardItem
+              onPress={() => {
+                openNFT({ currency: item.currency, address: item.address })
+                // _.throttle(() => openNFT({ currency: item.currency, address: item.address }), 1000)
+              }}
               item={item}
               key={key}
             />
