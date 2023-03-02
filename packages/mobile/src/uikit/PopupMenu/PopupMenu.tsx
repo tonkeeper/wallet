@@ -8,20 +8,28 @@ import { usePopupAnimation } from '$uikit/PopupSelect/usePopupAnimation';
 import { PopupMenuProps, PopupMenuItemProps } from '$uikit/PopupMenu/PopupMenu.interface';
 import { Text } from '$uikit/Text/Text';
 
-export const PopupMenuItem = Memo(({ icon, onPress, text }: PopupMenuItemProps) => {
-  return (
-    <View style={{ flex: 0 }}>
-      <Highlight onPress={() => onPress && onPress()} background="backgroundQuaternary">
-        <S.Item>
-          <S.ItemCont>
-            <Text variant="label1">{text}</Text>
-          </S.ItemCont>
-          <S.ItemCheckedWrap>{icon}</S.ItemCheckedWrap>
-        </S.Item>
-      </Highlight>
-    </View>
-  );
-});
+export const PopupMenuItem = Memo(
+  ({ icon, onPress, text, onCloseMenu, shouldCloseMenu }: PopupMenuItemProps) => {
+    return (
+      <View style={{ flex: 0 }}>
+        <Highlight
+          onPress={() => {
+            shouldCloseMenu && onCloseMenu?.();
+            onPress && onPress();
+          }}
+          background="backgroundQuaternary"
+        >
+          <S.Item>
+            <S.ItemCont>
+              <Text variant="label1">{text}</Text>
+            </S.ItemCont>
+            <S.ItemCheckedWrap>{icon}</S.ItemCheckedWrap>
+          </S.Item>
+        </Highlight>
+      </View>
+    );
+  },
+);
 
 export function PopupMenuComponent(props: PopupMenuProps) {
   const { children, items } = props;
@@ -72,6 +80,14 @@ export function PopupMenuComponent(props: PopupMenuProps) {
     });
   }, [children, handleOpen]);
 
+  const itemsPrepared = useMemo(() => {
+    return items.map((item) =>
+      React.cloneElement(item, {
+        onCloseMenu: () => handleClose(),
+      }),
+    );
+  }, [items, handleClose]);
+
   return (
     <>
       <View
@@ -86,7 +102,7 @@ export function PopupMenuComponent(props: PopupMenuProps) {
         <S.Overlay onPress={handleClose} />
         <S.Wrap style={[{ top: offsetTop.current }, popupAnimation.style]}>
           <S.Content>
-            {items.map((item, index, arr) => (
+            {itemsPrepared.map((item, index, arr) => (
               <View key={index}>
                 {item}
                 {arr.length !== index + 1 && <Separator />}

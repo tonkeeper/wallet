@@ -94,7 +94,7 @@ const ChartComponent: React.FC = () => {
             ) : null}
             <PriceLabel selectedPeriod={selectedPeriod} />
           </View>
-          <View style={{ paddingVertical: 15 }}>
+          <View style={{ paddingVertical: 30 }}>
             <View>
               <ChartPath
                 gradientEnabled
@@ -102,7 +102,7 @@ const ChartComponent: React.FC = () => {
                 hapticsEnabled
                 strokeWidth={2}
                 selectedStrokeWidth={2}
-                height={170}
+                height={160}
                 stroke={theme.colors.accentPrimaryLight}
                 width={SIZE}
                 selectedOpacity={1}

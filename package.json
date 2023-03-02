@@ -15,6 +15,7 @@
     "run:android": "cd packages && cd mobile && yarn android",
     "build:android": "cd packages && cd mobile && yarn build:android",
     "build:android:apk": "cd packages && cd mobile && yarn build:android:apk",
+    "bump": "cd packages/mobile && yarn bump",
     "rnm": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' +",
     "fnm": "find . -name \"node_modules\" -type d -prune | xargs du -chs",
     "adb": "adb reverse tcp:8081 tcp:8081"

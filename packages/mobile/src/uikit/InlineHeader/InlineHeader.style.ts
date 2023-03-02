@@ -1,5 +1,5 @@
 import styled from '$styled';
-import { nfs, ns } from '$utils';
+import { ns } from '$utils';
 
 export const Wrap = styled.View<{ skipMargin: boolean }>`
   height: ${ns(56)}px;

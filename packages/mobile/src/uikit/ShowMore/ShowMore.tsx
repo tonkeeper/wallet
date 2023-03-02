@@ -3,14 +3,18 @@ import { Text } from '$uikit';
 import { useTranslator } from '$hooks';
 import {TouchableOpacity, View} from 'react-native';
 import LinearGradient from "react-native-linear-gradient";
-import {ns} from "$utils";
+import {changeAlphaValue, convertHexToRGBA, ns} from "$utils";
 
 export interface ShowMoreProps {
   maxLines: number;
   text: string;
+  /**
+   * Background color for ellipsize button
+   */
+  backgroundColor?: string;
 }
 
-export const ShowMore: React.FC<ShowMoreProps> = ({ maxLines, text }) => {
+export const ShowMore: React.FC<ShowMoreProps> = ({ maxLines, text, backgroundColor = '#1D2633' }) => {
   const t = useTranslator();
 
   const [showEllipsize, setShowEllipsize] = useState(false);
@@ -41,10 +45,13 @@ export const ShowMore: React.FC<ShowMoreProps> = ({ maxLines, text }) => {
         <LinearGradient
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          colors={['rgba(29, 38, 51, 0)', 'rgba(29,38,51,1)']}
+          colors={[
+            changeAlphaValue(convertHexToRGBA(backgroundColor), 0),
+            convertHexToRGBA(backgroundColor)
+          ]}
           style={{ width: ns(24), height: ns(20) }}
         />
-        <View style={{ backgroundColor: '#1D2633' }}>
+        <View style={{ backgroundColor }}>
           <TouchableOpacity activeOpacity={0.6} onPress={handleShowAll}>
             <Text variant="body2" color="accentPrimary">
               {t('nft_more')}

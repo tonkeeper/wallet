@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { CryptoCurrency, Decimals } from '$shared/constants';
 import { walletBalancesSelector } from '$store/wallet';
 import { useFiatRate } from '$hooks/useFiatRate';
-import { formatAmount, toLocaleNumber } from '$utils';
+import { formatAmount, toLocaleNumber, truncateDecimal } from '$utils';
 import { TonThemeColor } from '$styled';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { useTheme } from '$hooks/useTheme';
@@ -20,6 +20,8 @@ export function useWalletInfo(currency: CryptoCurrency) {
   const amount = useMemo(() => {
     return formatAmount(balances[currency], Decimals[currency]);
   }, [balances, currency]);
+
+  const formattedRate = useMemo(() => formatFiatCurrencyAmount(truncateDecimal(fiatRate.today.toString(), 2), fiatCurrency), [fiatCurrency, fiatRate]);
 
   const priceDiff = useMemo(() => {
     if (fiatRate.yesterday) {
@@ -76,5 +78,6 @@ export function useWalletInfo(currency: CryptoCurrency) {
     amount,
     priceDiff,
     fiatInfo,
+    rate: formattedRate,
   };
 }
