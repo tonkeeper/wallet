@@ -25,6 +25,8 @@ import { DeeplinkOrigin } from '$libs/deeplinking';
 import Minimizer from 'react-native-minimizer';
 import { Linking } from 'react-native';
 import { TCEventID } from './EventID';
+import { AppStackRouteNames, getCurrentRoute, goBack } from '$navigation';
+import { delay } from '$utils';
 
 class TonConnectRemoteBridgeService {
   private readonly storeKey = 'ton-connect-http-bridge-lastEventId';
@@ -262,6 +264,23 @@ class TonConnectRemoteBridgeService {
     };
 
     this.send(event, sessionCrypto, connection.clientSessionId);
+  }
+
+  async closeOtherTransactions() {
+    const currentRouteName = getCurrentRoute()?.name;
+
+    if (
+      ['SheetsProvider', AppStackRouteNames.ModalContainer].includes(currentRouteName)
+    ) {
+      const returnStrategy = this.returnStrategy;
+
+      this.setReturnStrategy('none');
+      goBack();
+
+      this.setReturnStrategy(returnStrategy);
+
+      await delay(1000);
+    }
   }
 }
 
