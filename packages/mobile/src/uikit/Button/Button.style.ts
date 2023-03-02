@@ -78,7 +78,6 @@ export const Button = styled(Animated.View)<{
     } else if (size === 'medium_rounded') {
       return `
         height: ${ns(36)}px;
-        min-width: ${ns(115)}px;
         border-radius: ${ns(theme.radius.large)}px;
         padding-horizontal: ${ns(16)}px;
       `;

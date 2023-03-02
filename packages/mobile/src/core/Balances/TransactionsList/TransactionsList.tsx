@@ -45,6 +45,10 @@ export interface TransactionsListProps {
   contentContainerStyle: StyleProp<ViewStyle>;
   onEndReached?: () => void;
   otherCurrencies?: CryptoCurrencies[];
+  /**
+   * Skips margin. Used for new token screen
+   */
+  withoutMarginForFirstHeader?: boolean;
 }
 
 export const TransactionsList = forwardRef<any, TransactionsListProps>(
@@ -57,6 +61,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
       renderHeader,
       renderFooter,
       contentContainerStyle,
+      withoutMarginForFirstHeader,
       otherCurrencies = [],
       onEndReached = _.noop,
     },
@@ -292,7 +297,11 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
           if (!title) {
             return null;
           }
-          return <InlineHeader skipMargin={!!isFirst}>{title}</InlineHeader>;
+          return (
+            <InlineHeader skipMargin={withoutMarginForFirstHeader && !!isFirst}>
+              {title}
+            </InlineHeader>
+          );
         }}
         renderSectionFooter={({ section: { footer } }) => {
           return footer || null;

@@ -12,23 +12,24 @@ import { fiatCurrencySelector } from '$store/main';
 
 export function getRate(
   rates: RatesMap,
-  currency: CryptoCurrency,
+  currency: string,
   fiatCurrency: string,
+  shouldUppercaseCurrency: boolean = true,
 ): number {
   let result = 0;
 
   if (
-    [CryptoCurrencies.TonLocked, CryptoCurrencies.TonRestricted].indexOf(currency) > -1
+    [CryptoCurrencies.TonLocked, CryptoCurrencies.TonRestricted].indexOf(currency as CryptoCurrencies) > -1
   ) {
     currency = CryptoCurrencies.Ton;
   }
 
   fiatCurrency = fiatCurrency.toUpperCase();
-  const currencyUpper = currency?.toUpperCase();
-  if (currencyUpper === CryptoCurrencies.Btc.toUpperCase() && rates[fiatCurrency]) {
+  const key =  shouldUppercaseCurrency ? currency?.toUpperCase() : currency;
+  if (key === CryptoCurrencies.Btc.toUpperCase() && rates[fiatCurrency]) {
     result = +rates[fiatCurrency];
-  } else if (rates[currencyUpper]) {
-    const btcPrice = rates[currencyUpper];
+  } else if (rates[key]) {
+    const btcPrice = rates[key];
     const btcInFiat = rates[fiatCurrency];
 
     result = new BigNumber(btcInFiat).div(btcPrice).toNumber();

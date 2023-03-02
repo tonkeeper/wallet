@@ -9,11 +9,12 @@ import {
   PopupMenu,
   PopupMenuItem,
   Skeleton,
+  ShowMore,
 } from '$uikit';
 import { formatAmountAndLocalize, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
-import { useTranslator } from '$hooks';
+import { useTheme, useTranslator } from '$hooks';
 import { ActionButtonProps } from '$core/Balances/BalanceItem/BalanceItem.interface';
 import { openReceive, openSend } from '$navigation';
 import { CryptoCurrencies } from '$shared/constants';
@@ -24,34 +25,34 @@ import { Linking, View } from 'react-native';
 import { eventsSelector, eventsActions } from '$store/events';
 import { jettonIsLoadingSelector, jettonsActions, jettonSelector } from '$store/jettons';
 import { walletAddressSelector } from '$store/wallet';
+import { useJettonPrice } from '$hooks/useJettonPrice';
 
 const ActionButton: FC<ActionButtonProps> = (props) => {
   const { children, onPress, icon, isLast } = props;
 
   return (
-    <S.Action isLast={isLast}>
-      <S.Background borderEnd borderStart />
-      <S.ActionCont withDelay={false} onPress={onPress}>
-        <S.ActionContentWrap>
-          <S.IconWrap>
-            <Icon name={icon} color="accentPrimary" />
-          </S.IconWrap>
-          <S.ActionLabelWrapper>
-            <Text variant="label2">{children}</Text>
-          </S.ActionLabelWrapper>
-        </S.ActionContentWrap>
-      </S.ActionCont>
-    </S.Action>
+    <S.ActionWrapper isLast={isLast}>
+      <S.Action onPress={onPress}>
+        <S.ActionIcon>
+          <Icon name={icon} color="constantLight" />
+        </S.ActionIcon>
+        <Text variant="label3" color="foregroundSecondary">
+          {children}
+        </Text>
+      </S.Action>
+    </S.ActionWrapper>
   );
 };
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
+  const theme = useTheme();
   const { bottom: bottomInset } = useSafeAreaInsets();
   const jetton = useJetton(route.params.jettonAddress);
   const t = useTranslator();
   const dispatch = useDispatch();
   const jettonEvents = useJettonEvents(jetton.jettonAddress);
   const address = useSelector(walletAddressSelector);
+  const { price, total } = useJettonPrice(jetton.jettonAddress, jetton.balance);
   const { isLoading: isEventsLoading, canLoadMore } = useSelector(eventsSelector);
   const isJettonMetaLoading = useSelector((state) =>
     // @ts-ignore
@@ -104,30 +105,50 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     }
     return (
       <S.HeaderWrap>
-        {jetton.metadata.image ? (
-          <S.Logo source={{ uri: jetton.metadata.image }} />
-        ) : null}
-        <Text variant="h2">
-          {formatAmountAndLocalize(jetton.balance, jetton.metadata.decimals)}{' '}
-          {jetton.metadata.symbol}
-        </Text>
-        <S.JettonIDWrapper>
-          {!(isJettonMetaLoading ?? true) ? (
-            <Text textAlign="center" variant="body1" color="foregroundSecondary">
-              {jettonMeta?.description}
+        <S.FlexRow>
+          <S.JettonAmountWrapper>
+            <Text variant="h2">
+              {formatAmountAndLocalize(jetton.balance, jetton.metadata.decimals)}{' '}
+              {jetton.metadata.symbol}
             </Text>
-          ) : (
-            <Skeleton.Line style={{ marginTop: 6 }} width={120} />
-          )}
-        </S.JettonIDWrapper>
+            {total ? (
+              <Text style={{ marginTop: 2 }} variant="body2" color="foregroundSecondary">
+                {total}
+              </Text>
+            ) : null}
+            {price ? (
+              <Text style={{ marginTop: 12 }} variant="body2" color="foregroundSecondary">
+                {t('jetton_price')} {price}
+              </Text>
+            ) : null}
+            <S.JettonIDWrapper>
+              {!(isJettonMetaLoading ?? true) ? (
+                <ShowMore
+                  backgroundColor={theme.colors.backgroundPrimary}
+                  maxLines={2}
+                  text={jettonMeta?.description ?? ''}
+                />
+              ) : (
+                <>
+                  <Skeleton.Line height={ns(20)} width={240} />
+                </>
+              )}
+            </S.JettonIDWrapper>
+          </S.JettonAmountWrapper>
+          {jetton.metadata.image ? (
+            <S.Logo source={{ uri: jetton.metadata.image }} />
+          ) : null}
+        </S.FlexRow>
+        <S.Divider />
         <S.ActionsContainer>
-          <ActionButton onPress={handleReceive} icon="ic-tray-arrow-down-28">
-            {t('wallet_receive')}
-          </ActionButton>
-          <ActionButton isLast onPress={handleSend} icon="ic-tray-arrow-up-28">
+          <ActionButton onPress={handleSend} icon="ic-arrow-up-28">
             {t('wallet_send')}
           </ActionButton>
+          <ActionButton isLast onPress={handleReceive} icon="ic-arrow-down-28">
+            {t('wallet_receive')}
+          </ActionButton>
         </S.ActionsContainer>
+        <S.Divider style={{ marginBottom: 10 }} />
       </S.HeaderWrap>
     );
   }, [
@@ -150,6 +171,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const renderContent = useCallback(() => {
     return (
       <TransactionsList
+        withoutMarginForFirstHeader
         onEndReached={isEventsLoading || !canLoadMore ? undefined : handleLoadMore}
         eventsInfo={jettonEvents}
         initialData={[]}
@@ -183,6 +205,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             <PopupMenu
               items={[
                 <PopupMenuItem
+                  shouldCloseMenu
                   onPress={handleOpenExplorer}
                   text={t('jetton_open_explorer')}
                   icon={<Icon name="ic-globe-16" color="accentPrimary" />}
@@ -197,6 +220,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
               />
             </PopupMenu>
           }
+          titleProps={{ numberOfLines: 1 }}
           isLargeNavBar={false}
           navBarTitle={jetton.metadata?.name || maskifyTonAddress(jetton.jettonAddress)}
         >

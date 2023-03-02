@@ -16,13 +16,16 @@ export type IconNames =
   | 'ic-chevron-right-16'
   | 'ic-clock-16'
   | 'ic-close-16'
+  | 'ic-code-16'
   | 'ic-copy-16'
+  | 'ic-doc-16'
   | 'ic-done-16'
   | 'ic-done-bold-16'
   | 'ic-ellipsis-16'
   | 'ic-getgems-16'
   | 'ic-globe-16'
   | 'ic-link-bold-16'
+  | 'ic-magnifying-glass-16'
   | 'ic-pencil-16'
   | 'ic-sale-badge-16'
   | 'ic-share-16'
@@ -30,6 +33,7 @@ export type IconNames =
   | 'ic-swap-16'
   | 'ic-telegram-16'
   | 'ic-time-16'
+  | 'ic-twitter-16'
   | 'ic-verification-16'
   | 'ic-verification-secondary-16'
   | 'ic-backspace-bold-24'
@@ -38,6 +42,8 @@ export type IconNames =
   | 'ic-reset-24'
   | 'ic-ton-disabled-24'
   | 'ic-appearance-28'
+  | 'ic-arrow-down-28'
+  | 'ic-arrow-up-28'
   | 'ic-bell-28'
   | 'ic-doc-28'
   | 'ic-done-28'
@@ -52,9 +58,11 @@ export type IconNames =
   | 'ic-jetton-28'
   | 'ic-key-28'
   | 'ic-magnifying-glass-16'
+  | 'ic-minus-28'
   | 'ic-money-28'
   | 'ic-nft-collection-28'
   | 'ic-notification-28'
+  | 'ic-plus-28'
   | 'ic-return-28'
   | 'ic-secure-28'
   | 'ic-settings-28'
@@ -65,6 +73,7 @@ export type IconNames =
   | 'ic-swap-28'
   | 'ic-telegram-28'
   | 'ic-ticket-28'
+  | 'ic-ton-28'
   | 'ic-trash-bin-28'
   | 'ic-tray-arrow-down-28'
   | 'ic-tray-arrow-up-28'
@@ -109,13 +118,16 @@ export const AllIcons = [
   'ic-chevron-right-16',
   'ic-clock-16',
   'ic-close-16',
+  'ic-code-16',
   'ic-copy-16',
+  'ic-doc-16',
   'ic-done-16',
   'ic-done-bold-16',
   'ic-ellipsis-16',
   'ic-getgems-16',
   'ic-globe-16',
   'ic-link-bold-16',
+  'ic-magnifying-glass-16',
   'ic-pencil-16',
   'ic-sale-badge-16',
   'ic-share-16',
@@ -123,6 +135,7 @@ export const AllIcons = [
   'ic-swap-16',
   'ic-telegram-16',
   'ic-time-16',
+  'ic-twitter-16',
   'ic-verification-16',
   'ic-verification-secondary-16',
   'ic-backspace-bold-24',
@@ -131,6 +144,8 @@ export const AllIcons = [
   'ic-reset-24',
   'ic-ton-disabled-24',
   'ic-appearance-28',
+  'ic-arrow-down-28',
+  'ic-arrow-up-28',
   'ic-bell-28',
   'ic-doc-28',
   'ic-done-28',
@@ -145,9 +160,11 @@ export const AllIcons = [
   'ic-jetton-28',
   'ic-key-28',
   'ic-magnifying-glass-16',
+  'ic-minus-28',
   'ic-money-28',
   'ic-nft-collection-28',
   'ic-notification-28',
+  'ic-plus-28',
   'ic-return-28',
   'ic-secure-28',
   'ic-settings-28',
@@ -158,6 +175,7 @@ export const AllIcons = [
   'ic-swap-28',
   'ic-telegram-28',
   'ic-ticket-28',
+  'ic-ton-28',
   'ic-trash-bin-28',
   'ic-tray-arrow-down-28',
   'ic-tray-arrow-up-28',
@@ -203,13 +221,16 @@ export const IconSizes = {
   'ic-chevron-right-16': 16,
   'ic-clock-16': 16,
   'ic-close-16': 16,
+  'ic-code-16': 16,
   'ic-copy-16': 16,
+  'ic-doc-16': 16,
   'ic-done-16': 16,
   'ic-done-bold-16': 16,
   'ic-ellipsis-16': 16,
   'ic-getgems-16': 16,
   'ic-globe-16': 16,
   'ic-link-bold-16': 16,
+  'ic-magnifying-glass-16': 16,
   'ic-pencil-16': 16,
   'ic-sale-badge-16': 16,
   'ic-share-16': 16,
@@ -217,6 +238,7 @@ export const IconSizes = {
   'ic-swap-16': 16,
   'ic-telegram-16': 16,
   'ic-time-16': 16,
+  'ic-twitter-16': 16,
   'ic-verification-16': 16,
   'ic-verification-secondary-16': 16,
   'ic-backspace-bold-24': 24,
@@ -225,6 +247,8 @@ export const IconSizes = {
   'ic-reset-24': 24,
   'ic-ton-disabled-24': 24,
   'ic-appearance-28': 28,
+  'ic-arrow-down-28': 28,
+  'ic-arrow-up-28': 28,
   'ic-bell-28': 28,
   'ic-doc-28': 28,
   'ic-done-28': 28,
@@ -239,9 +263,11 @@ export const IconSizes = {
   'ic-jetton-28': 28,
   'ic-key-28': 28,
   'ic-magnifying-glass-16': 16,
+  'ic-minus-28': 28,
   'ic-money-28': 28,
   'ic-nft-collection-28': 28,
   'ic-notification-28': 28,
+  'ic-plus-28': 28,
   'ic-return-28': 28,
   'ic-secure-28': 28,
   'ic-settings-28': 28,
@@ -252,6 +278,7 @@ export const IconSizes = {
   'ic-swap-28': 28,
   'ic-telegram-28': 28,
   'ic-ticket-28': 28,
+  'ic-ton-28': 28,
   'ic-trash-bin-28': 28,
   'ic-tray-arrow-down-28': 28,
   'ic-tray-arrow-up-28': 28,

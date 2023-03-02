@@ -29,9 +29,16 @@ export const Receive: FC<ReceiveProps> = ({ route }) => {
   const [scrollTop, setScrollTop] = useState(0);
 
   // only useful for invoices (with amount included)
-  const address2url = useCallback((addr: string) => {
-    return 'ton://transfer/' + addr;
-  }, []);
+  const address2url = useCallback(
+    (addr: string) => {
+      let url = 'ton://transfer/' + addr;
+      if (jettonAddress) {
+        url = url + '?jetton=' + jettonAddress;
+      }
+      return url;
+    },
+    [jettonAddress],
+  );
 
   const address4copy = useCallback((addr: string) => {
     return addr;
