@@ -7,9 +7,17 @@ import { useRoute } from '@react-navigation/native';
 
 import { SetupBiometryProps } from './SetupBiometry.interface';
 import * as S from './SetupBiometry.style';
-import {Button, NavBar, Text} from '$uikit';
+import { Button, NavBar, Text } from '$uikit';
 import { ns, platform } from '$utils';
-import { goBack, openImportSetupNotifications, openSetupNotifications, openSetupWalletDone, popToTop, ResetPinStackRouteNames, SetupWalletStackRouteNames } from '$navigation';
+import {
+  goBack,
+  openImportSetupNotifications,
+  openSetupNotifications,
+  openSetupWalletDone,
+  popToTop,
+  ResetPinStackRouteNames,
+  SetupWalletStackRouteNames,
+} from '$navigation';
 import { walletActions } from '$store/wallet';
 import { toastActions } from '$store/toast';
 import { useTranslator } from '$hooks';
@@ -71,10 +79,16 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
     [dispatch, pin],
   );
 
-  const biometryName = useMemo(() => {
+  const biometryNameGenitive = useMemo(() => {
     return isTouchId
       ? t(`platform.${platform}.fingerprint_genitive`)
       : t(`platform.${platform}.face_recognition_genitive`);
+  }, [t, isTouchId]);
+
+  const biometryName = useMemo(() => {
+    return isTouchId
+      ? t(`platform.${platform}.fingerprint`)
+      : t(`platform.${platform}.face_recognition`);
   }, [t, isTouchId]);
 
   const handleEnable = useCallback(() => {
@@ -108,14 +122,14 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
             />
           </S.IconWrap>
           <Text variant="h2" textAlign="center">
-            {t('setup_biometry_title', { biometryType: biometryName })}
+            {t('setup_biometry_title', { biometryType: biometryNameGenitive })}
           </Text>
           <S.CaptionWrapper>
             <Text color="foregroundSecondary" textAlign="center" variant="label1">
               {t('setup_biometry_caption', {
                 biometryType: isTouchId
                   ? t(`platform.${platform}.capitalized_fingerprint`)
-                  : t(`platform.${platform}.capitalized_face_recognition`)
+                  : t(`platform.${platform}.capitalized_face_recognition`),
               })}
             </Text>
           </S.CaptionWrapper>
@@ -123,7 +137,7 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
         <S.Footer style={{ paddingBottom: bottomInset }}>
           <Button onPress={handleEnable} isLoading={isLoading}>
             {t('setup_biometry_enable_button', {
-              biometryType: biometryName
+              biometryType: biometryName,
             })}
           </Button>
         </S.Footer>
