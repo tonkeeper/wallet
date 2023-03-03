@@ -40,7 +40,7 @@ export const Image = styled(FastImage).attrs({
   position: relative;
   z-index: 2;
   width: 100%;
-  height: ${ns(171)}px;
+  height: ${ns(114)}px;
   border-top-left-radius: ${ns(RADIUS.normal)}px;
   border-top-right-radius: ${ns(RADIUS.normal)}px;
   background: ${({ theme }) => theme.colors.backgroundTertiary};
@@ -50,7 +50,7 @@ export const DNSBackground = styled.View`
   position: relative;
   z-index: 2;
   width: 100%;
-  height: ${ns(171)}px;
+  height: ${ns(114)}px;
   border-top-left-radius: ${ns(RADIUS.normal)}px;
   border-top-right-radius: ${ns(RADIUS.normal)}px;
   background: ${({ theme }) => theme.colors.accentPrimary};

@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { useSelector } from 'react-redux';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { CryptoCurrency, Decimals } from '$shared/constants';
 import { walletBalancesSelector } from '$store/wallet';
@@ -33,15 +33,19 @@ export function useWalletInfo(currency: CryptoCurrency) {
     }
   }, [fiatRate]);
 
-  const amountInUsd = useMemo(() => {
+  const amountToUsd = useCallback((amount: string | number) => {
     if (fiatRate && +fiatRate.today > 0) {
-      return new BigNumber(balances[currency] || 0)
+      return new BigNumber(amount)
         .multipliedBy(fiatRate.today)
         .toFormat(2, { decimalSeparator: '.', groupSeparator: '' });
     } else {
       return '-';
     }
-  }, [balances, currency, fiatRate]);
+  }, [currency, fiatRate]);
+
+  const amountInUsd = useMemo(() => {
+    return amountToUsd(balances[currency] || 0);
+  }, []);
 
   const fiatInfo = useMemo(() => {
     let percent = '0.0%';
@@ -78,6 +82,7 @@ export function useWalletInfo(currency: CryptoCurrency) {
     amount,
     priceDiff,
     fiatInfo,
+    amountToUsd,
     rate: formattedRate,
   };
 }

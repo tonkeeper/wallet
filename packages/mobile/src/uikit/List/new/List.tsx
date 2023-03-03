@@ -46,7 +46,7 @@ export const List = memo<ListProps>((props) => {
 
 const styles = Steezy.create(({ corners, colors }) => ({
   container: {
-    marginBottom: 32,
+    marginBottom: 16,
     overflow: 'hidden',
     borderRadius: corners.medium,
     backgroundColor: colors.backgroundContent

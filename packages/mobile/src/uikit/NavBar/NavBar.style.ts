@@ -8,16 +8,20 @@ import { Text } from '$uikit/Text/Text';
 
 export const Wrap = styled.View<{ isTransparent: boolean }>`
   z-index: 10;
-  ${({ isTransparent }) => {
+  ${({ isTransparent, theme }) => {
     if (isTransparent) {
       return `
+        backgroundColor: ${theme.colors.backgroundPrimary};
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
       `;
     } else {
-      return 'position: relative;';
+      return `
+        backgroundColor: ${theme.colors.backgroundPrimary};
+        position: relative;
+      `;
     }
   }}
 `;

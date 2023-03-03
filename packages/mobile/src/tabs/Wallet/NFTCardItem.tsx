@@ -1,65 +1,82 @@
-import { CollectionModel } from '$store/models';
+import { useTranslator } from '$hooks';
+import { openNFT } from '$navigation';
+import { NFTModel } from '$store/models';
 import { DarkTheme } from '$styles';
 import { Steezy } from '$styles';
-import { View, Image, Text, TouchableHighlight } from '$uikit';
-import React, { memo } from 'react';
-
-type NFTItem = {
-  collectionAddress?: string;
-  dns?: string;
-  verified?: boolean;
-  // currency: CryptoCurrency;
-  isApproved: boolean;
-  internalId: string;
-  provider: string;
-  address: string;
-  ownerAddress: string;
-  index: number;
-  name: string;
-  description?: string;
-  marketplaceURL?: string;
-  collection?: CollectionModel;
-  content: {
-    image: {
-      baseUrl: string;
-    };
-  };
-  attributes: {
-    trait_type: string;
-    value: string;
-  }[];
-  // metadata: MetaData;
-  ownerAddressToDisplay?: string;
-};
+import { View, Text, TouchableHighlight, Icon } from '$uikit';
+import { checkIsTonDiamondsNFT, maskifyTonAddress } from '$utils';
+import { dnsToUsername } from '$utils/dnsToUsername';
+import { useFlags } from '$utils/flags';
+import _ from 'lodash';
+import React, { memo, useCallback, useMemo } from 'react';
+import * as S from '../../core/NFTs/NFTItem/NFTItem.style';
 
 interface NFTCardItemProps {
-  item: NFTItem;
+  item: NFTModel;
   onPress?: () => void;
 }
 
 export const NFTCardItem = memo<NFTCardItemProps>((props) => {
-  const { item, onPress } = props;
+  const { item } = props;
 
-  const imageSource = { uri: item.content?.image?.baseUrl };
+  const flags = useFlags(['disable_apperance']);
+  const t = useTranslator();
+
+  const isTonDiamondsNft = checkIsTonDiamondsNFT(item);
+  const isOnSale = useMemo(() => !!item.sale, [item.sale]);
+  const isTG = (item.dns || item.name)?.endsWith('.t.me');
+  const isDNS = !!item.dns && !isTG;
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleOpenNftItem = useCallback(
+    _.throttle(() => openNFT({ currency: item.currency, address: item.address }), 1000),
+    [item],
+  );
+
+  const title = useMemo(() => {
+    if (isTG) {
+      return dnsToUsername(item.name);
+    }
+
+    if (isDNS) {
+      return item.dns;
+    }
+
+    return item.name || maskifyTonAddress(item.address);
+  }, [isDNS, isTG, item.dns, item.name, item.address]);
 
   return (
     <TouchableHighlight 
       underlayColor={DarkTheme.backgroundContentTint}
       style={styles.container}
       activeOpacity={1}
-      onPress={onPress}
+      onPress={handleOpenNftItem}
     >
       <View>
-        <Image
-          source={imageSource}
-          style={styles.image} 
-        />
+        <S.Image
+          source={{
+            uri: item.content.image.baseUrl,
+          }}
+        >
+          <S.OnSaleBadge>{isOnSale ? <S.OnSaleBadgeIcon /> : null}</S.OnSaleBadge>
+          <S.Badges>
+            {isTonDiamondsNft && !flags.disable_apperance ? (
+              <S.AppearanceBadge>
+                <Icon name="ic-appearance-16" color="constantLight" />
+              </S.AppearanceBadge>
+            ) : null}
+          </S.Badges>
+        </S.Image>
         <View style={styles.info}>
           <Text variant="label2" numberOfLines={1}>
-            {item.name}
+            {title}
           </Text>
           <Text variant="body3" color="textSecondary" numberOfLines={1}>
-            {item.collection?.name}
+            {isDNS
+              ? 'TON DNS'
+              : item?.collection
+              ? item.collection.name
+              : t('nft_single_nft')}
           </Text>
         </View>
       </View>

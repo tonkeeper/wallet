@@ -1,19 +1,25 @@
 import React, { memo, useCallback } from 'react';
+import { TextStyle } from 'react-native';
 import { Steezy, StyleProp } from '$styles';
 import { TouchableHighlight, View, SText } from '$uikit';
 import { DarkTheme } from '$styled';
+import FastImage from 'react-native-fast-image';
 import Animated, { useSharedValue } from 'react-native-reanimated';
-import { TextStyle } from 'react-native';
+
+type LeftContentFN = (isPressed: Animated.SharedValue<boolean>) => React.ReactNode;
 
 interface ListItemProps {
   title?: string | React.ReactNode;
   subtitle?: string | React.ReactNode;
   value?: string | React.ReactNode;
   subvalue?: string | React.ReactNode;
+  label?: string | React.ReactNode;
 
   valueStyle?: StyleProp<TextStyle>;
 
-  leftContent?: (isPressed: Animated.SharedValue<boolean>) => React.ReactNode;
+  picture?: string;
+
+  leftContent?: LeftContentFN | React.ReactNode;
   rightContent?: () => React.ReactNode;
 
   onPress?: () => void;
@@ -38,6 +44,9 @@ export const ListItem = memo<ListItemProps>((props) => {
     return props.leftContent;
   }, [props.leftContent]);
 
+  const hasLeftContent = !!leftContent || !!props.picture;
+  const pictureSource = { uri: props.picture };
+
   return (
     <TouchableHighlight 
       underlayColor={DarkTheme.colors.backgroundTertiary}
@@ -46,17 +55,42 @@ export const ListItem = memo<ListItemProps>((props) => {
       onPress={props.onPress}
     >
       <View style={styles.container}>
-        {leftContent && (
+        {hasLeftContent && (
           <View style={styles.leftContent}>
             {leftContent}
+            {!!props.picture && (
+              <View style={styles.pictureContainer}>
+                <FastImage 
+                  style={styles.picture.static}
+                  source={pictureSource} 
+                />
+              </View>
+            )}
           </View>
         )}
         <View style={styles.title}>
-          {typeof props.title === 'string' ? (
-            <SText variant="label1" numberOfLines={1}>
-              {props.title}
-            </SText>
-          ) : props.title}
+          <View style={styles.titleTextContainer}>
+            {typeof props.title === 'string' ? (
+              <SText 
+                style={styles.titleText}
+                variant="label1" 
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {props.title}
+              </SText>
+            ) : props.title}
+            {typeof props.label === 'string' ? (
+              <SText
+                style={styles.labelText}
+                color="textTertiary"
+                variant="label1" 
+                numberOfLines={1}
+              >
+                {props.label}
+              </SText>
+            ) : props.label}
+          </View>
 
           {typeof props.subtitle === 'string' ? (
             <SText 
@@ -71,7 +105,7 @@ export const ListItem = memo<ListItemProps>((props) => {
         <View style={styles.valueContainer}>
           {typeof props.value === 'string' ? (
             <SText variant="label1" style={[styles.valueText, props.valueStyle]}>
-              {props.value}
+              {`  ${props.value}`}
             </SText>
           ) : props.value}
 
@@ -97,18 +131,39 @@ const styles = Steezy.create(({ colors }) => ({
   leftContent: {
     paddingRight: 16,
   },
+  pictureContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 44 / 2,
+    overflow: 'hidden',
+    backgroundColor: colors.backgroundContentTint
+  },
+  picture: {
+    width: 44, 
+    height: 44
+  },
   title: {
-    flex: 1,
-    paddingRight: 16,
+    flexGrow: 1,
+    flexShrink: 1,
+  },
+  titleText: {
+    flexShrink: 1,
+  },
+  titleTextContainer: {
+    flexDirection: 'row',
+  },
+  labelText: {
+    marginLeft: 4,
   },
   valueContainer: {
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
   },
   subtitleText: {
     color: colors.textSecondary,
   },
   valueText: {
     textAlign: 'right',
+    flexShrink: 1,
   },
   subvalueText: {
     color: colors.textSecondary,

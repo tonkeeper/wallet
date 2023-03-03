@@ -1,28 +1,30 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { t } from '$translation';
-import { IconButton, IconButtonList, Screen, Text, TouchableOpacity, View } from '$uikit';
+import { Button, IconButton, IconButtonList, Screen, Text, View } from '$uikit';
 import { List } from '$uikit/List/new';
 import { Steezy } from '$styles';
 import { useNavigation } from '$libs/navigation';
 import { ScanQRButton } from '../../components/ScanQRButton';
-import { Image, RefreshControl } from 'react-native';
-import { useJettonBalances, useTheme, useWalletInfo } from '$hooks';
+import { RefreshControl, ScrollView, useWindowDimensions } from 'react-native';
+import { useDimensions, useJettonBalances, useTheme } from '$hooks';
 import TonWeb from 'tonweb';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { nftsSelector } from '$store/nfts';
-import { openJetton, openNFT, openWallet } from '$navigation';
-import { maskifyAddress } from '$utils';
-import { CryptoCurrencies, Decimals, FiatCurrencies } from '$shared/constants';
-import { formatCryptoCurrency, formatFiatCurrencyAmount } from '$utils/currency';
-import { ratesChartsSelector, ratesRatesSelector } from '$store/rates';
-import { fiatCurrencySelector } from '$store/main';
-import { getRate } from '$hooks/useFiatRate';
+import { openJetton, openJettonsList, openWallet } from '$navigation';
+import { formatAmountAndLocalize, maskifyAddress, statusBarHeight } from '$utils';
 import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
-import { TonThemeColor } from '$styled';
 import { useIsFocused } from '@react-navigation/native';
 import _ from 'lodash';
+import { useBalance } from './hooks/useBalance';
+import { ListItemRate } from './components/ListItemRate';
+import { TonIcon } from '../../components/TonIcon';
+import { CryptoCurrencies, LargeNavBarHeight, NavBarHeight } from '$shared/constants';
+import Animated, { measure, useAnimatedRef, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Tabs } from './components/Tabs';
+
 
 type TokenInfo = {
   address: WalletAddress;
@@ -31,7 +33,10 @@ type TokenInfo = {
   description?: string;
   iconUrl?: string;
   decimals: number;
-  quantity: string;
+  quantity: {
+    value: string;
+    formatted: string;
+  };
 }
 
 type WalletAddress = {
@@ -42,10 +47,12 @@ type WalletAddress = {
 
 type WalletVersion = 'v3R1' | 'v4R2';
 
-const useTonkens = (): TokenInfo[] => {
+const useTonkens = (): { 
+  list: TokenInfo[];
+} => {
   const jettonBalances = useJettonBalances();
 
-  return jettonBalances.map((item) => {
+  const tonkens = jettonBalances.map((item) => {
     const tokenInfo: TokenInfo = {
       address: {
         friendlyAddress: new TonWeb.utils.Address(item.jettonAddress).toString(true, true, true),
@@ -57,11 +64,18 @@ const useTonkens = (): TokenInfo[] => {
       description: item.metadata.description,
       iconUrl: item.metadata.image,
       decimals: item.metadata.decimals,
-      quantity: item.balance
+      quantity: {
+        value: item.balance,
+        formatted: formatAmountAndLocalize(item.balance, 2),
+      }
     };
 
     return tokenInfo;
   }) as TokenInfo[];
+
+  return {
+    list: tonkens,
+  }
 }
 
 const useNFTs = () => {
@@ -106,57 +120,6 @@ const useWallet = () => {
 
 
 
-const useBalance = () => {
-  const { amount, fiatInfo } = useWalletInfo(CryptoCurrencies.Ton);
-
-  const currency = CryptoCurrencies.Ton;
-  const charts = useSelector(ratesChartsSelector);
-  const fiatCurrency = useSelector(fiatCurrencySelector);
-  const rates = useSelector(ratesRatesSelector);
-
-  const currencyPrepared = useMemo(() => {
-    let result = currency;
-    if (
-      [CryptoCurrencies.TonLocked, CryptoCurrencies.TonRestricted].indexOf(currency) > -1
-    ) {
-      result = CryptoCurrencies.Ton;
-    }
-
-    return result;
-  }, [currency]);
-
-  const fiatPrice = useMemo(() => {
-    const points = charts['ton'] || [];
-
-    const fiatRate =
-      fiatCurrency === FiatCurrencies.Usd
-        ? 1
-        : getRate(rates, CryptoCurrencies.Usdt, fiatCurrency);
-
-    const price = points.length > 0 ? points[points.length - 1].y * fiatRate : 0;
-
-    return formatFiatCurrencyAmount(price.toFixed(2), fiatCurrency);
-  }, []);
-    
-  const formatedAmount = useMemo(() => {
-    return formatCryptoCurrency(
-      amount,
-      '',
-      Decimals[currencyPrepared],
-      2,
-      true,
-    )
-  }, []);
-
-  return {
-    fiatValue: fiatInfo.amount,
-    percent: fiatInfo.percent,
-    trend: fiatInfo.trend,
-    formatedAmount,
-    fiatPrice,
-    amount,
-  };
-}
 
 export const WalletScreen = memo((props) => {
   const dispatch = useDispatch();
@@ -168,9 +131,7 @@ export const WalletScreen = memo((props) => {
 
   const balance = useBalance();
 
-  const {
-    isRefreshing,
-  } = useSelector(walletSelector);
+  const { isRefreshing } = useSelector(walletSelector);
   const isFocused = useIsFocused();
   
   const handlePressSell = () => nav.openModal('Exchange', { category: 'sell' });
@@ -181,18 +142,109 @@ export const WalletScreen = memo((props) => {
     isFromMainScreen: true
   });
 
-  
-
   const handleRefresh = useCallback(() => {
     dispatch(walletActions.refreshBalancesPage(true));
   }, [dispatch]);
 
-  const trend2color: { [key: string]: TonThemeColor } = {
-    negative: 'accentNegative',
-    positive: 'accentPositive',
-    unknown: 'textSecondary'
-  };
+  const handleMigrate = useCallback((fromVersion: string) => () => {
+    dispatch(
+      walletActions.openMigration({
+        isTransfer: true,
+        fromVersion,
+      }),
+    );
+  }, []);
 
+  const dimensions = useWindowDimensions();
+
+  const scrollY = useSharedValue(0);
+  const balanceHeight = useSharedValue(0);
+
+  const scrollHandler = useAnimatedScrollHandler((event) => {
+    scrollY.value = event.contentOffset.y;
+  });
+
+  const balanceStyle = useAnimatedStyle(() => {
+    return {
+      // paddingTop: NavBarHeight + statusBarHeight,
+      transform: [{ 
+        translateY: -(scrollY.value - (LargeNavBarHeight + statusBarHeight + 24))
+      }]
+    }
+  });
+
+  const [tab, setTab] = useState<string>('tokens');
+
+  const balanceSection = (
+    <Animated.View
+      // pointerEvents="box-only"
+      style={[balanceStyle, {
+        position: 'absolute',
+        zIndex: 3,
+        width: dimensions.width
+      }]}
+      onLayout={(ev) => {
+        console.log(ev.nativeEvent.layout.height);
+        balanceHeight.value = ev.nativeEvent.layout.height;
+      }}
+    >
+      <View style={styles.mainSection}>
+        <View style={styles.amount}>
+          <Text variant="num2">
+            {balance.fiatValue}
+          </Text>
+          {wallet && (
+            <TouchableOpacity 
+              onPress={() => copyText(wallet.address.friendlyAddress)}
+            >
+              <Text
+                style={styles.addressText.static} 
+                color="textSecondary"
+                variant="body2"
+              >
+                {maskifyAddress(wallet.address.friendlyAddress)}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <IconButtonList>
+          <IconButton
+            onPress={handlePressBuy}
+            iconName="ic-plus-28"
+            title="Buy"
+          />
+          <IconButton
+            onPress={handlePressSend}
+            iconName="ic-arrow-up-28"
+            title="Send"
+          />
+          <IconButton
+            onPress={handlePressRecevie}
+            iconName="ic-arrow-down-28"
+            title="Receive"
+          />
+          {+balance.amount > 0 && (
+            <IconButton
+              onPress={handlePressSell}
+              iconName="ic-minus-28"
+              title="Sell"
+            />
+          )}
+        </IconButtonList>
+      </View>
+      <Tabs
+        value={tab}
+        onChange={({ value }) => setTab(value)}
+        items={[
+          { label: 'Tokens', value: 'tokens' },
+          { label: 'Collectibles', value: 'collectibles' }
+        ]}
+      />
+    </Animated.View>
+  );
+
+
+  
   return (
     <Screen>
       <Screen.Header 
@@ -201,130 +253,107 @@ export const WalletScreen = memo((props) => {
         rightContent={<ScanQRButton />}
       />
 
-      <Screen.ScrollView
-        refreshControl={
-          <RefreshControl
-            onRefresh={handleRefresh}
-            refreshing={isRefreshing && isFocused}
-            tintColor={theme.colors.foregroundPrimary}
-          />
-        }
-      >
-        <View style={styles.mainSection}>
-          <View style={styles.amount}>
-            <Text variant="num2">
-              {balance.fiatValue}
-            </Text>
-            {wallet && (
-              <TouchableOpacity 
-                onPress={() => copyText(wallet.address.friendlyAddress)}
-              >
-                <Text
-                  style={styles.addressText.static} 
-                  color="textSecondary"
-                  variant="body2"
-                >
-                  {maskifyAddress(wallet.address.friendlyAddress)}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
+      {balanceSection}
+      
+      
+      <Animated.View>
+        <Animated.ScrollView
+          onScroll={scrollHandler}
+          scrollEventThrottle={16}
+          style={{
+            paddingTop: balanceHeight.value
+          }}
+          refreshControl={
+            <RefreshControl
+              onRefresh={handleRefresh}
+              refreshing={isRefreshing && isFocused}
+              tintColor={theme.colors.foregroundPrimary}
+            />
+          }
+        >
           
-          <IconButtonList>
-            <IconButton
-              onPress={handlePressBuy}
-              iconName="ic-plus-28"
-              title="Buy"
-            />
-            <IconButton
-              onPress={handlePressSend}
-              iconName="ic-arrow-up-28"
-              title="Send"
-            />
-            <IconButton
-              onPress={handlePressRecevie}
-              iconName="ic-arrow-down-28"
-              title="Receive"
-            />
-            {+balance.amount > 0 && (
-              <IconButton
-                onPress={handlePressSell}
-                iconName="ic-minus-28"
-                title="Sell"
-              />
-            )}
-          </IconButtonList>
-        </View>
-        
-        {wallet ? (
-          <List>
-            <List.Item
-              onPress={() => openWallet(CryptoCurrencies.Ton)}
-              title="Toncoin"
-              subtitle={
-                <View style={{ flexDirection: 'row' }}>
-                  <Text
-                    color="textSecondary"
-                    style={{ marginRight: 6 }}
-                    variant="body2"
-                  >
-                    {balance.fiatPrice}
-                  </Text>
-                  <Text
-                    color={trend2color[balance.trend]}
-                    variant="body2" 
-                  >
-                    {balance.percent}
-                  </Text>
-                </View>
-              }
-              
-              value={balance.formatedAmount}
-              subvalue={balance.fiatValue}
-              leftContent={() => (
-                <View style={styles.tokenIcon}>
-                  <Image 
-                    style={{ width: 44, height: 44 }}
-                    source={require('$assets/currency/ic-ton-48.png')} 
+
+          {/* <Animated.View> */}
+
+
+          {wallet ? (
+            <>
+              <List>
+                <List.Item
+                  title="Toncoin"
+                  onPress={() => openWallet(CryptoCurrencies.Ton)}
+                  value={balance.formattedAmount}
+                  subvalue={balance.fiatValue}
+                  leftContent={<TonIcon />}
+                  subtitle={
+                    <ListItemRate
+                      percent={balance.percent}
+                      price={balance.fiatPrice}
+                      trend={balance.trend}
+                    />
+                  }
+                />
+                {tokens.list.map((item) => (
+                  <List.Item 
+                    key={item.address.rawAddress}
+                    onPress={() => openJetton(item.address.rawAddress)}
+                    picture={item.iconUrl}
+                    title={item.name}
+                    value={item.quantity.formatted}
+                    label={item.symbol}
+                    // TODO:
+                    // subvalue={item.rate?.fiatValue}
+                    // subtitle={item.rate && (
+                    //   <ListItemRate
+                    //     percent={item.rate.percent}
+                    //     price={item.rate.fiatPrice}
+                    //     trend={item.rate.trend}
+                    //   />
+                    // )}
                   />
+                ))}
+                {balance.oldVersions.map((item, key) => (
+                  <List.Item 
+                    key={`old-balance-${key}`}
+                    onPress={handleMigrate(item.version)}
+                    title={t('wallet.old_wallet_title')}
+                    leftContent={<TonIcon transparent />}
+                    value={item.amount.formatted}
+                    subvalue={item.amount.fiat}
+                    subtitle={
+                      <ListItemRate
+                        percent={balance.percent}
+                        price={balance.fiatPrice}
+                        trend={balance.trend}
+                      />
+                    }
+                  />
+                ))}
+              </List>
+              {tokens.list.length && (
+                <View style={styles.tonkensEdit}>
+                  <Button 
+                    onPress={() => openJettonsList()}
+                    size="medium_rounded"
+                    mode="secondary"
+                  >
+                    {t('wallet.edit_tokens_btn')}
+                  </Button>
                 </View>
               )}
-            />
-            
-            {tokens.map((item) => (
-              <List.Item 
-                onPress={() => openJetton(item.address.rawAddress)}
-                leftContent={() => (
-                  <View style={styles.tokenIcon}>
-                    <Image 
-                      style={{ width: 44, height: 44 }}
-                      source={{ uri: item.iconUrl }} 
-                    />
-                  </View>
-                )}
-                title={item.name}
-                value={item.quantity}
-                // subtitle={item.price}
-                // subvalue={}
-                // label={item.symbol}
+            </>
+          ) : null}
+
+          <View style={styles.nftElements}>
+            {nfts.map((item, key) => (
+              <NFTCardItem
+                item={item}
+                key={key}
               />
             ))}
-          </List>
-        ) : null}
-
-        <View style={styles.nftElements}>
-          {nfts.map((item, key) => (
-            <NFTCardItem
-              onPress={() => {
-                openNFT({ currency: item.currency, address: item.address })
-                // _.throttle(() => openNFT({ currency: item.currency, address: item.address }), 1000)
-              }}
-              item={item}
-              key={key}
-            />
-          ))}
-         </View>
-      </Screen.ScrollView>
+          </View>
+        </Animated.ScrollView>
+      </Animated.View>
     </Screen>
   );
 });
@@ -333,7 +362,7 @@ const styles = Steezy.create(({ colors }) => ({
   mainSection: {
     paddingTop: 29,
     paddingBottom: 24,
-    paddingHorizontal: 16,
+    paddingHorizontal: 16,  
   },
   amount: {
     alignItems: 'center',
@@ -342,17 +371,13 @@ const styles = Steezy.create(({ colors }) => ({
   addressText: {
     marginTop: 7.5
   },
-  tokenIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 44 / 2,
-    overflow: 'hidden',
-    backgroundColor: colors.backgroundContentTint
-  },
-  buttons: {
-    
+  tonkensEdit: {
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    marginBottom: 16
   },
   nftElements: {
+    marginTop: 16,
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginHorizontal: 12

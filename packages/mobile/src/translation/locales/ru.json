@@ -302,7 +302,10 @@
   "swap_title": "Обмен",
 
   "wallet": {
-    "screen_title": "Кошелек"
+    "screen_title": "Кошелек",
+    "edit_tokens_btn": "Редактировать",
+    "old_wallets_title": "Cтарые кошельки",
+    "old_wallet_title": "Cтарый кошелек"
   },
 
   "activity": {

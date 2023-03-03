@@ -295,7 +295,10 @@
   "swap_title": "Swap",
 
   "wallet": {
-    "screen_title": "Wallet"
+    "screen_title": "Wallet",
+    "edit_tokens_btn": "Edit",
+    "old_wallets_title": "Old wallets",
+    "old_wallet_title": "Old wallet"
   },
 
   "activity": {
