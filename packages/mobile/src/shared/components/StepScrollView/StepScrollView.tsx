@@ -1,4 +1,4 @@
-import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
+import { StepComponentProps } from '../StepView/StepView.interface';
 import React, { FC, memo, useEffect, useRef } from 'react';
 import { ScrollViewProps } from 'react-native';
 import { ScrollView as RNGHScrollView } from 'react-native-gesture-handler';

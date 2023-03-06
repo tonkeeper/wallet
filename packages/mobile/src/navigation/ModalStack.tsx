@@ -25,6 +25,7 @@ import {
   Receive,
   ScanQR,
   Send,
+  StakingTopUp,
 } from '$core';
 import { WebView } from '$core/WebView/WebView';
 import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewConfirmSending';
@@ -57,6 +58,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NFT} path="NFTItemDetails" />
       <Stack.Modal component={Receive} path={AppStackRouteNames.Receive} />
       <Stack.Modal component={Send} path={AppStackRouteNames.Send} />
+      <Stack.Modal component={StakingTopUp} path={AppStackRouteNames.StakingTopUp} />
       <Stack.Modal component={ScanQR} path={AppStackRouteNames.ScanQR} />
     </Stack.Group>
     <Stack.Group behavior="fullScreenModal">

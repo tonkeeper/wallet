@@ -39,3 +39,4 @@ export { ShowMore } from './ShowMore/ShowMore';
 export { TokenListItem } from './TokenListItem/TokenListItem';
 export { ListHeader } from './ListHeader';
 export { StatelessHighlight } from './StatelessHighlight/StatelessHighlight';
+export * from './Spacer';

@@ -224,7 +224,8 @@
     "amount": {
       "recipient_label": "Кому:",
       "insufficient_balance": "Недостаточно средств",
-      "send_all": "Отправить все %{amount}"
+      "max": "Максимум",
+      "send_all": "Доступно: %{amount}"
     },
     "comfirm": {
       "comment_label": "Комментарий",
