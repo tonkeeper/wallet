@@ -708,7 +708,7 @@
         "label": "Recipient address"
       },
       "amount": {
-        "label": "Fee",
+        "label": "Amount",
         "value": "%{value} TON"
       },
       "fee": {
