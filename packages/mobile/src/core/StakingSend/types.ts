@@ -1,4 +1,4 @@
-export enum StakingTopUpSteps {
+export enum StakingSendSteps {
   AMOUNT = 'AMOUNT',
   CONFIRM = 'CONFIRM',
 }

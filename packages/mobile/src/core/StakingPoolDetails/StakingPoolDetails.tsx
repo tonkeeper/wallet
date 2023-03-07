@@ -2,13 +2,12 @@ import { useFiatValue, useTranslator } from '$hooks';
 import { useNavigation } from '$libs/navigation';
 import { AppStackRouteNames, MainStackRouteNames } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
-import { BottomButtonWrap, BottomButtonWrapHelper } from '$shared/components';
+import { BottomButtonWrap, BottomButtonWrapHelper, NextCycle } from '$shared/components';
 import { CryptoCurrencies } from '$shared/constants';
 import { Button, ScrollHandler, Separator, Spacer, Text } from '$uikit';
 import { RouteProp } from '@react-navigation/native';
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import Animated from 'react-native-reanimated';
-import { NextCycle } from './NextCycle';
 import * as S from './StakingPoolDetails.style';
 import { PoolDetailsItem } from './types';
 
@@ -48,7 +47,11 @@ export const StakingPoolDetails: FC<Props> = (props) => {
   const withdrawalCompleteFee = '0.2';
 
   const handleTopUpPress = useCallback(() => {
-    nav.push(AppStackRouteNames.StakingTopUp);
+    nav.push(AppStackRouteNames.StakingSend, { isWithdrawal: false });
+  }, [nav]);
+
+  const handleWithdrawalPress = useCallback(() => {
+    nav.push(AppStackRouteNames.StakingSend, { isWithdrawal: true });
   }, [nav]);
 
   const handleDetailsButtonPress = useCallback(() => setDetailsVisible(true), []);
@@ -173,7 +176,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
           {hasDeposit ? (
             <>
               <S.Flex>
-                <Button onPress={handleTopUpPress} mode="secondary">
+                <Button onPress={handleWithdrawalPress} mode="secondary">
                   {t('staking.withdraw')}
                 </Button>
               </S.Flex>

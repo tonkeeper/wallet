@@ -647,6 +647,7 @@
     "staking_provider_desc": "Minimum deposit from %{minDeposit} TON.\nEarn up to to %{maxApy}%.",
     "staking_pool_desc": "APY ≈ %{apy}%, pool fee %{feePercentage}%",
     "top_up": "Top up",
+    "withdrawal_request": "Withdrawal request",
     "withdraw": "Withdraw",
     "deposit": "Deposit",
     "confirm_action": "Confirm action",

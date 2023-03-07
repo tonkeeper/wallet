@@ -35,4 +35,4 @@ export { DAppBrowser } from './DAppBrowser/DAppBrowser';
 export { Staking } from './Staking/Staking';
 export { StakingPools } from './StakingPools/StakingPools';
 export { StakingPoolDetails } from './StakingPoolDetails/StakingPoolDetails';
-export { StakingTopUp } from './StakingTopUp/StakingTopUp';
+export { StakingSend } from './StakingSend/StakingSend';

@@ -16,6 +16,7 @@ import {
   AmountInput,
   BottomButtonWrap,
   BottomButtonWrapHelper,
+  NextCycle,
   StepScrollView,
 } from '$shared/components';
 import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
@@ -23,20 +24,26 @@ import { SendAmount } from '$core/Send/Send.interface';
 import { CryptoCurrencies } from '$shared/constants';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
-import { StakingTopUpSteps } from '$core/StakingTopUp/types';
+import { StakingSendSteps } from '$core/StakingSend/types';
 
 interface Props extends StepComponentProps {
+  isWithdrawal: boolean;
+  stakingBalance: string;
   isPreparing: boolean;
   amount: SendAmount;
-  stepsScrollTop: SharedValue<Record<StakingTopUpSteps, number>>;
+  stepsScrollTop: SharedValue<Record<StakingSendSteps, number>>;
   afterTopUpReward: ReturnType<typeof useFiatValue>;
   currentReward: ReturnType<typeof useFiatValue>;
   setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;
   onContinue: () => void;
 }
 
+const nextCycleTimestamp = Date.now() / 1000 + 3600 * 11;
+
 const AmountStepComponent: FC<Props> = (props) => {
   const {
+    isWithdrawal,
+    stakingBalance,
     isPreparing,
     active,
     amount,
@@ -48,7 +55,13 @@ const AmountStepComponent: FC<Props> = (props) => {
 
   const fiatRate = useFiatRate(CryptoCurrencies.Ton);
 
-  const { decimals, balance, currencyTitle } = useCurrencyToSend(CryptoCurrencies.Ton);
+  const {
+    decimals,
+    balance: walletBalance,
+    currencyTitle,
+  } = useCurrencyToSend(CryptoCurrencies.Ton);
+
+  const balance = isWithdrawal ? stakingBalance : walletBalance;
 
   const wallet = useSelector(walletWalletSelector);
 
@@ -67,7 +80,7 @@ const AmountStepComponent: FC<Props> = (props) => {
   const scrollHandler = useAnimatedScrollHandler((event) => {
     stepsScrollTop.value = {
       ...stepsScrollTop.value,
-      [StakingTopUpSteps.AMOUNT]: event.contentOffset.y,
+      [StakingSendSteps.AMOUNT]: event.contentOffset.y,
     };
   });
 
@@ -121,32 +134,40 @@ const AmountStepComponent: FC<Props> = (props) => {
             />
           </S.InputContainer>
           <Spacer y={16} />
-          <S.TitleContainer>
-            <Text variant="label1">{t('staking.rewards.title')}</Text>
-          </S.TitleContainer>
-          <S.Table>
-            <S.Item>
-              <S.ItemLabel numberOfLines={1}>
-                {t('staking.rewards.after_top_up')}
-              </S.ItemLabel>
-              <S.ItemContent>
-                <S.ItemValue>
-                  {t('staking.rewards.value', { value: afterTopUpReward.amount })}
-                </S.ItemValue>
-                <S.ItemSubValue>{afterTopUpReward.fiatInfo.amount}</S.ItemSubValue>
-              </S.ItemContent>
-            </S.Item>
-            <Separator />
-            <S.Item>
-              <S.ItemLabel numberOfLines={1}>{t('staking.rewards.current')}</S.ItemLabel>
-              <S.ItemContent>
-                <S.ItemValue>{t('staking.rewards.value', { value: 0 })}</S.ItemValue>
-                <S.ItemSubValue>
-                  {t('staking.rewards.value', { value: 0 })}
-                </S.ItemSubValue>
-              </S.ItemContent>
-            </S.Item>
-          </S.Table>
+          {isWithdrawal ? (
+            <NextCycle timestamp={nextCycleTimestamp} frequency={36} />
+          ) : (
+            <>
+              <S.TitleContainer>
+                <Text variant="label1">{t('staking.rewards.title')}</Text>
+              </S.TitleContainer>
+              <S.Table>
+                <S.Item>
+                  <S.ItemLabel numberOfLines={1}>
+                    {t('staking.rewards.after_top_up')}
+                  </S.ItemLabel>
+                  <S.ItemContent>
+                    <S.ItemValue>
+                      {t('staking.rewards.value', { value: afterTopUpReward.amount })}
+                    </S.ItemValue>
+                    <S.ItemSubValue>{afterTopUpReward.fiatInfo.amount}</S.ItemSubValue>
+                  </S.ItemContent>
+                </S.Item>
+                <Separator />
+                <S.Item>
+                  <S.ItemLabel numberOfLines={1}>
+                    {t('staking.rewards.current')}
+                  </S.ItemLabel>
+                  <S.ItemContent>
+                    <S.ItemValue>{t('staking.rewards.value', { value: 0 })}</S.ItemValue>
+                    <S.ItemSubValue>
+                      {t('staking.rewards.value', { value: 0 })}
+                    </S.ItemSubValue>
+                  </S.ItemContent>
+                </S.Item>
+              </S.Table>
+            </>
+          )}
           <Spacer y={16} />
         </S.Content>
         <BottomButtonWrapHelper />

@@ -23,7 +23,7 @@ export enum AppStackRouteNames {
   DevStack = 'DevStack',
   DAppsSearch = 'DAppsSearch',
   DAppBrowser = 'DAppBrowser',
-  StakingTopUp = 'StakingTopUp',
+  StakingSend = 'StakingSend',
 }
 
 export enum MainStackRouteNames {

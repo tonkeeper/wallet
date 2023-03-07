@@ -6,7 +6,7 @@ import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
 import { SendAmount } from '$core/Send/Send.interface';
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
-import { StakingTopUpSteps } from '$core/StakingTopUp/types';
+import { StakingSendSteps } from '$core/StakingSend/types';
 import {
   ActionFooter,
   useActionFooter,
@@ -16,14 +16,15 @@ import { whalesIconSource } from '$assets/staking';
 import { CryptoCurrencies } from '$shared/constants';
 
 interface Props extends StepComponentProps {
+  isWithdrawal: boolean;
   message: string;
   amount: SendAmount;
-  stepsScrollTop: SharedValue<Record<StakingTopUpSteps, number>>;
+  stepsScrollTop: SharedValue<Record<StakingSendSteps, number>>;
   sendTx: () => Promise<void>;
 }
 
 const ConfirmStepComponent: FC<Props> = (props) => {
-  const { active, message, amount, stepsScrollTop, sendTx } = props;
+  const { isWithdrawal, active, message, amount, stepsScrollTop, sendTx } = props;
 
   const fiatValue = useFiatValue(CryptoCurrencies.Ton, amount.value);
   const fiatFee = useFiatValue(CryptoCurrencies.Ton, '0.207');
@@ -35,7 +36,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
   const scrollHandler = useAnimatedScrollHandler((event) => {
     stepsScrollTop.value = {
       ...stepsScrollTop.value,
-      [StakingTopUpSteps.CONFIRM]: event.contentOffset.y,
+      [StakingSendSteps.CONFIRM]: event.contentOffset.y,
     };
   });
 
@@ -49,6 +50,10 @@ const ConfirmStepComponent: FC<Props> = (props) => {
     await sendTx();
   });
 
+  const actionName = isWithdrawal
+    ? t('staking.withdrawal_request')
+    : t('staking.deposit');
+
   return (
     <S.Container>
       <StepScrollView onScroll={scrollHandler} active={active}>
@@ -60,7 +65,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
             <Spacer y={20} />
             <Text color="foregroundSecondary">{t('staking.confirm_action')}</Text>
             <Spacer y={4} />
-            <Text variant="h3">{t('staking.deposit')}</Text>
+            <Text variant="h3">{actionName}</Text>
           </S.Center>
           <Spacer y={32} />
           <S.Table>

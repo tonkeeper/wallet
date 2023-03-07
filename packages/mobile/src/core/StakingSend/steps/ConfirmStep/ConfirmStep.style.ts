@@ -40,11 +40,13 @@ export const ItemContent = styled.View`
 
 export const ItemValue = styled(Text).attrs({
   variant: 'label1',
+  textAlign: 'right',
 })``;
 
 export const ItemSubValue = styled(Text).attrs({
   variant: 'body2',
   color: 'foregroundSecondary',
+  textAlign: 'right',
 })``;
 
 export const FooterContainer = styled.View<{ bottomInset: number }>`

@@ -115,11 +115,11 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     textInputRef.current?.focus();
   }, [textInputRef]);
 
-  const handlePressAll = useCallback(() => {
-    setAmount({
-      value: balanceInputValue,
-      all: true,
-    });
+  const handleSwitchAll = useCallback(() => {
+    setAmount((s) => ({
+      value: s.all ? '0' : balanceInputValue,
+      all: !s.all,
+    }));
   }, [balanceInputValue, setAmount]);
 
   const handleToggleFiat = useCallback(() => {
@@ -226,7 +226,11 @@ const AmountInputComponent: React.FC<Props> = (props) => {
       </S.InputTouchable>
       {!isLockup ? (
         <S.SendAllContainer>
-          <Button mode="secondary" size="small" onPress={handlePressAll}>
+          <Button
+            mode={amount.all ? 'primary' : 'secondary'}
+            size="small"
+            onPress={handleSwitchAll}
+          >
             {t('send_screen_steps.amount.max')}
           </Button>
           {isInsufficientBalance ? (
