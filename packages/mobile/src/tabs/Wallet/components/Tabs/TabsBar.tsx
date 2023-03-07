@@ -5,33 +5,37 @@ import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native
 import { useTheme } from '$hooks';
 import { ns } from '$utils';
 import { LayoutChangeEvent, LayoutRectangle } from 'react-native';
+import { useTabCtx } from './TabsContainer';
 
 type TabItem = {
   label: string;
   value: string;
 }; 
 
-interface TabsProps {
+interface TabsBarProps {
   items: TabItem[];
   onChange: (item: TabItem, index: number) => void;
   value: string;
   indent?: boolean;
   center?: boolean;
+  sticky?: any;
+  children?: React.ReactNode;
 }
 
 const INDICATOR_WIDTH = ns(24);
 
-export const TabsComponent = (props: TabsProps) => {
+export const TabsBarComponent = (props: TabsBarProps) => {
   const { value, indent = true, center } = props;
+  const { activeIndex, setActiveIndex, scrollToIndex } = useTabCtx();
   const theme = useTheme();
 
-  const [tabsLayouts, setTabsLayouts] = useState<{ [key: string]: LayoutRectangle }>({});
+  const [tabsLayouts, setTabsBarLayouts] = useState<{ [key: string]: LayoutRectangle }>({});
 
   const handleLayout = useCallback((tab: string, event: LayoutChangeEvent) => {
     const layout = event?.nativeEvent?.layout;
 
     if (layout) {
-      setTabsLayouts((s) => ({ ...s, [tab]: layout }));
+      setTabsBarLayouts((s) => ({ ...s, [tab]: layout }));
     }
   }, []);
   
@@ -65,7 +69,12 @@ export const TabsComponent = (props: TabsProps) => {
         {props.items.map((item, index) => (
           <TouchableOpacity
             onLayout={(event) => handleLayout(item.value, event)}
-            onPress={() => props.onChange(item, index)}
+            onPress={() => {
+              props.onChange(item, index);
+              setActiveIndex(index);
+              
+              // scrollToIndex(index);
+            }}
             key={`tab-${index}`}
             activeOpacity={0.6}
           >
@@ -96,7 +105,7 @@ export const TabsComponent = (props: TabsProps) => {
   );
 };
 
-export const Tabs = memo(TabsComponent);
+export const TabsBar = memo(TabsBarComponent);
 
 const styles = Steezy.create(({ colors }) => ({
   container: {

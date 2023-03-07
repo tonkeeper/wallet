@@ -12,7 +12,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import * as S from '../../core/NFTs/NFTItem/NFTItem.style';
 
 interface NFTCardItemProps {
-  item: NFTModel;
+  item: any;
   onPress?: () => void;
 }
 
@@ -53,7 +53,7 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
       onPress={handleOpenNftItem}
     >
       <View>
-        <S.Image
+        <S.SmallImage
           source={{
             uri: item.content.image.baseUrl,
           }}
@@ -66,7 +66,7 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
               </S.AppearanceBadge>
             ) : null}
           </S.Badges>
-        </S.Image>
+        </S.SmallImage>
         <View style={styles.info}>
           <Text variant="label2" numberOfLines={1}>
             {title}

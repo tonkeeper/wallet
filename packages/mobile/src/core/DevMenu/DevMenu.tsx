@@ -131,6 +131,16 @@ export const DevMenu: FC = () => {
             >
               Use HTTP protocol in browser
             </CellSectionItem>
+            <CellSectionItem
+              indicator={
+                <Switch
+                  value={devFeatures[DevFeature.NewFlow]}
+                  onChange={() => toggleFeature(DevFeature.NewFlow)}
+                />
+              }
+            >
+              New Flow
+            </CellSectionItem>
             {__DEV__ && (
               <>
                 <CellSectionItem onPress={handleTestCrash}>

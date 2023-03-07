@@ -40,13 +40,37 @@ export const Image = styled(FastImage).attrs({
   position: relative;
   z-index: 2;
   width: 100%;
-  height: ${ns(114)}px;
+  height: ${ns(171)}px;
   border-top-left-radius: ${ns(RADIUS.normal)}px;
   border-top-right-radius: ${ns(RADIUS.normal)}px;
   background: ${({ theme }) => theme.colors.backgroundTertiary};
 `;
 
 export const DNSBackground = styled.View`
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: ${ns(171)}px;
+  border-top-left-radius: ${ns(RADIUS.normal)}px;
+  border-top-right-radius: ${ns(RADIUS.normal)}px;
+  background: ${({ theme }) => theme.colors.accentPrimary};
+  padding-vertical: ${ns(16)}px;
+  padding-horizontal: ${ns(20)}px;
+`;
+
+export const SmallImage = styled(FastImage).attrs({
+  resizeMode: 'cover',
+})`
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: ${ns(114)}px;
+  border-top-left-radius: ${ns(RADIUS.normal)}px;
+  border-top-right-radius: ${ns(RADIUS.normal)}px;
+  background: ${({ theme }) => theme.colors.backgroundTertiary};
+`;
+
+export const SmallDNSBackground = styled.View`
   position: relative;
   z-index: 2;
   width: 100%;
