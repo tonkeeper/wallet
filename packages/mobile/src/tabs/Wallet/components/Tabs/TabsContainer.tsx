@@ -1,5 +1,6 @@
-import React, { createContext, memo } from 'react';
+import React, { createContext, memo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
+import PagerView from 'react-native-pager-view';
 import { SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 interface TabsContainerProps {
@@ -14,18 +15,25 @@ export const TabsContext = createContext<{
   setScrollTo: (index: number, scrollTo: ScrollTo) => void;
   scrollAllTo: (index: number, a: number) => void;
   scrollToIndex: (index: number) => void;
+  setPageFN: (fn: (index: number) => void) => void;
+  setNativeActiveIndex: (index: number) => void;
   scrollY: SharedValue<number>;
   contentOffset: SharedValue<number>;
   headerHeight: SharedValue<number>;
+  pageOffset: SharedValue<number>;
+  localActive: number;
   headerOffsetStyle: { height: number };
 } | null>(null);
 
 export const TabsContainer = memo<TabsContainerProps>((props) => {
-  const [activeIndex, setActiveIndex] = React.useState(0);
+  const [activeIndex, setStateActiveIndex] = React.useState(0);
+  const [localActive, setActiveLocal] = React.useState(0);
+  const setActiveIndexFN = useRef<((index: number) => void) | null>(null);
 
   const contentOffset = useSharedValue(0);
   const scrollY = useSharedValue(0);
   const headerHeight = useSharedValue(0);
+  const pageOffset = useSharedValue(0);
   
   
   const refs = React.useRef<{ [key in string]: ScrollTo }>({});
@@ -52,28 +60,51 @@ export const TabsContainer = memo<TabsContainerProps>((props) => {
     height: headerHeight.value 
   }));
 
+  const setPageFN = (fn) => {
+    setActiveIndexFN.current = fn;
+  }
+
+  const setActiveIndex = (index: number) => {
+    setActiveIndexFN.current?.(index);
+    setActiveLocal(index);
+  } 
+
+  const setNativeActiveIndex = (index: number) => {
+    setStateActiveIndex(index);
+    setActiveLocal(index);
+  }
+
+
   return (
-    <TabsContext.Provider value={{ 
-      activeIndex, 
-      setActiveIndex,
-      setScrollTo,
-      scrollAllTo,
-      scrollToIndex,
-      scrollY,
-      contentOffset,
-      headerHeight,
-      headerOffsetStyle
-    }}>
-      <View style={styles.container}>
-        {props.children}
+      <View style={styles.pagerView}>
+        <TabsContext.Provider value={{ 
+          activeIndex, 
+          setActiveIndex,
+          setPageFN,
+          setScrollTo,
+          scrollAllTo,
+          scrollToIndex,
+          setNativeActiveIndex,
+          localActive,
+          scrollY,
+          contentOffset,
+          headerHeight,
+          headerOffsetStyle,
+          pageOffset
+        }}>
+          {props.children}
+        </TabsContext.Provider>
       </View>
-    </TabsContext.Provider>
+
   );
 });
 
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
+  },
+  pagerView: {
+    flex: 1,
   }
 });
 

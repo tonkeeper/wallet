@@ -215,38 +215,40 @@ export const WalletScreen = memo(() => {
               ]}
             />
           </Tabs.Header>
-          <Tabs.Section index={0}>
-            <Tabs.ScrollView
-              refreshControl={
-                <RefreshControl
-                  onRefresh={handleRefresh}
-                  refreshing={isRefreshing && isFocused}
-                  tintColor={theme.colors.foregroundPrimary}
-                />
-              }
-            >
-              <TokenList balance={balance} tokens={tokens} />
-              {/* <NFTsList nfts={nfts} /> */}
-            </Tabs.ScrollView>
-          </Tabs.Section>
-          <Tabs.Section index={1}>
-            <Tabs.FlashList
-              refreshControl={
-                <RefreshControl
-                  onRefresh={handleRefresh}
-                  refreshing={isRefreshing && isFocused}
-                  tintColor={theme.colors.foregroundPrimary}
-                />
-              }
-              data={nfts}
-              numColumns={3}
-              contentContainerStyle={{ paddingHorizontal: 12 }}
-              estimatedItemSize={1000}
-              renderItem={({ item }) => (
-                <NFTCardItem item={item} />
-              )}                
-            />
-          </Tabs.Section>
+          <Tabs.PagerView>
+            <Tabs.Section index={0}>
+              <Tabs.ScrollView
+                refreshControl={
+                  <RefreshControl
+                    onRefresh={handleRefresh}
+                    refreshing={isRefreshing && isFocused}
+                    tintColor={theme.colors.foregroundPrimary}
+                  />
+                }
+              >
+                <TokenList balance={balance} tokens={tokens} />
+                {/* <NFTsList nfts={nfts} /> */}
+              </Tabs.ScrollView>
+            </Tabs.Section>
+            <Tabs.Section index={1}>
+              <Tabs.FlashList
+                refreshControl={
+                  <RefreshControl
+                    onRefresh={handleRefresh}
+                    refreshing={isRefreshing && isFocused}
+                    tintColor={theme.colors.foregroundPrimary}
+                  />
+                }
+                data={nfts}
+                numColumns={3}
+                contentContainerStyle={{ paddingHorizontal: 12 }}
+                estimatedItemSize={1000}
+                renderItem={({ item }) => (
+                  <NFTCardItem item={item} />
+                )}                
+              />
+            </Tabs.Section>
+          </Tabs.PagerView>
         </>
       );
     } else {

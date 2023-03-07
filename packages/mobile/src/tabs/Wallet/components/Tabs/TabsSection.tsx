@@ -1,7 +1,7 @@
 import React, { createContext, memo } from 'react';
 import { Steezy } from '$styles';
 import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 import { LargeNavBarHeight } from '$shared/constants';
 import { statusBarHeight } from '$utils';
 import { useTabCtx } from './TabsContainer';
@@ -35,35 +35,42 @@ export const TabsSection = memo<TabsSectionProps>((props) => {
     return {
       transform: [{
         translateX: withSpring(-(activeIndex * dimensions.width), {
-          damping: 15,
-          mass: 0.1,
+          stiffness: 1000,
+            damping: 500,
+            mass: 3,
+            overshootClamping: true,
+            restDisplacementThreshold: 10,
+            restSpeedThreshold: 10,
         }),
       }]
     }
   });
 
   return (
-    <TabContext.Provider value={{ index: props.index }}>
-      <Animated.View 
-        style={[style, {
-          position: 'absolute',
-          top: 0,
-          left: props.index * dimensions.width,
-          right: 0,
-          bottom: 0,
-          zIndex: 3,
-          width: dimensions.width,
-          height: dimensions.height - (LargeNavBarHeight + statusBarHeight + 24)
-        }]}
-      >
-        {props.children}
-      </Animated.View>
-    </TabContext.Provider>
+    <View style={styles.container.static} key={`${props.index}`}>
+      <TabContext.Provider value={{ index: props.index }}>
+        {/* <Animated.View 
+          style={[style, {
+            position: 'absolute',
+            top: 0,
+            left: props.index * dimensions.width,
+            right: 0,
+            bottom: 0,
+            zIndex: 3,
+            width: dimensions.width,
+            height: dimensions.height - (LargeNavBarHeight + statusBarHeight + 24)
+          }]}
+        > */}
+          {props.children}
+        {/* </Animated.View> */}
+      </TabContext.Provider>
+    </View>
   );
 });
 
 const styles = Steezy.create({
   container: {
-    
+    flex: 1,
+
   }
 });

@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useState } from 'react';
 import { Steezy } from '$styles';
 import { Text, TouchableOpacity, View } from '$uikit';
-import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { Extrapolate, interpolate, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useTheme } from '$hooks';
 import { ns } from '$utils';
 import { LayoutChangeEvent, LayoutRectangle } from 'react-native';
@@ -26,53 +26,54 @@ const INDICATOR_WIDTH = ns(24);
 
 export const TabsBarComponent = (props: TabsBarProps) => {
   const { value, indent = true, center } = props;
-  const { activeIndex, setActiveIndex, scrollToIndex } = useTabCtx();
+  const { activeIndex, setActiveIndex, scrollToIndex, pageOffset, localActive } = useTabCtx();
   const theme = useTheme();
 
   const [tabsLayouts, setTabsBarLayouts] = useState<{ [key: string]: LayoutRectangle }>({});
 
-  const handleLayout = useCallback((tab: string, event: LayoutChangeEvent) => {
+  const handleLayout = useCallback((index: number, event: LayoutChangeEvent) => {
     const layout = event?.nativeEvent?.layout;
 
     if (layout) {
-      setTabsBarLayouts((s) => ({ ...s, [tab]: layout }));
+      setTabsBarLayouts((s) => ({ ...s, [`${index}`]: layout }));
     }
   }, []);
   
   const indicatorAnimatedStyle = useAnimatedStyle(() => {
-    const layout = tabsLayouts[value];
+    const output = Object.values(tabsLayouts).map((item) => {
+      return item.x + (item.width / 2 - INDICATOR_WIDTH / 2);
+    });
 
-    if (!layout) {
+    if (output.length !== 2) {
       return {
         opacity: 0,
       };
     }
 
-    const x = layout.x + (layout.width / 2 - INDICATOR_WIDTH / 2);
-
     return {
       transform: [
         {
-          translateX: withSpring(x, {
-            damping: 15,
-            mass: 0.1,
-          }),
+          translateX: interpolate(
+            pageOffset.value, 
+            [0, 1],
+            output,
+            Extrapolate.CLAMP
+          )
         },
       ],
       opacity: withTiming(1),
     };
-  }, [tabsLayouts, value]);
+  }, [tabsLayouts, value, pageOffset.value]);
 
   return (
     <View style={[indent && styles.indent, styles.center, center && styles.center]}>
       <View style={styles.container}>
         {props.items.map((item, index) => (
           <TouchableOpacity
-            onLayout={(event) => handleLayout(item.value, event)}
+            onLayout={(event) => handleLayout(index, event)}
             onPress={() => {
               props.onChange(item, index);
               setActiveIndex(index);
-              
               // scrollToIndex(index);
             }}
             key={`tab-${index}`}
@@ -82,7 +83,7 @@ export const TabsBarComponent = (props: TabsBarProps) => {
               <Text
                 variant="label1"
                 color={
-                  value === item.value 
+                  localActive === index
                     ? 'textPrimary'
                     : 'textSecondary'
                   }
