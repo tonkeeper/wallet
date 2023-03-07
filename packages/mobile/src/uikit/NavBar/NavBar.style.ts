@@ -6,12 +6,12 @@ import { ns, hNs } from '$utils';
 import { IsTablet, NavBarHeight, Opacity, TabletMaxWidth } from '$shared/constants';
 import { Text } from '$uikit/Text/Text';
 
-export const Wrap = styled.View<{ isTransparent: boolean }>`
+export const Wrap = styled.View<{ isTransparent: boolean; isBackground: boolean; }>`
   z-index: 10;
-  ${({ isTransparent, theme }) => {
+  ${({ isTransparent, theme, isBackground }) => {
     if (isTransparent) {
       return `
-        backgroundColor: ${theme.colors.backgroundPrimary};
+        ${isBackground && `backgroundColor: ${theme.colors.backgroundPrimary};`}
         position: absolute;
         top: 0;
         left: 0;
@@ -19,7 +19,7 @@ export const Wrap = styled.View<{ isTransparent: boolean }>`
       `;
     } else {
       return `
-        backgroundColor: ${theme.colors.backgroundPrimary};
+        ${isBackground && `backgroundColor: ${theme.colors.backgroundPrimary};`}
         position: relative;
       `;
     }

@@ -35,6 +35,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
     <NavBar 
       rightContent={rightContentContainer} 
       hideBackButton={!backButton}
+      fillBackground
     >
       {props.title}
     </NavBar>

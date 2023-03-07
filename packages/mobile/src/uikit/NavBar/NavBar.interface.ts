@@ -17,4 +17,5 @@ export interface NavBarProps {
   withBackground?: boolean;
   scrollTop?: SharedValue<number>;
   titleProps?: AnimateProps<TextProps>;
+  fillBackground?: boolean;
 }

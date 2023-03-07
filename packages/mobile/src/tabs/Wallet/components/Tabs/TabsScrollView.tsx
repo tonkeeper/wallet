@@ -3,9 +3,18 @@ import Animated, { runOnJS, useAnimatedScrollHandler, useAnimatedStyle, useShare
 import { useTabCtx } from './TabsContainer';
 import { ScrollViewProps, useWindowDimensions } from 'react-native';
 import { useCurrentTab } from './TabsSection';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 interface TabsScrollViewProps extends ScrollViewProps{
 
+}
+
+const useWrapBottomTabBarHeight = () => {
+  try { // Fix crash 
+    return useBottomTabBarHeight();
+  } catch (err) {
+    return 0;
+  }  
 }
 
 export const TabsScrollView = (props: TabsScrollViewProps) => {
@@ -68,6 +77,8 @@ export const TabsScrollView = (props: TabsScrollViewProps) => {
   
 
   const [_, setContentSize] = useState(0);
+
+  const tabBarHeight = useWrapBottomTabBarHeight();
  
   return (
     <Animated.ScrollView 
@@ -75,6 +86,7 @@ export const TabsScrollView = (props: TabsScrollViewProps) => {
       onScroll={scrollHandler}
       scrollEventThrottle={16}
       onContentSizeChange={(w, h) => setContentSize(h)}
+      contentContainerStyle={{ paddingBottom: tabBarHeight }}
       {...props}
     >
       <Animated.View style={headerOffsetStyle} />

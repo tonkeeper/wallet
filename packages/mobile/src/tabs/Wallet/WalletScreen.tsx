@@ -380,7 +380,7 @@ const TokenList = ({
           />
         ))}
       </List>
-      {tokens.list.length && (
+      {tokens.list.length > 0 && (
         <View style={styles.tonkensEdit}>
           <Button 
             onPress={() => openJettonsList()}
