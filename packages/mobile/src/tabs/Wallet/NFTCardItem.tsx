@@ -86,7 +86,8 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
 
 const styles = Steezy.create(({ colors, corners }) => ({
   container: {
-    margin: 4,
+    marginHorizontal: 4,
+    marginBottom: 8,
     width: 114,
     backgroundColor: colors.backgroundContent,
     borderRadius: corners.medium,

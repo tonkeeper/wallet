@@ -1,10 +1,10 @@
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Steezy } from '$styles';
 import { Text, TouchableOpacity, View } from '$uikit';
-import Animated, { Extrapolate, interpolate, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { Extrapolate, interpolate, interpolateColor, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useTheme } from '$hooks';
 import { ns } from '$utils';
-import { LayoutChangeEvent, LayoutRectangle } from 'react-native';
+import { LayoutChangeEvent, LayoutRectangle, StyleSheet } from 'react-native';
 import { useTabCtx } from './TabsContainer';
 
 type TabItem = {
@@ -26,7 +26,7 @@ const INDICATOR_WIDTH = ns(24);
 
 export const TabsBarComponent = (props: TabsBarProps) => {
   const { value, indent = true, center } = props;
-  const { activeIndex, setActiveIndex, scrollToIndex, pageOffset, localActive } = useTabCtx();
+  const { setActiveIndex, pageOffset, scrollY, headerHeight } = useTabCtx();
   const theme = useTheme();
 
   const [tabsLayouts, setTabsBarLayouts] = useState<{ [key: string]: LayoutRectangle }>({});
@@ -38,79 +38,138 @@ export const TabsBarComponent = (props: TabsBarProps) => {
       setTabsBarLayouts((s) => ({ ...s, [`${index}`]: layout }));
     }
   }, []);
-  
-  const indicatorAnimatedStyle = useAnimatedStyle(() => {
-    const output = Object.values(tabsLayouts).map((item) => {
+
+  const indicatorRange = useMemo(() => {
+    return Object.values(tabsLayouts).map((item) => {
       return item.x + (item.width / 2 - INDICATOR_WIDTH / 2);
     });
+  }, [tabsLayouts]);
 
-    if (output.length !== 2) {
+  const input = props.items.map((_, index) => index);
+  const indicatorAnimatedStyle = useAnimatedStyle(() => {
+    if (indicatorRange.length !== props.items.length) {
       return {
         opacity: 0,
       };
     }
 
+    const x = interpolate(
+      pageOffset.value, 
+      input,
+      indicatorRange,
+      Extrapolate.CLAMP
+    );
+
     return {
       transform: [
         {
-          translateX: interpolate(
-            pageOffset.value, 
-            [0, 1],
-            output,
-            Extrapolate.CLAMP
-          )
+          translateX: x
         },
       ],
       opacity: withTiming(1),
     };
-  }, [tabsLayouts, value, pageOffset.value]);
+  }, [indicatorRange, value, pageOffset.value, input]);
+
+  const containerStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{
+        translateY: scrollY.value > headerHeight.value ? scrollY.value - headerHeight.value : 0
+      }]
+    }
+  });
+
+  const borderStyle = useAnimatedStyle(() => {
+    return {
+      borderBottomColor:
+        scrollY && scrollY.value > headerHeight.value ? theme.colors.border : 'transparent',
+    };
+  });
 
   return (
-    <View style={[indent && styles.indent, styles.center, center && styles.center]}>
-      <View style={styles.container}>
-        {props.items.map((item, index) => (
-          <TouchableOpacity
-            onLayout={(event) => handleLayout(index, event)}
-            onPress={() => {
-              props.onChange(item, index);
-              setActiveIndex(index);
-              // scrollToIndex(index);
-            }}
-            key={`tab-${index}`}
-            activeOpacity={0.6}
-          >
-            <View style={styles.item}>
-              <Text
-                variant="label1"
-                color={
-                  localActive === index
-                    ? 'textPrimary'
-                    : 'textSecondary'
-                  }
-              >
-                {item.label}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-        <Animated.View
-          pointerEvents="none" 
-          style={[
-            styles.indicator.static,
-            indicatorAnimatedStyle,
-            { backgroundColor: theme.colors.accentPrimary }
-          ]} 
-        />
-      </View>
-    </View>
+    <Animated.View style={[]}>
+      <Animated.View 
+        style={[
+          containerStyle,
+          indent && styles.indent, 
+          styles.center,
+          styles.wrap, borderStyle,
+          { backgroundColor: theme.colors.backgroundPrimary },
+        ]}
+      >
+        <Animated.View style={[styles.container]}>
+          {props.items.map((item, index) => (
+            <TouchableOpacity
+              onLayout={(event) => handleLayout(index, event)}
+              onPress={() => {
+                props.onChange(item, index);
+                setActiveIndex(index);
+                // scrollToIndex(index);
+              }}
+              key={`tab-${index}`}
+              activeOpacity={0.6}
+            >
+              <View style={styles.item}>
+                <WrapText index={index} pageOffset={pageOffset}>
+                  {item.label}
+                </WrapText>
+              </View>
+            </TouchableOpacity>
+          ))}
+          <Animated.View
+            pointerEvents="none" 
+            style={[
+              styles.indicator,
+              indicatorAnimatedStyle,
+              { backgroundColor: theme.colors.accentPrimary }
+            ]} 
+          />
+        </Animated.View>
+      </Animated.View>
+    </Animated.View>
   );
 };
 
+const WrapText = ({ 
+  pageOffset,
+  index,
+  children
+}: { index: number, pageOffset: any; children?: React.ReactNode }) => {
+  const theme = useTheme();
+
+  const textStyle = useAnimatedStyle(() => {
+    return {
+      color: interpolateColor(
+        pageOffset.value,
+        [index - 1, index, index + 1],
+        [
+          theme.colors.textSecondary, 
+          theme.colors.textPrimary, 
+          theme.colors.textSecondary
+        ],
+      )
+    }
+  }, [pageOffset.value]);
+
+  return (
+    <Text
+      style={textStyle}
+      variant="label1"
+      reanimated
+    >
+      {children}
+    </Text>
+  )
+}
+
 export const TabsBar = memo(TabsBarComponent);
 
-const styles = Steezy.create(({ colors }) => ({
+const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
+    zIndex: 3,
+  },
+  wrap: {
+    borderBottomWidth: 1,
   },
   center: {
     justifyContent: 'center',
@@ -129,7 +188,7 @@ const styles = Steezy.create(({ colors }) => ({
     borderRadius: 3,
   },
   indent: {
-    marginHorizontal: 16,
-    marginBottom: 16
+    paddingHorizontal: 16,
+    // marginBottom: 16
   },
-}));
+});

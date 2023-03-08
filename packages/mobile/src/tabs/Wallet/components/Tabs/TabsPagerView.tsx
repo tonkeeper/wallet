@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import Animated, { useEvent, useHandler } from 'react-native-reanimated';
 import { useTabCtx } from './TabsContainer';
@@ -43,27 +43,26 @@ export const TabsPagerView: React.FC<TabsPagerViewProps> = (props) => {
     onPageScroll: e => {
       'worklet';
       pageOffset.value = e.offset + e.position;
-      // console.log('@', e.offset, e.position);
     },
 });
 
   return (
+    <View style={styles.pagerView}>
     <AnimatedPagerView 
       onPageScroll={pageScrollHandler}
       ref={refPagerView}
       style={styles.pagerView} 
       onPageSelected={(ev) => {
         setNativeActiveIndex(ev.nativeEvent.position);
-
-        console.log('!!!', ev.nativeEvent.position)
       }}
       initialPage={0}
       scrollEnabled={true}
-      overScrollMode="always"
+      // overScrollMode="always"
       overdrag
     >
       {props.children}
     </AnimatedPagerView>
+    </View>
   );
 };
 

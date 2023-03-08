@@ -271,13 +271,15 @@ export const WalletScreen = memo(() => {
   
   return (
     <Screen>
-      <Screen.Header 
-        backButton={false} 
-        title={t('wallet.screen_title')}
-        rightContent={<ScanQRButton />}
-      />
       <Tabs>
-        {renderContent()}
+        <Screen.Header
+          backButton={false} 
+          title={t('wallet.screen_title')}
+          rightContent={<ScanQRButton />}
+        />
+        <View style={{ flex: 1 }}>
+          {renderContent()}
+        </View>
       </Tabs>
     </Screen>
   );

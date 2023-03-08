@@ -43,7 +43,6 @@ export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem
     },
     onEndDrag(event) {
       if (activeIndex === index) {
-        console.log('end', index);
         scrollY.value = event.contentOffset.y;
         contentOffset.value = event.contentOffset.y;
         runOnJS(scrollAllTo)(index, event.contentOffset.y);

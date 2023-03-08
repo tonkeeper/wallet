@@ -39,6 +39,7 @@ export const NavBar: FC<NavBarProps> = (props) => {
     isCancelButton = false,
     withBackground = false,
     fillBackground = false,
+    innerAnimatedStyle,
     titleProps = {},
     scrollTop,
   } = props;
@@ -122,7 +123,7 @@ export const NavBar: FC<NavBarProps> = (props) => {
           locations={[0, 1]}
         />
       )}
-      <S.Cont style={borderStyle}>
+      <S.Cont style={[borderStyle, innerAnimatedStyle]}>
         <S.Content>
           <S.BackButtonContainer
             onPress={onBackPress || handleBack}

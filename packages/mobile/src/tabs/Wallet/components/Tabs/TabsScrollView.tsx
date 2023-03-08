@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Animated, { runOnJS, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useTabCtx } from './TabsContainer';
-import { ScrollViewProps, useWindowDimensions } from 'react-native';
+import { ScrollViewProps, useWindowDimensions, View } from 'react-native';
 import { useCurrentTab } from './TabsSection';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { LargeNavBarHeight } from '$shared/constants';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface TabsScrollViewProps extends ScrollViewProps{
 
@@ -20,19 +22,23 @@ const useWrapBottomTabBarHeight = () => {
 export const TabsScrollView = (props: TabsScrollViewProps) => {
   const { activeIndex, scrollAllTo, setScrollTo, headerOffsetStyle, contentOffset, scrollY, headerHeight } = useTabCtx();
   const { index } = useCurrentTab();
+  const tabBarHeight = useBottomTabBarHeight();
+  const [contentSize, setContentSize] = useState(0);
+  const safeArea = useSafeAreaInsets();
   
   const ref = useRef<Animated.ScrollView>(null);
 
   const localScrollY = useSharedValue(0);
   const hasSpace = useSharedValue(true);
 
-  const scrollTo = (y: number, animated?: boolean) => {
+  const scrollTo = React.useCallback((y: number, animated?: boolean) => {
     hasSpace.value = true;
 
-    setTimeout(() =>{
-      ref.current?.scrollTo({ y, animated });
+    setTimeout(() => {
+      // const correctY = Math.min(contentSize, y);
+      ref.current?.scrollTo({ y: y, animated });
     }, 200);
-  }
+  }, [contentSize]);
 
   useEffect(() => {
     setScrollTo(index, scrollTo);
@@ -41,7 +47,6 @@ export const TabsScrollView = (props: TabsScrollViewProps) => {
   const scrollHandler = useAnimatedScrollHandler({
     onScroll(event) {
       localScrollY.value = event.contentOffset.y
-      console.log(localScrollY.value);
       if (activeIndex === index) {
         contentOffset.value = 0;
         scrollY.value = event.contentOffset.y;
@@ -68,29 +73,34 @@ export const TabsScrollView = (props: TabsScrollViewProps) => {
   const dimensions = useWindowDimensions();
 
   const heightOffsetStyle = useAnimatedStyle(() => {
+    const s = dimensions.height - (tabBarHeight - (LargeNavBarHeight + 50)  - safeArea.bottom) - headerHeight.value - contentSize
+
+    console.log(s);
+
     return {
       // backgroundColor: 'red',
       width: dimensions.width,
-      minHeight: hasSpace.value ? dimensions.height : 0
+      minHeight: hasSpace.value ? s : 0
     }
   })
   
-
-  const [_, setContentSize] = useState(0);
-
-  const tabBarHeight = useWrapBottomTabBarHeight();
- 
   return (
     <Animated.ScrollView 
       ref={ref}
       onScroll={scrollHandler}
       scrollEventThrottle={16}
-      onContentSizeChange={(w, h) => setContentSize(h)}
+      // onContentSizeChange={(w, h) => setContentSize(h)}
       contentContainerStyle={{ paddingBottom: tabBarHeight }}
       {...props}
     >
       <Animated.View style={headerOffsetStyle} />
-      {props.children}
+      <View
+        onLayout={(ev) => {
+          setContentSize(ev.nativeEvent.layout.height);
+        }}
+      >
+        {props.children}
+      </View>
       <Animated.View style={heightOffsetStyle}/>
     </Animated.ScrollView>
   );

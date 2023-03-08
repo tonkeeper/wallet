@@ -1,7 +1,8 @@
+import { NavBarHeight } from '$shared/constants';
 import React, { createContext, memo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import PagerView from 'react-native-pager-view';
-import { SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { Extrapolate, interpolate, SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 interface TabsContainerProps {
   children?: React.ReactNode;
@@ -9,7 +10,7 @@ interface TabsContainerProps {
 
 type ScrollTo = (y: number, animated?: boolean) => void;
 
-export const TabsContext = createContext<{
+type TabsContextType = {
   activeIndex: number;
   setActiveIndex: (index: number) => void;
   setScrollTo: (index: number, scrollTo: ScrollTo) => void;
@@ -21,19 +22,47 @@ export const TabsContext = createContext<{
   contentOffset: SharedValue<number>;
   headerHeight: SharedValue<number>;
   pageOffset: SharedValue<number>;
-  localActive: number;
-  headerOffsetStyle: { height: number };
-} | null>(null);
+  headerOffsetStyle: ViewStyle;
+  opacityMainHeaderStyle: ViewStyle
+  shiftMainHeaderStyle: ViewStyle;
+};
+
+export const TabsContext = createContext<TabsContextType | null>(null);
 
 export const TabsContainer = memo<TabsContainerProps>((props) => {
   const [activeIndex, setStateActiveIndex] = React.useState(0);
-  const [localActive, setActiveLocal] = React.useState(0);
   const setActiveIndexFN = useRef<((index: number) => void) | null>(null);
 
   const contentOffset = useSharedValue(0);
   const scrollY = useSharedValue(0);
   const headerHeight = useSharedValue(0);
   const pageOffset = useSharedValue(0);
+
+  const opacityMainHeaderStyle = useAnimatedStyle(() => {
+    const start = headerHeight.value - NavBarHeight + 11;
+    const opacity = interpolate(
+      scrollY.value,
+      [0, start, start + (NavBarHeight / 3.5)],
+      [1, 1, 0],
+      Extrapolate.CLAMP
+    );
+
+    return { opacity };
+  });
+
+  const shiftMainHeaderStyle = useAnimatedStyle(() => {
+    const start = headerHeight.value - NavBarHeight;
+
+    const y = interpolate(
+      scrollY.value,
+      [0, start, start + (NavBarHeight / 3.5)],
+      [0, 0, -(NavBarHeight / 3.5)],
+    );;
+
+    return {
+      transform: [{ translateY: y }]
+    };
+  });
   
   
   const refs = React.useRef<{ [key in string]: ScrollTo }>({});
@@ -66,36 +95,29 @@ export const TabsContainer = memo<TabsContainerProps>((props) => {
 
   const setActiveIndex = (index: number) => {
     setActiveIndexFN.current?.(index);
-    setActiveLocal(index);
   } 
 
-  const setNativeActiveIndex = (index: number) => {
-    setStateActiveIndex(index);
-    setActiveLocal(index);
-  }
-
-
   return (
-      <View style={styles.pagerView}>
-        <TabsContext.Provider value={{ 
-          activeIndex, 
-          setActiveIndex,
-          setPageFN,
-          setScrollTo,
-          scrollAllTo,
-          scrollToIndex,
-          setNativeActiveIndex,
-          localActive,
-          scrollY,
-          contentOffset,
-          headerHeight,
-          headerOffsetStyle,
-          pageOffset
-        }}>
-          {props.children}
-        </TabsContext.Provider>
-      </View>
-
+    <TabsContext.Provider 
+      value={{ 
+        activeIndex, 
+        setActiveIndex,
+        setPageFN,
+        setScrollTo,
+        scrollAllTo,
+        scrollToIndex,
+        setNativeActiveIndex: setStateActiveIndex,
+        scrollY,
+        contentOffset,
+        headerHeight,
+        headerOffsetStyle,
+        pageOffset,
+        opacityMainHeaderStyle,
+        shiftMainHeaderStyle
+      }}
+    >
+      {props.children}
+    </TabsContext.Provider>
   );
 });
 
@@ -113,6 +135,16 @@ export const useTabCtx = () => {
 
   if (!ctx) {
     throw new Error('!ctx')
+  }
+
+  return ctx;
+}
+
+export const useMaybeTabCtx = ()  => {
+  const ctx = React.useContext(TabsContext);
+
+  if (!ctx) {
+    return null;
   }
 
   return ctx;

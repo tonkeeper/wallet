@@ -16,7 +16,6 @@ export const TabsHeader: React.FC<TabsHeaderProps> = (props) => {
   
   const balanceStyle = useAnimatedStyle(() => {
     return {
-      // paddingTop: NavBarHeight + statusBarHeight,
       transform: [{ 
         translateY: -(scrollY.value)
       }]
@@ -34,7 +33,6 @@ export const TabsHeader: React.FC<TabsHeaderProps> = (props) => {
         backgroundColor: theme.colors.backgroundPrimary
       }]}
       onLayout={(ev) => {
-        console.log('header height', ev.nativeEvent.layout.height);
         headerHeight.value = ev.nativeEvent.layout.height;
       }}
     >
