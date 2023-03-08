@@ -169,14 +169,6 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
               <Text style={{ marginTop: 2 }} variant="body2" color="foregroundSecondary">
                 {fiatInfo.amount}
               </Text>
-              <S.Price>
-                <Text color="foregroundSecondary" variant="body2">
-                  {rate}
-                </Text>
-                <Text style={{ marginLeft: 6 }} variant="body2" color={fiatInfo.color}>
-                  {fiatInfo.percent}&nbsp;&nbsp;24{t('wallet_hours_symbol')}
-                </Text>
-              </S.Price>
               <S.AboutWrapper>
                 <ShowMore
                   backgroundColor={theme.colors.backgroundPrimary}

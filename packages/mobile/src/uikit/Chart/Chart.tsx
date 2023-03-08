@@ -4,6 +4,7 @@ import {
   ChartPath,
   ChartPathProvider,
   CurrentPositionVerticalLine,
+  stepInterpolation,
 } from '@rainbow-me/animated-charts';
 import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks';
@@ -21,6 +22,8 @@ import { Rate } from './Rate/Rate';
 import { useQuery } from 'react-query';
 import { loadChartData } from './Chart.api';
 import { ChartYLabels } from './ChartYLabels/ChartYLabels';
+import { changeAlphaValue, convertHexToRGBA } from '$utils';
+import { ChartXLabels } from './ChartXLabels/ChartXLabels';
 
 export const { width: SIZE } = Dimensions.get('window');
 export const DEFAULT_CHART_PERIOD = ChartPeriod.ONE_DAY;
@@ -37,9 +40,13 @@ const ChartComponent: React.FC = () => {
 
   useEffect(() => {
     if (data) {
-      setCachedData(data.data);
+      setCachedData(
+        selectedPeriod === ChartPeriod.ONE_HOUR
+          ? stepInterpolation(data.data)
+          : data.data,
+      );
     }
-  }, [data]);
+  }, [data, selectedPeriod]);
 
   const rates = useSelector(ratesRatesSelector);
   const fiatCurrency = useSelector(fiatCurrencySelector);
@@ -75,7 +82,11 @@ const ChartComponent: React.FC = () => {
   return (
     <View>
       <View>
-        <ChartPathProvider data={{ points: cachedData }}>
+        <ChartPathProvider
+          data={{
+            points: cachedData,
+          }}
+        >
           <View style={{ paddingHorizontal: 28 }}>
             {latestPoint ? (
               <Rate
@@ -104,13 +115,13 @@ const ChartComponent: React.FC = () => {
                 selectedStrokeWidth={2}
                 height={160}
                 stroke={theme.colors.accentPrimaryLight}
-                width={SIZE}
+                width={SIZE - 1}
                 selectedOpacity={1}
               />
               <ChartDot
                 size={40}
                 style={{
-                  backgroundColor: 'rgba(69,174,245,0.24)',
+                  backgroundColor: changeAlphaValue(convertHexToRGBA(theme.colors.accentPrimaryLight), 0.24),
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
@@ -133,6 +144,7 @@ const ChartComponent: React.FC = () => {
             </View>
           </View>
           <ChartYLabels maxPrice={maxPrice} minPrice={minPrice} />
+          <ChartXLabels maxPrice={maxPrice} minPrice={minPrice} />
         </ChartPathProvider>
       </View>
       <PeriodSelector
