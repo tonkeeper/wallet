@@ -8,7 +8,7 @@ import {
 } from '@rainbow-me/animated-charts';
 import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ratesRatesSelector } from '$store/rates';
 import { chartPeriodSelector, fiatCurrencySelector, mainActions } from '$store/main';
 import { CryptoCurrencies, FiatCurrencies } from '$shared/constants';
@@ -31,6 +31,7 @@ export const DEFAULT_CHART_PERIOD = ChartPeriod.ONE_DAY;
 
 const ChartComponent: React.FC = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const chartPeriod = useSelector(chartPeriodSelector);
   const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>(
     chartPeriod ?? DEFAULT_CHART_PERIOD,
@@ -42,8 +43,8 @@ const ChartComponent: React.FC = () => {
 
   useEffect(() => {
     MainDB.setChartSelectedPeriod(selectedPeriod);
-    mainActions.setChartPeriod(selectedPeriod);
-  }, [selectedPeriod]);
+    dispatch(mainActions.setChartPeriod(selectedPeriod));
+  }, [dispatch, selectedPeriod]);
 
   const [cachedData, setCachedData] = useState(data?.data ?? []);
 
