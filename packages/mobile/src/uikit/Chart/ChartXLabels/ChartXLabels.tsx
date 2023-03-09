@@ -48,7 +48,7 @@ export const ChartXLabelsComponent: React.FC<ChartXLabelsProps> = (props) => {
           mode = 'HH:mm';
           break;
       }
-
+      if (!text) return;
       const subbedText = subMonths(new Date(parseInt(text) * 1000), 1);
       onUpdate(format(subbedText, mode, { locale: getLocale() }));
     },
@@ -78,14 +78,6 @@ export const ChartXLabelsComponent: React.FC<ChartXLabelsProps> = (props) => {
     },
     [chartData, updateLabel],
   );
-
-  useEffect(() => {
-    console.log(X1Value);
-  }, [X1Value]);
-
-  useEffect(() => {
-    console.log(X3Value);
-  }, [X3Value]);
 
   return (
     <>
