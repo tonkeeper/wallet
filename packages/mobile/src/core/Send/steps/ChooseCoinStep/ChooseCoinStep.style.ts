@@ -1,4 +1,4 @@
-import { StepScrollView } from '../../StepScrollView/StepScrollView';
+import { StepScrollView } from '../../../../shared/components/StepScrollView/StepScrollView';
 import styled from '$styled';
 import { Text } from '$uikit';
 import { ns } from '$utils';

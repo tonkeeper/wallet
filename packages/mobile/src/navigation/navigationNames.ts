@@ -23,11 +23,15 @@ export enum AppStackRouteNames {
   DevStack = 'DevStack',
   DAppsSearch = 'DAppsSearch',
   DAppBrowser = 'DAppBrowser',
+  StakingSend = 'StakingSend',
 }
 
 export enum MainStackRouteNames {
   Tabs = 'Tabs',
   Wallet = 'Wallet',
+  Staking = 'Staking',
+  StakingPools = 'StakingPools',
+  StakingPoolDetails = 'StakingPoolDetails',
   ImportWallet = 'ImportWallet',
   Subscriptions = 'Subscriptions',
   BackupWords = 'BackupWords',
@@ -96,6 +100,7 @@ export enum DevComponents {
 
 type ScreenNames =
   | `${AppStackRouteNames}`
+  | `${MainStackRouteNames}`
   | `${TabsStackRouteNames}`
   | `${SetupWalletStackRouteNames}`
   | `${SettingsStackRouteNames}`

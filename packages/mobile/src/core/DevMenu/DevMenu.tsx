@@ -131,6 +131,9 @@ export const DevMenu: FC = () => {
             >
               Use HTTP protocol in browser
             </CellSectionItem>
+            <CellSectionItem onPress={() => nav.navigate('Staking')}>
+              Open Staking
+            </CellSectionItem>
             {__DEV__ && (
               <>
                 <CellSectionItem onPress={handleTestCrash}>

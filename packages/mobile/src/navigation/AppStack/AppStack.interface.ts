@@ -59,4 +59,8 @@ export type AppStackParamList = {
   [AppStackRouteNames.WebView]: {
     webViewUrl: string;
   };
+  [AppStackRouteNames.StakingSend]: {
+    poolAddress: string;
+    isWithdrawal?: boolean;
+  };
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, Linking, View } from 'react-native';
-import { Icon, Loader, Text, TransitionOpacity } from '$uikit';
+import { Icon, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
   debugLog,
   delay,
@@ -123,6 +123,8 @@ type ActionFooterRef = {
 
 interface ActionFooterProps {
   responseOptions?: TxResponseOptions;
+  withCloseButton?: boolean;
+  confirmTitle?: string;
   onPressConfirm: () => Promise<void>;
   onCloseModal?: () => void;
 }
@@ -133,6 +135,8 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
     const [state, setState] = React.useState(States.INITIAL);
     const nav = useNavigation();
     const dispatch = useDispatch();
+
+    const { withCloseButton = true } = props;
 
     const closeModal = React.useCallback(() => {
       if (props.onCloseModal) {
@@ -173,11 +177,16 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
           entranceAnimation={false}
         >
           <View style={S.styles.footerButtons}>
-            <S.CancelButton mode="secondary" onPress={closeModal}>
-              {t('cancel')}
-            </S.CancelButton>
+            {withCloseButton ? (
+              <>
+                <S.ActionButton mode="secondary" onPress={closeModal}>
+                  {t('cancel')}
+                </S.ActionButton>
+                <Spacer x={16} />
+              </>
+            ) : null}
             <S.ActionButton onPress={() => props.onPressConfirm()}>
-              {t('nft_confirm_operation')}
+              {props.confirmTitle ?? t('nft_confirm_operation')}
             </S.ActionButton>
           </View>
         </TransitionOpacity>
