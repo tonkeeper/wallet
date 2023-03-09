@@ -25,7 +25,7 @@
   "dependencies": {
     "@amplitude/analytics-browser": "^1.6.7",
     "@gorhom/bottom-sheet": "^4.4.4",
-    "@rainbow-me/animated-charts": "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#0ac05f2df234e5a17cdb9a7051046d9475502e54",
+    "@rainbow-me/animated-charts": "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#3f989bd40c9286bb901cb277dff4ceb5d2c1c49b",
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/clipboard": "^1.5.1",
     "@react-native-community/netinfo": "^9.3.2",
