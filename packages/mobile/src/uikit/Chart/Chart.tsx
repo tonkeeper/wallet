@@ -10,7 +10,7 @@ import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks';
 import { useSelector } from 'react-redux';
 import { ratesRatesSelector } from '$store/rates';
-import { chartPeriodSelector, fiatCurrencySelector } from '$store/main';
+import { chartPeriodSelector, fiatCurrencySelector, mainActions } from '$store/main';
 import { CryptoCurrencies, FiatCurrencies } from '$shared/constants';
 import { getRate } from '$hooks/useFiatRate';
 import { formatFiatCurrencyAmount } from '$utils/currency';
@@ -42,9 +42,10 @@ const ChartComponent: React.FC = () => {
 
   useEffect(() => {
     MainDB.setChartSelectedPeriod(selectedPeriod);
+    mainActions.setChartPeriod(selectedPeriod);
   }, [selectedPeriod]);
 
-  const [cachedData, setCachedData] = useState([]);
+  const [cachedData, setCachedData] = useState(data?.data ?? []);
 
   useEffect(() => {
     if ((data && !isFetching && !isLoading) || !cachedData) {
