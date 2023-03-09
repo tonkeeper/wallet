@@ -10,7 +10,7 @@ import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks';
 import { useSelector } from 'react-redux';
 import { ratesRatesSelector } from '$store/rates';
-import { fiatCurrencySelector } from '$store/main';
+import { chartPeriodSelector, fiatCurrencySelector } from '$store/main';
 import { CryptoCurrencies, FiatCurrencies } from '$shared/constants';
 import { getRate } from '$hooks/useFiatRate';
 import { formatFiatCurrencyAmount } from '$utils/currency';
@@ -24,17 +24,25 @@ import { loadChartData } from './Chart.api';
 import { ChartYLabels } from './ChartYLabels/ChartYLabels';
 import { changeAlphaValue, convertHexToRGBA } from '$utils';
 import { ChartXLabels } from './ChartXLabels/ChartXLabels';
+import { MainDB } from '$database';
 
 export const { width: SIZE } = Dimensions.get('window');
 export const DEFAULT_CHART_PERIOD = ChartPeriod.ONE_DAY;
 
 const ChartComponent: React.FC = () => {
   const theme = useTheme();
-  const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>(DEFAULT_CHART_PERIOD);
+  const chartPeriod = useSelector(chartPeriodSelector);
+  const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>(
+    chartPeriod ?? DEFAULT_CHART_PERIOD,
+  );
 
   const { isLoading, isFetching, data } = useQuery(['chartFetch', selectedPeriod], () =>
     loadChartData(selectedPeriod),
   );
+
+  useEffect(() => {
+    MainDB.setChartSelectedPeriod(selectedPeriod);
+  }, [selectedPeriod]);
 
   const [cachedData, setCachedData] = useState([]);
 
