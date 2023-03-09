@@ -47,7 +47,7 @@ const ChartComponent: React.FC = () => {
   const [cachedData, setCachedData] = useState([]);
 
   useEffect(() => {
-    if (data && cachedData && !isFetching && !isLoading) {
+    if ((data && !isFetching && !isLoading) || !cachedData) {
       setCachedData(
         selectedPeriod === ChartPeriod.ONE_HOUR
           ? stepInterpolation(data.data)
