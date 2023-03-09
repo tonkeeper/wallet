@@ -144,7 +144,7 @@ const ChartComponent: React.FC = () => {
             </View>
           </View>
           <ChartYLabels maxPrice={maxPrice} minPrice={minPrice} />
-          <ChartXLabels maxPrice={maxPrice} minPrice={minPrice} />
+          <ChartXLabels currentPeriod={selectedPeriod} />
         </ChartPathProvider>
       </View>
       <PeriodSelector

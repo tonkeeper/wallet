@@ -1,13 +1,14 @@
 import { Text } from '$uikit/Text/Text';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import Animated, { runOnJS, useAnimatedReaction, useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useChartData } from '@rainbow-me/animated-charts';
-import { ns } from '$utils';
+import { getLocale, ns } from '$utils';
+import { ChartPeriod } from '../Chart.types';
+import { format, subMonths } from 'date-fns';
 
 export interface ChartXLabelsProps {
-  minPrice: string;
-  maxPrice: string;
+  currentPeriod: ChartPeriod;
 }
 
 const fontFamily = Platform.select({
@@ -15,34 +16,87 @@ const fontFamily = Platform.select({
   android: 'RobotoMono-Medium',
 });
 
-export const ChartXLabelsComponent: React.FC = () => {
+export const ChartXLabelsComponent: React.FC<ChartXLabelsProps> = (props) => {
   const chartData = useChartData();
-  const [points, setPoints] = useState([]);
+  const [X1Value, setX1Value] = useState();
+  const [X3Value, setX3Value] = useState();
+
+  const updateLabel = useCallback(
+    (text, onUpdate) => {
+      let mode = 'HH:mm';
+
+      switch (props.currentPeriod) {
+        case ChartPeriod.ONE_HOUR:
+          mode = 'HH:mm';
+          break;
+        case ChartPeriod.ONE_DAY:
+          mode = 'HH:mm';
+          break;
+        case ChartPeriod.SEVEN_DAYS:
+          mode = 'dd MMM';
+          break;
+        case ChartPeriod.ONE_MONTH:
+          mode = 'dd MMM';
+          break;
+        case ChartPeriod.SIX_MONTHS:
+          mode = 'dd MMM';
+          break;
+        case ChartPeriod.ONE_YEAR:
+          mode = 'dd MMM';
+          break;
+        default:
+          mode = 'HH:mm';
+          break;
+      }
+
+      const subbedText = subMonths(new Date(parseInt(text) * 1000), 1);
+      onUpdate(format(subbedText, mode, { locale: getLocale() }));
+    },
+    [props.currentPeriod],
+  );
 
   useAnimatedReaction(
     () => {
-      return chartData.data?.points;
+      return chartData.rect1XLabel?.value;
     },
     (result, previous) => {
       if (result !== previous) {
-        runOnJS(setPoints)(result);
+        runOnJS(updateLabel)(result, setX1Value);
       }
     },
-    [chartData],
+    [chartData, updateLabel],
   );
 
-  console.log(points);
+  useAnimatedReaction(
+    () => {
+      return chartData.rect3XLabel?.value;
+    },
+    (result, previous) => {
+      if (result !== previous) {
+        runOnJS(updateLabel)(result, setX3Value);
+      }
+    },
+    [chartData, updateLabel],
+  );
+
+  useEffect(() => {
+    console.log(X1Value);
+  }, [X1Value]);
+
+  useEffect(() => {
+    console.log(X3Value);
+  }, [X3Value]);
 
   return (
     <>
       <Animated.View style={[{ position: 'absolute', left: ns(44.5), bottom: ns(2.5) }]}>
         <Text style={{ fontFamily }} variant="label3" color="backgroundTertiary">
-          12:00
+          {X1Value}
         </Text>
       </Animated.View>
       <Animated.View style={[{ position: 'absolute', left: ns(203.5), bottom: ns(2.5) }]}>
         <Text style={{ fontFamily }} variant="label3" color="backgroundTertiary">
-          00:00
+          {X3Value}
         </Text>
       </Animated.View>
     </>
