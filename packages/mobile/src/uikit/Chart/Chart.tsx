@@ -47,14 +47,14 @@ const ChartComponent: React.FC = () => {
   const [cachedData, setCachedData] = useState([]);
 
   useEffect(() => {
-    if (data) {
+    if (data && cachedData && !isFetching && !isLoading) {
       setCachedData(
         selectedPeriod === ChartPeriod.ONE_HOUR
           ? stepInterpolation(data.data)
           : data.data,
       );
     }
-  }, [data, selectedPeriod]);
+  }, [data, selectedPeriod, isFetching, isLoading]);
 
   const rates = useSelector(ratesRatesSelector);
   const fiatCurrency = useSelector(fiatCurrencySelector);
