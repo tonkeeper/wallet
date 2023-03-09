@@ -227,6 +227,7 @@
     "amount": {
       "recipient_label": "Send to:",
       "insufficient_balance": "Insufficient balance",
+      "less_than_min": "Minimum amount is %{minAmount} TON",
       "max": "Max",
       "send_all": "Remaining: %{amount}"
     },

@@ -27,6 +27,7 @@ interface Props {
   balance: string;
   currencyTitle: string;
   amount: SendAmount;
+  minAmount?: string;
   fiatRate: number;
   hideSwap?: boolean;
   setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;
@@ -40,6 +41,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     currencyTitle,
     amount,
     fiatRate,
+    minAmount,
     hideSwap = false,
     setAmount,
   } = props;
@@ -51,24 +53,29 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const isLockup = !!wallet?.ton.isLockup();
 
-  const { formattedBalance, balanceInputValue, isInsufficientBalance } = useMemo(() => {
-    const bigNum = new BigNumber(parseLocaleNumber(amount.value));
-    const balanceBigNum = new BigNumber(balance);
+  const { formattedBalance, balanceInputValue, isInsufficientBalance, isLessThanMin } =
+    useMemo(() => {
+      const bigNum = new BigNumber(parseLocaleNumber(amount.value));
+      const balanceBigNum = new BigNumber(balance);
 
-    const formattedBalanceDecimals = balanceBigNum.isGreaterThanOrEqualTo(1)
-      ? 2
-      : decimals;
+      const formattedBalanceDecimals = balanceBigNum.isGreaterThanOrEqualTo(1)
+        ? 2
+        : decimals;
 
-    return {
-      formattedBalance: formatCryptoCurrency(
-        balance,
-        currencyTitle,
-        formattedBalanceDecimals,
-      ),
-      balanceInputValue: formatInputAmount(balance, decimals),
-      isInsufficientBalance: !isLockup && bigNum.isGreaterThan(balanceBigNum),
-    };
-  }, [amount.value, balance, currencyTitle, decimals, isLockup]);
+      return {
+        formattedBalance: formatCryptoCurrency(
+          balance,
+          currencyTitle,
+          formattedBalanceDecimals,
+        ),
+        balanceInputValue: formatInputAmount(balance, decimals),
+        isInsufficientBalance: !isLockup && bigNum.isGreaterThan(balanceBigNum),
+        isLessThanMin:
+          minAmount !== undefined &&
+          bigNum.isGreaterThan(0) &&
+          bigNum.isLessThan(new BigNumber(minAmount)),
+      };
+    }, [amount.value, balance, currencyTitle, decimals, isLockup, minAmount]);
 
   const theme = useTheme();
 
@@ -233,8 +240,12 @@ const AmountInputComponent: React.FC<Props> = (props) => {
           >
             {t('send_screen_steps.amount.max')}
           </Button>
-          {isInsufficientBalance ? (
-            <S.Error>{t('send_screen_steps.amount.insufficient_balance')}</S.Error>
+          {isInsufficientBalance || isLessThanMin ? (
+            <S.Error>
+              {isInsufficientBalance
+                ? t('send_screen_steps.amount.insufficient_balance')
+                : t('send_screen_steps.amount.less_than_min', { minAmount })}
+            </S.Error>
           ) : (
             <S.SandAllLabel>
               {t('send_screen_steps.amount.send_all', {

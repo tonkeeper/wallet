@@ -1,6 +1,6 @@
 import { useTranslator } from '$hooks';
 import { useNavigation } from '$libs/navigation';
-import { MainStackRouteNames } from '$navigation';
+import { MainStackRouteNames, openDAppBrowser } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
 import { StakingListCell } from '$shared/components';
 import { Icon, List, ScrollHandler, Spacer, Text } from '$uikit';
@@ -20,7 +20,9 @@ export const StakingPools: FC<Props> = () => {
 
   const providerName = 'TON Whales';
 
-  const handleWarningPress = useCallback(() => {}, []);
+  const handleWarningPress = useCallback(() => {
+    openDAppBrowser('https://tonwhales.com/');
+  }, []);
 
   const handlePoolPress = useCallback(
     (poolAddress: string) => {

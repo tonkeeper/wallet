@@ -61,6 +61,8 @@ const AmountStepComponent: FC<Props> = (props) => {
     currencyTitle,
   } = useCurrencyToSend(CryptoCurrencies.Ton);
 
+  const minAmount = isWithdrawal ? '0' : '50';
+
   const balance = isWithdrawal ? stakingBalance : walletBalance;
 
   const wallet = useSelector(walletWalletSelector);
@@ -71,9 +73,11 @@ const AmountStepComponent: FC<Props> = (props) => {
     const bigNum = new BigNumber(parseLocaleNumber(amount.value));
     return {
       isReadyToContinue:
-        bigNum.isGreaterThan(0) && (isLockup || bigNum.isLessThanOrEqualTo(balance)),
+        bigNum.isGreaterThan(0) &&
+        (isLockup || bigNum.isLessThanOrEqualTo(balance)) &&
+        bigNum.isGreaterThanOrEqualTo(new BigNumber(minAmount)),
     };
-  }, [amount.value, balance, isLockup]);
+  }, [amount.value, balance, isLockup, minAmount]);
 
   const { keyboardHeightStyle } = useReanimatedKeyboardHeight();
 
@@ -128,6 +132,7 @@ const AmountStepComponent: FC<Props> = (props) => {
                 balance,
                 currencyTitle,
                 amount,
+                minAmount,
                 fiatRate: fiatRate.today,
                 setAmount,
               }}

@@ -6,6 +6,7 @@ import { BottomButtonWrap, BottomButtonWrapHelper, NextCycle } from '$shared/com
 import { CryptoCurrencies } from '$shared/constants';
 import { Button, ScrollHandler, Separator, Spacer, Text } from '$uikit';
 import { RouteProp } from '@react-navigation/native';
+import BigNumber from 'bignumber.js';
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import * as S from './StakingPoolDetails.style';
@@ -30,11 +31,13 @@ export const StakingPoolDetails: FC<Props> = (props) => {
 
   const poolName = 'Tonkeeper #1';
 
-  const balance = useFiatValue(CryptoCurrencies.Ton, '0');
-
-  const pending = useFiatValue(CryptoCurrencies.Ton, '400');
-
   const hasDeposit = poolAddress === 'poolAddress2';
+
+  const balance = useFiatValue(CryptoCurrencies.Ton, hasDeposit ? '100' : '0');
+
+  const pending = useFiatValue(CryptoCurrencies.Ton, hasDeposit ? '0' : '400');
+
+  const hasPending = new BigNumber(pending.amount).isGreaterThan(0);
 
   const [detailsVisible, setDetailsVisible] = useState(!hasDeposit);
 
@@ -130,16 +133,20 @@ export const StakingPoolDetails: FC<Props> = (props) => {
               </S.BalanceRight>
             </S.BalanceContainer>
             <Spacer y={16} />
-            <S.BalanceContainer>
-              <Text variant="label1">{t('staking.details.pending')}</Text>
-              <S.BalanceRight>
-                <Text variant="label1">{pending.amount} TON</Text>
-                <Text variant="body2" color="foregroundSecondary">
-                  {pending.fiatInfo.amount}
-                </Text>
-              </S.BalanceRight>
-            </S.BalanceContainer>
-            <Spacer y={16} />
+            {hasPending ? (
+              <>
+                <S.BalanceContainer>
+                  <Text variant="label1">{t('staking.details.pending')}</Text>
+                  <S.BalanceRight>
+                    <Text variant="label1">{pending.amount} TON</Text>
+                    <Text variant="body2" color="foregroundSecondary">
+                      {pending.fiatInfo.amount}
+                    </Text>
+                  </S.BalanceRight>
+                </S.BalanceContainer>
+                <Spacer y={16} />
+              </>
+            ) : null}
             <NextCycle timestamp={nextCycleTimestamp} frequency={36} />
             <Spacer y={16} />
             {detailsVisible ? (
