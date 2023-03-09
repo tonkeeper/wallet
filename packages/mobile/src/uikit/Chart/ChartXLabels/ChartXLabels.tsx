@@ -49,8 +49,8 @@ export const ChartXLabelsComponent: React.FC<ChartXLabelsProps> = (props) => {
           break;
       }
       if (!text) return;
-      const subbedText = subMonths(new Date(parseInt(text) * 1000), 1);
-      onUpdate(format(subbedText, mode, { locale: getLocale() }));
+      const date = new Date(parseInt(text) * 1000);
+      onUpdate(format(date, mode, { locale: getLocale() }));
     },
     [props.currentPeriod],
   );
