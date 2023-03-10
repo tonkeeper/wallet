@@ -188,7 +188,11 @@ class TonConnectService {
       const currentWalletAddress = state.wallet?.address?.ton;
 
       let walletStateInit = '';
+      let publicKey = new Uint8Array();
       try {
+        if (state.wallet?.wallet?.vault?.tonPublicKey) {
+          publicKey = state.wallet.wallet.vault.tonPublicKey;
+        }
         if (state.wallet?.wallet) {
           const tonWallet = state.wallet.wallet.vault.tonWallet;
           const { stateInit } = await tonWallet.createStateInit();
@@ -200,6 +204,7 @@ class TonConnectService {
 
       const replyItems = ConnectReplyBuilder.createAutoConnectReplyItems(
         currentWalletAddress,
+        publicKey,
         walletStateInit,
       );
 

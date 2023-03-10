@@ -105,6 +105,7 @@ export class ConnectReplyBuilder {
   createReplyItems(
     addr: string,
     privateKey: Uint8Array,
+    publicKey: Uint8Array,
     walletStateInit: string,
   ): ConnectItemReply[] {
     const address = new TonWeb.utils.Address(addr).toString(false, true, true);
@@ -116,6 +117,7 @@ export class ConnectReplyBuilder {
             name: 'ton_addr',
             address,
             network: ConnectReplyBuilder.getNetwork(),
+            publicKey: Buffer.from(publicKey).toString('hex'),
             walletStateInit,
           };
 
@@ -135,6 +137,7 @@ export class ConnectReplyBuilder {
 
   static createAutoConnectReplyItems(
     addr: string,
+    publicKey: Uint8Array,
     walletStateInit: string,
   ): ConnectItemReply[] {
     const address = new TonWeb.utils.Address(addr).toString(false, true, true);
@@ -144,6 +147,7 @@ export class ConnectReplyBuilder {
         name: 'ton_addr',
         address,
         network: ConnectReplyBuilder.getNetwork(),
+        publicKey: Buffer.from(publicKey).toString('hex'),
         walletStateInit,
       },
     ];
