@@ -45,7 +45,7 @@ export function useWalletInfo(currency: CryptoCurrency) {
 
   const amountInUsd = useMemo(() => {
     return amountToUsd(balances[currency] || 0);
-  }, [balances, currency]);
+  }, [balances, currency, amountToUsd]);
 
   const fiatInfo = useMemo(() => {
     let percent = '0.0%';

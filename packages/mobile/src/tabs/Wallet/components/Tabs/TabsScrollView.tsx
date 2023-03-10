@@ -75,8 +75,6 @@ export const TabsScrollView = (props: TabsScrollViewProps) => {
   const heightOffsetStyle = useAnimatedStyle(() => {
     const s = dimensions.height - (tabBarHeight - (LargeNavBarHeight + 50)  - safeArea.bottom) - headerHeight.value - contentSize
 
-    console.log(s);
-
     return {
       // backgroundColor: 'red',
       width: dimensions.width,

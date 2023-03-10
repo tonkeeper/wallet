@@ -204,106 +204,112 @@ export const WalletScreen = memo(() => {
     </View>
   );
 
-  function renderContent() {
-    if (!wallet) {
-      return (
-        <>
-          <Screen.Header
-            backButton={false} 
-            title={t('wallet.screen_title')}
-            rightContent={<ScanQRButton />}
-          />
-          <Screen.ScrollView indent={false}>
-            {balanceSection}
 
-            <List>
-              <List.Item
-                title="Toncoin"
-                onPress={() => openWallet(CryptoCurrencies.Ton)}
-                leftContent={<TonIcon />}
-                chevron
-                subtitle={
-                  <ListItemRate
-                    price={balance.fiatPrice}
-                    trend={balance.trend}
+  function renderEmpty() {
+    return (
+      <>
+        <Screen.Header
+          backButton={false} 
+          title={t('wallet.screen_title')}
+          rightContent={<ScanQRButton />}
+        />
+        <Screen.ScrollView indent={false}>
+          {balanceSection}
+
+          <List>
+            <List.Item
+              title="Toncoin"
+              onPress={() => openWallet(CryptoCurrencies.Ton)}
+              leftContent={<TonIcon />}
+              chevron
+              subtitle={
+                <ListItemRate
+                  price={balance.fiatPrice}
+                  trend={balance.trend}
+                />
+              }
+            />
+          </List>
+        </Screen.ScrollView>
+        {isLoaded && !wallet && (
+          <S.CreateWalletButtonWrap style={{ bottom: tabBarHeight }}>
+            <S.CreateWalletButtonContainer skipHeader={false}>
+              <Button onPress={handleCreateWallet}>{t('balances_setup_wallet')}</Button>
+            </S.CreateWalletButtonContainer>
+          </S.CreateWalletButtonWrap>
+        )}
+      </>
+    );
+  }
+
+  function renderTabs() {
+    return (
+      <Tabs>
+        <Screen.Header
+          backButton={false} 
+          title={t('wallet.screen_title')}
+          rightContent={<ScanQRButton />}
+        />
+        <View style={{ flex: 1 }}>
+          <Tabs.Header>
+            {balanceSection}
+            <Tabs.Bar
+              onChange={({ value }) => setTab(value)}
+              value={tab}
+              items={[
+                { label: 'Tokens', value: 'tokens',  },
+                { label: 'Collectibles', value: 'collectibles' }
+              ]}
+            />
+          </Tabs.Header>
+          <Tabs.PagerView>
+            <Tabs.Section index={0}>
+              <Tabs.ScrollView
+                refreshControl={
+                  <RefreshControl
+                    onRefresh={handleRefresh}
+                    refreshing={isRefreshing && isFocused}
+                    tintColor={theme.colors.foregroundPrimary}
                   />
                 }
+              >
+                <TokenList balance={balance} tokens={tokens} />
+              </Tabs.ScrollView>
+            </Tabs.Section>
+            <Tabs.Section index={1}>
+              <Tabs.FlashList
+                refreshControl={
+                  <RefreshControl
+                    onRefresh={handleRefresh}
+                    refreshing={isRefreshing && isFocused}
+                    tintColor={theme.colors.foregroundPrimary}
+                  />
+                }
+                data={nfts}
+                numColumns={3}
+                contentContainerStyle={{ paddingHorizontal: 12 }}
+                estimatedItemSize={1000}
+                renderItem={({ item }) => (
+                  <NFTCardItem item={item} />
+                )}                
               />
-            </List>
-          </Screen.ScrollView>
-          {isLoaded && !wallet && (
-            <S.CreateWalletButtonWrap style={{ bottom: tabBarHeight }}>
-              <S.CreateWalletButtonContainer skipHeader={false}>
-                <Button onPress={handleCreateWallet}>{t('balances_setup_wallet')}</Button>
-              </S.CreateWalletButtonContainer>
-            </S.CreateWalletButtonWrap>
-          )}
-        </>
-      );
-    }
+            </Tabs.Section>
+          </Tabs.PagerView>
+        </View>
+      </Tabs>
+    );
+  }
 
-    const isTabs = true;
-
-    if (isTabs) {
-      return (
-        <Tabs>
-          <Screen.Header
-            backButton={false} 
-            title={t('wallet.screen_title')}
-            rightContent={<ScanQRButton />}
-          />
-          <View style={{ flex: 1 }}>
-            <Tabs.Header>
-              {balanceSection}
-              <Tabs.Bar
-                onChange={({ value }) => setTab(value)}
-                value={tab}
-                items={[
-                  { label: 'Tokens', value: 'tokens',  },
-                  { label: 'Collectibles', value: 'collectibles' }
-                ]}
-              />
-            </Tabs.Header>
-            <Tabs.PagerView>
-              <Tabs.Section index={0}>
-                <Tabs.ScrollView
-                  refreshControl={
-                    <RefreshControl
-                      onRefresh={handleRefresh}
-                      refreshing={isRefreshing && isFocused}
-                      tintColor={theme.colors.foregroundPrimary}
-                    />
-                  }
-                >
-                  <TokenList balance={balance} tokens={tokens} />
-                  {/* <NFTsList nfts={nfts} /> */}
-                </Tabs.ScrollView>
-              </Tabs.Section>
-              <Tabs.Section index={1}>
-                <Tabs.FlashList
-                  refreshControl={
-                    <RefreshControl
-                      onRefresh={handleRefresh}
-                      refreshing={isRefreshing && isFocused}
-                      tintColor={theme.colors.foregroundPrimary}
-                    />
-                  }
-                  data={nfts}
-                  numColumns={3}
-                  contentContainerStyle={{ paddingHorizontal: 12 }}
-                  estimatedItemSize={1000}
-                  renderItem={({ item }) => (
-                    <NFTCardItem item={item} />
-                  )}                
-                />
-              </Tabs.Section>
-            </Tabs.PagerView>
-          </View>
-        </Tabs>
-      );
-    } else {
-      return (
-        <Animated.ScrollView
+  function renderCompact() {
+    return (
+      <>
+        <Screen.Header
+          backButton={false} 
+          title={t('wallet.screen_title')}
+          rightContent={<ScanQRButton />}
+        />
+        <Screen.ScrollView
+          indent={false}
           refreshControl={
             <RefreshControl
               onRefresh={handleRefresh}
@@ -312,18 +318,34 @@ export const WalletScreen = memo(() => {
             />
           }
         >
+          {balanceSection}
           <TokenList balance={balance} tokens={tokens} />
           <NFTsList nfts={nfts} />
-        </Animated.ScrollView>
-      );
-    }
+        </Screen.ScrollView>
+      </>
+    );
   }
   
-  return (
-    <Screen>
-      {renderContent()}
-    </Screen>
-  );
+
+  if (!wallet) {
+    return (
+      <Screen>
+        {renderEmpty()}
+      </Screen>
+    );
+  } else if (tokens.list.length + nfts.length > 10) {
+    return (
+      <Screen>
+        {renderTabs()}
+      </Screen>
+    );
+  } else {
+    return (
+      <Screen>
+        {renderCompact()}
+      </Screen>
+    );
+  }
 });
 
 const styles = Steezy.create(({ colors }) => ({
