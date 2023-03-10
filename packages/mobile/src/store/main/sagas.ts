@@ -131,9 +131,14 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   const tonCustomIcon = yield call(MainDB.getTonCustomIcon);
   const jettonBalances = yield call(JettonsDB.getJettonBalances);
   const timeSyncedDismissed = yield call(MainDB.timeSyncedDismissedTimestamp);
+  const chartDefaultPeriod = yield call(MainDB.getChartSelectedPeriod);
 
   if (!isNewSecurityFlow) {
     yield put(mainActions.setUnlocked(true));
+  }
+
+  if (chartDefaultPeriod) {
+    yield put(mainActions.setChartPeriod(chartDefaultPeriod));
   }
 
   if (!serverConfig) {

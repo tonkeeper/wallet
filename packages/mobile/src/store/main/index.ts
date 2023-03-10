@@ -8,6 +8,7 @@ import {
   HideNotificationAction,
   MainState,
   SetAccentAction,
+  SetChartPeriodAction,
   SetFiatCurrencyAction,
   SetHasWalletAction,
   SetLogsAction,
@@ -24,7 +25,6 @@ import {
 } from '$store/main/interface';
 import { AccentKey } from '$styled';
 import { walletOldBalancesSelector, walletWalletSelector } from '$store/wallet';
-import { myNftsSelector, nftsSelector } from '$store/nfts';
 
 const initialState: MainState = {
   isInitiating: true,
@@ -43,6 +43,7 @@ const initialState: MainState = {
   accent: AccentKey.default,
   tonCustomIcon: null,
   alwaysShowV4R1: false,
+  chartPeriod: null,
 };
 
 export const { actions, reducer } = createSlice({
@@ -57,6 +58,10 @@ export const { actions, reducer } = createSlice({
       state.isInitiating = false;
       state.isHasWallet = isHasWallet;
       state.fiatCurrency = fiatCurrency;
+    },
+
+    setChartPeriod(state, action: SetChartPeriodAction) {
+      state.chartPeriod = action.payload;
     },
 
     setShowV4R1(state, action: SetShowV4R1) {
@@ -208,4 +213,9 @@ export const showV4R1Selector = createSelector(
 export const isTimeSyncedSelector = createSelector(
   mainSelector,
   (state) => state.isTimeSynced,
+);
+
+export const chartPeriodSelector = createSelector(
+  mainSelector,
+  (state) => state.chartPeriod,
 );
