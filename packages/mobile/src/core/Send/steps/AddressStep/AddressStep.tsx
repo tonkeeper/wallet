@@ -15,10 +15,13 @@ import React, {
 } from 'react';
 import { Keyboard } from 'react-native';
 import * as S from './AddressStep.style';
-import { BottomButtonWrap, BottomButtonWrapHelper } from '$shared/components';
+import {
+  BottomButtonWrap,
+  BottomButtonWrapHelper,
+  StepScrollView,
+} from '$shared/components';
 import { SendSteps, SuggestedAddress, SuggestedAddressType } from '../../Send.interface';
 import { AddressInput } from './components/AddressInput/AddressInput';
-import { StepScrollView } from '../../StepScrollView/StepScrollView';
 import { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import {
   WordHintsPopup,
@@ -78,11 +81,10 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
         try {
           const domain = value.toLowerCase();
           const resolvedDomain = await Tonapi.resolveDns(domain, signal);
-          
+
           if (resolvedDomain === 'aborted') {
             return 'aborted';
-          }
-          else if (resolvedDomain?.wallet?.address) {
+          } else if (resolvedDomain?.wallet?.address) {
             return new TonWeb.Address(resolvedDomain.wallet.address).toString(
               true,
               true,
@@ -152,13 +154,12 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           dnsAbortController = abortController;
 
           const resolvedDomain = await getAddressByDomain(domain, abortController.signal);
-          
+
           if (resolvedDomain === 'aborted') {
             setDnsLoading(false);
             dnsAbortController = null;
             return true;
-          }
-          else if (resolvedDomain) {
+          } else if (resolvedDomain) {
             setRecipient({ address: resolvedDomain, domain });
             setDnsLoading(false);
             dnsAbortController = null;

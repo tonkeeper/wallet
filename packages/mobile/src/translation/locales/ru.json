@@ -224,7 +224,9 @@
     "amount": {
       "recipient_label": "Кому:",
       "insufficient_balance": "Недостаточно средств",
-      "send_all": "Отправить все %{amount}"
+      "less_than_min": "Minimum amount is %{minAmount} TON",
+      "max": "Максимум",
+      "send_all": "Доступно: %{amount}"
     },
     "comfirm": {
       "comment_label": "Комментарий",
@@ -615,7 +617,7 @@
   },
 
   "chart": {
-    "price": "Стоимость",
+    "price": "Цена",
     "periods": {
       "1Y": "Г",
       "6M": "6M",
@@ -671,5 +673,84 @@
   },
 
   "transfer_deeplink_address_error": "Неверный адрес получателя",
-  "transfer_deeplink_amount_error": "Некорректный запрос суммы"
+  "transfer_deeplink_amount_error": "Некорректный запрос суммы",
+
+  "staking": {
+    "staking_provider_desc": "Minimum deposit from %{minDeposit} TON.\nEarn up to to %{maxApy}%.",
+    "staking_pool_desc": "APY ≈ %{apy}%, pool fee %{feePercentage}%",
+    "top_up": "Top up",
+    "withdrawal_request": "Withdrawal request",
+    "withdraw": "Withdraw",
+    "deposit": "Deposit",
+    "confirm_action": "Confirm action",
+    "warning": {
+      "title": "Warning",
+      "desc": "Staking based on third-party smart contracts. We are not responsible for their work.",
+      "about": "About %{name}"
+    },
+    "details": {
+      "show_details": "Details",
+      "balance": "Staking balance",
+      "pending": "Pending deposit",
+      "next_cycle": {
+        "title": "Next cycle",
+        "desc": "All transactions take effect once the cycle ends",
+        "time": "in %{time}"
+      },
+      "about_pool": "About pool",
+      "frequency": {
+        "label": "Reward frequency",
+        "value": "Every %{value} hours"
+      },
+      "apy": {
+        "label": "Est. APY rate",
+        "value": "≈ %{value}%"
+      },
+      "min_deposit": {
+        "label": "Minimal deposit",
+        "value": "%{value} TON"
+      },
+      "pool_fee": {
+        "label": "Pool fee",
+        "value": "%{value}%"
+      },
+      "deposit_fee": {
+        "label": "Deposit fee",
+        "value": "%{value} TON"
+      },
+      "withdrawal_request_fee": {
+        "label": "Withdrawal request fee",
+        "value": "%{value} TON"
+      },
+      "withdrawal_complete_fee": {
+        "label": "Complete withdrawal fee",
+        "value": "%{value} TON"
+      }
+    },
+    "rewards": {
+      "title": "Your yearly rewards",
+      "after_top_up": "After top up",
+      "current": "Current",
+      "value": "≈ %{value} TON"
+    },
+    "confirm": {
+      "recipient": {
+        "label": "Recipient"
+      },
+      "address": {
+        "label": "Recipient address"
+      },
+      "amount": {
+        "label": "Amount",
+        "value": "%{value} TON"
+      },
+      "fee": {
+        "label": "Fee",
+        "value": "≈ %{value} TON"
+      },
+      "message": {
+        "label": "Message"
+      }
+    }
+  }
 }

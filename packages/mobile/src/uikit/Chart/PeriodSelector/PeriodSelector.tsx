@@ -47,7 +47,7 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = (props) => {
       Haptics.selection();
       props.onSelect(value);
     },
-    [props.onSelect],
+    [props],
   );
 
   return (

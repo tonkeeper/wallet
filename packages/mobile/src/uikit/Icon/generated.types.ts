@@ -54,11 +54,9 @@ export type IconNames =
   | 'ic-explore-28'
   | 'ic-flash-28'
   | 'ic-gear-28'
-  | 'ic-globe-16'
   | 'ic-home-28'
   | 'ic-jetton-28'
   | 'ic-key-28'
-  | 'ic-magnifying-glass-16'
   | 'ic-minus-28'
   | 'ic-money-28'
   | 'ic-nft-collection-28'
@@ -158,11 +156,9 @@ export const AllIcons = [
   'ic-explore-28',
   'ic-flash-28',
   'ic-gear-28',
-  'ic-globe-16',
   'ic-home-28',
   'ic-jetton-28',
   'ic-key-28',
-  'ic-magnifying-glass-16',
   'ic-minus-28',
   'ic-money-28',
   'ic-nft-collection-28',
@@ -263,11 +259,9 @@ export const IconSizes = {
   'ic-explore-28': 28,
   'ic-flash-28': 28,
   'ic-gear-28': 28,
-  'ic-globe-16': 16,
   'ic-home-28': 28,
   'ic-jetton-28': 28,
   'ic-key-28': 28,
-  'ic-magnifying-glass-16': 16,
   'ic-minus-28': 28,
   'ic-money-28': 28,
   'ic-nft-collection-28': 28,

@@ -53,6 +53,7 @@
                 <data android:scheme="ton"/>
                 <data android:scheme="ton-subscriptions"/>
                 <data android:scheme="tonkeeper"/>
+                <data android:scheme="tc"/>
             </intent-filter>
 
             <intent-filter android:autoVerify="true">

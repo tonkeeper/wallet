@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { t } from '$translation';
 import { Text } from '$uikit/Text/Text';
 import { useChartData } from '@rainbow-me/animated-charts';
-import { format, subMonths } from 'date-fns';
+import { format } from 'date-fns';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { getLocale } from '$utils';
 import { Platform } from 'react-native';
@@ -30,10 +30,10 @@ export const PriceLabel: React.FC<{ selectedPeriod: ChartPeriod }> = (props) => 
         setState(t('chart.price'));
         return;
       }
-      const subbedText = subMonths(new Date(parseInt(text) * 1000), 1);
+      const date = new Date(parseInt(text) * 1000);
       setState(
         format(
-          subbedText,
+          date,
           `${getLocale().code === 'ru' ? 'cccccc' : 'ccc'}, dd MMM ${
             shouldShowHoursLabel ? 'HH:mm' : ''
           }`,
