@@ -25,6 +25,7 @@ export const TabsHeader: React.FC<TabsHeaderProps> = (props) => {
   
   return (
     <Animated.View
+      pointerEvents="box-none"
       style={[balanceStyle, {
         position: 'absolute',
         top: 0,

@@ -147,8 +147,8 @@ export const WalletScreen = memo(() => {
   }, [dispatch]);
 
   const balanceSection = (
-    <View style={styles.mainSection}>
-      <View style={styles.amount}>
+    <View style={styles.mainSection} pointerEvents="box-none">
+      <View style={styles.amount} pointerEvents="box-none">
         <Text variant="num2">
           {balance.fiatValue}
         </Text>

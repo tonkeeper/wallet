@@ -39,6 +39,7 @@ export const Cont = styled(Animated.View)`
   height: ${hNs(NavBarHeight - 0.5)}px;
   z-index: 2;
   border-bottom-width: ${ns(0.5)}px;
+  border-bottom-color: transparent;
 `;
 
 export const Content = styled.View`

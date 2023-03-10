@@ -86,44 +86,43 @@ export const TabsBarComponent = (props: TabsBarProps) => {
   });
 
   return (
-    <Animated.View style={[]}>
-      <Animated.View 
-        style={[
-          containerStyle,
-          indent && styles.indent, 
-          styles.center,
-          styles.wrap, borderStyle,
-          { backgroundColor: theme.colors.backgroundPrimary },
-        ]}
-      >
-        <Animated.View style={[styles.container]}>
-          {props.items.map((item, index) => (
-            <TouchableOpacity
-              onLayout={(event) => handleLayout(index, event)}
-              onPress={() => {
-                props.onChange(item, index);
-                setActiveIndex(index);
-                // scrollToIndex(index);
-              }}
-              key={`tab-${index}`}
-              activeOpacity={0.6}
-            >
-              <View style={styles.item}>
-                <WrapText index={index} pageOffset={pageOffset}>
-                  {item.label}
-                </WrapText>
-              </View>
-            </TouchableOpacity>
-          ))}
-          <Animated.View
-            pointerEvents="none" 
-            style={[
-              styles.indicator,
-              indicatorAnimatedStyle,
-              { backgroundColor: theme.colors.accentPrimary }
-            ]} 
-          />
-        </Animated.View>
+    <Animated.View
+      pointerEvents="box-none"
+      style={[
+        containerStyle,
+        indent && styles.indent, 
+        styles.center,
+        styles.wrap, borderStyle,
+        { backgroundColor: theme.colors.backgroundPrimary },
+      ]}
+    >
+      <Animated.View style={[styles.container]} pointerEvents="box-none">
+        {props.items.map((item, index) => (
+          <TouchableOpacity
+            onLayout={(event) => handleLayout(index, event)}
+            onPress={() => {
+              props.onChange(item, index);
+              setActiveIndex(index);
+              // scrollToIndex(index);
+            }}
+            key={`tab-${index}`}
+            activeOpacity={0.6}
+          >
+            <View style={styles.item}>
+              <WrapText index={index} pageOffset={pageOffset}>
+                {item.label}
+              </WrapText>
+            </View>
+          </TouchableOpacity>
+        ))}
+        <Animated.View
+          pointerEvents="box-none"
+          style={[
+            styles.indicator,
+            indicatorAnimatedStyle,
+            { backgroundColor: theme.colors.accentPrimary }
+          ]} 
+        />
       </Animated.View>
     </Animated.View>
   );
