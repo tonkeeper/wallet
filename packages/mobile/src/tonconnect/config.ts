@@ -19,5 +19,5 @@ export const tonConnectDeviceInfo: DeviceInfo = {
   appName: RNDeviceInfo.getApplicationName(),
   appVersion: RNDeviceInfo.getReadableVersion(),
   maxProtocolVersion: CURRENT_PROTOCOL_VERSION,
-  features: ['SendTransaction'],
+  features: ['SendTransaction', { name: 'SendTransaction', maxMessages: 4 }],
 };
