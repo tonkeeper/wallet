@@ -8,12 +8,19 @@ export type OldWalletBalanceItem = {
   balance: string;
 };
 
+export type Address = {
+  friendlyAddress: string;
+  rawAddress: string;
+  version: string;
+}
+
 export interface WalletState {
   isLoaded: boolean;
   isRefreshing: boolean;
   generatedVault: UnlockedVault | null;
   version: SelectableVersion;
   wallet: Wallet | null;
+  readableAddress: Address | null;
   currencies: CryptoCurrency[];
   balances: { [index: string]: string };
   address: { [index: string]: string };
@@ -22,6 +29,8 @@ export interface WalletState {
 
 export type SetGeneratedVaultAction = PayloadAction<UnlockedVault>;
 export type SetWalletAction = PayloadAction<Wallet>;
+export type SetReadableAddress = PayloadAction<Address | null>;
+
 export type RestoreWalletAction = PayloadAction<{
   mnemonics: string;
   config: any;

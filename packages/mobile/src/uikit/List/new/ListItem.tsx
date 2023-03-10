@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { TextStyle } from 'react-native';
 import { Steezy, StyleProp } from '$styles';
-import { TouchableHighlight, View, SText } from '$uikit';
+import { TouchableHighlight, View, SText, Icon } from '$uikit';
 import { DarkTheme } from '$styled';
 import FastImage from 'react-native-fast-image';
 import Animated, { useSharedValue } from 'react-native-reanimated';
@@ -18,6 +18,8 @@ interface ListItemProps {
   valueStyle?: StyleProp<TextStyle>;
 
   picture?: string;
+
+  chevron?: boolean;
 
   leftContent?: LeftContentFN | React.ReactNode;
   rightContent?: () => React.ReactNode;
@@ -114,6 +116,10 @@ export const ListItem = memo<ListItemProps>((props) => {
               {props.subvalue}
             </SText>
           ) : props.subvalue}
+
+          {props.chevron && (
+            <Icon name="ic-chevron-right-16" />
+          )}
         </View>
       </View>
     </TouchableHighlight>

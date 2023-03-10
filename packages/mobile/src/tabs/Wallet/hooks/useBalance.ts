@@ -41,7 +41,7 @@ export const useBalance = () => {
     const price = points.length > 0 ? points[points.length - 1].y * fiatRate : 0;
 
     return formatFiatCurrencyAmount(price.toFixed(2), fiatCurrency);
-  }, []);
+  }, [charts, fiatCurrency, rates]);
     
   const formattedAmount = useMemo(() => {
     return formatCryptoCurrency(
@@ -51,7 +51,7 @@ export const useBalance = () => {
       2,
       true,
     )
-  }, []);
+  }, [amount, currencyPrepared]);
 
   const amountToFiat = useCallback((amount: string) => {
     const amountInUsd = amountToUsd(amount);
@@ -62,7 +62,7 @@ export const useBalance = () => {
     }
 
     return formatFiatCurrencyAmount('0.00', fiatCurrency);
-  }, [amountToUsd]);
+  }, [amountToUsd, fiatCurrency]);
 
   const oldVersions = useMemo(() => {
     return oldWalletBalances.reduce((acc, item) => {

@@ -1,12 +1,12 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { Linking, RefreshControl, View } from 'react-native';
+import { Linking, RefreshControl, StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useIsFocused } from '@react-navigation/native';
 
 import * as S from '../../core/Balances/Balances.style';
-import { Button, Icon, InternalNotification, Loader, ScrollHandler, Text } from '$uikit';
+import { Button, Icon, InternalNotification, Loader, NavBar, Screen, ScrollHandler, Text } from '$uikit';
 import {
   useAppStateActive,
   usePrevious,
@@ -20,6 +20,7 @@ import {
   CryptoCurrencies,
   isServerConfigLoaded,
   LargeNavBarHeight,
+  NavBarHeight,
   SecondaryCryptoCurrencies,
   TabletMaxWidth,
 } from '$shared/constants';
@@ -29,16 +30,14 @@ import { mainActions, mainSelector } from '$store/main';
 import { InternalNotificationProps } from '$uikit/InternalNotification/InternalNotification.interface';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { getLastRefreshedAt, MainDB } from '$database';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { store } from '$store';
 import { jettonsSelector } from '$store/jettons';
-import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import { toastActions } from '$store/toast';
 import Clipboard from '@react-native-community/clipboard';
+import { useNavigation } from '$libs/navigation';
 
 export const ActivityScreen: FC = () => {
-  const deeplinking = useDeeplinking();
+  const nav = useNavigation();
   const t = useTranslator();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -57,13 +56,6 @@ export const ActivityScreen: FC = () => {
     eventsInfo,
     canLoadMore,
   } = useSelector(eventsSelector);
-  const {
-    badHosts,
-    isBadHostsDismissed,
-    internalNotifications,
-    timeSyncedDismissedTimestamp,
-    isTimeSynced,
-  } = useSelector(mainSelector);
 
   const netInfo = useNetInfo();
   const prevNetInfo = usePrevious(netInfo);
@@ -95,18 +87,6 @@ export const ActivityScreen: FC = () => {
   useEffect(() => {
     setNoSignalDismissed(false);
   }, [netInfo.isConnected]);
-
-  const handleCreateWallet = useCallback(() => {
-    openRequireWalletModal();
-  }, []);
-
-  const handleCopyAddress = useCallback(() => {
-    if (address.ton) {
-      Clipboard.setString(address.ton);
-      dispatch(toastActions.success(t('address_copied')));
-      triggerImpactLight();
-    }
-  }, [address]);
 
   const handleRefresh = useCallback(() => {
     dispatch(walletActions.refreshBalancesPage(true));
@@ -202,7 +182,7 @@ export const ActivityScreen: FC = () => {
           width: '100%',
           maxWidth: ns(TabletMaxWidth),
           alignSelf: 'center',
-          paddingTop: ns(LargeNavBarHeight),
+          paddingTop: ns(NavBarHeight) + ns(4),
           paddingHorizontal: ns(16),
           paddingBottom: tabBarHeight - ns(20),
         }}
@@ -217,27 +197,83 @@ export const ActivityScreen: FC = () => {
     }
   }, [netInfo.isConnected, prevNetInfo.isConnected, handleRefresh, dispatch]);
 
+  const handlePressRecevie = React.useCallback(() => {
+    if (wallet) {
+      nav.go('Receive', { 
+        currency: 'ton',
+        isFromMainScreen: true
+      });
+    } else {
+      openRequireWalletModal();
+    }
+  }, [wallet]);
+
+
+  const handlePressBuy = React.useCallback(() => {
+    if (wallet) {
+      nav.openModal('Exchange', { category: 'buy' });
+    } else {
+      openRequireWalletModal();
+    }
+  }, [wallet]);
+
+  if (isLoaded && (!wallet || Object.keys(eventsInfo).length < 1)) {
+    return (
+      <Screen>
+        <Screen.ScrollView contentContainerStyle={styles.emptyScrollView}>
+          <View style={styles.emptyContainer}>
+            <Text variant="h2" style={{ textAlign: 'center', marginBottom: ns(4) }}>
+              {t('activity.empty_transaction_title')}
+            </Text>
+            <Text variant="body1" color="textSecondary">
+              {t('activity.empty_transaction_caption')}
+            </Text>
+
+            <View style={styles.emptyButtons}>
+              <Button 
+                style={{ marginRight: ns(12) }}
+                onPress={handlePressBuy}
+                size="medium_rounded" 
+                mode="secondary"
+              >
+                {t('activity.buy_toncoin_btn')}
+              </Button>
+              <Button 
+                onPress={handlePressRecevie}
+                size="medium_rounded" 
+                mode="secondary"
+              >
+                {t('activity.receive_btn')}
+              </Button>
+            </View>
+          </View>
+        </Screen.ScrollView>
+      </Screen>
+    )
+  }
+
   return (
     <S.Wrap>
-      <ScrollHandler
-        navBarTitle={t('activity.screen_title')}
-        onPress={handleCopyAddress}
-        hitSlop={{
-          top: 22,
-          bottom: 16,
-          left: 16,
-          right: 22,
-        }}
-      >
+      <ScrollHandler navBarTitle={t('activity.screen_title')}>
         {renderContent()}
       </ScrollHandler>
-      {/* {isLoaded && !wallet && (
-        <S.CreateWalletButtonWrap style={{ bottom: tabBarHeight }}>
-          <S.CreateWalletButtonContainer>
-            <Button onPress={handleCreateWallet}>{t('balances_setup_wallet')}</Button>
-          </S.CreateWalletButtonContainer>
-        </S.CreateWalletButtonWrap>
-      )} */}
     </S.Wrap>
   );
 };
+
+const styles = StyleSheet.create({
+  emptyScrollView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyButtons: {
+    flexDirection: 'row',
+    marginTop: ns(24)
+  }
+})

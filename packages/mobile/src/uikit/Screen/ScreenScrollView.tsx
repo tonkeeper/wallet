@@ -19,7 +19,7 @@ interface ScreenScrollView extends ScrollViewProps {
 }
 
 export const ScreenScrollView = memo(forwardRef<Animated.ScrollView, ScreenScrollView>((props, ref) => {
-  const { indent } = props;
+  const { indent = true } = props;
   const tabBarHeight = useWrapBottomTabBarHeight();
   const { contentScrollHandler } = useScreenScroll();
   
@@ -29,7 +29,7 @@ export const ScreenScrollView = memo(forwardRef<Animated.ScrollView, ScreenScrol
       paddingBottom: tabBarHeight,
       // paddingTop: ns(NavBarHeight),
     }, 
-    props.style
+    props.contentContainerStyle
   ];
 
   return (

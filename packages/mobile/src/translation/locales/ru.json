@@ -309,9 +309,13 @@
   },
 
   "activity": {
-    "screen_title": "Activity",
-    "sent": "Sent",
-    "received": "Received"
+    "screen_title": "Активность",
+    "sent": "Отправить",
+    "received": "Received",
+    "empty_transaction_title":"Ваша активность будет показана здесь",
+    "empty_transaction_caption": "Совершите первую транзакцию!",
+    "buy_toncoin_btn": "Купить Toncoin",
+    "receive_btn": "Получить"
   },
 
   "browser": {

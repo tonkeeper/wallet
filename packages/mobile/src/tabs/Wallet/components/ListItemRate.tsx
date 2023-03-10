@@ -4,7 +4,7 @@ import { TonThemeColor } from '$styled';
 import { Text } from '$uikit';
 
 interface ListItemRateProps {
-  percent: string;
+  percent?: string;
   price: string;
   trend: string;
 }
@@ -24,12 +24,14 @@ export const ListItemRate = memo<ListItemRateProps>((props) => (
     >
       {props.price}
     </Text>
-    <Text
-      color={trend2color[props.trend]}
-      variant="body2"
-    >
-      {props.percent}
-    </Text>
+    {!!props.percent && (
+      <Text
+        color={trend2color[props.trend]}
+        variant="body2"
+      >
+        {props.percent}
+      </Text>
+    )}
   </View>
 ));
 

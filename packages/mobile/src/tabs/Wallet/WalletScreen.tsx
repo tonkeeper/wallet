@@ -11,7 +11,7 @@ import TonWeb from 'tonweb';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { nftsSelector } from '$store/nfts';
-import { openJetton, openJettonsList, openWallet } from '$navigation';
+import { openJetton, openJettonsList, openRequireWalletModal, openWallet } from '$navigation';
 import { formatAmountAndLocalize, maskifyAddress, statusBarHeight } from '$utils';
 import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
@@ -24,6 +24,8 @@ import { CryptoCurrencies } from '$shared/constants';
 import Animated from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Tabs } from './components/Tabs';
+import * as S from '../../core/Balances/Balances.style';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 type TokenInfo = {
   address: WalletAddress;
@@ -89,32 +91,9 @@ const useNFTs = () => {
 
 const useWallet = () => {
   const wallet = useSelector(walletWalletSelector);
-  const [address, setAddress] = React.useState<{
-    friendlyAddress: string;
-    rawAddress: string;
-    version: string;
-  } | null>(null);
 
-  React.useEffect(() => {
-    (async () => {
-      if (wallet) {
-        const rawAddress = await wallet.vault.getRawTonAddress();
-        const friendlyAddress = await wallet.vault.getTonAddress();
-
-        if (rawAddress && friendlyAddress) {
-          setAddress({
-            friendlyAddress, 
-            rawAddress,
-            version: 'v3R1'
-          });
-        }
-        
-      }
-    })();
-  }, []);
-
-  if (wallet && address) {
-    return { address };
+  if (wallet && wallet.address) {
+    return { address: wallet.address };
   }
 
   return null;
@@ -122,6 +101,7 @@ const useWallet = () => {
 
 export const WalletScreen = memo(() => {
   const [tab, setTab] = useState<string>('tokens');
+  const tabBarHeight = useBottomTabBarHeight();
   const dispatch = useDispatch();
   const theme = useTheme();
   const nav = useNavigation();
@@ -131,16 +111,45 @@ export const WalletScreen = memo(() => {
 
   const balance = useBalance();
 
-  const { isRefreshing } = useSelector(walletSelector);
+  const { isRefreshing, isLoaded } = useSelector(walletSelector);
   const isFocused = useIsFocused();
   
-  const handlePressSell = () => nav.openModal('Exchange', { category: 'sell' });
-  const handlePressBuy = () => nav.openModal('Exchange', { category: 'buy' });
-  const handlePressSend = () => nav.go('Send', {});
-  const handlePressRecevie = () => nav.go('Receive', { 
-    currency: 'ton',
-    isFromMainScreen: true
-  });
+  const handlePressSell = React.useCallback(() => {
+    if (wallet) {
+      nav.openModal('Exchange', { category: 'sell' });
+    } else {
+      openRequireWalletModal();
+    }
+  }, [wallet]);
+
+  const handlePressBuy = React.useCallback(() => {
+    if (wallet) {
+      nav.openModal('Exchange', { category: 'buy' });
+    } else {
+      openRequireWalletModal();
+    }
+  }, [wallet]);
+
+  const handlePressSend = React.useCallback(() => {
+    if (wallet) {
+      nav.go('Send', {});
+    } else {
+      openRequireWalletModal();
+    }
+  }, [wallet]);
+
+  const handlePressRecevie = React.useCallback(() => {
+    if (wallet) {
+      nav.go('Receive', { 
+        currency: 'ton',
+        isFromMainScreen: true
+      });
+    } else {
+      openRequireWalletModal();
+    }
+  }, [wallet]);
+
+  const handleCreateWallet = () => openRequireWalletModal();
 
   const handleRefresh = useCallback(() => {
     dispatch(walletActions.refreshBalancesPage(true));
@@ -156,6 +165,7 @@ export const WalletScreen = memo(() => {
           <TouchableOpacity 
             style={{ zIndex: 3 }}
             onPress={() => copyText(wallet.address.friendlyAddress)}
+            activeOpacity={0.6}
           >
             <Text
               style={styles.addressText.static} 
@@ -196,60 +206,100 @@ export const WalletScreen = memo(() => {
 
   function renderContent() {
     if (!wallet) {
-      return null;
+      return (
+        <>
+          <Screen.Header
+            backButton={false} 
+            title={t('wallet.screen_title')}
+            rightContent={<ScanQRButton />}
+          />
+          <Screen.ScrollView indent={false}>
+            {balanceSection}
+
+            <List>
+              <List.Item
+                title="Toncoin"
+                onPress={() => openWallet(CryptoCurrencies.Ton)}
+                leftContent={<TonIcon />}
+                chevron
+                subtitle={
+                  <ListItemRate
+                    price={balance.fiatPrice}
+                    trend={balance.trend}
+                  />
+                }
+              />
+            </List>
+          </Screen.ScrollView>
+          {isLoaded && !wallet && (
+            <S.CreateWalletButtonWrap style={{ bottom: tabBarHeight }}>
+              <S.CreateWalletButtonContainer skipHeader={false}>
+                <Button onPress={handleCreateWallet}>{t('balances_setup_wallet')}</Button>
+              </S.CreateWalletButtonContainer>
+            </S.CreateWalletButtonWrap>
+          )}
+        </>
+      );
     }
 
     const isTabs = true;
 
     if (isTabs) {
       return (
-        <>
-          <Tabs.Header>
-            {balanceSection}
-            <Tabs.Bar
-              onChange={({ value }) => setTab(value)}
-              value={tab}
-              items={[
-                { label: 'Tokens', value: 'tokens',  },
-                { label: 'Collectibles', value: 'collectibles' }
-              ]}
-            />
-          </Tabs.Header>
-          <Tabs.PagerView>
-            <Tabs.Section index={0}>
-              <Tabs.ScrollView
-                refreshControl={
-                  <RefreshControl
-                    onRefresh={handleRefresh}
-                    refreshing={isRefreshing && isFocused}
-                    tintColor={theme.colors.foregroundPrimary}
-                  />
-                }
-              >
-                <TokenList balance={balance} tokens={tokens} />
-                {/* <NFTsList nfts={nfts} /> */}
-              </Tabs.ScrollView>
-            </Tabs.Section>
-            <Tabs.Section index={1}>
-              <Tabs.FlashList
-                refreshControl={
-                  <RefreshControl
-                    onRefresh={handleRefresh}
-                    refreshing={isRefreshing && isFocused}
-                    tintColor={theme.colors.foregroundPrimary}
-                  />
-                }
-                data={nfts}
-                numColumns={3}
-                contentContainerStyle={{ paddingHorizontal: 12 }}
-                estimatedItemSize={1000}
-                renderItem={({ item }) => (
-                  <NFTCardItem item={item} />
-                )}                
+        <Tabs>
+          <Screen.Header
+            backButton={false} 
+            title={t('wallet.screen_title')}
+            rightContent={<ScanQRButton />}
+          />
+          <View style={{ flex: 1 }}>
+            <Tabs.Header>
+              {balanceSection}
+              <Tabs.Bar
+                onChange={({ value }) => setTab(value)}
+                value={tab}
+                items={[
+                  { label: 'Tokens', value: 'tokens',  },
+                  { label: 'Collectibles', value: 'collectibles' }
+                ]}
               />
-            </Tabs.Section>
-          </Tabs.PagerView>
-        </>
+            </Tabs.Header>
+            <Tabs.PagerView>
+              <Tabs.Section index={0}>
+                <Tabs.ScrollView
+                  refreshControl={
+                    <RefreshControl
+                      onRefresh={handleRefresh}
+                      refreshing={isRefreshing && isFocused}
+                      tintColor={theme.colors.foregroundPrimary}
+                    />
+                  }
+                >
+                  <TokenList balance={balance} tokens={tokens} />
+                  {/* <NFTsList nfts={nfts} /> */}
+                </Tabs.ScrollView>
+              </Tabs.Section>
+              <Tabs.Section index={1}>
+                <Tabs.FlashList
+                  refreshControl={
+                    <RefreshControl
+                      onRefresh={handleRefresh}
+                      refreshing={isRefreshing && isFocused}
+                      tintColor={theme.colors.foregroundPrimary}
+                    />
+                  }
+                  data={nfts}
+                  numColumns={3}
+                  contentContainerStyle={{ paddingHorizontal: 12 }}
+                  estimatedItemSize={1000}
+                  renderItem={({ item }) => (
+                    <NFTCardItem item={item} />
+                  )}                
+                />
+              </Tabs.Section>
+            </Tabs.PagerView>
+          </View>
+        </Tabs>
       );
     } else {
       return (
@@ -271,16 +321,7 @@ export const WalletScreen = memo(() => {
   
   return (
     <Screen>
-      <Tabs>
-        <Screen.Header
-          backButton={false} 
-          title={t('wallet.screen_title')}
-          rightContent={<ScanQRButton />}
-        />
-        <View style={{ flex: 1 }}>
-          {renderContent()}
-        </View>
-      </Tabs>
+      {renderContent()}
     </Screen>
   );
 });
@@ -347,6 +388,23 @@ const TokenList = ({
             />
           }
         />
+        {balance.oldVersions.map((item, key) => (
+          <List.Item 
+            key={`old-balance-${key}`}
+            onPress={handleMigrate(item.version)}
+            title={t('wallet.old_wallet_title')}
+            leftContent={<TonIcon transparent />}
+            value={item.amount.formatted}
+            subvalue={item.amount.fiat}
+            subtitle={
+              <ListItemRate
+                percent={balance.percent}
+                price={balance.fiatPrice}
+                trend={balance.trend}
+              />
+            }
+          />
+        ))}
         {tokens.list.map((item) => (
           <List.Item 
             key={item.address.rawAddress}
@@ -364,23 +422,6 @@ const TokenList = ({
             //     trend={item.rate.trend}
             //   />
             // )}
-          />
-        ))}
-        {balance.oldVersions.map((item, key) => (
-          <List.Item 
-            key={`old-balance-${key}`}
-            onPress={handleMigrate(item.version)}
-            title={t('wallet.old_wallet_title')}
-            leftContent={<TonIcon transparent />}
-            value={item.amount.formatted}
-            subvalue={item.amount.fiat}
-            subtitle={
-              <ListItemRate
-                percent={balance.percent}
-                price={balance.fiatPrice}
-                trend={balance.trend}
-              />
-            }
           />
         ))}
       </List>
