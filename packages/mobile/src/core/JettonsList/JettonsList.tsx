@@ -9,11 +9,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { jettonsActions, jettonsSelector } from '$store/jettons';
 import { Switch } from 'react-native';
 import { JettonBalanceModel, JettonVerification } from '$store/models';
+import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
+
 
 export const JettonsList: FC = () => {
   const t = useTranslator();
   const { excludedJettons } = useSelector(jettonsSelector);
   const { bottom: bottomInset } = useSafeAreaInsets();
+  const tabBarHeight = useBottomTabBarHeight();
   const dispatch = useDispatch();
 
   const onSwitchExcludedJetton = useCallback(
@@ -58,7 +61,7 @@ export const JettonsList: FC = () => {
       <ScrollHandler isLargeNavBar={false} navBarTitle={t('jettons_list_title')}>
         <AnimatedFlatList
           contentContainerStyle={{
-            paddingBottom: ns(16) + bottomInset,
+            paddingBottom: ns(16) + (tabBarHeight > 0 ? tabBarHeight : bottomInset),
             paddingHorizontal: ns(16),
             paddingTop: ns(16),
           }}

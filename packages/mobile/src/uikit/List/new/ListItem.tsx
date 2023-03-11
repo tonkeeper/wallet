@@ -55,6 +55,7 @@ export const ListItem = memo<ListItemProps>((props) => {
       onPressOut={handlePressOut}
       onPressIn={handlePressIn}
       onPress={props.onPress}
+      disabled={!props.onPress}
     >
       <View style={styles.container}>
         {hasLeftContent && (

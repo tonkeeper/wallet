@@ -3,7 +3,9 @@ import { FlashList, FlashListProps } from '@shopify/flash-list';
 import Animated, { runOnJS, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useTabCtx } from './TabsContainer';
 import { useCurrentTab } from './TabsSection';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useScrollToTop } from '@react-navigation/native';
+import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
+import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 
 interface TabsFlashListProps<TItem> extends FlashListProps<TItem> {
 
@@ -11,19 +13,15 @@ interface TabsFlashListProps<TItem> extends FlashListProps<TItem> {
 
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 
-const useWrapBottomTabBarHeight = () => {
-  try { // Fix crash 
-    return useBottomTabBarHeight();
-  } catch (err) {
-    return 0;
-  }  
-}
-
 export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem>) => {
   const { activeIndex, scrollAllTo, setScrollTo, headerOffsetStyle, contentOffset, scrollY, headerHeight } = useTabCtx();
   const { index } = useCurrentTab();
   const ref = useRef<FlashList<any>>(null);
-  const tabBarHeight = useWrapBottomTabBarHeight();
+  const tabBarHeight = useBottomTabBarHeight();
+
+  const { changeScrollOnJS } = useScrollHandler();
+
+  useScrollToTop(ref as any); // TODO: fix type
 
   useEffect(() => {
     setScrollTo(index, (y: number, animated?: boolean) => {
@@ -39,20 +37,27 @@ export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem
       if (activeIndex === index) {
         contentOffset.value = 0;
         scrollY.value = event.contentOffset.y;
+
+        runOnJS(changeScrollOnJS)(
+          event.contentOffset.y,
+          event.contentSize.height,
+          event.layoutMeasurement.height,
+        );
       }
     },
     onEndDrag(event) {
       if (activeIndex === index) {
         scrollY.value = event.contentOffset.y;
         contentOffset.value = event.contentOffset.y;
-        runOnJS(scrollAllTo)(index, event.contentOffset.y);
+        
+        runOnJS(scrollAllTo)(index, Math.min(event.contentOffset.y, headerHeight.value));
       }
     },
-    onMomentumEnd(event, context) {
+    onMomentumEnd(event) {
       if (activeIndex === index) {
         scrollY.value = event.contentOffset.y;
         contentOffset.value = event.contentOffset.y;
-        runOnJS(scrollAllTo)(index, event.contentOffset.y);
+        runOnJS(scrollAllTo)(index, Math.min(event.contentOffset.y, headerHeight.value));
       }
     },
     
@@ -70,7 +75,7 @@ export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem
       //   <Animated.View style={{ height: tabBarHeight }}/>
       // )}
       {...props}
-      contentContainerStyle={{ paddingBottom: tabBarHeight + 24, ...props.contentContainerStyle }}
+      contentContainerStyle={{ paddingBottom: tabBarHeight + 8, ...props.contentContainerStyle }}
     />
   );
 };

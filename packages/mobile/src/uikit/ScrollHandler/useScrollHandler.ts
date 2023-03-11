@@ -90,5 +90,5 @@ export const useScrollHandler = (snapOffset?: number, forceEnd?: boolean) => {
     [scrollRef, changeScrollOnJS],
   );
 
-  return { isSnapPointReached, scrollRef, scrollTop, scrollHandler };
+  return { isSnapPointReached, scrollRef, scrollTop, scrollHandler, changeScrollOnJS };
 };

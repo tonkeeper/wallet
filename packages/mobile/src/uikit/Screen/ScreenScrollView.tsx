@@ -1,18 +1,9 @@
 import React, { forwardRef, memo } from 'react';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { ScrollViewProps } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ns } from '$utils';
 import { useScreenScroll } from './context/ScreenScrollContext';
-import { LargeNavBarHeight, NavBarHeight } from '$shared/constants';
-
-const useWrapBottomTabBarHeight = () => {
-  try { // Fix crash 
-    return useBottomTabBarHeight();
-  } catch (err) {
-    return 0;
-  }  
-}
+import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 
 interface ScreenScrollView extends ScrollViewProps {
   indent?: boolean;
@@ -20,7 +11,7 @@ interface ScreenScrollView extends ScrollViewProps {
 
 export const ScreenScrollView = memo(forwardRef<Animated.ScrollView, ScreenScrollView>((props, ref) => {
   const { indent = true } = props;
-  const tabBarHeight = useWrapBottomTabBarHeight();
+  const tabBarHeight = useBottomTabBarHeight();
   const { contentScrollHandler } = useScreenScroll();
   
   const contentContainerStyle = [

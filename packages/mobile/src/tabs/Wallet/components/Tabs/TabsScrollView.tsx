@@ -6,17 +6,11 @@ import { useCurrentTab } from './TabsSection';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { LargeNavBarHeight } from '$shared/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useScrollToTop } from '@react-navigation/native';
+import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
 
 interface TabsScrollViewProps extends ScrollViewProps{
 
-}
-
-const useWrapBottomTabBarHeight = () => {
-  try { // Fix crash 
-    return useBottomTabBarHeight();
-  } catch (err) {
-    return 0;
-  }  
 }
 
 export const TabsScrollView = (props: TabsScrollViewProps) => {
@@ -27,6 +21,9 @@ export const TabsScrollView = (props: TabsScrollViewProps) => {
   const safeArea = useSafeAreaInsets();
   
   const ref = useRef<Animated.ScrollView>(null);
+  const { changeScrollOnJS } = useScrollHandler();
+
+  useScrollToTop(ref);
 
   const localScrollY = useSharedValue(0);
   const hasSpace = useSharedValue(true);
@@ -51,20 +48,26 @@ export const TabsScrollView = (props: TabsScrollViewProps) => {
         contentOffset.value = 0;
         scrollY.value = event.contentOffset.y;
         hasSpace.value = false;
+
+        runOnJS(changeScrollOnJS)(
+          event.contentOffset.y,
+          event.contentSize.height,
+          event.layoutMeasurement.height,
+        );
       }
     },
     onEndDrag(event) {
       if (activeIndex === index) {
         scrollY.value = event.contentOffset.y;
         contentOffset.value = event.contentOffset.y;
-        runOnJS(scrollAllTo)(index, event.contentOffset.y);
+        runOnJS(scrollAllTo)(index, Math.min(event.contentOffset.y, headerHeight.value));
       }
     },
     onMomentumEnd(event) {
       if (activeIndex === index) {
         scrollY.value = event.contentOffset.y;
         contentOffset.value = event.contentOffset.y;
-        runOnJS(scrollAllTo)(index, event.contentOffset.y);
+        runOnJS(scrollAllTo)(index, Math.min(event.contentOffset.y, headerHeight.value));
       }
     },
     

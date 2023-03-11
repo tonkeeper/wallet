@@ -9,15 +9,24 @@ import { useCallback, useMemo } from 'react';
 import { walletSelector } from '$store/wallet';
 import { truncateDecimal } from '$utils';
 import { Ton } from '$libs/Ton';
+import { useGetPrice } from '$hooks/useWalletInfo';
+
+type BalanceRate = {
+  percent: string;
+  price: string;
+  trend: string;
+}
 
 export const useBalance = () => {
-  const { amount, fiatInfo, priceDiff, amountToUsd } = useWalletInfo(CryptoCurrencies.Ton);
-  const { oldWalletBalances } = useSelector(walletSelector);
+  const { amount, fiatInfo, amountToUsd } = useWalletInfo(CryptoCurrencies.Ton);
+  const { oldWalletBalances, balances } = useSelector(walletSelector);
 
   const currency = CryptoCurrencies.Ton;
   const charts = useSelector(ratesChartsSelector);
   const fiatCurrency = useSelector(fiatCurrencySelector);
   const rates = useSelector(ratesRatesSelector);
+
+  const getPrice = useGetPrice();
 
   const currencyPrepared = useMemo(() => {
     let result = currency;
@@ -79,6 +88,42 @@ export const useBalance = () => {
     }, [] as any);
   }, [oldWalletBalances]);
 
+  const lockup = useMemo(() => {
+    const lockupList: { type: CryptoCurrencies; amount: string }[] = [];
+    const restricted = balances[CryptoCurrencies.TonRestricted];
+    const locked = balances[CryptoCurrencies.TonLocked];
+    
+    if (restricted) {
+      lockupList.push({ 
+        type: CryptoCurrencies.TonRestricted,
+        amount: restricted,
+      });
+    }
+
+    if (locked) {
+      lockupList.push({ 
+        type: CryptoCurrencies.TonLocked,
+        amount: locked
+      });
+    }
+
+    return lockupList.map((item) => {
+      const price = getPrice(item.type);
+
+      return {
+        type: item.type,
+        amount: {
+          value: Ton.fromNano(item.amount),
+          formatted: truncateDecimal(Ton.fromNano(item.amount), 2),
+          fiat: amountToFiat(Ton.fromNano(item.amount))
+        },
+        percent: price.fiatInfo.percent,
+        price: price.fiatInfo.amount,
+        trend: price.fiatInfo.trend
+      }
+    });
+  }, [balances, getPrice]);
+
   return {
     fiatValue: fiatInfo.amount,
     percent: fiatInfo.percent,
@@ -86,6 +131,7 @@ export const useBalance = () => {
     formattedAmount,
     fiatPrice,
     amount,
-    oldVersions
+    oldVersions,
+    lockup
   };
 };

@@ -1,6 +1,6 @@
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { t } from '$translation';
-import { Button, IconButton, IconButtonList, Screen, Text, View } from '$uikit';
+import { Button, IconButton, IconButtonList, InternalNotification, Screen, Text, View } from '$uikit';
 import { List } from '$uikit/List/new';
 import { Steezy } from '$styles';
 import { useNavigation } from '$libs/navigation';
@@ -20,12 +20,13 @@ import _ from 'lodash';
 import { useBalance } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
 import { TonIcon } from '../../components/TonIcon';
-import { CryptoCurrencies } from '$shared/constants';
-import Animated from 'react-native-reanimated';
+import { CryptoCurrencies, CurrencyLongName } from '$shared/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Tabs } from './components/Tabs';
 import * as S from '../../core/Balances/Balances.style';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useInternalNotifications } from './hooks/useInternalNotifications';
+import { mainActions } from '$store/main';
 
 type TokenInfo = {
   address: WalletAddress;
@@ -114,6 +115,16 @@ export const WalletScreen = memo(() => {
   const { isRefreshing, isLoaded } = useSelector(walletSelector);
   const isFocused = useIsFocused();
   
+  const notifications = useInternalNotifications();
+
+  // TODO: rewrite
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      dispatch(mainActions.mainStackInited());
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [dispatch]);
+
   const handlePressSell = React.useCallback(() => {
     if (wallet) {
       nav.openModal('Exchange', { category: 'sell' });
@@ -157,6 +168,18 @@ export const WalletScreen = memo(() => {
 
   const balanceSection = (
     <View style={styles.mainSection} pointerEvents="box-none">
+      
+      {notifications.map((notification, i) => (
+        <InternalNotification
+          key={i}
+          mode={notification.mode}
+          title={notification.title}
+          caption={notification.caption}
+          action={notification.action}
+          onPress={notification.onPress}
+          onClose={notification.onClose}
+        />
+      ))}
       <View style={styles.amount} pointerEvents="box-none">
         <Text variant="num2">
           {balance.fiatValue}
@@ -325,7 +348,6 @@ export const WalletScreen = memo(() => {
       </>
     );
   }
-  
 
   if (!wallet) {
     return (
@@ -333,7 +355,7 @@ export const WalletScreen = memo(() => {
         {renderEmpty()}
       </Screen>
     );
-  } else if (tokens.list.length + nfts.length > 10) {
+  } else if (tokens.list.length + nfts.length + 1 > 10) {
     return (
       <Screen>
         {renderTabs()}
@@ -353,11 +375,11 @@ const styles = Steezy.create(({ colors }) => ({
     position: 'relative',
   },
   mainSection: {
-    paddingTop: 29,
     paddingBottom: 24,
     paddingHorizontal: 16,
   },
   amount: {
+    paddingTop: 29,
     alignItems: 'center',
     marginBottom: 24.5
   },
@@ -410,6 +432,22 @@ const TokenList = ({
             />
           }
         />
+        {balance.lockup.map((item, key) => (
+           <List.Item
+            key={`lockup-${key}`}
+            title={CurrencyLongName[item.type]}
+            value={item.amount.formatted}
+            subvalue={item.amount.fiat}
+            leftContent={<TonIcon locked />}
+            subtitle={
+              <ListItemRate
+                percent={item.percent}
+                price={item.price}
+                trend={item.trend}
+              />
+            }
+          />
+        ))}
         {balance.oldVersions.map((item, key) => (
           <List.Item 
             key={`old-balance-${key}`}
