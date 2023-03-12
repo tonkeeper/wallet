@@ -6,6 +6,7 @@ import { useCurrentTab } from './TabsSection';
 import { useScrollToTop } from '@react-navigation/native';
 import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
+import { NavBarHeight } from '$shared/constants';
 
 interface TabsFlashListProps<TItem> extends FlashListProps<TItem> {
 
@@ -14,7 +15,7 @@ interface TabsFlashListProps<TItem> extends FlashListProps<TItem> {
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 
 export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem>) => {
-  const { activeIndex, scrollAllTo, setScrollTo, headerOffsetStyle, contentOffset, scrollY, headerHeight } = useTabCtx();
+  const { activeIndex, scrollAllTo, setScrollTo, headerOffsetStyle, contentOffset, scrollY, headerHeight, correctIntermediateHeaderState } = useTabCtx();
   const { index } = useCurrentTab();
   const ref = useRef<FlashList<any>>(null);
   const tabBarHeight = useBottomTabBarHeight();
@@ -51,6 +52,15 @@ export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem
         contentOffset.value = event.contentOffset.y;
         
         runOnJS(scrollAllTo)(index, Math.min(event.contentOffset.y, headerHeight.value));
+
+        if (
+          scrollY.value > headerHeight.value - NavBarHeight && 
+          scrollY.value < headerHeight.value &&
+          (!event.velocity || !event.velocity.y)
+        ) {
+          const isScrollUp = scrollY.value > headerHeight.value - ((NavBarHeight + 11) / 2);
+          runOnJS(correctIntermediateHeaderState)(index, isScrollUp ? 'up' : 'down');
+        }
       }
     },
     onMomentumEnd(event) {
@@ -58,6 +68,15 @@ export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem
         scrollY.value = event.contentOffset.y;
         contentOffset.value = event.contentOffset.y;
         runOnJS(scrollAllTo)(index, Math.min(event.contentOffset.y, headerHeight.value));
+
+        if (
+          scrollY.value > headerHeight.value - NavBarHeight && 
+          scrollY.value < headerHeight.value &&
+          (!event.velocity || !event.velocity.y)
+        ) {
+          const isScrollUp = scrollY.value > headerHeight.value - ((NavBarHeight + 11) / 2);
+          runOnJS(correctIntermediateHeaderState)(index, isScrollUp ? 'up' : 'down');
+        }
       }
     },
     

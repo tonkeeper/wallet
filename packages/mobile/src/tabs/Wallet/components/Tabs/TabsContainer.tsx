@@ -18,6 +18,7 @@ type TabsContextType = {
   scrollByIndex: (index: number) => void;
   setPageFN: (fn: (index: number) => void) => void;
   setNativeActiveIndex: (index: number) => void;
+  correctIntermediateHeaderState: (index: number, direction: 'up' | 'down') => void;
   scrollY: SharedValue<number>;
   contentOffset: SharedValue<number>;
   headerHeight: SharedValue<number>;
@@ -106,6 +107,20 @@ export const TabsContainer = memo<TabsContainerProps>((props) => {
     setActiveIndexFN.current?.(index);
   }, [activeIndex]);
 
+  const correctIntermediateHeaderState = (index: number, direction: 'up' | 'down') => {
+    if (direction === 'up') {
+      scrollByIndex(index, {
+        y: headerHeight.value,
+        animated: true
+      });
+    } else if (direction === 'down') {
+      scrollByIndex(index, {
+        y: headerHeight.value - NavBarHeight,
+        animated: true
+      });
+    }
+  }
+
   return (
     <TabsContext.Provider 
       value={{ 
@@ -116,6 +131,7 @@ export const TabsContainer = memo<TabsContainerProps>((props) => {
         scrollAllTo,
         scrollByIndex,
         setNativeActiveIndex: setStateActiveIndex,
+        correctIntermediateHeaderState,
         scrollY,
         contentOffset,
         headerHeight,
@@ -128,15 +144,6 @@ export const TabsContainer = memo<TabsContainerProps>((props) => {
       {props.children}
     </TabsContext.Provider>
   );
-});
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-  },
-  pagerView: {
-    flex: 1,
-  }
 });
 
 export const useTabCtx = () => {

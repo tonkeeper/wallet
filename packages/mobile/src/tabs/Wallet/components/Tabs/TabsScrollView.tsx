@@ -4,17 +4,27 @@ import { useTabCtx } from './TabsContainer';
 import { ScrollViewProps, useWindowDimensions, View } from 'react-native';
 import { useCurrentTab } from './TabsSection';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { LargeNavBarHeight } from '$shared/constants';
+import { LargeNavBarHeight, NavBarHeight } from '$shared/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useScrollToTop } from '@react-navigation/native';
 import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
+import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 
 interface TabsScrollViewProps extends ScrollViewProps{
 
 }
 
 export const TabsScrollView = (props: TabsScrollViewProps) => {
-  const { activeIndex, scrollAllTo, setScrollTo, headerOffsetStyle, contentOffset, scrollY, headerHeight } = useTabCtx();
+  const { 
+    activeIndex, 
+    scrollAllTo,
+    setScrollTo, 
+    headerOffsetStyle, 
+    contentOffset, 
+    scrollY, 
+    headerHeight, 
+    correctIntermediateHeaderState 
+  } = useTabCtx();
   const { index } = useCurrentTab();
   const tabBarHeight = useBottomTabBarHeight();
   const [contentSize, setContentSize] = useState(0);
@@ -32,7 +42,6 @@ export const TabsScrollView = (props: TabsScrollViewProps) => {
     hasSpace.value = true;
 
     setTimeout(() => {
-      // const correctY = Math.min(contentSize, y);
       ref.current?.scrollTo({ y: y, animated });
     }, 200);
   }, [contentSize]);
@@ -61,6 +70,15 @@ export const TabsScrollView = (props: TabsScrollViewProps) => {
         scrollY.value = event.contentOffset.y;
         contentOffset.value = event.contentOffset.y;
         runOnJS(scrollAllTo)(index, Math.min(event.contentOffset.y, headerHeight.value));
+
+        if (
+          scrollY.value > headerHeight.value - NavBarHeight && 
+          scrollY.value < headerHeight.value &&
+          (!event.velocity || !event.velocity.y)
+        ) {
+          const isScrollUp = scrollY.value > headerHeight.value - ((NavBarHeight + 11) / 2);
+          runOnJS(correctIntermediateHeaderState)(index, isScrollUp ? 'up' : 'down');
+        }
       }
     },
     onMomentumEnd(event) {
@@ -68,6 +86,15 @@ export const TabsScrollView = (props: TabsScrollViewProps) => {
         scrollY.value = event.contentOffset.y;
         contentOffset.value = event.contentOffset.y;
         runOnJS(scrollAllTo)(index, Math.min(event.contentOffset.y, headerHeight.value));
+
+        if (
+          scrollY.value > headerHeight.value - NavBarHeight && 
+          scrollY.value < headerHeight.value &&
+          (!event.velocity || !event.velocity.y)
+        ) {
+          const isScrollUp = scrollY.value > headerHeight.value - ((NavBarHeight + 11) / 2);
+          runOnJS(correctIntermediateHeaderState)(index, isScrollUp ? 'up' : 'down');
+        }
       }
     },
     
