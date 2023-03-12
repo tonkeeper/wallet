@@ -43,3 +43,4 @@ export * from './StyledNativeCompoenets';
 export { IconButton } from './IconButton';
 export { IconButtonList } from './IconButtonList';
 export * from './Spacer';
+export { Pressable } from './Pressable';

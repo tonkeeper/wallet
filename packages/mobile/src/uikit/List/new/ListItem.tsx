@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { TextStyle } from 'react-native';
 import { Steezy, StyleProp } from '$styles';
-import { TouchableHighlight, View, SText, Icon } from '$uikit';
+import { View, SText, Icon, Pressable } from '$uikit';
 import { DarkTheme } from '$styled';
 import FastImage from 'react-native-fast-image';
 import Animated, { useSharedValue } from 'react-native-reanimated';
@@ -50,7 +50,7 @@ export const ListItem = memo<ListItemProps>((props) => {
   const pictureSource = { uri: props.picture };
 
   return (
-    <TouchableHighlight 
+    <Pressable 
       underlayColor={DarkTheme.colors.backgroundTertiary}
       onPressOut={handlePressOut}
       onPressIn={handlePressIn}
@@ -123,7 +123,7 @@ export const ListItem = memo<ListItemProps>((props) => {
           )}
         </View>
       </View>
-    </TouchableHighlight>
+    </Pressable>
   );
 });
 
