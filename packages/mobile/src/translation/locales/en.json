@@ -300,7 +300,13 @@
     "screen_title": "Wallet",
     "edit_tokens_btn": "Edit",
     "old_wallets_title": "Old wallets",
-    "old_wallet_title": "Old wallet"
+    "old_wallet_title": "Old wallet",
+    "buy_btn": "Buy",
+    "send_btn": "Send",
+    "receive_btn": "Receive",
+    "sell_btn": "Sell",
+    "tonkens_tab_lable": "Tokens",
+    "collectibles_tab_lable": "Collectibles"
   },
 
   "activity": {

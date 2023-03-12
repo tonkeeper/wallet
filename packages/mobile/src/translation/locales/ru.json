@@ -304,10 +304,16 @@
   "swap_title": "Обмен",
 
   "wallet": {
-    "screen_title": "Кошелек",
+    "screen_title": "Кошёлек",
     "edit_tokens_btn": "Редактировать",
     "old_wallets_title": "Cтарые кошельки",
-    "old_wallet_title": "Cтарый кошелек"
+    "old_wallet_title": "Cтарый кошелек",
+    "buy_btn": "Купить",
+    "send_btn": "Отправить",
+    "receive_btn": "Получить",
+    "sell_btn": "Продать",
+    "tonkens_tab_lable": "Токены",
+    "collectibles_tab_lable": "NFT"
   },
 
   "activity": {

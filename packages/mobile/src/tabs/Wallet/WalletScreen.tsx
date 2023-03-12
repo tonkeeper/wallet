@@ -204,23 +204,23 @@ export const WalletScreen = memo(() => {
         <IconButton
           onPress={handlePressBuy}
           iconName="ic-plus-28"
-          title="Buy"
+          title={t('wallet.buy_btn')}
         />
         <IconButton
           onPress={handlePressSend}
           iconName="ic-arrow-up-28"
-          title="Send"
+          title={t('wallet.send_btn')}
         />
         <IconButton
           onPress={handlePressRecevie}
           iconName="ic-arrow-down-28"
-          title="Receive"
+          title={t('wallet.receive_btn')}
         />
         {+balance.amount > 0 && (
           <IconButton
             onPress={handlePressSell}
             iconName="ic-minus-28"
-            title="Sell"
+            title={t('wallet.sell_btn')}
           />
         )}
       </IconButtonList>
@@ -280,8 +280,8 @@ export const WalletScreen = memo(() => {
               onChange={({ value }) => setTab(value)}
               value={tab}
               items={[
-                { label: 'Tokens', value: 'tokens',  },
-                { label: 'Collectibles', value: 'collectibles' }
+                { label: t('wallet.tonkens_tab_lable'), value: 'tokens',  },
+                { label: t('wallet.collectibles_tab_lable'), value: 'collectibles' }
               ]}
             />
           </Tabs.Header>
