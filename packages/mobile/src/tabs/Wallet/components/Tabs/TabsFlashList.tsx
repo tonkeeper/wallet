@@ -52,15 +52,6 @@ export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem
         contentOffset.value = event.contentOffset.y;
         
         runOnJS(scrollAllTo)(index, Math.min(event.contentOffset.y, headerHeight.value));
-
-        if (
-          scrollY.value > headerHeight.value - NavBarHeight && 
-          scrollY.value < headerHeight.value &&
-          (!event.velocity || !event.velocity.y)
-        ) {
-          const isScrollUp = scrollY.value > headerHeight.value - ((NavBarHeight + 11) / 2);
-          runOnJS(correctIntermediateHeaderState)(index, isScrollUp ? 'up' : 'down');
-        }
       }
     },
     onMomentumEnd(event) {
@@ -68,15 +59,6 @@ export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem
         scrollY.value = event.contentOffset.y;
         contentOffset.value = event.contentOffset.y;
         runOnJS(scrollAllTo)(index, Math.min(event.contentOffset.y, headerHeight.value));
-
-        if (
-          scrollY.value > headerHeight.value - NavBarHeight && 
-          scrollY.value < headerHeight.value &&
-          (!event.velocity || !event.velocity.y)
-        ) {
-          const isScrollUp = scrollY.value > headerHeight.value - ((NavBarHeight + 11) / 2);
-          runOnJS(correctIntermediateHeaderState)(index, isScrollUp ? 'up' : 'down');
-        }
       }
     },
     
