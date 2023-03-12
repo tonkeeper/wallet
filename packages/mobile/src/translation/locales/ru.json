@@ -305,7 +305,7 @@
 
   "wallet": {
     "screen_title": "Кошёлек",
-    "edit_tokens_btn": "Редактировать",
+    "edit_tokens_btn": "Настроить",
     "old_wallets_title": "Cтарые кошельки",
     "old_wallet_title": "Cтарый кошелек",
     "buy_btn": "Купить",
