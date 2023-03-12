@@ -49,14 +49,14 @@ export function useWalletInfo(currency: CryptoCurrency) {
     let amountResult: string;
 
     if (+amount > 0) {
-      percent = priceDiff === null ? '-' : (+priceDiff > 0 ? '+ ' : '– ') + Math.abs(Number(priceDiff)) + '%';
+      percent = priceDiff === null ? '-' : (+priceDiff > 0 ? '+ ' : '– ') + Math.abs(Number(priceDiff)) + ' %';
       if (priceDiff !== null) {
         color = +priceDiff > 0 ? 'accentPositive' : 'accentNegative';
       }
       amountResult =
         amountInUsd === '-'
           ? amountInUsd
-          : formatFiatCurrencyAmount(amountInUsd, fiatCurrency);
+          : formatFiatCurrencyAmount(amountInUsd, fiatCurrency, true);
     } else {
       amountResult = formatFiatCurrencyAmount('0.00', fiatCurrency);
     }

@@ -115,7 +115,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     return currency?.toUpperCase();
   }, [currency]);
 
-  const { amount, rate, fiatInfo } = useWalletInfo(currency);
+  const { amount, fiatInfo } = useWalletInfo(currency);
 
   const handleReceive = useCallback(() => {
     if (!wallet) {
@@ -169,21 +169,6 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
               <Text style={{ marginTop: 2 }} variant="body2" color="foregroundSecondary">
                 {fiatInfo.amount}
               </Text>
-              <S.Price>
-                <Text color="foregroundSecondary" variant="body2">
-                  {rate}
-                </Text>
-                <Text style={{ marginLeft: 6 }} variant="body2" color={fiatInfo.color}>
-                  {fiatInfo.percent}&nbsp;&nbsp;24{t('wallet_hours_symbol')}
-                </Text>
-              </S.Price>
-              <S.AboutWrapper>
-                <ShowMore
-                  backgroundColor={theme.colors.backgroundPrimary}
-                  maxLines={2}
-                  text={t('about_ton')}
-                />
-              </S.AboutWrapper>
             </S.AmountWrapper>
             <S.IconWrapper>
               <Icon size={40} name="ic-ton-28" color="constantLight" />
@@ -249,16 +234,12 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     amount,
     currencyUpper,
     fiatInfo.amount,
-    fiatInfo.color,
-    fiatInfo.percent,
     handleDeploy,
     handleOpenExchange,
     handleReceive,
     handleSend,
     lockupDeploy,
-    rate,
     t,
-    theme.colors.backgroundPrimary,
     wallet,
     paddingBottom,
   ]);

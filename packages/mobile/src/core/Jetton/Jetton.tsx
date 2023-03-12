@@ -54,23 +54,6 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const address = useSelector(walletAddressSelector);
   const { price, total } = useJettonPrice(jetton.jettonAddress, jetton.balance);
   const { isLoading: isEventsLoading, canLoadMore } = useSelector(eventsSelector);
-  const isJettonMetaLoading = useSelector((state) =>
-    // @ts-ignore
-    jettonIsLoadingSelector(state, route.params.jettonAddress),
-  );
-  const jettonMeta = useSelector((state) =>
-    // @ts-ignore
-    jettonSelector(state, route.params.jettonAddress),
-  );
-
-  useLayoutEffect(() => {
-    const loadJettonInfo = async () => {
-      dispatch(jettonsActions.loadJettonMeta(route.params.jettonAddress));
-    };
-    if (!jettonMeta) {
-      loadJettonInfo();
-    }
-  }, []);
 
   const handleLoadMore = useCallback(() => {
     if (isEventsLoading || !canLoadMore) {
@@ -121,19 +104,6 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
                 {t('jetton_price')} {price}
               </Text>
             ) : null}
-            <S.JettonIDWrapper>
-              {!(isJettonMetaLoading ?? true) ? (
-                <ShowMore
-                  backgroundColor={theme.colors.backgroundPrimary}
-                  maxLines={2}
-                  text={jettonMeta?.description ?? ''}
-                />
-              ) : (
-                <>
-                  <Skeleton.Line height={ns(20)} width={240} />
-                </>
-              )}
-            </S.JettonIDWrapper>
           </S.JettonAmountWrapper>
           {jetton.metadata.image ? (
             <S.Logo source={{ uri: jetton.metadata.image }} />
@@ -151,14 +121,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         <S.Divider style={{ marginBottom: 10 }} />
       </S.HeaderWrap>
     );
-  }, [
-    jetton,
-    isJettonMetaLoading,
-    jettonMeta?.description,
-    handleReceive,
-    t,
-    handleSend,
-  ]);
+  }, [jetton, total, price, t, handleSend, handleReceive]);
 
   // workaround, need to paginate transactions even if content not modified
   const renderFooter = useMemo(() => {
