@@ -128,7 +128,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
   const navBarRight = (
     <TouchableOpacity
       onPress={handlePressOpenScanQR}
-      style={{ zIndex: 3 }}
+      style={{ zIndex: 3, marginRight: ns(2) }}
       activeOpacity={0.6}
       hitSlop={{
         top: 26,
