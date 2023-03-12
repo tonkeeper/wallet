@@ -103,7 +103,6 @@ export const TabsBarComponent = (props: TabsBarProps) => {
             onPress={() => {
               props.onChange(item, index);
               setActiveIndex(index);
-              // scrollToIndex(index);
             }}
             key={`tab-${index}`}
             activeOpacity={0.6}

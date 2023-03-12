@@ -1,5 +1,5 @@
 import { NavBarHeight } from '$shared/constants';
-import React, { createContext, memo, useRef } from 'react';
+import React, { createContext, memo, useCallback, useRef } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { Extrapolate, interpolate, SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -15,7 +15,7 @@ type TabsContextType = {
   setActiveIndex: (index: number) => void;
   setScrollTo: (index: number, scrollTo: ScrollTo) => void;
   scrollAllTo: (index: number, a: number) => void;
-  scrollToIndex: (index: number) => void;
+  scrollByIndex: (index: number) => void;
   setPageFN: (fn: (index: number) => void) => void;
   setNativeActiveIndex: (index: number) => void;
   scrollY: SharedValue<number>;
@@ -70,10 +70,12 @@ export const TabsContainer = memo<TabsContainerProps>((props) => {
     refs.current[`scroll-${index}`] = scrollTo;
   };    
 
-  const scrollToIndex = (index: number) => {
+  const scrollByIndex = (index: number, opts: { y?: number; animated?: boolean } = {}) => {
     const scrollTo = refs.current[`scroll-${index}`];
     if (scrollTo) {
-      scrollTo(scrollY.value);
+      const y = opts.y !== undefined ? opts.y : scrollY.value;
+      const animated = opts.animated !== undefined ? opts.animated : false;
+      scrollTo(y, animated);
     }
   }
 
@@ -93,9 +95,16 @@ export const TabsContainer = memo<TabsContainerProps>((props) => {
     setActiveIndexFN.current = fn;
   }
 
-  const setActiveIndex = (index: number) => {
+  const setActiveIndex = useCallback((index: number) => {
+    if (index === activeIndex && scrollY.value > headerHeight.value) {
+      scrollByIndex(index, {
+        y: headerHeight.value,
+        animated: true
+      });
+    }
+
     setActiveIndexFN.current?.(index);
-  } 
+  }, [activeIndex]);
 
   return (
     <TabsContext.Provider 
@@ -105,7 +114,7 @@ export const TabsContainer = memo<TabsContainerProps>((props) => {
         setPageFN,
         setScrollTo,
         scrollAllTo,
-        scrollToIndex,
+        scrollByIndex,
         setNativeActiveIndex: setStateActiveIndex,
         scrollY,
         contentOffset,
