@@ -38,12 +38,16 @@ export const TabsScrollView = (props: TabsScrollViewProps) => {
   const localScrollY = useSharedValue(0);
   const hasSpace = useSharedValue(true);
 
-  const scrollTo = React.useCallback((y: number, animated?: boolean) => {
+  const scrollTo = React.useCallback((y: number, animated?: boolean, withDelay?: boolean) => {
     hasSpace.value = true;
 
-    setTimeout(() => {
-      ref.current?.scrollTo({ y: y, animated });
-    }, 200);
+    if (withDelay) {
+      setTimeout(() => {
+        ref.current?.scrollTo({ y, animated });
+      }, 200);
+    } else {
+      ref.current?.scrollTo({ y, animated });
+    }
   }, [contentSize]);
 
   useEffect(() => {

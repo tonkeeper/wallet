@@ -13,7 +13,7 @@ type ScrollTo = (y: number, animated?: boolean) => void;
 type TabsContextType = {
   activeIndex: number;
   setActiveIndex: (index: number) => void;
-  setScrollTo: (index: number, scrollTo: ScrollTo) => void;
+  setScrollTo: (index: number, scrollTo: ScrollTo, withDelay?: boolean) => void;
   scrollAllTo: (index: number, a: number) => void;
   scrollByIndex: (index: number) => void;
   setPageFN: (fn: (index: number) => void) => void;
@@ -83,7 +83,7 @@ export const TabsContainer = memo<TabsContainerProps>((props) => {
   const scrollAllTo = (currentIndex: number, y: number) => {
     Object.values(refs.current).forEach((scrollTo, index) => {
       if (index !== currentIndex) {
-        scrollTo(y, false);
+        scrollTo(y, false, true);
       }
     });
   }
