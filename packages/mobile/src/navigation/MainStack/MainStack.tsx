@@ -12,6 +12,9 @@ import {
   CreatePin,
   SetupWalletDone,
   SetupBiometry,
+  Staking,
+  StakingPools,
+  StakingPoolDetails,
 } from '$core';
 import { useTheme } from '$hooks';
 import { DevStack } from '../DevStack/DevStack';
@@ -49,6 +52,12 @@ export const MainStack: FC = () => {
     >
       <Stack.Screen name={MainStackRouteNames.Tabs} component={TabStack} />
       <Stack.Screen name={MainStackRouteNames.Wallet} component={Wallet} />
+      <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />
+      <Stack.Screen name={MainStackRouteNames.StakingPools} component={StakingPools} />
+      <Stack.Screen
+        name={MainStackRouteNames.StakingPoolDetails}
+        component={StakingPoolDetails}
+      />
       <Stack.Screen name={MainStackRouteNames.BackupWords} component={BackupWords} />
       <Stack.Screen name={MainStackRouteNames.ImportWallet} component={ImportWallet} />
       <Stack.Screen name={MainStackRouteNames.Subscriptions} component={Subscriptions} />

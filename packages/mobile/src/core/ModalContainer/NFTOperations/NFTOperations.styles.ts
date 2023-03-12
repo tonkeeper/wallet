@@ -33,7 +33,6 @@ export const Image = styled(ProxyImage).attrs({
   height: 100%;
 `;
 
-
 export const LocalImage = styled(RNImage).attrs({
   resizeMode: 'cover',
 })`
@@ -41,7 +40,6 @@ export const LocalImage = styled(RNImage).attrs({
   width: 100%;
   height: 100%;
 `;
-
 
 export const NFTItemPreview = styled(Preview)`
   border-radius: ${({ theme }) => theme.radius.large}px;
@@ -126,11 +124,6 @@ export const Footer = styled.View`
 `;
 
 export const ActionButton = styled(Button)`
-  margin-left: 16px;
-  flex: 1;
-`;
-
-export const CancelButton = styled(Button)`
   flex: 1;
 `;
 

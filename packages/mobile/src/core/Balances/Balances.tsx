@@ -26,7 +26,7 @@ import {
 } from '$shared/constants';
 import { openRequireWalletModal, openScanQR, openSend } from '$navigation';
 import { eventsActions, eventsSelector } from '$store/events';
-import { mainActions, mainSelector } from '$store/main';
+import { chartPeriodSelector, mainActions, mainSelector } from '$store/main';
 import { InternalNotificationProps } from '$uikit/InternalNotification/InternalNotification.interface';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { getLastRefreshedAt, MainDB } from '$database';
@@ -78,6 +78,7 @@ export const Balances: FC = () => {
   const isConfigError = !isServerConfigLoaded();
   const isFocused = useIsFocused();
   const queryClient = useQueryClient();
+  const chartPeriod = useSelector(chartPeriodSelector);
 
   const isEventsLoadingMore = !isRefreshing && isEventsLoading && !!wallet;
 
@@ -89,7 +90,9 @@ export const Balances: FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    queryClient.prefetchQuery(['chartFetch', DEFAULT_CHART_PERIOD], () => loadChartData(DEFAULT_CHART_PERIOD));
+    queryClient.prefetchQuery(['chartFetch', chartPeriod || DEFAULT_CHART_PERIOD], () =>
+      loadChartData(chartPeriod || DEFAULT_CHART_PERIOD),
+    );
   }, []);
 
   useAppStateActive(() => {

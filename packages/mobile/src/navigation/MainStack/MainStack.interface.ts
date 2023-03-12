@@ -26,4 +26,11 @@ export type MainStackParamList = {
   [MainStackRouteNames.JettonsList]: {};
   [MainStackRouteNames.DeleteAccountDone]: {};
   [MainStackRouteNames.EditConfig]: {};
+  [MainStackRouteNames.Staking]: {};
+  [MainStackRouteNames.StakingPools]: {
+    providerId: string;
+  };
+  [MainStackRouteNames.StakingPoolDetails]: {
+    poolAddress: string;
+  };
 };

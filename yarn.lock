@@ -2573,9 +2573,9 @@
     schema-utils "^3.0.0"
     source-map "^0.7.3"
 
-"@rainbow-me/animated-charts@git+ssh://git@github.com:tonkeeper/react-native-animated-charts#e150474c47a2c348cf1b7095b1304dc533007d3d":
+"@rainbow-me/animated-charts@git+ssh://git@github.com:tonkeeper/react-native-animated-charts#3f989bd40c9286bb901cb277dff4ceb5d2c1c49b":
   version "1.0.0-alpha.6"
-  resolved "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#e150474c47a2c348cf1b7095b1304dc533007d3d"
+  resolved "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#3f989bd40c9286bb901cb277dff4ceb5d2c1c49b"
 
 "@react-dnd/asap@^4.0.0":
   version "4.0.1"
@@ -3263,11 +3263,12 @@
     tweetnacl "^1.0.3"
     tweetnacl-util "^0.15.1"
 
-"@tonconnect/protocol@^2.2.2":
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/@tonconnect/protocol/-/protocol-2.2.2.tgz#5238d6f0f0a09b40320d9bf25534c31908655498"
-  integrity sha512-SlfGiNxpWvRbUM/jIbRCDc42WAcEHgLCrpsNmJ1/brxqSY6/HW2VCIjTbJnzF0m2sLKP6LD6VUq3nV/eN8Y0Uw==
+"@tonconnect/protocol@^2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@tonconnect/protocol/-/protocol-2.2.5.tgz#15369801708354821295a6d284f0267799ac48cc"
+  integrity sha512-kR0E+CWZl6JrE/30283v+sRiAvEu21t1xOLFx6f/BxlCNLY2wki39+L32+iicX8gn/Ig99L1flr9TAI9QW9bnQ==
   dependencies:
+    tweetnacl "^1.0.3"
     tweetnacl-util "^0.15.1"
 
 "@tootallnate/once@1":

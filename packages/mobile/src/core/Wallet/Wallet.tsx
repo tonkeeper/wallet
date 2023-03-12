@@ -158,7 +158,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     return (
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom }}
+        contentContainerStyle={{ paddingBottom: paddingBottom + ns(16) }}
       >
         <S.HeaderWrap>
           <S.FlexRow>

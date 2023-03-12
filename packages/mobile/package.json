@@ -25,7 +25,7 @@
   "dependencies": {
     "@amplitude/analytics-browser": "^1.6.7",
     "@gorhom/bottom-sheet": "^4.4.4",
-    "@rainbow-me/animated-charts": "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#e150474c47a2c348cf1b7095b1304dc533007d3d",
+    "@rainbow-me/animated-charts": "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#3f989bd40c9286bb901cb277dff4ceb5d2c1c49b",
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/clipboard": "^1.5.1",
     "@react-native-community/netinfo": "^9.3.2",
@@ -38,7 +38,7 @@
     "@react-navigation/native-stack": "^6.7.0",
     "@reduxjs/toolkit": "^1.6.1",
     "@tonapps/tonlogin-client": "0.2.5",
-    "@tonconnect/protocol": "^2.2.2",
+    "@tonconnect/protocol": "^2.2.5",
     "@tonkeeper/shared": "1.0.0",
     "@vkontakte/vk-qr": "^2.0.13",
     "axios": "^0.27.2",

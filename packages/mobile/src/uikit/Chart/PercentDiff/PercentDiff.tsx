@@ -23,19 +23,22 @@ const fontFamily = Platform.select({
 
 const PercentDiffComponent: React.FC<PercentDiffProps> = (props) => {
   const chartData = useChartData();
-  const theme = useTheme();
   const [activePoint, setActivePoint] = React.useState(props.latestPoint);
 
-  const priceDiff = React.useMemo(() => {
-    return (((activePoint - props.firstPoint) / props.firstPoint) * 100).toFixed(2);
+  const priceDiffNumber = React.useMemo(() => {
+    return ((activePoint - props.firstPoint) / props.firstPoint) * 100;
   }, [activePoint, props.firstPoint]);
+
+  const priceDiff = React.useMemo(() => {
+    return priceDiffNumber.toFixed(2);
+  }, [priceDiffNumber]);
 
   useEffect(() => {
     setActivePoint(props.latestPoint);
   }, [props.latestPoint]);
 
   const fiatInfo = React.useMemo(() => {
-    let percent = '0.0%';
+    let percent = '0 %';
     let color: TonThemeColor = 'foregroundSecondary';
     let amountResult: string;
 
@@ -45,11 +48,19 @@ const PercentDiffComponent: React.FC<PercentDiffProps> = (props) => {
       true,
     );
 
+    if (priceDiffNumber === 0) {
+      return {
+        percent,
+        color,
+        diffInFiat,
+      };
+    }
+
     percent =
       priceDiff === null
         ? '-'
         : (+priceDiff > 0 ? '+ ' : '- ') + Math.abs(Number(priceDiff)) + ' %';
-    if (priceDiff !== null) {
+    if (priceDiff !== null && priceDiff !== diffInFiat) {
       color = +priceDiff > 0 ? 'accentPositive' : 'accentNegative';
     }
 
@@ -60,7 +71,7 @@ const PercentDiffComponent: React.FC<PercentDiffProps> = (props) => {
       diffInFiat,
       color,
     };
-  }, [priceDiff, theme.colors, activePoint]);
+  }, [activePoint, priceDiff, props.fiatRate, props.fiatCurrency, priceDiffNumber]);
 
   const formatPriceWrapper = (point: number) => {
     if (!point) {

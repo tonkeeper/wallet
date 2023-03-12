@@ -1,4 +1,4 @@
-import { SendRecipient } from '../../../../Send.interface';
+import { SendRecipient } from '../../../Send.interface';
 import React, { FC, memo, useLayoutEffect } from 'react';
 import * as S from './RecipientView.style';
 import { useTranslator } from '$hooks';

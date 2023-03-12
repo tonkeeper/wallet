@@ -4,6 +4,7 @@ import { FiatCurrency, ServerConfig, ServerConfigVersion } from '$shared/constan
 import { getWalletName } from '$shared/dynamicConfig';
 import { LogItem } from '$store/main/interface';
 import { AccentKey, AccentNFTIcon } from '$styled';
+import { ChartPeriod } from '$uikit/Chart/Chart.types';
 
 export class MainDB {
   static async isJettonsEnabled(): Promise<boolean> {
@@ -24,6 +25,14 @@ export class MainDB {
     } else {
       await AsyncStorage.setItem('show_v4r1', 'false');
     }
+  }
+
+  static async getChartSelectedPeriod(): Promise<ChartPeriod | null> {
+    return (await AsyncStorage.getItem('chartSelectedPeriod')) as ChartPeriod | null;
+  }
+
+  static async setChartSelectedPeriod(period: ChartPeriod) {
+    await AsyncStorage.setItem('chartSelectedPeriod', period);
   }
 
   static async getShowV4R1() {

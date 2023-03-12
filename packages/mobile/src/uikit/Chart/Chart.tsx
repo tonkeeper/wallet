@@ -4,12 +4,13 @@ import {
   ChartPath,
   ChartPathProvider,
   CurrentPositionVerticalLine,
+  stepInterpolation,
 } from '@rainbow-me/animated-charts';
 import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ratesRatesSelector } from '$store/rates';
-import { fiatCurrencySelector } from '$store/main';
+import { chartPeriodSelector, fiatCurrencySelector, mainActions } from '$store/main';
 import { CryptoCurrencies, FiatCurrencies } from '$shared/constants';
 import { getRate } from '$hooks/useFiatRate';
 import { formatFiatCurrencyAmount } from '$utils/currency';
@@ -21,25 +22,41 @@ import { Rate } from './Rate/Rate';
 import { useQuery } from 'react-query';
 import { loadChartData } from './Chart.api';
 import { ChartYLabels } from './ChartYLabels/ChartYLabels';
+import { changeAlphaValue, convertHexToRGBA } from '$utils';
+import { ChartXLabels } from './ChartXLabels/ChartXLabels';
+import { MainDB } from '$database';
 
 export const { width: SIZE } = Dimensions.get('window');
 export const DEFAULT_CHART_PERIOD = ChartPeriod.ONE_DAY;
 
 const ChartComponent: React.FC = () => {
   const theme = useTheme();
-  const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>(DEFAULT_CHART_PERIOD);
+  const dispatch = useDispatch();
+  const chartPeriod = useSelector(chartPeriodSelector);
+  const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>(
+    chartPeriod ?? DEFAULT_CHART_PERIOD,
+  );
 
   const { isLoading, isFetching, data } = useQuery(['chartFetch', selectedPeriod], () =>
     loadChartData(selectedPeriod),
   );
 
-  const [cachedData, setCachedData] = useState([]);
+  useEffect(() => {
+    MainDB.setChartSelectedPeriod(selectedPeriod);
+    dispatch(mainActions.setChartPeriod(selectedPeriod));
+  }, [dispatch, selectedPeriod]);
+
+  const [cachedData, setCachedData] = useState(data?.data ?? []);
 
   useEffect(() => {
-    if (data) {
-      setCachedData(data.data);
+    if ((data && !isFetching && !isLoading) || !cachedData) {
+      setCachedData(
+        selectedPeriod === ChartPeriod.ONE_HOUR
+          ? stepInterpolation(data.data)
+          : data.data,
+      );
     }
-  }, [data]);
+  }, [data, selectedPeriod, isFetching, isLoading]);
 
   const rates = useSelector(ratesRatesSelector);
   const fiatCurrency = useSelector(fiatCurrencySelector);
@@ -75,7 +92,11 @@ const ChartComponent: React.FC = () => {
   return (
     <View>
       <View>
-        <ChartPathProvider data={{ points: cachedData }}>
+        <ChartPathProvider
+          data={{
+            points: cachedData,
+          }}
+        >
           <View style={{ paddingHorizontal: 28 }}>
             {latestPoint ? (
               <Rate
@@ -104,13 +125,13 @@ const ChartComponent: React.FC = () => {
                 selectedStrokeWidth={2}
                 height={160}
                 stroke={theme.colors.accentPrimaryLight}
-                width={SIZE}
+                width={SIZE - 1}
                 selectedOpacity={1}
               />
               <ChartDot
                 size={40}
                 style={{
-                  backgroundColor: 'rgba(69,174,245,0.24)',
+                  backgroundColor: changeAlphaValue(convertHexToRGBA(theme.colors.accentPrimaryLight), 0.24),
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
@@ -133,6 +154,7 @@ const ChartComponent: React.FC = () => {
             </View>
           </View>
           <ChartYLabels maxPrice={maxPrice} minPrice={minPrice} />
+          <ChartXLabels currentPeriod={selectedPeriod} />
         </ChartPathProvider>
       </View>
       <PeriodSelector

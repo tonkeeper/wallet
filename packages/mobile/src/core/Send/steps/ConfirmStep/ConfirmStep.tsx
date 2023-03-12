@@ -1,7 +1,10 @@
-import { StepScrollView } from '$core/Send/StepScrollView/StepScrollView';
 import { useCopyText, useReanimatedKeyboardHeight, useTranslator } from '$hooks';
 import { openInactiveInfo } from '$navigation';
-import { BottomButtonWrap, BottomButtonWrapHelper } from '$shared/components';
+import {
+  BottomButtonWrap,
+  BottomButtonWrapHelper,
+  StepScrollView,
+} from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { getTokenConfig } from '$shared/dynamicConfig';
 import { Button, FormItem, Icon, Input, List, ListCell, Text } from '$uikit';
