@@ -49,7 +49,7 @@ export const useBalance = () => {
 
     const price = points.length > 0 ? points[points.length - 1].y * fiatRate : 0;
 
-    return formatFiatCurrencyAmount(price.toFixed(2), fiatCurrency);
+    return formatFiatCurrencyAmount(price.toFixed(2), fiatCurrency, true);
   }, [charts, fiatCurrency, rates]);
     
   const formattedAmount = useMemo(() => {
@@ -67,10 +67,10 @@ export const useBalance = () => {
     if (+amount > 0) {
       return amountInUsd === '-'
         ? amountInUsd
-        : formatFiatCurrencyAmount(amountInUsd, fiatCurrency);
+        : formatFiatCurrencyAmount(amountInUsd, fiatCurrency, true);
     }
 
-    return formatFiatCurrencyAmount('0.00', fiatCurrency);
+    return formatFiatCurrencyAmount('0.00', fiatCurrency, true);
   }, [amountToUsd, fiatCurrency]);
 
   const oldVersions = useMemo(() => {

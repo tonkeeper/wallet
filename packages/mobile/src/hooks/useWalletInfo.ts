@@ -22,7 +22,7 @@ export function useWalletInfo(currency: CryptoCurrency) {
     return formatAmount(balances[currency], Decimals[currency]);
   }, [balances, currency]);
 
-  const formattedRate = useMemo(() => formatFiatCurrencyAmount(truncateDecimal(fiatRate.today.toString(), 2), fiatCurrency), [fiatCurrency, fiatRate]);
+  const formattedRate = useMemo(() => formatFiatCurrencyAmount(truncateDecimal(fiatRate.today.toString(), 2, true), fiatCurrency), [fiatCurrency, fiatRate]);
 
   const priceDiff = useMemo(() => {
     if (fiatRate.yesterday) {
@@ -63,9 +63,9 @@ export function useWalletInfo(currency: CryptoCurrency) {
       amountResult =
         amountInUsd === '-'
           ? amountInUsd
-          : formatFiatCurrencyAmount(amountInUsd, fiatCurrency);
+          : formatFiatCurrencyAmount(amountInUsd, fiatCurrency, true);
     } else {
-      amountResult = formatFiatCurrencyAmount('0.00', fiatCurrency);
+      amountResult = formatFiatCurrencyAmount('0.00', fiatCurrency, true);
     }
 
     percent = toLocaleNumber(percent);
@@ -138,9 +138,9 @@ export function useGetPrice() {
       amountResult =
         amountInUsd === '-'
           ? amountInUsd
-          : formatFiatCurrencyAmount(amountInUsd, fiatCurrency);
+          : formatFiatCurrencyAmount(amountInUsd, fiatCurrency, true);
     } else {
-      amountResult = formatFiatCurrencyAmount('0.00', fiatCurrency);
+      amountResult = formatFiatCurrencyAmount('0.00', fiatCurrency, true);
     }
 
     percent = toLocaleNumber(percent);
