@@ -236,6 +236,7 @@ export const openSignRawModal = async (
       const checkResult = await checkIsInsufficient(totalAmount);
       if (checkResult.insufficient) {
         Toast.hide();
+        onDismiss?.();
         return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
       }
 
@@ -249,6 +250,7 @@ export const openSignRawModal = async (
       const checkResult = await checkIsInsufficient(totalAmount);
       if (checkResult.insufficient) {
         Toast.hide();
+        onDismiss?.();
         return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
       }
     }
