@@ -66,7 +66,6 @@ export const Pressable = (props: PressableProps) => {
   
   return (
     <NativePressable
-      // onStartShouldSetResponder={() => true}
       style={pressableStyle}
       onPressOut={handlePressOut}
       onPressIn={handlePressIn}

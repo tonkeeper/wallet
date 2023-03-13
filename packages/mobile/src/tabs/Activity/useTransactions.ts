@@ -12,7 +12,6 @@ import { EventsMap } from '$store/events/interface';
 import TonWeb from "tonweb";
 import { formatCryptoCurrency } from "$utils/currency";
 
-
 type EventActionSimplePreview = {
   short_description: string;
   full_description: string;
@@ -153,79 +152,6 @@ function ActionHistoryMapper(event: AccountEvent, action: AccountEventAction): H
 
   return { item, details };
 }
-
-// const getAccountHistory = async (): Promise<(string | AccountEvent)[]> => {
-//   const host = getServerConfig('tonapiIOEndpoint') + '/v1/event/getAccountEvents';
-
-//   const { data } = await network.get(host, {
-//     headers: {
-//       Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-//     },
-//     params: {
-//       account: myAddress,
-//       limit: 15,
-//       // beforeLt: '',
-//     }
-//   });
-
-//   data.events.sort((a, b) => {
-//     return a.timestamp > b.timestamp ? -1 : 1;
-//   });
-
-//   const events = data.events.map((event) => ({
-//     ...event,
-//     actions: event.actions.map((action) => 
-//       ActionHistoryMapper(event, {
-//         type: action.type,
-//         simple_preview: action.simple_preview,
-//         status: action.status,
-//         ...action[action.type],
-//       }))
-//   }))
-
-//   const formatGroupDate = (timestamp: number) => {
-//     const ts = timestamp * 1000;
-//     const now = new Date();
-
-//     if (differenceInCalendarMonths(now, new Date(ts)) < 1) {
-//       return format(new Date(ts), 'd MMMM', {
-//         locale: getLocale(),
-//       });
-//     } else {
-//       return format(new Date(ts), 'LLLL');
-//     }
-//   } 
-
-//   const groupsEvents = events.reduce((groups, event) => {
-//     const date = formatGroupDate(event.timestamp);
-
-//     if (!groups[date]) {
-//       groups[date] = [];
-//     }
-
-//     groups[date].push(event);
-
-//     return groups;
-//   }, {});
-
-//   return Object.keys(groupsEvents).reduce((acc, date) => {
-//     const txTime = groupsEvents[date][0].timestamp;
-
-//     acc.push(formatDate(new Date(txTime * 1000)))
-//     acc.push(...groupsEvents[date]);
-
-//     return acc;
-//   }, [] as (string | AccountEvent)[]);
-// }
-
-  // const [events, setEvents] = useState<(string | AccountEvent)[]>([]);
-
-    // useEffect(() => {
-  //   getAccountHistory().then((events) => {
-  //     setEvents(events)
-  //   });
-  // }, []);
-
 
 const convertEventsToTrasactions = (eventMap: EventsMap) => {
   const data = Object.values(eventMap);

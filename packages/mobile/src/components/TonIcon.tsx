@@ -1,6 +1,6 @@
-import { DarkTheme, Steezy } from '$styles';
+import { Steezy } from '$styles';
 import { Icon, View } from '$uikit';
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 
 type TonIconSizes = 'small';
 
@@ -19,17 +19,17 @@ export const TonIcon = memo<TonIconProps>((props) => {
   
   const sizeNum = iconSizes[size];
   
-  const sizeStyle = {
+  const sizeStyle = useMemo(() => ({
     width: sizeNum,
     height: sizeNum,
     borderRadius: sizeNum / 2,
-  };
+  }), []);
 
-  const containerStyle = [
+  const containerStyle =  useMemo(() => [
     styles.container,
     transparent && styles.backgroundTransparent,
     sizeStyle,
-  ];
+  ], []);
 
   return (
     <View style={containerStyle}>
@@ -58,8 +58,6 @@ const styles = Steezy.create(({ colors }) => ({
     right: -3,
     width: 20,
     height: 20,
-    // borderWidth: 2,
-    // borderColor: colors.backgroundContentTint,
     borderRadius: 20 / 2,
     backgroundColor: colors.backgroundContentTint,
     alignItems: 'center',

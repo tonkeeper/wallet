@@ -187,6 +187,5 @@ const styles = StyleSheet.create({
   },
   indent: {
     paddingHorizontal: 16,
-    // marginBottom: 16
   },
 });

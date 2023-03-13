@@ -1,27 +1,19 @@
 
 
 import React, { forwardRef, memo, useEffect, useRef } from 'react';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Animated from 'react-native-reanimated';
 import { ns, useMergeRefs } from '$utils';
 import { useScreenScroll } from './context/ScreenScrollContext';
 import { LargeNavBarHeight } from '$shared/constants';
 import { FlashList, FlashListProps } from '@shopify/flash-list';
-
-const useWrapBottomTabBarHeight = () => {
-  try { // Fix crash 
-    return useBottomTabBarHeight();
-  } catch (err) {
-    return 0;
-  }  
-}
+import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 
 const AnimatedFlashList = Animated.createAnimatedComponent<React.ComponentType<FlashListProps<any>>>(
   FlashList
 );
 
 export const ScreenScrollList = memo<FlashListProps<any>>(forwardRef((props, ref) => {
-  const tabBarHeight = useWrapBottomTabBarHeight();
+  const tabBarHeight = useBottomTabBarHeight();
   const { contentScrollHandler, setScrollTo } = useScreenScroll();
   const flashListRef = useRef<FlashList<any>>(null);
   const setRef = useMergeRefs(ref, flashListRef);

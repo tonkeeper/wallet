@@ -29,21 +29,7 @@ export const DevListComponent = () => {
             onPress={() => {}}
           />
         </List>
-
-
-        <Highlight onPress={() => {}}>
-          <Text>
-            qwewqe
-          </Text>
-        </Highlight>
-
       </Screen.ScrollView>
     </Screen>
   );
 };
-
-const styles = Steezy.create({
-  container: {
-
-  }
-});

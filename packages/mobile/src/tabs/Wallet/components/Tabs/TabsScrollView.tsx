@@ -92,7 +92,6 @@ export const TabsScrollView = (props: TabsScrollViewProps) => {
     const s = dimensions.height - (tabBarHeight - (LargeNavBarHeight + 50)  - safeArea.bottom) - headerHeight.value - contentSize
 
     return {
-      // backgroundColor: 'red',
       width: dimensions.width,
       minHeight: hasSpace.value ? s : 0
     }
@@ -103,7 +102,6 @@ export const TabsScrollView = (props: TabsScrollViewProps) => {
       ref={ref}
       onScroll={scrollHandler}
       scrollEventThrottle={16}
-      // onContentSizeChange={(w, h) => setContentSize(h)}
       contentContainerStyle={{ paddingBottom: tabBarHeight }}
       {...props}
     >

@@ -103,7 +103,6 @@ function* loadServerConfig(isTestnet: boolean, canRetry = false) {
 }
 
 function* initWorker() {
-  console.time();
   BigNumber.config({ EXPONENTIAL_AT: 1e9 });
 
   const isTestnet = yield call(getIsTestnet);
@@ -121,7 +120,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     needRefreshConfig = false;
   }
 
-
   const showV4R1 = yield call(MainDB.getShowV4R1);
   const currencies = yield call(getAddedCurrencies);
   const isIntroShown = yield call(getIntroShown);
@@ -135,8 +133,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   const jettonBalances = yield call(JettonsDB.getJettonBalances);
   const timeSyncedDismissed = yield call(MainDB.timeSyncedDismissedTimestamp);
   const chartDefaultPeriod = yield call(MainDB.getChartSelectedPeriod);
-
-  console.timeEnd();
 
   if (!isNewSecurityFlow) {
     yield put(mainActions.setUnlocked(true));
@@ -178,7 +174,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
 
   trackFirstLaunch();
   trackEvent('launch_app');
-
 
   yield fork(loadRates, true);
 
@@ -233,7 +228,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   yield put(favoritesActions.loadSuggests());
   yield put(mainActions.getTimeSynced());
 
-  
   SplashScreen.hideAsync();
 
   if (needRefreshConfig) {

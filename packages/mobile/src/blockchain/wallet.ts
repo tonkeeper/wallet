@@ -36,7 +36,6 @@ export class Wallet {
   }
 
   public async getReadableAddress() {
-    // console.log('this.vault)', this.vault)
     if (this.vault) {
       const rawAddress = await this.vault.getRawTonAddress();
       const friendlyAddress = await this.vault.getTonAddress();

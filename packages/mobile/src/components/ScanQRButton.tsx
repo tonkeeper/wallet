@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Icon, TouchableOpacity } from '$uikit';
 import { Steezy } from '$styles';
 import { store } from '$store';
@@ -11,12 +11,12 @@ import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 export const ScanQRButton = memo(() => {
   const deeplinking = useDeeplinking();
 
-  const hitSlop = {
+  const hitSlop = useMemo(() => ({
     top: 26,
     bottom: 26,
     left: 26,
     right: 26,
-  };
+  }), []);
 
   const handlePressScanQR = React.useCallback(() => {
     if (store.getState().wallet.wallet) {

@@ -1,5 +1,5 @@
 import { Steezy } from '$styles';
-import { View } from '$uikit/StyledNativeCompoenets';
+import { View } from '$uikit/StyledNativeComponents';
 import { Text } from '$uikit/Text/Text';
 import React, { memo } from 'react';
 import { useWindowDimensions } from 'react-native';
