@@ -1,14 +1,11 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 
-import { useEvent, usePrepareDetailedAction } from '$hooks';
+import { usePrepareDetailedAction } from '$hooks';
 import { ActionProps } from './Action.interface';
 import { ActionBase } from '$core/ModalContainer/Action/ActionBase/ActionBase';
 
-export const ActionModal: FC<ActionProps> = ({ eventKey, action }) => {
-  const event = useEvent(eventKey);
-  const [cachedEvent] = useState(event);
-
-  const actionProps = usePrepareDetailedAction(action, cachedEvent);
+export const ActionModal: FC<ActionProps> = ({ event, action }) => {
+  const actionProps = usePrepareDetailedAction(action, event);
 
   return <ActionBase {...actionProps} />;
 };

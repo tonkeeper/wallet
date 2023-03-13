@@ -166,7 +166,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
                   <ActionItem
                     borderStart={idx === 0}
                     borderEnd={actions.length === idx + 1}
-                    eventKey={item.eventId}
+                    event={item}
                     action={action}
                   />
                   {actions.length !== idx + 1 ? <Separator /> : null}
