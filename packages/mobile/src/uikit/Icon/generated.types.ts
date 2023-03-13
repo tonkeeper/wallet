@@ -42,6 +42,7 @@ export type IconNames =
   | 'ic-reset-24'
   | 'ic-ton-disabled-24'
   | 'ic-appearance-28'
+  | 'ic-arrow-2-circlepath-28'
   | 'ic-arrow-down-28'
   | 'ic-arrow-up-28'
   | 'ic-bell-28'
@@ -56,6 +57,7 @@ export type IconNames =
   | 'ic-home-28'
   | 'ic-jetton-28'
   | 'ic-key-28'
+  | 'ic-lock-28'
   | 'ic-minus-28'
   | 'ic-money-28'
   | 'ic-nft-collection-28'
@@ -142,6 +144,7 @@ export const AllIcons = [
   'ic-reset-24',
   'ic-ton-disabled-24',
   'ic-appearance-28',
+  'ic-arrow-2-circlepath-28',
   'ic-arrow-down-28',
   'ic-arrow-up-28',
   'ic-bell-28',
@@ -156,6 +159,7 @@ export const AllIcons = [
   'ic-home-28',
   'ic-jetton-28',
   'ic-key-28',
+  'ic-lock-28',
   'ic-minus-28',
   'ic-money-28',
   'ic-nft-collection-28',
@@ -243,6 +247,7 @@ export const IconSizes = {
   'ic-reset-24': 24,
   'ic-ton-disabled-24': 24,
   'ic-appearance-28': 28,
+  'ic-arrow-2-circlepath-28': 2,
   'ic-arrow-down-28': 28,
   'ic-arrow-up-28': 28,
   'ic-bell-28': 28,
@@ -257,6 +262,7 @@ export const IconSizes = {
   'ic-home-28': 28,
   'ic-jetton-28': 28,
   'ic-key-28': 28,
+  'ic-lock-28': 28,
   'ic-minus-28': 28,
   'ic-money-28': 28,
   'ic-nft-collection-28': 28,

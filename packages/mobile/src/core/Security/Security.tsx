@@ -130,7 +130,7 @@ export const Security: FC = () => {
         >
           {renderBiometryToggler()}
           <CellSection>
-            <CellSectionItem onPress={handleChangePasscode} icon="ic-key-24">
+            <CellSectionItem onPress={handleChangePasscode} icon="ic-lock-28">
               {t('security_change_passcode')}
             </CellSectionItem>
             <CellSectionItem onPress={handleResetPasscode} icon="ic-reset-24">
@@ -139,12 +139,12 @@ export const Security: FC = () => {
           </CellSection>
           <CellSection>
             {!!wallet && (
-              <CellSectionItem onPress={handleBackupSettings} icon="ic-backup-24">
+              <CellSectionItem onPress={handleBackupSettings} icon="ic-key-28">
                 {t('settings_backup_seed')}
               </CellSectionItem>
             )}
             {!!wallet && wallet.ton.isLockup() && (
-              <CellSectionItem onPress={handleCopyLockupConfig} icon="ic-backup-24">
+              <CellSectionItem onPress={handleCopyLockupConfig} icon="ic-key-28">
                 Copy lockup config
               </CellSectionItem>
             )}
