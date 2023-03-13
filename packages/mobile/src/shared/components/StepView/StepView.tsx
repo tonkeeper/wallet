@@ -125,7 +125,7 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
       position.value = withSpring(nextIndex * width * -1, {
         velocity,
         damping: 15,
-        mass: 0.5,
+        mass: velocity ? 0.07 : 0.25,
       });
     },
     [position, steps, width],
