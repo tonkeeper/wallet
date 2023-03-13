@@ -1,20 +1,11 @@
-import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
-import {
-  Button,
-  Icon,
-  ScrollHandler,
-  Text,
-  PopupMenu,
-  PopupMenuItem,
-  Skeleton,
-  ShowMore,
-} from '$uikit';
+import { Button, Icon, ScrollHandler, Text, PopupMenu, PopupMenuItem } from '$uikit';
 import { formatAmountAndLocalize, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
-import { useTheme, useTranslator } from '$hooks';
+import { useTranslator } from '$hooks';
 import { ActionButtonProps } from '$core/Balances/BalanceItem/BalanceItem.interface';
 import { openReceive, openSend } from '$navigation';
 import { CryptoCurrencies } from '$shared/constants';
@@ -23,7 +14,6 @@ import { useJettonEvents } from '$hooks/useJettonEvents';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import { Linking, View } from 'react-native';
 import { eventsSelector, eventsActions } from '$store/events';
-import { jettonIsLoadingSelector, jettonsActions, jettonSelector } from '$store/jettons';
 import { walletAddressSelector } from '$store/wallet';
 import { useJettonPrice } from '$hooks/useJettonPrice';
 
@@ -45,7 +35,6 @@ const ActionButton: FC<ActionButtonProps> = (props) => {
 };
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
-  const theme = useTheme();
   const { bottom: bottomInset } = useSafeAreaInsets();
   const jetton = useJetton(route.params.jettonAddress);
   const t = useTranslator();

@@ -56,6 +56,7 @@ const ChartComponent: React.FC = () => {
           : data.data,
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, selectedPeriod, isFetching, isLoading]);
 
   const rates = useSelector(ratesRatesSelector);

@@ -3,16 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { WalletProps } from './Wallet.interface';
 import * as S from './Wallet.style';
-import {
-  Button,
-  Icon,
-  PopupMenu,
-  PopupMenuItem,
-  ShowMore,
-  Text,
-  ScrollHandler,
-} from '$uikit';
-import { useTheme, useTranslator, useWalletInfo } from '$hooks';
+import { Button, Icon, PopupMenu, PopupMenuItem, Text, ScrollHandler } from '$uikit';
+import { useTranslator, useWalletInfo } from '$hooks';
 import { openReceive, openRequireWalletModal, openSend } from '$navigation';
 import {
   walletActions,
@@ -29,6 +21,7 @@ import { useNavigation } from '$libs/navigation';
 import { Chart } from '$uikit/Chart/Chart';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated from 'react-native-reanimated';
+import { IconNames } from '$uikit/Icon/generated.types';
 
 const ActionButton: FC<ActionButtonProps> = (props) => {
   const { children, onPress, icon, isLast } = props;
@@ -47,7 +40,13 @@ const ActionButton: FC<ActionButtonProps> = (props) => {
   );
 };
 
-const exploreActions = [
+export interface ExploreAction {
+  icon: IconNames;
+  text: string;
+  url: string;
+}
+
+const exploreActions: ExploreAction[] = [
   {
     icon: 'ic-globe-16',
     text: 'ton.org',
@@ -86,7 +85,6 @@ const exploreActions = [
 ];
 
 export const Wallet: FC<WalletProps> = ({ route }) => {
-  const theme = useTheme();
   const currency = route.params.currency;
   const wallet = useSelector(walletWalletSelector);
   const address = useSelector(walletAddressSelector);

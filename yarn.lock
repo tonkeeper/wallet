@@ -2573,9 +2573,9 @@
     schema-utils "^3.0.0"
     source-map "^0.7.3"
 
-"@rainbow-me/animated-charts@git+ssh://git@github.com:tonkeeper/react-native-animated-charts#3f989bd40c9286bb901cb277dff4ceb5d2c1c49b":
+"@rainbow-me/animated-charts@git+ssh://git@github.com:tonkeeper/react-native-animated-charts#b0872b97e43c694414b37c95c042e44b92e2c0e9":
   version "1.0.0-alpha.6"
-  resolved "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#3f989bd40c9286bb901cb277dff4ceb5d2c1c49b"
+  resolved "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#b0872b97e43c694414b37c95c042e44b92e2c0e9"
 
 "@react-dnd/asap@^4.0.0":
   version "4.0.1"
