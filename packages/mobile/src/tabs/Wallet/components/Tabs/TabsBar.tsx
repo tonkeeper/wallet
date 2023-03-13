@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     zIndex: 3,
   },
   wrap: {
-    borderBottomWidth: 1,
+    borderBottomWidth: ns(0.5),
   },
   center: {
     justifyContent: 'center',
