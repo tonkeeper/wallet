@@ -10,12 +10,12 @@ import {
   PopupMenuItem,
   Skeleton,
   ShowMore,
+  IconButton,
 } from '$uikit';
 import { formatAmountAndLocalize, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
 import { useTheme, useTranslator } from '$hooks';
-import { ActionButtonProps } from '$core/Balances/BalanceItem/BalanceItem.interface';
 import { openReceive, openSend } from '$navigation';
 import { CryptoCurrencies } from '$shared/constants';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,23 +26,6 @@ import { eventsSelector, eventsActions } from '$store/events';
 import { jettonIsLoadingSelector, jettonsActions, jettonSelector } from '$store/jettons';
 import { walletAddressSelector } from '$store/wallet';
 import { useJettonPrice } from '$hooks/useJettonPrice';
-
-const ActionButton: FC<ActionButtonProps> = (props) => {
-  const { children, onPress, icon, isLast } = props;
-
-  return (
-    <S.ActionWrapper isLast={isLast}>
-      <S.Action onPress={onPress}>
-        <S.ActionIcon>
-          <Icon name={icon} color="constantLight" />
-        </S.ActionIcon>
-        <Text variant="label3" color="foregroundSecondary">
-          {children}
-        </Text>
-      </S.Action>
-    </S.ActionWrapper>
-  );
-};
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const theme = useTheme();
@@ -70,6 +53,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     if (!jettonMeta) {
       loadJettonInfo();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleLoadMore = useCallback(() => {
@@ -141,23 +125,30 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         </S.FlexRow>
         <S.Divider />
         <S.ActionsContainer>
-          <ActionButton onPress={handleSend} icon="ic-arrow-up-28">
-            {t('wallet_send')}
-          </ActionButton>
-          <ActionButton isLast onPress={handleReceive} icon="ic-arrow-down-28">
-            {t('wallet_receive')}
-          </ActionButton>
+          <IconButton
+            onPress={handleSend}
+            iconName="ic-arrow-up-28"
+            title={t('wallet.send_btn')}
+          />
+          <IconButton
+            onPress={handleReceive}
+            iconName="ic-arrow-down-28"
+            title={t('wallet.receive_btn')}
+          />
         </S.ActionsContainer>
         <S.Divider style={{ marginBottom: 10 }} />
       </S.HeaderWrap>
     );
   }, [
     jetton,
-    isJettonMetaLoading,
-    jettonMeta?.description,
-    handleReceive,
+    total,
+    price,
     t,
+    isJettonMetaLoading,
+    theme.colors.backgroundPrimary,
+    jettonMeta?.description,
     handleSend,
+    handleReceive,
   ]);
 
   // workaround, need to paginate transactions even if content not modified
