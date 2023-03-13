@@ -220,34 +220,32 @@ export const ActivityScreen: FC = () => {
   if (isLoaded && (!wallet || Object.keys(eventsInfo).length < 1)) {
     return (
       <Screen>
-        <Screen.ScrollView contentContainerStyle={styles.emptyScrollView}>
-          <View style={styles.emptyContainer}>
-            <Text variant="h2" style={{ textAlign: 'center', marginBottom: ns(4) }}>
-              {t('activity.empty_transaction_title')}
-            </Text>
-            <Text variant="body1" color="textSecondary">
-              {t('activity.empty_transaction_caption')}
-            </Text>
+        <View style={styles.emptyContainer}>
+          <Text variant="h2" style={{ textAlign: 'center', marginBottom: ns(4) }}>
+            {t('activity.empty_transaction_title')}
+          </Text>
+          <Text variant="body1" color="textSecondary">
+            {t('activity.empty_transaction_caption')}
+          </Text>
 
-            <View style={styles.emptyButtons}>
-              <Button 
-                style={{ marginRight: ns(12) }}
-                onPress={handlePressBuy}
-                size="medium_rounded" 
-                mode="secondary"
-              >
-                {t('activity.buy_toncoin_btn')}
-              </Button>
-              <Button 
-                onPress={handlePressRecevie}
-                size="medium_rounded" 
-                mode="secondary"
-              >
-                {t('activity.receive_btn')}
-              </Button>
-            </View>
+          <View style={styles.emptyButtons}>
+            <Button 
+              style={{ marginRight: ns(12) }}
+              onPress={handlePressBuy}
+              size="medium_rounded" 
+              mode="secondary"
+            >
+              {t('activity.buy_toncoin_btn')}
+            </Button>
+            <Button 
+              onPress={handlePressRecevie}
+              size="medium_rounded" 
+              mode="secondary"
+            >
+              {t('activity.receive_btn')}
+            </Button>
           </View>
-        </Screen.ScrollView>
+        </View>
       </Screen>
     )
   }
@@ -262,11 +260,6 @@ export const ActivityScreen: FC = () => {
 };
 
 const styles = StyleSheet.create({
-  emptyScrollView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
