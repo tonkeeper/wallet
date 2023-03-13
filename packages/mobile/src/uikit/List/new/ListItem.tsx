@@ -1,10 +1,11 @@
 import React, { memo, useCallback } from 'react';
 import { TextStyle } from 'react-native';
 import { Steezy, StyleProp } from '$styles';
-import { View, SText, Icon, Pressable } from '$uikit';
+import { View, SText, Icon } from '$uikit';
 import { DarkTheme } from '$styled';
 import FastImage from 'react-native-fast-image';
 import Animated, { useSharedValue } from 'react-native-reanimated';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 type LeftContentFN = (isPressed: Animated.SharedValue<boolean>) => React.ReactNode;
 
@@ -50,7 +51,7 @@ export const ListItem = memo<ListItemProps>((props) => {
   const pictureSource = { uri: props.picture };
 
   return (
-    <Pressable 
+    <TouchableHighlight 
       underlayColor={DarkTheme.colors.backgroundTertiary}
       onPressOut={handlePressOut}
       onPressIn={handlePressIn}
@@ -123,7 +124,7 @@ export const ListItem = memo<ListItemProps>((props) => {
           )}
         </View>
       </View>
-    </Pressable>
+    </TouchableHighlight>
   );
 });
 

@@ -3,13 +3,16 @@ import { openNFT } from '$navigation';
 import { NFTModel } from '$store/models';
 import { DarkTheme } from '$styles';
 import { Steezy } from '$styles';
-import { View, Text, TouchableHighlight, Icon } from '$uikit';
+import { View, Text, Icon } from '$uikit';
 import { checkIsTonDiamondsNFT, maskifyTonAddress } from '$utils';
 import { dnsToUsername } from '$utils/dnsToUsername';
 import { useFlags } from '$utils/flags';
 import _ from 'lodash';
+import { TouchableHighlight as NativeTouchableHighlight } from 'react-native-gesture-handler';
 import React, { memo, useCallback, useMemo } from 'react';
 import * as S from '../../core/NFTs/NFTItem/NFTItem.style';
+
+const TouchableHighlight = Steezy.withStyle(NativeTouchableHighlight);
 
 interface NFTCardItemProps {
   item: any;
