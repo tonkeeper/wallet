@@ -27,6 +27,7 @@ import * as S from '../../core/Balances/Balances.style';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
+import { jettonsSelector } from '$store/jettons';
 
 type TokenInfo = {
   address: WalletAddress;
@@ -51,7 +52,9 @@ type WalletVersion = 'v3R1' | 'v4R2';
 
 const useTonkens = (): { 
   list: TokenInfo[];
+  canEdit: boolean;
 } => {
+  const { jettonBalances: allJettonBalances } = useSelector(jettonsSelector);
   const jettonBalances = useJettonBalances();
 
   const tonkens = jettonBalances.map((item) => {
@@ -77,6 +80,7 @@ const useTonkens = (): {
 
   return {
     list: tonkens,
+    canEdit: allJettonBalances.length > 0
   }
 }
 
@@ -485,7 +489,7 @@ const TokenList = ({
           />
         ))}
       </List>
-      {tokens.list.length > 0 && (
+      {tokens.canEdit && (
         <View style={styles.tonkensEdit}>
           <Button 
             onPress={() => openJettonsList()}
