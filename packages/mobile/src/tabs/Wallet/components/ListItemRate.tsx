@@ -26,6 +26,7 @@ export const ListItemRate = memo<ListItemRateProps>((props) => (
     </Text>
     {!!props.percent && (
       <Text
+        style={styles.percentText}
         color={trend2color[props.trend]}
         variant="body2"
       >
@@ -38,5 +39,8 @@ export const ListItemRate = memo<ListItemRateProps>((props) => (
 const styles = StyleSheet.create({
   subvalue: {
     flexDirection: 'row'
+  },
+  percentText: {
+    opacity: 0.74,
   }
 });
