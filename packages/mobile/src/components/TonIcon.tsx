@@ -36,7 +36,7 @@ export const TonIcon = memo<TonIconProps>((props) => {
       <Icon name="ic-ton-28" color="constantLight" />
       {locked && (
         <View style={styles.locked}>
-          <Icon name="ic-lock-12" color="backgroundSecondary" />
+          <Icon name="ic-lock-12" color="iconSecondary" />
         </View>
       )}
     </View>
@@ -54,14 +54,14 @@ const styles = Steezy.create(({ colors }) => ({
   },
   locked: {
     position: 'absolute',
-    bottom: -1,
-    right: -1,
-    width: 18,
-    height: 18,
-    borderWidth: 2,
-    borderColor: colors.backgroundContent,
-    borderRadius: 18 / 2,
-    backgroundColor: colors.iconSecondary,
+    bottom: -3,
+    right: -3,
+    width: 20,
+    height: 20,
+    // borderWidth: 2,
+    // borderColor: colors.backgroundContentTint,
+    borderRadius: 20 / 2,
+    backgroundColor: colors.backgroundContentTint,
     alignItems: 'center',
     justifyContent: 'center'
   }

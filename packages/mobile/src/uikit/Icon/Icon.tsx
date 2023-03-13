@@ -17,7 +17,15 @@ export interface IconProps {
 }
 
 export const Icon = React.memo((props: IconProps) => {
-  const { name, style, color, colorHex, colorless, size: customSize, imageStyle: customImageStyle } = props;
+  const {
+    name,
+    style,
+    color,
+    colorHex,
+    colorless,
+    size: customSize,
+    imageStyle: customImageStyle,
+  } = props;
   const theme = useTheme();
 
   const icon = MobileIconsList[name];

@@ -20,7 +20,7 @@ import _ from 'lodash';
 import { useBalance } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
 import { TonIcon } from '../../components/TonIcon';
-import { CryptoCurrencies, CurrencyLongName } from '$shared/constants';
+import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Tabs } from './components/Tabs';
 import * as S from '../../core/Balances/Balances.style';
@@ -439,17 +439,11 @@ const TokenList = ({
         {balance.lockup.map((item, key) => (
            <List.Item
             key={`lockup-${key}`}
-            title={CurrencyLongName[item.type]}
+            title={LockupNames[item.type]}
             value={item.amount.formatted}
             subvalue={item.amount.fiat}
             leftContent={<TonIcon locked />}
-            subtitle={
-              <ListItemRate
-                percent={item.percent}
-                price={item.price}
-                trend={item.trend}
-              />
-            }
+            subtitle="-"
           />
         ))}
         {balance.oldVersions.map((item, key) => (

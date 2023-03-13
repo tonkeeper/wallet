@@ -114,12 +114,9 @@ export const useBalance = () => {
         type: item.type,
         amount: {
           value: Ton.fromNano(item.amount),
-          formatted: truncateDecimal(Ton.fromNano(item.amount), 2),
-          fiat: amountToFiat(Ton.fromNano(item.amount))
+          formatted: price.amount,
+          fiat: price.fiatInfo.amount
         },
-        percent: price.fiatInfo.percent,
-        price: price.fiatInfo.amount,
-        trend: price.fiatInfo.trend
       }
     });
   }, [balances, getPrice]);

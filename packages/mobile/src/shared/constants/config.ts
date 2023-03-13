@@ -98,8 +98,8 @@ export const CurrencyLongName = {
 };
 
 export const LockupNames = {
-  [CryptoCurrencies.TonLocked]: 'Toncoin, locked',
-  [CryptoCurrencies.TonRestricted]: 'Toncoin, restricted',
+  [CryptoCurrencies.TonLocked]: 'Locked Toncoin',
+  [CryptoCurrencies.TonRestricted]: 'Restricted Toncoin',
 }
 
 export const Decimals = {
