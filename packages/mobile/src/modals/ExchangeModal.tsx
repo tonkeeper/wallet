@@ -22,13 +22,13 @@ export const ExchangeModal = ({ category }: ExchangeModalProps) => {
 
   const isSell = category === 'sell';
 
-  const sellItems = useMemo(() => {
+  const items = useMemo(() => {
     return categories.filter((item) => {
       if (isSell) {
-        return item.title === 'Sell TON';
+        return item?.type === 'sell';
       }
       
-      return item.title === 'Buy TON';
+      return item?.type === 'buy';
     });
   }, [isSell]);
 
@@ -59,7 +59,7 @@ export const ExchangeModal = ({ category }: ExchangeModalProps) => {
             </S.LoaderWrap>
           ) : (
             <>
-              {sellItems.map((category, cIndex) => (
+              {items.map((category, cIndex) => (
                 <React.Fragment key={category.title}>
                   {cIndex > 0 ? (
                     <S.HeaderContainer>

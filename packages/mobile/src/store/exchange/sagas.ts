@@ -33,6 +33,7 @@ export function* loadMethodsWorker() {
     for (let category of resp.data.data.categories) {
       if (category.items.length > 0) {
         categories.push({
+          type: category?.type,
           title: category.title,
           subtitle: category.subtitle,
           items: category.items.map((item: any) => item.id),
