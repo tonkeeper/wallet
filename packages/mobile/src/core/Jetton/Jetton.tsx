@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useLayoutEffect, useMemo } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
 import {
@@ -8,8 +8,6 @@ import {
   Text,
   PopupMenu,
   PopupMenuItem,
-  Skeleton,
-  ShowMore,
   IconButton,
 } from '$uikit';
 import { formatAmountAndLocalize, maskifyTonAddress, ns } from '$utils';
@@ -18,11 +16,10 @@ import { useJetton } from '$hooks/useJetton';
 import { useTheme, useTranslator } from '$hooks';
 import { openReceive, openSend } from '$navigation';
 import { CryptoCurrencies } from '$shared/constants';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useJettonEvents } from '$hooks/useJettonEvents';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import { Linking, RefreshControl } from 'react-native';
-import { jettonIsLoadingSelector, jettonsActions, jettonSelector } from '$store/jettons';
 import { walletAddressSelector } from '$store/wallet';
 import { useJettonPrice } from '$hooks/useJettonPrice';
 
@@ -31,30 +28,11 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const { bottom: bottomInset } = useSafeAreaInsets();
   const jetton = useJetton(route.params.jettonAddress);
   const t = useTranslator();
-  const dispatch = useDispatch();
   const { events, isRefreshing, refreshJettonEvents } = useJettonEvents(
     jetton.jettonAddress,
   );
   const address = useSelector(walletAddressSelector);
   const { price, total } = useJettonPrice(jetton.jettonAddress, jetton.balance);
-  const isJettonMetaLoading = useSelector((state) =>
-    // @ts-ignore
-    jettonIsLoadingSelector(state, route.params.jettonAddress),
-  );
-  const jettonMeta = useSelector((state) =>
-    // @ts-ignore
-    jettonSelector(state, route.params.jettonAddress),
-  );
-
-  useLayoutEffect(() => {
-    const loadJettonInfo = async () => {
-      dispatch(jettonsActions.loadJettonMeta(route.params.jettonAddress));
-    };
-    if (!jettonMeta) {
-      loadJettonInfo();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleSend = useCallback(() => {
     openSend(jetton.jettonAddress, undefined, undefined, undefined, true);
@@ -92,19 +70,6 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
                 {t('jetton_price')} {price}
               </Text>
             ) : null}
-            <S.JettonIDWrapper>
-              {!(isJettonMetaLoading ?? true) ? (
-                <ShowMore
-                  backgroundColor={theme.colors.backgroundPrimary}
-                  maxLines={2}
-                  text={jettonMeta?.description ?? ''}
-                />
-              ) : (
-                <>
-                  <Skeleton.Line height={ns(20)} width={240} />
-                </>
-              )}
-            </S.JettonIDWrapper>
           </S.JettonAmountWrapper>
           {jetton.metadata.image ? (
             <S.Logo source={{ uri: jetton.metadata.image }} />
@@ -126,17 +91,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         <S.Divider style={{ marginBottom: 10 }} />
       </S.HeaderWrap>
     );
-  }, [
-    jetton,
-    total,
-    price,
-    t,
-    isJettonMetaLoading,
-    theme.colors.backgroundPrimary,
-    jettonMeta?.description,
-    handleSend,
-    handleReceive,
-  ]);
+  }, [jetton, total, price, t, handleSend, handleReceive]);
 
   const renderContent = useCallback(() => {
     return (
@@ -161,10 +116,10 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   }, [
     refreshJettonEvents,
     isRefreshing,
-    theme.colors.foregroundPrimary,
     events,
     renderHeader,
     bottomInset,
+    theme.colors.foregroundPrimary,
   ]);
 
   if (!jetton) {

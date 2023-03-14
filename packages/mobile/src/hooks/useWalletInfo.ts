@@ -55,7 +55,7 @@ export function useWalletInfo(currency: CryptoCurrency) {
     let amountResult: string;
 
     if (+amount > 0) {
-      percent = priceDiff === null ? '-' : (+priceDiff > 0 ? '+ ' : '– ') + Math.abs(Number(priceDiff)) + '%';
+      percent = priceDiff === null ? '-' : (+priceDiff > 0 ? '+ ' : '– ') + Math.abs(Number(priceDiff)) + ' %';
       if (priceDiff !== null) {
         color = +priceDiff > 0 ? 'accentPositive' : 'accentNegative';
         trend = +priceDiff > 0 ? 'positive' : 'negative';

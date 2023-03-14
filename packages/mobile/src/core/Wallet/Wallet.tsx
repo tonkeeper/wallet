@@ -3,17 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { WalletProps } from './Wallet.interface';
 import * as S from './Wallet.style';
+import { useTranslator, useWalletInfo } from '$hooks';
 import {
   Button,
   Icon,
   PopupMenu,
   PopupMenuItem,
-  ShowMore,
   Text,
   ScrollHandler,
   IconButton,
 } from '$uikit';
-import { useTheme, useTranslator, useWalletInfo } from '$hooks';
 import { openReceive, openRequireWalletModal, openSend } from '$navigation';
 import {
   walletActions,
@@ -69,7 +68,6 @@ const exploreActions = [
 ];
 
 export const Wallet: FC<WalletProps> = ({ route }) => {
-  const theme = useTheme();
   const currency = route.params.currency;
   const wallet = useSelector(walletWalletSelector);
   const address = useSelector(walletAddressSelector);
@@ -100,6 +98,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   }, [currency]);
 
   const { amount, fiatInfo } = useWalletInfo(currency);
+
   const shouldRenderSellButton = useMemo(() => +amount > 0, [amount]);
 
   const handleReceive = useCallback(() => {
@@ -157,13 +156,6 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
               <Text style={{ marginTop: 2 }} variant="body2" color="foregroundSecondary">
                 {fiatInfo.amount}
               </Text>
-              <S.AboutWrapper>
-                <ShowMore
-                  backgroundColor={theme.colors.backgroundPrimary}
-                  maxLines={2}
-                  text={t('about_ton')}
-                />
-              </S.AboutWrapper>
             </S.AmountWrapper>
             <S.IconWrapper>
               <Icon size={40} name="ic-ton-28" color="constantLight" />
@@ -243,7 +235,6 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     amount,
     currencyUpper,
     fiatInfo.amount,
-    theme.colors.backgroundPrimary,
     t,
     handleOpenExchange,
     handleSend,
