@@ -52,7 +52,7 @@ export const TokenList = memo<TokenListProps>(({ tokens, balance }) => {
             value={item.amount.formatted}
             subvalue={item.amount.fiat}
             leftContent={<TonIcon locked />}
-            subtitle="-"
+            subtitle={balance.fiatPrice}
           />
         ))}
         {balance.oldVersions.map((item, key) => (
