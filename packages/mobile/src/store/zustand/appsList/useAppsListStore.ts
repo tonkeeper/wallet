@@ -3,7 +3,7 @@ import { i18n } from '$translation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import FastImage from 'react-native-fast-image';
-import create from 'zustand';
+import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { IAppCategory, IAppsListStore } from './types';
 
