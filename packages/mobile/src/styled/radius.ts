@@ -1,5 +1,5 @@
 export const RADIUS = {
   small: 6,
-  normal: 14,
+  normal: 16,
   large: 18,
 };

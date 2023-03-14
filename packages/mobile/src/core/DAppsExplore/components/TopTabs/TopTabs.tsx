@@ -25,7 +25,7 @@ const TopTabsComponent: FC<Props> = (props) => {
 
   const handleLayout = useCallback((tab: string, event: LayoutChangeEvent) => {
     const layout = event?.nativeEvent?.layout;
-
+    
     if (layout) {
       setTabsLayouts((s) => ({ ...s, [tab]: layout }));
     }

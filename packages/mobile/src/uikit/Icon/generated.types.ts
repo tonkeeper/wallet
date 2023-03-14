@@ -52,6 +52,7 @@ export type IconNames =
   | 'ic-door-28'
   | 'ic-envelope-28'
   | 'ic-explore-28'
+  | 'ic-flash-28'
   | 'ic-gear-28'
   | 'ic-home-28'
   | 'ic-jetton-28'
@@ -76,6 +77,7 @@ export type IconNames =
   | 'ic-tray-arrow-down-28'
   | 'ic-tray-arrow-up-28'
   | 'ic-viewfinder-28'
+  | 'ic-wallet-28'
   | 'ic-warning-28'
   | 'ic-xmark-28'
   | 'ic-checkmark-circle-32'
@@ -152,6 +154,7 @@ export const AllIcons = [
   'ic-door-28',
   'ic-envelope-28',
   'ic-explore-28',
+  'ic-flash-28',
   'ic-gear-28',
   'ic-home-28',
   'ic-jetton-28',
@@ -176,6 +179,7 @@ export const AllIcons = [
   'ic-tray-arrow-down-28',
   'ic-tray-arrow-up-28',
   'ic-viewfinder-28',
+  'ic-wallet-28',
   'ic-warning-28',
   'ic-xmark-28',
   'ic-checkmark-circle-32',
@@ -253,6 +257,7 @@ export const IconSizes = {
   'ic-door-28': 28,
   'ic-envelope-28': 28,
   'ic-explore-28': 28,
+  'ic-flash-28': 28,
   'ic-gear-28': 28,
   'ic-home-28': 28,
   'ic-jetton-28': 28,
@@ -277,6 +282,7 @@ export const IconSizes = {
   'ic-tray-arrow-down-28': 28,
   'ic-tray-arrow-up-28': 28,
   'ic-viewfinder-28': 28,
+  'ic-wallet-28': 28,
   'ic-warning-28': 28,
   'ic-xmark-28': 28,
   'ic-checkmark-circle-32': 32,

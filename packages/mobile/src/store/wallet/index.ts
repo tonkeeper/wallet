@@ -25,6 +25,7 @@ import {
   ChangePinAction,
   WalletGetUnlockedVaultAction,
   RefreshBalancesPageAction,
+  SetReadableAddress,
 } from '$store/wallet/interface';
 import { SwitchVersionAction } from '$store/main/interface';
 import { SelectableVersions } from '$shared/constants';
@@ -39,6 +40,7 @@ const initialState: WalletState = {
   balances: {},
   address: {},
   oldWalletBalances: [],
+  readableAddress: null
 };
 
 export const { actions, reducer } = createSlice({
@@ -62,6 +64,9 @@ export const { actions, reducer } = createSlice({
     },
     setWallet(state, action: SetWalletAction) {
       state.wallet = action.payload;
+    },
+    setReadableAddress(state, action: SetReadableAddress) {
+      state.readableAddress = action.payload;
     },
     setBalances(state, action: SetBalancesAction) {
       state.balances = {

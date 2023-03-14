@@ -8,6 +8,11 @@ export const textVariants = StyleSheet.create({
     lineHeight: nfs(40),
     fontFamily: FONT.medium,
   },
+  num2: {
+    fontSize: nfs(28),
+    lineHeight: nfs(36),
+    fontFamily: FONT.medium
+  },
   h1: {
     fontSize: nfs(32),
     lineHeight: nfs(40),

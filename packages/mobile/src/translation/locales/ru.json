@@ -303,6 +303,29 @@
 
   "swap_title": "Обмен",
 
+  "wallet": {
+    "screen_title": "Кошёлек",
+    "edit_tokens_btn": "Настроить",
+    "old_wallets_title": "Cтарые кошельки",
+    "old_wallet_title": "Cтарый кошелек",
+    "buy_btn": "Купить",
+    "send_btn": "Отправить",
+    "receive_btn": "Получить",
+    "sell_btn": "Продать",
+    "tonkens_tab_lable": "Токены",
+    "collectibles_tab_lable": "NFT"
+  },
+
+  "activity": {
+    "screen_title": "Активность",
+    "sent": "Отправить",
+    "received": "Received",
+    "empty_transaction_title":"Ваша активность будет показана здесь",
+    "empty_transaction_caption": "Совершите первую транзакцию!",
+    "buy_toncoin_btn": "Купить Toncoin",
+    "receive_btn": "Получить"
+  },
+
   "browser": {
     "title": "Браузер",
     "search_label": "Поиск",
@@ -328,6 +351,13 @@
     },
     "more_title": "Исследуйте все сервисы",
     "more_description": "Маркеты, биржи и другие"
+  },
+
+  "exchange_modal": {
+    "sell_title": "Продать Toncoin",
+    "buy_title": "Купить Toncoin",
+    "other_ways_to_sell": "Другие способы продажи",
+    "other_ways_to_buy": "Другие способы покупки"
   },
 
   "exchange_title": "Купить TON",

@@ -34,6 +34,7 @@ export const DevComponentList: React.FC = () => {
           <CellSectionItem onPress={() => nav.navigate('DevToast')}>
             Toast
           </CellSectionItem>
+          <CellSectionItem onPress={() => nav.navigate('DevListComponent')}>Lists</CellSectionItem>
           <CellSectionItem onPress={() => nav.navigate('DevWalletStore')}>Wallet Store</CellSectionItem>
         </CellSection>
       </Screen.ScrollView>

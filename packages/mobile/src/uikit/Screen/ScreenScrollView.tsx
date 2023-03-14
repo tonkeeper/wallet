@@ -1,38 +1,38 @@
-import React from 'react';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import React, { forwardRef, memo } from 'react';
 import { ScrollViewProps } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ns } from '$utils';
-import { ScrollHandler } from '../ScrollHandler/ScrollHandler';
+import { useScreenScroll } from './context/ScreenScrollContext';
+import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 
-const useWrapBottomTabBarHeight = () => {
-  try { // Fix crash 
-    return useBottomTabBarHeight();
-  } catch (err) {
-    return 0;
-  }  
+interface ScreenScrollView extends ScrollViewProps {
+  indent?: boolean;
 }
 
-export const ScreenScrollView: React.FC<ScrollViewProps> = (props) => {
-  const tabBarHeight = useWrapBottomTabBarHeight();
+export const ScreenScrollView = memo(forwardRef<Animated.ScrollView, ScreenScrollView>((props, ref) => {
+  const { indent = true } = props;
+  const tabBarHeight = useBottomTabBarHeight();
+  const { contentScrollHandler } = useScreenScroll();
+  
   const contentContainerStyle = [
     {
-      paddingHorizontal: ns(16),
-      paddingBottom: tabBarHeight, // Why ?
+      ...(indent && { paddingHorizontal: ns(16) }),
+      paddingBottom: tabBarHeight,
+      // paddingTop: ns(NavBarHeight),
     }, 
-    props.style
+    props.contentContainerStyle
   ];
 
   return (
-    <ScrollHandler>
-      <Animated.ScrollView
-        contentContainerStyle={contentContainerStyle}
-        showsVerticalScrollIndicator={false}
-        scrollEventThrottle={16}
-        {...props}
-      >
-        {props.children}
-      </Animated.ScrollView>
-    </ScrollHandler>
+    <Animated.ScrollView
+      contentContainerStyle={contentContainerStyle}
+      showsVerticalScrollIndicator={false}
+      scrollEventThrottle={16}
+      onScroll={contentScrollHandler}
+      ref={ref}
+      {...props}
+    >
+      {props.children}
+    </Animated.ScrollView>
   );
-};
+}));

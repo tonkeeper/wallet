@@ -13,6 +13,7 @@ import { Ton } from '$libs/Ton';
 import { AccountEvent, Configuration, RawBlockchainApi, SendApi } from 'tonapi-sdk-js';
 import axios from 'axios';
 import { Tonapi } from '$libs/Tonapi';
+import { Address } from '$store/wallet/interface';
 
 const TonWeb = require('tonweb');
 
@@ -21,6 +22,8 @@ export const jettonTransferForwardAmount = Ton.toNano('0.64');
 export class Wallet {
   readonly name: string;
   readonly vault: Vault;
+  address: Address | null = null;
+
 
   readonly ton: TonWallet;
 
@@ -28,6 +31,22 @@ export class Wallet {
     this.name = name;
     this.vault = vault;
     this.ton = ton;
+
+    this.getReadableAddress();
+  }
+
+  public async getReadableAddress() {
+    if (this.vault) {
+      const rawAddress = await this.vault.getRawTonAddress();
+      const friendlyAddress = await this.vault.getTonAddress();
+      const version = this.vault.getVersion();
+
+      this.address = {
+        rawAddress: rawAddress.toString(false),
+        friendlyAddress,
+        version
+      };
+    }
   }
 
   // Loads wallet from the disk storage

@@ -47,13 +47,17 @@ function scaleOnMiniDevices(scaledPixelSize, pixelSizeFromMockup) {
  * @param pixelSizeFromMockup element size from mockup
  * @param dimension height or width of device we relate to
  */
-export function ns(pixelSizeFromMockup: number, dimension: Dimension = Width) {
-  return scaleOnMiniDevices(
-    dimension === Height
-      ? h((pixelSizeFromMockup / GUIDELINE_HEIGHT) * 100)
-      : w((pixelSizeFromMockup / GUIDELINE_WIDTH) * 100),
-    pixelSizeFromMockup,
-  );
+export function ns(pixelSizeFromMockup: number | string, dimension: Dimension = Width): number {
+  if (typeof pixelSizeFromMockup === 'number') {
+    return scaleOnMiniDevices(
+      dimension === Height
+        ? h((pixelSizeFromMockup / GUIDELINE_HEIGHT) * 100)
+        : w((pixelSizeFromMockup / GUIDELINE_WIDTH) * 100),
+      pixelSizeFromMockup,
+    );
+  }
+
+  return pixelSizeFromMockup as any;
 }
 
 export function hNs(pixelSizeFromMockup: number) {

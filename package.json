@@ -8,6 +8,7 @@
   },
   "scripts": {
     "pods": "cd packages && cd mobile && yarn pods",
+    "icons": "cd packages && cd mobile && yarn icons",
     "start:mobile": "cd packages && cd mobile && yarn start",
     "start:web": "cd packages && cd web && yarn start",
     "run:ios": "cd packages && cd mobile && yarn ios",

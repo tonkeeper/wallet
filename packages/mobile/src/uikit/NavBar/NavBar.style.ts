@@ -6,8 +6,14 @@ import { ns, hNs } from '$utils';
 import { IsTablet, NavBarHeight, Opacity, TabletMaxWidth } from '$shared/constants';
 import { Text } from '$uikit/Text/Text';
 
-export const Wrap = styled.View<{ isTransparent: boolean }>`
+export const Wrap = styled.View<{ isTransparent: boolean; isBackground: boolean; }>`
   z-index: 10;
+  ${({ isBackground, theme }) => 
+    isBackground 
+      ? `backgroundColor: ${theme.colors.backgroundPrimary}` 
+      : ''
+  }
+
   ${({ isTransparent }) => {
     if (isTransparent) {
       return `
@@ -17,7 +23,9 @@ export const Wrap = styled.View<{ isTransparent: boolean }>`
         right: 0;
       `;
     } else {
-      return 'position: relative;';
+      return `
+        position: relative;
+      `;
     }
   }}
 `;
@@ -35,6 +43,7 @@ export const Cont = styled(Animated.View)`
   height: ${hNs(NavBarHeight - 0.5)}px;
   z-index: 2;
   border-bottom-width: ${ns(0.5)}px;
+  border-bottom-color: transparent;
 `;
 
 export const Content = styled.View`
