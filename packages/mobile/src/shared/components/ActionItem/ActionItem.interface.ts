@@ -1,8 +1,7 @@
-import { EventKey } from '$store/events/interface';
-import { Action } from 'tonapi-sdk-js';
+import { AccountEvent, Action } from 'tonapi-sdk-js';
 
 export interface ActionItemProps {
-  eventKey: EventKey;
+  event: AccountEvent;
   borderStart?: boolean;
   borderEnd?: boolean;
   action: Action;

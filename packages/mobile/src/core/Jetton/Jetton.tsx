@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
+import React, { FC, useCallback, useLayoutEffect, useMemo } from 'react';
 import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
 import {
@@ -21,8 +21,7 @@ import { CryptoCurrencies } from '$shared/constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { useJettonEvents } from '$hooks/useJettonEvents';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
-import { Linking, View } from 'react-native';
-import { eventsSelector, eventsActions } from '$store/events';
+import { Linking, RefreshControl } from 'react-native';
 import { jettonIsLoadingSelector, jettonsActions, jettonSelector } from '$store/jettons';
 import { walletAddressSelector } from '$store/wallet';
 import { useJettonPrice } from '$hooks/useJettonPrice';
@@ -33,10 +32,11 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const jetton = useJetton(route.params.jettonAddress);
   const t = useTranslator();
   const dispatch = useDispatch();
-  const jettonEvents = useJettonEvents(jetton.jettonAddress);
+  const { events, isRefreshing, refreshJettonEvents } = useJettonEvents(
+    jetton.jettonAddress,
+  );
   const address = useSelector(walletAddressSelector);
   const { price, total } = useJettonPrice(jetton.jettonAddress, jetton.balance);
-  const { isLoading: isEventsLoading, canLoadMore } = useSelector(eventsSelector);
   const isJettonMetaLoading = useSelector((state) =>
     // @ts-ignore
     jettonIsLoadingSelector(state, route.params.jettonAddress),
@@ -53,21 +53,8 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     if (!jettonMeta) {
       loadJettonInfo();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleLoadMore = useCallback(() => {
-    if (isEventsLoading || !canLoadMore) {
-      return;
-    }
-    dispatch(eventsActions.loadEvents({ isLoadMore: true }));
-  }, [dispatch, isEventsLoading, canLoadMore]);
-
-  useEffect(() => {
-    if (!Object.values(jettonEvents).length) {
-      handleLoadMore();
-    }
-  }, [handleLoadMore, jettonEvents]);
 
   const handleSend = useCallback(() => {
     openSend(jetton.jettonAddress, undefined, undefined, undefined, true);
@@ -151,22 +138,19 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     handleReceive,
   ]);
 
-  // workaround, need to paginate transactions even if content not modified
-  const renderFooter = useMemo(() => {
-    if (!isEventsLoading) {
-      return null;
-    }
-    return <View style={{ height: 1, width: '100%' }} />;
-  }, [isEventsLoading]);
-
   const renderContent = useCallback(() => {
     return (
       <TransactionsList
+        refreshControl={
+          <RefreshControl
+            onRefresh={refreshJettonEvents}
+            refreshing={isRefreshing}
+            tintColor={theme.colors.foregroundPrimary}
+          />
+        }
         withoutMarginForFirstHeader
-        onEndReached={isEventsLoading || !canLoadMore ? undefined : handleLoadMore}
-        eventsInfo={jettonEvents}
+        eventsInfo={events}
         initialData={[]}
-        renderFooter={renderFooter}
         renderHeader={renderHeader}
         contentContainerStyle={{
           paddingHorizontal: ns(16),
@@ -175,11 +159,10 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
       />
     );
   }, [
-    jettonEvents,
-    isEventsLoading,
-    canLoadMore,
-    handleLoadMore,
-    renderFooter,
+    refreshJettonEvents,
+    isRefreshing,
+    theme.colors.foregroundPrimary,
+    events,
     renderHeader,
     bottomInset,
   ]);

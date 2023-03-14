@@ -1,5 +1,5 @@
 import React, { createContext, memo, useCallback, useContext, useRef, useState } from "react";
-import { NativeScrollEvent, NativeSyntheticEvent, ScrollView } from "react-native";
+import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import Animated, {
   runOnJS,
   useAnimatedScrollHandler,
@@ -28,16 +28,6 @@ export const ScreenScrollProvider = memo((props) => {
   const setScrollTo = (scrollTo: ScrollToFN) => {
     scrollToRef.current = scrollTo;
   } 
-
-  // const { changeEnd } = useContext(ScrollPositionContext);
-
-  // useScrollToTop(scrollRef);
-
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     changeEnd(isEnd);
-  //   }, [changeEnd, isEnd]),
-  // );
 
   const changeScrollOnJS = useCallback((
     newPosition: number, 

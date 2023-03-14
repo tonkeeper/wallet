@@ -124,11 +124,6 @@ export const ActivityScreen: FC = () => {
       data: any;
       footer?: React.ReactElement;
     }[] = [];
-
-    //
-    // result.push({
-    //   data: ['add_coin_button'],
-    // });
     return result;
   }, [otherCurrencies, oldWalletBalances, jettonBalances, showJettons, wallet?.ton]);
 

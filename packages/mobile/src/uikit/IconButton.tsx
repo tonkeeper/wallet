@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Steezy, StyleProp } from '$styles';
-import { View, TouchableOpacity } from './StyledNativeCompoenets';
+import { View, TouchableOpacity } from './StyledNativeComponents';
 import { Text } from './Text/Text';
 import { IconNames } from './Icon/generated.types';
 import { ViewStyle } from 'react-native';

@@ -72,9 +72,6 @@ export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem
       ListHeaderComponent={
         <Animated.View style={headerOffsetStyle}/>
       }
-      // ListFooterComponent={() => (
-      //   <Animated.View style={{ height: tabBarHeight }}/>
-      // )}
       {...props}
       contentContainerStyle={{ paddingBottom: tabBarHeight + 8, ...props.contentContainerStyle }}
     />

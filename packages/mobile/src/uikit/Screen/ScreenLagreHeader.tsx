@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, { memo } from 'react';
 import {
   LargeNavBar,
 } from '$uikit/LargeNavBar/LargeNavBar';
@@ -7,10 +7,17 @@ import { NavBar } from '$uikit';
 import { Dimensions } from 'react-native';
 import { TabletMaxWidth } from '$shared/constants';
 import { useScreenScroll } from './context/ScreenScrollContext';
+import { LargeNavBarProps } from '$uikit/LargeNavBar/LargeNavBar.interface';
 
 const { width: deviceWidth } = Dimensions.get('window');
 
-export const ScreenLargeHeader: FC<any> = (props) => {
+interface ScreenLargeHeaderProps extends LargeNavBarProps {
+  navBarTitle: string;
+  isLargeNavBar?: boolean;
+  navBarRight?: React.ReactNode;
+}
+
+export const ScreenLargeHeader = memo<ScreenLargeHeaderProps>((props) => {
   const {
     children,
     navBarTitle,
@@ -26,31 +33,29 @@ export const ScreenLargeHeader: FC<any> = (props) => {
   const isBigScreen = deviceWidth > TabletMaxWidth;
   const shouldRenderLargeNavBar = !isBigScreen && isLargeNavBar;
 
-  return useMemo(() => {
-    return (
-      <>
-        {!!navBarTitle && shouldRenderLargeNavBar && (
-          <LargeNavBar
-            onPress={onPress}
-            bottomComponent={bottomComponent}
-            scrollTop={contentScrollY}
-            rightContent={navBarRight}
-            hitSlop={hitSlop}
-            position="absolute"
-          >
-            {navBarTitle}
-          </LargeNavBar>
-        )}
-        {!!navBarTitle && !shouldRenderLargeNavBar && (
-          <NavBar
-            hideBackButton={isLargeNavBar && isBigScreen}
-            scrollTop={contentScrollY}
-            rightContent={navBarRight}
-          >
-            {navBarTitle}
-          </NavBar>
-        )}
-      </>
-    );
-  }, [navBarTitle, children]);
-};
+  return (
+    <>
+      {!!navBarTitle && shouldRenderLargeNavBar && (
+        <LargeNavBar
+          onPress={onPress}
+          bottomComponent={bottomComponent}
+          scrollTop={contentScrollY}
+          rightContent={navBarRight}
+          hitSlop={hitSlop}
+          position="absolute"
+        >
+          {navBarTitle}
+        </LargeNavBar>
+      )}
+      {!!navBarTitle && !shouldRenderLargeNavBar && (
+        <NavBar
+          hideBackButton={isLargeNavBar && isBigScreen}
+          scrollTop={contentScrollY}
+          rightContent={navBarRight}
+        >
+          {navBarTitle}
+        </NavBar>
+      )}
+    </>
+  );
+});

@@ -1,7 +1,7 @@
 import { Steezy, StyleProp } from '$styles';
 import React, { memo } from 'react';
 import { ViewStyle } from 'react-native';
-import { View } from './StyledNativeCompoenets';
+import { View } from './StyledNativeComponents';
 
 interface IconButtonListProps {
   children?: React.ReactNode;

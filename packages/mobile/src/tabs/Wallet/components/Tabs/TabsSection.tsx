@@ -25,7 +25,6 @@ export const useCurrentTab = () => {
   return tab;
 }
 
-
 export const TabsSection = memo<TabsSectionProps>((props) => {
   const dimensions = useWindowDimensions();
   const { activeIndex } = useTabCtx();
@@ -49,20 +48,7 @@ export const TabsSection = memo<TabsSectionProps>((props) => {
   return (
     <View style={styles.container.static} key={`${props.index}`}>
       <TabContext.Provider value={{ index: props.index }}>
-        {/* <Animated.View 
-          style={[style, {
-            position: 'absolute',
-            top: 0,
-            left: props.index * dimensions.width,
-            right: 0,
-            bottom: 0,
-            zIndex: 3,
-            width: dimensions.width,
-            height: dimensions.height - (LargeNavBarHeight + statusBarHeight + 24)
-          }]}
-        > */}
-          {props.children}
-        {/* </Animated.View> */}
+        {props.children}
       </TabContext.Provider>
     </View>
   );
@@ -71,6 +57,5 @@ export const TabsSection = memo<TabsSectionProps>((props) => {
 const styles = Steezy.create({
   container: {
     flex: 1,
-
   }
 });

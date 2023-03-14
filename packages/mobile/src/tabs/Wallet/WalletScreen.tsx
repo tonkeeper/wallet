@@ -6,103 +6,30 @@ import { Steezy } from '$styles';
 import { useNavigation } from '$libs/navigation';
 import { ScanQRButton } from '../../components/ScanQRButton';
 import { RefreshControl } from 'react-native';
-import { useJettonBalances, useTheme } from '$hooks';
-import TonWeb from 'tonweb';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
-import { nftsSelector } from '$store/nfts';
-import { openJetton, openJettonsList, openRequireWalletModal, openWallet } from '$navigation';
-import { formatAmountAndLocalize, maskifyAddress, statusBarHeight } from '$utils';
-import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet';
+import { openRequireWalletModal, openWallet } from '$navigation';
+import { maskifyAddress } from '$utils';
+import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
 import { useIsFocused } from '@react-navigation/native';
 import _ from 'lodash';
 import { useBalance } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
 import { TonIcon } from '../../components/TonIcon';
-import { CryptoCurrencies, LockupNames } from '$shared/constants';
+import { CryptoCurrencies } from '$shared/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Tabs } from './components/Tabs';
 import * as S from '../../core/Balances/Balances.style';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
-import { jettonsSelector } from '$store/jettons';
-
-type TokenInfo = {
-  address: WalletAddress;
-  name?: string;
-  symbol?: string;
-  description?: string;
-  iconUrl?: string;
-  decimals: number;
-  quantity: {
-    value: string;
-    formatted: string;
-  };
-}
-
-type WalletAddress = {
-  friendlyAddress: string;
-  rawAddress: string;
-  version: WalletVersion;
-}
-
-type WalletVersion = 'v3R1' | 'v4R2';
-
-const useTonkens = (): { 
-  list: TokenInfo[];
-  canEdit: boolean;
-} => {
-  const { jettonBalances: allJettonBalances } = useSelector(jettonsSelector);
-  const jettonBalances = useJettonBalances();
-
-  const tonkens = jettonBalances.map((item) => {
-    const tokenInfo: TokenInfo = {
-      address: {
-        friendlyAddress: new TonWeb.utils.Address(item.jettonAddress).toString(true, true, true),
-        rawAddress: item.jettonAddress,
-        version: 'v3R1',
-      },
-      name: item.metadata.name,
-      symbol: item.metadata.symbol,
-      description: item.metadata.description,
-      iconUrl: item.metadata.image,
-      decimals: item.metadata.decimals,
-      quantity: {
-        value: item.balance,
-        formatted: formatAmountAndLocalize(item.balance, 2),
-      }
-    };
-
-    return tokenInfo;
-  }) as TokenInfo[];
-
-  return {
-    list: tonkens,
-    canEdit: allJettonBalances.length > 0
-  }
-}
-
-const useNFTs = () => {
-  const { myNfts } = useSelector(nftsSelector);
-
-  const nfts = Object.values(myNfts).map((item) => {
-    return item;
-  });
-
-  return nfts;
-};
-
-const useWallet = () => {
-  const wallet = useSelector(walletWalletSelector);
-
-  if (wallet && wallet.address) {
-    return { address: wallet.address };
-  }
-
-  return null;
-};
+import { TokenList } from './components/TokenList';
+import { NFTsList } from './components/NFTsList';
+import { useTonkens } from './hooks/useTokens';
+import { useNFTs } from './hooks/useNFTs';
+import { useWallet } from './hooks/useWallet';
+import { useTheme } from '$hooks';
 
 export const WalletScreen = memo(() => {
   const [tab, setTab] = useState<string>('tokens');
@@ -172,7 +99,6 @@ export const WalletScreen = memo(() => {
 
   const balanceSection = (
     <View style={styles.mainSection} pointerEvents="box-none">
-      
       {notifications.map((notification, i) => (
         <InternalNotification
           key={i}
@@ -374,7 +300,7 @@ export const WalletScreen = memo(() => {
   }
 });
 
-const styles = Steezy.create(({ colors }) => ({
+const styles = Steezy.create({
   container: {
     position: 'relative',
   },
@@ -390,125 +316,4 @@ const styles = Steezy.create(({ colors }) => ({
   addressText: {
     marginTop: 7.5
   },
-  tonkensEdit: {
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    marginBottom: 16
-  },
-  nftElements: {
-    marginTop: 16,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: 12
-  }
-}));
-
-
-const TokenList = ({
-  tokens,
-  balance,
-}: any) => {
-  const dispatch = useDispatch();
-
-  const handleMigrate = useCallback((fromVersion: string) => () => {
-    dispatch(
-      walletActions.openMigration({
-        isTransfer: true,
-        fromVersion,
-      }),
-    );
-  }, []);
-
-  return (
-    <View>
-      <List>
-        <List.Item
-          title="Toncoin"
-          onPress={() => openWallet(CryptoCurrencies.Ton)}
-          value={balance.formattedAmount}
-          subvalue={balance.fiatValue}
-          leftContent={<TonIcon />}
-          subtitle={
-            <ListItemRate
-              percent={balance.percent}
-              price={balance.fiatPrice}
-              trend={balance.trend}
-            />
-          }
-        />
-        {balance.lockup.map((item, key) => (
-           <List.Item
-            key={`lockup-${key}`}
-            title={LockupNames[item.type]}
-            value={item.amount.formatted}
-            subvalue={item.amount.fiat}
-            leftContent={<TonIcon locked />}
-            subtitle="-"
-          />
-        ))}
-        {balance.oldVersions.map((item, key) => (
-          <List.Item 
-            key={`old-balance-${key}`}
-            onPress={handleMigrate(item.version)}
-            title={t('wallet.old_wallet_title')}
-            leftContent={<TonIcon transparent />}
-            value={item.amount.formatted}
-            subvalue={item.amount.fiat}
-            subtitle={
-              <ListItemRate
-                percent={balance.percent}
-                price={balance.fiatPrice}
-                trend={balance.trend}
-              />
-            }
-          />
-        ))}
-        {tokens.list.map((item) => (
-          <List.Item 
-            key={item.address.rawAddress}
-            onPress={() => openJetton(item.address.rawAddress)}
-            picture={item.iconUrl}
-            title={item.name}
-            value={item.quantity.formatted}
-            label={item.symbol}
-            // TODO:
-            // subvalue={item.rate?.fiatValue}
-            // subtitle={item.rate && (
-            //   <ListItemRate
-            //     percent={item.rate.percent}
-            //     price={item.rate.fiatPrice}
-            //     trend={item.rate.trend}
-            //   />
-            // )}
-          />
-        ))}
-      </List>
-      {tokens.canEdit && (
-        <View style={styles.tonkensEdit}>
-          <Button 
-            onPress={() => openJettonsList()}
-            size="medium_rounded"
-            mode="secondary"
-          >
-            {t('wallet.edit_tokens_btn')}
-          </Button>
-        </View>
-      )}
-    </View>
-  )
-};
-
-const NFTsList = ({ nfts }: any) => {
-  return (
-    <View style={styles.nftElements}>
-      {nfts.map((item, key) => (
-        <NFTCardItem
-          item={item}
-          key={key}
-        />
-      ))}
-    </View> 
-  );
-}
-
-
+});
