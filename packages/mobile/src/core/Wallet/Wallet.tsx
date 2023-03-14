@@ -3,8 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { WalletProps } from './Wallet.interface';
 import * as S from './Wallet.style';
-import { Button, Icon, PopupMenu, PopupMenuItem, Text, ScrollHandler } from '$uikit';
 import { useTranslator, useWalletInfo } from '$hooks';
+import {
+  Button,
+  Icon,
+  PopupMenu,
+  PopupMenuItem,
+  Text,
+  ScrollHandler,
+  IconButton,
+} from '$uikit';
 import { openReceive, openRequireWalletModal, openSend } from '$navigation';
 import {
   walletActions,
@@ -15,38 +23,13 @@ import { Linking, View } from 'react-native';
 import { ns, toLocaleNumber } from '$utils';
 import { CryptoCurrencies } from '$shared/constants';
 import { toastActions } from '$store/toast';
-import { ActionButtonProps } from '$core/Balances/BalanceItem/BalanceItem.interface';
 import { t } from '$translation';
 import { useNavigation } from '$libs/navigation';
 import { Chart } from '$uikit/Chart/Chart';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated from 'react-native-reanimated';
-import { IconNames } from '$uikit/Icon/generated.types';
 
-const ActionButton: FC<ActionButtonProps> = (props) => {
-  const { children, onPress, icon, isLast } = props;
-
-  return (
-    <S.ActionWrapper isLast={isLast}>
-      <S.Action onPress={onPress}>
-        <S.ActionIcon>
-          <Icon name={icon} color="constantLight" />
-        </S.ActionIcon>
-        <Text variant="label3" color="foregroundSecondary">
-          {children}
-        </Text>
-      </S.Action>
-    </S.ActionWrapper>
-  );
-};
-
-export interface ExploreAction {
-  icon: IconNames;
-  text: string;
-  url: string;
-}
-
-const exploreActions: ExploreAction[] = [
+const exploreActions = [
   {
     icon: 'ic-globe-16',
     text: 'ton.org',
@@ -107,6 +90,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
           dispatch(toastActions.fail(err.message));
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const currencyUpper = useMemo(() => {
@@ -114,6 +98,8 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   }, [currency]);
 
   const { amount, fiatInfo } = useWalletInfo(currency);
+
+  const shouldRenderSellButton = useMemo(() => +amount > 0, [amount]);
 
   const handleReceive = useCallback(() => {
     if (!wallet) {
@@ -131,12 +117,15 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     openSend(currency);
   }, [currency, wallet]);
 
-  const handleOpenExchange = useCallback(() => {
-    if (!wallet) {
-      return openRequireWalletModal();
-    }
-    nav.openModal('Exchange');
-  }, [nav, wallet]);
+  const handleOpenExchange = useCallback(
+    (category: 'buy' | 'sell') => () => {
+      if (!wallet) {
+        return openRequireWalletModal();
+      }
+      nav.openModal('Exchange', { category });
+    },
+    [nav, wallet],
+  );
 
   const handleDeploy = useCallback(() => {
     setLockupDeploy('loading');
@@ -174,15 +163,28 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
           </S.FlexRow>
           <S.Divider />
           <S.ActionsContainer>
-            <ActionButton onPress={handleOpenExchange} icon="ic-plus-28">
-              {t('wallet_buy')}
-            </ActionButton>
-            <ActionButton onPress={handleSend} icon="ic-arrow-up-28">
-              {t('wallet_send')}
-            </ActionButton>
-            <ActionButton isLast onPress={handleReceive} icon="ic-arrow-down-28">
-              {t('wallet_receive')}
-            </ActionButton>
+            <IconButton
+              onPress={handleOpenExchange('buy')}
+              iconName="ic-plus-28"
+              title={t('wallet.buy_btn')}
+            />
+            <IconButton
+              onPress={handleSend}
+              iconName="ic-arrow-up-28"
+              title={t('wallet.send_btn')}
+            />
+            <IconButton
+              onPress={handleReceive}
+              iconName="ic-arrow-down-28"
+              title={t('wallet.receive_btn')}
+            />
+            {shouldRenderSellButton && (
+              <IconButton
+                onPress={handleOpenExchange('sell')}
+                iconName="ic-minus-28"
+                title={t('wallet.sell_btn')}
+              />
+            )}
           </S.ActionsContainer>
           <S.Divider />
         </S.HeaderWrap>
@@ -229,17 +231,18 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
       </Animated.ScrollView>
     );
   }, [
+    paddingBottom,
     amount,
     currencyUpper,
     fiatInfo.amount,
-    handleDeploy,
-    handleOpenExchange,
-    handleReceive,
-    handleSend,
-    lockupDeploy,
     t,
+    handleOpenExchange,
+    handleSend,
+    shouldRenderSellButton,
+    handleReceive,
     wallet,
-    paddingBottom,
+    handleDeploy,
+    lockupDeploy,
   ]);
 
   return (

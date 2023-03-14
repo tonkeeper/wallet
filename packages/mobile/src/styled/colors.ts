@@ -1,4 +1,13 @@
 export enum DARK_COLORS {
+  textPrimary = '#FFFFFF',
+  textSecondary = '#8994A3',
+  textTertiary = '#556170',
+  textLink = '#45AEF5',
+
+  iconPrimary = '#FFFFFF',
+  iconSecondary = '#8994A3',
+  iconTertiary = '#556170',
+
   foregroundPrimary = '#fff',
   foregroundSecondary = '#8994A3',
   foregroundTertiary = '#556170',

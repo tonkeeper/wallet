@@ -119,6 +119,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     serverConfig = yield call(loadServerConfig, isTestnet, canRetry);
     needRefreshConfig = false;
   }
+
   const showV4R1 = yield call(MainDB.getShowV4R1);
   const currencies = yield call(getAddedCurrencies);
   const isIntroShown = yield call(getIntroShown);
@@ -173,7 +174,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
 
   trackFirstLaunch();
   trackEvent('launch_app');
-
 
   yield fork(loadRates, true);
 

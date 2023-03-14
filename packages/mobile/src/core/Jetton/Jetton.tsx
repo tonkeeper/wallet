@@ -1,61 +1,38 @@
-import React, { FC, useCallback, useEffect, useMemo } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
-import { Button, Icon, ScrollHandler, Text, PopupMenu, PopupMenuItem } from '$uikit';
+import {
+  Button,
+  Icon,
+  ScrollHandler,
+  Text,
+  PopupMenu,
+  PopupMenuItem,
+  IconButton,
+} from '$uikit';
 import { formatAmountAndLocalize, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
-import { useTranslator } from '$hooks';
-import { ActionButtonProps } from '$core/Balances/BalanceItem/BalanceItem.interface';
+import { useTheme, useTranslator } from '$hooks';
 import { openReceive, openSend } from '$navigation';
 import { CryptoCurrencies } from '$shared/constants';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useJettonEvents } from '$hooks/useJettonEvents';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
-import { Linking, View } from 'react-native';
-import { eventsSelector, eventsActions } from '$store/events';
+import { Linking, RefreshControl } from 'react-native';
 import { walletAddressSelector } from '$store/wallet';
 import { useJettonPrice } from '$hooks/useJettonPrice';
 
-const ActionButton: FC<ActionButtonProps> = (props) => {
-  const { children, onPress, icon, isLast } = props;
-
-  return (
-    <S.ActionWrapper isLast={isLast}>
-      <S.Action onPress={onPress}>
-        <S.ActionIcon>
-          <Icon name={icon} color="constantLight" />
-        </S.ActionIcon>
-        <Text variant="label3" color="foregroundSecondary">
-          {children}
-        </Text>
-      </S.Action>
-    </S.ActionWrapper>
-  );
-};
-
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
+  const theme = useTheme();
   const { bottom: bottomInset } = useSafeAreaInsets();
   const jetton = useJetton(route.params.jettonAddress);
   const t = useTranslator();
-  const dispatch = useDispatch();
-  const jettonEvents = useJettonEvents(jetton.jettonAddress);
+  const { events, isRefreshing, refreshJettonEvents } = useJettonEvents(
+    jetton.jettonAddress,
+  );
   const address = useSelector(walletAddressSelector);
   const { price, total } = useJettonPrice(jetton.jettonAddress, jetton.balance);
-  const { isLoading: isEventsLoading, canLoadMore } = useSelector(eventsSelector);
-
-  const handleLoadMore = useCallback(() => {
-    if (isEventsLoading || !canLoadMore) {
-      return;
-    }
-    dispatch(eventsActions.loadEvents({ isLoadMore: true }));
-  }, [dispatch, isEventsLoading, canLoadMore]);
-
-  useEffect(() => {
-    if (!Object.values(jettonEvents).length) {
-      handleLoadMore();
-    }
-  }, [handleLoadMore, jettonEvents]);
 
   const handleSend = useCallback(() => {
     openSend(jetton.jettonAddress, undefined, undefined, undefined, true);
@@ -100,34 +77,35 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         </S.FlexRow>
         <S.Divider />
         <S.ActionsContainer>
-          <ActionButton onPress={handleSend} icon="ic-arrow-up-28">
-            {t('wallet_send')}
-          </ActionButton>
-          <ActionButton isLast onPress={handleReceive} icon="ic-arrow-down-28">
-            {t('wallet_receive')}
-          </ActionButton>
+          <IconButton
+            onPress={handleSend}
+            iconName="ic-arrow-up-28"
+            title={t('wallet.send_btn')}
+          />
+          <IconButton
+            onPress={handleReceive}
+            iconName="ic-arrow-down-28"
+            title={t('wallet.receive_btn')}
+          />
         </S.ActionsContainer>
         <S.Divider style={{ marginBottom: 10 }} />
       </S.HeaderWrap>
     );
   }, [jetton, total, price, t, handleSend, handleReceive]);
 
-  // workaround, need to paginate transactions even if content not modified
-  const renderFooter = useMemo(() => {
-    if (!isEventsLoading) {
-      return null;
-    }
-    return <View style={{ height: 1, width: '100%' }} />;
-  }, [isEventsLoading]);
-
   const renderContent = useCallback(() => {
     return (
       <TransactionsList
+        refreshControl={
+          <RefreshControl
+            onRefresh={refreshJettonEvents}
+            refreshing={isRefreshing}
+            tintColor={theme.colors.foregroundPrimary}
+          />
+        }
         withoutMarginForFirstHeader
-        onEndReached={isEventsLoading || !canLoadMore ? undefined : handleLoadMore}
-        eventsInfo={jettonEvents}
+        eventsInfo={events}
         initialData={[]}
-        renderFooter={renderFooter}
         renderHeader={renderHeader}
         contentContainerStyle={{
           paddingHorizontal: ns(16),
@@ -136,13 +114,12 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
       />
     );
   }, [
-    jettonEvents,
-    isEventsLoading,
-    canLoadMore,
-    handleLoadMore,
-    renderFooter,
+    refreshJettonEvents,
+    isRefreshing,
+    events,
     renderHeader,
     bottomInset,
+    theme.colors.foregroundPrimary,
   ]);
 
   if (!jetton) {

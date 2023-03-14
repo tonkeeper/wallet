@@ -296,6 +296,29 @@
 
   "swap_title": "Swap",
 
+  "wallet": {
+    "screen_title": "Wallet",
+    "edit_tokens_btn": "Edit",
+    "old_wallets_title": "Old wallets",
+    "old_wallet_title": "Old wallet",
+    "buy_btn": "Buy",
+    "send_btn": "Send",
+    "receive_btn": "Receive",
+    "sell_btn": "Sell",
+    "tonkens_tab_lable": "Tokens",
+    "collectibles_tab_lable": "Collectibles"
+  },
+
+  "activity": {
+    "screen_title": "Activity",
+    "sent": "Sent",
+    "received": "Received",
+    "empty_transaction_title":"Your activity will be shown here",
+    "empty_transaction_caption": "Make your first transaction!",
+    "buy_toncoin_btn": "Buy Toncoin",
+    "receive_btn": "Receive"
+  },
+
   "browser": {
     "title": "Browser",
     "search_label": "Search or enter address",
@@ -321,6 +344,13 @@
     },
     "more_title": "Explore all services",
     "more_description": "Markets, exchanges and more"
+  },
+
+  "exchange_modal": {
+    "sell_title": "Sell Toncoin",
+    "buy_title": "Buy Toncoin",
+    "other_ways_to_sell": "Other ways to sell",
+    "other_ways_to_buy": "Other ways to buy"
   },
 
   "exchange_title": "Buy TON",

@@ -39,4 +39,8 @@ export { ShowMore } from './ShowMore/ShowMore';
 export { TokenListItem } from './TokenListItem/TokenListItem';
 export { ListHeader } from './ListHeader';
 export { StatelessHighlight } from './StatelessHighlight/StatelessHighlight';
+export * from './StyledNativeComponents';
+export { IconButton } from './IconButton';
+export { IconButtonList } from './IconButtonList';
 export * from './Spacer';
+export { Pressable } from './Pressable';

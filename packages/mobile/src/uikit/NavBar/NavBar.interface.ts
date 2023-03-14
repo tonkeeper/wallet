@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { AnimateProps, SharedValue } from 'react-native-reanimated';
-import { TextProps } from 'react-native';
+import { TextProps, ViewStyle } from 'react-native';
 
 export interface NavBarProps {
   isModal?: boolean;
@@ -17,4 +17,6 @@ export interface NavBarProps {
   withBackground?: boolean;
   scrollTop?: SharedValue<number>;
   titleProps?: AnimateProps<TextProps>;
+  fillBackground?: boolean;
+  innerAnimatedStyle?: ViewStyle;
 }

@@ -38,6 +38,8 @@ export const NavBar: FC<NavBarProps> = (props) => {
     isBottomButton = false,
     isCancelButton = false,
     withBackground = false,
+    fillBackground = false,
+    innerAnimatedStyle,
     titleProps = {},
     scrollTop,
   } = props;
@@ -114,14 +116,14 @@ export const NavBar: FC<NavBarProps> = (props) => {
   );
 
   return (
-    <S.Wrap style={{ paddingTop: top }} isTransparent={isTransparent}>
+    <S.Wrap style={{ paddingTop: top }} isTransparent={isTransparent} isBackground={fillBackground}>
       {isTransparent && (
         <S.Gradient
           colors={[theme.colors.backgroundPrimary, 'rgba(21, 28, 41, 0)']}
           locations={[0, 1]}
         />
       )}
-      <S.Cont style={borderStyle}>
+      <S.Cont style={[borderStyle, innerAnimatedStyle]}>
         <S.Content>
           <S.BackButtonContainer
             onPress={onBackPress || handleBack}

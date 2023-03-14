@@ -94,6 +94,8 @@ function* loadJettonsWorker() {
   } catch (e) {
     e && debugLog(e.message);
     console.log('ERR', e);
+  } finally {
+    yield put(jettonsActions.setIsLoading(false));
   }
 }
 

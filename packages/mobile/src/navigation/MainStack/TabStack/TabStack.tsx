@@ -19,6 +19,9 @@ import { useNotificationsSubscribe } from '$hooks/useNotificationsSubscribe';
 import { IconNames } from '$uikit/Icon/generated.types';
 import { useFlags } from '$utils/flags';
 import { nftsSelector } from '$store/nfts';
+import { ActivityScreen } from '../../../tabs/Activity/ActivityScreen';
+import { WalletScreen } from '../../../tabs/Wallet/WalletScreen';
+import { DevFeature, useDevFeaturesToggle } from '$store';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -35,6 +38,8 @@ export const TabStack: FC = () => {
   const { isEnd: isScrollEnd } = useContext(ScrollPositionContext);
   // useSelector(mainSelector); // need for re-render when main state changed
   useNotificationsSubscribe();
+
+  const { devFeatures } = useDevFeaturesToggle();
 
   const isVisibleNftTab = React.useMemo(() => {
     if (flags.disable_nft_tab) {
@@ -61,13 +66,15 @@ export const TabStack: FC = () => {
         detachPreviousScreen: false,
         enableScreens: true,
         tabBarIcon: ({ color }) => {
-          let iconName: IconNames = 'ic-home-28';
+          let iconName: IconNames = devFeatures[DevFeature.NewFlow] ? 'ic-wallet-28' : 'ic-home-28';
           if (route.name === TabsStackRouteNames.NFT) {
             iconName = 'ic-nft-collection-28';
           } else if (route.name === TabsStackRouteNames.SettingsStack) {
             iconName = 'ic-settings-28';
           } else if (route.name === TabsStackRouteNames.Explore) {
             iconName = 'ic-explore-28';
+          } else if (route.name === TabsStackRouteNames.Activity) {
+            iconName = 'ic-flash-28';
           }
 
           return (
@@ -137,14 +144,34 @@ export const TabStack: FC = () => {
         tabBarAllowFontScaling: false,
       })}
     >
-      <Tab.Screen
-        component={Balances}
-        name={TabsStackRouteNames.Balances}
-        options={{
-          tabBarLabel: t('tab_wallet'),
-        }}
-      />
-      {isVisibleNftTab && (
+      {devFeatures[DevFeature.NewFlow] ? (
+        <>
+          <Tab.Screen
+            component={WalletScreen}
+            name={TabsStackRouteNames.Balances}
+            options={{
+              tabBarLabel: t('wallet.screen_title'),
+            }}
+          />
+          <Tab.Screen
+            component={ActivityScreen}
+            name={TabsStackRouteNames.Activity}
+            options={{
+              tabBarLabel: t('activity.screen_title'),
+            }}
+          />
+        </>
+      ) : (
+        <Tab.Screen
+          component={Balances}
+          name={TabsStackRouteNames.Balances}
+          options={{
+            tabBarLabel: t('tab_wallet'),
+          }}
+        />
+      )}
+
+      {isVisibleNftTab && !devFeatures[DevFeature.NewFlow] && (
         <Tab.Screen
           component={NFTs}
           name={TabsStackRouteNames.NFT}

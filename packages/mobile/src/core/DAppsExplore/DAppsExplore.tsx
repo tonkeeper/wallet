@@ -9,7 +9,7 @@ import { deviceWidth, ns } from '$utils';
 import { useFlags } from '$utils/flags';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import React, { FC, memo, useCallback, useState } from 'react';
-import { LayoutChangeEvent } from 'react-native';
+import { LayoutChangeEvent, StyleSheet } from 'react-native';
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
@@ -128,7 +128,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
   const navBarRight = (
     <TouchableOpacity
       onPress={handlePressOpenScanQR}
-      style={{ zIndex: 3 }}
+      style={styles.scanButton}
       activeOpacity={0.6}
       hitSlop={{
         top: 26,
@@ -249,3 +249,10 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
 };
 
 export const DAppsExplore = memo(DAppsExploreComponent);
+
+const styles = StyleSheet.create({
+  scanButton: {
+    zIndex: 3, 
+    marginRight: ns(2)
+  }
+});

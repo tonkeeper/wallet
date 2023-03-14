@@ -97,6 +97,11 @@ export const CurrencyLongName = {
   [CryptoCurrencies.Dai]: 'Maker DAI',
 };
 
+export const LockupNames = {
+  [CryptoCurrencies.TonLocked]: 'Locked Toncoin',
+  [CryptoCurrencies.TonRestricted]: 'Restricted Toncoin',
+}
+
 export const Decimals = {
   [CryptoCurrencies.Ton]: 9,
   [CryptoCurrencies.TonLocked]: 9,
