@@ -1,6 +1,6 @@
 import { generateAppHashFromUrl, getFixedLastSlashUrl } from '$utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import create from 'zustand';
+import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { IConnectedAppsStore, TonConnectBridgeType } from './types';
 
