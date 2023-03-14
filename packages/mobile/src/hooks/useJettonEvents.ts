@@ -1,32 +1,35 @@
-import { ActionType, JettonBalanceModel } from '$store/models';
+import { JettonBalanceModel } from '$store/models';
 import { useSelector } from 'react-redux';
-import { eventsSelector } from '$store/events';
-import { useMemo } from 'react';
-import { compareAddresses } from '$utils';
+import { useCallback, useEffect, useMemo } from 'react';
+import { walletAddressSelector } from '$store/wallet';
+import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 
 export function useJettonEvents(address: JettonBalanceModel['walletAddress']) {
-  const { eventsInfo } = useSelector(eventsSelector);
+  const tonAddress = useSelector(walletAddressSelector).ton;
+  const {
+    events = {},
+    isLoading = false,
+    isRefreshing = false,
+  } = useJettonEventsStore((state) => state.jettons[address] ?? {});
+  const { fetchJettonEvents } = useJettonEventsStore((state) => state.actions);
 
+  const retrieveJettonEvents = useCallback(
+    async (isRefresh?: boolean) => {
+      fetchJettonEvents(tonAddress, address, isRefresh);
+    },
+    [fetchJettonEvents, tonAddress, address],
+  );
+
+  const refreshJettonEvents = useCallback(async () => {
+    retrieveJettonEvents(true);
+  }, [retrieveJettonEvents]);
+
+  useEffect(() => {
+    retrieveJettonEvents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return useMemo(
-    () =>
-      Object.fromEntries(
-        Object.entries(eventsInfo)
-          .map(([_, event]) => [
-            _,
-            {
-              ...event,
-              actions: event.actions.filter(
-                (action) =>
-                  ActionType[action.type] === ActionType.JettonTransfer &&
-                  compareAddresses(
-                    action[ActionType[action.type]].jetton.address,
-                    address,
-                  ),
-              ),
-            },
-          ])
-          .filter(([_, event]) => event.actions.length > 0),
-      ),
-    [address, eventsInfo],
+    () => ({ events, isLoading, isRefreshing, refreshJettonEvents }),
+    [refreshJettonEvents, isLoading, isRefreshing, events],
   );
 }
