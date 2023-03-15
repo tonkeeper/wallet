@@ -9,7 +9,7 @@ import { Balances, DAppsExplore } from '$core';
 import { TabsStackRouteNames } from '$navigation';
 import { TabStackParamList } from './TabStack.interface';
 import { Icon, ScrollPositionContext } from '$uikit';
-import { useTheme } from '$hooks';
+import { usePreloadChart, useTheme } from '$hooks';
 import { isAndroid, nfs, ns, trackEvent } from '$utils';
 import { t } from '$translation';
 import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
@@ -36,8 +36,10 @@ export const TabStack: FC = () => {
   const hasNfts = useHasNfts();
   const { bottom: bottomInset } = useSafeAreaInsets();
   const { isEnd: isScrollEnd } = useContext(ScrollPositionContext);
+
   // useSelector(mainSelector); // need for re-render when main state changed
   useNotificationsSubscribe();
+  usePreloadChart();
 
   const { devFeatures } = useDevFeaturesToggle();
 

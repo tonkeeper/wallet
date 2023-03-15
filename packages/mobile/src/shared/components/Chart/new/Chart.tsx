@@ -8,43 +8,36 @@ import {
 } from '@rainbow-me/animated-charts';
 import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { ratesRatesSelector } from '$store/rates';
-import { chartPeriodSelector, fiatCurrencySelector, mainActions } from '$store/main';
+import { fiatCurrencySelector } from '$store/main';
 import { CryptoCurrencies, FiatCurrencies } from '$shared/constants';
 import { getRate } from '$hooks/useFiatRate';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { PriceLabel } from './PriceLabel/PriceLabel';
 import { PercentDiff } from './PercentDiff/PercentDiff';
 import { PeriodSelector } from './PeriodSelector/PeriodSelector';
-import { ChartPeriod } from './Chart.types';
 import { Rate } from './Rate/Rate';
 import { useQuery } from 'react-query';
 import { loadChartData } from './Chart.api';
 import { ChartYLabels } from './ChartYLabels/ChartYLabels';
 import { changeAlphaValue, convertHexToRGBA } from '$utils';
 import { ChartXLabels } from './ChartXLabels/ChartXLabels';
-import { MainDB } from '$database';
+import { ChartPeriod, useChartStore } from '$store/zustand/chart';
 
 export const { width: SIZE } = Dimensions.get('window');
-export const DEFAULT_CHART_PERIOD = ChartPeriod.ONE_DAY;
 
 const ChartComponent: React.FC = () => {
   const theme = useTheme();
-  const dispatch = useDispatch();
-  const chartPeriod = useSelector(chartPeriodSelector);
-  const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>(
-    chartPeriod ?? DEFAULT_CHART_PERIOD,
-  );
+  const selectedPeriod = useChartStore((state) => state.selectedPeriod);
+  const setChartPeriod = useChartStore((state) => state.actions.setChartPeriod);
 
-  const { isLoading, isFetching, data } = useQuery(['chartFetch', selectedPeriod], () =>
-    loadChartData(selectedPeriod),
-  );
-
-  useEffect(() => {
-    MainDB.setChartSelectedPeriod(selectedPeriod);
-    dispatch(mainActions.setChartPeriod(selectedPeriod));
-  }, [dispatch, selectedPeriod]);
+  const { isLoading, isFetching, data } = useQuery({
+    queryKey: ['chartFetch', selectedPeriod],
+    queryFn: () => loadChartData(selectedPeriod),
+    refetchInterval: 60 * 1000,
+    staleTime: 120 * 1000,
+  });
 
   const [cachedData, setCachedData] = useState(data?.data ?? []);
 
@@ -161,7 +154,7 @@ const ChartComponent: React.FC = () => {
       <PeriodSelector
         disabled={isLoading || isFetching}
         selectedPeriod={selectedPeriod}
-        onSelect={setSelectedPeriod}
+        onSelect={setChartPeriod}
       />
     </View>
   );

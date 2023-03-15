@@ -1,10 +1,10 @@
-import React, { useCallback } from 'react';
+import React, { memo, useCallback } from 'react';
 import { Text } from '$uikit/Text/Text';
 import { t } from '$translation';
 import { TouchableOpacity, View } from 'react-native';
-import { ChartPeriod } from '../Chart.types';
 import { Haptics, ns } from '$utils';
 import { useTheme } from '$hooks';
+import { ChartPeriod } from '$store/zustand/chart';
 
 export interface PeriodSelectorProps {
   selectedPeriod: ChartPeriod;
@@ -41,7 +41,7 @@ export const Period: React.FC<{
   );
 };
 
-export const PeriodSelector: React.FC<PeriodSelectorProps> = (props) => {
+export const PeriodSelectorComponent: React.FC<PeriodSelectorProps> = (props) => {
   const handleSelect = useCallback(
     (value: ChartPeriod) => () => {
       Haptics.selection();
@@ -71,3 +71,5 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = (props) => {
     </View>
   );
 };
+
+export const PeriodSelector = memo(PeriodSelectorComponent);
