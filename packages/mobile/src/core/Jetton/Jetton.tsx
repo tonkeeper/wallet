@@ -60,11 +60,9 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
               {formatAmountAndLocalize(jetton.balance, jetton.metadata.decimals)}{' '}
               {jetton.metadata.symbol}
             </Text>
-            {total ? (
-              <Text style={{ marginTop: 2 }} variant="body2" color="foregroundSecondary">
-                {total}
-              </Text>
-            ) : null}
+            <Text style={{ marginTop: 2 }} variant="body2" color="foregroundSecondary">
+              {total || t('jetton_token')}
+            </Text>
             {price ? (
               <Text style={{ marginTop: 12 }} variant="body2" color="foregroundSecondary">
                 {t('jetton_price')} {price}
