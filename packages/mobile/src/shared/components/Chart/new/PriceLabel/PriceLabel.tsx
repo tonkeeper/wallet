@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { getLocale } from '$utils';
 import { Platform } from 'react-native';
-import { ChartPeriod } from '../Chart.types';
+import { ChartPeriod } from '$store/zustand/chart';
 
 const fontFamily = Platform.select({
   ios: 'SFMono-Medium',

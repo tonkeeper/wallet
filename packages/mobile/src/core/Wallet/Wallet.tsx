@@ -20,14 +20,15 @@ import {
   walletWalletSelector,
 } from '$store/wallet';
 import { Linking, View } from 'react-native';
-import { ns, toLocaleNumber } from '$utils';
-import { CryptoCurrencies } from '$shared/constants';
+import { ns } from '$utils';
+import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { toastActions } from '$store/toast';
 import { t } from '$translation';
 import { useNavigation } from '$libs/navigation';
-import { Chart } from '$uikit/Chart/Chart';
+import { Chart } from '$shared/components/Chart/new/Chart';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated from 'react-native-reanimated';
+import { formatCryptoCurrency } from '$utils/currency';
 
 const exploreActions = [
   {
@@ -96,7 +97,6 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   const currencyUpper = useMemo(() => {
     return currency?.toUpperCase();
   }, [currency]);
-
   const { amount, fiatInfo } = useWalletInfo(currency);
 
   const shouldRenderSellButton = useMemo(() => +amount > 0, [amount]);
@@ -151,7 +151,13 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
           <S.FlexRow>
             <S.AmountWrapper>
               <Text variant="h2">
-                {toLocaleNumber(amount)} {currencyUpper}
+                {formatCryptoCurrency(
+                  amount,
+                  currencyUpper,
+                  Decimals[currency],
+                  Decimals[currency],
+                  true,
+                )}
               </Text>
               <Text style={{ marginTop: 2 }} variant="body2" color="foregroundSecondary">
                 {fiatInfo.amount}
@@ -234,12 +240,13 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     paddingBottom,
     amount,
     currencyUpper,
+    currency,
     fiatInfo.amount,
-    t,
     handleOpenExchange,
+    t,
     handleSend,
-    shouldRenderSellButton,
     handleReceive,
+    shouldRenderSellButton,
     wallet,
     handleDeploy,
     lockupDeploy,

@@ -43,7 +43,6 @@ const initialState: MainState = {
   accent: AccentKey.default,
   tonCustomIcon: null,
   alwaysShowV4R1: false,
-  chartPeriod: null,
 };
 
 export const { actions, reducer } = createSlice({
@@ -58,10 +57,6 @@ export const { actions, reducer } = createSlice({
       state.isInitiating = false;
       state.isHasWallet = isHasWallet;
       state.fiatCurrency = fiatCurrency;
-    },
-
-    setChartPeriod(state, action: SetChartPeriodAction) {
-      state.chartPeriod = action.payload;
     },
 
     setShowV4R1(state, action: SetShowV4R1) {

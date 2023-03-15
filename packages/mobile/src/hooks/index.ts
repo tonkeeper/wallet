@@ -23,3 +23,4 @@ export { useDimensions } from './useDimensions';
 export { useJettonBalances } from './useJettonBalances';
 export { usePrevious } from './usePrevious';
 export { useFiatValue } from './useFiatValue';
+export { usePreloadChart } from './usePreloadChart';
