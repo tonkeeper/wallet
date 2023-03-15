@@ -54,12 +54,14 @@ export function useWalletInfo(currency: CryptoCurrency) {
     let trend: 'unknown' | 'positive' | 'negative' = 'unknown';
     let amountResult: string;
 
+    percent = priceDiff === null ? '-' : (+priceDiff > 0 ? '+ ' : '– ') + Math.abs(Number(priceDiff)) + ' %';
+    if (priceDiff !== null) {
+      color = +priceDiff > 0 ? 'accentPositive' : 'accentNegative';
+      trend = +priceDiff > 0 ? 'positive' : 'negative';
+    }
+
     if (+amount > 0) {
-      percent = priceDiff === null ? '-' : (+priceDiff > 0 ? '+ ' : '– ') + Math.abs(Number(priceDiff)) + ' %';
-      if (priceDiff !== null) {
-        color = +priceDiff > 0 ? 'accentPositive' : 'accentNegative';
-        trend = +priceDiff > 0 ? 'positive' : 'negative';
-      }
+     
       amountResult =
         amountInUsd === '-'
           ? amountInUsd

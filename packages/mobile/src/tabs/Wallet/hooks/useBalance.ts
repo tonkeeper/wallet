@@ -10,34 +10,21 @@ import { walletSelector } from '$store/wallet';
 import { truncateDecimal } from '$utils';
 import { Ton } from '$libs/Ton';
 import { useGetPrice } from '$hooks/useWalletInfo';
+import BigNumber from 'bignumber.js';
 
-type BalanceRate = {
+type Rate = {
   percent: string;
   price: string;
   trend: string;
 }
 
-export const useBalance = () => {
-  const { amount, fiatInfo, amountToUsd } = useWalletInfo(CryptoCurrencies.Ton);
-  const { oldWalletBalances, balances } = useSelector(walletSelector);
 
-  const currency = CryptoCurrencies.Ton;
+export const useRates = () => {
+  const { fiatInfo } = useWalletInfo(CryptoCurrencies.Ton);
+
   const charts = useSelector(ratesChartsSelector);
   const fiatCurrency = useSelector(fiatCurrencySelector);
   const rates = useSelector(ratesRatesSelector);
-
-  const getPrice = useGetPrice();
-
-  const currencyPrepared = useMemo(() => {
-    let result = currency;
-    if (
-      [CryptoCurrencies.TonLocked, CryptoCurrencies.TonRestricted].indexOf(currency) > -1
-    ) {
-      result = CryptoCurrencies.Ton;
-    }
-
-    return result;
-  }, [currency]);
 
   const fiatPrice = useMemo(() => {
     const points = charts['ton'] || [];
@@ -51,26 +38,45 @@ export const useBalance = () => {
 
     return formatFiatCurrencyAmount(price.toFixed(2), fiatCurrency, true);
   }, [charts, fiatCurrency, rates]);
-    
-  const formattedAmount = useMemo(() => {
-    return formatCryptoCurrency(
-      amount,
-      '',
-      Decimals[currencyPrepared],
-      2,
-      true,
-    )
-  }, [amount, currencyPrepared]);
 
+  const ton = {
+    percent: fiatInfo.percent,
+    trend: fiatInfo.trend,
+    price: fiatPrice,
+  };
+
+  return { ton };
+}
+
+export const useBalance = () => {
+  const { amountToUsd } = useWalletInfo(CryptoCurrencies.Ton);
+  const { oldWalletBalances, balances } = useSelector(walletSelector);
+
+  const currency = CryptoCurrencies.Ton;
+  const fiatCurrency = useSelector(fiatCurrencySelector);
+
+  const getPrice = useGetPrice();
+
+  const currencyPrepared = useMemo(() => {
+    let result = currency;
+    if (
+      [CryptoCurrencies.TonLocked, CryptoCurrencies.TonRestricted].indexOf(currency) > -1
+    ) {
+      result = CryptoCurrencies.Ton;
+    }
+
+    return result;
+  }, [currency]);
+    
   const amountToFiat = useCallback((amount: string) => {
     const amountInUsd = amountToUsd(amount);
     if (+amount > 0) {
       return amountInUsd === '-'
         ? amountInUsd
         : formatFiatCurrencyAmount(amountInUsd, fiatCurrency, true);
+    } else {
+      return formatFiatCurrencyAmount(amountInUsd.replace('-', ''), fiatCurrency, true, true);
     }
-
-    return formatFiatCurrencyAmount('0.00', fiatCurrency, true);
   }, [amountToUsd, fiatCurrency]);
 
   const oldVersions = useMemo(() => {
@@ -113,7 +119,7 @@ export const useBalance = () => {
       return {
         type: item.type,
         amount: {
-          value: Ton.fromNano(item.amount),
+          nano: item.amount,
           formatted: price.amount,
           fiat: price.fiatInfo.amount
         },
@@ -121,14 +127,47 @@ export const useBalance = () => {
     });
   }, [balances, getPrice]);
 
-  return {
-    fiatValue: fiatInfo.amount,
-    percent: fiatInfo.percent,
-    trend: fiatInfo.trend,
-    formattedAmount,
-    fiatPrice,
-    amount,
+  const ton = useMemo(() => {
+    const balance = balances[CryptoCurrencies.Ton];
+
+    return {
+      amount: { 
+        nano: balance,
+        fiat: amountToFiat(balance),
+        formatted: formatCryptoCurrency(
+          balance,
+          '',
+          Decimals[currencyPrepared],
+          2,
+          true,
+        )
+      }
+    };
+  }, [balances, currencyPrepared, amountToFiat]);
+
+  const total = useMemo(() => {
+    const amounts = [
+      ton,
+      ...lockup
+    ];
+
+    const balanceNano = amounts.reduce((total, balance) => {
+      const nano = Ton.toNano(balance.amount.nano);
+      return total.plus(nano);
+    }, new BigNumber(0)).toString();
+
+    const balance = Ton.fromNano(balanceNano);
+
+    return {
+      value: balance,
+      fiat: amountToFiat(balance),
+    };
+  }, [amountToFiat, ton, lockup]);
+
+  return {  
     oldVersions,
-    lockup
+    lockup,
+    total,
+    ton,
   };
 };
