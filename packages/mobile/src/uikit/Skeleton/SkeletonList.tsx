@@ -25,12 +25,12 @@ const Cell: React.FC<{ withSeparator?: boolean; titleWidth: number }> = (props) 
             <SkeletonLineOpacityAnimation
               height={18}
               width={props.titleWidth}
-              style={{ borderRadius: ns(8), marginBottom: ns(4) }}
+              style={{ borderRadius: ns(9), marginBottom: ns(4) }}
             />
             <SkeletonLineOpacityAnimation
               height={16}
               width={86}
-              style={{ borderRadius: ns(8) }}
+              style={{ borderRadius: ns(9) }}
             />
           </View>
         </View>
@@ -46,10 +46,11 @@ export const SkeletonList: React.FC = () => {
       <View style={{ marginBottom: ns(10) }} />
       <View
         style={{
-          borderRadius: ns(8),
+          borderRadius: ns(14),
           width: ns(64),
           height: ns(28),
           backgroundColor: '#1D2633',
+          opacity: 0.32,
         }}
       />
       <View style={{ marginBottom: ns(18) }} />
@@ -61,6 +62,7 @@ export const SkeletonList: React.FC = () => {
           borderRadius: ns(16),
           height: ns(228),
           paddingLeft: ns(16),
+          opacity: 0.32,
         }}
       >
         <Cell titleWidth={40} />
