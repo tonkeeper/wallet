@@ -38,7 +38,7 @@ export const SkeletonLine: React.FC<SkeletonProps> = ({
   const animationStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        translateX: interpolate(animation.value, [0, 1], [-start, end]),
+        translateX: interpolate(animation.gradientAnimation.value, [0, 1], [-start, end]),
       },
     ],
   }));

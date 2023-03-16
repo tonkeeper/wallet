@@ -68,6 +68,7 @@ import { Ton } from '$libs/Ton';
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
 import { Tonapi } from '$libs/Tonapi';
 import { clearSubscribeStatus } from '$utils/messaging';
+import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 
 function* generateVaultWorker() {
   try {
@@ -275,6 +276,7 @@ function* switchVersionWorker() {
   yield call(Cache.clearAll, walletName);
   yield call(JettonsCache.clearAll, walletName);
   yield put(walletActions.refreshBalancesPage());
+  yield call(useJettonEventsStore.getState().actions.clearStore);
 }
 
 function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
@@ -546,6 +548,7 @@ function* cleanWalletWorker() {
     yield call(Cache.clearAll, walletName);
     yield call(clearSubscribeStatus);
     yield call(JettonsCache.clearAll, walletName);
+    yield call(useJettonEventsStore.getState().actions.clearStore);
 
     if (isNewFlow) {
       try {
@@ -786,6 +789,7 @@ function* doMigration(wallet: Wallet, newAddress: string) {
     yield call(destroyEventsManager);
     yield call(Cache.clearAll, walletName);
     yield call(JettonsCache.clearAll, walletName);
+    yield call(useJettonEventsStore.getState().actions.clearStore);
     yield put(walletActions.refreshBalancesPage());
     yield call(setMigrationState, null);
   } catch (e) {

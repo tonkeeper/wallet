@@ -104,7 +104,7 @@ export const ActionLabelWrapper = styled.View`
 export const ActionsContainer = styled.View`
   justify-content: center;
   flex-direction: row;
-  margin-bottom: ${ns(20)}px;
+  margin-bottom: ${ns(12)}px;
 `;
 
 export const IconWrap = styled.View`

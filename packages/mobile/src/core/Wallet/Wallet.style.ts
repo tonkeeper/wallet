@@ -6,7 +6,11 @@ export const Wrap = styled.View`
   flex: 1;
 `;
 
-export const HeaderWrap = styled.View`
+export const Header = styled.View`
+  margin-horizontal: ${ns(-16)}px;
+`;
+
+export const TokenInfoWrap = styled.View`
   align-items: center;
   padding-horizontal: ${ns(28)}px;
 `;
@@ -25,6 +29,7 @@ export const FlexRow = styled.View`
 export const ExploreButtons = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
+  margin-bottom: ${ns(10)}px;
 `;
 
 export const Info = styled.View`
@@ -52,7 +57,7 @@ export const Price = styled.View`
 export const ActionsContainer = styled.View`
   justify-content: center;
   flex-direction: row;
-  margin-bottom: ${ns(20)}px;
+  margin-bottom: ${ns(12)}px;
 `;
 
 export const IconWrapper = styled.View`

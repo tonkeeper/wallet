@@ -9,6 +9,7 @@ import {
   PopupMenu,
   PopupMenuItem,
   IconButton,
+  Skeleton,
 } from '$uikit';
 import { formatAmountAndLocalize, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,7 +29,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const { bottom: bottomInset } = useSafeAreaInsets();
   const jetton = useJetton(route.params.jettonAddress);
   const t = useTranslator();
-  const { events, isRefreshing, refreshJettonEvents } = useJettonEvents(
+  const { events, isRefreshing, isLoading, refreshJettonEvents } = useJettonEvents(
     jetton.jettonAddress,
   );
   const address = useSelector(walletAddressSelector);
@@ -73,7 +74,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             <S.Logo source={{ uri: jetton.metadata.image }} />
           ) : null}
         </S.FlexRow>
-        <S.Divider />
+        <S.Divider style={{ marginBottom: ns(16) }} />
         <S.ActionsContainer>
           <IconButton
             onPress={handleSend}
@@ -90,6 +91,13 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
       </S.HeaderWrap>
     );
   }, [jetton, total, price, t, handleSend, handleReceive]);
+
+  const renderFooter = useCallback(() => {
+    if (Object.values(events).length === 0 && isLoading) {
+      return <Skeleton.List />;
+    }
+    return null;
+  }, [events, isLoading]);
 
   const renderContent = useCallback(() => {
     return (
@@ -109,9 +117,11 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
           paddingHorizontal: ns(16),
           paddingBottom: bottomInset,
         }}
+        renderFooter={renderFooter}
       />
     );
   }, [
+    renderFooter,
     refreshJettonEvents,
     isRefreshing,
     events,

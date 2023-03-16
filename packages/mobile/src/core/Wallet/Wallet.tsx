@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { WalletProps } from './Wallet.interface';
 import * as S from './Wallet.style';
+import * as BalancesStyle from '../Balances/Balances.style';
 import { useTranslator, useWalletInfo } from '$hooks';
 import {
   Button,
@@ -12,11 +13,13 @@ import {
   Text,
   ScrollHandler,
   IconButton,
+  Loader,
 } from '$uikit';
 import { openReceive, openRequireWalletModal, openSend } from '$navigation';
 import {
   walletActions,
   walletAddressSelector,
+  walletIsRefreshingSelector,
   walletWalletSelector,
 } from '$store/wallet';
 import { Linking, View } from 'react-native';
@@ -27,8 +30,10 @@ import { t } from '$translation';
 import { useNavigation } from '$libs/navigation';
 import { Chart } from '$shared/components/Chart/new/Chart';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated from 'react-native-reanimated';
 import { formatCryptoCurrency } from '$utils/currency';
+import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
+import { eventsActions, eventsSelector } from '$store/events';
+import { groupAndFilterTonActivityItems } from '$utils/transactions';
 
 const exploreActions = [
   {
@@ -72,11 +77,21 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   const currency = route.params.currency;
   const wallet = useSelector(walletWalletSelector);
   const address = useSelector(walletAddressSelector);
+  const isRefreshing = useSelector(walletIsRefreshingSelector);
   const t = useTranslator();
   const dispatch = useDispatch();
   const [lockupDeploy, setLockupDeploy] = useState('loading');
   const nav = useNavigation();
   const { bottom: paddingBottom } = useSafeAreaInsets();
+  const {
+    isLoading: isEventsLoading,
+    eventsInfo,
+    canLoadMore,
+  } = useSelector(eventsSelector);
+
+  const filteredEventsInfo = useMemo(() => {
+    return groupAndFilterTonActivityItems(eventsInfo);
+  }, [eventsInfo]);
 
   useEffect(() => {
     if (currency === CryptoCurrencies.Ton && wallet && wallet.ton.isLockup()) {
@@ -141,103 +156,149 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     Linking.openURL(`https://tonapi.io/account/${address.ton}`);
   }, [address.ton]);
 
+  const handleLoadMore = useCallback(() => {
+    if (isEventsLoading || !canLoadMore) {
+      return;
+    }
+
+    dispatch(eventsActions.loadEvents({ isLoadMore: true }));
+  }, [dispatch, isEventsLoading, canLoadMore]);
+
+  const isEventsLoadingMore = !isRefreshing && isEventsLoading && !!wallet;
+
+  const renderFooter = useCallback(() => {
+    return (
+      <>
+        {isEventsLoadingMore ? (
+          <BalancesStyle.LoaderMoreWrap>
+            <Loader size="medium" />
+          </BalancesStyle.LoaderMoreWrap>
+        ) : null}
+        <BalancesStyle.BottomSpace />
+      </>
+    );
+  }, [isEventsLoadingMore]);
+
   const renderContent = useCallback(() => {
     return (
-      <Animated.ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: paddingBottom + ns(16) }}
-      >
-        <S.HeaderWrap>
-          <S.FlexRow>
-            <S.AmountWrapper>
-              <Text variant="h2">
-                {formatCryptoCurrency(
-                  amount,
-                  currencyUpper,
-                  Decimals[currency],
-                  Decimals[currency],
-                  true,
-                )}
-              </Text>
-              <Text style={{ marginTop: 2 }} variant="body2" color="foregroundSecondary">
-                {fiatInfo.amount}
-              </Text>
-            </S.AmountWrapper>
-            <S.IconWrapper>
-              <Icon size={40} name="ic-ton-28" color="constantLight" />
-            </S.IconWrapper>
-          </S.FlexRow>
-          <S.Divider />
-          <S.ActionsContainer>
-            <IconButton
-              onPress={handleOpenExchange('buy')}
-              iconName="ic-plus-28"
-              title={t('wallet.buy_btn')}
-            />
-            <IconButton
-              onPress={handleSend}
-              iconName="ic-arrow-up-28"
-              title={t('wallet.send_btn')}
-            />
-            <IconButton
-              onPress={handleReceive}
-              iconName="ic-arrow-down-28"
-              title={t('wallet.receive_btn')}
-            />
-            {shouldRenderSellButton && (
-              <IconButton
-                onPress={handleOpenExchange('sell')}
-                iconName="ic-minus-28"
-                title={t('wallet.sell_btn')}
-              />
-            )}
-          </S.ActionsContainer>
-          <S.Divider />
-        </S.HeaderWrap>
-        <S.ChartWrap>
-          <Chart />
-        </S.ChartWrap>
-        <S.Divider style={{ marginBottom: ns(22) }} />
-        <S.ExploreWrap>
-          <Text style={{ marginBottom: ns(14) }} variant="h3" color="foregroundPrimary">
-            {t('wallet_about')}
-          </Text>
-          <S.ExploreButtons>
-            {exploreActions.map((action) => (
-              <Button
-                onPress={() => Linking.openURL(action.url)}
-                key={action.text}
-                before={
-                  <Icon
-                    name={action.icon}
-                    color="foregroundPrimary"
-                    style={{ marginRight: 8 }}
+      <TransactionsList
+        withoutMarginForFirstHeader
+        initialData={[]}
+        onEndReached={isEventsLoading || !canLoadMore ? undefined : handleLoadMore}
+        eventsInfo={filteredEventsInfo}
+        contentContainerStyle={{
+          paddingHorizontal: ns(16),
+          paddingBottom,
+        }}
+        renderFooter={renderFooter}
+        renderHeader={
+          <S.Header>
+            <S.TokenInfoWrap>
+              <S.FlexRow>
+                <S.AmountWrapper>
+                  <Text variant="h2">
+                    {formatCryptoCurrency(
+                      amount,
+                      currencyUpper,
+                      Decimals[currency],
+                      Decimals[currency],
+                      true,
+                    )}
+                  </Text>
+                  <Text
+                    style={{ marginTop: 2 }}
+                    variant="body2"
+                    color="foregroundSecondary"
+                  >
+                    {fiatInfo.amount}
+                  </Text>
+                </S.AmountWrapper>
+                <S.IconWrapper>
+                  <Icon size={40} name="ic-ton-28" color="constantLight" />
+                </S.IconWrapper>
+              </S.FlexRow>
+              <S.Divider style={{ marginBottom: ns(16) }} />
+              <S.ActionsContainer>
+                <IconButton
+                  onPress={handleOpenExchange('buy')}
+                  iconName="ic-plus-28"
+                  title={t('wallet.buy_btn')}
+                />
+                <IconButton
+                  onPress={handleSend}
+                  iconName="ic-arrow-up-28"
+                  title={t('wallet.send_btn')}
+                />
+                <IconButton
+                  onPress={handleReceive}
+                  iconName="ic-arrow-down-28"
+                  title={t('wallet.receive_btn')}
+                />
+                {shouldRenderSellButton && (
+                  <IconButton
+                    onPress={handleOpenExchange('sell')}
+                    iconName="ic-minus-28"
+                    title={t('wallet.sell_btn')}
                   />
-                }
-                style={{ marginRight: 8, marginBottom: 8 }}
-                mode="secondary"
-                size="medium_rounded"
+                )}
+              </S.ActionsContainer>
+              <S.Divider />
+            </S.TokenInfoWrap>
+            <S.ChartWrap>
+              <Chart />
+            </S.ChartWrap>
+            <S.Divider style={{ marginBottom: ns(22) }} />
+            <S.ExploreWrap>
+              <Text
+                style={{ marginBottom: ns(14) }}
+                variant="h3"
+                color="foregroundPrimary"
               >
-                {action.text}
-              </Button>
-            ))}
-          </S.ExploreButtons>
-        </S.ExploreWrap>
-        {wallet && wallet.ton.isLockup() && (
-          <View style={{ padding: ns(16) }}>
-            <Button
-              onPress={handleDeploy}
-              disabled={lockupDeploy === 'deployed'}
-              isLoading={lockupDeploy === 'loading'}
-            >
-              {lockupDeploy === 'deploy' ? 'Deploy Wallet' : 'Deployed'}
-            </Button>
-          </View>
-        )}
-      </Animated.ScrollView>
+                {t('wallet_about')}
+              </Text>
+              <S.ExploreButtons>
+                {exploreActions.map((action) => (
+                  <Button
+                    onPress={() => Linking.openURL(action.url)}
+                    key={action.text}
+                    before={
+                      <Icon
+                        name={action.icon}
+                        color="foregroundPrimary"
+                        style={{ marginRight: 8 }}
+                      />
+                    }
+                    style={{ marginRight: 8, marginBottom: 8 }}
+                    mode="secondary"
+                    size="medium_rounded"
+                  >
+                    {action.text}
+                  </Button>
+                ))}
+              </S.ExploreButtons>
+            </S.ExploreWrap>
+            {wallet && wallet.ton.isLockup() && (
+              <View style={{ padding: ns(16) }}>
+                <Button
+                  onPress={handleDeploy}
+                  disabled={lockupDeploy === 'deployed'}
+                  isLoading={lockupDeploy === 'loading'}
+                >
+                  {lockupDeploy === 'deploy' ? 'Deploy Wallet' : 'Deployed'}
+                </Button>
+              </View>
+            )}
+          </S.Header>
+        }
+      />
     );
   }, [
+    isEventsLoading,
+    canLoadMore,
+    handleLoadMore,
+    filteredEventsInfo,
     paddingBottom,
+    renderFooter,
     amount,
     currencyUpper,
     currency,
