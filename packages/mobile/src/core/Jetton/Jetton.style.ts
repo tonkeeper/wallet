@@ -3,6 +3,7 @@ import Animated from 'react-native-reanimated';
 import FastImage from 'react-native-fast-image';
 import { deviceWidth, ns } from '$utils';
 import { TouchableOpacity } from 'react-native';
+import { Opacity } from '$shared/constants';
 
 export const Wrap = styled.View`
   flex: 1;
@@ -108,4 +109,16 @@ export const ActionsContainer = styled.View`
 `;
 
 export const IconWrap = styled.View`
+`;
+
+export const HeaderViewDetailsButton = styled(TouchableOpacity).attrs({
+  activeOpacity: Opacity.ForSmall,
+  hitSlop: { top: 20, left: 20, right: 20, bottom: 20 },
+})`
+  width: ${ns(32)}px;
+  height: ${ns(32)}px;
+  border-radius: ${ns(32 / 2)}px;
+  align-items: center;
+  justify-content: center;
+  background: ${({ theme }) => theme.colors.backgroundSecondary};
 `;

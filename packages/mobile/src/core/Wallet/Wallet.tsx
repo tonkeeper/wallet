@@ -326,12 +326,9 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
               />,
             ]}
           >
-            <Button
-              onPress={() => null}
-              size="navbar_icon"
-              mode="secondary"
-              before={<Icon name="ic-ellipsis-16" color="foregroundPrimary" />}
-            />
+            <S.HeaderViewDetailsButton onPress={() => null}>
+              <Icon name="ic-ellipsis-16" color="foregroundPrimary" />
+            </S.HeaderViewDetailsButton>
           </PopupMenu>
         }
         isLargeNavBar={false}

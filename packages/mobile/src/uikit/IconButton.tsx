@@ -19,7 +19,7 @@ export const IconButton = memo<IconButtonProps>((props) => {
       onPress={props.onPress}
       activeOpacity={0.6}
       style={styles.container}
-    > 
+    >
       <View style={styles.iconContainer}>
         <Icon name={props.iconName} colorHex="#FFF" />
       </View>

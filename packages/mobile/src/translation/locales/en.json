@@ -618,6 +618,8 @@
 
   "chart": {
     "price": "Price",
+    "no_internet": "No internet connection",
+    "check_connection": "Please check your connection and try again.",
     "periods": {
       "1Y": "Y",
       "6M": "6M",

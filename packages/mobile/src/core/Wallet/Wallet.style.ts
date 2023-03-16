@@ -1,3 +1,4 @@
+import { Opacity } from '$shared/constants';
 import styled from '$styled';
 import { deviceWidth, ns } from '$utils';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -118,4 +119,16 @@ export const ActionWrapper = styled.View<{ isLast?: boolean }>`
 
 export const ActionLabelWrapper = styled.View`
   margin-top: ${ns(2)}px;
+`;
+
+export const HeaderViewDetailsButton = styled(TouchableOpacity).attrs({
+  activeOpacity: Opacity.ForSmall,
+  hitSlop: { top: 20, left: 20, right: 20, bottom: 20 },
+})`
+  width: ${ns(32)}px;
+  height: ${ns(32)}px;
+  border-radius: ${ns(32 / 2)}px;
+  align-items: center;
+  justify-content: center;
+  background: ${({ theme }) => theme.colors.backgroundSecondary};
 `;

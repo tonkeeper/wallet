@@ -25,6 +25,11 @@ export const ChartYLabelsComponent: React.FC<ChartYLabelsProps> = (props) => {
     };
   }, [chartData?.state.value]);
 
+  // don't show labels if minPrice and maxPrice are 0
+  if (props.minPrice === '0' && props.maxPrice === '0') {
+    return null;
+  }
+
   return (
     <>
       <Animated.View

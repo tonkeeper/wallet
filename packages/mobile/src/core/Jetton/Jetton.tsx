@@ -10,13 +10,14 @@ import {
   PopupMenuItem,
   IconButton,
   Skeleton,
+  TouchableOpacity,
 } from '$uikit';
 import { formatAmountAndLocalize, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
 import { useTheme, useTranslator } from '$hooks';
 import { openReceive, openSend } from '$navigation';
-import { CryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies, Opacity } from '$shared/constants';
 import { useSelector } from 'react-redux';
 import { useJettonEvents } from '$hooks/useJettonEvents';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
@@ -149,12 +150,9 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
                 />,
               ]}
             >
-              <Button
-                onPress={() => null}
-                size="navbar_icon"
-                mode="secondary"
-                before={<Icon name="ic-ellipsis-16" color="foregroundPrimary" />}
-              />
+              <S.HeaderViewDetailsButton onPress={() => null}>
+                <Icon name="ic-ellipsis-16" color="foregroundPrimary" />
+              </S.HeaderViewDetailsButton>
             </PopupMenu>
           }
           titleProps={{ numberOfLines: 1 }}
