@@ -230,7 +230,7 @@
       "insufficient_balance": "Insufficient balance",
       "less_than_min": "Minimum amount is %{minAmount} TON",
       "max": "Max",
-      "send_all": "Remaining: %{amount}"
+      "remaining": "Remaining: %{amount}"
     },
     "comfirm": {
       "comment_label": "Comment",
@@ -314,7 +314,7 @@
     "screen_title": "Activity",
     "sent": "Sent",
     "received": "Received",
-    "empty_transaction_title":"Your activity will be shown here",
+    "empty_transaction_title": "Your activity will be shown here",
     "empty_transaction_caption": "Make your first transaction!",
     "buy_toncoin_btn": "Buy Toncoin",
     "receive_btn": "Receive"

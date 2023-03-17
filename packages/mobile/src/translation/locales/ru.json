@@ -227,7 +227,7 @@
       "insufficient_balance": "Недостаточно средств",
       "less_than_min": "Minimum amount is %{minAmount} TON",
       "max": "Максимум",
-      "send_all": "Доступно: %{amount}"
+      "remaining": "Доступно: %{amount}"
     },
     "comfirm": {
       "comment_label": "Комментарий",
@@ -321,7 +321,7 @@
     "screen_title": "Активность",
     "sent": "Отправить",
     "received": "Received",
-    "empty_transaction_title":"Ваша активность будет показана здесь",
+    "empty_transaction_title": "Ваша активность будет показана здесь",
     "empty_transaction_caption": "Совершите первую транзакцию!",
     "buy_toncoin_btn": "Купить Toncoin",
     "receive_btn": "Получить"
