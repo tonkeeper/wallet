@@ -24,7 +24,6 @@ export function formatFiatCurrencyAmount(
   if (conf.side === 'start') {
     return `${maybeNegative}${conf.symbol}${maybeThinSpace}${toLocaleNumber(amount)}`;
   } else {
-    
     return `${maybeNegative}${toLocaleNumber(amount)}${maybeThinSpace}${conf.symbol}`;
   }
 }
