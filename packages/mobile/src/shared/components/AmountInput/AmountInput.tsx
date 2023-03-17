@@ -53,20 +53,22 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const isLockup = !!wallet?.ton.isLockup();
 
-  const { formattedBalance, balanceInputValue, isInsufficientBalance, isLessThanMin } =
+  const { remainingBalance, balanceInputValue, isInsufficientBalance, isLessThanMin } =
     useMemo(() => {
-      const bigNum = new BigNumber(parseLocaleNumber(amount.value));
+      const bigNum = new BigNumber(parseLocaleNumber(amount.value) || '0');
       const balanceBigNum = new BigNumber(balance);
 
-      const formattedBalanceDecimals = balanceBigNum.isGreaterThanOrEqualTo(1)
+      const remainingBalanceBigNum = balanceBigNum.minus(bigNum);
+
+      const remainingBalanceDecimals = remainingBalanceBigNum.isGreaterThanOrEqualTo(1)
         ? 2
         : decimals;
 
       return {
-        formattedBalance: formatCryptoCurrency(
-          balance,
+        remainingBalance: formatCryptoCurrency(
+          remainingBalanceBigNum.toString(),
           currencyTitle,
-          formattedBalanceDecimals,
+          remainingBalanceDecimals,
         ),
         balanceInputValue: formatInputAmount(balance, decimals),
         isInsufficientBalance: !isLockup && bigNum.isGreaterThan(balanceBigNum),
@@ -248,8 +250,8 @@ const AmountInputComponent: React.FC<Props> = (props) => {
             </S.Error>
           ) : (
             <S.SandAllLabel>
-              {t('send_screen_steps.amount.send_all', {
-                amount: formattedBalance,
+              {t('send_screen_steps.amount.remaining', {
+                amount: remainingBalance,
               })}
             </S.SandAllLabel>
           )}
