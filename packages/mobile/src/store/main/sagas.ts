@@ -64,6 +64,7 @@ import { jettonsActions } from '$store/jettons';
 import { favoritesActions } from '$store/favorites';
 import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 import { clearSubscribeStatus } from '$utils/messaging';
+import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 
 SplashScreen.preventAutoHideAsync()
   .then((result) =>
@@ -255,6 +256,7 @@ export function* resetAll(isTestnet: boolean) {
   yield call(Cache.clearAll, getWalletName());
   yield call(clearSubscribeStatus);
   yield call(JettonsCache.clearAll, getWalletName());
+  yield call(useJettonEventsStore.getState().actions.clearStore);
   yield put(
     batchActions(
       mainActions.resetMain(),

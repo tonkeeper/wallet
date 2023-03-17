@@ -14,5 +14,6 @@ export interface IJettonEventsStore {
       jettonMaster: string,
       isRefresh?: boolean,
     ) => void;
+    clearStore: () => void;
   };
 }

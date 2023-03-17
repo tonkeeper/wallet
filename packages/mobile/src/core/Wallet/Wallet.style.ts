@@ -1,3 +1,4 @@
+import { Opacity } from '$shared/constants';
 import styled from '$styled';
 import { deviceWidth, ns } from '$utils';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -6,7 +7,11 @@ export const Wrap = styled.View`
   flex: 1;
 `;
 
-export const HeaderWrap = styled.View`
+export const Header = styled.View`
+  margin-horizontal: ${ns(-16)}px;
+`;
+
+export const TokenInfoWrap = styled.View`
   align-items: center;
   padding-horizontal: ${ns(28)}px;
 `;
@@ -25,6 +30,7 @@ export const FlexRow = styled.View`
 export const ExploreButtons = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
+  margin-bottom: ${ns(10)}px;
 `;
 
 export const Info = styled.View`
@@ -52,7 +58,7 @@ export const Price = styled.View`
 export const ActionsContainer = styled.View`
   justify-content: center;
   flex-direction: row;
-  margin-bottom: ${ns(20)}px;
+  margin-bottom: ${ns(12)}px;
 `;
 
 export const IconWrapper = styled.View`
@@ -113,4 +119,16 @@ export const ActionWrapper = styled.View<{ isLast?: boolean }>`
 
 export const ActionLabelWrapper = styled.View`
   margin-top: ${ns(2)}px;
+`;
+
+export const HeaderViewDetailsButton = styled(TouchableOpacity).attrs({
+  activeOpacity: Opacity.ForSmall,
+  hitSlop: { top: 20, left: 20, right: 20, bottom: 20 },
+})`
+  width: ${ns(32)}px;
+  height: ${ns(32)}px;
+  border-radius: ${ns(32 / 2)}px;
+  align-items: center;
+  justify-content: center;
+  background: ${({ theme }) => theme.colors.backgroundSecondary};
 `;

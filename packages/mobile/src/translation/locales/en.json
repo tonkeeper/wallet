@@ -170,6 +170,7 @@
   "jetton_name": "%{name} Token",
   "jetton_id": "Token ID: %{jettonAddress}",
   "jetton_price": "Price:",
+  "jetton_token": "Token",
   "jetton_id_copied": "Token ID copied",
   "jetton_open_explorer": "View details",
   "jettons_manage_tokens": "Manage tokens",
@@ -617,6 +618,8 @@
 
   "chart": {
     "price": "Price",
+    "no_internet": "No internet connection",
+    "check_connection": "Please check your connection and try again.",
     "periods": {
       "1Y": "Y",
       "6M": "6M",

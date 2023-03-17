@@ -21,9 +21,10 @@ import { Rate } from './Rate/Rate';
 import { useQuery } from 'react-query';
 import { loadChartData } from './Chart.api';
 import { ChartYLabels } from './ChartYLabels/ChartYLabels';
-import { changeAlphaValue, convertHexToRGBA } from '$utils';
+import { changeAlphaValue, convertHexToRGBA, ns } from '$utils';
 import { ChartXLabels } from './ChartXLabels/ChartXLabels';
 import { ChartPeriod, useChartStore } from '$store/zustand/chart';
+import { Fallback } from './Fallback/Fallback';
 
 export const { width: SIZE } = Dimensions.get('window');
 
@@ -32,7 +33,7 @@ const ChartComponent: React.FC = () => {
   const selectedPeriod = useChartStore((state) => state.selectedPeriod);
   const setChartPeriod = useChartStore((state) => state.actions.setChartPeriod);
 
-  const { isLoading, isFetching, data } = useQuery({
+  const { isLoading, isFetching, data, isError } = useQuery({
     queryKey: ['chartFetch', selectedPeriod],
     queryFn: () => loadChartData(selectedPeriod),
     refetchInterval: 60 * 1000,
@@ -54,6 +55,7 @@ const ChartComponent: React.FC = () => {
 
   const rates = useSelector(ratesRatesSelector);
   const fiatCurrency = useSelector(fiatCurrencySelector);
+  const shouldRenderChart = !!cachedData.length;
 
   const fiatRate =
     fiatCurrency === FiatCurrencies.Usd
@@ -92,40 +94,42 @@ const ChartComponent: React.FC = () => {
           }}
         >
           <View style={{ paddingHorizontal: 28 }}>
-            {latestPoint ? (
-              <Rate
-                fiatCurrency={fiatCurrency}
-                fiatRate={fiatRate}
-                latestPoint={latestPoint}
-              />
-            ) : null}
-            {latestPoint ? (
-              <PercentDiff
-                fiatCurrency={fiatCurrency}
-                fiatRate={fiatRate}
-                latestPoint={latestPoint}
-                firstPoint={firstPoint}
-              />
-            ) : null}
+            <Rate
+              fiatCurrency={fiatCurrency}
+              fiatRate={fiatRate}
+              latestPoint={latestPoint}
+            />
+            <PercentDiff
+              fiatCurrency={fiatCurrency}
+              fiatRate={fiatRate}
+              latestPoint={latestPoint}
+              firstPoint={firstPoint}
+            />
             <PriceLabel selectedPeriod={selectedPeriod} />
           </View>
           <View style={{ paddingVertical: 30 }}>
             <View>
               <ChartPath
+                __disableRendering={!shouldRenderChart}
                 gradientEnabled
                 longPressGestureHandlerProps={{ minDurationMs: 90 }}
                 hapticsEnabled
                 strokeWidth={2}
                 selectedStrokeWidth={2}
-                height={160}
+                height={ns(160)}
                 stroke={theme.colors.accentPrimaryLight}
                 width={SIZE - 1}
                 selectedOpacity={1}
-              />
+              >
+                <Fallback isError={isError} />
+              </ChartPath>
               <ChartDot
                 size={40}
                 style={{
-                  backgroundColor: changeAlphaValue(convertHexToRGBA(theme.colors.accentPrimaryLight), 0.24),
+                  backgroundColor: changeAlphaValue(
+                    convertHexToRGBA(theme.colors.accentPrimaryLight),
+                    0.24,
+                  ),
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}

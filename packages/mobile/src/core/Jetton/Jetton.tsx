@@ -9,13 +9,15 @@ import {
   PopupMenu,
   PopupMenuItem,
   IconButton,
+  Skeleton,
+  TouchableOpacity,
 } from '$uikit';
 import { formatAmountAndLocalize, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
 import { useTheme, useTranslator } from '$hooks';
 import { openReceive, openSend } from '$navigation';
-import { CryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies, Opacity } from '$shared/constants';
 import { useSelector } from 'react-redux';
 import { useJettonEvents } from '$hooks/useJettonEvents';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
@@ -28,7 +30,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const { bottom: bottomInset } = useSafeAreaInsets();
   const jetton = useJetton(route.params.jettonAddress);
   const t = useTranslator();
-  const { events, isRefreshing, refreshJettonEvents } = useJettonEvents(
+  const { events, isRefreshing, isLoading, refreshJettonEvents } = useJettonEvents(
     jetton.jettonAddress,
   );
   const address = useSelector(walletAddressSelector);
@@ -60,11 +62,9 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
               {formatAmountAndLocalize(jetton.balance, jetton.metadata.decimals)}{' '}
               {jetton.metadata.symbol}
             </Text>
-            {total ? (
-              <Text style={{ marginTop: 2 }} variant="body2" color="foregroundSecondary">
-                {total}
-              </Text>
-            ) : null}
+            <Text style={{ marginTop: 2 }} variant="body2" color="foregroundSecondary">
+              {total || t('jetton_token')}
+            </Text>
             {price ? (
               <Text style={{ marginTop: 12 }} variant="body2" color="foregroundSecondary">
                 {t('jetton_price')} {price}
@@ -75,7 +75,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             <S.Logo source={{ uri: jetton.metadata.image }} />
           ) : null}
         </S.FlexRow>
-        <S.Divider />
+        <S.Divider style={{ marginBottom: ns(16) }} />
         <S.ActionsContainer>
           <IconButton
             onPress={handleSend}
@@ -92,6 +92,13 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
       </S.HeaderWrap>
     );
   }, [jetton, total, price, t, handleSend, handleReceive]);
+
+  const renderFooter = useCallback(() => {
+    if (Object.values(events).length === 0 && isLoading) {
+      return <Skeleton.List />;
+    }
+    return null;
+  }, [events, isLoading]);
 
   const renderContent = useCallback(() => {
     return (
@@ -111,9 +118,11 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
           paddingHorizontal: ns(16),
           paddingBottom: bottomInset,
         }}
+        renderFooter={renderFooter}
       />
     );
   }, [
+    renderFooter,
     refreshJettonEvents,
     isRefreshing,
     events,
@@ -141,12 +150,9 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
                 />,
               ]}
             >
-              <Button
-                onPress={() => null}
-                size="navbar_icon"
-                mode="secondary"
-                before={<Icon name="ic-ellipsis-16" color="foregroundPrimary" />}
-              />
+              <S.HeaderViewDetailsButton onPress={() => null}>
+                <Icon name="ic-ellipsis-16" color="foregroundPrimary" />
+              </S.HeaderViewDetailsButton>
             </PopupMenu>
           }
           titleProps={{ numberOfLines: 1 }}
