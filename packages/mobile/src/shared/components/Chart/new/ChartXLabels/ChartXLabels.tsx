@@ -1,11 +1,11 @@
 import { Text } from '$uikit/Text/Text';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Platform } from 'react-native';
 import Animated, { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { getLocale, ns } from '$utils';
-import { ChartPeriod } from '../Chart.types';
-import { format, subMonths } from 'date-fns';
+import { format } from 'date-fns';
+import { ChartPeriod } from '$store/zustand/chart';
 
 export interface ChartXLabelsProps {
   currentPeriod: ChartPeriod;

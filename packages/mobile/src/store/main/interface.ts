@@ -28,7 +28,6 @@ export interface MainState {
   accent: AccentKey;
   tonCustomIcon: AccentNFTIcon | null;
   alwaysShowV4R1: boolean;
-  chartPeriod: ChartPeriod | null;
 }
 
 export type EndInitiatingAction = PayloadAction<{
@@ -56,4 +55,3 @@ export type AddLogAction = PayloadAction<{
 export type SetLogsAction = PayloadAction<LogItem[]>;
 export type SetUnlockedAction = PayloadAction<boolean>;
 export type SetShowV4R1 = PayloadAction<boolean>;
-export type SetChartPeriodAction = PayloadAction<ChartPeriod | null>;

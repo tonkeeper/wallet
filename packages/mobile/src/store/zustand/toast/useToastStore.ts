@@ -1,6 +1,6 @@
 import { t } from '$translation';
 import { Haptics } from '$utils';
-import create from 'zustand';
+import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { IToastStore, ToastSize } from './types';
 
