@@ -1,6 +1,6 @@
 import { useJettonBalances } from "$hooks";
 import { jettonsSelector } from "$store/jettons";
-import { formatAmountAndLocalize } from "$utils";
+import { formatter } from "$utils/formatter";
 import { useSelector } from "react-redux";
 import TonWeb from "tonweb";
 
@@ -46,7 +46,7 @@ export const useTonkens = (): {
       decimals: item.metadata.decimals,
       quantity: {
         value: item.balance,
-        formatted: formatAmountAndLocalize(item.balance, 2),
+        formatted: formatter.format(item.balance),
       }
     };
 

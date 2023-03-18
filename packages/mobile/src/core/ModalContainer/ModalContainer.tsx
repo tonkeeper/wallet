@@ -11,7 +11,6 @@ import { ConfirmSending } from '$core/ModalContainer/ConfirmSending/ConfirmSendi
 import { ExchangeMethod } from '$core/ModalContainer/ExchangeMethod/ExchangeMethod';
 import { CreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
 import { TonConnectModal } from '$core/TonConnect/TonConnectModal';
-import { Exchange } from '$core/Exchange/Exchange';
 import { InfoAboutInactive } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
 import { DeployModal } from './NFTOperations/Modals/DeployModal';
 import { ReminderEnableNotificationsModal } from './ReminderEnableNotificationsModal';

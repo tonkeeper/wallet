@@ -84,7 +84,7 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
     if (!wallet) {
       return openRequireWalletModal();
     }
-    nav.openModal('Exchange');
+    nav.openModal('OldExchange');
   }, [wallet]);
 
   const handleSend = useCallback(() => {

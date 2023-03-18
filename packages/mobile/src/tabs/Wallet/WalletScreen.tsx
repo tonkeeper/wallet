@@ -14,7 +14,7 @@ import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
 import { useIsFocused } from '@react-navigation/native';
 import _ from 'lodash';
-import { useBalance } from './hooks/useBalance';
+import { useBalance, useRates } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
 import { TonIcon } from '../../components/TonIcon';
 import { CryptoCurrencies } from '$shared/constants';
@@ -42,6 +42,7 @@ export const WalletScreen = memo(() => {
   const wallet = useWallet();
 
   const balance = useBalance();
+  const rates = useRates();
 
   const { isRefreshing, isLoaded } = useSelector(walletSelector);
   const isFocused = useIsFocused();
@@ -112,7 +113,7 @@ export const WalletScreen = memo(() => {
       ))}
       <View style={styles.amount} pointerEvents="box-none">
         <Text variant="num2">
-          {balance.fiatValue}
+          {balance.total.fiat}
         </Text>
         {wallet && (
           <TouchableOpacity 
@@ -146,7 +147,7 @@ export const WalletScreen = memo(() => {
           iconName="ic-arrow-down-28"
           title={t('wallet.receive_btn')}
         />
-        {+balance.amount > 0 && (
+        {+balance.ton.amount.nano > 0 && (
           <IconButton
             onPress={handlePressSell}
             iconName="ic-minus-28"
@@ -177,8 +178,8 @@ export const WalletScreen = memo(() => {
               chevron
               subtitle={
                 <ListItemRate
-                  price={balance.fiatPrice}
-                  trend={balance.trend}
+                  price={rates.ton.price}
+                  trend={rates.ton.trend}
                 />
               }
             />
@@ -226,7 +227,7 @@ export const WalletScreen = memo(() => {
                   />
                 }
               >
-                <TokenList balance={balance} tokens={tokens} />
+                <TokenList balance={balance} tokens={tokens} rates={rates} />
               </Tabs.ScrollView>
             </Tabs.Section>
             <Tabs.Section index={1}>
@@ -272,7 +273,7 @@ export const WalletScreen = memo(() => {
           }
         >
           {balanceSection}
-          <TokenList balance={balance} tokens={tokens} />
+          <TokenList balance={balance} tokens={tokens} rates={rates} />
           <NFTsList nfts={nfts} />
         </Screen.ScrollView>
       </>

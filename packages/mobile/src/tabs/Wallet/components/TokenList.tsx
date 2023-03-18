@@ -14,9 +14,10 @@ import { ListItemRate } from "./ListItemRate";
 interface TokenListProps {
   tokens: any; // TODO: add types
   balance: any; // TODO: add types
+  rates: any; // TODO: add types
 }
 
-export const TokenList = memo<TokenListProps>(({ tokens, balance }) => {
+export const TokenList = memo<TokenListProps>(({ tokens, balance, rates }) => {
   const dispatch = useDispatch();
 
   const handleMigrate = useCallback((fromVersion: string) => () => {
@@ -34,14 +35,14 @@ export const TokenList = memo<TokenListProps>(({ tokens, balance }) => {
         <List.Item
           title="Toncoin"
           onPress={() => openWallet(CryptoCurrencies.Ton)}
-          value={balance.formattedAmount}
-          subvalue={balance.fiatValue}
+          value={balance.ton.amount.formatted}
+          subvalue={balance.ton.amount.fiat}
           leftContent={<TonIcon />}
           subtitle={
             <ListItemRate
-              percent={balance.percent}
-              price={balance.fiatPrice}
-              trend={balance.trend}
+              percent={rates.ton.percent}
+              price={rates.ton.price}
+              trend={rates.ton.trend}
             />
           }
         />
@@ -52,7 +53,7 @@ export const TokenList = memo<TokenListProps>(({ tokens, balance }) => {
             value={item.amount.formatted}
             subvalue={item.amount.fiat}
             leftContent={<TonIcon locked />}
-            subtitle="-"
+            subtitle={rates.ton.price}
           />
         ))}
         {balance.oldVersions.map((item, key) => (
@@ -65,9 +66,9 @@ export const TokenList = memo<TokenListProps>(({ tokens, balance }) => {
             subvalue={item.amount.fiat}
             subtitle={
               <ListItemRate
-                percent={balance.percent}
-                price={balance.fiatPrice}
-                trend={balance.trend}
+                percent={rates.ton.percent}
+                price={rates.ton.price}
+                trend={rates.ton.trend}
               />
             }
           />

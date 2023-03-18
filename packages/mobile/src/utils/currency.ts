@@ -11,17 +11,20 @@ import {
 export function formatFiatCurrencyAmount(
   amount: any,
   currency: FiatCurrency,
-  withThinSpace?: boolean,
+  hasThinSpace?: boolean,
+  hasNegative?: boolean,
 ): string {
   const conf = FiatCurrencySymbolsConfig[currency];
   if (!conf) {
     return `${toLocaleNumber(amount)} ${currency?.toUpperCase()}`;
   }
 
+  const maybeNegative = hasNegative ? '− ' : '';
+  const maybeThinSpace = hasThinSpace ? ' ' : '';
   if (conf.side === 'start') {
-    return `${conf.symbol}${withThinSpace ? ' ' : ''}${toLocaleNumber(amount)}`;
+    return `${maybeNegative}${conf.symbol}${maybeThinSpace}${toLocaleNumber(amount)}`;
   } else {
-    return `${toLocaleNumber(amount)}${withThinSpace ? ' ' : ''}${conf.symbol}`;
+    return `${maybeNegative}${toLocaleNumber(amount)}${maybeThinSpace}${conf.symbol}`;
   }
 }
 
@@ -40,6 +43,10 @@ export function formatCryptoCurrency(
 
     if (decimal !== undefined) {
       amount = truncateDecimal(amount, decimal);
+    }
+
+    if (+amount < 0) {
+      amount = `${'− '}${amount.replace('-', '')}`;
     }
   }
 
