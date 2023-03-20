@@ -62,6 +62,7 @@ export type IconNames =
   | 'ic-nft-collection-28'
   | 'ic-notification-28'
   | 'ic-plus-28'
+  | 'ic-reorder-28'
   | 'ic-return-28'
   | 'ic-secure-28'
   | 'ic-settings-28'
@@ -164,6 +165,7 @@ export const AllIcons = [
   'ic-nft-collection-28',
   'ic-notification-28',
   'ic-plus-28',
+  'ic-reorder-28',
   'ic-return-28',
   'ic-secure-28',
   'ic-settings-28',
@@ -267,6 +269,7 @@ export const IconSizes = {
   'ic-nft-collection-28': 28,
   'ic-notification-28': 28,
   'ic-plus-28': 28,
+  'ic-reorder-28': 28,
   'ic-return-28': 28,
   'ic-secure-28': 28,
   'ic-settings-28': 28,
