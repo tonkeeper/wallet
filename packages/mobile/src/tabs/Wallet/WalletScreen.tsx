@@ -27,21 +27,19 @@ import _ from 'lodash';
 import { Rate, useBalance, useRates } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
 import { TonIcon, TonIconProps } from '../../components/TonIcon';
-import { CryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Tabs } from './components/Tabs';
 import * as S from '../../core/Balances/Balances.style';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
-import { mainActions } from '$store/main';
-import { TokenList } from './components/TokenList';
+import { mainActions } from '$store/main';;
 import { NFTsList } from './components/NFTsList';
 import { useTonkens } from './hooks/useTokens';
 import { useNFTs } from './hooks/useNFTs';
 import { useWallet } from './hooks/useWallet';
 import { useTheme } from '$hooks';
 import { ListSeparator } from '$uikit/List/new/ListSeparator';
-import { FlashList } from '@shopify/flash-list';
 
 export const WalletScreen = memo(() => {
   const [tab, setTab] = useState<string>('tokens');
@@ -472,6 +470,19 @@ const BalancesList = ({
       })),
     );
 
+    if (balance.lockup.length > 0) {
+      content.push(
+        ...balance.lockup.map((item) => ({
+          type: ContentType.Token,
+          tonIcon: { locked: true },
+          title: LockupNames[item.type],
+          value: item.amount.formatted,
+          subvalue: item.amount.fiat,
+          subtitle: rates.ton.price,
+        })),
+      );
+    }
+
     content.push(
       ...tokens.list.map((item) => ({
         type: ContentType.Token,
@@ -497,6 +508,11 @@ const BalancesList = ({
     });
 
     if (nfts) {
+      content.push({
+        type: ContentType.Spacer,
+        bottom: 16
+      });
+
       const numColumns = 3;
       for (let i = 0; i < Math.ceil(nfts.length / numColumns); i++) {
         content.push({ 
@@ -522,7 +538,6 @@ const BalancesList = ({
       data={data}
       getItemType={(item) => item.type}
       renderItem={RenderItem}
-      // contentContainerStyle={{ paddingBottom: 12 }}
       ListHeaderComponent={balancesSection ?? undefined}
       refreshControl={
         <RefreshControl
@@ -571,7 +586,7 @@ const styles = Steezy.create(({ colors, corners }) => ({
 
   tonkensEdit: {
     justifyContent: 'center', 
-    alignItems: 'center', 
-    marginBottom: 32
+    alignItems: 'center',
+    marginBottom: 16,
   },
 }));

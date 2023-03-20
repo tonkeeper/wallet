@@ -1,10 +1,11 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Steezy, StyleProp } from '$styles';
 import { View, TouchableOpacity } from './StyledNativeComponents';
 import { Text } from './Text/Text';
 import { IconNames } from './Icon/generated.types';
 import { ViewStyle } from 'react-native';
 import { Icon } from './Icon/Icon';
+import { getLocale } from '$translation';
 
 interface IconButtonProps {
   title: string;
@@ -14,26 +15,34 @@ interface IconButtonProps {
 }
 
 export const IconButton = memo<IconButtonProps>((props) => {
+  const locale = useMemo(() => getLocale(), []);
+
   return (
-    <TouchableOpacity
-      onPress={props.onPress}
-      activeOpacity={0.6}
-      style={styles.container}
-    >
-      <View style={styles.iconContainer}>
-        <Icon name={props.iconName} colorHex="#FFF" />
-      </View>
-      <Text variant="label3" color="textSecondary">
-        {props.title}
-      </Text>
-    </TouchableOpacity>
+    <View style={{ width: locale === 'ru' ? 80 : 72 }}>
+      <TouchableOpacity
+        onPress={props.onPress}
+        activeOpacity={0.6}
+        style={styles.container}
+      >
+        <View style={styles.iconContainer}>
+          <Icon name={props.iconName} colorHex="#FFF" />
+        </View>
+        <Text 
+          variant="label3" 
+          color="textSecondary"
+        >
+          {props.title}
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 });
 
 const styles = Steezy.create(({ colors }) => ({
   container: {
     paddingVertical: 8,
-    paddingHorizontal: 14,
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   iconContainer: {

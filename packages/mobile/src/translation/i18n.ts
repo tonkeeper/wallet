@@ -30,4 +30,8 @@ const getI18n = () => {
   return i18n;
 };
 
+export const getLocale = () => {
+  return i18n.locale;
+}
+
 export const i18n = getI18n();

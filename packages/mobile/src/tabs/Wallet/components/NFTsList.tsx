@@ -11,12 +11,12 @@ interface NFTsListProps {
 }
 
 const mockupCardSize = {
-  width: ns(114),
-  height: ns(166)
+  width: 114,
+  height: 166
 };
 
 const numColumn = 3;
-const indent = ns(8);
+const indent = 8;
 const heightRatio = mockupCardSize.height / mockupCardSize.width;
 
 export const NFTsList = memo<NFTsListProps>(({ nfts }) => {
@@ -29,9 +29,8 @@ export const NFTsList = memo<NFTsListProps>(({ nfts }) => {
     return { width, height };
   }, [dimensions.width]);
 
-
   return (
-    <View style={styles.nftElements}>
+    <View style={[styles.nftElements, { marginHorizontal: 12 }]}>
       {nfts.map((item, key) => (
         <View style={size} key={key}>
           <NFTCardItem item={item} />
@@ -46,6 +45,5 @@ const styles = Steezy.create({
     // marginTop: 16,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginHorizontal: 12 
   }
 });

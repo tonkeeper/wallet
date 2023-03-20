@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { t } from '$translation';
 import { openSetupWalletDone } from '$navigation';
-import { debugLog } from '$utils';
+import { debugLog, ns } from '$utils';
 import { useNotifications } from '$hooks/useNotifications';
 import { toastActions } from '$store/toast';
 import { saveDontShowReminderNotifications } from '$utils/messaging';
@@ -35,12 +35,12 @@ export const SetupNotifications: React.FC = () => {
   return (
     <Screen>
       <Screen.Header 
-        hideBackButton
         rightContent={
           <Button 
             size="navbar_small" 
             mode="secondary"
             onPress={() => openSetupWalletDone()}
+            style={{ marginRight: ns(16) }}
           >
             {t('later')}
           </Button>
