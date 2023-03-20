@@ -8,7 +8,7 @@ export const Screen = Object.assign(
   {
     Header: ScreenHeader,
     ScrollView: ScreenScrollView,
-    ScrollList: ScreenScrollList,
+    FlashList: ScreenScrollList,
     // Content: ScreenContent,
     // Footer: ScreenFooter, 
   }

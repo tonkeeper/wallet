@@ -1,22 +1,32 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { t } from '$translation';
-import { Button, IconButton, IconButtonList, InternalNotification, Screen, Text, View } from '$uikit';
+import {
+  Button,
+  IconButton,
+  IconButtonList,
+  InternalNotification,
+  Screen,
+  Spacer,
+  SpacerSizes,
+  Text,
+  View,
+} from '$uikit';
 import { List } from '$uikit/List/new';
 import { Steezy } from '$styles';
 import { useNavigation } from '$libs/navigation';
 import { ScanQRButton } from '../../components/ScanQRButton';
-import { RefreshControl } from 'react-native';
+import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
-import { openRequireWalletModal, openWallet } from '$navigation';
-import { maskifyAddress } from '$utils';
+import { openJetton, openJettonsList, openRequireWalletModal, openWallet } from '$navigation';
+import { maskifyAddress, ns } from '$utils';
 import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
 import { useIsFocused } from '@react-navigation/native';
 import _ from 'lodash';
-import { useBalance, useRates } from './hooks/useBalance';
+import { Rate, useBalance, useRates } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
-import { TonIcon } from '../../components/TonIcon';
+import { TonIcon, TonIconProps } from '../../components/TonIcon';
 import { CryptoCurrencies } from '$shared/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Tabs } from './components/Tabs';
@@ -30,6 +40,8 @@ import { useTonkens } from './hooks/useTokens';
 import { useNFTs } from './hooks/useNFTs';
 import { useWallet } from './hooks/useWallet';
 import { useTheme } from '$hooks';
+import { ListSeparator } from '$uikit/List/new/ListSeparator';
+import { FlashList } from '@shopify/flash-list';
 
 export const WalletScreen = memo(() => {
   const [tab, setTab] = useState<string>('tokens');
@@ -46,7 +58,7 @@ export const WalletScreen = memo(() => {
 
   const { isRefreshing, isLoaded } = useSelector(walletSelector);
   const isFocused = useIsFocused();
-  
+
   const notifications = useInternalNotifications();
 
   // TODO: rewrite
@@ -83,9 +95,9 @@ export const WalletScreen = memo(() => {
 
   const handlePressRecevie = React.useCallback(() => {
     if (wallet) {
-      nav.go('Receive', { 
+      nav.go('Receive', {
         currency: 'ton',
-        isFromMainScreen: true
+        isFromMainScreen: true,
       });
     } else {
       openRequireWalletModal();
@@ -112,20 +124,14 @@ export const WalletScreen = memo(() => {
         />
       ))}
       <View style={styles.amount} pointerEvents="box-none">
-        <Text variant="num2">
-          {balance.total.fiat}
-        </Text>
+        <Text variant="num2">{balance.total.fiat}</Text>
         {wallet && (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={{ zIndex: 3 }}
             onPress={() => copyText(wallet.address.friendlyAddress)}
             activeOpacity={0.6}
           >
-            <Text
-              style={styles.addressText.static} 
-              color="textSecondary"
-              variant="body2"
-            >
+            <Text style={styles.addressText.static} color="textSecondary" variant="body2">
               {maskifyAddress(wallet.address.friendlyAddress)}
             </Text>
           </TouchableOpacity>
@@ -158,12 +164,11 @@ export const WalletScreen = memo(() => {
     </View>
   );
 
-
   function renderEmpty() {
     return (
       <>
         <Screen.Header
-          backButton={false} 
+          backButton={false}
           title={t('wallet.screen_title')}
           rightContent={<ScanQRButton />}
         />
@@ -176,12 +181,7 @@ export const WalletScreen = memo(() => {
               onPress={() => openWallet(CryptoCurrencies.Ton)}
               leftContent={<TonIcon />}
               chevron
-              subtitle={
-                <ListItemRate
-                  price={rates.ton.price}
-                  trend={rates.ton.trend}
-                />
-              }
+              subtitle={<ListItemRate price={rates.ton.price} trend={rates.ton.trend} />}
             />
           </List>
         </Screen.ScrollView>
@@ -196,11 +196,29 @@ export const WalletScreen = memo(() => {
     );
   }
 
+  // TODO: rewrite
+  const dimensions = useWindowDimensions();
+  const mockupCardSize = {
+    width: ns(114),
+    height: ns(166)
+  };
+  
+  const numColumn = 3;
+  const indent = ns(8);
+  const heightRatio = mockupCardSize.height / mockupCardSize.width;
+
+  const nftCardSize = useMemo(() => {
+    const width = (dimensions.width / numColumn) - indent;
+    const height = width * heightRatio;
+
+    return { width, height };
+  }, [dimensions.width]);
+
   function renderTabs() {
     return (
       <Tabs>
         <Screen.Header
-          backButton={false} 
+          backButton={false}
           title={t('wallet.screen_title')}
           rightContent={<ScanQRButton />}
         />
@@ -211,27 +229,33 @@ export const WalletScreen = memo(() => {
               onChange={({ value }) => setTab(value)}
               value={tab}
               items={[
-                { label: t('wallet.tonkens_tab_lable'), value: 'tokens',  },
-                { label: t('wallet.collectibles_tab_lable'), value: 'collectibles' }
+                { label: t('wallet.tonkens_tab_lable'), value: 'tokens' },
+                { label: t('wallet.collectibles_tab_lable'), value: 'collectibles' },
               ]}
             />
           </Tabs.Header>
           <Tabs.PagerView>
             <Tabs.Section index={0}>
-              <Tabs.ScrollView
-                refreshControl={
-                  <RefreshControl
-                    onRefresh={handleRefresh}
-                    refreshing={isRefreshing && isFocused}
-                    tintColor={theme.colors.foregroundPrimary}
-                  />
-                }
-              >
-                <TokenList balance={balance} tokens={tokens} rates={rates} />
-              </Tabs.ScrollView>
+              <BalancesList 
+                balance={balance} 
+                tokens={tokens} 
+                rates={rates}
+                handleRefresh={handleRefresh}
+                isRefreshing={isRefreshing}
+                isFocused={isFocused}
+              />
             </Tabs.Section>
             <Tabs.Section index={1}>
               <Tabs.FlashList
+                contentContainerStyle={styles.scrollContainer.static}
+                estimatedItemSize={1000}
+                numColumns={3}
+                data={nfts}
+                renderItem={({ item }) => (
+                  <View style={nftCardSize}>
+                    <NFTCardItem item={item} />
+                  </View>
+                )}
                 refreshControl={
                   <RefreshControl
                     onRefresh={handleRefresh}
@@ -239,13 +263,6 @@ export const WalletScreen = memo(() => {
                     tintColor={theme.colors.foregroundPrimary}
                   />
                 }
-                data={nfts}
-                numColumns={3}
-                contentContainerStyle={{ paddingHorizontal: 12 }}
-                estimatedItemSize={1000}
-                renderItem={({ item }) => (
-                  <NFTCardItem item={item} />
-                )}                
               />
             </Tabs.Section>
           </Tabs.PagerView>
@@ -258,50 +275,281 @@ export const WalletScreen = memo(() => {
     return (
       <>
         <Screen.Header
-          backButton={false} 
+          backButton={false}
           title={t('wallet.screen_title')}
           rightContent={<ScanQRButton />}
         />
-        <Screen.ScrollView
-          indent={false}
-          refreshControl={
-            <RefreshControl
-              onRefresh={handleRefresh}
-              refreshing={isRefreshing && isFocused}
-              tintColor={theme.colors.foregroundPrimary}
-            />
-          }
-        >
-          {balanceSection}
-          <TokenList balance={balance} tokens={tokens} rates={rates} />
-          <NFTsList nfts={nfts} />
-        </Screen.ScrollView>
+        <BalancesList
+          balance={balance} 
+          tokens={tokens} 
+          rates={rates} 
+          nfts={nfts}
+          handleRefresh={handleRefresh}
+          isRefreshing={isRefreshing}
+          isFocused={isFocused}
+          balancesSection={balanceSection}
+        />
       </>
     );
   }
 
   if (!wallet) {
-    return (
-      <Screen>
-        {renderEmpty()}
-      </Screen>
-    );
+    return <Screen>{renderEmpty()}</Screen>;
+  } else if (tokens.list.length <= 2) {
+    return <Screen>{renderCompact()}</Screen>;
   } else if (tokens.list.length + nfts.length + 1 > 10) {
-    return (
-      <Screen>
-        {renderTabs()}
-      </Screen>
-    );
+    return <Screen>{renderTabs()}</Screen>;
   } else {
-    return (
-      <Screen>
-        {renderCompact()}
-      </Screen>
-    );
+    return <Screen>{renderCompact()}</Screen>;
   }
 });
 
-const styles = Steezy.create({
+enum ContentType {
+  Token,
+  Collectibles,
+  Spacer,
+  EditTokensButton,
+  NFTCardsRow
+}
+
+type TokenItem = {
+  type: ContentType.Token;
+
+  isFirst?: boolean;
+  isLast?: boolean
+
+  onPress?: () => void;
+  title: string;
+  subtitle?: string;
+  value: string;
+  subvalue: string;
+  rate?: Rate;
+  picture?: string;
+  tonIcon?: boolean | TonIconProps;
+};
+
+type SpacerItem = {
+  type: ContentType.Spacer;
+  bottom: SpacerSizes;
+}
+
+type EditTokensButtonItem = {
+  type: ContentType.EditTokensButton;
+}
+
+type NFTCardsRowItem = {
+  type: ContentType.NFTCardsRow;
+  items: any; // TODO:
+}
+
+type Content = 
+  | TokenItem 
+  | SpacerItem
+  | EditTokensButtonItem
+  | NFTCardsRowItem;
+
+const RenderItem = ({ item }: { item: Content }) => {
+  switch (item.type) {
+    case ContentType.Token:
+      const renderLeftContent = () => {
+        if (typeof item.tonIcon === 'object') {
+          return <TonIcon {...item.tonIcon} />;
+        } else if (typeof item.tonIcon === 'boolean') {
+          return <TonIcon />;
+        }
+      };
+
+      const containerStyle = [
+        item.isFirst && styles.firstListItem,
+        item.isLast && styles.lastListItem,
+        styles.containerListItem
+      ];
+
+      return (
+        <View style={containerStyle}>
+          <List.Item
+            leftContent={renderLeftContent()}
+            onPress={item.onPress}
+            title={item.title}
+            picture={item.picture}
+            value={item.value}
+            subvalue={item.subvalue}
+            subtitle={
+              item.rate ? (
+                <ListItemRate
+                  percent={item.rate.percent}
+                  price={item.rate.price}
+                  trend={item.rate.trend}
+                />
+              ) : (
+                item.subtitle
+              )
+            }
+          />
+          {!item.isLast && <ListSeparator />}
+        </View>
+      );
+    case ContentType.Spacer:
+      return <Spacer y={item.bottom}/>;
+    case ContentType.EditTokensButton: 
+      return (
+        <View style={styles.tonkensEdit}>
+          <Button 
+            onPress={() => openJettonsList()}
+            size="medium_rounded"
+            mode="secondary"
+          >
+            {t('wallet.edit_tokens_btn')}
+          </Button>
+        </View>
+      );
+    case ContentType.NFTCardsRow:
+      return (
+        <NFTsList nfts={item.items} />
+      );
+  }
+};
+
+
+// See https://shopify.github.io/flash-list/docs/fundamentals/performant-components#getitemtype
+const BalancesList = ({ 
+  tokens, 
+  balance, 
+  rates, 
+  nfts, 
+  handleRefresh,
+  isRefreshing,
+  isFocused,
+  balancesSection
+}) => {
+  const theme = useTheme();
+  const dispatch = useDispatch();
+  
+
+  const handleMigrate = useCallback(
+    (fromVersion: string) => () => {
+      dispatch(
+        walletActions.openMigration({
+          isTransfer: true,
+          fromVersion,
+        }),
+      );
+    },
+    [],
+  );
+
+  const data = useMemo(() => {
+    const content: Content[] = [];
+
+    // Tokens
+    content.push({
+      type: ContentType.Token,
+      title: 'Toncoin',
+      onPress: () => openWallet(CryptoCurrencies.Ton),
+      value: balance.ton.amount.formatted,
+      subvalue: balance.ton.amount.fiat,
+      tonIcon: true,
+      rate: {
+        percent: rates.ton.percent,
+        price: rates.ton.price,
+        trend: rates.ton.trend,
+      },
+    });
+
+    content.push(
+      ...balance.oldVersions.map((item) => ({
+        type: ContentType.Token,
+        onPress: handleMigrate(item.version),
+        title: t('wallet.old_wallet_title'),
+        tonIcon: { transparent: true },
+        value: item.amount.formatted,
+        subvalue: item.amount.fiat,
+        rate: {
+          percent: rates.ton.percent,
+          price: rates.ton.price,
+          trend: rates.ton.trend,
+        },
+      })),
+    );
+
+    content.push(
+      ...tokens.list.map((item) => ({
+        type: ContentType.Token,
+        onPress: () => openJetton(item.address.rawAddress),
+        picture: item.iconUrl,
+        title: item.name,
+        value: item.quantity.formatted,
+        label: item.symbol,
+      }))
+    );
+
+    // Make list
+    content[0].isFirst = true;
+    content[content.length - 1].isLast = true;
+
+    content.push({
+      type: ContentType.Spacer,
+      bottom: 16
+    });
+
+    content.push({
+      type: ContentType.EditTokensButton
+    });
+
+    if (nfts) {
+      const numColumns = 3;
+      for (let i = 0; i < Math.ceil(nfts.length / numColumns); i++) {
+        content.push({ 
+          type: ContentType.NFTCardsRow,
+          items: nfts.slice((i * numColumns), (i * numColumns) + numColumns)
+        })
+      }
+
+      content.push({
+        type: ContentType.Spacer,
+        bottom: 12
+      });
+    }
+
+    return content;
+  }, [balance.oldVersions, rates, tokens.list]);
+
+  const ListComponent = nfts ? Screen.FlashList : Tabs.FlashList;
+
+  return (
+    <ListComponent
+      estimatedItemSize={500}
+      data={data}
+      getItemType={(item) => item.type}
+      renderItem={RenderItem}
+      // contentContainerStyle={{ paddingBottom: 12 }}
+      ListHeaderComponent={balancesSection ?? undefined}
+      refreshControl={
+        <RefreshControl
+          onRefresh={handleRefresh}
+          refreshing={isRefreshing && isFocused}
+          tintColor={theme.colors.foregroundPrimary}
+        />
+      }
+    />
+  );
+};
+
+const styles = Steezy.create(({ colors, corners }) => ({
+  firstListItem: {
+    borderTopLeftRadius: corners.medium,
+    borderTopRightRadius: corners.medium,
+  },
+  lastListItem: {
+    borderBottomLeftRadius: corners.medium,
+    borderBottomRightRadius: corners.medium,
+  },
+  containerListItem: {
+    overflow: 'hidden',
+    backgroundColor: colors.backgroundContent,
+    marginHorizontal: 16,
+  },
+
   container: {
     position: 'relative',
   },
@@ -312,9 +560,18 @@ const styles = Steezy.create({
   amount: {
     paddingTop: 29,
     alignItems: 'center',
-    marginBottom: 24.5
+    marginBottom: 24.5,
   },
   addressText: {
-    marginTop: 7.5
+    marginTop: 7.5,
   },
-});
+  scrollContainer: {
+    paddingHorizontal: 12,
+  },
+
+  tonkensEdit: {
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    marginBottom: 32
+  },
+}));

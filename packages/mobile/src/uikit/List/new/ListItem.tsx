@@ -51,14 +51,15 @@ export const ListItem = memo<ListItemProps>((props) => {
   const pictureSource = { uri: props.picture };
 
   return (
-    <Pressable 
+    <TouchableHighlight 
       underlayColor={DarkTheme.colors.backgroundTertiary}
       onPressOut={handlePressOut}
       onPressIn={handlePressIn}
       onPress={props.onPress}
       disabled={!props.onPress}
-      style={styles.container.static}
+      
     >
+      <View style={styles.container.static}> 
       {hasLeftContent && (
         <View style={styles.leftContent}>
           {leftContent}
@@ -123,7 +124,8 @@ export const ListItem = memo<ListItemProps>((props) => {
           <Icon name="ic-chevron-right-16" />
         )}
       </View>
-    </Pressable>
+      </View>
+    </TouchableHighlight>
   );
 });
 

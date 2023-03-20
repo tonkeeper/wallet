@@ -11,7 +11,7 @@ import { useGetPrice } from '$hooks/useWalletInfo';
 import BigNumber from 'bignumber.js';
 import { formatter } from '$utils/formatter';
 
-type Rate = {
+export type Rate = {
   percent: string;
   price: string;
   trend: string;
@@ -88,7 +88,7 @@ export const useBalance = () => {
 
       return acc;
     }, [] as any);
-  }, [oldWalletBalances]);
+  }, [oldWalletBalances, amountToFiat]);
 
   const lockup = useMemo(() => {
     const lockupList: { type: CryptoCurrencies; amount: string }[] = [];

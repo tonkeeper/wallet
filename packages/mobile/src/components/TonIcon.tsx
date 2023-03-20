@@ -4,7 +4,7 @@ import React, { memo, useMemo } from 'react';
 
 type TonIconSizes = 'small';
 
-interface TonIconProps {
+export interface TonIconProps {
   size?: TonIconSizes;
   transparent?: boolean;
   locked?: boolean;

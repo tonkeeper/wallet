@@ -3,7 +3,7 @@ import { openNFT } from '$navigation';
 import { DarkTheme } from '$styles';
 import { Steezy } from '$styles';
 import { View, Text, Icon, Pressable } from '$uikit';
-import { checkIsTonDiamondsNFT, maskifyTonAddress } from '$utils';
+import { checkIsTonDiamondsNFT, maskifyTonAddress, ns } from '$utils';
 import { dnsToUsername } from '$utils/dnsToUsername';
 import { useFlags } from '$utils/flags';
 import _ from 'lodash';
@@ -83,9 +83,9 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
 
 const styles = Steezy.create(({ colors, corners }) => ({
   container: {
+    flex: 1,
     marginHorizontal: 4,
     marginBottom: 8,
-    width: 114,
     backgroundColor: colors.backgroundContent,
     borderRadius: corners.medium,
     overflow: 'hidden',
@@ -93,8 +93,5 @@ const styles = Steezy.create(({ colors, corners }) => ({
   info: {
     paddingVertical: 8,
     paddingHorizontal: 12,
-  },
-  image: {
-    height: 114,
   },
 }));

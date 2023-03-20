@@ -1,49 +1,56 @@
 
 
-import React, { forwardRef, memo, useEffect, useRef } from 'react';
+import React, { forwardRef, memo, useMemo, useRef } from 'react';
 import Animated from 'react-native-reanimated';
 import { ns, useMergeRefs } from '$utils';
-import { useScreenScroll } from './context/ScreenScrollContext';
-import { LargeNavBarHeight } from '$shared/constants';
-import { FlashList, FlashListProps } from '@shopify/flash-list';
+import { ContentStyle, FlashList, FlashListProps } from '@shopify/flash-list';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
+import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
+import { StyleSheet, View } from 'react-native';
 
 const AnimatedFlashList = Animated.createAnimatedComponent<React.ComponentType<FlashListProps<any>>>(
   FlashList
 );
 
 export const ScreenScrollList = memo<FlashListProps<any>>(forwardRef((props, ref) => {
+  const { contentContainerStyle, ...other } = props;
   const tabBarHeight = useBottomTabBarHeight();
-  const { contentScrollHandler, setScrollTo } = useScreenScroll();
+  const { scrollHandler } = useScrollHandler();
   const flashListRef = useRef<FlashList<any>>(null);
   const setRef = useMergeRefs(ref, flashListRef);
 
-  useEffect(() => {
-    const scrollTo = (offset: number) => {
-      flashListRef.current?.scrollToOffset({
-        animated: true,
-        offset
-      })
-    }
+  // useEffect(() => {
+  //   const scrollTo = (offset: number) => {
+  //     flashListRef.current?.scrollToOffset({
+  //       animated: true,
+  //       offset
+  //     })
+  //   }
 
-    setScrollTo(scrollTo);
-  }, []);
+  //   setScrollTo(scrollTo);
+  // }, []);
   
-  const contentContainerStyle = {
-    paddingHorizontal: ns(16),
+  const contentStyle: ContentStyle = useMemo(() => ({
     paddingBottom: tabBarHeight,
-    paddingTop: ns(LargeNavBarHeight),
-  }
+    ...contentContainerStyle,
+  }), [contentContainerStyle]);
  
   return (
-    <AnimatedFlashList
-      onScroll={contentScrollHandler}
-      ref={setRef}
-      scrollEventThrottle={16}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={contentContainerStyle}
-      horizontal={false}
-      {...props}
-    />
+    <View style={styles.container}>
+      <AnimatedFlashList
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={contentStyle}
+        horizontal={false}
+        {...other}
+      />
+    </View>
   );
 }));
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  }
+});

@@ -61,10 +61,11 @@ export const DNSBackground = styled.View`
 export const SmallImage = styled(FastImage).attrs({
   resizeMode: 'cover',
 })`
-  position: relative;
   z-index: 2;
+  flex: 1;
   width: 100%;
-  height: ${ns(114)}px;
+  height: 100%;
+  /* height: ${ns(114)}px; */
   border-top-left-radius: ${ns(RADIUS.normal)}px;
   border-top-right-radius: ${ns(RADIUS.normal)}px;
   background: ${({ theme }) => theme.colors.backgroundTertiary};

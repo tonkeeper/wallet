@@ -1,12 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { FlashList, FlashListProps } from '@shopify/flash-list';
-import Animated, { runOnJS, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useTabCtx } from './TabsContainer';
 import { useCurrentTab } from './TabsSection';
 import { useScrollToTop } from '@react-navigation/native';
 import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
-import { NavBarHeight } from '$shared/constants';
+import { LargeNavBarHeight } from '$shared/constants';
+import { useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface TabsFlashListProps<TItem> extends FlashListProps<TItem> {
 
@@ -19,14 +21,24 @@ export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem
   const { index } = useCurrentTab();
   const ref = useRef<FlashList<any>>(null);
   const tabBarHeight = useBottomTabBarHeight();
+  const dimensions = useWindowDimensions();
+  const safeArea = useSafeAreaInsets();
+  const hasSpace = useSharedValue(true);
 
-  const { changeScrollOnJS } = useScrollHandler();
+  const { changeScrollOnJS } = useScrollHandler(undefined, activeIndex !== index);
 
   useScrollToTop(ref as any); // TODO: fix type
 
   useEffect(() => {
-    setScrollTo(index, (y: number, animated?: boolean) => {
-      ref.current?.scrollToOffset({ offset: y, animated })
+    setScrollTo(index, (y: number, animated?: boolean, withDelay?: boolean) => {
+      hasSpace.value = true;
+      if (withDelay) {
+        setTimeout(() => {
+          ref.current?.scrollToOffset({ offset: y, animated })
+        }, 200);
+      } else {
+        ref.current?.scrollToOffset({ offset: y, animated })
+      }      
     });
   }, []);
  
@@ -38,6 +50,7 @@ export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem
       if (activeIndex === index) {
         contentOffset.value = 0;
         scrollY.value = event.contentOffset.y;
+        hasSpace.value = false;
 
         runOnJS(changeScrollOnJS)(
           event.contentOffset.y,
@@ -64,15 +77,28 @@ export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem
     
   }, [index, activeIndex]);
   
+  // TODO: fix it
+  const heightOffsetStyle = useAnimatedStyle(() => {
+    const s = dimensions.height// - contentHeight.value
+
+    return { 
+      width: dimensions.width,
+      height: hasSpace.value ? s : 0
+    }
+  })
+
   return (
     <AnimatedFlashList 
       ref={ref}
       onScroll={scrollHandler}
       scrollEventThrottle={16}
+      {...props}
       ListHeaderComponent={
         <Animated.View style={headerOffsetStyle}/>
       }
-      {...props}
+      ListFooterComponent={
+        <Animated.View style={heightOffsetStyle}/>
+      }
       contentContainerStyle={{ paddingBottom: tabBarHeight + 8, ...props.contentContainerStyle }}
     />
   );

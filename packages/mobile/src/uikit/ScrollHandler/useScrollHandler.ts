@@ -27,7 +27,7 @@ export const useScrollHandler = (snapOffset?: number, forceEnd?: boolean) => {
 
   const changeScrollOnJS = useCallback(
     (newPosition: number, contentHeight: number, containerHeight: number) => {
-      const newEnd = newPosition + Math.trunc(containerHeight) >= Math.trunc(contentHeight);
+      const newEnd = newPosition + containerHeight >= Math.trunc(contentHeight);
       const end = forceEnd ? false : !newEnd
       changeEnd(end);
       setEnd(end);
