@@ -24,8 +24,7 @@ export function destroyTransactionManager() {
 function* loadJettonMetaWorker(action: LoadJettonMetaAction) {
   try {
     const { wallet } = yield select(walletSelector);
-    const { showJettons } = yield select(jettonsSelector);
-    if (!wallet || !showJettons) {
+    if (!wallet) {
       yield put(nftsActions.setIsLoading(false));
       return;
     }
@@ -70,8 +69,7 @@ function* switchExcludedJettonWorker(action: SwitchExcludedJettonAction) {
 function* loadJettonsWorker() {
   try {
     const { wallet } = yield select(walletSelector);
-    const { showJettons } = yield select(jettonsSelector);
-    if (!wallet || !showJettons) {
+    if (!wallet) {
       yield put(jettonsActions.setIsLoading(false));
       return;
     }
@@ -99,14 +97,9 @@ function* loadJettonsWorker() {
   }
 }
 
-function* setShowJettonsWorker(action) {
-  MainDB.setJettonsEnabled(action.payload);
-}
-
 export function* jettonsSaga() {
   yield all([
     takeLatest(jettonsActions.loadJettons, loadJettonsWorker),
-    takeLatest(jettonsActions.setShowJettons, setShowJettonsWorker),
     takeLatest(jettonsActions.getIsFeatureEnabled, getIsFeatureEnabledWorker),
     takeEvery(jettonsActions.loadJettonMeta, loadJettonMetaWorker),
     takeEvery(jettonsActions.switchExcludedJetton, switchExcludedJettonWorker),

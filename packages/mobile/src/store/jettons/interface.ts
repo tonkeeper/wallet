@@ -9,7 +9,6 @@ export interface JettonsState {
   jettonBalances: JettonBalanceModel[];
   jettons: { [key: string]: JettonMetadata };
   excludedJettons: ExcludedJettons;
-  showJettons: boolean;
   isEnabled: boolean;
   isMetaLoading: { [key: string]: boolean };
 }
@@ -20,7 +19,6 @@ export type SetLoadingAction = PayloadAction<boolean>;
 export type SetIsEnabledAction = PayloadAction<boolean>;
 export type SwitchExcludedJettonAction = PayloadAction<{ jetton: string, value: boolean }>;
 export type SetExcludedJettonsAction = PayloadAction<ExcludedJettons>;
-export type SetShowJettonsAction = PayloadAction<boolean>;
 export type SetJettonsAction = PayloadAction<{
   jettonBalances: JettonBalanceModel[];
 }>;

@@ -773,6 +773,7 @@ function* doMigration(wallet: Wallet, newAddress: string) {
     wallet.vault.setVersion('v4R2');
     const walletName = getWalletName();
     const newWallet = new Wallet(walletName, wallet.vault);
+    yield call([newWallet, 'getReadableAddress']);
     yield call([newWallet, 'save']);
     yield put(walletActions.setWallet(newWallet));
 
