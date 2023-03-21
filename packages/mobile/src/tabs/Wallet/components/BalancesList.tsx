@@ -33,8 +33,8 @@ type TokenItem = {
   onPress?: () => void;
   title: string;
   subtitle?: string;
-  value: string;
-  subvalue: string;
+  value?: string;
+  subvalue?: string;
   rate?: Rate;
   picture?: string;
   tonIcon?: boolean | TonIconProps;
@@ -232,9 +232,11 @@ export const BalancesList = memo<BalancesListProps>(({
       bottom: 16
     });
 
-    content.push({
-      type: ContentType.EditTokensButton
-    });
+    if (tokens.canEdit) {
+      content.push({
+        type: ContentType.EditTokensButton
+      });
+    }
 
     if (nfts) {
       content.push({
