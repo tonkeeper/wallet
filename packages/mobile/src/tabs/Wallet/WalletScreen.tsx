@@ -140,7 +140,7 @@ export const WalletScreen = memo(() => {
           iconName="ic-arrow-down-28"
           title={t('wallet.receive_btn')}
         />
-        {+balance.ton.amount.nano > 0 && (
+        {!!wallet && (
           <IconButton
             onPress={handlePressSell}
             iconName="ic-minus-28"
