@@ -11,12 +11,13 @@ import { useWindowDimensions } from 'react-native';
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 
 export const TabsFlashList = (props: FlashListProps<any>) => {
-  const { activeIndex, scrollAllTo, setScrollTo, headerOffsetStyle, contentOffset, scrollY, headerHeight, correctIntermediateHeaderState } = useTabCtx();
-  const { index } = useCurrentTab();
+  const { activeIndex, scrollAllTo, setScrollTo, headerOffsetStyle, contentOffset, scrollY, headerHeight, isScrollInMomentum } = useTabCtx();
   const ref = useRef<FlashList<any>>(null);
   const tabBarHeight = useBottomTabBarHeight();
   const dimensions = useWindowDimensions();
   const hasSpace = useSharedValue(true);
+  const { index } = useCurrentTab();
+  
 
   const { changeScrollOnJS } = useScrollHandler(undefined, activeIndex !== index);
 
@@ -52,6 +53,11 @@ export const TabsFlashList = (props: FlashListProps<any>) => {
         );
       }
     },
+    onMomentumBegin() {
+      if (activeIndex === index) {
+        isScrollInMomentum.value = true;
+      }
+    },
     onEndDrag(event) {
       if (activeIndex === index) {
         scrollY.value = event.contentOffset.y;
@@ -62,6 +68,7 @@ export const TabsFlashList = (props: FlashListProps<any>) => {
     },
     onMomentumEnd(event) {
       if (activeIndex === index) {
+        isScrollInMomentum.value = false;
         scrollY.value = event.contentOffset.y;
         contentOffset.value = event.contentOffset.y;
         runOnJS(scrollAllTo)(index, Math.min(event.contentOffset.y, headerHeight.value));

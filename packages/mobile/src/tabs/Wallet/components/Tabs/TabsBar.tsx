@@ -26,7 +26,7 @@ const INDICATOR_WIDTH = ns(24);
 
 export const TabsBarComponent = (props: TabsBarProps) => {
   const { value, indent = true, center } = props;
-  const { setActiveIndex, pageOffset, scrollY, headerHeight } = useTabCtx();
+  const { setActiveIndex, pageOffset, scrollY, headerHeight, isScrollInMomentum } = useTabCtx();
   const theme = useTheme();
 
   const [tabsLayouts, setTabsBarLayouts] = useState<{ [key: string]: LayoutRectangle }>({});
@@ -101,8 +101,10 @@ export const TabsBarComponent = (props: TabsBarProps) => {
           <TouchableOpacity
             onLayout={(event) => handleLayout(index, event)}
             onPress={() => {
-              props.onChange(item, index);
-              setActiveIndex(index);
+              if (!isScrollInMomentum.value) {
+                props.onChange(item, index);
+                setActiveIndex(index);
+              }
             }}
             key={`tab-${index}`}
             activeOpacity={0.6}
