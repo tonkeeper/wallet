@@ -41,11 +41,12 @@ export const TabStack: FC = () => {
   useNotificationsSubscribe();
   usePreloadChart();
 
+  const tabBarStyle = { height: ns(64) + (safeArea.bottom > 0 ? ns(20) : 0) };
   const containerTabStyle = useMemo(() => [
-    { height: ns(64) + (safeArea.bottom > 0 ? ns(20) : 0) },
+    tabBarStyle,
     styles.tabBarContainer,
     bottomSeparatorStyle,
-  ], [safeArea.bottom, bottomSeparatorStyle]);  
+  ], [safeArea.bottom, bottomSeparatorStyle, tabBarStyle]);  
 
   const isVisibleNftTab = React.useMemo(() => {
     if (flags.disable_nft_tab) {
@@ -67,7 +68,7 @@ export const TabStack: FC = () => {
         headerShown: false,
         tabBarActiveTintColor: theme.colors.accentPrimary,
         tabBarInactiveTintColor: theme.colors.foregroundSecondary,
-        tabBarStyle: styles.tabBarStyle,
+        tabBarStyle: [styles.tabBarStyle, tabBarStyle],
         tabBarItemStyle: styles.tabBarItemStyle,
         tabBarIconStyle: styles.tabBarIconStyle,
         tabBarLabelStyle: styles.tabBarLabelStyle,

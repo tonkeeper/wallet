@@ -1,107 +1,40 @@
-import React, { createContext, memo, useCallback, useContext, useRef, useState } from "react";
-import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
-import Animated, {
-  runOnJS,
-  useAnimatedScrollHandler,
-  useSharedValue,
-} from 'react-native-reanimated';
-import { LargeNavBarInteractiveDistance } from "$uikit/LargeNavBar/LargeNavBar";
+import React, { createContext, memo, useContext } from 'react';
+import { LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { useScreenScrollHandler } from './useScreenScrollHandler';
 
-
-type ScrollToFN = (offset: number) => void;
-
-export type ScreenContext = {
-  contentScrollY: Animated.SharedValue<number>;
-  contentScrollHandler: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
-  setScrollTo: (fn: ScrollToFN) => void;
+export interface IScreenScrollContext {
+  scrollY: Animated.SharedValue<number>;
+  scrollHandler: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  scrollRef: React.RefObject<any>;
+  isEndReached: Animated.SharedValue<number>;
+  detectContentSize: (w: number, h: number) => void; 
+  detectLayoutSize: (ev: LayoutChangeEvent) => void; 
 }
 
-export const ScreenScrollContext = createContext<ScreenContext | null>(null);
+const defaultValue: IScreenScrollContext = {
+  detectContentSize: () => {},
+  detectLayoutSize: () => {},
+  scrollHandler: () => {},
+  scrollRef: { current: null },
+  isEndReached: { value: 0 },
+  scrollY: { value: 0 },
+};
 
+export const ScreenScrollContext = createContext<IScreenScrollContext>(defaultValue);
 
 export const ScreenScrollProvider = memo((props) => {
-  const contentScrollY = useSharedValue(0);
-
-  const [isEnd, setEnd] = useState(true);
-  const scrollToRef = useRef<ScrollToFN>();
-
-  const setScrollTo = (scrollTo: ScrollToFN) => {
-    scrollToRef.current = scrollTo;
-  } 
-
-  const changeScrollOnJS = useCallback((
-    newPosition: number, 
-    contentHeight: number, 
-    containerHeight: number
-  ) => {
-    const newEnd = newPosition + containerHeight >= contentHeight;
-    // changeEnd(newEnd);
-    // setEnd(newEnd);
-  }, []);
-
-  const correctScrollHandler = useCallback((top: number) => {
-    const isTop = top < LargeNavBarInteractiveDistance / 2;
-    const offset = isTop ? 0 : LargeNavBarInteractiveDistance;
-
-    scrollToRef.current?.(offset);
-  }, []);
-
-  const contentScrollHandler = useAnimatedScrollHandler(
-    {
-      onScroll: (event) => {
-        contentScrollY.value = event.contentOffset.y;
-
-        runOnJS(changeScrollOnJS)(
-          event.contentOffset.y,
-          event.contentSize.height,
-          event.layoutMeasurement.height,
-        );
-      },
-      onEndDrag(event) {
-        const top = event.contentOffset.y;
-        if (
-          top > 0 &&
-          top < LargeNavBarInteractiveDistance &&
-          (!event.velocity || !event.velocity.y)
-        ) {
-          runOnJS(correctScrollHandler)(top);
-        }
-      },
-      onMomentumEnd(event) {
-        const top = event.contentOffset.y;
-        if (
-          top > 0 &&
-          top < LargeNavBarInteractiveDistance &&
-          event.velocity &&
-          event.velocity.y !== 0
-        ) {
-          runOnJS(correctScrollHandler)(top);
-        }
-      },
-    },
-    [],
-  );
-
-  const screenScrollContext = { 
-    contentScrollHandler, 
-    contentScrollY,
-    setScrollTo
-  };
+  const screenScroll = useScreenScrollHandler();
 
   return (
-    <ScreenScrollContext.Provider value={screenScrollContext}>
+    <ScreenScrollContext.Provider value={screenScroll}>
       {props.children}
     </ScreenScrollContext.Provider>
-  )
+  );
 });
 
 
+// See useScreenScrollHandler
 export const useScreenScroll = () => {
-  const ctx = useContext(ScreenScrollContext);
-
-  if (!ctx) {
-    throw new Error("Couldn't find a ScreenScrollContext. Have you wrapped 'Screen' component?");
-  } 
-
-  return ctx;
+  return useContext(ScreenScrollContext);
 };

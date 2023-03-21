@@ -3,11 +3,9 @@ import { View } from "$uikit";
 import { NFTCardItem } from "../NFTCardItem";
 import { Steezy } from '$styles';
 import { useWindowDimensions } from 'react-native';
-import { ns } from '$utils';
 
 interface NFTsListProps {
   nfts: any; // TODO: add types
-  screenWidth: number;
 }
 
 const mockupCardSize = {
@@ -42,7 +40,6 @@ export const NFTsList = memo<NFTsListProps>(({ nfts }) => {
 
 const styles = Steezy.create({
   nftElements: {
-    // marginTop: 16,
     flexDirection: 'row',
     flexWrap: 'wrap',
   }

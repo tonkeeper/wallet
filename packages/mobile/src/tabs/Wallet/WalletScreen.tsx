@@ -1,45 +1,34 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { t } from '$translation';
-import {
-  Button,
-  IconButton,
-  IconButtonList,
-  InternalNotification,
-  Screen,
-  Spacer,
-  SpacerSizes,
-  Text,
-  View,
-} from '$uikit';
+import { Button, IconButton, IconButtonList, InternalNotification, Screen, Text, View } from '$uikit';
 import { List } from '$uikit/List/new';
-import { Steezy } from '$styles';
 import { useNavigation } from '$libs/navigation';
 import { ScanQRButton } from '../../components/ScanQRButton';
 import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
-import { openJetton, openJettonsList, openRequireWalletModal, openWallet } from '$navigation';
+import { openRequireWalletModal, openWallet } from '$navigation';
 import { maskifyAddress, ns } from '$utils';
 import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
 import { useIsFocused } from '@react-navigation/native';
 import _ from 'lodash';
-import { Rate, useBalance, useRates } from './hooks/useBalance';
+import { useBalance, useRates } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
-import { TonIcon, TonIconProps } from '../../components/TonIcon';
-import { CryptoCurrencies, LockupNames } from '$shared/constants';
+import { TonIcon } from '../../components/TonIcon';
+import { CryptoCurrencies } from '$shared/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Tabs } from './components/Tabs';
 import * as S from '../../core/Balances/Balances.style';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';;
-import { NFTsList } from './components/NFTsList';
 import { useTonkens } from './hooks/useTokens';
 import { useNFTs } from './hooks/useNFTs';
 import { useWallet } from './hooks/useWallet';
 import { useTheme } from '$hooks';
-import { ListSeparator } from '$uikit/List/new/ListSeparator';
+import { Steezy } from '$styles';
+import { BalancesList } from './components/BalancesList';
 
 export const WalletScreen = memo(() => {
   const [tab, setTab] = useState<string>('tokens');
@@ -108,7 +97,7 @@ export const WalletScreen = memo(() => {
     dispatch(walletActions.refreshBalancesPage(true));
   }, [dispatch]);
 
-  const balanceSection = (
+  const ListHeader = (
     <View style={styles.mainSection} pointerEvents="box-none">
       {notifications.map((notification, i) => (
         <InternalNotification
@@ -171,8 +160,7 @@ export const WalletScreen = memo(() => {
           rightContent={<ScanQRButton />}
         />
         <Screen.ScrollView indent={false}>
-          {balanceSection}
-
+          {ListHeader}
           <List>
             <List.Item
               title="Toncoin"
@@ -222,7 +210,7 @@ export const WalletScreen = memo(() => {
         />
         <View style={{ flex: 1 }}>
           <Tabs.Header>
-            {balanceSection}
+            {ListHeader}
             <Tabs.Bar
               onChange={({ value }) => setTab(value)}
               value={tab}
@@ -278,14 +266,14 @@ export const WalletScreen = memo(() => {
           rightContent={<ScanQRButton />}
         />
         <BalancesList
+          ListHeaderComponent={ListHeader}
+          handleRefresh={handleRefresh}
+          isRefreshing={isRefreshing}
+          isFocused={isFocused}
           balance={balance} 
           tokens={tokens} 
           rates={rates} 
           nfts={nfts}
-          handleRefresh={handleRefresh}
-          isRefreshing={isRefreshing}
-          isFocused={isFocused}
-          balancesSection={balanceSection}
         />
       </>
     );
@@ -302,269 +290,7 @@ export const WalletScreen = memo(() => {
   }
 });
 
-enum ContentType {
-  Token,
-  Collectibles,
-  Spacer,
-  EditTokensButton,
-  NFTCardsRow
-}
-
-type TokenItem = {
-  type: ContentType.Token;
-
-  isFirst?: boolean;
-  isLast?: boolean
-
-  onPress?: () => void;
-  title: string;
-  subtitle?: string;
-  value: string;
-  subvalue: string;
-  rate?: Rate;
-  picture?: string;
-  tonIcon?: boolean | TonIconProps;
-};
-
-type SpacerItem = {
-  type: ContentType.Spacer;
-  bottom: SpacerSizes;
-}
-
-type EditTokensButtonItem = {
-  type: ContentType.EditTokensButton;
-}
-
-type NFTCardsRowItem = {
-  type: ContentType.NFTCardsRow;
-  items: any; // TODO:
-}
-
-type Content = 
-  | TokenItem 
-  | SpacerItem
-  | EditTokensButtonItem
-  | NFTCardsRowItem;
-
-const RenderItem = ({ item }: { item: Content }) => {
-  switch (item.type) {
-    case ContentType.Token:
-      const renderLeftContent = () => {
-        if (typeof item.tonIcon === 'object') {
-          return <TonIcon {...item.tonIcon} />;
-        } else if (typeof item.tonIcon === 'boolean') {
-          return <TonIcon />;
-        }
-      };
-
-      const containerStyle = [
-        item.isFirst && styles.firstListItem,
-        item.isLast && styles.lastListItem,
-        styles.containerListItem
-      ];
-
-      return (
-        <View style={containerStyle}>
-          <List.Item
-            leftContent={renderLeftContent()}
-            onPress={item.onPress}
-            title={item.title}
-            picture={item.picture}
-            value={item.value}
-            subvalue={item.subvalue}
-            subtitle={
-              item.rate ? (
-                <ListItemRate
-                  percent={item.rate.percent}
-                  price={item.rate.price}
-                  trend={item.rate.trend}
-                />
-              ) : (
-                item.subtitle
-              )
-            }
-          />
-          {!item.isLast && <ListSeparator />}
-        </View>
-      );
-    case ContentType.Spacer:
-      return <Spacer y={item.bottom}/>;
-    case ContentType.EditTokensButton: 
-      return (
-        <View style={styles.tonkensEdit}>
-          <Button 
-            onPress={() => openJettonsList()}
-            size="medium_rounded"
-            mode="secondary"
-          >
-            {t('wallet.edit_tokens_btn')}
-          </Button>
-        </View>
-      );
-    case ContentType.NFTCardsRow:
-      return (
-        <NFTsList nfts={item.items} />
-      );
-  }
-};
-
-
-// See https://shopify.github.io/flash-list/docs/fundamentals/performant-components#getitemtype
-const BalancesList = ({ 
-  tokens, 
-  balance, 
-  rates, 
-  nfts, 
-  handleRefresh,
-  isRefreshing,
-  isFocused,
-  balancesSection
-}) => {
-  const theme = useTheme();
-  const dispatch = useDispatch();
-  
-
-  const handleMigrate = useCallback(
-    (fromVersion: string) => () => {
-      dispatch(
-        walletActions.openMigration({
-          isTransfer: true,
-          fromVersion,
-        }),
-      );
-    },
-    [],
-  );
-
-  const data = useMemo(() => {
-    const content: Content[] = [];
-
-    // Tokens
-    content.push({
-      type: ContentType.Token,
-      title: 'Toncoin',
-      onPress: () => openWallet(CryptoCurrencies.Ton),
-      value: balance.ton.amount.formatted,
-      subvalue: balance.ton.amount.fiat,
-      tonIcon: true,
-      rate: {
-        percent: rates.ton.percent,
-        price: rates.ton.price,
-        trend: rates.ton.trend,
-      },
-    });
-
-    content.push(
-      ...balance.oldVersions.map((item) => ({
-        type: ContentType.Token,
-        onPress: handleMigrate(item.version),
-        title: t('wallet.old_wallet_title'),
-        tonIcon: { transparent: true },
-        value: item.amount.formatted,
-        subvalue: item.amount.fiat,
-        rate: {
-          percent: rates.ton.percent,
-          price: rates.ton.price,
-          trend: rates.ton.trend,
-        },
-      })),
-    );
-
-    if (balance.lockup.length > 0) {
-      content.push(
-        ...balance.lockup.map((item) => ({
-          type: ContentType.Token,
-          tonIcon: { locked: true },
-          title: LockupNames[item.type],
-          value: item.amount.formatted,
-          subvalue: item.amount.fiat,
-          subtitle: rates.ton.price,
-        })),
-      );
-    }
-
-    content.push(
-      ...tokens.list.map((item) => ({
-        type: ContentType.Token,
-        onPress: () => openJetton(item.address.rawAddress),
-        picture: item.iconUrl,
-        title: item.name,
-        value: item.quantity.formatted,
-        label: item.symbol,
-      }))
-    );
-
-    // Make list
-    content[0].isFirst = true;
-    content[content.length - 1].isLast = true;
-
-    content.push({
-      type: ContentType.Spacer,
-      bottom: 16
-    });
-
-    content.push({
-      type: ContentType.EditTokensButton
-    });
-
-    if (nfts) {
-      content.push({
-        type: ContentType.Spacer,
-        bottom: 16
-      });
-
-      const numColumns = 3;
-      for (let i = 0; i < Math.ceil(nfts.length / numColumns); i++) {
-        content.push({ 
-          type: ContentType.NFTCardsRow,
-          items: nfts.slice((i * numColumns), (i * numColumns) + numColumns)
-        })
-      }
-
-      content.push({
-        type: ContentType.Spacer,
-        bottom: 12
-      });
-    }
-
-    return content;
-  }, [balance.oldVersions, rates, tokens.list]);
-
-  const ListComponent = nfts ? Screen.FlashList : Tabs.FlashList;
-
-  return (
-    <ListComponent
-      estimatedItemSize={500}
-      data={data}
-      getItemType={(item) => item.type}
-      renderItem={RenderItem}
-      ListHeaderComponent={balancesSection ?? undefined}
-      refreshControl={
-        <RefreshControl
-          onRefresh={handleRefresh}
-          refreshing={isRefreshing && isFocused}
-          tintColor={theme.colors.foregroundPrimary}
-        />
-      }
-    />
-  );
-};
-
 const styles = Steezy.create(({ colors, corners }) => ({
-  firstListItem: {
-    borderTopLeftRadius: corners.medium,
-    borderTopRightRadius: corners.medium,
-  },
-  lastListItem: {
-    borderBottomLeftRadius: corners.medium,
-    borderBottomRightRadius: corners.medium,
-  },
-  containerListItem: {
-    overflow: 'hidden',
-    backgroundColor: colors.backgroundContent,
-    marginHorizontal: 16,
-  },
-
   container: {
     position: 'relative',
   },
@@ -582,11 +308,5 @@ const styles = Steezy.create(({ colors, corners }) => ({
   },
   scrollContainer: {
     paddingHorizontal: 12,
-  },
-
-  tonkensEdit: {
-    justifyContent: 'center', 
-    alignItems: 'center',
-    marginBottom: 16,
   },
 }));
