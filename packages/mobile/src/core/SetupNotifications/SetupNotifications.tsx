@@ -41,7 +41,6 @@ export const SetupNotifications: React.FC = () => {
             mode="secondary"
             style={{ marginRight: ns(16) }}
             onPress={() => openSetupWalletDone()}
-            style={{ marginRight: ns(16) }}
           >
             {t('later')}
           </Button>
