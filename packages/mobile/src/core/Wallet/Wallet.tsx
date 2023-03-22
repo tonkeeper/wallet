@@ -138,8 +138,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   }, [currency]);
   const { amount, formattedFiatAmount } = useWalletInfo(currency);
 
-
-  const shouldRenderSellButton = useMemo(() => +amount > 0, [amount]);
+  const shouldRenderSellButton = useMemo(() => !!wallet, [wallet]);
 
   const handleReceive = useCallback(() => {
     if (!wallet) {

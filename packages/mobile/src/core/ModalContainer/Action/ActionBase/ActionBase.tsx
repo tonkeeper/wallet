@@ -4,28 +4,24 @@ import { useDispatch } from 'react-redux';
 import Clipboard from '@react-native-community/clipboard';
 
 import * as S from './ActionBase.style';
-import { BottomSheet, Highlight, Icon, Separator, Text } from '$uikit';
+import { Highlight, Icon, Separator, Text } from '$uikit';
 import { ns } from '$utils';
 import { toastActions } from '$store/toast';
 import { ActionBaseProps } from './ActionBase.interface';
 import { useTranslator } from '$hooks';
-import { openDAppBrowser, openSend, openSubscription } from '$navigation';
-import { CryptoCurrencies, getServerConfig } from '$shared/constants';
+import { openDAppBrowser, openSubscription } from '$navigation';
+import { getServerConfig } from '$shared/constants';
 import { Modal } from '$libs/navigation';
 
 export const ActionBase: FC<ActionBaseProps> = ({
   infoRows,
   head,
   isSpam,
-  comment,
-  recipientAddress,
-  shouldShowSendToRecipientButton,
   shouldShowOpenSubscriptionButton,
   subscriptionInfo,
   isInProgress,
   label,
   sentLabel,
-  jettonAddress,
   eventId,
 }) => {
   const dispatch = useDispatch();
@@ -50,19 +46,6 @@ export const ActionBase: FC<ActionBaseProps> = ({
     }, 500);
   }, [subscriptionInfo]);
 
-  const handleSendMore = useCallback(() => {
-    setClosed(true);
-    setTimeout(() => {
-      openSend(
-        jettonAddress || CryptoCurrencies.Ton,
-        recipientAddress,
-        comment,
-        true,
-        !!jettonAddress,
-      );
-    }, 500);
-  }, [comment, jettonAddress, recipientAddress]);
-
   const handleOpenInExplorer = useCallback(() => {
     openDAppBrowser(getServerConfig('transactionExplorer').replace('%s', eventId));
   }, [eventId]);
@@ -72,12 +55,6 @@ export const ActionBase: FC<ActionBaseProps> = ({
       return (
         <S.SendButton onPress={handleOpenSubscription}>
           {t('transaction_show_subscription_button')}
-        </S.SendButton>
-      );
-    } else if (shouldShowSendToRecipientButton) {
-      return (
-        <S.SendButton onPress={handleSendMore}>
-          {t('transaction_send_more_button')}
         </S.SendButton>
       );
     } else {

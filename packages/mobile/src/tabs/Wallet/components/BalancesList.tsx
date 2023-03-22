@@ -40,6 +40,7 @@ type TokenItem = {
   rate?: Rate;
   picture?: string;
   tonIcon?: boolean | TonIconProps;
+  label?: string;
 };
 
 type SpacerItem = {
@@ -92,6 +93,7 @@ const RenderItem = ({ item }: { item: Content }) => {
             title={item.title}
             picture={item.picture}
             value={item.value}
+            label={item.label}
             subvalue={item.subvalue}
             subtitle={
               item.rate ? (
@@ -226,9 +228,9 @@ export const BalancesList = memo<BalancesListProps>(({
         value: item.quantity.formatted,
         label: item.symbol,
         subvalue: item.rate.total,
-        rate: {
+        rate: item.rate.price ? {
           price: item.rate.price
-        }
+        } : undefined
       }))
     );
 

@@ -1,16 +1,16 @@
-import { useJettonBalances } from "$hooks";
-import { useGetJettonPrice } from "$hooks/useJettonPrice";
-import { jettonsSelector } from "$store/jettons";
-import { formatter } from "$utils/formatter";
-import { useMemo } from "react";
-import { useSelector } from "react-redux";
-import TonWeb from "tonweb";
+import { useJettonBalances } from '$hooks';
+import { useGetJettonPrice } from '$hooks/useJettonPrice';
+import { jettonsSelector } from '$store/jettons';
+import { formatter } from '$utils/formatter';
+import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import TonWeb from 'tonweb';
 
 type WalletAddress = {
   friendlyAddress: string;
   rawAddress: string;
   version: WalletVersion;
-}
+};
 
 type WalletVersion = 'v3R1' | 'v4R2';
 
@@ -28,24 +28,27 @@ type TokenInfo = {
   rate: {
     price: string | null;
     total: string | null;
-  }
-}
+  };
+};
 
-export const useTonkens = (): { 
+export const useTonkens = (): {
   list: TokenInfo[];
   canEdit: boolean;
 } => {
-  const { jettonBalances: allJettonBalances } = useSelector(jettonsSelector);
   const jettonBalances = useJettonBalances();
-  const getJettonPrice = useGetJettonPrice()
+  const allJettonBalances = useJettonBalances(true);
+  const getJettonPrice = useGetJettonPrice();
 
   const tonkens = useMemo(() => {
     return jettonBalances.map((item) => {
-
       const rate = getJettonPrice(item.jettonAddress, item.balance);
       const tokenInfo: TokenInfo = {
         address: {
-          friendlyAddress: new TonWeb.utils.Address(item.jettonAddress).toString(true, true, true),
+          friendlyAddress: new TonWeb.utils.Address(item.jettonAddress).toString(
+            true,
+            true,
+            true,
+          ),
           rawAddress: item.jettonAddress,
           version: 'v3R1',
         },
@@ -58,16 +61,15 @@ export const useTonkens = (): {
           value: item.balance,
           formatted: formatter.format(item.balance),
         },
-        rate
+        rate,
       };
 
       return tokenInfo;
-    }) as TokenInfo[]
-  
-  }, [jettonBalances, ]);
+    }) as TokenInfo[];
+  }, [jettonBalances]);
 
   return {
     list: tonkens,
-    canEdit: allJettonBalances.length > 0
-  }
-}
+    canEdit: allJettonBalances.length > 0,
+  };
+};
