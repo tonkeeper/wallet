@@ -792,7 +792,7 @@ function* doMigration(wallet: Wallet, newAddress: string) {
         }),
         eventsActions.resetEvents(),
         nftsActions.resetNFTs(),
-        jettonsActions.resetJettons(),
+        jettonsActions.setJettonBalances({ jettonBalances: [] }),
       ),
     );
     yield call(destroyEventsManager);
