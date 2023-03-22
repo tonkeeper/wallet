@@ -61,7 +61,6 @@ export const ActivityScreen: FC = () => {
   const prevNetInfo = usePrevious(netInfo);
 
   const jettonBalances = useJettonBalances();
-  const { showJettons } = useSelector(jettonsSelector);
   const [isNoSignalDismissed, setNoSignalDismissed] = useState(false);
   const isConfigError = !isServerConfigLoaded();
   const isFocused = useIsFocused();
@@ -125,7 +124,7 @@ export const ActivityScreen: FC = () => {
       footer?: React.ReactElement;
     }[] = [];
     return result;
-  }, [otherCurrencies, oldWalletBalances, jettonBalances, showJettons, wallet?.ton]);
+  }, [otherCurrencies, oldWalletBalances, jettonBalances, wallet?.ton]);
 
   const handleLoadMore = useCallback(() => {
     if (isEventsLoading || !canLoadMore) {

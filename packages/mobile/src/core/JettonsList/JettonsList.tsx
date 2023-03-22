@@ -63,7 +63,6 @@ export const JettonsList: FC = () => {
           contentContainerStyle={{
             paddingBottom: ns(16) + (tabBarHeight > 0 ? tabBarHeight : bottomInset),
             paddingHorizontal: ns(16),
-            paddingTop: ns(16),
           }}
           ItemSeparatorComponent={Separator}
           data={data}

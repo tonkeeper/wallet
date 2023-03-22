@@ -3,11 +3,11 @@ import { NFTKeyPair } from '$store/nfts/interface';
 import * as S from './TransactionItemNFT.style';
 import { openNFT } from '$navigation';
 import { useNFT } from '$hooks/useNFT';
-import { maskifyTonAddress } from '$utils';
+import { maskifyTonAddress, ns } from '$utils';
 import _ from 'lodash';
 import { Icon, Text } from '$uikit';
 import { useTranslator } from '$hooks';
-import {View} from "react-native";
+import { View } from 'react-native';
 import { dnsToUsername } from '$utils/dnsToUsername';
 
 export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
@@ -51,7 +51,9 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
             <S.TextWrap>
               <S.Background withImage={!!nft.content?.image?.baseUrl} />
               <Text numberOfLines={1} variant="body2">
-                {isTG ? dnsToUsername(nft.dns) : (nft.dns || nft.name || maskifyTonAddress(nft.address))}
+                {isTG
+                  ? dnsToUsername(nft.dns)
+                  : nft.dns || nft.name || maskifyTonAddress(nft.address)}
               </Text>
               <S.CollectionNameWrap withIcon={nft.isApproved}>
                 <Text color="foregroundSecondary" numberOfLines={1} variant="body2">
@@ -61,9 +63,12 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
                     ? nft.collection.name
                     : t('nft_single_nft')}
                 </Text>
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, marginRight: ns(10) }}>
                   {nft.isApproved && (
-                    <Icon style={{ marginLeft: 4 }} name="ic-verification-secondary-16" />
+                    <Icon
+                      style={{ marginLeft: ns(4) }}
+                      name="ic-verification-secondary-16"
+                    />
                   )}
                 </View>
               </S.CollectionNameWrap>

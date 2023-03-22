@@ -51,7 +51,7 @@ import {
   setLastRefreshedAt,
   setMigrationState,
 } from '$database';
-import { batchActions } from '$store';
+import { batchActions, Toast } from '$store';
 import { toastActions } from '$store/toast';
 import { subscriptionsActions } from '$store/subscriptions';
 import { t } from '$translation';
@@ -535,6 +535,9 @@ function* backupWalletWorker() {
     yield call(openBackupWords, unlockedVault.mnemonic);
   } catch (e) {
     e && debugLog(e.message);
+    if (e.message === t('access_denied')) {
+      return;
+    }
     yield put(toastActions.fail(e ? e.message : t('auth_failed')));
   }
 }
@@ -682,7 +685,7 @@ function* openMigrationWorker(action: OpenMigrationAction) {
         ? action.payload.fromVersion
         : wallet.vault.getVersion() ?? 'v3R2';
 
-    yield put(toastActions.loading());
+    yield call(Toast.loading);
 
     const tonweb = wallet.ton.getTonWeb();
     const [oldAddress, newAddress] = yield all([
@@ -696,7 +699,7 @@ function* openMigrationWorker(action: OpenMigrationAction) {
     ]);
 
     const migrationState = yield call(getMigrationState);
-    yield put(toastActions.hide());
+    yield call(Toast.hide);
     openMigration(
       fromVersion,
       oldAddress,
@@ -708,7 +711,7 @@ function* openMigrationWorker(action: OpenMigrationAction) {
     );
   } catch (e) {
     e && debugLog(e.message);
-    yield put(toastActions.fail(e.message));
+    yield call(Toast.fail, e.message);
   }
 }
 
@@ -773,6 +776,7 @@ function* doMigration(wallet: Wallet, newAddress: string) {
     wallet.vault.setVersion('v4R2');
     const walletName = getWalletName();
     const newWallet = new Wallet(walletName, wallet.vault);
+    yield call([newWallet, 'getReadableAddress']);
     yield call([newWallet, 'save']);
     yield put(walletActions.setWallet(newWallet));
 
@@ -873,7 +877,7 @@ function* changePinWorker(action: ChangePinAction) {
 
     const encrypted = yield call([vault, 'encrypt'], pin);
     yield call([encrypted, 'lock']);
-    yield put(toastActions.success('Passcode changed'));
+    yield put(toastActions.success(t('passcode_changed')));
     yield call(goBack);
   } catch (e) {
     yield put(toastActions.fail(e.message));

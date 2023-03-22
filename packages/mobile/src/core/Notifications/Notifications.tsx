@@ -85,7 +85,6 @@ export const Notifications: React.FC = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: ns(16),
-            paddingTop: ns(16),
             paddingBottom: tabBarHeight,
           }}
           scrollEventThrottle={16}

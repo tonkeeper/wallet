@@ -25,6 +25,7 @@ export const MobileIconsList = {
   'ic-getgems-16': require('$assets/icons/png/ic-getgems-16.png'),
   'ic-globe-16': require('$assets/icons/png/ic-globe-16.png'),
   'ic-link-bold-16': require('$assets/icons/png/ic-link-bold-16.png'),
+  'ic-loader-small-16': require('$assets/icons/png/ic-loader-small-16.png'),
   'ic-magnifying-glass-16': require('$assets/icons/png/ic-magnifying-glass-16.png'),
   'ic-pencil-16': require('$assets/icons/png/ic-pencil-16.png'),
   'ic-sale-badge-16': require('$assets/icons/png/ic-sale-badge-16.png'),
@@ -57,6 +58,7 @@ export const MobileIconsList = {
   'ic-home-28': require('$assets/icons/png/ic-home-28.png'),
   'ic-jetton-28': require('$assets/icons/png/ic-jetton-28.png'),
   'ic-key-28': require('$assets/icons/png/ic-key-28.png'),
+  'ic-lock-28': require('$assets/icons/png/ic-lock-28.png'),
   'ic-minus-28': require('$assets/icons/png/ic-minus-28.png'),
   'ic-money-28': require('$assets/icons/png/ic-money-28.png'),
   'ic-nft-collection-28': require('$assets/icons/png/ic-nft-collection-28.png'),
@@ -99,4 +101,5 @@ export const MobileIconsList = {
   'ic-loader-large-32': require('$assets/icons/png/ic-loader-large-32.png'),
   'ic-loader-medium-24': require('$assets/icons/png/ic-loader-medium-24.png'),
   'ic-loader-xlarge-64': require('$assets/icons/png/ic-loader-xlarge-64.png'),
+  'ic-arrow-2-circlepath-28': require('$assets/icons/png/ic-arrow-2-circlepath-28.png'),
 };
