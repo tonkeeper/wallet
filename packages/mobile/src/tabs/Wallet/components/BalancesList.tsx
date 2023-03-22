@@ -216,6 +216,10 @@ export const BalancesList = memo<BalancesListProps>(({
         title: item.name,
         value: item.quantity.formatted,
         label: item.symbol,
+        subvalue: item.rate.total,
+        rate: {
+          price: item.rate.price
+        }
       }))
     );
 

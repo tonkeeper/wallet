@@ -1,6 +1,8 @@
 import { useJettonBalances } from "$hooks";
+import { useGetJettonPrice } from "$hooks/useJettonPrice";
 import { jettonsSelector } from "$store/jettons";
 import { formatter } from "$utils/formatter";
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import TonWeb from "tonweb";
 
@@ -23,6 +25,10 @@ type TokenInfo = {
     value: string;
     formatted: string;
   };
+  rate: {
+    price: string | null;
+    total: string | null;
+  }
 }
 
 export const useTonkens = (): { 
@@ -31,27 +37,34 @@ export const useTonkens = (): {
 } => {
   const { jettonBalances: allJettonBalances } = useSelector(jettonsSelector);
   const jettonBalances = useJettonBalances();
+  const getJettonPrice = useGetJettonPrice()
 
-  const tonkens = jettonBalances.map((item) => {
-    const tokenInfo: TokenInfo = {
-      address: {
-        friendlyAddress: new TonWeb.utils.Address(item.jettonAddress).toString(true, true, true),
-        rawAddress: item.jettonAddress,
-        version: 'v3R1',
-      },
-      name: item.metadata.name,
-      symbol: item.metadata.symbol,
-      description: item.metadata.description,
-      iconUrl: item.metadata.image,
-      decimals: item.metadata.decimals,
-      quantity: {
-        value: item.balance,
-        formatted: formatter.format(item.balance),
-      }
-    };
+  const tonkens = useMemo(() => {
+    return jettonBalances.map((item) => {
 
-    return tokenInfo;
-  }) as TokenInfo[];
+      const rate = getJettonPrice(item.jettonAddress, item.balance);
+      const tokenInfo: TokenInfo = {
+        address: {
+          friendlyAddress: new TonWeb.utils.Address(item.jettonAddress).toString(true, true, true),
+          rawAddress: item.jettonAddress,
+          version: 'v3R1',
+        },
+        name: item.metadata.name,
+        symbol: item.metadata.symbol,
+        description: item.metadata.description,
+        iconUrl: item.metadata.image,
+        decimals: item.metadata.decimals,
+        quantity: {
+          value: item.balance,
+          formatted: formatter.format(item.balance),
+        },
+        rate
+      };
+
+      return tokenInfo;
+    }) as TokenInfo[]
+  
+  }, [jettonBalances, ]);
 
   return {
     list: tonkens,
