@@ -5,7 +5,7 @@
   "skip": "Пропустить",
   "later": "Позже",
   "continue": "Продолжить",
-  "loading": "Загрузка...",
+  "loading": "Загрузка",
   "success": "Успешно",
   "copied": "Скопировано",
   "address_copied": "Адрес скопирован",
@@ -452,7 +452,7 @@
   "require_create_wallet_modal_create_new": "Создать новый кошелёк",
   "require_create_wallet_modal_import": "Подключить существующий",
 
-  "import_wallet_title": "Введите секретный ключ",
+  "import_wallet_title": "Введите секретный ключ",
   "import_wallet_caption": "Чтобы восстановить доступ, введите 24 секретных слова, которые вы получили при создании кошелька.",
   "import_wallet_wrong_words_err": "Неправильный ключ",
   "import_wallet_reset_caption": "Чтобы восстановить доступ, введите 24 секретных слова, которые вы получили при создании кошелька.",
@@ -491,7 +491,7 @@
 
   "create_pin_current_title": "Введите текущий пин-код",
   "create_pin_new_title": "Задайте новый пин-код",
-  "create_pin_repeat_title": "Введите пин-код еще раз",
+  "create_pin_repeat_title": "Введите пин-код ещё раз",
   "pin_enter_faceid_err": "Ошибка сканирования биометрии",
   "pin_enter_skip_faceid_err": "Ошибка сканирования биометрии",
 
@@ -524,6 +524,7 @@
   "security_reset_passcode": "Сбросить пин-код",
   "security_use_biometry_switch": "Использовать %{biometryType}",
   "security_use_biometry_tip": "Вы всегда можете разблокировать кошелек с помощью пин-кода",
+  "passcode_changed": "Пин-код изменён",
 
   "setup_biometry_title": "Быстрый доступ с помощью\n%{biometryType}",
   "setup_biometry_caption": "%{biometryType} позволяет открывать кошелёк быстрее без ввода пин-кода.",

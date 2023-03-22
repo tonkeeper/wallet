@@ -3,6 +3,7 @@ import { hNs, nfs, ns } from '$utils';
 import appLogo from '$assets/settings_logo.svg';
 import { IsTablet, TabletMaxWidth } from '$shared/constants';
 import { View } from 'react-native';
+import AnimatedLottieView from 'lottie-react-native';
 
 export const Wrap = styled.View`
   flex: 1;
@@ -20,11 +21,13 @@ export const Content = styled(View)`
 export const AppInfo = styled.View`
   padding: ${ns(0)}px ${ns(32)}px ${ns(8)}px;
   align-items: center;
+  margin-top: ${ns(-10)}px;
 `;
 
-export const AppInfoIcon = styled(appLogo)`
-  width: ${ns(32)}px;
-  height: ${ns(32)}px;
+export const AppInfoIcon = styled(AnimatedLottieView)`
+  width: ${ns(54)}px;
+  height: ${ns(54)}px;
+  margin-bottom: ${ns(-11)}px;
 `;
 
 export const AppInfoTitleWrapper = styled.View`

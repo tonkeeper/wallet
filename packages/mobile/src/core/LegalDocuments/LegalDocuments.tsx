@@ -37,7 +37,6 @@ export const LegalDocuments: FC = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: ns(16),
-            paddingTop: ns(16),
             paddingBottom: tabBarHeight,
           }}
           scrollEventThrottle={16}
