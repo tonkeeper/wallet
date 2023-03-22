@@ -6,8 +6,9 @@ export const Wrap = styled.View`
   flex: 1;
 `;
 
-export const Content = styled.View`
+export const Content = styled.View<{ bottomInset: number }>`
   padding: 0 ${ns(16)}px;
+  padding-bottom: ${({ bottomInset }) => bottomInset}px;
 `;
 
 export const WarningContainer = styled.View`

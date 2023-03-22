@@ -1,18 +1,17 @@
-import { useFiatValue, useTranslator } from '$hooks';
-import { useNavigation } from '$libs/navigation';
-import { AppStackRouteNames, MainStackRouteNames } from '$navigation';
+import { usePoolInfo, useStakingRefreshControl, useTranslator } from '$hooks';
+import { MainStackRouteNames } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
 import { BottomButtonWrap, BottomButtonWrapHelper, NextCycle } from '$shared/components';
-import { CryptoCurrencies } from '$shared/constants';
+import { KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
+import { getStakingPoolByAddress, useStakingStore } from '$store';
 import { Button, ScrollHandler, Separator, Spacer, Text } from '$uikit';
+import { stakingFormatter } from '$utils/formatter';
 import { RouteProp } from '@react-navigation/native';
-import BigNumber from 'bignumber.js';
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
+import { RefreshControl } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
+import { shallow } from 'zustand/shallow';
 import * as S from './StakingPoolDetails.style';
-import { PoolDetailsItem } from './types';
-
-const nextCycleTimestamp = Date.now() / 1000 + 3600 * 11;
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPoolDetails>;
@@ -25,130 +24,120 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     },
   } = props;
 
+  const pool = useStakingStore((s) => getStakingPoolByAddress(s, poolAddress), shallow);
+  const poolStakingInfo = useStakingStore((s) => s.stakingInfo[pool.address], shallow);
+
   const t = useTranslator();
 
-  const nav = useNavigation();
+  const refreshControl = useStakingRefreshControl();
 
-  const poolName = 'Tonkeeper #1';
+  const {
+    infoRows,
+    balance,
+    pendingDeposit,
+    pendingWithdraw,
+    readyWithdraw,
+    hasDeposit,
+    hasPendingDeposit,
+    hasPendingWithdraw,
+    hasReadyWithdraw,
+    handleTopUpPress,
+    handleWithdrawalPress,
+    handleConfirmWithdrawalPress,
+  } = usePoolInfo(pool, poolStakingInfo);
 
-  const hasDeposit = poolAddress === 'poolAddress2';
-
-  const balance = useFiatValue(CryptoCurrencies.Ton, hasDeposit ? '100' : '0');
-
-  const pending = useFiatValue(CryptoCurrencies.Ton, hasDeposit ? '0' : '400');
-
-  const hasPending = new BigNumber(pending.amount).isGreaterThan(0);
-
-  const [detailsVisible, setDetailsVisible] = useState(!hasDeposit);
-
-  const frequency = 36;
-  const apy = 6.79608;
-  const minDeposit = '50';
-  const poolFee = 30;
-  const depositFee = '0.2';
-  const withdrawalRequestFee = '0.2';
-  const withdrawalCompleteFee = '0.2';
-
-  const handleTopUpPress = useCallback(() => {
-    nav.push(AppStackRouteNames.StakingSend, { isWithdrawal: false });
-  }, [nav]);
-
-  const handleWithdrawalPress = useCallback(() => {
-    nav.push(AppStackRouteNames.StakingSend, { isWithdrawal: true });
-  }, [nav]);
+  const [detailsVisible, setDetailsVisible] = useState(!hasDeposit && !hasPendingDeposit);
 
   const handleDetailsButtonPress = useCallback(() => setDetailsVisible(true), []);
 
-  const infoRows = useMemo(() => {
-    const rows: PoolDetailsItem[] = [];
-
-    if (apy) {
-      rows.push({
-        label: t('staking.details.apy.label'),
-        value: t('staking.details.apy.value', { value: apy.toFixed(2) }),
-      });
-    }
-
-    if (frequency) {
-      rows.push({
-        label: t('staking.details.frequency.label'),
-        value: t('staking.details.frequency.value', { value: frequency }),
-      });
-    }
-
-    if (minDeposit) {
-      rows.push({
-        label: t('staking.details.min_deposit.label'),
-        value: t('staking.details.min_deposit.value', { value: minDeposit }),
-      });
-    }
-
-    if (poolFee) {
-      rows.push({
-        label: t('staking.details.pool_fee.label'),
-        value: t('staking.details.pool_fee.value', { value: poolFee }),
-      });
-    }
-
-    if (depositFee) {
-      rows.push({
-        label: t('staking.details.deposit_fee.label'),
-        value: t('staking.details.deposit_fee.value', { value: depositFee }),
-      });
-    }
-
-    if (withdrawalRequestFee) {
-      rows.push({
-        label: t('staking.details.withdrawal_request_fee.label'),
-        value: t('staking.details.withdrawal_request_fee.value', {
-          value: withdrawalRequestFee,
-        }),
-      });
-    }
-
-    if (withdrawalCompleteFee) {
-      rows.push({
-        label: t('staking.details.withdrawal_complete_fee.label'),
-        value: t('staking.details.withdrawal_complete_fee.value', {
-          value: withdrawalCompleteFee,
-        }),
-      });
-    }
-
-    return rows;
-  }, [t]);
+  const isImplemeted = KNOWN_STAKING_IMPLEMENTATIONS.includes(pool.implementation);
 
   return (
     <S.Wrap>
-      <ScrollHandler isLargeNavBar={false} navBarTitle={poolName}>
-        <Animated.ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollHandler isLargeNavBar={false} navBarTitle={pool.name}>
+        <Animated.ScrollView
+          refreshControl={<RefreshControl {...refreshControl} />}
+          showsVerticalScrollIndicator={false}
+        >
           <S.Content>
             <S.BalanceContainer>
               <Text variant="label1">{t('staking.details.balance')}</Text>
               <S.BalanceRight>
-                <Text variant="label1">{balance.amount} TON</Text>
+                <Text variant="label1">
+                  {stakingFormatter.format(balance.amount)} TON
+                </Text>
                 <Text variant="body2" color="foregroundSecondary">
                   {balance.fiatInfo.amount}
                 </Text>
               </S.BalanceRight>
             </S.BalanceContainer>
             <Spacer y={16} />
-            {hasPending ? (
+            {hasPendingDeposit ? (
               <>
                 <S.BalanceContainer>
-                  <Text variant="label1">{t('staking.details.pending')}</Text>
+                  <Text variant="label1">{t('staking.details.pendingDeposit')}</Text>
                   <S.BalanceRight>
-                    <Text variant="label1">{pending.amount} TON</Text>
+                    <Text variant="label1">
+                      {stakingFormatter.format(pendingDeposit.amount)} TON
+                    </Text>
                     <Text variant="body2" color="foregroundSecondary">
-                      {pending.fiatInfo.amount}
+                      {pendingDeposit.fiatInfo.amount}
                     </Text>
                   </S.BalanceRight>
                 </S.BalanceContainer>
                 <Spacer y={16} />
               </>
             ) : null}
-            <NextCycle timestamp={nextCycleTimestamp} frequency={36} />
-            <Spacer y={16} />
+            {hasPendingWithdraw ? (
+              <>
+                <S.BalanceContainer>
+                  <Text variant="label1">{t('staking.details.pendingWithdraw')}</Text>
+                  <S.BalanceRight>
+                    <Text variant="label1">
+                      {stakingFormatter.format(pendingWithdraw.amount)} TON
+                    </Text>
+                    <Text variant="body2" color="foregroundSecondary">
+                      {pendingWithdraw.fiatInfo.amount}
+                    </Text>
+                  </S.BalanceRight>
+                </S.BalanceContainer>
+                <Spacer y={16} />
+              </>
+            ) : null}
+            {hasReadyWithdraw ? (
+              <>
+                <S.BalanceTouchableContainer>
+                  <S.BalanceTouchable
+                    onPress={handleConfirmWithdrawalPress}
+                    isDisabled={!isImplemeted}
+                  >
+                    <S.BalanceTouchableContent>
+                      <S.Flex>
+                        <Text variant="label1">{t('staking.details.readyWithdraw')}</Text>
+                        <Text variant="body2" color="foregroundSecondary">
+                          {t('staking.details.tap_to_collect')}
+                        </Text>
+                      </S.Flex>
+                      <S.BalanceRight>
+                        <Text variant="label1">
+                          {stakingFormatter.format(readyWithdraw.amount)} TON
+                        </Text>
+                        <Text variant="body2" color="foregroundSecondary">
+                          {readyWithdraw.fiatInfo.amount}
+                        </Text>
+                      </S.BalanceRight>
+                    </S.BalanceTouchableContent>
+                  </S.BalanceTouchable>
+                </S.BalanceTouchableContainer>
+                <Spacer y={16} />
+              </>
+            ) : null}
+            {pool.cycleStart && pool.cycleEnd ? (
+              <>
+                <NextCycle cycleStart={pool.cycleStart} cycleEnd={pool.cycleEnd} />
+                <Spacer y={16} />
+              </>
+            ) : null}
             {detailsVisible ? (
               <>
                 <S.TitleContainer>
@@ -183,7 +172,11 @@ export const StakingPoolDetails: FC<Props> = (props) => {
           {hasDeposit ? (
             <>
               <S.Flex>
-                <Button onPress={handleWithdrawalPress} mode="secondary">
+                <Button
+                  onPress={handleWithdrawalPress}
+                  disabled={!isImplemeted}
+                  mode="secondary"
+                >
                   {t('staking.withdraw')}
                 </Button>
               </S.Flex>
@@ -191,7 +184,9 @@ export const StakingPoolDetails: FC<Props> = (props) => {
             </>
           ) : null}
           <S.Flex>
-            <Button onPress={handleTopUpPress}>{t('staking.top_up')}</Button>
+            <Button onPress={handleTopUpPress} disabled={!isImplemeted}>
+              {t('staking.top_up')}
+            </Button>
           </S.Flex>
         </S.Row>
       </BottomButtonWrap>

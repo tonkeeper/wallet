@@ -81,3 +81,4 @@ export * from './string';
 export * from './nft';
 export * from './throttle';
 export * from './url';
+export * from './staking';

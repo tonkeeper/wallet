@@ -20,17 +20,6 @@ export const Container = styled.View`
   overflow: hidden;
 `;
 
-export const IconContainer = styled.View`
-  width: ${ICON_SIZE}px;
-  height: ${ICON_SIZE}px;
-  border-radius: ${ns(ICON_SIZE)}px;
-  overflow: hidden;
-  background: ${({ theme }) => theme.colors.backgroundQuaternary};
-  align-items: center;
-  justify-content: center;
-  margin-right: ${ns(16)}px;
-`;
-
 export const Icon = styled(FastImage).attrs({
   resizeMode: 'cover',
 })`
@@ -49,10 +38,9 @@ export const Title = styled(Text).attrs(() => ({
 
 export const SubTitle = styled(Text).attrs(() => ({
   variant: 'body2',
-  numberOfLines: 2,
   color: 'foregroundSecondary',
 }))``;
 
-export const ChervonContainer = styled.View`
+export const RightContainer = styled.View`
   margin-left: ${ns(16)}px;
 `;

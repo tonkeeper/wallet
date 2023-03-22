@@ -679,13 +679,15 @@
   "transfer_deeplink_amount_error": "Incorrect amount request",
 
   "staking": {
-    "staking_provider_desc": "Minimum deposit from %{minDeposit} TON.\nEarn up to to %{maxApy}%.",
-    "staking_pool_desc": "APY ≈ %{apy}%, pool fee %{feePercentage}%",
+    "title": "Staking",
+    "widget_desc": "Earn up to %{apy}% on your TONs",
+    "staking_pool_desc": "APY ≈ %{apy}%",
     "top_up": "Top up",
     "withdrawal_request": "Withdrawal request",
+    "withdrawal_confrim": "Withdrawal confirm",
     "withdraw": "Withdraw",
     "deposit": "Deposit",
-    "confirm_action": "Confirm action",
+    "transaction": "Transaction",
     "warning": {
       "title": "Warning",
       "desc": "Staking based on third-party smart contracts. We are not responsible for their work.",
@@ -694,7 +696,10 @@
     "details": {
       "show_details": "Details",
       "balance": "Staking balance",
-      "pending": "Pending deposit",
+      "pendingDeposit": "Pending deposit",
+      "pendingWithdraw": "Pending withdrawal",
+      "readyWithdraw": "Withdraw ready",
+      "tap_to_collect": "Tap to collect",
       "next_cycle": {
         "title": "Next cycle",
         "desc": "All transactions take effect once the cycle ends",
@@ -703,7 +708,7 @@
       "about_pool": "About pool",
       "frequency": {
         "label": "Reward frequency",
-        "value": "Every %{value} hours"
+        "value": "Every %{count} hours"
       },
       "apy": {
         "label": "Est. APY rate",
@@ -711,22 +716,6 @@
       },
       "min_deposit": {
         "label": "Minimal deposit",
-        "value": "%{value} TON"
-      },
-      "pool_fee": {
-        "label": "Pool fee",
-        "value": "%{value}%"
-      },
-      "deposit_fee": {
-        "label": "Deposit fee",
-        "value": "%{value} TON"
-      },
-      "withdrawal_request_fee": {
-        "label": "Withdrawal request fee",
-        "value": "%{value} TON"
-      },
-      "withdrawal_complete_fee": {
-        "label": "Complete withdrawal fee",
         "value": "%{value} TON"
       }
     },
@@ -747,12 +736,13 @@
         "label": "Amount",
         "value": "%{value} TON"
       },
+      "withdraw_amount": {
+        "label": "Withdraw amount",
+        "value": "%{value} TON"
+      },
       "fee": {
         "label": "Fee",
         "value": "≈ %{value} TON"
-      },
-      "message": {
-        "label": "Message"
       }
     }
   }

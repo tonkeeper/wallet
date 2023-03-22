@@ -1,6 +1,7 @@
 export enum DevFeature {
   UseHttpProtocol = 'UseHttpProtocol',
   NewFlow = 'NewFlow',
+  Staking = 'Staking',
 }
 
 export interface IDevFeaturesToggleStore {

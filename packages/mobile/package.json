@@ -42,6 +42,7 @@
     "@tonapps/tonlogin-client": "0.2.5",
     "@tonconnect/protocol": "^2.2.5",
     "@tonkeeper/shared": "1.0.0",
+    "@tonkeeper/core": "0.1.0",
     "@vkontakte/vk-qr": "^2.0.13",
     "axios": "^0.27.2",
     "bignumber.js": "^9.0.1",

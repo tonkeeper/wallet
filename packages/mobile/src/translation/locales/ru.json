@@ -686,80 +686,75 @@
   "transfer_deeplink_amount_error": "Некорректный запрос суммы",
 
   "staking": {
-    "staking_provider_desc": "Minimum deposit from %{minDeposit} TON.\nEarn up to to %{maxApy}%.",
-    "staking_pool_desc": "APY ≈ %{apy}%, pool fee %{feePercentage}%",
-    "top_up": "Top up",
-    "withdrawal_request": "Withdrawal request",
-    "withdraw": "Withdraw",
-    "deposit": "Deposit",
-    "confirm_action": "Confirm action",
+    "title": "Стейкинг",
+    "widget_desc": "Зарабатывайте на TON до %{apy}%",
+    "staking_pool_desc": "APY ≈ %{apy}%",
+    "top_up": "Пополнить",
+    "withdrawal_request": "Запрос на вывод",
+    "withdrawal_confrim": "Withdrawal confirm",
+    "withdraw": "Вывести",
+    "deposit": "Депозит",
+    "transaction": "Транзакция",
     "warning": {
-      "title": "Warning",
-      "desc": "Staking based on third-party smart contracts. We are not responsible for their work.",
-      "about": "About %{name}"
+      "title": "Предупреждение",
+      "desc": "Стейкинг основан на сторонних смарт-контрактах. Мы не несем ответственность за их работу.",
+      "about": "Подробнее о %{name}"
     },
     "details": {
-      "show_details": "Details",
-      "balance": "Staking balance",
-      "pending": "Pending deposit",
+      "show_details": "Подробнее",
+      "balance": "Баланс стейкинга",
+      "pendingDeposit": "Будет зачислено",
+      "pendingWithdraw": "В ожидании вывода",
+      "readyWithdraw": "Вывод готов",
+      "tap_to_collect": "Нажмите, чтобы вывести",
       "next_cycle": {
-        "title": "Next cycle",
-        "desc": "All transactions take effect once the cycle ends",
-        "time": "in %{time}"
+        "title": "Следующий цикл",
+        "desc": "Все транзакции исполняются только после завершения цикла",
+        "time": "через %{time}"
       },
-      "about_pool": "About pool",
+      "about_pool": "О пуле",
       "frequency": {
-        "label": "Reward frequency",
-        "value": "Every %{value} hours"
+        "label": "Частота выплат",
+        "value": {
+          "zero": "Каждые %{count} часов",
+          "one": "Каждые %{count} час",
+          "few": "Каждые %{count} часа",
+          "many": "Каждые %{count} часов"
+        }
       },
       "apy": {
-        "label": "Est. APY rate",
+        "label": "Годовая доходность",
         "value": "≈ %{value}%"
       },
       "min_deposit": {
-        "label": "Minimal deposit",
-        "value": "%{value} TON"
-      },
-      "pool_fee": {
-        "label": "Pool fee",
-        "value": "%{value}%"
-      },
-      "deposit_fee": {
-        "label": "Deposit fee",
-        "value": "%{value} TON"
-      },
-      "withdrawal_request_fee": {
-        "label": "Withdrawal request fee",
-        "value": "%{value} TON"
-      },
-      "withdrawal_complete_fee": {
-        "label": "Complete withdrawal fee",
+        "label": "Минимальный депозит",
         "value": "%{value} TON"
       }
     },
     "rewards": {
-      "title": "Your yearly rewards",
-      "after_top_up": "After top up",
-      "current": "Current",
+      "title": "Ваша годовая доходность",
+      "after_top_up": "После пополнения",
+      "current": "Текущая",
       "value": "≈ %{value} TON"
     },
     "confirm": {
       "recipient": {
-        "label": "Recipient"
+        "label": "Получатель"
       },
       "address": {
-        "label": "Recipient address"
+        "label": "Адрес получателя"
       },
       "amount": {
-        "label": "Amount",
+        "label": "Сумма",
+        "value": "%{value} TON"
+      },
+      "withdraw_amount": {
+        "label": "Сумма вывода",
         "value": "%{value} TON"
       },
       "fee": {
-        "label": "Fee",
+        "label": "Комиссия",
         "value": "≈ %{value} TON"
-      },
-      "message": {
-        "label": "Message"
       }
     }
   }

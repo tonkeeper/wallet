@@ -1,3 +1,4 @@
+import { StakingTransactionType } from '$core/StakingSend/types';
 import { AppStackRouteNames } from '$navigation';
 import { CryptoCurrency } from '$shared/constants';
 import { SubscriptionModel } from '$store/models';
@@ -61,6 +62,6 @@ export type AppStackParamList = {
   };
   [AppStackRouteNames.StakingSend]: {
     poolAddress: string;
-    isWithdrawal?: boolean;
+    transactionType: StakingTransactionType;
   };
 };
