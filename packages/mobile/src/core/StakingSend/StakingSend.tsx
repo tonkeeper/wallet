@@ -7,12 +7,13 @@ import { AppStackRouteNames } from '$navigation';
 import { AppStackParamList } from '$navigation/AppStack';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import { CryptoCurrencies } from '$shared/constants';
-import { getStakingPoolByAddress, useStakingStore } from '$store';
+import { getStakingPoolByAddress, Toast, useStakingStore } from '$store';
 import { walletSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
 import { parseLocaleNumber } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
 import { RouteProp } from '@react-navigation/native';
+import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
@@ -162,11 +163,17 @@ export const StakingSend: FC<Props> = (props) => {
 
       stepViewRef.current?.go(StakingSendSteps.CONFIRM);
     } catch (e) {
+      Toast.fail(
+        axios.isAxiosError(e) && e.message === 'Network Error'
+          ? t('error_network')
+          : t('error_occurred'),
+      );
+
       console.log(e);
     } finally {
       setPreparing(false);
     }
-  }, [amount, operations, pool, transactionType, walletAddress]);
+  }, [amount, operations, pool, t, transactionType, walletAddress]);
 
   const totalFee = useMemo(() => {
     const fee = new BigNumber(Ton.fromNano(accountEvent?.fee.total.toString() ?? '0'));

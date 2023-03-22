@@ -46,7 +46,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     handleConfirmWithdrawalPress,
   } = usePoolInfo(pool, poolStakingInfo);
 
-  const [detailsVisible, setDetailsVisible] = useState(!hasDeposit);
+  const [detailsVisible, setDetailsVisible] = useState(!hasDeposit && !hasPendingDeposit);
 
   const handleDetailsButtonPress = useCallback(() => setDetailsVisible(true), []);
 

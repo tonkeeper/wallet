@@ -82,7 +82,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
               <S.Icon source={icon} />
             </S.IconContainer>
             <Spacer y={20} />
-            <Text color="foregroundSecondary">{t('staking.confirm_action')}</Text>
+            <Text color="foregroundSecondary">{t('staking.transaction')}</Text>
             <Spacer y={4} />
             <Text variant="h3">{actionName}</Text>
           </S.Center>
