@@ -708,7 +708,7 @@
       "about_pool": "About pool",
       "frequency": {
         "label": "Reward frequency",
-        "value": "Every %{value} hours"
+        "value": "Every %{count} hours"
       },
       "apy": {
         "label": "Est. APY rate",

@@ -86,7 +86,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
     if (frequency) {
       rows.push({
         label: t('staking.details.frequency.label'),
-        value: t('staking.details.frequency.value', { value: frequency }),
+        value: t('staking.details.frequency.value', { count: frequency }),
       });
     }
 
