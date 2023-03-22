@@ -15,13 +15,15 @@ import { Tabs } from '../components/Tabs';
 import { NFTsList } from '../components/NFTsList';
 import { useTheme } from '$hooks';
 import { ListSeparator } from '$uikit/List/new/ListSeparator';
+import { StakingWidget } from './StakingWidget';
 
 enum ContentType {
   Token,
   Collectibles,
   Spacer,
   EditTokensButton,
-  NFTCardsRow
+  NFTCardsRow,
+  Staking,
 }
 
 type TokenItem = {
@@ -54,11 +56,16 @@ type NFTCardsRowItem = {
   items: any; // TODO:
 }
 
+type StakingItem = {
+  type: ContentType.Staking;
+}
+
 type Content = 
   | TokenItem 
   | SpacerItem
   | EditTokensButtonItem
-  | NFTCardsRowItem;
+  | NFTCardsRowItem
+  | StakingItem;
 
 const RenderItem = ({ item }: { item: Content }) => {
   switch (item.type) {
@@ -119,6 +126,8 @@ const RenderItem = ({ item }: { item: Content }) => {
       return (
         <NFTsList nfts={item.items} />
       );
+    case ContentType.Staking: 
+      return <StakingWidget />
   }
 };
 
@@ -241,6 +250,10 @@ export const BalancesList = memo<BalancesListProps>(({
         type: ContentType.EditTokensButton
       });
     }
+
+    content.push({
+      type: ContentType.Staking
+    });
 
     if (nfts) {
       content.push({
