@@ -1,14 +1,14 @@
 import { ScreenScrollView } from "./ScreenScrollView";
 import { ScreenContainer } from "./ScreenContainer";
 import { ScreenHeader } from "./ScreenHeader";
-import { ScreenScrollList } from "./ScreenScrollList";
+import { ScreenScrollList } from "./ScreenFlashList";
 
 export const Screen = Object.assign(
   ScreenContainer, 
   {
     Header: ScreenHeader,
     ScrollView: ScreenScrollView,
-    ScrollList: ScreenScrollList,
+    FlashList: ScreenScrollList,
     // Content: ScreenContent,
     // Footer: ScreenFooter, 
   }

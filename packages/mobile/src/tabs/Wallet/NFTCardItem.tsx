@@ -1,18 +1,14 @@
 import { useTranslator } from '$hooks';
 import { openNFT } from '$navigation';
-import { NFTModel } from '$store/models';
 import { DarkTheme } from '$styles';
 import { Steezy } from '$styles';
-import { View, Text, Icon } from '$uikit';
-import { checkIsTonDiamondsNFT, maskifyTonAddress } from '$utils';
+import { View, Text, Icon, Pressable } from '$uikit';
+import { checkIsTonDiamondsNFT, maskifyTonAddress, ns } from '$utils';
 import { dnsToUsername } from '$utils/dnsToUsername';
 import { useFlags } from '$utils/flags';
 import _ from 'lodash';
-import { TouchableHighlight as NativeTouchableHighlight } from 'react-native-gesture-handler';
 import React, { memo, useCallback, useMemo } from 'react';
 import * as S from '../../core/NFTs/NFTItem/NFTItem.style';
-
-const TouchableHighlight = Steezy.withStyle(NativeTouchableHighlight);
 
 interface NFTCardItemProps {
   item: any;
@@ -49,58 +45,53 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
   }, [isDNS, isTG, item.dns, item.name, item.address]);
 
   return (
-    <TouchableHighlight 
+    <Pressable
       underlayColor={DarkTheme.backgroundContentTint}
+      backgroundColor={DarkTheme.backgroundContent}
       style={styles.container}
-      activeOpacity={1}
       onPress={handleOpenNftItem}
     >
-      <View>
-        <S.SmallImage
-          source={{
-            uri: item.content.image.baseUrl,
-          }}
-        >
-          <S.OnSaleBadge>{isOnSale ? <S.OnSaleBadgeIcon /> : null}</S.OnSaleBadge>
-          <S.Badges>
-            {isTonDiamondsNft && !flags.disable_apperance ? (
-              <S.AppearanceBadge>
-                <Icon name="ic-appearance-16" color="constantLight" />
-              </S.AppearanceBadge>
-            ) : null}
-          </S.Badges>
-        </S.SmallImage>
-        <View style={styles.info}>
-          <Text variant="label2" numberOfLines={1}>
-            {title}
-          </Text>
-          <Text variant="body3" color="textSecondary" numberOfLines={1}>
-            {isDNS
-              ? 'TON DNS'
-              : item?.collection
-              ? item.collection.name
-              : t('nft_single_nft')}
-          </Text>
-        </View>
+      <S.SmallImage
+        source={{
+          uri: item.content.image.baseUrl,
+        }}
+      >
+        <S.OnSaleBadge>{isOnSale ? <S.OnSaleBadgeIcon /> : null}</S.OnSaleBadge>
+        <S.Badges>
+          {isTonDiamondsNft && !flags.disable_apperance ? (
+            <S.AppearanceBadge>
+              <Icon name="ic-appearance-16" color="constantLight" />
+            </S.AppearanceBadge>
+          ) : null}
+        </S.Badges>
+      </S.SmallImage>
+      <View style={styles.info}>
+        <Text variant="label2" numberOfLines={1}>
+          {title}
+        </Text>
+        <Text variant="body3" color="textSecondary" numberOfLines={1}>
+          {isDNS
+            ? 'TON DNS'
+            : item?.collection
+            ? item.collection.name
+            : t('nft_single_nft')}
+        </Text>
       </View>
-    </TouchableHighlight>
+    </Pressable>
   );
 });
 
 const styles = Steezy.create(({ colors, corners }) => ({
   container: {
+    flex: 1,
     marginHorizontal: 4,
     marginBottom: 8,
-    width: 114,
     backgroundColor: colors.backgroundContent,
     borderRadius: corners.medium,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   info: {
     paddingVertical: 8,
     paddingHorizontal: 12,
   },
-  image: {
-    height: 114
-  }
 }));

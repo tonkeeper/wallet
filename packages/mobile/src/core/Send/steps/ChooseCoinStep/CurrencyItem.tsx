@@ -3,10 +3,9 @@ import {
   CryptoCurrencies,
   CryptoCurrency,
   CurrencyLongName,
-  Decimals,
 } from '$shared/constants';
-import { CurrencyIcon, Separator, TokenListItem } from '$uikit';
-import { formatCryptoCurrency } from '$utils/currency';
+import { CurrencyIcon, TokenListItem } from '$uikit';
+import { formatter } from '$utils/formatter';
 import React, { FC, memo } from 'react';
 
 interface Props {
@@ -26,15 +25,15 @@ const CurrencyItemComponent: FC<Props> = (props) => {
       ? CryptoCurrencies.Ton
       : currency;
 
+  const balance = formatter.format(amount, {
+    currency: currencyPrepared.toUpperCase(),
+    currencySeparator: 'wide',
+  });
+    
   return (
     <TokenListItem
       name={CurrencyLongName[currency]}
-      balance={formatCryptoCurrency(
-        amount,
-        currencyPrepared,
-        Decimals[currencyPrepared],
-        2,
-      )}
+      balance={balance}
       icon={<CurrencyIcon size={44} currency={currency} />}
       onPress={onPress}
       borderStart={borderStart}

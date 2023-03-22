@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { t } from '$translation';
 import {
   Button,
@@ -10,14 +10,13 @@ import {
   View,
 } from '$uikit';
 import { List } from '$uikit/List/new';
-import { Steezy } from '$styles';
 import { useNavigation } from '$libs/navigation';
 import { ScanQRButton } from '../../components/ScanQRButton';
-import { RefreshControl } from 'react-native';
+import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { openRequireWalletModal, openWallet } from '$navigation';
-import { maskifyAddress } from '$utils';
+import { maskifyAddress, ns } from '$utils';
 import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
 import { useIsFocused } from '@react-navigation/native';
@@ -31,13 +30,13 @@ import { Tabs } from './components/Tabs';
 import * as S from '../../core/Balances/Balances.style';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
-import { mainActions } from '$store/main';
-import { TokenList } from './components/TokenList';
-import { NFTsList } from './components/NFTsList';
+import { mainActions } from '$store/main';;
 import { useTonkens } from './hooks/useTokens';
 import { useNFTs } from './hooks/useNFTs';
 import { useWallet } from './hooks/useWallet';
 import { useTheme } from '$hooks';
+import { Steezy } from '$styles';
+import { BalancesList } from './components/BalancesList';
 import { StakingWidget } from './components/StakingWidget';
 
 export const WalletScreen = memo(() => {
@@ -107,7 +106,7 @@ export const WalletScreen = memo(() => {
     dispatch(walletActions.refreshBalancesPage(true));
   }, [dispatch]);
 
-  const balanceSection = (
+  const ListHeader = (
     <View style={styles.mainSection} pointerEvents="box-none">
       {notifications.map((notification, i) => (
         <InternalNotification
@@ -150,7 +149,7 @@ export const WalletScreen = memo(() => {
           iconName="ic-arrow-down-28"
           title={t('wallet.receive_btn')}
         />
-        {+balance.ton.amount.nano > 0 && (
+        {!!wallet && (
           <IconButton
             onPress={handlePressSell}
             iconName="ic-minus-28"
@@ -170,8 +169,7 @@ export const WalletScreen = memo(() => {
           rightContent={<ScanQRButton />}
         />
         <Screen.ScrollView indent={false}>
-          {balanceSection}
-
+          {ListHeader}
           <List>
             <List.Item
               title="Toncoin"
@@ -193,6 +191,24 @@ export const WalletScreen = memo(() => {
     );
   }
 
+  // TODO: rewrite
+  const dimensions = useWindowDimensions();
+  const mockupCardSize = {
+    width: ns(114),
+    height: ns(166)
+  };
+  
+  const numColumn = 3;
+  const indent = ns(8);
+  const heightRatio = mockupCardSize.height / mockupCardSize.width;
+
+  const nftCardSize = useMemo(() => {
+    const width = (dimensions.width / numColumn) - indent;
+    const height = width * heightRatio;
+
+    return { width, height };
+  }, [dimensions.width]);
+
   function renderTabs() {
     return (
       <Tabs>
@@ -203,7 +219,7 @@ export const WalletScreen = memo(() => {
         />
         <View style={{ flex: 1 }}>
           <Tabs.Header>
-            {balanceSection}
+            {ListHeader}
             <Tabs.Bar
               onChange={({ value }) => setTab(value)}
               value={tab}
@@ -215,21 +231,26 @@ export const WalletScreen = memo(() => {
           </Tabs.Header>
           <Tabs.PagerView>
             <Tabs.Section index={0}>
-              <Tabs.ScrollView
-                refreshControl={
-                  <RefreshControl
-                    onRefresh={handleRefresh}
-                    refreshing={isRefreshing && isFocused}
-                    tintColor={theme.colors.foregroundPrimary}
-                  />
-                }
-              >
-                <TokenList balance={balance} tokens={tokens} rates={rates} />
-                <StakingWidget />
-              </Tabs.ScrollView>
+              <BalancesList 
+                balance={balance} 
+                tokens={tokens} 
+                rates={rates}
+                handleRefresh={handleRefresh}
+                isRefreshing={isRefreshing}
+                isFocused={isFocused}
+              />
             </Tabs.Section>
             <Tabs.Section index={1}>
               <Tabs.FlashList
+                contentContainerStyle={styles.scrollContainer.static}
+                estimatedItemSize={1000}
+                numColumns={3}
+                data={nfts}
+                renderItem={({ item }) => (
+                  <View style={nftCardSize}>
+                    <NFTCardItem item={item} />
+                  </View>
+                )}
                 refreshControl={
                   <RefreshControl
                     onRefresh={handleRefresh}
@@ -237,11 +258,6 @@ export const WalletScreen = memo(() => {
                     tintColor={theme.colors.foregroundPrimary}
                   />
                 }
-                data={nfts}
-                numColumns={3}
-                contentContainerStyle={{ paddingHorizontal: 12 }}
-                estimatedItemSize={1000}
-                renderItem={({ item }) => <NFTCardItem item={item} />}
               />
             </Tabs.Section>
           </Tabs.PagerView>
@@ -258,26 +274,24 @@ export const WalletScreen = memo(() => {
           title={t('wallet.screen_title')}
           rightContent={<ScanQRButton />}
         />
-        <Screen.ScrollView
-          indent={false}
-          refreshControl={
-            <RefreshControl
-              onRefresh={handleRefresh}
-              refreshing={isRefreshing && isFocused}
-              tintColor={theme.colors.foregroundPrimary}
-            />
-          }
-        >
-          {balanceSection}
-          <TokenList balance={balance} tokens={tokens} rates={rates} />
-          <NFTsList nfts={nfts} />
-        </Screen.ScrollView>
+        <BalancesList
+          ListHeaderComponent={ListHeader}
+          handleRefresh={handleRefresh}
+          isRefreshing={isRefreshing}
+          isFocused={isFocused}
+          balance={balance} 
+          tokens={tokens} 
+          rates={rates} 
+          nfts={nfts}
+        />
       </>
     );
   }
 
   if (!wallet) {
     return <Screen>{renderEmpty()}</Screen>;
+  } else if (tokens.list.length <= 2) {
+    return <Screen>{renderCompact()}</Screen>;
   } else if (tokens.list.length + nfts.length + 1 > 10) {
     return <Screen>{renderTabs()}</Screen>;
   } else {
@@ -285,7 +299,7 @@ export const WalletScreen = memo(() => {
   }
 });
 
-const styles = Steezy.create({
+const styles = Steezy.create(({ colors, corners }) => ({
   container: {
     position: 'relative',
   },
@@ -301,4 +315,7 @@ const styles = Steezy.create({
   addressText: {
     marginTop: 7.5,
   },
-});
+  scrollContainer: {
+    paddingHorizontal: 12,
+  },
+}));

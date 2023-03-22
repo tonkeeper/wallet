@@ -23,6 +23,7 @@ type TabsContextType = {
   contentOffset: SharedValue<number>;
   headerHeight: SharedValue<number>;
   pageOffset: SharedValue<number>;
+  isScrollInMomentum: SharedValue<boolean>;
   headerOffsetStyle: ViewStyle;
   opacityMainHeaderStyle: ViewStyle
   shiftMainHeaderStyle: ViewStyle;
@@ -31,12 +32,13 @@ type TabsContextType = {
 export const TabsContext = createContext<TabsContextType | null>(null);
 
 export const TabsContainer = memo<TabsContainerProps>((props) => {
+  const isScrollInMomentum = useSharedValue(false);
   const [activeIndex, setStateActiveIndex] = React.useState(0);
   const setActiveIndexFN = useRef<((index: number) => void) | null>(null);
 
   const contentOffset = useSharedValue(0);
   const scrollY = useSharedValue(0);
-  const headerHeight = useSharedValue(0);
+  const headerHeight = useSharedValue(293);
   const pageOffset = useSharedValue(0);
 
   const opacityMainHeaderStyle = useAnimatedStyle(() => {
@@ -138,7 +140,8 @@ export const TabsContainer = memo<TabsContainerProps>((props) => {
         headerOffsetStyle,
         pageOffset,
         opacityMainHeaderStyle,
-        shiftMainHeaderStyle
+        shiftMainHeaderStyle,
+        isScrollInMomentum
       }}
     >
       {props.children}

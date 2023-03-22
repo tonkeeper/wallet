@@ -9,7 +9,6 @@ import {
   format,
   fromNano,
   maskifyTonAddress,
-  truncateDecimal,
 } from '$utils';
 import { useTranslator } from '$hooks/useTranslator';
 import { formatCryptoCurrency } from '$utils/currency';
@@ -18,6 +17,7 @@ import { TransactionItemNFT } from '$shared/components/ActionItem/TransactionIte
 import { subscriptionsSelector } from '$store/subscriptions';
 import { Action } from 'tonapi-sdk-js';
 import { dnsToUsername } from '$utils/dnsToUsername';
+import { formatter } from '$utils/formatter';
 
 export function usePrepareAction(
   rawAction: Action,
@@ -58,7 +58,7 @@ export function usePrepareAction(
     let bottomContent;
     if (ActionType.TonTransfer === ActionType[rawAction.type]) {
       const amount = TonWeb.utils.fromNano(Math.abs(action.amount).toString());
-      label = prefix + ' ' + truncateDecimal(amount.toString(), 2, false, true);
+      label = prefix + ' ' + formatter.format(amount.toString());
       type = isReceive ? 'receive' : 'sent';
       typeLabel = t(`transaction_type_${type}`);
       currency = formatCryptoCurrency(
@@ -84,7 +84,7 @@ export function usePrepareAction(
 
     if (ActionType.JettonTransfer === ActionType[rawAction.type]) {
       const amount = fromNano(action.amount, action.jetton?.decimals ?? 9);
-      label = prefix + ' ' + truncateDecimal(amount.toString(), 2, false, true);
+      label = prefix + ' ' + formatter.format(amount.toString());
       type = isReceive ? 'receive' : 'sent';
       typeLabel = t(`transaction_type_${type}`);
       currency = formatCryptoCurrency(
@@ -114,7 +114,7 @@ export function usePrepareAction(
           ? t('transaction_type_subscription')
           : t('transaction_type_unsubscription');
       }
-      label = isSubscription ? prefix + ' ' + truncateDecimal(amount.toString(), 2, false, true) : '-';
+      label = isSubscription ? prefix + ' ' + formatter.format(amount.toString()) : '-';
       type = isSubscription ? 'subscription' : 'unsubscription';
       currency = isSubscription
         ? formatCryptoCurrency(
@@ -129,7 +129,7 @@ export function usePrepareAction(
 
     if (ActionType.AuctionBid === ActionType[rawAction.type] && action.auctionType === 'DNS.tg') {
       const amount = TonWeb.utils.fromNano(Math.abs(action.amount.value).toString());
-      label = prefix + ' ' + truncateDecimal(amount.toString(), 2, false, true);
+      label = prefix + ' ' + formatter.format(amount.toString());
       typeLabel = t('transaction_type_bid');
       type = 'tg_dns';
       currency = formatCryptoCurrency(

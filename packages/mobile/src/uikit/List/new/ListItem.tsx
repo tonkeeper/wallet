@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { TextStyle } from 'react-native';
 import { Steezy, StyleProp } from '$styles';
-import { View, SText, Icon } from '$uikit';
+import { View, SText, Icon, Pressable } from '$uikit';
 import { DarkTheme } from '$styled';
 import FastImage from 'react-native-fast-image';
 import Animated, { useSharedValue } from 'react-native-reanimated';
@@ -57,72 +57,73 @@ export const ListItem = memo<ListItemProps>((props) => {
       onPressIn={handlePressIn}
       onPress={props.onPress}
       disabled={!props.onPress}
+      
     >
-      <View style={styles.container}>
-        {hasLeftContent && (
-          <View style={styles.leftContent}>
-            {leftContent}
-            {!!props.picture && (
-              <View style={styles.pictureContainer}>
-                <FastImage 
-                  style={styles.picture.static}
-                  source={pictureSource} 
-                />
-              </View>
-            )}
-          </View>
-        )}
-        <View style={styles.title}>
-          <View style={styles.titleTextContainer}>
-            {typeof props.title === 'string' ? (
-              <SText 
-                style={styles.titleText}
-                variant="label1" 
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {props.title}
-              </SText>
-            ) : props.title}
-            {typeof props.label === 'string' ? (
-              <SText
-                style={styles.labelText}
-                color="textTertiary"
-                variant="label1" 
-                numberOfLines={1}
-              >
-                {props.label}
-              </SText>
-            ) : props.label}
-          </View>
-
-          {typeof props.subtitle === 'string' ? (
-            <SText 
-              variant="body2" 
-              style={styles.subtitleText}
-              numberOfLines={1}
-            >
-              {props.subtitle}
-            </SText>
-          ) : props.subtitle}
-        </View>
-        <View style={styles.valueContainer}>
-          {typeof props.value === 'string' ? (
-            <SText variant="label1" style={[styles.valueText, props.valueStyle]}>
-              {`  ${props.value}`}
-            </SText>
-          ) : props.value}
-
-          {typeof props.subvalue === 'string' ? (
-            <SText variant="body2" style={styles.subtitleText}>
-              {props.subvalue}
-            </SText>
-          ) : props.subvalue}
-
-          {props.chevron && (
-            <Icon name="ic-chevron-right-16" />
+      <View style={styles.container.static}> 
+      {hasLeftContent && (
+        <View style={styles.leftContent}>
+          {leftContent}
+          {!!props.picture && (
+            <View style={styles.pictureContainer}>
+              <FastImage 
+                style={styles.picture.static}
+                source={pictureSource} 
+              />
+            </View>
           )}
         </View>
+      )}
+      <View style={styles.title}>
+        <View style={styles.titleTextContainer}>
+          {typeof props.title === 'string' ? (
+            <SText 
+              style={styles.titleText}
+              variant="label1" 
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {props.title}
+            </SText>
+          ) : props.title}
+          {typeof props.label === 'string' ? (
+            <SText
+              style={styles.labelText}
+              color="textTertiary"
+              variant="label1" 
+              numberOfLines={1}
+            >
+              {props.label}
+            </SText>
+          ) : props.label}
+        </View>
+
+        {typeof props.subtitle === 'string' ? (
+          <SText 
+            variant="body2" 
+            style={styles.subtitleText}
+            numberOfLines={1}
+          >
+            {props.subtitle}
+          </SText>
+        ) : props.subtitle}
+      </View>
+      <View style={styles.valueContainer}>
+        {typeof props.value === 'string' ? (
+          <SText variant="label1" style={[styles.valueText, props.valueStyle]}>
+            {`  ${props.value}`}
+          </SText>
+        ) : props.value}
+
+        {typeof props.subvalue === 'string' ? (
+          <SText variant="body2" style={styles.subtitleText}>
+            {props.subvalue}
+          </SText>
+        ) : props.subvalue}
+
+        {props.chevron && (
+          <Icon name="ic-chevron-right-16" />
+        )}
+      </View>
       </View>
     </TouchableHighlight>
   );

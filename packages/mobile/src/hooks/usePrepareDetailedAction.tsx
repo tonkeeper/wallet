@@ -220,6 +220,7 @@ export function usePrepareDetailedAction(
 
     const actionProps: ActionBaseProps = {
       label,
+      eventId: event.eventId,
       sentLabel: t(sentLabelTranslationString, {
         date: format(
           event.timestamp * 1000,

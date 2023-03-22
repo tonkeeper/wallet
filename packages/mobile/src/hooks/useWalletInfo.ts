@@ -11,6 +11,7 @@ import { formatFiatCurrencyAmount } from '$utils/currency';
 import { useTheme } from '$hooks/useTheme';
 import { fiatCurrencySelector } from '$store/main';
 import { ratesRatesSelector, ratesYesterdayRatesSelector } from '$store/rates';
+import { formatter } from '$utils/formatter';
 
 export function useWalletInfo(currency: CryptoCurrency) {
   const theme = useTheme();
@@ -93,8 +94,22 @@ export function useWalletInfo(currency: CryptoCurrency) {
     };
   }, [amount, priceDiff, amountInUsd, theme.colors, fiatCurrency]);
 
+  const amountToFiat = useCallback((amount: string) => {
+    if (fiatRate && +fiatRate.today > 0) {
+      const fiat = new BigNumber(amount).multipliedBy(fiatRate.today);
+      return formatter.format(fiat, { currency: fiatCurrency });
+    } else {
+      return '-';
+    }
+  }, [fiatRate, fiatCurrency]);
+
+  const formattedFiatAmount = useMemo(() => {
+    return amountToFiat(amount);
+  }, [amountToFiat, amount]);
+
   return {
     amount,
+    formattedFiatAmount,
     priceDiff,
     fiatInfo,
     amountToUsd,

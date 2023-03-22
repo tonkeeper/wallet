@@ -7,6 +7,7 @@ import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMaybeTabCtx } from '../../tabs/Wallet/components/Tabs/TabsContainer';
 import { NavBar } from '../NavBar/NavBar';
+import { useScreenScroll } from './context/ScreenScrollContext';
 import { ScreenLargeHeader } from './ScreenLagreHeader';
 
 interface ScreenHeaderProps {
@@ -18,8 +19,7 @@ interface ScreenHeaderProps {
 
 export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
   const { rightContent, backButton = true } = props;
-  const { top: topInset } = useSafeAreaInsets();
-  const dimensions = useWindowDimensions();
+  const screenScroll = useScreenScroll();
   const tabsCtx = useMaybeTabCtx();
 
   const rightContentContainer = React.useMemo(() => {
@@ -34,7 +34,8 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
   if (props.large) {
     return (
       <ScreenLargeHeader 
-        navBarTitle={props.title}
+        navBarTitle={props.title!}
+        scrollTop={screenScroll.scrollY}
       />
     )
   }
@@ -50,7 +51,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
         rightContent={rightContentContainer} 
         hideBackButton={!backButton}
         fillBackground
-        scrollTop={tabsCtx?.scrollY}
+        scrollTop={tabsCtx?.scrollY ?? screenScroll.scrollY}
         innerAnimatedStyle={tabsCtx?.opacityMainHeaderStyle}
       >
         {props.title}

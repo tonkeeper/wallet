@@ -1,32 +1,38 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { FlashList, FlashListProps } from '@shopify/flash-list';
-import Animated, { runOnJS, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useTabCtx } from './TabsContainer';
 import { useCurrentTab } from './TabsSection';
 import { useScrollToTop } from '@react-navigation/native';
 import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
-import { NavBarHeight } from '$shared/constants';
-
-interface TabsFlashListProps<TItem> extends FlashListProps<TItem> {
-
-}
+import { useWindowDimensions } from 'react-native';
 
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 
-export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem>) => {
-  const { activeIndex, scrollAllTo, setScrollTo, headerOffsetStyle, contentOffset, scrollY, headerHeight, correctIntermediateHeaderState } = useTabCtx();
-  const { index } = useCurrentTab();
+export const TabsFlashList = (props: FlashListProps<any>) => {
+  const { activeIndex, scrollAllTo, setScrollTo, headerOffsetStyle, contentOffset, scrollY, headerHeight, isScrollInMomentum } = useTabCtx();
   const ref = useRef<FlashList<any>>(null);
   const tabBarHeight = useBottomTabBarHeight();
+  const dimensions = useWindowDimensions();
+  const hasSpace = useSharedValue(true);
+  const { index } = useCurrentTab();
+  
 
-  const { changeScrollOnJS } = useScrollHandler();
+  const { changeScrollOnJS } = useScrollHandler(undefined, activeIndex !== index);
 
   useScrollToTop(ref as any); // TODO: fix type
 
   useEffect(() => {
-    setScrollTo(index, (y: number, animated?: boolean) => {
-      ref.current?.scrollToOffset({ offset: y, animated })
+    setScrollTo(index, (y: number, animated?: boolean, withDelay?: boolean) => {
+      hasSpace.value = true;
+      if (withDelay) {
+        setTimeout(() => {
+          ref.current?.scrollToOffset({ offset: y, animated })
+        }, 200);
+      } else {
+        ref.current?.scrollToOffset({ offset: y, animated })
+      }      
     });
   }, []);
  
@@ -38,12 +44,18 @@ export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem
       if (activeIndex === index) {
         contentOffset.value = 0;
         scrollY.value = event.contentOffset.y;
+        hasSpace.value = false;
 
         runOnJS(changeScrollOnJS)(
           event.contentOffset.y,
           event.contentSize.height,
           event.layoutMeasurement.height,
         );
+      }
+    },
+    onMomentumBegin() {
+      if (activeIndex === index) {
+        isScrollInMomentum.value = true;
       }
     },
     onEndDrag(event) {
@@ -56,23 +68,41 @@ export const TabsFlashList = <TItem extends any>(props: TabsFlashListProps<TItem
     },
     onMomentumEnd(event) {
       if (activeIndex === index) {
+        isScrollInMomentum.value = false;
         scrollY.value = event.contentOffset.y;
         contentOffset.value = event.contentOffset.y;
         runOnJS(scrollAllTo)(index, Math.min(event.contentOffset.y, headerHeight.value));
       }
     },
-    
   }, [index, activeIndex]);
   
+  // TODO: fix it
+  const heightOffsetStyle = useAnimatedStyle(() => {
+    const s = dimensions.height;// - contentHeight.value
+
+    return { 
+      width: dimensions.width,
+      height: hasSpace.value ? s : 0
+    }
+  });
+
+  const handleScrollToTop = useCallback(() => {
+    scrollAllTo(index, 0);
+  }, [index]);
+
   return (
     <AnimatedFlashList 
-      ref={ref}
+      onScrollToTop={handleScrollToTop}
       onScroll={scrollHandler}
       scrollEventThrottle={16}
+      ref={ref}
+      {...props}
       ListHeaderComponent={
         <Animated.View style={headerOffsetStyle}/>
       }
-      {...props}
+      ListFooterComponent={
+        <Animated.View style={heightOffsetStyle}/>
+      }
       contentContainerStyle={{ paddingBottom: tabBarHeight + 8, ...props.contentContainerStyle }}
     />
   );

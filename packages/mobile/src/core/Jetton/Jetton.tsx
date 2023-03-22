@@ -10,9 +10,8 @@ import {
   PopupMenuItem,
   IconButton,
   Skeleton,
-  TouchableOpacity,
 } from '$uikit';
-import { formatAmountAndLocalize, maskifyTonAddress, ns } from '$utils';
+import { maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
 import { useTheme, useTranslator } from '$hooks';
@@ -24,6 +23,7 @@ import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsLi
 import { Linking, RefreshControl } from 'react-native';
 import { walletAddressSelector } from '$store/wallet';
 import { useJettonPrice } from '$hooks/useJettonPrice';
+import { formatter } from '$utils/formatter';
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const theme = useTheme();
@@ -59,8 +59,11 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         <S.FlexRow>
           <S.JettonAmountWrapper>
             <Text variant="h2">
-              {formatAmountAndLocalize(jetton.balance, jetton.metadata.decimals)}{' '}
-              {jetton.metadata.symbol}
+              {formatter.format(jetton.balance, {
+                decimals: jetton.metadata.decimals,
+                currency: jetton.metadata.symbol,
+                currencySeparator: 'wide',
+              })}
             </Text>
             <Text style={{ marginTop: 2 }} variant="body2" color="foregroundSecondary">
               {total || t('jetton_token')}

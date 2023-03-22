@@ -28,6 +28,7 @@ import { AppearanceBottomSheetProps } from '$core/ModalContainer/AppearanceBotto
 import { ExchangeDB } from '$core/ModalContainer/ExchangeMethod/ExchangeDB';
 import { MarketplacesModalProps } from '$core/ModalContainer/Marketplaces/Marketplaces.interface';
 import { AddEditFavoriteAddressProps } from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress.interface';
+import _ from 'lodash';
 
 export const navigationRef_depreceted = createRef<NavigationContainerRef>();
 export const navigationRef = createNavigationContainerRef();
@@ -100,9 +101,11 @@ export function openBalancesTab() {
 }
 
 export function openWallet(currency: CryptoCurrency) {
-  push(MainStackRouteNames.Wallet, {
-    currency,
-  });
+  _.throttle(() => {
+    navigate(MainStackRouteNames.Wallet, {
+      currency,
+    });
+  }, 1000)();
 }
 
 export function openEditCoins() {

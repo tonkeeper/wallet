@@ -35,7 +35,6 @@ export const SetupNotifications: React.FC = () => {
   return (
     <Screen>
       <Screen.Header 
-        hideBackButton
         rightContent={
           <Button 
             size="navbar_small" 

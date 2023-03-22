@@ -105,6 +105,7 @@
   "transaction_exchange_from_currency": "Из",
   "transaction_confirmations": "Подтверждения",
   "transaction_send_more_button": "Отправить ещё на этот адрес",
+  "transaction_view_in_explorer": "Открыть в эксплорере",
   "transaction_show_subscription_button": "Информация о подписке",
   "transaction_copy_caution": "Будьте осторожны при переходе по внешним ссылкам. Никогда не вводите свою секретную фразу на сторонних ресурсах, вы можете потерять свои средства.\n\n- - -\n\n",
 
@@ -308,13 +309,13 @@
     "screen_title": "Кошелёк",
     "edit_tokens_btn": "Настроить",
     "old_wallets_title": "Cтарые кошельки",
-    "old_wallet_title": "Cтарый кошелек",
+    "old_wallet_title": "Cтарый кошелёк",
     "buy_btn": "Купить",
     "send_btn": "Отправить",
     "receive_btn": "Получить",
     "sell_btn": "Продать",
     "tonkens_tab_lable": "Токены",
-    "collectibles_tab_lable": "NFT"
+    "collectibles_tab_lable": "Коллекции"
   },
 
   "activity": {
