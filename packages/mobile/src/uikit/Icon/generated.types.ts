@@ -69,6 +69,7 @@ export type IconNames =
   | 'ic-settings-28'
   | 'ic-shield-28'
   | 'ic-speed-28'
+  | 'ic-staking-28'
   | 'ic-star-28'
   | 'ic-success-28'
   | 'ic-swap-28'
@@ -174,6 +175,7 @@ export const AllIcons = [
   'ic-settings-28',
   'ic-shield-28',
   'ic-speed-28',
+  'ic-staking-28',
   'ic-star-28',
   'ic-success-28',
   'ic-swap-28',
@@ -280,6 +282,7 @@ export const IconSizes = {
   'ic-settings-28': 28,
   'ic-shield-28': 28,
   'ic-speed-28': 28,
+  'ic-staking-28': 28,
   'ic-star-28': 28,
   'ic-success-28': 28,
   'ic-swap-28': 28,

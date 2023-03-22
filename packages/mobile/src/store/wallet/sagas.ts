@@ -5,7 +5,13 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 
 import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet/index';
-import { EncryptedVault, jettonTransferForwardAmount, UnlockedVault, Vault, Wallet } from '$blockchain';
+import {
+  EncryptedVault,
+  jettonTransferForwardAmount,
+  UnlockedVault,
+  Vault,
+  Wallet,
+} from '$blockchain';
 import { mainActions } from '$store/main';
 import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
 import {
@@ -51,7 +57,7 @@ import {
   setLastRefreshedAt,
   setMigrationState,
 } from '$database';
-import { batchActions, Toast } from '$store';
+import { batchActions, Toast, useStakingStore } from '$store';
 import { toastActions } from '$store/toast';
 import { subscriptionsActions } from '$store/subscriptions';
 import { t } from '$translation';
@@ -288,6 +294,7 @@ function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
     yield put(jettonsActions.loadJettons());
     yield put(ratesActions.loadRates({ onlyCache: false }));
     yield put(mainActions.loadNotifications());
+    yield call(useStakingStore.getState().actions.fetchPools);
     yield call(setLastRefreshedAt, Date.now());
     yield put(subscriptionsActions.loadSubscriptions());
   } catch (e) {
@@ -364,10 +371,8 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
         const amountNano = isJetton ? jettonTransferForwardAmount : toNano(amount);
         const address = yield call([wallet.ton, 'getAddress']);
         const { balance } = yield call(Tonapi.getWalletInfo, address);
-        if (
-          new BigNumber(amountNano).gt(new BigNumber(balance))
-        ) {
-          return onInsufficientFunds({ totalAmount: amountNano, balance })
+        if (new BigNumber(amountNano).gt(new BigNumber(balance))) {
+          return onInsufficientFunds({ totalAmount: amountNano, balance });
         }
       } else {
         yield call(onNext, { fee, isInactive: isUninit });

@@ -1,6 +1,14 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { t } from '$translation';
-import { Button, IconButton, IconButtonList, InternalNotification, Screen, Text, View } from '$uikit';
+import {
+  Button,
+  IconButton,
+  IconButtonList,
+  InternalNotification,
+  Screen,
+  Text,
+  View,
+} from '$uikit';
 import { List } from '$uikit/List/new';
 import { Steezy } from '$styles';
 import { useNavigation } from '$libs/navigation';
@@ -30,6 +38,7 @@ import { useTonkens } from './hooks/useTokens';
 import { useNFTs } from './hooks/useNFTs';
 import { useWallet } from './hooks/useWallet';
 import { useTheme } from '$hooks';
+import { StakingWidget } from './components/StakingWidget';
 
 export const WalletScreen = memo(() => {
   const [tab, setTab] = useState<string>('tokens');
@@ -46,7 +55,7 @@ export const WalletScreen = memo(() => {
 
   const { isRefreshing, isLoaded } = useSelector(walletSelector);
   const isFocused = useIsFocused();
-  
+
   const notifications = useInternalNotifications();
 
   // TODO: rewrite
@@ -83,9 +92,9 @@ export const WalletScreen = memo(() => {
 
   const handlePressRecevie = React.useCallback(() => {
     if (wallet) {
-      nav.go('Receive', { 
+      nav.go('Receive', {
         currency: 'ton',
-        isFromMainScreen: true
+        isFromMainScreen: true,
       });
     } else {
       openRequireWalletModal();
@@ -112,20 +121,14 @@ export const WalletScreen = memo(() => {
         />
       ))}
       <View style={styles.amount} pointerEvents="box-none">
-        <Text variant="num2">
-          {balance.total.fiat}
-        </Text>
+        <Text variant="num2">{balance.total.fiat}</Text>
         {wallet && (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={{ zIndex: 3 }}
             onPress={() => copyText(wallet.address.friendlyAddress)}
             activeOpacity={0.6}
           >
-            <Text
-              style={styles.addressText.static} 
-              color="textSecondary"
-              variant="body2"
-            >
+            <Text style={styles.addressText.static} color="textSecondary" variant="body2">
               {maskifyAddress(wallet.address.friendlyAddress)}
             </Text>
           </TouchableOpacity>
@@ -158,12 +161,11 @@ export const WalletScreen = memo(() => {
     </View>
   );
 
-
   function renderEmpty() {
     return (
       <>
         <Screen.Header
-          backButton={false} 
+          backButton={false}
           title={t('wallet.screen_title')}
           rightContent={<ScanQRButton />}
         />
@@ -176,12 +178,7 @@ export const WalletScreen = memo(() => {
               onPress={() => openWallet(CryptoCurrencies.Ton)}
               leftContent={<TonIcon />}
               chevron
-              subtitle={
-                <ListItemRate
-                  price={rates.ton.price}
-                  trend={rates.ton.trend}
-                />
-              }
+              subtitle={<ListItemRate price={rates.ton.price} trend={rates.ton.trend} />}
             />
           </List>
         </Screen.ScrollView>
@@ -200,7 +197,7 @@ export const WalletScreen = memo(() => {
     return (
       <Tabs>
         <Screen.Header
-          backButton={false} 
+          backButton={false}
           title={t('wallet.screen_title')}
           rightContent={<ScanQRButton />}
         />
@@ -211,8 +208,8 @@ export const WalletScreen = memo(() => {
               onChange={({ value }) => setTab(value)}
               value={tab}
               items={[
-                { label: t('wallet.tonkens_tab_lable'), value: 'tokens',  },
-                { label: t('wallet.collectibles_tab_lable'), value: 'collectibles' }
+                { label: t('wallet.tonkens_tab_lable'), value: 'tokens' },
+                { label: t('wallet.collectibles_tab_lable'), value: 'collectibles' },
               ]}
             />
           </Tabs.Header>
@@ -228,6 +225,7 @@ export const WalletScreen = memo(() => {
                 }
               >
                 <TokenList balance={balance} tokens={tokens} rates={rates} />
+                <StakingWidget />
               </Tabs.ScrollView>
             </Tabs.Section>
             <Tabs.Section index={1}>
@@ -243,9 +241,7 @@ export const WalletScreen = memo(() => {
                 numColumns={3}
                 contentContainerStyle={{ paddingHorizontal: 12 }}
                 estimatedItemSize={1000}
-                renderItem={({ item }) => (
-                  <NFTCardItem item={item} />
-                )}                
+                renderItem={({ item }) => <NFTCardItem item={item} />}
               />
             </Tabs.Section>
           </Tabs.PagerView>
@@ -258,7 +254,7 @@ export const WalletScreen = memo(() => {
     return (
       <>
         <Screen.Header
-          backButton={false} 
+          backButton={false}
           title={t('wallet.screen_title')}
           rightContent={<ScanQRButton />}
         />
@@ -281,23 +277,11 @@ export const WalletScreen = memo(() => {
   }
 
   if (!wallet) {
-    return (
-      <Screen>
-        {renderEmpty()}
-      </Screen>
-    );
+    return <Screen>{renderEmpty()}</Screen>;
   } else if (tokens.list.length + nfts.length + 1 > 10) {
-    return (
-      <Screen>
-        {renderTabs()}
-      </Screen>
-    );
+    return <Screen>{renderTabs()}</Screen>;
   } else {
-    return (
-      <Screen>
-        {renderCompact()}
-      </Screen>
-    );
+    return <Screen>{renderCompact()}</Screen>;
   }
 });
 
@@ -312,9 +296,9 @@ const styles = Steezy.create({
   amount: {
     paddingTop: 29,
     alignItems: 'center',
-    marginBottom: 24.5
+    marginBottom: 24.5,
   },
   addressText: {
-    marginTop: 7.5
+    marginTop: 7.5,
   },
 });

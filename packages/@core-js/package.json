@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "author": "Nikita Kuznetsov <nkuz915@gmail.com>",
   "description": "Core features and state for tonkeeper web wallet",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "rm -fr dist && yarn generate:sdkV1 && yarn generate:sdkV2 && tsc",
     "start": "tsc -w",

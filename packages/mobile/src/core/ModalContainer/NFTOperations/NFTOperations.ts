@@ -365,13 +365,11 @@ export class NFTOperations {
     return data.collectionContentUri;
   }
 
-  public async signRaw(params: SignRawParams) {
+  public async signRaw(params: SignRawParams, sendMode = 3) {
     const wallet = this.getCurrentWallet();
 
     const signRawMethods = async (secretKey?: Uint8Array) => {
       const seqno = await this.getSeqno((await wallet.getAddress()).toString(false));
-
-      const sendMode = 3;
       const signingMessage = (wallet as any).createSigningMessage(seqno);
 
       const messages = [...params.messages].splice(0, 4);

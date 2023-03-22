@@ -9,6 +9,7 @@ module.exports = (async () => {
     watchFolders: [
       path.resolve(__dirname, '../../node_modules'),
       path.resolve(__dirname, '../../node_modules/@tonkeeper/shared'),
+      path.resolve(__dirname, '../../node_modules/@tonkeeper/core'),
     ],
     transformer: {
       getTransformOptions: async () => ({

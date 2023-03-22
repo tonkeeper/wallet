@@ -1,45 +1,68 @@
+import { NFTOperations } from '$core/ModalContainer/NFTOperations/NFTOperations';
+import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { SendAmount } from '$core/Send/Send.interface';
-import { useFiatValue, useTranslator } from '$hooks';
+import { useFiatValue, useInstance, useTranslator, useWallet } from '$hooks';
+import { Ton } from '$libs/Ton';
 import { AppStackRouteNames } from '$navigation';
 import { AppStackParamList } from '$navigation/AppStack';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import { CryptoCurrencies } from '$shared/constants';
+import { getStakingPoolByAddress, useStakingStore } from '$store';
+import { walletSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
-import { delay, parseLocaleNumber } from '$utils';
+import { parseLocaleNumber } from '$utils';
+import { getTimeSec } from '$utils/getTimeSec';
 import { RouteProp } from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { useSelector } from 'react-redux';
+import { AccountEvent } from 'tonapi-sdk-js';
+import { shallow } from 'zustand/shallow';
 import { AmountStep, ConfirmStep } from './steps';
-import { StakingSendSteps } from './types';
-
-const getMessage = (provider: string, amount: string, isWithdrawal?: boolean) => {
-  if (provider === 'whales') {
-    return isWithdrawal ? `Request withdraw of ${amount} TON asdasdasd` : 'Deposit';
-  }
-  if (provider === 'tf') {
-    return isWithdrawal ? 'w' : 'Deposit';
-  }
-
-  return '';
-};
+import { StakingSendSteps, StakingTransactionType } from './types';
+import { getStakeSignRawMessage, getWithdrawalFee } from './utils';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
 }
 
+const getTitle = (
+  transactionType: StakingTransactionType,
+  t: ReturnType<typeof useTranslator>,
+) => {
+  switch (transactionType) {
+    case StakingTransactionType.WITHDRAWAL:
+      return t('staking.withdrawal_request');
+    case StakingTransactionType.WITHDRAWAL_CONFIRM:
+      return t('staking.withdrawal_confrim');
+    case StakingTransactionType.DEPOSIT:
+    default:
+      return t('staking.top_up');
+  }
+};
+
 export const StakingSend: FC<Props> = (props) => {
   const {
     route: {
-      params: { isWithdrawal = false },
+      params: { poolAddress, transactionType },
     },
   } = props;
 
-  const apy = 6.79608;
+  const isWithdrawal = transactionType === StakingTransactionType.WITHDRAWAL;
+  const isWithdrawalConfrim =
+    transactionType === StakingTransactionType.WITHDRAWAL_CONFIRM;
 
-  const providerId = 'whales';
+  const unlockVault = useUnlockVault();
 
-  const stakingBalance = '100';
+  const pool = useStakingStore((s) => getStakingPoolByAddress(s, poolAddress), shallow);
+  const poolStakingInfo = useStakingStore((s) => s.stakingInfo[pool.address], shallow);
+
+  const { apy } = pool;
+
+  const stakingBalance = Ton.fromNano(poolStakingInfo?.amount ?? '0');
+  const pendingDeposit = Ton.fromNano(poolStakingInfo?.pendingDeposit ?? '0');
+  const readyWithdraw = Ton.fromNano(poolStakingInfo?.readyWithdraw ?? '0');
 
   const t = useTranslator();
 
@@ -64,22 +87,40 @@ export const StakingSend: FC<Props> = (props) => {
     () => stepsScrollTop.value[currentStep.id] || 0,
   );
 
-  const [amount, setAmount] = useState<SendAmount>({ value: '0', all: false });
+  const { address } = useSelector(walletSelector);
+  const walletAddress = address?.ton || '';
+  const wallet = useWallet();
+  const operations = useInstance(() => new NFTOperations(wallet));
+
+  const [amount, setAmount] = useState<SendAmount>({ value: readyWithdraw, all: false });
 
   const [isPreparing, setPreparing] = useState(false);
   const [isSending, setSending] = useState(false);
 
-  const message = getMessage(providerId, amount.value, isWithdrawal);
+  const [accountEvent, setAccountEvent] = useState<AccountEvent | null>(null);
 
-  const estimatedTopUp = useMemo(() => {
+  const estimatedCurrentReward = useMemo(() => {
+    const apyBN = new BigNumber(apy).dividedBy(100);
+    const bigNum = new BigNumber(stakingBalance).plus(new BigNumber(pendingDeposit));
+
+    return bigNum.multipliedBy(apyBN);
+  }, [apy, pendingDeposit, stakingBalance]);
+
+  const estimatedTopUpReward = useMemo(() => {
     const apyBN = new BigNumber(apy).dividedBy(100);
     const bigNum = new BigNumber(parseLocaleNumber(amount.value || '0'));
 
-    return bigNum.plus(bigNum.multipliedBy(apyBN)).toFixed(2);
-  }, [amount.value]);
+    return bigNum.multipliedBy(apyBN).plus(estimatedCurrentReward);
+  }, [amount.value, apy, estimatedCurrentReward]);
 
-  const afterTopUpReward = useFiatValue(CryptoCurrencies.Ton, estimatedTopUp);
-  const currentReward = useFiatValue(CryptoCurrencies.Ton, '0');
+  const afterTopUpReward = useFiatValue(
+    CryptoCurrencies.Ton,
+    estimatedTopUpReward.toString(),
+  );
+  const currentReward = useFiatValue(
+    CryptoCurrencies.Ton,
+    estimatedCurrentReward.toString(),
+  );
 
   const handleBack = useCallback(() => stepViewRef.current?.goBack(), []);
 
@@ -87,21 +128,96 @@ export const StakingSend: FC<Props> = (props) => {
     setCurrentStep({ id: id as StakingSendSteps, index });
   }, []);
 
-  const hideBackButton = currentStep.index === 0;
+  const hideBackButton = currentStep.index === 0 || isWithdrawalConfrim;
 
   const hideTitle = currentStep.id === StakingSendSteps.CONFIRM;
 
-  const prepareConfirmSending = useCallback(async () => {
-    console.log('todo');
+  const actionRef = useRef<Awaited<ReturnType<typeof operations.signRaw>> | null>(null);
 
-    stepViewRef.current?.go(StakingSendSteps.CONFIRM);
-  }, []);
+  const prepareConfirmSending = useCallback(async () => {
+    try {
+      setPreparing(true);
+
+      const message = await getStakeSignRawMessage(
+        pool,
+        Ton.toNano(parseLocaleNumber(amount.value)),
+        transactionType,
+        amount.all,
+      );
+
+      const action = await operations.signRaw(
+        {
+          source: walletAddress,
+          valid_until: getTimeSec() + 10 * 60,
+          messages: [message],
+        },
+        transactionType === StakingTransactionType.DEPOSIT && amount.all ? 128 : 3,
+      );
+
+      actionRef.current = action;
+
+      const data = await action.estimateTx();
+
+      setAccountEvent(data);
+
+      stepViewRef.current?.go(StakingSendSteps.CONFIRM);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setPreparing(false);
+    }
+  }, [amount, operations, pool, transactionType, walletAddress]);
+
+  const totalFee = useMemo(() => {
+    const fee = new BigNumber(Ton.fromNano(accountEvent?.fee.total.toString() ?? '0'));
+
+    if (
+      [
+        [
+          StakingTransactionType.WITHDRAWAL,
+          StakingTransactionType.WITHDRAWAL_CONFIRM,
+        ].includes(transactionType),
+      ]
+    ) {
+      const withdrawalFee = new BigNumber(Ton.fromNano(getWithdrawalFee(pool)));
+
+      return fee.plus(withdrawalFee).toString();
+    }
+
+    if (fee.isEqualTo(0)) {
+      return undefined;
+    }
+
+    return fee.toString();
+  }, [accountEvent, pool, transactionType]);
 
   const sendTx = useCallback(async () => {
-    await delay(3000);
-  }, []);
+    if (!actionRef.current) {
+      return Promise.reject();
+    }
 
-  const title = isWithdrawal ? t('staking.withdrawal_request') : t('staking.top_up');
+    try {
+      setSending(true);
+
+      const vault = await unlockVault();
+      const privateKey = await vault.getTonPrivateKey();
+
+      await actionRef.current.send(privateKey);
+    } catch (e) {
+      throw e;
+    } finally {
+      setSending(false);
+    }
+  }, [unlockVault]);
+
+  useEffect(() => {
+    if (isWithdrawalConfrim) {
+      prepareConfirmSending();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isWithdrawalConfrim]);
+
+  const title = getTitle(transactionType, t);
 
   return (
     <>
@@ -118,14 +234,17 @@ export const StakingSend: FC<Props> = (props) => {
       </NavBar>
       <StepView
         ref={stepViewRef}
-        backDisabled={isSending || isPreparing}
+        backDisabled={isSending || isPreparing || isWithdrawalConfrim}
         onChangeStep={handleChangeStep}
-        initialStepId={StakingSendSteps.AMOUNT}
+        initialStepId={
+          isWithdrawalConfrim ? StakingSendSteps.CONFIRM : StakingSendSteps.AMOUNT
+        }
         useBackHandler
       >
         <StepViewItem id={StakingSendSteps.AMOUNT}>
           {(stepProps) => (
             <AmountStep
+              pool={pool}
               isWithdrawal={isWithdrawal}
               isPreparing={isPreparing}
               amount={amount}
@@ -142,8 +261,9 @@ export const StakingSend: FC<Props> = (props) => {
         <StepViewItem id={StakingSendSteps.CONFIRM}>
           {(stepProps) => (
             <ConfirmStep
-              isWithdrawal={isWithdrawal}
-              message={message}
+              transactionType={transactionType}
+              pool={pool}
+              totalFee={totalFee}
               amount={amount}
               stepsScrollTop={stepsScrollTop}
               sendTx={sendTx}

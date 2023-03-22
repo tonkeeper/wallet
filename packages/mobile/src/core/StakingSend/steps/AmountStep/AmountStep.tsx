@@ -25,8 +25,12 @@ import { CryptoCurrencies } from '$shared/constants';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
 import { StakingSendSteps } from '$core/StakingSend/types';
+import { PoolInfo } from '@tonkeeper/core';
+import { Ton } from '$libs/Ton';
+import { stakingFormatter } from '$utils/formatter';
 
 interface Props extends StepComponentProps {
+  pool: PoolInfo;
   isWithdrawal: boolean;
   stakingBalance: string;
   isPreparing: boolean;
@@ -38,10 +42,9 @@ interface Props extends StepComponentProps {
   onContinue: () => void;
 }
 
-const nextCycleTimestamp = Date.now() / 1000 + 3600 * 11;
-
 const AmountStepComponent: FC<Props> = (props) => {
   const {
+    pool,
     isWithdrawal,
     stakingBalance,
     isPreparing,
@@ -49,6 +52,7 @@ const AmountStepComponent: FC<Props> = (props) => {
     amount,
     stepsScrollTop,
     afterTopUpReward,
+    currentReward,
     setAmount,
     onContinue,
   } = props;
@@ -61,7 +65,7 @@ const AmountStepComponent: FC<Props> = (props) => {
     currencyTitle,
   } = useCurrencyToSend(CryptoCurrencies.Ton);
 
-  const minAmount = isWithdrawal ? '0' : '50';
+  const minAmount = isWithdrawal ? '0' : Ton.fromNano(pool.minStake);
 
   const balance = isWithdrawal ? stakingBalance : walletBalance;
 
@@ -140,7 +144,7 @@ const AmountStepComponent: FC<Props> = (props) => {
           </S.InputContainer>
           <Spacer y={16} />
           {isWithdrawal ? (
-            <NextCycle timestamp={nextCycleTimestamp} frequency={36} />
+            <NextCycle cycleStart={pool.cycleStart} cycleEnd={pool.cycleEnd} />
           ) : (
             <>
               <S.TitleContainer>
@@ -153,7 +157,9 @@ const AmountStepComponent: FC<Props> = (props) => {
                   </S.ItemLabel>
                   <S.ItemContent>
                     <S.ItemValue>
-                      {t('staking.rewards.value', { value: afterTopUpReward.amount })}
+                      {t('staking.rewards.value', {
+                        value: stakingFormatter.format(afterTopUpReward.amount),
+                      })}
                     </S.ItemValue>
                     <S.ItemSubValue>{afterTopUpReward.fiatInfo.amount}</S.ItemSubValue>
                   </S.ItemContent>
@@ -164,10 +170,12 @@ const AmountStepComponent: FC<Props> = (props) => {
                     {t('staking.rewards.current')}
                   </S.ItemLabel>
                   <S.ItemContent>
-                    <S.ItemValue>{t('staking.rewards.value', { value: 0 })}</S.ItemValue>
-                    <S.ItemSubValue>
-                      {t('staking.rewards.value', { value: 0 })}
-                    </S.ItemSubValue>
+                    <S.ItemValue>
+                      {t('staking.rewards.value', {
+                        value: stakingFormatter.format(currentReward.amount),
+                      })}
+                    </S.ItemValue>
+                    <S.ItemSubValue>{currentReward.fiatInfo.amount}</S.ItemSubValue>
                   </S.ItemContent>
                 </S.Item>
               </S.Table>

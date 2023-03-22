@@ -1,6 +1,6 @@
 import styled from '$styled';
 import { Text } from '$uikit';
-import { ns } from '$utils';
+import { nfs, ns } from '$utils';
 import FastImage from 'react-native-fast-image';
 import Animated from 'react-native-reanimated';
 
@@ -35,12 +35,14 @@ export const ItemLabel = styled(Text).attrs({
 })``;
 
 export const ItemContent = styled.View`
-  align-items: flex-end;
+  flex: 1;
+  padding-left: ${ns(16)}px;
 `;
 
 export const ItemValue = styled(Text).attrs({
   variant: 'label1',
   textAlign: 'right',
+  numberOfLines: 1,
 })``;
 
 export const ItemSubValue = styled(Text).attrs({

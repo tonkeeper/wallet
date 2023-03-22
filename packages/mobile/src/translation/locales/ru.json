@@ -686,7 +686,6 @@
   "transfer_deeplink_amount_error": "Некорректный запрос суммы",
 
   "staking": {
-    "staking_provider_desc": "Minimum deposit from %{minDeposit} TON.\nEarn up to to %{maxApy}%.",
     "staking_pool_desc": "APY ≈ %{apy}%, pool fee %{feePercentage}%",
     "top_up": "Top up",
     "withdrawal_request": "Withdrawal request",
@@ -757,9 +756,6 @@
       "fee": {
         "label": "Fee",
         "value": "≈ %{value} TON"
-      },
-      "message": {
-        "label": "Message"
       }
     }
   }
