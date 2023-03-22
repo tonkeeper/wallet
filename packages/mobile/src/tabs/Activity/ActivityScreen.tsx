@@ -167,6 +167,7 @@ export const ActivityScreen: FC = () => {
             onRefresh={handleRefresh}
             refreshing={isRefreshing && isFocused}
             tintColor={theme.colors.foregroundPrimary}
+            progressBackgroundColor={theme.colors.foregroundPrimary}
           />
         }
         eventsInfo={eventsInfo}
