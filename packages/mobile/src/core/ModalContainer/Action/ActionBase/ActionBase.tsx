@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import Clipboard from '@react-native-community/clipboard';
 
@@ -9,8 +9,8 @@ import { ns } from '$utils';
 import { toastActions } from '$store/toast';
 import { ActionBaseProps } from './ActionBase.interface';
 import { useTranslator } from '$hooks';
-import { openSend, openSubscription } from '$navigation';
-import { CryptoCurrencies } from '$shared/constants';
+import { openDAppBrowser, openSend, openSubscription } from '$navigation';
+import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { Modal } from '$libs/navigation';
 
 export const ActionBase: FC<ActionBaseProps> = ({
@@ -26,6 +26,7 @@ export const ActionBase: FC<ActionBaseProps> = ({
   label,
   sentLabel,
   jettonAddress,
+  eventId,
 }) => {
   const dispatch = useDispatch();
   const [isClosed, setClosed] = useState(false);
@@ -62,6 +63,10 @@ export const ActionBase: FC<ActionBaseProps> = ({
     }, 500);
   }, [comment, jettonAddress, recipientAddress]);
 
+  const handleOpenInExplorer = useCallback(() => {
+    openDAppBrowser(getServerConfig('transactionExplorer').replace('%s', eventId));
+  }, [eventId]);
+
   function renderFooterButton() {
     if (shouldShowOpenSubscriptionButton) {
       return (
@@ -76,7 +81,11 @@ export const ActionBase: FC<ActionBaseProps> = ({
         </S.SendButton>
       );
     } else {
-      return null;
+      return (
+        <S.SendButton onPress={handleOpenInExplorer}>
+          {t('transaction_view_in_explorer')}
+        </S.SendButton>
+      );
     }
   }
 
@@ -132,9 +141,17 @@ export const ActionBase: FC<ActionBaseProps> = ({
               </Highlight>,
             ])}
           </S.Table>
-          {renderFooterButton()}
+          <View style={styles.buttonContainer}>
+            {renderFooterButton()}
+          </View>
         </View>
       </Modal.Content>
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    paddingBottom: 16
+  }
+});

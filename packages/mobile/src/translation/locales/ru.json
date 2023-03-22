@@ -105,6 +105,7 @@
   "transaction_exchange_from_currency": "Из",
   "transaction_confirmations": "Подтверждения",
   "transaction_send_more_button": "Отправить ещё на этот адрес",
+  "transaction_view_in_explorer": "Открыть в эксплорере",
   "transaction_show_subscription_button": "Информация о подписке",
   "transaction_copy_caution": "Будьте осторожны при переходе по внешним ссылкам. Никогда не вводите свою секретную фразу на сторонних ресурсах, вы можете потерять свои средства.\n\n- - -\n\n",
 
