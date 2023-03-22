@@ -1,5 +1,5 @@
 import styled from '$styled';
-import { Text } from '$uikit';
+import { Highlight, Text } from '$uikit';
 import { ns } from '$utils';
 
 export const Wrap = styled.View`
@@ -13,6 +13,22 @@ export const Content = styled.View`
 export const BalanceContainer = styled.View`
   background: ${({ theme }) => theme.colors.backgroundSecondary};
   border-radius: ${ns(16)}px;
+  padding: ${ns(16)}px;
+  overflow: hidden;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+export const BalanceTouchableContainer = styled.View`
+  background: ${({ theme }) => theme.colors.backgroundSecondary};
+  border-radius: ${ns(16)}px;
+  position: relative;
+  overflow: hidden;
+`;
+
+export const BalanceTouchable = styled(Highlight).attrs({ useRNGHComponent: true })``;
+
+export const BalanceTouchableContent = styled.View`
   padding: ${ns(16)}px;
   overflow: hidden;
   flex-direction: row;

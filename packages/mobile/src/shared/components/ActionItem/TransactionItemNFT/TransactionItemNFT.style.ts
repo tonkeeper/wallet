@@ -12,12 +12,12 @@ export const Background = styled.View<{ withImage: boolean }>`
   ${({ withImage }) =>
     !withImage
       ? `
-        border-top-left-radius: ${ns(RADIUS.normal)}px;
-        border-bottom-left-radius: ${ns(RADIUS.normal)}px;
+        border-top-left-radius: ${ns(12)}px;
+        border-bottom-left-radius: ${ns(12)}px;
       `
       : ''}
-  border-top-right-radius: ${ns(RADIUS.normal)}px;
-  border-bottom-right-radius: ${ns(RADIUS.normal)}px;
+  border-top-right-radius: ${ns(12)}px;
+  border-bottom-right-radius: ${ns(12)}px;
   position: absolute;
   z-index: 0;
   top: 0;
@@ -29,7 +29,7 @@ export const Background = styled.View<{ withImage: boolean }>`
 export const TextWrap = styled.View`
   justify-content: center;
   z-index: 2;
-  padding: ${ns(12)}px ${ns(12)}px ${ns(8)}px ${ns(12)}px;
+  padding: ${ns(12)}px ${ns(12)}px ${ns(10)}px ${ns(12)}px;
   height: ${ns(64)}px;
 `;
 
@@ -43,7 +43,7 @@ export const Container = styled.View`
 `;
 
 export const Pressable = styled(Highlight)`
-  border-radius: ${ns(RADIUS.normal)}px;
+  border-radius: ${ns(12)}px;
 `;
 
 export const Image = styled(FastImage).attrs({
@@ -52,8 +52,8 @@ export const Image = styled(FastImage).attrs({
   z-index: 2;
   width: ${ns(64)}px;
   height: ${ns(64)}px;
-  border-bottom-left-radius: ${ns(RADIUS.normal)}px;
-  border-top-left-radius: ${ns(RADIUS.normal)}px;
+  border-bottom-left-radius: ${ns(12)}px;
+  border-top-left-radius: ${ns(12)}px;
   background: ${({ theme }) => theme.colors.backgroundQuaternary};
 `;
 
@@ -62,8 +62,8 @@ export const GlobeIcon = styled(Icon).attrs({
   name: 'globe-96',
   colorless: true,
   imageStyle: {
-    borderBottomLeftRadius: ns(RADIUS.normal),
-    borderTopLeftRadius: ns(RADIUS.normal),
+    borderBottomLeftRadius: ns(12),
+    borderTopLeftRadius: ns(12),
   },
 })``;
 

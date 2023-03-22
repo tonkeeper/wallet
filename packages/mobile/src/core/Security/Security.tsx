@@ -103,7 +103,7 @@ export const Security: FC = () => {
           </CellSectionItem>
         </CellSection>
         <S.BiometryTip>
-          <Text variant="label2" color="foregroundSecondary">
+          <Text variant="body2" color="foregroundSecondary">
             {t('security_use_biometry_tip', {
               biometryType: isTouchId
                 ? t(`platform.${platform}.fingerprint`)
@@ -123,28 +123,30 @@ export const Security: FC = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: ns(16),
-            paddingTop: ns(16),
             paddingBottom: tabBarHeight,
           }}
           scrollEventThrottle={16}
         >
           {renderBiometryToggler()}
           <CellSection>
-            <CellSectionItem onPress={handleChangePasscode} icon="ic-key-24">
+            <CellSectionItem onPress={handleChangePasscode} icon="ic-lock-28">
               {t('security_change_passcode')}
             </CellSectionItem>
-            <CellSectionItem onPress={handleResetPasscode} icon="ic-reset-24">
+            <CellSectionItem
+              onPress={handleResetPasscode}
+              icon="ic-arrow-2-circlepath-28"
+            >
               {t('security_reset_passcode')}
             </CellSectionItem>
           </CellSection>
           <CellSection>
             {!!wallet && (
-              <CellSectionItem onPress={handleBackupSettings} icon="ic-backup-24">
+              <CellSectionItem onPress={handleBackupSettings} icon="ic-key-28">
                 {t('settings_backup_seed')}
               </CellSectionItem>
             )}
             {!!wallet && wallet.ton.isLockup() && (
-              <CellSectionItem onPress={handleCopyLockupConfig} icon="ic-backup-24">
+              <CellSectionItem onPress={handleCopyLockupConfig} icon="ic-key-28">
                 Copy lockup config
               </CellSectionItem>
             )}

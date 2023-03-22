@@ -1,6 +1,7 @@
 const cp = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const handImportedIcons = require('../src/assets/icons/hand-imported.json');
 
 const sourcePath = './src/assets/icons/svg';
 const destinationPath = './src/assets/icons/png';
@@ -59,10 +60,14 @@ async function getFiles(path = "./") {
 
     console.log('[step 0]: clear directory');
     const directory = destinationPath;
+    const skipFiles = handImportedIcons.map((icon) => icon.filename + '@4x.png');
     fs.readdir(directory, (err, files) => {
       if (err) throw err;
     
       for (const file of files) {
+        if (skipFiles.includes(file)) {
+          continue;
+        }
         fs.unlink(path.join(directory, file), err => {
           if (err) throw err;
         });
@@ -101,12 +106,17 @@ async function getFiles(path = "./") {
 
     // Types
     const types = `
-      export type IconNames = ${Array.from(svgs, i => `\'${i.filename}\'`).join(' | ')};
+      export type IconNames = ${Array.from(
+        [...svgs, ...handImportedIcons],
+        (i) => `\'${i.filename}\'`,
+      ).join(' | ')};
 
-      export const AllIcons = ${JSON.stringify(Array.from(svgs, i => i.filename))};
+      export const AllIcons = ${JSON.stringify(
+        Array.from([...svgs, ...handImportedIcons], (i) => i.filename),
+      )};
 
       export const IconSizes = {
-        ${svgs.map((icon) => {
+        ${[...svgs, ...handImportedIcons].map((icon) => {
           const size = icon.size
           return `'${icon.filename}': ${size},\n\t`
         }).join('')}
@@ -133,9 +143,11 @@ async function getFiles(path = "./") {
     // Mobile
     const IconsMobile = `
       export const MobileIconsList = {
-        ${svgs.map((icon) => {
-          return `'${icon.filename}': require('${importMobilePath}/${icon.filename}.png'),\n`
-        }).join('')}
+        ${[...svgs, ...handImportedIcons]
+          .map((icon) => {
+            return `'${icon.filename}': require('${importMobilePath}/${icon.filename}.png'),\n`;
+          })
+          .join('')}
       };
     `;
 

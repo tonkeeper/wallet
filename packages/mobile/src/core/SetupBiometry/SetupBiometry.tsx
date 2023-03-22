@@ -125,7 +125,7 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
             {t('setup_biometry_title', { biometryType: biometryNameGenitive })}
           </Text>
           <S.CaptionWrapper>
-            <Text color="foregroundSecondary" textAlign="center" variant="label1">
+            <Text color="foregroundSecondary" textAlign="center" variant="body1">
               {t('setup_biometry_caption', {
                 biometryType: isTouchId
                   ? t(`platform.${platform}.capitalized_fingerprint`)

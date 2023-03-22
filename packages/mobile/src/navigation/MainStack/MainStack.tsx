@@ -16,7 +16,7 @@ import {
   StakingPools,
   StakingPoolDetails,
 } from '$core';
-import { useTheme } from '$hooks';
+import { useStaking, useTheme } from '$hooks';
 import { DevStack } from '../DevStack/DevStack';
 import { useAttachScreen } from '../AttachScreen';
 import { SetupNotifications } from '$core/SetupNotifications/SetupNotifications';
@@ -33,6 +33,7 @@ export const MainStack: FC = () => {
   const theme = useTheme();
 
   useRemoteBridge();
+  useStaking();
 
   const initialRouteName = !attachedScreen.pathname
     ? MainStackRouteNames.Tabs

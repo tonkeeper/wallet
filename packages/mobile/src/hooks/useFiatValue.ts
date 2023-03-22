@@ -4,10 +4,10 @@ import { useMemo } from 'react';
 
 import { CryptoCurrency, Decimals } from '$shared/constants';
 import { useFiatRate } from '$hooks/useFiatRate';
-import { formatAmount, toLocaleNumber, truncateDecimal } from '$utils';
+import { formatAmount, toLocaleNumber } from '$utils';
 import { TonThemeColor } from '$styled';
-import { formatFiatCurrencyAmount } from '$utils/currency';
 import { fiatCurrencySelector } from '$store/main';
+import { formatter } from '$utils/formatter';
 
 export function useFiatValue(currency: CryptoCurrency, value: string) {
   const fiatRate = useFiatRate(currency);
@@ -18,11 +18,7 @@ export function useFiatValue(currency: CryptoCurrency, value: string) {
   }, [value, currency]);
 
   const formattedRate = useMemo(
-    () =>
-      formatFiatCurrencyAmount(
-        truncateDecimal(fiatRate.today.toString(), 2),
-        fiatCurrency,
-      ),
+    () => formatter.format(fiatRate.today.toString(), { currency: fiatCurrency }),
     [fiatCurrency, fiatRate],
   );
 
@@ -62,9 +58,9 @@ export function useFiatValue(currency: CryptoCurrency, value: string) {
       amountResult =
         amountInUsd === '-'
           ? amountInUsd
-          : formatFiatCurrencyAmount(amountInUsd, fiatCurrency);
+          : formatter.format(amountInUsd, { currency: fiatCurrency });
     } else {
-      amountResult = formatFiatCurrencyAmount('0.00', fiatCurrency);
+      amountResult = formatter.format('0.00', { currency: fiatCurrency });
     }
 
     percent = toLocaleNumber(percent);

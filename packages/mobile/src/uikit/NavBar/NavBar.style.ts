@@ -92,6 +92,7 @@ export const Title = styled(Text).attrs(() => ({
   variant: 'h3',
   textAlign: 'center',
   reanimated: true,
+  numberOfLines: 1,
 }))`
   padding: 0 ${hNs(NavBarHeight)}px;
   flex: 1;

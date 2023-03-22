@@ -43,7 +43,8 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     appsflyerDevKey: data.appsflyerDevKey,
     appsflyerAppId: data.appsflyerAppId,
     tonNFTsMarketplaceEndpoint: data.tonNFTsMarketplaceEndpoint,
-    tonapiIOEndpoint: data.tonapiIOEndpoint || 'https://keeper.tonapi.io',
+    // tonapiIOEndpoint: data.tonapiIOEndpoint || 'https://keeper.tonapi.io',
+    tonapiIOEndpoint: 'https://tonapi.io',
     tonApiKey: data.tonApiKey,
     tonapiMainnetHost: data.tonapiMainnetHost || 'https://tonapi.io',
     tonapiTestnetHost: data.tonapiTestnetHost || 'https://testnet.tonapi.io',
@@ -59,15 +60,16 @@ export function setServerConfig(data: any, isTestnet: boolean) {
 }
 
 export function updateServerConfig(jsonConfig: any) {
-  if (!jsonConfig) return;
+  if (!jsonConfig) {
+    return;
+  }
   try {
     Object.entries(JSON.parse(jsonConfig)).map(([key, value]) => {
       if (config) {
         config[key] = value;
       }
     });
-  } catch (e) {
-  }
+  } catch (e) {}
 }
 
 export function isServerConfigLoaded() {

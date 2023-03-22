@@ -127,7 +127,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   const primaryCurrency = yield call(getPrimaryFiatCurrency);
   const balances = yield call(getBalances);
   const isNewSecurityFlow = yield call(MainDB.isNewSecurityFlow);
-  const jettonsEnabled = yield call(MainDB.isJettonsEnabled);
   const excludedJettons = yield call(MainDB.getExcludedJettons);
   const accent = yield call(MainDB.getAccent);
   const tonCustomIcon = yield call(MainDB.getTonCustomIcon);
@@ -182,7 +181,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
         fiatCurrency: primaryCurrency || FiatCurrencies.Usd,
       }),
       mainActions.setShowV4R1(showV4R1),
-      jettonsActions.setShowJettons(jettonsEnabled),
       jettonsActions.setExcludedJettons(excludedJettons),
       mainActions.toggleIntro(!isIntroShown),
       walletActions.setWallet(wallet),

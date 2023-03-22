@@ -1,6 +1,14 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { t } from '$translation';
-import { Button, IconButton, IconButtonList, InternalNotification, Screen, Text, View } from '$uikit';
+import {
+  Button,
+  IconButton,
+  IconButtonList,
+  InternalNotification,
+  Screen,
+  Text,
+  View,
+} from '$uikit';
 import { List } from '$uikit/List/new';
 import { useNavigation } from '$libs/navigation';
 import { ScanQRButton } from '../../components/ScanQRButton';
@@ -29,6 +37,7 @@ import { useWallet } from './hooks/useWallet';
 import { useTheme } from '$hooks';
 import { Steezy } from '$styles';
 import { BalancesList } from './components/BalancesList';
+import { StakingWidget } from './components/StakingWidget';
 
 export const WalletScreen = memo(() => {
   const [tab, setTab] = useState<string>('tokens');

@@ -46,6 +46,7 @@ export const JettonName = styled.Text.attrs({
   color: ${({ theme }) => theme.colors.foregroundPrimary};
   font-size: ${nfs(16)}px;
   line-height: 24px;
+  margin-right: ${ns(16)}px;
 `;
 
 export const JettonInfo = styled.Text.attrs({

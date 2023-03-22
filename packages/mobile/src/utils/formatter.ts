@@ -18,3 +18,17 @@ export const formatter = new AmountFormatter({
     return decimal;
   },
 });
+
+export const stakingFormatter = new AmountFormatter({
+  getLocaleFormat: () => getNumberFormatSettings(),
+  getDefaultDecimals: (amount) => {
+    let decimal = 2;
+    if (amount.isEqualTo('0')) {
+      decimal = 0;
+    } else if (amount.isLessThan('100')) {
+      decimal = 4;
+    }
+
+    return decimal;
+  },
+});

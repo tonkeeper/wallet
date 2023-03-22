@@ -15,7 +15,12 @@ import {
   IconButton,
   Loader,
 } from '$uikit';
-import { openReceive, openRequireWalletModal, openSend } from '$navigation';
+import {
+  openDAppBrowser,
+  openReceive,
+  openRequireWalletModal,
+  openSend,
+} from '$navigation';
 import {
   walletActions,
   walletAddressSelector,
@@ -45,16 +50,19 @@ const exploreActions = [
     icon: 'ic-twitter-16',
     text: 'Twitter',
     url: 'https://twitter.com/ton_blockchain',
+    scheme: 'twitter://search',
   },
   {
     icon: 'ic-telegram-16',
     text: t('wallet_chat'),
     url: t('wallet_toncommunity_chat_link'),
+    scheme: 'tg://',
   },
   {
     icon: 'ic-telegram-16',
     text: t('wallet_community'),
     url: t('wallet_toncommunity_link'),
+    scheme: 'tg://',
   },
   {
     icon: 'ic-doc-16',
@@ -70,6 +78,7 @@ const exploreActions = [
     icon: 'ic-code-16',
     text: t('wallet_source_code'),
     url: 'https://github.com/ton-blockchain/ton',
+    scheme: 'github://',
   },
 ];
 
@@ -107,6 +116,21 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleOpenAction = useCallback(async (action: any) => {
+    try {
+      if (action.scheme) {
+        const canOpenUrl = await Linking.canOpenURL(action.scheme);
+        if (canOpenUrl) {
+          return Linking.openURL(action.url);
+        }
+      }
+      openDAppBrowser(action.url);
+    } catch (e) {
+      console.log(e);
+      openDAppBrowser(action.url);
+    }
   }, []);
 
   const currencyUpper = useMemo(() => {
@@ -258,7 +282,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
               <S.ExploreButtons>
                 {exploreActions.map((action) => (
                   <Button
-                    onPress={() => Linking.openURL(action.url)}
+                    onPress={() => handleOpenAction(action)}
                     key={action.text}
                     before={
                       <Icon
@@ -310,6 +334,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     wallet,
     handleDeploy,
     lockupDeploy,
+    handleOpenAction,
   ]);
 
   return (
