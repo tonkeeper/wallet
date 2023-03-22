@@ -15,6 +15,7 @@ type AmountFormatterOptions = {
 type AmountFormatOptions = {
   decimals?: number;
   currency?: string;
+  currencySeparator?: 'thin' | 'wide'; // Default thin;
   ignoreZeroTruncate?: boolean;
 };
 
@@ -23,6 +24,10 @@ type AmountNumber = string | number | BigNumber;
 export class AmountFormatter {
   private getDefaultDecimals: (bn: BigNumber) => number;
   private getLocaleFormat: () => LocaleFormat;
+  private spaces = {
+    thin: ' ',
+    wide: ' ',
+  };
 
   constructor(options: AmountFormatterOptions) {
     if (options.getDefaultDecimals) {
@@ -58,6 +63,7 @@ export class AmountFormatter {
   }
 
   public format(amount: AmountNumber = 0, options: AmountFormatOptions = {}) {
+    const { currencySeparator = 'thin' } = options;
     let bn = this.toBN(amount);
     
     const decimals = options.decimals ?? this.getDefaultDecimals(bn);
@@ -73,12 +79,12 @@ export class AmountFormatter {
       const conf = FiatCurrencySymbolsConfig[options.currency];
       if (conf) {
         if (conf.side === 'start') {
-          prefix += conf.symbol + ' ';
+          prefix += conf.symbol + this.spaces[currencySeparator];
         } else {
-          suffix = ' ' + conf.symbol;
+          suffix = this.spaces[currencySeparator] + conf.symbol;
         }
       } else {
-        suffix = ' ' + options.currency;
+        suffix = this.spaces[currencySeparator] + options.currency;
       }
     }
 

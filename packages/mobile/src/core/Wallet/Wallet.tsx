@@ -30,10 +30,10 @@ import { t } from '$translation';
 import { useNavigation } from '$libs/navigation';
 import { Chart } from '$shared/components/Chart/new/Chart';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { formatCryptoCurrency } from '$utils/currency';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import { eventsActions, eventsSelector } from '$store/events';
 import { groupAndFilterTonActivityItems } from '$utils/transactions';
+import { formatter } from '$utils/formatter';
 
 const exploreActions = [
   {
@@ -112,7 +112,8 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   const currencyUpper = useMemo(() => {
     return currency?.toUpperCase();
   }, [currency]);
-  const { amount, fiatInfo } = useWalletInfo(currency);
+  const { amount, formattedFiatAmount } = useWalletInfo(currency);
+
 
   const shouldRenderSellButton = useMemo(() => +amount > 0, [amount]);
 
@@ -197,20 +198,18 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
               <S.FlexRow>
                 <S.AmountWrapper>
                   <Text variant="h2">
-                    {formatCryptoCurrency(
-                      amount,
-                      currencyUpper,
-                      Decimals[currency],
-                      Decimals[currency],
-                      true,
-                    )}
+                    {formatter.format(amount, { 
+                      currency: currencyUpper,
+                      currencySeparator: 'wide',
+                      decimals: Decimals[currency]!
+                    })}
                   </Text>
                   <Text
                     style={{ marginTop: 2 }}
                     variant="body2"
                     color="foregroundSecondary"
                   >
-                    {fiatInfo.amount}
+                    {formattedFiatAmount}
                   </Text>
                 </S.AmountWrapper>
                 <S.IconWrapper>
@@ -302,7 +301,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     amount,
     currencyUpper,
     currency,
-    fiatInfo.amount,
+    formattedFiatAmount,
     handleOpenExchange,
     t,
     handleSend,
