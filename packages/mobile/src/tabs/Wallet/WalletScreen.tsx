@@ -30,14 +30,13 @@ import { Tabs } from './components/Tabs';
 import * as S from '../../core/Balances/Balances.style';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
-import { mainActions } from '$store/main';;
+import { mainActions } from '$store/main';
 import { useTonkens } from './hooks/useTokens';
 import { useNFTs } from './hooks/useNFTs';
 import { useWallet } from './hooks/useWallet';
 import { useTheme } from '$hooks';
 import { Steezy } from '$styles';
 import { BalancesList } from './components/BalancesList';
-import { StakingWidget } from './components/StakingWidget';
 
 export const WalletScreen = memo(() => {
   const [tab, setTab] = useState<string>('tokens');
@@ -49,7 +48,7 @@ export const WalletScreen = memo(() => {
   const nfts = useNFTs();
   const wallet = useWallet();
 
-  const balance = useBalance();
+  const balance = useBalance(tokens.total.fiat);
   const rates = useRates();
 
   const { isRefreshing, isLoaded } = useSelector(walletSelector);
@@ -149,13 +148,11 @@ export const WalletScreen = memo(() => {
           iconName="ic-arrow-down-28"
           title={t('wallet.receive_btn')}
         />
-        {!!wallet && (
-          <IconButton
-            onPress={handlePressSell}
-            iconName="ic-minus-28"
-            title={t('wallet.sell_btn')}
-          />
-        )}
+        <IconButton
+          onPress={handlePressSell}
+          iconName="ic-minus-28"
+          title={t('wallet.sell_btn')}
+        />
       </IconButtonList>
     </View>
   );
@@ -176,7 +173,7 @@ export const WalletScreen = memo(() => {
               onPress={() => openWallet(CryptoCurrencies.Ton)}
               leftContent={<TonIcon />}
               chevron
-              subtitle={<ListItemRate price={rates.ton.price} trend={rates.ton.trend} />}
+              subtitle={<ListItemRate price={rates.price} trend={rates.trend} />}
             />
           </List>
         </Screen.ScrollView>
@@ -195,15 +192,15 @@ export const WalletScreen = memo(() => {
   const dimensions = useWindowDimensions();
   const mockupCardSize = {
     width: ns(114),
-    height: ns(166)
+    height: ns(166),
   };
-  
+
   const numColumn = 3;
   const indent = ns(8);
   const heightRatio = mockupCardSize.height / mockupCardSize.width;
 
   const nftCardSize = useMemo(() => {
-    const width = (dimensions.width / numColumn) - indent;
+    const width = dimensions.width / numColumn - indent;
     const height = width * heightRatio;
 
     return { width, height };
@@ -231,9 +228,9 @@ export const WalletScreen = memo(() => {
           </Tabs.Header>
           <Tabs.PagerView>
             <Tabs.Section index={0}>
-              <BalancesList 
-                balance={balance} 
-                tokens={tokens} 
+              <BalancesList
+                balance={balance}
+                tokens={tokens}
                 rates={rates}
                 handleRefresh={handleRefresh}
                 isRefreshing={isRefreshing}
@@ -279,9 +276,9 @@ export const WalletScreen = memo(() => {
           handleRefresh={handleRefresh}
           isRefreshing={isRefreshing}
           isFocused={isFocused}
-          balance={balance} 
-          tokens={tokens} 
-          rates={rates} 
+          balance={balance}
+          tokens={tokens}
+          rates={rates}
           nfts={nfts}
         />
       </>

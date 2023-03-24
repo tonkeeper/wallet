@@ -1,9 +1,7 @@
 import { useJettonBalances } from '$hooks';
 import { useGetJettonPrice } from '$hooks/useJettonPrice';
-import { jettonsSelector } from '$store/jettons';
 import { formatter } from '$utils/formatter';
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import TonWeb from 'tonweb';
 
 type WalletAddress = {
@@ -28,18 +26,22 @@ type TokenInfo = {
   rate: {
     price: string | null;
     total: string | null;
+    total_numeric: number | null;
   };
 };
 
 export const useTonkens = (): {
   list: TokenInfo[];
+  total: {
+    fiat: number;
+  };
   canEdit: boolean;
 } => {
   const jettonBalances = useJettonBalances();
   const allJettonBalances = useJettonBalances(true);
   const getJettonPrice = useGetJettonPrice();
 
-  const tonkens = useMemo(() => {
+  const tokens = useMemo(() => {
     return jettonBalances.map((item) => {
       const rate = getJettonPrice(item.jettonAddress, item.balance);
       const tokenInfo: TokenInfo = {
@@ -66,10 +68,22 @@ export const useTonkens = (): {
 
       return tokenInfo;
     }) as TokenInfo[];
-  }, [jettonBalances]);
+  }, [jettonBalances, getJettonPrice]);
+
+  const fiatTotal = useMemo(
+    () =>
+      tokens.reduce(
+        (acc, token) => (token.rate.total_numeric ? acc + token.rate.total_numeric : acc),
+        0,
+      ),
+    [tokens],
+  );
 
   return {
-    list: tonkens,
+    list: tokens,
+    total: {
+      fiat: fiatTotal,
+    },
     canEdit: allJettonBalances.length > 0,
   };
 };

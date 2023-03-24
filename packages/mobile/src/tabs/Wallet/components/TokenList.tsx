@@ -35,14 +35,14 @@ export const TokenList = memo<TokenListProps>(({ tokens, balance, rates }) => {
         <List.Item
           title="Toncoin"
           onPress={() => openWallet(CryptoCurrencies.Ton)}
-          value={balance.ton.amount.formatted}
-          subvalue={balance.ton.amount.fiat}
+          value={balance.amount.formatted}
+          subvalue={balance.amount.fiat}
           leftContent={<TonIcon />}
           subtitle={
             <ListItemRate
-              percent={rates.ton.percent}
-              price={rates.ton.price}
-              trend={rates.ton.trend}
+              percent={rates.percent}
+              price={rates.price}
+              trend={rates.trend}
             />
           }
         />
@@ -53,7 +53,7 @@ export const TokenList = memo<TokenListProps>(({ tokens, balance, rates }) => {
             value={item.amount.formatted}
             subvalue={item.amount.fiat}
             leftContent={<TonIcon locked />}
-            subtitle={rates.ton.price}
+            subtitle={rates.price}
           />
         ))}
         {balance.oldVersions.map((item, key) => (
@@ -66,9 +66,9 @@ export const TokenList = memo<TokenListProps>(({ tokens, balance, rates }) => {
             subvalue={item.amount.fiat}
             subtitle={
               <ListItemRate
-                percent={rates.ton.percent}
-                price={rates.ton.price}
-                trend={rates.ton.trend}
+                percent={rates.percent}
+                price={rates.price}
+                trend={rates.trend}
               />
             }
           />

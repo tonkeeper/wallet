@@ -79,6 +79,7 @@
   "transaction_sender_address": "Адрес отправителя",
   "transaction_hash": "Транзакция",
   "transaction_fee": "Комиссия",
+  "transaction_refund": "Возврат",
   "transaction_merchant": "Продавец",
   "transaction_subscription": "Подписка",
   "transaction_unsubscription": "Отмена подписки",
@@ -105,7 +106,7 @@
   "transaction_exchange_from_currency": "Из",
   "transaction_confirmations": "Подтверждения",
   "transaction_send_more_button": "Отправить ещё на этот адрес",
-  "transaction_view_in_explorer": "Открыть в эксплорере",
+  "transaction_view_in_explorer": "Подробнее",
   "transaction_show_subscription_button": "Информация о подписке",
   "transaction_copy_caution": "Будьте осторожны при переходе по внешним ссылкам. Никогда не вводите свою секретную фразу на сторонних ресурсах, вы можете потерять свои средства.\n\n- - -\n\n",
 
@@ -297,7 +298,7 @@
 
   "info_about_inactive_title": "Неактивный контракт",
   "info_about_inactive_desc1": "Tonkeeper не знает, является ли этот адрес кошельком или смарт-контрактом.",
-  "info_about_inactive_desc2": "Если вы хотите просто перевести деньги на кошелек — вы можете продолжить.",
+  "info_about_inactive_desc2": "Если вы хотите просто перевести деньги на кошелёк — вы можете продолжить.",
   "info_about_inactive_desc3_1": "Если вы ожидаете автоматического действия от смарт-контракта,",
   "info_about_inactive_desc3_bold": " НЕ ПРОДОЛЖАЙТЕ ",
   "info_about_inactive_desc3_2": "— ваш денежный перевод может застрять на адресе этого кошелька.",
@@ -524,7 +525,7 @@
   "security_change_passcode": "Поменять пин-код",
   "security_reset_passcode": "Сбросить пин-код",
   "security_use_biometry_switch": "Использовать %{biometryType}",
-  "security_use_biometry_tip": "Вы всегда можете разблокировать кошелек с помощью пин-кода",
+  "security_use_biometry_tip": "Вы всегда можете разблокировать кошелёк с помощью пин-кода",
   "passcode_changed": "Пин-код изменён",
 
   "setup_biometry_title": "Быстрый доступ с помощью\n%{biometryType}",
@@ -648,7 +649,7 @@
   "exchange_telegram_bot": "TELEGRAM BOT",
 
   "appearance_title": "Оформление",
-  "appearance_description": "TON Diamonds NFT сделает ваш кошелек более красочным и уникальным.",
+  "appearance_description": "TON Diamonds NFT сделает ваш кошелёк более красочным и уникальным.",
   "appearance_confirm": "Применить",
   "appearance_accent_name": {
     "default": "Tonkeeper",

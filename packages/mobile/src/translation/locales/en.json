@@ -79,6 +79,7 @@
   "transaction_sender_address": "Sender address",
   "transaction_hash": "Transaction",
   "transaction_fee": "Fee",
+  "transaction_refund": "Refund",
   "transaction_merchant": "Merchant",
   "transaction_subscription": "Subscription",
   "transaction_unsubscription": "Unsubscription",

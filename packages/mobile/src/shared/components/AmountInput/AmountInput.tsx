@@ -20,6 +20,7 @@ import { LayoutChangeEvent, View } from 'react-native';
 import * as S from './AmountInput.style';
 import { Button, Text } from '$uikit';
 import { SwapButton } from '../SwapButton';
+import { formatter } from '$utils/formatter';
 
 interface Props {
   innerRef?: React.MutableRefObject<TextInput | null>;
@@ -65,12 +66,15 @@ const AmountInputComponent: React.FC<Props> = (props) => {
         : decimals;
 
       return {
-        remainingBalance: formatCryptoCurrency(
-          remainingBalanceBigNum.toString(),
-          currencyTitle,
-          remainingBalanceDecimals,
-        ),
-        balanceInputValue: formatInputAmount(balance, decimals),
+        remainingBalance: formatter.format(remainingBalanceBigNum, {
+          decimals: remainingBalanceDecimals,
+          currency: currencyTitle,
+          currencySeparator: 'wide',
+        }),
+        balanceInputValue: formatter.format(balance, {
+          decimals,
+          currencySeparator: 'wide',
+        }),
         isInsufficientBalance: !isLockup && bigNum.isGreaterThan(balanceBigNum),
         isLessThanMin:
           minAmount !== undefined &&
