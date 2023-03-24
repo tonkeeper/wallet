@@ -21,7 +21,6 @@ enum ContentType {
   Token,
   Collectibles,
   Spacer,
-  EditTokensButton,
   NFTCardsRow,
   Staking,
 }
@@ -48,10 +47,6 @@ type SpacerItem = {
   bottom: SpacerSizes;
 }
 
-type EditTokensButtonItem = {
-  type: ContentType.EditTokensButton;
-}
-
 type NFTCardsRowItem = {
   type: ContentType.NFTCardsRow;
   items: any; // TODO:
@@ -61,12 +56,7 @@ type StakingItem = {
   type: ContentType.Staking;
 }
 
-type Content = 
-  | TokenItem 
-  | SpacerItem
-  | EditTokensButtonItem
-  | NFTCardsRowItem
-  | StakingItem;
+type Content = TokenItem | SpacerItem | NFTCardsRowItem | StakingItem;
 
 const RenderItem = ({ item }: { item: Content }) => {
   switch (item.type) {
@@ -112,18 +102,6 @@ const RenderItem = ({ item }: { item: Content }) => {
       );
     case ContentType.Spacer:
       return <Spacer y={item.bottom}/>;
-    case ContentType.EditTokensButton: 
-      return (
-        <View style={styles.tonkensEdit}>
-          <Button 
-            onPress={() => openJettonsList()}
-            size="medium_rounded"
-            mode="secondary"
-          >
-            {t('wallet.edit_tokens_btn')}
-          </Button>
-        </View>
-      );
     case ContentType.NFTCardsRow:
       return (
         <NFTsList nfts={item.items} />
@@ -137,7 +115,7 @@ const RenderItem = ({ item }: { item: Content }) => {
 interface BalancesListProps {
   tokens: any; // TODO: 
   balance: any; // TODO: 
-  rates: { ton: Rate };
+  rates: Rate;
   nfts?: any;// TODO: 
   handleRefresh: () => void;
   isRefreshing: boolean;
@@ -184,9 +162,9 @@ export const BalancesList = memo<BalancesListProps>(({
       subvalue: balance.ton.amount.fiat,
       tonIcon: true,
       rate: {
-        percent: rates.ton.percent,
-        price: rates.ton.price,
-        trend: rates.ton.trend,
+        percent: rates.percent,
+        price: rates.price,
+        trend: rates.trend,
       },
     });
 
@@ -199,9 +177,9 @@ export const BalancesList = memo<BalancesListProps>(({
         value: item.amount.formatted,
         subvalue: item.amount.fiat,
         rate: {
-          percent: rates.ton.percent,
-          price: rates.ton.price,
-          trend: rates.ton.trend,
+          percent: rates.percent,
+          price: rates.price,
+          trend: rates.trend,
         },
       })),
     );
@@ -214,7 +192,7 @@ export const BalancesList = memo<BalancesListProps>(({
           title: LockupNames[item.type],
           value: item.amount.formatted,
           subvalue: item.amount.fiat,
-          subtitle: rates.ton.price,
+          subtitle: rates.price,
         })),
       );
     }
@@ -246,12 +224,6 @@ export const BalancesList = memo<BalancesListProps>(({
       type: ContentType.Spacer,
       bottom: 16
     });
-
-    if (tokens.canEdit) {
-      content.push({
-        type: ContentType.EditTokensButton
-      });
-    }
 
     content.push({
       type: ContentType.Staking
@@ -332,11 +304,5 @@ const styles = Steezy.create(({ colors, corners }) => ({
   },
   scrollContainer: {
     paddingHorizontal: 12,
-  },
-
-  tonkensEdit: {
-    justifyContent: 'center', 
-    alignItems: 'center',
-    marginBottom: 16,
   },
 }));

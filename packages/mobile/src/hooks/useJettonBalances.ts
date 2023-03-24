@@ -11,7 +11,8 @@ export const useJettonBalances = (withExcluded = false) => {
       jettonBalances.filter((jetton) => {
         const isWhitelisted = jetton.verification === JettonVerification.WHITELIST;
         const excludeWhitelisted = (isWhitelisted && excludedJettons[jetton.jettonAddress] === true);
-        const excludeOther = !isWhitelisted && excludedJettons[jetton.jettonAddress] !== false;
+        const excludeOther =
+          !isWhitelisted && excludedJettons[jetton.jettonAddress] !== false;
         const excluded = !withExcluded && (excludeWhitelisted || excludeOther);
 
         return jetton.balance !== '0' && !excluded;

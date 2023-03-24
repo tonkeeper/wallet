@@ -138,8 +138,6 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   }, [currency]);
   const { amount, formattedFiatAmount } = useWalletInfo(currency);
 
-  const shouldRenderSellButton = useMemo(() => !!wallet, [wallet]);
-
   const handleReceive = useCallback(() => {
     if (!wallet) {
       return openRequireWalletModal();
@@ -221,10 +219,10 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
               <S.FlexRow>
                 <S.AmountWrapper>
                   <Text variant="h2">
-                    {formatter.format(amount, { 
+                    {formatter.format(amount, {
                       currency: currencyUpper,
                       currencySeparator: 'wide',
-                      decimals: Decimals[currency]!
+                      decimals: Decimals[currency]!,
                     })}
                   </Text>
                   <Text
@@ -256,13 +254,11 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
                   iconName="ic-arrow-down-28"
                   title={t('wallet.receive_btn')}
                 />
-                {shouldRenderSellButton && (
-                  <IconButton
-                    onPress={handleOpenExchange('sell')}
-                    iconName="ic-minus-28"
-                    title={t('wallet.sell_btn')}
-                  />
-                )}
+                <IconButton
+                  onPress={handleOpenExchange('sell')}
+                  iconName="ic-minus-28"
+                  title={t('wallet.sell_btn')}
+                />
               </S.ActionsContainer>
               <S.Divider />
             </S.TokenInfoWrap>
@@ -329,7 +325,6 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     t,
     handleSend,
     handleReceive,
-    shouldRenderSellButton,
     wallet,
     handleDeploy,
     lockupDeploy,

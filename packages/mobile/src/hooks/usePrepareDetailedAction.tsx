@@ -24,6 +24,7 @@ import { NFTHead } from '$core/ModalContainer/Action/ActionBase/NFTHead/NFTHead'
 import { differenceInCalendarYears } from 'date-fns';
 import { subscriptionsSelector } from '$store/subscriptions';
 import { Action } from 'tonapi-sdk-js';
+import { formatter } from '$utils/formatter';
 
 export function usePrepareDetailedAction(
   rawAction: Action,
@@ -66,9 +67,12 @@ export function usePrepareDetailedAction(
       label =
         prefix +
         ' ' +
-        truncateDecimal(amount.toString(), Decimals[CryptoCurrencies.Ton], false, true) +
-        ' ' +
-        CryptoCurrencies.Ton.toUpperCase();
+        formatter.format(amount, {
+          withoutTruncate: true,
+          decimals: Decimals[CryptoCurrencies.Ton],
+          currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
+          currencySeparator: 'wide',
+        });
     }
 
     if (ActionType.NftItemTransfer === ActionType[rawAction.type]) {
@@ -87,18 +91,22 @@ export function usePrepareDetailedAction(
           true,
         );
       }
-      jettonAddress = action.jetton.address && new TonWeb.Address(action.jetton.address).toString(
-        true,
-        true,
-        true,
-      );
+      jettonAddress =
+        action.jetton.address &&
+        new TonWeb.Address(action.jetton.address).toString(true, true, true);
       const amount = fromNano(action.amount, action.jetton?.decimals ?? 9);
-      label = 
-        prefix + 
-        ' ' + 
-        truncateDecimal(amount.toString(), action.jetton.decimals ?? 9, false, true) + 
-        ' ' + 
-        (action.jetton?.symbol || (action.jetton?.name && action.jetton.name.toUpperCase().slice(0, 3)) || '');
+      label =
+        prefix +
+        ' ' +
+        formatter.format(amount, {
+          withoutTruncate: true,
+          decimals: action.jetton.decimals ?? 9,
+          currency:
+            action.jetton?.symbol ||
+            (action.jetton?.name && action.jetton.name.toUpperCase().slice(0, 3)) ||
+            '',
+          currencySeparator: 'wide',
+        });
     }
 
     if (ActionType.Subscribe === ActionType[rawAction.type]) {
@@ -106,11 +114,25 @@ export function usePrepareDetailedAction(
       if (compareAddresses(action.beneficiary.address, address.ton)) {
         sentLabelTranslationString = 'transaction_receive_date';
         label =
-          '+' + ' ' + truncateDecimal(amount.toString(), Decimals[CryptoCurrencies.Ton], false, true) + ' ' + CryptoCurrencies.Ton.toUpperCase();
+          '+' +
+          ' ' +
+          formatter.format(amount, {
+            withoutTruncate: true,
+            decimals: Decimals[CryptoCurrencies.Ton],
+            currency: CryptoCurrencies.Ton.toUpperCase(),
+            currencySeparator: 'wide',
+          });
       } else {
         sentLabelTranslationString = 'transaction_subscription_date';
         label =
-          '-' + ' ' + truncateDecimal(amount.toString(), Decimals[CryptoCurrencies.Ton], false, true) + ' ' + CryptoCurrencies.Ton.toUpperCase();
+          '-' +
+          ' ' +
+          formatter.format(amount, {
+            withoutTruncate: true,
+            decimals: Decimals[CryptoCurrencies.Ton],
+            currency: CryptoCurrencies.Ton.toUpperCase(),
+            currencySeparator: 'wide',
+          });
       }
     }
 
@@ -135,7 +157,14 @@ export function usePrepareDetailedAction(
         new BigNumber(action.amount.value).abs().toString(),
       );
       label =
-        '-' + ' ' + truncateDecimal(amount.toString(), Decimals[CryptoCurrencies.Ton], false, true) + ' ' + CryptoCurrencies.Ton.toUpperCase();
+        '-' +
+        ' ' +
+        formatter.format(amount, {
+          withoutTruncate: true,
+          decimals: Decimals[CryptoCurrencies.Ton],
+          currency: CryptoCurrencies.Ton.toUpperCase(),
+          currencySeparator: 'wide',
+        });
 
       infoRows.push({
         label: t('transaction_bid_dns'),
@@ -199,7 +228,9 @@ export function usePrepareDetailedAction(
         new BigNumber(event.fee.total).abs().toString(),
       );
       infoRows.push({
-        label: t('transaction_fee'),
+        label: new BigNumber(event.fee.total).isLessThan(0)
+          ? t('transaction_refund')
+          : t('transaction_fee'),
         value: formatCryptoCurrency(
           amount,
           CryptoCurrencies.Ton,

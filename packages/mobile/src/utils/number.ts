@@ -12,7 +12,7 @@ export const getLocaleDecimalSeparator = () => {
 export function parseLocaleNumber(stringNumber: string) {
   const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
   return stringNumber
-    .replace(groupingSeparator, '')
+    .replace(new RegExp(`\\${groupingSeparator}`, 'g'), '')
     .replace(new RegExp(`\\${NUMBER_DIVIDER}`, 'g'), '')
     .replace(new RegExp(`\\${decimalSeparator}`), '.');
 }
@@ -28,8 +28,11 @@ export function toLocaleNumber(value: string) {
 }
 
 export function formatInputAmount(raw: string, decimals: number) {
-  // replace dots to commas
-  raw = raw.replace(/\,/g, '.');
+  const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
+  if (groupingSeparator !== ',') {
+    // replace dots to commas
+    raw = raw.replace(/\,/g, '.');
+  }
   // remove non-numeric charsets
   raw = raw.replace(/[^0-9\.]/g, '');
   // allow only one leading zero
@@ -54,7 +57,7 @@ export function formatInputAmount(raw: string, decimals: number) {
 
   // apply length limitations
   const exp = raw.split('.');
-  exp[0] = exp[0].substr(0, 8).replace(/\B(?=(\d{3})+(?!\d))/g, NUMBER_DIVIDER);
+  exp[0] = exp[0].substr(0, 8).replace(/\B(?=(\d{3})+(?!\d))/g, groupingSeparator);
   if (exp[1]) {
     exp[1] = exp[1].substr(0, decimals);
   }

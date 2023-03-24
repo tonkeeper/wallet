@@ -20,13 +20,14 @@ export function useGetJettonPrice() {
       false,
     );
     if (!rate) {
-      return { price: null, total: null };
+      return { price: null, total: null, total_numeric: null };
     }
     const balanceInFiat = new BigNumber(balance).multipliedBy(rate);
     // TODO: return from backend raw jetton addresses
     return {
       price: formatter.format(rate.toString(), { currency: fiatCurrency }),
       total: formatter.format(balanceInFiat, { currency: fiatCurrency }),
+      total_numeric: balanceInFiat.toNumber(),
     };
   }, [rates, fiatCurrency]);
 

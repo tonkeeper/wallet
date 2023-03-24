@@ -16,6 +16,7 @@ type AmountFormatOptions = {
   decimals?: number;
   currency?: string;
   currencySeparator?: 'thin' | 'wide'; // Default thin;
+  withoutTruncate?: boolean;
   ignoreZeroTruncate?: boolean;
 };
 
@@ -62,10 +63,19 @@ export class AmountFormatter {
     return BigNumber.isBigNumber(amount) ? amount : new BigNumber(amount);
   }
 
+  public parseFormatted(stringNumber) {
+    const NUMBER_DIVIDER = ' ';
+    const { decimalSeparator, groupingSeparator } = this.getLocaleFormat();
+    return stringNumber
+      .replace(groupingSeparator, '')
+      .replace(new RegExp(`\\${NUMBER_DIVIDER}`, 'g'), '')
+      .replace(new RegExp(`\\${decimalSeparator}`), '.');
+  }
+
   public format(amount: AmountNumber = 0, options: AmountFormatOptions = {}) {
     const { currencySeparator = 'thin' } = options;
     let bn = this.toBN(amount);
-    
+
     const decimals = options.decimals ?? this.getDefaultDecimals(bn);
     let prefix = '';
     let suffix = '';
@@ -101,6 +111,10 @@ export class AmountFormatter {
     // truncate decimals 1.00 -> 1
     if (!options.ignoreZeroTruncate && bn.isLessThan('1000')) {
       bn = bn.decimalPlaces(decimals, BigNumber.ROUND_DOWN);
+      return bn.toFormat(formatConf);
+    }
+
+    if (options.withoutTruncate) {
       return bn.toFormat(formatConf);
     }
 
