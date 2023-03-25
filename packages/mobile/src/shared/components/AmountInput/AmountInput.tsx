@@ -95,14 +95,14 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const secondaryAmount = useMemo(() => {
     if (amount.all && isFiat) {
-      return formatInputAmount(balance, 2);
+      return formatInputAmount(balance, 2, true);
     }
 
     const { decimalSeparator } = getNumberFormatSettings();
 
     const secondaryValue = isFiat
-      ? fiatToCrypto(value, fiatRate, 2)
-      : cryptoToFiat(value, fiatRate, 2);
+      ? fiatToCrypto(value, fiatRate, 2, true)
+      : cryptoToFiat(value, fiatRate, 2, true);
 
     return secondaryValue === '0' ? `0${decimalSeparator}00` : secondaryValue;
   }, [amount.all, balance, fiatRate, isFiat, value]);
@@ -113,7 +113,6 @@ const AmountInputComponent: React.FC<Props> = (props) => {
   const handleChangeAmount = useCallback(
     (text: string) => {
       const nextValue = formatInputAmount(text, decimals);
-
       setValue(nextValue);
 
       setAmount({
@@ -224,7 +223,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
           {isFiatAvailable ? (
             <>
               <S.SecondaryAmountContainer onPress={handleToggleFiat}>
-                <Text color="foregroundSecondary">
+                <Text color="foregroundSecondary" numberOfLines={1}>
                   {secondaryAmount} {secondaryCurrencyCode}
                 </Text>
               </S.SecondaryAmountContainer>

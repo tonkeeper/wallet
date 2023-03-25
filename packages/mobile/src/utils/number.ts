@@ -27,7 +27,11 @@ export function toLocaleNumber(value: string) {
   }
 }
 
-export function formatInputAmount(raw: string, decimals: number) {
+export function formatInputAmount(
+  raw: string,
+  decimals: number,
+  skipFormatting?: boolean,
+) {
   const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
   if (groupingSeparator !== ',') {
     // replace dots to commas
@@ -57,9 +61,16 @@ export function formatInputAmount(raw: string, decimals: number) {
 
   // apply length limitations
   const exp = raw.split('.');
-  exp[0] = exp[0].substr(0, 8).replace(/\B(?=(\d{3})+(?!\d))/g, groupingSeparator);
+  if (!skipFormatting) {
+    exp[0] = exp[0].substr(0, 16);
+  }
+  let expNumLength = exp[0].length;
+  exp[0] = exp[0].replace(/\B(?=(\d{3})+(?!\d))/g, groupingSeparator);
   if (exp[1]) {
-    exp[1] = exp[1].substr(0, decimals);
+    exp[1] = exp[1].substr(
+      0,
+      Math.min(decimals, !skipFormatting ? 16 - expNumLength : 255),
+    );
   }
 
   return toLocaleNumber(exp.join('.'));
