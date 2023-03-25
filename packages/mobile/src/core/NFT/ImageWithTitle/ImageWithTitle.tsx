@@ -1,9 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import * as S from './ImageWithTitle.style';
 import { ImageWithTitleProps } from '$core/NFT/ImageWithTitle/ImageWithTitle.interface';
 import { Badge, Icon, ShowMore, Text } from '$uikit';
-import { useTheme, useTranslator } from '$hooks';
+import { useTranslator } from '$hooks';
 import { isIOS, ns } from '$utils';
+import Clipboard from '@react-native-community/clipboard';
+import { Toast } from '$store';
 
 export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
   uri,
@@ -15,8 +17,8 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
   description,
   isOnSale,
   bottom,
+  copyableTitle,
 }) => {
-  const theme = useTheme();
   const t = useTranslator();
   const [mediaHeight, setMediaHeight] = React.useState(358);
 
@@ -60,6 +62,11 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
     return null;
   }, [lottieUri, uri, videoUri]);
 
+  const handleCopyTitle = useCallback(() => {
+    Clipboard.setString(title ?? '');
+    Toast.success(t('copied'));
+  }, [t, title]);
+
   return (
     <S.Wrap>
       <S.Background />
@@ -70,7 +77,7 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
       ) : null}
       <S.TextWrap>
         {title ? (
-          <S.TitleWrap>
+          <S.TitleWrap disabled={!copyableTitle} onPress={handleCopyTitle}>
             <Text style={{ alignItems: 'center', marginRight: ns(8) }} variant="h2">
               {title}
             </Text>

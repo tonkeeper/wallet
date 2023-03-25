@@ -239,4 +239,9 @@ export const tonDiamondCollectionAddress = {
   testnet: 'EQDR1lqTwhPJKjkEbICwXBbarhxCKXqNOlRTDMMbxbqambV0',
 };
 
+export const telegramNumbersAddress = {
+  mainnet: 'EQAOQdwdw8kGftJCSFgOErM1mBjYPe4DBPq8-AhF6vr9si5N',
+  testnet: 'EQAOQdwdw8kGftJCSFgOErM1mBjYPe4DBPq8-AhF6vr9si5N',
+};
+
 export const KNOWN_STAKING_IMPLEMENTATIONS = ['whales'];
