@@ -68,6 +68,7 @@ export const StakingWidget = memo(StakingWidgetComponent);
 
 const styles = Steezy.create({
   container: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 32,
   },
 });
