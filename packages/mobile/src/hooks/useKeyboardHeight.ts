@@ -107,7 +107,6 @@ export const useReanimatedKeyboardHeight = (options?: {
 
   const keyboardWillHide = useCallback(
     (event) => {
-      console.log('keyboardWillHide');
       keyboardHeight.value = withTiming(0, {
         duration: event.duration,
       });
