@@ -540,9 +540,6 @@ function* backupWalletWorker() {
     yield call(openBackupWords, unlockedVault.mnemonic);
   } catch (e) {
     e && debugLog(e.message);
-    if (e.message === t('access_denied')) {
-      return;
-    }
     yield put(toastActions.fail(e ? e.message : t('auth_failed')));
   }
 }
@@ -664,9 +661,10 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
     e && debugLog(e.message);
 
     const err =
-      e && e.message && e.message.indexOf('-127') > -1
-        ? new UnlockVaultError(t('auth_failed'))
-        : new UnlockVaultError(e ? e.message : t('access_denied'));
+      e &&
+      e.message &&
+      e.message.indexOf('-127') > -1 &&
+      new UnlockVaultError(t('auth_failed'));
 
     if (action?.payload?.onFail) {
       action.payload.onFail(err);
