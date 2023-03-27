@@ -1,4 +1,4 @@
-import { useFiatRate, useInstance, useTranslator } from '$hooks';
+import { useFiatRate, useInstance, useJettonBalances, useTranslator } from '$hooks';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, getServerConfig } from '$shared/constants';
@@ -40,6 +40,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     withGoBack,
   } = route.params;
 
+  const jettons = useJettonBalances();
   const initialAddress =
     propsAddress && isValidAddress(propsAddress) ? propsAddress : null;
 
@@ -293,10 +294,11 @@ export const Send: FC<SendProps> = ({ route }) => {
         initialStepId={initialStepId}
         useBackHandler
       >
-        {!initialCurrency ? (
+        {!initialCurrency && jettons.length ? (
           <StepViewItem id={SendSteps.CHOOSE_TOKEN}>
             {(stepProps) => (
               <ChooseCoinStep
+                jettons={jettons}
                 stepsScrollTop={stepsScrollTop}
                 onChangeCurrency={onChangeCurrency}
                 {...stepProps}

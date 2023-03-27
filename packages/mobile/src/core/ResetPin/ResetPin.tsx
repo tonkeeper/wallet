@@ -19,7 +19,7 @@ import { debugLog, detectBiometryType, deviceWidth } from '$utils';
 import { useKeyboardHeight } from '$hooks';
 import { walletActions } from '$store/wallet';
 import { goBack, openSetupBiometryAfterRestore, popToTop } from '$navigation';
-import { toastActions } from '$store/toast';
+import { Toast } from '$store';
 
 export const ResetPin: FC = () => {
   const [step, setStep] = useState(0);
@@ -62,7 +62,7 @@ export const ResetPin: FC = () => {
           pin,
           onDone: () => {
             popToTop();
-            dispatch(toastActions.success());
+            Toast.success();
             setTimeout(() => goBack(), 20);
           },
           onFail: () => {},

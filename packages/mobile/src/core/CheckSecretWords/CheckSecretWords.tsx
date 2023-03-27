@@ -15,7 +15,7 @@ import { useTranslator } from '$hooks';
 import { css } from '$styled';
 import { NavBarHeight } from '$shared/constants';
 import { openCreatePin } from '$navigation';
-import { toastActions } from '$store/toast';
+import { Toast } from '$store';
 
 export const CheckSecretWords: FC = () => {
   const dispatch = useDispatch();
@@ -129,7 +129,7 @@ export const CheckSecretWords: FC = () => {
 
     const hasFailed = Object.values(failedCopy).filter((item) => !!item).length > 0;
     if (hasFailed) {
-      dispatch(toastActions.fail(t('import_wallet_wrong_words_err')));
+      Toast.fail(t('import_wallet_wrong_words_err'));
       return;
     }
 
@@ -138,7 +138,7 @@ export const CheckSecretWords: FC = () => {
       try {
         configParsed = parseLockupConfig(config);
       } catch (e) {
-        dispatch(toastActions.fail(`Lockup: ${e.message}`));
+        Toast.fail(`Lockup: ${e.message}`);
         return;
       }
 

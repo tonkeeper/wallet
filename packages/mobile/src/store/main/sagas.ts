@@ -8,7 +8,7 @@ import BigNumber from 'bignumber.js';
 
 import { mainActions, mainSelector } from './index';
 import { Wallet } from '$blockchain';
-import { batchActions } from '$store';
+import { batchActions, Toast } from '$store';
 import { walletActions, walletSelector } from '$store/wallet';
 import { ratesActions } from '$store/rates';
 import * as SplashScreen from 'expo-splash-screen';
@@ -42,7 +42,6 @@ import {
   setSavedServerConfig,
 } from '$database';
 import { openRequireWalletModal } from '$navigation';
-import { toastActions } from '$store/toast';
 import { subscriptionsActions } from '$store/subscriptions';
 import {
   HideNotificationAction,
@@ -284,7 +283,7 @@ function* toggleTestnetWorker(action: ToggleTestnetAction) {
 
     yield call(resetAll, isTestnet);
   } catch (e) {
-    yield put(toastActions.fail(e.message));
+    yield call(Toast.fail, e.message);
   }
 }
 

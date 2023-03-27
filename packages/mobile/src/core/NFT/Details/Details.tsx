@@ -4,11 +4,10 @@ import { DetailsProps } from './Details.interface';
 import { useTranslator } from '$hooks';
 import { Highlight, Separator, Text } from '$uikit';
 import Clipboard from '@react-native-community/clipboard';
-import { toastActions } from '$store/toast';
-import { useDispatch } from 'react-redux';
 import { maskifyTonAddress } from '$utils';
 import { getServerConfig } from '$shared/constants';
 import { openDAppBrowser } from '$navigation';
+import { Toast } from '$store';
 
 export const Details: React.FC<DetailsProps> = ({
   tokenId,
@@ -17,7 +16,6 @@ export const Details: React.FC<DetailsProps> = ({
   standard,
   ownerAddress,
 }) => {
-  const dispatch = useDispatch();
   const t = useTranslator();
 
   const handleOpenExplorer = useCallback(() => {
@@ -27,9 +25,9 @@ export const Details: React.FC<DetailsProps> = ({
   const handlePress = useCallback(
     (item) => () => {
       Clipboard.setString(item.copyableValue || item.value);
-      dispatch(toastActions.success(t('copied')));
+      Toast.success(t('copied'));
     },
-    [dispatch, t],
+    [t],
   );
 
   const items = useMemo(() => {

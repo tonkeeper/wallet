@@ -30,7 +30,6 @@ import {
 import { Linking, View } from 'react-native';
 import { ns } from '$utils';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
-import { toastActions } from '$store/toast';
 import { t } from '$translation';
 import { useNavigation } from '$libs/navigation';
 import { Chart } from '$shared/components/Chart/new/Chart';
@@ -39,6 +38,7 @@ import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsLi
 import { eventsActions, eventsSelector } from '$store/events';
 import { groupAndFilterTonActivityItems } from '$utils/transactions';
 import { formatter } from '$utils/formatter';
+import { Toast } from '$store';
 
 const exploreActions = [
   {
@@ -112,7 +112,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
           );
         })
         .catch((err: any) => {
-          dispatch(toastActions.fail(err.message));
+          Toast.fail(err.message);
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

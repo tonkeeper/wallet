@@ -12,9 +12,9 @@ import { CellSection, CellSectionItem } from '$shared/components';
 import { walletActions, walletSelector } from '$store/wallet';
 import { useTranslator } from '$hooks';
 import { openChangePin, openRequireWalletModal, openResetPin } from '$navigation';
-import { toastActions } from '$store/toast';
 import { detectBiometryType, ns, platform, triggerImpactLight } from '$utils';
 import { MainDB } from '$database';
+import { Toast } from '$store';
 
 export const Security: FC = () => {
   const t = useTranslator();
@@ -48,11 +48,11 @@ export const Security: FC = () => {
   const handleCopyLockupConfig = useCallback(() => {
     try {
       Clipboard.setString(JSON.stringify(wallet!.vault.getLockupConfig()));
-      dispatch(toastActions.success(t('copied')));
+      Toast.success(t('copied'));
     } catch (e) {
-      dispatch(toastActions.fail(e.message));
+      Toast.fail(e.message);
     }
-  }, [dispatch, t, wallet]);
+  }, [t, wallet]);
 
   const handleBiometry = useCallback(
     (triggerHaptic: boolean) => () => {

@@ -31,11 +31,9 @@ import { InternalNotificationProps } from '$uikit/InternalNotification/InternalN
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { getLastRefreshedAt, MainDB } from '$database';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { store } from '$store';
-import { jettonsSelector } from '$store/jettons';
+import { store, Toast } from '$store';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
-import { toastActions } from '$store/toast';
 import Clipboard from '@react-native-community/clipboard';
 
 export const Balances: FC = () => {
@@ -103,7 +101,7 @@ export const Balances: FC = () => {
   const handleCopyAddress = useCallback(() => {
     if (address.ton) {
       Clipboard.setString(address.ton);
-      dispatch(toastActions.success(t('address_copied')));
+      Toast.success(t('address_copied'));
       triggerImpactLight();
     }
   }, [address]);

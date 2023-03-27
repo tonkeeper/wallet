@@ -10,9 +10,9 @@ import { useDispatch } from 'react-redux';
 import { NotificationsStatus, useNotificationStatus } from '$hooks/useNotificationStatus';
 import messaging from '@react-native-firebase/messaging';
 import { useNotifications } from '$hooks/useNotifications';
-import { toastActions } from '$store/toast';
 import { t } from '$translation';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
+import { Toast, ToastSize } from '$store';
 
 export const Notifications: React.FC = () => {
   const dispatch = useDispatch();
@@ -67,9 +67,7 @@ export const Notifications: React.FC = () => {
         setIsSubscribeNotifications(!value);
       }
     } catch (err) {
-      dispatch(
-        toastActions.fail({ type: 'small', label: t('notifications_not_supported') }),
-      );
+      Toast.fail(t('notifications_not_supported'), { size: ToastSize.Small });
       debugLog('[NotificationsSettings]', err);
       setIsSubscribeNotifications(!value); // Revert
     } finally {

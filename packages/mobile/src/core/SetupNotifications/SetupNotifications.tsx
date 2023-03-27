@@ -7,8 +7,8 @@ import { t } from '$translation';
 import { openSetupWalletDone } from '$navigation';
 import { debugLog, ns } from '$utils';
 import { useNotifications } from '$hooks/useNotifications';
-import { toastActions } from '$store/toast';
 import { saveDontShowReminderNotifications } from '$utils/messaging';
+import { Toast } from '$store';
 
 export const SetupNotifications: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
@@ -27,7 +27,7 @@ export const SetupNotifications: React.FC = () => {
       openSetupWalletDone();
     } catch (err) {
       setLoading(false);
-      dispatch(toastActions.fail(err?.massage));
+      Toast.fail(err?.massage);
       debugLog('[SetupNotifications]:', err);
     }
   }, []);

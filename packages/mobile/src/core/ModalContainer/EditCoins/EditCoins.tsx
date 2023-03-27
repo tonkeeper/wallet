@@ -11,10 +11,10 @@ import {
   CurrencyLongName,
   SecondaryCryptoCurrencies,
 } from '$shared/constants';
-import { toastActions } from '$store/toast';
 import { saveAddedCurrencies } from '$database';
 import { ns } from '$utils';
 import * as S from './EditCoins.style';
+import { Toast } from '$store';
 
 export const EditCoins: FC<EditCoinsProps> = () => {
   const theme = useTheme();
@@ -42,10 +42,10 @@ export const EditCoins: FC<EditCoinsProps> = () => {
 
       if (index > -1) {
         currenciesCopy.splice(index, 1);
-        dispatch(toastActions.hide());
+        Toast.hide();
       } else {
         currenciesCopy.push(currency);
-        dispatch(toastActions.success(t('edit_coins_added_toast')));
+        Toast.success(t('edit_coins_added_toast'));
       }
 
       dispatch(walletActions.setCurrencies(currenciesCopy));

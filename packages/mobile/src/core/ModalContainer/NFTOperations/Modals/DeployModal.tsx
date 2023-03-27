@@ -9,8 +9,8 @@ import { DeployParams, TxResponseOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import {debugLog, toLocaleNumber} from '$utils';
-import { toastActions } from '$store/toast';
 import { useDispatch } from 'react-redux';
+import { Toast } from '$store';
 
 export type DeployModalProps = {
   params: DeployParams;
@@ -39,7 +39,7 @@ export const DeployModal: FC<DeployModalProps> = (props) => {
       .then((operation) => operation.estimateFee())
       .then((fee) => setFee(fee))
       .catch((err) =>  {
-        dispatch(toastActions.fail(err));
+        Toast.fail(err);
         debugLog('[deploy estimate fee]:', err)
       });
   }, []);
@@ -61,7 +61,7 @@ export const DeployModal: FC<DeployModalProps> = (props) => {
       setSent(true);
     } catch (err) {
       console.log(err);
-      dispatch(toastActions.fail(err?.message));
+      Toast.fail(err?.message);
     } finally {
       setSending(false);
     }
