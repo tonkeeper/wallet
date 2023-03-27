@@ -63,14 +63,14 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
                     ? nft.collection.name
                     : t('nft_single_nft')}
                 </Text>
-                <View style={{ flex: 1, marginRight: ns(10) }}>
-                  {nft.isApproved && (
-                    <Icon
-                      style={{ marginLeft: ns(4) }}
-                      name="ic-verification-secondary-16"
-                    />
-                  )}
-                </View>
+                {nft.isApproved && (
+                  <View style={{ flex: 1, marginRight: ns(8) }}>
+                      <Icon
+                        style={{ marginLeft: ns(4) }}
+                        name="ic-verification-secondary-16"
+                      />
+                  </View>
+                )}
               </S.CollectionNameWrap>
             </S.TextWrap>
           </S.Pressable>
