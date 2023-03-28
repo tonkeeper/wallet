@@ -261,6 +261,7 @@ export const BalancesList = memo<BalancesListProps>(({
           onRefresh={handleRefresh}
           refreshing={isRefreshing && isFocused}
           tintColor={theme.colors.foregroundPrimary}
+          progressBackgroundColor={theme.colors.foregroundPrimary}
         />
       }
     />

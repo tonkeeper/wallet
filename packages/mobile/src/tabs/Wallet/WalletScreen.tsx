@@ -253,6 +253,7 @@ export const WalletScreen = memo(() => {
                     onRefresh={handleRefresh}
                     refreshing={isRefreshing && isFocused}
                     tintColor={theme.colors.foregroundPrimary}
+                    progressBackgroundColor={theme.colors.foregroundPrimary}
                   />
                 }
               />
