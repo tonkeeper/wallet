@@ -122,8 +122,8 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
       if (!TonWeb.Address.isValid(text)) {
         setAddress('');
 
-        text = text.replace('.ton', '');
-        const walletAddress = await getAddressByDomain(`${text}.ton`);
+        const zone = text.indexOf('.') === -1 ? '.ton' : '';
+        const walletAddress = await getAddressByDomain(text + zone);
 
         if (walletAddress) {
           setAddress(walletAddress);
