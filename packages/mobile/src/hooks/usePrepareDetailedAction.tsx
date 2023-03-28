@@ -276,11 +276,7 @@ export function usePrepareDetailedAction(
 
     if (rawAction.status === 'failed') {
       actionProps.isFailed = true;
-      actionProps.head = (
-        <Text variant="h2">
-          NFT
-        </Text>
-      );
+      actionProps.head = head && <Text variant="h2">NFT</Text>;
     }
 
     return actionProps;
