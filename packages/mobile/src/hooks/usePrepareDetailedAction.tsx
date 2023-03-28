@@ -25,6 +25,7 @@ import { differenceInCalendarYears } from 'date-fns';
 import { subscriptionsSelector } from '$store/subscriptions';
 import { Action } from 'tonapi-sdk-js';
 import { formatter } from '$utils/formatter';
+import { Text } from '$uikit';
 
 export function usePrepareDetailedAction(
   rawAction: Action,
@@ -262,6 +263,7 @@ export function usePrepareDetailedAction(
       }),
       isInProgress: event.inProgress,
       isSpam: event.isScam,
+      isFailed: false,
       comment: action.comment,
       jettonAddress,
       recipientAddress,
@@ -271,6 +273,15 @@ export function usePrepareDetailedAction(
       shouldShowOpenSubscriptionButton,
       subscriptionInfo,
     };
+
+    if (rawAction.status === 'failed') {
+      actionProps.isFailed = true;
+      actionProps.head = (
+        <Text variant="h2">
+          NFT
+        </Text>
+      );
+    }
 
     return actionProps;
   }, [rawAction, address.ton, event, t, subscriptionsInfo]);

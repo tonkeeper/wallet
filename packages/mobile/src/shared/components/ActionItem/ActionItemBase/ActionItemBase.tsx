@@ -42,6 +42,8 @@ export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
       return 'ic-bell-28';
     } else if (type === 'unsubscription') {
       return 'ic-xmark-28';
+    } else if (type === 'failed') {
+      return 'ic-exclamationmark-circle-28';
     } else if (type === 'sent') {
       return 'ic-tray-arrow-up-28';
     } else if (type === 'return') {
@@ -133,6 +135,11 @@ export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
                 <Text variant="body2">{comment}</Text>
               </S.Comment>
             ) : null}
+            {type === 'failed' && (
+              <Text variant="body2" color="accentOrange">
+                {t('activity.failed_transaction')}
+              </Text>
+            )}
           </S.Cont>
         </S.ContWrap>
       </S.Wrap>

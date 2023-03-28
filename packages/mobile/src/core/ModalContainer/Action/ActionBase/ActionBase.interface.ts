@@ -14,6 +14,7 @@ export interface ActionBaseProps {
   recipientAddress?: string;
   infoRows: InfoRows;
   head?: ReactNode;
+  isFailed?: boolean;
   subscriptionInfo?: SubscriptionModel;
   isInProgress: boolean;
   isSpam: boolean;
