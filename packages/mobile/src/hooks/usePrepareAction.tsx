@@ -206,6 +206,11 @@ export function usePrepareAction(
       });
     }
 
+    if (rawAction.status === 'failed') {
+      actionProps.bottomContent = null;
+      actionProps.type = 'failed';
+    }
+
     return actionProps;
   }, [
     rawAction,

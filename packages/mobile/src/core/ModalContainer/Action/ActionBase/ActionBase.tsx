@@ -16,6 +16,7 @@ export const ActionBase: FC<ActionBaseProps> = ({
   infoRows,
   head,
   isSpam,
+  isFailed,
   shouldShowOpenSubscriptionButton,
   subscriptionInfo,
   isInProgress,
@@ -94,6 +95,11 @@ export const ActionBase: FC<ActionBaseProps> = ({
                 {sentLabel}
               </Text>
             </S.TypeLabelWrapper>
+            {isFailed && (
+              <Text variant="body1" color="accentOrange">
+                {t('activity.failed_transaction')}
+              </Text>
+            )}
             {isInProgress && (
               <S.Pending>
                 <Icon name="ic-time-16" color="foregroundSecondary" />

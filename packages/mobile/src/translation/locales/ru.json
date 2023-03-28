@@ -326,7 +326,8 @@
     "empty_transaction_title": "Ваша активность будет показана здесь",
     "empty_transaction_caption": "Совершите первую транзакцию!",
     "buy_toncoin_btn": "Купить Toncoin",
-    "receive_btn": "Получить"
+    "receive_btn": "Получить",
+    "failed_transaction": "Не успешно"
   },
 
   "browser": {

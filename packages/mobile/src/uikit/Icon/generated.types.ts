@@ -52,6 +52,7 @@ export type IconNames =
   | 'ic-donemark-thin-28'
   | 'ic-door-28'
   | 'ic-envelope-28'
+  | 'ic-exclamationmark-circle-28'
   | 'ic-explore-28'
   | 'ic-flash-28'
   | 'ic-gear-28'
@@ -158,6 +159,7 @@ export const AllIcons = [
   'ic-donemark-thin-28',
   'ic-door-28',
   'ic-envelope-28',
+  'ic-exclamationmark-circle-28',
   'ic-explore-28',
   'ic-flash-28',
   'ic-gear-28',
@@ -265,6 +267,7 @@ export const IconSizes = {
   'ic-donemark-thin-28': 28,
   'ic-door-28': 28,
   'ic-envelope-28': 28,
+  'ic-exclamationmark-circle-28': 28,
   'ic-explore-28': 28,
   'ic-flash-28': 28,
   'ic-gear-28': 28,
