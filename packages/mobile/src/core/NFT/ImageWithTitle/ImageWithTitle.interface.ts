@@ -10,4 +10,5 @@ export interface ImageWithTitleProps {
   description?: string;
   isOnSale: boolean;
   bottom?: ReactNode;
+  copyableTitle?: boolean;
 }

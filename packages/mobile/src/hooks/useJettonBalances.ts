@@ -1,10 +1,11 @@
-import { jettonsSelector } from '$store/jettons';
+import { jettonsBalancesSelector, excludedJettonsSelector } from '$store/jettons';
 import { JettonVerification } from '$store/models';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 export const useJettonBalances = (withExcluded = false) => {
-  const { jettonBalances, excludedJettons } = useSelector(jettonsSelector);
+  const jettonBalances = useSelector(jettonsBalancesSelector);
+  const excludedJettons = useSelector(excludedJettonsSelector);
 
   const jettons = useMemo(
     () =>

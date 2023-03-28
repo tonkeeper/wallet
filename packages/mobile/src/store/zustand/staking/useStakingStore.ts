@@ -1,4 +1,4 @@
-import { getServerConfig, KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
+import { KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
 import { store } from '$store';
 import { i18n } from '$translation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,7 +11,7 @@ import { IStakingStore, StakingApiStatus, StakingInfo, StakingProvider } from '.
 const getStakingApi = () => {
   return new StakingApi(
     new Configuration({
-      basePath: getServerConfig('tonapiIOEndpoint'),
+      basePath: 'https://tonapi.io', // TODO: remove that hardcode when staking API will be available on tonkeeper endpoint
       headers: {
         'Accept-Language': i18n.locale,
       },

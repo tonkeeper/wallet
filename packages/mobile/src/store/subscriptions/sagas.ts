@@ -2,14 +2,13 @@ import { all, takeLatest, call, put, select, fork } from 'redux-saga/effects';
 
 import { subscriptionsActions } from '$store/subscriptions/index';
 import { SubscribeAction, UnsubscribeAction } from '$store/subscriptions/interface';
-import { toastActions } from '$store/toast';
 import { walletSelector } from '$store/wallet';
 import { Api } from '$api';
 import { walletGetUnlockedVault } from '$store/wallet/sagas';
 import { getSubscriptions, saveSubscriptions } from '$database';
 import { SubscriptionModel } from '$store/models';
 import { CryptoCurrencies } from '$shared/constants';
-import { store } from '$store';
+import { store, Toast } from '$store';
 import { fuzzifyNumber, trackEvent } from '$utils';
 import { Ton } from '$libs/Ton';
 import { eventsActions } from '$store/events';
@@ -99,7 +98,7 @@ function* subscribeWorker(action: SubscribeAction) {
     });
   } catch (e) {
     console.log(e);
-    yield put(toastActions.fail(e.message));
+    yield call(Toast.fail, e.message);
     onFail();
   }
 }
@@ -118,7 +117,7 @@ function* unsubscribeWorker(action: UnsubscribeAction) {
     onDone();
   } catch (e) {
     console.log(e);
-    yield put(toastActions.fail(e.message));
+    yield call(Toast.fail, e.message);
     onFail();
   }
 }

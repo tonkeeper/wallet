@@ -13,14 +13,13 @@ import { CellSection, CellSectionItem } from '$shared/components';
 import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
 import { useNavigation, useTranslator } from '$hooks';
 import { openLogs } from '$navigation';
-import { toastActions } from '$store/toast';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { EventsDB, JettonsDB, MainDB, NFTsDB } from '$database';
 import { eventsActions } from '$store/events';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { Switch } from 'react-native-gesture-handler';
-import { DevFeature, useDevFeaturesToggle } from '$store';
+import { DevFeature, Toast, useDevFeaturesToggle } from '$store';
 
 export const DevMenu: FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
@@ -89,7 +88,7 @@ export const DevMenu: FC = () => {
 
   const handleCopyVersion = useCallback(() => {
     Clipboard.setString(DeviceInfo.getVersion() + ` (${DeviceInfo.getBuildNumber()})`);
-    dispatch(toastActions.success(t('copied')));
+    Toast.success(t('copied'));
   }, [dispatch, t]);
 
   const {

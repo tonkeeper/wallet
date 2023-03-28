@@ -116,7 +116,10 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
         if (link.match && link.operation === 'transfer' && isValidAddress(link.address)) {
           if (link.query.amount && !Number.isNaN(Number(link.query.amount))) {
             const parsedAmount = Ton.fromNano(new TonWeb.utils.BN(link.query.amount));
-            setAmount({ value: formatInputAmount(parsedAmount, decimals), all: false });
+            setAmount({
+              value: formatInputAmount(parsedAmount, decimals, true),
+              all: false,
+            });
           }
 
           if (link.query.text) {

@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Clipboard from '@react-native-community/clipboard';
 import { Share } from 'react-native';
 import vkQr from '@vkontakte/vk-qr';
@@ -11,13 +11,12 @@ import { CurrencyIcon, Icon, NavBar, Text } from '$uikit';
 import { walletSelector } from '$store/wallet';
 import { deviceWidth, ns, triggerImpactLight } from '$utils';
 import { useTranslator } from '$hooks';
-import { toastActions } from '$store/toast';
 import { CryptoCurrencies, TabletModalsWidth } from '$shared/constants';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
+import { Toast } from '$store';
 
 export const Receive: FC<ReceiveProps> = ({ route }) => {
   const t = useTranslator();
-  const dispatch = useDispatch();
   const qrSize = Math.min(deviceWidth, TabletModalsWidth) - ns(64) * 2 - ns(16) - ns(12);
   const { currency, jettonAddress, isJetton, isFromMainScreen } = route.params;
   const { currencyTitle, Logo } = useCurrencyToSend(
@@ -46,9 +45,9 @@ export const Receive: FC<ReceiveProps> = ({ route }) => {
 
   const handleCopy = useCallback(() => {
     Clipboard.setString(address4copy(address[currency]));
-    dispatch(toastActions.success(t('address_copied')));
+    Toast.success(t('address_copied'));
     triggerImpactLight();
-  }, [address4copy, address, currency, dispatch, t]);
+  }, [address4copy, address, currency, t]);
 
   const handleShare = useCallback(() => {
     Share.share({

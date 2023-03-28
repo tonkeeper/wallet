@@ -1,17 +1,16 @@
 import React, { FC, useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useDispatch } from 'react-redux';
 import Clipboard from '@react-native-community/clipboard';
 
 import * as S from './ActionBase.style';
 import { Highlight, Icon, Separator, Text } from '$uikit';
 import { ns } from '$utils';
-import { toastActions } from '$store/toast';
 import { ActionBaseProps } from './ActionBase.interface';
 import { useTranslator } from '$hooks';
 import { openDAppBrowser, openSubscription } from '$navigation';
 import { getServerConfig } from '$shared/constants';
 import { Modal } from '$libs/navigation';
+import { Toast } from '$store';
 
 export const ActionBase: FC<ActionBaseProps> = ({
   infoRows,
@@ -24,16 +23,15 @@ export const ActionBase: FC<ActionBaseProps> = ({
   sentLabel,
   eventId,
 }) => {
-  const dispatch = useDispatch();
   const [isClosed, setClosed] = useState(false);
   const t = useTranslator();
 
   const handlePress = useCallback(
     (item) => () => {
       Clipboard.setString(item.value);
-      dispatch(toastActions.success(t('copied')));
+      Toast.success(t('copied'));
     },
-    [dispatch, t],
+    [t],
   );
 
   const handleOpenSubscription = useCallback(() => {

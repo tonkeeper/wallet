@@ -127,11 +127,11 @@ export function usePrepareAction(
         : '';
     }
 
-    if (ActionType.AuctionBid === ActionType[rawAction.type] && action.auctionType === 'DNS.tg') {
+    if (ActionType.AuctionBid === ActionType[rawAction.type]) {
       const amount = TonWeb.utils.fromNano(Math.abs(action.amount.value).toString());
       label = prefix + ' ' + formatter.format(amount.toString());
       typeLabel = t('transaction_type_bid');
-      type = 'tg_dns';
+      type = action.auctionType === 'DNS.tg' ? 'tg_dns' : 'sent';
       currency = formatCryptoCurrency(
         '',
         CryptoCurrencies.Ton,
@@ -196,9 +196,12 @@ export function usePrepareAction(
         ),
         value: formattedDate,
       });
-    } else if (ActionType.AuctionBid === ActionType[rawAction.type] && action.auctionType === 'DNS.tg') {
+    } else if (ActionType.AuctionBid === ActionType[rawAction.type]) {
       actionProps.infoRows.push({
-        label: dnsToUsername(action.nft.dns),
+        label:
+          action.auctionType === 'DNS.tg'
+            ? dnsToUsername(action.nft.dns)
+            : action.nft.dns,
         value: formattedDate,
       });
     }

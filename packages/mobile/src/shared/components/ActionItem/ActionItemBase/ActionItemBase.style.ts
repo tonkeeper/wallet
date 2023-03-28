@@ -1,6 +1,8 @@
 import styled, { RADIUS } from '$styled';
-import { hNs, nfs, ns } from '$utils';
-import { Highlight, Text } from '$uikit';
+import { hNs, ns } from '$utils';
+import { Text } from '$uikit';
+import { TouchableHighlight } from 'react-native';
+import Animated from 'react-native-reanimated';
 
 const borders = (borderStart: boolean, borderEnd: boolean) => {
   return `
@@ -23,18 +25,10 @@ const borders = (borderStart: boolean, borderEnd: boolean) => {
   `;
 };
 
-export const Background = styled.View<{ borderStart: boolean; borderEnd: boolean }>`
-  background: ${({ theme }) => theme.colors.backgroundSecondary};
-  ${({ borderStart, borderEnd }) => borders(borderStart, borderEnd)}
-  position: absolute;
-  z-index: -1;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-`;
-
-export const Wrap = styled(Highlight)<{ borderStart: boolean; borderEnd: boolean }>`
+export const Wrap = styled(TouchableHighlight)<{
+  borderStart?: boolean;
+  borderEnd?: boolean;
+}>`
   ${({ borderStart, borderEnd }) => borders(borderStart, borderEnd)}
   z-index: 2;
   overflow: hidden;
@@ -45,7 +39,7 @@ export const ContWrap = styled.View`
   padding: ${ns(16)}px ${hNs(16)}px;
 `;
 
-export const Icon = styled.View`
+export const Icon = styled(Animated.View)`
   width: ${ns(44)}px;
   height: ${hNs(44)}px;
   border-radius: ${ns(44 / 2)}px;
@@ -85,7 +79,7 @@ export const SmallText = styled(Text).attrs({
   variant: 'body2',
 })``;
 
-export const Comment = styled.View`
+export const Comment = styled(Animated.View)`
   margin-top: ${hNs(8)}px;
   padding: ${ns(8)}px ${hNs(12)}px;
   background: ${({ theme }) => theme.colors.backgroundTertiary};

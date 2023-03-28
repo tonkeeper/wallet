@@ -19,9 +19,9 @@ import { AppStackRouteNames, goBack, openResetPin, useParams } from '$navigation
 import { walletActions, walletWalletSelector } from '$store/wallet';
 import { mainActions } from '$store/main';
 import { useTranslator } from '$hooks';
-import { toastActions } from '$store/toast';
 import { MainDB } from '$database';
 import { useNotifications } from '$hooks/useNotifications';
+import { Toast, ToastSize } from '$store';
 
 export const AccessConfirmation: FC = () => {
   const route = useRoute();
@@ -115,7 +115,7 @@ export const AccessConfirmation: FC = () => {
                   });
               })
               .catch((err) => {
-                dispatch(toastActions.fail(err.message));
+                Toast.fail(err.message);
                 triggerError();
               });
           }, 300);
@@ -144,7 +144,7 @@ export const AccessConfirmation: FC = () => {
         }, 500);
       })
       .catch((e) => {
-        dispatch(toastActions.fail({ label: e.message, type: 'small' }));
+        Toast.fail(e.message, { size: ToastSize.Small });
         setBiometryFailed(true);
         triggerError();
       });

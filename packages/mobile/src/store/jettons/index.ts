@@ -70,6 +70,10 @@ export const jettonsBalancesSelector = createSelector(
   jettonsSelector,
   (jettons) => jettons.jettonBalances,
 );
+export const excludedJettonsSelector = createSelector(
+  jettonsSelector,
+  (jettons) => jettons.excludedJettons,
+);
 export const jettonsIsMetaLoadingSelector = createSelector(
   jettonsSelector,
   (jettons) => jettons.isMetaLoading,

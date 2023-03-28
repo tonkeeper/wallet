@@ -4,7 +4,11 @@ import { fiatCurrencySelector } from '$store/main';
 import { useFiatRate } from '$hooks/useFiatRate';
 import { useWalletInfo } from '$hooks';
 import { useCallback, useMemo } from 'react';
-import { walletSelector } from '$store/wallet';
+import {
+  walletBalancesSelector,
+  walletOldBalancesSelector,
+  walletVersionSelector,
+} from '$store/wallet';
 import { Ton } from '$libs/Ton';
 import { useGetPrice } from '$hooks/useWalletInfo';
 import BigNumber from 'bignumber.js';
@@ -62,12 +66,18 @@ const useAmountToFiat = () => {
 };
 
 export const useBalance = (tokensTotal: number) => {
-  const { oldWalletBalances, balances } = useSelector(walletSelector);
+  const balances = useSelector(walletBalancesSelector);
+  const walletVersion = useSelector(walletVersionSelector);
+  const oldWalletBalances = useSelector(walletOldBalancesSelector);
   const amountToFiat = useAmountToFiat();
   const getPrice = useGetPrice();
 
   const oldVersions = useMemo(() => {
     return oldWalletBalances.reduce((acc, item) => {
+      if (walletVersion && walletVersion <= item.version) {
+        return acc;
+      }
+
       const balance = Ton.fromNano(item.balance);
 
       acc.push({
@@ -81,7 +91,7 @@ export const useBalance = (tokensTotal: number) => {
 
       return acc;
     }, [] as any);
-  }, [oldWalletBalances, amountToFiat]);
+  }, [oldWalletBalances, amountToFiat, walletVersion]);
 
   const lockup = useMemo(() => {
     const lockupList: { type: CryptoCurrencies; amount: string }[] = [];

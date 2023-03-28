@@ -4,11 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import Clipboard from '@react-native-community/clipboard';
 
 import * as S from './Logs.style';
-import {NavBar, RoundedSectionList, Text} from '$uikit';
+import { NavBar, RoundedSectionList, Text } from '$uikit';
 import { mainSelector } from '$store/main';
 import { format, ns } from '$utils';
-import { toastActions } from '$store/toast';
 import { useTranslator } from '$hooks';
+import { Toast } from '$store';
 
 export const Logs: FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
@@ -43,7 +43,7 @@ export const Logs: FC = () => {
       ].join('\n');
 
       Clipboard.setString(payload);
-      dispatch(toastActions.success(t('copied')));
+      Toast.success(t('copied'));
     },
     [t, dispatch],
   );

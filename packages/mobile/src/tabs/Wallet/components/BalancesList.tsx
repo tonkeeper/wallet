@@ -221,18 +221,13 @@ export const BalancesList = memo<BalancesListProps>(({
     lastTokenElement.isLast = true;
 
     content.push({
-      type: ContentType.Spacer,
-      bottom: 16
-    });
-
-    content.push({
       type: ContentType.Staking
     });
 
     if (nfts) {
       content.push({
         type: ContentType.Spacer,
-        bottom: 16
+        bottom: 12
       });
 
       const numColumns = 3;
@@ -242,12 +237,12 @@ export const BalancesList = memo<BalancesListProps>(({
           items: nfts.slice((i * numColumns), (i * numColumns) + numColumns)
         })
       }
-
-      content.push({
-        type: ContentType.Spacer,
-        bottom: 12
-      });
     }
+
+    content.push({
+      type: ContentType.Spacer,
+      bottom: 12
+    });
 
     return content;
   }, [balance.oldVersions, rates, tokens.list]);

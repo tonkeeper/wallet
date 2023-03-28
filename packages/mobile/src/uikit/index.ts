@@ -10,7 +10,7 @@ export { FormItem } from './FormItem/FormItem';
 export { Input } from './Input/Input';
 export { Loader } from './Loader/Loader';
 export { Button } from './Button/Button';
-export { Toast } from './Toast/Toast';
+export { ToastComponent } from './Toast/new/ToastComponent';
 export { Separator } from './Separator/Separator';
 export { List, ListCell } from './List/List';
 export { PinCode } from './PinCode/PinCode';

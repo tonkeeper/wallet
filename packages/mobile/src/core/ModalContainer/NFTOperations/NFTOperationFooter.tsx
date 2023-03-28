@@ -12,13 +12,13 @@ import { getTimeSec } from '$utils/getTimeSec';
 import { TxBodyOptions, TxResponseOptions } from './TXRequest.types';
 import { UnlockVaultError } from '$store/wallet/sagas';
 import { useDispatch, useSelector } from 'react-redux';
-import { toastActions } from '$store/toast';
 import { t } from '$translation';
 import * as S from './NFTOperations.styles';
 import { useNavigation } from '$libs/navigation';
 import { eventsActions } from '$store/events';
 import axios from 'axios';
 import { isTimeSyncedSelector } from '$store/main';
+import { Toast } from '$store';
 
 enum States {
   INITIAL,
@@ -84,7 +84,6 @@ export const useNFTOperationState = (txBody?: TxBodyOptions) => {
 
 export const useActionFooter = () => {
   const ref = React.useRef<ActionFooterRef>(null);
-  const dispatch = useDispatch();
 
   const onConfirm = (confirm: ConfirmFn) => async () => {
     try {
@@ -97,7 +96,7 @@ export const useActionFooter = () => {
       ref.current?.setState(States.SUCCESS);
     } catch (error) {
       if (error instanceof UnlockVaultError) {
-        dispatch(toastActions.fail(error?.message));
+        Toast.fail(error?.message);
       } else if (error instanceof NFTOperationError) {
         if (error?.message) {
           ref.current?.setError(error.message);

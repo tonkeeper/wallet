@@ -53,7 +53,12 @@ export function formatCryptoCurrency(
   return `${toLocaleNumber(amount)} ${currency?.toUpperCase()}`;
 }
 
-export const cryptoToFiat = (input: string, fiatRate: number, decimals: number) => {
+export const cryptoToFiat = (
+  input: string,
+  fiatRate: number,
+  decimals: number,
+  skipFormatting?: boolean,
+) => {
   if (!fiatRate || fiatRate <= 0) {
     return '0';
   }
@@ -67,10 +72,19 @@ export const cryptoToFiat = (input: string, fiatRate: number, decimals: number) 
     groupSeparator: '',
   });
 
-  return formatInputAmount(formatted === '0.00' ? '0' : formatted, decimals);
+  return formatInputAmount(
+    formatted === '0.00' ? '0' : formatted,
+    decimals,
+    skipFormatting,
+  );
 };
 
-export const fiatToCrypto = (input: string, fiatRate: number, decimals: number) => {
+export const fiatToCrypto = (
+  input: string,
+  fiatRate: number,
+  decimals: number,
+  skipFormatting?: boolean,
+) => {
   if (!fiatRate || fiatRate <= 0) {
     return '0';
   }
@@ -79,5 +93,5 @@ export const fiatToCrypto = (input: string, fiatRate: number, decimals: number) 
 
   const calculated = bigNum.dividedBy(fiatRate);
 
-  return formatInputAmount(calculated.toString(), decimals);
+  return formatInputAmount(calculated.toString(), decimals, skipFormatting);
 };

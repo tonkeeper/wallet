@@ -15,7 +15,6 @@ import {
   maskifyTonAddress,
   triggerNotificationSuccess,
 } from '$utils';
-import { toastActions } from '$store/toast';
 import { UnlockVaultError } from '$store/wallet/sagas';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import {
@@ -29,7 +28,7 @@ import { t } from '$translation';
 import { TonConnectModalProps } from './models';
 import { useEffect } from 'react';
 import { Modal, useNavigation } from '$libs/navigation';
-import { store } from '$store';
+import { store, Toast } from '$store';
 import { openRequireWalletModal, push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 import { mainSelector } from '$store/main';
@@ -172,13 +171,13 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
       animation.revert();
       let message = error?.message;
       if (axios.isAxiosError(error)) {
-        return dispatch(toastActions.fail(t('error_network')));
+        return Toast.fail(t('error_network'));
       } else if (error instanceof UnlockVaultError) {
         return;
       }
 
       debugLog('[TonLogin]:', error);
-      dispatch(toastActions.fail(message));
+      Toast.fail(message);
     }
   }, [animation, dispatch, props, sendToCallbackUrl, unlockVault]);
 
