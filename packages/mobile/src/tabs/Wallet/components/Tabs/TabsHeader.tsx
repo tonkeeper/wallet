@@ -30,7 +30,7 @@ export const TabsHeader: React.FC<TabsHeaderProps> = (props) => {
       style={[balanceStyle, {
         position: 'absolute',
         top: 0,
-        zIndex: isAndroid ? 0 : 4,
+        zIndex: isAndroid ? 1 : 4,
         width: dimensions.width,
         backgroundColor: theme.colors.backgroundPrimary
       }]}
