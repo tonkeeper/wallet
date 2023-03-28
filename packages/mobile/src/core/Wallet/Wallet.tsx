@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { WalletProps } from './Wallet.interface';
 import * as S from './Wallet.style';
 import * as BalancesStyle from '../Balances/Balances.style';
-import { useTranslator, useWalletInfo } from '$hooks';
+import { useTheme, useTranslator, useWalletInfo } from '$hooks';
 import {
   Button,
   Icon,
@@ -27,7 +27,7 @@ import {
   walletIsRefreshingSelector,
   walletWalletSelector,
 } from '$store/wallet';
-import { Linking, View } from 'react-native';
+import { Linking, RefreshControl, View } from 'react-native';
 import { ns } from '$utils';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { t } from '$translation';
@@ -97,6 +97,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     eventsInfo,
     canLoadMore,
   } = useSelector(eventsSelector);
+  const theme = useTheme();
 
   const filteredEventsInfo = useMemo(() => {
     return groupAndFilterTonActivityItems(eventsInfo);
@@ -164,6 +165,10 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     [nav, wallet],
   );
 
+  const handleRefresh = useCallback(() => {
+    dispatch(walletActions.refreshBalancesPage(true));
+  }, [dispatch]);
+
   const handleDeploy = useCallback(() => {
     setLockupDeploy('loading');
     dispatch(
@@ -204,6 +209,13 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   const renderContent = useCallback(() => {
     return (
       <TransactionsList
+        refreshControl={
+          <RefreshControl
+            onRefresh={handleRefresh}
+            refreshing={isRefreshing}
+            tintColor={theme.colors.foregroundPrimary}
+          />
+        }
         withoutMarginForFirstHeader
         initialData={[]}
         onEndReached={isEventsLoading || !canLoadMore ? undefined : handleLoadMore}
@@ -311,6 +323,9 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
       />
     );
   }, [
+    handleRefresh,
+    isRefreshing,
+    theme.colors.foregroundPrimary,
     isEventsLoading,
     canLoadMore,
     handleLoadMore,
