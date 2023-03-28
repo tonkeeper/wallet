@@ -7,6 +7,8 @@ import { useScrollToTop } from '@react-navigation/native';
 import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useWindowDimensions } from 'react-native';
+import _ from 'lodash';
+import { isAndroid } from '$utils';
 
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 
@@ -17,7 +19,6 @@ export const TabsFlashList = (props: FlashListProps<any>) => {
   const dimensions = useWindowDimensions();
   const hasSpace = useSharedValue(true);
   const { index } = useCurrentTab();
-  
 
   const { changeScrollOnJS } = useScrollHandler(undefined, activeIndex !== index);
 
@@ -26,25 +27,36 @@ export const TabsFlashList = (props: FlashListProps<any>) => {
   useEffect(() => {
     setScrollTo(index, (y: number, animated?: boolean, withDelay?: boolean) => {
       hasSpace.value = true;
-      if (withDelay) {
-        setTimeout(() => {
+      requestAnimationFrame(() => {
+        if (withDelay) {
+          setTimeout(() => {
+            ref.current?.scrollToOffset({ offset: y, animated })
+          }, isAndroid ? 0 : 200);
+        } else {
           ref.current?.scrollToOffset({ offset: y, animated })
-        }, 200);
-      } else {
-        ref.current?.scrollToOffset({ offset: y, animated })
-      }      
+        }
+      });
     });
   }, []);
  
   const contentHeight = useSharedValue(0);
 
+  const scrollAdjacentTabs = _.throttle((index, y) => {
+    runOnJS(scrollAllTo)(index, y);
+  }, 200);
+
   const scrollHandler = useAnimatedScrollHandler({
     onScroll(event) {
       contentHeight.value = event.layoutMeasurement.height;
+
       if (activeIndex === index) {
         contentOffset.value = 0;
         scrollY.value = event.contentOffset.y;
         hasSpace.value = false;
+
+        if (isAndroid && event.contentOffset.y >= 0) {
+          runOnJS(scrollAdjacentTabs)(index, Math.min(event.contentOffset.y, headerHeight.value));
+        }
 
         runOnJS(changeScrollOnJS)(
           event.contentOffset.y,
@@ -62,7 +74,6 @@ export const TabsFlashList = (props: FlashListProps<any>) => {
       if (activeIndex === index) {
         scrollY.value = event.contentOffset.y;
         contentOffset.value = event.contentOffset.y;
-        
         runOnJS(scrollAllTo)(index, Math.min(event.contentOffset.y, headerHeight.value));
       }
     },
@@ -95,6 +106,7 @@ export const TabsFlashList = (props: FlashListProps<any>) => {
       onScrollToTop={handleScrollToTop}
       onScroll={scrollHandler}
       scrollEventThrottle={16}
+      showsVerticalScrollIndicator={false}
       ref={ref}
       {...props}
       ListHeaderComponent={

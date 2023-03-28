@@ -205,6 +205,7 @@ const styles = StyleSheet.create({
     margin: 0,
     backgroundColor: 'transparent',
     borderTopWidth: 0,
+    elevation: 0,
   },
   tabBarItemStyle: {
     height: ns(64),

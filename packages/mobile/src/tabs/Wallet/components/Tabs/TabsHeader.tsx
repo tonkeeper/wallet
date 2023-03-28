@@ -1,4 +1,5 @@
 import { useTheme } from '$hooks';
+import { isAndroid } from '$utils';
 import * as React from 'react';
 import { StyleSheet, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
@@ -29,7 +30,7 @@ export const TabsHeader: React.FC<TabsHeaderProps> = (props) => {
       style={[balanceStyle, {
         position: 'absolute',
         top: 0,
-        zIndex: 4,
+        zIndex: isAndroid ? 0 : 4,
         width: dimensions.width,
         backgroundColor: theme.colors.backgroundPrimary
       }]}
