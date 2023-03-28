@@ -68,6 +68,7 @@ export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
   return (
     <View>
       <S.Wrap
+        delayLongPress={85}
         delayPressIn={85}
         onLongPress={handlePressIn}
         onHideUnderlay={handlePressOut}
