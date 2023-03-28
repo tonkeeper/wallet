@@ -227,7 +227,7 @@ export const BalancesList = memo<BalancesListProps>(({
     if (nfts) {
       content.push({
         type: ContentType.Spacer,
-        bottom: 12
+        bottom: 32,
       });
 
       const numColumns = 3;
