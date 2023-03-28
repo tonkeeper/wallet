@@ -151,12 +151,13 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
         const domain = value.toLowerCase();
 
-        if (!favorite && !TonWeb.Address.isValid(domain) && domain.includes('.')) {
+        if (!favorite && !TonWeb.Address.isValid(domain)) {
           setDnsLoading(true);
           const abortController = new AbortController();
           dnsAbortController = abortController;
 
-          const resolvedDomain = await getAddressByDomain(domain, abortController.signal);
+          const zone = domain.indexOf('.') === -1 ? '.ton' : '';
+          const resolvedDomain = await getAddressByDomain(domain + zone, abortController.signal);
 
           if (resolvedDomain === 'aborted') {
             setDnsLoading(false);

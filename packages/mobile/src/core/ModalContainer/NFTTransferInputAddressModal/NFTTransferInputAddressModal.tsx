@@ -119,9 +119,11 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
 
     const handleTextChange = React.useCallback(async (text: string) => {
       setInputValue(text);
-      if (!TonWeb.Address.isValid(text) && text.includes('.')) {
+      if (!TonWeb.Address.isValid(text)) {
         setAddress('');
-        const walletAddress = await getAddressByDomain(text);
+
+        const zone = text.indexOf('.') === -1 ? '.ton' : '';
+        const walletAddress = await getAddressByDomain(text + zone);
 
         if (walletAddress) {
           setAddress(walletAddress);
