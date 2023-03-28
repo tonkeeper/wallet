@@ -68,9 +68,7 @@ export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
   return (
     <View>
       <S.Wrap
-        delayLongPress={85}
-        delayPressIn={85}
-        onLongPress={handlePressIn}
+        onShowUnderlay={handlePressIn}
         onHideUnderlay={handlePressOut}
         style={{ backgroundColor: DarkTheme.colors.backgroundSecondary }}
         underlayColor={DarkTheme.colors.backgroundTertiary}

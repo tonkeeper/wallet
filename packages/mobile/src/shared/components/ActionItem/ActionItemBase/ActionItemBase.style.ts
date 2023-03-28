@@ -1,7 +1,7 @@
 import styled, { RADIUS } from '$styled';
 import { hNs, ns } from '$utils';
 import { Text } from '$uikit';
-import { TouchableHighlight } from 'react-native';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 
 const borders = (borderStart: boolean, borderEnd: boolean) => {
