@@ -539,6 +539,9 @@ function* backupWalletWorker() {
     yield call(openBackupWords, unlockedVault.mnemonic);
   } catch (e) {
     e && debugLog(e.message);
+    if (!e?.message) {
+      return;
+    }
     yield call(Toast.fail, e ? e.message : t('auth_failed'));
   }
 }
