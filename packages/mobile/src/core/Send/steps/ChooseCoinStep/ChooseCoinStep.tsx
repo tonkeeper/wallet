@@ -2,7 +2,7 @@ import { SendSteps } from '$core/Send/Send.interface';
 import { useJettonBalances, useTranslator } from '$hooks';
 import { CryptoCurrencies, SecondaryCryptoCurrencies } from '$shared/constants';
 import { walletSelector } from '$store/wallet';
-import React, { FC, memo, useMemo } from 'react';
+import React, { FC, memo, useEffect, useMemo } from 'react';
 import { useAnimatedScrollHandler } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import { ChooseCoinStepProps } from './ChooseCoinStep.interface';
@@ -33,8 +33,6 @@ const ChooseCoinStepComponent: FC<ChooseCoinStepProps> = (props) => {
     });
   }, [currencies, balances]);
 
-  const jettons = useJettonBalances();
-
   const scrollHandler = useAnimatedScrollHandler((event) => {
     stepsScrollTop.value = {
       ...stepsScrollTop.value,
@@ -61,13 +59,13 @@ const ChooseCoinStepComponent: FC<ChooseCoinStepProps> = (props) => {
           borderEnd={otherCurrencies.length - 1 === index}
         />
       ))}
-      {jettons.map((jetton, index) => (
+      {props.jettons.map((jetton, index) => (
         <JettonItem
           key={jetton.jettonAddress}
           jetton={jetton}
           onPress={() => onChangeCurrency(jetton.jettonAddress, true)}
           borderStart={index === 0}
-          borderEnd={jettons.length - 1 === index}
+          borderEnd={props.jettons.length - 1 === index}
         />
       ))}
     </S.Container>

@@ -1,42 +1,38 @@
 import React, { FC, useCallback, useState } from 'react';
-import { View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { StyleSheet, View } from 'react-native';
 import Clipboard from '@react-native-community/clipboard';
 
 import * as S from './ActionBase.style';
-import { BottomSheet, Highlight, Icon, Separator, Text } from '$uikit';
+import { Highlight, Icon, Separator, Text } from '$uikit';
 import { ns } from '$utils';
-import { toastActions } from '$store/toast';
 import { ActionBaseProps } from './ActionBase.interface';
 import { useTranslator } from '$hooks';
-import { openSend, openSubscription } from '$navigation';
-import { CryptoCurrencies } from '$shared/constants';
+import { openDAppBrowser, openSubscription } from '$navigation';
+import { getServerConfig } from '$shared/constants';
 import { Modal } from '$libs/navigation';
+import { Toast } from '$store';
 
 export const ActionBase: FC<ActionBaseProps> = ({
   infoRows,
   head,
   isSpam,
-  comment,
-  recipientAddress,
-  shouldShowSendToRecipientButton,
+  isFailed,
   shouldShowOpenSubscriptionButton,
   subscriptionInfo,
   isInProgress,
   label,
   sentLabel,
-  jettonAddress,
+  eventId,
 }) => {
-  const dispatch = useDispatch();
   const [isClosed, setClosed] = useState(false);
   const t = useTranslator();
 
   const handlePress = useCallback(
     (item) => () => {
       Clipboard.setString(item.value);
-      dispatch(toastActions.success(t('copied')));
+      Toast.success(t('copied'));
     },
-    [dispatch, t],
+    [t],
   );
 
   const handleOpenSubscription = useCallback(() => {
@@ -49,18 +45,9 @@ export const ActionBase: FC<ActionBaseProps> = ({
     }, 500);
   }, [subscriptionInfo]);
 
-  const handleSendMore = useCallback(() => {
-    setClosed(true);
-    setTimeout(() => {
-      openSend(
-        jettonAddress || CryptoCurrencies.Ton,
-        recipientAddress,
-        comment,
-        true,
-        !!jettonAddress,
-      );
-    }, 500);
-  }, [comment, jettonAddress, recipientAddress]);
+  const handleOpenInExplorer = useCallback(() => {
+    openDAppBrowser(getServerConfig('transactionExplorer').replace('%s', eventId));
+  }, [eventId]);
 
   function renderFooterButton() {
     if (shouldShowOpenSubscriptionButton) {
@@ -69,14 +56,12 @@ export const ActionBase: FC<ActionBaseProps> = ({
           {t('transaction_show_subscription_button')}
         </S.SendButton>
       );
-    } else if (shouldShowSendToRecipientButton) {
+    } else {
       return (
-        <S.SendButton onPress={handleSendMore}>
-          {t('transaction_send_more_button')}
+        <S.SendButton onPress={handleOpenInExplorer}>
+          {t('transaction_view_in_explorer')}
         </S.SendButton>
       );
-    } else {
-      return null;
     }
   }
 
@@ -110,6 +95,11 @@ export const ActionBase: FC<ActionBaseProps> = ({
                 {sentLabel}
               </Text>
             </S.TypeLabelWrapper>
+            {isFailed && (
+              <Text variant="body1" color="accentOrange">
+                {t('activity.failed_transaction')}
+              </Text>
+            )}
             {isInProgress && (
               <S.Pending>
                 <Icon name="ic-time-16" color="foregroundSecondary" />
@@ -132,9 +122,17 @@ export const ActionBase: FC<ActionBaseProps> = ({
               </Highlight>,
             ])}
           </S.Table>
-          {renderFooterButton()}
+          <View style={styles.buttonContainer}>
+            {renderFooterButton()}
+          </View>
         </View>
       </Modal.Content>
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    paddingBottom: 16
+  }
+});

@@ -5,7 +5,7 @@
   "skip": "Skip",
   "later": "Later",
   "continue": "Continue",
-  "loading": "Loading...",
+  "loading": "Loading",
   "success": "Success!",
   "copied": "Copied",
   "address_copied": "Address copied",
@@ -79,6 +79,7 @@
   "transaction_sender_address": "Sender address",
   "transaction_hash": "Transaction",
   "transaction_fee": "Fee",
+  "transaction_refund": "Refund",
   "transaction_merchant": "Merchant",
   "transaction_subscription": "Subscription",
   "transaction_unsubscription": "Unsubscription",
@@ -105,6 +106,7 @@
   "transaction_exchange_from_currency": "From",
   "transaction_confirmations": "Confirmations",
   "transaction_send_more_button": "Send more to this recipient",
+  "transaction_view_in_explorer": "View in explorer",
   "transaction_show_subscription_button": "View subscription",
   "transaction_copy_caution": "Be careful with external links. Never give your secret phrase to third-party resources — you can lose all your funds.\n\n- - -\n\n",
 
@@ -170,6 +172,7 @@
   "jetton_name": "%{name} Token",
   "jetton_id": "Token ID: %{jettonAddress}",
   "jetton_price": "Price:",
+  "jetton_token": "Token",
   "jetton_id_copied": "Token ID copied",
   "jetton_open_explorer": "View details",
   "jettons_manage_tokens": "Manage tokens",
@@ -229,7 +232,7 @@
       "insufficient_balance": "Insufficient balance",
       "less_than_min": "Minimum amount is %{minAmount} TON",
       "max": "Max",
-      "send_all": "Remaining: %{amount}"
+      "remaining": "Remaining: %{amount}"
     },
     "comfirm": {
       "comment_label": "Comment",
@@ -319,10 +322,11 @@
     "screen_title": "Activity",
     "sent": "Sent",
     "received": "Received",
-    "empty_transaction_title":"Your activity will be shown here",
+    "empty_transaction_title": "Your activity will be shown here",
     "empty_transaction_caption": "Make your first transaction!",
     "buy_toncoin_btn": "Buy Toncoin",
-    "receive_btn": "Receive"
+    "receive_btn": "Receive",
+    "failed_transaction": "Failed"
   },
 
   "browser": {
@@ -385,7 +389,7 @@
   "settings_security": "Security",
   "settings_appearance": "Theme",
   "settings_news_url": "https://t.me/tonkeeper",
-  "settings_jettons_list": "List of tokens",
+  "settings_jettons_list": "Manage tokens",
   "settings_delete_account": "Delete account",
   "settings_search_engine": "Search engine",
 
@@ -522,6 +526,7 @@
   "security_reset_passcode": "Reset passcode",
   "security_use_biometry_switch": "Use %{biometryType}",
   "security_use_biometry_tip": "You can always unlock your wallet with a passcode.",
+  "passcode_changed": "Passcode changed",
 
   "setup_biometry_title": "Quick sign-in with %{biometryType}",
   "setup_biometry_caption": "%{biometryType} allows you to open your wallet faster without having\nto enter your password.",
@@ -623,6 +628,8 @@
 
   "chart": {
     "price": "Price",
+    "no_internet": "No internet connection",
+    "check_connection": "Please check your connection and try again.",
     "periods": {
       "1Y": "Y",
       "6M": "6M",
@@ -681,13 +688,15 @@
   "transfer_deeplink_amount_error": "Incorrect amount request",
 
   "staking": {
-    "staking_provider_desc": "Minimum deposit from %{minDeposit} TON.\nEarn up to to %{maxApy}%.",
-    "staking_pool_desc": "APY ≈ %{apy}%, pool fee %{feePercentage}%",
+    "title": "Staking",
+    "widget_desc": "Earn up to %{apy}% on your TONs",
+    "staking_pool_desc": "APY ≈ %{apy}%",
     "top_up": "Top up",
     "withdrawal_request": "Withdrawal request",
+    "withdrawal_confrim": "Withdrawal confirm",
     "withdraw": "Withdraw",
     "deposit": "Deposit",
-    "confirm_action": "Confirm action",
+    "transaction": "Transaction",
     "warning": {
       "title": "Warning",
       "desc": "Staking based on third-party smart contracts. We are not responsible for their work.",
@@ -696,7 +705,10 @@
     "details": {
       "show_details": "Details",
       "balance": "Staking balance",
-      "pending": "Pending deposit",
+      "pendingDeposit": "Pending deposit",
+      "pendingWithdraw": "Pending withdrawal",
+      "readyWithdraw": "Withdraw ready",
+      "tap_to_collect": "Tap to collect",
       "next_cycle": {
         "title": "Next cycle",
         "desc": "All transactions take effect once the cycle ends",
@@ -705,7 +717,7 @@
       "about_pool": "About pool",
       "frequency": {
         "label": "Reward frequency",
-        "value": "Every %{value} hours"
+        "value": "Every %{count} hours"
       },
       "apy": {
         "label": "Est. APY rate",
@@ -713,22 +725,6 @@
       },
       "min_deposit": {
         "label": "Minimal deposit",
-        "value": "%{value} TON"
-      },
-      "pool_fee": {
-        "label": "Pool fee",
-        "value": "%{value}%"
-      },
-      "deposit_fee": {
-        "label": "Deposit fee",
-        "value": "%{value} TON"
-      },
-      "withdrawal_request_fee": {
-        "label": "Withdrawal request fee",
-        "value": "%{value} TON"
-      },
-      "withdrawal_complete_fee": {
-        "label": "Complete withdrawal fee",
         "value": "%{value} TON"
       }
     },
@@ -749,12 +745,13 @@
         "label": "Amount",
         "value": "%{value} TON"
       },
+      "withdraw_amount": {
+        "label": "Withdraw amount",
+        "value": "%{value} TON"
+      },
       "fee": {
         "label": "Fee",
         "value": "≈ %{value} TON"
-      },
-      "message": {
-        "label": "Message"
       }
     }
   }

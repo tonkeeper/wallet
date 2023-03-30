@@ -19,11 +19,11 @@ import { subscriptionsActions } from '$store/subscriptions';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { formatCryptoCurrency } from '$utils/currency';
 import { useTheme, useTranslator, useWalletInfo } from '$hooks';
-import { toastActions } from '$store/toast';
 import {eventsEventsInfoSelector, eventsSelector} from '$store/events';
 import {walletSelector, walletWalletSelector} from '$store/wallet';
 import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
+import { Toast } from '$store';
 
 export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   invoiceId = null,
@@ -128,10 +128,10 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
         setLoading(false);
       })
       .catch((e) => {
-        dispatch(toastActions.fail(e.message));
+        Toast.fail(e.message);
         setClosed(true);
       });
-  }, [dispatch, invoiceId]);
+  }, [invoiceId]);
 
   useEffect(() => {
     if (!isEdit) {

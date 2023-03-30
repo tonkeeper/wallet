@@ -3,10 +3,9 @@ import Clipboard from '@react-native-community/clipboard';
 import { StyleSheet, View } from 'react-native';
 import { t } from '$translation';
 import { Button, DevSeparator, Screen, Text } from '$uikit';
-import { toastActions } from '$store/toast';
-import { useDispatch } from 'react-redux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ns } from '$utils';
+import { Toast } from '$store';
 
 interface ErrorScreenProps {
   refresh: () => void;
@@ -14,16 +13,15 @@ interface ErrorScreenProps {
 }
 
 export const ErrorScreen: React.FC<ErrorScreenProps> = (props) => {
-  const dispatch = useDispatch();
   const safeArea = useSafeAreaInsets();
 
   const handleCopyLog = React.useCallback((value?: string) => () => {
       if (value) {
         Clipboard.setString(value);
-        dispatch(toastActions.success(t('copied')));
+        Toast.success(t('copied'));
       }
     },
-    [dispatch, t]
+    [t]
   );
 
   return (

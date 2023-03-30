@@ -25,6 +25,7 @@ export type IconNames =
   | 'ic-getgems-16'
   | 'ic-globe-16'
   | 'ic-link-bold-16'
+  | 'ic-loader-small-16'
   | 'ic-magnifying-glass-16'
   | 'ic-pencil-16'
   | 'ic-sale-badge-16'
@@ -51,12 +52,14 @@ export type IconNames =
   | 'ic-donemark-thin-28'
   | 'ic-door-28'
   | 'ic-envelope-28'
+  | 'ic-exclamationmark-circle-28'
   | 'ic-explore-28'
   | 'ic-flash-28'
   | 'ic-gear-28'
   | 'ic-home-28'
   | 'ic-jetton-28'
   | 'ic-key-28'
+  | 'ic-lock-28'
   | 'ic-minus-28'
   | 'ic-money-28'
   | 'ic-nft-collection-28'
@@ -68,6 +71,7 @@ export type IconNames =
   | 'ic-settings-28'
   | 'ic-shield-28'
   | 'ic-speed-28'
+  | 'ic-staking-28'
   | 'ic-star-28'
   | 'ic-success-28'
   | 'ic-swap-28'
@@ -99,7 +103,8 @@ export type IconNames =
   | 'globe-96'
   | 'ic-loader-large-32'
   | 'ic-loader-medium-24'
-  | 'ic-loader-xlarge-64';
+  | 'ic-loader-xlarge-64'
+  | 'ic-arrow-2-circlepath-28';
 
 export const AllIcons = [
   'ic-chevron-right-12',
@@ -128,6 +133,7 @@ export const AllIcons = [
   'ic-getgems-16',
   'ic-globe-16',
   'ic-link-bold-16',
+  'ic-loader-small-16',
   'ic-magnifying-glass-16',
   'ic-pencil-16',
   'ic-sale-badge-16',
@@ -154,12 +160,14 @@ export const AllIcons = [
   'ic-donemark-thin-28',
   'ic-door-28',
   'ic-envelope-28',
+  'ic-exclamationmark-circle-28',
   'ic-explore-28',
   'ic-flash-28',
   'ic-gear-28',
   'ic-home-28',
   'ic-jetton-28',
   'ic-key-28',
+  'ic-lock-28',
   'ic-minus-28',
   'ic-money-28',
   'ic-nft-collection-28',
@@ -171,6 +179,7 @@ export const AllIcons = [
   'ic-settings-28',
   'ic-shield-28',
   'ic-speed-28',
+  'ic-staking-28',
   'ic-star-28',
   'ic-success-28',
   'ic-swap-28',
@@ -203,6 +212,7 @@ export const AllIcons = [
   'ic-loader-large-32',
   'ic-loader-medium-24',
   'ic-loader-xlarge-64',
+  'ic-arrow-2-circlepath-28',
 ];
 
 export const IconSizes = {
@@ -232,6 +242,7 @@ export const IconSizes = {
   'ic-getgems-16': 16,
   'ic-globe-16': 16,
   'ic-link-bold-16': 16,
+  'ic-loader-small-16': 16,
   'ic-magnifying-glass-16': 16,
   'ic-pencil-16': 16,
   'ic-sale-badge-16': 16,
@@ -258,12 +269,14 @@ export const IconSizes = {
   'ic-donemark-thin-28': 28,
   'ic-door-28': 28,
   'ic-envelope-28': 28,
+  'ic-exclamationmark-circle-28': 28,
   'ic-explore-28': 28,
   'ic-flash-28': 28,
   'ic-gear-28': 28,
   'ic-home-28': 28,
   'ic-jetton-28': 28,
   'ic-key-28': 28,
+  'ic-lock-28': 28,
   'ic-minus-28': 28,
   'ic-money-28': 28,
   'ic-nft-collection-28': 28,
@@ -275,6 +288,7 @@ export const IconSizes = {
   'ic-settings-28': 28,
   'ic-shield-28': 28,
   'ic-speed-28': 28,
+  'ic-staking-28': 28,
   'ic-star-28': 28,
   'ic-success-28': 28,
   'ic-swap-28': 28,
@@ -307,4 +321,5 @@ export const IconSizes = {
   'ic-loader-large-32': 32,
   'ic-loader-medium-24': 24,
   'ic-loader-xlarge-64': 64,
+  'ic-arrow-2-circlepath-28': 28,
 };

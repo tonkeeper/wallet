@@ -8,7 +8,7 @@ import BigNumber from 'bignumber.js';
 
 import { mainActions, mainSelector } from './index';
 import { Wallet } from '$blockchain';
-import { batchActions } from '$store';
+import { batchActions, Toast } from '$store';
 import { walletActions, walletSelector } from '$store/wallet';
 import { ratesActions } from '$store/rates';
 import * as SplashScreen from 'expo-splash-screen';
@@ -42,7 +42,6 @@ import {
   setSavedServerConfig,
 } from '$database';
 import { openRequireWalletModal } from '$navigation';
-import { toastActions } from '$store/toast';
 import { subscriptionsActions } from '$store/subscriptions';
 import {
   HideNotificationAction,
@@ -64,6 +63,7 @@ import { jettonsActions } from '$store/jettons';
 import { favoritesActions } from '$store/favorites';
 import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 import { clearSubscribeStatus } from '$utils/messaging';
+import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 
 SplashScreen.preventAutoHideAsync()
   .then((result) =>
@@ -126,7 +126,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   const primaryCurrency = yield call(getPrimaryFiatCurrency);
   const balances = yield call(getBalances);
   const isNewSecurityFlow = yield call(MainDB.isNewSecurityFlow);
-  const jettonsEnabled = yield call(MainDB.isJettonsEnabled);
   const excludedJettons = yield call(MainDB.getExcludedJettons);
   const accent = yield call(MainDB.getAccent);
   const tonCustomIcon = yield call(MainDB.getTonCustomIcon);
@@ -181,7 +180,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
         fiatCurrency: primaryCurrency || FiatCurrencies.Usd,
       }),
       mainActions.setShowV4R1(showV4R1),
-      jettonsActions.setShowJettons(jettonsEnabled),
       jettonsActions.setExcludedJettons(excludedJettons),
       mainActions.toggleIntro(!isIntroShown),
       walletActions.setWallet(wallet),
@@ -255,6 +253,7 @@ export function* resetAll(isTestnet: boolean) {
   yield call(Cache.clearAll, getWalletName());
   yield call(clearSubscribeStatus);
   yield call(JettonsCache.clearAll, getWalletName());
+  yield call(useJettonEventsStore.getState().actions.clearStore);
   yield put(
     batchActions(
       mainActions.resetMain(),
@@ -284,7 +283,7 @@ function* toggleTestnetWorker(action: ToggleTestnetAction) {
 
     yield call(resetAll, isTestnet);
   } catch (e) {
-    yield put(toastActions.fail(e.message));
+    yield call(Toast.fail, e.message);
   }
 }
 

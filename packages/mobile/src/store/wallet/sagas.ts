@@ -5,7 +5,13 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 
 import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet/index';
-import { EncryptedVault, jettonTransferForwardAmount, UnlockedVault, Vault, Wallet } from '$blockchain';
+import {
+  EncryptedVault,
+  jettonTransferForwardAmount,
+  UnlockedVault,
+  Vault,
+  Wallet,
+} from '$blockchain';
 import { mainActions } from '$store/main';
 import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
 import {
@@ -51,8 +57,7 @@ import {
   setLastRefreshedAt,
   setMigrationState,
 } from '$database';
-import { batchActions } from '$store';
-import { toastActions } from '$store/toast';
+import { batchActions, Toast, useStakingStore } from '$store';
 import { subscriptionsActions } from '$store/subscriptions';
 import { t } from '$translation';
 import { initHandler } from '$store/main/sagas';
@@ -68,6 +73,7 @@ import { Ton } from '$libs/Ton';
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
 import { Tonapi } from '$libs/Tonapi';
 import { clearSubscribeStatus } from '$utils/messaging';
+import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 
 function* generateVaultWorker() {
   try {
@@ -98,7 +104,7 @@ function* restoreWalletWorker(action: RestoreWalletAction) {
     yield call(trackEvent, 'import_wallet');
   } catch (e) {
     e && debugLog(e.message);
-    yield put(toastActions.fail(e.message));
+    yield call(Toast.fail, e.message);
     action.payload.onFail();
   }
 }
@@ -141,11 +147,11 @@ function* createWalletWorker(action: CreateWalletAction) {
     console.debug({ createWalletError: e });
     e && debugLog(e.message);
     if (e.message && e.message.indexOf('-25293') > -1) {
-      yield put(toastActions.fail(t('pin_enter_faceid_err')));
+      yield call(Toast.fail, t('pin_enter_faceid_err'));
     } else if (e.message && e.message.indexOf('-127') > -1) {
-      yield put(toastActions.fail(t('pin_enter_skip_faceid_err')));
+      yield call(Toast.fail, t('pin_enter_skip_faceid_err'));
     } else {
-      yield put(toastActions.fail(e.message));
+      yield call(Toast.fail, e.message);
     }
     onFail && onFail();
   }
@@ -275,6 +281,7 @@ function* switchVersionWorker() {
   yield call(Cache.clearAll, walletName);
   yield call(JettonsCache.clearAll, walletName);
   yield put(walletActions.refreshBalancesPage());
+  yield call(useJettonEventsStore.getState().actions.clearStore);
 }
 
 function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
@@ -286,6 +293,7 @@ function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
     yield put(jettonsActions.loadJettons());
     yield put(ratesActions.loadRates({ onlyCache: false }));
     yield put(mainActions.loadNotifications());
+    yield call(useStakingStore.getState().actions.fetchPools);
     yield call(setLastRefreshedAt, Date.now());
     yield put(subscriptionsActions.loadSubscriptions());
   } catch (e) {
@@ -309,7 +317,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
     } = action.payload;
 
     if (!onEnd) {
-      yield put(toastActions.loading());
+      yield call(Toast.loading);
     }
 
     const { wallet } = yield select(walletSelector);
@@ -352,7 +360,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
     if (onEnd) {
       yield call(onEnd);
     } else {
-      yield put(toastActions.hide());
+      yield call(Toast.hide);
     }
     yield call(Keyboard.dismiss);
     yield delay(100);
@@ -362,10 +370,8 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
         const amountNano = isJetton ? jettonTransferForwardAmount : toNano(amount);
         const address = yield call([wallet.ton, 'getAddress']);
         const { balance } = yield call(Tonapi.getWalletInfo, address);
-        if (
-          new BigNumber(amountNano).gt(new BigNumber(balance))
-        ) {
-          return onInsufficientFunds({ totalAmount: amountNano, balance })
+        if (new BigNumber(amountNano).gt(new BigNumber(balance))) {
+          return onInsufficientFunds({ totalAmount: amountNano, balance });
         }
       } else {
         yield call(onNext, { fee, isInactive: isUninit });
@@ -374,11 +380,11 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
 
     if (isEstimateFeeError) {
       yield delay(300);
-      yield put(toastActions.fail(t('send_fee_estimation_error')));
+      yield call(Toast.fail, t('send_fee_estimation_error'));
     }
   } catch (e) {
     e && debugLog(e.message);
-    yield put(toastActions.fail(e.message));
+    yield call(Toast.fail, e.message);
     if (action.payload.onEnd) {
       yield call(action.payload.onEnd);
     }
@@ -463,7 +469,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       return;
     }
 
-    yield put(toastActions.fail(e ? e.message : t('send_sending_failed')));
+    yield call(Toast.fail, e ? e.message : t('send_sending_failed'));
   }
 }
 
@@ -533,7 +539,10 @@ function* backupWalletWorker() {
     yield call(openBackupWords, unlockedVault.mnemonic);
   } catch (e) {
     e && debugLog(e.message);
-    yield put(toastActions.fail(e ? e.message : t('auth_failed')));
+    if (!e?.message) {
+      return;
+    }
+    yield call(Toast.fail, e ? e.message : t('auth_failed'));
   }
 }
 
@@ -546,6 +555,7 @@ function* cleanWalletWorker() {
     yield call(Cache.clearAll, walletName);
     yield call(clearSubscribeStatus);
     yield call(JettonsCache.clearAll, walletName);
+    yield call(useJettonEventsStore.getState().actions.clearStore);
 
     if (isNewFlow) {
       try {
@@ -589,7 +599,7 @@ function* cleanWalletWorker() {
     yield call(trackEvent, 'reset_wallet');
   } catch (e) {
     e && debugLog(e.message);
-    yield put(toastActions.fail(e.message));
+    yield put(Toast.fail, e.message);
   }
 }
 
@@ -653,9 +663,10 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
     e && debugLog(e.message);
 
     const err =
-      e && e.message && e.message.indexOf('-127') > -1
-        ? new UnlockVaultError(t('auth_failed'))
-        : new UnlockVaultError(e ? e.message : t('access_denied'));
+      e &&
+      e.message &&
+      e.message.indexOf('-127') > -1 &&
+      new UnlockVaultError(t('auth_failed'));
 
     if (action?.payload?.onFail) {
       action.payload.onFail(err);
@@ -679,7 +690,7 @@ function* openMigrationWorker(action: OpenMigrationAction) {
         ? action.payload.fromVersion
         : wallet.vault.getVersion() ?? 'v3R2';
 
-    yield put(toastActions.loading());
+    yield call(Toast.loading);
 
     const tonweb = wallet.ton.getTonWeb();
     const [oldAddress, newAddress] = yield all([
@@ -693,7 +704,7 @@ function* openMigrationWorker(action: OpenMigrationAction) {
     ]);
 
     const migrationState = yield call(getMigrationState);
-    yield put(toastActions.hide());
+    yield call(Toast.hide);
     openMigration(
       fromVersion,
       oldAddress,
@@ -705,7 +716,7 @@ function* openMigrationWorker(action: OpenMigrationAction) {
     );
   } catch (e) {
     e && debugLog(e.message);
-    yield put(toastActions.fail(e.message));
+    yield call(Toast.fail, e.message);
   }
 }
 
@@ -760,7 +771,7 @@ function* migrateWorker(action: MigrateAction) {
   } catch (e) {
     e && debugLog(e.message);
     action.payload.onFail();
-    yield put(toastActions.fail(e.message));
+    yield call(Toast.fail, e.message);
     yield call(setMigrationState, null);
   }
 }
@@ -770,6 +781,7 @@ function* doMigration(wallet: Wallet, newAddress: string) {
     wallet.vault.setVersion('v4R2');
     const walletName = getWalletName();
     const newWallet = new Wallet(walletName, wallet.vault);
+    yield call([newWallet, 'getReadableAddress']);
     yield call([newWallet, 'save']);
     yield put(walletActions.setWallet(newWallet));
 
@@ -780,17 +792,18 @@ function* doMigration(wallet: Wallet, newAddress: string) {
         }),
         eventsActions.resetEvents(),
         nftsActions.resetNFTs(),
-        jettonsActions.resetJettons(),
+        jettonsActions.setJettonBalances({ jettonBalances: [] }),
       ),
     );
     yield call(destroyEventsManager);
     yield call(Cache.clearAll, walletName);
     yield call(JettonsCache.clearAll, walletName);
+    yield call(useJettonEventsStore.getState().actions.clearStore);
     yield put(walletActions.refreshBalancesPage());
     yield call(setMigrationState, null);
   } catch (e) {
     e && debugLog(e.message);
-    yield put(toastActions.fail(e.message));
+    yield call(Toast.fail, e.message);
   }
 }
 
@@ -814,7 +827,7 @@ function* waitMigrationWorker(action: WaitMigrationAction) {
 
       if (Date.now() - state.startAt > 70 * 1000) {
         action.payload.onFail();
-        yield put(toastActions.fail(t('migration_failed')));
+        yield call(Toast.fail, t('migration_failed'));
         yield call(setMigrationState, null);
         return;
       }
@@ -858,7 +871,7 @@ function* toggleBiometryWorker(action: ToggleBiometryAction) {
     }
     yield call(MainDB.setBiometryEnabled, isEnabled);
   } catch (e) {
-    yield put(toastActions.fail(e.message));
+    yield call(Toast.fail, e.message);
     onFail();
   }
 }
@@ -869,10 +882,10 @@ function* changePinWorker(action: ChangePinAction) {
 
     const encrypted = yield call([vault, 'encrypt'], pin);
     yield call([encrypted, 'lock']);
-    yield put(toastActions.success('Passcode changed'));
+    yield call(Toast.success, t('passcode_changed'));
     yield call(goBack);
   } catch (e) {
-    yield put(toastActions.fail(e.message));
+    yield call(Toast.fail, e.message);
     yield call(goBack);
   }
 }
@@ -907,7 +920,7 @@ function* securityMigrateWorker() {
       yield call(openCreatePin);
     }
   } catch (e) {
-    yield put(toastActions.fail(e.message));
+    yield call(Toast.fail, e.message);
   }
 }
 

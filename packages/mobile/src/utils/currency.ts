@@ -11,17 +11,20 @@ import {
 export function formatFiatCurrencyAmount(
   amount: any,
   currency: FiatCurrency,
-  withThinSpace?: boolean,
+  hasThinSpace?: boolean,
+  hasNegative?: boolean,
 ): string {
   const conf = FiatCurrencySymbolsConfig[currency];
   if (!conf) {
     return `${toLocaleNumber(amount)} ${currency?.toUpperCase()}`;
   }
 
+  const maybeNegative = hasNegative ? '− ' : '';
+  const maybeThinSpace = hasThinSpace ? ' ' : '';
   if (conf.side === 'start') {
-    return `${conf.symbol}${withThinSpace ? ' ' : ''}${toLocaleNumber(amount)}`;
+    return `${maybeNegative}${conf.symbol}${maybeThinSpace}${toLocaleNumber(amount)}`;
   } else {
-    return `${toLocaleNumber(amount)}${withThinSpace ? ' ' : ''}${conf.symbol}`;
+    return `${maybeNegative}${toLocaleNumber(amount)}${maybeThinSpace}${conf.symbol}`;
   }
 }
 
@@ -41,12 +44,21 @@ export function formatCryptoCurrency(
     if (decimal !== undefined) {
       amount = truncateDecimal(amount, decimal);
     }
+
+    if (+amount < 0) {
+      amount = `${'− '}${amount.replace('-', '')}`;
+    }
   }
 
   return `${toLocaleNumber(amount)} ${currency?.toUpperCase()}`;
 }
 
-export const cryptoToFiat = (input: string, fiatRate: number, decimals: number) => {
+export const cryptoToFiat = (
+  input: string,
+  fiatRate: number,
+  decimals: number,
+  skipFormatting?: boolean,
+) => {
   if (!fiatRate || fiatRate <= 0) {
     return '0';
   }
@@ -60,10 +72,19 @@ export const cryptoToFiat = (input: string, fiatRate: number, decimals: number) 
     groupSeparator: '',
   });
 
-  return formatInputAmount(formatted === '0.00' ? '0' : formatted, decimals);
+  return formatInputAmount(
+    formatted === '0.00' ? '0' : formatted,
+    decimals,
+    skipFormatting,
+  );
 };
 
-export const fiatToCrypto = (input: string, fiatRate: number, decimals: number) => {
+export const fiatToCrypto = (
+  input: string,
+  fiatRate: number,
+  decimals: number,
+  skipFormatting?: boolean,
+) => {
   if (!fiatRate || fiatRate <= 0) {
     return '0';
   }
@@ -72,5 +93,5 @@ export const fiatToCrypto = (input: string, fiatRate: number, decimals: number) 
 
   const calculated = bigNum.dividedBy(fiatRate);
 
-  return formatInputAmount(calculated.toString(), decimals);
+  return formatInputAmount(calculated.toString(), decimals, skipFormatting);
 };

@@ -16,7 +16,7 @@ export { CreatePin } from './CreatePin/CreatePin';
 export { SetupWalletDone } from './SetupWalletDone/SetupWalletDone';
 export { Fiat } from './Fiat/Fiat';
 export { BuyFiat } from './BuyFiat/BuyFiat';
-export { Exchange } from './Exchange/Exchange';
+export { OldExchange } from './Exchange/Exchange';
 export { ModalContainer } from './ModalContainer/ModalContainer';
 export { Migration } from './Migration/Migration';
 export { DevMenu } from './DevMenu/DevMenu';

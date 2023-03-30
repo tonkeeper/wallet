@@ -6,14 +6,13 @@ import {
 } from '$navigation';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { getTokenConfig } from '$shared/dynamicConfig';
-import { toastActions } from '$store/toast';
+import { Toast } from '$store';
 import { Button, Icon } from '$uikit';
 import { maskifyAddress, parseLocaleNumber } from '$utils';
 import { formatCryptoCurrency } from '$utils/currency';
 import BigNumber from 'bignumber.js';
 import React, { FC, memo, useCallback, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useDispatch } from 'react-redux';
 import { DoneStepProps } from './DoneStep.interface';
 import * as S from './DoneStep.style';
 
@@ -33,8 +32,6 @@ const DoneStepComponent: FC<DoneStepProps> = (props) => {
   const t = useTranslator();
 
   const { bottom: bottomInset } = useSafeAreaInsets();
-
-  const dispatch = useDispatch();
 
   const feeCurrency = useMemo(() => {
     const tokenConfig = getTokenConfig(currency as CryptoCurrency);
@@ -84,11 +81,11 @@ const DoneStepComponent: FC<DoneStepProps> = (props) => {
       domain: recipient.domain,
       name: recipientAccountInfo?.name,
       onSave: () => {
-        dispatch(toastActions.success(t('send_screen_steps.done.favorite_saved')));
+        Toast.success(t('send_screen_steps.done.favorite_saved'));
         setTimeout(handlePressDone, 350);
       },
     });
-  }, [dispatch, handlePressDone, recipient, recipientAccountInfo, t]);
+  }, [handlePressDone, recipient, recipientAccountInfo, t]);
 
   if (!recipient) {
     return null;

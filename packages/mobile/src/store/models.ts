@@ -168,6 +168,7 @@ export interface InternalNotificationModel {
 }
 
 export interface ExchangeCategoryModel {
+  type?: string;
   title: string;
   subtitle: string;
   items: string[];

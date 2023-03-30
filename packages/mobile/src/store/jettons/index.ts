@@ -6,7 +6,6 @@ import {
   SetLoadingAction,
   JettonsState,
   LoadJettonsAction,
-  SetShowJettonsAction,
   SetJettonMetadataAction,
   SetIsEnabledAction,
   SwitchExcludedJettonAction,
@@ -18,7 +17,6 @@ const initialState: JettonsState = {
   isLoading: false,
   jettonBalances: [],
   jettons: {},
-  showJettons: false,
   isEnabled: false,
   excludedJettons: {},
   isMetaLoading: {},
@@ -44,9 +42,6 @@ export const { actions, reducer } = createSlice({
     switchExcludedJetton(state, action: SwitchExcludedJettonAction) {},
     setExcludedJettons(state, action: SetExcludedJettonsAction) {
       state.excludedJettons = action.payload;
-    },
-    setShowJettons(state, action: SetShowJettonsAction) {
-      state.showJettons = action.payload;
     },
     setJettonBalances(state, action: SetJettonsAction) {
       state.jettonBalances = action.payload.jettonBalances;
@@ -74,6 +69,10 @@ export const jettonsMetaSelector = createSelector(
 export const jettonsBalancesSelector = createSelector(
   jettonsSelector,
   (jettons) => jettons.jettonBalances,
+);
+export const excludedJettonsSelector = createSelector(
+  jettonsSelector,
+  (jettons) => jettons.excludedJettons,
 );
 export const jettonsIsMetaLoadingSelector = createSelector(
   jettonsSelector,

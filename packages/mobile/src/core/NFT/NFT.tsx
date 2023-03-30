@@ -6,7 +6,13 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { ImageWithTitle } from '$core/NFT/ImageWithTitle/ImageWithTitle';
-import { checkIsTonDiamondsNFT, compareAddresses, maskifyTonAddress, ns } from '$utils';
+import {
+  checkIsTelegramNumbersNFT,
+  checkIsTonDiamondsNFT,
+  compareAddresses,
+  maskifyTonAddress,
+  ns,
+} from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslator } from '$hooks';
 import { Properties } from '$core/NFT/Properties/Properties';
@@ -50,6 +56,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
   const isTG = (nft.dns || nft.name)?.endsWith('.t.me');
   const isDNS = !!nft.dns && !isTG;
   const isTonDiamondsNft = checkIsTonDiamondsNFT(nft);
+  const isNumbersNft = checkIsTelegramNumbersNFT(nft);
 
   const t = useTranslator();
   const scrollTop = useSharedValue(0);
@@ -147,6 +154,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
         >
           {nft.name || nft.collection?.name || nft.content.image.baseUrl ? (
             <ImageWithTitle
+              copyableTitle={isNumbersNft}
               uri={isDNS ? undefined : nft.content.image.baseUrl}
               lottieUri={lottieUri}
               videoUri={videoUri}

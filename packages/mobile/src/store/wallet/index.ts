@@ -164,3 +164,8 @@ export const walletOldBalancesSelector = createSelector(
   walletSelector,
   (walletState) => walletState.oldWalletBalances,
 );
+
+export const walletIsRefreshingSelector = createSelector(
+  walletSelector,
+  (walletState) => walletState.isRefreshing,
+);

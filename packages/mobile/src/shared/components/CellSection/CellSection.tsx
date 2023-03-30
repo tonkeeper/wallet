@@ -30,7 +30,7 @@ export const CellSectionItem = forwardRef<any, PropsWithChildren<CellProps>>(
       icon,
       indicator,
       inlineContent,
-      content
+      content,
     } = props;
 
     return (
@@ -53,9 +53,7 @@ export const CellSectionItem = forwardRef<any, PropsWithChildren<CellProps>>(
               {inlineContent}
             </S.SectionItemTitleWrap>
             {!!indicator && <S.SectionItemIndicator>{indicator}</S.SectionItemIndicator>}
-            {!!icon && (
-              <Icon name={icon} color="accentPrimary" />
-            )}
+            {!!icon && <Icon name={icon} color="accentPrimary" />}
           </S.SectionItemInner>
         </S.SectionItem>
       </>

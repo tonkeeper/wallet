@@ -20,15 +20,17 @@ export const useScrollHandler = (snapOffset?: number, forceEnd?: boolean) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      changeEnd(forceEnd || isEnd);
-    }, [changeEnd, forceEnd, isEnd]),
+      const end = forceEnd ? false : isEnd;
+      changeEnd(end);
+    }, [forceEnd, isEnd]),
   );
 
   const changeScrollOnJS = useCallback(
     (newPosition: number, contentHeight: number, containerHeight: number) => {
-      const newEnd = newPosition + containerHeight >= contentHeight;
-      changeEnd(forceEnd || newEnd);
-      setEnd(forceEnd || newEnd);
+      const newEnd = newPosition + containerHeight >= Math.trunc(contentHeight);
+      const end = forceEnd ? false : !newEnd
+      changeEnd(end);
+      setEnd(end);
 
       if (typeof snapOffset === 'number') {
         setSnapPointReached(newPosition >= snapOffset);
@@ -57,13 +59,15 @@ export const useScrollHandler = (snapOffset?: number, forceEnd?: boolean) => {
   const scrollHandler = useAnimatedScrollHandler(
     {
       onScroll: (event) => {
-        scrollTop.value = event.contentOffset.y;
-
-        runOnJS(changeScrollOnJS)(
-          event.contentOffset.y,
-          event.contentSize.height,
-          event.layoutMeasurement.height,
-        );
+        if (scrollTop.value !== event.contentOffset.y) {
+          runOnJS(changeScrollOnJS)(
+            event.contentOffset.y,
+            event.contentSize.height,
+            event.layoutMeasurement.height,
+          );
+        }
+        
+        scrollTop.value = event.contentOffset.y;        
       },
       onEndDrag(event) {
         const top = event.contentOffset.y;
@@ -87,7 +91,7 @@ export const useScrollHandler = (snapOffset?: number, forceEnd?: boolean) => {
         }
       },
     },
-    [scrollRef, changeScrollOnJS],
+    [scrollRef, changeScrollOnJS, forceEnd],
   );
 
   return { isSnapPointReached, scrollRef, scrollTop, scrollHandler, changeScrollOnJS };

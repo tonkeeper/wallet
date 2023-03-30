@@ -12,7 +12,6 @@ export const useNotificationsSubscribe = () => {
   React.useEffect(() => {
     async function tryToSubscribe() {
       const subscribeStatus = await getSubscribeStatus();
-      console.log('SUBSCRIBE_STATUS', subscribeStatus);
       if (
         (wallet && !isSubscribe.current) &&
         subscribeStatus !== SUBSCRIBE_STATUS.UNSUBSCRIBED

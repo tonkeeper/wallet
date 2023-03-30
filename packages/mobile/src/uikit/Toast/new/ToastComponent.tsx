@@ -105,7 +105,7 @@ export const ToastComponent = memo(() => {
         >
           {toast.isLoading && (
             <View style={styles.loaderContainer}>
-              <Loader color="foregroundPrimary" size="medium" />
+              <Loader color="foregroundPrimary" size="small" />
             </View>
           )}
 
@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
     maxWidth: deviceWidth - ns(32) * 2,
   },
   loaderContainer: {
-    marginRight: 9,
+    marginRight: 8,
+    marginLeft: -8,
   },
 });

@@ -1,14 +1,14 @@
 import React from 'react';
-import { Button, Icon, Screen, Text } from '$uikit';
+import { Button, Icon, Screen, Spacer, Text } from '$uikit';
 import * as S from '$core/SetupNotifications/SetupNotifications.style';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { t } from '$translation';
 import { openSetupWalletDone } from '$navigation';
-import { debugLog } from '$utils';
+import { debugLog, ns } from '$utils';
 import { useNotifications } from '$hooks/useNotifications';
-import { toastActions } from '$store/toast';
 import { saveDontShowReminderNotifications } from '$utils/messaging';
+import { Toast } from '$store';
 
 export const SetupNotifications: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
@@ -27,7 +27,7 @@ export const SetupNotifications: React.FC = () => {
       openSetupWalletDone();
     } catch (err) {
       setLoading(false);
-      dispatch(toastActions.fail(err?.massage));
+      Toast.fail(err?.massage);
       debugLog('[SetupNotifications]:', err);
     }
   }, []);
@@ -35,11 +35,11 @@ export const SetupNotifications: React.FC = () => {
   return (
     <Screen>
       <Screen.Header 
-        hideBackButton
         rightContent={
           <Button 
             size="navbar_small" 
             mode="secondary"
+            style={{ marginRight: ns(16) }}
             onPress={() => openSetupWalletDone()}
           >
             {t('later')}
@@ -54,6 +54,7 @@ export const SetupNotifications: React.FC = () => {
           <Text textAlign="center" variant="h2">
             {t('setup_notifications_title')}
           </Text>
+          <Spacer y={4} />
           <Text textAlign="center" variant="body1" color="foregroundSecondary">
             {t('setup_notifications_caption')}
           </Text>

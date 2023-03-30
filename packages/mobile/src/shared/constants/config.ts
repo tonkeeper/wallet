@@ -23,7 +23,7 @@ export enum CryptoCurrencies {
   Wbtc = 'wbtc',
 }
 
-export type CryptoCurrency = typeof CryptoCurrencies[keyof typeof CryptoCurrencies];
+export type CryptoCurrency = (typeof CryptoCurrencies)[keyof typeof CryptoCurrencies];
 
 export enum FiatCurrencies {
   Usd = 'usd',
@@ -39,7 +39,7 @@ export enum FiatCurrencies {
   Jpy = 'jpy',
 }
 
-export type FiatCurrency = typeof FiatCurrencies[keyof typeof FiatCurrencies];
+export type FiatCurrency = (typeof FiatCurrencies)[keyof typeof FiatCurrencies];
 
 export enum SelectableVersions {
   V4R2 = 'v4R2',
@@ -49,7 +49,7 @@ export enum SelectableVersions {
 }
 
 export type SelectableVersion =
-  typeof SelectableVersions[keyof typeof SelectableVersions];
+  (typeof SelectableVersions)[keyof typeof SelectableVersions];
 
 export const PrimaryCryptoCurrencies = [
   CryptoCurrencies.Ton,
@@ -100,7 +100,7 @@ export const CurrencyLongName = {
 export const LockupNames = {
   [CryptoCurrencies.TonLocked]: 'Locked Toncoin',
   [CryptoCurrencies.TonRestricted]: 'Restricted Toncoin',
-}
+};
 
 export const Decimals = {
   [CryptoCurrencies.Ton]: 9,
@@ -238,3 +238,10 @@ export const tonDiamondCollectionAddress = {
   mainnet: 'EQAG2BH0JlmFkbMrLEnyn2bIITaOSssd4WdisE4BdFMkZbir',
   testnet: 'EQDR1lqTwhPJKjkEbICwXBbarhxCKXqNOlRTDMMbxbqambV0',
 };
+
+export const telegramNumbersAddress = {
+  mainnet: 'EQAOQdwdw8kGftJCSFgOErM1mBjYPe4DBPq8-AhF6vr9si5N',
+  testnet: 'EQAOQdwdw8kGftJCSFgOErM1mBjYPe4DBPq8-AhF6vr9si5N',
+};
+
+export const KNOWN_STAKING_IMPLEMENTATIONS = ['whales'];

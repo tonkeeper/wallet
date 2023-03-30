@@ -12,12 +12,12 @@ import { InputItem } from './InputItem';
 import { Button, Input, NavBarHelper, Text } from '$uikit';
 import * as S from './ImportWalletForm.style';
 import { useReanimatedKeyboardHeight, useTranslator } from '$hooks';
-import { toastActions } from '$store/toast';
 import { ImportWalletFormProps } from './ImportWalletForm.interface';
 import { useInputsRegistry } from './useInputRegistry';
 import { WordHintsPopup, WordHintsPopupRef } from './WordHintsPopup';
 import { Keyboard } from 'react-native';
 import { wordlist } from '$libs/Ton/mnemonic/wordlist';
+import { Toast } from '$store';
 
 export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
   const { onWordsFilled } = props;
@@ -107,7 +107,7 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
     }
 
     if (hasFailed) {
-      dispatch(toastActions.fail(t('import_wallet_wrong_words_err')));
+      Toast.fail(t('import_wallet_wrong_words_err'));
       setRestoring(false);
       return;
     }
@@ -119,7 +119,7 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
       try {
         configParsed = parseLockupConfig(config);
       } catch (e) {
-        dispatch(toastActions.fail(`Lockup: ${(e as Error).message}`));
+        Toast.fail(`Lockup: ${(e as Error).message}`);
         setRestoring(false);
         return;
       }

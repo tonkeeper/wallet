@@ -10,7 +10,7 @@ import { getServerConfig, getServerConfigSafe } from '$shared/constants';
 import { Linking } from 'react-native';
 import { Modal } from '$libs/navigation';
 
-export const ExchangeModal: FC = () => {
+export const OldExchange: FC = () => {
   const t = useTranslator();
 
   const { isLoading, categories } = useSelector(exchangeSelector);

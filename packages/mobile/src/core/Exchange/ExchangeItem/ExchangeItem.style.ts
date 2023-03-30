@@ -1,7 +1,7 @@
 import FastImage from 'react-native-fast-image';
 
 import styled, { RADIUS } from '$styled';
-import { Highlight, Badge as UIBadge } from '$uikit';
+import { Badge as UIBadge, Pressable } from '$uikit';
 import { hNs, nfs, ns } from '$utils';
 
 export const Wrap = styled.View`
@@ -29,7 +29,9 @@ const radius = (topRadius: boolean, bottomRadius: boolean) => {
   `;
 };
 
-export const Card = styled(Highlight)<{ topRadius: boolean; bottomRadius: boolean }>`
+export const Card = styled(Pressable).attrs(({ theme }) => ({
+  underlayColor: theme.colors.backgroundTertiary
+}))<{ topRadius: boolean; bottomRadius: boolean }>`
   overflow: hidden;
   padding: ${hNs(16)}px ${ns(16)}px;
   ${({ bottomRadius, topRadius }) => radius(topRadius, bottomRadius)}

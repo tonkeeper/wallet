@@ -1,109 +1,114 @@
-import { CryptoCurrencies, Decimals, FiatCurrencies } from '$shared/constants';
-import { formatCryptoCurrency, formatFiatCurrencyAmount } from '$utils/currency';
-import { ratesChartsSelector, ratesRatesSelector } from '$store/rates';
+import { CryptoCurrencies } from '$shared/constants';
 import { useSelector } from 'react-redux';
 import { fiatCurrencySelector } from '$store/main';
-import { getRate } from '$hooks/useFiatRate';
+import { useFiatRate } from '$hooks/useFiatRate';
 import { useWalletInfo } from '$hooks';
 import { useCallback, useMemo } from 'react';
-import { walletSelector } from '$store/wallet';
-import { truncateDecimal } from '$utils';
+import {
+  walletBalancesSelector,
+  walletOldBalancesSelector,
+  walletVersionSelector,
+} from '$store/wallet';
 import { Ton } from '$libs/Ton';
 import { useGetPrice } from '$hooks/useWalletInfo';
+import BigNumber from 'bignumber.js';
+import { formatter } from '$utils/formatter';
 
-type BalanceRate = {
+export type Rate = {
   percent: string;
   price: string;
   trend: string;
-}
+};
 
-export const useBalance = () => {
-  const { amount, fiatInfo, amountToUsd } = useWalletInfo(CryptoCurrencies.Ton);
-  const { oldWalletBalances, balances } = useSelector(walletSelector);
+// TODO: rewrite
+export const useRates = (): Rate => {
+  const { fiatInfo } = useWalletInfo(CryptoCurrencies.Ton);
 
-  const currency = CryptoCurrencies.Ton;
-  const charts = useSelector(ratesChartsSelector);
   const fiatCurrency = useSelector(fiatCurrencySelector);
-  const rates = useSelector(ratesRatesSelector);
-
-  const getPrice = useGetPrice();
-
-  const currencyPrepared = useMemo(() => {
-    let result = currency;
-    if (
-      [CryptoCurrencies.TonLocked, CryptoCurrencies.TonRestricted].indexOf(currency) > -1
-    ) {
-      result = CryptoCurrencies.Ton;
-    }
-
-    return result;
-  }, [currency]);
 
   const fiatPrice = useMemo(() => {
-    const points = charts['ton'] || [];
+    const price = fiatInfo.fiatRate;
 
-    const fiatRate =
-      fiatCurrency === FiatCurrencies.Usd
-        ? 1
-        : getRate(rates, CryptoCurrencies.Usdt, fiatCurrency);
+    return formatter.format(price.toFixed(2), {
+      ignoreZeroTruncate: true,
+      currency: fiatCurrency,
+      decimals: 2,
+    });
+  }, [fiatCurrency, fiatInfo.fiatRate]);
 
-    const price = points.length > 0 ? points[points.length - 1].y * fiatRate : 0;
+  return {
+    percent: fiatInfo.percent,
+    trend: fiatInfo.trend,
+    price: fiatPrice,
+  };
+};
 
-    return formatFiatCurrencyAmount(price.toFixed(2), fiatCurrency, true);
-  }, [charts, fiatCurrency, rates]);
-    
-  const formattedAmount = useMemo(() => {
-    return formatCryptoCurrency(
-      amount,
-      '',
-      Decimals[currencyPrepared],
-      2,
-      true,
-    )
-  }, [amount, currencyPrepared]);
+// TODO: rewrite
+const useAmountToFiat = () => {
+  const fiatRate = useFiatRate(CryptoCurrencies.Ton);
+  const fiatCurrency = useSelector(fiatCurrencySelector);
 
-  const amountToFiat = useCallback((amount: string) => {
-    const amountInUsd = amountToUsd(amount);
-    if (+amount > 0) {
-      return amountInUsd === '-'
-        ? amountInUsd
-        : formatFiatCurrencyAmount(amountInUsd, fiatCurrency, true);
-    }
+  const amountToFiat = useCallback(
+    (amount: string, fiatAmountToSum?: number) => {
+      if (fiatRate && +fiatRate.today > 0) {
+        const fiat = new BigNumber(amount)
+          .multipliedBy(fiatRate.today)
+          .plus(fiatAmountToSum ?? 0);
+        return formatter.format(fiat, { currency: fiatCurrency });
+      } else {
+        return '-';
+      }
+    },
+    [fiatRate, fiatCurrency],
+  );
 
-    return formatFiatCurrencyAmount('0.00', fiatCurrency, true);
-  }, [amountToUsd, fiatCurrency]);
+  return amountToFiat;
+};
+
+export const useBalance = (tokensTotal: number) => {
+  const balances = useSelector(walletBalancesSelector);
+  const walletVersion = useSelector(walletVersionSelector);
+  const oldWalletBalances = useSelector(walletOldBalancesSelector);
+  const amountToFiat = useAmountToFiat();
+  const getPrice = useGetPrice();
 
   const oldVersions = useMemo(() => {
     return oldWalletBalances.reduce((acc, item) => {
+      if (walletVersion && walletVersion <= item.version) {
+        return acc;
+      }
+
+      const balance = Ton.fromNano(item.balance);
+
       acc.push({
         version: item.version,
         amount: {
-          value: Ton.fromNano(item.balance),
-          formatted: truncateDecimal(Ton.fromNano(item.balance), 2),
-          fiat: amountToFiat(Ton.fromNano(item.balance))
+          value: balance,
+          formatted: formatter.format(balance),
+          fiat: amountToFiat(balance),
         },
       });
 
       return acc;
     }, [] as any);
-  }, [oldWalletBalances]);
+  }, [oldWalletBalances, amountToFiat, walletVersion]);
 
   const lockup = useMemo(() => {
     const lockupList: { type: CryptoCurrencies; amount: string }[] = [];
     const restricted = balances[CryptoCurrencies.TonRestricted];
     const locked = balances[CryptoCurrencies.TonLocked];
-    
+
     if (restricted) {
-      lockupList.push({ 
+      lockupList.push({
         type: CryptoCurrencies.TonRestricted,
         amount: restricted,
       });
     }
 
     if (locked) {
-      lockupList.push({ 
+      lockupList.push({
         type: CryptoCurrencies.TonLocked,
-        amount: locked
+        amount: locked,
       });
     }
 
@@ -113,22 +118,49 @@ export const useBalance = () => {
       return {
         type: item.type,
         amount: {
-          value: Ton.fromNano(item.amount),
+          nano: item.amount,
           formatted: price.amount,
-          fiat: price.fiatInfo.amount
+          fiat: price.fiatInfo.amount,
         },
-      }
+      };
     });
   }, [balances, getPrice]);
 
+  const ton = useMemo(() => {
+    const balance = balances[CryptoCurrencies.Ton] ?? '0';
+
+    const formatted = formatter.format(balance);
+    return {
+      amount: {
+        nano: balance,
+        fiat: amountToFiat(balance),
+        formatted,
+      },
+    };
+  }, [balances, amountToFiat]);
+
+  const total = useMemo(() => {
+    const amounts = [ton, ...lockup];
+
+    const balanceNano = amounts
+      .reduce((total, balance) => {
+        const nano = Ton.toNano(balance.amount.nano);
+        return total.plus(nano);
+      }, new BigNumber(0))
+      .toString(10);
+
+    const balance = Ton.fromNano(balanceNano);
+
+    return {
+      value: balance,
+      fiat: amountToFiat(balance, tokensTotal),
+    };
+  }, [ton, lockup, tokensTotal, amountToFiat]);
+
   return {
-    fiatValue: fiatInfo.amount,
-    percent: fiatInfo.percent,
-    trend: fiatInfo.trend,
-    formattedAmount,
-    fiatPrice,
-    amount,
     oldVersions,
-    lockup
+    lockup,
+    total,
+    ton,
   };
 };

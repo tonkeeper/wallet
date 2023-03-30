@@ -4,6 +4,7 @@ import LottieView from 'lottie-react-native';
 import FastImage from 'react-native-fast-image';
 import RNVideo from 'react-native-video';
 import { ns } from '$utils';
+import { TouchableOpacity } from 'react-native';
 
 export const Wrap = styled(Animated.View)`
   flex: 1;
@@ -52,7 +53,9 @@ export const Row = styled.View`
   align-items: center;
 `;
 
-export const TitleWrap = styled.View`
+export const TitleWrap = styled(TouchableOpacity).attrs({
+  activeOpacity: 0.6,
+})`
   margin-bottom: ${ns(8)}px;
   flex-direction: row;
   flex-wrap: wrap;

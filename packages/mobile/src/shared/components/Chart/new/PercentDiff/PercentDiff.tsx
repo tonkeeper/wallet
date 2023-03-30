@@ -26,7 +26,9 @@ const PercentDiffComponent: React.FC<PercentDiffProps> = (props) => {
   const [activePoint, setActivePoint] = React.useState(props.latestPoint);
 
   const priceDiffNumber = React.useMemo(() => {
-    return ((activePoint - props.firstPoint) / props.firstPoint) * 100;
+    return props.firstPoint
+      ? ((activePoint - props.firstPoint) / props.firstPoint) * 100
+      : 0;
   }, [activePoint, props.firstPoint]);
 
   const priceDiff = React.useMemo(() => {

@@ -2,6 +2,7 @@ import { useTheme } from '$hooks';
 import { Steezy } from '$styles';
 import { AnimatedView, Icon, View } from '$uikit';
 import { ViewStyle } from '@bogoslavskiy/react-native-steezy/dist/types';
+import { isAndroid } from '$utils';
 import * as React from 'react';
 import { StyleProp, useWindowDimensions } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
@@ -49,7 +50,6 @@ export const TabsHeader: React.FC<TabsHeaderProps> = (props) => {
     return null;
   }
 
-  
   return (
     <AnimatedView
       pointerEvents="box-none"
@@ -68,9 +68,8 @@ const styles = Steezy.create(({ colors, safeArea }) => ({
   container: {
     position: 'absolute',
     top: 0,
-    zIndex: 4,
+    zIndex: isAndroid ? 1 : 4,
     backgroundColor: colors.backgroundPrimary,
-    justifyContent: 'center',
   },
   rightContent: {
     top: 0,

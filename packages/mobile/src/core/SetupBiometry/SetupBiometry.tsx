@@ -19,9 +19,9 @@ import {
   SetupWalletStackRouteNames,
 } from '$navigation';
 import { walletActions } from '$store/wallet';
-import { toastActions } from '$store/toast';
 import { useTranslator } from '$hooks';
 import { getPermission } from '$utils/messaging';
+import { Toast } from '$store';
 
 const LottieFaceId = require('$assets/lottie/faceid.json');
 const LottieTouchId = require('$assets/lottie/touchid.json');
@@ -55,7 +55,7 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
           onDone: async () => {
             if (routeNode.name === ResetPinStackRouteNames.SetupBiometry) {
               popToTop();
-              dispatch(toastActions.success());
+              Toast.success();
               setTimeout(() => goBack(), 20);
             } else {
               const hasNotificationPermission = await getPermission();
@@ -125,7 +125,7 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
             {t('setup_biometry_title', { biometryType: biometryNameGenitive })}
           </Text>
           <S.CaptionWrapper>
-            <Text color="foregroundSecondary" textAlign="center" variant="label1">
+            <Text color="foregroundSecondary" textAlign="center" variant="body1">
               {t('setup_biometry_caption', {
                 biometryType: isTouchId
                   ? t(`platform.${platform}.capitalized_fingerprint`)

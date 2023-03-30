@@ -20,6 +20,7 @@ import { LayoutChangeEvent, View } from 'react-native';
 import * as S from './AmountInput.style';
 import { Button, Text } from '$uikit';
 import { SwapButton } from '../SwapButton';
+import { formatter } from '$utils/formatter';
 
 interface Props {
   innerRef?: React.MutableRefObject<TextInput | null>;
@@ -53,22 +54,27 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const isLockup = !!wallet?.ton.isLockup();
 
-  const { formattedBalance, balanceInputValue, isInsufficientBalance, isLessThanMin } =
+  const { remainingBalance, balanceInputValue, isInsufficientBalance, isLessThanMin } =
     useMemo(() => {
-      const bigNum = new BigNumber(parseLocaleNumber(amount.value));
+      const bigNum = new BigNumber(parseLocaleNumber(amount.value) || '0');
       const balanceBigNum = new BigNumber(balance);
 
-      const formattedBalanceDecimals = balanceBigNum.isGreaterThanOrEqualTo(1)
+      const remainingBalanceBigNum = balanceBigNum.minus(bigNum);
+
+      const remainingBalanceDecimals = remainingBalanceBigNum.isGreaterThanOrEqualTo(1)
         ? 2
         : decimals;
 
       return {
-        formattedBalance: formatCryptoCurrency(
-          balance,
-          currencyTitle,
-          formattedBalanceDecimals,
-        ),
-        balanceInputValue: formatInputAmount(balance, decimals),
+        remainingBalance: formatter.format(remainingBalanceBigNum, {
+          decimals: remainingBalanceDecimals,
+          currency: currencyTitle,
+          currencySeparator: 'wide',
+        }),
+        balanceInputValue: formatter.format(balance, {
+          decimals,
+          currencySeparator: 'wide',
+        }),
         isInsufficientBalance: !isLockup && bigNum.isGreaterThan(balanceBigNum),
         isLessThanMin:
           minAmount !== undefined &&
@@ -89,14 +95,14 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const secondaryAmount = useMemo(() => {
     if (amount.all && isFiat) {
-      return formatInputAmount(balance, 2);
+      return formatInputAmount(balance, 2, true);
     }
 
     const { decimalSeparator } = getNumberFormatSettings();
 
     const secondaryValue = isFiat
-      ? fiatToCrypto(value, fiatRate, 2)
-      : cryptoToFiat(value, fiatRate, 2);
+      ? fiatToCrypto(value, fiatRate, 2, true)
+      : cryptoToFiat(value, fiatRate, 2, true);
 
     return secondaryValue === '0' ? `0${decimalSeparator}00` : secondaryValue;
   }, [amount.all, balance, fiatRate, isFiat, value]);
@@ -107,7 +113,6 @@ const AmountInputComponent: React.FC<Props> = (props) => {
   const handleChangeAmount = useCallback(
     (text: string) => {
       const nextValue = formatInputAmount(text, decimals);
-
       setValue(nextValue);
 
       setAmount({
@@ -218,7 +223,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
           {isFiatAvailable ? (
             <>
               <S.SecondaryAmountContainer onPress={handleToggleFiat}>
-                <Text color="foregroundSecondary">
+                <Text color="foregroundSecondary" numberOfLines={1}>
                   {secondaryAmount} {secondaryCurrencyCode}
                 </Text>
               </S.SecondaryAmountContainer>
@@ -248,8 +253,8 @@ const AmountInputComponent: React.FC<Props> = (props) => {
             </S.Error>
           ) : (
             <S.SandAllLabel>
-              {t('send_screen_steps.amount.send_all', {
-                amount: formattedBalance,
+              {t('send_screen_steps.amount.remaining', {
+                amount: remainingBalance,
               })}
             </S.SandAllLabel>
           )}

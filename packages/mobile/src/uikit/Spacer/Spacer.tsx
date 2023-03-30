@@ -2,7 +2,7 @@ import { ns } from '$utils';
 import React, { FC, memo } from 'react';
 import { StyleSheet, View, ViewProps } from 'react-native';
 
-type SpacerSizes = 2 | 4 | 8 | 12 | 16 | 20 | 24 | 32;
+export type SpacerSizes = 2 | 4 | 8 | 12 | 16 | 20 | 24 | 32;
 
 const sizes: SpacerSizes[] = [2, 4, 8, 12, 16, 20, 24, 32];
 

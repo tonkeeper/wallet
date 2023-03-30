@@ -116,7 +116,10 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
         if (link.match && link.operation === 'transfer' && isValidAddress(link.address)) {
           if (link.query.amount && !Number.isNaN(Number(link.query.amount))) {
             const parsedAmount = Ton.fromNano(new TonWeb.utils.BN(link.query.amount));
-            setAmount({ value: formatInputAmount(parsedAmount, decimals), all: false });
+            setAmount({
+              value: formatInputAmount(parsedAmount, decimals, true),
+              all: false,
+            });
           }
 
           if (link.query.text) {
@@ -148,12 +151,13 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
         const domain = value.toLowerCase();
 
-        if (!favorite && !TonWeb.Address.isValid(domain) && domain.includes('.')) {
+        if (!favorite && !TonWeb.Address.isValid(domain)) {
           setDnsLoading(true);
           const abortController = new AbortController();
           dnsAbortController = abortController;
 
-          const resolvedDomain = await getAddressByDomain(domain, abortController.signal);
+          const zone = domain.indexOf('.') === -1 ? '.ton' : '';
+          const resolvedDomain = await getAddressByDomain(domain + zone, abortController.signal);
 
           if (resolvedDomain === 'aborted') {
             setDnsLoading(false);

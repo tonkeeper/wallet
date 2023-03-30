@@ -9,10 +9,12 @@ export type InfoRows = {
 
 export interface ActionBaseProps {
   comment?: string;
+  eventId: string;
   jettonAddress?: string;
   recipientAddress?: string;
   infoRows: InfoRows;
   head?: ReactNode;
+  isFailed?: boolean;
   subscriptionInfo?: SubscriptionModel;
   isInProgress: boolean;
   isSpam: boolean;

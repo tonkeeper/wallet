@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider as StoreProvider, useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components/native';
@@ -6,7 +6,7 @@ import { ThemeProvider } from 'styled-components/native';
 import { store } from '$store';
 import { AppearanceAccents, DarkTheme, TonTheme } from '$styled';
 import { AppNavigator } from '$navigation/AppNavigator';
-import { Toast, ScrollPositionProvider } from '$uikit';
+import { ScrollPositionProvider } from '$uikit';
 import { useMemo } from 'react';
 import { accentSelector } from '$store/main';
 import { ToastComponent } from '$uikit/Toast/new/ToastComponent';
@@ -46,7 +46,6 @@ export const App: FC = () => {
             <ScrollPositionProvider>
               <AppNavigator />
             </ScrollPositionProvider>
-            <Toast />
             <ToastComponent />
           </SafeAreaProvider>
         </TonThemeProvider>

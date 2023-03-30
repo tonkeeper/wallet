@@ -14,6 +14,9 @@ export const useJettonEventsStore = create(
     (set) => ({
       ...initialState,
       actions: {
+        clearStore: () => {
+          set(initialState);
+        },
         fetchJettonEvents: async (address, jettonMaster, isRefresh) => {
           set((state) => ({
             ...state,
@@ -56,7 +59,6 @@ export const useJettonEventsStore = create(
           const eventsMap = events.reduce((acc, event) => {
             acc[event.eventId] = {
               ...event,
-              actions: event.actions.filter((action) => action.type === 'JettonTransfer'),
               currency: CryptoCurrencies.Ton,
             };
             return acc;

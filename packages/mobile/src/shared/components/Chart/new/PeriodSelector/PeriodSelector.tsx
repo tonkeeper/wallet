@@ -29,7 +29,7 @@ export const Period: React.FC<{
 
   return (
     <TouchableOpacity
-      activeOpacity={1}
+      activeOpacity={props.selected ? 1 : 0.6}
       disabled={props.selected || props.disabled}
       onPress={props.onSelect}
       style={{ paddingVertical: ns(7.5), borderRadius: ns(18), flex: 1, backgroundColor }}

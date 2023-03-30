@@ -20,6 +20,7 @@ export interface ServerConfig {
   cachedMediaKey: string;
   cachedMediaSalt: string;
   NFTOnExplorerUrl: string;
+  transactionExplorer: string;
   flags: Record<string, boolean>;
   directSupportUrl: string;
   amplitudeKey: string;
@@ -51,21 +52,23 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     cachedMediaSalt: data.cachedMediaSalt,
     NFTOnExplorerUrl: data.NFTOnExplorerUrl || 'https://tonscan.org/nft/%s',
     directSupportUrl: data.directSupportUrl,
+    transactionExplorer: 'https://tonapi.io/transaction/%s',
     flags: data.flags || {},
     amplitudeKey: data.amplitudeKey,
   };
 }
 
 export function updateServerConfig(jsonConfig: any) {
-  if (!jsonConfig) return;
+  if (!jsonConfig) {
+    return;
+  }
   try {
     Object.entries(JSON.parse(jsonConfig)).map(([key, value]) => {
       if (config) {
         config[key] = value;
       }
     });
-  } catch (e) {
-  }
+  } catch (e) {}
 }
 
 export function isServerConfigLoaded() {

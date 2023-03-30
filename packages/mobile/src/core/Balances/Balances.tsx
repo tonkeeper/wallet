@@ -31,11 +31,9 @@ import { InternalNotificationProps } from '$uikit/InternalNotification/InternalN
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { getLastRefreshedAt, MainDB } from '$database';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { store } from '$store';
-import { jettonsSelector } from '$store/jettons';
+import { store, Toast } from '$store';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
-import { toastActions } from '$store/toast';
 import Clipboard from '@react-native-community/clipboard';
 
 export const Balances: FC = () => {
@@ -70,7 +68,6 @@ export const Balances: FC = () => {
   const prevNetInfo = usePrevious(netInfo);
 
   const jettonBalances = useJettonBalances();
-  const { showJettons } = useSelector(jettonsSelector);
   const [isNoSignalDismissed, setNoSignalDismissed] = useState(false);
   const isConfigError = !isServerConfigLoaded();
   const isFocused = useIsFocused();
@@ -104,7 +101,7 @@ export const Balances: FC = () => {
   const handleCopyAddress = useCallback(() => {
     if (address.ton) {
       Clipboard.setString(address.ton);
-      dispatch(toastActions.success(t('address_copied')));
+      Toast.success(t('address_copied'));
       triggerImpactLight();
     }
   }, [address]);
@@ -158,7 +155,7 @@ export const Balances: FC = () => {
       });
     }
 
-    if (showJettons && jettonBalances.length > 0) {
+    if (jettonBalances.length > 0) {
       result.push({
         data: jettonBalances.map((jetton) => ({
           type: 'jetton',
@@ -189,7 +186,7 @@ export const Balances: FC = () => {
     //   data: ['add_coin_button'],
     // });
     return result;
-  }, [otherCurrencies, oldWalletBalances, jettonBalances, showJettons, wallet?.ton]);
+  }, [otherCurrencies, oldWalletBalances, jettonBalances, wallet?.ton]);
 
   const handleLoadMore = useCallback(() => {
     if (isEventsLoading || !canLoadMore) {

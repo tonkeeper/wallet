@@ -6,7 +6,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { useIsFocused } from '@react-navigation/native';
 
 import * as S from '../../core/Balances/Balances.style';
-import { Button, Icon, InternalNotification, Loader, NavBar, Screen, ScrollHandler, Text } from '$uikit';
+import { Button, Loader, Screen, ScrollHandler, Text } from '$uikit';
 import {
   useAppStateActive,
   usePrevious,
@@ -15,25 +15,20 @@ import {
   useTranslator,
 } from '$hooks';
 import { walletActions, walletSelector } from '$store/wallet';
-import { isValidAddress, maskifyTonAddress, ns, triggerImpactLight } from '$utils';
+import { ns } from '$utils';
 import {
   CryptoCurrencies,
   isServerConfigLoaded,
-  LargeNavBarHeight,
   NavBarHeight,
   SecondaryCryptoCurrencies,
   TabletMaxWidth,
 } from '$shared/constants';
-import { openRequireWalletModal, openScanQR, openSend } from '$navigation';
+import { openRequireWalletModal } from '$navigation';
 import { eventsActions, eventsSelector } from '$store/events';
-import { mainActions, mainSelector } from '$store/main';
-import { InternalNotificationProps } from '$uikit/InternalNotification/InternalNotification.interface';
+import { mainActions } from '$store/main';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
-import { getLastRefreshedAt, MainDB } from '$database';
-import { jettonsSelector } from '$store/jettons';
+import { getLastRefreshedAt } from '$database';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
-import { toastActions } from '$store/toast';
-import Clipboard from '@react-native-community/clipboard';
 import { useNavigation } from '$libs/navigation';
 
 export const ActivityScreen: FC = () => {
@@ -42,15 +37,8 @@ export const ActivityScreen: FC = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
-  const {
-    currencies,
-    isRefreshing,
-    isLoaded,
-    balances,
-    address,
-    wallet,
-    oldWalletBalances,
-  } = useSelector(walletSelector);
+  const { currencies, isRefreshing, isLoaded, balances, wallet, oldWalletBalances } =
+    useSelector(walletSelector);
   const {
     isLoading: isEventsLoading,
     eventsInfo,
@@ -61,9 +49,6 @@ export const ActivityScreen: FC = () => {
   const prevNetInfo = usePrevious(netInfo);
 
   const jettonBalances = useJettonBalances();
-  const { showJettons } = useSelector(jettonsSelector);
-  const [isNoSignalDismissed, setNoSignalDismissed] = useState(false);
-  const isConfigError = !isServerConfigLoaded();
   const isFocused = useIsFocused();
 
   const isEventsLoadingMore = !isRefreshing && isEventsLoading && !!wallet;
@@ -83,10 +68,6 @@ export const ActivityScreen: FC = () => {
       }
     });
   });
-
-  useEffect(() => {
-    setNoSignalDismissed(false);
-  }, [netInfo.isConnected]);
 
   const handleRefresh = useCallback(() => {
     dispatch(walletActions.refreshBalancesPage(true));
@@ -125,7 +106,7 @@ export const ActivityScreen: FC = () => {
       footer?: React.ReactElement;
     }[] = [];
     return result;
-  }, [otherCurrencies, oldWalletBalances, jettonBalances, showJettons, wallet?.ton]);
+  }, [otherCurrencies, oldWalletBalances, jettonBalances, wallet?.ton]);
 
   const handleLoadMore = useCallback(() => {
     if (isEventsLoading || !canLoadMore) {
@@ -167,6 +148,7 @@ export const ActivityScreen: FC = () => {
             onRefresh={handleRefresh}
             refreshing={isRefreshing && isFocused}
             tintColor={theme.colors.foregroundPrimary}
+            progressBackgroundColor={theme.colors.foregroundPrimary}
           />
         }
         eventsInfo={eventsInfo}
@@ -259,6 +241,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginHorizontal: 16,
   },
   emptyButtons: {
     flexDirection: 'row',

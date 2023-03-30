@@ -19,9 +19,11 @@ const loaderSize: { [key in LoaderSizes]: number } = {
   xlarge: ns(64),
   large:  ns(32),
   medium: ns(24),
+  small:  ns(16),
 };
 
 const loaderIcon: { [key in LoaderSizes]: ImageRequireSource } = {
+  small: require('$assets/icons/png/ic-loader-small-16.png'),
   medium: require('$assets/icons/png/ic-loader-medium-24.png'),
   large: require('$assets/icons/png/ic-loader-large-32.png'),
   xlarge: require('$assets/icons/png/ic-loader-xlarge-64.png')

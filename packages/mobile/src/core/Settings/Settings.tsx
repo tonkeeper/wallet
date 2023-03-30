@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Rate, { AndroidMarket } from 'react-native-rate';
 import { Alert, Linking, View } from 'react-native';
@@ -9,7 +9,7 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
 import { PopupSelect, ScrollHandler, Text } from '$uikit';
-import { useNavigation, useTranslator } from '$hooks';
+import { useJettonBalances, useNavigation, useTranslator } from '$hooks';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
 import {
@@ -38,18 +38,28 @@ import {
   IsTablet,
   SelectableVersions,
 } from '$shared/constants';
-import { hNs, maskifyAddress, ns, trackEvent, useHasDiamondsOnBalance } from '$utils';
+import {
+  hNs,
+  maskifyAddress,
+  ns,
+  throttle,
+  trackEvent,
+  useHasDiamondsOnBalance,
+} from '$utils';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { MainDB } from '$database';
 import { useNotifications } from '$hooks/useNotifications';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
-import { jettonsBalancesSelector } from '$store/jettons';
 import { useAllAddresses } from '$hooks/useAllAddresses';
 import { useFlags } from '$utils/flags';
 import { SearchEngine, useBrowserStore } from '$store';
+import AnimatedLottieView from 'lottie-react-native';
 
 export const Settings: FC = () => {
+  const animationRef = useRef<AnimatedLottieView>(null);
+  const devMenuHandlerRef = useRef(null);
+
   const flags = useFlags([
     'disable_apperance',
     'disable_support_button',
@@ -67,12 +77,20 @@ export const Settings: FC = () => {
   const hasSubscriptions = useSelector(hasSubscriptionsSelector);
   const wallet = useSelector(walletWalletSelector);
   const version = useSelector(walletVersionSelector);
-  const jettonBalances = useSelector(jettonsBalancesSelector);
   const allTonAddesses = useAllAddresses();
   const showV4R1 = useSelector(showV4R1Selector);
+  const jettonBalances = useJettonBalances(true);
 
   const searchEngine = useBrowserStore((state) => state.searchEngine);
   const setSearchEngine = useBrowserStore((state) => state.actions.setSearchEngine);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleAnimateDiamond = useCallback(
+    throttle(() => {
+      animationRef?.current?.play();
+    }, 500),
+    [],
+  );
 
   const handleRateApp = useCallback(() => {
     const options = {
@@ -343,21 +361,35 @@ export const Settings: FC = () => {
                 </CellSectionItem>
               </CellSection>
             )}
+            <TapGestureHandler
+              simultaneousHandlers={devMenuHandlerRef}
+              onHandlerStateChange={handleAnimateDiamond}
+            >
+              <TapGestureHandler
+                ref={devMenuHandlerRef}
+                numberOfTaps={5}
+                onGestureEvent={() => console.log(true)}
+                onActivated={handleDevMenu}
+              >
+                <S.AppInfo>
+                  <S.AppInfoIcon
+                    ref={animationRef}
+                    loop={false}
+                    source={require('$assets/lottie/diamond.json')}
+                  />
 
-            <TapGestureHandler numberOfTaps={5} onActivated={handleDevMenu}>
-              <S.AppInfo>
-                <S.AppInfoIcon />
-                <S.AppInfoTitleWrapper>
-                  <Text fontSize={14} lineHeight={20} fontWeight="700">
-                    {DeviceInfo.getApplicationName()}
-                  </Text>
-                </S.AppInfoTitleWrapper>
-                <S.AppInfoVersionWrapper>
-                  <Text variant="label3" color="foregroundSecondary">
-                    {t('settings_version')} {DeviceInfo.getVersion()}
-                  </Text>
-                </S.AppInfoVersionWrapper>
-              </S.AppInfo>
+                  <S.AppInfoTitleWrapper>
+                    <Text fontSize={14} lineHeight={20} fontWeight="700">
+                      {DeviceInfo.getApplicationName()}
+                    </Text>
+                  </S.AppInfoTitleWrapper>
+                  <S.AppInfoVersionWrapper>
+                    <Text variant="label3" color="foregroundSecondary">
+                      {t('settings_version')} {DeviceInfo.getVersion()}
+                    </Text>
+                  </S.AppInfoVersionWrapper>
+                </S.AppInfo>
+              </TapGestureHandler>
             </TapGestureHandler>
           </S.Content>
           <View style={{ height: LargeNavBarInteractiveDistance }} />

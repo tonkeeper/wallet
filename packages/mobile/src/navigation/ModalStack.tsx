@@ -20,7 +20,7 @@ import {
   ChangePin,
   DAppBrowser,
   DAppsSearch,
-  Exchange,
+  OldExchange,
   Migration,
   Receive,
   ScanQR,
@@ -47,6 +47,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NFTSalePlaceGetgemsModal} path="NFTSalePlaceGetgems" />
       <Stack.Modal component={NFTSaleCancelModal} path="NFTSaleCancel" />
       <Stack.Modal component={ExchangeModal} path="Exchange" />
+      <Stack.Modal component={OldExchange} path="OldExchange" />
       <Stack.Modal
         component={NFTTransferInputAddressModal}
         path="NFTTransferInputAddress"

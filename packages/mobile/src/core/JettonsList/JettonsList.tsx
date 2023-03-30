@@ -84,7 +84,6 @@ export const JettonsList: FC = () => {
           contentContainerStyle={{
             paddingBottom: ns(16) + bottomInset,
             paddingHorizontal: ns(16),
-            paddingTop: ns(16),
           }}
           onDragEnd={({ data: newData }) => reorderJettons({}, newData)}
           keyExtractor={(item) => item.jettonAddress}

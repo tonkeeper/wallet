@@ -16,9 +16,8 @@ import React, {
 import { LayoutChangeEvent, TextInput } from 'react-native';
 import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import * as S from './AddressInput.style';
-import { useDispatch } from 'react-redux';
-import { toastActions } from '$store/toast';
 import { InputContentSize } from '$uikit/Input/Input.interface';
+import { Toast } from '$store';
 
 interface Props {
   wordHintsRef: RefObject<WordHintsPopupRef>;
@@ -53,8 +52,6 @@ const AddressInputComponent: FC<Props> = (props) => {
   const canScanQR = value.length === 0;
 
   const t = useTranslator();
-
-  const dispatch = useDispatch();
 
   const textInputRef = useRef<TextInput>(null);
 
@@ -139,13 +136,13 @@ const AddressInputComponent: FC<Props> = (props) => {
       const link = parseTonLink(code);
 
       if (link.match && link.operation === 'transfer' && !isValidAddress(link.address)) {
-        dispatch(toastActions.fail(t('transfer_deeplink_address_error')));
+        Toast.fail(t('transfer_deeplink_address_error'));
         return false;
       }
 
       return await updateRecipient(code);
     });
-  }, [dispatch, t, updateRecipient]);
+  }, [t, updateRecipient]);
 
   const scanQRContainerStyle = useAnimatedStyle(
     () => ({

@@ -1,4 +1,4 @@
-import { tonDiamondCollectionAddress } from '$shared/constants';
+import { tonDiamondCollectionAddress, telegramNumbersAddress } from '$shared/constants';
 import { getChainName } from '$shared/dynamicConfig';
 import { MarketplaceModel, NFTModel, TonDiamondMetadata } from '$store/models';
 import { myNftsSelector } from '$store/nfts';
@@ -9,6 +9,7 @@ import TonWeb from 'tonweb';
 import { capitalizeFirstLetter } from './string';
 
 const getTonDiamondsCollectionAddress = () => tonDiamondCollectionAddress[getChainName()];
+const getTelegramNumbersCollectionAddress = () => telegramNumbersAddress[getChainName()];
 
 export const checkIsTonDiamondsNFT = (
   nft: NFTModel,
@@ -25,6 +26,18 @@ export const checkIsTonDiamondsNFT = (
     collectionAddress === getTonDiamondsCollectionAddress() &&
     Boolean((nft.metadata as TonDiamondMetadata)?.theme?.main)
   );
+};
+
+export const checkIsTelegramNumbersNFT = (nft: NFTModel): boolean => {
+  if (!nft) {
+    return false;
+  }
+
+  const collectionAddress = nft.collectionAddress
+    ? new TonWeb.utils.Address(nft.collectionAddress).toString(true, true, true)
+    : '';
+
+  return collectionAddress === getTelegramNumbersCollectionAddress();
 };
 
 export const useHasDiamondsOnBalance = () => {

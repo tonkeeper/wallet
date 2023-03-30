@@ -2,27 +2,45 @@ import { Ton } from '$libs/Ton';
 import { fiatCurrencySelector } from '$store/main';
 import { JettonBalanceModel } from '$store/models';
 import { ratesRatesSelector } from '$store/rates';
-import { formatFiatCurrencyAmount } from '$utils/currency';
+import { formatter } from '$utils/formatter';
 import BigNumber from 'bignumber.js';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { getRate } from './useFiatRate';
 
-export function useJettonPrice(address: JettonBalanceModel['jettonAddress'], balance: string) {
-    const rates = useSelector(ratesRatesSelector);
-    const fiatCurrency = useSelector(fiatCurrencySelector);
+export function useGetJettonPrice() {
+  const rates = useSelector(ratesRatesSelector);
+  const fiatCurrency = useSelector(fiatCurrencySelector);
 
-    return useMemo(() => {
-        const rate = getRate(rates, Ton.formatAddress(address, { bounce: true, cut: false }), fiatCurrency, false);
-        if (!rate) {
-            return { price: null, total: null };
-        }
-        console.log(balance);
-        const balanceInFiat = new BigNumber(balance).multipliedBy(rate).toFixed(2).toString();
-        // TODO: return from backend raw jetton addresses
-        return { 
-            price: formatFiatCurrencyAmount(rate.toFixed(2), fiatCurrency), 
-            total: formatFiatCurrencyAmount(balanceInFiat, fiatCurrency),
-        };
-    }, [rates, fiatCurrency, balance]);
+  const getJettonPrice = useCallback((address: string, balance: string) => {
+    const rate = getRate(
+      rates,
+      Ton.formatAddress(address, { bounce: true, cut: false }),
+      fiatCurrency,
+      false,
+    );
+    if (!rate) {
+      return { price: null, total: null, total_numeric: null };
+    }
+    const balanceInFiat = new BigNumber(balance).multipliedBy(rate);
+    // TODO: return from backend raw jetton addresses
+    return {
+      price: formatter.format(rate.toString(), { currency: fiatCurrency }),
+      total: formatter.format(balanceInFiat, { currency: fiatCurrency }),
+      total_numeric: balanceInFiat.toNumber(),
+    };
+  }, [rates, fiatCurrency]);
+
+  return getJettonPrice;
+}
+
+export function useJettonPrice(
+  address: JettonBalanceModel['jettonAddress'],
+  balance: string,
+) {
+  const getJettonPrice = useGetJettonPrice();
+
+  return useMemo(() => {
+    return getJettonPrice(address, balance);
+  }, [getJettonPrice, address, balance]);
 }
