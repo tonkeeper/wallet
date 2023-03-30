@@ -1,6 +1,14 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { t } from '$translation';
-import { Button, IconButton, IconButtonList, InternalNotification, Screen, Text, View } from '$uikit';
+import {
+  Button,
+  IconButton,
+  IconButtonList,
+  InternalNotification,
+  Screen,
+  Text,
+  View,
+} from '$uikit';
 import { List } from '$uikit/List/new';
 import { Steezy } from '$styles';
 import { useNavigation } from '$libs/navigation';
@@ -30,6 +38,7 @@ import { useTonkens } from './hooks/useTokens';
 import { useNFTs } from './hooks/useNFTs';
 import { useWallet } from './hooks/useWallet';
 import { useTheme } from '$hooks';
+import { ApprovalCell } from '$core/ApprovalCell/components/ApprovalCell';
 
 export const WalletScreen = memo(() => {
   const [tab, setTab] = useState<string>('tokens');
@@ -154,6 +163,7 @@ export const WalletScreen = memo(() => {
           />
         )}
       </IconButtonList>
+      <ApprovalCell />
     </View>
   );
 

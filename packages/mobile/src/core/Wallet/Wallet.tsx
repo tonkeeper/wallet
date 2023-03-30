@@ -19,7 +19,7 @@ import {
   walletAddressSelector,
   walletWalletSelector,
 } from '$store/wallet';
-import { Linking, View } from 'react-native';
+import { Linking, Platform, View } from 'react-native';
 import { ns } from '$utils';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { toastActions } from '$store/toast';

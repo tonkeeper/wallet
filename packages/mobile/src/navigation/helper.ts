@@ -427,6 +427,10 @@ export function openJettonsList() {
   push(MainStackRouteNames.JettonsList);
 }
 
+export function openManageTokens() {
+  push(MainStackRouteNames.ManageTokens);
+}
+
 export function openJettonsListSettingsStack() {
   push(SettingsStackRouteNames.JettonsList);
 }

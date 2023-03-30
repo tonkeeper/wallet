@@ -33,4 +33,5 @@ export type MainStackParamList = {
   [MainStackRouteNames.StakingPoolDetails]: {
     poolAddress: string;
   };
+  [MainStackRouteNames.ManageTokens]: {};
 };

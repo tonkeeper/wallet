@@ -309,6 +309,12 @@
     "collectibles_tab_lable": "Collectibles"
   },
 
+  "approval": {
+    "approve_one": "Approve incoming token \"%{name}\"",
+    "approve_few": "Approve incoming tokens \"%{name1}\" and \"%{name2}\"",
+    "manage_tokens": "Manage tokens"
+  },
+
   "activity": {
     "screen_title": "Activity",
     "sent": "Sent",

@@ -25,6 +25,7 @@ import { JettonsList } from '$core/JettonsList/JettonsList';
 import { DeleteAccountDone } from '$core/DeleteAccountDone/DeleteAccountDone';
 import { EditConfig } from '$core/EditConfig/EditConfig';
 import { useRemoteBridge } from '$tonconnect';
+import { ManageTokens } from '$core/ManageTokens/ManageTokens';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -88,6 +89,7 @@ export const MainStack: FC = () => {
       <Stack.Screen name={MainStackRouteNames.EditConfig} component={EditConfig} />
       <Stack.Screen name={MainStackRouteNames.Jetton} component={Jetton} />
       <Stack.Screen name={MainStackRouteNames.JettonsList} component={JettonsList} />
+      <Stack.Screen name={MainStackRouteNames.ManageTokens} component={ManageTokens} />
     </Stack.Navigator>
   );
 };

@@ -24,6 +24,7 @@ export const DarkTheme = {
   buttonPrimaryBackgroundDisabled: '#378AC2',
   buttonSecondaryBackgroundDisabled: '#171F29',
   buttonTertiaryBackgroundDisabled: '#28303D',
+  backgroundContentAttention: '#424C5C',
 
   fieldBackground: '#1D2633',
   fieldActiveBorder: '#45AEF5',
