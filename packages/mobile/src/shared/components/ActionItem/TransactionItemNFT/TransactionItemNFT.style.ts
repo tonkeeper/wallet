@@ -1,29 +1,11 @@
-import styled, { RADIUS } from '$styled';
-import { hNs, ns } from '$utils';
+import styled from '$styled';
+import { ns } from '$utils';
 import FastImage from 'react-native-fast-image';
-import { Highlight, Icon } from '$uikit';
+import { Icon } from '$uikit';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 export const Wrap = styled.View`
   margin-top: ${ns(8)}px;
-`;
-
-export const Background = styled.View<{ withImage: boolean }>`
-  background: ${({ theme }) => theme.colors.backgroundTertiary};
-  ${({ withImage }) =>
-    !withImage
-      ? `
-        border-top-left-radius: ${ns(12)}px;
-        border-bottom-left-radius: ${ns(12)}px;
-      `
-      : ''}
-  border-top-right-radius: ${ns(12)}px;
-  border-bottom-right-radius: ${ns(12)}px;
-  position: absolute;
-  z-index: 0;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 `;
 
 export const TextWrap = styled.View`
@@ -42,8 +24,16 @@ export const Container = styled.View`
   flex-direction: row;
 `;
 
-export const Pressable = styled(Highlight)`
-  border-radius: ${ns(12)}px;
+export const Pressable = styled(TouchableHighlight)<{ withImage: boolean }>`
+  ${({ withImage }) =>
+    !withImage
+      ? `
+      border-top-left-radius: ${ns(12)}px;
+      border-bottom-left-radius: ${ns(12)}px;
+    `
+      : ''}
+  border-top-right-radius: ${ns(12)}px;
+  border-bottom-right-radius: ${ns(12)}px;
 `;
 
 export const Image = styled(FastImage).attrs({

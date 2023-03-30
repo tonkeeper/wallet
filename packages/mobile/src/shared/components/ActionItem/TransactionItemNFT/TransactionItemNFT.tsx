@@ -9,6 +9,7 @@ import { Icon, Text } from '$uikit';
 import { useTranslator } from '$hooks';
 import { View } from 'react-native';
 import { dnsToUsername } from '$utils/dnsToUsername';
+import { DarkTheme } from '$styled';
 
 export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
   const nft = useNFT(keyPair);
@@ -47,9 +48,13 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
           </S.Pressable>
         ) : null}
         <S.TextContainer>
-          <S.Pressable onPress={handleOpenNftItem}>
+          <S.Pressable
+            withImage={!!nft.content?.image?.baseUrl}
+            style={{ backgroundColor: DarkTheme.colors.backgroundTertiary }}
+            underlayColor={DarkTheme.colors.backgroundTertiary}
+            onPress={handleOpenNftItem}
+          >
             <S.TextWrap>
-              <S.Background withImage={!!nft.content?.image?.baseUrl} />
               <Text numberOfLines={1} variant="body2">
                 {isTG
                   ? dnsToUsername(nft.dns)
@@ -65,10 +70,10 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
                 </Text>
                 {nft.isApproved && (
                   <View style={{ flex: 1, marginRight: ns(8) }}>
-                      <Icon
-                        style={{ marginLeft: ns(4) }}
-                        name="ic-verification-secondary-16"
-                      />
+                    <Icon
+                      style={{ marginLeft: ns(4) }}
+                      name="ic-verification-secondary-16"
+                    />
                   </View>
                 )}
               </S.CollectionNameWrap>
