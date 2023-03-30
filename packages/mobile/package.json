@@ -129,7 +129,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@types/react": "~18.0.14",
+    "@types/react": "~18.0.24",
     "@react-native-community/eslint-config": "^3.2.0",
     "@types/bluebird": "^3.5.36",
     "@types/i18n-js": "^3.8.2",
@@ -150,7 +150,7 @@
     "typescript": "^4.9.4"
   },
   "resolutions": {
-    "@types/react": "~18.0.14"
+    "@types/react": "~18.0.24"
   },
   "jest": {
     "preset": "react-native",
