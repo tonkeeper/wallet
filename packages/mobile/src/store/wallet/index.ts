@@ -40,7 +40,7 @@ const initialState: WalletState = {
   balances: {},
   address: {},
   oldWalletBalances: [],
-  readableAddress: null
+  readableAddress: null,
 };
 
 export const { actions, reducer } = createSlice({
@@ -168,4 +168,9 @@ export const walletOldBalancesSelector = createSelector(
 export const walletIsRefreshingSelector = createSelector(
   walletSelector,
   (walletState) => walletState.isRefreshing,
+);
+
+export const isLockupWalletSelector = createSelector(
+  walletSelector,
+  (walletState) => !!walletState.wallet?.ton.isLockup(),
 );

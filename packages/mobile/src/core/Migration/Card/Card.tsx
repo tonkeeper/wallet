@@ -15,7 +15,7 @@ import { ns } from '$utils';
 import { useCounter } from '$core/Migration/Card/useCounter';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { formatCryptoCurrency } from '$utils/currency';
-import {Text} from "$uikit";
+import { Text } from '$uikit';
 
 const PositionOffsetHorizontal = ns(57);
 const PositionOffsetVertical = ns(28);
@@ -82,7 +82,12 @@ export const Card: FC<CardProps> = (props) => {
         <Text numberOfLines={1} ellipsizeMode="middle" variant="label1" fontWeight="700">
           {address}
         </Text>
-        <Text reanimated variant="label2" color="foregroundSecondary">
+        <Text
+          reanimated
+          variant="label2"
+          numberOfLines={mode === 'old' ? 1 : 2}
+          color="foregroundSecondary"
+        >
           {formatCryptoCurrency(
             amountValue,
             CryptoCurrencies.Ton,
