@@ -6,13 +6,9 @@
 
   },
   "dependencies": {
-    "react-native-web": "0.17.7"
+    "react-native-web": "~0.18.10"
   },
   "devDependencies": {
-    "@types/react-native": "~0.66.13"
-  },
-  "resolutions": {
-    "@types/react-native": "~0.66.13",
-    "@types/react": "^17"
+
   }
 }
