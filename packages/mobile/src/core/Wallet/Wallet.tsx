@@ -27,7 +27,7 @@ import {
   walletIsRefreshingSelector,
   walletWalletSelector,
 } from '$store/wallet';
-import { Linking, RefreshControl, View } from 'react-native';
+import { Linking, Platform, RefreshControl, View } from 'react-native';
 import { ns } from '$utils';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { t } from '$translation';
@@ -67,6 +67,7 @@ const exploreActions = [
   {
     icon: 'ic-doc-16',
     text: 'Whitepaper',
+    openInBrowser: Platform.OS === 'android',
     url: 'https://ton.org/whitepaper.pdf',
   },
   {
@@ -121,11 +122,12 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
 
   const handleOpenAction = useCallback(async (action: any) => {
     try {
+      let shouldOpenInBrowser = action.openInBrowser;
       if (action.scheme) {
-        const canOpenUrl = await Linking.canOpenURL(action.scheme);
-        if (canOpenUrl) {
-          return Linking.openURL(action.url);
-        }
+        shouldOpenInBrowser = await Linking.canOpenURL(action.scheme);
+      }
+      if (shouldOpenInBrowser) {
+        return Linking.openURL(action.url);
       }
       openDAppBrowser(action.url);
     } catch (e) {
