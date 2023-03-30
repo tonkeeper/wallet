@@ -24,6 +24,7 @@ export type IconNames =
   | 'ic-ellipsis-16'
   | 'ic-getgems-16'
   | 'ic-globe-16'
+  | 'ic-information-circle-16'
   | 'ic-link-bold-16'
   | 'ic-loader-small-16'
   | 'ic-magnifying-glass-16'
@@ -131,6 +132,7 @@ export const AllIcons = [
   'ic-ellipsis-16',
   'ic-getgems-16',
   'ic-globe-16',
+  'ic-information-circle-16',
   'ic-link-bold-16',
   'ic-loader-small-16',
   'ic-magnifying-glass-16',
@@ -239,6 +241,7 @@ export const IconSizes = {
   'ic-ellipsis-16': 16,
   'ic-getgems-16': 16,
   'ic-globe-16': 16,
+  'ic-information-circle-16': 16,
   'ic-link-bold-16': 16,
   'ic-loader-small-16': 16,
   'ic-magnifying-glass-16': 16,

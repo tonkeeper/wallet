@@ -14,6 +14,8 @@ import { Ton } from '$libs/Ton';
 import { useGetPrice } from '$hooks/useWalletInfo';
 import BigNumber from 'bignumber.js';
 import { formatter } from '$utils/formatter';
+import { useStakingStore } from '$store';
+import { shallow } from 'zustand/shallow';
 
 export type Rate = {
   percent: string;
@@ -73,6 +75,18 @@ export const useBalance = (tokensTotal: number) => {
   const isLockup = useSelector(isLockupWalletSelector);
   const amountToFiat = useAmountToFiat();
   const getPrice = useGetPrice();
+  const stakingBalance = useStakingStore((s) => {
+    const balance = s.stakingBalance;
+
+    const formatted = formatter.format();
+    return {
+      amount: {
+        nano: balance,
+        fiat: amountToFiat(balance),
+        formatted,
+      },
+    };
+  }, shallow);
 
   const oldVersions = useMemo(() => {
     if (isLockup) {
@@ -146,7 +160,7 @@ export const useBalance = (tokensTotal: number) => {
   }, [balances, amountToFiat]);
 
   const total = useMemo(() => {
-    const amounts = [ton, ...lockup];
+    const amounts = [ton, stakingBalance, ...lockup];
 
     const balanceNano = amounts
       .reduce((total, balance) => {
@@ -161,7 +175,7 @@ export const useBalance = (tokensTotal: number) => {
       value: balance,
       fiat: amountToFiat(balance, tokensTotal),
     };
-  }, [ton, lockup, tokensTotal, amountToFiat]);
+  }, [ton, stakingBalance, lockup, amountToFiat, tokensTotal]);
 
   return {
     oldVersions,

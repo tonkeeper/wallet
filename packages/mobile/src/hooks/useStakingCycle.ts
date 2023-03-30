@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { intervalToDuration } from 'date-fns';
-import { interpolate, useDerivedValue } from 'react-native-reanimated';
+import { Duration, intervalToDuration } from 'date-fns';
+import { Extrapolation, interpolate, useDerivedValue } from 'react-native-reanimated';
 import { useTranslator } from './useTranslator';
 
 export const useStakingCycle = (cycleStart: number, cycleEnd: number, enabled = true) => {
@@ -11,10 +11,13 @@ export const useStakingCycle = (cycleStart: number, cycleEnd: number, enabled = 
   const startTimestamp = cycleStart * 1000;
   const endTimestamp = cycleEnd * 1000;
 
-  const duration = intervalToDuration({ start: now, end: endTimestamp });
+  const duration: Duration =
+    now < endTimestamp
+      ? intervalToDuration({ start: now, end: endTimestamp })
+      : { days: 0, hours: 0, minutes: 0, seconds: 0 };
 
   const progress = useDerivedValue(
-    () => interpolate(now, [startTimestamp, endTimestamp], [0, 1]),
+    () => interpolate(now, [startTimestamp, endTimestamp], [0, 1], Extrapolation.CLAMP),
     [now],
   );
 

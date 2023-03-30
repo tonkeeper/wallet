@@ -11,7 +11,7 @@ import {
   useStakingStore,
 } from '$store';
 import { Icon, List, ScrollHandler, Spacer, Text } from '$uikit';
-import { getPoolIcon } from '$utils';
+import { calculatePoolBalance, getPoolIcon } from '$utils';
 import { RouteProp } from '@react-navigation/native';
 import { PoolInfo } from '@tonkeeper/core';
 import BigNumber from 'bignumber.js';
@@ -57,10 +57,13 @@ export const StakingPools: FC<Props> = (props) => {
   const refreshControl = useStakingRefreshControl();
 
   const list = useMemo(() => {
-    return pools.map((pool) => ({
-      ...pool,
-      balance: calculateBalance(pool, stakingInfo),
-    }));
+    return pools.map((pool) => {
+      const balance = calculatePoolBalance(pool, stakingInfo);
+      return {
+        ...pool,
+        balance: balance.isGreaterThan(0) ? balance.toString() : undefined,
+      };
+    });
   }, [pools, stakingInfo]);
 
   const handleWarningPress = useCallback(() => {
