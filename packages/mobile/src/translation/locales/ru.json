@@ -227,7 +227,7 @@
     "amount": {
       "recipient_label": "Кому:",
       "insufficient_balance": "Недостаточно средств",
-      "less_than_min": "Minimum amount is %{minAmount} TON",
+      "less_than_min": "Минимум %{minAmount} TON",
       "max": "Максимум",
       "remaining": "Доступно: %{amount}"
     },
@@ -690,11 +690,12 @@
 
   "staking": {
     "title": "Стейкинг",
-    "widget_desc": "Зарабатывайте на TON до %{apy}%",
+    "widget_desc": "Зарабатывайте на TON до %{apy}%",
     "staking_pool_desc": "APY ≈ %{apy}%",
+    "staking_desc": "Депозит от %{minStake} TON.\nЗарабатывайте до %{maxApy}%.",
     "top_up": "Пополнить",
     "withdrawal_request": "Запрос на вывод",
-    "withdrawal_confrim": "Withdrawal confirm",
+    "get_withdrawal": "Получить вывод",
     "withdraw": "Вывести",
     "deposit": "Депозит",
     "transaction": "Транзакция",
@@ -724,6 +725,9 @@
           "few": "Каждые %{count} часа",
           "many": "Каждые %{count} часов"
         }
+      },
+      "pool_address": {
+        "label": "Адрес пула"
       },
       "apy": {
         "label": "Годовая доходность",

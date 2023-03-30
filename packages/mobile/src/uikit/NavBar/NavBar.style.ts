@@ -6,13 +6,10 @@ import { ns, hNs } from '$utils';
 import { IsTablet, NavBarHeight, Opacity, TabletMaxWidth } from '$shared/constants';
 import { Text } from '$uikit/Text/Text';
 
-export const Wrap = styled.View<{ isTransparent: boolean; isBackground: boolean; }>`
+export const Wrap = styled.View<{ isTransparent: boolean; isBackground: boolean }>`
   z-index: 10;
-  ${({ isBackground, theme }) => 
-    isBackground 
-      ? `backgroundColor: ${theme.colors.backgroundPrimary}` 
-      : ''
-  }
+  ${({ isBackground, theme }) =>
+    isBackground ? `backgroundColor: ${theme.colors.backgroundPrimary}` : ''}
 
   ${({ isTransparent }) => {
     if (isTransparent) {
@@ -89,12 +86,10 @@ export const RightContent = styled.View`
 `;
 
 export const Title = styled(Text).attrs(() => ({
-  variant: 'h3',
   textAlign: 'center',
   reanimated: true,
-  numberOfLines: 1,
 }))`
-  padding: 0 ${hNs(NavBarHeight)}px;
+  margin: 0 ${hNs(NavBarHeight - 24)}px;
   flex: 1;
   z-index: 1;
 `;

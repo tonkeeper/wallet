@@ -9,7 +9,10 @@ import {
   whalesTeam2IconSource,
   whalesTeamIconSource,
 } from '$assets/staking';
+import { Ton } from '$libs/Ton';
+import { StakingInfo } from '$store';
 import { PoolInfo } from '@tonkeeper/core';
+import BigNumber from 'bignumber.js';
 import { ImageRequireSource } from 'react-native';
 
 export const getPoolIcon = (pool: PoolInfo): ImageRequireSource | null => {
@@ -40,4 +43,17 @@ export const getImplementationIcon = (implementation: string) => {
   if (implementation === 'tf') {
     return tfIconSource;
   }
+};
+
+export const calculatePoolBalance = (pool: PoolInfo, stakingInfo: StakingInfo) => {
+  const amount = new BigNumber(Ton.fromNano(stakingInfo[pool.address]?.amount || '0'));
+  const pendingDeposit = new BigNumber(
+    Ton.fromNano(stakingInfo[pool.address]?.pendingDeposit || '0'),
+  );
+  const readyWithdraw = new BigNumber(
+    Ton.fromNano(stakingInfo[pool.address]?.readyWithdraw || '0'),
+  );
+  const balance = amount.plus(pendingDeposit).plus(readyWithdraw);
+
+  return balance;
 };

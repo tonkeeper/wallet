@@ -1,10 +1,10 @@
 import { usePoolInfo, useStakingRefreshControl, useTranslator } from '$hooks';
-import { MainStackRouteNames } from '$navigation';
+import { MainStackRouteNames, openDAppBrowser } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
 import { BottomButtonWrap, BottomButtonWrapHelper, NextCycle } from '$shared/components';
 import { KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
 import { getStakingPoolByAddress, useStakingStore } from '$store';
-import { Button, ScrollHandler, Separator, Spacer, Text } from '$uikit';
+import { Button, Highlight, Icon, ScrollHandler, Separator, Spacer, Text } from '$uikit';
 import { stakingFormatter } from '$utils/formatter';
 import { RouteProp } from '@react-navigation/native';
 import React, { FC, useCallback, useState } from 'react';
@@ -50,11 +50,26 @@ export const StakingPoolDetails: FC<Props> = (props) => {
 
   const handleDetailsButtonPress = useCallback(() => setDetailsVisible(true), []);
 
+  const handleOpenExplorer = useCallback(() => {
+    openDAppBrowser(`https://tonapi.io/account/${pool.address}`);
+  }, [pool.address]);
+
   const isImplemeted = KNOWN_STAKING_IMPLEMENTATIONS.includes(pool.implementation);
 
   return (
     <S.Wrap>
-      <ScrollHandler isLargeNavBar={false} navBarTitle={pool.name}>
+      <ScrollHandler
+        isLargeNavBar={false}
+        navBarTitle={pool.name}
+        navBarRight={
+          <Button
+            onPress={handleOpenExplorer}
+            size="navbar_icon"
+            mode="secondary"
+            before={<Icon name="ic-information-circle-16" color="foregroundPrimary" />}
+          />
+        }
+      >
         <Animated.ScrollView
           refreshControl={<RefreshControl {...refreshControl} />}
           showsVerticalScrollIndicator={false}
@@ -147,10 +162,12 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                   {infoRows.map((item, i) => [
                     <React.Fragment key={item.label}>
                       {i > 0 ? <Separator /> : null}
-                      <S.Item>
-                        <S.ItemLabel numberOfLines={1}>{item.label}</S.ItemLabel>
-                        <S.ItemValue>{item.value}</S.ItemValue>
-                      </S.Item>
+                      <Highlight onPress={item.onPress} isDisabled={!item.onPress}>
+                        <S.Item>
+                          <S.ItemLabel numberOfLines={1}>{item.label}</S.ItemLabel>
+                          <S.ItemValue>{item.value}</S.ItemValue>
+                        </S.Item>
+                      </Highlight>
                     </React.Fragment>,
                   ])}
                 </S.Table>

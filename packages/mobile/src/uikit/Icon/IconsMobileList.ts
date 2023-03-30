@@ -24,6 +24,7 @@ export const MobileIconsList = {
   'ic-ellipsis-16': require('$assets/icons/png/ic-ellipsis-16.png'),
   'ic-getgems-16': require('$assets/icons/png/ic-getgems-16.png'),
   'ic-globe-16': require('$assets/icons/png/ic-globe-16.png'),
+  'ic-information-circle-16': require('$assets/icons/png/ic-information-circle-16.png'),
   'ic-link-bold-16': require('$assets/icons/png/ic-link-bold-16.png'),
   'ic-loader-small-16': require('$assets/icons/png/ic-loader-small-16.png'),
   'ic-magnifying-glass-16': require('$assets/icons/png/ic-magnifying-glass-16.png'),

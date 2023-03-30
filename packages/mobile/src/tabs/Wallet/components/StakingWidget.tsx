@@ -29,10 +29,10 @@ const StakingWidgetComponent: FC = () => {
   const isStakingEnabled = devFeatures[DevFeature.Staking];
 
   const handleStakingPress = useCallback(() => {
-    nav.push(MainStackRouteNames.Staking);
+    nav.push(MainStackRouteNames.StakingPools, { providerId: 'whales' });
   }, [nav]);
 
-  if (!isStakingEnabled) {
+  if (!isStakingEnabled || stakingInfo.length === 0) {
     return null;
   }
 

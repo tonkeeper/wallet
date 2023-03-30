@@ -230,7 +230,7 @@
     "amount": {
       "recipient_label": "Send to:",
       "insufficient_balance": "Insufficient balance",
-      "less_than_min": "Minimum amount is %{minAmount} TON",
+      "less_than_min": "Minimum %{minAmount} TON",
       "max": "Max",
       "remaining": "Remaining: %{amount}"
     },
@@ -683,11 +683,12 @@
 
   "staking": {
     "title": "Staking",
-    "widget_desc": "Earn up to %{apy}% on your TONs",
+    "widget_desc": "Earn up to %{apy}% on your TONs",
     "staking_pool_desc": "APY ≈ %{apy}%",
+    "staking_desc": "Minimum deposit from %{minStake} TON.\nEarn up to %{maxApy}%.",
     "top_up": "Top up",
     "withdrawal_request": "Withdrawal request",
-    "withdrawal_confrim": "Withdrawal confirm",
+    "get_withdrawal": "Get withdrawal",
     "withdraw": "Withdraw",
     "deposit": "Deposit",
     "transaction": "Transaction",
@@ -712,6 +713,9 @@
       "frequency": {
         "label": "Reward frequency",
         "value": "Every %{count} hours"
+      },
+      "pool_address": {
+        "label": "Pool address"
       },
       "apy": {
         "label": "Est. APY rate",

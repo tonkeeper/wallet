@@ -109,7 +109,7 @@ export class AmountFormatter {
     };
 
     // truncate decimals 1.00 -> 1
-    if (!options.ignoreZeroTruncate && bn.isLessThan('1000')) {
+    if (!options.ignoreZeroTruncate) {
       bn = bn.decimalPlaces(decimals, BigNumber.ROUND_DOWN);
       return bn.toFormat(formatConf);
     }
