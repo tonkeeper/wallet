@@ -12,6 +12,9 @@ sealed interface ReactComponent {
     object Wallet : ReactComponent {
         override val name: String = "ton_keeper"
         override val arguments: Bundle = Bundle.EMPTY
+        // override val arguments: Bundle = Bundle().apply {
+        //     putBoolean("concurrentRoot", true);
+        // }
     }
 }
 
