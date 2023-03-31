@@ -72,7 +72,10 @@ export const useStakingStore = create(
 
             const pools = rawPools
               .filter(
-                (pool) => !!pool.name && pool.maxNominators > pool.currentNominators,
+                (pool) =>
+                  !!pool.name &&
+                  pool.maxNominators > pool.currentNominators &&
+                  pool.implementation === 'whales',
               )
               .sort((a, b) => {
                 if (a.apy === b.apy) {
