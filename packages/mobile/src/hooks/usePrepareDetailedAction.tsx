@@ -26,6 +26,9 @@ import { subscriptionsSelector } from '$store/subscriptions';
 import { Action } from 'tonapi-sdk-js';
 import { formatter } from '$utils/formatter';
 import { Text } from '$uikit';
+import { useFiatRate } from './useFiatRate';
+import { fiatCurrencySelector } from '$store/main';
+import { useGetJettonPrice } from './useJettonPrice';
 
 export function usePrepareDetailedAction(
   rawAction: Action,
@@ -34,6 +37,9 @@ export function usePrepareDetailedAction(
   const { address } = useSelector(walletSelector);
   const t = useTranslator();
   const { subscriptionsInfo } = useSelector(subscriptionsSelector);
+  const fiatRate = useFiatRate(CryptoCurrencies.Ton);
+  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const getJettonPrice = useGetJettonPrice();
 
   return useMemo(() => {
     const action = rawAction[ActionType[rawAction.type]];
@@ -43,6 +49,8 @@ export function usePrepareDetailedAction(
         new TonWeb.Address(address.ton).toString(false, false, false);
 
     const prefix = isReceive ? '+' : '−';
+
+    const isFailed = rawAction.status === 'failed';
 
     let label;
     let head;
@@ -55,6 +63,7 @@ export function usePrepareDetailedAction(
     let sentLabelTranslationString = isReceive
       ? 'transaction_receive_date'
       : 'transaction_sent_date';
+    let fiatValue: string | undefined;
     if (ActionType.TonTransfer === ActionType[rawAction.type]) {
       if (!isReceive) {
         shouldShowSendToRecipientButton = true;
@@ -74,6 +83,7 @@ export function usePrepareDetailedAction(
           currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
           currencySeparator: 'wide',
         });
+      fiatValue = !isFailed ? formatter.format(fiatRate.today * parseFloat(amount), { currency: fiatCurrency, currencySeparator: 'wide' }) : undefined;
     }
 
     if (ActionType.NftItemTransfer === ActionType[rawAction.type]) {
@@ -108,6 +118,8 @@ export function usePrepareDetailedAction(
             '',
           currencySeparator: 'wide',
         });
+        const jettonPrice = getJettonPrice(jettonAddress, amount);
+        fiatValue = !isFailed && jettonPrice.total_numeric ? formatter.format(jettonPrice.total_numeric, { currency: fiatCurrency, currencySeparator: 'wide' }) : undefined;
     }
 
     if (ActionType.Subscribe === ActionType[rawAction.type]) {
@@ -135,6 +147,7 @@ export function usePrepareDetailedAction(
             currencySeparator: 'wide',
           });
       }
+      fiatValue = !isFailed ? formatter.format(fiatRate.today * parseFloat(amount), { currency: fiatCurrency.toLocaleUpperCase(), currencySeparator: 'wide' }) : undefined;
     }
 
     if (ActionType.UnSubscribe === ActionType[rawAction.type]) {
@@ -237,6 +250,7 @@ export function usePrepareDetailedAction(
           CryptoCurrencies.Ton,
           Decimals[CryptoCurrencies.Ton],
         ).trim(),
+        subvalue: formatter.format(fiatRate.today * parseFloat(amount), { currency: fiatCurrency, currencySeparator: 'wide' }),
       });
     }
 
@@ -272,9 +286,10 @@ export function usePrepareDetailedAction(
       shouldShowSendToRecipientButton,
       shouldShowOpenSubscriptionButton,
       subscriptionInfo,
+      fiatValue,
     };
 
-    if (rawAction.status === 'failed') {
+    if (isFailed) {
       actionProps.isFailed = true;
       actionProps.head = head && <Text variant="h2">NFT</Text>;
     }
