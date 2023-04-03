@@ -9,6 +9,6 @@ export interface IDevFeaturesToggleStore {
   devLanguage: null | string;
   actions: {
     toggleFeature: (feature: DevFeature) => void;
-    setDevLanguage: (language: string) => void;
+    setDevLanguage: (language?: string) => void;
   };
 }

@@ -20,7 +20,7 @@ import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { Switch } from 'react-native-gesture-handler';
 import { DevFeature, Toast, useDevFeaturesToggle } from '$store';
-import { languages } from '$translation';
+import { tags } from '$translation';
 
 export const DevMenu: FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
@@ -172,9 +172,9 @@ export const DevMenu: FC = () => {
           </CellSection>
           <CellSection>
           <PopupSelect
-                    items={['auto', ...languages.map(lang => lang.tag)]}
+                    items={['auto', ...tags.map(lang => lang.tag)]}
                     selected={devLanguage || 'auto'}
-                    onChange={setDevLanguage}
+                    onChange={(lang) => setDevLanguage(lang === 'auto' ? undefined : lang)}
                     keyExtractor={(item) => item}
                     width={220}
                     renderItem={(item) => (

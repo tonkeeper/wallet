@@ -1,3 +1,4 @@
+import { i18n } from '$translation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -23,9 +24,12 @@ export const useDevFeaturesToggle = create(
             return { devFeatures };
           });
         },
-        setDevLanguage: async (language: string) => {
+        setDevLanguage: async (language?: string) => {
           set(() => {
-            const devLanguage = language === 'auto' ? null : language;
+            const devLanguage = language;
+            if (devLanguage) {
+              i18n.locale = devLanguage;
+            }
             return { devLanguage };
           });
         }
@@ -34,6 +38,13 @@ export const useDevFeaturesToggle = create(
     {
       name: 'devFeaturesToggle',
       storage: createJSONStorage(() => AsyncStorage),
+      onRehydrateStorage: () => {
+        return (state) => {
+          if (state?.devLanguage) {
+            i18n.locale = state.devLanguage;
+          }
+        }
+      },
       partialize: ({ devFeatures, devLanguage }) => ({ devFeatures, devLanguage } as IDevFeaturesToggleStore),
     },
   ),
