@@ -72,8 +72,8 @@ const exploreActions = [
   },
   {
     icon: 'ic-magnifying-glass-16',
-    text: 'ton.api',
-    url: 'https://tonapi.io',
+    text: 'ton.viewer',
+    url: 'https://tonviewer.com',
   },
   {
     icon: 'ic-code-16',
