@@ -114,7 +114,6 @@ export function usePrepareDetailedAction(
           decimals: action.jetton.decimals ?? 9,
           currency:
             action.jetton?.symbol ||
-            (action.jetton?.name && action.jetton.name.toUpperCase().slice(0, 3)) ||
             '',
           currencySeparator: 'wide',
         });
