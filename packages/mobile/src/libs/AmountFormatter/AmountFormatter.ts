@@ -18,6 +18,7 @@ type AmountFormatOptions = {
   currencySeparator?: 'thin' | 'wide'; // Default thin;
   withoutTruncate?: boolean;
   ignoreZeroTruncate?: boolean;
+  absolute?: boolean;
 };
 
 type AmountNumber = string | number | BigNumber;
@@ -73,7 +74,7 @@ export class AmountFormatter {
   }
 
   public format(amount: AmountNumber = 0, options: AmountFormatOptions = {}) {
-    const { currencySeparator = 'thin' } = options;
+    const { currencySeparator = 'thin', absolute = false } = options;
     let bn = this.toBN(amount);
 
     const decimals = options.decimals ?? this.getDefaultDecimals(bn);
@@ -82,7 +83,9 @@ export class AmountFormatter {
 
     if (bn.isNegative()) {
       bn = bn.abs();
-      prefix += '− ';
+      if (!absolute) {
+        prefix += '− ';
+      }
     }
 
     if (options.currency) {

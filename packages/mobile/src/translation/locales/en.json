@@ -574,6 +574,7 @@
 
   "txActions": {
     "fee": "Fee",
+    "refund": "Refund",
     "amount": "Amount",
 
     "signRaw": {
@@ -583,6 +584,7 @@
         "button": "Open Settings"
       },
       "totalFee": "Total fee",
+      "totalRefund": "Total refund",
       "title": "Confirm transaction",
       "recipient": "Recipient",
       "comment": "Comment",

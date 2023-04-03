@@ -89,7 +89,7 @@ export function usePrepareAction(
       typeLabel = t(`transaction_type_${type}`);
       currency = formatCryptoCurrency(
         '',
-        action.jetton?.symbol || action.jetton?.name && action.jetton.name.toUpperCase().slice(0, 3),
+        action.jetton?.symbol,
         Decimals[CryptoCurrencies.Ton],
         undefined,
         true,

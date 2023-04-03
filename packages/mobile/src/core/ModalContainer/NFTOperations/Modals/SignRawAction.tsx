@@ -16,7 +16,7 @@ import { useDownloadNFT } from '../useDownloadNFT';
 
 interface Props {
   action: Action;
-  totalFee?: string;
+  totalFee?: { fee: string; isNegative: boolean };
   countActions: number;
   params: any;
 }
@@ -87,7 +87,7 @@ export const SignRawAction = React.memo<Props>((props) => {
 interface TonTransferActionProps {
   action: TonTransferActionData;
   skipHeader?: boolean;
-  totalFee?: string;
+  totalFee?: Props['totalFee'];
 }
 
 const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
@@ -129,10 +129,10 @@ const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
           {Boolean(totalFee) && (
             <>
               <Separator />
-              <Highlight onPress={() => copyText(totalFee)}>
+              <Highlight onPress={() => copyText(totalFee?.fee)}>
                 <S.InfoItem>
-                  <S.InfoItemLabel>{t('txActions.fee')}</S.InfoItemLabel>
-                  <S.InfoItemValueText>{totalFee}</S.InfoItemValueText>
+                  <S.InfoItemLabel>{totalFee?.isNegative ? t('txActions.refund') : t('txActions.fee')}</S.InfoItemLabel>
+                  <S.InfoItemValueText>{totalFee?.fee}</S.InfoItemValueText>
                 </S.InfoItem>
               </Highlight>
             </>
@@ -146,7 +146,7 @@ const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
 interface NftItemTransferActionProps {
   action: NftTransferActionData;
   skipHeader?: boolean;
-  totalFee?: string;
+  totalFee?: Props['totalFee'];
 }
 const NftItemTransferAction = React.memo<NftItemTransferActionProps>((props) => {
   const { action, totalFee } = props;
@@ -198,10 +198,10 @@ const NftItemTransferAction = React.memo<NftItemTransferActionProps>((props) => 
         {Boolean(totalFee) && (
           <>
             <Separator />
-            <Highlight onPress={() => copyText(totalFee)}>
+            <Highlight onPress={() => copyText(totalFee?.fee)}>
               <S.InfoItem>
-                <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
-                <S.InfoItemValueText>{totalFee}</S.InfoItemValueText>
+                <S.InfoItemLabel>{totalFee?.isNegative ? t('txActions.refund') : t('txActions.fee')}</S.InfoItemLabel>
+                <S.InfoItemValueText>{totalFee?.fee}</S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
           </>
@@ -214,7 +214,7 @@ const NftItemTransferAction = React.memo<NftItemTransferActionProps>((props) => 
 interface TgAuctionBidActionProps {
   action: SDKAuctionBidAction;
   skipHeader?: boolean;
-  totalFee?: string;
+  totalFee?: Props['totalFee'];
 }
 
 const TgAuctionBidAction = React.memo<TgAuctionBidActionProps>((props) => {
@@ -261,10 +261,10 @@ const TgAuctionBidAction = React.memo<TgAuctionBidActionProps>((props) => {
         {Boolean(totalFee) && (
           <>
             <Separator />
-            <Highlight onPress={() => copyText(totalFee)}>
+            <Highlight onPress={() => copyText(totalFee?.fee)}>
               <S.InfoItem>
-                <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
-                <S.InfoItemValueText>{totalFee}</S.InfoItemValueText>
+                <S.InfoItemLabel>{totalFee?.isNegative ? t('txActions.refund') : t('txActions.fee')}</S.InfoItemLabel>
+                <S.InfoItemValueText>{totalFee?.fee}</S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
           </>
@@ -277,7 +277,7 @@ const TgAuctionBidAction = React.memo<TgAuctionBidActionProps>((props) => {
 interface AuctionBidActionProps {
   action: SDKAuctionBidAction;
   skipHeader?: boolean;
-  totalFee?: string;
+  totalFee?: Props['totalFee'];
 }
 
 const AuctionBidAction = React.memo<AuctionBidActionProps>((props) => {
@@ -330,10 +330,10 @@ const AuctionBidAction = React.memo<AuctionBidActionProps>((props) => {
         {Boolean(totalFee) && (
           <>
             <Separator />
-            <Highlight onPress={() => copyText(totalFee)}>
+            <Highlight onPress={() => copyText(totalFee?.fee)}>
               <S.InfoItem>
-                <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
-                <S.InfoItemValueText>{totalFee}</S.InfoItemValueText>
+                <S.InfoItemLabel>{totalFee?.isNegative ? t('txActions.refund') : t('txActions.fee')}</S.InfoItemLabel>
+                <S.InfoItemValueText>{totalFee?.fee}</S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
           </>

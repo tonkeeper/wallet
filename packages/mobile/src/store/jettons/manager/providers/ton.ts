@@ -75,7 +75,7 @@ export class TonProvider extends BaseProvider {
         ...metadata,
         decimals,
         image: metadata?.image && proxyMedia(metadata.image, 512, 512),
-        symbol: metadata?.symbol || (metadata?.name && metadata.name.toUpperCase().slice(0, 3))
+        symbol: metadata?.symbol
       },
       walletAddress,
       verification: jettonBalance.verification,

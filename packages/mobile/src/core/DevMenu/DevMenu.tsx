@@ -8,7 +8,7 @@ import DeviceInfo from 'react-native-device-info';
 
 import * as S from './DevMenu.style';
 import { ns } from '$utils';
-import { NavBar, ScrollHandler } from '$uikit';
+import { NavBar, PopupSelect, ScrollHandler, Text } from '$uikit';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
 import { useNavigation, useTranslator } from '$hooks';
@@ -20,6 +20,7 @@ import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { Switch } from 'react-native-gesture-handler';
 import { DevFeature, Toast, useDevFeaturesToggle } from '$store';
+import { tags } from '$translation';
 
 export const DevMenu: FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
@@ -93,7 +94,8 @@ export const DevMenu: FC = () => {
 
   const {
     devFeatures,
-    actions: { toggleFeature },
+    devLanguage,
+    actions: { toggleFeature, setDevLanguage },
   } = useDevFeaturesToggle();
 
   const toggleHttpProtocol = useCallback(() => {
@@ -167,6 +169,30 @@ export const DevMenu: FC = () => {
             >
               Force show v4r1
             </CellSectionItem>
+          </CellSection>
+          <CellSection>
+          <PopupSelect
+                    items={['auto', ...tags.map(lang => lang.tag)]}
+                    selected={devLanguage || 'auto'}
+                    onChange={(lang) => setDevLanguage(lang === 'auto' ? undefined : lang)}
+                    keyExtractor={(item) => item}
+                    width={220}
+                    renderItem={(item) => (
+                      <Text variant="label1">
+                          {item}
+                      </Text>
+                    )}
+                  >
+                    <CellSectionItem
+                      indicator={
+                        <Text variant="label1" color="accentPrimary">
+                          {devLanguage || 'auto'}
+                        </Text>
+                      }
+                    >
+                      Language
+                    </CellSectionItem>
+            </PopupSelect>
           </CellSection>
           <CellSection>
             <CellSectionItem onPress={handleClearJettonsCache}>

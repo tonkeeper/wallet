@@ -327,7 +327,7 @@
     "empty_transaction_caption": "Совершите первую транзакцию!",
     "buy_toncoin_btn": "Купить Toncoin",
     "receive_btn": "Получить",
-    "failed_transaction": "Не успешно"
+    "failed_transaction": "Неуспешно"
   },
 
   "browser": {
@@ -581,6 +581,7 @@
 
   "txActions": {
     "fee": "Комиссия",
+    "refund": "Возврат",
     "amount": "Сумма",
 
     "signRaw": {
@@ -590,6 +591,7 @@
         "button": "Открыть настройки"
       },
       "totalFee": "Суммарная комиссия",
+      "totalRefund": "Суммарный возврат",
       "title": "Подтвердить транзакцию",
       "recipient": "Получатель",
       "comment": "Комментарий",
