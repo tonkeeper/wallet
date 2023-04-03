@@ -238,16 +238,14 @@ export function usePrepareDetailedAction(
 
     if (event.fee) {
       const amount = TonWeb.utils.fromNano(
-        new BigNumber(event.fee.total).abs().toString(),
+        new BigNumber(event.fee.total).toString(),
       );
       infoRows.push({
         label: new BigNumber(event.fee.total).isLessThan(0)
           ? t('transaction_refund')
           : t('transaction_fee'),
-        value: formatCryptoCurrency(
-          amount,
-          CryptoCurrencies.Ton,
-          Decimals[CryptoCurrencies.Ton],
+        value: formatter.format(
+          amount, { currencySeparator: 'wide', currency: CryptoCurrencies.Ton.toUpperCase(), absolute: true }
         ).trim(),
         subvalue: formatter.format(fiatRate.today * parseFloat(amount), { currency: fiatCurrency, currencySeparator: 'wide' }),
       });

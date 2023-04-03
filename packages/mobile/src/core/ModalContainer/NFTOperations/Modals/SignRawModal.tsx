@@ -28,6 +28,8 @@ import {
   openInsufficientFundsModal,
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { TonConnectRemoteBridge } from '$tonconnect';
+import { formatter } from '$utils/formatter';
+import { CryptoCurrencies } from '$shared/constants';
 
 interface SignRawModalProps {
   action: Awaited<ReturnType<NFTOperations['signRaw']>>;
@@ -110,7 +112,10 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     const fee = accountEvent?.fee;
 
     if (fee) {
-      return `≈ ${truncateDecimal(Ton.fromNano(fee.total.toString()), 1)} TON`;
+      return { 
+        fee: `≈ ` + formatter.format(Ton.fromNano(fee.total.toString()), { currencySeparator: 'wide', currency: CryptoCurrencies.Ton.toLocaleUpperCase(), absolute: true }),
+        isNegative: fee.total < 0,
+      }
     }
   }, [accountEvent]);
 
@@ -129,11 +134,11 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
         <S.Container>
           {actions.length > 1 && totalFee && (
             <S.Info>
-              <Highlight onPress={() => copyText(totalFee)}>
+              <Highlight onPress={() => copyText(totalFee.fee)}>
                 <S.InfoItem>
-                  <S.InfoItemLabel>{t('txActions.signRaw.totalFee')}</S.InfoItemLabel>
+                  <S.InfoItemLabel>{totalFee.isNegative ?  t('txActions.signRaw.totalRefund') : t('txActions.signRaw.totalFee')}</S.InfoItemLabel>
                   <S.InfoItemValue>
-                    <Text variant="body1">{totalFee}</Text>
+                    <Text variant="body1">{totalFee.fee}</Text>
                   </S.InfoItemValue>
                 </S.InfoItem>
               </Highlight>
