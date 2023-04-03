@@ -58,6 +58,11 @@ export const ItemValue = styled(Text).attrs({
   flex: 1;
 `;
 
+export const ItemValueWrapper = styled.View`
+  flex: 1;
+  align-items: flex-end;
+`;
+
 export const SendButton = styled(Button).attrs({
   mode: 'secondary',
 })`
