@@ -14,6 +14,7 @@ export interface ServerConfig {
   tonNFTsMarketplaceEndpoint: string;
   tonapiIOEndpoint: string;
   tonapiMainnetHost: string;
+  accountExplorer: string;
   tonapiTestnetHost: string;
   tonApiKey: string;
   cachedMediaEndpoint: string;
@@ -40,6 +41,7 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     isExchangeEnabled: data.isExchangeEnabled,
     exchangePostUrl: data.exchangePostUrl,
     mercuryoSecret: data.mercuryoSecret,
+    accountExplorer: data.accountExplorer || 'https://tonviewer.com/account/%s',
     appsflyerDevKey: data.appsflyerDevKey,
     appsflyerAppId: data.appsflyerAppId,
     tonNFTsMarketplaceEndpoint: data.tonNFTsMarketplaceEndpoint,

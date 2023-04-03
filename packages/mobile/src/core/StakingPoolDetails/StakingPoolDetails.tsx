@@ -2,7 +2,7 @@ import { usePoolInfo, useStakingRefreshControl, useTranslator } from '$hooks';
 import { MainStackRouteNames, openDAppBrowser } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
 import { BottomButtonWrap, BottomButtonWrapHelper, NextCycle } from '$shared/components';
-import { KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
+import { getServerConfig, KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
 import { getStakingPoolByAddress, useStakingStore } from '$store';
 import { Button, Highlight, Icon, ScrollHandler, Separator, Spacer, Text } from '$uikit';
 import { stakingFormatter } from '$utils/formatter';
@@ -51,7 +51,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
   const handleDetailsButtonPress = useCallback(() => setDetailsVisible(true), []);
 
   const handleOpenExplorer = useCallback(() => {
-    openDAppBrowser(`https://tonapi.io/account/${pool.address}`);
+    openDAppBrowser(getServerConfig('accountExplorer').replace('%s', pool.address));
   }, [pool.address]);
 
   const isImplemeted = KNOWN_STAKING_IMPLEMENTATIONS.includes(pool.implementation);

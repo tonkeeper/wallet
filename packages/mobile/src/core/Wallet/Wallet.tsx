@@ -29,7 +29,7 @@ import {
 } from '$store/wallet';
 import { Linking, Platform, RefreshControl, View } from 'react-native';
 import { ns } from '$utils';
-import { CryptoCurrencies, Decimals } from '$shared/constants';
+import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
 import { t } from '$translation';
 import { useNavigation } from '$libs/navigation';
 import { Chart } from '$shared/components/Chart/new/Chart';
@@ -182,7 +182,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   }, [dispatch]);
 
   const handleOpenExplorer = useCallback(() => {
-    Linking.openURL(`https://tonapi.io/account/${address.ton}`);
+    openDAppBrowser(getServerConfig('accountExplorer').replace('%s', address.ton));
   }, [address.ton]);
 
   const handleLoadMore = useCallback(() => {
