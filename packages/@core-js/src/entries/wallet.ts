@@ -44,19 +44,19 @@ export interface WalletVoucher {
 
 export interface WalletState {
   publicKey: string;
-  revision: number;
-
-  voucher?: WalletVoucher;
-
   active: WalletAddress;
 
   name?: string;
+
+  revision: number;
+  voucher?: WalletVoucher;
+
+  network?: Network;
 
   hiddenJettons?: string[];
   shownJettons?: string[];
   orderJettons?: string[];
 
-  network?: Network;
   lang?: Language;
   fiat?: FiatCurrencies;
   theme?: string;
