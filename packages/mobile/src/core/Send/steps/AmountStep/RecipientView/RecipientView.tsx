@@ -20,8 +20,6 @@ const RecipientViewComponent: FC<Props> = (props) => {
 
   const t = useTranslator();
 
-  const [titleWidth, setTitleWidth] = useState(0);
-
   const shortenedAddress = recipient ? maskifyAddress(recipient.address) : '';
 
   const name = recipient?.domain || recipient?.name || recipientAccountInfo?.name;
@@ -30,37 +28,12 @@ const RecipientViewComponent: FC<Props> = (props) => {
 
   const subtitle = name ? shortenedAddress : '';
 
-  const handleTitleTextLayout = useCallback(
-    (e: NativeSyntheticEvent<TextLayoutEventData>) => {
-      if (isAndroid) {
-        return;
-      }
-
-      if (e.nativeEvent.lines.length > 1) {
-        setTitleWidth(e.nativeEvent.lines[0]?.width || 0);
-      }
-    },
-    [],
-  );
-
-  useLayoutEffect(() => {
-    if (recipient) {
-      setTitleWidth(0);
-    }
-  }, [recipient]);
-
   return (
     <S.Touchable onPress={goToAddress}>
       <S.Container>
         <S.InfoContainer>
           <S.Label>{t('send_screen_steps.amount.recipient_label')}</S.Label>
-          <S.Title
-            numberOfLines={1}
-            width={titleWidth}
-            onTextLayout={handleTitleTextLayout}
-          >
-            {title}
-          </S.Title>
+          <S.Title numberOfLines={1}>{title}</S.Title>
           <S.SubTitle>{subtitle}</S.SubTitle>
         </S.InfoContainer>
         <S.IconTouchable onPress={goToAddress}>
