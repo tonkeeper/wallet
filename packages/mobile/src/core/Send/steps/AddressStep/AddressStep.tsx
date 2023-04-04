@@ -149,6 +149,16 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           return true;
         }
 
+        if (isValidAddress(value)) {
+          if (accountInfo) {
+            setRecipientAccountInfo(accountInfo as AccountRepr);
+          }
+
+          setRecipient({ address: value });
+
+          return true;
+        }
+
         const domain = value.toLowerCase();
 
         if (!favorite && !TonWeb.Address.isValid(domain)) {
@@ -157,7 +167,10 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           dnsAbortController = abortController;
 
           const zone = domain.indexOf('.') === -1 ? '.ton' : '';
-          const resolvedDomain = await getAddressByDomain(domain + zone, abortController.signal);
+          const resolvedDomain = await getAddressByDomain(
+            domain + zone,
+            abortController.signal,
+          );
 
           if (resolvedDomain === 'aborted') {
             setDnsLoading(false);
@@ -172,16 +185,6 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
             setDnsLoading(false);
             dnsAbortController = null;
           }
-        }
-
-        if (isValidAddress(value)) {
-          if (accountInfo) {
-            setRecipientAccountInfo(accountInfo as AccountRepr);
-          }
-
-          setRecipient({ address: value });
-
-          return true;
         }
 
         setRecipient(null);

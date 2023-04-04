@@ -9,6 +9,7 @@ import { eventsEventsInfoSelector } from '$store/events';
 import { walletAddressSelector } from '$store/wallet';
 import { CryptoCurrencies } from '$shared/constants';
 import { Tonapi } from '$libs/Tonapi';
+import { useStakingStore } from '$store';
 
 const TonWeb = require('tonweb');
 
@@ -23,6 +24,8 @@ export const useSuggestedAddresses = () => {
   const { favorites, hiddenRecentAddresses, updatedDnsAddresses } =
     useSelector(favoritesSelector);
   const address = useSelector(walletAddressSelector);
+
+  const stakingPools = useStakingStore((s) => s.pools.map((pool) => pool.address));
 
   const favoriteAddresses = useMemo(
     (): SuggestedAddress[] =>
@@ -75,12 +78,21 @@ export const useSuggestedAddresses = () => {
             compareAddresses(favorite.address, action.recipient.address),
           ) !== -1;
 
+        const isStakingPool =
+          stakingPools.findIndex((poolAddress) =>
+            compareAddresses(poolAddress, action.recipient.address),
+          ) !== -1;
+
         const friendlyAddress = new TonWeb.Address(action.recipient.address).toString(
           true,
           true,
           true,
         );
-        if (hiddenRecentAddresses.includes(friendlyAddress) || isFavorite) {
+        if (
+          hiddenRecentAddresses.includes(friendlyAddress) ||
+          isFavorite ||
+          isStakingPool
+        ) {
           return false;
         }
 
