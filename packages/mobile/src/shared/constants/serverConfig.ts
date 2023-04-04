@@ -41,7 +41,7 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     isExchangeEnabled: data.isExchangeEnabled,
     exchangePostUrl: data.exchangePostUrl,
     mercuryoSecret: data.mercuryoSecret,
-    accountExplorer: data.accountExplorer || 'https://tonviewer.com/account/%s',
+    accountExplorer: data.accountExplorer || 'https://tonviewer.com/%s',
     appsflyerDevKey: data.appsflyerDevKey,
     appsflyerAppId: data.appsflyerAppId,
     tonNFTsMarketplaceEndpoint: data.tonNFTsMarketplaceEndpoint,

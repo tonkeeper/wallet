@@ -31,7 +31,6 @@ export const useDevFeaturesToggle = create(
             const devLanguage = language;
             return { devLanguage };
           });
-          await delay(1000);
           RNRestart.restart();
         }
       },
