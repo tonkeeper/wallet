@@ -26,5 +26,6 @@ export interface IStakingStore {
   stakingBalance: string;
   actions: {
     fetchPools: (silent?: boolean) => Promise<void>;
+    reset: () => void;
   };
 }
