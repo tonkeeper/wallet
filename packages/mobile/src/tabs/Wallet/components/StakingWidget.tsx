@@ -24,6 +24,11 @@ const StakingWidgetComponent: FC = () => {
     shallow,
   );
 
+  const hasPools = useStakingStore(
+    (s) => s.pools.some((pool) => pool.implementation === 'whales'),
+    shallow,
+  );
+
   const { devFeatures } = useDevFeaturesToggle();
 
   const isStakingEnabled = devFeatures[DevFeature.Staking];
@@ -32,7 +37,7 @@ const StakingWidgetComponent: FC = () => {
     nav.push(MainStackRouteNames.StakingPools, { providerId: 'whales' });
   }, [nav]);
 
-  if (!isStakingEnabled || stakingInfo.length === 0) {
+  if (!isStakingEnabled || !hasPools) {
     return null;
   }
 

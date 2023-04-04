@@ -128,6 +128,10 @@ export const useStakingStore = create(
               return total.plus(calculatePoolBalance(pool, stakingInfo));
             }, new BigNumber('0'));
 
+            if (address !== store.getState().wallet?.address?.ton) {
+              return;
+            }
+
             set({
               pools: pools.sort((a, b) => b.apy - a.apy),
               providers,
@@ -140,6 +144,8 @@ export const useStakingStore = create(
             set({ status: StakingApiStatus.Idle });
           }
         },
+        reset: () =>
+          set({ stakingInfo: {}, stakingBalance: '0', status: StakingApiStatus.Idle }),
       },
     }),
     {
