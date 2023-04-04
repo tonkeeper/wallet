@@ -11,7 +11,7 @@ import {
   IconButton,
   Skeleton,
 } from '$uikit';
-import { maskifyTonAddress, ns } from '$utils';
+import { delay, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
 import { useTheme, useTranslator } from '$hooks';
@@ -44,11 +44,13 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     openReceive(CryptoCurrencies.Ton, true, jetton.jettonAddress);
   }, [jetton.jettonAddress]);
 
-  const handleOpenExplorer = useCallback(() => {
+
+  const handleOpenExplorer = useCallback(async () => {
+    await delay(200);
     openDAppBrowser(
       getServerConfig('accountExplorer').replace('%s', address.ton) + `/jetton/${jetton.jettonAddress}`,
     );
-  }, [address.ton, jetton.jettonAddress]);
+    }, [address.ton, jetton.jettonAddress]);
 
   const renderHeader = useMemo(() => {
     if (!jetton) {

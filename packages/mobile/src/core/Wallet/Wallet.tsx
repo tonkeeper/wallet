@@ -28,7 +28,7 @@ import {
   walletWalletSelector,
 } from '$store/wallet';
 import { Linking, Platform, RefreshControl, View } from 'react-native';
-import { ns } from '$utils';
+import { delay, ns } from '$utils';
 import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
 import { t } from '$translation';
 import { useNavigation } from '$libs/navigation';
@@ -181,7 +181,8 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     );
   }, [dispatch]);
 
-  const handleOpenExplorer = useCallback(() => {
+  const handleOpenExplorer = useCallback(async () => {
+    await delay(200);
     openDAppBrowser(getServerConfig('accountExplorer').replace('%s', address.ton));
   }, [address.ton]);
 
@@ -355,6 +356,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
           <PopupMenu
             items={[
               <PopupMenuItem
+                shouldCloseMenu
                 onPress={handleOpenExplorer}
                 text={t('jetton_open_explorer')}
                 icon={<Icon name="ic-globe-16" color="accentPrimary" />}
