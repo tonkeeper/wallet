@@ -72,7 +72,7 @@ const exploreActions = [
   },
   {
     icon: 'ic-magnifying-glass-16',
-    text: 'ton.viewer',
+    text: 'tonviewer.com',
     url: 'https://tonviewer.com',
   },
   {
