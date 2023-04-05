@@ -7,18 +7,20 @@ import { Api } from '$api';
 import { walletGetUnlockedVault } from '$store/wallet/sagas';
 import { getSubscriptions, saveSubscriptions } from '$database';
 import { SubscriptionModel } from '$store/models';
-import { CryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { store, Toast } from '$store';
 import { fuzzifyNumber, trackEvent } from '$utils';
 import { Ton } from '$libs/Ton';
 import { eventsActions } from '$store/events';
+import { network } from '$libs/network';
 
 export async function reloadSubscriptionsFromServer(address: string) {
   try {
-    const resp: any = await Api.get('/subscriptions', {
+    const host = getServerConfig('subscriptionsHost');
+    const resp = await network.get(`${host}/v1/subscriptions`, {
       params: { address },
     });
-    store.dispatch(subscriptionsActions.setSubscriptionsInfo(resp));
+    store.dispatch(subscriptionsActions.setSubscriptionsInfo(resp.data.data));
     await saveSubscriptions(Object.values(resp));
   } catch {}
 }
@@ -81,12 +83,15 @@ function* subscribeWorker(action: SubscribeAction) {
 
     const currency = CryptoCurrencies.Ton;
 
-    yield call(Api.post, `/subscribe/confirm/${subscription.id}`, {
-      signed_tx: prepared.signedTx,
-      wallet_address: prepared.walletAddress,
-      subscription_address: prepared.subscriptionAddress,
-      fee: prepared.fee,
-      startAt: prepared.startAt,
+    const host = getServerConfig('subscriptionsHost');
+    yield call(network.post, `${host}/v1/subscribe/confirm/${subscription.id}`, {
+      params: {
+        signed_tx: prepared.signedTx,
+        wallet_address: prepared.walletAddress,
+        subscription_address: prepared.subscriptionAddress,
+        fee: prepared.fee,
+        startAt: prepared.startAt,
+      }
     });
 
     yield put(eventsActions.pollEvents());
@@ -108,11 +113,17 @@ function* unsubscribeWorker(action: UnsubscribeAction) {
   try {
     const { wallet } = yield select(walletSelector);
     const unlockedVault = yield call(walletGetUnlockedVault);
-    const result = yield call(
-      [wallet.ton, 'removeSubscription'],
+    const signedTx = yield call(
+      [wallet.ton, 'getCancelSubscriptionBoc'],
       unlockedVault,
       subscription.subscriptionAddress,
     );
+
+    const host = getServerConfig('subscriptionsHost');
+    yield call(network.post, `${host}/v1/subscribe/cancel/${subscription.id}`, {
+      params: { signed_tx: signedTx }
+    });
+
     yield put(eventsActions.pollEvents());
     onDone();
   } catch (e) {
