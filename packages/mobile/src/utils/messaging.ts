@@ -1,4 +1,5 @@
-import { debugLog } from '$utils';
+import { debugLog, isAndroid } from '$utils';
+import { PermissionsAndroid, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import { getTimeSec } from './getTimeSec';
@@ -9,25 +10,38 @@ export async function getToken() {
 }
 
 export async function getPermission() {
-  const authStatus = await messaging().hasPermission();
-  const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-  return enabled;
-}
-
-export async function requestUserPermissionAndGetToken() {
-  const hasPermission = await getPermission();
-
-  if (!hasPermission) {
-    const authStatus = await messaging().requestPermission();
+  if (isAndroid && +Platform.Version >= 33) {
+    return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+  } else {
+    const authStatus = await messaging().hasPermission();
     const enabled =
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
+    return enabled;
+  }
+}
+
+export async function requestUserPermissionAndGetToken() {
+  if (isAndroid && +Platform.Version >= 33) {
+    const status = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+    const enabled = status === PermissionsAndroid.RESULTS.GRANTED;
+
     if (!enabled) {
       return false;
+    }
+  } else {
+    const hasPermission = await getPermission();
+
+    if (!hasPermission) {
+      const authStatus = await messaging().requestPermission();
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+      if (!enabled) {
+        return false;
+      }
     }
   }
 
