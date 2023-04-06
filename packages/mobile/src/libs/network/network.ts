@@ -19,7 +19,7 @@ export type NetworkResponse<TData = any> = {
 
 function createNetworkMethod(method: NetworkMethods) {
   return async <T = any>(url: string, options: NetworkOptions): Promise<NetworkResponse<T>>  => {
-    const fetchOptions: RequestInit = { method, headers: options.headers };
+    const fetchOptions: RequestInit = { method, headers: options.headers ?? {} };
 
     let query: string | undefined;
     if (options.params) {
@@ -27,12 +27,16 @@ function createNetworkMethod(method: NetworkMethods) {
         query = jsonToUrl(options.params);
       } else  {
         fetchOptions.body = JSON.stringify(options.params);
+        fetchOptions.headers!['Content-Type'] = 'application/json';
       }
     }
 
     const endpoint = url + (query ? `?${query}` : '');
     const response = await fetch(endpoint, fetchOptions);
-    const data = await response.json();
+    let data = {} as T;
+    try {
+      data = await response.json();
+    } catch (err) {}
 
     return { 
       statusText: response.statusText,

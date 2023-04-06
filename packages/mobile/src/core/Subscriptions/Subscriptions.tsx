@@ -28,18 +28,18 @@ export const Subscriptions: FC = () => {
         title: t('subscriptions_section_active'),
         data: subscriptions
           .filter((item) => !!item.isActive || item.chargedAt + item.intervalSec > now)
-          .map((item) => ({
+          .map((item, index) => ({
             ...item,
-            key: `${item.subscriptionId}`,
+            key: `${item.subscriptionId}-${index}`,
           })),
       },
       {
         title: t('subscriptions_section_expired'),
         data: subscriptions
           .filter((item) => !item.isActive && item.chargedAt + item.intervalSec <= now)
-          .map((item) => ({
+          .map((item, index) => ({
             ...item,
-            key: `${item.subscriptionId}`,
+            key: `${item.subscriptionId}-${index}`,
           })),
       },
     ].filter(({ data }) => data.length > 0);
