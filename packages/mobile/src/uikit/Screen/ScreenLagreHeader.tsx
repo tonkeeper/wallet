@@ -6,7 +6,7 @@ import {
 import { NavBar } from '$uikit';
 import { Dimensions } from 'react-native';
 import { TabletMaxWidth } from '$shared/constants';
-import { useScreenScroll } from './context/ScreenScrollContext';
+import { useScreenScroll } from './hooks';
 import { LargeNavBarProps } from '$uikit/LargeNavBar/LargeNavBar.interface';
 
 const { width: deviceWidth } = Dimensions.get('window');

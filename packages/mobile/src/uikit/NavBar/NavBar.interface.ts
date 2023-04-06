@@ -19,4 +19,5 @@ export interface NavBarProps {
   titleProps?: AnimateProps<TextProps>;
   fillBackground?: boolean;
   innerAnimatedStyle?: ViewStyle;
+  children?: React.ReactNode;
 }

@@ -7,7 +7,6 @@ import { isValidAddress } from '$utils';
 import { CryptoCurrencies } from '$shared/constants';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
  
-
 export const ScanQRButton = memo(() => {
   const deeplinking = useDeeplinking();
 

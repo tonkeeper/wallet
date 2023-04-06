@@ -6,8 +6,9 @@ export interface ButtonProps {
   size?: 'small' | 'large' | 'navbar_small' | 'navbar_icon' | 'large_rounded' | 'medium_rounded';
   mode?: 'secondary' | 'primary' | 'primary_red' | 'tertiary' | 'light';
   titleFont?: fontKeys;
-  before?: (({ isPressed: boolean }) => ReactElement) | ReactElement;
-  after?: (({ isPressed: boolean }) => ReactElement) | ReactElement;
+  children?: React.ReactNode;
+  before?: ((opts: { isPressed: boolean }) => ReactElement) | ReactElement;
+  after?: ((opts: { isPressed: boolean }) => ReactElement) | ReactElement;
   style?: StyleProp<ViewStyle>;
   withoutTextPadding?: boolean;
   withoutFixedHeight?: boolean;

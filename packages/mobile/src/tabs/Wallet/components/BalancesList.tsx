@@ -1,21 +1,22 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '$translation';
-import { Button, Screen, Spacer, SpacerSizes, View } from '$uikit';
+import { Screen, Spacer, SpacerSizes, View } from '$uikit';
 import { List } from '$uikit/List/new';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { openJetton, openJettonsList, openWallet } from '$navigation';
-import { walletActions } from '$store/wallet';
+import { useDispatch, useSelector } from 'react-redux';
+import { openJetton, openWallet } from '$navigation';
+import { walletActions, walletSelector } from '$store/wallet';
 import { Rate } from '../hooks/useBalance';
 import { ListItemRate } from '../components/ListItemRate';
 import { TonIcon, TonIconProps } from '../../../components/TonIcon';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
-import { Tabs } from '../components/Tabs';
 import { NFTsList } from '../components/NFTsList';
 import { useTheme } from '$hooks';
 import { ListSeparator } from '$uikit/List/new/ListSeparator';
 import { StakingWidget } from './StakingWidget';
+import { useIsFocused } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
 
 enum ContentType {
   Token,
@@ -113,30 +114,34 @@ const RenderItem = ({ item }: { item: Content }) => {
 
 
 interface BalancesListProps {
-  tokens: any; // TODO: 
-  balance: any; // TODO: 
-  rates: Rate;
+  tokens?: any; // TODO: 
+  balance?: any; // TODO: 
+  rates?: Rate;
   nfts?: any;// TODO: 
-  handleRefresh: () => void;
-  isRefreshing: boolean;
-  isFocused: boolean;
   ListHeaderComponent?: React.ReactElement;
+  ListComponent: FlashList<any> | typeof Screen.FlashList;
 }
 
 // See https://shopify.github.io/flash-list/docs/fundamentals/performant-components#getitemtype
-export const BalancesList = memo<BalancesListProps>(({ 
-  tokens, 
-  balance, 
-  rates, 
-  nfts, 
-  handleRefresh,
-  isRefreshing,
-  isFocused,
-  ListHeaderComponent
-}) => {
+export const BalancesList = memo<BalancesListProps>((props) => {
+  const { 
+    ListHeaderComponent,
+    ListComponent,
+    tokens, 
+    balance, 
+    rates, 
+    nfts, 
+  } = props;
+
   const theme = useTheme();
   const dispatch = useDispatch();
+
+  const { isRefreshing } = useSelector(walletSelector);
+  const isFocused = useIsFocused();
   
+  const handleRefresh = useCallback(() => {
+    dispatch(walletActions.refreshBalancesPage(true));
+  }, [dispatch]);
 
   const handleMigrate = useCallback(
     (fromVersion: string) => () => {
@@ -153,83 +158,88 @@ export const BalancesList = memo<BalancesListProps>(({
   const data = useMemo(() => {
     const content: Content[] = [];
 
-    // Tokens
-    content.push({
-      type: ContentType.Token,
-      title: 'Toncoin',
-      onPress: () => openWallet(CryptoCurrencies.Ton),
-      value: balance.ton.amount.formatted,
-      subvalue: balance.ton.amount.fiat,
-      tonIcon: true,
-      rate: {
-        percent: rates.percent,
-        price: rates.price,
-        trend: rates.trend,
-      },
-    });
+    const hasTokens = balance && tokens && rates;
 
-    content.push(
-      ...balance.oldVersions.map((item) => ({
+    if (hasTokens) {
+      // Tokens
+      content.push({
         type: ContentType.Token,
-        onPress: handleMigrate(item.version),
-        title: t('wallet.old_wallet_title'),
-        tonIcon: { transparent: true },
-        value: item.amount.formatted,
-        subvalue: item.amount.fiat,
+        title: 'Toncoin',
+        onPress: () => openWallet(CryptoCurrencies.Ton),
+        value: balance.ton.amount.formatted,
+        subvalue: balance.ton.amount.fiat,
+        tonIcon: true,
         rate: {
           percent: rates.percent,
           price: rates.price,
           trend: rates.trend,
         },
-      })),
-    );
-
-    if (balance.lockup.length > 0) {
-      content.push(
-        ...balance.lockup.map((item) => ({
-          type: ContentType.Token,
-          tonIcon: { locked: true },
-          title: LockupNames[item.type],
-          value: item.amount.formatted,
-          subvalue: item.amount.fiat,
-          subtitle: rates.price,
-        })),
-      );
-    }
-
-    content.push(
-      ...tokens.list.map((item) => ({
-        type: ContentType.Token,
-        onPress: () => openJetton(item.address.rawAddress),
-        picture: item.iconUrl,
-        title: item.name,
-        value: item.quantity.formatted,
-        label: item.symbol,
-        subvalue: item.rate.total,
-        rate: item.rate.price ? {
-          price: item.rate.price
-        } : undefined
-      }))
-    );
-
-    
-    const firstTonkenElement = content[0] as TokenItem;
-    const lastTokenElement = content[content.length - 1] as TokenItem;
-
-    // Make list; set corners
-    firstTonkenElement.isFirst = true;
-    lastTokenElement.isLast = true;
-
-    content.push({
-      type: ContentType.Staking
-    });
-
-    if (nfts) {
-      content.push({
-        type: ContentType.Spacer,
-        bottom: 32,
       });
 
+      content.push(
+        ...balance.oldVersions.map((item) => ({
+          type: ContentType.Token,
+          onPress: handleMigrate(item.version),
+          title: t('wallet.old_wallet_title'),
+          tonIcon: { transparent: true },
+          value: item.amount.formatted,
+          subvalue: item.amount.fiat,
+          rate: {
+            percent: rates.percent,
+            price: rates.price,
+            trend: rates.trend,
+          },
+        })),
+      );
+
+      if (balance.lockup.length > 0) {
+        content.push(
+          ...balance.lockup.map((item) => ({
+            type: ContentType.Token,
+            tonIcon: { locked: true },
+            title: LockupNames[item.type],
+            value: item.amount.formatted,
+            subvalue: item.amount.fiat,
+            subtitle: rates.price,
+          })),
+        );
+      }
+
+      content.push(
+        ...tokens.list.map((item) => ({
+          type: ContentType.Token,
+          onPress: () => openJetton(item.address.rawAddress),
+          picture: item.iconUrl,
+          title: item.name,
+          value: item.quantity.formatted,
+          label: item.symbol,
+          subvalue: item.rate.total,
+          rate: item.rate.price ? {
+            price: item.rate.price
+          } : undefined
+        }))
+      );
+
+      const firstTonkenElement = content[0] as TokenItem;
+      const lastTokenElement = content[content.length - 1] as TokenItem;
+
+      // Make list; set corners
+      firstTonkenElement.isFirst = true;
+      lastTokenElement.isLast = true;
+
+      content.push({
+        type: ContentType.Staking
+      });
+
+      if (nfts) {
+        content.push({
+          type: ContentType.Spacer,
+          bottom: 32,
+        });
+      }
+    }
+
+    if (nfts) {
       const numColumns = 3;
       for (let i = 0; i < Math.ceil(nfts.length / numColumns); i++) {
         content.push({ 
@@ -241,13 +251,11 @@ export const BalancesList = memo<BalancesListProps>(({
 
     content.push({
       type: ContentType.Spacer,
-      bottom: 12
+      bottom: hasTokens ? 12 : 8
     });
 
     return content;
-  }, [balance.oldVersions, rates, tokens.list]);
-
-  const ListComponent = nfts ? Screen.FlashList : Tabs.FlashList;
+  }, [balance?.oldVersions, rates, tokens?.list]);
 
   return (
     <ListComponent

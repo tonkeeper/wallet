@@ -5,6 +5,7 @@ import styled, { css } from '$styled';
 import { ns, hNs } from '$utils';
 import { IsTablet, NavBarHeight, Opacity, TabletMaxWidth } from '$shared/constants';
 import { Text } from '$uikit/Text/Text';
+import { StyleSheet } from 'react-native';
 
 export const Wrap = styled.View<{ isTransparent: boolean; isBackground: boolean }>`
   z-index: 10;
@@ -39,7 +40,7 @@ export const Gradient = styled(LinearGradient)`
 export const Cont = styled(Animated.View)`
   height: ${hNs(NavBarHeight - 0.5)}px;
   z-index: 2;
-  border-bottom-width: ${ns(0.5)}px;
+  border-bottom-width: ${StyleSheet.hairlineWidth}px;
   border-bottom-color: transparent;
 `;
 

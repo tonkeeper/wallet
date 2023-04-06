@@ -20,6 +20,7 @@ const plugins = [
         $styled: './src/styled',
         $styles: './src/styles',
         $shared: './src/shared',
+        $components: './src/components',
         $navigation: './src/navigation',
         $translation: './src/translation',
         $services: './src/services',

@@ -1,19 +1,19 @@
-import React, { memo } from 'react';
+import { ScreenScrollContext, useScreenScrollHandler } from './hooks/useScreenScroll';
 import { View, StyleSheet } from 'react-native';
-import { ScreenScrollProvider } from './context/ScreenScrollContext';
+import { PropsWithChildren, memo } from 'react';
 
-export const ScreenContainer = memo((props) => {
+export const ScreenContainer = memo<PropsWithChildren>((props) => {
+  const screenScroll = useScreenScrollHandler();
+
   return (
-    <ScreenScrollProvider>
-      <View style={styles.container}>
-        {props.children}
-      </View>
-    </ScreenScrollProvider>
+    <ScreenScrollContext.Provider value={screenScroll}>
+      <View style={styles.container}>{props.children}</View>
+    </ScreenScrollContext.Provider>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
-  }
+    flex: 1,
+  },
 });

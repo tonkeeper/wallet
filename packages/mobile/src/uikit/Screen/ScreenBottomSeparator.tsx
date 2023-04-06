@@ -1,9 +1,9 @@
-import React, { memo } from "react";
 import Animated, { interpolateColor, useAnimatedStyle } from "react-native-reanimated";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { useScreenScroll } from "./context/ScreenScrollContext";
+import { useScreenScroll } from "./hooks";
 import { StyleSheet } from "react-native";
 import { useTheme } from "$hooks";
+import { memo } from "react";
 
 export const ScreenBottomSeparator = memo(() => {
   const { isEndReached } = useScreenScroll();

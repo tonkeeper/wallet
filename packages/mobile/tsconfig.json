@@ -23,6 +23,8 @@
       "$services": ["services"],
       "$translation": ["translation"],
       "$tonconnect": ["tonconnect"],
+      "$components": ["components"],
+      "$components/*": ["components/*"],
       "$api/*": ["api/*"],
       "$core/*": ["core/*"],
       "$modals/*": ["modals/*"],

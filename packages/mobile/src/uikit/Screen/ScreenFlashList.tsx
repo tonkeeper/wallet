@@ -1,24 +1,31 @@
-import React, { forwardRef, memo, useMemo } from 'react';
 import { FlashList, ContentStyle, FlashListProps } from '@shopify/flash-list';
 import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
-import { useScreenScroll } from './context/ScreenScrollContext';
 import { ScreenBottomSeparator } from './ScreenBottomSeparator';
+import { forwardRef, memo, useEffect, useMemo } from 'react';
+import { useScrollToTop } from '@react-navigation/native';
 import { StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { useScreenScroll } from './hooks';
 import { useMergeRefs } from '$utils';
 
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 
-type ScreenScrollListProps = FlashListProps<any> & {
+export type ScreenScrollListProps = FlashListProps<any> & {
   hideBottomSeparator?: boolean;
 };
 
 export const ScreenScrollList = memo<ScreenScrollListProps>(forwardRef((props, ref) => {
   const { contentContainerStyle, hideBottomSeparator, ...other } = props;
-  const { detectContentSize, detectLayoutSize, scrollHandler, scrollRef } = useScreenScroll();
+  const { detectContentSize, detectLayoutSize, scrollHandler, scrollRef, headerEjectionPoint } = useScreenScroll();
   const tabBarHeight = useBottomTabBarHeight();
-  const setRef = useMergeRefs(ref, scrollRef);
+  const setRef = useMergeRefs(scrollRef, ref);
+
+  useScrollToTop(scrollRef);
+
+  useEffect(() => {
+    headerEjectionPoint.value = 0;
+  }, []);
 
   useScrollHandler(undefined, true); // TODO: remove this, when old separator will be removed
 

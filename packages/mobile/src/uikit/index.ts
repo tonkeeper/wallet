@@ -44,3 +44,4 @@ export { IconButton } from './IconButton';
 export { IconButtonList } from './IconButtonList';
 export * from './Spacer';
 export { Pressable } from './Pressable';
+export { PagerView } from './PagerView';
