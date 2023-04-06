@@ -250,7 +250,7 @@ export class TonWallet {
     };
   }
 
-  async removeSubscription(unlockedVault: UnlockedVault, subscriptionAddress: string) {
+  async getCancelSubscriptionBoc(unlockedVault: UnlockedVault, subscriptionAddress: string) {
     const isInstalled = this.isSubscriptionActive(subscriptionAddress);
     if (!isInstalled) {
       return;
@@ -279,18 +279,13 @@ export class TonWallet {
 
     try {
       const query = await tx.getQuery();
-      const boc = TonWeb.utils.bytesToBase64(await query.toBoc(false));
-      await this.sendApi.sendBoc({ sendBocRequest: { boc } });
+      return TonWeb.utils.bytesToBase64(await query.toBoc(false));
     } catch (e) {
       if (!store.getState().main.isTimeSynced) {
         throw new Error('wrong_time');
       }
       throw new Error(t('send_publish_tx_error'));
     }
-
-    return {
-      fee,
-    };
   }
 
   async isSubscriptionActive(subscriptionAddress: string) {

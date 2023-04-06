@@ -1,6 +1,7 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "useUnknownInCatchVariables": false,
     "allowJs": true,
     "skipLibCheck": false,
     "strict": true,
