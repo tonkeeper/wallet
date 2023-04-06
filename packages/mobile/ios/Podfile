@@ -11,8 +11,6 @@ install! 'cocoapods',
 
 prepare_react_native_project!
 
-$RNFirebaseAnalyticsWithoutAdIdSupport=true
-
 # If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
 # because `react-native-flipper` depends on (FlipperKit,...), which will be excluded. To fix this,
 # you can also exclude `react-native-flipper` in `react-native.config.js`
@@ -42,6 +40,17 @@ target 'ton_keeper' do
   use_expo_modules!
   config = use_native_modules!
 
+  # For Firebase
+  pod 'GoogleUtilities', :modular_headers => true
+  pod 'FirebaseSessions', :modular_headers => true
+  pod 'FirebaseCore', :modular_headers => true
+  pod 'FirebaseCoreExtension', :modular_headers => true
+  pod 'FirebaseInstallations', :modular_headers => true
+  pod 'GoogleDataTransport', :modular_headers => true
+  pod 'nanopb', :modular_headers => true
+
+  $RNFirebaseAnalyticsWithoutAdIdSupport=true
+
   # Flags change depending on the env values.
   flags = get_default_flags()
 
@@ -60,13 +69,13 @@ target 'ton_keeper' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-
-  permissions_path = '../node_modules/react-native-permissions/ios'
-  pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
   
   # Utilities
   pod 'R.swift', '~> 6.1.0'
   pod 'TonMnemonicSwift', :git => 'git@github.com:tonkeeper/ton-mnemonic-swift.git', :branch => 'main'
+  
+  permissions_path = '../node_modules/react-native-permissions/ios'
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
 
   post_install do |installer|
     react_native_post_install(

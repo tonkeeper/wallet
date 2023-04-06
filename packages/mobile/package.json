@@ -30,10 +30,10 @@
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/clipboard": "^1.5.1",
     "@react-native-community/netinfo": "^9.3.2",
-    "@react-native-firebase/analytics": "14.7.0",
-    "@react-native-firebase/app": "14.7.0",
-    "@react-native-firebase/crashlytics": "14.7.0",
-    "@react-native-firebase/messaging": "14.7.0",
+    "@react-native-firebase/analytics": "17.4.1",
+    "@react-native-firebase/app": "17.4.1",
+    "@react-native-firebase/crashlytics": "17.4.1",
+    "@react-native-firebase/messaging": "17.4.1",
     "@react-navigation/bottom-tabs": "^6.3.2",
     "@react-navigation/native": "^6.0.11",
     "@react-navigation/native-stack": "^6.7.0",
@@ -150,9 +150,6 @@
     "react-test-renderer": "18.2.0",
     "typescript": "^4.9.4"
   },
-  "resolutions": {
-    "@types/react": "~18.0.24"
-  },
   "jest": {
     "preset": "react-native",
     "moduleFileExtensions": [
@@ -176,14 +173,14 @@
   },
   "expo-yarn-workspaces": {
     "symlinks": [
+      "react-native-permissions",
       "react-native-minimizer",
       "react-native-scrypt",
       "react-native-camera",
       "tonweb",
       "expo-modules-core",
       "@unimodules/core",
-      "@unimodules/react-native-adapter",
-      "react-native-permissions"
+      "@unimodules/react-native-adapter"
     ]
   }
 }
