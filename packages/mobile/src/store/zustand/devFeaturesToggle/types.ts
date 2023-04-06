@@ -1,6 +1,5 @@
 export enum DevFeature {
   UseHttpProtocol = 'UseHttpProtocol',
-  NewFlow = 'NewFlow',
   Staking = 'Staking',
 }
 

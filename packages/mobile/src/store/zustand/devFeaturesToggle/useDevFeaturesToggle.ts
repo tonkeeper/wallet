@@ -8,7 +8,6 @@ import RNRestart from 'react-native-restart';
 
 const initialState: Omit<IDevFeaturesToggleStore, 'actions'> = {
   devFeatures: {
-    [DevFeature.NewFlow]: true,
     [DevFeature.UseHttpProtocol]: false,
     [DevFeature.Staking]: false,
   },
