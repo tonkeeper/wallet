@@ -8,6 +8,7 @@ export interface ButtonProps {
   titleFont?: fontKeys;
   before?: (({ isPressed: boolean }) => ReactElement) | ReactElement;
   after?: (({ isPressed: boolean }) => ReactElement) | ReactElement;
+  children: ReactElement | string;
   style?: StyleProp<ViewStyle>;
   withoutTextPadding?: boolean;
   withoutFixedHeight?: boolean;
