@@ -3,8 +3,7 @@ import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom
 import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
-import { Balances, DAppsExplore } from '$core';
+import { DAppsExplore } from '$core';
 import { TabsStackRouteNames } from '$navigation';
 import { TabStackParamList } from './TabStack.interface';
 import { Icon, ScrollPositionContext, View } from '$uikit';
@@ -12,53 +11,28 @@ import { usePreloadChart, useTheme } from '$hooks';
 import { isAndroid, nfs, ns, trackEvent } from '$utils';
 import { t } from '$translation';
 import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
-import { NFTs } from '$core/NFTs/NFTs';
 import { TabBarBadgeIndicator } from './TabBarBadgeIndicator';
 import { useNotificationsSubscribe } from '$hooks/useNotificationsSubscribe';
-import { useFlags } from '$utils/flags';
-import { nftsSelector } from '$store/nfts';
 import { ActivityScreen } from '../../../tabs/Activity/ActivityScreen';
 import { WalletScreen } from '../../../tabs/Wallet/WalletScreen';
-import { DevFeature, useDevFeaturesToggle } from '$store';
 import Animated from 'react-native-reanimated';
 import { FONT } from '$styled';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
-const useHasNfts = () => {
-  const { myNfts } = useSelector(nftsSelector);
-  return Object.keys(myNfts).length > 0;
-};
-
 export const TabStack: FC = () => {
   const { bottomSeparatorStyle } = useContext(ScrollPositionContext);
-  const flags = useFlags(['disable_nft_tab', 'disable_nft_tab_if_no_nft']);
-  const { devFeatures } = useDevFeaturesToggle();
   const safeArea = useSafeAreaInsets();
-  const hasNfts = useHasNfts();
   const theme = useTheme();
-  
+
   useNotificationsSubscribe();
   usePreloadChart();
 
   const tabBarStyle = { height: ns(64) + (safeArea.bottom > 0 ? ns(20) : 0) };
-  const containerTabStyle = useMemo(() => [
-    tabBarStyle,
-    styles.tabBarContainer,
-    bottomSeparatorStyle,
-  ], [safeArea.bottom, bottomSeparatorStyle, tabBarStyle]);  
-
-  const isVisibleNftTab = React.useMemo(() => {
-    if (flags.disable_nft_tab) {
-      return false;
-    }
-
-    if (flags.disable_nft_tab_if_no_nft && !hasNfts) {
-      return false;
-    }
-
-    return true;
-  }, [flags.disable_nft_tab_if_no_nft, flags.disable_nft_tab, hasNfts]);
+  const containerTabStyle = useMemo(
+    () => [tabBarStyle, styles.tabBarContainer, bottomSeparatorStyle],
+    [safeArea.bottom, bottomSeparatorStyle, tabBarStyle],
+  );
 
   return (
     <Tab.Navigator
@@ -80,19 +54,19 @@ export const TabStack: FC = () => {
       tabBar={(props) => (
         <Animated.View style={containerTabStyle}>
           {isAndroid ? (
-            <View 
+            <View
               style={[
                 styles.tabBarSplashBackground,
-                { backgroundColor: theme.colors.backgroundPrimary }
-              ]} 
+                { backgroundColor: theme.colors.backgroundPrimary },
+              ]}
             />
           ) : (
             <BlurView tint="dark" intensity={48} style={StyleSheet.absoluteFill}>
-              <View 
+              <View
                 style={[
                   styles.tabBarBlurBackground,
-                  { backgroundColor: theme.colors.backgroundPrimaryTrans }
-                ]} 
+                  { backgroundColor: theme.colors.backgroundPrimaryTrans },
+                ]}
               />
             </BlurView>
           )}
@@ -100,62 +74,28 @@ export const TabStack: FC = () => {
         </Animated.View>
       )}
     >
-      {devFeatures[DevFeature.NewFlow] ? (
-        <>
-          <Tab.Screen
-            component={WalletScreen}
-            name={TabsStackRouteNames.Balances}
-            options={{
-              tabBarLabel: t('wallet.screen_title'),
-              tabBarIcon: ({ color }) => (
-                <Icon colorHex={color} name="ic-wallet-28" />
-              ),
-            }}
-          />
-          <Tab.Screen
-            component={ActivityScreen}
-            name={TabsStackRouteNames.Activity}
-            options={{
-              tabBarLabel: t('activity.screen_title'),
-              tabBarIcon: ({ color }) => (
-                <Icon colorHex={color} name="ic-flash-28" />
-              ),
-            }}
-          />
-        </>
-      ) : (
-        <Tab.Screen
-          component={Balances}
-          name={TabsStackRouteNames.Balances}
-          options={{
-            tabBarLabel: t('tab_wallet'),
-            tabBarIcon: ({ color }) => (
-              <Icon colorHex={color} name="ic-home-28" />
-            ),
-          }}
-        />
-      )}
-
-      {isVisibleNftTab && !devFeatures[DevFeature.NewFlow] && (
-        <Tab.Screen
-          component={NFTs}
-          name={TabsStackRouteNames.NFT}
-          options={{
-            tabBarLabel: t('tab_nft'),
-            tabBarIcon: ({ color }) => (
-              <Icon colorHex={color} name="ic-nft-collection-28" />
-            ),
-          }}
-        />
-      )}
+      <Tab.Screen
+        component={WalletScreen}
+        name={TabsStackRouteNames.Balances}
+        options={{
+          tabBarLabel: t('wallet.screen_title'),
+          tabBarIcon: ({ color }) => <Icon colorHex={color} name="ic-wallet-28" />,
+        }}
+      />
+      <Tab.Screen
+        component={ActivityScreen}
+        name={TabsStackRouteNames.Activity}
+        options={{
+          tabBarLabel: t('activity.screen_title'),
+          tabBarIcon: ({ color }) => <Icon colorHex={color} name="ic-flash-28" />,
+        }}
+      />
       <Tab.Screen
         component={DAppsExplore}
         name={TabsStackRouteNames.Explore}
         options={{
           tabBarLabel: t('tab_browser'),
-          tabBarIcon: ({ color }) => (
-            <Icon colorHex={color} name="ic-explore-28" />
-          ),
+          tabBarIcon: ({ color }) => <Icon colorHex={color} name="ic-explore-28" />,
         }}
         listeners={{
           tabPress: (e) => {
@@ -230,4 +170,3 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
 });
-

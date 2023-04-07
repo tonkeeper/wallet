@@ -9,6 +9,7 @@ import RNRestart from 'react-native-restart';
 const initialState: Omit<IDevFeaturesToggleStore, 'actions'> = {
   devFeatures: {
     [DevFeature.UseHttpProtocol]: false,
+    [DevFeature.Staking]: false,
   },
   devLanguage: null,
 };
@@ -31,7 +32,6 @@ export const useDevFeaturesToggle = create(
             const devLanguage = language;
             return { devLanguage };
           });
-          await delay(1000);
           RNRestart.restart();
         }
       },
