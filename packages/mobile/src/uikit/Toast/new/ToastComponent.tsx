@@ -14,6 +14,7 @@ import { useTheme } from '$hooks';
 import { Loader, Text } from '$uikit';
 import { deviceWidth, ns } from '$utils';
 import { Toast, useToastStore } from '$store';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 
 export enum ToastAnimationState {
   SHOWING = 'SHOWING',
@@ -44,6 +45,16 @@ export const ToastComponent = memo(() => {
       });
     }
   }, [state, translate]);
+
+  const handleSwipeUp = useCallback((e) => {
+    const { nativeEvent } = e;
+
+    if (nativeEvent.velocityY > 0) {
+      animatedHide();
+    } else {
+      console.log('Swipe left');
+    }
+  }, []);
 
   React.useEffect(() => {
     const disposerHide = useToastStore.subscribe(
@@ -94,24 +105,26 @@ export const ToastComponent = memo(() => {
 
   return (
     <FullWindowOverlay style={styles.overlay}>
-      <Pressable style={[styles.container, indentStyle]} onPress={animatedHide}>
-        <Animated.View
-          style={[
-            styles.toast,
-            animatedStyle,
-            toast.size === 'small' && styles.toastSmall,
-            { backgroundColor: theme.colors.backgroundTertiary },
-          ]}
-        >
-          {toast.isLoading && (
-            <View style={styles.loaderContainer}>
-              <Loader color="foregroundPrimary" size="small" />
-            </View>
-          )}
+      <PanGestureHandler onGestureEvent={handleSwipeUp}>
+        <Pressable style={[styles.container, indentStyle]} onPress={animatedHide}>
+          <Animated.View
+            style={[
+              styles.toast,
+              animatedStyle,
+              toast.size === 'small' && styles.toastSmall,
+              { backgroundColor: theme.colors.backgroundTertiary },
+            ]}
+          >
+            {toast.isLoading && (
+              <View style={styles.loaderContainer}>
+                <Loader color="foregroundPrimary" size="small" />
+              </View>
+            )}
 
-          <Text variant="label2">{toast.message}</Text>
-        </Animated.View>
-      </Pressable>
+            <Text variant="label2">{toast.message}</Text>
+          </Animated.View>
+        </Pressable>
+      </PanGestureHandler>
     </FullWindowOverlay>
   );
 });
