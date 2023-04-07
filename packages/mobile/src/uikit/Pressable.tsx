@@ -1,6 +1,6 @@
 import { Steezy } from '$styles';
 import { StyleProp } from '@bogoslavskiy/react-native-steezy';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import {
   GestureResponderEvent,
   Pressable as NativePressable,
@@ -104,24 +104,22 @@ export const Pressable = (props: PressableProps) => {
   }, []);
 
   const underlayStyle = useAnimatedStyle(() => {
-    if (props.underlayColor) {
+    if (underlayColor) {
       return {
         backgroundColor: interpolateColor(
           isPressed.value,
           [0, 1],
-          [backgroundColor, props.underlayColor],
+          [backgroundColor, underlayColor],
         ),
       };
     }
 
     return {};
-  }, [props.underlayColor, backgroundColor]);
-
-  const pressableStyle = useMemo(() => [style, underlayStyle], [style, underlayStyle]);
+  }, [underlayColor, backgroundColor]);
 
   return (
     <AnimatedPressable
-      style={pressableStyle}
+      style={[style, underlayStyle]}
       onPressOut={handlePressOut}
       onTouchMove={handleMove}
       onPressIn={handlePressIn}

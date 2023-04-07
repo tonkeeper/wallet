@@ -1,11 +1,9 @@
 import 'react-native-get-random-values';
 import 'react-native-gesture-handler';
-import 'react-native-reanimated';
 import './global';
-import 'react-native-console-time-polyfill';
 import 'text-encoding-polyfill';
-
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
+
 import { AppRegistry, LogBox } from 'react-native';
 import {
   setJSExceptionHandler,

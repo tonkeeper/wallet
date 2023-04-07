@@ -3031,7 +3031,7 @@
     component-type "^1.2.1"
     join-component "^1.1.0"
 
-"@shopify/flash-list@^1.4.1":
+"@shopify/flash-list@^1.4.2":
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/@shopify/flash-list/-/flash-list-1.4.2.tgz#86c188f42fcb4bb2a569c0354978e9148a83d1f3"
   integrity sha512-MX3vyiHdyCoveqrv+0LufQVlLpoWMZ/bpn+4v6RKfW6ZE0+z8S7WdZTU5Gdj7IFPlkulJAtdFn4Jl0V7tDvd6A==
@@ -14946,11 +14946,6 @@ react-native-codegen@^0.71.5:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-react-native-console-time-polyfill@^1.2.3:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/react-native-console-time-polyfill/-/react-native-console-time-polyfill-1.2.3.tgz#1039dab1bb9e2d8040f5e19de68e0da781dc9b60"
-  integrity sha512-C7CUb1c6GsCssqvjtRuqVqnGwlfEHXxXDvCUuGNbq/gpZZt+9YbZD3ODmXBDxis3tDQA0k1lbT1VMTqWQw9rDg==
-
 react-native-crypto@^2.1.2, react-native-crypto@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/react-native-crypto/-/react-native-crypto-2.2.0.tgz#c999ed7c96064f830e1f958687f53d0c44025770"
@@ -15055,7 +15050,7 @@ react-native-os@^1.2.2:
   resolved "https://registry.yarnpkg.com/react-native-os/-/react-native-os-1.2.6.tgz#1bb16d78ccad1143972183a04f443cf1af9fbefa"
   integrity sha512-OlT+xQAcvkcnf7imgXiu+myMkqDt4xw2bP5SlVo19hEn5XHBkPMLX7dk3sSGxxncH/ToMDsf1KLyrPabNVtadA==
 
-react-native-pager-view@^6.1.4:
+react-native-pager-view@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-6.2.0.tgz#51380d93fbe47f6380dc71d613a787bf27a4ca37"
   integrity sha512-pf9OnL/Tkr+5s4Gjmsn7xh91PtJLDa6qxYa/bmtUhd/+s4cQdWQ8DIFoOFghwZIHHHwVdWtoXkp6HtpjN+r20g==
@@ -15092,13 +15087,14 @@ react-native-rate@^1.2.6:
   resolved "https://registry.yarnpkg.com/react-native-rate/-/react-native-rate-1.2.12.tgz#d4307b2994f9c849b987eb65599ec467db4aee04"
   integrity sha512-A/z3s7Zth08aXcJnru6S4p71NG8acx2w5LhIfItwTJUbQruNJugk8WrN51dLBCSDv8W33kbS5YoUT4M9jOP5gA==
 
-react-native-reanimated@^2.9.1:
-  version "2.15.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.15.0.tgz#d795ed8a56f61cdbb3413d07d4dd43f47e161d1e"
-  integrity sha512-pNbcjIsqB72lsLGr7DvcXl07oovTvQUaBgP6CdkYtogmrCKUMcB+TDe2OjUNPWdzJ9JkgNIZZ1h71LM78H9HrQ==
+react-native-reanimated@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.0.2.tgz#8f7284fab2b0cd949779429e48f32d19a966bbd6"
+  integrity sha512-8Et90yTI9yxchGbDP79k391XZqc/64zNbASbGy8X3Vgv4EbZ1M3IkKwcIbZmbVwpA804VJ6V9nJAGUh9fP0LrA==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.16.7"
     "@babel/preset-typescript" "^7.16.7"
+    convert-source-map "^1.7.0"
     invariant "^2.2.4"
     lodash.isequal "^4.5.0"
     setimmediate "^1.0.5"
