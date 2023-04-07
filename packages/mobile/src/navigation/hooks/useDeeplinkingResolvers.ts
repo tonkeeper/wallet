@@ -371,7 +371,7 @@ export function useDeeplinkingResolvers() {
         throw new Error('Error JSON txrequest-inline parsing');
       }
 
-      resolveTxType(txRequest);
+      await resolveTxType(txRequest);
     } catch (err) {
       debugLog('[txrequest-url]', err);
       Toast.fail(err?.message);
