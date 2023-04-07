@@ -37,6 +37,8 @@ export enum FiatCurrencies {
   Idr = 'idr',
   Inr = 'inr',
   Jpy = 'jpy',
+  Uah = 'uah',
+  Uzs = 'uzs',
 }
 
 export type FiatCurrency = (typeof FiatCurrencies)[keyof typeof FiatCurrencies];
@@ -129,6 +131,14 @@ export const FiatCurrencySymbolsConfig = {
   },
   [FiatCurrencies.Aed]: {
     symbol: 'DH',
+    side: 'end',
+  },
+  [FiatCurrencies.Uah]: {
+    symbol: '₴',
+    side: 'end',
+  },
+  [FiatCurrencies.Uzs]: {
+    symbol: 'Som',
     side: 'end',
   },
   [FiatCurrencies.Gbp]: {
