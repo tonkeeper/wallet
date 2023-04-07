@@ -1,95 +1,49 @@
 import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import { ScreenHeaderHeight, Header, HeaderProps } from './headers/Header';
 import { ScreenLargeHeader } from './ScreenLagreHeader';
-import { NavBarHeight } from '$shared/constants';
 import { useScreenScroll } from './hooks';
-import { NavBar } from '../NavBar/NavBar';
-import React, { memo } from 'react';
-import { Steezy } from '$styles';
+import React, { memo, useEffect } from 'react';
+import { LargeNavBar } from '$uikit/LargeNavBar/LargeNavBar';
 
-interface ScreenHeaderProps {
-  title?: string;
-  rightContent?: React.ReactNode;
-  hideBackButton?: boolean;
+type ScreenHeaderProps = HeaderProps & {
   large?: boolean;
-}
+};
 
 export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
-  const { rightContent, hideBackButton } = props;
-  const screenScroll = useScreenScroll();
+  const { headerType } = useScreenScroll();
 
-  const ejectionOpacityStyle = useAnimatedStyle(() => {
-    if (screenScroll.headerEjectionPoint.value > 0) {
-      const start = screenScroll.headerEjectionPoint.value - NavBarHeight + 11;
-      const opacity = interpolate(
-        screenScroll.scrollY.value,
-        [0, start, start + (NavBarHeight / 3.5)],
-        [1, 1, 0],
-        Extrapolate.CLAMP
-      );
-
-      return { opacity };
-    }
-
-    return {};
-  });
-
-  const ejectionShiftStyle = useAnimatedStyle(() => {
-    if (screenScroll.headerEjectionPoint.value > 0) {
-      const start = screenScroll.headerEjectionPoint.value - NavBarHeight;
-
-      const y = interpolate(
-        screenScroll.scrollY.value,
-        [0, start, start + (NavBarHeight / 3.5)],
-        [0, 0, -(NavBarHeight / 3.5)],
-      );;
-
-      return {
-        transform: [{ translateY: y }]
-      };
-    }
-
-    return {};
-  });
-
-  const rightContentContainer = React.useMemo(() => {
-    if (rightContent) {
-      return rightContent;
-    }
-
-    return null;
-  }, [rightContent]);
+  useEffect(() => {
+    headerType.value = props.large ? 'large' : 'screen'
+  }, []);
 
 
   if (props.large) {
     return (
-      <ScreenLargeHeader 
-        navBarTitle={props.title!}
-        scrollTop={screenScroll.scrollY}
-      />
-    )
+      <LargeNavBar
+        onPress={() => {}}
+        bottomComponent={null}
+        // scrollTop={scrollY}
+        rightContent={null}
+        hitSlop={{}}
+        // position="absolute"
+      >
+        {props.title}
+      </LargeNavBar>
+    );
   }
 
   return (
-    <Animated.View
-      style={[
-        { zIndex: 3 },
-        ejectionShiftStyle
-      ]}
-    >
-      <NavBar
-        innerAnimatedStyle={ejectionOpacityStyle}
-        rightContent={rightContentContainer} 
-        scrollTop={screenScroll.scrollY}
-        hideBackButton={hideBackButton}
-        fillBackground
-      >
-        {props.title}
-      </NavBar>
-    </Animated.View>
+    <Header
+      backButtonPosition={props.backButtonPosition}
+      backButtonIcon={props.backButtonIcon}
+      hideBackButton={props.hideBackButton}
+      rightContent={props.rightContent}
+      onBackPress={props.onBackPress}
+      hideTitle={props.hideTitle}
+      onGoBack={props.onGoBack}
+      gradient={props.gradient}
+      isModal={props.isModal}
+      title={props.title}
+    />
   );
-
 });
-
-const styles = Steezy.create(({ colors }) => ({
-
-}));

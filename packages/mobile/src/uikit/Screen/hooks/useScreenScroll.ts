@@ -27,6 +27,8 @@ export const useScreenScrollHandler = () => {
   const scrollY = useSharedValue(0);
   const layoutHeight = useRef(0);
 
+  const headerType = useSharedValue('screen');
+
   const detectLayoutSize = useCallback((ev: LayoutChangeEvent) => {
     layoutHeight.current = ev.nativeEvent.layout.height;
   }, []);
@@ -93,6 +95,7 @@ export const useScreenScrollHandler = () => {
     detectLayoutSize,
     scrollHandler,
     onScroll,
+    headerType,
     isEndReached,
     scrollRef,
     scrollY,

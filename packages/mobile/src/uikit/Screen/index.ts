@@ -3,6 +3,8 @@ import { ScreenContainer } from "./ScreenContainer";
 import { ScreenHeader } from "./ScreenHeader";
 import { ScreenScrollList } from "./ScreenFlashList";
 
+export { ScreenHeaderHeight } from './headers/Header';
+
 export const Screen = Object.assign(
   ScreenContainer, 
   {

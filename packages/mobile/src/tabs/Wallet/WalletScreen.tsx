@@ -169,6 +169,7 @@ export const WalletScreen = memo(() => {
         title={t('wallet.screen_title')}
         rightContent={<ScanQRButton />}
         hideBackButton
+        // large
       />
       {isPagerView ? (
         <PagerView tabBarStyle={styles.tabBar.static}>
