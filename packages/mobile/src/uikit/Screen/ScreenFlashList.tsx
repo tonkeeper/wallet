@@ -1,8 +1,8 @@
 import { FlashList, ContentStyle, FlashListProps } from '@shopify/flash-list';
-import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
+import { useScrollHandler } from '../ScrollHandler/useScrollHandler';
+import { Fragment, forwardRef, memo, useEffect, useMemo } from 'react';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { ScreenBottomSeparator } from './ScreenBottomSeparator';
-import { forwardRef, memo, useEffect, useMemo } from 'react';
 import { useScrollToTop } from '@react-navigation/native';
 import { StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -16,12 +16,12 @@ export type ScreenScrollListProps = FlashListProps<any> & {
 };
 
 export const ScreenScrollList = memo<ScreenScrollListProps>(forwardRef((props, ref) => {
-  const { contentContainerStyle, hideBottomSeparator, ...other } = props;
-  const { detectContentSize, detectLayoutSize, scrollHandler, scrollRef, headerEjectionPoint } = useScreenScroll();
+  const { contentContainerStyle, hideBottomSeparator, ListHeaderComponent, ...other } = props;
+  const { detectContentSize, detectLayoutSize, scrollHandler, headerOffsetStyle, scrollRef, headerEjectionPoint } = useScreenScroll();
   const tabBarHeight = useBottomTabBarHeight();
   const setRef = useMergeRefs(scrollRef, ref);
 
-  useScrollToTop(scrollRef);
+  useScrollToTop(scrollRef as any);
 
   useEffect(() => {
     headerEjectionPoint.value = 0;
@@ -34,10 +34,18 @@ export const ScreenScrollList = memo<ScreenScrollListProps>(forwardRef((props, r
     ...contentContainerStyle,
   }), [contentContainerStyle]);
 
+  const HeaderComponent = (
+    <Fragment>
+      <Animated.View style={headerOffsetStyle} />
+      {ListHeaderComponent as any}
+    </Fragment>
+  );
+
   return (
     <View style={styles.container}>
       <AnimatedFlashList
         onContentSizeChange={detectContentSize}
+        ListHeaderComponent={HeaderComponent}
         contentContainerStyle={contentStyle}
         showsVerticalScrollIndicator={false}
         onLayout={detectLayoutSize}

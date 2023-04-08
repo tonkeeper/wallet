@@ -1,8 +1,10 @@
 import Animated, { runOnJS, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { ScreenLargeHeaderDistance } from '../Screen/ScreenLargeHeader';
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useScrollHandler } from '../ScrollHandler/useScrollHandler';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { FlashList, FlashListProps } from '@shopify/flash-list';
 import { useScrollToTop } from '@react-navigation/native';
-import { memo, useEffect, useMemo, useRef } from 'react';
 import { useScreenScroll } from '$uikit/Screen/hooks';
 import { usePagerView } from './hooks/usePagerView';
 import { usePageIndex } from './hooks/usePageIndex';
@@ -15,18 +17,19 @@ const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 export const PagerViewFlashList = memo<FlashListProps<any>>((props) => {
   const { contentContainerStyle } = props;
   const { activeIndex, scrollAllTo, setScrollTo, contentOffset, scrollY, headerHeight, isScrollInMomentum } = usePagerView();
+  const { onScroll, detectContentSize, detectLayoutSize } = useScreenScroll();
   const tabBarHeight = useBottomTabBarHeight();
   const dimensions = useWindowDimensions();
   const ref = useRef<FlashList<any>>(null);
   const contentHeight = useSharedValue(0);
   const localScrollY = useSharedValue(0);
-  const screenScroll = useScreenScroll();
   const hasSpace = useSharedValue(true);
   const index = usePageIndex();
 
-  const setRef = useMergeRefs(screenScroll.scrollRef, ref);
+  const setRef = useMergeRefs(ref);
 
   useScrollToTop(ref as any);
+  useScrollHandler(undefined, true); // TODO: remove this, when old separator will be removed
   
   const scrollToTopHandler = () => scrollAllTo(index, 0);
 
@@ -47,6 +50,17 @@ export const PagerViewFlashList = memo<FlashListProps<any>>((props) => {
     }
   }, 200);
 
+  const correctLargeHeader = useCallback((top: number) => {
+    const y = top > ScreenLargeHeaderDistance / 2 
+      ? ScreenLargeHeaderDistance 
+      : 0;
+      
+    requestAnimationFrame(() => {
+      console.log(ref.current?.scrollToOffset);
+      ref.current?.scrollToOffset({ offset: y, animated: true });
+    });
+  }, []);
+
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
       'worklet';
@@ -59,7 +73,7 @@ export const PagerViewFlashList = memo<FlashListProps<any>>((props) => {
         contentOffset.value = 0;
         hasSpace.value = false;
         
-        screenScroll.onScroll(event);
+        onScroll(event);
 
         if (event.contentOffset.y >= 0) {
           runOnJS(scrollAdjacentTabs)(
@@ -75,10 +89,31 @@ export const PagerViewFlashList = memo<FlashListProps<any>>((props) => {
         isScrollInMomentum.value = true;
       }
     },
-    onMomentumEnd: () => {
+    onMomentumEnd: (event) => {
       'worklet';
       if (activeIndex.value === index) {
         isScrollInMomentum.value = false;
+
+        const top = event.contentOffset.y;
+        if (
+          top > 0 &&
+          top < ScreenLargeHeaderDistance &&
+          event.velocity &&
+          event.velocity.y !== 0
+        ) {
+          runOnJS(correctLargeHeader)(top);
+        }
+      }
+    },
+    onEndDrag: (event) => {
+      'worklet';
+      const top = event.contentOffset.y;
+      if (
+        top > 0 &&
+        top < ScreenLargeHeaderDistance &&
+        (!event.velocity || !event.velocity.y)
+      ) {
+        runOnJS(correctLargeHeader)(top);
       }
     },
   }, [index, activeIndex.value]);
@@ -105,13 +140,13 @@ export const PagerViewFlashList = memo<FlashListProps<any>>((props) => {
   return (
     <AnimatedFlashList
       {...props}
-      onContentSizeChange={screenScroll.detectContentSize}
       ListHeaderComponent={ListHeaderComponent}
       ListFooterComponent={ListFooterComponent}
-      onLayout={screenScroll.detectLayoutSize}
+      onContentSizeChange={detectContentSize}
       showsVerticalScrollIndicator={false}
       onScrollToTop={scrollToTopHandler}
       contentContainerStyle={listStyle}
+      onLayout={detectLayoutSize}
       onScroll={scrollHandler}
       scrollEventThrottle={16}
       ref={setRef}

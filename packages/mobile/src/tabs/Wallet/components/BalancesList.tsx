@@ -251,7 +251,7 @@ export const BalancesList = memo<BalancesListProps>((props) => {
 
     content.push({
       type: ContentType.Spacer,
-      bottom: hasTokens ? 12 : 8
+      bottom: hasTokens ? 8 : 4
     });
 
     return content;

@@ -1,19 +1,18 @@
 import { createContext, useCallback, useRef, useContext, useEffect } from 'react';
 import { usePagerScrollHandler } from './usePagerScrollHandler';
+import { ScreenHeaderHeight } from '../../Screen/ScreenHeader';
 import { useSharedValue } from 'react-native-reanimated';
-import { useScreenScroll } from '$uikit/Screen/hooks';
+import { useScreenScroll } from '../../Screen/hooks';
 import { LayoutChangeEvent } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { ns } from '$utils';
 
 export const tabIndicatorWidth = ns(24);
 
-// type ScrollToParams = { y: number, animated?: boolean };
-// type ScrollTo = (params: ScrollToParams) => void;
 type ScrollTo = (y: number, animated?: boolean) => void;
 
 export const usePagerViewHandler = () => {
-  const { headerEjectionPoint } = useScreenScroll();
+  const { headerEjectionPoint, isLargeHeader } = useScreenScroll();
   const isScrollInMomentum = useSharedValue(false);
   const pagerViewRef = useRef<PagerView>(null);
   const contentOffset = useSharedValue(0);
@@ -22,9 +21,9 @@ export const usePagerViewHandler = () => {
   const pageOffset = useSharedValue(0);
   const scrollY = useSharedValue(0);
 
-
   const measureHeader = (event: LayoutChangeEvent) => {
-    headerEjectionPoint.value = event.nativeEvent.layout.height;
+    const headerOffset = isLargeHeader.value ? ScreenHeaderHeight : 0;
+    headerEjectionPoint.value = event.nativeEvent.layout.height - (isLargeHeader.value ? 64 : 0);
     headerHeight.value = event.nativeEvent.layout.height;
   };
 

@@ -2,8 +2,10 @@ import Animated, { Extrapolate, interpolate, interpolateColor, useAnimatedStyle,
 import { LayoutChangeEvent, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { tabIndicatorWidth, usePagerView } from './hooks/usePagerView';
 import React, { memo, useCallback, useMemo, useState } from 'react';
+import { ScreenHeaderHeight } from '../Screen/ScreenHeader';
+import { useScreenScroll } from '../Screen/hooks';
+import { Text } from '../Text/Text';
 import { useTheme } from '$hooks';
-import { Text } from '$uikit';
 
 type TabItem = {
   label: string;
@@ -12,14 +14,16 @@ type TabItem = {
 interface TabsBarProps {
   style?: ViewStyle;
   indent?: boolean;
-  center?: boolean;
   tabs: TabItem[];
 }
 
+export const PagerViewTabBarHeight = 64;
+
 export const PagerViewTabBar = memo<TabsBarProps>((props) => {
-  const { center, style, tabs } = props;
+  const { style, tabs } = props;
   const [tabsPositions, setTabsPositions] = useState<{ [key: string]: number }>({});
   const { pageOffset, scrollY, headerHeight, setPage } = usePagerView();
+  const { isLargeHeader } = useScreenScroll();
   const theme = useTheme();
 
   const handlePressTab = (index: number) => () => setPage(index);
@@ -60,8 +64,10 @@ export const PagerViewTabBar = memo<TabsBarProps>((props) => {
   }, [tabsPositions, tabsIndexes, pageOffset.value]);
 
   const containerAnimatedStyle = useAnimatedStyle(() => {
-    const isHeaderEndReached = scrollY.value > headerHeight.value;
-    const translateY = isHeaderEndReached ? scrollY.value - headerHeight.value : 0;
+    'worklet';
+    const headerOffset = isLargeHeader.value ? ScreenHeaderHeight : 0;
+    const isHeaderEndReached = scrollY.value > headerHeight.value - headerOffset;
+    const translateY = isHeaderEndReached ? scrollY.value - (headerHeight.value - headerOffset): 0;
     const borderBottomColor = isHeaderEndReached ? theme.colors.border : 'transparent';
 
     return {
@@ -75,13 +81,12 @@ export const PagerViewTabBar = memo<TabsBarProps>((props) => {
       pointerEvents="box-none"
       style={[
         styles.container,
-        center && styles.center,
         containerAnimatedStyle,
         style,
         { backgroundColor: theme.colors.backgroundPrimary },
       ]}
     >
-      <Animated.View style={styles.row} pointerEvents="box-none">
+      <View style={styles.row} pointerEvents="box-none">
         {tabs.map((tab, index) => (
           <TouchableOpacity
             onLayout={measureTabItem(index)}
@@ -102,7 +107,7 @@ export const PagerViewTabBar = memo<TabsBarProps>((props) => {
             { backgroundColor: theme.colors.accentPrimary },
           ]}
         />
-      </Animated.View>
+      </View>
     </Animated.View>
   );
 });
@@ -142,13 +147,11 @@ const TabLabel = memo<TabLabelProps>((props) => {
 const styles = StyleSheet.create({
   container: {
     borderBottomWidth: StyleSheet.hairlineWidth,
+    height: PagerViewTabBarHeight,
   },
   row: {
     flexDirection: 'row',
-  },
-  center: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingTop: 12,
   },
   indicator: {
     position: 'absolute',
@@ -159,7 +162,8 @@ const styles = StyleSheet.create({
   },
   tabItem: {
     paddingTop: 4,
-    paddingBottom: 24,
     paddingHorizontal: 16,
+    textAlign: 'center',
+    height: PagerViewTabBarHeight - 12,
   },
 });

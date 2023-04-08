@@ -26,7 +26,6 @@ const styles = Steezy.create({
     alignItems: 'center',
   },
   buttons: {
-    paddingVertical: 8,
     marginHorizontal: 16,
     flexDirection: 'row',
   }

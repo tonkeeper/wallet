@@ -169,7 +169,6 @@ export const WalletScreen = memo(() => {
         title={t('wallet.screen_title')}
         rightContent={<ScanQRButton />}
         hideBackButton
-        // large
       />
       {isPagerView ? (
         <PagerView tabBarStyle={styles.tabBar.static}>
@@ -206,10 +205,9 @@ export const WalletScreen = memo(() => {
 const styles = Steezy.create({
   mainSection: {
     paddingBottom: 24,
-    paddingHorizontal: 16,
   },
   amount: {
-    paddingTop: 29,
+    paddingTop: 28,
     alignItems: 'center',
     marginBottom: 24.5,
   },
@@ -223,7 +221,6 @@ const styles = Steezy.create({
     marginTop: 7.5,
   },
   tabBar: {
-    justifyContent: 'center',
     alignItems: 'center',
   },
 });
