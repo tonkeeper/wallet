@@ -32,7 +32,7 @@ export const ScreenScrollList = memo<ScreenScrollListProps>(forwardRef((props, r
   const contentStyle: ContentStyle = useMemo(() => ({
     paddingBottom: tabBarHeight,
     ...contentContainerStyle,
-  }), [contentContainerStyle]);
+  }), [contentContainerStyle, tabBarHeight]);
 
   const HeaderComponent = (
     <Fragment>

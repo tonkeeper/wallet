@@ -3,7 +3,7 @@ import React, { FC, useCallback, useState } from 'react';
 import * as S from './Button.style';
 import { ButtonProps } from './Button.interface';
 import { Loader } from '$uikit/Loader/Loader';
-import { TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 
 export const Button: FC<ButtonProps> = (props) => {
   const {
@@ -11,6 +11,7 @@ export const Button: FC<ButtonProps> = (props) => {
     titleFont,
     size = 'large',
     mode = 'primary',
+    indent,
     children,
     before = null,
     after = null,
@@ -68,6 +69,7 @@ export const Button: FC<ButtonProps> = (props) => {
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       disabled={disabled || isLoading}
+      style={indent && styles.indent}
     >
       <S.Button
         withoutFixedHeight={withoutFixedHeight}
@@ -83,3 +85,10 @@ export const Button: FC<ButtonProps> = (props) => {
     </TouchableWithoutFeedback>
   );
 };
+
+const styles = StyleSheet.create({
+  indent: {
+    marginHorizontal: 16,
+    marginBottom: 16,
+  }
+});

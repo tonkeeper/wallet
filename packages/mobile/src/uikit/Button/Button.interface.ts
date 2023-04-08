@@ -7,6 +7,7 @@ export interface ButtonProps {
   mode?: 'secondary' | 'primary' | 'primary_red' | 'tertiary' | 'light';
   titleFont?: fontKeys;
   children?: React.ReactNode;
+  indent?: boolean;
   before?: ((opts: { isPressed: boolean }) => ReactElement) | ReactElement;
   after?: ((opts: { isPressed: boolean }) => ReactElement) | ReactElement;
   style?: StyleProp<ViewStyle>;

@@ -154,11 +154,13 @@ export const WalletScreen = memo(() => {
             />
           </List>
         </Screen.ScrollView>
-        {isLoaded && (
-          <Button onPress={() => openRequireWalletModal()}>
-            {t('balances_setup_wallet')}
-          </Button>
-        )}
+        {/* <Screen.Content style={styles.setupWalletButton}>
+          {isLoaded && (
+            <Button onPress={() => openRequireWalletModal()}>
+              {t('balances_setup_wallet')}
+            </Button>
+          )}
+        </Screen.Content> */}
       </Screen>
     );
   }
@@ -223,4 +225,8 @@ const styles = Steezy.create({
   tabBar: {
     alignItems: 'center',
   },
+  setupWalletButton: {
+    marginHorizontal: 16,
+    marginVertical: 16,
+  }
 });

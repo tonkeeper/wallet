@@ -1,43 +1,64 @@
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
+import { ScrollViewProps, View, StyleSheet } from 'react-native';
+import { ScreenBottomSeparator } from './ScreenBottomSeparator';
+import { forwardRef, memo, useEffect, useMemo } from 'react';
 import { useScrollToTop } from '@react-navigation/native';
-import { forwardRef, memo, useRef } from 'react';
 import Animated from 'react-native-reanimated';
-import { ScrollViewProps } from 'react-native';
 import { useScreenScroll } from './hooks';
 import { ns, useMergeRefs } from '$utils';
 
 interface ScreenScrollView extends ScrollViewProps {
+  hideBottomSeparator?: boolean;
   indent?: boolean;
 }
 
-export const ScreenScrollView = memo(forwardRef<Animated.ScrollView, ScreenScrollView>((props, ref) => {
-  const { indent = true } = props;
-  const scrollRef = useRef<Animated.ScrollView>(null);
-  const tabBarHeight = useBottomTabBarHeight();
-  const { scrollHandler } = useScreenScroll();
-  const setRef = useMergeRefs(scrollRef, ref);
+export const ScreenScrollView = memo(
+  forwardRef<Animated.ScrollView, ScreenScrollView>((props, ref) => {
+    const { indent = true, hideBottomSeparator, contentContainerStyle, ...other } = props;
+    const { detectContentSize, detectLayoutSize, scrollHandler, headerOffsetStyle, scrollRef, headerEjectionPoint } = useScreenScroll();
+    const tabBarHeight = useBottomTabBarHeight();
+    const setRef = useMergeRefs(scrollRef, ref);
 
-  useScrollToTop(scrollRef);
-  
-  const contentContainerStyle = [
-    {
-      ...(indent && { paddingHorizontal: ns(16) }),
-      paddingBottom: tabBarHeight,
-      // paddingTop: ns(NavBarHeight),
-    }, 
-    props.contentContainerStyle
-  ];
+    useScrollToTop(scrollRef as any);
 
-  return (
-    <Animated.ScrollView
-      contentContainerStyle={contentContainerStyle}
-      showsVerticalScrollIndicator={false}
-      scrollEventThrottle={16}
-      onScroll={scrollHandler}
-      ref={setRef}
-      {...props}
-    >
-      {props.children}
-    </Animated.ScrollView>
-  );
-}));
+    useEffect(() => {
+      headerEjectionPoint.value = 0;
+    }, []);
+
+    const contentStyle = useMemo(() => {
+      return [
+        { paddingBottom: tabBarHeight },
+        indent && styles.indent,
+        contentContainerStyle,
+      ];
+    }, [contentContainerStyle, tabBarHeight]);
+
+    return (
+      <View style={styles.container}>
+        <Animated.ScrollView
+          onContentSizeChange={detectContentSize}
+          contentContainerStyle={contentStyle}
+          showsVerticalScrollIndicator={false}
+          onLayout={detectLayoutSize}
+          scrollEventThrottle={16}
+          onScroll={scrollHandler}
+          ref={setRef}
+          {...other}
+        >
+          <Animated.View style={headerOffsetStyle} />
+          {props.children}
+        </Animated.ScrollView>
+        {!hideBottomSeparator && <ScreenBottomSeparator />}
+      </View>
+    );
+  }),
+);
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  indent: {
+    paddingHorizontal: ns(16),
+  },
+});
