@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import * as S from './NFTHead.style';
 import { useNFT } from '$hooks/useNFT';
 import { NFTKeyPair } from '$store/nfts/interface';
-import { useTranslator } from '$hooks';
+import { useTranslator } from '$hooks/useTranslator';
 import {Icon, Text} from '$uikit';
 import _ from 'lodash';
 import { openNFT } from '$navigation';

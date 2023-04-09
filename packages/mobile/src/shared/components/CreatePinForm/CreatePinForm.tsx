@@ -18,7 +18,7 @@ import { PinCodeRef } from '$uikit/PinCode/PinCode.interface';
 import { deviceWidth } from '$utils';
 import { CreatePinFormProps } from './CreatePinForm.interface';
 import { walletWalletSelector } from '$store/wallet';
-import { useTranslator } from '$hooks';
+import { useTranslator } from '$hooks/useTranslator';
 
 export const CreatePinForm: FC<CreatePinFormProps> = (props) => {
   const { onPinCreated, validateOldPin = false, onVaultUnlocked } = props;

@@ -3,7 +3,8 @@ import BN from 'bn.js';
 import { Cell } from 'tonweb/dist/types/boc/cell';
 import { BitStringReader } from '$utils/bitStringReader';
 import * as mnemonic from './mnemonic';
-import { debugLog, maskifyAddress, toLocaleNumber } from '$utils';
+import { debugLog } from '$utils'; // TODO: fix require cycle
+import { toLocaleNumber } from '$utils/number';
 import { Address, AddressFormatOptions } from './Address';
 
 export class Ton {

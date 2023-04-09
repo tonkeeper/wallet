@@ -1,4 +1,4 @@
-import { useJettonBalances } from '$hooks';
+import { useJettonBalances } from '$hooks/useJettonBalances';
 import { useGetJettonPrice } from '$hooks/useJettonPrice';
 import { formatter } from '$utils/formatter';
 import { useMemo } from 'react';

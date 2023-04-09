@@ -2,7 +2,7 @@ import Animated, { interpolateColor, useAnimatedStyle } from "react-native-reani
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useScreenScroll } from "./hooks";
 import { StyleSheet } from "react-native";
-import { useTheme } from "$hooks";
+import { useTheme } from "$hooks/useTheme";
 import { memo } from "react";
 
 export const ScreenBottomSeparator = memo(() => {

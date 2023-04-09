@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { debugLog } from '$utils';
+import { debugLog } from '$utils'; // TODO: fix require cycle
 
 export const ExchangeDB = {
   isShowDetails: async (methodId: string) => {
