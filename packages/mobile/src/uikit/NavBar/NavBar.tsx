@@ -7,7 +7,7 @@ import * as S from './NavBar.style';
 import { NavBarProps } from './NavBar.interface';
 import { goBack } from '$navigation';
 import { Icon } from '$uikit/Icon/Icon';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { NavBarHeight } from '$shared/constants';
 import { hNs } from '$utils';
 

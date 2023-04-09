@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { mainActions, mainSelector } from '$store/main';
 import { t } from '$translation';
 import { CellSection, CellSectionItem } from '$shared/components';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 
 export const ChooseCurrencyScreen: React.FC = () => {
   const { fiatCurrency } = useSelector(mainSelector);

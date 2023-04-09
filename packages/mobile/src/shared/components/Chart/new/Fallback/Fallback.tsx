@@ -1,4 +1,4 @@
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { t } from '$translation';
 import { Skeleton, Text } from '$uikit';
 import { deviceWidth, ns } from '$utils';

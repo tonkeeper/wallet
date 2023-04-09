@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { LargeNavBar } from '$uikit/LargeNavBar/LargeNavBar';
 
 import { ScrollHandlerProps } from '$uikit/ScrollHandler/ScrollHandler.interface';
-import { NavBar } from '$uikit';
+import { NavBar } from '../NavBar/NavBar';
 import { Dimensions } from 'react-native';
 import { TabletMaxWidth } from '$shared/constants';
 import { useScrollHandler } from './useScrollHandler';

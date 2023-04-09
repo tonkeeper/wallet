@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { ResetPinStackRouteNames } from '$navigation';
 import { ResetPin, SetupBiometry } from '$core';
 import { ResetPinStackParamList } from '$navigation/ResetPinStack/ResetPinStack.interface';

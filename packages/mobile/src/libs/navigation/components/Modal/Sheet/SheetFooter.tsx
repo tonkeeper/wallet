@@ -4,7 +4,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useBottomSheetInternal } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSheetInternal } from './SheetsProvider';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 
 export type SheetFooterProps = {
   children: React.ReactNode;

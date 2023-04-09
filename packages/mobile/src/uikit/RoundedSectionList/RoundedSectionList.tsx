@@ -5,7 +5,8 @@ import {
   RoundedSectionListItem,
   RoundedSectionListProps,
 } from '$uikit/RoundedSectionList/RoundedSectionList.interface';
-import { InlineHeader, Separator } from '$uikit';
+import { Separator } from '../Separator';
+import { InlineHeader } from '../InlineHeader/InlineHeader';
 import { RADIUS } from '$styled';
 import { ns } from '$utils';
 import * as S from './RoundedSectionList.style';

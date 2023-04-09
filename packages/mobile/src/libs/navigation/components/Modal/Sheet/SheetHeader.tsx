@@ -5,7 +5,7 @@ import { useSheetInternal } from './SheetsProvider';
 import { Opacity } from '$shared/constants';
 import styled, { RADIUS } from '$styled';
 import { Icon, Text } from '$uikit';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { ns } from '$utils';
 
 export interface SheetHeaderProps {

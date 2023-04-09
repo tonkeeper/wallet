@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Steezy } from '$styles';
-import { View } from '$uikit';
+import { View } from '../../StyledNativeComponents';
 
 interface ListSeparatorProps {
   absolute?: boolean;

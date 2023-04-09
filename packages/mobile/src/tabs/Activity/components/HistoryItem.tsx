@@ -3,7 +3,7 @@ import { Steezy } from '$styles';
 import { Icon } from '$uikit';
 import { List } from '$uikit/List/new';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { IconNames } from '$uikit/Icon/generated.types';
 
 interface TransactionItemProps {

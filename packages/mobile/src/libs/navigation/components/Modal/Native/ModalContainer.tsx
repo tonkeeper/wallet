@@ -1,4 +1,4 @@
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
 

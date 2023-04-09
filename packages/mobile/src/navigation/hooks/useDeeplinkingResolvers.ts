@@ -30,7 +30,6 @@ import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/A
 import { openTonConnect } from '$core/TonConnect/TonConnectModal';
 import { useCallback } from 'react';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
-import { jettonsBalancesSelector } from '$store/jettons';
 import BigNumber from 'bignumber.js';
 import { Tonapi } from '$libs/Tonapi';
 

@@ -5,7 +5,7 @@ import { useScreenScroll } from '../Screen/hooks';
 import { usePagerView } from './hooks/usePagerView';
 import { PropsWithChildren, memo } from 'react';
 import { isAndroid } from '$utils';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 
 export const PagerViewInternalHeader = memo<PropsWithChildren>((props) => {
   const { measureHeader, scrollY } = usePagerView();

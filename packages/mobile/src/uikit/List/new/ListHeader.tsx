@@ -1,7 +1,7 @@
 import React from 'react';
-import { Text } from '../../Text/Text';
+import { Text } from '../../Text';
 import { Steezy } from '$styles';
-import { View } from '$uikit';
+import { View } from '../../StyledNativeComponents';
 
 interface ListHeaderProps {
   title: string;

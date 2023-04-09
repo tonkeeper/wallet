@@ -12,7 +12,7 @@ import { ListItemRate } from '../components/ListItemRate';
 import { TonIcon, TonIconProps } from '../../../components/TonIcon';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { NFTsList } from '../components/NFTsList';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { ListSeparator } from '$uikit/List/new/ListSeparator';
 import { StakingWidget } from './StakingWidget';
 import { useIsFocused } from '@react-navigation/native';

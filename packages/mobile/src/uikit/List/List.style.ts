@@ -1,6 +1,6 @@
 import styled from '$styled';
-import { nfs, ns } from '$utils';
-import { Highlight } from '$uikit';
+import { ns } from '$utils';
+import { Highlight } from '../Highlight/Highlight';
 import { Text } from '$uikit/Text/Text';
 
 export const Wrap = styled.View`

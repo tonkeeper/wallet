@@ -1,5 +1,5 @@
 import styled from '$styled';
-import { Highlight } from '$uikit';
+import { Highlight } from '../Highlight/Highlight';
 
 export const ItemWrap = styled(Highlight)`
   position: relative;

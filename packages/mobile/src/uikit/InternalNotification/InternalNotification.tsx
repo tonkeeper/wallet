@@ -3,8 +3,9 @@ import { LayoutAnimation, View } from 'react-native';
 
 import { InternalNotificationProps } from './InternalNotification.interface';
 import * as S from './InternalNotification.style';
-import { useTheme } from '$hooks';
-import { Icon, Text } from '$uikit';
+import { useTheme } from '$hooks/useTheme';
+import { Text } from '../Text';
+import { Icon } from '../Icon';
 import { ns, triggerSelection } from '$utils';
 
 export const InternalNotification: FC<InternalNotificationProps> = (props) => {

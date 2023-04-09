@@ -8,7 +8,6 @@ export { useDate } from './useDate';
 export { useAppStateActive } from './useAppStateActive';
 export { useFiatRate } from './useFiatRate';
 export { useEvent } from './useEvent';
-export { usePrepareAction } from './usePrepareAction';
 export { usePrepareDetailedAction } from './usePrepareDetailedAction';
 export { useWalletInfo } from './useWalletInfo';
 export { useExchangeMethodInfo } from './useExchangeMethodInfo';

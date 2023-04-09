@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 
-import { useTheme } from '$hooks';
-import { Icon } from '$uikit';
+import { useTheme } from '$hooks/useTheme';
+import { Icon } from '../../Icon';
 
 import { HeaderProps } from './Header.interface';
 import * as S from './Header.style';

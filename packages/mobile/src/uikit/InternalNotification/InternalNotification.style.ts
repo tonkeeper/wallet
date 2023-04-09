@@ -1,9 +1,9 @@
 import { Animated } from 'react-native';
 
 import styled from '$styled';
-import { nfs, ns } from '$utils';
+import { ns } from '$utils';
 import { Opacity } from '$shared/constants';
-import { Highlight } from '$uikit';
+import { Highlight } from '../Highlight/Highlight';
 
 export const Clickable = styled(Highlight)`
   border-radius: ${({ theme }) => theme.radius.normal}px;

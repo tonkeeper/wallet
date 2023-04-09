@@ -16,7 +16,8 @@ import {
   StakingPools,
   StakingPoolDetails,
 } from '$core';
-import { useStaking, useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
+import { useStaking } from '$hooks/useStaking';
 import { DevStack } from '../DevStack/DevStack';
 import { useAttachScreen } from '../AttachScreen';
 import { SetupNotifications } from '$core/SetupNotifications/SetupNotifications';

@@ -5,7 +5,7 @@ import React, { memo, useCallback, useMemo, useState } from 'react';
 import { ScreenHeaderHeight } from '../Screen/ScreenHeader';
 import { useScreenScroll } from '../Screen/hooks';
 import { Text } from '../Text/Text';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 
 type TabItem = {
   label: string;

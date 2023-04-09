@@ -1,7 +1,9 @@
 import React, { memo, useCallback } from 'react';
 import { TextStyle } from 'react-native';
 import { Steezy, StyleProp } from '$styles';
-import { View, SText, Icon, Pressable } from '$uikit';
+import { SText, View } from '../../StyledNativeComponents';
+import { Icon } from '../../Icon';
+import { Pressable } from '../../Pressable';
 import { DarkTheme } from '$styled';
 import FastImage from 'react-native-fast-image';
 import Animated, { useSharedValue } from 'react-native-reanimated';

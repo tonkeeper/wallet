@@ -7,8 +7,8 @@ import React, { useCallback, memo } from 'react';
 import { useScreenScroll } from './hooks';
 import { Icon } from '$uikit/Icon/Icon';
 import { goBack } from '$navigation';
-import { useTheme } from '$hooks';
-import { Text } from '$uikit';
+import { useTheme } from '$hooks/useTheme';
+import { Text } from '../Text';
 
 type BackButtonIcon = 'back' | 'close' | 'down';
 

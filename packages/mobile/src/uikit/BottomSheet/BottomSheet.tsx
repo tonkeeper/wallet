@@ -11,7 +11,7 @@ import { Content } from './Content/Content';
 import { BottomSheetProps, BottomSheetRef } from './BottomSheet.interface';
 import * as HeaderS from './Header/Header.style';
 import { Icon } from '$uikit/Icon/Icon';
-import { useReanimatedKeyboardHeight } from '$hooks';
+import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
 
 export const BottomSheet = React.forwardRef<BottomSheetRef, BottomSheetProps>(
   (props, ref) => {

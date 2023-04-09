@@ -10,7 +10,7 @@ import {
   ModalContainer,
   AccessConfirmation,
 } from '$core';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { mainSelector } from '$store/main';
 import { isAndroid } from '$utils';
 import { walletWalletSelector } from '$store/wallet';

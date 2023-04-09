@@ -12,7 +12,7 @@ import { InlineKeyboardProps, KeyProps } from './InlineKeyboard.interface';
 import * as S from './InlineKeyboard.style';
 import { detectBiometryType, triggerSelection } from '$utils';
 import { Icon } from '$uikit/Icon/Icon';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { MainDB } from '$database';
 
 const Key: FC<KeyProps> = (props) => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { View } from 'react-native';
 import { Icon } from './Icon/Icon';
 import { Text } from './Text/Text';

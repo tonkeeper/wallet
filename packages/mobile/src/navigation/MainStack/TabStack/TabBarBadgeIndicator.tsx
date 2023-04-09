@@ -1,4 +1,4 @@
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
 import { useShouldEnableNotifications } from '$hooks/useShouldEnableNotifications';
 import { getCurrentRoute } from '$navigation/helper';

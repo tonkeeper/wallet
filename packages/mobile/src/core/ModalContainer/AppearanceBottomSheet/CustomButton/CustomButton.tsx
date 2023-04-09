@@ -1,4 +1,4 @@
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { AccentModel } from '$styled';
 import { ButtonProps } from '$uikit/Button/Button.interface';
 import React, { FC, memo, ReactNode, useCallback, useMemo, useState } from 'react';

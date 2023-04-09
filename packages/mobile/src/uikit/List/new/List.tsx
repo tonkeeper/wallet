@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { Steezy, StyleProp } from '$styles';
-import { View } from '$uikit';
+import { View } from '../../StyledNativeComponents';
 import { ListHeader } from './ListHeader';
 import { ListSeparator } from './ListSeparator';
 import { ViewStyle } from 'react-native';

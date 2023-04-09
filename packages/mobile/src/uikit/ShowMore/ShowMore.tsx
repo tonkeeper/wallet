@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { Text } from '$uikit';
-import { useTranslator } from '$hooks';
+import { Text } from '../Text';
+import { useTranslator } from '$hooks/useTranslator';
 import {TouchableOpacity, View} from 'react-native';
 import LinearGradient from "react-native-linear-gradient";
 import {changeAlphaValue, convertHexToRGBA, ns} from "$utils";

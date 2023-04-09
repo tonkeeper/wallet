@@ -8,7 +8,7 @@ import { useScreenScroll } from './hooks';
 import { Icon } from '../Icon/Icon';
 import { goBack } from '$navigation';
 import { Text } from '../Text/Text';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 
 type BackButtonIcon = 'back' | 'close' | 'down';
 

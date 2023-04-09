@@ -9,7 +9,7 @@ import {
 } from 'react-native-reanimated';
 
 import { css } from '$styled';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { InputProps } from './Input.interface';
 import * as S from './Input.style';
 import { isIOS, ns } from '$utils';

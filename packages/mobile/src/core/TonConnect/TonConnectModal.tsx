@@ -4,7 +4,7 @@ import queryString from 'query-string';
 import TonWeb from 'tonweb';
 import { useDispatch, useSelector } from 'react-redux';
 import { Linking, StyleSheet } from 'react-native';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { SelectableVersionsConfig } from '$shared/constants';
 import { walletSelector } from '$store/wallet';
 import { Button, Icon, Loader, Text, TransitionOpacity } from '$uikit';

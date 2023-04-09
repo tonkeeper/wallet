@@ -1,5 +1,5 @@
 import React, { memo, useEffect } from 'react';
-import { TouchableOpacity, Insets, StyleSheet } from 'react-native';
+import { TouchableOpacity, Insets, StyleSheet, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { useAnimatedStyle, interpolate, SharedValue, Extrapolate } from 'react-native-reanimated';
@@ -8,10 +8,8 @@ import * as S from '../LargeNavBar/LargeNavBar.style';
 import { deviceHeight, deviceWidth, hNs, ns } from '$utils';
 import { Text } from '$uikit/Text/Text';
 import { useScreenScroll } from './hooks';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { ScreenHeaderHeight } from './ScreenHeader';
-import { Steezy } from '$styles';
-import { View } from '$uikit';
 
 export const ScreenLargeHeaderDistance = ns(20);
 export const ScreenLargeHeaderHeight = ns(88);

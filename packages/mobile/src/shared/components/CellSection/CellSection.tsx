@@ -2,7 +2,7 @@ import React, { FC, forwardRef, PropsWithChildren, useMemo } from 'react';
 
 import * as S from './CellSection.style';
 import { CellProps } from './CellSection.interface';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { Icon, Separator, Text } from '$uikit';
 
 export const CellSection: FC = ({ children }) => {

@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { isAndroid, statusBarHeight, useMergeRefs } from '$utils';
 import { useSheetInternal } from './SheetsProvider';
 import SheetBackdrop from './SheetBackdrop';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 
 export type SheetContainerRef = BottomSheetModal;
 
