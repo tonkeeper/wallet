@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import FastImage from 'react-native-fast-image';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { IAppCategory, IAppsListStore } from './types';
 
 const initialState: Omit<IAppsListStore, 'actions'> = {
@@ -57,7 +57,7 @@ export const useAppsListStore = create(
     }),
     {
       name: 'appsList',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ categories, appsList, moreEnabled }) =>
         ({ categories, appsList, moreEnabled } as IAppsListStore),
     },

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { ChartPeriod, IChartStore } from './types';
 
 const initialState: Omit<IChartStore, 'actions'> = {
@@ -19,7 +19,7 @@ export const useChartStore = create(
     }),
     {
       name: 'chart',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ selectedPeriod }) => ({ selectedPeriod } as IChartStore),
     },
   ),

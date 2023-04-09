@@ -7,7 +7,7 @@ import { Configuration, StakingApi } from '@tonkeeper/core';
 import BigNumber from 'bignumber.js';
 import TonWeb from 'tonweb';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { IStakingStore, StakingApiStatus, StakingInfo, StakingProvider } from './types';
 
 const getStakingApi = () => {
@@ -150,7 +150,7 @@ export const useStakingStore = create(
     }),
     {
       name: 'staking',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ pools, providers, stakingInfo, maxApy, stakingBalance }) =>
         ({ pools, providers, stakingInfo, maxApy, stakingBalance } as IStakingStore),
     },

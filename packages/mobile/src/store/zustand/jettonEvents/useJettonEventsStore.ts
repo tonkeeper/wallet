@@ -2,7 +2,7 @@ import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Configuration, JettonApi } from 'tonapi-sdk-js';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { IJettonEventsStore } from './types';
 
 const initialState: Omit<IJettonEventsStore, 'actions'> = {
@@ -89,7 +89,7 @@ export const useJettonEventsStore = create(
     }),
     {
       name: 'jetton-events',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ jettons }) => ({ jettons } as IJettonEventsStore),
     },
   ),

@@ -1,7 +1,7 @@
 import { generateAppHashFromUrl, getFixedLastSlashUrl } from '$utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import { persist, subscribeWithSelector } from 'zustand/middleware';
+import { createJSONStorage, persist, subscribeWithSelector } from 'zustand/middleware';
 import { IConnectedAppsStore, TonConnectBridgeType } from './types';
 
 const initialState: Omit<IConnectedAppsStore, 'actions'> = {
@@ -142,7 +142,7 @@ export const useConnectedAppsStore = create(
       }),
       {
         name: 'TCApps',
-        getStorage: () => AsyncStorage,
+        storage: createJSONStorage(() => AsyncStorage),
         partialize: ({ connectedApps }) => ({ connectedApps } as IConnectedAppsStore),
       },
     ),
