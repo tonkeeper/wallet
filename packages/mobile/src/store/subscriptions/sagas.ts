@@ -20,8 +20,11 @@ export async function reloadSubscriptionsFromServer(address: string) {
     const resp = await network.get(`${host}/v1/subscriptions`, {
       params: { address },
     });
+    if (!resp.data.data) {
+      return;
+    }
     store.dispatch(subscriptionsActions.setSubscriptionsInfo(resp.data.data));
-    await saveSubscriptions(Object.values(resp));
+    await saveSubscriptions(Object.values(resp.data.data));
   } catch {}
 }
 
