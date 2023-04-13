@@ -54,9 +54,7 @@ export const NotificationDeniedIndicator = styled.View`
   width: ${ns(8)}px;
   height: ${ns(8)}px;
   border-radius: ${ns(4)}px;
-  position: relative;
-  left: 8px;
-  top: 1px;
+  margin-left: ${ns(8)}px;
 `;
 
 export const WalletVersion = styled.View`
