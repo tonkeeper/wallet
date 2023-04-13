@@ -207,7 +207,7 @@ export const Settings: FC = () => {
   }, []);
 
   const notificationIndicator = React.useMemo(() => {
-    if (!notificationsBadge.isVisible) {
+    if (notificationsBadge.isVisible) {
       return <S.NotificationDeniedIndicator />;
     }
 
