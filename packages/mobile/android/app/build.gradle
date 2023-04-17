@@ -231,7 +231,7 @@ dependencies {
         }
     }
 
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
@@ -252,8 +252,17 @@ dependencies {
     implementation 'com.madgag.spongycastle:pg:1.54.0.0'
 
     // Libs
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("com.google.zxing:core:3.3.3")
+    implementation("com.google.zxing:android-core:3.3.3")
+
+    def camerax_version = "1.2.2"
+    implementation("androidx.camera:camera-core:${camerax_version}")
+    implementation("androidx.camera:camera-camera2:${camerax_version}")
+    implementation("androidx.camera:camera-lifecycle:${camerax_version}")
+    implementation("androidx.camera:camera-view:${camerax_version}")
+    implementation("androidx.camera:camera-extensions:${camerax_version}")
 
     // DevKit
     implementation(project(":libs-ton:crypto"))
