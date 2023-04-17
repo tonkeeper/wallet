@@ -36,7 +36,7 @@ const getTitle = (
     case StakingTransactionType.WITHDRAWAL:
       return t('staking.withdrawal_request');
     case StakingTransactionType.WITHDRAWAL_CONFIRM:
-      return t('staking.withdrawal_confrim');
+      return t('staking.get_withdrawal');
     case StakingTransactionType.DEPOSIT:
     default:
       return t('staking.top_up');

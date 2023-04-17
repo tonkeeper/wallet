@@ -16,6 +16,7 @@ import {nftsActions} from "$store/nfts";
 import { Modal } from '$libs/navigation';
 import {CaptionWrap} from "../NFTOperations.styles";
 import { dnsToUsername } from '$utils/dnsToUsername';
+import { formatter } from '$utils/formatter';
 
 type NFTTransferModalProps = TxRequestBody<NftTransferParams>;
 
@@ -120,10 +121,10 @@ export const NFTTransferModal = ({ params, fee: precalculatedFee, ...options }: 
             <Separator />
             <Highlight onPress={() => fee && copyText(toLocaleNumber(fee))}>
               <S.InfoItem>
-                <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
+                <S.InfoItemLabel>{parseFloat(fee) >= 0 ? t('transaction_fee') : t('transaction_refund')}</S.InfoItemLabel>
                 <S.InfoItemValue>
                   {fee ? (
-                    <Text variant="body1">{toLocaleNumber(fee)} TON</Text>
+                    <Text variant="body1">{formatter.format(fee, { currencySeparator: 'wide', currency: CryptoCurrencies.Ton.toLocaleUpperCase(), absolute: true })}</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}

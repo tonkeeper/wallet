@@ -1,8 +1,10 @@
 import { KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
 import { store } from '$store';
 import { i18n } from '$translation';
+import { calculatePoolBalance } from '$utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Configuration, StakingApi } from '@tonkeeper/core';
+import BigNumber from 'bignumber.js';
 import TonWeb from 'tonweb';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -25,6 +27,7 @@ const initialState: Omit<IStakingStore, 'actions'> = {
   pools: [],
   providers: [],
   maxApy: null,
+  stakingBalance: '0',
 };
 
 export const useStakingStore = create(
@@ -68,7 +71,12 @@ export const useStakingStore = create(
               ]);
 
             const pools = rawPools
-              .filter((pool) => !!pool.name)
+              .filter(
+                (pool) =>
+                  !!pool.name &&
+                  pool.maxNominators > pool.currentNominators &&
+                  pool.implementation === 'whales',
+              )
               .sort((a, b) => {
                 if (a.apy === b.apy) {
                   return a.cycleStart > b.cycleStart ? 1 : -1;
@@ -97,7 +105,17 @@ export const useStakingStore = create(
 
                 return indexA > indexB ? 1 : -1;
               })
-              .map((id): StakingProvider => ({ id, ...implementations[id] }));
+              .map((id): StakingProvider => {
+                const implementationPools = pools.filter(
+                  (pool) => pool.implementation === id,
+                );
+                const maxApy = Math.max(...implementationPools.map((pool) => pool.apy));
+                const minStake = Math.min(
+                  ...implementationPools.map((pool) => pool.minStake),
+                );
+
+                return { id, maxApy, minStake, ...implementations[id] };
+              });
 
             const maxApy = Math.max(...pools.map((pool) => pool.apy));
 
@@ -106,24 +124,35 @@ export const useStakingStore = create(
               {},
             );
 
+            const stakingBalance = pools.reduce((total, pool) => {
+              return total.plus(calculatePoolBalance(pool, stakingInfo));
+            }, new BigNumber('0'));
+
+            if (address !== store.getState().wallet?.address?.ton) {
+              return;
+            }
+
             set({
               pools: pools.sort((a, b) => b.apy - a.apy),
               providers,
               maxApy,
               stakingInfo,
+              stakingBalance: stakingBalance.toString(),
             });
           } catch {
           } finally {
             set({ status: StakingApiStatus.Idle });
           }
         },
+        reset: () =>
+          set({ stakingInfo: {}, stakingBalance: '0', status: StakingApiStatus.Idle }),
       },
     }),
     {
       name: 'staking',
       getStorage: () => AsyncStorage,
-      partialize: ({ pools, providers, stakingInfo, maxApy }) =>
-        ({ pools, providers, stakingInfo, maxApy } as IStakingStore),
+      partialize: ({ pools, providers, stakingInfo, maxApy, stakingBalance }) =>
+        ({ pools, providers, stakingInfo, maxApy, stakingBalance } as IStakingStore),
     },
   ),
 );

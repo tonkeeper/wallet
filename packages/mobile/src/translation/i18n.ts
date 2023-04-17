@@ -1,7 +1,7 @@
 import { findBestAvailableLanguage } from 'react-native-localize';
 import { pluralizeForRussian } from './pluralization';
 import { I18nManager } from 'react-native';
-import { locales } from './locales';
+import { locales, tags } from './locales';
 import { I18n } from 'i18n-js';
 
 export const FALLBACK_LANGUAGE = {
@@ -9,16 +9,11 @@ export const FALLBACK_LANGUAGE = {
   languageTag: 'en',
 };
 
-export enum LanguageTags {
-  en = 'en',
-  ru = 'ru',
-}
-
 const getI18n = () => {
   I18nManager.forceRTL(false);
   I18nManager.allowRTL(false);
 
-  const { languageTag } = findBestAvailableLanguage(Object.keys(LanguageTags)) || FALLBACK_LANGUAGE;
+  const { languageTag } = findBestAvailableLanguage(tags.filter(lang => lang.enabledForProduction).map(lang => lang.tag)) || FALLBACK_LANGUAGE;
 
   const i18n = new I18n(locales);
 

@@ -5,6 +5,7 @@ import { useFiatRate } from '$hooks/useFiatRate';
 import { useWalletInfo } from '$hooks';
 import { useCallback, useMemo } from 'react';
 import {
+  isLockupWalletSelector,
   walletBalancesSelector,
   walletOldBalancesSelector,
   walletVersionSelector,
@@ -13,6 +14,8 @@ import { Ton } from '$libs/Ton';
 import { useGetPrice } from '$hooks/useWalletInfo';
 import BigNumber from 'bignumber.js';
 import { formatter } from '$utils/formatter';
+import { DevFeature, useDevFeaturesToggle, useStakingStore } from '$store';
+import { shallow } from 'zustand/shallow';
 
 export type Rate = {
   percent: string;
@@ -69,10 +72,35 @@ export const useBalance = (tokensTotal: number) => {
   const balances = useSelector(walletBalancesSelector);
   const walletVersion = useSelector(walletVersionSelector);
   const oldWalletBalances = useSelector(walletOldBalancesSelector);
+  const isLockup = useSelector(isLockupWalletSelector);
   const amountToFiat = useAmountToFiat();
   const getPrice = useGetPrice();
 
+  const { devFeatures } = useDevFeaturesToggle();
+  const isStakingEnabled = devFeatures[DevFeature.Staking];
+
+  const stakingBalance = useStakingStore((s) => {
+    let balance = '0';
+
+    if (isStakingEnabled) {
+      balance = s.stakingBalance;
+    }
+
+    const formatted = formatter.format();
+    return {
+      amount: {
+        nano: balance,
+        fiat: amountToFiat(balance),
+        formatted,
+      },
+    };
+  }, shallow);
+
   const oldVersions = useMemo(() => {
+    if (isLockup) {
+      return [];
+    }
+
     return oldWalletBalances.reduce((acc, item) => {
       if (walletVersion && walletVersion <= item.version) {
         return acc;
@@ -91,7 +119,7 @@ export const useBalance = (tokensTotal: number) => {
 
       return acc;
     }, [] as any);
-  }, [oldWalletBalances, amountToFiat, walletVersion]);
+  }, [isLockup, oldWalletBalances, walletVersion, amountToFiat]);
 
   const lockup = useMemo(() => {
     const lockupList: { type: CryptoCurrencies; amount: string }[] = [];
@@ -140,7 +168,7 @@ export const useBalance = (tokensTotal: number) => {
   }, [balances, amountToFiat]);
 
   const total = useMemo(() => {
-    const amounts = [ton, ...lockup];
+    const amounts = [ton, stakingBalance, ...lockup];
 
     const balanceNano = amounts
       .reduce((total, balance) => {
@@ -155,7 +183,7 @@ export const useBalance = (tokensTotal: number) => {
       value: balance,
       fiat: amountToFiat(balance, tokensTotal),
     };
-  }, [ton, lockup, tokensTotal, amountToFiat]);
+  }, [ton, stakingBalance, lockup, amountToFiat, tokensTotal]);
 
   return {
     oldVersions,

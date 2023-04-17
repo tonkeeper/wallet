@@ -175,7 +175,6 @@ export function openDAppsSearch(
 
 export function openDAppBrowser(url: string) {
   const params = { url };
-
   if (getCurrentRoute()?.name === AppStackRouteNames.DAppsSearch) {
     replace(AppStackRouteNames.DAppBrowser, params);
   } else {

@@ -45,7 +45,7 @@ const PercentDiffComponent: React.FC<PercentDiffProps> = (props) => {
     let amountResult: string;
 
     const diffInFiat = formatFiatCurrencyAmount(
-      Math.abs(((activePoint * parseFloat(priceDiff)) / 100) * props.fiatRate).toFixed(2),
+      Math.abs(((props.firstPoint * parseFloat(priceDiff)) / 100) * props.fiatRate).toFixed(2),
       props.fiatCurrency,
       true,
     );

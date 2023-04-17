@@ -24,15 +24,20 @@ const StakingWidgetComponent: FC = () => {
     shallow,
   );
 
+  const hasPools = useStakingStore(
+    (s) => s.pools.some((pool) => pool.implementation === 'whales'),
+    shallow,
+  );
+
   const { devFeatures } = useDevFeaturesToggle();
 
   const isStakingEnabled = devFeatures[DevFeature.Staking];
 
   const handleStakingPress = useCallback(() => {
-    nav.push(MainStackRouteNames.Staking);
+    nav.push(MainStackRouteNames.StakingPools, { providerId: 'whales' });
   }, [nav]);
 
-  if (!isStakingEnabled) {
+  if (!isStakingEnabled || !hasPools) {
     return null;
   }
 

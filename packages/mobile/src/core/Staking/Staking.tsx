@@ -5,7 +5,9 @@ import { StakingListCell } from '$shared/components';
 import { useStakingStore } from '$store';
 import { List, ScrollHandler } from '$uikit';
 import { getImplementationIcon } from '$utils';
-import React, { FC, useCallback } from 'react';
+import { formatter } from '$utils/formatter';
+import BigNumber from 'bignumber.js';
+import React, { FC, useCallback, useMemo } from 'react';
 import { RefreshControl } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,6 +24,23 @@ export const Staking: FC<Props> = () => {
   const { bottom: bottomInset } = useSafeAreaInsets();
 
   const providers = useStakingStore((s) => s.providers, shallow);
+
+  const list = useMemo(() => {
+    return providers.map((item) => {
+      const bn = new BigNumber(formatter.fromNano(item.minStake));
+      const minStake = bn.isLessThan('1000')
+        ? formatter.format(bn.toFixed(0), { decimals: 0 })
+        : `${bn.dividedBy('1000').toFixed(0)}K`;
+
+      return {
+        ...item,
+        description: t('staking.staking_desc', {
+          maxApy: item.maxApy.toFixed(2),
+          minStake: minStake,
+        }),
+      };
+    });
+  }, [providers, t]);
 
   const refreshControl = useStakingRefreshControl();
 
@@ -41,7 +60,7 @@ export const Staking: FC<Props> = () => {
         >
           <S.Content bottomInset={bottomInset}>
             <List separator={false}>
-              {providers.map((provider, index) => (
+              {list.map((provider, index) => (
                 <StakingListCell
                   key={provider.id}
                   id={provider.id}

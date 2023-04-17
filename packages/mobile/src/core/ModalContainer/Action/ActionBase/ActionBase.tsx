@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import Clipboard from '@react-native-community/clipboard';
 
 import * as S from './ActionBase.style';
-import { Highlight, Icon, Separator, Text } from '$uikit';
+import { Highlight, Icon, Separator, Spacer, Text } from '$uikit';
 import { ns } from '$utils';
 import { ActionBaseProps } from './ActionBase.interface';
 import { useTranslator } from '$hooks';
@@ -23,6 +23,7 @@ export const ActionBase: FC<ActionBaseProps> = ({
   label,
   sentLabel,
   eventId,
+  fiatValue,
 }) => {
   const [isClosed, setClosed] = useState(false);
   const t = useTranslator();
@@ -86,9 +87,20 @@ export const ActionBase: FC<ActionBaseProps> = ({
               </S.SpamWrap>
             )}
             {head || (
-              <Text variant="h2" textAlign="center">
-                {label}
-              </Text>
+              <>
+                <Text variant="h2" textAlign="center">
+                  {label}
+                </Text>
+                {fiatValue && (
+                  <>
+                    <Spacer y={4} />
+                    <Text color="textSecondary" variant="body1">
+                      {fiatValue}
+                    </Text>
+                    <Spacer y={2} />
+                  </>
+                )}
+              </>
             )}
             <S.TypeLabelWrapper>
               <Text textAlign="center" color="foregroundSecondary" variant="body1">
@@ -117,7 +129,10 @@ export const ActionBase: FC<ActionBaseProps> = ({
               <Highlight key={item.label} onPress={handlePress(item)}>
                 <S.Item>
                   <S.ItemLabel numberOfLines={1}>{item.label}</S.ItemLabel>
-                  <S.ItemValue>{item.preparedValue || item.value}</S.ItemValue>
+                  <S.ItemValueWrapper>
+                    <S.ItemValue>{item.preparedValue || item.value}</S.ItemValue>
+                    {item.subvalue && <Text variant="body2" color="textSecondary">{item.subvalue}</Text>}
+                  </ S.ItemValueWrapper>
                 </S.Item>
               </Highlight>,
             ])}

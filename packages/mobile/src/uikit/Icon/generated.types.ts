@@ -24,6 +24,7 @@ export type IconNames =
   | 'ic-ellipsis-16'
   | 'ic-getgems-16'
   | 'ic-globe-16'
+  | 'ic-information-circle-16'
   | 'ic-link-bold-16'
   | 'ic-loader-small-16'
   | 'ic-magnifying-glass-16'
@@ -60,6 +61,7 @@ export type IconNames =
   | 'ic-jetton-28'
   | 'ic-key-28'
   | 'ic-lock-28'
+  | 'ic-message-bubble-28'
   | 'ic-minus-28'
   | 'ic-money-28'
   | 'ic-nft-collection-28'
@@ -132,6 +134,7 @@ export const AllIcons = [
   'ic-ellipsis-16',
   'ic-getgems-16',
   'ic-globe-16',
+  'ic-information-circle-16',
   'ic-link-bold-16',
   'ic-loader-small-16',
   'ic-magnifying-glass-16',
@@ -168,6 +171,7 @@ export const AllIcons = [
   'ic-jetton-28',
   'ic-key-28',
   'ic-lock-28',
+  'ic-message-bubble-28',
   'ic-minus-28',
   'ic-money-28',
   'ic-nft-collection-28',
@@ -241,6 +245,7 @@ export const IconSizes = {
   'ic-ellipsis-16': 16,
   'ic-getgems-16': 16,
   'ic-globe-16': 16,
+  'ic-information-circle-16': 16,
   'ic-link-bold-16': 16,
   'ic-loader-small-16': 16,
   'ic-magnifying-glass-16': 16,
@@ -277,6 +282,7 @@ export const IconSizes = {
   'ic-jetton-28': 28,
   'ic-key-28': 28,
   'ic-lock-28': 28,
+  'ic-message-bubble-28': 28,
   'ic-minus-28': 28,
   'ic-money-28': 28,
   'ic-nft-collection-28': 28,

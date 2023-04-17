@@ -1,12 +1,17 @@
+import { i18n } from '$translation';
+import { delay } from '$utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { DevFeature, IDevFeaturesToggleStore } from './types';
+import RNRestart from 'react-native-restart';
 
 const initialState: Omit<IDevFeaturesToggleStore, 'actions'> = {
   devFeatures: {
     [DevFeature.UseHttpProtocol]: false,
+    [DevFeature.Staking]: false,
   },
+  devLanguage: null,
 };
 
 export const useDevFeaturesToggle = create(
@@ -22,12 +27,26 @@ export const useDevFeaturesToggle = create(
             return { devFeatures };
           });
         },
+        setDevLanguage: async (language?: string) => {
+          set(() => {
+            const devLanguage = language;
+            return { devLanguage };
+          });
+          RNRestart.restart();
+        }
       },
     }),
     {
       name: 'devFeaturesToggle',
-      getStorage: () => AsyncStorage,
-      partialize: ({ devFeatures }) => ({ devFeatures } as IDevFeaturesToggleStore),
+      storage: createJSONStorage(() => AsyncStorage),
+      onRehydrateStorage: () => {
+        return (state) => {
+          if (state?.devLanguage) {
+            i18n.locale = state.devLanguage;
+          }
+        }
+      },
+      partialize: ({ devFeatures, devLanguage }) => ({ devFeatures, devLanguage } as IDevFeaturesToggleStore),
     },
   ),
 );

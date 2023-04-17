@@ -580,6 +580,7 @@ function* cleanWalletWorker() {
     yield call(MainDB.setExcludedJettons, {});
     yield call(saveFavorites, []);
     yield call(saveHiddenRecentAddresses, []);
+    yield call(useStakingStore.getState().actions.reset);
 
     yield put(
       batchActions(

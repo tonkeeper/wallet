@@ -115,8 +115,14 @@ export const NavBar: FC<NavBarProps> = (props) => {
     [children, hideTitle],
   );
 
+  const isSmallTitle = typeof children === 'string' && children.length > 18;
+
   return (
-    <S.Wrap style={{ paddingTop: top }} isTransparent={isTransparent} isBackground={fillBackground}>
+    <S.Wrap
+      style={{ paddingTop: top }}
+      isTransparent={isTransparent}
+      isBackground={fillBackground}
+    >
       {isTransparent && (
         <S.Gradient
           colors={[theme.colors.backgroundPrimary, 'rgba(21, 28, 41, 0)']}
@@ -133,7 +139,12 @@ export const NavBar: FC<NavBarProps> = (props) => {
               <Icon name={iconName} color="foregroundPrimary" />
             </S.BackButton>
           </S.BackButtonContainer>
-          <S.Title {...titleProps} style={titleAnimatedStyle}>
+          <S.Title
+            variant={isSmallTitle ? 'label1' : 'h3'}
+            numberOfLines={1}
+            {...titleProps}
+            style={titleAnimatedStyle}
+          >
             {children}
           </S.Title>
           {renderRightContent()}

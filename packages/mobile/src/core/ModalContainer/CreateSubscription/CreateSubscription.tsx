@@ -16,7 +16,7 @@ import {
   triggerNotificationSuccess,
 } from '$utils';
 import { subscriptionsActions } from '$store/subscriptions';
-import { CryptoCurrencies, Decimals } from '$shared/constants';
+import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
 import { formatCryptoCurrency } from '$utils/currency';
 import { useTheme, useTranslator, useWalletInfo } from '$hooks';
 import {eventsEventsInfoSelector, eventsSelector} from '$store/events';
@@ -24,6 +24,7 @@ import {walletSelector, walletWalletSelector} from '$store/wallet';
 import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { Toast } from '$store';
+import { network } from '$libs/network';
 
 export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   invoiceId = null,
@@ -118,13 +119,14 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   }, [isEdit, info, eventsInfo]);
 
   const loadInfo = useCallback(() => {
-    Api.get(`/subscribe/invoice/${invoiceId}`, {
+    const host = getServerConfig('subscriptionsHost');
+    network.get(`${host}/v1/subscribe/invoice/${invoiceId}`, {
       params: {
         contractVersion: TonWeb.version,
       },
     })
       .then((resp) => {
-        setInfo(resp as any);
+        setInfo(resp.data.data as any);
         setLoading(false);
       })
       .catch((e) => {

@@ -11,12 +11,12 @@ import {
   IconButton,
   Skeleton,
 } from '$uikit';
-import { maskifyTonAddress, ns } from '$utils';
+import { delay, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
 import { useTheme, useTranslator } from '$hooks';
-import { openReceive, openSend } from '$navigation';
-import { CryptoCurrencies, Opacity } from '$shared/constants';
+import { openDAppBrowser, openReceive, openSend } from '$navigation';
+import { CryptoCurrencies, getServerConfig, Opacity } from '$shared/constants';
 import { useSelector } from 'react-redux';
 import { useJettonEvents } from '$hooks/useJettonEvents';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
@@ -44,11 +44,13 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     openReceive(CryptoCurrencies.Ton, true, jetton.jettonAddress);
   }, [jetton.jettonAddress]);
 
-  const handleOpenExplorer = useCallback(() => {
-    Linking.openURL(
-      `https://tonapi.io/account/${address.ton}/jetton/${jetton.jettonAddress}`,
+
+  const handleOpenExplorer = useCallback(async () => {
+    await delay(200);
+    openDAppBrowser(
+      getServerConfig('accountExplorer').replace('%s', address.ton) + `/jetton/${jetton.jettonAddress}`,
     );
-  }, [address.ton, jetton.jettonAddress]);
+    }, [address.ton, jetton.jettonAddress]);
 
   const renderHeader = useMemo(() => {
     if (!jetton) {

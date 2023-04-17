@@ -4,6 +4,7 @@ import { SubscriptionModel } from '$store/models';
 export type InfoRows = {
   label: ReactNode;
   value?: ReactNode;
+  subvalue?: ReactNode;
   preparedValue?: ReactNode;
 }[];
 
@@ -22,4 +23,5 @@ export interface ActionBaseProps {
   sentLabel: string;
   shouldShowSendToRecipientButton: boolean;
   shouldShowOpenSubscriptionButton: boolean;
+  fiatValue?: string;
 }

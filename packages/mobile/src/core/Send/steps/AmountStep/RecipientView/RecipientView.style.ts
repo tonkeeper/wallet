@@ -35,11 +35,10 @@ export const Label = styled(Text).attrs({
 
 export const Title = styled(Text).attrs({
   variant: 'body1',
-})<{ width: number }>`
+})`
   flex-grow: 0;
   flex-shrink: 1;
   flex-basis: auto;
-  width: ${({ width }) => (width ? width + 'px' : 'auto')};
 `;
 
 export const SubTitle = styled(Text).attrs({

@@ -7,13 +7,12 @@
     "@tonkeeper/shared": "1.0.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.12",
-    "@types/react-dom": "^17.0.11",
     "craco-babel-loader": "^1.0.4",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-native-web": "0.17.7",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-native-web": "~0.18.10",
     "react-scripts": "5.0.1",
-    "typescript": "^4.9.5",
+    "typescript": "^4.9.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -22,8 +21,7 @@
     "test": "craco test"
   },
   "resolutions": {
-    "@types/react-native": "~0.66.13",
-    "@types/react": "^17"
+    "@types/react": "~18.0.24"
   },
   "eslintConfig": {
     "extends": [

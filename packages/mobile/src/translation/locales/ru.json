@@ -227,7 +227,7 @@
     "amount": {
       "recipient_label": "Кому:",
       "insufficient_balance": "Недостаточно средств",
-      "less_than_min": "Minimum amount is %{minAmount} TON",
+      "less_than_min": "Минимум %{minAmount} TON",
       "max": "Максимум",
       "remaining": "Доступно: %{amount}"
     },
@@ -327,7 +327,7 @@
     "empty_transaction_caption": "Совершите первую транзакцию!",
     "buy_toncoin_btn": "Купить Toncoin",
     "receive_btn": "Получить",
-    "failed_transaction": "Не успешно"
+    "failed_transaction": "Неуспешно"
   },
 
   "browser": {
@@ -368,12 +368,12 @@
   "exchange_other_ways": "Другие способы покупки и продажи",
 
   "settings_title": "Настройки",
-  "settings_primary_currency": "Основная валюта",
-  "settings_rate": "Оценить приложение",
-  "settings_contact_support": "Написать команде",
+  "settings_primary_currency": "Валюта",
+  "settings_rate": "Оценить Tonkeeper",
+  "settings_contact_support": "Написать нам",
   "settings_legal_documents": "Юридические документы",
   "settings_news": "Новости Tonkeeper",
-  "settings_support": "Чат поддержки",
+  "settings_support": "Поддержка",
   "settings_backup_seed": "Показать секретный ключ",
   "settings_reset": "Выйти",
   "settings_notifications": "Уведомления",
@@ -390,9 +390,9 @@
   "settings_security": "Безопасность",
   "settings_appearance": "Оформление",
   "settings_news_url": "https://t.me/tonkeeper_ru",
-  "settings_jettons_list": "Управление токенами",
+  "settings_jettons_list": "Токены",
   "settings_delete_account": "Удалить аккаунт",
-  "settings_search_engine": "Поисковая машина",
+  "settings_search_engine": "Поиск",
 
   "settings_delete_alert_title": "Вы уверены, что хотите удалить аккаунт?",
   "settings_delete_alert_caption": "Это действие приведет к удалению вашего аккаунта и всех данных из этого приложения.",
@@ -581,6 +581,7 @@
 
   "txActions": {
     "fee": "Комиссия",
+    "refund": "Возврат",
     "amount": "Сумма",
 
     "signRaw": {
@@ -590,6 +591,7 @@
         "button": "Открыть настройки"
       },
       "totalFee": "Суммарная комиссия",
+      "totalRefund": "Суммарный возврат",
       "title": "Подтвердить транзакцию",
       "recipient": "Получатель",
       "comment": "Комментарий",
@@ -690,11 +692,12 @@
 
   "staking": {
     "title": "Стейкинг",
-    "widget_desc": "Зарабатывайте на TON до %{apy}%",
+    "widget_desc": "Зарабатывайте на TON до %{apy}%",
     "staking_pool_desc": "APY ≈ %{apy}%",
+    "staking_desc": "Депозит от %{minStake} TON.\nЗарабатывайте до %{maxApy}%.",
     "top_up": "Пополнить",
     "withdrawal_request": "Запрос на вывод",
-    "withdrawal_confrim": "Withdrawal confirm",
+    "get_withdrawal": "Получить вывод",
     "withdraw": "Вывести",
     "deposit": "Депозит",
     "transaction": "Транзакция",
@@ -724,6 +727,9 @@
           "few": "Каждые %{count} часа",
           "many": "Каждые %{count} часов"
         }
+      },
+      "pool_address": {
+        "label": "Адрес пула"
       },
       "apy": {
         "label": "Годовая доходность",

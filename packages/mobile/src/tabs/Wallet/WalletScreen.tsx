@@ -121,13 +121,15 @@ export const WalletScreen = memo(() => {
       ))}
       <View style={styles.amount} pointerEvents="box-none">
         <Text variant="num2">{balance.total.fiat}</Text>
+        <View style={styles.walletSpace} />
         {wallet && (
           <TouchableOpacity
+            hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
             style={{ zIndex: 3 }}
             onPress={() => copyText(wallet.address.friendlyAddress)}
             activeOpacity={0.6}
           >
-            <Text style={styles.addressText.static} color="textSecondary" variant="body2">
+            <Text color="textSecondary" variant="body2">
               {maskifyAddress(wallet.address.friendlyAddress)}
             </Text>
           </TouchableOpacity>
@@ -312,7 +314,7 @@ const styles = Steezy.create(({ colors, corners }) => ({
     alignItems: 'center',
     marginBottom: 24.5,
   },
-  addressText: {
+  walletSpace: {
     marginTop: 7.5,
   },
   scrollContainer: {

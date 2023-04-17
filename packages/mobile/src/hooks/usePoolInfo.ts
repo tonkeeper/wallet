@@ -1,6 +1,6 @@
 import { AppStackRouteNames, openRequireWalletModal } from '$navigation';
 import { CryptoCurrencies } from '$shared/constants';
-import { stakingFormatter } from '$utils/formatter';
+import { formatter, stakingFormatter } from '$utils/formatter';
 import { PoolInfo, AccountStakingInfo } from '@tonkeeper/core';
 import BigNumber from 'bignumber.js';
 import { useCallback, useMemo } from 'react';
@@ -9,14 +9,19 @@ import { useTranslator } from './useTranslator';
 import { useNavigation } from '$libs/navigation';
 import { StakingTransactionType } from '$core/StakingSend/types';
 import { useWallet } from './useWallet';
+import { Address } from '$libs/Ton';
+import { useCopyText } from './useCopyText';
 
 export interface PoolDetailsItem {
   label: string;
   value: string;
+  onPress?: () => void;
 }
 
 export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo) => {
   const t = useTranslator();
+
+  const copyText = useCopyText();
 
   const nav = useNavigation();
 
@@ -90,15 +95,27 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
       });
     }
 
+    const address = new Address(pool.address);
+
+    rows.push({
+      label: t('staking.details.pool_address.label'),
+      value: address.format({ cut: true }),
+      onPress: () => {
+        copyText(address.format(), t('address_copied'));
+      },
+    });
+
     if (minDeposit) {
       rows.push({
         label: t('staking.details.min_deposit.label'),
-        value: t('staking.details.min_deposit.value', { value: minDeposit }),
+        value: t('staking.details.min_deposit.value', {
+          value: formatter.format(minDeposit, { decimals: 0 }),
+        }),
       });
     }
 
     return rows;
-  }, [apy, frequency, minDeposit, t]);
+  }, [apy, copyText, frequency, minDeposit, pool.address, t]);
 
   return {
     infoRows,

@@ -1,6 +1,6 @@
-import { useFiatValue, useTranslator } from '$hooks';
-import { Separator, Spacer, Text } from '$uikit';
-import React, { FC, memo } from 'react';
+import { useCopyText, useFiatValue, useTranslator } from '$hooks';
+import { Highlight, Separator, Spacer, Text } from '$uikit';
+import React, { FC, memo, useCallback, useMemo } from 'react';
 import * as S from './ConfirmStep.style';
 import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
@@ -34,7 +34,7 @@ const getActionName = (
     case StakingTransactionType.WITHDRAWAL:
       return t('staking.withdrawal_request');
     case StakingTransactionType.WITHDRAWAL_CONFIRM:
-      return t('staking.withdrawal_confrim');
+      return t('staking.get_withdrawal');
     case StakingTransactionType.DEPOSIT:
     default:
       return t('staking.deposit');
@@ -45,7 +45,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
   const { transactionType, active, pool, totalFee, amount, stepsScrollTop, sendTx } =
     props;
 
-  const address = new Address(pool.address);
+  const address = useMemo(() => new Address(pool.address), [pool.address]);
 
   const fiatValue = useFiatValue(CryptoCurrencies.Ton, amount.value);
   const fiatFee = useFiatValue(CryptoCurrencies.Ton, totalFee || '0');
@@ -63,11 +63,22 @@ const ConfirmStepComponent: FC<Props> = (props) => {
 
   const { footerRef, onConfirm } = useActionFooter();
 
+  const copyText = useCopyText();
+
   const handleConfirm = onConfirm(async ({ startLoading }) => {
     startLoading();
 
     await sendTx();
   });
+
+  const handleCopyAddress = useCallback(() => {
+    copyText(address.format(), t('address_copied'));
+  }, [address, copyText, t]);
+
+  const handleCopyPoolName = useCallback(
+    () => copyText(pool.name),
+    [copyText, pool.name],
+  );
 
   const actionName = getActionName(transactionType, t);
 
@@ -88,19 +99,23 @@ const ConfirmStepComponent: FC<Props> = (props) => {
           </S.Center>
           <Spacer y={32} />
           <S.Table>
-            <S.Item>
-              <S.ItemLabel>{t('staking.confirm.recipient.label')}</S.ItemLabel>
-              <S.ItemContent>
-                <S.ItemValue>{pool.name}</S.ItemValue>
-              </S.ItemContent>
-            </S.Item>
+            <Highlight onPress={handleCopyPoolName}>
+              <S.Item>
+                <S.ItemLabel>{t('staking.confirm.recipient.label')}</S.ItemLabel>
+                <S.ItemContent>
+                  <S.ItemValue>{pool.name}</S.ItemValue>
+                </S.ItemContent>
+              </S.Item>
+            </Highlight>
             <Separator />
-            <S.Item>
-              <S.ItemLabel>{t('staking.confirm.address.label')}</S.ItemLabel>
-              <S.ItemContent>
-                <S.ItemValue>{address.format({ cut: true })}</S.ItemValue>
-              </S.ItemContent>
-            </S.Item>
+            <Highlight onPress={handleCopyAddress}>
+              <S.Item>
+                <S.ItemLabel>{t('staking.confirm.address.label')}</S.ItemLabel>
+                <S.ItemContent>
+                  <S.ItemValue>{address.format({ cut: true })}</S.ItemValue>
+                </S.ItemContent>
+              </S.Item>
+            </Highlight>
             <Separator />
             {[
               StakingTransactionType.WITHDRAWAL,

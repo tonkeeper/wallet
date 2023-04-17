@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "author": "Nikita Kuznetsov <nkuz915@gmail.com>",
   "description": "Core features and state for tonkeeper web wallet",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "scripts": {
     "build": "rm -fr dist && yarn generate:sdkV1 && yarn generate:sdkV2 && tsc",
     "start": "tsc -w",
     "generate:sdkV1": "rm -fr src/tonApiV1 && docker build -f Dockerfile.apiV1 . -t tonapisdk && docker run --rm --user=$(id -u):$(id -g) -v \"$PWD\":/local tonapisdk",
     "generate:sdkV2": "rm -fr src/tonApiV2 && docker build -f Dockerfile.apiV2 . -t tonapisdk && docker run --rm --user=$(id -u):$(id -g) -v \"$PWD\":/local tonapisdk",
-    "build:pkg": "yarn build"
+    "build:pkg": "rm -fr dist && tsc"
   },
   "license": "ISC",
   "devDependencies": {

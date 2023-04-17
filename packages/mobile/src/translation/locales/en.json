@@ -230,7 +230,7 @@
     "amount": {
       "recipient_label": "Send to:",
       "insufficient_balance": "Insufficient balance",
-      "less_than_min": "Minimum amount is %{minAmount} TON",
+      "less_than_min": "Minimum %{minAmount} TON",
       "max": "Max",
       "remaining": "Remaining: %{amount}"
     },
@@ -367,12 +367,12 @@
   "exchange_other_ways": "Other ways to buy or sell TON",
 
   "settings_title": "Settings",
-  "settings_primary_currency": "Primary currency",
-  "settings_rate": "Rate this app",
-  "settings_contact_support": "Contact Team",
-  "settings_legal_documents": "Legal documents",
+  "settings_primary_currency": "Currency",
+  "settings_rate": "Rate Tonkeeper",
+  "settings_contact_support": "Contact us",
+  "settings_legal_documents": "Legal",
   "settings_news": "Tonkeeper news",
-  "settings_support": "Support chat",
+  "settings_support": "Support",
   "settings_backup_seed": "Show recovery phrase",
   "settings_reset": "Log out",
   "settings_notifications": "Notifications",
@@ -389,9 +389,9 @@
   "settings_security": "Security",
   "settings_appearance": "Theme",
   "settings_news_url": "https://t.me/tonkeeper",
-  "settings_jettons_list": "Manage tokens",
+  "settings_jettons_list": "Tokens",
   "settings_delete_account": "Delete account",
-  "settings_search_engine": "Search engine",
+  "settings_search_engine": "Search",
 
   "settings_delete_alert_title": "Are you sure you want to delete your account?",
   "settings_delete_alert_caption": "This action will delete your account and all data from this application.",
@@ -580,6 +580,7 @@
 
   "txActions": {
     "fee": "Fee",
+    "refund": "Refund",
     "amount": "Amount",
 
     "signRaw": {
@@ -589,6 +590,7 @@
         "button": "Open Settings"
       },
       "totalFee": "Total fee",
+      "totalRefund": "Total refund",
       "title": "Confirm transaction",
       "recipient": "Recipient",
       "comment": "Comment",
@@ -689,11 +691,12 @@
 
   "staking": {
     "title": "Staking",
-    "widget_desc": "Earn up to %{apy}% on your TONs",
+    "widget_desc": "Earn up to %{apy}% on your TONs",
     "staking_pool_desc": "APY ≈ %{apy}%",
+    "staking_desc": "Minimum deposit from %{minStake} TON.\nEarn up to %{maxApy}%.",
     "top_up": "Top up",
     "withdrawal_request": "Withdrawal request",
-    "withdrawal_confrim": "Withdrawal confirm",
+    "get_withdrawal": "Get withdrawal",
     "withdraw": "Withdraw",
     "deposit": "Deposit",
     "transaction": "Transaction",
@@ -718,6 +721,9 @@
       "frequency": {
         "label": "Reward frequency",
         "value": "Every %{count} hours"
+      },
+      "pool_address": {
+        "label": "Pool address"
       },
       "apy": {
         "label": "Est. APY rate",

@@ -68,8 +68,6 @@ export const TabsPagerView: React.FC<TabsPagerViewProps> = (props) => {
   })
 
   const funnyStyle = useAnimatedStyle(() => {
-    const scale = withSpring(pageOffset.value > 1.89 && pageOffset.value < 1.892 ? 2 : 1);
-
     return {
       transform: [{ 
         translateX: pageOffset.value > 2 ? 50 : interpolate(
@@ -78,8 +76,6 @@ export const TabsPagerView: React.FC<TabsPagerViewProps> = (props) => {
           [50, -80],
           Extrapolate.CLAMP
         )
-      }, {
-        scale: scale,
       }]
     }
   });

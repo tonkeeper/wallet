@@ -5,6 +5,8 @@ export interface StakingProvider {
   name: string;
   description: string;
   url: string;
+  maxApy: number;
+  minStake: number;
 }
 
 export type StakingInfo = Record<AccountStakingInfo['pool'], AccountStakingInfo>;
@@ -21,7 +23,9 @@ export interface IStakingStore {
   pools: PoolInfo[];
   providers: StakingProvider[];
   stakingInfo: StakingInfo;
+  stakingBalance: string;
   actions: {
     fetchPools: (silent?: boolean) => Promise<void>;
+    reset: () => void;
   };
 }

@@ -28,8 +28,8 @@ import {
   walletWalletSelector,
 } from '$store/wallet';
 import { Linking, Platform, RefreshControl, View } from 'react-native';
-import { ns } from '$utils';
-import { CryptoCurrencies, Decimals } from '$shared/constants';
+import { delay, ns } from '$utils';
+import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
 import { t } from '$translation';
 import { useNavigation } from '$libs/navigation';
 import { Chart } from '$shared/components/Chart/new/Chart';
@@ -72,8 +72,8 @@ const exploreActions = [
   },
   {
     icon: 'ic-magnifying-glass-16',
-    text: 'ton.api',
-    url: 'https://tonapi.io',
+    text: 'tonviewer.com',
+    url: 'https://tonviewer.com',
   },
   {
     icon: 'ic-code-16',
@@ -181,8 +181,9 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     );
   }, [dispatch]);
 
-  const handleOpenExplorer = useCallback(() => {
-    Linking.openURL(`https://tonapi.io/account/${address.ton}`);
+  const handleOpenExplorer = useCallback(async () => {
+    await delay(200);
+    openDAppBrowser(getServerConfig('accountExplorer').replace('%s', address.ton));
   }, [address.ton]);
 
   const handleLoadMore = useCallback(() => {
@@ -355,6 +356,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
           <PopupMenu
             items={[
               <PopupMenuItem
+                shouldCloseMenu
                 onPress={handleOpenExplorer}
                 text={t('jetton_open_explorer')}
                 icon={<Icon name="ic-globe-16" color="accentPrimary" />}

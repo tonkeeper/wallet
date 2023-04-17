@@ -8,7 +8,7 @@ import Animated from 'react-native-reanimated';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
-import { PopupSelect, ScrollHandler, Text } from '$uikit';
+import { Icon, PopupSelect, ScrollHandler, Spacer, Text } from '$uikit';
 import { useJettonBalances, useNavigation, useTranslator } from '$hooks';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
@@ -47,7 +47,7 @@ import {
   useHasDiamondsOnBalance,
 } from '$utils';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
-import { CellSection, CellSectionItem } from '$shared/components';
+import { CellSectionItem } from '$shared/components';
 import { MainDB } from '$database';
 import { useNotifications } from '$hooks/useNotifications';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
@@ -55,6 +55,8 @@ import { useAllAddresses } from '$hooks/useAllAddresses';
 import { useFlags } from '$utils/flags';
 import { SearchEngine, useBrowserStore } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
+import { List } from '$uikit/List/new';
+import { Steezy } from '$styles';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -119,7 +121,7 @@ export const Settings: FC = () => {
 
   const handleSupport = useCallback(() => {
     Linking.openURL(getServerConfig('directSupportUrl')).catch((err) => console.log(err));
-  }, [t]);
+  }, []);
 
   const handleResetWallet = useCallback(() => {
     Alert.alert(t('settings_reset_alert_title'), t('settings_reset_alert_caption'), [
@@ -186,10 +188,6 @@ export const Settings: FC = () => {
     openJettonsListSettingsStack();
   }, []);
 
-  const handleRecovery = useCallback(() => {
-    dispatch(walletActions.backupWallet());
-  }, []);
-
   const handleDeleteAccount = useCallback(() => {
     Alert.alert(t('settings_delete_alert_title'), t('settings_delete_alert_caption'), [
       {
@@ -228,139 +226,213 @@ export const Settings: FC = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingTop: IsTablet ? ns(8) : hNs(LargeNavBarHeight),
-            paddingHorizontal: ns(16),
             paddingBottom: tabBarHeight,
             alignItems: IsTablet ? 'center' : undefined,
           }}
           scrollEventThrottle={16}
         >
-          <S.Content>
-            <CellSection>
-              {hasSubscriptions && (
-                <CellSectionItem onPress={handleSubscriptions} icon="ic-ticket-28">
-                  {t('settings_subscriptions')}
-                </CellSectionItem>
-              )}
-              {!!wallet && (
-                <>
-                  <CellSectionItem onPress={handleRecovery} icon="ic-key-28">
-                    {t('settings_recovery_phrase')}
-                  </CellSectionItem>
-                  <PopupSelect
-                    items={versions}
-                    selected={version}
-                    onChange={handleChangeVersion}
-                    keyExtractor={(item) => item}
-                    width={220}
-                    renderItem={(version) => (
-                      <S.WalletVersion>
-                        <Text variant="label1" style={{ marginRight: ns(8) }}>
-                          {SelectableVersionsConfig[version]?.label}
-                        </Text>
-                        <Text variant="body1" color="foregroundSecondary">
-                          {maskifyAddress(
-                            allTonAddesses[SelectableVersionsConfig[version]?.label],
-                          )}
-                        </Text>
-                      </S.WalletVersion>
-                    )}
-                  >
-                    <CellSectionItem
-                      indicator={
-                        <Text variant="label1" color="accentPrimary">
-                          {SelectableVersionsConfig[version]?.label}
-                        </Text>
-                      }
-                    >
-                      {t('settings_wallet_version')}
-                    </CellSectionItem>
-                  </PopupSelect>
-                  {jettonBalances.length ? (
-                    <CellSectionItem onPress={handleJettonsList} icon="ic-jetton-28">
-                      {t('settings_jettons_list')}
-                    </CellSectionItem>
-                  ) : null}
-                  <CellSectionItem onPress={handleSecurity} icon="ic-shield-28">
-                    {t('settings_security')}
-                  </CellSectionItem>
-                  {isAppearanceVisible && (
-                    <CellSectionItem onPress={handleAppearance} icon="ic-appearance-28">
-                      {t('settings_appearance')}
-                    </CellSectionItem>
-                  )}
-                  <CellSectionItem onPress={handleResetWallet} icon="ic-door-28">
-                    {t('settings_reset')}
-                  </CellSectionItem>
-                </>
-              )}
-            </CellSection>
-            <CellSection>
-              <CellSectionItem
-                onPress={() => nav.navigate('ChooseCurrency')}
-                indicator={
-                  <S.SelectedCurrency>{fiatCurrency.toUpperCase()}</S.SelectedCurrency>
+          <List>
+            <List.Item
+              value={
+                <Icon
+                  style={styles.icon.static}
+                  color="accentPrimary"
+                  name={'ic-key-28'}
+                />
+              }
+              title={t('settings_security')}
+              onPress={handleSecurity}
+            />
+            {!!jettonBalances.length && (
+              <List.Item
+                value={
+                  <Icon
+                    style={styles.icon.static}
+                    color="accentPrimary"
+                    name={'ic-jetton-28'}
+                  />
                 }
-              >
-                {t('settings_primary_currency')}
-              </CellSectionItem>
-              {!!wallet && (
-                <CellSectionItem
-                  onPress={handleNotifications}
-                  icon="ic-notification-28"
-                  inlineContent={notificationIndicator}
-                >
-                  {t('settings_notifications')}
-                </CellSectionItem>
-              )}
-
-              <PopupSelect
-                items={searchEngineVariants}
-                selected={searchEngine}
-                onChange={setSearchEngine}
-                keyExtractor={(item) => item}
-                width={176}
-                renderItem={(item) => <Text variant="label1">{item}</Text>}
-              >
-                <CellSectionItem
-                  indicator={
-                    <Text variant="label1" color="accentPrimary">
-                      {searchEngine}
-                    </Text>
-                  }
-                >
-                  {t('settings_search_engine')}
-                </CellSectionItem>
-              </PopupSelect>
-            </CellSection>
-            <CellSection>
-              <CellSectionItem onPress={handleRateApp} icon="ic-star-28">
-                {t('settings_rate')}
-              </CellSectionItem>
-              {!flags.disable_support_button ? (
-                <CellSectionItem onPress={handleSupport} icon="ic-telegram-28">
-                  {t('settings_support')}
-                </CellSectionItem>
-              ) : null}
-              <CellSectionItem onPress={handleNews} icon="ic-telegram-28">
-                {t('settings_news')}
-              </CellSectionItem>
-              {!flags.disable_feedback_button ? (
-                <CellSectionItem onPress={handleFeedback} icon="ic-envelope-28">
-                  {t('settings_contact_support')}
-                </CellSectionItem>
-              ) : null}
-              <CellSectionItem onPress={handleLegal} icon="ic-doc-28">
-                {t('settings_legal_documents')}
-              </CellSectionItem>
-            </CellSection>
-
-            {!!wallet && (
-              <CellSection>
-                <CellSectionItem onPress={handleDeleteAccount} icon="ic-trash-bin-28">
-                  {t('settings_delete_account')}
-                </CellSectionItem>
-              </CellSection>
+                title={t('settings_jettons_list')}
+                onPress={handleJettonsList}
+              />
             )}
+            {hasSubscriptions && (
+              <List.Item
+                value={
+                  <Icon
+                    style={styles.icon.static}
+                    color="accentPrimary"
+                    name={'ic-ticket-28'}
+                  />
+                }
+                title={t('settings_subscriptions')}
+                onPress={handleSubscriptions}
+              />
+            )}
+            {isAppearanceVisible && (
+              <List.Item
+                value={
+                  <Icon
+                    style={styles.icon.static}
+                    color="accentPrimary"
+                    name={'ic-appearance-28'}
+                  />
+                }
+                title={t('settings_appearance')}
+                onPress={handleAppearance}
+              />
+            )}
+          </List>
+          <Spacer y={16} />
+          <List>
+            {!!wallet && (
+              <List.Item
+                value={<Icon color="accentPrimary" name={'ic-notification-28'} />}
+                title={
+                  <View style={styles.notificationsTextContainer.static}>
+                    <Text variant="label1" numberOfLines={1} ellipsizeMode="tail">
+                      {t('settings_notifications')}
+                    </Text>
+                    {notificationIndicator}
+                  </View>
+                }
+                onPress={handleNotifications}
+              />
+            )}
+            <List.Item
+              value={
+                <S.SelectedCurrency>{fiatCurrency.toUpperCase()}</S.SelectedCurrency>
+              }
+              title={t('settings_primary_currency')}
+              onPress={() => nav.navigate('ChooseCurrency')}
+            />
+            <PopupSelect
+              items={searchEngineVariants}
+              selected={searchEngine}
+              onChange={setSearchEngine}
+              keyExtractor={(item) => item}
+              width={176}
+              renderItem={(item) => <Text variant="label1">{item}</Text>}
+            >
+              <List.Item
+                value={
+                  <Text variant="label1" color="accentPrimary">
+                    {searchEngine}
+                  </Text>
+                }
+                title={t('settings_search_engine')}
+              />
+            </PopupSelect>
+            <PopupSelect
+              items={versions}
+              selected={version}
+              onChange={handleChangeVersion}
+              keyExtractor={(item) => item}
+              width={220}
+              renderItem={(version) => (
+                <S.WalletVersion>
+                  <Text variant="label1" style={{ marginRight: ns(8) }}>
+                    {SelectableVersionsConfig[version]?.label}
+                  </Text>
+                  <Text variant="body1" color="foregroundSecondary">
+                    {maskifyAddress(
+                      allTonAddesses[SelectableVersionsConfig[version]?.label],
+                    )}
+                  </Text>
+                </S.WalletVersion>
+              )}
+            >
+              <List.Item
+                value={
+                  <Text variant="label1" color="accentPrimary">
+                    {SelectableVersionsConfig[version]?.label}
+                  </Text>
+                }
+                title={t('settings_wallet_version')}
+              />
+            </PopupSelect>
+          </List>
+          <Spacer y={16} />
+          <List>
+            {!flags.disable_support_button ? (
+              <List.Item
+                onPress={handleSupport}
+                value={
+                  <Icon
+                    style={styles.icon.static}
+                    color="accentPrimary"
+                    name={'ic-message-bubble-28'}
+                  />
+                }
+                title={t('settings_support')}
+              />
+            ) : null}
+            <List.Item
+              onPress={handleNews}
+              value={
+                <Icon
+                  style={styles.icon.static}
+                  color="iconSecondary"
+                  name={'ic-telegram-28'}
+                />
+              }
+              title={t('settings_news')}
+            />
+            {!flags.disable_feedback_button ? (
+              <List.Item
+                onPress={handleFeedback}
+                value={
+                  <Icon
+                    style={styles.icon.static}
+                    color="iconSecondary"
+                    name={'ic-envelope-28'}
+                  />
+                }
+                title={t('settings_contact_support')}
+              />
+            ) : null}
+            <List.Item
+              onPress={handleRateApp}
+              value={
+                <Icon
+                  style={styles.icon.static}
+                  color="iconSecondary"
+                  name={'ic-star-28'}
+                />
+              }
+              title={t('settings_rate')}
+            />
+            <List.Item
+              onPress={handleLegal}
+              value={
+                <Icon
+                  style={styles.icon.static}
+                  color="iconSecondary"
+                  name={'ic-doc-28'}
+                />
+              }
+              title={t('settings_legal_documents')}
+            />
+            <List.Item
+              onPress={handleDeleteAccount}
+              value={
+                <Icon
+                  style={styles.icon.static}
+                  color="iconSecondary"
+                  name={'ic-trash-bin-28'}
+                />
+              }
+              title={t('settings_delete_account')}
+            />
+          </List>
+          <Spacer y={16} />
+          <List>
+            <CellSectionItem onPress={handleResetWallet} icon="ic-door-28">
+              {t('settings_reset')}
+            </CellSectionItem>
+          </List>
+          <Spacer y={16} />
+          <S.Content>
             <TapGestureHandler
               simultaneousHandlers={devMenuHandlerRef}
               onHandlerStateChange={handleAnimateDiamond}
@@ -398,3 +470,14 @@ export const Settings: FC = () => {
     </S.Wrap>
   );
 };
+
+const styles = Steezy.create({
+  icon: {
+    marginTop: -2,
+    marginBottom: -2,
+  },
+  notificationsTextContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+});
