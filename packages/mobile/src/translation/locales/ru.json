@@ -718,6 +718,11 @@
         "desc": "Все транзакции исполняются только после завершения цикла",
         "time": "через %{time}"
       },
+      "cooldown": {
+        "title": "Cooldown period",
+        "desc": "Two-hour period applied at the start of each staking cycle to improve the process of withdrawals and deposits between cycles",
+        "active": "Active"
+      },
       "about_pool": "О пуле",
       "frequency": {
         "label": "Частота выплат",
