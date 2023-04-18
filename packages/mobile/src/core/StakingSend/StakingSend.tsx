@@ -93,7 +93,10 @@ export const StakingSend: FC<Props> = (props) => {
   const wallet = useWallet();
   const operations = useInstance(() => new NFTOperations(wallet));
 
-  const [amount, setAmount] = useState<SendAmount>({ value: readyWithdraw, all: false });
+  const [amount, setAmount] = useState<SendAmount>({
+    value: isWithdrawalConfrim ? readyWithdraw : '0',
+    all: false,
+  });
 
   const [isPreparing, setPreparing] = useState(false);
   const [isSending, setSending] = useState(false);

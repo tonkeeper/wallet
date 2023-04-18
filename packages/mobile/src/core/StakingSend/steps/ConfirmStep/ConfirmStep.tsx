@@ -13,9 +13,15 @@ import {
 } from '$core/ModalContainer/NFTOperations/NFTOperationFooter';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CryptoCurrencies } from '$shared/constants';
-import { getImplementationIcon, getPoolIcon, truncateDecimal } from '$utils';
+import {
+  getImplementationIcon,
+  getPoolIcon,
+  parseLocaleNumber,
+  truncateDecimal,
+} from '$utils';
 import { PoolInfo } from '@tonkeeper/core';
 import { Address } from '$libs/Ton';
+import { formatter, stakingFormatter } from '$utils/formatter';
 
 interface Props extends StepComponentProps {
   transactionType: StakingTransactionType;
@@ -47,7 +53,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
 
   const address = useMemo(() => new Address(pool.address), [pool.address]);
 
-  const fiatValue = useFiatValue(CryptoCurrencies.Ton, amount.value);
+  const fiatValue = useFiatValue(CryptoCurrencies.Ton, parseLocaleNumber(amount.value));
   const fiatFee = useFiatValue(CryptoCurrencies.Ton, totalFee || '0');
 
   const { bottom: bottomInset } = useSafeAreaInsets();
@@ -127,7 +133,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                   <S.ItemContent>
                     <S.ItemValue>
                       {t('staking.confirm.withdraw_amount.value', {
-                        value: fiatValue.amount,
+                        value: stakingFormatter.format(fiatValue.amount),
                       })}
                     </S.ItemValue>
                     <S.ItemSubValue>≈ {fiatValue.fiatInfo.amount}</S.ItemSubValue>
@@ -141,7 +147,9 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                   <S.ItemLabel>{t('staking.confirm.amount.label')}</S.ItemLabel>
                   <S.ItemContent>
                     <S.ItemValue>
-                      {t('staking.confirm.amount.value', { value: fiatValue.amount })}
+                      {t('staking.confirm.amount.value', {
+                        value: stakingFormatter.format(fiatValue.amount),
+                      })}
                     </S.ItemValue>
                     <S.ItemSubValue>≈ {fiatValue.fiatInfo.amount}</S.ItemSubValue>
                   </S.ItemContent>

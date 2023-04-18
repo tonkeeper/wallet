@@ -704,12 +704,17 @@
       "balance": "Staking balance",
       "pendingDeposit": "Pending deposit",
       "pendingWithdraw": "Pending withdrawal",
-      "readyWithdraw": "Withdraw ready",
+      "readyWithdraw": "Withdrawal ready",
       "tap_to_collect": "Tap to collect",
       "next_cycle": {
         "title": "Next cycle",
         "desc": "All transactions take effect once the cycle ends",
         "time": "in %{time}"
+      },
+      "cooldown": {
+        "title": "Cooldown period",
+        "desc": "Two-hour period applied at the start of each staking cycle to improve the process of withdrawals and deposits between cycles",
+        "active": "Active"
       },
       "about_pool": "About pool",
       "frequency": {

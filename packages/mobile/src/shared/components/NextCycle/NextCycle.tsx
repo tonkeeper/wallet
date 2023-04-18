@@ -15,7 +15,10 @@ const NextCycleComponent: FC<Props> = (props) => {
 
   const t = useTranslator();
 
-  const { formattedDuration, progress } = useStakingCycle(cycleStart, cycleEnd);
+  const { formattedDuration, progress, isCooldown } = useStakingCycle(
+    cycleStart,
+    cycleEnd,
+  );
 
   const containerWidth = useSharedValue(0);
 
@@ -29,6 +32,22 @@ const NextCycleComponent: FC<Props> = (props) => {
   const progressAnimatedStyle = useAnimatedStyle(() => ({
     width: interpolate(progress.value, [0, 1], [0, containerWidth.value]),
   }));
+
+  if (isCooldown) {
+    return (
+      <S.Container>
+        <S.Row>
+          <Text variant="label1">{t('staking.details.cooldown.title')}</Text>
+          <Text variant="label1" color="accentPositive">
+            {t('staking.details.cooldown.active')}
+          </Text>
+        </S.Row>
+        <Text variant="body2" color="foregroundSecondary">
+          {t('staking.details.cooldown.desc')}
+        </Text>
+      </S.Container>
+    );
+  }
 
   return (
     <S.Container onLayout={handleLayout}>
