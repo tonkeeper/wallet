@@ -719,9 +719,9 @@
         "time": "через %{time}"
       },
       "cooldown": {
-        "title": "Cooldown period",
-        "desc": "Two-hour period applied at the start of each staking cycle to improve the process of withdrawals and deposits between cycles",
-        "active": "Active"
+        "title": "Период ожидания",
+        "desc": "Двухчасовой период, применяемый в начале каждого стейкинг цикла для улучшения процесса снятия и внесения средств между циклами",
+        "active": "Активен"
       },
       "about_pool": "О пуле",
       "frequency": {
