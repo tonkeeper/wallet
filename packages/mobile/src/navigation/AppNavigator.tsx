@@ -7,31 +7,34 @@ import { setNavigationRef, onNavigationReady } from './helper';
 import { AppStack } from './AppStack';
 import { mainSelector } from '$store/main';
 import { useTheme } from '$hooks';
-import { ProvidersWithoutNavigation } from './Providers';
+import { ProvidersWithNavigation, ProvidersWithoutNavigation } from './Providers';
 
 export const AppNavigator: FC = () => {
   const theme = useTheme();
   const { isInitiating } = useSelector(mainSelector);
 
-  const navigationTheme = useMemo(() => ({
-    dark: true,
-    colors: {
-      primary: theme.colors.accentPrimary,
-      background: theme.colors.backgroundPrimary,
-      card: theme.colors.backgroundPrimary,
-      text: theme.colors.constantLight,
-      notification: theme.colors.backgroundPrimary,
-      border: 'none',
-    }
-  }), [theme]);
+  const navigationTheme = useMemo(
+    () => ({
+      dark: true,
+      colors: {
+        primary: theme.colors.accentPrimary,
+        background: theme.colors.backgroundPrimary,
+        card: theme.colors.backgroundPrimary,
+        text: theme.colors.constantLight,
+        notification: theme.colors.backgroundPrimary,
+        border: 'none',
+      },
+    }),
+    [theme],
+  );
 
   if (isInitiating) {
     return null;
   }
 
   return (
-    <NavigationContainer 
-      ref={setNavigationRef} 
+    <NavigationContainer
+      ref={setNavigationRef}
       onReady={onNavigationReady}
       theme={navigationTheme}
     >
@@ -40,7 +43,9 @@ export const AppNavigator: FC = () => {
           barStyle={theme.isDark ? 'light-content' : 'dark-content'}
           backgroundColor={theme?.colors.constantDark}
         />
-        <AppStack />
+        <ProvidersWithNavigation>
+          <AppStack />
+        </ProvidersWithNavigation>
       </ProvidersWithoutNavigation>
     </NavigationContainer>
   );
