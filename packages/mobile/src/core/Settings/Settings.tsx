@@ -208,7 +208,11 @@ export const Settings: FC = () => {
 
   const notificationIndicator = React.useMemo(() => {
     if (notificationsBadge.isVisible) {
-      return <S.NotificationDeniedIndicator />;
+      return (
+        <View style={styles.notificationIndicatorContainer.static}>
+          <S.NotificationDeniedIndicator />
+        </View>
+      );
     }
 
     return null;
@@ -479,5 +483,11 @@ const styles = Steezy.create({
   notificationsTextContainer: {
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  notificationIndicatorContainer: {
+    height: 24,
+    paddingTop: 9.5,
+    paddingBottom: 6.5,
+    marginLeft: 8,
   },
 });
