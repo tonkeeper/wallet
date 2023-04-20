@@ -692,6 +692,8 @@
   "transfer_deeplink_address_error": "Неверный адрес получателя",
   "transfer_deeplink_amount_error": "Некорректный запрос суммы",
 
+  "confirm": "Подтвердить",
+
   "staking": {
     "title": "Стейкинг",
     "widget_desc": "Зарабатывайте на TON до %{apy}%",

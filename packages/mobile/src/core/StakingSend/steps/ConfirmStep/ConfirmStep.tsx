@@ -51,6 +51,9 @@ const ConfirmStepComponent: FC<Props> = (props) => {
   const { transactionType, active, pool, totalFee, amount, stepsScrollTop, sendTx } =
     props;
 
+  const isWithdrawalConfrim =
+    transactionType === StakingTransactionType.WITHDRAWAL_CONFIRM;
+
   const address = useMemo(() => new Address(pool.address), [pool.address]);
 
   const fiatValue = useFiatValue(CryptoCurrencies.Ton, parseLocaleNumber(amount.value));
@@ -176,8 +179,8 @@ const ConfirmStepComponent: FC<Props> = (props) => {
       </StepScrollView>
       <S.FooterContainer bottomInset={bottomInset}>
         <ActionFooter
-          withCloseButton={false}
-          confirmTitle={t('confirm_sending_submit')}
+          withCloseButton={isWithdrawalConfrim}
+          confirmTitle={t(isWithdrawalConfrim ? 'confirm' : 'confirm_sending_submit')}
           onPressConfirm={handleConfirm}
           ref={footerRef}
         />
