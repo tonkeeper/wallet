@@ -5,11 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AppStackParamList } from '$navigation/AppStack/AppStack.interface';
 import { AppStackRouteNames } from '$navigation';
 import { MainStack } from '$navigation/MainStack';
-import {
-  Intro,
-  ModalContainer,
-  AccessConfirmation,
-} from '$core';
+import { Intro, AccessConfirmation } from '$core';
 import { useTheme } from '$hooks';
 import { mainSelector } from '$store/main';
 import { isAndroid } from '$utils';
@@ -18,7 +14,6 @@ import { useAttachScreen } from '$navigation/AttachScreen';
 import { useNotificationsResolver } from '$hooks/useNotificationsResolver';
 import { withModalStack } from '$libs/navigation';
 import { ModalStack } from '$navigation/ModalStack';
-import { ProvidersWithNavigation } from '$navigation/Providers';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -54,25 +49,23 @@ export const AppStackComponent: FC = () => {
   }
 
   return (
-    <ProvidersWithNavigation>
-      <Stack.Navigator
-        screenOptions={{
-          presentation: 'modal',
-          headerShown: false,
-          gestureEnabled: true,
-          animation: isAndroid ? 'default' : 'slide_from_right',
-          contentStyle: {
-            backgroundColor: theme.colors.backgroundPrimary,
-          },
-        }}
-      >
-        {renderRoot()}
-      </Stack.Navigator>
-    </ProvidersWithNavigation>
+    <Stack.Navigator
+      screenOptions={{
+        presentation: 'modal',
+        headerShown: false,
+        gestureEnabled: true,
+        animation: isAndroid ? 'default' : 'slide_from_right',
+        contentStyle: {
+          backgroundColor: theme.colors.backgroundPrimary,
+        },
+      }}
+    >
+      {renderRoot()}
+    </Stack.Navigator>
   );
 };
 
-export const AppStack = withModalStack({ 
+export const AppStack = withModalStack({
   RootStack: AppStackComponent,
   ModalStack: ModalStack,
-})
+});
