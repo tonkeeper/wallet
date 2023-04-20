@@ -83,6 +83,15 @@ export const useStakingStore = create(
                     pool.maxNominators > pool.currentNominators &&
                     pool.implementation === 'whales',
                 )
+                .map((pool) => {
+                  if (pool.implementation !== 'whales') {
+                    return pool;
+                  }
+
+                  const cycleStart = pool.cycleEnd > 0 ? pool.cycleEnd - 36 * 3600 : 0;
+
+                  return { ...pool, cycleStart };
+                })
                 .sort((a, b) => {
                   if (a.apy === b.apy) {
                     return a.cycleStart > b.cycleStart ? 1 : -1;
