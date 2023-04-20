@@ -2,14 +2,16 @@ import React from 'react';
 import { AttachScreenButton } from '$navigation/AttachScreen';
 import { Button, DevSeparator, Screen, Text } from '$uikit';
 import { useDeeplinking } from '$libs/deeplinking';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const DevDeeplinking: React.FC = () => {
   const deeplinking = useDeeplinking();
+  const { bottom: paddingBottom } = useSafeAreaInsets();
 
   return (
     <Screen>
       <Screen.Header title="Deeplinking" rightContent={<AttachScreenButton />} />
-      <Screen.ScrollView>
+      <Screen.ScrollView contentContainerStyle={{ paddingBottom }}>
         <Text variant="h2">sign-raw-payload</Text>
 
         <DevSeparator />
@@ -234,6 +236,14 @@ export const DevDeeplinking: React.FC = () => {
           }}
         >
           Subscribe with delay 1s
+        </Button>
+        <DevSeparator />
+        <Button
+          onPress={() => {
+            deeplinking.resolve('https://app.tonkeeper.com/buy-ton');
+          }}
+        >
+          Buy TON
         </Button>
       </Screen.ScrollView>
     </Screen>

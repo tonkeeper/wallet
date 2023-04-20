@@ -125,6 +125,14 @@ export function useDeeplinkingResolvers() {
     }
   });
 
+  deeplinking.add('/buy-ton', () => {
+    if (!getWallet()) {
+      return openRequireWalletModal();
+    } else {
+      nav.openModal('Exchange', { category: 'buy' });
+    }
+  });
+
   deeplinking.add('/transfer/:address', async ({ params, query, resolveParams }) => {
     const currency = CryptoCurrencies.Ton;
     const address = params.address;
