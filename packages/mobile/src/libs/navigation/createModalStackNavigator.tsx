@@ -10,6 +10,7 @@ import { AdditionalRouteConfig, ModalBehavior, ModalRouteConfigByType, WithPath 
 // DEPRECATED
 import { AppStackRouteNames } from "$navigation";
 import { ModalContainer } from "$core";
+import { ProvidersWithNavigation } from "$navigation/Providers";
 
 
 const isValidKey = (key: unknown) =>
@@ -128,44 +129,46 @@ function createModalNavigator(Stack: any) {
 
     return (
       <SheetRoutesContext.Provider value={routes.sheets}>
-        <Stack.Navigator {...restProps} screenOptions={screenOptionsNavigator}>
-          <Stack.Screen component={RootStack} name="Root" options={{ headerShown: false }} />
-          <Stack.Screen
-            options={sheetsProviderOptions}
-            component={SheetContainer}
-            name="SheetsProvider"
-          />
-
-          {/* DEPRECATED */}
-          <Stack.Screen
-            options={sheetsProviderOptions}
-            name={AppStackRouteNames.ModalContainer}
-            component={ModalContainer}
-            initialParams={{
-              modalName: null,
-              message: null,
-            }}
-          />
-
-          {routes.native.map((route, index) => (
-            <Stack.Screen 
-              {...route.restProps}
-              key={`native-modal-${index}`}
-              name={route.path}
-              options={{ 
-                ...route.restProps.options,
-                ...(route.restProps.animation && { 
-                  animation: route.restProps.animation 
-                }),
-                presentation: route.restProps.behavior,
-              }}
-              component={wrapNativeModal(
-                route.component, 
-                route.restProps.behavior
-              )}
+        <ProvidersWithNavigation>
+          <Stack.Navigator {...restProps} screenOptions={screenOptionsNavigator}>
+            <Stack.Screen component={RootStack} name="Root" options={{ headerShown: false }} />
+            <Stack.Screen
+              options={sheetsProviderOptions}
+              component={SheetContainer}
+              name="SheetsProvider"
             />
-          ))}
-        </Stack.Navigator>
+
+            {/* DEPRECATED */}
+            <Stack.Screen
+              options={sheetsProviderOptions}
+              name={AppStackRouteNames.ModalContainer}
+              component={ModalContainer}
+              initialParams={{
+                modalName: null,
+                message: null,
+              }}
+            />
+
+            {routes.native.map((route, index) => (
+              <Stack.Screen 
+                {...route.restProps}
+                key={`native-modal-${index}`}
+                name={route.path}
+                options={{ 
+                  ...route.restProps.options,
+                  ...(route.restProps.animation && { 
+                    animation: route.restProps.animation 
+                  }),
+                  presentation: route.restProps.behavior,
+                }}
+                component={wrapNativeModal(
+                  route.component, 
+                  route.restProps.behavior
+                )}
+              />
+            ))}
+          </Stack.Navigator>
+        </ProvidersWithNavigation>
       </SheetRoutesContext.Provider>
     );
   });
