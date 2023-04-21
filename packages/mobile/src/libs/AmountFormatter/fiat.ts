@@ -36,7 +36,7 @@ export const FiatCurrencySymbolsConfig = {
     side: 'end',
   },
   [FiatCurrencies.Uzs]: {
-    symbol: 'Som',
+    symbol: 'Sum',
     side: 'end',
   },
   [FiatCurrencies.Gbp]: {
