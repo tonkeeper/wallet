@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TonThemeColor } from '$styled';
-import { Text } from '$uikit';
+import { Spacer, Text } from '$uikit';
 
 interface ListItemRateProps {
   percent?: string;
@@ -12,35 +12,29 @@ interface ListItemRateProps {
 const trend2color: { [key: string]: TonThemeColor } = {
   negative: 'accentNegative',
   positive: 'accentPositive',
-  unknown: 'textSecondary'
+  unknown: 'textSecondary',
 };
 
 export const ListItemRate = memo<ListItemRateProps>((props) => (
-  <View style={styles.subvalue}>
-    <Text
-      color="textSecondary"
-      style={{ marginRight: 6 }}
-      variant="body2"
-    >
-      {props.price}
-    </Text>
+  <Text style={styles.title} numberOfLines={1} color="textSecondary" variant="body2">
+    {props.price}
+    <View style={styles.spacing} />
     {!!props.percent && (
-      <Text
-        style={styles.percentText}
-        color={trend2color[props.trend]}
-        variant="body2"
-      >
+      <Text style={styles.percentText} color={trend2color[props.trend]} variant="body2">
         {props.percent}
       </Text>
     )}
-  </View>
+  </Text>
 ));
 
 const styles = StyleSheet.create({
-  subvalue: {
-    flexDirection: 'row'
+  spacing: {
+    width: 6,
+  },
+  title: {
+    marginRight: 6,
   },
   percentText: {
     opacity: 0.74,
-  }
+  },
 });
