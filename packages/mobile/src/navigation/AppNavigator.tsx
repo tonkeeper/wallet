@@ -7,7 +7,7 @@ import { setNavigationRef, onNavigationReady } from './helper';
 import { AppStack } from './AppStack';
 import { mainSelector } from '$store/main';
 import { useTheme } from '$hooks';
-import { ProvidersWithNavigation, ProvidersWithoutNavigation } from './Providers';
+import { ProvidersWithoutNavigation } from './Providers';
 
 export const AppNavigator: FC = () => {
   const theme = useTheme();
@@ -43,9 +43,7 @@ export const AppNavigator: FC = () => {
           barStyle={theme.isDark ? 'light-content' : 'dark-content'}
           backgroundColor={theme?.colors.constantDark}
         />
-        <ProvidersWithNavigation>
-          <AppStack />
-        </ProvidersWithNavigation>
+        <AppStack />
       </ProvidersWithoutNavigation>
     </NavigationContainer>
   );
