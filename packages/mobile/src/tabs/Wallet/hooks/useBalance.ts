@@ -14,7 +14,7 @@ import { Ton } from '$libs/Ton';
 import { useGetPrice } from '$hooks/useWalletInfo';
 import BigNumber from 'bignumber.js';
 import { formatter } from '$utils/formatter';
-import { DevFeature, useDevFeaturesToggle, useStakingStore } from '$store';
+import { useStakingStore } from '$store';
 import { shallow } from 'zustand/shallow';
 
 export type Rate = {
@@ -76,15 +76,8 @@ export const useBalance = (tokensTotal: number) => {
   const amountToFiat = useAmountToFiat();
   const getPrice = useGetPrice();
 
-  const { devFeatures } = useDevFeaturesToggle();
-  const isStakingEnabled = devFeatures[DevFeature.Staking];
-
   const stakingBalance = useStakingStore((s) => {
-    let balance = '0';
-
-    if (isStakingEnabled) {
-      balance = s.stakingBalance;
-    }
+    const balance = s.stakingBalance;
 
     const formatted = formatter.format();
     return {

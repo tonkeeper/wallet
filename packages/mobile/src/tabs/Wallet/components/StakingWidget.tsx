@@ -5,7 +5,7 @@ import { List, View } from '$uikit';
 import React, { FC, memo, useCallback } from 'react';
 import { useNavigation } from '$libs/navigation';
 import { Steezy } from '$styles';
-import { DevFeature, useDevFeaturesToggle, useStakingStore } from '$store';
+import { useStakingStore } from '$store';
 import { shallow } from 'zustand/shallow';
 import { StakingWidgetStatus } from './StakingWidgetStatus';
 
@@ -29,15 +29,11 @@ const StakingWidgetComponent: FC = () => {
     shallow,
   );
 
-  const { devFeatures } = useDevFeaturesToggle();
-
-  const isStakingEnabled = devFeatures[DevFeature.Staking];
-
   const handleStakingPress = useCallback(() => {
     nav.push(MainStackRouteNames.StakingPools, { providerId: 'whales' });
   }, [nav]);
 
-  if (!isStakingEnabled || !hasPools) {
+  if (!hasPools) {
     return null;
   }
 
