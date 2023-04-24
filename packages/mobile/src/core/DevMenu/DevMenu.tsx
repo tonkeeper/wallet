@@ -132,16 +132,6 @@ export const DevMenu: FC = () => {
             >
               Use HTTP protocol in browser
             </CellSectionItem>
-            <CellSectionItem
-              indicator={
-                <Switch
-                  value={devFeatures[DevFeature.Staking]}
-                  onChange={() => toggleFeature(DevFeature.Staking)}
-                />
-              }
-            >
-              Staking
-            </CellSectionItem>
             {__DEV__ && (
               <>
                 <CellSectionItem onPress={handleTestCrash}>
@@ -161,27 +151,23 @@ export const DevMenu: FC = () => {
             </CellSectionItem>
           </CellSection>
           <CellSection>
-          <PopupSelect
-                    items={['auto', ...tags.map(lang => lang.tag)]}
-                    selected={devLanguage || 'auto'}
-                    onChange={(lang) => setDevLanguage(lang === 'auto' ? undefined : lang)}
-                    keyExtractor={(item) => item}
-                    width={220}
-                    renderItem={(item) => (
-                      <Text variant="label1">
-                          {item}
-                      </Text>
-                    )}
-                  >
-                    <CellSectionItem
-                      indicator={
-                        <Text variant="label1" color="accentPrimary">
-                          {devLanguage || 'auto'}
-                        </Text>
-                      }
-                    >
-                      Language
-                    </CellSectionItem>
+            <PopupSelect
+              items={['auto', ...tags.map((lang) => lang.tag)]}
+              selected={devLanguage || 'auto'}
+              onChange={(lang) => setDevLanguage(lang === 'auto' ? undefined : lang)}
+              keyExtractor={(item) => item}
+              width={220}
+              renderItem={(item) => <Text variant="label1">{item}</Text>}
+            >
+              <CellSectionItem
+                indicator={
+                  <Text variant="label1" color="accentPrimary">
+                    {devLanguage || 'auto'}
+                  </Text>
+                }
+              >
+                Language
+              </CellSectionItem>
             </PopupSelect>
           </CellSection>
           <CellSection>

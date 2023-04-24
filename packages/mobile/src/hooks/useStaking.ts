@@ -1,4 +1,4 @@
-import { DevFeature, useDevFeaturesToggle, useStakingStore } from '$store';
+import { useStakingStore } from '$store';
 import { walletSelector, walletWalletSelector } from '$store/wallet';
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
@@ -10,14 +10,10 @@ export const useStaking = () => {
 
   const prevAddress = useRef(address);
 
-  const { devFeatures } = useDevFeaturesToggle();
-
-  const isStakingEnabled = devFeatures[DevFeature.Staking];
-
   const hasWallet = !!wallet;
 
   useEffect(() => {
-    if (!hasWallet || !isStakingEnabled) {
+    if (!hasWallet) {
       useStakingStore.getState().actions.reset();
 
       return;
@@ -32,7 +28,7 @@ export const useStaking = () => {
     return () => {
       clearInterval(timerId);
     };
-  }, [hasWallet, isStakingEnabled]);
+  }, [hasWallet]);
 
   useEffect(() => {
     if (address !== prevAddress.current) {
