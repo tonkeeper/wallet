@@ -1,4 +1,4 @@
-import { KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
+import { KNOWN_STAKING_IMPLEMENTATIONS, getServerConfig } from '$shared/constants';
 import { store } from '$store';
 import { i18n } from '$translation';
 import { calculatePoolBalance } from '$utils';
@@ -13,8 +13,9 @@ import { IStakingStore, StakingApiStatus, StakingInfo, StakingProvider } from '.
 const getStakingApi = () => {
   return new StakingApi(
     new Configuration({
-      basePath: 'https://tonapi.io', // TODO: remove that hardcode when staking API will be available on tonkeeper endpoint
+      basePath: getServerConfig('tonapiIOEndpoint'),
       headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
         'Accept-Language': i18n.locale,
       },
     }),
