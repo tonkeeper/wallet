@@ -1,7 +1,7 @@
 import { useDeeplinking } from '$libs/deeplinking';
 import { openDAppsSearch } from '$navigation';
 import { walletSelector } from '$store/wallet';
-import { getCorrectUrl, getSearchQuery } from '$utils';
+import { getCorrectUrl, getSearchQuery, getUrlWithoutTonProxy } from '$utils';
 import React, { FC, memo, useCallback, useState } from 'react';
 import { Linking, useWindowDimensions } from 'react-native';
 import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -75,7 +75,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
       progress.value = withTiming(e.nativeEvent.progress);
 
       setTitle(e.nativeEvent.title);
-      setCurrentUrl(removeUtmFromUrl(e.nativeEvent.url));
+      setCurrentUrl(getUrlWithoutTonProxy(removeUtmFromUrl(e.nativeEvent.url)));
     },
     [progress],
   );
