@@ -336,7 +336,8 @@
     "manage_tokens": "Manage tokens",
     "name": "Name",
     "token_id": "Token ID",
-    "collection_id": "Collection ID"
+    "collection_id": "Collection ID",
+    "token_copied": "Token ID copied"
   },
 
   "activity": {

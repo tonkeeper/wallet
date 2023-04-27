@@ -44,7 +44,7 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
 
   const handleCopyAddress = useCallback(() => {
     Clipboard.setString(props.tokenAddress);
-    Toast.show(t('copied'));
+    Toast.show(t('approval.token_copied'));
   }, [props.tokenAddress]);
 
   const modalState = useMemo(() => {

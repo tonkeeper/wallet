@@ -12,6 +12,14 @@ export const useTokenApprovalStore = create(
     (set, getState) => ({
       ...initialState,
       actions: {
+        removeTokenStatus: (address: string) => {
+          const { tokens } = getState();
+
+          if (tokens[address]) {
+            delete tokens[address];
+            set({ tokens });
+          }
+        },
         updateTokenStatus: (
           address: string,
           status: TokenApprovalStatus,

@@ -23,5 +23,6 @@ export interface ITokenApprovalStore {
       status: TokenApprovalStatus,
       type: TokenApprovalType,
     ) => void;
+    removeTokenStatus: (address: string) => void;
   };
 }

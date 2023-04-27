@@ -23,7 +23,7 @@ import { EventsMap } from '$store/events/interface';
 import { differenceInCalendarMonths } from 'date-fns';
 import { EventModel, JettonBalanceModel } from '$store/models';
 import { openEditCoins, openJetton, openJettonsList } from '$navigation';
-import { Ton } from '$libs/Ton';
+import { Address, Ton } from '$libs/Ton';
 import { useTranslator } from '$hooks';
 import { walletActions } from '$store/wallet';
 import { useDispatch } from 'react-redux';
@@ -31,6 +31,8 @@ import _ from 'lodash';
 import { BalanceItem } from '$core/Balances/BalanceItem/BalanceItem';
 import { TokenListItem } from '$uikit/TokenListItem/TokenListItem';
 import { ActionItem } from '$shared/components/ActionItem/ActionItem';
+import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
+import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
 
 const AnimatedSectionList =
   Animated.createAnimatedComponent<SectionListProps<any>>(SectionList);
@@ -69,6 +71,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
   ) => {
     const t = useTranslator();
     const dispatch = useDispatch();
+    const tokensApprovalState = useTokenApprovalStore((state) => state.tokens);
 
     const handleManageJettons = useCallback(() => {
       openJettonsList();
@@ -110,6 +113,15 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
       let lastDate = '';
       let chunk: any = [];
       for (let event of eventsCopy) {
+        const jettonTransferAction = event.actions?.find((a) => a.jettonTransfer?.jetton);
+        const jettonAddress = jettonTransferAction?.jettonTransfer?.jetton?.address;
+        if (
+          jettonAddress &&
+          tokensApprovalState[new Address(jettonAddress).toString(true, true, true)]
+            .current === TokenApprovalStatus.Declined
+        ) {
+          continue;
+        }
         const ev = eventsInfo[event.eventId];
         const ts = ev.timestamp * 1000;
         const now = new Date();
@@ -152,7 +164,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
       }
 
       return result;
-    }, [initialData, eventsInfo]);
+    }, [initialData, eventsInfo, tokensApprovalState]);
 
     function renderItem({ item, index, section }: SectionListRenderItemInfo<any>) {
       const borderStart = index === 0;
