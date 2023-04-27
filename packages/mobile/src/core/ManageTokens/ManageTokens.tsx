@@ -12,9 +12,9 @@ import { t } from '$translation';
 import { List } from '$uikit/List/new';
 import { ListSeparator } from '$uikit/List/new/ListSeparator';
 import { StyleSheet } from 'react-native';
-import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { ContentType, Content } from '$core/ManageTokens/ManageTokens.types';
 import { useJettonData } from '$core/ManageTokens/hooks/useJettonData';
+import { useNftData } from '$core/ManageTokens/hooks/useNftData';
 
 export function reorderJettons(newOrder: JettonBalanceModel[]) {
   return newOrder.map((jettonBalance) => {
@@ -61,6 +61,7 @@ export const ManageTokens: FC = () => {
   const { bottom: bottomInset } = useSafeAreaInsets();
   const [tab, setTab] = useState<string>('tokens');
   const jettonData = useJettonData();
+  const nftData = useNftData();
 
   const renderTabs = useCallback(() => {
     return (
@@ -79,16 +80,8 @@ export const ManageTokens: FC = () => {
             </Tabs.Header>
             <Tabs.PagerView>
               <Tabs.Section index={0}>
-                <View style={styles.sectionContainer}>
-                  <FlashList
-                    contentContainerStyle={styles.flashList.static}
-                    data={jettonData}
-                    renderItem={FLashListItem}
-                  />
-                </View>
-              </Tabs.Section>
-              <Tabs.Section index={1}>
                 <FlashList
+                  estimatedItemSize={76}
                   contentContainerStyle={StyleSheet.flatten([
                     styles.flashList.static,
                     { paddingBottom: bottomInset },
@@ -97,29 +90,44 @@ export const ManageTokens: FC = () => {
                   renderItem={FLashListItem}
                 />
               </Tabs.Section>
+              <Tabs.Section index={1}>
+                <FlashList
+                  estimatedItemSize={76}
+                  contentContainerStyle={StyleSheet.flatten([
+                    styles.flashList.static,
+                    { paddingBottom: bottomInset },
+                  ])}
+                  data={nftData}
+                  renderItem={FLashListItem}
+                />
+              </Tabs.Section>
             </Tabs.PagerView>
           </View>
         </Tabs>
       </Screen>
     );
-  }, [bottomInset, jettonData, tab]);
+  }, [bottomInset, jettonData, nftData, tab]);
 
-  // return renderTabs();
-
-  return (
-    <Screen>
-      <Screen.Header title={t('approval.manage_tokens')} />
-      <Screen.FlashList
-        estimatedItemSize={76}
-        contentContainerStyle={StyleSheet.flatten([
-          styles.flashList.static,
-          { paddingBottom: bottomInset },
-        ])}
-        data={jettonData}
-        renderItem={FLashListItem}
-      />
-    </Screen>
-  );
+  // TODO: need to remove this hardcode after refactoring collectibles
+  // if (jettonData.length && nftData.length) {
+  if (false) {
+    return renderTabs();
+  } else {
+    return (
+      <Screen>
+        <Screen.Header title={t('approval.manage_tokens')} />
+        <Screen.FlashList
+          estimatedItemSize={76}
+          contentContainerStyle={StyleSheet.flatten([
+            styles.flashList.static,
+            { paddingBottom: bottomInset },
+          ])}
+          data={jettonData}
+          renderItem={FLashListItem}
+        />
+      </Screen>
+    );
+  }
 };
 
 const styles = Steezy.create(({ safeArea, corners, colors }) => ({
@@ -128,7 +136,6 @@ const styles = Steezy.create(({ safeArea, corners, colors }) => ({
     paddingTop: safeArea.top,
     paddingBottom: 16,
   },
-  sectionContainer: {},
   flashList: {
     paddingHorizontal: 16,
   },

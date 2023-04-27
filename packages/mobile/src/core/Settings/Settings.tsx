@@ -9,7 +9,7 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
 import { Icon, PopupSelect, ScrollHandler, Spacer, Text } from '$uikit';
-import { useJettonBalances, useNavigation, useTranslator } from '$hooks';
+import { useIsHasJettons, useJettonBalances, useNavigation, useTranslator } from '$hooks';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
 import {
@@ -82,7 +82,7 @@ export const Settings: FC = () => {
   const version = useSelector(walletVersionSelector);
   const allTonAddesses = useAllAddresses();
   const showV4R1 = useSelector(showV4R1Selector);
-  const { enabled: jettonBalances } = useJettonBalances();
+  const hasJettons = useIsHasJettons();
   const tokenApproval = useDevFeatureEnabled(DevFeature.TokenApproval);
 
   const searchEngine = useBrowserStore((state) => state.searchEngine);
@@ -249,7 +249,7 @@ export const Settings: FC = () => {
               title={t('settings_security')}
               onPress={handleSecurity}
             />
-            {!!jettonBalances.length && (
+            {hasJettons && (
               <List.Item
                 value={
                   <Icon

@@ -4,11 +4,16 @@ import { Icon, Spacer, SText, View } from '$uikit';
 import { List } from '$uikit/List/new';
 import { openManageTokens } from '$navigation';
 import { t } from '$translation';
-import { useJettonBalances } from '$hooks';
+import { useApprovedNfts, useJettonBalances } from '$hooks';
 
 const ApprovalCellComponent: React.FC = () => {
   const handleApproveTokens = useCallback(openManageTokens, []);
-  const { pending } = useJettonBalances();
+  const { pending: jettonsPending } = useJettonBalances();
+  const { pending: nftsPending } = useApprovedNfts();
+
+  const pending = useMemo(() => {
+    return [...jettonsPending, ...nftsPending];
+  }, [jettonsPending, nftsPending]);
 
   const text = useMemo(() => {
     if (pending.length === 1) {
@@ -19,7 +24,9 @@ const ApprovalCellComponent: React.FC = () => {
         name1: pending[0].metadata?.name,
         name2: pending[1].metadata?.name,
       });
-    } else return t('approval.approve_many', { count: pending.length });
+    } else {
+      return t('approval.approve_many', { count: pending.length });
+    }
   }, [pending]);
 
   if (!pending.length) {

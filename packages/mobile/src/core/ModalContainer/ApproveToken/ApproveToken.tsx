@@ -21,7 +21,7 @@ import Clipboard from '@react-native-community/clipboard';
 export interface ApproveTokenModalParams {
   tokenAddress: string;
   type: TokenApprovalType;
-  verification: JettonVerification;
+  verification?: JettonVerification;
   name?: string;
   image?: string;
 }
@@ -101,7 +101,7 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
     } else {
       return t('approval.verify_tokens_description');
     }
-  }, [currentStatus?.updated_at, modalState, props.type]);
+  }, [currentStatus, modalState, props.type]);
 
   const renderActions = useCallback(() => {
     switch (modalState) {

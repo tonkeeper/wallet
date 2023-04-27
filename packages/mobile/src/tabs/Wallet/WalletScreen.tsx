@@ -31,9 +31,8 @@ import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
 import { useTonkens } from './hooks/useTokens';
-import { useNFTs } from './hooks/useNFTs';
 import { useWallet } from './hooks/useWallet';
-import { useTheme } from '$hooks';
+import { useApprovedNfts, useTheme } from '$hooks';
 import { ApprovalCell } from '$core/ApprovalCell/components/ApprovalCell';
 import { Steezy } from '$styles';
 import { BalancesList } from './components/BalancesList';
@@ -46,7 +45,7 @@ export const WalletScreen = memo(() => {
   const theme = useTheme();
   const nav = useNavigation();
   const tokens = useTonkens();
-  const nfts = useNFTs();
+  const { enabled: nfts } = useApprovedNfts();
   const wallet = useWallet();
   const tokenApproval = useDevFeatureEnabled(DevFeature.TokenApproval);
 

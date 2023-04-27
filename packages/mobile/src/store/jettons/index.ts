@@ -76,6 +76,12 @@ export const jettonsBalancesSelector = createSelector(
   jettonsSelector,
   (jettons) => jettons.jettonBalances,
 );
+
+export const hasJettonsSelector = createSelector(
+  jettonsBalancesSelector,
+  (jettonBalances) =>
+    !!jettonBalances.filter((balance) => balance.balance !== '0').length,
+);
 export const excludedJettonsSelector = createSelector(
   jettonsSelector,
   (jettons) => jettons.excludedJettons,
