@@ -136,6 +136,10 @@ export function openReceive(
   });
 }
 
+export function openExploreTab(initialCategory?: string) {
+  navigate(TabsStackRouteNames.Explore, { initialCategory });
+}
+
 export function openSend(
   currency?: CryptoCurrency | string,
   address?: string,

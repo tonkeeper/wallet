@@ -26,7 +26,7 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
     handleConfirmWithdrawalPress,
   } = usePoolInfo(pool, poolStakingInfo);
 
-  const { formattedDuration } = useStakingCycle(
+  const { formattedDuration, isCooldown } = useStakingCycle(
     pool.cycleStart,
     pool.cycleEnd,
     hasPendingWithdraw,
@@ -59,7 +59,7 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
         <StakingListCell
           id={`pendingWithdraw_${poolStakingInfo.pool}`}
           name={t('staking.details.pendingWithdraw')}
-          description={formattedDuration}
+          description={isCooldown ? pool.name : formattedDuration}
           balance={pendingWithdraw.amount}
           iconSource={iconSource}
           numberOfLines={1}

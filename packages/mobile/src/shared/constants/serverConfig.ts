@@ -18,6 +18,7 @@ export interface ServerConfig {
   subscriptionsHost: string;
   tonapiTestnetHost: string;
   tonApiKey: string;
+  tonApiV2Key: string;
   cachedMediaEndpoint: string;
   cachedMediaKey: string;
   cachedMediaSalt: string;
@@ -48,6 +49,7 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     tonNFTsMarketplaceEndpoint: data.tonNFTsMarketplaceEndpoint,
     tonapiIOEndpoint: data.tonapiIOEndpoint || 'https://keeper.tonapi.io',
     tonApiKey: data.tonApiKey,
+    tonApiV2Key: data.tonApiV2Key,
     subscriptionsHost: data.subscriptionsHost || 'https://api.tonkeeper.com',
     tonapiMainnetHost: data.tonapiMainnetHost || 'https://tonapi.io',
     tonapiTestnetHost: data.tonapiTestnetHost || 'https://testnet.tonapi.io',

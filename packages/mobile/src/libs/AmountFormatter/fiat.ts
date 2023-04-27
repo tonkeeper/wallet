@@ -10,6 +10,8 @@ export enum FiatCurrencies {
   Idr = 'idr',
   Inr = 'inr',
   Jpy = 'jpy',
+  Uah = 'uah',
+  Uzs = 'uzs',
 }
 
 export const FiatCurrencySymbolsConfig = {
@@ -27,6 +29,14 @@ export const FiatCurrencySymbolsConfig = {
   },
   [FiatCurrencies.Aed]: {
     symbol: 'DH',
+    side: 'end',
+  },
+  [FiatCurrencies.Uah]: {
+    symbol: '₴',
+    side: 'end',
+  },
+  [FiatCurrencies.Uzs]: {
+    symbol: 'Sum',
     side: 'end',
   },
   [FiatCurrencies.Gbp]: {

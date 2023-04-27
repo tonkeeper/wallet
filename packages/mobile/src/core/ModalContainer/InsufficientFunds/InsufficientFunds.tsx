@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '$translation';
 import { Modal } from '$libs/navigation';
-import { push } from '$navigation';
+import { openExploreTab, push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 import { Button, Icon, Text } from '$uikit';
 import * as S from './InsufficientFunds.style';
@@ -12,6 +12,7 @@ import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { Ton } from '$libs/Ton';
 import { Tonapi } from '$libs/Tonapi';
 import { store } from '$store';
+import { formatter } from '$utils/formatter';
 
 export interface InsufficientFundsParams {
     /**
@@ -41,13 +42,19 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>(
       decimals = 9,
     } = props;
     const nav = useNavigation();
-    const formattedAmount = useMemo(() => truncateDecimal(new BigNumber(fromNano(totalAmount, decimals)).toString(), 2, false, true), [totalAmount, decimals]);
-    const formattedBalance = useMemo(() => truncateDecimal(new BigNumber(fromNano(balance, decimals)).toString(), 2, false, true), [balance, decimals]);
+    const formattedAmount = useMemo(() => formatter.format(fromNano(totalAmount, decimals), { decimals }), [totalAmount, decimals]);
+    const formattedBalance = useMemo(() => formatter.format(fromNano(balance, decimals), { decimals }), [totalAmount, decimals]);
 
     const handleOpenRechargeWallet = useCallback(async () => {
         nav.goBack();
         await delay(550);
         nav.openModal('Exchange');
+    }, []);
+
+    const handleOpenDappBrowser = useCallback(async () => {
+        nav.goBack();
+        await delay(550);
+        openExploreTab('defi');
     }, []);
 
     return (
@@ -76,13 +83,13 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>(
         </Modal.Content>
         <Modal.Footer>
           <S.FooterWrap>
-                {currency === 'TON' && (<Button
-                    style={{ marginBottom: 16 }}
-                    mode="secondary"
-                    onPress={handleOpenRechargeWallet}
-                >
+              <Button
+                style={{ marginBottom: 16 }}
+                mode="secondary"
+                onPress={currency === 'TON' ? handleOpenRechargeWallet : handleOpenDappBrowser}
+              >
                 {t('txActions.signRaw.insufficientFunds.rechargeWallet')}
-              </Button>)}
+            </Button>
           </S.FooterWrap>
         </Modal.Footer>
       </Modal>

@@ -11,10 +11,11 @@ export const useStakingCycle = (cycleStart: number, cycleEnd: number, enabled = 
   const startTimestamp = cycleStart * 1000;
   const endTimestamp = cycleEnd * 1000;
 
-  const duration: Duration =
-    now < endTimestamp
-      ? intervalToDuration({ start: now, end: endTimestamp })
-      : { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  const isCooldown = now > endTimestamp;
+
+  const duration: Duration = isCooldown
+    ? { days: 0, hours: 0, minutes: 0, seconds: 0 }
+    : intervalToDuration({ start: now, end: endTimestamp });
 
   const progress = useDerivedValue(
     () => interpolate(now, [startTimestamp, endTimestamp], [0, 1], Extrapolation.CLAMP),
@@ -40,5 +41,5 @@ export const useStakingCycle = (cycleStart: number, cycleEnd: number, enabled = 
     }
   }, [enabled]);
 
-  return { duration, formattedDuration, progress };
+  return { duration, formattedDuration, progress, isCooldown };
 };

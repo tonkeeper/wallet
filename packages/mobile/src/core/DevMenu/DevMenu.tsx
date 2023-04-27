@@ -139,16 +139,6 @@ export const DevMenu: FC = () => {
             <CellSectionItem
               indicator={
                 <Switch
-                  value={devFeatures[DevFeature.Staking]}
-                  onChange={() => toggleFeature(DevFeature.Staking)}
-                />
-              }
-            >
-              Staking
-            </CellSectionItem>
-            <CellSectionItem
-              indicator={
-                <Switch
                   value={devFeatures[DevFeature.TokenApproval]}
                   onChange={() => toggleFeature(DevFeature.TokenApproval)}
                 />

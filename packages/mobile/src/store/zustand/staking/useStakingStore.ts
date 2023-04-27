@@ -1,9 +1,9 @@
-import { KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
+import { KNOWN_STAKING_IMPLEMENTATIONS, getServerConfig } from '$shared/constants';
 import { store } from '$store';
 import { i18n } from '$translation';
 import { calculatePoolBalance } from '$utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Configuration, StakingApi } from '@tonkeeper/core';
+import { Configuration, PoolInfo, StakingApi } from '@tonkeeper/core';
 import BigNumber from 'bignumber.js';
 import TonWeb from 'tonweb';
 import { create } from 'zustand';
@@ -13,8 +13,9 @@ import { IStakingStore, StakingApiStatus, StakingInfo, StakingProvider } from '.
 const getStakingApi = () => {
   return new StakingApi(
     new Configuration({
-      basePath: 'https://tonapi.io', // TODO: remove that hardcode when staking API will be available on tonkeeper endpoint
+      basePath: getServerConfig('tonapiIOEndpoint'),
       headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
         'Accept-Language': i18n.locale,
       },
     }),
@@ -59,87 +60,113 @@ export const useStakingStore = create(
               ? new TonWeb.utils.Address(address).toString(false, true, true)
               : undefined;
 
-            const [{ pools: rawPools, implementations }, { pools: poolsByNominators }] =
-              await Promise.all([
-                getStakingApi().stakingPools({
-                  availableFor: rawAddress,
-                  acceptLanguage: i18n.locale,
-                }),
-                getStakingApi().poolsByNominators({
-                  accountId: rawAddress!,
-                }),
-              ]);
+            const [poolsResponse, nominatorsResponse] = await Promise.allSettled([
+              getStakingApi().stakingPools({
+                availableFor: rawAddress,
+                acceptLanguage: i18n.locale,
+              }),
+              getStakingApi().poolsByNominators({
+                accountId: rawAddress!,
+              }),
+            ]);
 
-            const pools = rawPools
-              .filter(
-                (pool) =>
-                  !!pool.name &&
-                  pool.maxNominators > pool.currentNominators &&
-                  pool.implementation === 'whales',
-              )
-              .sort((a, b) => {
-                if (a.apy === b.apy) {
-                  return a.cycleStart > b.cycleStart ? 1 : -1;
-                }
+            let pools = getState().pools;
 
-                return a.apy > b.apy ? 1 : -1;
-              });
+            let nextState: Partial<IStakingStore> = {};
 
-            const providers = Object.keys(implementations)
-              .filter((id) => pools.some((pool) => pool.implementation === id))
-              .sort((a, b) => {
-                const indexA = KNOWN_STAKING_IMPLEMENTATIONS.indexOf(a);
-                const indexB = KNOWN_STAKING_IMPLEMENTATIONS.indexOf(b);
+            if (poolsResponse.status === 'fulfilled') {
+              const { implementations } = poolsResponse.value;
 
-                if (indexA === -1 && indexB === -1) {
-                  return 0;
-                }
+              pools = poolsResponse.value.pools
+                .filter(
+                  (pool) =>
+                    !!pool.name &&
+                    pool.maxNominators > pool.currentNominators &&
+                    pool.implementation === 'whales',
+                )
+                .map((pool) => {
+                  if (pool.implementation !== 'whales') {
+                    return pool;
+                  }
 
-                if (indexA === -1) {
-                  return 1;
-                }
+                  const cycleStart = pool.cycleEnd > 0 ? pool.cycleEnd - 36 * 3600 : 0;
 
-                if (indexB === -1) {
-                  return -1;
-                }
+                  return { ...pool, cycleStart };
+                })
+                .sort((a, b) => {
+                  if (a.apy === b.apy) {
+                    return a.cycleStart > b.cycleStart ? 1 : -1;
+                  }
 
-                return indexA > indexB ? 1 : -1;
-              })
-              .map((id): StakingProvider => {
-                const implementationPools = pools.filter(
-                  (pool) => pool.implementation === id,
-                );
-                const maxApy = Math.max(...implementationPools.map((pool) => pool.apy));
-                const minStake = Math.min(
-                  ...implementationPools.map((pool) => pool.minStake),
-                );
+                  return a.apy > b.apy ? 1 : -1;
+                });
 
-                return { id, maxApy, minStake, ...implementations[id] };
-              });
+              const providers = Object.keys(implementations)
+                .filter((id) => pools.some((pool) => pool.implementation === id))
+                .sort((a, b) => {
+                  const indexA = KNOWN_STAKING_IMPLEMENTATIONS.indexOf(a);
+                  const indexB = KNOWN_STAKING_IMPLEMENTATIONS.indexOf(b);
 
-            const maxApy = Math.max(...pools.map((pool) => pool.apy));
+                  if (indexA === -1 && indexB === -1) {
+                    return 0;
+                  }
 
-            const stakingInfo = poolsByNominators.reduce<StakingInfo>(
-              (acc, cur) => ({ ...acc, [cur.pool]: cur }),
-              {},
-            );
+                  if (indexA === -1) {
+                    return 1;
+                  }
 
-            const stakingBalance = pools.reduce((total, pool) => {
-              return total.plus(calculatePoolBalance(pool, stakingInfo));
-            }, new BigNumber('0'));
+                  if (indexB === -1) {
+                    return -1;
+                  }
+
+                  return indexA > indexB ? 1 : -1;
+                })
+                .map((id): StakingProvider => {
+                  const implementationPools = pools.filter(
+                    (pool) => pool.implementation === id,
+                  );
+                  const maxApy = Math.max(...implementationPools.map((pool) => pool.apy));
+                  const minStake = Math.min(
+                    ...implementationPools.map((pool) => pool.minStake),
+                  );
+
+                  return { id, maxApy, minStake, ...implementations[id] };
+                });
+
+              const maxApy = Math.max(...pools.map((pool) => pool.apy));
+
+              nextState = {
+                ...nextState,
+                pools: pools.sort((a, b) => b.apy - a.apy),
+                providers,
+                maxApy,
+              };
+            }
+
+            if (nominatorsResponse.status === 'fulfilled') {
+              const stakingInfo = nominatorsResponse.value.pools.reduce<StakingInfo>(
+                (acc, cur) => ({ ...acc, [cur.pool]: cur }),
+                {},
+              );
+
+              const stakingBalance = pools.reduce((total, pool) => {
+                return total.plus(calculatePoolBalance(pool, stakingInfo));
+              }, new BigNumber('0'));
+
+              nextState = {
+                ...nextState,
+                stakingInfo,
+                stakingBalance: stakingBalance.toString(),
+              };
+            }
 
             if (address !== store.getState().wallet?.address?.ton) {
               return;
             }
 
-            set({
-              pools: pools.sort((a, b) => b.apy - a.apy),
-              providers,
-              maxApy,
-              stakingInfo,
-              stakingBalance: stakingBalance.toString(),
-            });
-          } catch {
+            set({ ...nextState });
+          } catch (e) {
+            console.log('fetchPools error', e.response);
           } finally {
             set({ status: StakingApiStatus.Idle });
           }

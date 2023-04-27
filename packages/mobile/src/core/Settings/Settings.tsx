@@ -214,7 +214,11 @@ export const Settings: FC = () => {
 
   const notificationIndicator = React.useMemo(() => {
     if (notificationsBadge.isVisible) {
-      return <S.NotificationDeniedIndicator />;
+      return (
+        <View style={styles.notificationIndicatorContainer.static}>
+          <S.NotificationDeniedIndicator />
+        </View>
+      );
     }
 
     return null;
@@ -238,7 +242,8 @@ export const Settings: FC = () => {
           scrollEventThrottle={16}
         >
           <List>
-            <List.Item
+            {!!wallet && (
+              <List.Item
               value={
                 <Icon
                   style={styles.icon.static}
@@ -329,34 +334,36 @@ export const Settings: FC = () => {
                 title={t('settings_search_engine')}
               />
             </PopupSelect>
-            <PopupSelect
-              items={versions}
-              selected={version}
-              onChange={handleChangeVersion}
-              keyExtractor={(item) => item}
-              width={220}
-              renderItem={(version) => (
-                <S.WalletVersion>
-                  <Text variant="label1" style={{ marginRight: ns(8) }}>
-                    {SelectableVersionsConfig[version]?.label}
-                  </Text>
-                  <Text variant="body1" color="foregroundSecondary">
-                    {maskifyAddress(
-                      allTonAddesses[SelectableVersionsConfig[version]?.label],
-                    )}
-                  </Text>
-                </S.WalletVersion>
-              )}
-            >
-              <List.Item
-                value={
-                  <Text variant="label1" color="accentPrimary">
-                    {SelectableVersionsConfig[version]?.label}
-                  </Text>
-                }
-                title={t('settings_wallet_version')}
-              />
-            </PopupSelect>
+            {!!wallet && (
+              <PopupSelect
+                items={versions}
+                selected={version}
+                onChange={handleChangeVersion}
+                keyExtractor={(item) => item}
+                width={220}
+                renderItem={(version) => (
+                  <S.WalletVersion>
+                    <Text variant="label1" style={{ marginRight: ns(8) }}>
+                      {SelectableVersionsConfig[version]?.label}
+                    </Text>
+                    <Text variant="body1" color="foregroundSecondary">
+                      {maskifyAddress(
+                        allTonAddesses[SelectableVersionsConfig[version]?.label],
+                      )}
+                    </Text>
+                  </S.WalletVersion>
+                )}
+              >
+                <List.Item
+                  value={
+                    <Text variant="label1" color="accentPrimary">
+                      {SelectableVersionsConfig[version]?.label}
+                    </Text>
+                  }
+                  title={t('settings_wallet_version')}
+                />
+              </PopupSelect>
+            )}
           </List>
           <Spacer y={16} />
           <List>
@@ -419,25 +426,31 @@ export const Settings: FC = () => {
               }
               title={t('settings_legal_documents')}
             />
-            <List.Item
-              onPress={handleDeleteAccount}
-              value={
-                <Icon
-                  style={styles.icon.static}
-                  color="iconSecondary"
-                  name={'ic-trash-bin-28'}
-                />
-              }
-              title={t('settings_delete_account')}
-            />
+            {!!wallet && (
+              <List.Item
+                onPress={handleDeleteAccount}
+                value={
+                  <Icon
+                    style={styles.icon.static}
+                    color="iconSecondary"
+                    name={'ic-trash-bin-28'}
+                  />
+                }
+                title={t('settings_delete_account')}
+              />
+            )}
           </List>
           <Spacer y={16} />
-          <List>
-            <CellSectionItem onPress={handleResetWallet} icon="ic-door-28">
-              {t('settings_reset')}
-            </CellSectionItem>
-          </List>
-          <Spacer y={16} />
+          {!!wallet && (
+            <>
+              <List>
+                <CellSectionItem onPress={handleResetWallet} icon="ic-door-28">
+                  {t('settings_reset')}
+                </CellSectionItem>
+              </List>
+              <Spacer y={16} />
+            </>
+          )}
           <S.Content>
             <TapGestureHandler
               simultaneousHandlers={devMenuHandlerRef}
@@ -485,5 +498,11 @@ const styles = Steezy.create({
   notificationsTextContainer: {
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  notificationIndicatorContainer: {
+    height: 24,
+    paddingTop: 9.5,
+    paddingBottom: 6.5,
+    marginLeft: 8,
   },
 });

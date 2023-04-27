@@ -37,7 +37,9 @@ export const Item = styled.View`
 export const ItemLabel = styled(Text).attrs({
   color: 'foregroundSecondary',
   variant: 'body1',
-})``;
+})`
+  flex: 1;
+`;
 
 export const ItemContent = styled.View`
   align-items: flex-end;

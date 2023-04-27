@@ -4,6 +4,8 @@ export type TabStackParamList = {
   [TabsStackRouteNames.Balances]: {};
   [TabsStackRouteNames.Activity]: {};
   [TabsStackRouteNames.NFT]: {};
-  [TabsStackRouteNames.Explore]: {};
+  [TabsStackRouteNames.Explore]: {
+    initialCategory?: string;
+  };
   [TabsStackRouteNames.SettingsStack]: {};
 };

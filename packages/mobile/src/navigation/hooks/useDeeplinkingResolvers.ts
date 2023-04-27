@@ -4,7 +4,14 @@ import { useDispatch } from 'react-redux';
 import { DeeplinkingResolver, useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
-import { Base64, compareAddresses, debugLog, delay, isValidAddress } from '$utils';
+import {
+  Base64,
+  compareAddresses,
+  debugLog,
+  delay,
+  fromNano,
+  isValidAddress,
+} from '$utils';
 import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import {
@@ -125,6 +132,14 @@ export function useDeeplinkingResolvers() {
     }
   });
 
+  deeplinking.add('/buy-ton', () => {
+    if (!getWallet()) {
+      return openRequireWalletModal();
+    } else {
+      nav.openModal('Exchange', { category: 'buy' });
+    }
+  });
+
   deeplinking.add('/transfer/:address', async ({ params, query, resolveParams }) => {
     const currency = CryptoCurrencies.Ton;
     const address = params.address;
@@ -139,8 +154,6 @@ export function useDeeplinkingResolvers() {
     }
 
     if (Number(query.amount) > 0) {
-      const amount = Ton.fromNano(query.amount.toString());
-
       if (query.init || query.bin) {
         const message: SignRawMessage = {
           amount: query.amount,
@@ -184,6 +197,7 @@ export function useDeeplinkingResolvers() {
         }
 
         let decimals = jettonBalance.metadata?.decimals ?? 9;
+        const amount = fromNano(query.amount.toString(), decimals);
 
         if (new BigNumber(jettonBalance.balance ?? 0).lt(query.amount)) {
           openInsufficientFundsModal({
@@ -225,6 +239,7 @@ export function useDeeplinkingResolvers() {
           }),
         );
       } else {
+        const amount = Ton.fromNano(query.amount.toString());
         dispatch(
           walletActions.confirmSendCoins({
             currency,

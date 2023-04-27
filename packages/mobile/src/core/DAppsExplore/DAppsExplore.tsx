@@ -1,6 +1,6 @@
 import { useTheme, useTranslator } from '$hooks';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
-import { openDAppsSearch, openRequireWalletModal, openScanQR } from '$navigation';
+import { openDAppsSearch, openRequireWalletModal, openScanQR, TabsStackRouteNames } from '$navigation';
 import { IsTablet, LargeNavBarHeight, TabletMaxWidth } from '$shared/constants';
 import { store, useAppsListStore } from '$store';
 import { Icon, LargeNavBar, NavBar } from '$uikit';
@@ -8,7 +8,7 @@ import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
 import { deviceWidth, ns } from '$utils';
 import { useFlags } from '$utils/flags';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import React, { FC, memo, useCallback, useState } from 'react';
+import React, { FC, memo, useCallback, useEffect, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet } from 'react-native';
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
 import Animated, {
@@ -28,15 +28,18 @@ import {
 } from './components';
 import * as S from './DAppsExplore.style';
 import { NavBarSpacerHeight } from './DAppsExplore.style';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { TabStackParamList } from '$navigation/MainStack/TabStack/TabStack.interface';
 
 const OFFSET = ns(16);
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
-export interface DAppsExploreProps {}
+export type DAppsExploreProps = NativeStackScreenProps<TabStackParamList, TabsStackRouteNames.Explore>;
 
 const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
-  const {} = props;
+  const { initialCategory } = props.route?.params || {};
+  const { setParams } = props.navigation;
 
   const flags = useFlags(['disable_dapps']);
 
@@ -57,6 +60,13 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
   const { top: topInset } = useSafeAreaInsets();
 
   const [activeCategory, setActiveCategory] = useState('featured');
+
+  useEffect(() => {
+    if (initialCategory) {
+      setActiveCategory(initialCategory);
+      setParams({ initialCategory: undefined });
+    }
+  }, [initialCategory]);
 
   const { isSnapPointReached, scrollRef, scrollTop, scrollHandler } = useScrollHandler(
     tabsSnapOffset,

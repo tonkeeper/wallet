@@ -398,7 +398,7 @@
   "settings_title": "Настройки",
   "settings_primary_currency": "Валюта",
   "settings_rate": "Оценить Tonkeeper",
-  "settings_contact_support": "Написать нам",
+  "settings_contact_support": "Написать команде",
   "settings_legal_documents": "Юридические документы",
   "settings_news": "Новости Tonkeeper",
   "settings_support": "Поддержка",
@@ -416,7 +416,7 @@
   "settings_wallet_version": "Текущий адрес",
   "settings_version": "Версия",
   "settings_security": "Безопасность",
-  "settings_appearance": "Оформление",
+  "settings_appearance": "Тема",
   "settings_news_url": "https://t.me/tonkeeper_ru",
   "settings_jettons_list": "Токены",
   "settings_delete_account": "Удалить аккаунт",
@@ -705,6 +705,8 @@
       "EUR": "Евро",
       "RUB": "Российский рубль",
       "AED": "Дирхам ОАЭ",
+      "UAH": "Украинская гривна",
+      "UZS": "Узбекский сум",
       "GBP": "Фунт стерлингов",
       "CHF": "Швейцарский франк",
       "CNY": "Китайский юань",
@@ -717,6 +719,8 @@
 
   "transfer_deeplink_address_error": "Неверный адрес получателя",
   "transfer_deeplink_amount_error": "Некорректный запрос суммы",
+
+  "confirm": "Подтвердить",
 
   "staking": {
     "title": "Стейкинг",
@@ -745,6 +749,11 @@
         "title": "Следующий цикл",
         "desc": "Все транзакции исполняются только после завершения цикла",
         "time": "через %{time}"
+      },
+      "cooldown": {
+        "title": "Период ожидания",
+        "desc": "Двухчасовой период, применяемый в начале каждого стейкинг цикла для улучшения процесса снятия и внесения средств между циклами",
+        "active": "Активен"
       },
       "about_pool": "О пуле",
       "frequency": {

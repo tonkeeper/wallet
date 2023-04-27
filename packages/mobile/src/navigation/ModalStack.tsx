@@ -29,7 +29,6 @@ import {
 } from '$core';
 import { WebView } from '$core/WebView/WebView';
 import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewConfirmSending';
-import { ProvidersWithNavigation } from './Providers';
 import { ActionModal } from '$core/ModalContainer/Action/Action';
 import { ExchangeModal } from '$modals/ExchangeModal';
 
@@ -74,21 +73,10 @@ export const ModalStack = React.memo(() => (
       />
       <Stack.Modal
         options={{ gestureEnabled: false }}
-        component={(props) => (
-          <ProvidersWithNavigation>
-            <BuyFiat {...props} />
-          </ProvidersWithNavigation>
-        )}
+        component={BuyFiat}
         path={AppStackRouteNames.BuyFiat}
       />
-      <Stack.Modal
-        component={(props) => (
-          <ProvidersWithNavigation>
-            <DAppBrowser {...props} />
-          </ProvidersWithNavigation>
-        )}
-        path={AppStackRouteNames.DAppBrowser}
-      />
+      <Stack.Modal component={DAppBrowser} path={AppStackRouteNames.DAppBrowser} />
     </Stack.Group>
     <Stack.Group behavior="fullScreenModal" animation="fade">
       <Stack.Modal

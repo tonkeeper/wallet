@@ -1,6 +1,6 @@
 export const TEST = 1;
 
-export const ServerConfigVersion = 2;
+export const ServerConfigVersion = 3;
 
 export const GOOGLE_PACKAGE_NAME = 'com.ton_keeper';
 export const APPLE_STORE_ID = '1587742107';
@@ -37,6 +37,8 @@ export enum FiatCurrencies {
   Idr = 'idr',
   Inr = 'inr',
   Jpy = 'jpy',
+  Uah = 'uah',
+  Uzs = 'uzs',
 }
 
 export type FiatCurrency = (typeof FiatCurrencies)[keyof typeof FiatCurrencies];
@@ -129,6 +131,14 @@ export const FiatCurrencySymbolsConfig = {
   },
   [FiatCurrencies.Aed]: {
     symbol: 'DH',
+    side: 'end',
+  },
+  [FiatCurrencies.Uah]: {
+    symbol: '₴',
+    side: 'end',
+  },
+  [FiatCurrencies.Uzs]: {
+    symbol: 'Sum',
     side: 'end',
   },
   [FiatCurrencies.Gbp]: {
