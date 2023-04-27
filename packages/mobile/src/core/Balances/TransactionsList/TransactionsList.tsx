@@ -118,7 +118,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
         if (
           jettonAddress &&
           tokensApprovalState[new Address(jettonAddress).toString(true, true, true)]
-            .current === TokenApprovalStatus.Declined
+            ?.current === TokenApprovalStatus.Declined
         ) {
           continue;
         }
