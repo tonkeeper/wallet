@@ -1,24 +1,248 @@
-import { Modal } from '$libs/navigation';
+import { Modal, useNavigation } from '$libs/navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 import { push } from '$navigation';
-import React, { memo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
+import {
+  TokenApprovalStatus,
+  TokenApprovalType,
+} from '$store/zustand/tokenApproval/types';
+import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
+import { getTokenStatus } from '$store/zustand/tokenApproval/selectors';
+import { JettonVerification } from '$store/models';
+import { Button, Highlight, Icon, Spacer, Text, View } from '$uikit';
+import { Steezy } from '$styles';
+import { t } from '$translation';
+import { format, maskifyAddress } from '$utils';
+import * as S from '$core/ModalContainer/NFTOperations/NFTOperations.styles';
+import FastImage from 'react-native-fast-image';
+import { Toast } from '$store';
+import Clipboard from '@react-native-community/clipboard';
 
-export const ApproveToken = memo(() => {
+export interface ApproveTokenModalParams {
+  tokenAddress: string;
+  type: TokenApprovalType;
+  verification: JettonVerification;
+  name?: string;
+  image?: string;
+}
+export const ApproveToken = memo((props: ApproveTokenModalParams) => {
+  const nav = useNavigation();
+  const currentStatus = useTokenApprovalStore((state) =>
+    getTokenStatus(state, props.tokenAddress),
+  );
+  const updateTokenStatus = useTokenApprovalStore(
+    (state) => state.actions.updateTokenStatus,
+  );
+
+  const handleUpdateStatus = useCallback(
+    (approvalStatus: TokenApprovalStatus) => () => {
+      updateTokenStatus(props.tokenAddress, approvalStatus, props.type);
+      nav.goBack();
+    },
+    [nav, props.tokenAddress, props.type, updateTokenStatus],
+  );
+
+  const handleCopyAddress = useCallback(() => {
+    Clipboard.setString(props.tokenAddress);
+    Toast.show(t('copied'));
+  }, [props.tokenAddress]);
+
+  const modalState = useMemo(() => {
+    if (!currentStatus && props.verification === JettonVerification.NONE) {
+      return 'pending';
+    } else if (
+      props.verification === JettonVerification.BLACKLIST ||
+      currentStatus?.current === TokenApprovalStatus.Declined
+    ) {
+      return 'declined';
+    } else if (
+      props.verification === JettonVerification.WHITELIST ||
+      currentStatus?.current === TokenApprovalStatus.Approved
+    ) {
+      return 'approved';
+    }
+  }, [currentStatus, props.verification]);
+
+  const title = useMemo(() => {
+    if (props.type === TokenApprovalType.Jetton) {
+      if (modalState === 'pending') {
+        return t('approval.verify_token');
+      } else {
+        return t('approval.token_details');
+      }
+    } else {
+      if (modalState === 'pending') {
+        return t('approval.verify_collection');
+      } else {
+        return t('approval.collection_details');
+      }
+    }
+  }, [modalState, props.type]);
+
+  const subtitle = useMemo(() => {
+    if (modalState === 'declined') {
+      if (!currentStatus) {
+        return t('approval.blacklisted');
+      }
+      return t('approval.declined_at', {
+        date: format(currentStatus?.updated_at, 'd MMM yyyy'),
+      });
+    }
+    if (modalState === 'approved') {
+      if (!currentStatus) {
+        return t('approval.whitelisted');
+      }
+      return t('approval.accepted_at', {
+        date: format(currentStatus?.updated_at, 'd MMM yyyy'),
+      });
+    }
+    if (props.type === TokenApprovalType.Jetton) {
+      return t('approval.verify_token_description');
+    } else {
+      return t('approval.verify_tokens_description');
+    }
+  }, [currentStatus?.updated_at, modalState, props.type]);
+
+  const renderActions = useCallback(() => {
+    switch (modalState) {
+      case 'pending':
+        return (
+          <>
+            <Button
+              onPress={handleUpdateStatus(TokenApprovalStatus.Approved)}
+              mode="secondary"
+            >
+              {t('approval.accept')}
+            </Button>
+            <Spacer y={16} />
+            <Button
+              onPress={handleUpdateStatus(TokenApprovalStatus.Declined)}
+              mode="secondary"
+            >
+              {t('approval.decline')}
+            </Button>
+          </>
+        );
+      case 'approved':
+        return (
+          <Button
+            onPress={handleUpdateStatus(TokenApprovalStatus.Declined)}
+            mode="secondary"
+          >
+            {t('approval.move_to_declined')}
+          </Button>
+        );
+      case 'declined':
+        return (
+          <Button
+            onPress={handleUpdateStatus(TokenApprovalStatus.Approved)}
+            mode="secondary"
+          >
+            {t('approval.move_to_accepted')}
+          </Button>
+        );
+    }
+  }, [handleUpdateStatus, modalState]);
+
   return (
     <Modal>
       <Modal.Header />
-      <Modal.Content />
-      <Modal.Footer />
+      <Modal.Content>
+        <View style={styles.wrap}>
+          <View style={styles.textWrap}>
+            <Text textAlign="center" variant="h2">
+              {title}
+            </Text>
+            <Spacer y={4} />
+            <Text variant="body2" color="textSecondary" textAlign="center">
+              {subtitle}
+            </Text>
+          </View>
+          <Spacer y={32} />
+          <S.Details>
+            {props.name && (
+              <Highlight contentViewStyle={styles.highlight.static}>
+                <S.DetailItem>
+                  <S.DetailItemLabel>{t('approval.name')}</S.DetailItemLabel>
+                  <S.DetailItemValueText>{props.name}</S.DetailItemValueText>
+                </S.DetailItem>
+                <FastImage
+                  style={
+                    props.type === TokenApprovalType.Jetton
+                      ? styles.jettonImage.static
+                      : styles.collectionImage.static
+                  }
+                  source={{ uri: props.image }}
+                />
+              </Highlight>
+            )}
+            <Highlight
+              onPress={handleCopyAddress}
+              contentViewStyle={styles.highlight.static}
+            >
+              <S.DetailItem>
+                <S.DetailItemLabel>
+                  {props.type === TokenApprovalType.Jetton
+                    ? t('approval.token_id')
+                    : t('approval.collection_id')}
+                </S.DetailItemLabel>
+                <S.DetailItemValueText>
+                  {maskifyAddress(props.tokenAddress, 6)}
+                </S.DetailItemValueText>
+              </S.DetailItem>
+              <Icon style={styles.copyIcon.static} name={'ic-copy-16'} />
+            </Highlight>
+          </S.Details>
+        </View>
+        <Spacer y={16} />
+      </Modal.Content>
+      <Modal.Footer>
+        <View style={styles.footerWrap}>{renderActions()}</View>
+        <Spacer y={16} />
+      </Modal.Footer>
     </Modal>
   );
 });
 
-export const openApproveTokenModal = async () => {
+export const openApproveTokenModal = async (params: ApproveTokenModalParams) => {
   push('SheetsProvider', {
     $$action: SheetActions.ADD,
     component: ApproveToken,
     path: 'ApproveToken',
+    params,
   });
 
   return true;
 };
+
+const styles = Steezy.create({
+  wrap: {
+    paddingHorizontal: 16,
+  },
+  textWrap: {
+    paddingHorizontal: 16,
+    paddingTop: 48,
+  },
+  footerWrap: {
+    paddingHorizontal: 16,
+  },
+  jettonImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  collectionImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+  },
+  highlight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingRight: 16,
+  },
+  copyIcon: {
+    marginRight: 4,
+  },
+});

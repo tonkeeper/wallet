@@ -28,7 +28,7 @@ import { CryptoCurrencies } from '$shared/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Tabs } from './components/Tabs';
 import * as S from '../../core/Balances/Balances.style';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
 import { useTonkens } from './hooks/useTokens';
@@ -157,7 +157,7 @@ export const WalletScreen = memo(() => {
           title={t('wallet.sell_btn')}
         />
       </IconButtonList>
-      <ApprovalCell />
+      {wallet && <ApprovalCell />}
     </View>
   );
 

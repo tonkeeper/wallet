@@ -43,7 +43,7 @@ export const ListItem = memo<ListItemProps>((props) => {
   const leftContent = React.useMemo(() => {
     if (typeof props.leftContent === 'function') {
       return props.leftContent(isPressed);
-    } 
+    }
 
     return props.leftContent;
   }, [props.leftContent]);
@@ -61,16 +61,13 @@ export const ListItem = memo<ListItemProps>((props) => {
       onPress={props.onPress}
       disabled={!props.onPress}
     >
-      <View style={styles.container.static}> 
+      <View style={styles.container.static}>
         {hasLeftContent && (
           <View style={styles.leftContent}>
             {leftContent}
             {!!props.picture && (
               <View style={styles.pictureContainer}>
-                <FastImage 
-                  style={styles.picture.static}
-                  source={pictureSource} 
-                />
+                <FastImage style={styles.picture.static} source={pictureSource} />
               </View>
             )}
           </View>
@@ -78,53 +75,57 @@ export const ListItem = memo<ListItemProps>((props) => {
         <View style={styles.title}>
           <View style={styles.titleTextContainer}>
             {typeof props.title === 'string' ? (
-              <SText 
+              <SText
                 style={styles.titleText}
-                variant="label1" 
+                variant="label1"
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
                 {props.title}
               </SText>
-            ) : props.title}
+            ) : (
+              props.title
+            )}
             {typeof props.label === 'string' ? (
               <SText
                 style={styles.labelText}
                 color="textTertiary"
-                variant="label1" 
+                variant="label1"
                 numberOfLines={1}
               >
                 {props.label}
               </SText>
-            ) : props.label}
+            ) : (
+              props.label
+            )}
           </View>
 
           {typeof props.subtitle === 'string' ? (
-            <SText 
-              variant="body2" 
-              style={styles.subtitleText}
-              numberOfLines={1}
-            >
+            <SText variant="body2" style={styles.subtitleText} numberOfLines={1}>
               {props.subtitle}
             </SText>
-          ) : props.subtitle}
+          ) : (
+            props.subtitle
+          )}
         </View>
         <View style={styles.valueContainer}>
           {typeof props.value === 'string' ? (
             <SText variant="label1" style={[styles.valueText, props.valueStyle]}>
               {`  ${props.value}`}
             </SText>
-          ) : props.value}
+          ) : (
+            props.value
+          )}
 
           {typeof props.subvalue === 'string' ? (
             <SText variant="body2" style={styles.subtitleText}>
               {props.subvalue}
             </SText>
-          ) : props.subvalue}
-
-          {props.chevron && (
-            <Icon name="ic-chevron-right-16" />
+          ) : (
+            props.subvalue
           )}
+
+          {props.chevron && <Icon name="ic-chevron-right-16" />}
         </View>
       </View>
     </TouchableComponent>
@@ -141,17 +142,19 @@ const styles = Steezy.create(({ colors }) => ({
   },
   leftContent: {
     paddingRight: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   pictureContainer: {
     width: 44,
     height: 44,
     borderRadius: 44 / 2,
     overflow: 'hidden',
-    backgroundColor: colors.backgroundContentTint
+    backgroundColor: colors.backgroundContentTint,
   },
   picture: {
-    width: 44, 
-    height: 44
+    width: 44,
+    height: 44,
   },
   title: {
     flexGrow: 1,
@@ -179,5 +182,5 @@ const styles = Steezy.create(({ colors }) => ({
   subvalueText: {
     color: colors.textSecondary,
     textAlign: 'right',
-  }
+  },
 }));

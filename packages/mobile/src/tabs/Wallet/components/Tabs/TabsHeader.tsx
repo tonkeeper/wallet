@@ -1,47 +1,51 @@
-import { useTheme } from '$hooks';
 import { Steezy } from '$styles';
-import { AnimatedView, Icon, View } from '$uikit';
-import { ViewStyle } from '@bogoslavskiy/react-native-steezy/dist/types';
+import { AnimatedView, Icon, TouchableOpacity, View } from '$uikit';
+import { Style } from '@bogoslavskiy/react-native-steezy/dist/types';
 import { isAndroid } from '$utils';
 import * as React from 'react';
-import { StyleProp, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { useTabCtx } from './TabsContainer';
-import { NavBarHeight } from '$shared/constants';
 import { goBack } from '$navigation';
 
 interface TabsHeaderProps {
-  style?: StyleProp<ViewStyle>;
+  style?: Style;
+  withBackButton?: boolean;
+  children?: React.ReactNode;
 }
 
 export const TabsHeader: React.FC<TabsHeaderProps> = (props) => {
   const dimensions = useWindowDimensions();
-  const theme = useTheme();
   const { headerHeight, scrollY } = useTabCtx();
 
-  const isClosedButton = true;
+  const shouldRenderGoBackButton = props.withBackButton ?? false;
 
-  
   const balanceStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ 
-        translateY: -(scrollY.value)
-      }]
-    }
+      transform: [
+        {
+          translateY: -scrollY.value,
+        },
+      ],
+    };
   });
 
   const handleBack = React.useCallback(() => {
     goBack();
   }, []);
 
-  function renderRightContent() {
-    if (isClosedButton) {
+  function renderLeftContent() {
+    if (shouldRenderGoBackButton) {
       return (
-        <View style={styles.rightContent}>
-          <View style={styles.backButtonContaner} onPress={handleBack}>
-            <View style={styles.backButton}>
+        <View style={styles.leftContent}>
+          <View style={styles.backButtonContainer}>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              style={styles.backButton}
+              onPress={handleBack}
+            >
               <Icon name="ic-chevron-left-16" color="foregroundPrimary" />
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
       );
@@ -58,7 +62,7 @@ export const TabsHeader: React.FC<TabsHeaderProps> = (props) => {
         headerHeight.value = ev.nativeEvent.layout.height;
       }}
     >
-      {renderRightContent()}
+      {renderLeftContent()}
       {props.children}
     </AnimatedView>
   );
@@ -71,28 +75,24 @@ const styles = Steezy.create(({ colors, safeArea }) => ({
     zIndex: isAndroid ? 1 : 4,
     backgroundColor: colors.backgroundPrimary,
   },
-  rightContent: {
+  leftContent: {
     top: 0,
-    right: 0,
+    left: 16,
     position: 'absolute',
     zIndex: 2,
-    minWidth: NavBarHeight,
     alignItems: 'center',
     justifyContent: 'center',
     flex: 0,
   },
-  backButtonContaner: {
+  backButtonContainer: {
     paddingTop: safeArea.top,
-    width: NavBarHeight,
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    top: 0,
-    left: 0,
-    position: 'absolute',
     zIndex: 2,
   },
   backButton: {
-    background: colors.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     height: 32,
     width: 32,
     borderRadius: 16,

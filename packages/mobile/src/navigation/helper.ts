@@ -430,7 +430,9 @@ export function openJettonsList() {
 }
 
 export function openManageTokens() {
-  push(MainStackRouteNames.ManageTokens);
+  _.throttle(() => {
+    push(MainStackRouteNames.ManageTokens);
+  }, 1000)();
 }
 
 export function openJettonsListSettingsStack() {

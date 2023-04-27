@@ -102,6 +102,10 @@ export const DevMenu: FC = () => {
     toggleFeature(DevFeature.UseHttpProtocol);
   }, [toggleFeature]);
 
+  const toggleTokenApproval = useCallback(() => {
+    toggleFeature(DevFeature.TokenApproval);
+  }, [toggleFeature]);
+
   return (
     <S.Wrap>
       <NavBar>Dev Menu</NavBar>
@@ -142,6 +146,16 @@ export const DevMenu: FC = () => {
             >
               Staking
             </CellSectionItem>
+            <CellSectionItem
+              indicator={
+                <Switch
+                  value={devFeatures[DevFeature.TokenApproval]}
+                  onChange={() => toggleFeature(DevFeature.TokenApproval)}
+                />
+              }
+            >
+              Token approval
+            </CellSectionItem>
             {__DEV__ && (
               <>
                 <CellSectionItem onPress={handleTestCrash}>
@@ -161,27 +175,23 @@ export const DevMenu: FC = () => {
             </CellSectionItem>
           </CellSection>
           <CellSection>
-          <PopupSelect
-                    items={['auto', ...tags.map(lang => lang.tag)]}
-                    selected={devLanguage || 'auto'}
-                    onChange={(lang) => setDevLanguage(lang === 'auto' ? undefined : lang)}
-                    keyExtractor={(item) => item}
-                    width={220}
-                    renderItem={(item) => (
-                      <Text variant="label1">
-                          {item}
-                      </Text>
-                    )}
-                  >
-                    <CellSectionItem
-                      indicator={
-                        <Text variant="label1" color="accentPrimary">
-                          {devLanguage || 'auto'}
-                        </Text>
-                      }
-                    >
-                      Language
-                    </CellSectionItem>
+            <PopupSelect
+              items={['auto', ...tags.map((lang) => lang.tag)]}
+              selected={devLanguage || 'auto'}
+              onChange={(lang) => setDevLanguage(lang === 'auto' ? undefined : lang)}
+              keyExtractor={(item) => item}
+              width={220}
+              renderItem={(item) => <Text variant="label1">{item}</Text>}
+            >
+              <CellSectionItem
+                indicator={
+                  <Text variant="label1" color="accentPrimary">
+                    {devLanguage || 'auto'}
+                  </Text>
+                }
+              >
+                Language
+              </CellSectionItem>
             </PopupSelect>
           </CellSection>
           <CellSection>

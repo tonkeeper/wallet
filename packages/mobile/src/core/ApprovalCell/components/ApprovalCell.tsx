@@ -1,13 +1,30 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Steezy } from '$styles';
 import { Icon, Spacer, SText, View } from '$uikit';
 import { List } from '$uikit/List/new';
 import { openManageTokens } from '$navigation';
+import { t } from '$translation';
+import { useJettonBalances } from '$hooks';
 
 const ApprovalCellComponent: React.FC = () => {
-  const handleApproveTokens = useCallback(() => {
-    openManageTokens();
-  }, []);
+  const handleApproveTokens = useCallback(openManageTokens, []);
+  const { pending } = useJettonBalances();
+
+  const text = useMemo(() => {
+    if (pending.length === 1) {
+      return t('approval.approve_token', { name: pending[0].metadata?.name });
+    }
+    if (pending.length === 2) {
+      return t('approval.approve_two_tokens', {
+        name1: pending[0].metadata?.name,
+        name2: pending[1].metadata?.name,
+      });
+    } else return t('approval.approve_many', { count: pending.length });
+  }, [pending]);
+
+  if (!pending.length) {
+    return null;
+  }
 
   return (
     <>
@@ -22,7 +39,7 @@ const ApprovalCellComponent: React.FC = () => {
           }
           title={
             <SText numberOfLines={2} style={styles.title} variant="body2">
-              Approve incoming token "Helium"
+              {text}
             </SText>
           }
           chevron

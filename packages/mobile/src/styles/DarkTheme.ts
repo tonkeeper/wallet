@@ -10,6 +10,8 @@ export const DarkTheme = {
   backgroundContentTint: '#2E3847',
   backgroundOverlayStrong: 'rgba(0, 0, 0, 0.72)',
   backgroundOverlayLight: 'rgba(0, 0, 0, 0.48)',
+  backgroundSecondary: '#1D2633',
+  backgroundPrimary: '#10161F',
 
   iconPrimary: '#FFFFFF',
   iconSecondary: '#8994A3',

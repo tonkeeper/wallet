@@ -10,6 +10,7 @@ const initialState: Omit<IDevFeaturesToggleStore, 'actions'> = {
   devFeatures: {
     [DevFeature.UseHttpProtocol]: false,
     [DevFeature.Staking]: false,
+    [DevFeature.TokenApproval]: false,
   },
   devLanguage: null,
 };
@@ -33,7 +34,7 @@ export const useDevFeaturesToggle = create(
             return { devLanguage };
           });
           RNRestart.restart();
-        }
+        },
       },
     }),
     {
@@ -44,9 +45,10 @@ export const useDevFeaturesToggle = create(
           if (state?.devLanguage) {
             i18n.locale = state.devLanguage;
           }
-        }
+        };
       },
-      partialize: ({ devFeatures, devLanguage }) => ({ devFeatures, devLanguage } as IDevFeaturesToggleStore),
+      partialize: ({ devFeatures, devLanguage }) =>
+        ({ devFeatures, devLanguage } as IDevFeaturesToggleStore),
     },
   ),
 );

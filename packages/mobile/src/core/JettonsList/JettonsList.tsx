@@ -33,7 +33,6 @@ export const JettonsList: FC = () => {
   const t = useTranslator();
   const { excludedJettons } = useSelector(jettonsSelector);
   const { bottom: bottomInset } = useSafeAreaInsets();
-  const tabBarHeight = useBottomTabBarHeight();
   const dispatch = useDispatch();
 
   const onSwitchExcludedJetton = useCallback(
@@ -42,7 +41,7 @@ export const JettonsList: FC = () => {
     [dispatch],
   );
 
-  const data = useJettonBalances(true);
+  const { enabled: data } = useJettonBalances();
 
   function renderJetton({
     drag,

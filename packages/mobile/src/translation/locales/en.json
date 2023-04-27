@@ -313,9 +313,30 @@
   },
 
   "approval": {
-    "approve_one": "Approve incoming token \"%{name}\"",
-    "approve_few": "Approve incoming tokens \"%{name1}\" and \"%{name2}\"",
-    "manage_tokens": "Manage tokens"
+    "verify_token": "Verify token",
+    "token_details": "Token details",
+    "accept": "Accept",
+    "decline": "Decline",
+    "blacklisted": "Token is blacklisted",
+    "whitelisted": "Token is whitelisted",
+    "pending": "Pending",
+    "declined": "Declined",
+    "move_to_declined": "Move to Declined",
+    "move_to_accepted": "Move to Accepted",
+    "accepted_at": "Accepted on %{date}",
+    "declined_at": "Declined on %{date}",
+    "collection_details": "Collection details",
+    "verify_collection": "Verify collection",
+    "verify_token_description": "This token is from unknown issuer. To detect counterfeits, verify the token ID with the issuer's official source. You can change token visibility later in settings.",
+    "verify_tokens_description": "These tokens are from unknown issuer. To detect counterfeits, verify the collection ID with the issuer's official source. You can change token visibility later in settings.",
+    "accepted": "Accepted",
+    "approve_token": "Approve incoming token \"%{name}\"",
+    "approve_two_tokens": "Approve incoming tokens \"%{name1}\" and \"%{name2}\"",
+    "approve_many": "Approve %{count} incoming tokens",
+    "manage_tokens": "Manage tokens",
+    "name": "Name",
+    "token_id": "Token ID",
+    "collection_id": "Collection ID"
   },
 
   "activity": {

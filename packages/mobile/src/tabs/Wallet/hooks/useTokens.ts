@@ -37,8 +37,7 @@ export const useTonkens = (): {
   };
   canEdit: boolean;
 } => {
-  const jettonBalances = useJettonBalances();
-  const allJettonBalances = useJettonBalances(true);
+  const { enabled: jettonBalances } = useJettonBalances();
   const getJettonPrice = useGetJettonPrice();
 
   const tokens = useMemo(() => {
@@ -84,6 +83,5 @@ export const useTonkens = (): {
     total: {
       fiat: fiatTotal,
     },
-    canEdit: allJettonBalances.length > 0,
   };
 };

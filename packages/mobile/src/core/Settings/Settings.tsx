@@ -18,6 +18,7 @@ import {
   openDevMenu,
   openJettonsListSettingsStack,
   openLegalDocuments,
+  openManageTokens,
   openNotifications,
   openSecurity,
   openSecurityMigration,
@@ -53,7 +54,7 @@ import { useNotifications } from '$hooks/useNotifications';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
 import { useAllAddresses } from '$hooks/useAllAddresses';
 import { useFlags } from '$utils/flags';
-import { SearchEngine, useBrowserStore } from '$store';
+import { DevFeature, SearchEngine, useBrowserStore, useDevFeatureEnabled } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
 import { List } from '$uikit/List/new';
 import { Steezy } from '$styles';
@@ -81,7 +82,8 @@ export const Settings: FC = () => {
   const version = useSelector(walletVersionSelector);
   const allTonAddesses = useAllAddresses();
   const showV4R1 = useSelector(showV4R1Selector);
-  const jettonBalances = useJettonBalances(true);
+  const { enabled: jettonBalances } = useJettonBalances();
+  const tokenApproval = useDevFeatureEnabled(DevFeature.TokenApproval);
 
   const searchEngine = useBrowserStore((state) => state.searchEngine);
   const setSearchEngine = useBrowserStore((state) => state.actions.setSearchEngine);
@@ -188,6 +190,10 @@ export const Settings: FC = () => {
     openJettonsListSettingsStack();
   }, []);
 
+  const handleManageTokens = useCallback(() => {
+    openManageTokens();
+  }, []);
+
   const handleDeleteAccount = useCallback(() => {
     Alert.alert(t('settings_delete_alert_title'), t('settings_delete_alert_caption'), [
       {
@@ -253,7 +259,7 @@ export const Settings: FC = () => {
                   />
                 }
                 title={t('settings_jettons_list')}
-                onPress={handleJettonsList}
+                onPress={tokenApproval ? handleManageTokens : handleJettonsList}
               />
             )}
             {hasSubscriptions && (
