@@ -9,7 +9,7 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
 import { Icon, PopupSelect, ScrollHandler, Spacer, Text } from '$uikit';
-import { useIsHasJettons, useJettonBalances, useNavigation, useTranslator } from '$hooks';
+import { useIsHasJettons, useNavigation, useTranslator } from '$hooks';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
 import {
@@ -244,16 +244,17 @@ export const Settings: FC = () => {
           <List>
             {!!wallet && (
               <List.Item
-              value={
-                <Icon
-                  style={styles.icon.static}
-                  color="accentPrimary"
-                  name={'ic-key-28'}
-                />
-              }
-              title={t('settings_security')}
-              onPress={handleSecurity}
-            />
+                value={
+                  <Icon
+                    style={styles.icon.static}
+                    color="accentPrimary"
+                    name={'ic-key-28'}
+                  />
+                }
+                title={t('settings_security')}
+                onPress={handleSecurity}
+              />
+            )}
             {hasJettons && (
               <List.Item
                 value={
