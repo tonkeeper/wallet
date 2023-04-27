@@ -289,7 +289,7 @@ function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
     yield put(walletActions.loadBalances());
     yield put(eventsActions.loadEvents({ isReplace: true, ignoreCache: action.payload }));
     yield put(nftsActions.loadNFTs({ isReplace: true }));
-    yield put(jettonsActions.getIsFeatureEnabled());
+    // yield put(jettonsActions.getIsFeatureEnabled());
     yield put(jettonsActions.loadJettons());
     yield put(ratesActions.loadRates({ onlyCache: false }));
     yield put(mainActions.loadNotifications());

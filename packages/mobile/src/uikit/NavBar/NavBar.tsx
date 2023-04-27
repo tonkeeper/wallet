@@ -139,14 +139,18 @@ export const NavBar: FC<NavBarProps> = (props) => {
               <Icon name={iconName} color="foregroundPrimary" />
             </S.BackButton>
           </S.BackButtonContainer>
-          <S.Title
-            variant={isSmallTitle ? 'label1' : 'h3'}
-            numberOfLines={1}
-            {...titleProps}
-            style={titleAnimatedStyle}
-          >
-            {children}
-          </S.Title>
+          {typeof children === 'string' ? (
+            <S.Title
+              variant={isSmallTitle ? 'label1' : 'h3'}
+              numberOfLines={1}
+              {...titleProps}
+              style={titleAnimatedStyle}
+            >
+              {children}
+            </S.Title>
+          ) : (
+            children
+          )}
           {renderRightContent()}
         </S.Content>
       </S.Cont>

@@ -1,50 +1,102 @@
-import { useTheme } from '$hooks';
+import { Steezy } from '$styles';
+import { AnimatedView, Icon, TouchableOpacity, View } from '$uikit';
+import { Style } from '@bogoslavskiy/react-native-steezy/dist/types';
 import { isAndroid } from '$utils';
 import * as React from 'react';
-import { StyleSheet, useWindowDimensions } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { useWindowDimensions } from 'react-native';
+import { useAnimatedStyle } from 'react-native-reanimated';
 import { useTabCtx } from './TabsContainer';
+import { goBack } from '$navigation';
 
 interface TabsHeaderProps {
-  
+  style?: Style;
+  withBackButton?: boolean;
+  children?: React.ReactNode;
 }
 
 export const TabsHeader: React.FC<TabsHeaderProps> = (props) => {
   const dimensions = useWindowDimensions();
-  const theme = useTheme();
   const { headerHeight, scrollY } = useTabCtx();
 
-  
+  const shouldRenderGoBackButton = props.withBackButton ?? false;
+
   const balanceStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ 
-        translateY: -(scrollY.value)
-      }]
-    }
+      transform: [
+        {
+          translateY: -scrollY.value,
+        },
+      ],
+    };
   });
 
-  
+  const handleBack = React.useCallback(() => {
+    goBack();
+  }, []);
+
+  function renderLeftContent() {
+    if (shouldRenderGoBackButton) {
+      return (
+        <View style={styles.leftContent}>
+          <View style={styles.backButtonContainer}>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              style={styles.backButton}
+              onPress={handleBack}
+            >
+              <Icon name="ic-chevron-left-16" color="foregroundPrimary" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
+
+    return null;
+  }
+
   return (
-    <Animated.View
+    <AnimatedView
       pointerEvents="box-none"
-      style={[balanceStyle, {
-        position: 'absolute',
-        top: 0,
-        zIndex: isAndroid ? 1 : 4,
-        width: dimensions.width,
-        backgroundColor: theme.colors.backgroundPrimary
-      }]}
+      style={[balanceStyle, styles.container, { width: dimensions.width }, props.style]}
       onLayout={(ev) => {
         headerHeight.value = ev.nativeEvent.layout.height;
       }}
     >
+      {renderLeftContent()}
       {props.children}
-    </Animated.View>
+    </AnimatedView>
   );
 };
 
-const styles = StyleSheet.create({
+const styles = Steezy.create(({ colors, safeArea }) => ({
   container: {
-    
-  }
-});
+    position: 'absolute',
+    top: 0,
+    zIndex: isAndroid ? 1 : 4,
+    backgroundColor: colors.backgroundPrimary,
+  },
+  leftContent: {
+    top: 0,
+    left: 16,
+    position: 'absolute',
+    zIndex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 0,
+  },
+  backButtonContainer: {
+    paddingTop: safeArea.top,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 2,
+  },
+  backButton: {
+    backgroundColor: colors.backgroundSecondary,
+    height: 32,
+    width: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+}));

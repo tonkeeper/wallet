@@ -52,9 +52,9 @@ export interface WalletState {
 
   name?: string;
 
-  hiddenJettons?: string[];
-  shownJettons?: string[];
-  orderJettons?: string[];
+  sortedJettons?: {
+    [key in WalletVersion]: [string]; // array of sorted token's addresses
+  };
 
   network?: Network;
   lang?: Language;

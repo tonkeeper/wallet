@@ -67,6 +67,7 @@ export const MobileIconsList = {
   'ic-nft-collection-28': require('$assets/icons/png/ic-nft-collection-28.png'),
   'ic-notification-28': require('$assets/icons/png/ic-notification-28.png'),
   'ic-plus-28': require('$assets/icons/png/ic-plus-28.png'),
+  'ic-reorder-28': require('$assets/icons/png/ic-reorder-28.png'),
   'ic-return-28': require('$assets/icons/png/ic-return-28.png'),
   'ic-secure-28': require('$assets/icons/png/ic-secure-28.png'),
   'ic-settings-28': require('$assets/icons/png/ic-settings-28.png'),

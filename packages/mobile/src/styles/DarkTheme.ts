@@ -10,6 +10,8 @@ export const DarkTheme = {
   backgroundContentTint: '#2E3847',
   backgroundOverlayStrong: 'rgba(0, 0, 0, 0.72)',
   backgroundOverlayLight: 'rgba(0, 0, 0, 0.48)',
+  backgroundSecondary: '#1D2633',
+  backgroundPrimary: '#10161F',
 
   iconPrimary: '#FFFFFF',
   iconSecondary: '#8994A3',
@@ -24,6 +26,7 @@ export const DarkTheme = {
   buttonPrimaryBackgroundDisabled: '#378AC2',
   buttonSecondaryBackgroundDisabled: '#171F29',
   buttonTertiaryBackgroundDisabled: '#28303D',
+  backgroundContentAttention: '#424C5C',
 
   fieldBackground: '#1D2633',
   fieldActiveBorder: '#45AEF5',

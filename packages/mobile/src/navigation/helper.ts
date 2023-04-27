@@ -433,6 +433,12 @@ export function openJettonsList() {
   push(MainStackRouteNames.JettonsList);
 }
 
+export function openManageTokens() {
+  _.throttle(() => {
+    push(MainStackRouteNames.ManageTokens);
+  }, 1000)();
+}
+
 export function openJettonsListSettingsStack() {
   push(SettingsStackRouteNames.JettonsList);
 }

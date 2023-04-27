@@ -1,4 +1,4 @@
-import {createSelector, createSlice} from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '$store/rootReducer';
 import {
@@ -11,6 +11,7 @@ import {
   SwitchExcludedJettonAction,
   SetExcludedJettonsAction,
   LoadJettonMetaAction,
+  SetSortedJettonsAction,
 } from './interface';
 
 const initialState: JettonsState = {
@@ -19,6 +20,7 @@ const initialState: JettonsState = {
   jettons: {},
   isEnabled: false,
   excludedJettons: {},
+  sortedJettons: {},
   isMetaLoading: {},
 };
 
@@ -46,6 +48,9 @@ export const { actions, reducer } = createSlice({
     setJettonBalances(state, action: SetJettonsAction) {
       state.jettonBalances = action.payload.jettonBalances;
     },
+    setSortedJettons(state, action: SetSortedJettonsAction) {
+      state.sortedJettons = { ...state.sortedJettons, ...action.payload.sortedJettons };
+    },
     setJettonMetadata(state, action: SetJettonMetadataAction) {
       state.jettons = {
         ...state.jettons,
@@ -61,6 +66,7 @@ export const { actions, reducer } = createSlice({
 
 export { reducer as jettonsReducer, actions as jettonsActions };
 
+export const sortedJettonsSelector = (state: RootState) => state.jettons.sortedJettons;
 export const jettonsSelector = (state: RootState) => state.jettons;
 export const jettonsMetaSelector = createSelector(
   jettonsSelector,
@@ -69,6 +75,12 @@ export const jettonsMetaSelector = createSelector(
 export const jettonsBalancesSelector = createSelector(
   jettonsSelector,
   (jettons) => jettons.jettonBalances,
+);
+
+export const hasJettonsSelector = createSelector(
+  jettonsBalancesSelector,
+  (jettonBalances) =>
+    !!jettonBalances.filter((balance) => balance.balance !== '0').length,
 );
 export const excludedJettonsSelector = createSelector(
   jettonsSelector,

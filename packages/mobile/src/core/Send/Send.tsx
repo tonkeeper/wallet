@@ -2,7 +2,12 @@ import { useFiatRate, useInstance, useJettonBalances, useTranslator } from '$hoo
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, getServerConfig } from '$shared/constants';
-import {walletActions, walletBalancesSelector, walletSelector, walletWalletSelector} from '$store/wallet';
+import {
+  walletActions,
+  walletBalancesSelector,
+  walletSelector,
+  walletWalletSelector,
+} from '$store/wallet';
 import { NavBar } from '$uikit';
 import { isValidAddress, parseLocaleNumber } from '$utils';
 import React, {
@@ -40,7 +45,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     withGoBack,
   } = route.params;
 
-  const jettons = useJettonBalances();
+  const { enabled: jettons } = useJettonBalances();
   const initialAddress =
     propsAddress && isValidAddress(propsAddress) ? propsAddress : null;
 

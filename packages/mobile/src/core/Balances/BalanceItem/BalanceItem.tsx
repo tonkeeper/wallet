@@ -63,7 +63,7 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
   const fiatCurrency = useSelector(fiatCurrencySelector);
   const nav = useNavigation();
 
-  const availableJettons = useJettonBalances();
+  const { enabled: availableJettons } = useJettonBalances();
 
   const { amount, fiatInfo } = useWalletInfo(currency);
 

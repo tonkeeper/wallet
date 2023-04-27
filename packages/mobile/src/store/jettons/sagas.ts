@@ -14,6 +14,8 @@ import {
 } from '$store/jettons/interface';
 import { Api } from '$api';
 import _ from 'lodash';
+import { JettonBalanceModel } from '$store/models';
+import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 
 let manager: JettonsManager | null;
 
@@ -79,7 +81,20 @@ function* loadJettonsWorker() {
       tonAddress: yield call([wallet.ton, 'getAddress']),
     });
 
-    const balances = yield call([manager, 'fetch']);
+    const { jettonBalances } = yield select(jettonsSelector);
+    const balances: JettonBalanceModel[] = yield call([manager, 'fetch']);
+
+    // Move Token to pending if name or symbol changed
+    jettonBalances.forEach((balance: JettonBalanceModel) => {
+      const newBalance = balances.find((b) => b.jettonAddress === balance.jettonAddress);
+      if (
+        newBalance &&
+        (balance.metadata.name !== newBalance.metadata.name ||
+          balance.metadata.symbol !== newBalance.metadata.symbol)
+      ) {
+        useTokenApprovalStore.getState().actions.removeTokenStatus(balance.jettonAddress);
+      }
+    });
 
     yield put(
       batchActions(
