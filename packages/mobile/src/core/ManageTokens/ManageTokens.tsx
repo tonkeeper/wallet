@@ -1,6 +1,6 @@
-import React, { FC, ReactNode, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 
-import { ListButton, Screen, Spacer, SpacerSizes, SText, Text, View } from '$uikit';
+import { Screen, Spacer, SText, View } from '$uikit';
 import { useJettonBalances } from '$hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { JettonBalanceModel } from '$store/models';
@@ -11,44 +11,10 @@ import { FlashList } from '@shopify/flash-list';
 import { t } from '$translation';
 import { List } from '$uikit/List/new';
 import { ListSeparator } from '$uikit/List/new/ListSeparator';
-import { formatter } from '$utils/formatter';
 import { StyleSheet } from 'react-native';
-import { openApproveTokenModal } from '$core/ModalContainer/ApproveToken/ApproveToken';
-import {
-  TokenApprovalStatus,
-  TokenApprovalType,
-} from '$store/zustand/tokenApproval/types';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
-enum ContentType {
-  Title,
-  Cell,
-  Spacer,
-}
-
-type TitleItem = {
-  type: ContentType.Title;
-  title: string;
-};
-
-type SpacerItem = {
-  type: ContentType.Spacer;
-  bottom: SpacerSizes;
-};
-
-type CellItem = {
-  type: ContentType.Cell;
-  isFirst?: boolean;
-  leftContent?: ReactNode;
-  attentionBackground?: boolean;
-  title?: string;
-  chevron?: boolean;
-  subtitle?: string;
-  isLast?: boolean;
-  picture?: string;
-  onPress?: () => void;
-};
-
-type Content = CellItem | TitleItem | SpacerItem;
+import { ContentType, Content } from '$core/ManageTokens/ManageTokens.types';
+import { useJettonData } from '$core/ManageTokens/hooks/useJettonData';
 
 export function reorderJettons(newOrder: JettonBalanceModel[]) {
   return newOrder.map((jettonBalance) => {
@@ -94,155 +60,7 @@ const FLashListItem = ({ item }: { item: Content }) => {
 export const ManageTokens: FC = () => {
   const { bottom: bottomInset } = useSafeAreaInsets();
   const [tab, setTab] = useState<string>('tokens');
-  const updateTokenStatus = useTokenApprovalStore(
-    (state) => state.actions.updateTokenStatus,
-  );
-
-  const { enabled, pending, disabled } = useJettonBalances();
-
-  const data = useMemo(() => {
-    const content: Content[] = [];
-
-    if (pending.length) {
-      content.push({
-        type: ContentType.Title,
-        title: t('approval.pending'),
-      });
-
-      content.push(
-        ...pending.map(
-          (jettonBalance, index) =>
-            ({
-              attentionBackground: true,
-              chevron: true,
-              type: ContentType.Cell,
-              isFirst: index === 0,
-              isLast: index === pending.length - 1,
-              picture: jettonBalance.metadata?.image,
-              title: jettonBalance.metadata?.name,
-              subtitle: formatter.format(jettonBalance.balance, {
-                currency: jettonBalance.metadata?.symbol,
-                currencySeparator: 'wide',
-              }),
-              onPress: () =>
-                openApproveTokenModal({
-                  type: TokenApprovalType.Jetton,
-                  tokenAddress: jettonBalance.jettonAddress,
-                  verification: jettonBalance.verification,
-                  image: jettonBalance.metadata?.image,
-                  name: jettonBalance.metadata?.name,
-                }),
-            } as CellItem),
-        ),
-      );
-      content.push({
-        type: ContentType.Spacer,
-        bottom: 16,
-      });
-    }
-
-    if (enabled.length) {
-      content.push({
-        type: ContentType.Title,
-        title: t('approval.accepted'),
-      });
-      content.push(
-        ...enabled.map(
-          (jettonBalance, index) =>
-            ({
-              type: ContentType.Cell,
-              isFirst: index === 0,
-              leftContent: (
-                <>
-                  <ListButton
-                    type="remove"
-                    onPress={() =>
-                      updateTokenStatus(
-                        jettonBalance.jettonAddress,
-                        TokenApprovalStatus.Declined,
-                        TokenApprovalType.Jetton,
-                      )
-                    }
-                  />
-                  <Spacer x={16} />
-                </>
-              ),
-              isLast: index === enabled.length - 1,
-              picture: jettonBalance.metadata?.image,
-              title: jettonBalance.metadata?.name,
-              subtitle: formatter.format(jettonBalance.balance, {
-                currency: jettonBalance.metadata?.symbol,
-                currencySeparator: 'wide',
-              }),
-              onPress: () =>
-                openApproveTokenModal({
-                  type: TokenApprovalType.Jetton,
-                  tokenAddress: jettonBalance.jettonAddress,
-                  verification: jettonBalance.verification,
-                  image: jettonBalance.metadata?.image,
-                  name: jettonBalance.metadata?.name,
-                }),
-            } as CellItem),
-        ),
-      );
-      content.push({
-        type: ContentType.Spacer,
-        bottom: 16,
-      });
-    }
-
-    if (disabled.length) {
-      content.push({
-        type: ContentType.Title,
-        title: t('approval.declined'),
-      });
-      content.push(
-        ...disabled.map(
-          (jettonBalance, index) =>
-            ({
-              type: ContentType.Cell,
-              isFirst: index === 0,
-              isLast: index === disabled.length - 1,
-              picture: jettonBalance.metadata?.image,
-              title: jettonBalance.metadata?.name,
-              leftContent: (
-                <>
-                  <ListButton
-                    type="add"
-                    onPress={() =>
-                      updateTokenStatus(
-                        jettonBalance.jettonAddress,
-                        TokenApprovalStatus.Approved,
-                        TokenApprovalType.Jetton,
-                      )
-                    }
-                  />
-                  <Spacer x={16} />
-                </>
-              ),
-              subtitle: formatter.format(jettonBalance.balance, {
-                currency: jettonBalance.metadata?.symbol,
-                currencySeparator: 'wide',
-              }),
-              onPress: () =>
-                openApproveTokenModal({
-                  type: TokenApprovalType.Jetton,
-                  tokenAddress: jettonBalance.jettonAddress,
-                  verification: jettonBalance.verification,
-                  image: jettonBalance.metadata?.image,
-                  name: jettonBalance.metadata?.name,
-                }),
-            } as CellItem),
-        ),
-      );
-      content.push({
-        type: ContentType.Spacer,
-        bottom: 16,
-      });
-    }
-
-    return content;
-  }, [disabled, enabled, pending, updateTokenStatus]);
+  const jettonData = useJettonData();
 
   const renderTabs = useCallback(() => {
     return (
@@ -261,20 +79,21 @@ export const ManageTokens: FC = () => {
             </Tabs.Header>
             <Tabs.PagerView>
               <Tabs.Section index={0}>
-                <View
-                  contentContainerStyle={styles.flashList.static}
-                  style={styles.sectionContainer}
-                >
-                  <FlashList data={data} renderItem={FLashListItem} />
+                <View style={styles.sectionContainer}>
+                  <FlashList
+                    contentContainerStyle={styles.flashList.static}
+                    data={jettonData}
+                    renderItem={FLashListItem}
+                  />
                 </View>
               </Tabs.Section>
               <Tabs.Section index={1}>
                 <FlashList
-                  contentContainerStyle={[
+                  contentContainerStyle={StyleSheet.flatten([
                     styles.flashList.static,
                     { paddingBottom: bottomInset },
-                  ]}
-                  data={data}
+                  ])}
+                  data={jettonData}
                   renderItem={FLashListItem}
                 />
               </Tabs.Section>
@@ -283,7 +102,7 @@ export const ManageTokens: FC = () => {
         </Tabs>
       </Screen>
     );
-  }, [bottomInset, data, tab]);
+  }, [bottomInset, jettonData, tab]);
 
   // return renderTabs();
 
@@ -296,7 +115,7 @@ export const ManageTokens: FC = () => {
           styles.flashList.static,
           { paddingBottom: bottomInset },
         ])}
-        data={data}
+        data={jettonData}
         renderItem={FLashListItem}
       />
     </Screen>
