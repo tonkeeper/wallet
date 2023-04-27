@@ -1,4 +1,8 @@
-import { jettonsBalancesSelector, sortedJettonsSelector } from '$store/jettons';
+import {
+  excludedJettonsSelector,
+  jettonsBalancesSelector,
+  sortedJettonsSelector,
+} from '$store/jettons';
 import { JettonBalanceModel, JettonVerification } from '$store/models';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -6,6 +10,7 @@ import { walletWalletSelector } from '$store/wallet';
 import { Address } from '$libs/Ton';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
+import { DevFeature, useDevFeatureEnabled } from '$store';
 
 export interface IBalances {
   pending: JettonBalanceModel[];
@@ -13,11 +18,13 @@ export interface IBalances {
   disabled: JettonBalanceModel[];
 }
 export const useJettonBalances = () => {
+  const tokenApproval = useDevFeatureEnabled(DevFeature.TokenApproval);
   const jettonBalances = useSelector(jettonsBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
   const sortedJettons =
     useSelector(sortedJettonsSelector)[wallet?.vault?.getVersion?.() || ''];
   const approvalStatuses = useTokenApprovalStore();
+  const excludedJettons = useSelector(excludedJettonsSelector);
 
   const jettons = useMemo(() => {
     const balances: IBalances = {
@@ -58,6 +65,24 @@ export const useJettonBalances = () => {
 
     return balances;
   }, [approvalStatuses.tokens, jettonBalances, sortedJettons]);
+
+  if (!tokenApproval) {
+    const legacyJettons = jettonBalances.filter((jetton) => {
+      const isWhitelisted = jetton.verification === JettonVerification.WHITELIST;
+      const excludeWhitelisted =
+        isWhitelisted && excludedJettons[jetton.jettonAddress] === true;
+      const excludeOther =
+        !isWhitelisted && excludedJettons[jetton.jettonAddress] !== false;
+      const excluded = excludeWhitelisted || excludeOther;
+
+      return jetton.balance !== '0' && !excluded;
+    });
+    return {
+      pending: [],
+      enabled: legacyJettons,
+      disabled: [],
+    };
+  }
 
   return jettons;
 };
