@@ -5,7 +5,7 @@
     "skip": "Salta",
     "later": "Dopo",
     "continue": "Prosegui",
-    "loading": "Caricamento...",
+    "loading": "Caricamento",
     "success": "Riuscito!",
     "copied": "Copiato",
     "address_copied": "Indirizzo copiato",
@@ -79,6 +79,7 @@
     "transaction_sender_address": "Indirizzo Mittente",
     "transaction_hash": "Transazione",
     "transaction_fee": "Commissioni",
+    "transaction_refund": "Rimborso",
     "transaction_merchant": "Negoziante",
     "transaction_subscription": "Iscrizione",
     "transaction_unsubscription": "Disiscrizione",
@@ -105,6 +106,7 @@
     "transaction_exchange_from_currency": "Da",
     "transaction_confirmations": "Conferme",
     "transaction_send_more_button": "Invia altro a questo destinatario",
+    "transaction_view_in_explorer": "Visualizza in explorer",
     "transaction_show_subscription_button": "Visualizza Abbonamento",
     "transaction_copy_caution": "Fai attenzione ai link esterni. Non dare MAI la tua frase segreta a risorse di terze parti: puoi perdere tutti i tuoi fondi.\n\n- - -\n\n",
   
@@ -170,6 +172,7 @@
     "jetton_name": "%{name} Token",
     "jetton_id": "Token ID: %{jettonAddress}",
     "jetton_price": "Prezzo:",
+    "jetton_token": "Token",
     "jetton_id_copied": "Token ID copiato",
     "jetton_open_explorer": "Mostra dettagli",
     "jettons_manage_tokens": "Gestisci token",
@@ -227,7 +230,9 @@
       "amount": {
         "recipient_label": "Invia A:",
         "insufficient_balance": "Fondi insufficienti",
-        "send_all": "Invia tutto %{amount}"
+        "less_than_min": "Minimo %{minAmount} TON",
+        "max": "Massimo",
+        "remaining": "Rimanente: %{amount}"
       },
       "comfirm": {
         "comment_label": "Commento",
@@ -294,6 +299,30 @@
   
     "swap_title": "Swap",
   
+    "wallet": {
+      "screen_title": "Wallet",
+      "edit_tokens_btn": "Modifica",
+      "old_wallets_title": "Vecchi wallet",
+      "old_wallet_title": "Vecchio wallet",
+      "buy_btn": "Compra",
+      "send_btn": "Invia",
+      "receive_btn": "Ricevi",
+      "sell_btn": "Vendi",
+      "tonkens_tab_lable": "Token",
+      "collectibles_tab_lable": "Collezionabili"
+    },
+  
+    "activity": {
+      "screen_title": "Attività",
+      "sent": "Invia",
+      "received": "Ricevi",
+      "empty_transaction_title": "Le tue attività verranno mostrate qui",
+      "empty_transaction_caption": "Effettua la tua prima transazione!",
+      "buy_toncoin_btn": "Compra Toncoin",
+      "receive_btn": "Ricevi",
+      "failed_transaction": "Fallito"
+    },
+  
     "browser": {
       "title": "Browser",
       "search_label": "Cerca o inserisci l'indirizzo",
@@ -321,16 +350,23 @@
       "more_description": "Marcati, exchange ed altro"
     },
   
+    "exchange_modal": {
+      "sell_title": "Vendi Toncoin",
+      "buy_title": "Compra Toncoin",
+      "other_ways_to_sell": "Altre vie per vendere",
+      "other_ways_to_buy": "Altre vie per comprare"
+    },
+  
     "exchange_title": "Compra TON",
     "exchange_other_ways": "Altri modi per acquistare o vendere TON",
   
     "settings_title": "Impostazioni",
-    "settings_primary_currency": "Valuta principale",
-    "settings_rate": "Vota l'applicazione",
-    "settings_contact_support": "Contatta il Team",
-    "settings_legal_documents": "Documentazione Legale",
+    "settings_primary_currency": "Valuta",
+    "settings_rate": "Vota TonKeeper",
+    "settings_contact_support": "Contatta il team",
+    "settings_legal_documents": "Legale",
     "settings_news": "Tonkeeper news",
-    "settings_support": "Chat di Supporto",
+    "settings_support": "Supporto",
     "settings_backup_seed": "Mostra Frase di Recupero",
     "settings_reset": "Disconnetti",
     "settings_notifications": "Notifiche",
@@ -347,9 +383,9 @@
     "settings_security": "Sicurezza",
     "settings_appearance": "Tema",
     "settings_news_url": "https://t.me/tonkeeper",
-    "settings_jettons_list": "List dei token",
+    "settings_jettons_list": "Token",
     "settings_delete_account": "Elimina Account",
-    "settings_search_engine": "Motore di Ricerca",
+    "settings_search_engine": "Cerca",
   
     "settings_delete_alert_title": "Sei sicuro di voler eliminare il tuo Account?",
     "settings_delete_alert_caption": "Questa azione eliminerà il tuo Account e tutti i Dati da questa applicazione.",
@@ -484,6 +520,7 @@
     "security_reset_passcode": "Resetta passcode",
     "security_use_biometry_switch": "Usa %{biometryType}",
     "security_use_biometry_tip": "Puoi sempre sbloccare il tuo wallet con un passcode.",
+    "passcode_changed": "Passcode cambiato",
   
     "setup_biometry_title": "Accesso rapido con %{biometryType}",
     "setup_biometry_caption": "%{biometryType} ti permette di aprire il tuo wallet più velocemente senza dover\ninserire la tua password.",
@@ -537,6 +574,7 @@
   
     "txActions": {
       "fee": "Commissioni",
+      "refund": "Rimborso",
       "amount": "Ammontare",
   
       "signRaw": {
@@ -546,6 +584,7 @@
           "button": "Apri Impostazioni"
         },
         "totalFee": "Commissioni totali",
+        "totalRefund": "Rimborso totale",
         "title": "Conferma transazione",
         "recipient": "Destinatario",
         "comment": "Commento",
@@ -585,6 +624,8 @@
   
     "chart": {
       "price": "Prezzo",
+      "no_internet": "Nessuna connessione internet",
+      "check_connection": "Controlla la tua connessione e riprova.",
       "periods": {
         "1Y": "A",
         "6M": "6M",
@@ -629,6 +670,8 @@
         "EUR": "Euro",
         "RUB": "Rublo Russo",
         "AED": "Dirham Emirati Arabi Uniti",
+        "UAH": "Grivnia ucraina",
+        "UZS": "Sono uzbeko",
         "GBP": "Sterline",
         "CHF": "Franco Svizzero",
         "CNY": "Yuan Chinese",
@@ -640,5 +683,85 @@
     },
   
     "transfer_deeplink_address_error": "Indirizzo del destinatario errato",
-    "transfer_deeplink_amount_error": "Richiesta di importo errata"
+    "transfer_deeplink_amount_error": "Incorrect amount request",
+  
+    "confirm": "Conferma",
+  
+    "staking": {
+      "title": "Staking",
+      "widget_desc": "Guadagna sino a %{apy}% sui tuoi TON",
+      "staking_pool_desc": "APY ≈ %{apy}%",
+      "staking_desc": "Minimo deposito da %{minStake} TON.\nGuadagna sino a %{maxApy}%.",
+      "top_up": "Top up",
+      "withdrawal_request": "Richiedi prelievo",
+      "get_withdrawal": "Ottieni prelievo",
+      "withdraw": "Prelievo",
+      "deposit": "Deposito",
+      "transaction": "Transazione",
+      "warning": {
+        "title": "Attenzione",
+        "desc": "Staking basato su Smart Contract di terze parti. Non siamo responsabili del loro lavoro.",
+        "about": "Riguardo %{name}"
+      },
+      "details": {
+        "show_details": "Dettagli",
+        "balance": "Bilancio staking",
+        "pendingDeposit": "Deposito in sospeso",
+        "pendingWithdraw": "Prelievo in sospeso",
+        "readyWithdraw": "Prelievo pronto",
+        "tap_to_collect": "Tocca per raccogliere",
+        "next_cycle": {
+          "title": "Prossimo ciclo",
+          "desc": "Tutte le transazioni hanno effetto una volta terminato il ciclo",
+          "time": "in %{time}"
+        },
+        "cooldown": {
+          "title": "Periodo di raffreddamento",
+          "desc": "Periodo di due ore applicato all'inizio di ogni ciclo di staking per migliorare il processo di prelievi e depositi tra i cicli",
+          "active": "Attivo"
+        },
+        "about_pool": "Riguarlo la pool",
+        "frequency": {
+          "label": "Frequenza ricompensa",
+          "value": "Ogni %{count} ore"
+        },
+        "pool_address": {
+          "label": "Indirizzo pool"
+        },
+        "apy": {
+          "label": "Stima rapporto APY",
+          "value": "≈ %{value}%"
+        },
+        "min_deposit": {
+          "label": "Deposito minimo",
+          "value": "%{value} TON"
+        }
+      },
+      "rewards": {
+        "title": "Le tue ricompense annuali",
+        "after_top_up": "Dopo il top up",
+        "current": "Corrente",
+        "value": "≈ %{value} TON"
+      },
+      "confirm": {
+        "recipient": {
+          "label": "Destinatario"
+        },
+        "address": {
+          "label": "Indirizzo destinatario"
+        },
+        "amount": {
+          "label": "Importo",
+          "value": "%{value} TON"
+        },
+        "withdraw_amount": {
+          "label": "Importo del prelievo",
+          "value": "%{value} TON"
+        },
+        "fee": {
+          "label": "Commissioni",
+          "value": "≈ %{value} TON"
+        }
+      }
+    }
   }
