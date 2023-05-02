@@ -39,6 +39,7 @@ import { eventsActions, eventsSelector } from '$store/events';
 import { groupAndFilterTonActivityItems } from '$utils/transactions';
 import { formatter } from '$utils/formatter';
 import { Toast } from '$store';
+import { useFlags } from '$utils/flags';
 
 const exploreActions = [
   {
@@ -85,6 +86,7 @@ const exploreActions = [
 
 export const Wallet: FC<WalletProps> = ({ route }) => {
   const currency = route.params.currency;
+  const flags = useFlags(['disable_exchange_methods']);
   const wallet = useSelector(walletWalletSelector);
   const address = useSelector(walletAddressSelector);
   const isRefreshing = useSelector(walletIsRefreshingSelector);
@@ -254,11 +256,13 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
               </S.FlexRow>
               <S.Divider style={{ marginBottom: ns(16) }} />
               <S.ActionsContainer>
-                <IconButton
-                  onPress={handleOpenExchange('buy')}
-                  iconName="ic-plus-28"
-                  title={t('wallet.buy_btn')}
-                />
+                {!flags.disable_exchange_methods && (
+                  <IconButton
+                    onPress={handleOpenExchange('buy')}
+                    iconName="ic-plus-28"
+                    title={t('wallet.buy_btn')}
+                  />
+                )}
                 <IconButton
                   onPress={handleSend}
                   iconName="ic-arrow-up-28"
@@ -269,11 +273,13 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
                   iconName="ic-arrow-down-28"
                   title={t('wallet.receive_btn')}
                 />
-                <IconButton
-                  onPress={handleOpenExchange('sell')}
-                  iconName="ic-minus-28"
-                  title={t('wallet.sell_btn')}
-                />
+                {!flags.disable_exchange_methods && (
+                  <IconButton
+                    onPress={handleOpenExchange('sell')}
+                    iconName="ic-minus-28"
+                    title={t('wallet.sell_btn')}
+                  />
+                )}
               </S.ActionsContainer>
               <S.Divider />
             </S.TokenInfoWrap>
