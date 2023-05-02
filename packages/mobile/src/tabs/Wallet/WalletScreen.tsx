@@ -37,8 +37,10 @@ import { useWallet } from './hooks/useWallet';
 import { useTheme } from '$hooks';
 import { Steezy } from '$styles';
 import { BalancesList } from './components/BalancesList';
+import { useFlags } from '$utils/flags';
 
 export const WalletScreen = memo(() => {
+  const flags = useFlags(['disable_exchange_methods']);
   const [tab, setTab] = useState<string>('tokens');
   const tabBarHeight = useBottomTabBarHeight();
   const dispatch = useDispatch();
@@ -135,11 +137,13 @@ export const WalletScreen = memo(() => {
         )}
       </View>
       <IconButtonList>
-        <IconButton
-          onPress={handlePressBuy}
-          iconName="ic-plus-28"
-          title={t('wallet.buy_btn')}
-        />
+        {!flags.disable_exchange_methods && (
+          <IconButton
+            onPress={handlePressBuy}
+            iconName="ic-plus-28"
+            title={t('wallet.buy_btn')}
+          />
+        )}
         <IconButton
           onPress={handlePressSend}
           iconName="ic-arrow-up-28"
@@ -150,11 +154,13 @@ export const WalletScreen = memo(() => {
           iconName="ic-arrow-down-28"
           title={t('wallet.receive_btn')}
         />
-        <IconButton
-          onPress={handlePressSell}
-          iconName="ic-minus-28"
-          title={t('wallet.sell_btn')}
-        />
+        {!flags.disable_exchange_methods && (
+          <IconButton
+            onPress={handlePressSell}
+            iconName="ic-minus-28"
+            title={t('wallet.sell_btn')}
+          />
+        )}
       </IconButtonList>
     </View>
   );
