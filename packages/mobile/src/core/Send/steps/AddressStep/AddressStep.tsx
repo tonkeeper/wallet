@@ -28,7 +28,7 @@ import {
   WordHintsPopupRef,
 } from '$shared/components/ImportWalletForm/WordHintsPopup';
 import { AddressStepProps } from './AddressStep.interface';
-import { AccountRepr } from 'tonapi-sdk-js';
+import { Account } from '@tonkeeper/core';
 import { Tonapi } from '$libs/Tonapi';
 
 const TonWeb = require('tonweb');
@@ -103,7 +103,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
   );
 
   const updateRecipient = useCallback(
-    async (value: string, accountInfo?: Partial<AccountRepr>) => {
+    async (value: string, accountInfo?: Partial<Account>) => {
       try {
         const link = parseTonLink(value);
 
@@ -151,7 +151,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
         if (isValidAddress(value)) {
           if (accountInfo) {
-            setRecipientAccountInfo(accountInfo as AccountRepr);
+            setRecipientAccountInfo(accountInfo as Account);
           }
 
           setRecipient({ address: value });
@@ -202,7 +202,6 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
       setComment,
       setRecipient,
       setRecipientAccountInfo,
-      dnsAbortController,
     ],
   );
 

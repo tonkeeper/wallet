@@ -24,9 +24,9 @@ import { Address } from 'tonweb/dist/types/utils/address';
 import { t } from '$translation';
 import { Ton } from '$libs/Ton';
 import { getServerConfig } from '$shared/constants';
-import { AccountEvent, Configuration, SendApi, NFTApi } from 'tonapi-sdk-js';
 import axios from 'axios';
 import { Tonapi } from '$libs/Tonapi';
+import { AccountEvent, Configuration, NFTApi, BlockchainApi } from '@tonkeeper/core';
 
 const { NftCollection, NftItem, NftSale } = TonWeb.token.nft;
 
@@ -38,18 +38,18 @@ export class NFTOperations {
   private wallet: Wallet;
   private nftApi = new NFTApi(
     new Configuration({
-      basePath: getServerConfig('tonapiIOEndpoint'),
+      basePath: getServerConfig('tonapiV2Endpoint'),
       headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
       },
     }),
   );
 
-  private sendApi = new SendApi(
+  private blockchainApi = new BlockchainApi(
     new Configuration({
-      basePath: getServerConfig('tonapiIOEndpoint'),
+      basePath: getServerConfig('tonapiV2Endpoint'),
       headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
       },
     }),
   );
@@ -61,13 +61,13 @@ export class NFTOperations {
     this.wallet = wallet;
 
     const tonApiConfiguration = new Configuration({
-      basePath: getServerConfig('tonapiIOEndpoint'),
+      basePath: getServerConfig('tonapiV2Endpoint'),
       headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
       },
     });
 
-    this.sendApi = new SendApi(tonApiConfiguration);
+    this.blockchainApi = new BlockchainApi(tonApiConfiguration);
 
     this.getMyAddresses();
   }
@@ -405,16 +405,16 @@ export class NFTOperations {
         const queryMsg = await methods.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
 
-        const endpoint = getServerConfig('tonapiIOEndpoint');
+        const endpoint = getServerConfig('tonapiV2Endpoint');
 
         const resp = await axios.post(
-          `${endpoint}/v1/send/estimateTx`,
+          `${endpoint}/v2/blockchain/message/emulate`,
           {
             boc: boc,
           },
           {
             headers: {
-              Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+              Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
             },
           },
         );
@@ -437,7 +437,9 @@ export class NFTOperations {
         const queryMsg = await methods.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
 
-        const response = await this.sendApi.sendBoc({ sendBocRequest: { boc } });
+        const response = await this.blockchainApi.sendMessage({
+          sendMessageRequest: { boc },
+        });
 
         onDone?.(boc);
 
@@ -447,43 +449,36 @@ export class NFTOperations {
   }
 
   public async getCollectionAddressByItem(nftItemAddress: string) {
-    const nftItemData = await this.nftApi.getNftItemByAddress({
-      account: nftItemAddress,
+    const nftItemData = await this.nftApi.getNftItemsByAddresses({
+      getAccountsRequest: { accountIds: [nftItemAddress] },
     });
 
-    if (!nftItemData.collectionAddress) {
+    const collectionAddress = nftItemData.nftItems[0]?.collection?.address;
+
+    if (!collectionAddress) {
       throw new NFTOperationError('collectionAddress empty');
     }
     const isTestnet = this.wallet.ton.isTestnet;
-    return new TonWeb.Address(nftItemData.collectionAddress).toString(
-      true,
-      true,
-      true,
-      isTestnet,
-    );
+    return new TonWeb.Address(collectionAddress).toString(true, true, true, isTestnet);
   }
 
   private async getOwnerAddressByItem(nftItemAddress: string) {
-    const nftItemData = await this.nftApi.getNftItemByAddress({
-      account: nftItemAddress,
+    const nftItemData = await this.nftApi.getNftItemsByAddresses({
+      getAccountsRequest: { accountIds: [nftItemAddress] },
     });
+    const ownerAddress = nftItemData.nftItems[0].owner?.address;
 
-    if (!nftItemData.owner?.address) {
+    if (!ownerAddress) {
       throw new NFTOperationError('No ownerAddress');
     }
 
     const isTestnet = this.wallet.ton.isTestnet;
-    return new TonWeb.Address(nftItemData.owner.address).toString(
-      true,
-      true,
-      true,
-      isTestnet,
-    );
+    return new TonWeb.Address(ownerAddress).toString(true, true, true, isTestnet);
   }
 
   private async getOwnerAddressByCollection(nftCollectionAddress: string) {
     const nftCollection = await this.nftApi.getNftCollection({
-      account: nftCollectionAddress,
+      accountId: nftCollectionAddress,
     });
 
     const isTestnet = this.wallet.ton.isTestnet;
@@ -556,7 +551,7 @@ export class NFTOperations {
         if (
           amountBN
             .plus(params.sendMode === 128 ? 0 : feeNano)
-            .isGreaterThan(myInfo.balance)
+            .isGreaterThan(myInfo?.balance ?? '0')
         ) {
           throw new NFTOperationError(t('send_insufficient_funds'));
         }
@@ -564,7 +559,7 @@ export class NFTOperations {
         const queryMsg = await transfer.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
 
-        await this.sendApi.sendBoc({ sendBocRequest: { boc } });
+        await this.blockchainApi.sendMessage({ sendMessageRequest: { boc } });
       },
     };
   }

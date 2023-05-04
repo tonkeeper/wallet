@@ -19,18 +19,12 @@ import {
     AccountAddressFromJSONTyped,
     AccountAddressToJSON,
 } from './AccountAddress';
-import type { Jetton } from './Jetton';
+import type { JettonPreview } from './JettonPreview';
 import {
-    JettonFromJSON,
-    JettonFromJSONTyped,
-    JettonToJSON,
-} from './Jetton';
-import type { JettonVerificationType } from './JettonVerificationType';
-import {
-    JettonVerificationTypeFromJSON,
-    JettonVerificationTypeFromJSONTyped,
-    JettonVerificationTypeToJSON,
-} from './JettonVerificationType';
+    JettonPreviewFromJSON,
+    JettonPreviewFromJSONTyped,
+    JettonPreviewToJSON,
+} from './JettonPreview';
 
 /**
  * 
@@ -40,22 +34,10 @@ import {
 export interface JettonBalance {
     /**
      * 
-     * @type {JettonVerificationType}
-     * @memberof JettonBalance
-     */
-    verification: JettonVerificationType;
-    /**
-     * 
      * @type {string}
      * @memberof JettonBalance
      */
     balance: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof JettonBalance
-     */
-    jettonAddress: string;
     /**
      * 
      * @type {AccountAddress}
@@ -64,10 +46,10 @@ export interface JettonBalance {
     walletAddress: AccountAddress;
     /**
      * 
-     * @type {Jetton}
+     * @type {JettonPreview}
      * @memberof JettonBalance
      */
-    metadata?: Jetton;
+    jetton: JettonPreview;
 }
 
 /**
@@ -75,10 +57,9 @@ export interface JettonBalance {
  */
 export function instanceOfJettonBalance(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "verification" in value;
     isInstance = isInstance && "balance" in value;
-    isInstance = isInstance && "jettonAddress" in value;
     isInstance = isInstance && "walletAddress" in value;
+    isInstance = isInstance && "jetton" in value;
 
     return isInstance;
 }
@@ -93,11 +74,9 @@ export function JettonBalanceFromJSONTyped(json: any, ignoreDiscriminator: boole
     }
     return {
         
-        'verification': JettonVerificationTypeFromJSON(json['verification']),
         'balance': json['balance'],
-        'jettonAddress': json['jetton_address'],
         'walletAddress': AccountAddressFromJSON(json['wallet_address']),
-        'metadata': !exists(json, 'metadata') ? undefined : JettonFromJSON(json['metadata']),
+        'jetton': JettonPreviewFromJSON(json['jetton']),
     };
 }
 
@@ -110,11 +89,9 @@ export function JettonBalanceToJSON(value?: JettonBalance | null): any {
     }
     return {
         
-        'verification': JettonVerificationTypeToJSON(value.verification),
         'balance': value.balance,
-        'jetton_address': value.jettonAddress,
         'wallet_address': AccountAddressToJSON(value.walletAddress),
-        'metadata': JettonToJSON(value.metadata),
+        'jetton': JettonPreviewToJSON(value.jetton),
     };
 }
 

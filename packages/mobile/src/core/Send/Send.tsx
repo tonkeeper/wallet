@@ -31,7 +31,7 @@ import { DoneStep } from './steps/DoneStep/DoneStep';
 import { goBack, openReminderEnableNotificationsModal } from '$navigation';
 import { favoritesActions } from '$store/favorites';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { AccountApi, AccountRepr, Configuration } from 'tonapi-sdk-js';
+import { Configuration, AccountsApi, Account } from '@tonkeeper/core';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {
@@ -62,15 +62,15 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   const dispatch = useDispatch();
 
-  const accountApi = useInstance(() => {
+  const accountsApi = useInstance(() => {
     const tonApiConfiguration = new Configuration({
-      basePath: getServerConfig('tonapiIOEndpoint'),
+      basePath: getServerConfig('tonapiV2Endpoint'),
       headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
       },
     });
 
-    return new AccountApi(tonApiConfiguration);
+    return new AccountsApi(tonApiConfiguration);
   });
 
   const balances = useSelector(walletBalancesSelector);
@@ -82,9 +82,7 @@ export const Send: FC<SendProps> = ({ route }) => {
   const [recipient, setRecipient] = useState<SendRecipient | null>(
     initialAddress ? { address: initialAddress } : null,
   );
-  const [recipientAccountInfo, setRecipientAccountInfo] = useState<AccountRepr | null>(
-    null,
-  );
+  const [recipientAccountInfo, setRecipientAccountInfo] = useState<Account | null>(null);
 
   const [amount, setAmount] = useState<SendAmount>({ value: initialAmount, all: false });
 
@@ -261,11 +259,11 @@ export const Send: FC<SendProps> = ({ route }) => {
     }
 
     try {
-      const accountInfo = await accountApi.getAccountInfo({ account: recipient.address });
+      const accountInfo = await accountsApi.getAccount({ accountId: recipient.address });
 
       setRecipientAccountInfo(accountInfo);
     } catch {}
-  }, [accountApi, recipient]);
+  }, [accountsApi, recipient]);
 
   useEffect(() => () => Keyboard.dismiss(), []);
 

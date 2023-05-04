@@ -4,24 +4,34 @@ import { BaseProvider } from '$store/nfts/manager/providers/base';
 import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { CollectionModel, NFTModel } from '$store/models';
 import _ from 'lodash';
-import { Configuration, NFTApi } from 'tonapi-sdk-js';
 import { allSettled } from 'bluebird';
 import { proxyMedia } from '$utils/proxyMedia';
 import { debugLog } from '$utils';
+import { Configuration, NFTApi, AccountsApi } from '@tonkeeper/core';
 
 export class TonProvider extends BaseProvider {
   public readonly name = 'TonProvider';
   private nftApi = new NFTApi(
     new Configuration({
-      basePath: getServerConfig('tonapiIOEndpoint'),
+      basePath: getServerConfig('tonapiV2Endpoint'),
       headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+      },
+    }),
+  );
+  private accountsApi = new AccountsApi(
+    new Configuration({
+      basePath: getServerConfig('tonapiV2Endpoint'),
+      headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
       },
     }),
   );
 
   async loadCollection(collectionAddress: string): Promise<CollectionModel> {
-    const collection = await this.nftApi.getNftCollection({ account: collectionAddress });
+    const collection = await this.nftApi.getNftCollection({
+      accountId: collectionAddress,
+    });
 
     const name =
       typeof collection.metadata?.name === 'string'
@@ -61,10 +71,10 @@ export class TonProvider extends BaseProvider {
         return [];
       }
 
-      const resp = await this.nftApi.searchNFTItems({
-        includeOnSale: true,
-        owner: this.address,
+      const resp = await this.accountsApi.getNftItemsByOwner({
+        accountId: this.address,
         limit: 1000,
+        indirectOwnership: true,
         offset: 0,
       });
 
@@ -112,7 +122,9 @@ export class TonProvider extends BaseProvider {
   }
 
   async loadNFTItem(address: string): Promise<NFTModel> {
-    const nfts = await this.nftApi.getNFTItems({ addresses: [address] });
+    const nfts = await this.nftApi.getNftItemsByAddresses({
+      getAccountsRequest: { accountIds: [address] },
+    });
 
     let nft = nfts.nftItems[0];
     if (!nft) throw new Error('NFT item not loaded');

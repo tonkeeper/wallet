@@ -19,12 +19,12 @@ import {
     AccountAddressFromJSONTyped,
     AccountAddressToJSON,
 } from './AccountAddress';
-import type { Jetton } from './Jetton';
+import type { JettonPreview } from './JettonPreview';
 import {
-    JettonFromJSON,
-    JettonFromJSONTyped,
-    JettonToJSON,
-} from './Jetton';
+    JettonPreviewFromJSON,
+    JettonPreviewFromJSONTyped,
+    JettonPreviewToJSON,
+} from './JettonPreview';
 import type { Refund } from './Refund';
 import {
     RefundFromJSON,
@@ -82,10 +82,10 @@ export interface JettonTransferAction {
     refund?: Refund;
     /**
      * 
-     * @type {Jetton}
+     * @type {JettonPreview}
      * @memberof JettonTransferAction
      */
-    jetton: Jetton;
+    jetton: JettonPreview;
 }
 
 /**
@@ -118,7 +118,7 @@ export function JettonTransferActionFromJSONTyped(json: any, ignoreDiscriminator
         'amount': json['amount'],
         'comment': !exists(json, 'comment') ? undefined : json['comment'],
         'refund': !exists(json, 'refund') ? undefined : RefundFromJSON(json['refund']),
-        'jetton': JettonFromJSON(json['jetton']),
+        'jetton': JettonPreviewFromJSON(json['jetton']),
     };
 }
 
@@ -138,7 +138,7 @@ export function JettonTransferActionToJSON(value?: JettonTransferAction | null):
         'amount': value.amount,
         'comment': value.comment,
         'refund': RefundToJSON(value.refund),
-        'jetton': JettonToJSON(value.jetton),
+        'jetton': JettonPreviewToJSON(value.jetton),
     };
 }
 

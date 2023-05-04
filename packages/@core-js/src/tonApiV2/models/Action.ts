@@ -49,6 +49,12 @@ import {
     NftPurchaseActionFromJSONTyped,
     NftPurchaseActionToJSON,
 } from './NftPurchaseAction';
+import type { SmartContractAction } from './SmartContractAction';
+import {
+    SmartContractActionFromJSON,
+    SmartContractActionFromJSONTyped,
+    SmartContractActionToJSON,
+} from './SmartContractAction';
 import type { SubscriptionAction } from './SubscriptionAction';
 import {
     SubscriptionActionFromJSON,
@@ -136,6 +142,12 @@ export interface Action {
     nftPurchase?: NftPurchaseAction;
     /**
      * 
+     * @type {SmartContractAction}
+     * @memberof Action
+     */
+    smartContractExec?: SmartContractAction;
+    /**
+     * 
      * @type {ActionSimplePreview}
      * @memberof Action
      */
@@ -155,6 +167,7 @@ export const ActionTypeEnum = {
     UnSubscribe: 'UnSubscribe',
     AuctionBid: 'AuctionBid',
     NftPurchase: 'NftPurchase',
+    SmartContractExec: 'SmartContractExec',
     Unknown: 'Unknown'
 } as const;
 export type ActionTypeEnum = typeof ActionTypeEnum[keyof typeof ActionTypeEnum];
@@ -202,6 +215,7 @@ export function ActionFromJSONTyped(json: any, ignoreDiscriminator: boolean): Ac
         'unSubscribe': !exists(json, 'UnSubscribe') ? undefined : UnSubscriptionActionFromJSON(json['UnSubscribe']),
         'auctionBid': !exists(json, 'AuctionBid') ? undefined : AuctionBidActionFromJSON(json['AuctionBid']),
         'nftPurchase': !exists(json, 'NftPurchase') ? undefined : NftPurchaseActionFromJSON(json['NftPurchase']),
+        'smartContractExec': !exists(json, 'SmartContractExec') ? undefined : SmartContractActionFromJSON(json['SmartContractExec']),
         'simplePreview': ActionSimplePreviewFromJSON(json['simple_preview']),
     };
 }
@@ -225,6 +239,7 @@ export function ActionToJSON(value?: Action | null): any {
         'UnSubscribe': UnSubscriptionActionToJSON(value.unSubscribe),
         'AuctionBid': AuctionBidActionToJSON(value.auctionBid),
         'NftPurchase': NftPurchaseActionToJSON(value.nftPurchase),
+        'SmartContractExec': SmartContractActionToJSON(value.smartContractExec),
         'simple_preview': ActionSimplePreviewToJSON(value.simplePreview),
     };
 }

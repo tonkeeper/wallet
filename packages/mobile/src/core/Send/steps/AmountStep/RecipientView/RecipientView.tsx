@@ -1,17 +1,14 @@
 import { SendRecipient } from '../../../Send.interface';
-import React, { FC, memo, useLayoutEffect } from 'react';
+import React, { FC, memo } from 'react';
 import * as S from './RecipientView.style';
 import { useTranslator } from '$hooks';
 import { isAndroid, maskifyAddress } from '$utils';
 import { Icon } from '$uikit';
-import { useState } from 'react';
-import { useCallback } from 'react';
-import { NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
-import { AccountRepr } from 'tonapi-sdk-js';
+import { Account } from '@tonkeeper/core';
 
 interface Props {
   recipient: SendRecipient | null;
-  recipientAccountInfo: AccountRepr | null;
+  recipientAccountInfo: Account | null;
   goToAddress: () => void;
 }
 

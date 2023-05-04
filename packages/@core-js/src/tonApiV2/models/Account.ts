@@ -32,11 +32,11 @@ export interface Account {
      */
     balance: number;
     /**
-     * 
+     * unix timestamp
      * @type {number}
      * @memberof Account
      */
-    lastTransactionLt: number;
+    lastActivity: number;
     /**
      * 
      * @type {string}
@@ -73,6 +73,12 @@ export interface Account {
      * @memberof Account
      */
     memoRequired?: boolean;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof Account
+     */
+    getMethods: Array<string>;
 }
 
 /**
@@ -82,8 +88,9 @@ export function instanceOfAccount(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "address" in value;
     isInstance = isInstance && "balance" in value;
-    isInstance = isInstance && "lastTransactionLt" in value;
+    isInstance = isInstance && "lastActivity" in value;
     isInstance = isInstance && "status" in value;
+    isInstance = isInstance && "getMethods" in value;
 
     return isInstance;
 }
@@ -100,13 +107,14 @@ export function AccountFromJSONTyped(json: any, ignoreDiscriminator: boolean): A
         
         'address': json['address'],
         'balance': json['balance'],
-        'lastTransactionLt': json['last_transaction_lt'],
+        'lastActivity': json['last_activity'],
         'status': json['status'],
         'interfaces': !exists(json, 'interfaces') ? undefined : json['interfaces'],
         'name': !exists(json, 'name') ? undefined : json['name'],
         'isScam': !exists(json, 'is_scam') ? undefined : json['is_scam'],
         'icon': !exists(json, 'icon') ? undefined : json['icon'],
         'memoRequired': !exists(json, 'memo_required') ? undefined : json['memo_required'],
+        'getMethods': json['get_methods'],
     };
 }
 
@@ -121,13 +129,14 @@ export function AccountToJSON(value?: Account | null): any {
         
         'address': value.address,
         'balance': value.balance,
-        'last_transaction_lt': value.lastTransactionLt,
+        'last_activity': value.lastActivity,
         'status': value.status,
         'interfaces': value.interfaces,
         'name': value.name,
         'is_scam': value.isScam,
         'icon': value.icon,
         'memo_required': value.memoRequired,
+        'get_methods': value.getMethods,
     };
 }
 

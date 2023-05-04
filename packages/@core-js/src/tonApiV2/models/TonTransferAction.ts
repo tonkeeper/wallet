@@ -57,12 +57,6 @@ export interface TonTransferAction {
      */
     comment?: string;
     /**
-     * raw hex encoded payload
-     * @type {string}
-     * @memberof TonTransferAction
-     */
-    payload?: string;
-    /**
      * 
      * @type {Refund}
      * @memberof TonTransferAction
@@ -96,7 +90,6 @@ export function TonTransferActionFromJSONTyped(json: any, ignoreDiscriminator: b
         'recipient': AccountAddressFromJSON(json['recipient']),
         'amount': json['amount'],
         'comment': !exists(json, 'comment') ? undefined : json['comment'],
-        'payload': !exists(json, 'payload') ? undefined : json['payload'],
         'refund': !exists(json, 'refund') ? undefined : RefundFromJSON(json['refund']),
     };
 }
@@ -114,7 +107,6 @@ export function TonTransferActionToJSON(value?: TonTransferAction | null): any {
         'recipient': AccountAddressToJSON(value.recipient),
         'amount': value.amount,
         'comment': value.comment,
-        'payload': value.payload,
         'refund': RefundToJSON(value.refund),
     };
 }

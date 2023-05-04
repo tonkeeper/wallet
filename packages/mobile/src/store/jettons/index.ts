@@ -54,9 +54,9 @@ export const { actions, reducer } = createSlice({
     setJettonMetadata(state, action: SetJettonMetadataAction) {
       state.jettons = {
         ...state.jettons,
-        [action.payload.jetton.jettonAddress]: action.payload.jetton,
+        [action.payload.jetton.address]: action.payload.jetton,
       };
-      state.isMetaLoading[action.payload.jetton.jettonAddress] = false;
+      state.isMetaLoading[action.payload.jetton.address] = false;
     },
     resetJettons() {
       return initialState;

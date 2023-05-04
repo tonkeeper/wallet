@@ -1,5 +1,5 @@
 import { CryptoCurrency, FiatCurrency } from '$shared/constants';
-import {AccountEvent} from "tonapi-sdk-js";
+import { AccountEvent } from 'tonapi-sdk-js';
 
 export type TransactionType =
   | 'receive'
@@ -257,7 +257,7 @@ export interface TonDiamondMetadata {
 }
 
 export interface JettonMetadata {
-  jettonAddress: string;
+  address: string;
   decimals: number;
   symbol?: string;
   image_data?: string;

@@ -1,12 +1,12 @@
 import { SendRecipient, SendAmount } from '../../Send.interface';
 import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
 import React from 'react';
-import { AccountRepr } from 'tonapi-sdk-js';
+import { Account } from '@tonkeeper/core';
 
 export interface AmountStepProps extends StepComponentProps {
   isPreparing: boolean;
   recipient: SendRecipient | null;
-  recipientAccountInfo: AccountRepr | null;
+  recipientAccountInfo: Account | null;
   decimals: number;
   balance: string;
   currencyTitle: string;
