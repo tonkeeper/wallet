@@ -59,6 +59,8 @@ export const StakingSend: FC<Props> = (props) => {
   const pool = useStakingStore((s) => getStakingPoolByAddress(s, poolAddress), shallow);
   const poolStakingInfo = useStakingStore((s) => s.stakingInfo[pool.address], shallow);
 
+  const isTfPool = pool.implementation === 'tf'
+
   const { apy } = pool;
 
   const stakingBalance = Ton.fromNano(poolStakingInfo?.amount ?? '0');
@@ -94,7 +96,7 @@ export const StakingSend: FC<Props> = (props) => {
   const operations = useInstance(() => new NFTOperations(wallet));
 
   const [amount, setAmount] = useState<SendAmount>({
-    value: isWithdrawalConfrim ? readyWithdraw : '0',
+    value: isWithdrawalConfrim ? isTfPool ? stakingBalance : readyWithdraw : '0',
     all: false,
   });
 
