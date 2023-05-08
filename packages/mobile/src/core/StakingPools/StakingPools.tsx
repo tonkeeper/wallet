@@ -21,6 +21,7 @@ import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { shallow } from 'zustand/shallow';
 import * as S from './StakingPools.style';
+import { logEvent } from '@amplitude/analytics-browser';
 
 const calculateBalance = (pool: PoolInfo, stakingInfo: StakingInfo) => {
   const amount = new BigNumber(Ton.fromNano(stakingInfo[pool.address]?.amount || '0'));
@@ -75,7 +76,8 @@ export const StakingPools: FC<Props> = (props) => {
   }, [provider.url]);
 
   const handlePoolPress = useCallback(
-    (poolAddress: string) => {
+    (poolAddress: string, poolName: string) => {
+      logEvent('pool_open', { poolName, poolAddress });
       nav.push(MainStackRouteNames.StakingPoolDetails, { poolAddress });
     },
     [nav],
