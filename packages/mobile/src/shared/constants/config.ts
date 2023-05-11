@@ -254,4 +254,4 @@ export const telegramNumbersAddress = {
   testnet: 'EQAOQdwdw8kGftJCSFgOErM1mBjYPe4DBPq8-AhF6vr9si5N',
 };
 
-export const KNOWN_STAKING_IMPLEMENTATIONS = ['whales'];
+export const KNOWN_STAKING_IMPLEMENTATIONS = ['whales', 'tf'];

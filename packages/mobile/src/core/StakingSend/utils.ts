@@ -31,6 +31,22 @@ export const createWhalesWithdrawStakeCell = async (amount: BN) => {
   return encodeBytes(await addStakeCommand.toBoc());
 };
 
+export const createTfAddStakeCommand = async () => {
+  const addStakeCommand = new Cell();
+  addStakeCommand.bits.writeUint(0, 32);
+  addStakeCommand.bits.writeString("d");
+
+  return encodeBytes(await addStakeCommand.toBoc());
+};
+
+export const createTfWithdrawStakeCell = async () => {
+  const addStakeCommand = new Cell();
+  addStakeCommand.bits.writeUint(0, 32);
+  addStakeCommand.bits.writeString("w");
+
+  return encodeBytes(await addStakeCommand.toBoc());
+};
+
 export const getStakeSignRawMessage = async (
   pool: PoolInfo,
   amount: BN,
@@ -52,12 +68,29 @@ export const getStakeSignRawMessage = async (
     };
   }
 
+  if (pool.implementation === 'tf') {
+    const payload =
+      transactionType === StakingTransactionType.DEPOSIT
+        ? await createTfAddStakeCommand()
+        : await createTfWithdrawStakeCell();
+
+    return {
+      address: pool.address,
+      amount: transactionType === StakingTransactionType.DEPOSIT ? amount : withdrawalFee,
+      payload,
+    };
+  }
+
   throw new Error('not implemented yet');
 };
 
 export const getWithdrawalFee = (pool: PoolInfo): BN => {
   if (pool.implementation === 'whales') {
     return Ton.toNano('0.2');
+  }
+
+  if (pool.implementation === 'tf') {
+    return Ton.toNano('1');
   }
 
   return Ton.toNano(0);

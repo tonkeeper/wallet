@@ -67,7 +67,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
   const handleWithdrawalPress = useCallback(() => {
     nav.push(AppStackRouteNames.StakingSend, {
       poolAddress: pool.address,
-      transactionType: StakingTransactionType.WITHDRAWAL,
+      transactionType: pool.implementation === 'tf' ? StakingTransactionType.WITHDRAWAL_CONFIRM : StakingTransactionType.WITHDRAWAL,
     });
   }, [nav, pool.address]);
 

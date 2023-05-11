@@ -32,7 +32,7 @@ const StakingWidgetComponent: FC = () => {
 
   const handleStakingPress = useCallback(() => {
     logEvent('staking_open');
-    nav.push(MainStackRouteNames.StakingPools, { providerId: 'whales' });
+    nav.push(MainStackRouteNames.Staking);
   }, [nav]);
 
   if (!hasPools) {
