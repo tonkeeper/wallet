@@ -11,10 +11,17 @@ export const getLocaleDecimalSeparator = () => {
 
 export function parseLocaleNumber(stringNumber: string) {
   const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
-  return stringNumber
-    .replace(new RegExp(`\\${groupingSeparator}`, 'g'), '')
-    .replace(new RegExp(`\\${NUMBER_DIVIDER}`, 'g'), '')
-    .replace(new RegExp(`\\${decimalSeparator}`), '.');
+
+  let rawValue = stringNumber
+  .replace(new RegExp(`\\${groupingSeparator}`, 'g'), '')
+  .replace(new RegExp(`\\${NUMBER_DIVIDER}`, 'g'), '')
+  .replace(new RegExp(`\\${decimalSeparator}`), '.')
+
+  if (rawValue.endsWith('.')) {
+    rawValue = rawValue.replace('.', '')
+  }
+
+  return rawValue;
 }
 
 export function toLocaleNumber(value: string) {
@@ -33,12 +40,14 @@ export function formatInputAmount(
   skipFormatting?: boolean,
 ) {
   const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
-  if (groupingSeparator !== ',') {
-    // replace dots to commas
+  if (decimalSeparator === ',') {
+    // remove non-numeric charsets
+    raw = raw.replace(/[^0-9\,]/g, '');
     raw = raw.replace(/\,/g, '.');
+  } else {
+    // remove non-numeric charsets
+    raw = raw.replace(/[^0-9\.]/g, '');
   }
-  // remove non-numeric charsets
-  raw = raw.replace(/[^0-9\.]/g, '');
   // allow only one leading zero
   raw = raw.replace(/^([0]+)/, '0');
   // prepend zero before leading comma
@@ -73,7 +82,7 @@ export function formatInputAmount(
     );
   }
 
-  return toLocaleNumber(exp.join('.'));
+  return exp.join(decimalSeparator)
 }
 
 export function formatAmount(amount: string, decimals: number, withGrouping?: boolean) {
