@@ -13,9 +13,9 @@ export interface ButtonProps {
   mode?: 'secondary' | 'primary' | 'primary_red' | 'tertiary' | 'light';
   children: ReactNode;
   titleFont?: fontKeys;
-  before?: (({ isPressed: boolean }) => ReactElement) | ReactElement;
-  after?: (({ isPressed: boolean }) => ReactElement) | ReactElement;
-  children: ReactElement | string;
+  before?: ((props: { isPressed: boolean }) => ReactElement) | ReactElement;
+  after?: ((props: { isPressed: boolean }) => ReactElement) | ReactElement;
+  children: ReactNode;
   style?: StyleProp<ViewStyle>;
   withoutTextPadding?: boolean;
   withoutFixedHeight?: boolean;

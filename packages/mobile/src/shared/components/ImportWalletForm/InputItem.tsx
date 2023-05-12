@@ -14,7 +14,17 @@ import { InputItemProps, InputItemRef } from './ImportWalletForm.interface';
 import * as S from './ImportWalletForm.style';
 
 export const InputItem = forwardRef<InputItemRef, InputItemProps>((props, ref) => {
-  const { index, onSubmitEditing, onFocus, onBlur, onMultipleWords, onSpace, onLayout, onChangeText, onContentSizeChange } = props;
+  const {
+    index,
+    onSubmitEditing,
+    onFocus,
+    onBlur,
+    onMultipleWords,
+    onSpace,
+    onLayout,
+    onChangeText,
+    onContentSizeChange,
+  } = props;
 
   const inputRef = useRef<TextInput>(null);
   const [value, setValue] = useState('');
@@ -93,6 +103,7 @@ export const InputItem = forwardRef<InputItemRef, InputItemProps>((props, ref) =
         onBlur={handleBlur}
         onFocus={onFocus}
         blurOnSubmit={false}
+        withClearButton={false}
       />
     </S.InputWrap>
   );

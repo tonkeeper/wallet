@@ -3,6 +3,8 @@ import { AnimateProps, SharedValue } from 'react-native-reanimated';
 import { TextProps, ViewStyle } from 'react-native';
 
 export interface NavBarProps {
+  children: ReactNode;
+  subtitle?: ReactNode;
   isModal?: boolean;
   rightContent?: ReactNode;
   hideBackButton?: boolean;

@@ -116,7 +116,7 @@ export const WordHintsPopup = React.forwardRef<WordHintsPopupRef, WordHintsPopup
     }));
 
     return (
-      <S.Container style={wrapStyle}>
+      <S.Container style={wrapStyle} pointerEvents={results.length > 0 ? 'auto' : 'none'}>
         <S.WordHintsWrap style={popupAnimation.style}>
           <FlatList
             scrollEnabled={false}

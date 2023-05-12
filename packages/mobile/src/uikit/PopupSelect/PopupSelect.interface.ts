@@ -1,5 +1,6 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
+import { AnchorPosition } from './usePopupAnimation';
 
 export interface PopupSelectProps<T> {
   items: T[];
@@ -8,7 +9,11 @@ export interface PopupSelectProps<T> {
   width?: number;
   autoWidth?: boolean;
   minWidth?: boolean;
+  maxHeight?: number;
   scrollY?: Animated.SharedValue<number>;
+  anchor?: AnchorPosition;
+  top?: number;
+  asFullWindowOverlay?: boolean;
   onChange: (item: T) => void;
   renderItem: (item: T, index: number) => React.ReactNode;
   keyExtractor: (item: T, index: number) => string;

@@ -19,7 +19,7 @@ const SPRING_CONFIG = {
   restSpeedThreshold: 0.001,
 };
 
-export type AnchorPosition = 'top-right' | 'top-left';
+export type AnchorPosition = 'top-right' | 'top-left' | 'top-center';
 
 export const popupAnimationAnchor = (
   anchor: AnchorPosition,
@@ -68,7 +68,7 @@ export const usePopupAnimation = (options: UsePopupAnimationOptions) => {
   const opacity = useSharedValue(0);
   const state = useSharedValue<PopupAnimationState>(PopupAnimationState.CLOSED);
 
-  const open = React.useCallback(() => {
+  const open = React.useCallback((onDone?: () => void) => {
     if (state.value !== PopupAnimationState.OPENED) {
       cancelAnimation(scale);
       cancelAnimation(opacity);
@@ -77,6 +77,9 @@ export const usePopupAnimation = (options: UsePopupAnimationOptions) => {
       scale.value = withSpring(1, SPRING_CONFIG, (isFinising) => {
         if (isFinising) {
           state.value = PopupAnimationState.OPENED;
+          if (onDone) {
+            runOnJS(onDone)();
+          }
         }
       });
 

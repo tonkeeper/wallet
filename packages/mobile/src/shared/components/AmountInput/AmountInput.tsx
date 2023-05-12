@@ -22,8 +22,10 @@ import { Button, Text } from '$uikit';
 import { SwapButton } from '../SwapButton';
 import { formatter } from '$utils/formatter';
 
+export type AmountInputRef = TextInput & { value: string };
+
 interface Props {
-  innerRef?: React.MutableRefObject<TextInput | null>;
+  innerRef?: React.MutableRefObject<AmountInputRef | null>;
   decimals: number;
   balance: string;
   currencyTitle: string;
@@ -31,6 +33,7 @@ interface Props {
   minAmount?: string;
   fiatRate: number;
   hideSwap?: boolean;
+  withCoinSelector?: boolean;
   setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;
 }
 
@@ -44,6 +47,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     fiatRate,
     minAmount,
     hideSwap = false,
+    withCoinSelector = false,
     setAmount,
   } = props;
 
@@ -171,7 +175,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
   const handleRef = useCallback(
     (ref: TextInput) => {
       if (innerRef) {
-        innerRef.current = ref;
+        innerRef.current = ref as AmountInputRef;
       }
 
       textInputRef.current = ref;
@@ -195,6 +199,20 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount]);
 
+  useEffect(() => {
+    if (!isFiatAvailable) {
+      setValue(amount.value);
+
+      setFiat(false);
+    }
+  }, [isFiatAvailable]);
+
+  useEffect(() => {
+    if (innerRef?.current) {
+      innerRef.current.value = value;
+    }
+  }, [value]);
+
   return (
     <>
       <S.InputTouchable onPress={handlePressInput}>
@@ -202,6 +220,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
           <S.AmountContainer
             style={amountContainerStyle}
             isFiatAvailable={isFiatAvailable}
+            withCoinSelector={withCoinSelector}
           >
             <S.FakeInputWrap>
               <S.AmountInput

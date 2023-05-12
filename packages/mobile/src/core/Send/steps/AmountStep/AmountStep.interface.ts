@@ -6,12 +6,13 @@ import { AccountRepr } from 'tonapi-sdk-js';
 export interface AmountStepProps extends StepComponentProps {
   isPreparing: boolean;
   recipient: SendRecipient | null;
-  recipientAccountInfo: AccountRepr | null;
   decimals: number;
   balance: string;
+  currency: string;
   currencyTitle: string;
   amount: SendAmount;
   fiatRate: number;
+  onChangeCurrency: (currency: string, isJetton?: boolean) => void;
   setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;
   goToAddress: () => void;
   onContinue: () => void;
