@@ -3,6 +3,7 @@ import { AmountInputRef } from '$shared/components';
 import {
   CryptoCurrencies,
   CryptoCurrency,
+  Decimals,
   SecondaryCryptoCurrencies,
 } from '$shared/constants';
 import { JettonBalanceModel } from '$store/models';
@@ -11,18 +12,24 @@ import { Steezy } from '$styles';
 import { CurrencyIcon, Highlight, Icon, PopupSelect, Spacer, Text, View } from '$uikit';
 import { ns } from '$utils';
 import { formatter } from '$utils/formatter';
-import React, { FC, memo, useMemo, useRef } from 'react';
+import React, { FC, memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 type CoinItem =
-  | { isJetton: false; currency: string; balance: string }
-  | { isJetton: true; jetton: JettonBalanceModel; currency: string; balance: string };
+  | { isJetton: false; currency: string; balance: string; decimals: number }
+  | {
+      isJetton: true;
+      jetton: JettonBalanceModel;
+      currency: string;
+      balance: string;
+      decimals: number;
+    };
 
 interface Props {
   currency: string;
   currencyTitle: string;
   textInputRef: React.RefObject<AmountInputRef>;
-  onChangeCurrency: (currency: string, isJetton?: boolean) => void;
+  onChangeCurrency: (currency: string, decimals: number, isJetton: boolean) => void;
 }
 
 const CoinDropdownComponent: FC<Props> = (props) => {
@@ -51,6 +58,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
         isJetton: false,
         currency: item,
         balance: balances[item],
+        decimals: Decimals[item],
       }),
     );
 
@@ -62,10 +70,11 @@ const CoinDropdownComponent: FC<Props> = (props) => {
           jetton: jetton,
           currency: jetton.jettonAddress,
           balance: jetton.balance,
+          decimals: jetton.metadata.decimals,
         }),
       ),
     ];
-  }, [currencies, balances]);
+  }, [jettons, balances, currencies]);
 
   const selectedCoin = useMemo(
     () => coins.find((item) => item.currency === currency)!,
@@ -77,7 +86,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
       <PopupSelect
         items={coins}
         selected={selectedCoin}
-        onChange={(item) => onChangeCurrency(item.currency, item.isJetton)}
+        onChange={(item) => onChangeCurrency(item.currency, item.decimals, item.isJetton)}
         keyExtractor={(item) => item.currency}
         width={ns(220)}
         maxHeight={ns(216)}

@@ -8,7 +8,12 @@ import {
   walletWalletSelector,
 } from '$store/wallet';
 import { NavBar, Text } from '$uikit';
-import { isValidAddress, maskifyAddress, parseLocaleNumber } from '$utils';
+import {
+  formatInputAmount,
+  isValidAddress,
+  maskifyAddress,
+  parseLocaleNumber,
+} from '$utils';
 import React, {
   FC,
   useCallback,
@@ -41,7 +46,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     isInactive: initialIsInactive = false,
     withGoBack,
   } = route.params;
-  
+
   const initialAddress =
     propsAddress && isValidAddress(propsAddress) ? propsAddress : null;
 
@@ -72,8 +77,10 @@ export const Send: FC<SendProps> = ({ route }) => {
   const balances = useSelector(walletBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
 
-  const [currency, setCurrency] = useState(initialCurrency || CryptoCurrencies.Ton);
-  const [isJetton, setIsJetton] = useState(!!initialIsJetton);
+  const [{ currency, isJetton }, setCurrency] = useState({
+    currency: initialCurrency || CryptoCurrencies.Ton,
+    isJetton: !!initialIsJetton,
+  });
 
   const [recipient, setRecipient] = useState<SendRecipient | null>(
     initialAddress ? { address: initialAddress } : null,
@@ -98,7 +105,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     isJetton,
   );
 
-  const fiatRate = useFiatRate(currency as CryptoCurrency);
+  const fiatRate = useFiatRate(currency as CryptoCurrency, isJetton);
 
   const stepViewRef = useRef<StepViewRef>(null);
 
@@ -128,17 +135,19 @@ export const Send: FC<SendProps> = ({ route }) => {
     stepViewRef.current?.go(SendSteps.AMOUNT);
   }, []);
 
-  const goToAddress = useCallback(() => {
-    stepViewRef.current?.go(SendSteps.ADDRESS);
-  }, []);
-
   const onChangeCurrency = useCallback(
-    (nextCurrency: CryptoCurrency | string, nextIsJetton?: boolean) => {
-      setAmount((s) => ({ value: s.value, all: false }));
-      setCurrency(nextCurrency);
-      setIsJetton(!!nextIsJetton);
+    (
+      nextCurrency: CryptoCurrency | string,
+      nextDecimals: number,
+      nextIsJetton: boolean,
+    ) => {
+      setAmount({
+        value: '0',
+        all: false,
+      });
+      setCurrency({ currency: nextCurrency, isJetton: !!nextIsJetton });
     },
-    [goToAddress],
+    [],
   );
 
   const prepareConfirmSending = useCallback(async () => {
@@ -213,7 +222,6 @@ export const Send: FC<SendProps> = ({ route }) => {
       isJetton,
       jettonWalletAddress,
       recipient,
-      withGoBack,
     ],
   );
 
@@ -221,7 +229,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     return new Promise<void>(async (resolve, reject) => {
       doSend(resolve, reject);
     });
-  }, [amount, fee, currency, wallet, balances, t, doSend]);
+  }, [doSend]);
 
   const fetchRecipientAccountInfo = useCallback(async () => {
     if (!recipient) {
@@ -325,7 +333,6 @@ export const Send: FC<SendProps> = ({ route }) => {
               amount={amount}
               fiatRate={fiatRate.today}
               setAmount={setAmount}
-              goToAddress={goToAddress}
               onContinue={prepareConfirmSending}
               {...stepProps}
             />

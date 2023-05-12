@@ -99,7 +99,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const secondaryAmount = useMemo(() => {
     if (amount.all && isFiat) {
-      return formatInputAmount(balance, 2, true);
+      return formatInputAmount(formatter.format(balance), 2, true);
     }
 
     const { decimalSeparator } = getNumberFormatSettings();
@@ -200,18 +200,15 @@ const AmountInputComponent: React.FC<Props> = (props) => {
   }, [amount]);
 
   useEffect(() => {
-    if (!isFiatAvailable) {
-      setValue(amount.value);
-
-      setFiat(false);
-    }
-  }, [isFiatAvailable]);
+    setFiat(false);
+    setValue('0');
+  }, [currencyTitle]);
 
   useEffect(() => {
     if (innerRef?.current) {
       innerRef.current.value = value;
     }
-  }, [value]);
+  }, [innerRef, value]);
 
   return (
     <>

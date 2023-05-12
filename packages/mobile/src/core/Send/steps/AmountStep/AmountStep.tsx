@@ -23,7 +23,6 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
     amount,
     fiatRate,
     setAmount,
-    goToAddress,
     onContinue,
     onChangeCurrency,
   } = props;

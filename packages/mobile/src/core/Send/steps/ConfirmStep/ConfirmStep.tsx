@@ -151,8 +151,17 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     return parseLocaleNumber(amount.value);
   }, [amount.all, amount.value, fee, isJetton]);
 
-  const fiatValue = useFiatValue(CryptoCurrencies.Ton, calculatedValue);
-  const fiatFee = useFiatValue(CryptoCurrencies.Ton, fee || '0');
+  const fiatValue = useFiatValue(
+    currency as CryptoCurrency,
+    calculatedValue,
+    decimals,
+    isJetton,
+  );
+  const fiatFee = useFiatValue(
+    CryptoCurrencies.Ton,
+    fee || '0',
+    Decimals[CryptoCurrencies.Ton],
+  );
 
   const feeValue = useMemo(() => {
     if (fee === '0') {
@@ -162,6 +171,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     return `≈ ${formatter.format(fee, {
       decimals: Decimals[feeCurrency],
       currency: feeCurrency.toUpperCase(),
+      currencySeparator: 'wide',
     })}`;
   }, [fee, feeCurrency]);
 
@@ -169,6 +179,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     const value = formatter.format(calculatedValue, {
       decimals,
       currency: currencyTitle,
+      currencySeparator: 'wide',
     });
     if (amount.all && !isJetton) {
       return `≈ ${value}`;
@@ -240,7 +251,9 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
               <S.ItemLabel>{t('confirm_sending_amount')}</S.ItemLabel>
               <S.ItemContent>
                 <S.ItemValue>{amountValue}</S.ItemValue>
-                <S.ItemSubValue>≈ {fiatValue.fiatInfo.amount}</S.ItemSubValue>
+                {fiatValue.fiatInfo.avaivable ? (
+                  <S.ItemSubValue>≈ {fiatValue.fiatInfo.amount}</S.ItemSubValue>
+                ) : null}
               </S.ItemContent>
             </S.Item>
             <Separator />

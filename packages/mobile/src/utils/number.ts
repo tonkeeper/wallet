@@ -13,12 +13,12 @@ export function parseLocaleNumber(stringNumber: string) {
   const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
 
   let rawValue = stringNumber
-  .replace(new RegExp(`\\${groupingSeparator}`, 'g'), '')
-  .replace(new RegExp(`\\${NUMBER_DIVIDER}`, 'g'), '')
-  .replace(new RegExp(`\\${decimalSeparator}`), '.')
+    .replace(new RegExp(`\\${groupingSeparator}`, 'g'), '')
+    .replace(new RegExp(`\\${NUMBER_DIVIDER}`, 'g'), '')
+    .replace(new RegExp(`\\${decimalSeparator}`), '.');
 
   if (rawValue.endsWith('.')) {
-    rawValue = rawValue.replace('.', '')
+    rawValue = rawValue.replace('.', '');
   }
 
   return rawValue;
@@ -38,6 +38,7 @@ export function formatInputAmount(
   raw: string,
   decimals: number,
   skipFormatting?: boolean,
+  trimSeparator?: boolean,
 ) {
   const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
   if (decimalSeparator === ',') {
@@ -76,13 +77,14 @@ export function formatInputAmount(
   let expNumLength = exp[0].length;
   exp[0] = exp[0].replace(/\B(?=(\d{3})+(?!\d))/g, groupingSeparator);
   if (exp[1]) {
-    exp[1] = exp[1].substr(
-      0,
-      Math.min(decimals, !skipFormatting ? 16 - expNumLength : 255),
-    );
+    exp[1] = exp[1]
+      .substr(0, Math.min(decimals, !skipFormatting ? 16 - expNumLength : 255))
+      .trim();
   }
 
-  return exp.join(decimalSeparator)
+  return trimSeparator && typeof exp[1] === 'string' && exp[1].length === 0
+    ? exp[0]
+    : exp.join(decimalSeparator);
 }
 
 export function formatAmount(amount: string, decimals: number, withGrouping?: boolean) {
