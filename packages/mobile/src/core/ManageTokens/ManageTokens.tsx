@@ -19,6 +19,7 @@ import { ScaleDecorator } from '$uikit/DraggableFlashList';
 import { NestableDraggableFlatList } from '$uikit/DraggableFlashList/components/NestableDraggableFlatList';
 import { NestableScrollContainer } from '$uikit/DraggableFlashList/components/NestableScrollContainer';
 import { Haptics } from '$utils';
+import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 
 export function reorderJettons(newOrder: JettonBalanceModel[]) {
   return newOrder.map((jettonBalance) => {
@@ -53,6 +54,7 @@ const FLashListItem = ({
       return (
         <View style={containerStyle}>
           <List.Item
+            imageStyle={item.imageStyle}
             chevron={item.chevron}
             chevronColor={item.chevronColor}
             title={item.title}
@@ -62,7 +64,7 @@ const FLashListItem = ({
             leftContent={item.leftContent}
             value={item.isDraggable && renderDragButton?.()}
           />
-          {!item.isLast && <ListSeparator separatorVariant={item.separatorVariant} />}
+          {!item.isLast && <ListSeparator variant={item.separatorVariant} />}
         </View>
       );
   }
@@ -94,8 +96,30 @@ export const ManageTokens: FC = () => {
   const [tab, setTab] = useState<string>('tokens');
   const jettonData = useJettonData();
   const nftData = useNftData();
+  const hasWatchedCollectiblesTab = useTokenApprovalStore(
+    (state) => state.hasWatchedCollectiblesTab,
+  );
+  const setHasWatchedCollectiblesTab = useTokenApprovalStore(
+    (state) => state.actions.setHasWatchedCollectiblesTab,
+  );
+
+  const withCollectibleDot = React.useMemo(() => {
+    return !hasWatchedCollectiblesTab;
+  }, [hasWatchedCollectiblesTab]);
 
   const renderJettonList = useCallback(() => {
+    return (
+      <FlashList
+        estimatedItemSize={76}
+        contentContainerStyle={StyleSheet.flatten([
+          styles.flashList.static,
+          { paddingBottom: bottomInset },
+        ])}
+        data={jettonData}
+        renderItem={FLashListItem}
+      />
+    );
+    // TODO: draggable flashlist
     return (
       <NestableScrollContainer>
         {jettonData.pending.length > 0 && (
@@ -142,7 +166,7 @@ export const ManageTokens: FC = () => {
         )}
       </NestableScrollContainer>
     );
-  }, [jettonData]);
+  }, [bottomInset, jettonData]);
 
   const renderTabs = useCallback(() => {
     return (
@@ -151,11 +175,23 @@ export const ManageTokens: FC = () => {
           <View style={{ flex: 1 }}>
             <Tabs.Header withBackButton style={styles.tabsHeader}>
               <Tabs.Bar
-                onChange={({ value }) => setTab(value)}
+                // TODO: Remove hardcoded inline styles
+                indicatorStyle={{ bottom: 0 }}
+                itemStyle={{ paddingTop: 16, paddingBottom: 8 }}
+                onChange={({ value }) => {
+                  setTab(value);
+                  if (value === 'collectibles') {
+                    setHasWatchedCollectiblesTab(true);
+                  }
+                }}
                 value={tab}
                 items={[
                   { label: t('wallet.tonkens_tab_lable'), value: 'tokens' },
-                  { label: t('wallet.collectibles_tab_lable'), value: 'collectibles' },
+                  {
+                    label: t('wallet.collectibles_tab_lable'),
+                    value: 'collectibles',
+                    withDot: withCollectibleDot,
+                  },
                 ]}
               />
             </Tabs.Header>
@@ -163,6 +199,7 @@ export const ManageTokens: FC = () => {
               <Tabs.Section index={0}>{renderJettonList()}</Tabs.Section>
               <Tabs.Section index={1}>
                 <FlashList
+                  keyExtractor={(item) => item?.id}
                   estimatedItemSize={76}
                   contentContainerStyle={StyleSheet.flatten([
                     styles.flashList.static,
@@ -177,7 +214,14 @@ export const ManageTokens: FC = () => {
         </Tabs>
       </Screen>
     );
-  }, [bottomInset, nftData, renderJettonList, tab]);
+  }, [
+    bottomInset,
+    nftData,
+    renderJettonList,
+    setHasWatchedCollectiblesTab,
+    tab,
+    withCollectibleDot,
+  ]);
 
   if (nftData.length) {
     return renderTabs();
@@ -185,7 +229,16 @@ export const ManageTokens: FC = () => {
     return (
       <Screen>
         <Screen.Header title={t('approval.manage_tokens')} />
-        {renderJettonList()}
+        <Screen.FlashList
+          keyExtractor={(item) => item?.id}
+          estimatedItemSize={76}
+          renderItem={FLashListItem}
+          contentContainerStyle={StyleSheet.flatten([
+            styles.flashList.static,
+            { paddingBottom: bottomInset },
+          ])}
+          data={nftData.length ? nftData : jettonData}
+        />
       </Screen>
     );
   }

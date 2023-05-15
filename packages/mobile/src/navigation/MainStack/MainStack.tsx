@@ -90,11 +90,7 @@ export const MainStack: FC = () => {
       <Stack.Screen name={MainStackRouteNames.EditConfig} component={EditConfig} />
       <Stack.Screen name={MainStackRouteNames.Jetton} component={Jetton} />
       <Stack.Screen name={MainStackRouteNames.JettonsList} component={JettonsList} />
-      <Stack.Screen
-        options={{ gestureEnabled: false }}
-        name={MainStackRouteNames.ManageTokens}
-        component={ManageTokens}
-      />
+      <Stack.Screen name={MainStackRouteNames.ManageTokens} component={ManageTokens} />
     </Stack.Navigator>
   );
 };

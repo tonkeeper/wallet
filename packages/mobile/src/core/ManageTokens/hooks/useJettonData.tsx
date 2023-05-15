@@ -13,6 +13,7 @@ import { useJettonBalances } from '$hooks';
 
 const baseJettonCellData = (jettonBalance) => ({
   type: ContentType.Cell,
+  id: jettonBalance.jettonAddress,
   picture: jettonBalance.metadata?.image,
   title: jettonBalance.metadata?.name,
   subtitle: formatter.format(jettonBalance.balance, {
@@ -21,7 +22,7 @@ const baseJettonCellData = (jettonBalance) => ({
   }),
   onPress: () =>
     openApproveTokenModal({
-      type: TokenApprovalType.Jetton,
+      type: TokenApprovalType.Token,
       tokenAddress: jettonBalance.jettonAddress,
       verification: jettonBalance.verification,
       image: jettonBalance.metadata?.image,
@@ -29,6 +30,123 @@ const baseJettonCellData = (jettonBalance) => ({
     }),
 });
 
+export function useJettonData() {
+  const updateTokenStatus = useTokenApprovalStore(
+    (state) => state.actions.updateTokenStatus,
+  );
+  const { enabled, pending, disabled } = useJettonBalances();
+  const data = useMemo(() => {
+    const content: Content[] = [];
+
+    if (pending.length) {
+      content.push({
+        id: 'pending_title',
+        type: ContentType.Title,
+        title: t('approval.pending'),
+      });
+
+      content.push(
+        ...pending.map(
+          (jettonBalance, index) =>
+            ({
+              ...baseJettonCellData(jettonBalance),
+              attentionBackground: true,
+              chevron: true,
+              isFirst: index === 0,
+              isLast: index === pending.length - 1,
+            } as CellItem),
+        ),
+      );
+      content.push({
+        id: 'pending_spacer',
+        type: ContentType.Spacer,
+        bottom: 16,
+      });
+    }
+
+    if (enabled.length) {
+      content.push({
+        id: 'enabled_title',
+        type: ContentType.Title,
+        title: t('approval.accepted'),
+      });
+      content.push(
+        ...enabled.map(
+          (jettonBalance, index) =>
+            ({
+              ...baseJettonCellData(jettonBalance),
+              isFirst: index === 0,
+              leftContent: (
+                <>
+                  <ListButton
+                    type="remove"
+                    onPress={() =>
+                      updateTokenStatus(
+                        jettonBalance.jettonAddress,
+                        TokenApprovalStatus.Declined,
+                        TokenApprovalType.Token,
+                      )
+                    }
+                  />
+                  <Spacer x={16} />
+                </>
+              ),
+              isLast: index === enabled.length - 1,
+            } as CellItem),
+        ),
+      );
+      content.push({
+        id: 'accepted_spacer',
+        type: ContentType.Spacer,
+        bottom: 16,
+      });
+    }
+
+    if (disabled.length) {
+      content.push({
+        id: 'disabled_title',
+        type: ContentType.Title,
+        title: t('approval.declined'),
+      });
+      content.push(
+        ...disabled.map(
+          (jettonBalance, index) =>
+            ({
+              ...baseJettonCellData(jettonBalance),
+              isFirst: index === 0,
+              isLast: index === disabled.length - 1,
+              leftContent: (
+                <>
+                  <ListButton
+                    type="add"
+                    onPress={() =>
+                      updateTokenStatus(
+                        jettonBalance.jettonAddress,
+                        TokenApprovalStatus.Approved,
+                        TokenApprovalType.Token,
+                      )
+                    }
+                  />
+                  <Spacer x={16} />
+                </>
+              ),
+            } as CellItem),
+        ),
+      );
+      content.push({
+        id: 'disabled_spacer',
+        type: ContentType.Spacer,
+        bottom: 16,
+      });
+    }
+
+    return content;
+  }, [disabled, enabled, pending, updateTokenStatus]);
+  return data;
+}
+
+// Draggable jetton list, need to be fixed
+/*
 export function useJettonData() {
   const updateTokenStatus = useTokenApprovalStore(
     (state) => state.actions.updateTokenStatus,
@@ -73,7 +191,7 @@ export function useJettonData() {
                     updateTokenStatus(
                       jettonBalance.jettonAddress,
                       TokenApprovalStatus.Declined,
-                      TokenApprovalType.Jetton,
+                      TokenApprovalType.Token,
                     );
                   }}
                 />
@@ -101,7 +219,7 @@ export function useJettonData() {
                     updateTokenStatus(
                       jettonBalance.jettonAddress,
                       TokenApprovalStatus.Approved,
-                      TokenApprovalType.Jetton,
+                      TokenApprovalType.Token,
                     );
                   }}
                 />
@@ -117,3 +235,4 @@ export function useJettonData() {
 
   return data;
 }
+*/

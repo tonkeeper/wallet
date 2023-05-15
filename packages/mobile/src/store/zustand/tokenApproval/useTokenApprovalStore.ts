@@ -5,6 +5,7 @@ import { ITokenApprovalStore, TokenApprovalStatus, TokenApprovalType } from './t
 
 const initialState: Omit<ITokenApprovalStore, 'actions'> = {
   tokens: {},
+  hasWatchedCollectiblesTab: false,
 };
 
 export const useTokenApprovalStore = create(
@@ -19,6 +20,9 @@ export const useTokenApprovalStore = create(
             delete tokens[address];
             set({ tokens });
           }
+        },
+        setHasWatchedCollectiblesTab: (hasWatchedCollectiblesTab: boolean) => {
+          set({ hasWatchedCollectiblesTab });
         },
         updateTokenStatus: (
           address: string,
@@ -52,7 +56,8 @@ export const useTokenApprovalStore = create(
     {
       name: 'tokenApproval',
       getStorage: () => AsyncStorage,
-      partialize: ({ tokens }) => ({ tokens } as ITokenApprovalStore),
+      partialize: ({ tokens, hasWatchedCollectiblesTab }) =>
+        ({ tokens, hasWatchedCollectiblesTab } as ITokenApprovalStore),
     },
   ),
 );

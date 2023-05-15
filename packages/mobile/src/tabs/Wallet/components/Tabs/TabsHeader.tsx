@@ -76,7 +76,7 @@ const styles = Steezy.create(({ colors, safeArea }) => ({
     backgroundColor: colors.backgroundPrimary,
   },
   leftContent: {
-    top: 0,
+    top: 16,
     left: 16,
     position: 'absolute',
     zIndex: 2,

@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { nftsSelector } from '$store/nfts';
 import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
 import { DevFeature, useDevFeatureEnabled } from '$store';
+import { Address } from '$libs/Ton';
 
 export interface IBalances {
   pending: NFTModel[];
@@ -21,8 +22,15 @@ export function useApprovedNfts() {
       enabled: [],
       disabled: [],
     };
+    if (!tokenApproval) {
+      nftBalances.enabled = Object.values(myNfts);
+      return nftBalances;
+    }
     Object.values(myNfts).forEach((item) => {
-      const approvalStatus = approvalStatuses[item?.collectionAddress || item.address];
+      const approvalStatus =
+        approvalStatuses[
+          item?.collectionAddress || new Address(item.address).toString(false)
+        ];
       if (
         (item.isApproved && !approvalStatus) ||
         approvalStatus?.current === TokenApprovalStatus.Approved

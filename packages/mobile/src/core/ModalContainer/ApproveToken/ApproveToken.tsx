@@ -70,7 +70,7 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
   }, [currentStatus, props.verification]);
 
   const title = useMemo(() => {
-    if (props.type === TokenApprovalType.Jetton) {
+    if (props.type === TokenApprovalType.Token) {
       if (modalState === 'pending') {
         return t('approval.verify_token');
       } else {
@@ -88,7 +88,11 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
   const subtitle = useMemo(() => {
     if (modalState === 'declined') {
       if (!currentStatus) {
-        return t('approval.blacklisted');
+        return t(
+          props.type === TokenApprovalType.Token
+            ? 'approval.blacklisted_token'
+            : 'approval.blacklisted_collection',
+        );
       }
       return t('approval.declined_at', {
         date: format(currentStatus?.updated_at, 'd MMM yyyy'),
@@ -96,13 +100,17 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
     }
     if (modalState === 'approved') {
       if (!currentStatus) {
-        return t('approval.whitelisted');
+        return t(
+          props.type === TokenApprovalType.Token
+            ? 'approval.whitelisted_token'
+            : 'approval.whitelisted_collection',
+        );
       }
       return t('approval.accepted_at', {
         date: format(currentStatus?.updated_at, 'd MMM yyyy'),
       });
     }
-    if (props.type === TokenApprovalType.Jetton) {
+    if (props.type === TokenApprovalType.Token) {
       return t('approval.verify_token_description');
     } else {
       return t('approval.verify_tokens_description');
@@ -188,7 +196,7 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
             >
               <S.DetailItem>
                 <S.DetailItemLabel>
-                  {props.type === TokenApprovalType.Jetton
+                  {props.type === TokenApprovalType.Token
                     ? t('approval.token_id')
                     : t('approval.collection_id')}
                 </S.DetailItemLabel>

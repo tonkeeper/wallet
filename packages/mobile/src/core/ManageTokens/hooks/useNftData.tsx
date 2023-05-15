@@ -13,6 +13,7 @@ import { CellItem, Content, ContentType } from '$core/ManageTokens/ManageTokens.
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { useApprovedNfts } from '$hooks';
 import { JettonVerification, NFTModel } from '$store/models';
+import { Address } from '$libs/Ton';
 
 const baseNftCellData = (nft: NFTModel) => ({
   type: ContentType.Cell,
@@ -29,11 +30,11 @@ const baseNftCellData = (nft: NFTModel) => ({
       imageType: ImageType.SQUARE,
       type: nft.collectionAddress
         ? TokenApprovalType.Collection
-        : TokenApprovalType.Jetton,
+        : TokenApprovalType.Token,
       verification: nft.isApproved
         ? JettonVerification.WHITELIST
         : JettonVerification.NONE,
-      tokenAddress: nft.address,
+      tokenAddress: nft.collectionAddress || new Address(nft.address).toString(false),
       image: nft.content.image.baseUrl,
       name: nft.collection?.name,
     }),
@@ -78,6 +79,8 @@ export function useNftData() {
               id: nft.address,
               attentionBackground: true,
               chevron: true,
+              separatorVariant: 'alternate',
+              chevronColor: 'iconSecondary',
               isFirst: index === 0,
               isLast: index === array.length - 1,
             } as CellItem),
@@ -109,11 +112,11 @@ export function useNftData() {
                     type="remove"
                     onPress={() =>
                       updateTokenStatus(
-                        nft.collectionAddress || nft.address,
+                        nft.collectionAddress || new Address(nft.address).toString(false),
                         TokenApprovalStatus.Declined,
                         nft.collectionAddress
                           ? TokenApprovalType.Collection
-                          : TokenApprovalType.Jetton,
+                          : TokenApprovalType.Token,
                       )
                     }
                   />
@@ -151,11 +154,11 @@ export function useNftData() {
                     type="add"
                     onPress={() =>
                       updateTokenStatus(
-                        nft.collectionAddress || nft.address,
+                        nft.collectionAddress || new Address(nft.address).toString(false),
                         TokenApprovalStatus.Approved,
                         nft.collectionAddress
                           ? TokenApprovalType.Collection
-                          : TokenApprovalType.Jetton,
+                          : TokenApprovalType.Token,
                       )
                     }
                   />

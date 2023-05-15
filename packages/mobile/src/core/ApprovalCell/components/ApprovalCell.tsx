@@ -38,6 +38,7 @@ const ApprovalCellComponent: React.FC = () => {
       <Spacer y={16} />
       <List indent={false} style={styles.container}>
         <List.Item
+          chevronColor="iconSecondary"
           onPress={handleApproveTokens}
           leftContent={
             <View style={styles.iconContainer}>

@@ -1,7 +1,6 @@
 import { SpacerSizes } from '$uikit';
-import { ReactNode } from 'react';
-import { TonThemeColor } from '$styled';
 import { ListSeparatorProps } from '$uikit/List/new/ListSeparator';
+import { ListItemProps } from '$uikit/List/new/ListItem';
 
 export enum ContentType {
   Title,
@@ -24,9 +23,10 @@ export type SpacerItem = {
 export type CellItem = {
   separatorVariant?: ListSeparatorProps['variant'];
   type: ContentType.Cell;
-  chevronColor?: TonThemeColor;
+  imageStyle?: ListItemProps['imageStyle'];
+  chevronColor?: ListItemProps['chevronColor'];
   isFirst?: boolean;
-  leftContent?: ReactNode;
+  leftContent?: ListItemProps['leftContent'];
   attentionBackground?: boolean;
   title?: string;
   chevron?: boolean;
