@@ -22,11 +22,6 @@ export function useApprovedNfts() {
       disabled: [],
     };
     Object.values(myNfts).forEach((item) => {
-      // hardcoded, because we need to refactor collectibles
-      if (!tokenApproval || true) {
-        return nftBalances.enabled.push(item);
-      }
-
       const approvalStatus = approvalStatuses[item?.collectionAddress || item.address];
       if (
         (item.isApproved && !approvalStatus) ||
@@ -41,6 +36,6 @@ export function useApprovedNfts() {
     });
 
     return nftBalances;
-  }, [approvalStatuses, myNfts]);
+  }, [approvalStatuses, myNfts, tokenApproval]);
   return nfts;
 }

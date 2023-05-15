@@ -2,10 +2,11 @@ import React, { memo } from 'react';
 import { Steezy } from '$styles';
 import { View } from '$uikit';
 
-interface ListSeparatorProps {
+export interface ListSeparatorProps {
   absolute?: boolean;
   toTop?: boolean;
   leftOffset?: number;
+  variant?: 'common' | 'alternate';
 }
 
 export const ListSeparator = memo<ListSeparatorProps>((props) => {
@@ -14,14 +15,19 @@ export const ListSeparator = memo<ListSeparatorProps>((props) => {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.separator, separatorOffsetStyle]} />
+      <View
+        style={[
+          styles.separator,
+          separatorOffsetStyle,
+          props.variant === 'alternate' && styles.separatorAlternate,
+        ]}
+      />
     </View>
   );
 });
 
 const styles = Steezy.create(({ colors }) => ({
   container: {
-    backgroundColor: colors.separatorCommon,
     zIndex: 1,
     height: 0,
   },
@@ -29,5 +35,8 @@ const styles = Steezy.create(({ colors }) => ({
     height: 0.5,
     backgroundColor: colors.separatorCommon,
     marginTop: -0.5,
+  },
+  separatorAlternate: {
+    backgroundColor: colors.separatorAlternate,
   },
 }));

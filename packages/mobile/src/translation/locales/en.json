@@ -315,6 +315,11 @@
   "approval": {
     "verify_token": "Verify token",
     "token_details": "Token details",
+    "token_count": {
+      "one": "%{count} token",
+      "other": "%{count} tokens"
+    },
+    "single_token": "Single token",
     "accept": "Accept",
     "decline": "Decline",
     "blacklisted": "Token is blacklisted",

@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react';
 import { TextStyle } from 'react-native';
 import { Steezy, StyleProp } from '$styles';
 import { View, SText, Icon, Pressable } from '$uikit';
-import { DarkTheme } from '$styled';
+import { DarkTheme, TonThemeColor } from '$styled';
 import FastImage from 'react-native-fast-image';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -16,6 +16,7 @@ interface ListItemProps {
   value?: string | React.ReactNode;
   subvalue?: string | React.ReactNode;
   label?: string | React.ReactNode;
+  chevronColor?: TonThemeColor;
 
   valueStyle?: StyleProp<TextStyle>;
 
@@ -125,7 +126,9 @@ export const ListItem = memo<ListItemProps>((props) => {
             props.subvalue
           )}
 
-          {props.chevron && <Icon name="ic-chevron-right-16" />}
+          {props.chevron && (
+            <Icon color={props.chevronColor} name="ic-chevron-right-16" />
+          )}
         </View>
       </View>
     </TouchableComponent>

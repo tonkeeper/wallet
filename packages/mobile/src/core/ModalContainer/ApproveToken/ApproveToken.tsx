@@ -18,10 +18,15 @@ import FastImage from 'react-native-fast-image';
 import { Toast } from '$store';
 import Clipboard from '@react-native-community/clipboard';
 
+export enum ImageType {
+  ROUND = 'round',
+  SQUARE = 'square',
+}
 export interface ApproveTokenModalParams {
   tokenAddress: string;
   type: TokenApprovalType;
   verification?: JettonVerification;
+  imageType?: ImageType;
   name?: string;
   image?: string;
 }
@@ -61,6 +66,7 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
     ) {
       return 'approved';
     }
+    return 'pending';
   }, [currentStatus, props.verification]);
 
   const title = useMemo(() => {
@@ -168,9 +174,9 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
                 </S.DetailItem>
                 <FastImage
                   style={
-                    props.type === TokenApprovalType.Jetton
-                      ? styles.jettonImage.static
-                      : styles.collectionImage.static
+                    props.imageType !== ImageType.SQUARE
+                      ? styles.round.static
+                      : styles.square.static
                   }
                   source={{ uri: props.image }}
                 />
@@ -226,12 +232,12 @@ const styles = Steezy.create({
   footerWrap: {
     paddingHorizontal: 16,
   },
-  jettonImage: {
+  round: {
     width: 40,
     height: 40,
     borderRadius: 20,
   },
-  collectionImage: {
+  square: {
     width: 40,
     height: 40,
     borderRadius: 8,
