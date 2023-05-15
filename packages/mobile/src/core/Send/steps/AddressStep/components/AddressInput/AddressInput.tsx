@@ -14,7 +14,12 @@ import React, {
   useState,
 } from 'react';
 import { LayoutChangeEvent, TextInput } from 'react-native';
-import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import {
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from 'react-native-reanimated';
 import * as S from './AddressInput.style';
 import { InputContentSize } from '$uikit/Input/Input.interface';
 import { Toast } from '$store';
@@ -144,31 +149,30 @@ const AddressInputComponent: FC<Props> = (props) => {
     });
   }, [t, updateRecipient]);
 
-  const scanQRContainerStyle = useAnimatedStyle(
-    () => ({
-      opacity: withTiming(canScanQR ? 1 : 0, { duration: 150 }),
-      zIndex: canScanQR ? 1 : -1,
-    }),
-    [canScanQR],
-  );
+  const showLoader = dnsLoading && value.length > 0;
 
-  const loadingContainerStyle = useAnimatedStyle(
-    () => ({
-      opacity: withTiming(dnsLoading ? 1 : 0, { duration: 150 }),
-      zIndex: dnsLoading ? 1 : -1,
-    }),
-    [dnsLoading],
-  );
+  const loadingContainerStyle = useAnimatedStyle(() => {
+    const visible =
+      showLoader && inputWidth.value - contentWidth.value - infoWidth.value > -5;
+
+    return {
+      opacity: withTiming(visible ? 1 : 0, { duration: 150 }),
+      zIndex: visible ? 1 : -1,
+      transform: [{ translateX: contentWidth.value }],
+    };
+  }, [showLoader]);
 
   const infoContainerStyle = useAnimatedStyle(() => {
     const visible =
-      !!recipient && inputWidth.value - contentWidth.value - infoWidth.value > -5;
+      !!recipient &&
+      !showLoader &&
+      inputWidth.value - contentWidth.value - infoWidth.value > -5;
 
     return {
       opacity: withTiming(visible ? 1 : 0, { duration: 200 }),
       transform: [{ translateX: contentWidth.value }],
     };
-  }, [recipient]);
+  }, [recipient, showLoader]);
 
   useEffect(() => {
     if (!recipient) {
@@ -241,28 +245,29 @@ const AddressInputComponent: FC<Props> = (props) => {
         onFocus={updateHints}
         onContentSizeChange={handleContentSizeChange}
         onLayout={handleInputLayout}
-        placeholder={t('send_address_placeholder')}
+        label={t('send_address_placeholder')}
         innerRef={textInputRef}
         autoComplete="off"
         returnKeyType="next"
         autoCapitalize="none"
         textContentType="none"
         editable={editable}
+        multiline
+        blurOnSubmit
         autoCorrect={false}
         spellCheck={false}
         onSubmitEditing={handleSubmit}
-        multiline
         isFailed={isFailed}
-        blurOnSubmit
+        rightContent={
+          <S.ScanQRTouchable disabled={!canScanQR} onPress={handleScanQR}>
+            <Icon name="ic-viewfinder-28" color="accentPrimary" />
+          </S.ScanQRTouchable>
+        }
+        withPasteButton
       />
       <S.LoaderContainer style={loadingContainerStyle} pointerEvents="none">
-        <Loader size="medium" />
+        <Loader size="small" />
       </S.LoaderContainer>
-      <S.ScanQRContainer style={scanQRContainerStyle}>
-        <S.ScanQRTouchable disabled={!canScanQR} onPress={handleScanQR}>
-          <Icon name="ic-viewfinder-28" color="accentPrimary" />
-        </S.ScanQRTouchable>
-      </S.ScanQRContainer>
       <S.InfoContainer
         style={infoContainerStyle}
         onLayout={handleInfoLayout}

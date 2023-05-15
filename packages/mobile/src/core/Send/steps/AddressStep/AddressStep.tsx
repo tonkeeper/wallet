@@ -1,4 +1,3 @@
-import { AddressSuggests } from './components/AddressSuggests/AddressSuggests';
 import { useSuggestedAddresses } from '../../hooks/useSuggestedAddresses';
 import { useReanimatedKeyboardHeight, useTranslator } from '$hooks';
 import { Ton } from '$libs/Ton';
@@ -13,7 +12,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, TextInput } from 'react-native';
 import * as S from './AddressStep.style';
 import {
   BottomButtonWrap,
@@ -21,7 +20,6 @@ import {
   StepScrollView,
 } from '$shared/components';
 import { SendSteps, SuggestedAddress, SuggestedAddressType } from '../../Send.interface';
-import { AddressInput } from './components/AddressInput/AddressInput';
 import { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import {
   WordHintsPopup,
@@ -30,6 +28,8 @@ import {
 import { AddressStepProps } from './AddressStep.interface';
 import { AccountRepr } from 'tonapi-sdk-js';
 import { Tonapi } from '$libs/Tonapi';
+import { AddressInput, AddressSuggests, CommentInput } from './components';
+import { useCommentMaxLength } from '$core/Send/hooks';
 
 const TonWeb = require('tonweb');
 
@@ -39,6 +39,8 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     recipient,
     decimals,
     stepsScrollTop,
+    comment,
+    recipientAccountInfo,
     setRecipient,
     setRecipientAccountInfo,
     setAmount,
@@ -47,7 +49,16 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     active,
   } = props;
 
-  const isReadyToContinue = !!recipient;
+  const commentInputRef = useRef<TextInput>(null);
+
+  const dynamicMaxLength = useCommentMaxLength(comment);
+
+  const isCommentRequired = !!recipientAccountInfo?.memoRequired;
+
+  const commentError =
+    comment.length > dynamicMaxLength || (isCommentRequired && comment.length === 0);
+
+  const isReadyToContinue = !!recipient && !commentError;
 
   const t = useTranslator();
 
@@ -104,6 +115,14 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
   const updateRecipient = useCallback(
     async (value: string, accountInfo?: Partial<AccountRepr>) => {
+      setRecipientAccountInfo(null);
+
+      if (value.length === 0) {
+        setRecipient(null);
+
+        return;
+      }
+
       try {
         const link = parseTonLink(value);
 
@@ -212,19 +231,21 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
       const value = isFavorite ? suggest.name! : suggest.address;
       const accountInfo = !isFavorite ? { name: suggest.name } : undefined;
       updateRecipient(value, accountInfo);
-
-      onContinue();
     },
     [onContinue, updateRecipient],
   );
 
-  const handleAddressSubmit = useCallback(() => {
+  const handleCommentSubmit = useCallback(() => {
     if (isReadyToContinue) {
       onContinue();
     } else {
       Keyboard.dismiss();
     }
   }, [isReadyToContinue, onContinue]);
+
+  const handleAddressSubmit = useCallback(() => {
+    commentInputRef.current?.focus();
+  }, [recipient, onContinue]);
 
   useEffect(() => {
     if (recipient) {
@@ -241,7 +262,11 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
         ref={wordHintsRef}
       />
       <S.Container style={keyboardHeightStyle}>
-        <StepScrollView onScroll={scrollHandler} active={active}>
+        <StepScrollView
+          onScroll={scrollHandler}
+          active={active}
+          keyboardDismissMode="on-drag"
+        >
           <FormItem>
             <AddressInput
               wordHintsRef={wordHintsRef}
@@ -253,6 +278,13 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
               onSubmit={handleAddressSubmit}
             />
           </FormItem>
+          <CommentInput
+            innerRef={commentInputRef}
+            isCommentRequired={isCommentRequired}
+            comment={comment}
+            setComment={setComment}
+            onSubmit={handleCommentSubmit}
+          />
           {suggestedAddresses.length > 0 ? (
             <FormItem title={suggestsLabel}>
               <AddressSuggests

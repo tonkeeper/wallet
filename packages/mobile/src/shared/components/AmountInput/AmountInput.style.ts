@@ -5,6 +5,12 @@ import { TouchableWithoutFeedback } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 
+const getContainerTopOffset = (isFiatAvailable: boolean, withCoinSelector: boolean) => {
+  const baseOffset = withCoinSelector ? 20 : 0;
+
+  return ns(isFiatAvailable ? baseOffset + 4 : baseOffset);
+};
+
 export const SHADOW_INPUT_PADDING = 500;
 
 export const InputTouchable = styled(TouchableWithoutFeedback)`
@@ -20,12 +26,16 @@ export const InputContainer = styled.View`
   overflow: hidden;
 `;
 
-export const AmountContainer = styled(Animated.View)<{ isFiatAvailable: boolean }>`
+export const AmountContainer = styled(Animated.View)<{
+  isFiatAvailable: boolean;
+  withCoinSelector: boolean;
+}>`
   flex-direction: row;
   justify-content: center;
   align-items: center;
   width: 1000px;
-  margin-top: ${({ isFiatAvailable }) => ns(isFiatAvailable ? 4 : 0)}px;
+  margin-top: ${({ isFiatAvailable, withCoinSelector }) =>
+    getContainerTopOffset(isFiatAvailable, withCoinSelector)}px;
 `;
 
 export const FakeInputWrap = styled.View`
@@ -82,7 +92,10 @@ export const SandAllLabel = styled(Text).attrs({
   variant: 'body2',
   color: 'foregroundSecondary',
   numberOfLines: 1,
-})``;
+  textAlign: 'right',
+})`
+  flex: 1;
+`;
 
 export const SecondaryAmountContainer = styled.TouchableOpacity.attrs({
   activeOpacity: 0.6,

@@ -1,30 +1,26 @@
-import { useCopyText, useReanimatedKeyboardHeight, useTranslator } from '$hooks';
-import { openInactiveInfo } from '$navigation';
-import {
-  BottomButtonWrap,
-  BottomButtonWrapHelper,
-  StepScrollView,
-} from '$shared/components';
+import { useCopyText, useFiatValue, useTranslator } from '$hooks';
+import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { getTokenConfig } from '$shared/dynamicConfig';
-import { Button, FormItem, Icon, Input, List, ListCell, Text } from '$uikit';
-import { maskifyAddress, ns, parseLocaleNumber } from '$utils';
-import { formatCryptoCurrency } from '$utils/currency';
-import React, {
-  FC,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { Highlight, Icon, Separator, Spacer, Text } from '$uikit';
+import { maskifyAddress, parseLocaleNumber } from '$utils';
+import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
 import { ConfirmStepProps } from './ConfirmStep.interface';
 import * as S from './ConfirmStep.style';
 import BigNumber from 'bignumber.js';
 import { useAnimatedScrollHandler } from 'react-native-reanimated';
 import { SendSteps } from '$core/Send/Send.interface';
-import { TextInput } from 'react-native-gesture-handler';
+import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
+import { formatter } from '$utils/formatter';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  ActionFooter,
+  useActionFooter,
+} from '$core/ModalContainer/NFTOperations/NFTOperationFooter';
+import { openInactiveInfo } from '$navigation';
+import { Alert } from 'react-native';
+import { walletBalancesSelector, walletWalletSelector } from '$store/wallet';
+import { useSelector } from 'react-redux';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -38,18 +34,96 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     isJetton,
     fee,
     isInactive,
-    isSending,
     amount,
     comment,
-    setComment,
-    onConfirm,
+    onConfirm: sendTx,
   } = props;
 
-  const { keyboardHeightStyle } = useReanimatedKeyboardHeight();
+  const { footerRef, onConfirm } = useActionFooter();
+
+  const { bottom: bottomInset } = useSafeAreaInsets();
 
   const t = useTranslator();
 
   const copyText = useCopyText();
+
+  const balances = useSelector(walletBalancesSelector);
+  const wallet = useSelector(walletWalletSelector);
+
+  const { Logo } = useCurrencyToSend(currency, isJetton, 96);
+
+  const showLockupAlert = useCallback(
+    () =>
+      new Promise((resolve, reject) =>
+        Alert.alert(t('send_lockup_warning_title'), t('send_lockup_warning_caption'), [
+          {
+            text: t('cancel'),
+            style: 'cancel',
+            onPress: reject,
+          },
+          {
+            text: t('send_lockup_warning_submit_button'),
+            onPress: resolve,
+            style: 'destructive',
+          },
+        ]),
+      ),
+    [t],
+  );
+
+  const showAllBalanceAlert = useCallback(
+    () =>
+      new Promise((resolve, reject) =>
+        Alert.alert(t('send_all_warning_title'), undefined, [
+          {
+            text: t('cancel'),
+            style: 'cancel',
+            onPress: reject,
+          },
+          {
+            text: t('continue'),
+            onPress: resolve,
+            style: 'destructive',
+          },
+        ]),
+      ),
+    [t],
+  );
+
+  const handleConfirm = useCallback(async () => {
+    try {
+      const amountWithFee = new BigNumber(parseLocaleNumber(amount.value)).plus(fee);
+      if (
+        currency === CryptoCurrencies.Ton &&
+        wallet &&
+        wallet.ton.isLockup() &&
+        !amount.all &&
+        new BigNumber(balances[currency]).isLessThan(amountWithFee)
+      ) {
+        await showLockupAlert();
+      }
+
+      if (currency === CryptoCurrencies.Ton && amount.all) {
+        await showAllBalanceAlert();
+      }
+
+      onConfirm(async ({ startLoading }) => {
+        startLoading();
+
+        await sendTx();
+      })();
+    } catch {}
+  }, [
+    amount,
+    fee,
+    currency,
+    wallet,
+    balances,
+    t,
+    sendTx,
+    showLockupAlert,
+    showAllBalanceAlert,
+  ]);
 
   const scrollHandler = useAnimatedScrollHandler((event) => {
     stepsScrollTop.value = {
@@ -69,40 +143,50 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     }
   }, [currency, isJetton]);
 
+  const calculatedValue = useMemo(() => {
+    if (amount.all && !isJetton) {
+      return new BigNumber(parseLocaleNumber(amount.value)).minus(fee).toString();
+    }
+
+    return parseLocaleNumber(amount.value);
+  }, [amount.all, amount.value, fee, isJetton]);
+
+  const fiatValue = useFiatValue(
+    currency as CryptoCurrency,
+    calculatedValue,
+    decimals,
+    isJetton,
+  );
+  const fiatFee = useFiatValue(
+    CryptoCurrencies.Ton,
+    fee || '0',
+    Decimals[CryptoCurrencies.Ton],
+  );
+
   const feeValue = useMemo(() => {
     if (fee === '0') {
       return `? ${feeCurrency.toUpperCase()}`;
     }
 
-    return `≈ ${formatCryptoCurrency(fee, feeCurrency, Decimals[feeCurrency])}`;
+    return `≈ ${formatter.format(fee, {
+      decimals: Decimals[feeCurrency],
+      currency: feeCurrency.toUpperCase(),
+      currencySeparator: 'wide',
+    })}`;
   }, [fee, feeCurrency]);
 
   const amountValue = useMemo(() => {
+    const value = formatter.format(calculatedValue, {
+      decimals,
+      currency: currencyTitle,
+      currencySeparator: 'wide',
+    });
     if (amount.all && !isJetton) {
-      return `≈ ${formatCryptoCurrency(
-        new BigNumber(parseLocaleNumber(amount.value)).minus(fee).toString(),
-        currencyTitle,
-        decimals,
-      )}`;
+      return `≈ ${value}`;
     }
 
-    return formatCryptoCurrency(parseLocaleNumber(amount.value), currencyTitle, decimals);
-  }, [amount.all, amount.value, currencyTitle, decimals, fee, isJetton]);
-
-  /*
-    Динамически ограничиваем максимальную длину текста, равную одной ячейке в тон формате (1023 бита)
-    Это решает проблему мерцающего инпута, которая была при асинхронном хэндлинге введённого коммента
-   */
-  const dynamicMaxLength = useMemo(() => {
-    const maxLength = 122;
-    // eslint-disable-next-line no-undef
-    const commentBits = new TextEncoder().encode(comment).length * 8;
-    const calculatedMaxLength = Math.trunc(
-      maxLength - Math.min(61, commentBits - comment.length * 8),
-    );
-
-    return calculatedMaxLength;
-  }, [comment]);
+    return value;
+  }, [calculatedValue, currencyTitle, amount.all, isJetton]);
 
   const handleCopy = useCallback(() => {
     if (!recipient) {
@@ -112,121 +196,11 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     copyText(recipient.address, t('address_copied'));
   }, [copyText, recipient, t]);
 
-  const renderChevron = useCallback(({ isPressed }) => {
-    return (
-      <S.ChevronWrap>
-        <Icon
-          color={!isPressed ? 'foregroundPrimary' : 'foregroundSecondary'}
-          name="ic-chevron-right-12"
-        />
-      </S.ChevronWrap>
-    );
-  }, []);
-
-  const detailsLabel = amount.all
-    ? t('send_screen_steps.comfirm.details_max_balance_label', {
-        currency: currencyTitle,
-      })
-    : t('send_screen_steps.comfirm.details_label');
-
-  const detailsIndicator = amount.all ? (
-    <S.WarningIconWrapper>
-      <Icon name="ic-warning-28" color="foregroundPrimary" />
-    </S.WarningIconWrapper>
-  ) : undefined;
-
-  const commentInputRef = useRef<TextInput>(null);
-
-  const [commentRequiredError, setCommentRequiredError] = useState(false);
-
-  const isCommentRequired = !!recipientAccountInfo?.memoRequired;
-
-  const commentError = comment.length > dynamicMaxLength;
-
-  const commentCharactersLeftCount = dynamicMaxLength - comment.length;
-
-  const commentCharactersExceededCount = comment.length - dynamicMaxLength;
-
-  const commentCharactersLeftText =
-    commentCharactersLeftCount >= 0 && commentCharactersLeftCount < 25
-      ? t('send_screen_steps.comfirm.comment_characters_left', {
-          count: commentCharactersLeftCount,
-        })
-      : null;
-
-  const commentCharactersExceededText =
-    commentCharactersExceededCount > 0
-      ? t('send_screen_steps.comfirm.comment_characters_exceeded', {
-          count: commentCharactersExceededCount,
-        })
-      : null;
-
-  const commentDescription = (
-    <Text color="foregroundSecondary" variant="body2">
-      {isCommentRequired ? (
-        <Text variant="body2" color="accentOrange">
-          {t('send_screen_steps.comfirm.comment_required_text')}
-        </Text>
-      ) : null}
-      {t('send_screen_steps.comfirm.comment_description')}
-      {commentCharactersLeftText || commentCharactersExceededText ? '\n' : null}
-      {commentCharactersLeftText ? (
-        <Text variant="body2" color="accentOrange">
-          {commentCharactersLeftText}
-        </Text>
-      ) : null}
-      {commentCharactersExceededText ? (
-        <Text variant="body2" color="accentNegative">
-          {commentCharactersExceededText}
-        </Text>
-      ) : null}
-      <Text />
-    </Text>
-  );
-
-  const commentInputValue = (
-    <>
-      {comment.slice(0, dynamicMaxLength)}
-      <S.CommentExceededValue>{comment.slice(dynamicMaxLength)}</S.CommentExceededValue>
-    </>
-  );
-
-  const handleCommentChange = useCallback(
-    (text: string) => {
-      setCommentRequiredError(text.length === 0);
-      setComment(text);
-    },
-    [setComment],
-  );
-
-  const handleConfirm = useCallback(() => {
-    if (isCommentRequired && comment.length === 0) {
-      setCommentRequiredError(true);
-      commentInputRef.current?.focus();
-
-      return;
-    }
-
-    onConfirm();
-  }, [comment.length, isCommentRequired, onConfirm]);
-
   useEffect(() => {
-    if (!isCommentRequired) {
-      return;
+    if (!active) {
+      footerRef.current?.reset();
     }
-
-    if (active) {
-      commentInputRef.current?.focus();
-      return;
-    }
-
-    const timeoutId = setTimeout(() => {
-      commentInputRef.current?.blur();
-      setCommentRequiredError(false);
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [active, isCommentRequired]);
+  }, [active]);
 
   if (!recipient) {
     return null;
@@ -235,96 +209,118 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const recipientName = recipient.domain || recipient.name || recipientAccountInfo?.name;
 
   return (
-    <S.Container style={keyboardHeightStyle}>
+    <S.Container>
       <StepScrollView onScroll={scrollHandler} active={active}>
-        <S.Form>
-          <FormItem
-            title={
-              isCommentRequired
-                ? t('send_screen_steps.comfirm.comment_label_required')
-                : t('send_screen_steps.comfirm.comment_label')
-            }
-            description={commentDescription}
-          >
-            <Input
-              innerRef={commentInputRef}
-              isFailed={commentRequiredError}
-              value={commentInputValue}
-              onChangeText={handleCommentChange}
-              placeholder={
-                isCommentRequired
-                  ? t('send_screen_steps.comfirm.comment_placeholder_required')
-                  : t('send_screen_steps.comfirm.comment_placeholder')
-              }
-              returnKeyType="done"
-              multiline
-              blurOnSubmit
-            />
-          </FormItem>
-          <FormItem title={detailsLabel} indicator={detailsIndicator}>
-            <List align="left">
-              {recipientName ? (
-                <ListCell label={t('confirm_sending_recipient')}>
-                  {recipientName}
-                </ListCell>
-              ) : null}
-              <ListCell
-                label={
-                  recipientName
+        <S.Content>
+          <S.Center>
+            <S.IconContainer>{Logo}</S.IconContainer>
+            <Spacer y={20} />
+            <Text color="foregroundSecondary">
+              {t('send_screen_steps.comfirm.title')}
+            </Text>
+            <Spacer y={4} />
+            <Text variant="h3">
+              {t('send_screen_steps.comfirm.action', { coin: currencyTitle })}
+            </Text>
+          </S.Center>
+          <Spacer y={32} />
+          <S.Table>
+            {recipientName ? (
+              <S.Item>
+                <S.ItemLabel>{t('confirm_sending_recipient')}</S.ItemLabel>
+                <S.ItemContent>
+                  <S.ItemValue>{recipientName}</S.ItemValue>
+                </S.ItemContent>
+              </S.Item>
+            ) : null}
+            <Separator />
+            <Highlight onPress={handleCopy}>
+              <S.Item>
+                <S.ItemLabel>
+                  {recipientName
                     ? t('confirm_sending_recipient_address')
-                    : t('confirm_sending_recipient')
-                }
-                onPress={handleCopy}
-              >
-                {maskifyAddress(recipient.address, 4)}
-              </ListCell>
-              <ListCell label={t('confirm_sending_amount')}>{amountValue}</ListCell>
-              <ListCell label={t('confirm_sending_fee')}>{feeValue}</ListCell>
-            </List>
-          </FormItem>
-        </S.Form>
-        {isInactive ? (
-          <S.Card>
-            <S.Background />
-            <S.ContentWrap>
-              <S.TextWrap>
-                <S.LabelWrapper>
-                  <Text variant="label1">{t('confirm_sending_inactive_warn_title')}</Text>
-                </S.LabelWrapper>
-                <S.DescriptionWrapper>
-                  <Text variant="body2" color="foregroundSecondary">
-                    {t('confirm_sending_inactive_warn_description')}
-                  </Text>
-                </S.DescriptionWrapper>
-                <Button
-                  titleFont="regular"
-                  withoutFixedHeight
+                    : t('confirm_sending_recipient')}
+                </S.ItemLabel>
+                <S.ItemContent>
+                  <S.ItemValue>{maskifyAddress(recipient.address, 4)}</S.ItemValue>
+                </S.ItemContent>
+              </S.Item>
+            </Highlight>
+            <Separator />
+            <S.Item>
+              <S.ItemLabel>{t('confirm_sending_amount')}</S.ItemLabel>
+              <S.ItemContent>
+                <S.ItemValue>{amountValue}</S.ItemValue>
+                {fiatValue.fiatInfo.avaivable ? (
+                  <S.ItemSubValue>≈ {fiatValue.fiatInfo.amount}</S.ItemSubValue>
+                ) : null}
+              </S.ItemContent>
+            </S.Item>
+            <Separator />
+            <S.Item>
+              <S.ItemLabel>{t('confirm_sending_fee')}</S.ItemLabel>
+              <S.ItemContent>
+                <S.ItemValue>{feeValue}</S.ItemValue>
+                {fee !== '0' ? (
+                  <S.ItemSubValue>≈ {fiatFee.fiatInfo.amount}</S.ItemSubValue>
+                ) : null}
+              </S.ItemContent>
+            </S.Item>
+            {comment.length > 0 ? (
+              <>
+                <Separator />
+                <S.Item>
+                  <S.ItemLabel>
+                    {t('send_screen_steps.comfirm.comment_label')}
+                  </S.ItemLabel>
+                  <S.ItemContent>
+                    <S.ItemValue>{comment}</S.ItemValue>
+                  </S.ItemContent>
+                </S.Item>
+              </>
+            ) : null}
+          </S.Table>
+          {isInactive ? (
+            <>
+              <Spacer y={16} />
+              <S.WarningContainer>
+                <S.WarningTouchable
+                  background="backgroundQuaternary"
                   onPress={openInactiveInfo}
-                  size="small"
-                  style={{ alignSelf: 'flex-start' }}
-                  withoutTextPadding
-                  mode="tertiary"
-                  after={renderChevron}
                 >
-                  {t('confirm_sending_inactive_warn_about')}
-                </Button>
-              </S.TextWrap>
-              <Icon
-                style={{ marginTop: ns(4) }}
-                color="foregroundPrimary"
-                name="ic-exclamationmark-triangle-36"
-              />
-            </S.ContentWrap>
-          </S.Card>
-        ) : null}
+                  <S.WarningContent>
+                    <Text variant="label1">
+                      {t('confirm_sending_inactive_warn_title')}
+                    </Text>
+                    <Text variant="body2" color="foregroundSecondary">
+                      {t('confirm_sending_inactive_warn_description')}
+                    </Text>
+                    <Spacer y={4} />
+                    <S.WarningRow>
+                      <Text variant="label2">
+                        {t('confirm_sending_inactive_warn_about')}
+                      </Text>
+                      <Spacer x={2} />
+                      <S.WarningIcon>
+                        <Icon name="ic-chevron-right-12" color="foregroundPrimary" />
+                      </S.WarningIcon>
+                    </S.WarningRow>
+                  </S.WarningContent>
+                </S.WarningTouchable>
+              </S.WarningContainer>
+            </>
+          ) : null}
+        </S.Content>
         <BottomButtonWrapHelper />
       </StepScrollView>
-
-      <BottomButtonWrap>
-        <Button onPress={handleConfirm} disabled={commentError} isLoading={isSending}>
-          {t('confirm_sending_submit')}
-        </Button>
-      </BottomButtonWrap>
+      <S.FooterContainer bottomInset={bottomInset}>
+        <ActionFooter
+          withCloseButton={false}
+          confirmTitle={t('confirm_sending_submit')}
+          onPressConfirm={handleConfirm}
+          ref={footerRef}
+        />
+      </S.FooterContainer>
     </S.Container>
   );
 };

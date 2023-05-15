@@ -1,4 +1,4 @@
-import { ReactElement, Ref } from 'react';
+import { ReactElement, ReactNode, Ref } from 'react';
 import { TextInputProps } from './TextInput';
 
 import { css } from '$styled';
@@ -16,4 +16,8 @@ export interface InputProps
   isFailed?: boolean;
   value?: string | ReactElement;
   onContentSizeChange?: (contentSize: InputContentSize) => void;
+  label?: string;
+  rightContent?: ReactNode;
+  withPasteButton?: boolean;
+  withClearButton?: boolean;
 }

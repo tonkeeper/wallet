@@ -16,5 +16,6 @@ export interface StepViewProps {
   initialStepId?: string;
   autoHeight?: boolean;
   swipeEnabled?: boolean;
+  swipeBackEnabled?: boolean;
   onChangeStep?: (currentStepId: string | number, currentStepIndex: number) => void;
 }

@@ -8,6 +8,7 @@
   "loading": "Loading",
   "success": "Success!",
   "copied": "Copied",
+  "paste": "Paste",
   "address_copied": "Address copied",
   "link_copied": "Link copied",
   "form_optional_indicator": "Optional",
@@ -194,7 +195,7 @@
   "receive_received_title": "You received\n%{amount} %{currency}",
 
   "send_title": "Send %{currency}",
-  "send_address_placeholder": "Wallet address or domain",
+  "send_address_placeholder": "Address or domain",
   "send_comment_label": "Add a comment",
   "send_fee_estimation_error": "Failed to calculate fee",
   "send_get_wallet_info_error": "Failed to get wallet info",
@@ -209,13 +210,11 @@
   "send_lockup_warning_submit_button": "Send",
   "send_invalid_recipient_title": "Invalid recipient",
   "send_invalid_recipient_caption": "The domain does not exist or the wallet address is not linked to it",
+  "send_all_warning_title": "Are you sure you want to send all your balance?",
 
   "send_screen_steps": {
-    "choose_coin": {
-      "title": "Select a token to send",
-      "subtitle": "You will enter the recipient and amount next."
-    },
     "address": {
+      "title": "Recipient",
       "placeholder": "Wallet address or domain",
       "recent_label": "Recent",
       "suggests_label": "Favorites and recent transactions",
@@ -228,19 +227,20 @@
       }
     },
     "amount": {
-      "recipient_label": "Send to:",
+      "title": "Amount",
+      "recipient_label": "To:",
       "insufficient_balance": "Insufficient balance",
       "less_than_min": "Minimum %{minAmount} TON",
       "max": "Max",
       "remaining": "Remaining: %{amount}"
     },
     "comfirm": {
+      "title": "Confirm transaction",
+      "action": "%{coin} Transfer",
       "comment_label": "Comment",
       "comment_label_required": "Required comment",
       "comment_required_text": "You must include memo or tag when sending to an exchange. ",
       "comment_description": "The comment is visible to everyone.",
-      "comment_placeholder": "Message or reference (optional)",
-      "comment_placeholder_required": "Memo or tag",
       "details_label": "Details",
       "details_max_balance_label": "Sending max. balance of %{currency}",
       "comment_characters_left": "%{count} characters left.",

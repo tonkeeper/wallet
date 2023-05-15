@@ -2,6 +2,18 @@ import Animated from 'react-native-reanimated';
 
 import styled from '$styled';
 import { ns } from '$utils';
+import { AnchorPosition } from './usePopupAnimation';
+
+const getWrapperAlign = (anchor: AnchorPosition) => {
+  if (anchor === 'top-center') {
+    return 'center';
+  }
+  if (anchor === 'top-left') {
+    return 'flex-start';
+  }
+
+  return 'flex-end';
+};
 
 export const Overlay = styled.TouchableOpacity.attrs({
   activeOpacity: 1,
@@ -9,10 +21,10 @@ export const Overlay = styled.TouchableOpacity.attrs({
   flex: 1;
 `;
 
-export const Wrap = styled(Animated.View)`
+export const Wrap = styled(Animated.View)<{ anchor: AnchorPosition }>`
   background: ${({ theme }) => theme.colors.backgroundTertiary};
   flex: 0 0 auto;
-  align-self: flex-end;
+  align-self: ${({ anchor }) => getWrapperAlign(anchor)};
   margin-horizontal: ${ns(16)}px;
   border-radius: ${({ theme }) => ns(theme.radius.normal)}px;
   box-shadow: 0px ${ns(8)}px ${ns(32)}px rgba(0, 0, 0, 0.16);
