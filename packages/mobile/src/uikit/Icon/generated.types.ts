@@ -38,6 +38,7 @@ export type IconNames =
   | 'ic-twitter-16'
   | 'ic-verification-16'
   | 'ic-verification-secondary-16'
+  | 'ic-xmark-circle-16'
   | 'ic-backspace-bold-24'
   | 'ic-backup-24'
   | 'ic-key-24'
@@ -148,6 +149,7 @@ export const AllIcons = [
   'ic-twitter-16',
   'ic-verification-16',
   'ic-verification-secondary-16',
+  'ic-xmark-circle-16',
   'ic-backspace-bold-24',
   'ic-backup-24',
   'ic-key-24',
@@ -259,6 +261,7 @@ export const IconSizes = {
   'ic-twitter-16': 16,
   'ic-verification-16': 16,
   'ic-verification-secondary-16': 16,
+  'ic-xmark-circle-16': 16,
   'ic-backspace-bold-24': 24,
   'ic-backup-24': 24,
   'ic-key-24': 24,

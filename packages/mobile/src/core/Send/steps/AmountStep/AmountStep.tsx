@@ -3,29 +3,28 @@ import { Button, Spacer } from '$uikit';
 import React, { FC, memo, useEffect, useMemo, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as S from './AmountStep.style';
-import { RecipientView } from './RecipientView/RecipientView';
 import { parseLocaleNumber } from '$utils';
 import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { AmountStepProps } from './AmountStep.interface';
-import { TextInput } from 'react-native-gesture-handler';
 import { walletWalletSelector } from '$store/wallet';
-import { AmountInput } from '$shared/components';
+import { AmountInput, AmountInputRef } from '$shared/components';
+import { CoinDropdown } from './CoinDropdown';
 
 const AmountStepComponent: FC<AmountStepProps> = (props) => {
   const {
     isPreparing,
     active,
     recipient,
-    recipientAccountInfo,
     decimals,
     balance,
+    currency,
     currencyTitle,
     amount,
     fiatRate,
     setAmount,
-    goToAddress,
     onContinue,
+    onChangeCurrency,
   } = props;
 
   const wallet = useSelector(walletWalletSelector);
@@ -46,9 +45,9 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
 
   const t = useTranslator();
 
-  const textInputRef = useRef<TextInput>(null);
-
   const isFirstRender = useRef(true);
+
+  const textInputRef = useRef<AmountInputRef>(null);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -75,18 +74,27 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
     return () => clearTimeout(timeoutId);
   }, [active]);
 
+  if (!recipient) {
+    return null;
+  }
+
   return (
     <S.Container bottomInset={bottomInset} style={keyboardHeightStyle}>
-      <RecipientView
-        recipient={recipient}
-        recipientAccountInfo={recipientAccountInfo}
-        goToAddress={goToAddress}
-      />
-      <Spacer y={16} />
-      <AmountInput
-        innerRef={textInputRef}
-        {...{ decimals, balance, currencyTitle, amount, fiatRate, setAmount }}
-      />
+      <S.AmountContainer>
+        <AmountInput
+          innerRef={textInputRef}
+          withCoinSelector={true}
+          {...{ decimals, balance, currencyTitle, amount, fiatRate, setAmount }}
+        />
+        <S.CoinContainer>
+          <CoinDropdown
+            currency={currency}
+            currencyTitle={currencyTitle}
+            textInputRef={textInputRef}
+            onChangeCurrency={onChangeCurrency}
+          />
+        </S.CoinContainer>
+      </S.AmountContainer>
       <Spacer y={16} />
       <Button disabled={!isReadyToContinue} isLoading={isPreparing} onPress={onContinue}>
         {t('continue')}

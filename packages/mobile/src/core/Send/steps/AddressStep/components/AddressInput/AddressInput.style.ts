@@ -10,33 +10,26 @@ export const InputContainer = styled.View`
 `;
 
 export const ScanQRContainer = styled(Animated.View)`
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
   justify-content: center;
 `;
 
 export const ScanQRTouchable = styled.TouchableOpacity.attrs({
   activeOpacity: 0.6,
 })`
-  padding: 0 ${ns(14)}px;
+  padding-left: ${ns(8)}px;
+  padding-right: ${ns(14)}px;
 `;
 
 export const LoaderContainer = styled(Animated.View)`
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  justify-content: center;
-  padding: 0 ${ns(14)}px;
+  left: ${ns(isAndroid ? 20 : 16)}px;
+  bottom: ${ns(15)}px;
+  padding: 0 ${ns(8)}px;
 `;
 
 export const InfoContainer = styled(Animated.View)`
   position: absolute;
   left: ${ns(isAndroid ? 20 : 16)}px;
-  top: 0;
-  bottom: 0;
-  justify-content: center;
+  bottom: ${ns(11.5)}px;
   padding: 0 ${ns(8)}px;
 `;

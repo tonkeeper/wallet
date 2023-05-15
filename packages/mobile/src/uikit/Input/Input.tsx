@@ -1,5 +1,5 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import {
+import React, { FC, useCallback, useEffect, useState } from 'react';
+import Animated, {
   interpolate,
   useAnimatedStyle,
   useSharedValue,
@@ -9,7 +9,7 @@ import {
 } from 'react-native-reanimated';
 
 import { css } from '$styled';
-import { useTheme } from '$hooks';
+import { useTheme, useTranslator } from '$hooks';
 import { InputProps } from './Input.interface';
 import * as S from './Input.style';
 import { isIOS, ns } from '$utils';
@@ -18,8 +18,19 @@ import {
   NativeSyntheticEvent,
   TextInputContentSizeChangeEventData,
 } from 'react-native';
+import { Text } from '../Text/Text';
+import Clipboard from '@react-native-community/clipboard';
+import { Icon } from '$uikit/Icon/Icon';
 
 const FocusedInputBorderWidth = ns(1.5);
+
+const LARGE_LABEL_FONT_SIZE = ns(16);
+const LARGE_LABEL_LINE_HEIGHT = ns(24);
+
+const SMALL_LABEL_FONT_SIZE = ns(12);
+const SMALL_LABEL_LINE_HEIGHT = ns(16);
+
+const ANIM_DURATION = 100;
 
 export const Input: FC<InputProps> = (props) => {
   const {
@@ -33,6 +44,12 @@ export const Input: FC<InputProps> = (props) => {
     autoFocus = false,
     isFailed = false,
     value,
+    placeholder,
+    label,
+    rightContent,
+    withPasteButton,
+    withClearButton = true,
+    onChangeText,
 
     onContentSizeChange,
 
@@ -45,6 +62,8 @@ export const Input: FC<InputProps> = (props) => {
   const [isFocused, setFocused] = useState(false);
   const focusAnimation = useSharedValue(0);
   const failAnimation = useSharedValue(0);
+
+  const t = useTranslator();
 
   useEffect(() => {
     cancelAnimation(focusAnimation);
@@ -126,8 +145,77 @@ export const Input: FC<InputProps> = (props) => {
     };
   });
 
+  const hasLabel = !!label && label.length > 0;
+
+  const hasValue =
+    !!value &&
+    (typeof value === 'object'
+      ? value.props.children.some(
+          (child) => typeof child === 'string' && child.length > 0,
+        )
+      : value.length > 0);
+
+  const shouldAnimate = hasLabel && hasValue;
+
+  const labelContainerStyle = useAnimatedStyle(
+    () => ({
+      paddingTop: withTiming(shouldAnimate ? 8 : 20, { duration: ANIM_DURATION }),
+    }),
+    [shouldAnimate],
+  );
+
+  const labelTextStyle = useAnimatedStyle(
+    () => ({
+      fontSize: withTiming(
+        shouldAnimate ? SMALL_LABEL_FONT_SIZE : LARGE_LABEL_FONT_SIZE,
+        {
+          duration: ANIM_DURATION,
+        },
+      ),
+    }),
+    [shouldAnimate],
+  );
+
+  const inputSpacerStyle = useAnimatedStyle(() => ({
+    height: withTiming(shouldAnimate ? 8 : 0, {
+      duration: ANIM_DURATION,
+    }),
+  }));
+
+  const inputHeightCompensatorStyle = useAnimatedStyle(() => ({
+    marginBottom: withTiming(shouldAnimate ? -8 : 0, {
+      duration: ANIM_DURATION,
+    }),
+  }));
+
+  const rightContentStyle = useAnimatedStyle(
+    () => ({
+      opacity: withTiming(hasValue ? 0 : 1, { duration: 150 }),
+    }),
+    [shouldAnimate],
+  );
+
+  const clearButtonStyle = useAnimatedStyle(
+    () => ({
+      opacity: withTiming(hasValue ? 1 : 0, { duration: 150 }),
+    }),
+    [shouldAnimate],
+  );
+
+  const handlePastePress = useCallback(async () => {
+    try {
+      const str = await Clipboard.getString();
+
+      onChangeText?.(str);
+    } catch {}
+  }, [onChangeText]);
+
+  const handlePressClear = useCallback(() => {
+    onChangeText?.('');
+  }, [onChangeText]);
+
   return (
-    <S.InputWrapper {...{ wrapperStyle, isFailed }}>
+    <S.InputWrapper {...{ wrapperStyle, isFailed, withClearButton }}>
       <S.Border
         {...{ isFocused, isFailed }}
         pointerEvents="none"
@@ -138,13 +226,21 @@ export const Input: FC<InputProps> = (props) => {
         pointerEvents="none"
         style={[failBorderStyle, { zIndex: 2 }]}
       />
+      <S.LabelContainer style={labelContainerStyle}>
+        <Text reanimated style={labelTextStyle} color="foregroundSecondary">
+          {label}
+        </Text>
+      </S.LabelContainer>
+      <Animated.View style={inputSpacerStyle} />
       <S.Input
         {...otherProps}
+        onChangeText={onChangeText}
         {...{ inputStyle, multiline, editable, keyboardType, blurOnSubmit, autoFocus }}
         ref={innerRef}
         allowFontScaling={false}
         selectionColor={isFailed ? colors.accentNegative : colors.accentPrimary}
         keyboardAppearance={isDark ? 'dark' : 'light'}
+        placeholder={hasLabel ? '' : placeholder}
         placeholderTextColor={colors.foregroundSecondary}
         onFocus={handleFocus}
         onBlur={handleBlur}
@@ -155,10 +251,34 @@ export const Input: FC<InputProps> = (props) => {
       >
         <S.InputText>{value}</S.InputText>
       </S.Input>
+      <Animated.View style={inputHeightCompensatorStyle} />
       {onContentSizeChange ? (
         <S.GhostTextContainer pointerEvents="none">
           <S.InputText onLayout={handleTextLayout}>{value}</S.InputText>
         </S.GhostTextContainer>
+      ) : null}
+      <S.RightContainer
+        style={rightContentStyle}
+        pointerEvents={hasValue ? 'none' : 'auto'}
+      >
+        {withPasteButton ? (
+          <S.RightButton onPress={handlePastePress}>
+            <Text variant="label1" color="accentPrimary">
+              {t('paste')}
+            </Text>
+          </S.RightButton>
+        ) : null}
+        {rightContent}
+      </S.RightContainer>
+      {withClearButton ? (
+        <S.RightContainer
+          style={clearButtonStyle}
+          pointerEvents={hasValue ? 'auto' : 'none'}
+        >
+          <S.RightButton onPress={handlePressClear}>
+            <Icon name="ic-xmark-circle-16" color="iconSecondary" />
+          </S.RightButton>
+        </S.RightContainer>
       ) : null}
     </S.InputWrapper>
   );

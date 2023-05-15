@@ -8,6 +8,8 @@ export interface AddressStepProps extends StepComponentProps {
   recipient: SendRecipient | null;
   decimals: number;
   stepsScrollTop: SharedValue<Record<SendSteps, number>>;
+  comment: string;
+  recipientAccountInfo: AccountRepr | null;
   setRecipient: React.Dispatch<React.SetStateAction<SendRecipient | null>>;
   setRecipientAccountInfo: React.Dispatch<React.SetStateAction<Account | null>>;
   setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;

@@ -458,7 +458,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
     action.payload.onFail();
     e && debugLog(e.message);
 
-    if (e.message === 'wrong_time') {
+    if (e && e.message === 'wrong_time') {
       MainDB.setTimeSyncedDismissed(false);
       yield put(mainActions.setTimeSyncedDismissed(false));
       Alert.alert(
@@ -468,8 +468,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
 
       return;
     }
-
-    yield call(Toast.fail, e ? e.message : t('send_sending_failed'));
   }
 }
 

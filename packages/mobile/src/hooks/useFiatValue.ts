@@ -9,13 +9,18 @@ import { TonThemeColor } from '$styled';
 import { fiatCurrencySelector } from '$store/main';
 import { formatter } from '$utils/formatter';
 
-export function useFiatValue(currency: CryptoCurrency, value: string) {
-  const fiatRate = useFiatRate(currency);
+export function useFiatValue(
+  currency: CryptoCurrency,
+  value: string,
+  decimals?: number,
+  isJetton?: boolean,
+) {
+  const fiatRate = useFiatRate(currency, isJetton);
   const fiatCurrency = useSelector(fiatCurrencySelector);
 
   const amount = useMemo(() => {
-    return formatAmount(value, Decimals[currency]);
-  }, [value, currency]);
+    return formatAmount(value, decimals ?? Decimals[currency]);
+  }, [value, currency, decimals]);
 
   const formattedRate = useMemo(
     () => formatter.format(fiatRate.today.toString(), { currency: fiatCurrency }),
@@ -66,6 +71,7 @@ export function useFiatValue(currency: CryptoCurrency, value: string) {
     percent = toLocaleNumber(percent);
 
     return {
+      avaivable: fiatRate.today > 0,
       percent,
       percentAbs: percent !== '-' ? percent.replace(/[-–]/, '') : percent,
       color,

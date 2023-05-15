@@ -41,6 +41,7 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
     useBackHandler,
     autoHeight = false,
     swipeEnabled = false,
+    swipeBackEnabled = false,
     onChangeStep,
   } = props;
 
@@ -169,12 +170,16 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
     .failOffsetY(90)
     .failOffsetY(-90)
     .minDistance(50)
-    .enabled(swipeEnabled)
+    .enabled(swipeEnabled || swipeBackEnabled)
     .onBegin(() => {
       startPosition.value = position.value;
     })
     .onUpdate((e) => {
       let diff = e.translationX;
+
+      if (swipeBackEnabled && diff < 0) {
+        return;
+      }
 
       if (
         (currentIndex === stepsLastIndex && diff < 0) ||
@@ -186,6 +191,10 @@ const StepViewComponent = forwardRef<StepViewRef, StepViewProps>((props, ref) =>
       position.value = startPosition.value + diff;
     })
     .onEnd((e) => {
+      if (swipeBackEnabled && e.translationX < 0) {
+        return;
+      }
+
       const velocity = Math.abs(e.velocityX) > 200 ? e.velocityX : 0;
       const pos = Math.abs(e.translationX) > 200 ? e.translationX : 0;
 

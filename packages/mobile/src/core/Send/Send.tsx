@@ -1,15 +1,19 @@
-import { useFiatRate, useInstance, useJettonBalances, useTranslator } from '$hooks';
+import { useFiatRate, useInstance, useTranslator } from '$hooks';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, getServerConfig } from '$shared/constants';
 import {
   walletActions,
   walletBalancesSelector,
-  walletSelector,
   walletWalletSelector,
 } from '$store/wallet';
-import { NavBar } from '$uikit';
-import { isValidAddress, parseLocaleNumber } from '$utils';
+import { NavBar, Text } from '$uikit';
+import {
+  formatInputAmount,
+  isValidAddress,
+  maskifyAddress,
+  parseLocaleNumber,
+} from '$utils';
 import React, {
   FC,
   useCallback,
@@ -23,15 +27,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SendAmount, SendProps, SendRecipient, SendSteps } from './Send.interface';
 import { AddressStep } from './steps/AddressStep/AddressStep';
 import { AmountStep } from './steps/AmountStep/AmountStep';
-import { ChooseCoinStep } from './steps/ChooseCoinStep/ChooseCoinStep';
 import { ConfirmStep } from './steps/ConfirmStep/ConfirmStep';
 import BigNumber from 'bignumber.js';
 import { Alert, Keyboard } from 'react-native';
-import { DoneStep } from './steps/DoneStep/DoneStep';
-import { goBack, openReminderEnableNotificationsModal } from '$navigation';
 import { favoritesActions } from '$store/favorites';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { Configuration, AccountsApi, Account } from '@tonkeeper/core';
+import { DismissedActionError } from './steps/ConfirmStep/DismissedActionError';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {
@@ -45,7 +47,6 @@ export const Send: FC<SendProps> = ({ route }) => {
     withGoBack,
   } = route.params;
 
-  const { enabled: jettons } = useJettonBalances();
   const initialAddress =
     propsAddress && isValidAddress(propsAddress) ? propsAddress : null;
 
@@ -76,8 +77,10 @@ export const Send: FC<SendProps> = ({ route }) => {
   const balances = useSelector(walletBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
 
-  const [currency, setCurrency] = useState(initialCurrency || CryptoCurrencies.Ton);
-  const [isJetton, setIsJetton] = useState(!!initialIsJetton);
+  const [{ currency, isJetton }, setCurrency] = useState({
+    currency: initialCurrency || CryptoCurrencies.Ton,
+    isJetton: !!initialIsJetton,
+  });
 
   const [recipient, setRecipient] = useState<SendRecipient | null>(
     initialAddress ? { address: initialAddress } : null,
@@ -100,12 +103,12 @@ export const Send: FC<SendProps> = ({ route }) => {
     isJetton,
   );
 
-  const fiatRate = useFiatRate(currency as CryptoCurrency);
+  const fiatRate = useFiatRate(currency as CryptoCurrency, isJetton);
 
   const stepViewRef = useRef<StepViewRef>(null);
 
   const [currentStep, setCurrentStep] = useState<{ id: SendSteps; index: number }>({
-    id: initialCurrency ? SendSteps.ADDRESS : SendSteps.CHOOSE_TOKEN,
+    id: SendSteps.ADDRESS,
     index: 0,
   });
 
@@ -120,8 +123,6 @@ export const Send: FC<SendProps> = ({ route }) => {
     () => stepsScrollTop.value[currentStep.id] || 0,
   );
 
-  const navBarTitle = currency ? t('send_title', { currency: currencyTitle }) : '';
-
   const handleBack = useCallback(() => stepViewRef.current?.goBack(), []);
 
   const handleChangeStep = useCallback((id: string | number, index: number) => {
@@ -132,20 +133,19 @@ export const Send: FC<SendProps> = ({ route }) => {
     stepViewRef.current?.go(SendSteps.AMOUNT);
   }, []);
 
-  const goToAddress = useCallback(() => {
-    stepViewRef.current?.go(SendSteps.ADDRESS);
-  }, []);
-
   const onChangeCurrency = useCallback(
-    (nextCurrency: CryptoCurrency | string, nextIsJetton?: boolean) => {
-      setAmount({ value: '0', all: false });
-      setRecipient(null);
-      setCurrency(nextCurrency);
-      setIsJetton(!!nextIsJetton);
-
-      goToAddress();
+    (
+      nextCurrency: CryptoCurrency | string,
+      nextDecimals: number,
+      nextIsJetton: boolean,
+    ) => {
+      setAmount({
+        value: '0',
+        all: false,
+      });
+      setCurrency({ currency: nextCurrency, isJetton: !!nextIsJetton });
     },
-    [goToAddress],
+    [],
   );
 
   const prepareConfirmSending = useCallback(async () => {
@@ -182,75 +182,52 @@ export const Send: FC<SendProps> = ({ route }) => {
     recipient,
   ]);
 
-  const doSend = useCallback(() => {
-    if (!recipient) {
-      return;
-    }
+  const doSend = useCallback(
+    (onDone: () => void, onFail: (e?: Error) => void) => {
+      if (!recipient) {
+        return onFail(new DismissedActionError());
+      }
 
-    setSending(true);
-    dispatch(
-      walletActions.sendCoins({
-        currency: currency as CryptoCurrency,
-        amount: parseLocaleNumber(amount.value),
-        isSendAll: amount.all,
-        address: recipient.address,
-        comment,
-        isJetton,
-        jettonWalletAddress,
-        decimals,
-        onDone: () => {
-          dispatch(favoritesActions.restoreHiddenAddress(recipient.address));
-
-          if (withGoBack) {
-            goBack();
-            setTimeout(() => {
-              openReminderEnableNotificationsModal();
-            }, 350);
-            return;
-          }
-
-          setSending(false);
-          stepViewRef.current?.go(SendSteps.DONE);
-        },
-        onFail: () => setSending(false),
-      }),
-    );
-  }, [
-    amount,
-    comment,
-    currency,
-    decimals,
-    dispatch,
-    isJetton,
-    jettonWalletAddress,
-    recipient,
-    withGoBack,
-  ]);
+      setSending(true);
+      dispatch(
+        walletActions.sendCoins({
+          currency: currency as CryptoCurrency,
+          amount: parseLocaleNumber(amount.value),
+          isSendAll: amount.all,
+          address: recipient.address,
+          comment,
+          isJetton,
+          jettonWalletAddress,
+          decimals,
+          onDone: () => {
+            dispatch(favoritesActions.restoreHiddenAddress(recipient.address));
+            setSending(false);
+            onDone();
+          },
+          onFail: () => {
+            setSending(false);
+            onFail(new DismissedActionError());
+          },
+        }),
+      );
+    },
+    [
+      amount,
+      comment,
+      currency,
+      decimals,
+      dispatch,
+      isJetton,
+      jettonWalletAddress,
+      recipient,
+    ],
+  );
 
   const handleSend = useCallback(() => {
-    const amountWithFee = new BigNumber(parseLocaleNumber(amount.value)).plus(fee);
-    if (
-      currency === CryptoCurrencies.Ton &&
-      wallet &&
-      wallet.ton.isLockup() &&
-      !amount.all &&
-      new BigNumber(balances[currency]).isLessThan(amountWithFee)
-    ) {
-      Alert.alert(t('send_lockup_warning_title'), t('send_lockup_warning_caption'), [
-        {
-          text: t('cancel'),
-          style: 'cancel',
-        },
-        {
-          text: t('send_lockup_warning_submit_button'),
-          onPress: () => doSend(),
-          style: 'destructive',
-        },
-      ]);
-    } else {
-      doSend();
-    }
-  }, [amount, fee, currency, wallet, balances, t, doSend]);
+    return new Promise<void>(async (resolve, reject) => {
+      doSend(resolve, reject);
+    });
+  }, [doSend]);
 
   const fetchRecipientAccountInfo = useCallback(async () => {
     if (!recipient) {
@@ -271,11 +248,35 @@ export const Send: FC<SendProps> = ({ route }) => {
     fetchRecipientAccountInfo();
   }, [fetchRecipientAccountInfo]);
 
-  const isDoneStep = currentStep.id === SendSteps.DONE;
+  const isAddressStep = currentStep.id === SendSteps.ADDRESS;
+  const isConfirmStep = currentStep.id === SendSteps.CONFIRM;
 
-  const hideBackButton = currentStep.index === 0 || isDoneStep;
+  const hideBackButton = currentStep.index === 0;
 
-  const hideTitle = currentStep.id === SendSteps.CHOOSE_TOKEN || isDoneStep;
+  const navBarTitle = isAddressStep
+    ? t('send_screen_steps.address.title')
+    : t('send_screen_steps.amount.title');
+
+  const shortenedAddress = recipient ? maskifyAddress(recipient.address) : '';
+
+  const name = recipient?.domain || recipient?.name || recipientAccountInfo?.name;
+
+  const primaryName = name ?? shortenedAddress;
+
+  const secondaryName = name ? shortenedAddress : '';
+
+  const subtitle = isAddressStep ? null : (
+    <Text variant="body2" color="textSecondary">
+      {`${t('send_screen_steps.amount.recipient_label')} ${primaryName} `}
+      {secondaryName.length ? (
+        <Text variant="body2" color="textTertiary">
+          {secondaryName}
+        </Text>
+      ) : (
+        ''
+      )}
+    </Text>
+  );
 
   return (
     <>
@@ -284,8 +285,9 @@ export const Send: FC<SendProps> = ({ route }) => {
         isClosedButton
         isForceBackIcon
         hideBackButton={hideBackButton}
-        hideTitle={hideTitle}
+        hideTitle={isConfirmStep}
         scrollTop={scrollTop}
+        subtitle={subtitle}
         onBackPress={handleBack}
       >
         {navBarTitle}
@@ -296,20 +298,8 @@ export const Send: FC<SendProps> = ({ route }) => {
         onChangeStep={handleChangeStep}
         initialStepId={initialStepId}
         useBackHandler
+        swipeBackEnabled
       >
-        {!initialCurrency && jettons.length ? (
-          <StepViewItem id={SendSteps.CHOOSE_TOKEN}>
-            {(stepProps) => (
-              <ChooseCoinStep
-                jettons={jettons}
-                stepsScrollTop={stepsScrollTop}
-                onChangeCurrency={onChangeCurrency}
-                {...stepProps}
-              />
-            )}
-          </StepViewItem>
-        ) : null}
-
         <StepViewItem id={SendSteps.ADDRESS}>
           {(stepProps) => (
             <AddressStep
@@ -318,6 +308,8 @@ export const Send: FC<SendProps> = ({ route }) => {
               stepsScrollTop={stepsScrollTop}
               setRecipient={setRecipient}
               setRecipientAccountInfo={setRecipientAccountInfo}
+              recipientAccountInfo={recipientAccountInfo}
+              comment={comment}
               setComment={setComment}
               setAmount={setAmount}
               onContinue={goToAmount}
@@ -331,14 +323,14 @@ export const Send: FC<SendProps> = ({ route }) => {
             <AmountStep
               isPreparing={isPreparing}
               recipient={recipient}
-              recipientAccountInfo={recipientAccountInfo}
               decimals={decimals}
               balance={balance}
+              currency={currency}
+              onChangeCurrency={onChangeCurrency}
               currencyTitle={currencyTitle}
               amount={amount}
               fiatRate={fiatRate.today}
               setAmount={setAmount}
-              goToAddress={goToAddress}
               onContinue={prepareConfirmSending}
               {...stepProps}
             />
@@ -356,29 +348,10 @@ export const Send: FC<SendProps> = ({ route }) => {
               amount={amount}
               decimals={decimals}
               isJetton={isJetton}
-              isSending={isSending}
               fee={fee}
               isInactive={isInactive}
               comment={comment}
-              setComment={setComment}
               onConfirm={handleSend}
-              {...stepProps}
-            />
-          )}
-        </StepViewItem>
-
-        <StepViewItem id={SendSteps.DONE}>
-          {(stepProps) => (
-            <DoneStep
-              currencyTitle={currencyTitle}
-              currency={currency}
-              amount={amount}
-              comment={comment}
-              decimals={decimals}
-              isJetton={isJetton}
-              recipient={recipient}
-              recipientAccountInfo={recipientAccountInfo}
-              fee={fee}
               {...stepProps}
             />
           )}

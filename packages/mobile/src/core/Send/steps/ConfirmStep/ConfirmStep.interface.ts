@@ -16,8 +16,6 @@ export interface ConfirmStepProps extends StepComponentProps {
   isJetton: boolean;
   fee: string;
   isInactive: boolean;
-  isSending: boolean;
   comment: string;
-  setComment: React.Dispatch<React.SetStateAction<string>>;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void>;
 }

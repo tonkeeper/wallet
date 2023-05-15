@@ -8,6 +8,7 @@
   "loading": "Загрузка",
   "success": "Успешно",
   "copied": "Скопировано",
+  "paste": "Вставить",
   "address_copied": "Адрес скопирован",
   "link_copied": "Ссылка скопирована",
   "form_optional_indicator": "Необязательно",
@@ -192,7 +193,7 @@
   "receive_received_title": "Вам зачислено\n%{amount} %{currency}",
 
   "send_title": "Отправить %{currency}",
-  "send_address_placeholder": "Адрес кошелька или домен",
+  "send_address_placeholder": "Адрес или домен",
   "send_fee_estimation_error": "Ошибка подсчёта комиссии",
   "send_get_wallet_info_error": "Ошибка запроса кошелька",
   "send_build_tx_error": "Ошибка создания транзакции",
@@ -206,13 +207,11 @@
   "send_lockup_warning_submit_button": "Отправить",
   "send_invalid_recipient_title": "Неверный получатель",
   "send_invalid_recipient_caption": "Домен не существует или адрес кошелька к нему не привязан. Введите действительный адрес домена или кошелька.",
+  "send_all_warning_title": "Вы уверены, что хотите отправить весь свой баланс?",
 
   "send_screen_steps": {
-    "choose_coin": {
-      "title": "Выберите, что хотите отправить",
-      "subtitle": "Получателя и сумму нужно будет ввести далее."
-    },
     "address": {
+      "title": "Получатель",
       "placeholder": "Адрес кошелька или домен",
       "recent_label": "Недавние",
       "suggests_label": "Избранные и недавние",
@@ -225,6 +224,7 @@
       }
     },
     "amount": {
+      "title": "Сумма",
       "recipient_label": "Кому:",
       "insufficient_balance": "Недостаточно средств",
       "less_than_min": "Минимум %{minAmount} TON",
@@ -232,12 +232,12 @@
       "remaining": "Доступно: %{amount}"
     },
     "comfirm": {
+      "title": "Подтвердить транзакцию",
+      "action": "Отправка %{coin}",
       "comment_label": "Комментарий",
       "comment_label_required": "Обязательный комментарий",
       "comment_required_text": "Обязательно укажите memo или тег при отправке на биржу. ",
       "comment_description": "Комментарий виден всем.",
-      "comment_placeholder": "Текст для получателя (необяз.)",
-      "comment_placeholder_required": "Memo или тег",
       "details_label": "Детали",
       "details_max_balance_label": "Отправка всего баланса %{currency}",
       "comment_characters_left": {

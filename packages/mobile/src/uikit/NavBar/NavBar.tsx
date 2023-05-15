@@ -1,15 +1,20 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { View } from 'react-native';
-import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { LayoutChangeEvent, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 import * as S from './NavBar.style';
 import { NavBarProps } from './NavBar.interface';
 import { goBack } from '$navigation';
-import { Icon } from '$uikit/Icon/Icon';
+import { Icon } from '../Icon/Icon';
 import { useTheme } from '$hooks';
 import { NavBarHeight } from '$shared/constants';
 import { hNs } from '$utils';
+import { Text } from '../Text/Text';
 
 export const NavBarHelper: FC = () => {
   const { top } = useSafeAreaInsets();
@@ -42,6 +47,7 @@ export const NavBar: FC<NavBarProps> = (props) => {
     innerAnimatedStyle,
     titleProps = {},
     scrollTop,
+    subtitle,
   } = props;
   const { top: topInset } = useSafeAreaInsets();
   const theme = useTheme();
@@ -115,6 +121,24 @@ export const NavBar: FC<NavBarProps> = (props) => {
     [children, hideTitle],
   );
 
+  const subtitleHeight = useSharedValue(0);
+
+  const handleSubtitleLayout = useCallback((event: LayoutChangeEvent) => {
+    subtitleHeight.value = event.nativeEvent.layout.height;
+  }, []);
+
+  const hasSubtitle = !!subtitle;
+
+  const subtitleAnimatedStyle = useAnimatedStyle(
+    () => ({
+      position: 'relative',
+      height: hasSubtitle
+        ? withTiming(subtitleHeight.value, { duration: 100 })
+        : withTiming(0, { duration: 100 }),
+    }),
+    [hasSubtitle],
+  );
+
   const isSmallTitle = typeof children === 'string' && children.length > 18;
 
   return (
@@ -139,18 +163,27 @@ export const NavBar: FC<NavBarProps> = (props) => {
               <Icon name={iconName} color="foregroundPrimary" />
             </S.BackButton>
           </S.BackButtonContainer>
-          {typeof children === 'string' ? (
+          <S.CenterContent style={titleAnimatedStyle}>
             <S.Title
               variant={isSmallTitle ? 'label1' : 'h3'}
               numberOfLines={1}
               {...titleProps}
-              style={titleAnimatedStyle}
             >
               {children}
             </S.Title>
-          ) : (
-            children
-          )}
+            <Animated.View style={subtitleAnimatedStyle}>
+              {subtitle ? (
+                <S.Subtitle
+                  variant="body2"
+                  numberOfLines={1}
+                  color="textSecondary"
+                  onLayout={handleSubtitleLayout}
+                >
+                  {subtitle}
+                </S.Subtitle>
+              ) : null}
+            </Animated.View>
+          </S.CenterContent>
           {renderRightContent()}
         </S.Content>
       </S.Cont>

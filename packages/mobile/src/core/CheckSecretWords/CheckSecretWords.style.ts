@@ -1,5 +1,5 @@
 import styled from '$styled';
-import {isAndroid, nfs, ns} from '$utils';
+import { isAndroid, nfs, ns } from '$utils';
 
 export const Inputs = styled.View`
   padding-vertical: ${ns(32)}px;
@@ -26,8 +26,8 @@ export const InputNumber = styled.TextInput.attrs({
   top: 0;
   padding-left: 0;
   padding-right: 0;
-  padding-top: ${ns(isAndroid ? 19 : 17.5)}px;
-  padding-bottom: ${ns(isAndroid ? 15 : 17.5)}px;
+  padding-top: ${ns(isAndroid ? 18 : 22.5)}px;
+  padding-bottom: ${ns(isAndroid ? 18.5 : 22)}px;
   ${isAndroid ? 'text-align-vertical: top;' : ''}
   z-index: 3;
   position: absolute;

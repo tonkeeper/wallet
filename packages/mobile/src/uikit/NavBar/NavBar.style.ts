@@ -85,11 +85,19 @@ export const RightContent = styled.View`
   flex: 0 0 auto;
 `;
 
-export const Title = styled(Text).attrs(() => ({
-  textAlign: 'center',
-  reanimated: true,
-}))`
-  margin: 0 ${hNs(NavBarHeight - 24)}px;
+export const CenterContent = styled(Animated.View)`
   flex: 1;
   z-index: 1;
+  margin: 0 ${hNs(NavBarHeight - 24)}px;
+`;
+
+export const Title = styled(Text).attrs(() => ({
+  textAlign: 'center',
+}))``;
+
+export const Subtitle = styled(Text).attrs(() => ({
+  textAlign: 'center',
+}))`
+  position: absolute;
+  width: 100%;
 `;
