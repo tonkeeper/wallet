@@ -18,10 +18,15 @@ import FastImage from 'react-native-fast-image';
 import { Toast } from '$store';
 import Clipboard from '@react-native-community/clipboard';
 
+export enum ImageType {
+  ROUND = 'round',
+  SQUARE = 'square',
+}
 export interface ApproveTokenModalParams {
   tokenAddress: string;
   type: TokenApprovalType;
   verification?: JettonVerification;
+  imageType?: ImageType;
   name?: string;
   image?: string;
 }
@@ -61,10 +66,11 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
     ) {
       return 'approved';
     }
+    return 'pending';
   }, [currentStatus, props.verification]);
 
   const title = useMemo(() => {
-    if (props.type === TokenApprovalType.Jetton) {
+    if (props.type === TokenApprovalType.Token) {
       if (modalState === 'pending') {
         return t('approval.verify_token');
       } else {
@@ -82,7 +88,11 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
   const subtitle = useMemo(() => {
     if (modalState === 'declined') {
       if (!currentStatus) {
-        return t('approval.blacklisted');
+        return t(
+          props.type === TokenApprovalType.Token
+            ? 'approval.blacklisted_token'
+            : 'approval.blacklisted_collection',
+        );
       }
       return t('approval.declined_at', {
         date: format(currentStatus?.updated_at, 'd MMM yyyy'),
@@ -90,13 +100,17 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
     }
     if (modalState === 'approved') {
       if (!currentStatus) {
-        return t('approval.whitelisted');
+        return t(
+          props.type === TokenApprovalType.Token
+            ? 'approval.whitelisted_token'
+            : 'approval.whitelisted_collection',
+        );
       }
       return t('approval.accepted_at', {
         date: format(currentStatus?.updated_at, 'd MMM yyyy'),
       });
     }
-    if (props.type === TokenApprovalType.Jetton) {
+    if (props.type === TokenApprovalType.Token) {
       return t('approval.verify_token_description');
     } else {
       return t('approval.verify_tokens_description');
@@ -168,9 +182,9 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
                 </S.DetailItem>
                 <FastImage
                   style={
-                    props.type === TokenApprovalType.Jetton
-                      ? styles.jettonImage.static
-                      : styles.collectionImage.static
+                    props.imageType !== ImageType.SQUARE
+                      ? styles.round.static
+                      : styles.square.static
                   }
                   source={{ uri: props.image }}
                 />
@@ -182,7 +196,7 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
             >
               <S.DetailItem>
                 <S.DetailItemLabel>
-                  {props.type === TokenApprovalType.Jetton
+                  {props.type === TokenApprovalType.Token
                     ? t('approval.token_id')
                     : t('approval.collection_id')}
                 </S.DetailItemLabel>
@@ -226,12 +240,12 @@ const styles = Steezy.create({
   footerWrap: {
     paddingHorizontal: 16,
   },
-  jettonImage: {
+  round: {
     width: 40,
     height: 40,
     borderRadius: 20,
   },
-  collectionImage: {
+  square: {
     width: 40,
     height: 40,
     borderRadius: 8,

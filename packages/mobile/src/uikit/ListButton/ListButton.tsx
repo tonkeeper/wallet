@@ -28,7 +28,7 @@ const MinusIcon = () => (
 export const ListButton: React.FC<ListButtonProps> = (props) => {
   return (
     <TouchableOpacity
-      hitSlop={{ top: 4, bottom: 4, right: 4, left: 4 }}
+      hitSlop={{ top: 8, bottom: 8, right: 8, left: 8 }}
       activeOpacity={0.6}
       style={styles.container.static}
       onPress={props.onPress}

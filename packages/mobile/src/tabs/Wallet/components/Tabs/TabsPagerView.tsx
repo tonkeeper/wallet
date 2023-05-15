@@ -17,20 +17,18 @@ import funny from '$assets/funny.json';
 import { Haptics, ns } from '$utils';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 
-interface TabsPagerViewProps {
+interface TabsPagerViewProps {}
 
-}
-
-const AnimatedPagerView = Animated.createAnimatedComponent(PagerView)
+const AnimatedPagerView = Animated.createAnimatedComponent(PagerView);
 
 function usePageScrollHandler(handlers: any, dependencies?: any) {
   const { context, doDependenciesDiffer } = useHandler(handlers, dependencies);
   const subscribeForEvents = ['onPageScroll'];
 
   return useEvent(
-    event => {
+    (event) => {
       'worklet';
-      const {onPageScroll} = handlers;
+      const { onPageScroll } = handlers;
       if (onPageScroll && event.eventName.endsWith('onPageScroll')) {
         onPageScroll(event, context);
       }
@@ -48,36 +46,39 @@ export const TabsPagerView: React.FC<TabsPagerViewProps> = (props) => {
   React.useEffect(() => {
     const setPage = (index: number) => {
       requestAnimationFrame(() => refPagerView.current?.setPage(index));
-    }
+    };
 
     setPageFN(setPage);
   }, []);
 
   const pageScrollHandler = usePageScrollHandler({
-    onPageScroll: e => {
+    onPageScroll: (e) => {
       'worklet';
 
       pageOffset.value = e.offset + e.position;
     },
   });
 
-  useAnimatedReaction(() => pageOffset.value, () => {
-    if (pageOffset.value > 1.8 && pageOffset.value < 2) {
-      runOnJS(Haptics.notificationSuccess)();
-    }
-  })
+  useAnimatedReaction(
+    () => pageOffset.value,
+    () => {
+      if (pageOffset.value > 1.8 && pageOffset.value < 2) {
+        runOnJS(Haptics.notificationSuccess)();
+      }
+    },
+  );
 
   const funnyStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ 
-        translateX: pageOffset.value > 2 ? 50 : interpolate(
-          pageOffset.value,
-          [1.8, 1.9],
-          [50, -80],
-          Extrapolate.CLAMP
-        )
-      }]
-    }
+      transform: [
+        {
+          translateX:
+            pageOffset.value > 2
+              ? 50
+              : interpolate(pageOffset.value, [1.8, 1.9], [50, -80], Extrapolate.CLAMP),
+        },
+      ],
+    };
   });
 
   return (
@@ -85,15 +86,15 @@ export const TabsPagerView: React.FC<TabsPagerViewProps> = (props) => {
       <Animated.View
         style={[styles.funny, funnyStyle, { bottom: ns(16) + tabBarHeight }]}
       >
-        <FastImage 
+        <FastImage
           source={{ uri: funny.image }}
           style={{ width: ns(132), height: ns(132) }}
         />
       </Animated.View>
-      <AnimatedPagerView 
+      <AnimatedPagerView
         onPageScroll={pageScrollHandler}
         ref={refPagerView}
-        style={styles.pagerView} 
+        style={styles.pagerView}
         onPageSelected={(ev) => {
           setNativeActiveIndex(ev.nativeEvent.position);
         }}
@@ -103,17 +104,17 @@ export const TabsPagerView: React.FC<TabsPagerViewProps> = (props) => {
         overdrag
       >
         {props.children}
-      </AnimatedPagerView>      
+      </AnimatedPagerView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   pagerView: {
-    flex: 1
+    flex: 1,
   },
   funny: {
     position: 'absolute',
     right: -80,
-  }
+  },
 });

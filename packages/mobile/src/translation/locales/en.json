@@ -315,10 +315,17 @@
   "approval": {
     "verify_token": "Verify token",
     "token_details": "Token details",
+    "token_count": {
+      "one": "%{count} token",
+      "other": "%{count} tokens"
+    },
+    "single_token": "Single token",
     "accept": "Accept",
     "decline": "Decline",
-    "blacklisted": "Token is blacklisted",
-    "whitelisted": "Token is whitelisted",
+    "blacklisted_token": "Token is blacklisted",
+    "whitelisted_token": "Token is whitelisted",
+    "blacklisted_collection": "Collection is blacklisted",
+    "whitelisted_collection": "Collection is whitelisted",
     "pending": "Pending",
     "declined": "Declined",
     "move_to_declined": "Move to Declined",

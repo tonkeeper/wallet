@@ -13,6 +13,7 @@ import { useJettonBalances } from '$hooks';
 
 const baseJettonCellData = (jettonBalance) => ({
   type: ContentType.Cell,
+  id: jettonBalance.jettonAddress,
   picture: jettonBalance.metadata?.image,
   title: jettonBalance.metadata?.name,
   subtitle: formatter.format(jettonBalance.balance, {
@@ -21,7 +22,7 @@ const baseJettonCellData = (jettonBalance) => ({
   }),
   onPress: () =>
     openApproveTokenModal({
-      type: TokenApprovalType.Jetton,
+      type: TokenApprovalType.Token,
       tokenAddress: jettonBalance.jettonAddress,
       verification: jettonBalance.verification,
       image: jettonBalance.metadata?.image,
@@ -39,6 +40,7 @@ export function useJettonData() {
 
     if (pending.length) {
       content.push({
+        id: 'pending_title',
         type: ContentType.Title,
         title: t('approval.pending'),
       });
@@ -56,6 +58,7 @@ export function useJettonData() {
         ),
       );
       content.push({
+        id: 'pending_spacer',
         type: ContentType.Spacer,
         bottom: 16,
       });
@@ -63,6 +66,7 @@ export function useJettonData() {
 
     if (enabled.length) {
       content.push({
+        id: 'enabled_title',
         type: ContentType.Title,
         title: t('approval.accepted'),
       });
@@ -80,7 +84,7 @@ export function useJettonData() {
                       updateTokenStatus(
                         jettonBalance.jettonAddress,
                         TokenApprovalStatus.Declined,
-                        TokenApprovalType.Jetton,
+                        TokenApprovalType.Token,
                       )
                     }
                   />
@@ -92,6 +96,7 @@ export function useJettonData() {
         ),
       );
       content.push({
+        id: 'accepted_spacer',
         type: ContentType.Spacer,
         bottom: 16,
       });
@@ -99,6 +104,7 @@ export function useJettonData() {
 
     if (disabled.length) {
       content.push({
+        id: 'disabled_title',
         type: ContentType.Title,
         title: t('approval.declined'),
       });
@@ -117,7 +123,7 @@ export function useJettonData() {
                       updateTokenStatus(
                         jettonBalance.jettonAddress,
                         TokenApprovalStatus.Approved,
-                        TokenApprovalType.Jetton,
+                        TokenApprovalType.Token,
                       )
                     }
                   />
@@ -128,6 +134,7 @@ export function useJettonData() {
         ),
       );
       content.push({
+        id: 'disabled_spacer',
         type: ContentType.Spacer,
         bottom: 16,
       });
@@ -135,6 +142,97 @@ export function useJettonData() {
 
     return content;
   }, [disabled, enabled, pending, updateTokenStatus]);
+  return data;
+}
+
+// Draggable jetton list, need to be fixed
+/*
+export function useJettonData() {
+  const updateTokenStatus = useTokenApprovalStore(
+    (state) => state.actions.updateTokenStatus,
+  );
+  const { enabled, pending, disabled } = useJettonBalances();
+  const data = useMemo(() => {
+    const content: { pending: Content[]; enabled: Content[]; disabled: Content[] } = {
+      pending: [],
+      enabled: [],
+      disabled: [],
+    };
+
+    if (pending.length) {
+      content.pending = pending.map(
+        (jettonBalance, index) =>
+          ({
+            ...baseJettonCellData(jettonBalance),
+            attentionBackground: true,
+            chevron: true,
+            separatorVariant: 'alternate',
+            chevronColor: 'iconSecondary',
+            isFirst: index === 0,
+            isLast: index === pending.length - 1,
+            id: jettonBalance.jettonAddress + '_pending',
+          } as CellItem),
+      );
+    }
+
+    if (enabled.length) {
+      content.enabled = enabled.map(
+        (jettonBalance, index) =>
+          ({
+            ...baseJettonCellData(jettonBalance),
+            id: jettonBalance.jettonAddress + '_enabled',
+            isFirst: index === 0,
+            isDraggable: true,
+            leftContent: (
+              <>
+                <ListButton
+                  type="remove"
+                  onPress={() => {
+                    updateTokenStatus(
+                      jettonBalance.jettonAddress,
+                      TokenApprovalStatus.Declined,
+                      TokenApprovalType.Token,
+                    );
+                  }}
+                />
+                <Spacer x={16} />
+              </>
+            ),
+            isLast: index === enabled.length - 1,
+          } as CellItem),
+      );
+    }
+
+    if (disabled.length) {
+      content.disabled = disabled.map(
+        (jettonBalance, index) =>
+          ({
+            ...baseJettonCellData(jettonBalance),
+            id: jettonBalance.jettonAddress + '_disabled',
+            isFirst: index === 0,
+            isLast: index === disabled.length - 1,
+            leftContent: (
+              <>
+                <ListButton
+                  type="add"
+                  onPress={() => {
+                    updateTokenStatus(
+                      jettonBalance.jettonAddress,
+                      TokenApprovalStatus.Approved,
+                      TokenApprovalType.Token,
+                    );
+                  }}
+                />
+                <Spacer x={16} />
+              </>
+            ),
+          } as CellItem),
+      );
+    }
+
+    return content;
+  }, [disabled, enabled, pending, updateTokenStatus]);
 
   return data;
 }
+*/

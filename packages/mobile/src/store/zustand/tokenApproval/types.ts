@@ -5,7 +5,7 @@ export enum TokenApprovalStatus {
 
 export enum TokenApprovalType {
   Collection = 'collection',
-  Jetton = 'jetton',
+  Token = 'token',
 }
 
 export interface ApprovalStatus {
@@ -17,6 +17,7 @@ export interface ApprovalStatus {
 
 export interface ITokenApprovalStore {
   tokens: Record<string, ApprovalStatus>;
+  hasWatchedCollectiblesTab: boolean;
   actions: {
     updateTokenStatus: (
       address: string,
@@ -24,5 +25,6 @@ export interface ITokenApprovalStore {
       type: TokenApprovalType,
     ) => void;
     removeTokenStatus: (address: string) => void;
+    setHasWatchedCollectiblesTab: (hasWatchedCollectiblesTab: boolean) => void;
   };
 }
