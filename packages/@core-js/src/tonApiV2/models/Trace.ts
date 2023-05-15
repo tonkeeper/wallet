@@ -34,6 +34,12 @@ export interface Trace {
     transaction: Transaction;
     /**
      * 
+     * @type {Array<string>}
+     * @memberof Trace
+     */
+    interfaces: Array<string>;
+    /**
+     * 
      * @type {Array<Trace>}
      * @memberof Trace
      */
@@ -46,6 +52,7 @@ export interface Trace {
 export function instanceOfTrace(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "transaction" in value;
+    isInstance = isInstance && "interfaces" in value;
 
     return isInstance;
 }
@@ -61,6 +68,7 @@ export function TraceFromJSONTyped(json: any, ignoreDiscriminator: boolean): Tra
     return {
         
         'transaction': TransactionFromJSON(json['transaction']),
+        'interfaces': json['interfaces'],
         'children': !exists(json, 'children') ? undefined : ((json['children'] as Array<any>).map(TraceFromJSON)),
     };
 }
@@ -75,6 +83,7 @@ export function TraceToJSON(value?: Trace | null): any {
     return {
         
         'transaction': TransactionToJSON(value.transaction),
+        'interfaces': value.interfaces,
         'children': value.children === undefined ? undefined : ((value.children as Array<any>).map(TraceToJSON)),
     };
 }

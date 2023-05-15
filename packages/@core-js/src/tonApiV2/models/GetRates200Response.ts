@@ -16,42 +16,42 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface StateInit
+ * @interface GetRates200Response
  */
-export interface StateInit {
+export interface GetRates200Response {
     /**
      * 
-     * @type {string}
-     * @memberof StateInit
+     * @type {{ [key: string]: any; }}
+     * @memberof GetRates200Response
      */
-    boc: string;
+    rates: { [key: string]: any; };
 }
 
 /**
- * Check if a given object implements the StateInit interface.
+ * Check if a given object implements the GetRates200Response interface.
  */
-export function instanceOfStateInit(value: object): boolean {
+export function instanceOfGetRates200Response(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "boc" in value;
+    isInstance = isInstance && "rates" in value;
 
     return isInstance;
 }
 
-export function StateInitFromJSON(json: any): StateInit {
-    return StateInitFromJSONTyped(json, false);
+export function GetRates200ResponseFromJSON(json: any): GetRates200Response {
+    return GetRates200ResponseFromJSONTyped(json, false);
 }
 
-export function StateInitFromJSONTyped(json: any, ignoreDiscriminator: boolean): StateInit {
+export function GetRates200ResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetRates200Response {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'boc': json['boc'],
+        'rates': json['rates'],
     };
 }
 
-export function StateInitToJSON(value?: StateInit | null): any {
+export function GetRates200ResponseToJSON(value?: GetRates200Response | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -60,7 +60,7 @@ export function StateInitToJSON(value?: StateInit | null): any {
     }
     return {
         
-        'boc': value.boc,
+        'rates': value.rates,
     };
 }
 

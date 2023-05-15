@@ -39,10 +39,10 @@ export interface TvmStackRecord {
     slice?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof TvmStackRecord
      */
-    _int?: number;
+    num?: string;
     /**
      * 
      * @type {Array<TvmStackRecord>}
@@ -57,7 +57,7 @@ export interface TvmStackRecord {
  */
 export const TvmStackRecordTypeEnum = {
     Cell: 'cell',
-    Int: 'int',
+    Num: 'num',
     Nan: 'nan',
     Null: 'null',
     Tuple: 'tuple'
@@ -88,7 +88,7 @@ export function TvmStackRecordFromJSONTyped(json: any, ignoreDiscriminator: bool
         'type': json['type'],
         'cell': !exists(json, 'cell') ? undefined : json['cell'],
         'slice': !exists(json, 'slice') ? undefined : json['slice'],
-        '_int': !exists(json, 'int') ? undefined : json['int'],
+        'num': !exists(json, 'num') ? undefined : json['num'],
         'tuple': !exists(json, 'tuple') ? undefined : ((json['tuple'] as Array<any>).map(TvmStackRecordFromJSON)),
     };
 }
@@ -105,7 +105,7 @@ export function TvmStackRecordToJSON(value?: TvmStackRecord | null): any {
         'type': value.type,
         'cell': value.cell,
         'slice': value.slice,
-        'int': value._int,
+        'num': value.num,
         'tuple': value.tuple === undefined ? undefined : ((value.tuple as Array<any>).map(TvmStackRecordToJSON)),
     };
 }

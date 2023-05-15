@@ -5,6 +5,7 @@ apis/DNSApi.ts
 apis/EventsApi.ts
 apis/JettonsApi.ts
 apis/NFTApi.ts
+apis/RatesApi.ts
 apis/StakingApi.ts
 apis/StorageApi.ts
 apis/TracesApi.ts
@@ -19,6 +20,7 @@ models/AccountStaking.ts
 models/AccountStakingInfo.ts
 models/AccountStatus.ts
 models/AccountStorageInfo.ts
+models/Accounts.ts
 models/Action.ts
 models/ActionPhase.ts
 models/ActionSimplePreview.ts
@@ -38,13 +40,17 @@ models/DomainBids.ts
 models/DomainNames.ts
 models/Event.ts
 models/Fee.ts
+models/FoundAccounts.ts
+models/FoundAccountsAddressesInner.ts
+models/GetAccountsRequest.ts
 models/GetBlock401Response.ts
+models/GetRates200Response.ts
 models/GetStorageProviders200Response.ts
 models/ImagePreview.ts
-models/Jetton.ts
 models/JettonBalance.ts
 models/JettonInfo.ts
 models/JettonMetadata.ts
+models/JettonPreview.ts
 models/JettonTransferAction.ts
 models/JettonVerificationType.ts
 models/JettonsBalances.ts
@@ -65,6 +71,7 @@ models/RawAccount.ts
 models/Refund.ts
 models/Sale.ts
 models/SendMessageRequest.ts
+models/SmartContractAction.ts
 models/StakingPoolInfo200Response.ts
 models/StakingPools200Response.ts
 models/StateInit.ts

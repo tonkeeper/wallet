@@ -1,8 +1,7 @@
 import { debugLog } from '$utils';
-import axios from 'axios';
 import React from 'react';
 import { getServerConfig } from '$shared/constants';
-import { getChainName } from '$shared/dynamicConfig';
+import { NFTApi, Configuration } from '@tonkeeper/core';
 
 export type NFTCollectionMeta = {
   name: string;
@@ -19,17 +18,18 @@ export function useDownloadCollectionMeta(addr?: string) {
 
   const download = React.useCallback(async (address: string) => {
     try {
-      const endpoint = getServerConfig('tonapiIOEndpoint');
+      const endpoint = getServerConfig('tonapiV2Endpoint');
+      const nftApi = new NFTApi(
+        new Configuration({
+          basePath: endpoint,
+          headers: {
+            Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+          },
+        }),
+      );
 
-      const response: any = await axios.get(`${endpoint}/v1/nft/getCollection`, {
-        headers: {
-          Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-        },
-        params: {
-          account: address,
-        },
-      });
-      setMeta(response.data.metadata);
+      const collection = await nftApi.getNftCollection({ accountId: address });
+      setMeta(collection.metadata as NFTCollectionMeta);
     } catch (err) {
       debugLog('Error download collection meta', err);
     }

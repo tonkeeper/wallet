@@ -37,7 +37,7 @@ export interface AccountEvents {
      * @type {number}
      * @memberof AccountEvents
      */
-    nextFrom?: number;
+    nextFrom: number;
 }
 
 /**
@@ -46,6 +46,7 @@ export interface AccountEvents {
 export function instanceOfAccountEvents(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "events" in value;
+    isInstance = isInstance && "nextFrom" in value;
 
     return isInstance;
 }
@@ -61,7 +62,7 @@ export function AccountEventsFromJSONTyped(json: any, ignoreDiscriminator: boole
     return {
         
         'events': ((json['events'] as Array<any>).map(AccountEventFromJSON)),
-        'nextFrom': !exists(json, 'next_from') ? undefined : json['next_from'],
+        'nextFrom': json['next_from'],
     };
 }
 

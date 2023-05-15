@@ -39,10 +39,10 @@ export interface JettonMetadata {
     symbol: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof JettonMetadata
      */
-    decimals: number;
+    decimals: string;
     /**
      * 
      * @type {string}

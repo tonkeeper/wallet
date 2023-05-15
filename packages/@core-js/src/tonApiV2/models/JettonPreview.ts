@@ -23,65 +23,67 @@ import {
 /**
  * 
  * @export
- * @interface Jetton
+ * @interface JettonPreview
  */
-export interface Jetton {
+export interface JettonPreview {
     /**
      * 
      * @type {string}
-     * @memberof Jetton
+     * @memberof JettonPreview
      */
     address: string;
     /**
      * 
      * @type {string}
-     * @memberof Jetton
+     * @memberof JettonPreview
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof Jetton
+     * @memberof JettonPreview
      */
     symbol: string;
     /**
      * 
      * @type {number}
-     * @memberof Jetton
+     * @memberof JettonPreview
      */
     decimals: number;
     /**
      * 
      * @type {string}
-     * @memberof Jetton
+     * @memberof JettonPreview
      */
-    image?: string;
+    image: string;
     /**
      * 
      * @type {JettonVerificationType}
-     * @memberof Jetton
+     * @memberof JettonPreview
      */
-    verification?: JettonVerificationType;
+    verification: JettonVerificationType;
 }
 
 /**
- * Check if a given object implements the Jetton interface.
+ * Check if a given object implements the JettonPreview interface.
  */
-export function instanceOfJetton(value: object): boolean {
+export function instanceOfJettonPreview(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "address" in value;
     isInstance = isInstance && "name" in value;
     isInstance = isInstance && "symbol" in value;
     isInstance = isInstance && "decimals" in value;
+    isInstance = isInstance && "image" in value;
+    isInstance = isInstance && "verification" in value;
 
     return isInstance;
 }
 
-export function JettonFromJSON(json: any): Jetton {
-    return JettonFromJSONTyped(json, false);
+export function JettonPreviewFromJSON(json: any): JettonPreview {
+    return JettonPreviewFromJSONTyped(json, false);
 }
 
-export function JettonFromJSONTyped(json: any, ignoreDiscriminator: boolean): Jetton {
+export function JettonPreviewFromJSONTyped(json: any, ignoreDiscriminator: boolean): JettonPreview {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -91,12 +93,12 @@ export function JettonFromJSONTyped(json: any, ignoreDiscriminator: boolean): Je
         'name': json['name'],
         'symbol': json['symbol'],
         'decimals': json['decimals'],
-        'image': !exists(json, 'image') ? undefined : json['image'],
-        'verification': !exists(json, 'verification') ? undefined : JettonVerificationTypeFromJSON(json['verification']),
+        'image': json['image'],
+        'verification': JettonVerificationTypeFromJSON(json['verification']),
     };
 }
 
-export function JettonToJSON(value?: Jetton | null): any {
+export function JettonPreviewToJSON(value?: JettonPreview | null): any {
     if (value === undefined) {
         return undefined;
     }

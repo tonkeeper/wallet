@@ -16,42 +16,42 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface StateInit
+ * @interface GetAccountsRequest
  */
-export interface StateInit {
+export interface GetAccountsRequest {
     /**
      * 
-     * @type {string}
-     * @memberof StateInit
+     * @type {Array<string>}
+     * @memberof GetAccountsRequest
      */
-    boc: string;
+    accountIds: Array<string>;
 }
 
 /**
- * Check if a given object implements the StateInit interface.
+ * Check if a given object implements the GetAccountsRequest interface.
  */
-export function instanceOfStateInit(value: object): boolean {
+export function instanceOfGetAccountsRequest(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "boc" in value;
+    isInstance = isInstance && "accountIds" in value;
 
     return isInstance;
 }
 
-export function StateInitFromJSON(json: any): StateInit {
-    return StateInitFromJSONTyped(json, false);
+export function GetAccountsRequestFromJSON(json: any): GetAccountsRequest {
+    return GetAccountsRequestFromJSONTyped(json, false);
 }
 
-export function StateInitFromJSONTyped(json: any, ignoreDiscriminator: boolean): StateInit {
+export function GetAccountsRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetAccountsRequest {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'boc': json['boc'],
+        'accountIds': json['account_ids'],
     };
 }
 
-export function StateInitToJSON(value?: StateInit | null): any {
+export function GetAccountsRequestToJSON(value?: GetAccountsRequest | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -60,7 +60,7 @@ export function StateInitToJSON(value?: StateInit | null): any {
     }
     return {
         
-        'boc': value.boc,
+        'account_ids': value.accountIds,
     };
 }
 

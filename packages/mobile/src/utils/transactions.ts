@@ -1,5 +1,5 @@
 import { EventsMap } from '$store/events/interface';
-import { Action } from 'tonapi-sdk-js';
+import { Action } from '@tonkeeper/core';
 
 const seeIfTonTransfer = (action: Action) => {
   if (action.type === 'TonTransfer') {

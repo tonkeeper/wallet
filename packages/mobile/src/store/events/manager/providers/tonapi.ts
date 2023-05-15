@@ -2,20 +2,20 @@ import { Cache, NextFromPair } from '$store/events/manager/cache';
 import { BaseProvider } from '$store/events/manager/providers/base';
 import { getServerConfig } from '$shared/constants';
 import { EventModel } from '$store/models';
-import { EventApi, Configuration } from 'tonapi-sdk-js';
+import { AccountsApi, Configuration, GetEventsByAccountRequest } from '@tonkeeper/core';
 
 export class TonapiProvider extends BaseProvider {
   public readonly name = 'TonapiProvider';
   private limit = 25;
-  private api: EventApi;
+  private api: AccountsApi;
 
   constructor(address: string) {
     super(address);
-    this.api = new EventApi(
+    this.api = new AccountsApi(
       new Configuration({
-        basePath: getServerConfig('tonapiIOEndpoint'),
+        basePath: getServerConfig('tonapiV2Endpoint'),
         headers: {
-          Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+          Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
         },
       }),
     );
@@ -26,14 +26,14 @@ export class TonapiProvider extends BaseProvider {
       return [];
     }
 
-    const params: any = {
-      account: this.address,
+    const params: GetEventsByAccountRequest = {
+      accountId: this.address,
       limit: this.limit,
     };
     if (this.nextFrom) {
-      params.beforeLt = this.nextFrom;
+      params.beforeLt = parseInt(this.nextFrom);
     }
-    const resp: any = await this.api.accountEvents(params);
+    const resp: any = await this.api.getEventsByAccount(params);
 
     let events: EventModel[] = [];
     if (resp?.events) {
