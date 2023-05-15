@@ -81,8 +81,7 @@ export const useStakingStore = create(
                 .filter(
                   (pool) =>
                     !!pool.name &&
-                    pool.maxNominators > pool.currentNominators &&
-                    pool.implementation === 'whales',
+                    pool.maxNominators > pool.currentNominators
                 )
                 .map((pool) => {
                   if (pool.implementation !== 'whales') {

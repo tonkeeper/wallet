@@ -8,6 +8,7 @@ import { Steezy } from '$styles';
 import { useStakingStore } from '$store';
 import { shallow } from 'zustand/shallow';
 import { StakingWidgetStatus } from './StakingWidgetStatus';
+import { logEvent } from '@amplitude/analytics-browser';
 
 const StakingWidgetComponent: FC = () => {
   const t = useTranslator();
@@ -30,7 +31,8 @@ const StakingWidgetComponent: FC = () => {
   );
 
   const handleStakingPress = useCallback(() => {
-    nav.push(MainStackRouteNames.StakingPools, { providerId: 'whales' });
+    logEvent('staking_open');
+    nav.push(MainStackRouteNames.Staking);
   }, [nav]);
 
   if (!hasPools) {
