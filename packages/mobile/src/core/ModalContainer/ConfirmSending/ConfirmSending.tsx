@@ -4,11 +4,17 @@ import { Alert } from 'react-native';
 import BigNumber from 'bignumber.js';
 
 import { ConfirmSendingProps } from './ConfirmSending.interface';
-import { BottomSheet, Button, Icon, List, ListCell, Text } from '$uikit';
+import { BottomSheet, Button, Icon, Text } from '$uikit';
+import { List, ListCell } from '$uikit/List/old/List';
 import * as S from './ConfirmSending.style';
 import { useTranslator } from '$hooks';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
-import {walletActions, walletBalancesSelector, walletSelector, walletWalletSelector} from '$store/wallet';
+import {
+  walletActions,
+  walletBalancesSelector,
+  walletSelector,
+  walletWalletSelector,
+} from '$store/wallet';
 import { formatCryptoCurrency } from '$utils/currency';
 import { getTokenConfig } from '$shared/dynamicConfig';
 import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
@@ -19,7 +25,7 @@ import {
 } from '$navigation';
 import { ns, maskifyAddress } from '$utils';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
-import {favoritesFavoritesSelector, favoritesSelector} from '$store/favorites';
+import { favoritesFavoritesSelector, favoritesSelector } from '$store/favorites';
 
 export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
   const {

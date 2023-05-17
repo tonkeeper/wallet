@@ -1,7 +1,6 @@
 import React, { memo } from 'react';
 import { Steezy } from '$styles';
-import { Icon } from '$uikit';
-import { List } from '$uikit/List/new';
+import { Icon, List } from '$uikit';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useTheme } from '$hooks';
 import { IconNames } from '$uikit/Icon/generated.types';
@@ -14,7 +13,7 @@ interface TransactionItemProps {
 export const HistoryItem = memo<TransactionItemProps>((props) => {
   const { event, onPress } = props;
   if (typeof event === 'string') {
-    return <List.Header title={event} />
+    return <List.Header title={event} />;
   }
 
   return (
@@ -29,10 +28,7 @@ export const HistoryItem = memo<TransactionItemProps>((props) => {
           valueStyle={item.isReceive && styles.receiveValue}
           subvalue={item.subvalue}
           leftContent={(isPressed) => (
-            <LeftIcon 
-              iconName={item.iconName}
-              isPressed={isPressed}
-            />
+            <LeftIcon iconName={item.iconName} isPressed={isPressed} />
           )}
         />
       ))}
@@ -40,36 +36,31 @@ export const HistoryItem = memo<TransactionItemProps>((props) => {
   );
 });
 
-const LeftIcon = (props: { 
+const LeftIcon = (props: {
   isPressed: Animated.SharedValue<boolean>;
   iconName: IconNames;
 }) => {
   const theme = useTheme();
 
   const backgroundStyle = useAnimatedStyle(() => ({
-    backgroundColor: props.isPressed.value 
-      ? theme.colors.backgroundQuaternary  
-      : theme.colors.backgroundTertiary
+    backgroundColor: props.isPressed.value
+      ? theme.colors.backgroundQuaternary
+      : theme.colors.backgroundTertiary,
   }));
 
   return (
     <Animated.View style={[styles.icon.static, backgroundStyle]}>
-      {props.iconName && (
-        <Icon 
-          name={props.iconName} 
-          color="foregroundSecondary" 
-        />
-      )}
+      {props.iconName && <Icon name={props.iconName} color="foregroundSecondary" />}
     </Animated.View>
   );
-}
+};
 
 const styles = Steezy.create(({ colors }) => ({
   list: {
     marginBottom: 8,
   },
   list2: {
-    marginBottom: 16
+    marginBottom: 16,
   },
   icon: {
     width: 44,
@@ -80,6 +71,6 @@ const styles = Steezy.create(({ colors }) => ({
     backgroundColor: colors.backgroundContentTint,
   },
   receiveValue: {
-    color: colors.accentGreen
-  }
+    color: colors.accentGreen,
+  },
 }));

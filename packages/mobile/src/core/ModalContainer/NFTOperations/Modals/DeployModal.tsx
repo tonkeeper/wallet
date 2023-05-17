@@ -1,5 +1,6 @@
 import React, { FC, useCallback, useRef, useState } from 'react';
-import {BottomSheet, Button, CurrencyIcon, List, ListCell, Text} from '$uikit';
+import { BottomSheet, Button, CurrencyIcon, Text } from '$uikit';
+import { List, ListCell } from '$uikit/List/old/List';
 import * as S from './DeployModal.style';
 import { useInstance, useTranslator, useWallet } from '$hooks';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
@@ -8,18 +9,18 @@ import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
 import { DeployParams, TxResponseOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
-import {debugLog, toLocaleNumber} from '$utils';
+import { debugLog, toLocaleNumber } from '$utils';
 import { useDispatch } from 'react-redux';
 import { Toast } from '$store';
 
 export type DeployModalProps = {
   params: DeployParams;
   responseOptions: TxResponseOptions;
-}
+};
 
 export const DeployModal: FC<DeployModalProps> = (props) => {
   const { address, amount, text } = props.params;
-  
+
   const t = useTranslator();
   const dispatch = useDispatch();
   const bottomSheetRef = useRef<BottomSheetRef>(null);
@@ -38,9 +39,9 @@ export const DeployModal: FC<DeployModalProps> = (props) => {
       .deploy(props.params)
       .then((operation) => operation.estimateFee())
       .then((fee) => setFee(fee))
-      .catch((err) =>  {
+      .catch((err) => {
         Toast.fail(err);
-        debugLog('[deploy estimate fee]:', err)
+        debugLog('[deploy estimate fee]:', err);
       });
   }, []);
 
@@ -104,15 +105,9 @@ export const DeployModal: FC<DeployModalProps> = (props) => {
             <ListCell label={t('confirm_sending_fee')}>
               {toLocaleNumber(fee)} TON
             </ListCell>
-            {!!text && (
-              <ListCell label={t('confirm_sending_message')}>{text}</ListCell>
-            )}
+            {!!text && <ListCell label={t('confirm_sending_message')}>{text}</ListCell>}
           </List>
-          <S.SendButton 
-            isLoading={isSending} 
-            onPress={confirm}
-            disabled={fee === '~'}
-          >
+          <S.SendButton isLoading={isSending} onPress={confirm} disabled={fee === '~'}>
             {t('deploy_contract_button')}
           </S.SendButton>
         </S.ListWrap>

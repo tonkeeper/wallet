@@ -1,15 +1,15 @@
 import React from 'react';
-import { openJetton, openJettonsList, openWallet } from "$navigation";
-import { CryptoCurrencies, LockupNames } from "$shared/constants";
-import { walletActions } from "$store/wallet";
-import { Steezy } from "$styles";
-import { t } from "$translation";
-import { Button, View } from "$uikit";
-import { List } from "$uikit/List/new";
-import { TonIcon } from "../../../components/TonIcon";
-import { memo, useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { ListItemRate } from "./ListItemRate";
+import { openJetton, openJettonsList, openWallet } from '$navigation';
+import { CryptoCurrencies, LockupNames } from '$shared/constants';
+import { walletActions } from '$store/wallet';
+import { Steezy } from '$styles';
+import { t } from '$translation';
+import { Button, View } from '$uikit';
+import { List } from '$uikit';
+import { TonIcon } from '../../../components/TonIcon';
+import { memo, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
+import { ListItemRate } from './ListItemRate';
 
 interface TokenListProps {
   tokens: any; // TODO: add types
@@ -20,14 +20,17 @@ interface TokenListProps {
 export const TokenList = memo<TokenListProps>(({ tokens, balance, rates }) => {
   const dispatch = useDispatch();
 
-  const handleMigrate = useCallback((fromVersion: string) => () => {
-    dispatch(
-      walletActions.openMigration({
-        isTransfer: true,
-        fromVersion,
-      }),
-    );
-  }, []);
+  const handleMigrate = useCallback(
+    (fromVersion: string) => () => {
+      dispatch(
+        walletActions.openMigration({
+          isTransfer: true,
+          fromVersion,
+        }),
+      );
+    },
+    [],
+  );
 
   return (
     <View>
@@ -47,7 +50,7 @@ export const TokenList = memo<TokenListProps>(({ tokens, balance, rates }) => {
           }
         />
         {balance.lockup.map((item, key) => (
-           <List.Item
+          <List.Item
             key={`lockup-${key}`}
             title={LockupNames[item.type]}
             value={item.amount.formatted}
@@ -57,7 +60,7 @@ export const TokenList = memo<TokenListProps>(({ tokens, balance, rates }) => {
           />
         ))}
         {balance.oldVersions.map((item, key) => (
-          <List.Item 
+          <List.Item
             key={`old-balance-${key}`}
             onPress={handleMigrate(item.version)}
             title={t('wallet.old_wallet_title')}
@@ -74,7 +77,7 @@ export const TokenList = memo<TokenListProps>(({ tokens, balance, rates }) => {
           />
         ))}
         {tokens.list.map((item) => (
-          <List.Item 
+          <List.Item
             key={item.address.rawAddress}
             onPress={() => openJetton(item.address.rawAddress)}
             picture={item.iconUrl}
@@ -95,7 +98,7 @@ export const TokenList = memo<TokenListProps>(({ tokens, balance, rates }) => {
       </List>
       {tokens.canEdit && (
         <View style={styles.tonkensEdit}>
-          <Button 
+          <Button
             onPress={() => openJettonsList()}
             size="medium_rounded"
             mode="secondary"
@@ -105,13 +108,13 @@ export const TokenList = memo<TokenListProps>(({ tokens, balance, rates }) => {
         </View>
       )}
     </View>
-  )
+  );
 });
 
 const styles = Steezy.create({
   tonkensEdit: {
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    marginBottom: 16
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
   },
 });

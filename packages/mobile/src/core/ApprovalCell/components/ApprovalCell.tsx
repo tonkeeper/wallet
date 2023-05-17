@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Steezy } from '$styles';
-import { Icon, Spacer, SText, View } from '$uikit';
-import { List } from '$uikit/List/new';
+import { Icon, Spacer, SText, View, List } from '$uikit';
 import { openManageTokens } from '$navigation';
 import { t } from '$translation';
 import { useApprovedNfts, useJettonBalances } from '$hooks';

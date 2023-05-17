@@ -1,7 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '$translation';
-import { Button, Screen, Spacer, SpacerSizes, View } from '$uikit';
-import { List } from '$uikit/List/new';
+import { List, Screen, Spacer, SpacerSizes, View } from '$uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -14,7 +13,7 @@ import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { Tabs } from '../components/Tabs';
 import { NFTsList } from '../components/NFTsList';
 import { useTheme } from '$hooks';
-import { ListSeparator } from '$uikit/List/new/ListSeparator';
+import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StakingWidget } from './StakingWidget';
 
 enum ContentType {
@@ -29,7 +28,7 @@ type TokenItem = {
   type: ContentType.Token;
 
   isFirst?: boolean;
-  isLast?: boolean
+  isLast?: boolean;
 
   onPress?: () => void;
   title: string;
@@ -45,16 +44,16 @@ type TokenItem = {
 type SpacerItem = {
   type: ContentType.Spacer;
   bottom: SpacerSizes;
-}
+};
 
 type NFTCardsRowItem = {
   type: ContentType.NFTCardsRow;
   items: any; // TODO:
-}
+};
 
 type StakingItem = {
   type: ContentType.Staking;
-}
+};
 
 type Content = TokenItem | SpacerItem | NFTCardsRowItem | StakingItem;
 
@@ -72,7 +71,7 @@ const RenderItem = ({ item }: { item: Content }) => {
       const containerStyle = [
         item.isFirst && styles.firstListItem,
         item.isLast && styles.lastListItem,
-        styles.containerListItem
+        styles.containerListItem,
       ];
 
       return (
@@ -101,22 +100,19 @@ const RenderItem = ({ item }: { item: Content }) => {
         </View>
       );
     case ContentType.Spacer:
-      return <Spacer y={item.bottom}/>;
+      return <Spacer y={item.bottom} />;
     case ContentType.NFTCardsRow:
-      return (
-        <NFTsList nfts={item.items} />
-      );
-    case ContentType.Staking: 
-      return <StakingWidget />
+      return <NFTsList nfts={item.items} />;
+    case ContentType.Staking:
+      return <StakingWidget />;
   }
 };
 
-
 interface BalancesListProps {
-  tokens: any; // TODO: 
-  balance: any; // TODO: 
+  tokens: any; // TODO:
+  balance: any; // TODO:
   rates: Rate;
-  nfts?: any;// TODO: 
+  nfts?: any; // TODO:
   handleRefresh: () => void;
   isRefreshing: boolean;
   isFocused: boolean;
@@ -124,149 +120,151 @@ interface BalancesListProps {
 }
 
 // See https://shopify.github.io/flash-list/docs/fundamentals/performant-components#getitemtype
-export const BalancesList = memo<BalancesListProps>(({ 
-  tokens, 
-  balance, 
-  rates, 
-  nfts, 
-  handleRefresh,
-  isRefreshing,
-  isFocused,
-  ListHeaderComponent
-}) => {
-  const theme = useTheme();
-  const dispatch = useDispatch();
-  
+export const BalancesList = memo<BalancesListProps>(
+  ({
+    tokens,
+    balance,
+    rates,
+    nfts,
+    handleRefresh,
+    isRefreshing,
+    isFocused,
+    ListHeaderComponent,
+  }) => {
+    const theme = useTheme();
+    const dispatch = useDispatch();
 
-  const handleMigrate = useCallback(
-    (fromVersion: string) => () => {
-      dispatch(
-        walletActions.openMigration({
-          isTransfer: true,
-          fromVersion,
-        }),
-      );
-    },
-    [],
-  );
-
-  const data = useMemo(() => {
-    const content: Content[] = [];
-
-    // Tokens
-    content.push({
-      type: ContentType.Token,
-      title: 'Toncoin',
-      onPress: () => openWallet(CryptoCurrencies.Ton),
-      value: balance.ton.amount.formatted,
-      subvalue: balance.ton.amount.fiat,
-      tonIcon: true,
-      rate: {
-        percent: rates.percent,
-        price: rates.price,
-        trend: rates.trend,
+    const handleMigrate = useCallback(
+      (fromVersion: string) => () => {
+        dispatch(
+          walletActions.openMigration({
+            isTransfer: true,
+            fromVersion,
+          }),
+        );
       },
-    });
+      [],
+    );
 
-    content.push(
-      ...balance.oldVersions.map((item) => ({
+    const data = useMemo(() => {
+      const content: Content[] = [];
+
+      // Tokens
+      content.push({
         type: ContentType.Token,
-        onPress: handleMigrate(item.version),
-        title: t('wallet.old_wallet_title'),
-        tonIcon: { transparent: true },
-        value: item.amount.formatted,
-        subvalue: item.amount.fiat,
+        title: 'Toncoin',
+        onPress: () => openWallet(CryptoCurrencies.Ton),
+        value: balance.ton.amount.formatted,
+        subvalue: balance.ton.amount.fiat,
+        tonIcon: true,
         rate: {
           percent: rates.percent,
           price: rates.price,
           trend: rates.trend,
         },
-      })),
-    );
-
-    if (balance.lockup.length > 0) {
-      content.push(
-        ...balance.lockup.map((item) => ({
-          type: ContentType.Token,
-          tonIcon: { locked: true },
-          title: LockupNames[item.type],
-          value: item.amount.formatted,
-          subvalue: item.amount.fiat,
-          subtitle: rates.price,
-        })),
-      );
-    }
-
-    content.push(
-      ...tokens.list.map((item) => ({
-        type: ContentType.Token,
-        onPress: () => openJetton(item.address.rawAddress),
-        picture: item.iconUrl,
-        title: item.name,
-        value: item.quantity.formatted,
-        label: item.symbol,
-        subvalue: item.rate.total,
-        rate: item.rate.price ? {
-          price: item.rate.price
-        } : undefined
-      }))
-    );
-
-    
-    const firstTonkenElement = content[0] as TokenItem;
-    const lastTokenElement = content[content.length - 1] as TokenItem;
-
-    // Make list; set corners
-    firstTonkenElement.isFirst = true;
-    lastTokenElement.isLast = true;
-
-    content.push({
-      type: ContentType.Staking
-    });
-
-    if (nfts) {
-      content.push({
-        type: ContentType.Spacer,
-        bottom: 32,
       });
 
-      const numColumns = 3;
-      for (let i = 0; i < Math.ceil(nfts.length / numColumns); i++) {
-        content.push({ 
-          type: ContentType.NFTCardsRow,
-          items: nfts.slice((i * numColumns), (i * numColumns) + numColumns)
-        })
+      content.push(
+        ...balance.oldVersions.map((item) => ({
+          type: ContentType.Token,
+          onPress: handleMigrate(item.version),
+          title: t('wallet.old_wallet_title'),
+          tonIcon: { transparent: true },
+          value: item.amount.formatted,
+          subvalue: item.amount.fiat,
+          rate: {
+            percent: rates.percent,
+            price: rates.price,
+            trend: rates.trend,
+          },
+        })),
+      );
+
+      if (balance.lockup.length > 0) {
+        content.push(
+          ...balance.lockup.map((item) => ({
+            type: ContentType.Token,
+            tonIcon: { locked: true },
+            title: LockupNames[item.type],
+            value: item.amount.formatted,
+            subvalue: item.amount.fiat,
+            subtitle: rates.price,
+          })),
+        );
       }
-    }
 
-    content.push({
-      type: ContentType.Spacer,
-      bottom: 12
-    });
+      content.push(
+        ...tokens.list.map((item) => ({
+          type: ContentType.Token,
+          onPress: () => openJetton(item.address.rawAddress),
+          picture: item.iconUrl,
+          title: item.name,
+          value: item.quantity.formatted,
+          label: item.symbol,
+          subvalue: item.rate.total,
+          rate: item.rate.price
+            ? {
+                price: item.rate.price,
+              }
+            : undefined,
+        })),
+      );
 
-    return content;
-  }, [balance.oldVersions, rates, tokens.list]);
+      const firstTonkenElement = content[0] as TokenItem;
+      const lastTokenElement = content[content.length - 1] as TokenItem;
 
-  const ListComponent = nfts ? Screen.FlashList : Tabs.FlashList;
+      // Make list; set corners
+      firstTonkenElement.isFirst = true;
+      lastTokenElement.isLast = true;
 
-  return (
-    <ListComponent
-      ListHeaderComponent={ListHeaderComponent}
-      getItemType={(item) => item.type}
-      renderItem={RenderItem}
-      estimatedItemSize={500}
-      data={data}
-      refreshControl={
-        <RefreshControl
-          onRefresh={handleRefresh}
-          refreshing={isRefreshing && isFocused}
-          tintColor={theme.colors.foregroundPrimary}
-          progressBackgroundColor={theme.colors.foregroundPrimary}
-        />
+      content.push({
+        type: ContentType.Staking,
+      });
+
+      if (nfts) {
+        content.push({
+          type: ContentType.Spacer,
+          bottom: 32,
+        });
+
+        const numColumns = 3;
+        for (let i = 0; i < Math.ceil(nfts.length / numColumns); i++) {
+          content.push({
+            type: ContentType.NFTCardsRow,
+            items: nfts.slice(i * numColumns, i * numColumns + numColumns),
+          });
+        }
       }
-    />
-  );
-});
+
+      content.push({
+        type: ContentType.Spacer,
+        bottom: 12,
+      });
+
+      return content;
+    }, [balance.oldVersions, rates, tokens.list]);
+
+    const ListComponent = nfts ? Screen.FlashList : Tabs.FlashList;
+
+    return (
+      <ListComponent
+        ListHeaderComponent={ListHeaderComponent}
+        getItemType={(item) => item.type}
+        renderItem={RenderItem}
+        estimatedItemSize={500}
+        data={data}
+        refreshControl={
+          <RefreshControl
+            onRefresh={handleRefresh}
+            refreshing={isRefreshing && isFocused}
+            tintColor={theme.colors.foregroundPrimary}
+            progressBackgroundColor={theme.colors.foregroundPrimary}
+          />
+        }
+      />
+    );
+  },
+);
 
 const styles = Steezy.create(({ colors, corners }) => ({
   firstListItem: {
