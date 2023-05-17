@@ -24,6 +24,7 @@ import { Address } from 'tonweb/dist/types/utils/address';
 import { t } from '$translation';
 import { Ton } from '$libs/Ton';
 import { getServerConfig } from '$shared/constants';
+import { AccountEvent, Configuration, SendApi } from 'tonapi-sdk-js';
 import axios from 'axios';
 import { Tonapi } from '$libs/Tonapi';
 import { AccountEvent, Configuration, NFTApi, BlockchainApi } from '@tonkeeper/core';
@@ -45,11 +46,11 @@ export class NFTOperations {
     }),
   );
 
-  private blockchainApi = new BlockchainApi(
+  private sendApi = new SendApi(
     new Configuration({
-      basePath: getServerConfig('tonapiV2Endpoint'),
+      basePath: getServerConfig('tonapiIOEndpoint'),
       headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
       },
     }),
   );
@@ -61,13 +62,13 @@ export class NFTOperations {
     this.wallet = wallet;
 
     const tonApiConfiguration = new Configuration({
-      basePath: getServerConfig('tonapiV2Endpoint'),
+      basePath: getServerConfig('tonapiIOEndpoint'),
       headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
       },
     });
 
-    this.blockchainApi = new BlockchainApi(tonApiConfiguration);
+    this.sendApi = new SendApi(tonApiConfiguration);
 
     this.getMyAddresses();
   }
@@ -405,16 +406,16 @@ export class NFTOperations {
         const queryMsg = await methods.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
 
-        const endpoint = getServerConfig('tonapiV2Endpoint');
+        const endpoint = getServerConfig('tonapiIOEndpoint');
 
         const resp = await axios.post(
-          `${endpoint}/v2/blockchain/message/emulate`,
+          `${endpoint}/v1/send/estimateTx`,
           {
             boc: boc,
           },
           {
             headers: {
-              Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+              Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
             },
           },
         );
@@ -437,9 +438,7 @@ export class NFTOperations {
         const queryMsg = await methods.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
 
-        const response = await this.blockchainApi.sendMessage({
-          sendMessageRequest: { boc },
-        });
+        const response = await this.sendApi.sendBoc({ sendBocRequest: { boc } });
 
         onDone?.(boc);
 
@@ -559,7 +558,7 @@ export class NFTOperations {
         const queryMsg = await transfer.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
 
-        await this.blockchainApi.sendMessage({ sendMessageRequest: { boc } });
+        await this.sendApi.sendBoc({ sendBocRequest: { boc } });
       },
     };
   }
