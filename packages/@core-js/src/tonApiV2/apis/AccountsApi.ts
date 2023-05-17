@@ -67,6 +67,7 @@ export interface GetAccountsOperationRequest {
 export interface GetEventsByAccountRequest {
     accountId: string;
     limit: number;
+    acceptLanguage?: string;
     beforeLt?: number;
     startDate?: number;
     endDate?: number;
@@ -79,6 +80,7 @@ export interface GetJettonsBalancesRequest {
 export interface GetJettonsHistoryRequest {
     accountId: string;
     limit: number;
+    acceptLanguage?: string;
     beforeLt?: number;
     startDate?: number;
     endDate?: number;
@@ -88,6 +90,7 @@ export interface GetJettonsHistoryByIDRequest {
     accountId: string;
     jettonId: string;
     limit: number;
+    acceptLanguage?: string;
     beforeLt?: number;
     startDate?: number;
     endDate?: number;
@@ -163,9 +166,10 @@ export interface AccountsApiInterface {
     getAccounts(requestParameters: GetAccountsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Accounts>;
 
     /**
-     * Get events for account
+     * Get events for an account. Each event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      * @param {string} accountId account ID
      * @param {number} limit 
+     * @param {string} [acceptLanguage] 
      * @param {number} [beforeLt] omit this parameter to get last events
      * @param {number} [startDate] 
      * @param {number} [endDate] 
@@ -176,7 +180,7 @@ export interface AccountsApiInterface {
     getEventsByAccountRaw(requestParameters: GetEventsByAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AccountEvents>>;
 
     /**
-     * Get events for account
+     * Get events for an account. Each event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      */
     getEventsByAccount(requestParameters: GetEventsByAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AccountEvents>;
 
@@ -198,6 +202,7 @@ export interface AccountsApiInterface {
      * Get the transfer jettons history for account_id
      * @param {string} accountId account ID
      * @param {number} limit 
+     * @param {string} [acceptLanguage] 
      * @param {number} [beforeLt] omit this parameter to get last events
      * @param {number} [startDate] 
      * @param {number} [endDate] 
@@ -217,6 +222,7 @@ export interface AccountsApiInterface {
      * @param {string} accountId account ID
      * @param {string} jettonId jetton ID
      * @param {number} limit 
+     * @param {string} [acceptLanguage] 
      * @param {number} [beforeLt] omit this parameter to get last events
      * @param {number} [startDate] 
      * @param {number} [endDate] 
@@ -388,7 +394,7 @@ export class AccountsApi extends runtime.BaseAPI implements AccountsApiInterface
     }
 
     /**
-     * Get events for account
+     * Get events for an account. Each event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      */
     async getEventsByAccountRaw(requestParameters: GetEventsByAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AccountEvents>> {
         if (requestParameters.accountId === null || requestParameters.accountId === undefined) {
@@ -419,6 +425,10 @@ export class AccountsApi extends runtime.BaseAPI implements AccountsApiInterface
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (requestParameters.acceptLanguage !== undefined && requestParameters.acceptLanguage !== null) {
+            headerParameters['Accept-Language'] = String(requestParameters.acceptLanguage);
+        }
+
         const response = await this.request({
             path: `/v2/accounts/{account_id}/events`.replace(`{${"account_id"}}`, encodeURIComponent(String(requestParameters.accountId))),
             method: 'GET',
@@ -430,7 +440,7 @@ export class AccountsApi extends runtime.BaseAPI implements AccountsApiInterface
     }
 
     /**
-     * Get events for account
+     * Get events for an account. Each event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      */
     async getEventsByAccount(requestParameters: GetEventsByAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AccountEvents> {
         const response = await this.getEventsByAccountRaw(requestParameters, initOverrides);
@@ -499,6 +509,10 @@ export class AccountsApi extends runtime.BaseAPI implements AccountsApiInterface
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (requestParameters.acceptLanguage !== undefined && requestParameters.acceptLanguage !== null) {
+            headerParameters['Accept-Language'] = String(requestParameters.acceptLanguage);
+        }
+
         const response = await this.request({
             path: `/v2/accounts/{account_id}/jettons/history`.replace(`{${"account_id"}}`, encodeURIComponent(String(requestParameters.accountId))),
             method: 'GET',
@@ -552,6 +566,10 @@ export class AccountsApi extends runtime.BaseAPI implements AccountsApiInterface
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters.acceptLanguage !== undefined && requestParameters.acceptLanguage !== null) {
+            headerParameters['Accept-Language'] = String(requestParameters.acceptLanguage);
+        }
 
         const response = await this.request({
             path: `/v2/accounts/{account_id}/jettons/{jetton_id}/history`.replace(`{${"account_id"}}`, encodeURIComponent(String(requestParameters.accountId))).replace(`{${"jetton_id"}}`, encodeURIComponent(String(requestParameters.jettonId))),

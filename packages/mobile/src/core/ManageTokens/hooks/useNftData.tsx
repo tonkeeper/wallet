@@ -22,19 +22,20 @@ const baseNftCellData = (nft: NFTModel) => ({
   imageStyle: {
     borderRadius: 8,
   },
-  subtitle: nft.collectionAddress
+  subtitle: nft.collection
     ? t('approval.token_count', { count: nft.count })
     : t('approval.single_token'),
   onPress: () =>
     openApproveTokenModal({
       imageType: ImageType.SQUARE,
-      type: nft.collectionAddress
+      type: nft.collection?.address
         ? TokenApprovalType.Collection
         : TokenApprovalType.Token,
       verification: nft.isApproved
         ? JettonVerification.WHITELIST
         : JettonVerification.NONE,
-      tokenAddress: nft.collectionAddress || new Address(nft.address).toString(false),
+      tokenAddress:
+        nft.collection?.addressRaw || new Address(nft.address).toString(false),
       image: nft.content.image.baseUrl,
       name: nft.collection?.name,
     }),
@@ -42,7 +43,7 @@ const baseNftCellData = (nft: NFTModel) => ({
 
 function groupByCollection(nftItems: NFTModel[]): (NFTModel & { count: number })[] {
   const grouped = nftItems.reduce((acc, nft) => {
-    const uniqAddress = nft.collectionAddress || nft.address;
+    const uniqAddress = nft.collection?.address || nft.address;
     if (!acc[uniqAddress]) {
       acc[uniqAddress] = {
         ...nft,
@@ -112,9 +113,10 @@ export function useNftData() {
                     type="remove"
                     onPress={() =>
                       updateTokenStatus(
-                        nft.collectionAddress || new Address(nft.address).toString(false),
+                        nft.collection?.address ||
+                          new Address(nft.address).toString(false),
                         TokenApprovalStatus.Declined,
-                        nft.collectionAddress
+                        nft.collection?.address
                           ? TokenApprovalType.Collection
                           : TokenApprovalType.Token,
                       )
@@ -154,9 +156,10 @@ export function useNftData() {
                     type="add"
                     onPress={() =>
                       updateTokenStatus(
-                        nft.collectionAddress || new Address(nft.address).toString(false),
+                        nft.collection?.address ||
+                          new Address(nft.address).toString(false),
                         TokenApprovalStatus.Approved,
-                        nft.collectionAddress
+                        nft.collection?.address
                           ? TokenApprovalType.Collection
                           : TokenApprovalType.Token,
                       )

@@ -49,7 +49,7 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     appsflyerAppId: data.appsflyerAppId,
     tonNFTsMarketplaceEndpoint: data.tonNFTsMarketplaceEndpoint,
     tonapiIOEndpoint: data.tonapiIOEndpoint || 'https://keeper.tonapi.io',
-    tonapiV2Endpoint: data.tonapiV2Endpoint || 'https://keeper.tonapi.io',
+    tonapiV2Endpoint: data.tonapiV2Endpoint || 'https://tonapi.io',
     tonApiKey: data.tonApiKey,
     tonApiV2Key: data.tonApiV2Key,
     subscriptionsHost: data.subscriptionsHost || 'https://api.tonkeeper.com',
