@@ -35,7 +35,7 @@ import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
 import { openTimeNotSyncedModal } from '$core/ModalContainer/TimeNotSynced/TimeNotSynced';
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 import { openTonConnect } from '$core/TonConnect/TonConnectModal';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { jettonsBalancesSelector } from '$store/jettons';
 import BigNumber from 'bignumber.js';
@@ -345,7 +345,7 @@ export function useDeeplinkingResolvers() {
         break;
       case 'sign-raw-payload':
         const { params, ...options } = txBody;
-        openSignRawModal(params, options);
+        await openSignRawModal(params, options);
         break;
       case 'deploy':
         openDeploy(txBody);
@@ -353,8 +353,14 @@ export function useDeeplinkingResolvers() {
     }
   };
 
+  const prevTxRequestPath = useRef('');
   deeplinking.add('/v1/txrequest-url/*', async ({ params }) => {
     try {
+      if (params.path === prevTxRequestPath.current) {
+        return;
+      }
+
+      prevTxRequestPath.current = params.path;
       Toast.loading();
 
       const { data } = await axios.get(`https://${params.path}`);
@@ -376,6 +382,10 @@ export function useDeeplinkingResolvers() {
 
       debugLog('[txrequest-url]', err);
       Toast.fail(message);
+    } finally {
+      setTimeout(() => {
+        prevTxRequestPath.current = '';
+      }, 1000)
     }
   });
 
