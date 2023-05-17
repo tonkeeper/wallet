@@ -1,5 +1,5 @@
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
-import { Ton } from '$libs/Ton';
+import { Address, Ton } from '$libs/Ton';
 import { encodeBytes } from '$utils/base64';
 import { PoolInfo } from '@tonkeeper/core';
 import BN from 'bn.js';
@@ -34,7 +34,7 @@ export const createWhalesWithdrawStakeCell = async (amount: BN) => {
 export const createTfAddStakeCommand = async () => {
   const addStakeCommand = new Cell();
   addStakeCommand.bits.writeUint(0, 32);
-  addStakeCommand.bits.writeString("d");
+  addStakeCommand.bits.writeString('d');
 
   return encodeBytes(await addStakeCommand.toBoc());
 };
@@ -42,7 +42,7 @@ export const createTfAddStakeCommand = async () => {
 export const createTfWithdrawStakeCell = async () => {
   const addStakeCommand = new Cell();
   addStakeCommand.bits.writeUint(0, 32);
-  addStakeCommand.bits.writeString("w");
+  addStakeCommand.bits.writeString('w');
 
   return encodeBytes(await addStakeCommand.toBoc());
 };
@@ -55,6 +55,8 @@ export const getStakeSignRawMessage = async (
 ): Promise<SignRawMessage> => {
   const withdrawalFee = getWithdrawalFee(pool);
 
+  const address = new Address(pool.address).format({ bounce: true });
+
   if (pool.implementation === 'whales') {
     const payload =
       transactionType === StakingTransactionType.DEPOSIT
@@ -62,7 +64,7 @@ export const getStakeSignRawMessage = async (
         : await createWhalesWithdrawStakeCell(isWithdrawAll ? Ton.toNano(0) : amount);
 
     return {
-      address: pool.address,
+      address,
       amount: transactionType === StakingTransactionType.DEPOSIT ? amount : withdrawalFee,
       payload,
     };
@@ -75,7 +77,7 @@ export const getStakeSignRawMessage = async (
         : await createTfWithdrawStakeCell();
 
     return {
-      address: pool.address,
+      address,
       amount: transactionType === StakingTransactionType.DEPOSIT ? amount : withdrawalFee,
       payload,
     };
