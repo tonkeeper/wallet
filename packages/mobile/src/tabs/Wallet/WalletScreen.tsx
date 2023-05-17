@@ -294,7 +294,7 @@ export const WalletScreen = memo(() => {
     return <Screen>{renderEmpty()}</Screen>;
   } else if (tokens.list.length <= 2) {
     return <Screen>{renderCompact()}</Screen>;
-  } else if (tokens.list.length + nfts.length + 1 > 10) {
+  } else if (nfts.length && tokens.list.length + nfts.length + 1 > 10) {
     return <Screen>{renderTabs()}</Screen>;
   } else {
     return <Screen>{renderCompact()}</Screen>;
