@@ -18,8 +18,8 @@ export const checkIsTonDiamondsNFT = (
     return false;
   }
 
-  const collectionAddress = nft.collectionAddress
-    ? new TonWeb.utils.Address(nft.collectionAddress).toString(true, true, true)
+  const collectionAddress = nft.collection?.address
+    ? new TonWeb.utils.Address(nft.collection.address).toString(true, true, true)
     : '';
 
   return (
@@ -33,8 +33,8 @@ export const checkIsTelegramNumbersNFT = (nft: NFTModel): boolean => {
     return false;
   }
 
-  const collectionAddress = nft.collectionAddress
-    ? new TonWeb.utils.Address(nft.collectionAddress).toString(true, true, true)
+  const collectionAddress = nft.collection?.address
+    ? new TonWeb.utils.Address(nft.collection.address).toString(true, true, true)
     : '';
 
   return collectionAddress === getTelegramNumbersCollectionAddress();

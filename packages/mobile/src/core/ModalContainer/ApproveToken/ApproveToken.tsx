@@ -17,6 +17,7 @@ import * as S from '$core/ModalContainer/NFTOperations/NFTOperations.styles';
 import FastImage from 'react-native-fast-image';
 import { Toast } from '$store';
 import Clipboard from '@react-native-community/clipboard';
+import { Address } from '$libs/Ton';
 
 export enum ImageType {
   ROUND = 'round',
@@ -201,7 +202,10 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
                     : t('approval.collection_id')}
                 </S.DetailItemLabel>
                 <S.DetailItemValueText>
-                  {maskifyAddress(props.tokenAddress, 6)}
+                  {maskifyAddress(
+                    new Address(props.tokenAddress).toString(true, true, true),
+                    6,
+                  )}
                 </S.DetailItemValueText>
               </S.DetailItem>
               <Icon style={styles.copyIcon.static} name={'ic-copy-16'} />

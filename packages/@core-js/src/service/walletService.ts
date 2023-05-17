@@ -1,9 +1,4 @@
-import {
-  Address,
-  WalletContractV3R1,
-  WalletContractV3R2,
-  WalletContractV4,
-} from 'ton';
+import { Address, WalletContractV3R1, WalletContractV3R2, WalletContractV4 } from 'ton';
 import { KeyPair, mnemonicToPrivateKey } from 'ton-crypto';
 import { WalletAddress, WalletState, WalletVersion } from '../entries/wallet';
 import { AppKey } from '../Keys';
@@ -23,7 +18,7 @@ export const importWallet = async (
   tonApiConfig: Configuration,
   mnemonic: string[],
   password: string,
-  name?: string
+  name?: string,
 ): Promise<readonly [string, WalletState]> => {
   const encryptedMnemonic = await encrypt(mnemonic.join(' '), password);
   const keyPair = await mnemonicToPrivateKey(mnemonic);
@@ -71,18 +66,13 @@ const findWalletVersion = (interfaces: string[]): WalletVersion => {
   throw new Error('Unexpected wallet version');
 };
 
-const findWalletAddress = async (
-  tonApiConfig: Configuration,
-  keyPair: KeyPair
-) => {
+const findWalletAddress = async (tonApiConfig: Configuration, keyPair: KeyPair) => {
   const result = await new WalletApi(tonApiConfig).findWalletsByPubKey({
     publicKey: keyPair.publicKey.toString('hex'),
   });
 
   const activeWallet = result.wallets.find((wallet) => {
-    if (
-      wallet.interfaces.some((value) => Object.keys(versionMap).includes(value))
-    ) {
+    if (wallet.interfaces.some((value) => Object.keys(versionMap).includes(value))) {
       return wallet.balance > 0 || wallet.status === 'active';
     }
     return false;
@@ -111,10 +101,7 @@ const findWalletAddress = async (
   return wallet;
 };
 
-export const getWalletContract = (
-  publicKey: Buffer,
-  version: WalletVersion
-) => {
+export const getWalletContract = (publicKey: Buffer, version: WalletVersion) => {
   switch (version) {
     case WalletVersion.v3R1:
       return WalletContractV3R1.create({
@@ -137,7 +124,7 @@ export const getWalletContract = (
 };
 export const getWalletAddress = (
   publicKey: Buffer,
-  version: WalletVersion
+  version: WalletVersion,
 ): WalletAddress => {
   const { address } = getWalletContract(publicKey, version);
   return {
@@ -150,7 +137,7 @@ export const getWalletAddress = (
 export const updateWalletVersion = async (
   storage: IStorage,
   wallet: WalletState,
-  version: WalletVersion
+  version: WalletVersion,
 ) => {
   const updated: WalletState = {
     ...wallet,
@@ -166,15 +153,8 @@ export const updateWalletProperty = async (
   wallet: WalletState,
   props: Pick<
     WalletState,
-    | 'name'
-    | 'hiddenJettons'
-    | 'shownJettons'
-    | 'orderJettons'
-    | 'lang'
-    | 'fiat'
-    | 'network'
-    | 'voucher'
-  >
+    'name' | 'sortedJettons' | 'lang' | 'fiat' | 'network' | 'voucher'
+  >,
 ) => {
   const updated: WalletState = {
     ...wallet,
@@ -188,7 +168,7 @@ export const updateWalletProperty = async (
       tonApi,
       updated.publicKey,
       updated.voucher,
-      createWalletBackup(updated)
+      createWalletBackup(updated),
     );
   }
 };
@@ -209,7 +189,7 @@ export const addWalletVoucher = async (
   tonApi: Configuration,
   storage: IStorage,
   wallet: WalletState,
-  password: string
+  password: string,
 ) => {
   const mnemonic = await getWalletMnemonic(storage, wallet.publicKey, password);
   const keyPair = await mnemonicToPrivateKey(mnemonic);
@@ -221,7 +201,7 @@ export const addWalletVoucher = async (
 export const deleteWalletVoucher = async (
   tonApi: Configuration,
   storage: IStorage,
-  wallet: WalletState
+  wallet: WalletState,
 ) => {
   if (wallet.voucher) {
     try {

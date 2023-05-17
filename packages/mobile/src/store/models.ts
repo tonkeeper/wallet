@@ -212,14 +212,11 @@ export interface ExchangeMethodModel {
 export interface CollectionModel {
   ownerAddressToDisplay?: string;
   name: string;
-  description: string;
+  description?: string;
   address: string;
-  addressRaw: string;
-  getGemsModerated?: boolean;
 }
 
 export interface NFTModel<MetaData = {}> {
-  collectionAddress?: string;
   dns?: string;
   verified?: boolean;
   currency: CryptoCurrency;

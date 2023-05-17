@@ -1,6 +1,7 @@
 .openapi-generator-ignore
 apis/AccountsApi.ts
 apis/BlockchainApi.ts
+apis/ConnectApi.ts
 apis/DNSApi.ts
 apis/EventsApi.ts
 apis/JettonsApi.ts
@@ -9,6 +10,7 @@ apis/RatesApi.ts
 apis/StakingApi.ts
 apis/StorageApi.ts
 apis/TracesApi.ts
+apis/WalletApi.ts
 apis/index.ts
 index.ts
 models/AccStatusChange.ts
@@ -46,6 +48,8 @@ models/GetAccountsRequest.ts
 models/GetBlock401Response.ts
 models/GetRates200Response.ts
 models/GetStorageProviders200Response.ts
+models/GetTonConnectPayload200Response.ts
+models/GetWalletBackup200Response.ts
 models/ImagePreview.ts
 models/JettonBalance.ts
 models/JettonInfo.ts
@@ -80,6 +84,10 @@ models/StorageProvider.ts
 models/Subscription.ts
 models/SubscriptionAction.ts
 models/Subscriptions.ts
+models/TonConnectProof200Response.ts
+models/TonConnectProofRequest.ts
+models/TonConnectProofRequestProof.ts
+models/TonConnectProofRequestProofDomain.ts
 models/TonTransferAction.ts
 models/Trace.ts
 models/TraceId.ts
@@ -91,6 +99,8 @@ models/TvmStackRecord.ts
 models/UnSubscriptionAction.ts
 models/Validator.ts
 models/Validators.ts
+models/ValueFlow.ts
+models/ValueFlowNftsInner.ts
 models/WalletDNS.ts
 models/index.ts
 runtime.ts

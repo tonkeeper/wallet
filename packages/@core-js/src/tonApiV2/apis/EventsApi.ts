@@ -27,6 +27,7 @@ import {
 
 export interface GetEventRequest {
     eventId: string;
+    acceptLanguage?: string;
 }
 
 /**
@@ -37,8 +38,9 @@ export interface GetEventRequest {
  */
 export interface EventsApiInterface {
     /**
-     * Get the event by event ID or hash of any transaction in trace
+     * Get an event either by event ID or a hash of any transaction in a trace. An event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      * @param {string} eventId event ID or transaction hash in hex (without 0x) or base64url format
+     * @param {string} [acceptLanguage] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApiInterface
@@ -46,7 +48,7 @@ export interface EventsApiInterface {
     getEventRaw(requestParameters: GetEventRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Event>>;
 
     /**
-     * Get the event by event ID or hash of any transaction in trace
+     * Get an event either by event ID or a hash of any transaction in a trace. An event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      */
     getEvent(requestParameters: GetEventRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Event>;
 
@@ -58,7 +60,7 @@ export interface EventsApiInterface {
 export class EventsApi extends runtime.BaseAPI implements EventsApiInterface {
 
     /**
-     * Get the event by event ID or hash of any transaction in trace
+     * Get an event either by event ID or a hash of any transaction in a trace. An event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      */
     async getEventRaw(requestParameters: GetEventRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Event>> {
         if (requestParameters.eventId === null || requestParameters.eventId === undefined) {
@@ -68,6 +70,10 @@ export class EventsApi extends runtime.BaseAPI implements EventsApiInterface {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters.acceptLanguage !== undefined && requestParameters.acceptLanguage !== null) {
+            headerParameters['Accept-Language'] = String(requestParameters.acceptLanguage);
+        }
 
         const response = await this.request({
             path: `/v2/events/{event_id}`.replace(`{${"event_id"}}`, encodeURIComponent(String(requestParameters.eventId))),
@@ -80,7 +86,7 @@ export class EventsApi extends runtime.BaseAPI implements EventsApiInterface {
     }
 
     /**
-     * Get the event by event ID or hash of any transaction in trace
+     * Get an event either by event ID or a hash of any transaction in a trace. An event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      */
     async getEvent(requestParameters: GetEventRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Event> {
         const response = await this.getEventRaw(requestParameters, initOverrides);

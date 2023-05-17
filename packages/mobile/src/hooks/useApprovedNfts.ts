@@ -29,7 +29,7 @@ export function useApprovedNfts() {
     Object.values(myNfts).forEach((item) => {
       const approvalStatus =
         approvalStatuses[
-          item?.collectionAddress || new Address(item.address).toString(false)
+          item?.collection?.address || new Address(item.address).toString(false)
         ];
       if (
         (item.isApproved && !approvalStatus) ||

@@ -39,11 +39,8 @@ export class TonProvider extends BaseProvider {
         : collection.metadata?.name;
 
     return {
-      // @ts-ignore
-      getGemsModerated: collection.getGemsModerated, // TODO: ping Denis to implement
-      addressRaw: collection.address,
       description: collection?.metadata?.description,
-      address: new TonWeb.utils.Address(collection.address).toString(true, true, true),
+      address: collection.address,
       name,
     };
   }
@@ -129,6 +126,7 @@ export class TonProvider extends BaseProvider {
     let nft = nfts.nftItems[0];
     if (!nft) throw new Error('NFT item not loaded');
     let collection: CollectionModel | undefined;
+
     if (nft.collection) {
       collection = await this.loadCollection(nft.collection.address);
     }
@@ -168,7 +166,7 @@ export class TonProvider extends BaseProvider {
       address,
       name,
       ownerAddress,
-      collection,
+      collection: collection || nft.collection,
     };
   };
 

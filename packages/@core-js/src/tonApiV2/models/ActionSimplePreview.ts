@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { AccountAddress } from './AccountAddress';
+import {
+    AccountAddressFromJSON,
+    AccountAddressFromJSONTyped,
+    AccountAddressToJSON,
+} from './AccountAddress';
+
 /**
  * 
  * @export
@@ -24,25 +31,19 @@ export interface ActionSimplePreview {
      * @type {string}
      * @memberof ActionSimplePreview
      */
-    name: string;
+    description: string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof ActionSimplePreview
      */
-    shortDescription: string;
+    value?: number;
     /**
      * 
-     * @type {string}
+     * @type {Array<AccountAddress>}
      * @memberof ActionSimplePreview
      */
-    fullDescription: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ActionSimplePreview
-     */
-    image?: string;
+    accounts: Array<AccountAddress>;
 }
 
 /**
@@ -50,9 +51,8 @@ export interface ActionSimplePreview {
  */
 export function instanceOfActionSimplePreview(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "name" in value;
-    isInstance = isInstance && "shortDescription" in value;
-    isInstance = isInstance && "fullDescription" in value;
+    isInstance = isInstance && "description" in value;
+    isInstance = isInstance && "accounts" in value;
 
     return isInstance;
 }
@@ -67,10 +67,9 @@ export function ActionSimplePreviewFromJSONTyped(json: any, ignoreDiscriminator:
     }
     return {
         
-        'name': json['name'],
-        'shortDescription': json['short_description'],
-        'fullDescription': json['full_description'],
-        'image': !exists(json, 'image') ? undefined : json['image'],
+        'description': json['description'],
+        'value': !exists(json, 'value') ? undefined : json['value'],
+        'accounts': ((json['accounts'] as Array<any>).map(AccountAddressFromJSON)),
     };
 }
 
@@ -83,10 +82,9 @@ export function ActionSimplePreviewToJSON(value?: ActionSimplePreview | null): a
     }
     return {
         
-        'name': value.name,
-        'short_description': value.shortDescription,
-        'full_description': value.fullDescription,
-        'image': value.image,
+        'description': value.description,
+        'value': value.value,
+        'accounts': ((value.accounts as Array<any>).map(AccountAddressToJSON)),
     };
 }
 
