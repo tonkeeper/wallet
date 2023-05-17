@@ -1,4 +1,4 @@
-import { all, call, put, takeLatest } from 'redux-saga/effects';
+import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 import FastImage from 'react-native-fast-image';
 import axios from 'axios';
 import { i18n } from '$translation';
@@ -10,10 +10,13 @@ import { ExchangeCategoryModel } from '$store/models';
 import { ExchangeMethods } from '$store/exchange/interface';
 import { getIsTestnet } from '$database';
 import { getServerConfig } from '$shared/constants/serverConfig';
+import { fiatCurrencySelector } from '$store/main';
 
 export function* loadMethodsWorker() {
   try {
     const isTestnet = yield call(getIsTestnet);
+    const currency = yield select(fiatCurrencySelector);
+
     const resp = yield withRetry(
       'loadMethodsWorker',
       axios.get,
@@ -23,6 +26,7 @@ export function* loadMethodsWorker() {
           lang: i18n.locale,
           build: DeviceInfo.getReadableVersion(),
           chainName: isTestnet ? 'testnet' : 'mainnet',
+          currency,
         },
       },
     );
