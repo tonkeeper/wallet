@@ -52,6 +52,7 @@ export function useJettonData() {
               ...baseJettonCellData(jettonBalance),
               attentionBackground: true,
               chevron: true,
+              chevronColor: 'iconSecondary',
               isFirst: index === 0,
               isLast: index === pending.length - 1,
             } as CellItem),

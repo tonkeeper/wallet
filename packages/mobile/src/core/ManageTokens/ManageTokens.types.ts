@@ -1,6 +1,6 @@
 import { SpacerSizes } from '$uikit';
-import { ListSeparatorProps } from '$uikit/List/new/ListSeparator';
-import { ListItemProps } from '$uikit/List/new/ListItem';
+import { ListSeparatorProps } from '$uikit/List/ListSeparator';
+import { ListItemProps } from '$uikit/List/ListItem';
 
 export enum ContentType {
   Title,

@@ -10,7 +10,8 @@ import {
   StakingInfo,
   useStakingStore,
 } from '$store';
-import { Icon, List, ScrollHandler, Spacer, Text } from '$uikit';
+import { Icon, ScrollHandler, Spacer, Text } from '$uikit';
+import { List } from '$uikit/List/old/List';
 import { calculatePoolBalance, getPoolIcon } from '$utils';
 import { RouteProp } from '@react-navigation/native';
 import { PoolInfo } from '@tonkeeper/core';

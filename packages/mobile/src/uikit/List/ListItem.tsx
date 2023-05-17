@@ -18,6 +18,9 @@ export interface ListItemProps {
   label?: string | React.ReactNode;
   chevronColor?: TonThemeColor;
   imageStyle?: StyleProp<ViewStyle>;
+  compact?: boolean;
+  isLast?: boolean;
+  isFirst?: boolean;
 
   valueStyle?: StyleProp<TextStyle>;
 
@@ -33,6 +36,7 @@ export interface ListItemProps {
 
 export const ListItem = memo<ListItemProps>((props) => {
   const isPressed = useSharedValue(false);
+  const { compact = true } = props;
 
   const handlePressIn = useCallback(() => {
     isPressed.value = true;
@@ -54,6 +58,51 @@ export const ListItem = memo<ListItemProps>((props) => {
   const pictureSource = { uri: props.picture };
 
   const TouchableComponent = isAndroid ? Pressable : TouchableHighlight;
+  const renderTitle = useCallback(() => {
+    return (
+      <View style={styles.title}>
+        <View style={styles.titleTextContainer}>
+          {typeof props.title === 'string' ? (
+            <SText
+              style={styles.titleText}
+              variant={compact ? 'label1' : 'body2'}
+              color={compact ? 'textPrimary' : 'textSecondary'}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {props.title}
+            </SText>
+          ) : (
+            props.title
+          )}
+          {typeof props.label === 'string' ? (
+            <SText
+              style={styles.labelText}
+              color="textTertiary"
+              variant="label1"
+              numberOfLines={1}
+            >
+              {props.label}
+            </SText>
+          ) : (
+            props.label
+          )}
+        </View>
+
+        {typeof props.subtitle === 'string' ? (
+          <SText
+            variant="body2"
+            color={compact ? 'textSecondary' : 'textPrimary'}
+            numberOfLines={1}
+          >
+            {props.subtitle}
+          </SText>
+        ) : (
+          props.subtitle
+        )}
+      </View>
+    );
+  }, [props.title, compact, props.label, props.subtitle]);
 
   return (
     <TouchableComponent
@@ -63,7 +112,14 @@ export const ListItem = memo<ListItemProps>((props) => {
       onPress={props.onPress}
       disabled={!props.onPress}
     >
-      <View style={styles.container.static}>
+      <View
+        style={[
+          styles.container.static,
+          props.isFirst && styles.containerFirst.static,
+          props.isLast && styles.containerLast.static,
+          compact && styles.containerCompact.static,
+        ]}
+      >
         {hasLeftContent && (
           <View style={styles.leftContent}>
             {leftContent}
@@ -74,42 +130,7 @@ export const ListItem = memo<ListItemProps>((props) => {
             )}
           </View>
         )}
-        <View style={styles.title}>
-          <View style={styles.titleTextContainer}>
-            {typeof props.title === 'string' ? (
-              <SText
-                style={styles.titleText}
-                variant="label1"
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {props.title}
-              </SText>
-            ) : (
-              props.title
-            )}
-            {typeof props.label === 'string' ? (
-              <SText
-                style={styles.labelText}
-                color="textTertiary"
-                variant="label1"
-                numberOfLines={1}
-              >
-                {props.label}
-              </SText>
-            ) : (
-              props.label
-            )}
-          </View>
-
-          {typeof props.subtitle === 'string' ? (
-            <SText variant="body2" style={styles.subtitleText} numberOfLines={1}>
-              {props.subtitle}
-            </SText>
-          ) : (
-            props.subtitle
-          )}
-        </View>
+        {renderTitle()}
         <View style={styles.valueContainer}>
           {typeof props.value === 'string' ? (
             <SText variant="label1" style={[styles.valueText, props.valueStyle]}>
@@ -141,8 +162,17 @@ const styles = Steezy.create(({ colors }) => ({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 8,
     minHeight: 56,
+  },
+  containerFirst: {
+    paddingTop: 16,
+  },
+  containerLast: {
+    paddingBottom: 16,
+  },
+  containerCompact: {
+    paddingVertical: 16,
   },
   leftContent: {
     paddingRight: 16,
@@ -175,9 +205,6 @@ const styles = Steezy.create(({ colors }) => ({
   },
   valueContainer: {
     alignItems: 'flex-end',
-  },
-  subtitleText: {
-    color: colors.textSecondary,
   },
   valueText: {
     textAlign: 'right',

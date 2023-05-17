@@ -1,7 +1,7 @@
 import React, { FC, memo, useCallback, useEffect, useRef } from 'react';
 import { useAppsListStore } from '$store';
 import { openDAppBrowser } from '$navigation';
-import { List } from '$uikit';
+import { List } from '$uikit/List/old/List';
 import { PopularAppCell } from '../PopularAppCell/PopularAppCell';
 import * as S from './PopularApps.style';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';

@@ -8,7 +8,7 @@ import Animated from 'react-native-reanimated';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
-import { Icon, PopupSelect, ScrollHandler, Spacer, Text } from '$uikit';
+import { Icon, PopupSelect, ScrollHandler, Spacer, Text, List } from '$uikit';
 import { useIsHasJettons, useNavigation, useTranslator } from '$hooks';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
@@ -56,7 +56,6 @@ import { useAllAddresses } from '$hooks/useAllAddresses';
 import { useFlags } from '$utils/flags';
 import { DevFeature, SearchEngine, useBrowserStore, useDevFeatureEnabled } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
-import { List } from '$uikit/List/new';
 import { Steezy } from '$styles';
 
 export const Settings: FC = () => {

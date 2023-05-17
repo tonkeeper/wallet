@@ -12,7 +12,7 @@ export { Loader } from './Loader/Loader';
 export { Button } from './Button/Button';
 export { ToastComponent } from './Toast/new/ToastComponent';
 export { Separator } from './Separator/Separator';
-export { List, ListCell } from './List/List';
+export { List } from './List';
 export { PinCode } from './PinCode/PinCode';
 export { PopupSelect, PopupSelectItem } from './PopupSelect/PopupSelect';
 export { PopupMenu, PopupMenuItem } from './PopupMenu/PopupMenu';

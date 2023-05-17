@@ -1,8 +1,8 @@
 import { SuggestedAddress } from '../../../../Send.interface';
-import { List } from '$uikit';
 import React, { FC, memo } from 'react';
 import Animated, { Keyframe, SequencedTransition } from 'react-native-reanimated';
 import { AddressSuggestCell } from '../AddressSuggestCell/AddressSuggestCell';
+import { List } from '$uikit/List/old/List';
 
 const enteringKeyframe = new Keyframe({
   0: {

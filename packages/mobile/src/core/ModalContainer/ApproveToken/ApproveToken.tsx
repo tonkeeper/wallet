@@ -9,7 +9,7 @@ import {
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { getTokenStatus } from '$store/zustand/tokenApproval/selectors';
 import { JettonVerification } from '$store/models';
-import { Button, Highlight, Icon, Spacer, Text, View } from '$uikit';
+import { Button, Highlight, Icon, Spacer, Text, View, List } from '$uikit';
 import { Steezy } from '$styles';
 import { t } from '$translation';
 import { format, maskifyAddress } from '$utils';
@@ -108,7 +108,7 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
         );
       }
       return t('approval.accepted_at', {
-        date: format(currentStatus?.updated_at, 'd MMM yyyy'),
+        date: format(currentStatus?.updated_at, 'd MMM yyyy, hh:mm'),
       });
     }
     if (props.type === TokenApprovalType.Token) {
@@ -174,13 +174,11 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
             </Text>
           </View>
           <Spacer y={32} />
-          <S.Details>
-            {props.name && (
-              <Highlight contentViewStyle={styles.highlight.static}>
-                <S.DetailItem>
-                  <S.DetailItemLabel>{t('approval.name')}</S.DetailItemLabel>
-                  <S.DetailItemValueText>{props.name}</S.DetailItemValueText>
-                </S.DetailItem>
+          <List indent={false} compact={false}>
+            <List.Item
+              title={t('approval.name')}
+              subtitle={props.name}
+              value={
                 <FastImage
                   style={
                     props.imageType !== ImageType.SQUARE
@@ -189,28 +187,26 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
                   }
                   source={{ uri: props.image }}
                 />
-              </Highlight>
-            )}
-            <Highlight
+              }
+            />
+            <List.Item
               onPress={handleCopyAddress}
-              contentViewStyle={styles.highlight.static}
-            >
-              <S.DetailItem>
-                <S.DetailItemLabel>
-                  {props.type === TokenApprovalType.Token
-                    ? t('approval.token_id')
-                    : t('approval.collection_id')}
-                </S.DetailItemLabel>
-                <S.DetailItemValueText>
-                  {maskifyAddress(
-                    new Address(props.tokenAddress).toString(true, true, true),
-                    6,
-                  )}
-                </S.DetailItemValueText>
-              </S.DetailItem>
-              <Icon style={styles.copyIcon.static} name={'ic-copy-16'} />
-            </Highlight>
-          </S.Details>
+              title={
+                props.type === TokenApprovalType.Token
+                  ? t('approval.token_id')
+                  : t('approval.collection_id')
+              }
+              subtitle={maskifyAddress(
+                new Address(props.tokenAddress).toString(true, true, true),
+                6,
+              )}
+              value={
+                <View style={styles.copyIconContainer}>
+                  <Icon name={'ic-copy-16'} />
+                </View>
+              }
+            />
+          </List>
         </View>
         <Spacer y={16} />
       </Modal.Content>
@@ -260,7 +256,7 @@ const styles = Steezy.create({
     justifyContent: 'space-between',
     paddingRight: 16,
   },
-  copyIcon: {
-    marginRight: 4,
+  copyIconContainer: {
+    margin: 4,
   },
 });

@@ -1,7 +1,8 @@
 import { useTranslator } from '$hooks';
 import { MainStackRouteNames } from '$navigation';
 import { StakingListCell } from '$shared/components';
-import { List, View } from '$uikit';
+import { View } from '$uikit';
+import { List } from '$uikit/List/old/List';
 import React, { FC, memo, useCallback } from 'react';
 import { useNavigation } from '$libs/navigation';
 import { Steezy } from '$styles';

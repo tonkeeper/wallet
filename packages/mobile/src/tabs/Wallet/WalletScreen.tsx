@@ -7,9 +7,9 @@ import {
   InternalNotification,
   Screen,
   Text,
+  List,
   View,
 } from '$uikit';
-import { List } from '$uikit/List/new';
 import { useNavigation } from '$libs/navigation';
 import { ScanQRButton } from '../../components/ScanQRButton';
 import { RefreshControl, useWindowDimensions } from 'react-native';

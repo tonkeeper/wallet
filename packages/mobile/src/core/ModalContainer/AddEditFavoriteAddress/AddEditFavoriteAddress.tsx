@@ -2,7 +2,8 @@ import React, { FC, memo, useCallback, useState } from 'react';
 import * as S from './AddEditFavoriteAddress.style';
 
 import { AddEditFavoriteAddressProps } from './AddEditFavoriteAddress.interface';
-import { BottomSheet, Input, List, ListCell, Text } from '$uikit';
+import { BottomSheet, Input, Text } from '$uikit';
+import { List, ListCell } from '$uikit/List/old/List';
 import { useCopyText, useTranslator } from '$hooks';
 import { Alert, Keyboard } from 'react-native';
 import { useDispatch } from 'react-redux';

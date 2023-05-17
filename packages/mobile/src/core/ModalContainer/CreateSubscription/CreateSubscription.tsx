@@ -6,21 +6,22 @@ import { getUnixTime } from 'date-fns';
 
 import { CreateSubscriptionProps } from './CreateSubscription.interface';
 import * as S from './CreateSubscription.style';
-import { BottomSheet, Button, Icon, List, ListCell, Loader, Text } from '$uikit';
-import { Api } from '$api';
+import { BottomSheet, Button, Icon, Loader, Text } from '$uikit';
+import { List, ListCell } from '$uikit/List/old/List';
 import { ActionType, SubscriptionModel, TransactionType } from '$store/models';
 import {
   compareAddresses,
   format,
-  formatSubscriptionPeriod, toLocaleNumber,
+  formatSubscriptionPeriod,
+  toLocaleNumber,
   triggerNotificationSuccess,
 } from '$utils';
 import { subscriptionsActions } from '$store/subscriptions';
 import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
 import { formatCryptoCurrency } from '$utils/currency';
 import { useTheme, useTranslator, useWalletInfo } from '$hooks';
-import {eventsEventsInfoSelector, eventsSelector} from '$store/events';
-import {walletSelector, walletWalletSelector} from '$store/wallet';
+import { eventsEventsInfoSelector, eventsSelector } from '$store/events';
+import { walletSelector, walletWalletSelector } from '$store/wallet';
 import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { Toast } from '$store';
@@ -120,11 +121,12 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
 
   const loadInfo = useCallback(() => {
     const host = getServerConfig('subscriptionsHost');
-    network.get(`${host}/v1/subscribe/invoice/${invoiceId}`, {
-      params: {
-        contractVersion: TonWeb.version,
-      },
-    })
+    network
+      .get(`${host}/v1/subscribe/invoice/${invoiceId}`, {
+        params: {
+          contractVersion: TonWeb.version,
+        },
+      })
       .then((resp) => {
         setInfo(resp.data.data as any);
         setLoading(false);
