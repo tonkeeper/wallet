@@ -24,10 +24,10 @@ import { Address } from 'tonweb/dist/types/utils/address';
 import { t } from '$translation';
 import { Ton } from '$libs/Ton';
 import { getServerConfig } from '$shared/constants';
-import { AccountEvent, Configuration, SendApi } from 'tonapi-sdk-js';
+import { SendApi, Configuration as ConfigurationV1 } from 'tonapi-sdk-js';
 import axios from 'axios';
 import { Tonapi } from '$libs/Tonapi';
-import { AccountEvent, Configuration, NFTApi, BlockchainApi } from '@tonkeeper/core';
+import { AccountEvent, Configuration, NFTApi } from '@tonkeeper/core';
 
 const { NftCollection, NftItem, NftSale } = TonWeb.token.nft;
 
@@ -47,7 +47,7 @@ export class NFTOperations {
   );
 
   private sendApi = new SendApi(
-    new Configuration({
+    new ConfigurationV1({
       basePath: getServerConfig('tonapiIOEndpoint'),
       headers: {
         Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
@@ -61,7 +61,7 @@ export class NFTOperations {
     this.tonwebWallet = wallet.vault.tonWallet;
     this.wallet = wallet;
 
-    const tonApiConfiguration = new Configuration({
+    const tonApiConfiguration = new ConfigurationV1({
       basePath: getServerConfig('tonapiIOEndpoint'),
       headers: {
         Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
