@@ -4,6 +4,7 @@ import React, { FC, memo, useCallback, useState } from 'react';
 import { LayoutChangeEvent, LayoutRectangle } from 'react-native';
 import { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import * as S from './TopTabs.style';
+import { ScrollView } from 'react-native';
 
 interface TabItem {
   id: string;
@@ -67,23 +68,25 @@ const TopTabsComponent: FC<Props> = (props) => {
   }
 
   return (
-    <S.Container>
-      {tabs.map((tab) => (
-        <S.TabItem
-          key={tab.id}
-          onLayout={(event) => handleLayout(tab.id, event)}
-          onPress={() => handleTabPress(tab)}
-        >
-          <Text
-            color={tab.id === selectedId ? 'foregroundPrimary' : 'foregroundSecondary'}
-            variant="label1"
+    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <S.Container>
+        {tabs.map((tab) => (
+          <S.TabItem
+            key={tab.id}
+            onLayout={(event) => handleLayout(tab.id, event)}
+            onPress={() => handleTabPress(tab)}
           >
-            {tab.title}
-          </Text>
-        </S.TabItem>
-      ))}
-      <S.Indicator style={indicatorAnimatedStyle} pointerEvents="none" />
-    </S.Container>
+            <Text
+              color={tab.id === selectedId ? 'foregroundPrimary' : 'foregroundSecondary'}
+              variant="label1"
+            >
+              {tab.title}
+            </Text>
+          </S.TabItem>
+        ))}
+        <S.Indicator style={indicatorAnimatedStyle} pointerEvents="none" />
+      </S.Container>
+    </ScrollView>
   );
 };
 
