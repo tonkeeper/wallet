@@ -95,7 +95,7 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
           />
         </S.CoinContainer>
       </S.AmountContainer>
-      <Spacer y={16} />
+      <Spacer y={40} />
       <Button disabled={!isReadyToContinue} isLoading={isPreparing} onPress={onContinue}>
         {t('continue')}
       </Button>

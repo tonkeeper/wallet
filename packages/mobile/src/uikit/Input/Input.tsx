@@ -25,10 +25,7 @@ import { Icon } from '$uikit/Icon/Icon';
 const FocusedInputBorderWidth = ns(1.5);
 
 const LARGE_LABEL_FONT_SIZE = ns(16);
-const LARGE_LABEL_LINE_HEIGHT = ns(24);
-
 const SMALL_LABEL_FONT_SIZE = ns(12);
-const SMALL_LABEL_LINE_HEIGHT = ns(16);
 
 const ANIM_DURATION = 100;
 
@@ -155,6 +152,10 @@ export const Input: FC<InputProps> = (props) => {
         )
       : value.length > 0);
 
+  const hasValueAnim = useSharedValue(hasValue);
+
+  hasValueAnim.value = hasValue;
+
   const shouldAnimate = hasLabel && hasValue;
 
   const labelContainerStyle = useAnimatedStyle(
@@ -188,31 +189,37 @@ export const Input: FC<InputProps> = (props) => {
     }),
   }));
 
-  const rightContentStyle = useAnimatedStyle(
-    () => ({
-      opacity: withTiming(hasValue ? 0 : 1, { duration: 150 }),
-    }),
-    [shouldAnimate],
-  );
+  const rightContentStyle = useAnimatedStyle(() => ({
+    opacity: withTiming(hasValueAnim.value ? 0 : 1, { duration: 100 }),
+  }));
 
   const clearButtonStyle = useAnimatedStyle(
     () => ({
-      opacity: withTiming(hasValue ? 1 : 0, { duration: 150 }),
+      opacity: withTiming(isFocused && hasValueAnim.value ? 1 : 0, { duration: 100 }),
     }),
-    [shouldAnimate],
+    [isFocused],
+  );
+
+  const handleChangeText = useCallback(
+    (text: string) => {
+      hasValueAnim.value = text.length > 0;
+
+      onChangeText?.(text);
+    },
+    [hasValueAnim, onChangeText],
   );
 
   const handlePastePress = useCallback(async () => {
     try {
       const str = await Clipboard.getString();
 
-      onChangeText?.(str);
+      handleChangeText(str);
     } catch {}
-  }, [onChangeText]);
+  }, [handleChangeText]);
 
   const handlePressClear = useCallback(() => {
-    onChangeText?.('');
-  }, [onChangeText]);
+    handleChangeText('');
+  }, [handleChangeText]);
 
   return (
     <S.InputWrapper {...{ wrapperStyle, isFailed, withClearButton }}>
@@ -234,7 +241,7 @@ export const Input: FC<InputProps> = (props) => {
       <Animated.View style={inputSpacerStyle} />
       <S.Input
         {...otherProps}
-        onChangeText={onChangeText}
+        onChangeText={handleChangeText}
         {...{ inputStyle, multiline, editable, keyboardType, blurOnSubmit, autoFocus }}
         ref={innerRef}
         allowFontScaling={false}

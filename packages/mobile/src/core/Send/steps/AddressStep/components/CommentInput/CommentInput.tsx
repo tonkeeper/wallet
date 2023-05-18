@@ -1,7 +1,7 @@
 import { useCommentMaxLength } from '$core/Send/hooks';
 import { useTranslator } from '$hooks';
 import { FormItem, Input, Text } from '$uikit';
-import React, { FC, Ref, memo, useCallback, useMemo, useState } from 'react';
+import React, { FC, Ref, memo, useCallback, useState } from 'react';
 import * as S from './CommentInput.style';
 
 interface Props {
@@ -40,13 +40,17 @@ const CommentInputComponent: FC<Props> = (props) => {
       : null;
 
   const commentDescription =
-    isCommentRequired || commentCharactersLeftText || commentCharactersExceededText ? (
+    comment.length > 0 || isCommentRequired ? (
       <Text color="foregroundSecondary" variant="body2">
         {isCommentRequired ? (
           <Text variant="body2" color="accentOrange">
             {t('send_screen_steps.comfirm.comment_required_text')}
           </Text>
         ) : null}
+        {comment.length > 0 && !isCommentRequired
+          ? t('send_screen_steps.comfirm.comment_description')
+          : null}
+        {commentCharactersLeftText || commentCharactersExceededText ? '\n' : null}
         {isCommentRequired && (commentCharactersLeftText || commentCharactersExceededText)
           ? '\n'
           : null}
