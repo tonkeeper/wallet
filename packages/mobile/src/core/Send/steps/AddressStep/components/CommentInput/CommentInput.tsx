@@ -1,7 +1,7 @@
 import { useCommentMaxLength } from '$core/Send/hooks';
 import { useTranslator } from '$hooks';
 import { FormItem, Input, Text } from '$uikit';
-import React, { FC, Ref, memo, useCallback, useState } from 'react';
+import React, { FC, Ref, memo, useCallback, useEffect, useState } from 'react';
 import * as S from './CommentInput.style';
 
 interface Props {
@@ -81,6 +81,12 @@ const CommentInputComponent: FC<Props> = (props) => {
     },
     [setComment, isCommentRequired],
   );
+
+  useEffect(() => {
+    if (!isCommentRequired) {
+      setCommentRequiredError(false);
+    }
+  }, [isCommentRequired]);
 
   return (
     <FormItem description={commentDescription}>
