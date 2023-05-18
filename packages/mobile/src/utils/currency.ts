@@ -76,7 +76,7 @@ export const cryptoToFiat = (
   });
 
   return formatInputAmount(
-    formatted === '0.00' ? '0' : formatted,
+    formatted === `0${decimalSeparator}00` ? '0' : formatted,
     decimals,
     skipFormatting,
   );

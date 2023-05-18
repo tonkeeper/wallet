@@ -36,7 +36,7 @@ const AddressSuggestsComponent: FC<Props> = (props) => {
       {addresses.map((item, index) => (
         <Animated.View
           key={`${item.type}_${item.address}`}
-          entering={enteringKeyframe.delay(250).duration(250)}
+          entering={enteringKeyframe.duration(250)}
           exiting={exitingKeyframe.duration(250)}
           layout={SequencedTransition.duration(250)}
         >

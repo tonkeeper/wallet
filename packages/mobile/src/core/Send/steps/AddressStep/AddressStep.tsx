@@ -120,7 +120,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
       if (value.length === 0) {
         setRecipient(null);
 
-        return;
+        return false;
       }
 
       try {
@@ -231,7 +231,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
       const accountInfo = !isFavorite ? { name: suggest.name } : undefined;
       updateRecipient(value, accountInfo);
     },
-    [onContinue, updateRecipient],
+    [updateRecipient],
   );
 
   const handleCommentSubmit = useCallback(() => {
@@ -244,7 +244,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
   const handleAddressSubmit = useCallback(() => {
     commentInputRef.current?.focus();
-  }, [recipient, onContinue]);
+  }, []);
 
   useEffect(() => {
     if (recipient) {

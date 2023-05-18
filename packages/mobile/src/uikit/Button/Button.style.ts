@@ -65,9 +65,9 @@ export const Button = styled(Animated.View)<{
       `;
     } else if (size === 'small') {
       return `
-        ${!withoutFixedHeight && `height: ${ns(32)}px`};
-        min-width: ${ns(32)}px;
-        border-radius: ${ns(32 / 2)}px;
+        ${!withoutFixedHeight && `height: ${ns(36)}px`};
+        min-width: ${ns(36)}px;
+        border-radius: ${ns(36 / 2)}px;
       `;
     } else if (size === 'large_rounded') {
       return `
