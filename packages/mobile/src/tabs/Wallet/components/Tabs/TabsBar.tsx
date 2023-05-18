@@ -24,10 +24,12 @@ interface TabsBarProps {
   onChange: (item: TabItem, index: number) => void;
   itemStyle?: StyleProp<ViewStyle>;
   indicatorStyle?: StyleProp<ViewStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
   value: string;
   indent?: boolean;
   center?: boolean;
   sticky?: any;
+  scrollY?: Animated.SharedValue<number>;
   children?: React.ReactNode;
 }
 
@@ -91,7 +93,8 @@ export const TabsBarComponent = (props: TabsBarProps) => {
   const borderStyle = useAnimatedStyle(() => {
     return {
       borderBottomColor:
-        scrollY && scrollY.value > headerHeight.value
+        (scrollY && scrollY.value > headerHeight.value) ||
+        (props.scrollY && props.scrollY.value > headerHeight.value)
           ? theme.colors.border
           : 'transparent',
     };
@@ -107,6 +110,7 @@ export const TabsBarComponent = (props: TabsBarProps) => {
         styles.wrap.static,
         borderStyle,
         { backgroundColor: theme.colors.backgroundPrimary },
+        props.containerStyle,
       ]}
     >
       <Animated.View style={[styles.container.static]} pointerEvents="box-none">

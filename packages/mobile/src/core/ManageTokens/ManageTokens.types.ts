@@ -6,6 +6,7 @@ export enum ContentType {
   Title,
   Cell,
   Spacer,
+  ShowAllButton,
 }
 
 export type TitleItem = {
@@ -17,6 +18,12 @@ export type TitleItem = {
 export type SpacerItem = {
   type: ContentType.Spacer;
   bottom: SpacerSizes;
+  id: string;
+};
+
+export type ShowAllButtonItem = {
+  type: ContentType.ShowAllButton;
+  onPress: () => void;
   id: string;
 };
 
@@ -38,4 +45,4 @@ export type CellItem = {
   id: string;
 };
 
-export type Content = CellItem | TitleItem | SpacerItem;
+export type Content = CellItem | TitleItem | SpacerItem | ShowAllButtonItem;

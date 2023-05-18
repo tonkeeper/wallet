@@ -313,6 +313,7 @@
   },
 
   "approval": {
+    "show_all": "Show all",
     "verify_token": "Verify token",
     "token_details": "Token details",
     "token_count": {

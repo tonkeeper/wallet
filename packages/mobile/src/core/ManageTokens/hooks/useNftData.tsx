@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { t } from '$translation';
 import {
   ImageType,
@@ -34,8 +34,7 @@ const baseNftCellData = (nft: NFTModel) => ({
       verification: nft.isApproved
         ? JettonVerification.WHITELIST
         : JettonVerification.NONE,
-      tokenAddress:
-        nft.collection?.addressRaw || new Address(nft.address).toString(false),
+      tokenAddress: nft.collection?.address || new Address(nft.address).toString(false),
       image: nft.content.image.baseUrl,
       name: nft.collection?.name,
     }),
@@ -58,6 +57,8 @@ function groupByCollection(nftItems: NFTModel[]): (NFTModel & { count: number })
 }
 
 export function useNftData() {
+  const [isExtendedEnabled, setIsExtendedEnabled] = useState(false);
+  const [isExtendedDisabled, setIsExtendedDisabled] = useState(false);
   const updateTokenStatus = useTokenApprovalStore(
     (state) => state.actions.updateTokenStatus,
   );
@@ -100,8 +101,9 @@ export function useNftData() {
         type: ContentType.Title,
         title: t('approval.accepted'),
       });
+      const groupedEnabled = groupByCollection(enabled);
       content.push(
-        ...groupByCollection(enabled).map(
+        ...groupedEnabled.slice(0, !isExtendedEnabled ? 4 : undefined).map(
           (nft, index, array) =>
             ({
               ...baseNftCellData(nft),
@@ -129,6 +131,13 @@ export function useNftData() {
             } as CellItem),
         ),
       );
+      if (!isExtendedEnabled && groupedEnabled.length > 4) {
+        content.push({
+          id: 'show_accepted_nfts',
+          onPress: () => setIsExtendedEnabled(true),
+          type: ContentType.ShowAllButton,
+        });
+      }
       content.push({
         id: 'spacer_enabled',
         type: ContentType.Spacer,
@@ -142,8 +151,10 @@ export function useNftData() {
         type: ContentType.Title,
         title: t('approval.declined'),
       });
+      const groupedDisabled = groupByCollection(disabled);
+
       content.push(
-        ...groupByCollection(disabled).map(
+        ...groupedDisabled.slice(0, !isExtendedDisabled ? 4 : undefined).map(
           (nft, index, array) =>
             ({
               ...baseNftCellData(nft),
@@ -171,6 +182,13 @@ export function useNftData() {
             } as CellItem),
         ),
       );
+      if (!isExtendedDisabled && groupedDisabled.length > 4) {
+        content.push({
+          id: 'show_disabled_nfts',
+          onPress: () => setIsExtendedDisabled(true),
+          type: ContentType.ShowAllButton,
+        });
+      }
       content.push({
         id: 'spacer_disabled',
         type: ContentType.Spacer,
@@ -179,5 +197,12 @@ export function useNftData() {
     }
 
     return content;
-  }, [disabled, enabled, pending, updateTokenStatus]);
+  }, [
+    disabled,
+    enabled,
+    isExtendedDisabled,
+    isExtendedEnabled,
+    pending,
+    updateTokenStatus,
+  ]);
 }
