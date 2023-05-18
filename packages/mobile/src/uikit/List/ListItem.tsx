@@ -106,7 +106,7 @@ export const ListItem = memo<ListItemProps>((props) => {
 
   return (
     <TouchableComponent
-      underlayColor={DarkTheme.colors.backgroundTertiary}
+      underlayColor={DarkTheme.colors.backgroundHighlighted}
       onPressOut={handlePressOut}
       onPressIn={handlePressIn}
       onPress={props.onPress}

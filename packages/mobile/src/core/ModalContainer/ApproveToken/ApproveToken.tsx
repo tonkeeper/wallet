@@ -12,7 +12,7 @@ import { JettonVerification } from '$store/models';
 import { Button, Highlight, Icon, Spacer, Text, View, List } from '$uikit';
 import { Steezy } from '$styles';
 import { t } from '$translation';
-import { format, maskifyAddress } from '$utils';
+import { format, maskifyAddress, triggerImpactLight } from '$utils';
 import * as S from '$core/ModalContainer/NFTOperations/NFTOperations.styles';
 import FastImage from 'react-native-fast-image';
 import { Toast } from '$store';
@@ -50,6 +50,7 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
 
   const handleCopyAddress = useCallback(() => {
     Clipboard.setString(props.tokenAddress);
+    triggerImpactLight();
     Toast.show(t('approval.token_copied'));
   }, [props.tokenAddress]);
 

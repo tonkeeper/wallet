@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useState } from 'react';
 
-import { Icon, Screen, Spacer, SText, View, List } from '$uikit';
+import { Icon, Screen, Spacer, SText, View, List, Button } from '$uikit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { JettonBalanceModel } from '$store/models';
 import { Address } from '$libs/Ton';
@@ -19,6 +19,12 @@ import { NestableDraggableFlatList } from '$uikit/DraggableFlashList/components/
 import { NestableScrollContainer } from '$uikit/DraggableFlashList/components/NestableScrollContainer';
 import { Haptics } from '$utils';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
+import Animated, {
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from 'react-native-reanimated';
+
+const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 
 export function reorderJettons(newOrder: JettonBalanceModel[]) {
   return newOrder.map((jettonBalance) => {
@@ -43,6 +49,14 @@ const FLashListItem = ({
       );
     case ContentType.Spacer:
       return <Spacer y={item.bottom} />;
+    case ContentType.ShowAllButton:
+      return (
+        <View style={styles.showAllButtonWrap}>
+          <Button onPress={item.onPress} mode="secondary" size="medium_rounded">
+            {t('approval.show_all')}
+          </Button>
+        </View>
+      );
     case ContentType.Cell:
       const containerStyle = [
         item.isFirst && styles.firstListItem,
@@ -101,6 +115,12 @@ export const ManageTokens: FC = () => {
   const setHasWatchedCollectiblesTab = useTokenApprovalStore(
     (state) => state.actions.setHasWatchedCollectiblesTab,
   );
+  const scrollY = useSharedValue(0);
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
 
   const withCollectibleDot = React.useMemo(() => {
     return !hasWatchedCollectiblesTab;
@@ -108,12 +128,14 @@ export const ManageTokens: FC = () => {
 
   const renderJettonList = useCallback(() => {
     return (
-      <FlashList
+      <AnimatedFlashList
         estimatedItemSize={76}
         contentContainerStyle={StyleSheet.flatten([
           styles.flashList.static,
           { paddingBottom: bottomInset },
         ])}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
         data={jettonData}
         renderItem={FLashListItem}
       />
@@ -165,7 +187,7 @@ export const ManageTokens: FC = () => {
         )}
       </NestableScrollContainer>
     );
-  }, [bottomInset, jettonData]);
+  }, [bottomInset, jettonData, scrollHandler]);
 
   const renderTabs = useCallback(() => {
     return (
@@ -175,8 +197,10 @@ export const ManageTokens: FC = () => {
             <Tabs.Header withBackButton style={styles.tabsHeader}>
               <Tabs.Bar
                 // TODO: Remove hardcoded inline styles
+                containerStyle={{ paddingBottom: 16 }}
                 indicatorStyle={{ bottom: 0 }}
                 itemStyle={{ paddingTop: 16, paddingBottom: 8 }}
+                scrollY={scrollY}
                 onChange={({ value }) => {
                   setTab(value);
                   if (value === 'collectibles') {
@@ -197,13 +221,15 @@ export const ManageTokens: FC = () => {
             <Tabs.PagerView>
               <Tabs.Section index={0}>{renderJettonList()}</Tabs.Section>
               <Tabs.Section index={1}>
-                <FlashList
+                <AnimatedFlashList
                   keyExtractor={(item) => item?.id}
                   estimatedItemSize={76}
                   contentContainerStyle={StyleSheet.flatten([
                     styles.flashList.static,
                     { paddingBottom: bottomInset },
                   ])}
+                  onScroll={scrollHandler}
+                  scrollEventThrottle={16}
                   data={nftData}
                   renderItem={FLashListItem}
                 />
@@ -217,6 +243,8 @@ export const ManageTokens: FC = () => {
     bottomInset,
     nftData,
     renderJettonList,
+    scrollHandler,
+    scrollY,
     setHasWatchedCollectiblesTab,
     tab,
     withCollectibleDot,
@@ -247,14 +275,12 @@ const styles = Steezy.create(({ safeArea, corners, colors }) => ({
   tabsHeader: {
     position: 'relative',
     paddingTop: safeArea.top,
-    paddingBottom: 16,
   },
   flashList: {
     paddingHorizontal: 16,
   },
   flashListTitle: {
     paddingVertical: 14,
-    paddingHorizontal: 16,
   },
   firstListItem: {
     borderTopLeftRadius: corners.medium,
@@ -270,5 +296,9 @@ const styles = Steezy.create(({ safeArea, corners, colors }) => ({
   },
   attentionBackground: {
     backgroundColor: colors.backgroundContentAttention,
+  },
+  showAllButtonWrap: {
+    alignItems: 'center',
+    marginTop: 16,
   },
 }));

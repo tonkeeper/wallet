@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { t } from '$translation';
 import { formatter } from '$utils/formatter';
 import { openApproveTokenModal } from '$core/ModalContainer/ApproveToken/ApproveToken';
@@ -31,6 +31,8 @@ const baseJettonCellData = (jettonBalance) => ({
 });
 
 export function useJettonData() {
+  const [isExtendedEnabled, setIsExtendedEnabled] = useState(false);
+  const [isExtendedDisabled, setIsExtendedDisabled] = useState(false);
   const updateTokenStatus = useTokenApprovalStore(
     (state) => state.actions.updateTokenStatus,
   );
@@ -53,6 +55,7 @@ export function useJettonData() {
               attentionBackground: true,
               chevron: true,
               chevronColor: 'iconSecondary',
+              separatorVariant: 'alternate',
               isFirst: index === 0,
               isLast: index === pending.length - 1,
             } as CellItem),
@@ -72,8 +75,8 @@ export function useJettonData() {
         title: t('approval.accepted'),
       });
       content.push(
-        ...enabled.map(
-          (jettonBalance, index) =>
+        ...enabled.slice(0, !isExtendedEnabled ? 4 : undefined).map(
+          (jettonBalance, index, array) =>
             ({
               ...baseJettonCellData(jettonBalance),
               isFirst: index === 0,
@@ -92,10 +95,17 @@ export function useJettonData() {
                   <Spacer x={16} />
                 </>
               ),
-              isLast: index === enabled.length - 1,
+              isLast: index === array.length - 1,
             } as CellItem),
         ),
       );
+      if (!isExtendedEnabled && enabled.length > 4) {
+        content.push({
+          id: 'show_accepted_jettons',
+          onPress: () => setIsExtendedEnabled(true),
+          type: ContentType.ShowAllButton,
+        });
+      }
       content.push({
         id: 'accepted_spacer',
         type: ContentType.Spacer,
@@ -110,12 +120,12 @@ export function useJettonData() {
         title: t('approval.declined'),
       });
       content.push(
-        ...disabled.map(
-          (jettonBalance, index) =>
+        ...disabled.slice(0, !isExtendedDisabled ? 4 : undefined).map(
+          (jettonBalance, index, array) =>
             ({
               ...baseJettonCellData(jettonBalance),
               isFirst: index === 0,
-              isLast: index === disabled.length - 1,
+              isLast: index === array.length - 1,
               leftContent: (
                 <>
                   <ListButton
@@ -134,6 +144,13 @@ export function useJettonData() {
             } as CellItem),
         ),
       );
+      if (!isExtendedDisabled && disabled.length > 4) {
+        content.push({
+          id: 'show_disabled_jettons',
+          onPress: () => setIsExtendedDisabled(true),
+          type: ContentType.ShowAllButton,
+        });
+      }
       content.push({
         id: 'disabled_spacer',
         type: ContentType.Spacer,
@@ -142,7 +159,14 @@ export function useJettonData() {
     }
 
     return content;
-  }, [disabled, enabled, pending, updateTokenStatus]);
+  }, [
+    disabled,
+    enabled,
+    isExtendedDisabled,
+    isExtendedEnabled,
+    pending,
+    updateTokenStatus,
+  ]);
   return data;
 }
 

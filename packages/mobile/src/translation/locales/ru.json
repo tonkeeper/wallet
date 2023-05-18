@@ -320,6 +320,7 @@
   },
 
   "approval": {
+    "show_all": "Показать все",
     "verify_token": "Проверьте токен",
     "verify_collection": "Проверьте коллекцию",
     "token_details": "Подробнее о токене",

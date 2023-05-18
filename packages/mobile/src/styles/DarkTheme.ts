@@ -42,6 +42,6 @@ export const DarkTheme = {
   tabBarActiveIcon: '#45AEF5',
   tabBarInactiveIcon: '#8994A3',
 
-  separatorCommon: 'rgba(255, 255, 255, 0.08)',
-  separatorAlternate: 'rgba(255, 255, 255, 0.04)',
+  separatorCommon: 'rgba(79, 90, 112, 0.24)',
+  separatorAlternate: 'rgba(255, 255, 255, 0.08)',
 };
