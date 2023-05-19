@@ -415,17 +415,6 @@ export const Settings: FC = () => {
               }
               title={t('settings_rate')}
             />
-            <List.Item
-              onPress={handleLegal}
-              value={
-                <Icon
-                  style={styles.icon.static}
-                  color="iconSecondary"
-                  name={'ic-doc-28'}
-                />
-              }
-              title={t('settings_legal_documents')}
-            />
             {!!wallet && (
               <List.Item
                 onPress={handleDeleteAccount}
@@ -439,6 +428,17 @@ export const Settings: FC = () => {
                 title={t('settings_delete_account')}
               />
             )}
+            <List.Item
+              onPress={handleLegal}
+              value={
+                <Icon
+                  style={styles.icon.static}
+                  color="iconSecondary"
+                  name={'ic-doc-28'}
+                />
+              }
+              title={t('settings_legal_documents')}
+            />
           </List>
           <Spacer y={16} />
           {!!wallet && (
