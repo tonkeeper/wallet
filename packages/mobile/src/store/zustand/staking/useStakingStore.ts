@@ -79,9 +79,7 @@ export const useStakingStore = create(
 
               pools = poolsResponse.value.pools
                 .filter(
-                  (pool) =>
-                    !!pool.name &&
-                    pool.maxNominators > pool.currentNominators
+                  (pool) => !!pool.name && pool.maxNominators > pool.currentNominators,
                 )
                 .map((pool) => {
                   if (pool.implementation !== 'whales') {
@@ -93,6 +91,18 @@ export const useStakingStore = create(
                   return { ...pool, cycleStart };
                 })
                 .sort((a, b) => {
+                  if (a.name.includes('Tonkeeper') && !b.name.includes('Tonkeeper')) {
+                    return -1;
+                  }
+
+                  if (b.name.includes('Tonkeeper') && !a.name.includes('Tonkeeper')) {
+                    return 1;
+                  }
+
+                  if (a.name.includes('Tonkeeper') && b.name.includes('Tonkeeper')) {
+                    return a.name.includes('#1') ? -1 : 1;
+                  }
+
                   if (a.apy === b.apy) {
                     return a.cycleStart > b.cycleStart ? 1 : -1;
                   }
