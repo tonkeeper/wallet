@@ -114,15 +114,16 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
       })();
     } catch {}
   }, [
-    amount,
+    amount.value,
+    amount.all,
     fee,
     currency,
     wallet,
     balances,
-    t,
-    sendTx,
+    onConfirm,
     showLockupAlert,
     showAllBalanceAlert,
+    sendTx,
   ]);
 
   const scrollHandler = useAnimatedScrollHandler((event) => {
@@ -186,7 +187,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     }
 
     return value;
-  }, [calculatedValue, currencyTitle, amount.all, isJetton]);
+  }, [calculatedValue, decimals, currencyTitle, amount.all, isJetton]);
 
   const handleCopy = useCallback(() => {
     if (!recipient) {
@@ -200,7 +201,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     if (!active) {
       footerRef.current?.reset();
     }
-  }, [active]);
+  }, [active, footerRef]);
 
   if (!recipient) {
     return null;
@@ -229,7 +230,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
               <S.Item>
                 <S.ItemLabel>{t('confirm_sending_recipient')}</S.ItemLabel>
                 <S.ItemContent>
-                  <S.ItemValue>{recipientName}</S.ItemValue>
+                  <S.ItemValue numberOfLines={1}>{recipientName}</S.ItemValue>
                 </S.ItemContent>
               </S.Item>
             ) : null}
@@ -242,7 +243,9 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
                     : t('confirm_sending_recipient')}
                 </S.ItemLabel>
                 <S.ItemContent>
-                  <S.ItemValue>{maskifyAddress(recipient.address, 4)}</S.ItemValue>
+                  <S.ItemValue numberOfLines={1}>
+                    {maskifyAddress(recipient.address, 4)}
+                  </S.ItemValue>
                 </S.ItemContent>
               </S.Item>
             </Highlight>
@@ -250,7 +253,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
             <S.Item>
               <S.ItemLabel>{t('confirm_sending_amount')}</S.ItemLabel>
               <S.ItemContent>
-                <S.ItemValue>{amountValue}</S.ItemValue>
+                <S.ItemValue numberOfLines={1}>{amountValue}</S.ItemValue>
                 {fiatValue.fiatInfo.avaivable ? (
                   <S.ItemSubValue>≈ {fiatValue.fiatInfo.amount}</S.ItemSubValue>
                 ) : null}
@@ -260,7 +263,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
             <S.Item>
               <S.ItemLabel>{t('confirm_sending_fee')}</S.ItemLabel>
               <S.ItemContent>
-                <S.ItemValue>{feeValue}</S.ItemValue>
+                <S.ItemValue numberOfLines={1}>{feeValue}</S.ItemValue>
                 {fee !== '0' ? (
                   <S.ItemSubValue>≈ {fiatFee.fiatInfo.amount}</S.ItemSubValue>
                 ) : null}

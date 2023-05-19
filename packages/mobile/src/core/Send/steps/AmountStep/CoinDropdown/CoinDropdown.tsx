@@ -81,6 +81,10 @@ const CoinDropdownComponent: FC<Props> = (props) => {
     [coins, currency],
   );
 
+  if (coins.length === 1) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
       <PopupSelect
