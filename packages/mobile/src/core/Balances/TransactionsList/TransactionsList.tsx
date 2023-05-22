@@ -8,6 +8,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import {
+  compareAddresses,
   format,
   formatAmountAndLocalize,
   formatDate,
@@ -24,7 +25,7 @@ import { differenceInCalendarMonths } from 'date-fns';
 import { EventModel, JettonBalanceModel } from '$store/models';
 import { openEditCoins, openJetton, openJettonsList } from '$navigation';
 import { Address, Ton } from '$libs/Ton';
-import { useTranslator } from '$hooks';
+import { useJettonBalances, useTranslator } from '$hooks';
 import { walletActions } from '$store/wallet';
 import { useDispatch } from 'react-redux';
 import _ from 'lodash';
@@ -71,7 +72,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
   ) => {
     const t = useTranslator();
     const dispatch = useDispatch();
-    const tokensApprovalState = useTokenApprovalStore((state) => state.tokens);
+    const { enabled } = useJettonBalances();
 
     const handleManageJettons = useCallback(() => {
       openJettonsList();
@@ -117,8 +118,9 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
         const jettonAddress = jettonTransferAction?.jettonTransfer?.jetton?.address;
         if (
           jettonAddress &&
-          tokensApprovalState[new Address(jettonAddress).toString(true, true, true)]
-            ?.current === TokenApprovalStatus.Declined
+          enabled.find((enabledJetton) =>
+            compareAddresses(enabledJetton.jettonAddress, jettonAddress),
+          )
         ) {
           continue;
         }
@@ -164,7 +166,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
       }
 
       return result;
-    }, [initialData, eventsInfo, tokensApprovalState]);
+    }, [initialData, eventsInfo, enabled]);
 
     function renderItem({ item, index, section }: SectionListRenderItemInfo<any>) {
       const borderStart = index === 0;

@@ -9,15 +9,15 @@ import {
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { getTokenStatus } from '$store/zustand/tokenApproval/selectors';
 import { JettonVerification } from '$store/models';
-import { Button, Highlight, Icon, Spacer, Text, View, List } from '$uikit';
+import { Button, Icon, Spacer, Text, View, List } from '$uikit';
 import { Steezy } from '$styles';
 import { t } from '$translation';
 import { format, maskifyAddress, triggerImpactLight } from '$utils';
-import * as S from '$core/ModalContainer/NFTOperations/NFTOperations.styles';
 import FastImage from 'react-native-fast-image';
 import { Toast } from '$store';
 import Clipboard from '@react-native-community/clipboard';
 import { Address } from '$libs/Ton';
+import { TranslateOptions } from 'i18n-js';
 
 export enum ImageType {
   ROUND = 'round',
@@ -71,53 +71,47 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
     return 'pending';
   }, [currentStatus, props.verification]);
 
-  const title = useMemo(() => {
+  const translationPrefix = useMemo(() => {
     if (props.type === TokenApprovalType.Token) {
-      if (modalState === 'pending') {
-        return t('approval.verify_token');
-      } else {
-        return t('approval.token_details');
-      }
+      return 'token';
     } else {
-      if (modalState === 'pending') {
-        return t('approval.verify_collection');
-      } else {
-        return t('approval.collection_details');
-      }
+      return 'collection';
     }
-  }, [modalState, props.type]);
+  }, [props.type]);
+
+  const translateWithPrefix = useCallback(
+    (key: string, options?: TranslateOptions) =>
+      t(`approval.${key}_${translationPrefix}`, options),
+    [translationPrefix],
+  );
+
+  const title = useMemo(() => {
+    if (modalState === 'pending') {
+      return translateWithPrefix('verify');
+    } else {
+      return translateWithPrefix('details');
+    }
+  }, [modalState, translateWithPrefix]);
 
   const subtitle = useMemo(() => {
     if (modalState === 'declined') {
       if (!currentStatus) {
-        return t(
-          props.type === TokenApprovalType.Token
-            ? 'approval.blacklisted_token'
-            : 'approval.blacklisted_collection',
-        );
+        return translateWithPrefix('blacklisted');
       }
-      return t('approval.declined_at', {
-        date: format(currentStatus?.updated_at, 'd MMM yyyy'),
+      return translateWithPrefix('declined_at', {
+        date: format(currentStatus?.updated_at, 'd MMM yyyy, hh:mm'),
       });
     }
     if (modalState === 'approved') {
       if (!currentStatus) {
-        return t(
-          props.type === TokenApprovalType.Token
-            ? 'approval.whitelisted_token'
-            : 'approval.whitelisted_collection',
-        );
+        return translateWithPrefix('whitelisted');
       }
-      return t('approval.accepted_at', {
+      return translateWithPrefix('accepted_at', {
         date: format(currentStatus?.updated_at, 'd MMM yyyy, hh:mm'),
       });
     }
-    if (props.type === TokenApprovalType.Token) {
-      return t('approval.verify_token_description');
-    } else {
-      return t('approval.verify_tokens_description');
-    }
-  }, [currentStatus, modalState, props.type]);
+    return translateWithPrefix('verify_description');
+  }, [currentStatus, modalState, translateWithPrefix]);
 
   const renderActions = useCallback(() => {
     switch (modalState) {
@@ -176,27 +170,25 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
           </View>
           <Spacer y={32} />
           <List indent={false} compact={false}>
-            <List.Item
-              title={t('approval.name')}
-              subtitle={props.name}
-              value={
-                <FastImage
-                  style={
-                    props.imageType !== ImageType.SQUARE
-                      ? styles.round.static
-                      : styles.square.static
-                  }
-                  source={{ uri: props.image }}
-                />
-              }
-            />
+            {props.name ? (
+              <List.Item
+                title={t('approval.name')}
+                subtitle={props.name}
+                value={
+                  <FastImage
+                    style={
+                      props.imageType !== ImageType.SQUARE
+                        ? styles.round.static
+                        : styles.square.static
+                    }
+                    source={{ uri: props.image }}
+                  />
+                }
+              />
+            ) : null}
             <List.Item
               onPress={handleCopyAddress}
-              title={
-                props.type === TokenApprovalType.Token
-                  ? t('approval.token_id')
-                  : t('approval.collection_id')
-              }
+              title={translateWithPrefix('id')}
               subtitle={maskifyAddress(
                 new Address(props.tokenAddress).toString(true, true, true),
                 6,

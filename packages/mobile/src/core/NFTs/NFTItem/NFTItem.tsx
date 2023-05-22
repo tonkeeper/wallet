@@ -26,16 +26,12 @@ export const NFTItem: React.FC<NFTItemProps> = ({ item, isLastInRow }) => {
   );
 
   const title = useMemo(() => {
-    if (isTG) {
-      return dnsToUsername(item.name);
-    }
-
     if (isDNS) {
       return item.dns;
     }
 
     return item.name || maskifyTonAddress(item.address);
-  }, [isDNS, isTG, item.dns, item.name, item.address]);
+  }, [isDNS, item.dns, item.name, item.address]);
 
   const renderPicture = () => {
     if (isDNS) {

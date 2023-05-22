@@ -18,7 +18,7 @@ import { Address } from '$libs/Ton';
 const baseNftCellData = (nft: NFTModel) => ({
   type: ContentType.Cell,
   picture: nft.content.image.baseUrl,
-  title: nft.collection?.name || nft.name,
+  title: nft.collection ? nft.collection?.name || t('nft_unnamed_collection') : nft.name,
   imageStyle: {
     borderRadius: 8,
   },

@@ -199,8 +199,6 @@ const styles = Steezy.create(({ colors }) => ({
     alignItems: 'center',
   },
   item: {
-    flexDirection: 'row',
-    alignItems: 'center',
     paddingTop: 4,
     paddingBottom: 24,
     paddingHorizontal: 16,
@@ -216,7 +214,12 @@ const styles = Steezy.create(({ colors }) => ({
     paddingHorizontal: 16,
   },
   itemDotContainer: {
-    marginLeft: 6,
+    position: 'absolute',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    top: 10,
+    bottom: 0,
+    right: 2,
   },
   itemDot: {
     width: 8,
