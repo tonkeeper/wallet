@@ -390,6 +390,7 @@
     "about_dapps_learn_more": "Learn more",
     "actions": {
       "refresh": "Refresh",
+      "mute": "Mute",
       "share": "Share",
       "copy_link": "Copy link",
       "disconnect": "Disconnect"
@@ -586,7 +587,7 @@
   "reminder_notifications_later_button": "Later",
 
   "ton_login_title": "Connect to %{name}?",
-  "ton_login_caption": "%{name} is requesting access to your wallet address",
+  "ton_login_caption": "%{name} is requesting access to your wallet address\u2028",
   "ton_login_connect_button": "Connect wallet",
   "ton_login_back_to_button": "Back to %{name}",
   "ton_login_success": "Done",

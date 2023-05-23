@@ -1,6 +1,7 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import { AnchorPosition } from './usePopupAnimation';
+import { IconProps } from '$uikit/Icon/Icon';
 
 export interface PopupSelectProps<T> {
   items: T[];
@@ -21,6 +22,7 @@ export interface PopupSelectProps<T> {
 
 export interface PopupSelectItemProps {
   children?: React.ReactNode;
+  icon?: IconProps['name'];
   value: any;
   onPress?: (value: any) => void;
   checked?: boolean;

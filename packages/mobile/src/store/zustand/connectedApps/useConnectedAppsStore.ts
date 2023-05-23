@@ -9,6 +9,10 @@ const initialState: Omit<IConnectedAppsStore, 'actions'> = {
     mainnet: {},
     testnet: {},
   },
+  notificationsEnabled: {
+    mainnet: {},
+    testnet: {},
+  },
 };
 
 export const useConnectedAppsStore = create(
@@ -115,6 +119,36 @@ export const useConnectedAppsStore = create(
               }
 
               return { connectedApps };
+            });
+          },
+          enableNotifications: (chainName, walletAddress, url) => {
+            const fixedUrl = getFixedLastSlashUrl(url);
+
+            set(({ notificationsEnabled }) => {
+              if (!notificationsEnabled[chainName][walletAddress]) {
+                notificationsEnabled[chainName][walletAddress] = {};
+              }
+
+              const hash = generateAppHashFromUrl(fixedUrl);
+
+              notificationsEnabled[chainName][walletAddress][hash] = true;
+
+              return { notificationsEnabled };
+            });
+          },
+          disableNotifications: (chainName, walletAddress, url) => {
+            const fixedUrl = getFixedLastSlashUrl(url);
+
+            set(({ notificationsEnabled }) => {
+              if (!notificationsEnabled[chainName][walletAddress]) {
+                notificationsEnabled[chainName][walletAddress] = {};
+              }
+
+              const hash = generateAppHashFromUrl(fixedUrl);
+
+              notificationsEnabled[chainName][walletAddress][hash] = false;
+
+              return { notificationsEnabled };
             });
           },
           removeApp: (chainName, walletAddress, url) => {

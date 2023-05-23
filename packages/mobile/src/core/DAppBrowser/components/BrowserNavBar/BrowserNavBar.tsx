@@ -6,6 +6,7 @@ import React, { FC, memo, useCallback, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Share from 'react-native-share';
 import * as S from './BrowserNavBar.style';
+import { PopupSelectItemProps } from '$uikit/PopupSelect/PopupSelect.interface';
 
 enum PopupActionType {
   REFRESH,
@@ -17,6 +18,7 @@ enum PopupActionType {
 interface PopupAction {
   type: PopupActionType;
   label: string;
+  icon?: PopupSelectItemProps['icon'];
 }
 
 interface Props {
@@ -61,14 +63,17 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
       {
         type: PopupActionType.REFRESH,
         label: t('browser.actions.refresh'),
+        icon: 'ic-refresh-16',
       },
       {
         type: PopupActionType.SHARE,
         label: t('browser.actions.share'),
+        icon: 'ic-share-16',
       },
       {
         type: PopupActionType.COPY_LINK,
         label: t('browser.actions.copy_link'),
+        icon: 'ic-copy-16',
       },
     ];
 
@@ -76,6 +81,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
       items.push({
         type: PopupActionType.DISCONNECT,
         label: t('browser.actions.disconnect'),
+        icon: 'ic-disconnect-16',
       });
     }
 

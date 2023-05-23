@@ -37,6 +37,13 @@ export interface IConnectedAppsStore {
       };
     };
   };
+  notificationsEnabled: {
+    [chainName: string]: {
+      [walletAddress: string]: {
+        [domain: string]: boolean;
+      };
+    };
+  };
   actions: {
     saveAppConnection: (
       chainName: 'mainnet' | 'testnet',
@@ -59,6 +66,16 @@ export interface IConnectedAppsStore {
       walletAddress: string,
       url: string,
       clientSessionId: string,
+    ) => void;
+    enableNotifications: (
+      chainName: 'mainnet' | 'testnet',
+      walletAddress: string,
+      url: string,
+    ) => void;
+    disableNotifications: (
+      chainName: 'mainnet' | 'testnet',
+      walletAddress: string,
+      url: string,
     ) => void;
   };
 }

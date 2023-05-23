@@ -7,7 +7,7 @@ import { Linking, StyleSheet } from 'react-native';
 import { useTheme } from '$hooks';
 import { SelectableVersionsConfig } from '$shared/constants';
 import { walletSelector } from '$store/wallet';
-import { Button, Icon, Loader, Text, TransitionOpacity } from '$uikit';
+import { Button, Icon, List, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
   debugLog,
   delay,
@@ -279,7 +279,6 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
             <Text color="foregroundSecondary" variant="body1" textAlign="center">
               {t('ton_login_caption', { name: domain })}
               <Text color="foregroundTertiary" variant="body1" textAlign="center">
-                {' '}
                 {maskedAddress}{' '}
               </Text>
               {SelectableVersionsConfig[version]
@@ -287,6 +286,18 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
                 : null}
             </Text>
           </S.Content>
+          {isTonConnectV2 ? (
+            <>
+              <List indent={false}>
+                <List.ItemWithCheckbox
+                  title="Allow notifications"
+                  checked={true}
+                  onChange={() => false}
+                />
+              </List>
+              <Spacer y={16} />
+            </>
+          ) : null}
           <S.Footer isTonConnectV2={isTonConnectV2}>
             <TransitionOpacity
               style={styles.actionContainer}
