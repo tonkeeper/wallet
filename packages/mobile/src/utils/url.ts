@@ -17,13 +17,13 @@ export const isTonUrl = (value: string) =>
 export const getDomainFromURL = (url: string): string => domainFromPartialUrl(url);
 
 export const getUrlWithTonProxy = (url: string) => {
-  const regex = /(\.ton)(?=\/|$)(?!\.run)/g;
+  const regex = /(\.ton)(?=\/|$)(?!\.website)/g;
 
-  return url.replace(regex, '.ton.run');
+  return url.replace(regex, '.ton.website');
 };
 
 export const getUrlWithoutTonProxy = (url: string) => {
-  const regex = /(\.ton)\.run(?=\/|$)/g;
+  const regex = /(\.ton)\.website(?=\/|$)/g;
 
   return url.replace(regex, '.ton');
 };
