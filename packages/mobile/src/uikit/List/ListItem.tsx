@@ -134,7 +134,7 @@ export const ListItem = memo<ListItemProps>((props) => {
           )}
 
           {typeof props.subvalue === 'string' ? (
-            <SText variant="body2" style={styles.subtitleText}>
+            <SText variant="body2" style={styles.subvalueText}>
               {props.subvalue}
             </SText>
           ) : (
