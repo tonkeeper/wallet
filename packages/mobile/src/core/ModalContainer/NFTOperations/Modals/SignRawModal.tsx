@@ -112,10 +112,16 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     const fee = accountEvent?.fee;
 
     if (fee) {
-      return { 
-        fee: `≈ ` + formatter.format(Ton.fromNano(fee.total.toString()), { currencySeparator: 'wide', currency: CryptoCurrencies.Ton.toLocaleUpperCase(), absolute: true }),
+      return {
+        fee:
+          `≈ ` +
+          formatter.format(Ton.fromNano(fee.total.toString()), {
+            currencySeparator: 'wide',
+            currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
+            absolute: true,
+          }),
         isNegative: fee.total < 0,
-      }
+      };
     }
   }, [accountEvent]);
 
@@ -136,7 +142,11 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
             <S.Info>
               <Highlight onPress={() => copyText(totalFee.fee)}>
                 <S.InfoItem>
-                  <S.InfoItemLabel>{totalFee.isNegative ?  t('txActions.signRaw.totalRefund') : t('txActions.signRaw.totalFee')}</S.InfoItemLabel>
+                  <S.InfoItemLabel>
+                    {totalFee.isNegative
+                      ? t('txActions.signRaw.totalRefund')
+                      : t('txActions.signRaw.totalFee')}
+                  </S.InfoItemLabel>
                   <S.InfoItemValue>
                     <Text variant="body1">{totalFee.fee}</Text>
                   </S.InfoItemValue>

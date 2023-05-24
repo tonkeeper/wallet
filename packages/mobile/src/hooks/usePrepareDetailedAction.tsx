@@ -83,7 +83,12 @@ export function usePrepareDetailedAction(
           currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
           currencySeparator: 'wide',
         });
-      fiatValue = !isFailed ? formatter.format(fiatRate.today * parseFloat(amount), { currency: fiatCurrency, currencySeparator: 'wide' }) : undefined;
+      fiatValue = !isFailed
+        ? formatter.format(fiatRate.today * parseFloat(amount), {
+            currency: fiatCurrency,
+            currencySeparator: 'wide',
+          })
+        : undefined;
     }
 
     if (ActionType.NftItemTransfer === ActionType[rawAction.type]) {
@@ -112,13 +117,17 @@ export function usePrepareDetailedAction(
         formatter.format(amount, {
           withoutTruncate: true,
           decimals: action.jetton.decimals ?? 9,
-          currency:
-            action.jetton?.symbol ||
-            '',
+          currency: action.jetton?.symbol || '',
           currencySeparator: 'wide',
         });
-        const jettonPrice = getJettonPrice(jettonAddress, amount);
-        fiatValue = !isFailed && jettonPrice.total_numeric ? formatter.format(jettonPrice.total_numeric, { currency: fiatCurrency, currencySeparator: 'wide' }) : undefined;
+      const jettonPrice = getJettonPrice(jettonAddress, amount);
+      fiatValue =
+        !isFailed && jettonPrice.total_numeric
+          ? formatter.format(jettonPrice.total_numeric, {
+              currency: fiatCurrency,
+              currencySeparator: 'wide',
+            })
+          : undefined;
     }
 
     if (ActionType.Subscribe === ActionType[rawAction.type]) {
@@ -146,7 +155,12 @@ export function usePrepareDetailedAction(
             currencySeparator: 'wide',
           });
       }
-      fiatValue = !isFailed ? formatter.format(fiatRate.today * parseFloat(amount), { currency: fiatCurrency.toLocaleUpperCase(), currencySeparator: 'wide' }) : undefined;
+      fiatValue = !isFailed
+        ? formatter.format(fiatRate.today * parseFloat(amount), {
+            currency: fiatCurrency.toLocaleUpperCase(),
+            currencySeparator: 'wide',
+          })
+        : undefined;
     }
 
     if (ActionType.UnSubscribe === ActionType[rawAction.type]) {
@@ -181,7 +195,7 @@ export function usePrepareDetailedAction(
 
       infoRows.push({
         label: t('transaction_bid_dns'),
-        value: action.nft.dns,
+        value: action.nft.dns ?? action.nft.metadata?.name,
       });
 
       infoRows.push({
@@ -237,17 +251,22 @@ export function usePrepareDetailedAction(
     }
 
     if (event.fee) {
-      const amount = TonWeb.utils.fromNano(
-        new BigNumber(event.fee.total).toString(),
-      );
+      const amount = TonWeb.utils.fromNano(new BigNumber(event.fee.total).toString());
       infoRows.push({
         label: new BigNumber(event.fee.total).isLessThan(0)
           ? t('transaction_refund')
           : t('transaction_fee'),
-        value: formatter.format(
-          amount, { currencySeparator: 'wide', currency: CryptoCurrencies.Ton.toUpperCase(), absolute: true }
-        ).trim(),
-        subvalue: formatter.format(fiatRate.today * parseFloat(amount), { currency: fiatCurrency, currencySeparator: 'wide' }),
+        value: formatter
+          .format(amount, {
+            currencySeparator: 'wide',
+            currency: CryptoCurrencies.Ton.toUpperCase(),
+            absolute: true,
+          })
+          .trim(),
+        subvalue: formatter.format(fiatRate.today * parseFloat(amount), {
+          currency: fiatCurrency,
+          currencySeparator: 'wide',
+        }),
       });
     }
 

@@ -77,7 +77,7 @@ const FLashListItem = ({
             leftContent={item.leftContent}
             value={item.isDraggable && renderDragButton?.()}
           />
-          {!item.isLast && <ListSeparator variant={item.separatorVariant} />}
+          {!item.isLast && <ListSeparator />}
         </View>
       );
   }

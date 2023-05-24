@@ -56,7 +56,7 @@ export class TonProvider extends BaseProvider {
     return collectionsArr.reduce((acc, current) => {
       if (current.isFulfilled()) {
         let collection = current.value();
-        acc[collection.addressRaw] = collection;
+        acc[collection.address] = collection;
       }
       return acc;
     }, {});
@@ -166,7 +166,7 @@ export class TonProvider extends BaseProvider {
       address,
       name,
       ownerAddress,
-      collection: collection || nft.collection,
+      collection: collection ?? nft.collection,
     };
   };
 

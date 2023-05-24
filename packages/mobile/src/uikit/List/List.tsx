@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { Steezy, StyleProp } from '$styles';
-import { View } from '$uikit';
+import { Spacer, View } from '$uikit';
 import { ListHeader } from './ListHeader';
 import { ListSeparator } from './ListSeparator';
 import { ViewStyle } from 'react-native';
@@ -17,25 +17,29 @@ export const List = memo<ListProps>((props) => {
   const { indent = true, compact = true } = props;
 
   const items = useMemo(() => {
-    return React.Children.map(props.children, (node, i) => {
-      if (!React.isValidElement(node)) {
-        return node;
-      }
+    return React.Children.toArray(props.children)
+      .filter((node) => node != null)
+      .map((node, i, arr) => {
+        if (!React.isValidElement(node)) {
+          return node;
+        }
 
-      const child = node as React.ReactElement;
-
-      return (
-        <>
-          {compact && i > 0 && <ListSeparator />}
-          {React.cloneElement(child, {
-            compact,
-            isFirst: i === 0,
-            // @ts-ignore
-            isLast: i === props.children.length - 1,
-          })}
-        </>
-      );
-    });
+        const child = node as React.ReactElement;
+        return (
+          <>
+            {!compact && i === 0 && <Spacer y={8} />}
+            {compact && i > 0 && <ListSeparator />}
+            {React.cloneElement(child, {
+              compact,
+              isFirst: i === 0,
+              // @ts-ignore
+              isLast: i === props.children.length - 1,
+            })}
+            {/* @ts-ignore **/}
+            {!compact && i === arr.length - 1 && <Spacer y={8} />}
+          </>
+        );
+      });
   }, [compact, props.children]);
 
   return (

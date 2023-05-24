@@ -131,7 +131,9 @@ const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
               <Separator />
               <Highlight onPress={() => copyText(totalFee?.fee)}>
                 <S.InfoItem>
-                  <S.InfoItemLabel>{totalFee?.isNegative ? t('txActions.refund') : t('txActions.fee')}</S.InfoItemLabel>
+                  <S.InfoItemLabel>
+                    {totalFee?.isNegative ? t('txActions.refund') : t('txActions.fee')}
+                  </S.InfoItemLabel>
                   <S.InfoItemValueText>{totalFee?.fee}</S.InfoItemValueText>
                 </S.InfoItem>
               </Highlight>
@@ -158,9 +160,7 @@ const NftItemTransferAction = React.memo<NftItemTransferActionProps>((props) => 
   const caption = React.useMemo(() => {
     let text = '...';
     if (item.data?.metadata) {
-      text = isTG
-        ? `${dnsToUsername(item.data.metadata.name)}`
-        : `${item.data.metadata.name}`;
+      text = `${item.data.metadata.name}`;
     }
 
     if (item.data?.collection) {
@@ -200,7 +200,9 @@ const NftItemTransferAction = React.memo<NftItemTransferActionProps>((props) => 
             <Separator />
             <Highlight onPress={() => copyText(totalFee?.fee)}>
               <S.InfoItem>
-                <S.InfoItemLabel>{totalFee?.isNegative ? t('txActions.refund') : t('txActions.fee')}</S.InfoItemLabel>
+                <S.InfoItemLabel>
+                  {totalFee?.isNegative ? t('txActions.refund') : t('txActions.fee')}
+                </S.InfoItemLabel>
                 <S.InfoItemValueText>{totalFee?.fee}</S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
@@ -263,7 +265,9 @@ const TgAuctionBidAction = React.memo<TgAuctionBidActionProps>((props) => {
             <Separator />
             <Highlight onPress={() => copyText(totalFee?.fee)}>
               <S.InfoItem>
-                <S.InfoItemLabel>{totalFee?.isNegative ? t('txActions.refund') : t('txActions.fee')}</S.InfoItemLabel>
+                <S.InfoItemLabel>
+                  {totalFee?.isNegative ? t('txActions.refund') : t('txActions.fee')}
+                </S.InfoItemLabel>
                 <S.InfoItemValueText>{totalFee?.fee}</S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
@@ -332,7 +336,9 @@ const AuctionBidAction = React.memo<AuctionBidActionProps>((props) => {
             <Separator />
             <Highlight onPress={() => copyText(totalFee?.fee)}>
               <S.InfoItem>
-                <S.InfoItemLabel>{totalFee?.isNegative ? t('txActions.refund') : t('txActions.fee')}</S.InfoItemLabel>
+                <S.InfoItemLabel>
+                  {totalFee?.isNegative ? t('txActions.refund') : t('txActions.fee')}
+                </S.InfoItemLabel>
                 <S.InfoItemValueText>{totalFee?.fee}</S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>

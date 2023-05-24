@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCopyText, useInstance, useWallet } from '$hooks';
-import {Highlight, Icon, Separator, Skeleton, Text} from '$uikit';
+import { Highlight, Icon, Separator, Skeleton, Text } from '$uikit';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { useDownloadCollectionMeta } from '../useDownloadCollectionMeta';
 import { NftTransferParams, TxRequestBody } from '../TXRequest.types';
@@ -8,19 +8,22 @@ import { useDownloadNFT } from '../useDownloadNFT';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import {debugLog, maskifyAddress, toLocaleNumber} from '$utils';
+import { debugLog, maskifyAddress, toLocaleNumber } from '$utils';
 import { t } from '$translation';
 import { CryptoCurrencies } from '$shared/constants';
 import { useDispatch } from 'react-redux';
-import {nftsActions} from "$store/nfts";
+import { nftsActions } from '$store/nfts';
 import { Modal } from '$libs/navigation';
-import {CaptionWrap} from "../NFTOperations.styles";
-import { dnsToUsername } from '$utils/dnsToUsername';
+import { CaptionWrap } from '../NFTOperations.styles';
 import { formatter } from '$utils/formatter';
 
 type NFTTransferModalProps = TxRequestBody<NftTransferParams>;
 
-export const NFTTransferModal = ({ params, fee: precalculatedFee, ...options }: NFTTransferModalProps) => {
+export const NFTTransferModal = ({
+  params,
+  fee: precalculatedFee,
+  ...options
+}: NFTTransferModalProps) => {
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const item = useDownloadNFT(params.nftItemAddress);
   const collectionMeta = useDownloadCollectionMeta();
@@ -47,7 +50,7 @@ export const NFTTransferModal = ({ params, fee: precalculatedFee, ...options }: 
         collectionMeta.download(address);
       })
       .catch((err) => debugLog('[NFT getCollectionUriByItem]', err));
-    
+
     if (!precalculatedFee) {
       operations
         .transfer(params)
@@ -81,7 +84,7 @@ export const NFTTransferModal = ({ params, fee: precalculatedFee, ...options }: 
   const caption = React.useMemo(() => {
     let text = '...';
     if (item.data?.metadata) {
-      text = `${isTG ? dnsToUsername(item.data.dns) : (item.data.dns || item.data.metadata.name)}`;
+      text = `${(!isTG && item.data.dns) || item.data.metadata.name}`;
     }
 
     if (collectionMeta.data) {
@@ -121,10 +124,18 @@ export const NFTTransferModal = ({ params, fee: precalculatedFee, ...options }: 
             <Separator />
             <Highlight onPress={() => fee && copyText(toLocaleNumber(fee))}>
               <S.InfoItem>
-                <S.InfoItemLabel>{parseFloat(fee) >= 0 ? t('transaction_fee') : t('transaction_refund')}</S.InfoItemLabel>
+                <S.InfoItemLabel>
+                  {parseFloat(fee) >= 0 ? t('transaction_fee') : t('transaction_refund')}
+                </S.InfoItemLabel>
                 <S.InfoItemValue>
                   {fee ? (
-                    <Text variant="body1">{formatter.format(fee, { currencySeparator: 'wide', currency: CryptoCurrencies.Ton.toLocaleUpperCase(), absolute: true })}</Text>
+                    <Text variant="body1">
+                      {formatter.format(fee, {
+                        currencySeparator: 'wide',
+                        currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
+                        absolute: true,
+                      })}
+                    </Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}

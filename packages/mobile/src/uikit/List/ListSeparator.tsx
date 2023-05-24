@@ -6,7 +6,6 @@ export interface ListSeparatorProps {
   absolute?: boolean;
   toTop?: boolean;
   leftOffset?: number;
-  variant?: 'common' | 'alternate';
 }
 
 export const ListSeparator = memo<ListSeparatorProps>((props) => {
@@ -15,13 +14,7 @@ export const ListSeparator = memo<ListSeparatorProps>((props) => {
 
   return (
     <View style={styles.container}>
-      <View
-        style={[
-          styles.separator,
-          separatorOffsetStyle,
-          props.variant === 'alternate' && styles.separatorAlternate,
-        ]}
-      />
+      <View style={[styles.separator, separatorOffsetStyle]} />
     </View>
   );
 });
@@ -35,8 +28,5 @@ const styles = Steezy.create(({ colors }) => ({
     height: 0.5,
     backgroundColor: colors.separatorCommon,
     marginTop: -0.5,
-  },
-  separatorAlternate: {
-    backgroundColor: colors.separatorAlternate,
   },
 }));

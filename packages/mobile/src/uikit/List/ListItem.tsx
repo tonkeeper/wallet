@@ -112,14 +112,7 @@ export const ListItem = memo<ListItemProps>((props) => {
       onPress={props.onPress}
       disabled={!props.onPress}
     >
-      <View
-        style={[
-          styles.container.static,
-          props.isFirst && styles.containerFirst.static,
-          props.isLast && styles.containerLast.static,
-          compact && styles.containerCompact.static,
-        ]}
-      >
+      <View style={[styles.container.static, compact && styles.containerCompact.static]}>
         {hasLeftContent && (
           <View style={styles.leftContent}>
             {leftContent}
@@ -164,12 +157,6 @@ const styles = Steezy.create(({ colors }) => ({
     paddingHorizontal: 16,
     paddingVertical: 8,
     minHeight: 56,
-  },
-  containerFirst: {
-    paddingTop: 16,
-  },
-  containerLast: {
-    paddingBottom: 16,
   },
   containerCompact: {
     paddingVertical: 16,
