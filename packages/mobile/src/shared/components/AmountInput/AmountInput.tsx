@@ -2,11 +2,11 @@ import { SendAmount } from '$core/Send/Send.interface';
 import { mainSelector } from '$store/main';
 import { walletWalletSelector } from '$store/wallet';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Switch, TextInput } from 'react-native-gesture-handler';
+import { TextInput } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { formatInputAmount, parseLocaleNumber } from '$utils';
-import { cryptoToFiat, fiatToCrypto, formatCryptoCurrency } from '$utils/currency';
+import { cryptoToFiat, fiatToCrypto, trimZeroDecimals } from '$utils/currency';
 import { useTheme, useTranslator } from '$hooks';
 import { getNumberFormatSettings } from 'react-native-localize';
 import {
@@ -140,11 +140,11 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const handleToggleFiat = useCallback(() => {
     if (isFiat) {
-      setValue(amount.value);
+      setValue(trimZeroDecimals(amount.value));
 
       setFiat(false);
     } else {
-      setValue(cryptoToFiat(amount.value, fiatRate, 2));
+      setValue(trimZeroDecimals(cryptoToFiat(amount.value, fiatRate, 2)));
 
       setFiat(true);
     }
