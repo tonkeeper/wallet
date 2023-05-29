@@ -14,6 +14,7 @@ import {
   ScrollHandler,
   IconButton,
   Loader,
+  SwapIcon,
 } from '$uikit';
 import {
   openDAppBrowser,
@@ -157,15 +158,20 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     openSend(currency);
   }, [currency, wallet]);
 
-  const handleOpenExchange = useCallback(
-    (category: 'buy' | 'sell') => () => {
-      if (!wallet) {
-        return openRequireWalletModal();
-      }
-      nav.openModal('Exchange', { category });
-    },
-    [nav, wallet],
-  );
+  const handleOpenExchange = useCallback(() => {
+    if (!wallet) {
+      return openRequireWalletModal();
+    }
+    nav.openModal('Exchange');
+  }, [nav, wallet]);
+
+  const handlePressSwap = React.useCallback(() => {
+    if (wallet) {
+      nav.openModal('Swap');
+    } else {
+      openRequireWalletModal();
+    }
+  }, [nav, wallet]);
 
   const handleRefresh = useCallback(() => {
     dispatch(walletActions.refreshBalancesPage(true));
@@ -255,11 +261,6 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
               <S.Divider style={{ marginBottom: ns(16) }} />
               <S.ActionsContainer>
                 <IconButton
-                  onPress={handleOpenExchange('buy')}
-                  iconName="ic-plus-28"
-                  title={t('wallet.buy_btn')}
-                />
-                <IconButton
                   onPress={handleSend}
                   iconName="ic-arrow-up-28"
                   title={t('wallet.send_btn')}
@@ -270,9 +271,14 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
                   title={t('wallet.receive_btn')}
                 />
                 <IconButton
-                  onPress={handleOpenExchange('sell')}
-                  iconName="ic-minus-28"
-                  title={t('wallet.sell_btn')}
+                  onPress={handleOpenExchange}
+                  iconName="ic-plus-28"
+                  title={t('wallet.buy_btn')}
+                />
+                <IconButton
+                  onPress={handlePressSwap}
+                  icon={<SwapIcon />}
+                  title={t('wallet.swap_btn')}
                 />
               </S.ActionsContainer>
               <S.Divider />

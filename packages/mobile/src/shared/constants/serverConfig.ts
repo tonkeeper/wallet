@@ -28,6 +28,7 @@ export interface ServerConfig {
   flags: Record<string, boolean>;
   directSupportUrl: string;
   amplitudeKey: string;
+  stonfiUrl: string;
 }
 
 let config: ServerConfig | null = null;
@@ -63,6 +64,7 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     transactionExplorer: 'https://tonapi.io/transaction/%s',
     flags: data.flags || {},
     amplitudeKey: data.amplitudeKey,
+    stonfiUrl: data.stonfiUrl || 'https://tonkeeper-stage-lqf1jk9z.ston.fi/swap',
   };
 }
 

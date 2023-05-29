@@ -136,7 +136,7 @@ export function useDeeplinkingResolvers() {
     if (!getWallet()) {
       return openRequireWalletModal();
     } else {
-      nav.openModal('Exchange', { category: 'buy' });
+      nav.openModal('Exchange');
     }
   });
 
@@ -385,7 +385,7 @@ export function useDeeplinkingResolvers() {
     } finally {
       setTimeout(() => {
         prevTxRequestPath.current = '';
-      }, 1000)
+      }, 1000);
     }
   });
 

@@ -9,6 +9,7 @@ import {
   Text,
   List,
   View,
+  SwapIcon,
 } from '$uikit';
 import { useNavigation } from '$libs/navigation';
 import { ScanQRButton } from '../../components/ScanQRButton';
@@ -65,21 +66,21 @@ export const WalletScreen = memo(() => {
     return () => clearTimeout(timer);
   }, [dispatch]);
 
-  const handlePressSell = React.useCallback(() => {
+  const handlePressSwap = React.useCallback(() => {
     if (wallet) {
-      nav.openModal('Exchange', { category: 'sell' });
+      nav.openModal('Swap');
     } else {
       openRequireWalletModal();
     }
-  }, [wallet]);
+  }, [nav, wallet]);
 
   const handlePressBuy = React.useCallback(() => {
     if (wallet) {
-      nav.openModal('Exchange', { category: 'buy' });
+      nav.openModal('Exchange');
     } else {
       openRequireWalletModal();
     }
-  }, [wallet]);
+  }, [nav, wallet]);
 
   const handlePressSend = React.useCallback(() => {
     if (wallet) {
@@ -87,7 +88,7 @@ export const WalletScreen = memo(() => {
     } else {
       openRequireWalletModal();
     }
-  }, [wallet]);
+  }, [nav, wallet]);
 
   const handlePressRecevie = React.useCallback(() => {
     if (wallet) {
@@ -98,7 +99,7 @@ export const WalletScreen = memo(() => {
     } else {
       openRequireWalletModal();
     }
-  }, [wallet]);
+  }, [nav, wallet]);
 
   const handleCreateWallet = () => openRequireWalletModal();
 
@@ -137,11 +138,6 @@ export const WalletScreen = memo(() => {
       </View>
       <IconButtonList>
         <IconButton
-          onPress={handlePressBuy}
-          iconName="ic-plus-28"
-          title={t('wallet.buy_btn')}
-        />
-        <IconButton
           onPress={handlePressSend}
           iconName="ic-arrow-up-28"
           title={t('wallet.send_btn')}
@@ -152,9 +148,14 @@ export const WalletScreen = memo(() => {
           title={t('wallet.receive_btn')}
         />
         <IconButton
-          onPress={handlePressSell}
-          iconName="ic-minus-28"
-          title={t('wallet.sell_btn')}
+          onPress={handlePressBuy}
+          iconName="ic-plus-28"
+          title={t('wallet.buy_btn')}
+        />
+        <IconButton
+          onPress={handlePressSwap}
+          icon={<SwapIcon animated />}
+          title={t('wallet.swap_btn')}
         />
       </IconButtonList>
       {tokenApproval && wallet && <ApprovalCell />}

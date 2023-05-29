@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { ReactNode, memo, useMemo } from 'react';
 import { Steezy, StyleProp } from '$styles';
 import { View, TouchableOpacity } from './StyledNativeComponents';
 import { Text } from './Text/Text';
@@ -9,7 +9,8 @@ import { getLocale } from '$translation';
 
 interface IconButtonProps {
   title: string;
-  iconName: IconNames;
+  iconName?: IconNames;
+  icon?: ReactNode;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
 }
@@ -25,12 +26,10 @@ export const IconButton = memo<IconButtonProps>((props) => {
         style={styles.container}
       >
         <View style={styles.iconContainer}>
-          <Icon name={props.iconName} colorHex="#FFF" />
+          {props.iconName ? <Icon name={props.iconName} colorHex="#FFF" /> : null}
+          {props.icon}
         </View>
-        <Text 
-          variant="label3" 
-          color="textSecondary"
-        >
+        <Text variant="label3" color="textSecondary">
           {props.title}
         </Text>
       </TouchableOpacity>
@@ -53,5 +52,7 @@ const styles = Steezy.create(({ colors }) => ({
     backgroundColor: colors.buttonTertiaryBackground,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+    flexDirection: 'row',
   },
 }));

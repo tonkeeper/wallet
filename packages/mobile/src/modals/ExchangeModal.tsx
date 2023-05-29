@@ -1,7 +1,7 @@
 import React, { FC, memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Button, InlineHeader, Loader, View } from '$uikit';
+import { Button, InlineHeader, Loader, Spacer, View } from '$uikit';
 import * as S from '../core/Exchange/Exchange.style';
 import { exchangeSelector } from '$store/exchange';
 import { ExchangeItem } from '../core/Exchange/ExchangeItem/ExchangeItem';
@@ -11,26 +11,10 @@ import { Linking } from 'react-native';
 import { Modal } from '$libs/navigation';
 import { Steezy } from '$styles';
 
-interface ExchangeModalProps {
-  category: 'buy' | 'sell';
-}
-
-export const ExchangeModal = ({ category }: ExchangeModalProps) => {
+export const ExchangeModal = () => {
   const t = useTranslator();
 
   const { isLoading, categories } = useSelector(exchangeSelector);
-
-  const isSell = category === 'sell';
-
-  const items = useMemo(() => {
-    return categories.filter((item) => {
-      if (isSell) {
-        return item?.type === 'sell';
-      }
-      
-      return item?.type === 'buy';
-    });
-  }, [isSell]);
 
   const otherWaysAvailable = getServerConfigSafe('exchangePostUrl') !== 'none';
 
@@ -44,66 +28,58 @@ export const ExchangeModal = ({ category }: ExchangeModalProps) => {
 
   return (
     <Modal>
-      <Modal.Header 
-        title={
-          isSell
-            ? t('exchange_modal.sell_title') 
-            : t('exchange_modal.buy_title')
-        } 
-      />
-      <Modal.Content safeArea>
-        <View style={styles.container}>
-          {isLoading ? (
-            <S.LoaderWrap>
-              <Loader size="medium" />
-            </S.LoaderWrap>
-          ) : (
-            <>
-              {items.map((category, cIndex) => (
-                <React.Fragment key={category.title}>
-                  {cIndex > 0 ? (
-                    <S.HeaderContainer>
-                      <InlineHeader>{category.title}</InlineHeader>
-                    </S.HeaderContainer>
-                  ) : null}
-                  <S.Contain>
-                    {category.items.map((item, idx, arr) => (
-                      <ExchangeItem
-                        topRadius={idx === 0}
-                        bottomRadius={idx === arr.length - 1}
-                        key={item}
-                        methodId={item}
-                      />
-                    ))}
-                  </S.Contain>
-                </React.Fragment>
-              ))}
-              {otherWaysAvailable && (
-                <View style={styles.otherWaysContainer}>
-                  <Button size="medium_rounded" mode="secondary" onPress={openOtherWays}>
-                    {
-                      isSell 
-                        ? t('exchange_modal.other_ways_to_sell')
-                        : t('exchange_modal.other_ways_to_buy')
-                    }
-                  </Button>
-                </View>
-              )}
-            </>
-          )}
-        </View>
-      </Modal.Content>
+      <Modal.Header title={t('exchange_modal.title')} />
+      <Modal.ScrollView>
+        <Modal.Content safeArea>
+          <View style={styles.container}>
+            {isLoading ? (
+              <S.LoaderWrap>
+                <Loader size="medium" />
+              </S.LoaderWrap>
+            ) : (
+              <>
+                {categories.map((category, cIndex) => (
+                  <React.Fragment key={category.title}>
+                    {cIndex > 0 ? <Spacer y={32} /> : null}
+                    <S.Contain>
+                      {category.items.map((item, idx, arr) => (
+                        <ExchangeItem
+                          topRadius={idx === 0}
+                          bottomRadius={idx === arr.length - 1}
+                          key={item}
+                          methodId={item}
+                        />
+                      ))}
+                    </S.Contain>
+                    {otherWaysAvailable && category.type === 'buy' ? (
+                      <View style={styles.otherWaysContainer}>
+                        <Button
+                          size="medium_rounded"
+                          mode="secondary"
+                          onPress={openOtherWays}
+                        >
+                          {t('exchange_modal.other_ways_to_buy')}
+                        </Button>
+                      </View>
+                    ) : null}
+                  </React.Fragment>
+                ))}
+              </>
+            )}
+          </View>
+        </Modal.Content>
+      </Modal.ScrollView>
     </Modal>
   );
 };
 
 const styles = Steezy.create({
   container: {
-    paddingBottom: 16
+    paddingBottom: 16,
   },
   otherWaysContainer: {
     marginTop: 16,
     justifyContent: 'center',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
 });

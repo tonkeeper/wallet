@@ -312,10 +312,10 @@
     "edit_tokens_btn": "Настроить",
     "old_wallets_title": "Cтарые кошельки",
     "old_wallet_title": "Cтарый кошелёк",
-    "buy_btn": "Купить",
+    "buy_btn": "Купить TON",
     "send_btn": "Отправить",
     "receive_btn": "Получить",
-    "sell_btn": "Продать",
+    "swap_btn": "Обменять",
     "tonkens_tab_lable": "Токены",
     "collectibles_tab_lable": "Коллекции"
   },
@@ -404,9 +404,7 @@
   },
 
   "exchange_modal": {
-    "sell_title": "Продать Toncoin",
-    "buy_title": "Купить Toncoin",
-    "other_ways_to_sell": "Другие способы продажи",
+    "title": "Купить или продать",
     "other_ways_to_buy": "Другие способы покупки"
   },
 

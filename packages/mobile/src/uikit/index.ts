@@ -46,3 +46,4 @@ export * from './Spacer';
 export { Pressable } from './Pressable';
 export { ListButton } from './ListButton/ListButton';
 export { DraggableFlashList } from './DraggableFlashList';
+export { SwapIcon } from './SwapIcon/SwapIcon';

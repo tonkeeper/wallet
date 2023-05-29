@@ -31,6 +31,7 @@ import { WebView } from '$core/WebView/WebView';
 import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewConfirmSending';
 import { ActionModal } from '$core/ModalContainer/Action/Action';
 import { ExchangeModal } from '$modals/ExchangeModal';
+import { Swap } from '$core/Swap/Swap';
 
 const Stack = createModalStackNavigator();
 
@@ -60,6 +61,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={Send} path={AppStackRouteNames.Send} />
       <Stack.Modal component={StakingSend} path={AppStackRouteNames.StakingSend} />
       <Stack.Modal component={ScanQR} path={AppStackRouteNames.ScanQR} />
+      <Stack.Modal component={Swap} path={AppStackRouteNames.Swap} />
     </Stack.Group>
     <Stack.Group behavior="fullScreenModal">
       <Stack.Modal
