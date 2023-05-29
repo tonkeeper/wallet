@@ -29,44 +29,46 @@ export const ExchangeModal = () => {
   return (
     <Modal>
       <Modal.Header title={t('exchange_modal.title')} />
-      <Modal.Content safeArea>
-        <View style={styles.container}>
-          {isLoading ? (
-            <S.LoaderWrap>
-              <Loader size="medium" />
-            </S.LoaderWrap>
-          ) : (
-            <>
-              {categories.map((category, cIndex) => (
-                <React.Fragment key={category.title}>
-                  {cIndex > 0 ? <Spacer y={32} /> : null}
-                  <S.Contain>
-                    {category.items.map((item, idx, arr) => (
-                      <ExchangeItem
-                        topRadius={idx === 0}
-                        bottomRadius={idx === arr.length - 1}
-                        key={item}
-                        methodId={item}
-                      />
-                    ))}
-                  </S.Contain>
-                  {otherWaysAvailable && category.type === 'buy' ? (
-                    <View style={styles.otherWaysContainer}>
-                      <Button
-                        size="medium_rounded"
-                        mode="secondary"
-                        onPress={openOtherWays}
-                      >
-                        {t('exchange_modal.other_ways_to_buy')}
-                      </Button>
-                    </View>
-                  ) : null}
-                </React.Fragment>
-              ))}
-            </>
-          )}
-        </View>
-      </Modal.Content>
+      <Modal.ScrollView>
+        <Modal.Content safeArea>
+          <View style={styles.container}>
+            {isLoading ? (
+              <S.LoaderWrap>
+                <Loader size="medium" />
+              </S.LoaderWrap>
+            ) : (
+              <>
+                {categories.map((category, cIndex) => (
+                  <React.Fragment key={category.title}>
+                    {cIndex > 0 ? <Spacer y={32} /> : null}
+                    <S.Contain>
+                      {category.items.map((item, idx, arr) => (
+                        <ExchangeItem
+                          topRadius={idx === 0}
+                          bottomRadius={idx === arr.length - 1}
+                          key={item}
+                          methodId={item}
+                        />
+                      ))}
+                    </S.Contain>
+                    {otherWaysAvailable && category.type === 'buy' ? (
+                      <View style={styles.otherWaysContainer}>
+                        <Button
+                          size="medium_rounded"
+                          mode="secondary"
+                          onPress={openOtherWays}
+                        >
+                          {t('exchange_modal.other_ways_to_buy')}
+                        </Button>
+                      </View>
+                    ) : null}
+                  </React.Fragment>
+                ))}
+              </>
+            )}
+          </View>
+        </Modal.Content>
+      </Modal.ScrollView>
     </Modal>
   );
 };
