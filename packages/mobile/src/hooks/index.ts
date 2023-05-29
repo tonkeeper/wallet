@@ -30,3 +30,4 @@ export { usePoolInfo } from './usePoolInfo';
 export { useStakingCycle } from './useStakingCycle';
 export { useApprovedNfts } from './useApprovedNfts';
 export { useIsHasJettons } from './useIsHasJettons';
+export { useWebViewBridge } from './jsBridge';

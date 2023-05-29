@@ -24,6 +24,7 @@ export enum AppStackRouteNames {
   DAppsSearch = 'DAppsSearch',
   DAppBrowser = 'DAppBrowser',
   StakingSend = 'StakingSend',
+  Swap = 'Swap',
 }
 
 export enum MainStackRouteNames {

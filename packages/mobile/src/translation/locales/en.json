@@ -305,10 +305,10 @@
     "edit_tokens_btn": "Edit",
     "old_wallets_title": "Old wallets",
     "old_wallet_title": "Old wallet",
-    "buy_btn": "Buy",
+    "buy_btn": "Buy TON",
     "send_btn": "Send",
     "receive_btn": "Receive",
-    "sell_btn": "Sell",
+    "swap_btn": "Swap",
     "tonkens_tab_lable": "Tokens",
     "collectibles_tab_lable": "Collectibles"
   },
@@ -390,9 +390,7 @@
   },
 
   "exchange_modal": {
-    "sell_title": "Sell Toncoin",
-    "buy_title": "Buy Toncoin",
-    "other_ways_to_sell": "Other ways to sell",
+    "title": "Buy or sell",
     "other_ways_to_buy": "Other ways to buy"
   },
 

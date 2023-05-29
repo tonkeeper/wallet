@@ -10,6 +10,7 @@ import {
   PopupMenuItem,
   IconButton,
   Skeleton,
+  SwapIcon,
 } from '$uikit';
 import { delay, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -24,6 +25,9 @@ import { Linking, RefreshControl } from 'react-native';
 import { walletAddressSelector } from '$store/wallet';
 import { useJettonPrice } from '$hooks/useJettonPrice';
 import { formatter } from '$utils/formatter';
+import { useNavigation } from '$libs/navigation';
+import { useSwapStore } from '$store/zustand/swap';
+import { shallow } from 'zustand/shallow';
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const theme = useTheme();
@@ -36,6 +40,10 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const address = useSelector(walletAddressSelector);
   const { price, total } = useJettonPrice(jetton.jettonAddress, jetton.balance);
 
+  const nav = useNavigation();
+
+  const showSwap = useSwapStore((s) => !!s.assets[jetton.jettonAddress], shallow);
+
   const handleSend = useCallback(() => {
     openSend(jetton.jettonAddress, undefined, undefined, undefined, true);
   }, [jetton.jettonAddress]);
@@ -44,13 +52,17 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     openReceive(CryptoCurrencies.Ton, true, jetton.jettonAddress);
   }, [jetton.jettonAddress]);
 
+  const handlePressSwap = React.useCallback(() => {
+    nav.openModal('Swap', { jettonAddress: jetton.jettonAddress });
+  }, [jetton.jettonAddress, nav]);
 
   const handleOpenExplorer = useCallback(async () => {
     await delay(200);
     openDAppBrowser(
-      getServerConfig('accountExplorer').replace('%s', address.ton) + `/jetton/${jetton.jettonAddress}`,
+      getServerConfig('accountExplorer').replace('%s', address.ton) +
+        `/jetton/${jetton.jettonAddress}`,
     );
-    }, [address.ton, jetton.jettonAddress]);
+  }, [address.ton, jetton.jettonAddress]);
 
   const renderHeader = useMemo(() => {
     if (!jetton) {
@@ -92,11 +104,18 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             iconName="ic-arrow-down-28"
             title={t('wallet.receive_btn')}
           />
+          {showSwap ? (
+            <IconButton
+              onPress={handlePressSwap}
+              icon={<SwapIcon />}
+              title={t('wallet.swap_btn')}
+            />
+          ) : null}
         </S.ActionsContainer>
         <S.Divider style={{ marginBottom: 10 }} />
       </S.HeaderWrap>
     );
-  }, [jetton, total, price, t, handleSend, handleReceive]);
+  }, [jetton, total, t, price, handleSend, handleReceive, handlePressSwap]);
 
   const renderFooter = useCallback(() => {
     if (Object.values(events).length === 0 && isLoading) {
