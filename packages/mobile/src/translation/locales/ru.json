@@ -194,7 +194,7 @@
   "receive_received_title": "Вам зачислено\n%{amount} %{currency}",
 
   "send_title": "Отправить %{currency}",
-  "send_address_placeholder": "Адрес или домен",
+  "send_address_placeholder": "Адрес или имя",
   "send_fee_estimation_error": "Ошибка подсчёта комиссии",
   "send_get_wallet_info_error": "Ошибка запроса кошелька",
   "send_build_tx_error": "Ошибка создания транзакции",
@@ -357,7 +357,6 @@
       "few": "Одобрите %{count} входящих токена",
       "many": "Одобрите %{count} входящих токенов",
       "other": "Одобрите %{count} входящих токенов"
-
     },
     "manage_tokens": "Настроить токены",
     "name": "Имя",

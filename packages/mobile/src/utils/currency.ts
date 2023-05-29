@@ -54,6 +54,14 @@ export function formatCryptoCurrency(
   return `${toLocaleNumber(amount)} ${currency?.toUpperCase()}`;
 }
 
+export const trimZeroDecimals = (input: string) => {
+  const { decimalSeparator } = getNumberFormatSettings();
+
+  const exp = input.split(decimalSeparator);
+
+  return exp[1] && exp[1].split('').every((s) => s === '0') ? exp[0] : input;
+};
+
 export const cryptoToFiat = (
   input: string,
   fiatRate: number,
@@ -75,11 +83,7 @@ export const cryptoToFiat = (
     groupSeparator: groupingSeparator,
   });
 
-  return formatInputAmount(
-    formatted === `0${decimalSeparator}00` ? '0' : formatted,
-    decimals,
-    skipFormatting,
-  );
+  return formatInputAmount(formatted, decimals, skipFormatting);
 };
 
 export const fiatToCrypto = (

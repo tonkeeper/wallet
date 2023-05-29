@@ -196,7 +196,7 @@
   "receive_received_title": "You received\n%{amount} %{currency}",
 
   "send_title": "Send %{currency}",
-  "send_address_placeholder": "Address or domain",
+  "send_address_placeholder": "Address or name",
   "send_comment_label": "Add a comment",
   "send_fee_estimation_error": "Failed to calculate fee",
   "send_get_wallet_info_error": "Failed to get wallet info",
@@ -218,7 +218,7 @@
       "title": "Recipient",
       "placeholder": "Wallet address or domain",
       "recent_label": "Recent",
-      "suggests_label": "Favorites and recent transactions",
+      "suggests_label": "Favorites and recent",
       "delete_alert_text": "Are you sure want to delete «%{name}» from your favorites?",
       "suggest_actions": {
         "add": "Add to favorites",
