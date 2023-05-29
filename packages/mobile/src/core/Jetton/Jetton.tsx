@@ -115,7 +115,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         <S.Divider style={{ marginBottom: 10 }} />
       </S.HeaderWrap>
     );
-  }, [jetton, total, t, price, handleSend, handleReceive, handlePressSwap]);
+  }, [jetton, total, t, price, handleSend, handleReceive, showSwap, handlePressSwap]);
 
   const renderFooter = useCallback(() => {
     if (Object.values(events).length === 0 && isLoading) {

@@ -140,6 +140,14 @@ export function useDeeplinkingResolvers() {
     }
   });
 
+  deeplinking.add('/swap', ({ query }) => {
+    if (!getWallet()) {
+      return openRequireWalletModal();
+    } else {
+      nav.openModal('Swap', { ft: query.ft, tt: query.tt });
+    }
+  });
+
   deeplinking.add('/transfer/:address', async ({ params, query, resolveParams }) => {
     const currency = CryptoCurrencies.Ton;
     const address = params.address;

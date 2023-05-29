@@ -12,6 +12,8 @@ import { getDomainFromURL } from '$utils';
 
 interface Props {
   jettonAddress?: string;
+  ft?: string;
+  tt?: string;
 }
 
 export const Swap: FC<Props> = (props) => {
@@ -20,8 +22,8 @@ export const Swap: FC<Props> = (props) => {
   const baseUrl = getServerConfig('stonfiUrl');
 
   const url = useMemo(() => {
-    const ft = jettonAddress ?? 'TON';
-    const tt = jettonAddress ? 'TON' : null;
+    const ft = props.ft ?? jettonAddress ?? 'TON';
+    const tt = props.tt ?? (jettonAddress ? 'TON' : null);
 
     let path = `${baseUrl}?ft=${ft}`;
 
@@ -30,7 +32,7 @@ export const Swap: FC<Props> = (props) => {
     }
 
     return path;
-  }, [baseUrl, jettonAddress]);
+  }, [baseUrl, jettonAddress, props.ft, props.tt]);
 
   const address = useSelector(walletAddressSelector);
 
