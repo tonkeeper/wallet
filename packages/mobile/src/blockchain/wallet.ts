@@ -322,9 +322,8 @@ export class TonWallet {
 
   private async prepareAddress(address: string): Promise<string> {
     const info = await this.getWalletInfo(address);
-
     let preparedAddress = address;
-    if (['empty', 'uninit'].includes(info?.status ?? '')) {
+    if (['empty', 'uninit', 'nonexist'].includes(info?.status ?? '')) {
       const addr = new TonWeb.utils.Address(preparedAddress);
       preparedAddress = addr.toString(true, false, false);
     }
