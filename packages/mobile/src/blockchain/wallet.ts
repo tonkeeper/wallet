@@ -355,7 +355,7 @@ export class TonWallet {
     // coins (because most wallets use EQ... bounce=true format),
     // then we display warning about "inactive contract".
     const info = await this.getWalletInfo(address);
-    return ['empty', 'uninit'].includes(info?.status ?? '');
+    return ['empty', 'uninit', 'nonexist'].includes(info?.status ?? '');
   }
 
   async estimateJettonFee(
@@ -640,7 +640,7 @@ export class TonWallet {
   async getLockupBalances() {
     const address = await this.getAddress();
     const info = await this.getWalletInfo(address);
-    if (['empty', 'uninit'].includes(info?.status ?? '')) {
+    if (['empty', 'uninit', 'nonexist'].includes(info?.status ?? '')) {
       try {
         const balance = (await this.blockchainApi.getRawAccount({ accountId: address }))
           .balance;
