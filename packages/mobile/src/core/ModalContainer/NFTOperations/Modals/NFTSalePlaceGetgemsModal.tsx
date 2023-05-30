@@ -50,7 +50,7 @@ export const NFTSalePlaceGetgemsModal = ({
     async (contractAddress: string, secretKey: Uint8Array) => {
       const info = await wallet!.ton.getWalletInfo(contractAddress);
 
-      if (['empty', 'uninit'].includes(info?.status ?? '')) {
+      if (['empty', 'uninit', 'nonexist'].includes(info?.status ?? '')) {
         throw new Error('Contract uninitialized');
       }
 
