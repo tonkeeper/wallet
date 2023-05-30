@@ -72,7 +72,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
   ) => {
     const t = useTranslator();
     const dispatch = useDispatch();
-    const { enabled } = useJettonBalances();
+    const { enabled } = useJettonBalances(true);
 
     const handleManageJettons = useCallback(() => {
       openJettonsList();
