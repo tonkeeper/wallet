@@ -111,7 +111,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
         .getWalletInfo(address[currency])
         .then((info: any) => {
           setLockupDeploy(
-            ['empty', 'uninit'].includes(info.status) ? 'deploy' : 'deployed',
+            ['empty', 'uninit', 'nonexist'].includes(info.status) ? 'deploy' : 'deployed',
           );
         })
         .catch((err: any) => {
