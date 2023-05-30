@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { StonfiInjectedObject } from './types';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 import { getTimeSec } from '$utils/getTimeSec';
@@ -9,6 +9,7 @@ import * as S from './Swap.style';
 import { Icon } from '$uikit';
 import { getServerConfig } from '$shared/constants';
 import { getDomainFromURL } from '$utils';
+import { logEvent } from '@amplitude/analytics-browser';
 
 interface Props {
   jettonAddress?: string;
@@ -73,6 +74,12 @@ export const Swap: FC<Props> = (props) => {
 
   const handleLoadEnd = useCallback(() => {
     setTimeout(() => setOverlayVisible(false), 300);
+  }, []);
+
+  useEffect(() => {
+    logEvent('swap_open', { token: jettonAddress ?? 'TON' });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
