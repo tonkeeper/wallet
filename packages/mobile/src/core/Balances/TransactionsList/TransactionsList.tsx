@@ -118,7 +118,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
         const jettonAddress = jettonTransferAction?.jettonTransfer?.jetton?.address;
         if (
           jettonAddress &&
-          enabled.find((enabledJetton) =>
+          !enabled.find((enabledJetton) =>
             compareAddresses(enabledJetton.jettonAddress, jettonAddress),
           )
         ) {
@@ -161,7 +161,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
         });
       }
 
-      if (eventsCopy.length > 0) {
+      if (eventsCopy.length > 0 && result.length > 0) {
         result[sectionsBeforeTxsLen].isFirst = true;
       }
 
