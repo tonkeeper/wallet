@@ -17,7 +17,7 @@ export interface IBalances {
   enabled: JettonBalanceModel[];
   disabled: JettonBalanceModel[];
 }
-export const useJettonBalances = () => {
+export const useJettonBalances = (withZeroBalances?: boolean) => {
   const tokenApproval = useDevFeatureEnabled(DevFeature.TokenApproval);
   const jettonBalances = useSelector(jettonsBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
@@ -37,13 +37,15 @@ export const useJettonBalances = () => {
       const approvalStatus = approvalStatuses.tokens[jetton.jettonAddress];
       const isWhitelisted = jetton.verification === JettonVerification.WHITELIST;
       const isBlacklisted = jetton.verification === JettonVerification.BLACKLIST;
-
-      if (jetton.balance === '0') return;
-
-      if (
+      const isEnabled =
         (isWhitelisted && !approvalStatus) ||
-        approvalStatus?.current === TokenApprovalStatus.Approved
-      ) {
+        approvalStatus?.current === TokenApprovalStatus.Approved;
+
+      if (!withZeroBalances && jetton.balance === '0') {
+        return;
+      }
+
+      if (isEnabled) {
         balances.enabled.push(jetton);
       } else if (
         (isBlacklisted && !approvalStatus) ||
