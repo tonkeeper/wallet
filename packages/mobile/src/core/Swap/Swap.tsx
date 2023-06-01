@@ -10,6 +10,7 @@ import { Icon } from '$uikit';
 import { getServerConfig } from '$shared/constants';
 import { getDomainFromURL } from '$utils';
 import { logEvent } from '@amplitude/analytics-browser';
+import { checkIsTimeSynced } from '$navigation/hooks/useDeeplinkingResolvers';
 
 interface Props {
   jettonAddress?: string;
@@ -47,8 +48,16 @@ export const Swap: FC<Props> = (props) => {
         new Promise((resolve, reject) => {
           const { valid_until } = request;
 
+          if (!checkIsTimeSynced()) {
+            reject();
+
+            return;
+          }
+
           if (valid_until < getTimeSec()) {
             reject();
+
+            return;
           }
 
           openSignRawModal(
