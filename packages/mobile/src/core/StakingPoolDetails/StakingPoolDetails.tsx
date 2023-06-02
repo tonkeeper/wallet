@@ -41,6 +41,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     hasPendingDeposit,
     hasPendingWithdraw,
     hasReadyWithdraw,
+    isWithdrawDisabled,
     handleTopUpPress,
     handleWithdrawalPress,
     handleConfirmWithdrawalPress,
@@ -187,7 +188,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
               <S.Flex>
                 <Button
                   onPress={handleWithdrawalPress}
-                  disabled={!isImplemeted}
+                  disabled={!isImplemeted || isWithdrawDisabled}
                   mode="secondary"
                 >
                   {t('staking.withdraw')}
