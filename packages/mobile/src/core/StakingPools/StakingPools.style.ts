@@ -8,7 +8,7 @@ export const Wrap = styled.View`
 
 export const Content = styled.View<{ bottomInset: number }>`
   padding: 0 ${ns(16)}px;
-  padding-bottom: ${({ bottomInset }) => bottomInset}px;
+  padding-bottom: ${({ bottomInset }) => ns(16) + bottomInset}px;
 `;
 
 export const WarningContainer = styled.View`
