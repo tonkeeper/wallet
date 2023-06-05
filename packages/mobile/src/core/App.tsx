@@ -12,6 +12,8 @@ import { accentSelector } from '$store/main';
 import { ToastComponent } from '$uikit/Toast/new/ToastComponent';
 import { View } from 'react-native';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { PortalDestination } from '@alexzunik/rn-native-portals-reborn';
+import { isAndroid } from '$utils';
 
 const TonThemeProvider: FC = ({ children }) => {
   const accent = useSelector(accentSelector);
@@ -28,9 +30,7 @@ const TonThemeProvider: FC = ({ children }) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.backgroundPrimary }}>
-      <ThemeProvider {...{ theme }}>
-        {children}
-      </ThemeProvider>
+      <ThemeProvider {...{ theme }}>{children}</ThemeProvider>
     </View>
   );
 };
@@ -47,6 +47,18 @@ export const App: FC = () => {
               <AppNavigator />
             </ScrollPositionProvider>
             <ToastComponent />
+            {isAndroid ? (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                }}
+              >
+                <PortalDestination name="popupPortal" />
+              </View>
+            ) : null}
           </SafeAreaProvider>
         </TonThemeProvider>
       </QueryClientProvider>

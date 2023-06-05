@@ -103,13 +103,13 @@ const CoinDropdownComponent: FC<Props> = (props) => {
               <CurrencyIcon size={24} currency={item.currency as CryptoCurrency} />
             )}
             <Spacer x={8} />
-            <Text numberOfLines={1} style={{ width: ns(132) }}>
+            <Text numberOfLines={1} style={{ width: ns(156) }}>
               <Text variant="label1">
                 {item.isJetton
                   ? item.jetton.metadata.symbol ?? ''
                   : item.currency.toUpperCase()}
               </Text>
-              <Spacer x={8} />
+              {'  '}
               <Text color="foregroundSecondary">{formatter.format(item.balance)}</Text>
             </Text>
           </>

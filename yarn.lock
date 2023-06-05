@@ -7,6 +7,11 @@
   resolved "https://registry.yarnpkg.com/@0no-co/graphql.web/-/graphql.web-1.0.0.tgz#af3f5e3b9359d2f011bc37a93654348b92d4d893"
   integrity sha512-JBq2pWyDchE1vVjj/+c4dzZ8stbpew4RrzpZ3vYdn1WJFGHfYg6YIX1fDdMKtSXJJM9FUlsoDOxemr9WMM2p+A==
 
+"@alexzunik/rn-native-portals-reborn@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@alexzunik/rn-native-portals-reborn/-/rn-native-portals-reborn-1.0.5.tgz#f77767c4de03592d7b1a77b922270e9269528a2f"
+  integrity sha512-VdZgBiAng4o4d0f2PoWSIa+MI/9aRPFV1FXN1MILaToWgDDjSJ5ghQchTMSbtr9c/a3oO1mPMSONxtdvGwTU8g==
+
 "@amplitude/analytics-browser@^1.6.7":
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/@amplitude/analytics-browser/-/analytics-browser-1.9.3.tgz#2dfd7583d2cdb1d7f1139bef99f86ee0b5dca001"
