@@ -250,7 +250,7 @@ export const ManageTokens: FC = () => {
     withCollectibleDot,
   ]);
 
-  if (nftData.length) {
+  if (nftData.length && jettonData.length) {
     return renderTabs();
   } else {
     return (

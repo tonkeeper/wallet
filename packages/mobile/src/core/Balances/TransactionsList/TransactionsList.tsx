@@ -25,7 +25,7 @@ import { differenceInCalendarMonths } from 'date-fns';
 import { EventModel, JettonBalanceModel } from '$store/models';
 import { openEditCoins, openJetton, openJettonsList } from '$navigation';
 import { Address, Ton } from '$libs/Ton';
-import { useJettonBalances, useTranslator } from '$hooks';
+import { useApprovedNfts, useJettonBalances, useTranslator } from '$hooks';
 import { walletActions } from '$store/wallet';
 import { useDispatch } from 'react-redux';
 import _ from 'lodash';
@@ -34,6 +34,7 @@ import { TokenListItem } from '$uikit/TokenListItem/TokenListItem';
 import { ActionItem } from '$shared/components/ActionItem/ActionItem';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
+import { useNftData } from '$core/ManageTokens/hooks/useNftData';
 
 const AnimatedSectionList =
   Animated.createAnimatedComponent<SectionListProps<any>>(SectionList);
@@ -73,6 +74,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
     const t = useTranslator();
     const dispatch = useDispatch();
     const { enabled } = useJettonBalances(true);
+    const { enabled: enabledNfts } = useApprovedNfts();
 
     const handleManageJettons = useCallback(() => {
       openJettonsList();
@@ -115,12 +117,19 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
       let chunk: any = [];
       for (let event of eventsCopy) {
         const jettonTransferAction = event.actions?.find((a) => a.jettonTransfer?.jetton);
+        const nftTransferAction = event.actions?.find((a) => a.nftItemTransfer?.nft);
         const jettonAddress = jettonTransferAction?.jettonTransfer?.jetton?.address;
+        const nftAddress = nftTransferAction?.nftItemTransfer?.nft;
+
         if (
-          jettonAddress &&
-          !enabled.find((enabledJetton) =>
-            compareAddresses(enabledJetton.jettonAddress, jettonAddress),
-          )
+          (jettonAddress &&
+            !enabled.find((enabledJetton) =>
+              compareAddresses(enabledJetton.jettonAddress, jettonAddress),
+            )) ||
+          (nftAddress &&
+            enabledNfts.find((enabledNft) =>
+              compareAddresses(enabledNft.address, nftAddress),
+            ))
         ) {
           continue;
         }
@@ -166,7 +175,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
       }
 
       return result;
-    }, [initialData, eventsInfo, enabled]);
+    }, [initialData, eventsInfo, enabled, enabledNfts]);
 
     function renderItem({ item, index, section }: SectionListRenderItemInfo<any>) {
       const borderStart = index === 0;
