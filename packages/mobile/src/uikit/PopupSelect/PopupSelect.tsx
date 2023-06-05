@@ -10,8 +10,6 @@ import React, {
 } from 'react';
 import {
   Dimensions,
-  FlatList,
-  InteractionManager,
   LayoutChangeEvent,
   Modal,
   StyleProp,
@@ -32,6 +30,8 @@ import * as S from './PopupSelect.style';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { FullWindowOverlay } from 'react-native-screens';
 import { useDimensions } from '$hooks';
+import { PortalOrigin } from '@alexzunik/rn-native-portals-reborn';
+import { FlatList } from 'react-native-gesture-handler';
 
 const ScreenWidth = Dimensions.get('window').width;
 // We should add extra-width for iPhone mini and SE
@@ -99,7 +99,16 @@ const PopupContainer: FC<{
   const { window } = useDimensions();
 
   if (asFullWindowOverlay) {
-    return (
+    return isAndroid ? (
+      <PortalOrigin destination={visible ? 'popupPortal' : null}>
+        <View
+          style={{ width: window.width, height: window.height, position: 'absolute' }}
+          pointerEvents={visible ? 'auto' : 'none'}
+        >
+          {children}
+        </View>
+      </PortalOrigin>
+    ) : (
       <FullWindowOverlay>
         <View
           style={{ width: window.width, height: window.height }}
