@@ -13,6 +13,7 @@ enum PopupActionType {
   SHARE,
   COPY_LINK,
   DISCONNECT,
+  MUTE,
 }
 
 interface PopupAction {
@@ -25,6 +26,7 @@ interface Props {
   title: string;
   url: string;
   isConnected: boolean;
+  isNotificationsEnabled: boolean;
   walletAddress: string;
   canGoBack: boolean;
   onBackPress: () => void;
@@ -38,6 +40,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
     title,
     url,
     isConnected,
+    isNotificationsEnabled,
     walletAddress,
     canGoBack,
     onBackPress,
@@ -65,6 +68,17 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
         label: t('browser.actions.refresh'),
         icon: 'ic-refresh-16',
       },
+    ];
+
+    if (isNotificationsEnabled) {
+      items.push({
+        type: PopupActionType.MUTE,
+        label: t('browser.actions.mute'),
+        icon: 'ic-disconnect-16',
+      });
+    }
+
+    items.push(
       {
         type: PopupActionType.SHARE,
         label: t('browser.actions.share'),
@@ -75,7 +89,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
         label: t('browser.actions.copy_link'),
         icon: 'ic-copy-16',
       },
-    ];
+    );
 
     if (isConnected) {
       items.push({

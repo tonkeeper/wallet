@@ -19,12 +19,12 @@ import {
     AccountAddressFromJSONTyped,
     AccountAddressToJSON,
 } from './AccountAddress';
-import type { ValueFlowNftsInner } from './ValueFlowNftsInner';
+import type { ValueFlowJettonsInner } from './ValueFlowJettonsInner';
 import {
-    ValueFlowNftsInnerFromJSON,
-    ValueFlowNftsInnerFromJSONTyped,
-    ValueFlowNftsInnerToJSON,
-} from './ValueFlowNftsInner';
+    ValueFlowJettonsInnerFromJSON,
+    ValueFlowJettonsInnerFromJSONTyped,
+    ValueFlowJettonsInnerToJSON,
+} from './ValueFlowJettonsInner';
 
 /**
  * 
@@ -52,16 +52,10 @@ export interface ValueFlow {
     fees: number;
     /**
      * 
-     * @type {Array<ValueFlowNftsInner>}
+     * @type {Array<ValueFlowJettonsInner>}
      * @memberof ValueFlow
      */
-    nfts?: Array<ValueFlowNftsInner>;
-    /**
-     * 
-     * @type {Array<ValueFlowNftsInner>}
-     * @memberof ValueFlow
-     */
-    jettons?: Array<ValueFlowNftsInner>;
+    jettons?: Array<ValueFlowJettonsInner>;
 }
 
 /**
@@ -89,8 +83,7 @@ export function ValueFlowFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'account': AccountAddressFromJSON(json['account']),
         'ton': json['ton'],
         'fees': json['fees'],
-        'nfts': !exists(json, 'nfts') ? undefined : ((json['nfts'] as Array<any>).map(ValueFlowNftsInnerFromJSON)),
-        'jettons': !exists(json, 'jettons') ? undefined : ((json['jettons'] as Array<any>).map(ValueFlowNftsInnerFromJSON)),
+        'jettons': !exists(json, 'jettons') ? undefined : ((json['jettons'] as Array<any>).map(ValueFlowJettonsInnerFromJSON)),
     };
 }
 
@@ -106,8 +99,7 @@ export function ValueFlowToJSON(value?: ValueFlow | null): any {
         'account': AccountAddressToJSON(value.account),
         'ton': value.ton,
         'fees': value.fees,
-        'nfts': value.nfts === undefined ? undefined : ((value.nfts as Array<any>).map(ValueFlowNftsInnerToJSON)),
-        'jettons': value.jettons === undefined ? undefined : ((value.jettons as Array<any>).map(ValueFlowNftsInnerToJSON)),
+        'jettons': value.jettons === undefined ? undefined : ((value.jettons as Array<any>).map(ValueFlowJettonsInnerToJSON)),
     };
 }
 

@@ -50,10 +50,8 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
 
   const [canGoBack, setCanGoBack] = useState(false);
 
-  const { ref, isConnected, disconnect, ...webViewProps } = useDAppBridge(
-    walletAddress,
-    currentUrl,
-  );
+  const { ref, isConnected, disconnect, notificationsEnabled, ...webViewProps } =
+    useDAppBridge(walletAddress, currentUrl);
 
   const dimensions = useWindowDimensions();
 
@@ -137,6 +135,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
       <BrowserNavBar
         title={app?.name || title}
         url={currentUrl}
+        isNotificationsEnabled={notificationsEnabled}
         isConnected={isConnected}
         walletAddress={walletAddress}
         canGoBack={canGoBack}

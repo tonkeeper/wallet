@@ -26,6 +26,7 @@ export interface IConnectedApp {
   url: string;
   icon: string;
   autoConnectDisabled?: boolean;
+  notificationsEnabled?: boolean;
   connections: IConnectedAppConnection[];
 }
 
@@ -34,13 +35,6 @@ export interface IConnectedAppsStore {
     [chainName: string]: {
       [walletAddress: string]: {
         [domain: string]: IConnectedApp;
-      };
-    };
-  };
-  notificationsEnabled: {
-    [chainName: string]: {
-      [walletAddress: string]: {
-        [domain: string]: boolean;
       };
     };
   };

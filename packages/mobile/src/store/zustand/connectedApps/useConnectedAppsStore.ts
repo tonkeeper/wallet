@@ -9,10 +9,6 @@ const initialState: Omit<IConnectedAppsStore, 'actions'> = {
     mainnet: {},
     testnet: {},
   },
-  notificationsEnabled: {
-    mainnet: {},
-    testnet: {},
-  },
 };
 
 export const useConnectedAppsStore = create(
@@ -124,31 +120,44 @@ export const useConnectedAppsStore = create(
           enableNotifications: (chainName, walletAddress, url) => {
             const fixedUrl = getFixedLastSlashUrl(url);
 
-            set(({ notificationsEnabled }) => {
-              if (!notificationsEnabled[chainName][walletAddress]) {
-                notificationsEnabled[chainName][walletAddress] = {};
+            set(({ connectedApps }) => {
+              const keys = Object.keys(connectedApps[chainName][walletAddress] || {});
+
+              const apps = Object.values(connectedApps[chainName][walletAddress] || {});
+
+              const index = apps.findIndex((app) =>
+                fixedUrl.startsWith(getFixedLastSlashUrl(app.url)),
+              );
+
+              const hash = keys[index];
+
+              if (connectedApps[chainName][walletAddress]?.[hash]) {
+                connectedApps[chainName][walletAddress][hash].notificationsEnabled = true;
               }
 
-              const hash = generateAppHashFromUrl(fixedUrl);
-
-              notificationsEnabled[chainName][walletAddress][hash] = true;
-
-              return { notificationsEnabled };
+              return { connectedApps };
             });
           },
           disableNotifications: (chainName, walletAddress, url) => {
             const fixedUrl = getFixedLastSlashUrl(url);
 
-            set(({ notificationsEnabled }) => {
-              if (!notificationsEnabled[chainName][walletAddress]) {
-                notificationsEnabled[chainName][walletAddress] = {};
+            set(({ connectedApps }) => {
+              const keys = Object.keys(connectedApps[chainName][walletAddress] || {});
+
+              const apps = Object.values(connectedApps[chainName][walletAddress] || {});
+
+              const index = apps.findIndex((app) =>
+                fixedUrl.startsWith(getFixedLastSlashUrl(app.url)),
+              );
+
+              const hash = keys[index];
+
+              if (connectedApps[chainName][walletAddress]?.[hash]) {
+                connectedApps[chainName][walletAddress][hash].notificationsEnabled =
+                  false;
               }
 
-              const hash = generateAppHashFromUrl(fixedUrl);
-
-              notificationsEnabled[chainName][walletAddress][hash] = false;
-
-              return { notificationsEnabled };
+              return { connectedApps };
             });
           },
           removeApp: (chainName, walletAddress, url) => {

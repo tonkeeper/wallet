@@ -3,6 +3,7 @@ apis/AccountsApi.ts
 apis/BlockchainApi.ts
 apis/ConnectApi.ts
 apis/DNSApi.ts
+apis/EmulationApi.ts
 apis/EventsApi.ts
 apis/JettonsApi.ts
 apis/NFTApi.ts
@@ -36,6 +37,8 @@ models/ComputeSkipReason.ts
 models/Config.ts
 models/ContractDeployAction.ts
 models/CreditPhase.ts
+models/DnsExpiring.ts
+models/DnsExpiringItemsInner.ts
 models/DnsRecord.ts
 models/DomainBid.ts
 models/DomainBids.ts
@@ -100,7 +103,7 @@ models/UnSubscriptionAction.ts
 models/Validator.ts
 models/Validators.ts
 models/ValueFlow.ts
-models/ValueFlowNftsInner.ts
+models/ValueFlowJettonsInner.ts
 models/WalletDNS.ts
 models/index.ts
 runtime.ts

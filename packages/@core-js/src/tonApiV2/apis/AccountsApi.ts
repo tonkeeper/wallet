@@ -18,6 +18,7 @@ import type {
   Account,
   AccountEvents,
   Accounts,
+  DnsExpiring,
   DomainNames,
   FoundAccounts,
   GetAccountsRequest,
@@ -34,6 +35,8 @@ import {
     AccountEventsToJSON,
     AccountsFromJSON,
     AccountsToJSON,
+    DnsExpiringFromJSON,
+    DnsExpiringToJSON,
     DomainNamesFromJSON,
     DomainNamesToJSON,
     FoundAccountsFromJSON,
@@ -62,6 +65,11 @@ export interface GetAccountRequest {
 
 export interface GetAccountsOperationRequest {
     getAccountsRequest?: GetAccountsRequest;
+}
+
+export interface GetDnsExpiringRequest {
+    accountId: string;
+    period?: number;
 }
 
 export interface GetEventsByAccountRequest {
@@ -116,6 +124,10 @@ export interface GetTracesByAccountRequest {
     limit?: number;
 }
 
+export interface ReindexAccountRequest {
+    accountId: string;
+}
+
 /**
  * AccountsApi - interface
  * 
@@ -164,6 +176,21 @@ export interface AccountsApiInterface {
      * Get human-friendly information about several accounts without low-level details.
      */
     getAccounts(requestParameters: GetAccountsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Accounts>;
+
+    /**
+     * Get expiring .ton dns
+     * @param {string} accountId account ID
+     * @param {number} [period] number of days before expiration
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccountsApiInterface
+     */
+    getDnsExpiringRaw(requestParameters: GetDnsExpiringRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DnsExpiring>>;
+
+    /**
+     * Get expiring .ton dns
+     */
+    getDnsExpiring(requestParameters: GetDnsExpiringRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DnsExpiring>;
 
     /**
      * Get events for an account. Each event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
@@ -297,6 +324,20 @@ export interface AccountsApiInterface {
      */
     getTracesByAccount(requestParameters: GetTracesByAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TraceIds>;
 
+    /**
+     * Update internal cache for a particular account
+     * @param {string} accountId account ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccountsApiInterface
+     */
+    reindexAccountRaw(requestParameters: ReindexAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>>;
+
+    /**
+     * Update internal cache for a particular account
+     */
+    reindexAccount(requestParameters: ReindexAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void>;
+
 }
 
 /**
@@ -390,6 +431,40 @@ export class AccountsApi extends runtime.BaseAPI implements AccountsApiInterface
      */
     async getAccounts(requestParameters: GetAccountsOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Accounts> {
         const response = await this.getAccountsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get expiring .ton dns
+     */
+    async getDnsExpiringRaw(requestParameters: GetDnsExpiringRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DnsExpiring>> {
+        if (requestParameters.accountId === null || requestParameters.accountId === undefined) {
+            throw new runtime.RequiredError('accountId','Required parameter requestParameters.accountId was null or undefined when calling getDnsExpiring.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.period !== undefined) {
+            queryParameters['period'] = requestParameters.period;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/v2/accounts/{account_id}/dns/expiring`.replace(`{${"account_id"}}`, encodeURIComponent(String(requestParameters.accountId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => DnsExpiringFromJSON(jsonValue));
+    }
+
+    /**
+     * Get expiring .ton dns
+     */
+    async getDnsExpiring(requestParameters: GetDnsExpiringRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DnsExpiring> {
+        const response = await this.getDnsExpiringRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -727,6 +802,35 @@ export class AccountsApi extends runtime.BaseAPI implements AccountsApiInterface
     async getTracesByAccount(requestParameters: GetTracesByAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TraceIds> {
         const response = await this.getTracesByAccountRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     * Update internal cache for a particular account
+     */
+    async reindexAccountRaw(requestParameters: ReindexAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.accountId === null || requestParameters.accountId === undefined) {
+            throw new runtime.RequiredError('accountId','Required parameter requestParameters.accountId was null or undefined when calling reindexAccount.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/v2/accounts/{account_id}/reindex`.replace(`{${"account_id"}}`, encodeURIComponent(String(requestParameters.accountId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Update internal cache for a particular account
+     */
+    async reindexAccount(requestParameters: ReindexAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.reindexAccountRaw(requestParameters, initOverrides);
     }
 
 }

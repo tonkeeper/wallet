@@ -1,6 +1,5 @@
 import React from 'react';
-import { Steezy } from '$styles';
-import { Screen, List, Checkbox } from '$uikit';
+import { Screen, List } from '$uikit';
 import { AttachScreenButton } from '$navigation/AttachScreen';
 
 export const DevListComponent = () => {

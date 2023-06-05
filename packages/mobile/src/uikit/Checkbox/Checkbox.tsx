@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, TouchableOpacity } from '$uikit';
+import { Icon } from '$uikit';
 import { Steezy } from '$styles';
 import Animated, {
   interpolateColor,
@@ -9,11 +9,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme } from '$hooks';
 import { useEffect } from 'react';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 export interface CheckboxProps {
   checked: boolean;
   onChange: () => void;
   disabled?: boolean;
 }
+
+const STouchableOpacity = Steezy.withStyle(TouchableOpacity);
 
 const Checkbox: React.FC<CheckboxProps> = (props) => {
   const { checked, onChange } = props;
@@ -48,13 +51,13 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
   }, [checked, colorProgress]);
 
   return (
-    <TouchableOpacity onPress={onChange} activeOpacity={0.6}>
+    <STouchableOpacity onPress={onChange} activeOpacity={0.6}>
       <Animated.View style={[styles.checkbox.static, animatedStyle]}>
         <Animated.View style={iconStyle}>
           <Icon name="ic-done-bold-16" color="foregroundPrimary" />
         </Animated.View>
       </Animated.View>
-    </TouchableOpacity>
+    </STouchableOpacity>
   );
 };
 

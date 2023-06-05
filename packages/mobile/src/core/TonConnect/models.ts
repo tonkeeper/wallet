@@ -5,6 +5,7 @@ import { ConnectReplyBuilder, DAppManifest } from '$tonconnect';
 export interface TonConnectModalResponse {
   address: string;
   replyItems: ConnectItemReply[];
+  notificationsEnabled: boolean;
 }
 
 export type TonConnectModalProps =

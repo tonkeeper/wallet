@@ -118,10 +118,10 @@ export interface Message {
     decodedOpName?: string;
     /**
      * 
-     * @type {{ [key: string]: any; }}
+     * @type {any}
      * @memberof Message
      */
-    decodedBody: { [key: string]: any; };
+    decodedBody: any | null;
 }
 
 /**

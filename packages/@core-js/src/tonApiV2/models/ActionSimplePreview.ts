@@ -31,13 +31,31 @@ export interface ActionSimplePreview {
      * @type {string}
      * @memberof ActionSimplePreview
      */
-    description: string;
+    name: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof ActionSimplePreview
      */
-    value?: number;
+    description: string;
+    /**
+     * a link to an image for this particular action.
+     * @type {string}
+     * @memberof ActionSimplePreview
+     */
+    actionImage?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ActionSimplePreview
+     */
+    value?: string;
+    /**
+     * a link to an image that depicts this action's asset.
+     * @type {string}
+     * @memberof ActionSimplePreview
+     */
+    valueImage?: string;
     /**
      * 
      * @type {Array<AccountAddress>}
@@ -51,6 +69,7 @@ export interface ActionSimplePreview {
  */
 export function instanceOfActionSimplePreview(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "name" in value;
     isInstance = isInstance && "description" in value;
     isInstance = isInstance && "accounts" in value;
 
@@ -67,8 +86,11 @@ export function ActionSimplePreviewFromJSONTyped(json: any, ignoreDiscriminator:
     }
     return {
         
+        'name': json['name'],
         'description': json['description'],
+        'actionImage': !exists(json, 'action_image') ? undefined : json['action_image'],
         'value': !exists(json, 'value') ? undefined : json['value'],
+        'valueImage': !exists(json, 'value_image') ? undefined : json['value_image'],
         'accounts': ((json['accounts'] as Array<any>).map(AccountAddressFromJSON)),
     };
 }
@@ -82,8 +104,11 @@ export function ActionSimplePreviewToJSON(value?: ActionSimplePreview | null): a
     }
     return {
         
+        'name': value.name,
         'description': value.description,
+        'action_image': value.actionImage,
         'value': value.value,
+        'value_image': value.valueImage,
         'accounts': ((value.accounts as Array<any>).map(AccountAddressToJSON)),
     };
 }

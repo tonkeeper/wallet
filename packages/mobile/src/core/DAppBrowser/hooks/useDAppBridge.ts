@@ -12,16 +12,19 @@ import {
 export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
   const [connectEvent, setConnectEvent] = useState<ConnectEvent | null>(null);
 
-  const isConnected = useConnectedAppsStore(
+  const [isConnected, notificationsEnabled] = useConnectedAppsStore(
     useCallback(
       (state) => {
         const app = getConnectedAppByUrl(walletAddress, webViewUrl, state);
 
         if (!app) {
-          return false;
+          return [false, false];
         }
 
-        return Boolean(connectEvent && connectEvent.event === 'connect');
+        return [
+          Boolean(connectEvent && connectEvent.event === 'connect'),
+          Boolean(app.notificationsEnabled),
+        ];
       },
       [connectEvent, webViewUrl, walletAddress],
     ),
@@ -79,6 +82,7 @@ export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
     injectedJavaScriptBeforeContentLoaded,
     onMessage,
     isConnected,
+    notificationsEnabled,
     disconnect,
   };
 };

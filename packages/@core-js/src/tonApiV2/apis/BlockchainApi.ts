@@ -15,7 +15,6 @@
 
 import * as runtime from '../runtime';
 import type {
-  AccountEvent,
   Block,
   Config,
   GetBlock401Response,
@@ -27,8 +26,6 @@ import type {
   Validators,
 } from '../models';
 import {
-    AccountEventFromJSON,
-    AccountEventToJSON,
     BlockFromJSON,
     BlockToJSON,
     ConfigFromJSON,
@@ -48,10 +45,6 @@ import {
     ValidatorsFromJSON,
     ValidatorsToJSON,
 } from '../models';
-
-export interface EmulateMessageRequest {
-    sendMessageRequest?: SendMessageRequest;
-}
 
 export interface ExecGetMethodRequest {
     accountId: string;
@@ -83,7 +76,7 @@ export interface GetTransactionRequest {
 }
 
 export interface SendMessageOperationRequest {
-    sendMessageRequest?: SendMessageRequest;
+    sendMessageRequest: SendMessageRequest;
 }
 
 /**
@@ -93,20 +86,6 @@ export interface SendMessageOperationRequest {
  * @interface BlockchainApiInterface
  */
 export interface BlockchainApiInterface {
-    /**
-     * Emulate sending message to blockchain
-     * @param {SendMessageRequest} [sendMessageRequest] bag-of-cells serialized to base64
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof BlockchainApiInterface
-     */
-    emulateMessageRaw(requestParameters: EmulateMessageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AccountEvent>>;
-
-    /**
-     * Emulate sending message to blockchain
-     */
-    emulateMessage(requestParameters: EmulateMessageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AccountEvent>;
-
     /**
      * Execute get method for account
      * @param {string} accountId account ID
@@ -237,7 +216,7 @@ export interface BlockchainApiInterface {
 
     /**
      * Send message to blockchain
-     * @param {SendMessageRequest} [sendMessageRequest] bag-of-cells serialized to base64
+     * @param {SendMessageRequest} sendMessageRequest bag-of-cells serialized to base64
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof BlockchainApiInterface
@@ -255,35 +234,6 @@ export interface BlockchainApiInterface {
  * 
  */
 export class BlockchainApi extends runtime.BaseAPI implements BlockchainApiInterface {
-
-    /**
-     * Emulate sending message to blockchain
-     */
-    async emulateMessageRaw(requestParameters: EmulateMessageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AccountEvent>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        const response = await this.request({
-            path: `/v2/blockchain/message/emulate`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: SendMessageRequestToJSON(requestParameters.sendMessageRequest),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => AccountEventFromJSON(jsonValue));
-    }
-
-    /**
-     * Emulate sending message to blockchain
-     */
-    async emulateMessage(requestParameters: EmulateMessageRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AccountEvent> {
-        const response = await this.emulateMessageRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
 
     /**
      * Execute get method for account
@@ -567,6 +517,10 @@ export class BlockchainApi extends runtime.BaseAPI implements BlockchainApiInter
      * Send message to blockchain
      */
     async sendMessageRaw(requestParameters: SendMessageOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.sendMessageRequest === null || requestParameters.sendMessageRequest === undefined) {
+            throw new runtime.RequiredError('sendMessageRequest','Required parameter requestParameters.sendMessageRequest was null or undefined when calling sendMessage.');
+        }
+
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -587,7 +541,7 @@ export class BlockchainApi extends runtime.BaseAPI implements BlockchainApiInter
     /**
      * Send message to blockchain
      */
-    async sendMessage(requestParameters: SendMessageOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async sendMessage(requestParameters: SendMessageOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.sendMessageRaw(requestParameters, initOverrides);
     }
 

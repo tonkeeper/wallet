@@ -1,12 +1,22 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { Linking, RefreshControl, StyleSheet, View } from 'react-native';
+import { RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useIsFocused } from '@react-navigation/native';
 
 import * as S from '../../core/Balances/Balances.style';
-import { Button, Loader, Screen, ScrollHandler, Text } from '$uikit';
+import {
+  Button,
+  Icon,
+  List,
+  Loader,
+  Screen,
+  ScrollHandler,
+  Spacer,
+  Text,
+  View,
+} from '$uikit';
 import {
   useAppStateActive,
   usePrevious,
@@ -18,18 +28,20 @@ import { walletActions, walletSelector } from '$store/wallet';
 import { ns } from '$utils';
 import {
   CryptoCurrencies,
-  isServerConfigLoaded,
   NavBarHeight,
   SecondaryCryptoCurrencies,
   TabletMaxWidth,
 } from '$shared/constants';
-import { openRequireWalletModal } from '$navigation';
+import { openNotificationsScreen, openRequireWalletModal } from '$navigation';
 import { eventsActions, eventsSelector } from '$store/events';
 import { mainActions } from '$store/main';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { getLastRefreshedAt } from '$database';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import { useNavigation } from '$libs/navigation';
+import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
+import { Steezy } from '$styles';
+import { Notification } from '$core/Notifications/Notification';
 
 export const ActivityScreen: FC = () => {
   const nav = useNavigation();
@@ -44,6 +56,7 @@ export const ActivityScreen: FC = () => {
     eventsInfo,
     canLoadMore,
   } = useSelector(eventsSelector);
+  const notifications = useNotificationsStore((state) => state.notifications);
 
   const netInfo = useNetInfo();
   const prevNetInfo = usePrevious(netInfo);
@@ -72,6 +85,10 @@ export const ActivityScreen: FC = () => {
   const handleRefresh = useCallback(() => {
     dispatch(walletActions.refreshBalancesPage(true));
   }, [dispatch]);
+
+  const handleOpenNotificationsScreen = useCallback(() => {
+    openNotificationsScreen();
+  }, []);
 
   const otherCurrencies = useMemo(() => {
     const list = [...SecondaryCryptoCurrencies];
@@ -106,7 +123,7 @@ export const ActivityScreen: FC = () => {
       footer?: React.ReactElement;
     }[] = [];
     return result;
-  }, [otherCurrencies, oldWalletBalances, jettonBalances, wallet?.ton]);
+  }, []);
 
   const handleLoadMore = useCallback(() => {
     if (isEventsLoading || !canLoadMore) {
@@ -115,6 +132,30 @@ export const ActivityScreen: FC = () => {
 
     dispatch(eventsActions.loadEvents({ isLoadMore: true }));
   }, [dispatch, isEventsLoading, canLoadMore]);
+
+  const renderNotificationsHeader = useCallback(() => {
+    return (
+      <View style={styles.notificationsHeader}>
+        <Spacer y={12} />
+        {notifications.slice(0, 2).map((notification) => (
+          <Notification notification={notification} key={notification.received_at} />
+        ))}
+        <List style={styles.listStyle.static}>
+          <List.Item
+            leftContent={
+              <View style={styles.iconContainer}>
+                <Icon name={'ic-bell-28'} color={'iconSecondary'} />
+              </View>
+            }
+            onPress={handleOpenNotificationsScreen}
+            title={'Notifications'}
+            subtitle={'From connected services'}
+            chevron
+          />
+        </List>
+      </View>
+    );
+  }, [notifications]);
 
   function renderFooter() {
     return (
@@ -142,6 +183,7 @@ export const ActivityScreen: FC = () => {
 
     return (
       <TransactionsList
+        renderHeader={renderNotificationsHeader}
         refreshControl={
           <RefreshControl
             onRefresh={handleRefresh}
@@ -230,7 +272,7 @@ export const ActivityScreen: FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const styles = Steezy.create(({ colors }) => ({
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -241,4 +283,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: ns(24),
   },
-});
+  iconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.backgroundContentTint,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  notificationsHeader: {
+    marginHorizontal: -16,
+  },
+  listStyle: {
+    marginBottom: 8,
+  },
+}));

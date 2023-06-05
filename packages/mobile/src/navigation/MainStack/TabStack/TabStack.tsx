@@ -13,12 +13,12 @@ import { t } from '$translation';
 import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
 import { TabBarBadgeIndicator } from './TabBarBadgeIndicator';
 import { useNotificationsSubscribe } from '$hooks/useNotificationsSubscribe';
-import { ActivityScreen } from '../../../tabs/Activity/ActivityScreen';
 import { WalletScreen } from '../../../tabs/Wallet/WalletScreen';
 import Animated from 'react-native-reanimated';
 import { FONT } from '$styled';
 import { useCheckForUpdates } from '$hooks/useCheckForUpdates';
 import { useLoadExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
+import { ActivityStack } from '$navigation/ActivityStack/ActivityStack';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -87,7 +87,7 @@ export const TabStack: FC = () => {
         }}
       />
       <Tab.Screen
-        component={ActivityScreen}
+        component={ActivityStack}
         name={TabsStackRouteNames.Activity}
         options={{
           tabBarLabel: t('activity.screen_title'),

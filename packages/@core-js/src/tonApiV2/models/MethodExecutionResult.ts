@@ -46,10 +46,10 @@ export interface MethodExecutionResult {
     stack: Array<TvmStackRecord>;
     /**
      * 
-     * @type {{ [key: string]: any; }}
+     * @type {any}
      * @memberof MethodExecutionResult
      */
-    decoded?: { [key: string]: any; };
+    decoded?: any | null;
 }
 
 /**

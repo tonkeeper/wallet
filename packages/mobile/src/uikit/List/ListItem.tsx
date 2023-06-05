@@ -7,6 +7,7 @@ import FastImage from 'react-native-fast-image';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { isAndroid } from '$utils';
+import { TextProps } from '$uikit/Text/Text';
 
 type LeftContentFN = (isPressed: Animated.SharedValue<boolean>) => React.ReactNode;
 
@@ -22,6 +23,8 @@ export interface ListItemProps {
   isLast?: boolean;
   isFirst?: boolean;
   disabled?: boolean;
+  titleProps?: TextProps;
+  leftContentStyle?: StyleProp<ViewStyle>;
 
   valueStyle?: StyleProp<TextStyle>;
   containerStyle?: StyleProp<ViewStyle>;
@@ -38,7 +41,7 @@ export interface ListItemProps {
 
 export const ListItem = memo<ListItemProps>((props) => {
   const isPressed = useSharedValue(false);
-  const { compact = true } = props;
+  const { compact = true, titleProps = {} } = props;
 
   const handlePressIn = useCallback(() => {
     isPressed.value = true;
@@ -71,6 +74,7 @@ export const ListItem = memo<ListItemProps>((props) => {
               color={compact ? 'textPrimary' : 'textSecondary'}
               numberOfLines={1}
               ellipsizeMode="tail"
+              {...titleProps}
             >
               {props.title}
             </SText>
@@ -122,7 +126,7 @@ export const ListItem = memo<ListItemProps>((props) => {
         ]}
       >
         {hasLeftContent && (
-          <View style={styles.leftContent}>
+          <View style={[styles.leftContent, props.leftContentStyle]}>
             {leftContent}
             {!!props.picture && (
               <View style={[styles.pictureContainer, props.imageStyle]}>

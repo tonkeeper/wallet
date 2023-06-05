@@ -8,6 +8,7 @@ import {
   IConnectedAppConnectionRemote,
 } from './types';
 import { useConnectedAppsStore } from './useConnectedAppsStore';
+import app from '@tonkeeper/web/src/App';
 
 export const saveAppConnection = (
   walletAddress: string,
@@ -17,6 +18,12 @@ export const saveAppConnection = (
   useConnectedAppsStore
     .getState()
     .actions.saveAppConnection(getChainName(), walletAddress, appData, connection);
+};
+
+export const enableNotifications = (walletAddress: string, url: IConnectedApp['url']) => {
+  useConnectedAppsStore
+    .getState()
+    .actions.enableNotifications(getChainName(), walletAddress, url);
 };
 
 export const removeConnectedApp = (url: string) => {
