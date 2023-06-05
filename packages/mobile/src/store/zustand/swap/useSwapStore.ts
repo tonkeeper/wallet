@@ -2,13 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ISwapStore, StonFiAsset, StonFiItem, SwapAssets } from './types';
-import BigNumber from 'bignumber.js';
-
-const defaultDecimals = 9;
-const minTonReverse = 500;
 
 const StonFiTon = 'EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c';
-const StonFiWton = 'EQDQoc5M3Bh8eWFephi9bClhevelbZZvWhkqdo80XuY_0qXv';
 
 const initialState: Omit<ISwapStore, 'actions'> = {
   assets: {},
@@ -45,43 +40,30 @@ export const useSwapStore = create(
             const assetList: StonFiAsset[] = (await assets.json()).result.assets;
 
             const items = data.reduce((acc, item) => {
-              let tonReverse: string | undefined;
-              let jettonAddress: string | undefined;
-              if (
-                item.token1_address === StonFiTon ||
-                item.token1_address === StonFiWton
-              ) {
-                tonReverse = item.reserve1;
-                jettonAddress = item.token0_address;
-              }
-              if (
-                item.token0_address === StonFiTon ||
-                item.token0_address === StonFiWton
-              ) {
-                tonReverse = item.reserve0;
-                jettonAddress = item.token1_address;
-              }
-              if (!tonReverse || !jettonAddress) {
-                return acc;
-              }
+              if (!acc[item.token0_address] && item.token0_address !== StonFiTon) {
+                const asset = assetList.find(
+                  (a) => a.contract_address === item.token0_address,
+                );
 
-              if (
-                new BigNumber(tonReverse).isLessThan(
-                  new BigNumber(minTonReverse).shiftedBy(defaultDecimals),
-                )
-              ) {
-                return acc;
+                if (asset) {
+                  acc[item.token0_address] = {
+                    address: item.token0_address,
+                    symbol: asset.symbol,
+                  };
+                }
               }
+              if (!acc[item.token1_address] && item.token1_address !== StonFiTon) {
+                const asset = assetList.find(
+                  (a) => a.contract_address === item.token1_address,
+                );
 
-              const asset = assetList.find((a) => a.contract_address === jettonAddress);
-              if (!asset) {
-                return acc;
+                if (asset) {
+                  acc[item.token1_address] = {
+                    address: item.token1_address,
+                    symbol: asset.symbol,
+                  };
+                }
               }
-
-              acc[jettonAddress] = {
-                address: jettonAddress,
-                symbol: asset.symbol,
-              };
 
               return acc;
             }, {} as SwapAssets);
