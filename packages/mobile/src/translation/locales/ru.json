@@ -352,6 +352,9 @@
     "accepted": "Принятые",
     "approve_token": "Одобрите входящий токен \"%{name}\" ",
     "approve_two_tokens": "Одобрите входящие токены \"%{name1}\" и \"%{name2}\"",
+    "approve_collection_one": "Одобрите входящий токен из коллекции \"%{collection}\"",
+    "approve_collection_many": "Одобрите входящие токены из коллекции \"%{collection}\"",
+    "approve_two_collections": "Одобрите входящие токены из коллекций \"%{collection1}\" \"%{collection2}\"",
     "approve_many": {
       "one": "Одобрите %{count} входящий токен",
       "few": "Одобрите %{count} входящих токена",
