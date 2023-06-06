@@ -127,7 +127,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
               compareAddresses(enabledJetton.jettonAddress, jettonAddress),
             )) ||
           (nftAddress &&
-            enabledNfts.find((enabledNft) =>
+            !enabledNfts.find((enabledNft) =>
               compareAddresses(enabledNft.address, nftAddress),
             ))
         ) {

@@ -4,7 +4,22 @@ import { Icon, Spacer, SText, View, List } from '$uikit';
 import { openManageTokens } from '$navigation';
 import { t } from '$translation';
 import { useApprovedNfts, useJettonBalances } from '$hooks';
+import { groupByCollection } from '$core/ManageTokens/hooks/useNftData';
+import { NFTModel } from '$store/models';
 
+function getStringForTokensApproval(pending: any) {
+  if (pending.length === 1) {
+    return t('approval.approve_token', { name: pending[0].metadata?.name });
+  }
+  if (pending.length === 2) {
+    return t('approval.approve_two_tokens', {
+      name1: pending[0].metadata?.name,
+      name2: pending[1].metadata?.name,
+    });
+  } else {
+    return t('approval.approve_many', { count: pending.length });
+  }
+}
 const ApprovalCellComponent: React.FC = () => {
   const handleApproveTokens = useCallback(openManageTokens, []);
   const { pending: jettonsPending } = useJettonBalances();
@@ -15,18 +30,35 @@ const ApprovalCellComponent: React.FC = () => {
   }, [jettonsPending, nftsPending]);
 
   const text = useMemo(() => {
-    if (pending.length === 1) {
-      return t('approval.approve_token', { name: pending[0].metadata?.name });
+    if (!pending.length) {
+      return '';
     }
-    if (pending.length === 2) {
-      return t('approval.approve_two_tokens', {
-        name1: pending[0].metadata?.name,
-        name2: pending[1].metadata?.name,
-      });
+    if (jettonsPending.length) {
+      return getStringForTokensApproval(pending);
     } else {
-      return t('approval.approve_many', { count: pending.length });
+      const grouped = groupByCollection(nftsPending);
+      const areAllTokensFromCollections = grouped.every((item) => item.collection);
+      if (!areAllTokensFromCollections || grouped.length > 2) {
+        return getStringForTokensApproval(pending);
+      }
+
+      if (grouped.length === 2) {
+        return t('approval.approve_two_collections', {
+          collection1: grouped[0].collection?.name,
+          collection2: grouped[1].collection?.name,
+        });
+      }
+
+      return t(
+        grouped[0].count === 1
+          ? 'approval.approve_collection_one'
+          : 'approval.approve_collection_many',
+        {
+          collection: grouped[0].collection?.name,
+        },
+      );
     }
-  }, [pending]);
+  }, [jettonsPending.length, nftsPending, pending]);
 
   if (!pending.length) {
     return null;

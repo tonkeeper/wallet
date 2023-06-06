@@ -40,7 +40,9 @@ const baseNftCellData = (nft: NFTModel) => ({
     }),
 });
 
-function groupByCollection(nftItems: NFTModel[]): (NFTModel & { count: number })[] {
+export function groupByCollection(
+  nftItems: NFTModel[],
+): (NFTModel & { count: number })[] {
   const grouped = nftItems.reduce((acc, nft) => {
     const uniqAddress = nft.collection?.address || nft.address;
     if (!acc[uniqAddress]) {
