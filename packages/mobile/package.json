@@ -44,6 +44,8 @@
     "@tonconnect/protocol": "^2.2.5",
     "@tonkeeper/core": "0.1.0",
     "@tonkeeper/shared": "1.0.0",
+    "@tonkeeper/router": "*",
+    "@tonkeeper/uikit": "*",
     "@vkontakte/vk-qr": "^2.0.13",
     "axios": "^0.27.2",
     "bignumber.js": "^9.0.1",
