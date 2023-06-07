@@ -65,7 +65,13 @@ const AmountStepComponent: FC<Props> = (props) => {
     currencyTitle,
   } = useCurrencyToSend(CryptoCurrencies.Ton);
 
-  const minAmount = isWithdrawal ? '0' : Ton.fromNano(pool.minStake);
+  const minStake = new BigNumber(walletBalance).isGreaterThanOrEqualTo(
+    new BigNumber(Ton.fromNano(pool.minStake)).plus(1),
+  )
+    ? Ton.fromNano(pool.minStake)
+    : new BigNumber(Ton.fromNano(pool.minStake)).plus(1).toString();
+
+  const minAmount = isWithdrawal ? '0' : minStake;
 
   const balance = isWithdrawal ? stakingBalance : walletBalance;
 
