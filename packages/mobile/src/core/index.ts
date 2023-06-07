@@ -36,3 +36,4 @@ export { Staking } from './Staking/Staking';
 export { StakingPools } from './StakingPools/StakingPools';
 export { StakingPoolDetails } from './StakingPoolDetails/StakingPoolDetails';
 export { StakingSend } from './StakingSend/StakingSend';
+export { BrowserScreen } from './DAppsExplore/BrowserScreen';
