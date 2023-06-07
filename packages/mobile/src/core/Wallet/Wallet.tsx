@@ -40,6 +40,7 @@ import { eventsActions, eventsSelector } from '$store/events';
 import { groupAndFilterTonActivityItems } from '$utils/transactions';
 import { formatter } from '$utils/formatter';
 import { Toast } from '$store';
+import { useFlags } from '$utils/flags';
 
 const exploreActions = [
   {
@@ -86,6 +87,7 @@ const exploreActions = [
 
 export const Wallet: FC<WalletProps> = ({ route }) => {
   const currency = route.params.currency;
+  const flags = useFlags(['disable_swap']);
   const wallet = useSelector(walletWalletSelector);
   const address = useSelector(walletAddressSelector);
   const isRefreshing = useSelector(walletIsRefreshingSelector);
@@ -275,11 +277,13 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
                   iconName="ic-plus-28"
                   title={t('wallet.buy_btn')}
                 />
-                <IconButton
-                  onPress={handlePressSwap}
-                  icon={<SwapIcon />}
-                  title={t('wallet.swap_btn')}
-                />
+                {!flags.disable_swap && (
+                  <IconButton
+                    onPress={handlePressSwap}
+                    icon={<SwapIcon />}
+                    title={t('wallet.swap_btn')}
+                  />
+                )}
               </S.ActionsContainer>
               <S.Divider />
             </S.TokenInfoWrap>

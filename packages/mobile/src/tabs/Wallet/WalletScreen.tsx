@@ -38,8 +38,10 @@ import { ApprovalCell } from '$core/ApprovalCell/components/ApprovalCell';
 import { Steezy } from '$styles';
 import { BalancesList } from './components/BalancesList';
 import { DevFeature, useDevFeatureEnabled } from '$store';
+import { useFlags } from '$utils/flags';
 
 export const WalletScreen = memo(() => {
+  const flags = useFlags(['disable_swap']);
   const [tab, setTab] = useState<string>('tokens');
   const tabBarHeight = useBottomTabBarHeight();
   const dispatch = useDispatch();
@@ -152,11 +154,13 @@ export const WalletScreen = memo(() => {
           iconName="ic-plus-28"
           title={t('wallet.buy_btn')}
         />
-        <IconButton
-          onPress={handlePressSwap}
-          icon={<SwapIcon animated />}
-          title={t('wallet.swap_btn')}
-        />
+        {!flags.disable_swap && (
+          <IconButton
+            onPress={handlePressSwap}
+            icon={<SwapIcon animated />}
+            title={t('wallet.swap_btn')}
+          />
+        )}
       </IconButtonList>
       {tokenApproval && wallet && <ApprovalCell />}
     </View>

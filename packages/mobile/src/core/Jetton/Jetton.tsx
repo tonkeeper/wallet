@@ -28,9 +28,11 @@ import { formatter } from '$utils/formatter';
 import { useNavigation } from '$libs/navigation';
 import { useSwapStore } from '$store/zustand/swap';
 import { shallow } from 'zustand/shallow';
+import { useFlags } from '$utils/flags';
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const theme = useTheme();
+  const flags = useFlags(['disable_swap']);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const jetton = useJetton(route.params.jettonAddress);
   const t = useTranslator();
@@ -104,7 +106,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             iconName="ic-arrow-down-28"
             title={t('wallet.receive_btn')}
           />
-          {showSwap ? (
+          {showSwap && !flags.disable_swap ? (
             <IconButton
               onPress={handlePressSwap}
               icon={<SwapIcon />}
