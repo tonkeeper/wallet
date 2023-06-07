@@ -43,7 +43,7 @@ export function formatInputAmount(
   const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
   if (decimalSeparator === ',') {
     // remove non-numeric charsets
-    raw = raw.replace(/[^0-9\,]/g, '');
+    raw = raw.replace(/[^0-9\,\.]/g, '');
     raw = raw.replace(/\,/g, '.');
   } else {
     // remove non-numeric charsets
