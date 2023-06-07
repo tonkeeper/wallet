@@ -1,7 +1,7 @@
 import { Text } from '$uikit';
 import { ns } from '$utils';
 import React, { FC, memo, useCallback, useState } from 'react';
-import { LayoutChangeEvent, LayoutRectangle } from 'react-native';
+import { LayoutChangeEvent, LayoutRectangle, ScrollViewProps } from 'react-native';
 import { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import * as S from './TopTabs.style';
 import { ScrollView } from 'react-native';
@@ -19,14 +19,14 @@ interface Props {
 
 const INDICATOR_WIDTH = ns(24);
 
-const TopTabsComponent: FC<Props> = (props) => {
+const TopTabsComponent = React.forwardRef<ScrollView, Props>((props, ref) => {
   const { tabs, selectedId, onChange } = props;
 
   const [tabsLayouts, setTabsLayouts] = useState<{ [key: string]: LayoutRectangle }>({});
 
   const handleLayout = useCallback((tab: string, event: LayoutChangeEvent) => {
     const layout = event?.nativeEvent?.layout;
-    
+
     if (layout) {
       setTabsLayouts((s) => ({ ...s, [tab]: layout }));
     }
@@ -68,7 +68,7 @@ const TopTabsComponent: FC<Props> = (props) => {
   }
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} ref={ref}>
       <S.Container>
         {tabs.map((tab) => (
           <S.TabItem
@@ -88,6 +88,6 @@ const TopTabsComponent: FC<Props> = (props) => {
       </S.Container>
     </ScrollView>
   );
-};
+});
 
 export const TopTabs = memo(TopTabsComponent);

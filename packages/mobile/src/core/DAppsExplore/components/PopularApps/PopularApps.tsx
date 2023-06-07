@@ -10,10 +10,11 @@ import { useTranslator } from '$hooks';
 interface Props {
   activeCategory: string;
   setActiveCategory: (activeCategory: string) => void;
+  onChangeStep: (index: number) => void;
 }
 
 const PopularAppsComponent: FC<Props> = (props) => {
-  const { activeCategory, setActiveCategory } = props;
+  const { activeCategory, setActiveCategory, onChangeStep } = props;
 
   const stepViewRef = useRef<StepViewRef>(null);
 
@@ -27,8 +28,9 @@ const PopularAppsComponent: FC<Props> = (props) => {
   const t = useTranslator();
 
   const handleChangeStep = useCallback(
-    (currentStepId: string | number) => {
+    (currentStepId: string | number, currentStepIndex: number) => {
       setActiveCategory(currentStepId as string);
+      onChangeStep(currentStepIndex);
     },
     [setActiveCategory],
   );
