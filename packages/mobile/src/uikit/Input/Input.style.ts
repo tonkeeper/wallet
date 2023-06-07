@@ -55,6 +55,7 @@ export const Input = styled(TextInput)<{ inputStyle: ReturnType<typeof css> }>`
   margin: 0;
   z-index: 3;
   align-items: center;
+  padding: 0;
 
   ${() => {
     if (!isAndroid) {

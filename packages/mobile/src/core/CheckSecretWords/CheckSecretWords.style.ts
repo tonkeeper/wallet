@@ -26,8 +26,8 @@ export const InputNumber = styled.TextInput.attrs({
   top: 0;
   padding-left: 0;
   padding-right: 0;
-  padding-top: ${ns(isAndroid ? 18 : 22.5)}px;
-  padding-bottom: ${ns(isAndroid ? 18.5 : 22)}px;
+  padding-top: ${ns(isAndroid ? 21.5 : 22.5)}px;
+  padding-bottom: ${ns(isAndroid ? 15.5 : 22)}px;
   ${isAndroid ? 'text-align-vertical: top;' : ''}
   z-index: 3;
   position: absolute;
