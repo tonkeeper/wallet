@@ -90,7 +90,6 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
           <CoinDropdown
             currency={currency}
             currencyTitle={currencyTitle}
-            textInputRef={textInputRef}
             onChangeCurrency={onChangeCurrency}
           />
         </S.CoinContainer>

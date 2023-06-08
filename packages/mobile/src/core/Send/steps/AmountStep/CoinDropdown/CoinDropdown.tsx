@@ -28,12 +28,11 @@ type CoinItem =
 interface Props {
   currency: string;
   currencyTitle: string;
-  textInputRef: React.RefObject<AmountInputRef>;
   onChangeCurrency: (currency: string, decimals: number, isJetton: boolean) => void;
 }
 
 const CoinDropdownComponent: FC<Props> = (props) => {
-  const { currency, currencyTitle, textInputRef, onChangeCurrency } = props;
+  const { currency, currencyTitle, onChangeCurrency } = props;
 
   const { currencies, balances } = useSelector(walletSelector);
 
@@ -117,19 +116,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
         anchor="top-center"
         top={ns(40) + ns(8)}
       >
-        <Highlight
-          background="backgroundQuaternary"
-          useRNGHComponent
-          onPress={() => {
-            if (!textInputRef.current) {
-              return;
-            }
-            const value = textInputRef.current.value;
-            textInputRef.current.setNativeProps({
-              selection: { start: value.length, end: value.length },
-            });
-          }}
-        >
+        <Highlight background="backgroundQuaternary" useRNGHComponent>
           <View style={styles.content}>
             <Text variant="label1">{currencyTitle}</Text>
             <View style={styles.chevron}>
