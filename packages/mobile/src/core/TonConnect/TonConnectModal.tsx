@@ -5,7 +5,7 @@ import TonWeb from 'tonweb';
 import { useDispatch, useSelector } from 'react-redux';
 import { Linking, StyleSheet } from 'react-native';
 import { useTheme } from '$hooks';
-import { SelectableVersionsConfig } from '$shared/constants';
+import { getServerConfig, SelectableVersionsConfig } from '$shared/constants';
 import { walletSelector } from '$store/wallet';
 import { Button, Icon, List, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
@@ -29,11 +29,12 @@ import { t } from '$translation';
 import { TonConnectModalProps } from './models';
 import { useEffect } from 'react';
 import { Modal, useNavigation } from '$libs/navigation';
-import { store, Toast } from '$store';
+import { store, Toast, useConnectedAppsStore, useNotificationsStore } from '$store';
 import { openRequireWalletModal, push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 import { mainSelector } from '$store/main';
 import { createTonProofForTonkeeper } from '$utils/notificationsproof';
+import { ConnectApi, Configuration } from '@tonkeeper/core';
 
 export const TonConnectModal = (props: TonConnectModalProps) => {
   const animation = useTonConnectAnimation();
@@ -166,8 +167,28 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
           walletStateInit,
         );
 
-        const token = await createTonProofForTonkeeper(address, privateKey);
-        console.log('ttt', token);
+        if (withNotifications) {
+          const notifications_token =
+            useNotificationsStore.getState().notifications_token;
+          if (!notifications_token) {
+            const proof = await createTonProofForTonkeeper(address, privateKey);
+            const connectApi = new ConnectApi(
+              new Configuration({
+                basePath: getServerConfig('tonapiV2Endpoint'),
+                headers: {
+                  Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+                },
+              }),
+            );
+            const token = await connectApi.tonConnectProof({
+              tonConnectProofRequest: proof,
+            });
+
+            await useNotificationsStore
+              .getState()
+              .actions.setNotificationsToken(token.token);
+          }
+        }
 
         requestPromise.resolve({
           address,

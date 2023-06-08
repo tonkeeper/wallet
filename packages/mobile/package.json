@@ -27,6 +27,7 @@
     "@alexzunik/rn-native-portals-reborn": "^1.0.5",
     "@amplitude/analytics-browser": "^1.6.7",
     "@bogoslavskiy/react-native-steezy": "^1.0.4",
+    "@expo/react-native-action-sheet": "^4.0.1",
     "@gorhom/bottom-sheet": "^4.4.4",
     "@rainbow-me/animated-charts": "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#b0872b97e43c694414b37c95c042e44b92e2c0e9",
     "@react-native-async-storage/async-storage": "^1.15.5",

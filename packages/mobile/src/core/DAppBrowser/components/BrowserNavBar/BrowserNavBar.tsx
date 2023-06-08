@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Share from 'react-native-share';
 import * as S from './BrowserNavBar.style';
 import { PopupSelectItemProps } from '$uikit/PopupSelect/PopupSelect.interface';
+import { Toast } from '$store';
 
 enum PopupActionType {
   REFRESH,
@@ -33,6 +34,7 @@ interface Props {
   onTitlePress: () => void;
   onRefreshPress: () => void;
   disconnect: () => Promise<void>;
+  unsubscribeFromNotifications: () => Promise<void>;
 }
 
 const BrowserNavBarComponent: FC<Props> = (props) => {
@@ -47,6 +49,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
     onTitlePress,
     onRefreshPress,
     disconnect,
+    unsubscribeFromNotifications,
   } = props;
 
   const t = useTranslator();
@@ -100,7 +103,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
     }
 
     return items;
-  }, [isConnected, t]);
+  }, [isConnected, isNotificationsEnabled, t]);
 
   const handlePressAction = useCallback(
     (action: PopupAction) => {
@@ -118,9 +121,13 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
           return copyText(url);
         case PopupActionType.DISCONNECT:
           return disconnect();
+        case PopupActionType.MUTE:
+          Toast.success(t('notifications.muted'));
+          unsubscribeFromNotifications();
+          return;
       }
     },
-    [copyText, disconnect, onRefreshPress, url],
+    [copyText, disconnect, onRefreshPress, unsubscribeFromNotifications, url],
   );
 
   return (

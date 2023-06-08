@@ -40,6 +40,7 @@ import { TCEventID } from './EventID';
 import { DAppManifest } from './models';
 import { SendTransactionError } from './SendTransactionError';
 import { TonConnectRemoteBridge } from './TonConnectRemoteBridge';
+import messaging from '@react-native-firebase/messaging';
 
 class TonConnectService {
   checkProtocolVersionCapability(protocolVersion: number) {
@@ -140,7 +141,10 @@ class TonConnectService {
               },
         );
 
-        enableNotifications(address, manifest.url);
+        if (notificationsEnabled) {
+          const token = await messaging().getToken();
+          enableNotifications(address, manifest.url, clientSessionId, token);
+        }
 
         return {
           id: TCEventID.getId(),

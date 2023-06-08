@@ -20,10 +20,31 @@ export const saveAppConnection = (
     .actions.saveAppConnection(getChainName(), walletAddress, appData, connection);
 };
 
-export const enableNotifications = (walletAddress: string, url: IConnectedApp['url']) => {
+export const enableNotifications = (
+  walletAddress: string,
+  url: IConnectedApp['url'],
+  sessionId: string | undefined,
+  firebaseToken: string,
+) => {
   useConnectedAppsStore
     .getState()
-    .actions.enableNotifications(getChainName(), walletAddress, url);
+    .actions.enableNotifications(
+      getChainName(),
+      walletAddress,
+      url,
+      sessionId,
+      firebaseToken,
+    );
+};
+
+export const disableNotifications = (
+  walletAddress: string,
+  url: IConnectedApp['url'],
+  firebaseToken: string,
+) => {
+  useConnectedAppsStore
+    .getState()
+    .actions.disableNotifications(getChainName(), walletAddress, url, firebaseToken);
 };
 
 export const removeConnectedApp = (url: string) => {

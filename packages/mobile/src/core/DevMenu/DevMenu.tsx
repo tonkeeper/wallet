@@ -92,7 +92,7 @@ export const DevMenu: FC = () => {
   const handlePushNotification = useCallback(() => {
     addNotification({
       title: 'Test notification added from dev menu',
-      service_url: 'https://getgems.io',
+      dapp_url: 'https://getgems.io',
       received_at: Date.now(),
     });
   }, [addNotification]);

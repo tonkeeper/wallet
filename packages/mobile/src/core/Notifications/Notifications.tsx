@@ -92,11 +92,12 @@ export const Notifications: React.FC = () => {
   );
 
   const handleSwitchNotifications = React.useCallback(
-    async (value: boolean, url: string) => {
+    async (value: boolean, url: string, session_id: string | undefined) => {
+      const token = await messaging().getToken();
       if (value) {
-        return enableNotifications(getChainName(), address.ton, url);
+        return enableNotifications(getChainName(), address.ton, url, session_id, token);
       }
-      disableNotifications(getChainName(), address.ton, url);
+      disableNotifications(getChainName(), address.ton, url, token);
     },
     [disableNotifications, enableNotifications, address],
   );
@@ -152,7 +153,12 @@ export const Notifications: React.FC = () => {
                     disabled={!isSubscribeNotifications}
                     value={!!app.notificationsEnabled}
                     onChange={() =>
-                      handleSwitchNotifications(!app.notificationsEnabled, app.url)
+                      handleSwitchNotifications(
+                        !app.notificationsEnabled,
+                        app.url,
+                        // @ts-ignore
+                        app.connections[0]?.clientSessionId,
+                      )
                     }
                   />
                 ))}

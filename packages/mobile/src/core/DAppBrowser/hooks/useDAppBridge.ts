@@ -7,7 +7,9 @@ import {
   removeInjectedConnection,
   getConnectedAppByUrl,
   useConnectedAppsStore,
+  disableNotifications,
 } from '$store';
+import messaging from '@react-native-firebase/messaging';
 
 export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
   const [connectEvent, setConnectEvent] = useState<ConnectEvent | null>(null);
@@ -77,6 +79,10 @@ export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
     } catch {}
   }, [webViewUrl, sendEvent]);
 
+  const unsubscribeFromNotifications = useCallback(async () => {
+    disableNotifications(walletAddress, webViewUrl, await messaging().getToken());
+  }, [walletAddress, webViewUrl]);
+
   return {
     ref,
     injectedJavaScriptBeforeContentLoaded,
@@ -84,5 +90,6 @@ export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
     isConnected,
     notificationsEnabled,
     disconnect,
+    unsubscribeFromNotifications,
   };
 };

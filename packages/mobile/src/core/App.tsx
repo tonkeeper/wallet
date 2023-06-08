@@ -14,6 +14,7 @@ import { View } from 'react-native';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { PortalDestination } from '@alexzunik/rn-native-portals-reborn';
 import { isAndroid } from '$utils';
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 
 const TonThemeProvider: FC = ({ children }) => {
   const accent = useSelector(accentSelector);
@@ -40,28 +41,30 @@ const queryClient = new QueryClient();
 export const App: FC = () => {
   return (
     <StoreProvider {...{ store }}>
-      <QueryClientProvider client={queryClient}>
-        <TonThemeProvider>
-          <SafeAreaProvider>
-            <ScrollPositionProvider>
-              <AppNavigator />
-            </ScrollPositionProvider>
-            <ToastComponent />
-            {isAndroid ? (
-              <View
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                }}
-              >
-                <PortalDestination name="popupPortal" />
-              </View>
-            ) : null}
-          </SafeAreaProvider>
-        </TonThemeProvider>
-      </QueryClientProvider>
+      <ActionSheetProvider>
+        <QueryClientProvider client={queryClient}>
+          <TonThemeProvider>
+            <SafeAreaProvider>
+              <ScrollPositionProvider>
+                <AppNavigator />
+              </ScrollPositionProvider>
+              <ToastComponent />
+              {isAndroid ? (
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                  }}
+                >
+                  <PortalDestination name="popupPortal" />
+                </View>
+              ) : null}
+            </SafeAreaProvider>
+          </TonThemeProvider>
+        </QueryClientProvider>
+      </ActionSheetProvider>
     </StoreProvider>
   );
 };

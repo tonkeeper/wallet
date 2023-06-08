@@ -177,6 +177,60 @@ async function sendBoc(boc: string) {
     console.log(e);
   }
 }
+
+export interface SubscribeToNotificationsRequest {
+  app_url: string;
+  account: string;
+  firebase_token: string;
+  session_id?: string;
+  commercial: boolean;
+}
+async function subscribeToNotifications(
+  token: string,
+  request: SubscribeToNotificationsRequest,
+) {
+  try {
+    const endpoint = getServerConfig('tonapiIOEndpoint');
+    const response: any = await axios.post(
+      `${endpoint}/v1/internal/pushes/tonconnect`,
+      request,
+      {
+        headers: prepareHeaders({
+          'X-TonConnect-Auth': token,
+        }),
+      },
+    );
+    return response.data;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export interface UnsubscribeToNotificationsParams {
+  app_url: string;
+  firebase_token: string;
+}
+
+async function unsubscribeFromNotifications(
+  token: string,
+  params: UnsubscribeToNotificationsParams,
+) {
+  try {
+    const endpoint = getServerConfig('tonapiIOEndpoint');
+    const response: any = await axios.delete(
+      `${endpoint}/v1/internal/pushes/tonconnect`,
+      {
+        params,
+        headers: prepareHeaders({
+          'X-TonConnect-Auth': token,
+        }),
+      },
+    );
+    return response.data;
+  } catch (e) {
+    console.log(e);
+  }
+}
 async function getBalances(pubkey: string) {
   const wallets = await findByPubkey(pubkey);
 
@@ -236,6 +290,8 @@ export const Tonapi = {
   findByPubkey,
   getWalletInfo,
   getBalances,
+  subscribeToNotifications,
+  unsubscribeFromNotifications,
   resolveDns,
   estimateTx,
   sendBoc,

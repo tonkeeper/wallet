@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import { useNavigation } from './useNavigation';
 import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { useDeeplinking } from '$libs/deeplinking';
+import { getToken } from '$utils/messaging';
 
 export const useNotificationsResolver = () => {
   const { isMainStackInited } = useSelector(mainSelector);
   const nav = useNavigation();
   const deeplinking = useDeeplinking();
+
+  useEffect(() => {
+    getToken();
+  }, []);
 
   React.useEffect(() => {
     if (!isMainStackInited) {

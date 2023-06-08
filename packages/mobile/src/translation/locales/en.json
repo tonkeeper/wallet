@@ -825,5 +825,13 @@
     "remindLater": "Remind me later",
     "tap": "Tap to update",
     "retry": "Download error. Tap to retry."
+  },
+
+  "notifications": {
+    "mute_notifications": "Mute notifications",
+    "disconnect_app": "Disconnect %{app_name}",
+    "report": "Report",
+    "muted": "Muted",
+    "disconnected_app": "Disconnected app"
   }
 }

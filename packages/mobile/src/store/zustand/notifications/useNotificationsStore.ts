@@ -6,6 +6,7 @@ import { INotification, INotificationsStore } from './types';
 const initialState: Omit<INotificationsStore, 'actions'> = {
   last_seen: 0,
   notifications: [],
+  notifications_token: null,
 };
 
 export const useNotificationsStore = create(
@@ -24,14 +25,15 @@ export const useNotificationsStore = create(
               (notification) => notification.received_at !== receivedAt,
             ),
           })),
+        setNotificationsToken: (token) => set({ notifications_token: token }),
         reset: () => set({ last_seen: 0, notifications: [] }),
       },
     }),
     {
       name: 'notifications',
       getStorage: () => AsyncStorage,
-      partialize: ({ notifications, last_seen }) =>
-        ({ notifications, last_seen } as INotificationsStore),
+      partialize: ({ notifications, last_seen, notifications_token }) =>
+        ({ notifications, last_seen, notifications_token } as INotificationsStore),
     },
   ),
 );

@@ -147,6 +147,13 @@ export const ActivityScreen: FC = () => {
                 <Icon name={'ic-bell-28'} color={'iconSecondary'} />
               </View>
             }
+            rightContent={
+              notifications.length > 2 && (
+                <View style={styles.notificationsCount}>
+                  <Text variant="label2">{notifications.length}</Text>
+                </View>
+              )
+            }
             onPress={handleOpenNotificationsScreen}
             title={'Notifications'}
             subtitle={'From connected services'}
@@ -293,6 +300,15 @@ const styles = Steezy.create(({ colors }) => ({
   },
   notificationsHeader: {
     marginHorizontal: -16,
+  },
+  notificationsCount: {
+    backgroundColor: colors.backgroundContentTint,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
   },
   listStyle: {
     marginBottom: 8,

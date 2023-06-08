@@ -34,7 +34,7 @@ export interface ListItemProps {
   chevron?: boolean;
 
   leftContent?: LeftContentFN | React.ReactNode;
-  rightContent?: () => React.ReactNode;
+  rightContent?: () => React.ReactElement;
 
   onPress?: () => void;
 }
@@ -57,7 +57,7 @@ export const ListItem = memo<ListItemProps>((props) => {
     }
 
     return props.leftContent;
-  }, [props.leftContent]);
+  }, [isPressed, props.leftContent]);
 
   const hasLeftContent = !!leftContent || !!props.picture;
   const pictureSource = { uri: props.picture };
@@ -153,9 +153,12 @@ export const ListItem = memo<ListItemProps>((props) => {
             props.subvalue
           )}
 
-          {props.chevron && (
-            <Icon color={props.chevronColor} name="ic-chevron-right-16" />
-          )}
+          <View style={styles.rightContent}>
+            {props.rightContent}
+            {props.chevron && (
+              <Icon color={props.chevronColor} name="ic-chevron-right-16" />
+            )}
+          </View>
         </View>
       </View>
     </TouchableComponent>
@@ -212,5 +215,9 @@ const styles = Steezy.create(({ colors }) => ({
   subvalueText: {
     color: colors.textSecondary,
     textAlign: 'right',
+  },
+  rightContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 }));
