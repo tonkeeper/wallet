@@ -94,6 +94,7 @@ export const DevMenu: FC = () => {
       title: 'Test notification added from dev menu',
       dapp_url: 'https://getgems.io',
       received_at: Date.now(),
+      link: 'https://getgems.io',
     });
   }, [addNotification]);
 

@@ -16,6 +16,7 @@ import { TonConnect } from '$tonconnect';
 import messaging from '@react-native-firebase/messaging';
 import { useSelector } from 'react-redux';
 import { walletAddressSelector } from '$store/wallet';
+import { openDAppBrowser } from '$navigation';
 
 interface NotificationProps {
   notification: INotification;
@@ -112,12 +113,21 @@ export const Notification: React.FC<NotificationProps> = (props) => {
         />
       </View>
     );
-  }, [deleteNotification, handleOpenSettings, props.notification.received_at]);
+  }, [app, deleteNotification, handleOpenSettings, props.notification.received_at]);
+
+  const handleOpenInWebView = useCallback(() => {
+    if (!props.notification.link) {
+      return;
+    }
+    openDAppBrowser(props.notification.link);
+  }, [props.notification.link]);
 
   return (
     <Swipeable ref={swipeableRef} renderRightActions={renderRightActions}>
       <List style={styles.listStyle.static}>
         <List.Item
+          disabled={!props.notification.link}
+          onPress={handleOpenInWebView}
           imageStyle={styles.imageStyle.static}
           leftContentStyle={styles.leftContentStyle.static}
           picture={props.notification.icon_url || app?.icon}

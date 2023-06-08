@@ -25,6 +25,7 @@ export interface ListItemProps {
   disabled?: boolean;
   titleProps?: TextProps;
   leftContentStyle?: StyleProp<ViewStyle>;
+  disabled?: boolean;
 
   valueStyle?: StyleProp<TextStyle>;
   containerStyle?: StyleProp<ViewStyle>;

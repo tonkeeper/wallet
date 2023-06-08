@@ -4,6 +4,7 @@ export interface INotification {
   received_at: number;
   icon_url?: string;
   name?: string;
+  link?: string;
 }
 
 export interface INotificationsStore {
