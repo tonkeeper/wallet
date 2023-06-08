@@ -18,7 +18,6 @@ export interface IBalances {
   disabled: JettonBalanceModel[];
 }
 export const useJettonBalances = (withZeroBalances?: boolean) => {
-  const tokenApproval = useDevFeatureEnabled(DevFeature.TokenApproval);
   const jettonBalances = useSelector(jettonsBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
   const sortedJettons =
@@ -66,25 +65,7 @@ export const useJettonBalances = (withZeroBalances?: boolean) => {
     }
 
     return balances;
-  }, [approvalStatuses.tokens, jettonBalances, sortedJettons]);
-
-  if (!tokenApproval) {
-    const legacyJettons = jettonBalances.filter((jetton) => {
-      const isWhitelisted = jetton.verification === JettonVerification.WHITELIST;
-      const excludeWhitelisted =
-        isWhitelisted && excludedJettons[jetton.jettonAddress] === true;
-      const excludeOther =
-        !isWhitelisted && excludedJettons[jetton.jettonAddress] !== false;
-      const excluded = excludeWhitelisted || excludeOther;
-
-      return jetton.balance !== '0' && !excluded;
-    });
-    return {
-      pending: [],
-      enabled: legacyJettons,
-      disabled: [],
-    };
-  }
+  }, [approvalStatuses.tokens, jettonBalances, sortedJettons, withZeroBalances]);
 
   return jettons;
 };

@@ -50,7 +50,6 @@ export const WalletScreen = memo(() => {
   const tokens = useTonkens();
   const { enabled: nfts } = useApprovedNfts();
   const wallet = useWallet();
-  const tokenApproval = useDevFeatureEnabled(DevFeature.TokenApproval);
 
   const balance = useBalance(tokens.total.fiat);
   const rates = useRates();
@@ -162,7 +161,7 @@ export const WalletScreen = memo(() => {
           />
         )}
       </IconButtonList>
-      {tokenApproval && wallet && <ApprovalCell />}
+      {wallet && <ApprovalCell />}
     </View>
   );
 

@@ -13,7 +13,6 @@ export interface IBalances {
   disabled: NFTModel[];
 }
 export function useApprovedNfts() {
-  const tokenApproval = useDevFeatureEnabled(DevFeature.TokenApproval);
   const { myNfts } = useSelector(nftsSelector);
   const approvalStatuses = useTokenApprovalStore((state) => state.tokens);
   const nfts = useMemo(() => {
@@ -22,10 +21,6 @@ export function useApprovedNfts() {
       enabled: [],
       disabled: [],
     };
-    if (!tokenApproval) {
-      nftBalances.enabled = Object.values(myNfts);
-      return nftBalances;
-    }
     Object.values(myNfts).forEach((item) => {
       const approvalStatus =
         approvalStatuses[
