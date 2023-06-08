@@ -39,6 +39,6 @@ export function useApprovedNfts() {
     });
 
     return nftBalances;
-  }, [approvalStatuses, myNfts, tokenApproval]);
+  }, [approvalStatuses, myNfts]);
   return nfts;
 }
