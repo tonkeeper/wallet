@@ -1,6 +1,6 @@
 export const TEST = 1;
 
-export const ServerConfigVersion = 3;
+export const ServerConfigVersion = 4;
 
 export const GOOGLE_PACKAGE_NAME = 'com.ton_keeper';
 export const APPLE_STORE_ID = '1587742107';
