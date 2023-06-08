@@ -102,10 +102,6 @@ export const DevMenu: FC = () => {
     toggleFeature(DevFeature.UseHttpProtocol);
   }, [toggleFeature]);
 
-  const toggleTokenApproval = useCallback(() => {
-    toggleFeature(DevFeature.TokenApproval);
-  }, [toggleFeature]);
-
   return (
     <S.Wrap>
       <NavBar>Dev Menu</NavBar>
@@ -135,16 +131,6 @@ export const DevMenu: FC = () => {
               }
             >
               Use HTTP protocol in browser
-            </CellSectionItem>
-            <CellSectionItem
-              indicator={
-                <Switch
-                  value={devFeatures[DevFeature.TokenApproval]}
-                  onChange={() => toggleFeature(DevFeature.TokenApproval)}
-                />
-              }
-            >
-              Token approval
             </CellSectionItem>
             {__DEV__ && (
               <>
