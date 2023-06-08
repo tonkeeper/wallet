@@ -41,9 +41,16 @@ export function formatInputAmount(
   trimSeparator?: boolean,
 ) {
   const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
+
+  if (raw.endsWith(decimalSeparator) || raw.endsWith(groupingSeparator)) {
+    raw = raw.slice(0, -1) + decimalSeparator;
+  }
+
+  raw = raw.replaceAll(groupingSeparator, '');
+
   if (decimalSeparator === ',') {
     // remove non-numeric charsets
-    raw = raw.replace(/[^0-9\,\.]/g, '');
+    raw = raw.replace(/[^0-9\,]/g, '');
     raw = raw.replace(/\,/g, '.');
   } else {
     // remove non-numeric charsets
