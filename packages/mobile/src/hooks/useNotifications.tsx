@@ -29,7 +29,7 @@ export const useNotifications = () => {
 
     const endpoint = `${getServerConfig(
       'tonapiIOEndpoint',
-    )}/internal/pushes/plain/subscribe`;
+    )}/v1/internal/pushes/plain/subscribe`;
     const addresses = await wallet.ton.getAllAddresses();
     const accounts = Object.values(addresses).map((address) => ({ address }));
     const deviceId = DeviceInfo.getUniqueId();
