@@ -42,7 +42,7 @@ export function formatInputAmount(
 ) {
   const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
 
-  if (raw.endsWith(decimalSeparator) || raw.endsWith(groupingSeparator)) {
+  if (raw.endsWith(',') || raw.endsWith('.')) {
     raw = raw.slice(0, -1) + decimalSeparator;
   }
 

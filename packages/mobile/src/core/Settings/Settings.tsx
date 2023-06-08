@@ -82,7 +82,6 @@ export const Settings: FC = () => {
   const allTonAddesses = useAllAddresses();
   const showV4R1 = useSelector(showV4R1Selector);
   const hasJettons = useIsHasJettons();
-  const tokenApproval = useDevFeatureEnabled(DevFeature.TokenApproval);
 
   const searchEngine = useBrowserStore((state) => state.searchEngine);
   const setSearchEngine = useBrowserStore((state) => state.actions.setSearchEngine);
@@ -264,7 +263,7 @@ export const Settings: FC = () => {
                   />
                 }
                 title={t('settings_jettons_list')}
-                onPress={tokenApproval ? handleManageTokens : handleJettonsList}
+                onPress={handleManageTokens}
               />
             )}
             {hasSubscriptions && (
