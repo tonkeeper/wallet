@@ -13,11 +13,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { LayoutChangeEvent, TextInput } from 'react-native';
+import { LayoutChangeEvent } from 'react-native';
 import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import * as S from './AddressInput.style';
 import { InputContentSize } from '$uikit/Input/Input.interface';
 import { Toast } from '$store';
+import { TextInput } from 'react-native-gesture-handler';
 
 interface Props {
   wordHintsRef: RefObject<WordHintsPopupRef>;

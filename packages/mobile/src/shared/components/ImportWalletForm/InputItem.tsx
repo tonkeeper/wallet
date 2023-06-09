@@ -6,12 +6,12 @@ import React, {
   useState,
 } from 'react';
 import { wordlist } from '$libs/Ton/mnemonic/wordlist';
-import { TextInput } from 'react-native';
 import { Input } from '$uikit';
 import { css } from '$styled';
 import { ns } from '$utils';
 import { InputItemProps, InputItemRef } from './ImportWalletForm.interface';
 import * as S from './ImportWalletForm.style';
+import { TextInput } from 'react-native-gesture-handler';
 
 export const InputItem = forwardRef<InputItemRef, InputItemProps>((props, ref) => {
   const {
