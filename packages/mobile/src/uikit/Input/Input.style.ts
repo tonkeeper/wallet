@@ -41,7 +41,10 @@ export const Border = styled(Animated.View)<{ isFocused: boolean; isFailed: bool
   z-index: 1;
 `;
 
-export const Input = styled(TextInput)<{ inputStyle: ReturnType<typeof css> }>`
+export const Input = styled(TextInput)<{
+  inputStyle: ReturnType<typeof css>;
+  isLarge: boolean;
+}>`
   ${({ theme: { font, colors } }) => css`
     font-family: ${font.regular};
     color: ${colors.foregroundPrimary};
@@ -57,16 +60,16 @@ export const Input = styled(TextInput)<{ inputStyle: ReturnType<typeof css> }>`
   align-items: center;
   padding: 0;
 
-  ${() => {
+  ${({ isLarge }) => {
     if (!isAndroid) {
       return `
-        padding-top: ${ns(22.5)}px;
-        padding-bottom: ${ns(22)}px;
+        padding-top: ${isLarge ? ns(22.5) : ns(18.5)}px;
+        padding-bottom: ${isLarge ? ns(22) : ns(18)}px;
       `;
     } else {
       return `
-        padding-top: ${ns(18)}px;
-        padding-bottom: ${ns(18.5)}px;
+        padding-top: ${isLarge ? ns(18) : ns(14)}px;
+        padding-bottom: ${isLarge ? ns(18.5) : ns(14.5)}px;
       `;
     }
   }}
