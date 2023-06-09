@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -21,6 +21,7 @@ import {
 import { Text } from '../Text/Text';
 import Clipboard from '@react-native-community/clipboard';
 import { Icon } from '$uikit/Icon/Icon';
+import { TextInput, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 const FocusedInputBorderWidth = ns(1.5);
 
@@ -59,6 +60,9 @@ export const Input: FC<InputProps> = (props) => {
   const [isFocused, setFocused] = useState(false);
   const focusAnimation = useSharedValue(0);
   const failAnimation = useSharedValue(0);
+  const ref = useRef<TextInput>(null);
+
+  const inputRef = innerRef ?? ref;
 
   const t = useTranslator();
 
@@ -221,72 +225,79 @@ export const Input: FC<InputProps> = (props) => {
     handleChangeText('');
   }, [handleChangeText]);
 
+  const handlePressInput = useCallback(() => {
+    inputRef.current?.focus();
+  }, [inputRef]);
+
   return (
-    <S.InputWrapper {...{ wrapperStyle, isFailed, withClearButton }}>
-      <S.Border
-        {...{ isFocused, isFailed }}
-        pointerEvents="none"
-        style={focusBorderStyle}
-      />
-      <S.Border
-        {...{ isFocused, isFailed }}
-        pointerEvents="none"
-        style={[failBorderStyle, { zIndex: 2 }]}
-      />
-      <S.LabelContainer style={labelContainerStyle}>
-        <Text reanimated style={labelTextStyle} color="foregroundSecondary">
-          {label}
-        </Text>
-      </S.LabelContainer>
-      <Animated.View style={inputSpacerStyle} />
-      <S.Input
-        {...otherProps}
-        onChangeText={handleChangeText}
-        {...{ inputStyle, multiline, editable, keyboardType, blurOnSubmit, autoFocus }}
-        ref={innerRef}
-        allowFontScaling={false}
-        selectionColor={isFailed ? colors.accentNegative : colors.accentPrimary}
-        keyboardAppearance={isDark ? 'dark' : 'light'}
-        placeholder={hasLabel ? '' : placeholder}
-        placeholderTextColor={colors.foregroundSecondary}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onContentSizeChange={handleContentSizeChange}
-        scrollEnabled={false}
-        disableFullscreenUI
-        component={component}
-      >
-        <S.InputText>{value}</S.InputText>
-      </S.Input>
-      <Animated.View style={inputHeightCompensatorStyle} />
-      {onContentSizeChange ? (
-        <S.GhostTextContainer pointerEvents="none">
-          <S.InputText onLayout={handleTextLayout}>{value}</S.InputText>
-        </S.GhostTextContainer>
-      ) : null}
-      <S.RightContainer
-        style={rightContentStyle}
-        pointerEvents={hasValue ? 'none' : 'auto'}
-      >
-        {withPasteButton ? (
-          <S.RightButton onPress={handlePastePress}>
-            <Text variant="label1" color="accentPrimary">
-              {t('paste')}
-            </Text>
-          </S.RightButton>
-        ) : null}
-        {rightContent}
-      </S.RightContainer>
-      {withClearButton ? (
-        <S.RightContainer
-          style={clearButtonStyle}
-          pointerEvents={hasValue ? 'auto' : 'none'}
+    <TouchableWithoutFeedback onPress={handlePressInput}>
+      <S.InputWrapper {...{ wrapperStyle, isFailed, withClearButton }}>
+        <S.Border
+          {...{ isFocused, isFailed }}
+          pointerEvents="none"
+          style={focusBorderStyle}
+        />
+        <S.Border
+          {...{ isFocused, isFailed }}
+          pointerEvents="none"
+          style={[failBorderStyle, { zIndex: 2 }]}
+        />
+        <S.LabelContainer style={labelContainerStyle}>
+          <Text reanimated style={labelTextStyle} color="foregroundSecondary">
+            {label}
+          </Text>
+        </S.LabelContainer>
+        <Animated.View style={inputSpacerStyle} />
+        <S.Input
+          {...otherProps}
+          isLarge={hasLabel}
+          onChangeText={handleChangeText}
+          {...{ inputStyle, multiline, editable, keyboardType, blurOnSubmit, autoFocus }}
+          ref={inputRef}
+          allowFontScaling={false}
+          selectionColor={isFailed ? colors.accentNegative : colors.accentPrimary}
+          keyboardAppearance={isDark ? 'dark' : 'light'}
+          placeholder={hasLabel ? '' : placeholder}
+          placeholderTextColor={colors.foregroundSecondary}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onContentSizeChange={handleContentSizeChange}
+          scrollEnabled={false}
+          disableFullscreenUI
+          component={component}
         >
-          <S.RightButton onPress={handlePressClear}>
-            <Icon name="ic-xmark-circle-16" color="iconSecondary" />
-          </S.RightButton>
+          <S.InputText>{value}</S.InputText>
+        </S.Input>
+        <Animated.View style={inputHeightCompensatorStyle} />
+        {onContentSizeChange ? (
+          <S.GhostTextContainer pointerEvents="none">
+            <S.InputText onLayout={handleTextLayout}>{value}</S.InputText>
+          </S.GhostTextContainer>
+        ) : null}
+        <S.RightContainer
+          style={rightContentStyle}
+          pointerEvents={hasValue ? 'none' : 'auto'}
+        >
+          {withPasteButton ? (
+            <S.RightButton onPress={handlePastePress}>
+              <Text variant="label1" color="accentPrimary">
+                {t('paste')}
+              </Text>
+            </S.RightButton>
+          ) : null}
+          {rightContent}
         </S.RightContainer>
-      ) : null}
-    </S.InputWrapper>
+        {withClearButton ? (
+          <S.RightContainer
+            style={clearButtonStyle}
+            pointerEvents={hasValue && isFocused ? 'auto' : 'none'}
+          >
+            <S.RightButton onPress={handlePressClear}>
+              <Icon name="ic-xmark-circle-16" color="iconSecondary" />
+            </S.RightButton>
+          </S.RightContainer>
+        ) : null}
+      </S.InputWrapper>
+    </TouchableWithoutFeedback>
   );
 };

@@ -1,11 +1,12 @@
 import { useCommentMaxLength } from '$core/Send/hooks';
 import { useTranslator } from '$hooks';
 import { FormItem, Input, Text } from '$uikit';
-import React, { FC, Ref, memo, useCallback, useEffect, useState } from 'react';
+import React, { FC, RefObject, memo, useCallback, useEffect, useState } from 'react';
 import * as S from './CommentInput.style';
+import { TextInput } from 'react-native-gesture-handler';
 
 interface Props {
-  innerRef?: Ref<any>;
+  innerRef?: RefObject<TextInput>;
   comment: string;
   isCommentRequired: boolean;
   setComment: React.Dispatch<React.SetStateAction<string>>;
