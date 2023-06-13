@@ -433,9 +433,9 @@ export function openJettonsList() {
   push(MainStackRouteNames.JettonsList);
 }
 
-export function openManageTokens() {
+export function openManageTokens(initialTab?: string) {
   _.throttle(() => {
-    push(MainStackRouteNames.ManageTokens);
+    push(MainStackRouteNames.ManageTokens, { initialTab });
   }, 1000)();
 }
 

@@ -6,7 +6,7 @@ import { store } from '$store';
 import { getServerConfig } from '$shared/constants';
 import { UnlockedVault, Vault } from './vault';
 import { compareAddresses, debugLog } from '$utils';
-import { getWalletName } from '$shared/dynamicConfig';
+import { getChainName, getWalletName } from '$shared/dynamicConfig';
 import { t } from '$translation';
 import { Ton } from '$libs/Ton';
 
@@ -42,7 +42,9 @@ export class Wallet {
   public async getReadableAddress() {
     if (this.vault) {
       const rawAddress = await this.vault.getRawTonAddress();
-      const friendlyAddress = await this.vault.getTonAddress();
+      const friendlyAddress = await this.vault.getTonAddress(
+        !(getChainName() === 'mainnet'),
+      );
       const version = this.vault.getVersion();
 
       this.address = {

@@ -1,4 +1,4 @@
-import {createSelector, createSlice} from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '$store/rootReducer';
 import {
@@ -98,4 +98,9 @@ export const { actions, reducer } = createSlice({
 export { reducer as nftsReducer, actions as nftsActions };
 
 export const nftsSelector = (state: RootState) => state.nfts;
-export const myNftsSelector = createSelector(nftsSelector, nfts => nfts.myNfts);
+export const myNftsSelector = createSelector(nftsSelector, (nfts) => nfts.myNfts);
+
+export const hasNftsSelector = createSelector(
+  myNftsSelector,
+  (nfts) => Object.keys(nfts).length > 0,
+);
