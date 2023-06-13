@@ -220,7 +220,7 @@ export const ManageTokens: FC = () => {
                 ]}
               />
             </Tabs.Header>
-            <Tabs.PagerView initialPage={tab === 'collectibles' ? 1 : 0}>
+            <Tabs.PagerView initialPage={params.initialTab === 'collectibles' ? 1 : 0}>
               <Tabs.Section index={0}>{renderJettonList()}</Tabs.Section>
               <Tabs.Section index={1}>
                 <AnimatedFlashList
