@@ -21,9 +21,14 @@ function getStringForTokensApproval(pending: any) {
   }
 }
 const ApprovalCellComponent: React.FC = () => {
-  const handleApproveTokens = useCallback(openManageTokens, []);
   const { pending: jettonsPending } = useJettonBalances();
   const { pending: nftsPending } = useApprovedNfts();
+  const handleApproveTokens = useCallback(() => {
+    if (!jettonsPending.length) {
+      return openManageTokens('collectibles');
+    }
+    openManageTokens();
+  }, [jettonsPending]);
 
   const pending = useMemo(() => {
     return [...jettonsPending, ...nftsPending];

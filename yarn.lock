@@ -1300,10 +1300,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@bogoslavskiy/react-native-steezy@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@bogoslavskiy/react-native-steezy/-/react-native-steezy-1.0.2.tgz#d0594e2abd2eae7b68012a06495efb573ad7d5fc"
-  integrity sha512-DPu0c2q4+FA2Ez9RsfUT7itHTF2XBCYtGSWU5RoouoqTPh7ICNVrgZmp4O6KZCPPe/QU4udHwwZf49EM5JtWkQ==
+"@bogoslavskiy/react-native-steezy@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@bogoslavskiy/react-native-steezy/-/react-native-steezy-1.0.4.tgz#6fa2eaeda04a6babca1440a00f3c542c60da985b"
+  integrity sha512-0kEtqYE5zYYO9XWcUaXIFHaWwxkP9qgINnpcJeyCTL3NHbeCK/KcCrkflch+LHyiIgYL6ma8iOdEOCV5VT2Ueg==
 
 "@craco/craco@^7.0.0":
   version "7.1.0"

@@ -197,14 +197,14 @@ export function useDeeplinkingResolvers() {
         const currentAddress = await getWallet().ton.getAddress();
         const { balances } = await Tonapi.getJettonBalances(currentAddress);
         const jettonBalance = balances.find((balance) =>
-          compareAddresses(balance.jetton_address, query.jetton),
+          compareAddresses(balance.jetton?.address, query.jetton),
         );
 
         if (!jettonBalance) {
           return Toast.fail(t('transfer_deeplink_address_error'));
         }
 
-        let decimals = jettonBalance.metadata?.decimals ?? 9;
+        let decimals = jettonBalance.jetton?.decimals ?? 9;
         const amount = fromNano(query.amount.toString(), decimals);
 
         if (new BigNumber(jettonBalance.balance ?? 0).lt(query.amount)) {
@@ -212,7 +212,7 @@ export function useDeeplinkingResolvers() {
             balance: jettonBalance.balance ?? 0,
             totalAmount: query.amount,
             decimals,
-            currency: jettonBalance.metadata?.symbol,
+            currency: jettonBalance.jetton?.symbol,
           });
           return;
         }

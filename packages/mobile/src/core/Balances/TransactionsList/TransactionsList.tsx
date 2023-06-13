@@ -74,7 +74,6 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
     const t = useTranslator();
     const dispatch = useDispatch();
     const { enabled } = useJettonBalances(true);
-    const { enabled: enabledNfts } = useApprovedNfts();
 
     const handleManageJettons = useCallback(() => {
       openJettonsList();
@@ -117,19 +116,13 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
       let chunk: any = [];
       for (let event of eventsCopy) {
         const jettonTransferAction = event.actions?.find((a) => a.jettonTransfer?.jetton);
-        const nftTransferAction = event.actions?.find((a) => a.nftItemTransfer?.nft);
         const jettonAddress = jettonTransferAction?.jettonTransfer?.jetton?.address;
-        const nftAddress = nftTransferAction?.nftItemTransfer?.nft;
 
         if (
-          (jettonAddress &&
-            !enabled.find((enabledJetton) =>
-              compareAddresses(enabledJetton.jettonAddress, jettonAddress),
-            )) ||
-          (nftAddress &&
-            !enabledNfts.find((enabledNft) =>
-              compareAddresses(enabledNft.address, nftAddress),
-            ))
+          jettonAddress &&
+          !enabled.find((enabledJetton) =>
+            compareAddresses(enabledJetton.jettonAddress, jettonAddress),
+          )
         ) {
           continue;
         }
