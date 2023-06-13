@@ -168,7 +168,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
       }
 
       return result;
-    }, [initialData, eventsInfo, enabled, enabledNfts]);
+    }, [initialData, eventsInfo, enabled]);
 
     function renderItem({ item, index, section }: SectionListRenderItemInfo<any>) {
       const borderStart = index === 0;
