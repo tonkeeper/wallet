@@ -17,11 +17,12 @@ import {
   LayoutChangeEvent,
   NativeSyntheticEvent,
   TextInputContentSizeChangeEventData,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { Text } from '../Text/Text';
 import Clipboard from '@react-native-community/clipboard';
 import { Icon } from '$uikit/Icon/Icon';
-import { TextInput, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { TextInput } from 'react-native-gesture-handler';
 
 const FocusedInputBorderWidth = ns(1.5);
 
