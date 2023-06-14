@@ -59,16 +59,10 @@ export interface ExecGetMethodRequest {
     args?: Array<string>;
 }
 
-export interface ExecGetMethodPostRequest {
-    accountId: string;
-    methodName: string;
-    body?: object;
-}
-
 export interface GetAccountTransactionsRequest {
     accountId: string;
-    maxLt?: number;
-    minLt?: number;
+    afterLt?: number;
+    beforeLt?: number;
     limit?: number;
 }
 
@@ -130,26 +124,10 @@ export interface BlockchainApiInterface {
     execGetMethod(requestParameters: ExecGetMethodRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MethodExecutionResult>;
 
     /**
-     * Execute get method for account
-     * @param {string} accountId account ID
-     * @param {string} methodName contract get method name
-     * @param {object} [body] input parameters for contract get method
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof BlockchainApiInterface
-     */
-    execGetMethodPostRaw(requestParameters: ExecGetMethodPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MethodExecutionResult>>;
-
-    /**
-     * Execute get method for account
-     */
-    execGetMethodPost(requestParameters: ExecGetMethodPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MethodExecutionResult>;
-
-    /**
      * Get account transactions
      * @param {string} accountId account ID
-     * @param {number} [maxLt] omit this parameter to get last transactions
-     * @param {number} [minLt] omit this parameter to get last transactions
+     * @param {number} [afterLt] omit this parameter to get last transactions
+     * @param {number} [beforeLt] omit this parameter to get last transactions
      * @param {number} [limit] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -346,43 +324,6 @@ export class BlockchainApi extends runtime.BaseAPI implements BlockchainApiInter
     }
 
     /**
-     * Execute get method for account
-     */
-    async execGetMethodPostRaw(requestParameters: ExecGetMethodPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MethodExecutionResult>> {
-        if (requestParameters.accountId === null || requestParameters.accountId === undefined) {
-            throw new runtime.RequiredError('accountId','Required parameter requestParameters.accountId was null or undefined when calling execGetMethodPost.');
-        }
-
-        if (requestParameters.methodName === null || requestParameters.methodName === undefined) {
-            throw new runtime.RequiredError('methodName','Required parameter requestParameters.methodName was null or undefined when calling execGetMethodPost.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        const response = await this.request({
-            path: `/v2/blockchain/accounts/{account_id}/methods/{method_name}`.replace(`{${"account_id"}}`, encodeURIComponent(String(requestParameters.accountId))).replace(`{${"method_name"}}`, encodeURIComponent(String(requestParameters.methodName))),
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters.body as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => MethodExecutionResultFromJSON(jsonValue));
-    }
-
-    /**
-     * Execute get method for account
-     */
-    async execGetMethodPost(requestParameters: ExecGetMethodPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MethodExecutionResult> {
-        const response = await this.execGetMethodPostRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
      * Get account transactions
      */
     async getAccountTransactionsRaw(requestParameters: GetAccountTransactionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Transactions>> {
@@ -392,12 +333,12 @@ export class BlockchainApi extends runtime.BaseAPI implements BlockchainApiInter
 
         const queryParameters: any = {};
 
-        if (requestParameters.maxLt !== undefined) {
-            queryParameters['max_lt'] = requestParameters.maxLt;
+        if (requestParameters.afterLt !== undefined) {
+            queryParameters['after_lt'] = requestParameters.afterLt;
         }
 
-        if (requestParameters.minLt !== undefined) {
-            queryParameters['min_lt'] = requestParameters.minLt;
+        if (requestParameters.beforeLt !== undefined) {
+            queryParameters['before_lt'] = requestParameters.beforeLt;
         }
 
         if (requestParameters.limit !== undefined) {

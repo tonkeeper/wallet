@@ -154,7 +154,7 @@ export class Vault {
     return new UnlockedVault(info, phrase);
   }
 
-   // Returns true if the device has a passcode/biometric protection.
+  // Returns true if the device has a passcode/biometric protection.
   // If it does not, app asks user to encrypt the wallet with a password.
   static async isDeviceProtected(): Promise<boolean> {
     return await EncryptedStorage.isDeviceProtected();

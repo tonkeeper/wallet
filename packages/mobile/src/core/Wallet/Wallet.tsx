@@ -14,6 +14,7 @@ import {
   ScrollHandler,
   IconButton,
   Loader,
+  SwapIcon,
 } from '$uikit';
 import {
   openDAppBrowser,
@@ -39,6 +40,7 @@ import { eventsActions, eventsSelector } from '$store/events';
 import { groupAndFilterTonActivityItems } from '$utils/transactions';
 import { formatter } from '$utils/formatter';
 import { Toast } from '$store';
+import { useFlags } from '$utils/flags';
 
 const exploreActions = [
   {
@@ -85,6 +87,7 @@ const exploreActions = [
 
 export const Wallet: FC<WalletProps> = ({ route }) => {
   const currency = route.params.currency;
+  const flags = useFlags(['disable_swap']);
   const wallet = useSelector(walletWalletSelector);
   const address = useSelector(walletAddressSelector);
   const isRefreshing = useSelector(walletIsRefreshingSelector);
@@ -110,7 +113,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
         .getWalletInfo(address[currency])
         .then((info: any) => {
           setLockupDeploy(
-            ['empty', 'uninit'].includes(info.status) ? 'deploy' : 'deployed',
+            ['empty', 'uninit', 'nonexist'].includes(info.status) ? 'deploy' : 'deployed',
           );
         })
         .catch((err: any) => {
@@ -157,15 +160,20 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     openSend(currency);
   }, [currency, wallet]);
 
-  const handleOpenExchange = useCallback(
-    (category: 'buy' | 'sell') => () => {
-      if (!wallet) {
-        return openRequireWalletModal();
-      }
-      nav.openModal('Exchange', { category });
-    },
-    [nav, wallet],
-  );
+  const handleOpenExchange = useCallback(() => {
+    if (!wallet) {
+      return openRequireWalletModal();
+    }
+    nav.openModal('Exchange');
+  }, [nav, wallet]);
+
+  const handlePressSwap = React.useCallback(() => {
+    if (wallet) {
+      nav.openModal('Swap');
+    } else {
+      openRequireWalletModal();
+    }
+  }, [nav, wallet]);
 
   const handleRefresh = useCallback(() => {
     dispatch(walletActions.refreshBalancesPage(true));
@@ -255,11 +263,6 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
               <S.Divider style={{ marginBottom: ns(16) }} />
               <S.ActionsContainer>
                 <IconButton
-                  onPress={handleOpenExchange('buy')}
-                  iconName="ic-plus-28"
-                  title={t('wallet.buy_btn')}
-                />
-                <IconButton
                   onPress={handleSend}
                   iconName="ic-arrow-up-28"
                   title={t('wallet.send_btn')}
@@ -270,10 +273,17 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
                   title={t('wallet.receive_btn')}
                 />
                 <IconButton
-                  onPress={handleOpenExchange('sell')}
-                  iconName="ic-minus-28"
-                  title={t('wallet.sell_btn')}
+                  onPress={handleOpenExchange}
+                  iconName="ic-plus-28"
+                  title={t('wallet.buy_btn')}
                 />
+                {!flags.disable_swap && (
+                  <IconButton
+                    onPress={handlePressSwap}
+                    icon={<SwapIcon />}
+                    title={t('wallet.swap_btn')}
+                  />
+                )}
               </S.ActionsContainer>
               <S.Divider />
             </S.TokenInfoWrap>

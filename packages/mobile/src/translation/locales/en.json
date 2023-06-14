@@ -8,6 +8,7 @@
   "loading": "Loading",
   "success": "Success!",
   "copied": "Copied",
+  "paste": "Paste",
   "address_copied": "Address copied",
   "link_copied": "Link copied",
   "form_optional_indicator": "Optional",
@@ -138,6 +139,7 @@
   "nft_marketplaces": "Discover",
   "nft_marketplaces_title": "NFT Markets",
   "nft_single_nft": "Single NFT",
+  "nft_unnamed_collection": "Unnamed collection",
   "nft_on_sale": "On sale",
   "nft_on_sale_text": "NFT is on sale at the marketplace now. For transfer, you should remove it from sale first.",
   "dns_on_sale_text": "Domain is on sale at the marketplace now. For transfer, you should remove it from sale first.",
@@ -194,7 +196,7 @@
   "receive_received_title": "You received\n%{amount} %{currency}",
 
   "send_title": "Send %{currency}",
-  "send_address_placeholder": "Wallet address or domain",
+  "send_address_placeholder": "Address or name",
   "send_comment_label": "Add a comment",
   "send_fee_estimation_error": "Failed to calculate fee",
   "send_get_wallet_info_error": "Failed to get wallet info",
@@ -209,16 +211,14 @@
   "send_lockup_warning_submit_button": "Send",
   "send_invalid_recipient_title": "Invalid recipient",
   "send_invalid_recipient_caption": "The domain does not exist or the wallet address is not linked to it",
+  "send_all_warning_title": "Are you sure you want to send all your balance?",
 
   "send_screen_steps": {
-    "choose_coin": {
-      "title": "Select a token to send",
-      "subtitle": "You will enter the recipient and amount next."
-    },
     "address": {
+      "title": "Recipient",
       "placeholder": "Wallet address or domain",
       "recent_label": "Recent",
-      "suggests_label": "Favorites and recent transactions",
+      "suggests_label": "Favorites and recent",
       "delete_alert_text": "Are you sure want to delete «%{name}» from your favorites?",
       "suggest_actions": {
         "add": "Add to favorites",
@@ -228,19 +228,20 @@
       }
     },
     "amount": {
-      "recipient_label": "Send to:",
+      "title": "Amount",
+      "recipient_label": "To:",
       "insufficient_balance": "Insufficient balance",
       "less_than_min": "Minimum %{minAmount} TON",
       "max": "Max",
       "remaining": "Remaining: %{amount}"
     },
     "comfirm": {
+      "title": "Confirm transaction",
+      "action": "%{coin} transfer",
       "comment_label": "Comment",
       "comment_label_required": "Required comment",
-      "comment_required_text": "You must include memo or tag when sending to an exchange. ",
+      "comment_required_text": "You must include the note from the exchange for transfer. Without it your funds will be lost. ",
       "comment_description": "The comment is visible to everyone.",
-      "comment_placeholder": "Message or reference (optional)",
-      "comment_placeholder_required": "Memo or tag",
       "details_label": "Details",
       "details_max_balance_label": "Sending max. balance of %{currency}",
       "comment_characters_left": "%{count} characters left.",
@@ -304,12 +305,54 @@
     "edit_tokens_btn": "Edit",
     "old_wallets_title": "Old wallets",
     "old_wallet_title": "Old wallet",
-    "buy_btn": "Buy",
+    "buy_btn": "Buy TON",
     "send_btn": "Send",
     "receive_btn": "Receive",
-    "sell_btn": "Sell",
+    "swap_btn": "Swap",
     "tonkens_tab_lable": "Tokens",
     "collectibles_tab_lable": "Collectibles"
+  },
+
+  "approval": {
+    "show_all": "Show all",
+    "verify_token": "Verify token",
+    "details_token": "Token details",
+    "token_count": {
+      "one": "%{count} token",
+      "other": "%{count} tokens"
+    },
+    "single_token": "Single token",
+    "accept": "Accept",
+    "decline": "Decline",
+    "blacklisted_token": "Blacklisted token",
+    "whitelisted_token": "Whitelisted token",
+    "blacklisted_collection": "Blacklisted collection",
+    "whitelisted_collection": "Whitelisted collection",
+    "pending": "Pending",
+    "declined": "Declined",
+    "move_to_declined": "Move to Declined",
+    "move_to_accepted": "Move to Accepted",
+    "accepted_at_token": "Accepted on %{date}",
+    "accepted_at_collection": "Accepted on %{date}",
+    "declined_at_token": "Declined on %{date}",
+    "declined_at_collection": "Declined on %{date}",
+    "details_collection": "Collection details",
+    "verify_collection": "Verify collection",
+    "verify_description_token": "This token is from unknown issuer. To detect counterfeits, verify the token ID with the issuer's official source. You can change token visibility later in settings.",
+    "verify_description_collection": "These tokens are from unknown issuer. To detect counterfeits, verify the collection ID with the issuer's official source. You can change token visibility later in settings.",
+    "accepted": "Accepted",
+    "approve_all": "Accept all",
+    "approve_token": "Approve incoming token \"%{name}\"",
+    "approve_two_tokens": "Approve incoming tokens \"%{name1}\" and \"%{name2}\"",
+    "approve_many": "Approve %{count} incoming tokens",
+    "approve_collection_one": "Approve incoming token from \"%{collection}\" collection",
+    "approve_collection_many": "Approve incoming tokens from \"%{collection}\" collection",
+    "approve_two_collections": "Approve incoming tokens from \"%{collection1}\" \"%{collection2}\" collections",
+    "manage_tokens": "Manage tokens",
+    "name": "Name",
+    "id_token": "Token ID",
+    "id_collection": "Collection ID",
+    "token_copied": "Token ID copied"
   },
 
   "activity": {
@@ -351,9 +394,7 @@
   },
 
   "exchange_modal": {
-    "sell_title": "Sell Toncoin",
-    "buy_title": "Buy Toncoin",
-    "other_ways_to_sell": "Other ways to sell",
+    "title": "Buy or sell",
     "other_ways_to_buy": "Other ways to buy"
   },
 
@@ -363,7 +404,7 @@
   "settings_title": "Settings",
   "settings_primary_currency": "Currency",
   "settings_rate": "Rate Tonkeeper",
-  "settings_contact_support": "Contact team",
+  "settings_contact_support": "Contact us",
   "settings_legal_documents": "Legal",
   "settings_news": "Tonkeeper news",
   "settings_support": "Support",
@@ -456,7 +497,7 @@
   "create_wallet_generating": "Generating wallet...",
   "create_wallet_generated": "Your wallet has\njust been created!",
   "create_wallet_title": "Grab a pen and a piece of paper",
-  "create_wallet_caption": "We strongly recommend you write down the recovery phrase because it’s the only way to have access to and recover your wallet in case of loosing your device. Do not send it to yourself via email or take a screenshot. It’s safer when kept offline.",
+  "create_wallet_caption": "We strongly recommend you write down the recovery phrase because it’s the only way to have access to and recover your wallet in case of losing your device. Do not send it to yourself via email or take a screenshot. It’s safer when kept offline.",
   "create_wallet_continue_button": "Continue",
 
   "secret_words_title": "Your recovery phrase",

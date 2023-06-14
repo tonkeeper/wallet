@@ -8,8 +8,8 @@ const prepareHeaders = (restHeaders?: { [key: string]: string }) => {
     Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
     Build: DeviceInfo.getBuildNumber(),
     ...(restHeaders ?? {}),
-  }
-}
+  };
+};
 
 const getBulkInfo = async (addresses: string[]) => {
   const endpoint = getServerConfig('tonapiIOEndpoint');
@@ -49,12 +49,11 @@ const findByPubkey = async (pubkey: string) => {
 
 async function getWalletInfo(address: string) {
   try {
-    const endpoint = getServerConfig('tonapiIOEndpoint');
-    const response: any = await axios.get(`${endpoint}/v1/account/getInfo`, {
-      headers: prepareHeaders(),
-      params: {
-        account: address,
-      },
+    const endpoint = getServerConfig('tonapiV2Endpoint');
+    const response: any = await axios.get(`${endpoint}/v2/accounts/${address}`, {
+      headers: prepareHeaders({
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+      }),
     });
     return response.data;
   } catch (e) {
@@ -69,19 +68,18 @@ type Balances = {
 
 async function resolveDns(domain: string, signal?: AbortSignal) {
   try {
-    const endpoint = getServerConfig('tonapiIOEndpoint');
-    const response: any = await axios.get(`${endpoint}/v1/dns/resolve`, {
-      headers: prepareHeaders(),
-      params: {
-        name: domain,
-      },
+    const endpoint = getServerConfig('tonapiV2Endpoint');
+    const response: any = await axios.get(`${endpoint}/v2/dns/${domain}/resolve`, {
+      headers: prepareHeaders({
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+      }),
       signal,
     });
     return response.data;
   } catch (e) {
     if (axios.isCancel(e)) {
       return 'aborted';
-    }    
+    }
     return false;
   }
 }
@@ -91,13 +89,12 @@ async function getJettonBalances(address: string) {
     if (!Ton.isValidAddress(address)) {
       throw new Error('Wrong address');
     }
-    const endpoint = getServerConfig('tonapiIOEndpoint');
+    const endpoint = getServerConfig('tonapiV2Endpoint');
 
-    const resp: any = await axios.get(`${endpoint}/v1/jetton/getBalances`, {
-      headers: prepareHeaders(),
-      params: {
-        account: address,
-      },
+    const resp: any = await axios.get(`${endpoint}/v2/accounts/${address}/jettons`, {
+      headers: prepareHeaders({
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+      }),
     });
     return resp.data;
   } catch (e) {
@@ -108,31 +105,77 @@ async function getJettonBalances(address: string) {
 async function estimateTx(boc: string) {
   try {
     const endpoint = getServerConfig('tonapiIOEndpoint');
-    const response: any = await axios.post(`${endpoint}/v1/send/estimateTx`, {
-      boc,
-    }, {
-      headers: prepareHeaders(),
-    });
+    const response: any = await axios.post(
+      `${endpoint}/v1/send/estimateTx`,
+      {
+        boc,
+      },
+      {
+        headers: prepareHeaders(),
+      },
+    );
     return response.data;
   } catch (e) {
     console.log(e);
   }
 }
+/*async function estimateTx(boc: string) {
+  try {
+    const endpoint = getServerConfig('tonapiV2Endpoint');
+    const response: any = await axios.post(
+      `${endpoint}/v2/blockchain/message/emulate`,
+      {
+        boc,
+      },
+      {
+        headers: prepareHeaders({
+          Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+        }),
+      },
+    );
+    return response.data;
+  } catch (e) {
+    console.log(e);
+  }
+}*/
+
+/*async function sendBoc(boc: string) {
+  try {
+    const endpoint = getServerConfig('tonapiV2Endpoint');
+    const response: any = await axios.post(
+      `${endpoint}/v2/blockchain/message`,
+      {
+        boc,
+      },
+      {
+        headers: prepareHeaders({
+          Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+        }),
+      },
+    );
+    return response.data;
+  } catch (e) {
+    console.log(e);
+  }
+}*/
 
 async function sendBoc(boc: string) {
   try {
     const endpoint = getServerConfig('tonapiIOEndpoint');
-    const response: any = await axios.post(`${endpoint}/v1/send/boc`, {
-      boc,
-    }, {
-      headers: prepareHeaders(),
-    });
+    const response: any = await axios.post(
+      `${endpoint}/v1/send/boc`,
+      {
+        boc,
+      },
+      {
+        headers: prepareHeaders(),
+      },
+    );
     return response.data;
   } catch (e) {
     console.log(e);
   }
 }
-
 async function getBalances(pubkey: string) {
   const wallets = await findByPubkey(pubkey);
 

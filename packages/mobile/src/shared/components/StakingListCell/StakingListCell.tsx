@@ -17,7 +17,7 @@ interface Props {
   separator?: boolean;
   isWidget?: boolean;
   numberOfLines?: number;
-  onPress?: (id: string) => void;
+  onPress?: (id: string, name: string) => void;
 }
 
 const StakingListCellComponent: FC<Props> = (props) => {
@@ -36,8 +36,8 @@ const StakingListCellComponent: FC<Props> = (props) => {
   const balance = useFiatValue(CryptoCurrencies.Ton, balanceValue || '0');
 
   const handlePress = useCallback(() => {
-    onPress?.(id);
-  }, [id, onPress]);
+    onPress?.(id, name);
+  }, [id, name, onPress]);
 
   return (
     <>

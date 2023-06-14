@@ -49,6 +49,12 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
   const hasPendingWithdraw = new BigNumber(pendingWithdraw.amount).isGreaterThan(0);
   const hasReadyWithdraw = new BigNumber(readyWithdraw.amount).isGreaterThan(0);
 
+  const isWithdrawDisabled =
+    hasDeposit &&
+    new BigNumber(balance.amount)
+      .minus(new BigNumber(pendingWithdraw.amount))
+      .isEqualTo(0);
+
   const frequency = Math.round((pool.cycleEnd - pool.cycleStart) / 3600);
   const apy = pool.apy.toFixed(2);
   const minDeposit = stakingFormatter.fromNano(pool.minStake);
@@ -67,9 +73,12 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
   const handleWithdrawalPress = useCallback(() => {
     nav.push(AppStackRouteNames.StakingSend, {
       poolAddress: pool.address,
-      transactionType: StakingTransactionType.WITHDRAWAL,
+      transactionType:
+        pool.implementation === 'tf'
+          ? StakingTransactionType.WITHDRAWAL_CONFIRM
+          : StakingTransactionType.WITHDRAWAL,
     });
-  }, [nav, pool.address]);
+  }, [nav, pool.address, pool.implementation]);
 
   const handleConfirmWithdrawalPress = useCallback(() => {
     nav.push(AppStackRouteNames.StakingSend, {
@@ -127,6 +136,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
     hasPendingDeposit,
     hasPendingWithdraw,
     hasReadyWithdraw,
+    isWithdrawDisabled,
     handleTopUpPress,
     handleWithdrawalPress,
     handleConfirmWithdrawalPress,

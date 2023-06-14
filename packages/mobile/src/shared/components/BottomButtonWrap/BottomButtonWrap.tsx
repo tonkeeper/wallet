@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ns } from '$utils';
@@ -16,7 +16,7 @@ export const BottomButtonWrapHelper: FC = () => {
   );
 };
 
-export const BottomButtonWrap: FC = ({ children }) => {
+export const BottomButtonWrap: FC<{ children: ReactNode }> = ({ children }) => {
   const { bottom } = useSafeAreaInsets();
   const theme = useTheme();
 

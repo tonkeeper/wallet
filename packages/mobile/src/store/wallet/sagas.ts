@@ -289,7 +289,7 @@ function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
     yield put(walletActions.loadBalances());
     yield put(eventsActions.loadEvents({ isReplace: true, ignoreCache: action.payload }));
     yield put(nftsActions.loadNFTs({ isReplace: true }));
-    yield put(jettonsActions.getIsFeatureEnabled());
+    // yield put(jettonsActions.getIsFeatureEnabled());
     yield put(jettonsActions.loadJettons());
     yield put(ratesActions.loadRates({ onlyCache: false }));
     yield put(mainActions.loadNotifications());
@@ -458,7 +458,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
     action.payload.onFail();
     e && debugLog(e.message);
 
-    if (e.message === 'wrong_time') {
+    if (e && e.message === 'wrong_time') {
       MainDB.setTimeSyncedDismissed(false);
       yield put(mainActions.setTimeSyncedDismissed(false));
       Alert.alert(
@@ -468,8 +468,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
 
       return;
     }
-
-    yield call(Toast.fail, e ? e.message : t('send_sending_failed'));
   }
 }
 

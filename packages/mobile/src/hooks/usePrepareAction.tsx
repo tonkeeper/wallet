@@ -4,19 +4,13 @@ import { ActionItemBaseProps } from '$shared/components/ActionItem/ActionItemBas
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
-import {
-  compareAddresses,
-  format,
-  fromNano,
-  maskifyTonAddress,
-} from '$utils';
+import { compareAddresses, format, fromNano, maskifyTonAddress } from '$utils';
 import { useTranslator } from '$hooks/useTranslator';
 import { formatCryptoCurrency } from '$utils/currency';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { TransactionItemNFT } from '$shared/components/ActionItem/TransactionItemNFT/TransactionItemNFT';
 import { subscriptionsSelector } from '$store/subscriptions';
 import { Action } from 'tonapi-sdk-js';
-import { dnsToUsername } from '$utils/dnsToUsername';
 import { formatter } from '$utils/formatter';
 
 export function usePrepareAction(
@@ -138,7 +132,7 @@ export function usePrepareAction(
         Decimals[CryptoCurrencies.Ton],
         undefined,
         true,
-      ).trim()
+      ).trim();
     }
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
@@ -199,9 +193,7 @@ export function usePrepareAction(
     } else if (ActionType.AuctionBid === ActionType[rawAction.type]) {
       actionProps.infoRows.push({
         label:
-          action.auctionType === 'DNS.tg'
-            ? dnsToUsername(action.nft.dns)
-            : action.nft.dns,
+          action.auctionType === 'DNS.tg' ? action.nft.metadata.name : action.nft.dns,
         value: formattedDate,
       });
     }

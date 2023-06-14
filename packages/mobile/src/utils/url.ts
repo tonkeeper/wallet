@@ -11,9 +11,24 @@ export const isValidUrl = (value: string) =>
     value,
   ) || /[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+/.test(value);
 
+export const isTonUrl = (value: string) =>
+  /(?:https?:\/\/)?(?:www\.)?[^.\/]+\.ton(?:\/|$)/.test(value);
+
 export const getDomainFromURL = (url: string): string => domainFromPartialUrl(url);
 
-export const getCorrectUrl = (url: string) => {
+export const getUrlWithTonProxy = (url: string) => {
+  const regex = /(\.ton)(?=\/|$)(?!\.website)/g;
+
+  return url.replace(regex, '.ton.website');
+};
+
+export const getUrlWithoutTonProxy = (url: string) => {
+  const regex = /(\.ton)\.website(?=\/|$)/g;
+
+  return url.replace(regex, '.ton');
+};
+
+export const getCorrectUrl = (value: string) => {
   const httpEnabled =
     useDevFeaturesToggle.getState().devFeatures[DevFeature.UseHttpProtocol];
 
@@ -21,9 +36,15 @@ export const getCorrectUrl = (url: string) => {
 
   const protocolToReplace = httpEnabled ? 'https://' : 'http://';
 
-  const fixedUrl = url.replace(protocolToReplace, protocol);
+  const fixedUrl = value.replace(protocolToReplace, protocol);
 
-  return fixedUrl.startsWith(protocol) ? fixedUrl : `${protocol}${url}`;
+  const url = fixedUrl.startsWith(protocol) ? fixedUrl : `${protocol}${value}`;
+
+  if (isTonUrl(url)) {
+    return getUrlWithTonProxy(url);
+  }
+
+  return url;
 };
 
 export const getUrlTitle = async (url: string, cancelTokenSource: CancelTokenSource) => {

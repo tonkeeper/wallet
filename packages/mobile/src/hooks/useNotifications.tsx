@@ -1,23 +1,23 @@
-import React, {useMemo} from 'react';
+import React, { useMemo } from 'react';
 import DeviceInfo from 'react-native-device-info';
 import { i18n } from '$translation';
 import axios from 'axios';
 import { walletWalletSelector } from '$store/wallet';
-import {getServerConfig} from '$shared/constants';
+import { getServerConfig } from '$shared/constants';
 import {
   getSubscribeStatus,
   removeSubscribeStatus,
   requestUserPermissionAndGetToken,
   saveSubscribeStatus,
-  SUBSCRIBE_STATUS
+  SUBSCRIBE_STATUS,
 } from '$utils/messaging';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 
-export const useNotifications = () => {  
+export const useNotifications = () => {
   const wallet = useSelector(walletWalletSelector);
-  
+
   const subscribe = React.useCallback(async () => {
-    console.log('[Notifications]: subscribe')
+    console.log('[Notifications]: subscribe');
     if (!wallet) {
       return false;
     }
@@ -27,7 +27,9 @@ export const useNotifications = () => {
       return false;
     }
 
-    const endpoint = `${getServerConfig('tonapiIOEndpoint')}/subscribe`;
+    const endpoint = `${getServerConfig(
+      'tonapiIOEndpoint',
+    )}/v1/internal/pushes/plain/subscribe`;
     const addresses = await wallet.ton.getAllAddresses();
     const accounts = Object.values(addresses).map((address) => ({ address }));
     const deviceId = DeviceInfo.getUniqueId();
@@ -67,4 +69,4 @@ export const useNotifications = () => {
   }, []);
 
   return useMemo(() => ({ subscribe, unsubscribe }), [subscribe, unsubscribe]);
-}
+};

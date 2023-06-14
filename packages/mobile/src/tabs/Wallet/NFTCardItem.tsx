@@ -4,7 +4,6 @@ import { DarkTheme } from '$styles';
 import { Steezy } from '$styles';
 import { View, Text, Icon, Pressable } from '$uikit';
 import { checkIsTonDiamondsNFT, maskifyTonAddress, ns } from '$utils';
-import { dnsToUsername } from '$utils/dnsToUsername';
 import { useFlags } from '$utils/flags';
 import _ from 'lodash';
 import React, { memo, useCallback, useMemo } from 'react';
@@ -33,16 +32,12 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
   );
 
   const title = useMemo(() => {
-    if (isTG) {
-      return dnsToUsername(item.name);
-    }
-
     if (isDNS) {
       return item.dns;
     }
 
     return item.name || maskifyTonAddress(item.address);
-  }, [isDNS, isTG, item.dns, item.name, item.address]);
+  }, [isDNS, item.dns, item.name, item.address]);
 
   return (
     <Pressable
@@ -73,7 +68,7 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
           {isDNS
             ? 'TON DNS'
             : item?.collection
-            ? item.collection.name
+            ? item.collection.name || t('nft_unnamed_collection')
             : t('nft_single_nft')}
         </Text>
       </View>

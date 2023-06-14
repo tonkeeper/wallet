@@ -2,11 +2,11 @@ import { SendAmount } from '$core/Send/Send.interface';
 import { mainSelector } from '$store/main';
 import { walletWalletSelector } from '$store/wallet';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Switch, TextInput } from 'react-native-gesture-handler';
+import { TextInput } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { formatInputAmount, parseLocaleNumber } from '$utils';
-import { cryptoToFiat, fiatToCrypto, formatCryptoCurrency } from '$utils/currency';
+import { cryptoToFiat, fiatToCrypto, trimZeroDecimals } from '$utils/currency';
 import { useTheme, useTranslator } from '$hooks';
 import { getNumberFormatSettings } from 'react-native-localize';
 import {
@@ -22,8 +22,10 @@ import { Button, Text } from '$uikit';
 import { SwapButton } from '../SwapButton';
 import { formatter } from '$utils/formatter';
 
+export type AmountInputRef = TextInput & { value: string };
+
 interface Props {
-  innerRef?: React.MutableRefObject<TextInput | null>;
+  innerRef?: React.MutableRefObject<AmountInputRef | null>;
   decimals: number;
   balance: string;
   currencyTitle: string;
@@ -31,6 +33,7 @@ interface Props {
   minAmount?: string;
   fiatRate: number;
   hideSwap?: boolean;
+  withCoinSelector?: boolean;
   setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;
 }
 
@@ -44,6 +47,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     fiatRate,
     minAmount,
     hideSwap = false,
+    withCoinSelector = false,
     setAmount,
   } = props;
 
@@ -95,7 +99,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const secondaryAmount = useMemo(() => {
     if (amount.all && isFiat) {
-      return formatInputAmount(balance, 2, true);
+      return formatInputAmount(formatter.format(balance), 2, true);
     }
 
     const { decimalSeparator } = getNumberFormatSettings();
@@ -136,11 +140,11 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const handleToggleFiat = useCallback(() => {
     if (isFiat) {
-      setValue(amount.value);
+      setValue(trimZeroDecimals(amount.value));
 
       setFiat(false);
     } else {
-      setValue(cryptoToFiat(amount.value, fiatRate, 2));
+      setValue(trimZeroDecimals(cryptoToFiat(amount.value, fiatRate, 2)));
 
       setFiat(true);
     }
@@ -171,7 +175,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
   const handleRef = useCallback(
     (ref: TextInput) => {
       if (innerRef) {
-        innerRef.current = ref;
+        innerRef.current = ref as AmountInputRef;
       }
 
       textInputRef.current = ref;
@@ -195,6 +199,17 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount]);
 
+  useEffect(() => {
+    setFiat(false);
+    setValue('0');
+  }, [currencyTitle]);
+
+  useEffect(() => {
+    if (innerRef?.current) {
+      innerRef.current.value = value;
+    }
+  }, [innerRef, value]);
+
   return (
     <>
       <S.InputTouchable onPress={handlePressInput}>
@@ -202,6 +217,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
           <S.AmountContainer
             style={amountContainerStyle}
             isFiatAvailable={isFiatAvailable}
+            withCoinSelector={withCoinSelector}
           >
             <S.FakeInputWrap>
               <S.AmountInput

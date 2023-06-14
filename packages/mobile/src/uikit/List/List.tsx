@@ -1,50 +1,65 @@
-import React, { FC, isValidElement, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
+import { Steezy, StyleProp } from '$styles';
+import { Spacer, View } from '$uikit';
+import { ListHeader } from './ListHeader';
+import { ListSeparator } from './ListSeparator';
+import { ViewStyle } from 'react-native';
 
-import * as S from './List.style';
-import { ListCellProps, ListProps } from './List.interface';
-import { Separator } from '$uikit';
+interface ListProps {
+  headerTitle?: string;
+  children?: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+  indent?: boolean;
+  compact?: boolean;
+}
 
-export const ListCell: FC<ListCellProps> = ({
-  label,
-  align = 'right',
-  children,
-  onPress,
-}) => {
+export const List = memo<ListProps>((props) => {
+  const { indent = true, compact = true } = props;
+
+  const items = useMemo(() => {
+    return React.Children.toArray(props.children)
+      .filter((node) => node != null)
+      .map((node, i, arr) => {
+        if (!React.isValidElement(node)) {
+          return node;
+        }
+
+        const child = node as React.ReactElement;
+        return (
+          <View key={i}>
+            {!compact && i === 0 && <Spacer y={8} />}
+            {compact && i > 0 && <ListSeparator />}
+            {React.cloneElement(child, {
+              compact,
+              isFirst: i === 0,
+              // @ts-ignore
+              isLast: i === props.children.length - 1,
+            })}
+            {/* @ts-ignore **/}
+            {!compact && i === arr.length - 1 && <Spacer y={8} />}
+          </View>
+        );
+      });
+  }, [compact, props.children]);
+
   return (
-    <S.Cell onPress={onPress} isDisabled={!onPress}>
-      <S.CellIn>
-        <S.CellLabel>{label}</S.CellLabel>
-        <S.CellValue
-          style={
-            {
-              // textAlign: align,
-            }
-          }
-        >
-          {children}
-        </S.CellValue>
-      </S.CellIn>
-    </S.Cell>
+    <>
+      {props.headerTitle && <ListHeader title={props.headerTitle} />}
+      <View style={[styles.container, props.style, indent && styles.indentHorizontal]}>
+        {items}
+      </View>
+    </>
   );
-};
+});
 
-export const List: FC<ListProps> = ({ children, align = 'right', separator = true }) => {
-  const content = useMemo(() => {
-    return React.Children.map(children, (item, i) => {
-      if (!isValidElement(item)) {
-        return null;
-      }
-
-      return (
-        <>
-          {separator && i > 0 && <Separator />}
-          {React.cloneElement(item, {
-            align,
-          })}
-        </>
-      );
-    });
-  }, [align, children, separator]);
-
-  return <S.Wrap>{content}</S.Wrap>;
-};
+const styles = Steezy.create(({ corners, colors }) => ({
+  container: {
+    marginBottom: 16,
+    overflow: 'hidden',
+    borderRadius: corners.medium,
+    backgroundColor: colors.backgroundContent,
+  },
+  indentHorizontal: {
+    marginHorizontal: 16,
+  },
+}));

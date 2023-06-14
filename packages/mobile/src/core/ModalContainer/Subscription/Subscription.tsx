@@ -2,12 +2,13 @@ import React, { FC } from 'react';
 const TonWeb = require('tonweb');
 
 import { SubscriptionProps } from './Subscription.interface';
-import { BottomSheet, List, ListCell } from '$uikit';
+import { BottomSheet } from '$uikit';
+import { List, ListCell } from '$uikit/List/old/List';
 import { useSelector } from 'react-redux';
 import { subscriptionsSelector } from '$store/subscriptions';
 import { formatAmount, formatSubscriptionPeriod } from '$utils';
-import {CryptoCurrencies, Decimals} from '$shared/constants';
-import {Ton} from "$libs/Ton";
+import { CryptoCurrencies, Decimals } from '$shared/constants';
+import { Ton } from '$libs/Ton';
 
 export const Subscription: FC<SubscriptionProps> = ({ subscriptionId }) => {
   const { subscriptionsInfo } = useSelector(subscriptionsSelector);

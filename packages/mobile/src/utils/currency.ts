@@ -7,6 +7,7 @@ import {
   toLocaleNumber,
   truncateDecimal,
 } from './number';
+import { getNumberFormatSettings } from 'react-native-localize';
 
 export function formatFiatCurrencyAmount(
   amount: any,
@@ -53,6 +54,14 @@ export function formatCryptoCurrency(
   return `${toLocaleNumber(amount)} ${currency?.toUpperCase()}`;
 }
 
+export const trimZeroDecimals = (input: string) => {
+  const { decimalSeparator } = getNumberFormatSettings();
+
+  const exp = input.split(decimalSeparator);
+
+  return exp[1] && exp[1].split('').every((s) => s === '0') ? exp[0] : input;
+};
+
 export const cryptoToFiat = (
   input: string,
   fiatRate: number,
@@ -67,16 +76,14 @@ export const cryptoToFiat = (
 
   const calculated = bigNum.multipliedBy(fiatRate);
 
+  const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
+
   const formatted = calculated.toFormat(decimals, undefined, {
-    decimalSeparator: '.',
-    groupSeparator: '',
+    decimalSeparator: decimalSeparator,
+    groupSeparator: groupingSeparator,
   });
 
-  return formatInputAmount(
-    formatted === '0.00' ? '0' : formatted,
-    decimals,
-    skipFormatting,
-  );
+  return formatInputAmount(formatted, decimals, skipFormatting);
 };
 
 export const fiatToCrypto = (
@@ -93,5 +100,12 @@ export const fiatToCrypto = (
 
   const calculated = bigNum.dividedBy(fiatRate);
 
-  return formatInputAmount(calculated.toString(), decimals, skipFormatting);
+  const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
+
+  const formatted = calculated.toFormat(decimals, undefined, {
+    decimalSeparator: decimalSeparator,
+    groupSeparator: groupingSeparator,
+  });
+
+  return formatInputAmount(formatted, decimals, skipFormatting);
 };

@@ -3,7 +3,7 @@ import * as S from './NFTHead.style';
 import { useNFT } from '$hooks/useNFT';
 import { NFTKeyPair } from '$store/nfts/interface';
 import { useTranslator } from '$hooks';
-import {Icon, Text} from '$uikit';
+import { Icon, Text } from '$uikit';
 import _ from 'lodash';
 import { openNFT } from '$navigation';
 import { dnsToUsername } from '$utils/dnsToUsername';
@@ -25,15 +25,15 @@ export const NFTHead: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
   }
   return (
     <S.Wrap activeOpacity={0.6} onPress={handleOpenNftItem}>
-      {isDNS ? (
-        <S.GlobeIcon />
-      ) : null}
+      {isDNS ? <S.GlobeIcon /> : null}
       {!isDNS && nft?.content?.image?.baseUrl ? (
         <S.Image source={{ uri: nft?.content?.image?.baseUrl }} />
       ) : null}
       <S.NameWrapper>
         <Text numberOfLines={1} variant="h2">
-          {isTG ? dnsToUsername(nft.dns) : (nft.dns || nft.name || t('nft_transaction_head_placeholder'))}
+          {isTG
+            ? dnsToUsername(nft.dns)
+            : nft.dns || nft.name || t('nft_transaction_head_placeholder')}
         </Text>
       </S.NameWrapper>
       {nft?.collection?.name ? (

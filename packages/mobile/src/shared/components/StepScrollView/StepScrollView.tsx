@@ -24,12 +24,12 @@ const StepScrollViewComponent: FC<Props> = ({ active, ...scrollViewProps }) => {
   return (
     <AnimatedScrollView
       ref={scrollViewRef}
-      {...scrollViewProps}
       keyboardDismissMode="interactive"
       keyboardShouldPersistTaps="handled"
       scrollEventThrottle={16}
       showsVerticalScrollIndicator={false}
       bounces={false}
+      {...scrollViewProps}
     />
   );
 };

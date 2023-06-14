@@ -1,13 +1,15 @@
 import { useTranslator } from '$hooks';
 import { MainStackRouteNames } from '$navigation';
 import { StakingListCell } from '$shared/components';
-import { List, View } from '$uikit';
+import { View } from '$uikit';
+import { List } from '$uikit/List/old/List';
 import React, { FC, memo, useCallback } from 'react';
 import { useNavigation } from '$libs/navigation';
 import { Steezy } from '$styles';
 import { useStakingStore } from '$store';
 import { shallow } from 'zustand/shallow';
 import { StakingWidgetStatus } from './StakingWidgetStatus';
+import { logEvent } from '@amplitude/analytics-browser';
 
 const StakingWidgetComponent: FC = () => {
   const t = useTranslator();
@@ -30,7 +32,8 @@ const StakingWidgetComponent: FC = () => {
   );
 
   const handleStakingPress = useCallback(() => {
-    nav.push(MainStackRouteNames.StakingPools, { providerId: 'whales' });
+    logEvent('staking_open');
+    nav.push(MainStackRouteNames.Staking);
   }, [nav]);
 
   if (!hasPools) {

@@ -1,4 +1,6 @@
 import React, {
+  FC,
+  ReactNode,
   useCallback,
   useContext,
   useEffect,
@@ -8,7 +10,6 @@ import React, {
 } from 'react';
 import {
   Dimensions,
-  FlatList,
   LayoutChangeEvent,
   Modal,
   StyleProp,
@@ -27,6 +28,10 @@ import { deviceHeight, isAndroid, Memo, ns, triggerSelection } from '$utils';
 import { usePopupAnimation } from './usePopupAnimation';
 import * as S from './PopupSelect.style';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { FullWindowOverlay } from 'react-native-screens';
+import { useDimensions } from '$hooks';
+import { PortalOrigin } from '@alexzunik/rn-native-portals-reborn';
+import { FlatList } from 'react-native-gesture-handler';
 
 const ScreenWidth = Dimensions.get('window').width;
 // We should add extra-width for iPhone mini and SE
@@ -86,6 +91,42 @@ export const PopupSelectItem = Memo(
   },
 );
 
+const PopupContainer: FC<{
+  children: ReactNode;
+  asFullWindowOverlay?: boolean;
+  visible: boolean;
+}> = ({ asFullWindowOverlay, children, visible }) => {
+  const { window } = useDimensions();
+
+  if (asFullWindowOverlay) {
+    return isAndroid ? (
+      <PortalOrigin destination={visible ? 'popupPortal' : null}>
+        <View
+          style={{ width: window.width, height: window.height, position: 'absolute' }}
+          pointerEvents={visible ? 'auto' : 'none'}
+        >
+          {children}
+        </View>
+      </PortalOrigin>
+    ) : (
+      <FullWindowOverlay>
+        <View
+          style={{ width: window.width, height: window.height }}
+          pointerEvents={visible ? 'auto' : 'none'}
+        >
+          {children}
+        </View>
+      </FullWindowOverlay>
+    );
+  }
+
+  return (
+    <Modal animationType="none" transparent visible={visible}>
+      {children}
+    </Modal>
+  );
+};
+
 export function PopupSelectComponent<T>(props: PopupSelectProps<T>) {
   const {
     children,
@@ -97,32 +138,38 @@ export function PopupSelectComponent<T>(props: PopupSelectProps<T>) {
     width: initialWidth = 160,
     autoWidth = false,
     minWidth,
+    maxHeight,
     scrollY,
+    anchor = 'top-right',
+    top = 0,
+    asFullWindowOverlay,
   } = props;
   const [visible, setVisible] = useState(false);
   const childrenRef = useRef<View>(null);
   const tabBarHeight = useContext(BottomTabBarHeightContext);
   const offsetTop = useRef(0);
 
+  const flatListRef = useRef<FlatList>(null);
+
   const scrollYBefore = useSharedValue(0);
 
   const popupHeight = useMemo(() => {
-    const maxHeight = deviceHeight - offsetTop.current - (tabBarHeight || 0) - 32;
+    const max = deviceHeight - offsetTop.current - (tabBarHeight || 0) - 32;
     const height = ns(47.5 * items.length) + 0.5;
-    return Math.min(height, maxHeight);
-  }, [items.length, tabBarHeight]);
+    return maxHeight ? Math.min(height, max, maxHeight) : Math.min(height, max);
+  }, [items.length, tabBarHeight, maxHeight]);
 
   const [width, setWidth] = useState(autoWidth ? 0 : initialWidth);
 
   const popupAnimation = usePopupAnimation({
-    anchor: 'top-right',
+    anchor: anchor,
     height: popupHeight,
     width: ns(width),
   });
 
   const measure = useCallback((onDone: () => void) => {
     childrenRef.current?.measureInWindow((x, y) => {
-      offsetTop.current = y;
+      offsetTop.current = y + top;
       onDone();
     });
   }, []);
@@ -130,6 +177,16 @@ export function PopupSelectComponent<T>(props: PopupSelectProps<T>) {
   useEffect(() => {
     if (visible) {
       popupAnimation.open();
+      if (asFullWindowOverlay) {
+        const index = items.findIndex((v) => v === selected);
+        if (index > -1) {
+          flatListRef.current?.scrollToIndex({
+            index,
+            animated: false,
+            viewOffset: popupHeight - ns(47),
+          });
+        }
+      }
     }
   }, [visible]);
 
@@ -185,20 +242,23 @@ export function PopupSelectComponent<T>(props: PopupSelectProps<T>) {
       >
         {childrenPrepared}
       </View>
-
-      <Modal animationType="none" transparent visible={visible}>
+      <PopupContainer asFullWindowOverlay={asFullWindowOverlay} visible={visible}>
         <S.Overlay onPress={() => handleClose()}>
           <Animated.View style={scrollCompensationStyle}>
             <S.Wrap
+              anchor={anchor}
               style={[{ top: offsetTop.current, width: ns(width) }, popupAnimation.style]}
             >
               <S.Content>
                 <FlatList
+                  ref={flatListRef}
                   data={items}
                   keyExtractor={keyExtractor}
                   alwaysBounceVertical={false}
                   ItemSeparatorComponent={() => <Separator />}
                   showsVerticalScrollIndicator={false}
+                  keyboardDismissMode="none"
+                  keyboardShouldPersistTaps="handled"
                   renderItem={({ item, index }) => (
                     <PopupSelectItem
                       checked={item === selected}
@@ -220,7 +280,7 @@ export function PopupSelectComponent<T>(props: PopupSelectProps<T>) {
             </S.Wrap>
           </Animated.View>
         </S.Overlay>
-      </Modal>
+      </PopupContainer>
     </>
   );
 }

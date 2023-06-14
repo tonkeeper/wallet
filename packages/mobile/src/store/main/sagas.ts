@@ -64,6 +64,7 @@ import { favoritesActions } from '$store/favorites';
 import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 import { clearSubscribeStatus } from '$utils/messaging';
 import { useJettonEventsStore } from '$store/zustand/jettonEvents';
+import { useSwapStore } from '$store/zustand/swap';
 
 SplashScreen.preventAutoHideAsync()
   .then((result) =>
@@ -209,6 +210,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     yield put(subscriptionsActions.loadSubscriptions());
     const { wallet: walletNew } = yield select(walletSelector);
     yield call([walletNew.ton, 'getAddress']);
+    useSwapStore.getState().actions.fetchAssets();
   } else {
     yield put(walletActions.endLoading());
   }

@@ -8,9 +8,9 @@ export const Touchable = styled.TouchableWithoutFeedback``;
 
 export const Container = styled(Animated.View)`
   background: ${({ theme }) => theme.colors.backgroundTertiary};
-  width: ${ns(36)}px;
-  height: ${ns(36)}px;
-  border-radius: ${ns(36)}px;
+  width: ${ns(40)}px;
+  height: ${ns(40)}px;
+  border-radius: ${ns(40)}px;
   align-items: center;
   justify-content: center;
   flex-direction: row;

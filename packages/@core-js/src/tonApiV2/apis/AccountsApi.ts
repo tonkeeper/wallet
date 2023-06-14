@@ -17,7 +17,10 @@ import * as runtime from '../runtime';
 import type {
   Account,
   AccountEvents,
+  Accounts,
   DomainNames,
+  FoundAccounts,
+  GetAccountsRequest,
   GetBlock401Response,
   JettonsBalances,
   NftItems,
@@ -29,8 +32,14 @@ import {
     AccountToJSON,
     AccountEventsFromJSON,
     AccountEventsToJSON,
+    AccountsFromJSON,
+    AccountsToJSON,
     DomainNamesFromJSON,
     DomainNamesToJSON,
+    FoundAccountsFromJSON,
+    FoundAccountsToJSON,
+    GetAccountsRequestFromJSON,
+    GetAccountsRequestToJSON,
     GetBlock401ResponseFromJSON,
     GetBlock401ResponseToJSON,
     JettonsBalancesFromJSON,
@@ -51,9 +60,14 @@ export interface GetAccountRequest {
     accountId: string;
 }
 
+export interface GetAccountsOperationRequest {
+    getAccountsRequest?: GetAccountsRequest;
+}
+
 export interface GetEventsByAccountRequest {
     accountId: string;
     limit: number;
+    acceptLanguage?: string;
     beforeLt?: number;
     startDate?: number;
     endDate?: number;
@@ -63,8 +77,34 @@ export interface GetJettonsBalancesRequest {
     accountId: string;
 }
 
+export interface GetJettonsHistoryRequest {
+    accountId: string;
+    limit: number;
+    acceptLanguage?: string;
+    beforeLt?: number;
+    startDate?: number;
+    endDate?: number;
+}
+
+export interface GetJettonsHistoryByIDRequest {
+    accountId: string;
+    jettonId: string;
+    limit: number;
+    acceptLanguage?: string;
+    beforeLt?: number;
+    startDate?: number;
+    endDate?: number;
+}
+
 export interface GetNftItemsByOwnerRequest {
     accountId: string;
+    limit?: number;
+    offset?: number;
+    indirectOwnership?: boolean;
+}
+
+export interface GetSearchAccountsRequest {
+    name: string;
 }
 
 export interface GetSubscriptionsByAccountRequest {
@@ -112,9 +152,24 @@ export interface AccountsApiInterface {
     getAccount(requestParameters: GetAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Account>;
 
     /**
-     * Get events for account
+     * Get human-friendly information about several accounts without low-level details.
+     * @param {GetAccountsRequest} [getAccountsRequest] a list of account ids
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccountsApiInterface
+     */
+    getAccountsRaw(requestParameters: GetAccountsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Accounts>>;
+
+    /**
+     * Get human-friendly information about several accounts without low-level details.
+     */
+    getAccounts(requestParameters: GetAccountsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Accounts>;
+
+    /**
+     * Get events for an account. Each event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      * @param {string} accountId account ID
      * @param {number} limit 
+     * @param {string} [acceptLanguage] 
      * @param {number} [beforeLt] omit this parameter to get last events
      * @param {number} [startDate] 
      * @param {number} [endDate] 
@@ -125,7 +180,7 @@ export interface AccountsApiInterface {
     getEventsByAccountRaw(requestParameters: GetEventsByAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AccountEvents>>;
 
     /**
-     * Get events for account
+     * Get events for an account. Each event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      */
     getEventsByAccount(requestParameters: GetEventsByAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AccountEvents>;
 
@@ -144,8 +199,50 @@ export interface AccountsApiInterface {
     getJettonsBalances(requestParameters: GetJettonsBalancesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<JettonsBalances>;
 
     /**
+     * Get the transfer jettons history for account_id
+     * @param {string} accountId account ID
+     * @param {number} limit 
+     * @param {string} [acceptLanguage] 
+     * @param {number} [beforeLt] omit this parameter to get last events
+     * @param {number} [startDate] 
+     * @param {number} [endDate] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccountsApiInterface
+     */
+    getJettonsHistoryRaw(requestParameters: GetJettonsHistoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AccountEvents>>;
+
+    /**
+     * Get the transfer jettons history for account_id
+     */
+    getJettonsHistory(requestParameters: GetJettonsHistoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AccountEvents>;
+
+    /**
+     * Get the transfer jetton history for account_id and jetton_id
+     * @param {string} accountId account ID
+     * @param {string} jettonId jetton ID
+     * @param {number} limit 
+     * @param {string} [acceptLanguage] 
+     * @param {number} [beforeLt] omit this parameter to get last events
+     * @param {number} [startDate] 
+     * @param {number} [endDate] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccountsApiInterface
+     */
+    getJettonsHistoryByIDRaw(requestParameters: GetJettonsHistoryByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AccountEvents>>;
+
+    /**
+     * Get the transfer jetton history for account_id and jetton_id
+     */
+    getJettonsHistoryByID(requestParameters: GetJettonsHistoryByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AccountEvents>;
+
+    /**
      * Get all NFT items by owner address
      * @param {string} accountId account ID
+     * @param {number} [limit] 
+     * @param {number} [offset] 
+     * @param {boolean} [indirectOwnership] Selling nft items in ton implemented usually via transfer items to special selling account. This option enables including items which owned not directly.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccountsApiInterface
@@ -156,6 +253,20 @@ export interface AccountsApiInterface {
      * Get all NFT items by owner address
      */
     getNftItemsByOwner(requestParameters: GetNftItemsByOwnerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NftItems>;
+
+    /**
+     * Search for accounts by name. You can find the account by the first characters of the domain.
+     * @param {string} name 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccountsApiInterface
+     */
+    getSearchAccountsRaw(requestParameters: GetSearchAccountsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FoundAccounts>>;
+
+    /**
+     * Search for accounts by name. You can find the account by the first characters of the domain.
+     */
+    getSearchAccounts(requestParameters: GetSearchAccountsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FoundAccounts>;
 
     /**
      * Get all subscriptions by wallet address
@@ -254,7 +365,36 @@ export class AccountsApi extends runtime.BaseAPI implements AccountsApiInterface
     }
 
     /**
-     * Get events for account
+     * Get human-friendly information about several accounts without low-level details.
+     */
+    async getAccountsRaw(requestParameters: GetAccountsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Accounts>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/v2/accounts/_bulk`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: GetAccountsRequestToJSON(requestParameters.getAccountsRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AccountsFromJSON(jsonValue));
+    }
+
+    /**
+     * Get human-friendly information about several accounts without low-level details.
+     */
+    async getAccounts(requestParameters: GetAccountsOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Accounts> {
+        const response = await this.getAccountsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get events for an account. Each event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      */
     async getEventsByAccountRaw(requestParameters: GetEventsByAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AccountEvents>> {
         if (requestParameters.accountId === null || requestParameters.accountId === undefined) {
@@ -285,6 +425,10 @@ export class AccountsApi extends runtime.BaseAPI implements AccountsApiInterface
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (requestParameters.acceptLanguage !== undefined && requestParameters.acceptLanguage !== null) {
+            headerParameters['Accept-Language'] = String(requestParameters.acceptLanguage);
+        }
+
         const response = await this.request({
             path: `/v2/accounts/{account_id}/events`.replace(`{${"account_id"}}`, encodeURIComponent(String(requestParameters.accountId))),
             method: 'GET',
@@ -296,7 +440,7 @@ export class AccountsApi extends runtime.BaseAPI implements AccountsApiInterface
     }
 
     /**
-     * Get events for account
+     * Get events for an account. Each event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      */
     async getEventsByAccount(requestParameters: GetEventsByAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AccountEvents> {
         const response = await this.getEventsByAccountRaw(requestParameters, initOverrides);
@@ -334,6 +478,118 @@ export class AccountsApi extends runtime.BaseAPI implements AccountsApiInterface
     }
 
     /**
+     * Get the transfer jettons history for account_id
+     */
+    async getJettonsHistoryRaw(requestParameters: GetJettonsHistoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AccountEvents>> {
+        if (requestParameters.accountId === null || requestParameters.accountId === undefined) {
+            throw new runtime.RequiredError('accountId','Required parameter requestParameters.accountId was null or undefined when calling getJettonsHistory.');
+        }
+
+        if (requestParameters.limit === null || requestParameters.limit === undefined) {
+            throw new runtime.RequiredError('limit','Required parameter requestParameters.limit was null or undefined when calling getJettonsHistory.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.beforeLt !== undefined) {
+            queryParameters['before_lt'] = requestParameters.beforeLt;
+        }
+
+        if (requestParameters.limit !== undefined) {
+            queryParameters['limit'] = requestParameters.limit;
+        }
+
+        if (requestParameters.startDate !== undefined) {
+            queryParameters['start_date'] = requestParameters.startDate;
+        }
+
+        if (requestParameters.endDate !== undefined) {
+            queryParameters['end_date'] = requestParameters.endDate;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters.acceptLanguage !== undefined && requestParameters.acceptLanguage !== null) {
+            headerParameters['Accept-Language'] = String(requestParameters.acceptLanguage);
+        }
+
+        const response = await this.request({
+            path: `/v2/accounts/{account_id}/jettons/history`.replace(`{${"account_id"}}`, encodeURIComponent(String(requestParameters.accountId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AccountEventsFromJSON(jsonValue));
+    }
+
+    /**
+     * Get the transfer jettons history for account_id
+     */
+    async getJettonsHistory(requestParameters: GetJettonsHistoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AccountEvents> {
+        const response = await this.getJettonsHistoryRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get the transfer jetton history for account_id and jetton_id
+     */
+    async getJettonsHistoryByIDRaw(requestParameters: GetJettonsHistoryByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AccountEvents>> {
+        if (requestParameters.accountId === null || requestParameters.accountId === undefined) {
+            throw new runtime.RequiredError('accountId','Required parameter requestParameters.accountId was null or undefined when calling getJettonsHistoryByID.');
+        }
+
+        if (requestParameters.jettonId === null || requestParameters.jettonId === undefined) {
+            throw new runtime.RequiredError('jettonId','Required parameter requestParameters.jettonId was null or undefined when calling getJettonsHistoryByID.');
+        }
+
+        if (requestParameters.limit === null || requestParameters.limit === undefined) {
+            throw new runtime.RequiredError('limit','Required parameter requestParameters.limit was null or undefined when calling getJettonsHistoryByID.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.beforeLt !== undefined) {
+            queryParameters['before_lt'] = requestParameters.beforeLt;
+        }
+
+        if (requestParameters.limit !== undefined) {
+            queryParameters['limit'] = requestParameters.limit;
+        }
+
+        if (requestParameters.startDate !== undefined) {
+            queryParameters['start_date'] = requestParameters.startDate;
+        }
+
+        if (requestParameters.endDate !== undefined) {
+            queryParameters['end_date'] = requestParameters.endDate;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters.acceptLanguage !== undefined && requestParameters.acceptLanguage !== null) {
+            headerParameters['Accept-Language'] = String(requestParameters.acceptLanguage);
+        }
+
+        const response = await this.request({
+            path: `/v2/accounts/{account_id}/jettons/{jetton_id}/history`.replace(`{${"account_id"}}`, encodeURIComponent(String(requestParameters.accountId))).replace(`{${"jetton_id"}}`, encodeURIComponent(String(requestParameters.jettonId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AccountEventsFromJSON(jsonValue));
+    }
+
+    /**
+     * Get the transfer jetton history for account_id and jetton_id
+     */
+    async getJettonsHistoryByID(requestParameters: GetJettonsHistoryByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AccountEvents> {
+        const response = await this.getJettonsHistoryByIDRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Get all NFT items by owner address
      */
     async getNftItemsByOwnerRaw(requestParameters: GetNftItemsByOwnerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NftItems>> {
@@ -343,10 +599,22 @@ export class AccountsApi extends runtime.BaseAPI implements AccountsApiInterface
 
         const queryParameters: any = {};
 
+        if (requestParameters.limit !== undefined) {
+            queryParameters['limit'] = requestParameters.limit;
+        }
+
+        if (requestParameters.offset !== undefined) {
+            queryParameters['offset'] = requestParameters.offset;
+        }
+
+        if (requestParameters.indirectOwnership !== undefined) {
+            queryParameters['indirect_ownership'] = requestParameters.indirectOwnership;
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v2/accounts/{account_id}/ntfs`.replace(`{${"account_id"}}`, encodeURIComponent(String(requestParameters.accountId))),
+            path: `/v2/accounts/{account_id}/nfts`.replace(`{${"account_id"}}`, encodeURIComponent(String(requestParameters.accountId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -360,6 +628,40 @@ export class AccountsApi extends runtime.BaseAPI implements AccountsApiInterface
      */
     async getNftItemsByOwner(requestParameters: GetNftItemsByOwnerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NftItems> {
         const response = await this.getNftItemsByOwnerRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Search for accounts by name. You can find the account by the first characters of the domain.
+     */
+    async getSearchAccountsRaw(requestParameters: GetSearchAccountsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FoundAccounts>> {
+        if (requestParameters.name === null || requestParameters.name === undefined) {
+            throw new runtime.RequiredError('name','Required parameter requestParameters.name was null or undefined when calling getSearchAccounts.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.name !== undefined) {
+            queryParameters['name'] = requestParameters.name;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/v2/accounts/search`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => FoundAccountsFromJSON(jsonValue));
+    }
+
+    /**
+     * Search for accounts by name. You can find the account by the first characters of the domain.
+     */
+    async getSearchAccounts(requestParameters: GetSearchAccountsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FoundAccounts> {
+        const response = await this.getSearchAccountsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

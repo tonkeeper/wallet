@@ -24,6 +24,7 @@ export enum AppStackRouteNames {
   DAppsSearch = 'DAppsSearch',
   DAppBrowser = 'DAppBrowser',
   StakingSend = 'StakingSend',
+  Swap = 'Swap',
 }
 
 export enum MainStackRouteNames {
@@ -44,6 +45,7 @@ export enum MainStackRouteNames {
   Jetton = 'Jetton',
   JettonsList = 'JettonsList',
   EditConfig = 'EditConfig',
+  ManageTokens = 'ManageTokens',
 }
 
 export enum TabsStackRouteNames {

@@ -19,6 +19,7 @@ import { eventsActions } from '$store/events';
 import axios from 'axios';
 import { isTimeSyncedSelector } from '$store/main';
 import { Toast } from '$store';
+import { DismissedActionError } from '$core/Send/steps/ConfirmStep/DismissedActionError';
 
 enum States {
   INITIAL,
@@ -95,7 +96,11 @@ export const useActionFooter = () => {
 
       ref.current?.setState(States.SUCCESS);
     } catch (error) {
-      if (error instanceof UnlockVaultError) {
+      if (error instanceof DismissedActionError) {
+        ref.current?.setState(States.ERROR);
+        await delay(1750);
+        ref.current?.setState(States.INITIAL);
+      } else if (error instanceof UnlockVaultError) {
         Toast.fail(error?.message);
       } else if (error instanceof NFTOperationError) {
         if (error?.message) {
@@ -118,6 +123,7 @@ export const useActionFooter = () => {
 type ActionFooterRef = {
   setState: (state: States) => Promise<void>;
   setError: (msg: string) => void;
+  reset: () => void;
 };
 
 interface ActionFooterProps {
@@ -165,6 +171,10 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
         setErrorText(msg);
         setState(States.ERROR);
         triggerNotificationError();
+      },
+      reset() {
+        setErrorText(t('error_occurred'));
+        setState(States.INITIAL);
       },
     }));
 

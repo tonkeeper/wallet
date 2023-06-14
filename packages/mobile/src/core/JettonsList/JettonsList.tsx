@@ -4,13 +4,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as S from './JettonsList.style';
 import { AnimatedFlatList, ScrollHandler, Separator } from '$uikit';
 import { ns, formatAmount } from '$utils';
-import { useJettonBalances, useTranslator } from '$hooks';
+import { useTranslator } from '$hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { jettonsActions, jettonsSelector } from '$store/jettons';
 import { Switch } from 'react-native';
 import { JettonBalanceModel, JettonVerification } from '$store/models';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
-
+import { useJettonBalancesLegacy } from '$hooks/useJettonBalancesLegacy';
 
 export const JettonsList: FC = () => {
   const t = useTranslator();
@@ -25,7 +25,7 @@ export const JettonsList: FC = () => {
     [dispatch],
   );
 
-  const data = useJettonBalances(true);
+  const data = useJettonBalancesLegacy(true);
 
   function renderJetton({
     item: jetton,
@@ -35,7 +35,9 @@ export const JettonsList: FC = () => {
     index: number;
   }) {
     const isWhitelisted = jetton.verification === JettonVerification.WHITELIST;
-    const isEnabled = (isWhitelisted && !excludedJettons[jetton.jettonAddress]) || excludedJettons[jetton.jettonAddress] === false;
+    const isEnabled =
+      (isWhitelisted && !excludedJettons[jetton.jettonAddress]) ||
+      excludedJettons[jetton.jettonAddress] === false;
 
     return (
       <S.JettonInner isFirst={index === 0} isLast={data.length - 1 === index}>
@@ -63,6 +65,7 @@ export const JettonsList: FC = () => {
           contentContainerStyle={{
             paddingBottom: ns(16) + (tabBarHeight > 0 ? tabBarHeight : bottomInset),
             paddingHorizontal: ns(16),
+            paddingTop: ns(16),
           }}
           ItemSeparatorComponent={Separator}
           data={data}

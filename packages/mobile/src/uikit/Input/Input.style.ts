@@ -7,6 +7,7 @@ import { TextInput } from './TextInput';
 export const InputWrapper = styled.View<{
   wrapperStyle: ReturnType<typeof css>;
   isFailed: boolean;
+  withClearButton: boolean;
 }>`
   flex: 0 0 auto;
   overflow: hidden;
@@ -16,6 +17,7 @@ export const InputWrapper = styled.View<{
       ? changeAlphaValue(convertHexToRGBA(theme.colors.accentNegative), 0.08)
       : theme.colors.backgroundSecondary};
   padding-horizontal: ${ns(16)}px;
+  padding-right: ${({ withClearButton }) => ns(withClearButton ? 52 : 16)}px;
 
   ${({ wrapperStyle }) => wrapperStyle};
   position: relative;
@@ -39,7 +41,10 @@ export const Border = styled(Animated.View)<{ isFocused: boolean; isFailed: bool
   z-index: 1;
 `;
 
-export const Input = styled(TextInput)<{ inputStyle: ReturnType<typeof css> }>`
+export const Input = styled(TextInput)<{
+  inputStyle: ReturnType<typeof css>;
+  isLarge: boolean;
+}>`
   ${({ theme: { font, colors } }) => css`
     font-family: ${font.regular};
     color: ${colors.foregroundPrimary};
@@ -53,17 +58,18 @@ export const Input = styled(TextInput)<{ inputStyle: ReturnType<typeof css> }>`
   margin: 0;
   z-index: 3;
   align-items: center;
+  padding: 0;
 
-  ${() => {
+  ${({ isLarge }) => {
     if (!isAndroid) {
       return `
-        padding-top: ${ns(18.5)}px;
-        padding-bottom: ${ns(18)}px;
+        padding-top: ${isLarge ? ns(22.5) : ns(18.5)}px;
+        padding-bottom: ${isLarge ? ns(22) : ns(18)}px;
       `;
     } else {
       return `
-        padding-top: ${ns(14)}px;
-        padding-bottom: ${ns(14.5)}px;
+        padding-top: ${isLarge ? ns(18) : ns(14)}px;
+        padding-bottom: ${isLarge ? ns(18.5) : ns(14.5)}px;
       `;
     }
   }}
@@ -96,4 +102,30 @@ export const GhostTextContainer = styled.View`
   padding: 0 ${16}px;
   opacity: 0;
   align-items: flex-start;
+`;
+
+export const LabelContainer = styled(Animated.View)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding-horizontal: ${ns(16)}px;
+`;
+
+export const RightContainer = styled(Animated.View)`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  z-index: 4;
+`;
+
+export const RightButton = styled.TouchableOpacity`
+  padding: 0 ${ns(20)}px;
+  height: 100%;
+  justify-content: center;
 `;

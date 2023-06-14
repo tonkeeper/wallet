@@ -10,6 +10,8 @@ export const DarkTheme = {
   backgroundContentTint: '#2E3847',
   backgroundOverlayStrong: 'rgba(0, 0, 0, 0.72)',
   backgroundOverlayLight: 'rgba(0, 0, 0, 0.48)',
+  backgroundSecondary: '#1D2633',
+  backgroundPrimary: '#10161F',
 
   iconPrimary: '#FFFFFF',
   iconSecondary: '#8994A3',
@@ -24,6 +26,7 @@ export const DarkTheme = {
   buttonPrimaryBackgroundDisabled: '#378AC2',
   buttonSecondaryBackgroundDisabled: '#171F29',
   buttonTertiaryBackgroundDisabled: '#28303D',
+  backgroundContentAttention: '#424C5C',
 
   fieldBackground: '#1D2633',
   fieldActiveBorder: '#45AEF5',
@@ -39,6 +42,5 @@ export const DarkTheme = {
   tabBarActiveIcon: '#45AEF5',
   tabBarInactiveIcon: '#8994A3',
 
-  separatorCommon: 'rgba(255, 255, 255, 0.08)',
-  separatorAlternate: 'rgba(255, 255, 255, 0.04)',
+  separatorCommon: 'rgba(194, 218, 255, 0.08)',
 };

@@ -1,14 +1,21 @@
-import { ReactElement } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { fontKeys } from '$styled';
 
 export interface ButtonProps {
-  size?: 'small' | 'large' | 'navbar_small' | 'navbar_icon' | 'large_rounded' | 'medium_rounded';
+  size?:
+    | 'small'
+    | 'large'
+    | 'navbar_small'
+    | 'navbar_icon'
+    | 'large_rounded'
+    | 'medium_rounded';
   mode?: 'secondary' | 'primary' | 'primary_red' | 'tertiary' | 'light';
+  children: ReactNode;
   titleFont?: fontKeys;
-  before?: (({ isPressed: boolean }) => ReactElement) | ReactElement;
-  after?: (({ isPressed: boolean }) => ReactElement) | ReactElement;
-  children: ReactElement | string;
+  before?: ((props: { isPressed: boolean }) => ReactElement) | ReactElement;
+  after?: ((props: { isPressed: boolean }) => ReactElement) | ReactElement;
+  children: ReactNode;
   style?: StyleProp<ViewStyle>;
   withoutTextPadding?: boolean;
   withoutFixedHeight?: boolean;

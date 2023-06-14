@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { Linking, RefreshControl, StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -48,7 +48,7 @@ export const ActivityScreen: FC = () => {
   const netInfo = useNetInfo();
   const prevNetInfo = usePrevious(netInfo);
 
-  const jettonBalances = useJettonBalances();
+  const { enabled: jettonBalances } = useJettonBalances();
   const isFocused = useIsFocused();
 
   const isEventsLoadingMore = !isRefreshing && isEventsLoading && !!wallet;
@@ -116,7 +116,6 @@ export const ActivityScreen: FC = () => {
     dispatch(eventsActions.loadEvents({ isLoadMore: true }));
   }, [dispatch, isEventsLoading, canLoadMore]);
 
-
   function renderFooter() {
     return (
       <>
@@ -176,15 +175,14 @@ export const ActivityScreen: FC = () => {
 
   const handlePressRecevie = React.useCallback(() => {
     if (wallet) {
-      nav.go('Receive', { 
+      nav.go('Receive', {
         currency: 'ton',
-        isFromMainScreen: true
+        isFromMainScreen: true,
       });
     } else {
       openRequireWalletModal();
     }
   }, [wallet]);
-
 
   const handlePressBuy = React.useCallback(() => {
     if (wallet) {
@@ -206,25 +204,21 @@ export const ActivityScreen: FC = () => {
           </Text>
 
           <View style={styles.emptyButtons}>
-            <Button 
+            <Button
               style={{ marginRight: ns(12) }}
               onPress={handlePressBuy}
-              size="medium_rounded" 
+              size="medium_rounded"
               mode="secondary"
             >
               {t('activity.buy_toncoin_btn')}
             </Button>
-            <Button 
-              onPress={handlePressRecevie}
-              size="medium_rounded" 
-              mode="secondary"
-            >
+            <Button onPress={handlePressRecevie} size="medium_rounded" mode="secondary">
               {t('activity.receive_btn')}
             </Button>
           </View>
         </View>
       </Screen>
-    )
+    );
   }
 
   return (
@@ -245,6 +239,6 @@ const styles = StyleSheet.create({
   },
   emptyButtons: {
     flexDirection: 'row',
-    marginTop: ns(24)
-  }
-})
+    marginTop: ns(24),
+  },
+});

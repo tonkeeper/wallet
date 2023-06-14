@@ -67,7 +67,7 @@ export const Balances: FC = () => {
   const netInfo = useNetInfo();
   const prevNetInfo = usePrevious(netInfo);
 
-  const jettonBalances = useJettonBalances();
+  const { enabled: jettonBalances } = useJettonBalances();
   const [isNoSignalDismissed, setNoSignalDismissed] = useState(false);
   const isConfigError = !isServerConfigLoaded();
   const isFocused = useIsFocused();

@@ -14,41 +14,45 @@ type ScreenScrollListProps = FlashListProps<any> & {
   hideBottomSeparator?: boolean;
 };
 
-export const ScreenScrollList = memo<ScreenScrollListProps>(forwardRef((props, ref) => {
-  const { contentContainerStyle, hideBottomSeparator, ...other } = props;
-  const { detectContentSize, detectLayoutSize, scrollHandler, scrollRef } = useScreenScroll();
-  const tabBarHeight = useBottomTabBarHeight();
-  const setRef = useMergeRefs(ref, scrollRef);
+export const ScreenScrollList = memo<ScreenScrollListProps>(
+  forwardRef((props, ref) => {
+    const { contentContainerStyle, hideBottomSeparator, ...other } = props;
+    const { detectContentSize, detectLayoutSize, scrollHandler, scrollRef } =
+      useScreenScroll();
+    const tabBarHeight = useBottomTabBarHeight();
+    const setRef = useMergeRefs(ref, scrollRef);
 
-  useScrollHandler(undefined, true); // TODO: remove this, when old separator will be removed
+    useScrollHandler(undefined, true); // TODO: remove this, when old separator will be removed
 
-  const contentStyle: ContentStyle = useMemo(() => ({
-    paddingBottom: tabBarHeight,
-    ...contentContainerStyle,
-  }), [contentContainerStyle]);
+    const contentStyle: ContentStyle = useMemo(
+      () => ({
+        paddingBottom: tabBarHeight,
+        ...contentContainerStyle,
+      }),
+      [contentContainerStyle],
+    );
 
-  return (
-    <View style={styles.container}>
-      <AnimatedFlashList
-        onContentSizeChange={detectContentSize}
-        contentContainerStyle={contentStyle}
-        showsVerticalScrollIndicator={false}
-        onLayout={detectLayoutSize}
-        scrollEventThrottle={16}
-        onScroll={scrollHandler}
-        horizontal={false}
-        ref={setRef}
-        {...other}
-      />
-      {!hideBottomSeparator && (
-        <ScreenBottomSeparator />
-      )}
-    </View>
-  );
-}));
+    return (
+      <View style={styles.container}>
+        <AnimatedFlashList
+          onContentSizeChange={detectContentSize}
+          contentContainerStyle={contentStyle}
+          showsVerticalScrollIndicator={false}
+          onLayout={detectLayoutSize}
+          scrollEventThrottle={16}
+          onScroll={scrollHandler}
+          horizontal={false}
+          ref={setRef}
+          {...other}
+        />
+        {!hideBottomSeparator && <ScreenBottomSeparator />}
+      </View>
+    );
+  }),
+);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  }
+  },
 });

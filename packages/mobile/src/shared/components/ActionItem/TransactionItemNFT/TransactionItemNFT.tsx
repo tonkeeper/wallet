@@ -8,7 +8,6 @@ import _ from 'lodash';
 import { Icon, Text } from '$uikit';
 import { useTranslator } from '$hooks';
 import { View } from 'react-native';
-import { dnsToUsername } from '$utils/dnsToUsername';
 import { DarkTheme } from '$styled';
 
 export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
@@ -56,9 +55,7 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
           >
             <S.TextWrap>
               <Text numberOfLines={1} variant="body2">
-                {isTG
-                  ? dnsToUsername(nft.dns)
-                  : nft.dns || nft.name || maskifyTonAddress(nft.address)}
+                {(isDNS && nft.dns) || nft.name || maskifyTonAddress(nft.address)}
               </Text>
               <S.CollectionNameWrap withIcon={nft.isApproved}>
                 <Text color="foregroundSecondary" numberOfLines={1} variant="body2">

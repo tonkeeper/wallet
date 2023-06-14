@@ -28,3 +28,6 @@ export { useStaking } from './useStaking';
 export { useStakingRefreshControl } from './useStakingRefreshControl';
 export { usePoolInfo } from './usePoolInfo';
 export { useStakingCycle } from './useStakingCycle';
+export { useApprovedNfts } from './useApprovedNfts';
+export { useShouldShowTokensButton } from './useShouldShowTokensButton';
+export { useWebViewBridge } from './jsBridge';

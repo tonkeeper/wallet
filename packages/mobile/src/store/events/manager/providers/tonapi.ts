@@ -2,7 +2,7 @@ import { Cache, NextFromPair } from '$store/events/manager/cache';
 import { BaseProvider } from '$store/events/manager/providers/base';
 import { getServerConfig } from '$shared/constants';
 import { EventModel } from '$store/models';
-import { EventApi, Configuration } from 'tonapi-sdk-js';
+import { Configuration, EventApi, AccountEventsRequest } from 'tonapi-sdk-js';
 
 export class TonapiProvider extends BaseProvider {
   public readonly name = 'TonapiProvider';
@@ -26,15 +26,14 @@ export class TonapiProvider extends BaseProvider {
       return [];
     }
 
-    const params: any = {
+    const params: AccountEventsRequest = {
       account: this.address,
       limit: this.limit,
     };
     if (this.nextFrom) {
-      params.beforeLt = this.nextFrom;
+      params.beforeLt = parseInt(this.nextFrom);
     }
     const resp: any = await this.api.accountEvents(params);
-
     let events: EventModel[] = [];
     if (resp?.events) {
       events = resp.events.map(this.map);

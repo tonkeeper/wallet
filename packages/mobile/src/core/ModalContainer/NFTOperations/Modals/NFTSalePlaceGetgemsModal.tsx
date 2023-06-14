@@ -1,8 +1,8 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import { useCopyText, useInstance, useWallet } from '$hooks';
-import {Highlight, Icon, Separator, Skeleton, Text} from '$uikit';
-import {debugLog, delay, maskifyAddress, retry, toLocaleNumber} from '$utils';
+import { Highlight, Icon, Separator, Skeleton, Text } from '$uikit';
+import { debugLog, delay, maskifyAddress, retry, toLocaleNumber } from '$utils';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftSalePlaceGetgemsParams, TxRequestBody } from '../TXRequest.types';
 import { useDownloadNFT } from '../useDownloadNFT';
@@ -49,9 +49,8 @@ export const NFTSalePlaceGetgemsModal = ({
   const transferToContract = React.useCallback(
     async (contractAddress: string, secretKey: Uint8Array) => {
       const info = await wallet!.ton.getWalletInfo(contractAddress);
-      console.log(contractAddress);
 
-      if (['empty', 'uninit'].includes(info.status)) {
+      if (['empty', 'uninit', 'nonexist'].includes(info?.status ?? '')) {
         throw new Error('Contract uninitialized');
       }
 
@@ -138,7 +137,6 @@ export const NFTSalePlaceGetgemsModal = ({
     return false;
   }, [fullPrice, feeAndRoyalties]);
 
-
   const isTG = (item.data?.dns || item.data?.metadata?.name)?.endsWith('.t.me');
   const isDNS = !!item.data?.dns && !isTG;
 
@@ -203,7 +201,9 @@ export const NFTSalePlaceGetgemsModal = ({
               </S.InfoItem>
             </Highlight>
             <Separator />
-            <Highlight onPress={() => feeAndRoyalties && copyText(toLocaleNumber(feeAndRoyalties))}>
+            <Highlight
+              onPress={() => feeAndRoyalties && copyText(toLocaleNumber(feeAndRoyalties))}
+            >
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_fee_and_royalties')}</S.InfoItemLabel>
                 <S.InfoItemValue>
@@ -229,7 +229,9 @@ export const NFTSalePlaceGetgemsModal = ({
               <Highlight onPress={() => copyText(toLocaleNumber(marketplaceFee))}>
                 <S.DetailItem>
                   <S.DetailItemLabel>Marketplace fee</S.DetailItemLabel>
-                  <S.DetailItemValueText>{toLocaleNumber(marketplaceFee)} TON</S.DetailItemValueText>
+                  <S.DetailItemValueText>
+                    {toLocaleNumber(marketplaceFee)} TON
+                  </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
               <Highlight onPress={() => copyText(params.royaltyAddress)}>
@@ -250,7 +252,9 @@ export const NFTSalePlaceGetgemsModal = ({
                   )}
                 </S.DetailItem>
               </Highlight>
-              <Highlight onPress={() => blockchainFee && copyText(toLocaleNumber(blockchainFee))}>
+              <Highlight
+                onPress={() => blockchainFee && copyText(toLocaleNumber(blockchainFee))}
+              >
                 <S.DetailItem>
                   <S.DetailItemLabel>Blockchain fee</S.DetailItemLabel>
                   {blockchainFee ? (
@@ -272,10 +276,7 @@ export const NFTSalePlaceGetgemsModal = ({
         </S.Container>
       </Modal.ScrollView>
       <Modal.Footer>
-        <NFTOperationFooter
-          onPressConfirm={handleConfirm}
-          ref={footerRef} 
-        />
+        <NFTOperationFooter onPressConfirm={handleConfirm} ref={footerRef} />
       </Modal.Footer>
     </Modal>
   );

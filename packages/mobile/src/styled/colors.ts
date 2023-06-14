@@ -15,6 +15,7 @@ export enum DARK_COLORS {
   backgroundPrimaryTrans = 'rgba(16, 22, 31, 0.92)',
   backgroundSecondary = '#1D2633',
   backgroundTertiary = '#2E3847',
+  backgroundHighlighted = 'rgba(79, 90, 112, 0.24)',
   backgroundQuaternary = '#3E4A5C',
   backgroundCamera = '#0c121f',
   border = 'rgba(255, 255, 255, 0.08)',

@@ -3,10 +3,12 @@ import messaging from '@react-native-firebase/messaging';
 import { useNavigation } from './useNavigation';
 import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
+import { useDeeplinking } from '$libs/deeplinking';
 
 export const useNotificationsResolver = () => {
   const { isMainStackInited } = useSelector(mainSelector);
   const nav = useNavigation();
+  const deeplinking = useDeeplinking();
 
   React.useEffect(() => {
     if (!isMainStackInited) {
@@ -19,7 +21,13 @@ export const useNotificationsResolver = () => {
         remoteMessage,
       );
 
-      nav.navigate('Balances');
+      const deeplink = remoteMessage.data?.deeplink;
+
+      if (deeplink) {
+        deeplinking.resolve(deeplink);
+      } else {
+        nav.navigate('Balances');
+      }
     });
 
     messaging()
@@ -28,10 +36,11 @@ export const useNotificationsResolver = () => {
         if (remoteMessage) {
           console.log('Notification caused app to open from quit state:', remoteMessage);
 
-          // openTransaction({
-          //   currency: CryptoCurrencies.Ton,
-          //   hash: ''
-          // });
+          const deeplink = remoteMessage.data?.deeplink;
+
+          if (deeplink) {
+            deeplinking.resolve(deeplink);
+          }
         }
       });
   }, [isMainStackInited]);

@@ -1,24 +1,35 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Steezy } from '$styles';
 import { Text, TouchableOpacity, View } from '$uikit';
-import Animated, { Extrapolate, interpolate, interpolateColor, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Extrapolate,
+  interpolate,
+  interpolateColor,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 import { useTheme } from '$hooks';
 import { ns } from '$utils';
-import { LayoutChangeEvent, LayoutRectangle, StyleSheet } from 'react-native';
+import { LayoutChangeEvent, LayoutRectangle, StyleProp, ViewStyle } from 'react-native';
 import { useTabCtx } from './TabsContainer';
 
 type TabItem = {
   label: string;
   value: string;
-}; 
+  withDot?: boolean;
+};
 
 interface TabsBarProps {
   items: TabItem[];
   onChange: (item: TabItem, index: number) => void;
+  itemStyle?: StyleProp<ViewStyle>;
+  indicatorStyle?: StyleProp<ViewStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
   value: string;
   indent?: boolean;
   center?: boolean;
   sticky?: any;
+  scrollY?: Animated.SharedValue<number>;
   children?: React.ReactNode;
 }
 
@@ -26,10 +37,13 @@ const INDICATOR_WIDTH = ns(24);
 
 export const TabsBarComponent = (props: TabsBarProps) => {
   const { value, indent = true, center } = props;
-  const { setActiveIndex, pageOffset, scrollY, headerHeight, isScrollInMomentum } = useTabCtx();
+  const { setActiveIndex, pageOffset, scrollY, headerHeight, isScrollInMomentum } =
+    useTabCtx();
   const theme = useTheme();
 
-  const [tabsLayouts, setTabsBarLayouts] = useState<{ [key: string]: LayoutRectangle }>({});
+  const [tabsLayouts, setTabsBarLayouts] = useState<{ [key: string]: LayoutRectangle }>(
+    {},
+  );
 
   const handleLayout = useCallback((index: number, event: LayoutChangeEvent) => {
     const layout = event?.nativeEvent?.layout;
@@ -53,17 +67,12 @@ export const TabsBarComponent = (props: TabsBarProps) => {
       };
     }
 
-    const x = interpolate(
-      pageOffset.value, 
-      input,
-      indicatorRange,
-      Extrapolate.CLAMP
-    );
+    const x = interpolate(pageOffset.value, input, indicatorRange, Extrapolate.CLAMP);
 
     return {
       transform: [
         {
-          translateX: x
+          translateX: x,
         },
       ],
       opacity: withTiming(1),
@@ -72,16 +81,22 @@ export const TabsBarComponent = (props: TabsBarProps) => {
 
   const containerStyle = useAnimatedStyle(() => {
     return {
-      transform: [{
-        translateY: scrollY.value > headerHeight.value ? scrollY.value - headerHeight.value : 0
-      }]
-    }
+      transform: [
+        {
+          translateY:
+            scrollY.value > headerHeight.value ? scrollY.value - headerHeight.value : 0,
+        },
+      ],
+    };
   });
 
   const borderStyle = useAnimatedStyle(() => {
     return {
       borderBottomColor:
-        scrollY && scrollY.value > headerHeight.value ? theme.colors.border : 'transparent',
+        (scrollY && scrollY.value > headerHeight.value) ||
+        (props.scrollY && props.scrollY.value > headerHeight.value)
+          ? theme.colors.border
+          : 'transparent',
     };
   });
 
@@ -90,13 +105,15 @@ export const TabsBarComponent = (props: TabsBarProps) => {
       pointerEvents="box-none"
       style={[
         containerStyle,
-        indent && styles.indent, 
-        styles.center,
-        styles.wrap, borderStyle,
+        indent && styles.indent.static,
+        styles.center.static,
+        styles.wrap.static,
+        borderStyle,
         { backgroundColor: theme.colors.backgroundPrimary },
+        props.containerStyle,
       ]}
     >
-      <Animated.View style={[styles.container]} pointerEvents="box-none">
+      <Animated.View style={[styles.container.static]} pointerEvents="box-none">
         {props.items.map((item, index) => (
           <TouchableOpacity
             onLayout={(event) => handleLayout(index, event)}
@@ -109,31 +126,41 @@ export const TabsBarComponent = (props: TabsBarProps) => {
             key={`tab-${index}`}
             activeOpacity={0.6}
           >
-            <View style={styles.item}>
+            <View style={[styles.item, props.itemStyle]}>
               <WrapText index={index} pageOffset={pageOffset}>
                 {item.label}
               </WrapText>
+              {item.withDot && (
+                <View style={styles.itemDotContainer}>
+                  <View style={styles.itemDot} />
+                </View>
+              )}
             </View>
           </TouchableOpacity>
         ))}
         <Animated.View
           pointerEvents="box-none"
           style={[
-            styles.indicator,
+            styles.indicator.static,
             indicatorAnimatedStyle,
-            { backgroundColor: theme.colors.accentPrimary }
-          ]} 
+            { backgroundColor: theme.colors.accentPrimary },
+            props.indicatorStyle,
+          ]}
         />
       </Animated.View>
     </Animated.View>
   );
 };
 
-const WrapText = ({ 
+const WrapText = ({
   pageOffset,
   index,
-  children
-}: { index: number, pageOffset: any; children?: React.ReactNode }) => {
+  children,
+}: {
+  index: number;
+  pageOffset: any;
+  children?: React.ReactNode;
+}) => {
   const theme = useTheme();
 
   const textStyle = useAnimatedStyle(() => {
@@ -142,28 +169,24 @@ const WrapText = ({
         pageOffset.value,
         [index - 1, index, index + 1],
         [
-          theme.colors.textSecondary, 
-          theme.colors.textPrimary, 
-          theme.colors.textSecondary
+          theme.colors.textSecondary,
+          theme.colors.textPrimary,
+          theme.colors.textSecondary,
         ],
-      )
-    }
+      ),
+    };
   }, [pageOffset.value]);
 
   return (
-    <Text
-      style={textStyle}
-      variant="label1"
-      reanimated
-    >
+    <Text style={textStyle} variant="label1" reanimated>
       {children}
     </Text>
-  )
-}
+  );
+};
 
 export const TabsBar = memo(TabsBarComponent);
 
-const styles = StyleSheet.create({
+const styles = Steezy.create(({ colors }) => ({
   container: {
     flexDirection: 'row',
     zIndex: 3,
@@ -190,4 +213,18 @@ const styles = StyleSheet.create({
   indent: {
     paddingHorizontal: 16,
   },
-});
+  itemDotContainer: {
+    position: 'absolute',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    top: 10,
+    bottom: 0,
+    right: 2,
+  },
+  itemDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.accentRed,
+  },
+}));

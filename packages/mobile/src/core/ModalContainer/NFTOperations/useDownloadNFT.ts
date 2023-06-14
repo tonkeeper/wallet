@@ -2,7 +2,7 @@ import { debugLog } from '$utils';
 import axios from 'axios';
 import React from 'react';
 import { getServerConfig } from '$shared/constants';
-import {proxyMedia} from "$utils/proxyMedia";
+import { proxyMedia } from '$utils/proxyMedia';
 
 export type NFTItemMeta = {
   name: string;
@@ -17,16 +17,19 @@ export function useDownloadNFT(addr?: string) {
 
   const download = React.useCallback(async (address: string) => {
     try {
-      const endpoint = getServerConfig('tonapiIOEndpoint');
+      const endpoint = getServerConfig('tonapiV2Endpoint');
 
-      const response: any = await axios.get(`${endpoint}/v1/nft/getItems`, {
-        headers: {
-          Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+      const response: any = await axios.post(
+        `${endpoint}/v2/nfts/_bulk`,
+        {
+          account_ids: [address],
         },
-        params: {
-          addresses: address,
+        {
+          headers: {
+            Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+          },
         },
-      });
+      );
       const nft = response.data.nft_items[0];
       const image =
         (nft.previews &&

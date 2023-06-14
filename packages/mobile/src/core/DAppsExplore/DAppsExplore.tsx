@@ -1,6 +1,11 @@
 import { useTheme, useTranslator } from '$hooks';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
-import { openDAppsSearch, openRequireWalletModal, openScanQR, TabsStackRouteNames } from '$navigation';
+import {
+  openDAppsSearch,
+  openRequireWalletModal,
+  openScanQR,
+  TabsStackRouteNames,
+} from '$navigation';
 import { IsTablet, LargeNavBarHeight, TabletMaxWidth } from '$shared/constants';
 import { store, useAppsListStore } from '$store';
 import { Icon, LargeNavBar, NavBar } from '$uikit';
@@ -8,7 +13,7 @@ import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
 import { deviceWidth, ns } from '$utils';
 import { useFlags } from '$utils/flags';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import React, { FC, memo, useCallback, useEffect, useState } from 'react';
+import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet } from 'react-native';
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
 import Animated, {
@@ -35,7 +40,10 @@ const OFFSET = ns(16);
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
-export type DAppsExploreProps = NativeStackScreenProps<TabStackParamList, TabsStackRouteNames.Explore>;
+export type DAppsExploreProps = NativeStackScreenProps<
+  TabStackParamList,
+  TabsStackRouteNames.Explore
+>;
 
 const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
   const { initialCategory } = props.route?.params || {};
@@ -135,6 +143,8 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
       navBarOpacity.value === 0 ? theme.colors.backgroundPrimary : 'transparent',
   }));
 
+  const tabScrollView = useRef<ScrollView>(null);
+
   const navBarRight = (
     <TouchableOpacity
       onPress={handlePressOpenScanQR}
@@ -208,6 +218,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
               <S.Content>
                 <Animated.View style={topTabsContainerStyle}>
                   <TopTabs
+                    ref={tabScrollView}
                     tabs={categories}
                     selectedId={activeCategory}
                     onChange={(value) => {
@@ -230,7 +241,14 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
                   setPopularAppsHeight(event.nativeEvent.layout.height)
                 }
               >
-                <PopularApps 
+                <PopularApps
+                  onChangeStep={(step) => {
+                    if (step >= 2) {
+                      tabScrollView.current?.scrollToEnd();
+                    } else {
+                      tabScrollView.current?.scrollTo({ x: 0 });
+                    }
+                  }}
                   activeCategory={activeCategory}
                   setActiveCategory={setActiveCategory}
                 />
@@ -262,7 +280,7 @@ export const DAppsExplore = memo(DAppsExploreComponent);
 
 const styles = StyleSheet.create({
   scanButton: {
-    zIndex: 3, 
-    marginRight: ns(2)
-  }
+    zIndex: 3,
+    marginRight: ns(2),
+  },
 });

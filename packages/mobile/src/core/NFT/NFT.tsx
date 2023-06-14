@@ -29,7 +29,6 @@ import { useFlags } from '$utils/flags';
 import { LinkingDomainButton } from './LinkingDomainButton';
 import { nftsActions } from '$store/nfts';
 import { useNavigation } from '$libs/navigation';
-import { dnsToUsername } from '$utils/dnsToUsername';
 import { openDAppBrowser } from '$navigation';
 
 export const NFT: React.FC<NFTProps> = ({ route }) => {
@@ -108,16 +107,12 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
   const videoUri = isTonDiamondsNft ? nft.metadata?.animation_url : undefined;
 
   const title = useMemo(() => {
-    if (isTG) {
-      return dnsToUsername(nft.name);
-    }
-
     if (isDNS) {
       return nft.dns;
     }
 
     return nft.name || maskifyTonAddress(nft.address);
-  }, [isDNS, isTG, nft.dns, nft.name, nft.address]);
+  }, [isDNS, nft.dns, nft.name, nft.address]);
 
   return (
     <S.Wrap>
@@ -158,7 +153,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
               uri={isDNS ? undefined : nft.content.image.baseUrl}
               lottieUri={lottieUri}
               videoUri={videoUri}
-              title={isTG ? dnsToUsername(nft.name) : nft.dns || nft.name}
+              title={(!isTG && nft.dns) || nft.name}
               collection={isDNS ? 'TON DNS' : nft.collection?.name}
               isVerified={isDNS || nft.isApproved}
               description={nft.description}

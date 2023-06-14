@@ -35,7 +35,7 @@ import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
 import { openTimeNotSyncedModal } from '$core/ModalContainer/TimeNotSynced/TimeNotSynced';
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 import { openTonConnect } from '$core/TonConnect/TonConnectModal';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { jettonsBalancesSelector } from '$store/jettons';
 import BigNumber from 'bignumber.js';
@@ -136,7 +136,15 @@ export function useDeeplinkingResolvers() {
     if (!getWallet()) {
       return openRequireWalletModal();
     } else {
-      nav.openModal('Exchange', { category: 'buy' });
+      nav.openModal('Exchange');
+    }
+  });
+
+  deeplinking.add('/swap', ({ query }) => {
+    if (!getWallet()) {
+      return openRequireWalletModal();
+    } else {
+      nav.openModal('Swap', { ft: query.ft, tt: query.tt });
     }
   });
 
@@ -189,14 +197,14 @@ export function useDeeplinkingResolvers() {
         const currentAddress = await getWallet().ton.getAddress();
         const { balances } = await Tonapi.getJettonBalances(currentAddress);
         const jettonBalance = balances.find((balance) =>
-          compareAddresses(balance.jetton_address, query.jetton),
+          compareAddresses(balance.jetton?.address, query.jetton),
         );
 
         if (!jettonBalance) {
           return Toast.fail(t('transfer_deeplink_address_error'));
         }
 
-        let decimals = jettonBalance.metadata?.decimals ?? 9;
+        let decimals = jettonBalance.jetton?.decimals ?? 9;
         const amount = fromNano(query.amount.toString(), decimals);
 
         if (new BigNumber(jettonBalance.balance ?? 0).lt(query.amount)) {
@@ -204,7 +212,7 @@ export function useDeeplinkingResolvers() {
             balance: jettonBalance.balance ?? 0,
             totalAmount: query.amount,
             decimals,
-            currency: jettonBalance.metadata?.symbol,
+            currency: jettonBalance.jetton?.symbol,
           });
           return;
         }
@@ -345,7 +353,7 @@ export function useDeeplinkingResolvers() {
         break;
       case 'sign-raw-payload':
         const { params, ...options } = txBody;
-        openSignRawModal(params, options);
+        await openSignRawModal(params, options);
         break;
       case 'deploy':
         openDeploy(txBody);
@@ -353,8 +361,14 @@ export function useDeeplinkingResolvers() {
     }
   };
 
+  const prevTxRequestPath = useRef('');
   deeplinking.add('/v1/txrequest-url/*', async ({ params }) => {
     try {
+      if (params.path === prevTxRequestPath.current) {
+        return;
+      }
+
+      prevTxRequestPath.current = params.path;
       Toast.loading();
 
       const { data } = await axios.get(`https://${params.path}`);
@@ -376,6 +390,10 @@ export function useDeeplinkingResolvers() {
 
       debugLog('[txrequest-url]', err);
       Toast.fail(message);
+    } finally {
+      setTimeout(() => {
+        prevTxRequestPath.current = '';
+      }, 1000);
     }
   });
 

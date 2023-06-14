@@ -1,8 +1,8 @@
 import { SuggestedAddress } from '../../../../Send.interface';
-import { List } from '$uikit';
 import React, { FC, memo } from 'react';
 import Animated, { Keyframe, SequencedTransition } from 'react-native-reanimated';
 import { AddressSuggestCell } from '../AddressSuggestCell/AddressSuggestCell';
+import { List } from '$uikit/List/old/List';
 
 const enteringKeyframe = new Keyframe({
   0: {
@@ -36,7 +36,7 @@ const AddressSuggestsComponent: FC<Props> = (props) => {
       {addresses.map((item, index) => (
         <Animated.View
           key={`${item.type}_${item.address}`}
-          entering={enteringKeyframe.delay(250).duration(250)}
+          entering={enteringKeyframe.duration(250)}
           exiting={exitingKeyframe.duration(250)}
           layout={SequencedTransition.duration(250)}
         >

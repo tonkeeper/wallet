@@ -87,7 +87,9 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
         <S.Row>
           <S.CollectionWrapper>
             <Text color="foregroundSecondary" variant="body2">
-              {collection || t('nft_single_nft')}
+              {collection == null
+                ? t('nft_single_nft')
+                : collection || t('nft_unnamed_collection')}
             </Text>
           </S.CollectionWrapper>
           {isVerified && <Icon name="ic-verification-16" colorless />}

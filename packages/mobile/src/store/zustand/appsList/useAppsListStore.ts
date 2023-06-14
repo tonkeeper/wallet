@@ -6,6 +6,7 @@ import FastImage from 'react-native-fast-image';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { IAppCategory, IAppsListStore } from './types';
+import DeviceInfo from 'react-native-device-info';
 
 const initialState: Omit<IAppsListStore, 'actions'> = {
   fetching: true,
@@ -23,9 +24,12 @@ export const useAppsListStore = create(
         fetchPopularApps: async () => {
           set({ fetching: true });
           try {
-            const response = await axios.get(
-              `${getServerConfig('tonkeeperEndpoint')}/apps/popular?lang=${i18n.locale}`,
-            );
+            const response = await axios.get(`${getServerConfig('tonkeeperEndpoint')}/apps/popular`, {
+              params: {
+                lang: i18n.locale,
+                build: DeviceInfo.getReadableVersion(),
+              }
+            });
 
             const { categories, moreEnabled, moreUrl } = response.data.data as {
               categories: IAppCategory[];

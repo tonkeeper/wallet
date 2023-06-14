@@ -1,5 +1,5 @@
 import { CryptoCurrency, FiatCurrency } from '$shared/constants';
-import {AccountEvent} from "tonapi-sdk-js";
+import { AccountEvent } from 'tonapi-sdk-js';
 
 export type TransactionType =
   | 'receive'
@@ -212,14 +212,11 @@ export interface ExchangeMethodModel {
 export interface CollectionModel {
   ownerAddressToDisplay?: string;
   name: string;
-  description: string;
+  description?: string;
   address: string;
-  addressRaw: string;
-  getGemsModerated?: boolean;
 }
 
 export interface NFTModel<MetaData = {}> {
-  collectionAddress?: string;
   dns?: string;
   verified?: boolean;
   currency: CryptoCurrency;
@@ -257,7 +254,7 @@ export interface TonDiamondMetadata {
 }
 
 export interface JettonMetadata {
-  jettonAddress: string;
+  address: string;
   decimals: number;
   symbol?: string;
   image_data?: string;

@@ -38,6 +38,7 @@ export type IconNames =
   | 'ic-twitter-16'
   | 'ic-verification-16'
   | 'ic-verification-secondary-16'
+  | 'ic-xmark-circle-16'
   | 'ic-backspace-bold-24'
   | 'ic-backup-24'
   | 'ic-key-24'
@@ -67,6 +68,7 @@ export type IconNames =
   | 'ic-nft-collection-28'
   | 'ic-notification-28'
   | 'ic-plus-28'
+  | 'ic-reorder-28'
   | 'ic-return-28'
   | 'ic-secure-28'
   | 'ic-settings-28'
@@ -147,6 +149,7 @@ export const AllIcons = [
   'ic-twitter-16',
   'ic-verification-16',
   'ic-verification-secondary-16',
+  'ic-xmark-circle-16',
   'ic-backspace-bold-24',
   'ic-backup-24',
   'ic-key-24',
@@ -176,6 +179,7 @@ export const AllIcons = [
   'ic-nft-collection-28',
   'ic-notification-28',
   'ic-plus-28',
+  'ic-reorder-28',
   'ic-return-28',
   'ic-secure-28',
   'ic-settings-28',
@@ -257,6 +261,7 @@ export const IconSizes = {
   'ic-twitter-16': 16,
   'ic-verification-16': 16,
   'ic-verification-secondary-16': 16,
+  'ic-xmark-circle-16': 16,
   'ic-backspace-bold-24': 24,
   'ic-backup-24': 24,
   'ic-key-24': 24,
@@ -286,6 +291,7 @@ export const IconSizes = {
   'ic-nft-collection-28': 28,
   'ic-notification-28': 28,
   'ic-plus-28': 28,
+  'ic-reorder-28': 28,
   'ic-return-28': 28,
   'ic-secure-28': 28,
   'ic-settings-28': 28,

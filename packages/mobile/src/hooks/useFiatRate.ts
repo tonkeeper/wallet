@@ -3,10 +3,7 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import { CryptoCurrencies, CryptoCurrency } from '$shared/constants';
-import {
-  ratesRatesSelector,
-  ratesYesterdayRatesSelector,
-} from '$store/rates';
+import { ratesRatesSelector, ratesYesterdayRatesSelector } from '$store/rates';
 import { RatesMap } from '$store/rates/interface';
 import { fiatCurrencySelector } from '$store/main';
 
@@ -19,13 +16,15 @@ export function getRate(
   let result = 0;
 
   if (
-    [CryptoCurrencies.TonLocked, CryptoCurrencies.TonRestricted].indexOf(currency as CryptoCurrencies) > -1
+    [CryptoCurrencies.TonLocked, CryptoCurrencies.TonRestricted].indexOf(
+      currency as CryptoCurrencies,
+    ) > -1
   ) {
     currency = CryptoCurrencies.Ton;
   }
 
   fiatCurrency = fiatCurrency.toUpperCase();
-  const key =  shouldUppercaseCurrency ? currency?.toUpperCase() : currency;
+  const key = shouldUppercaseCurrency ? currency?.toUpperCase() : currency;
   if (key === CryptoCurrencies.Btc.toUpperCase() && rates[fiatCurrency]) {
     result = +rates[fiatCurrency];
   } else if (rates[key]) {
@@ -38,15 +37,15 @@ export function getRate(
   return result;
 }
 
-export function useFiatRate(currency: CryptoCurrency) {
+export function useFiatRate(currency: CryptoCurrency, isJetton?: boolean) {
   const rates = useSelector(ratesRatesSelector);
   const yesterdayRates = useSelector(ratesYesterdayRatesSelector);
   const fiatCurrency = useSelector(fiatCurrencySelector);
 
   return useMemo(() => {
     return {
-      today: getRate(rates, currency, fiatCurrency),
-      yesterday: getRate(yesterdayRates, currency, fiatCurrency),
+      today: getRate(rates, currency, fiatCurrency, !isJetton),
+      yesterday: getRate(yesterdayRates, currency, fiatCurrency, !isJetton),
     };
-  }, [rates, currency, fiatCurrency, yesterdayRates]);
+  }, [rates, currency, fiatCurrency, yesterdayRates, isJetton]);
 }

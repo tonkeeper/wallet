@@ -19,6 +19,7 @@ export interface ServerConfig {
   tonapiTestnetHost: string;
   tonApiKey: string;
   tonApiV2Key: string;
+  tonapiV2Endpoint: string;
   cachedMediaEndpoint: string;
   cachedMediaKey: string;
   cachedMediaSalt: string;
@@ -27,6 +28,7 @@ export interface ServerConfig {
   flags: Record<string, boolean>;
   directSupportUrl: string;
   amplitudeKey: string;
+  stonfiUrl: string;
 }
 
 let config: ServerConfig | null = null;
@@ -48,6 +50,7 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     appsflyerAppId: data.appsflyerAppId,
     tonNFTsMarketplaceEndpoint: data.tonNFTsMarketplaceEndpoint,
     tonapiIOEndpoint: data.tonapiIOEndpoint || 'https://keeper.tonapi.io',
+    tonapiV2Endpoint: data.tonapiV2Endpoint || 'https://tonapi.io',
     tonApiKey: data.tonApiKey,
     tonApiV2Key: data.tonApiV2Key,
     subscriptionsHost: data.subscriptionsHost || 'https://api.tonkeeper.com',
@@ -61,6 +64,7 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     transactionExplorer: 'https://tonapi.io/transaction/%s',
     flags: data.flags || {},
     amplitudeKey: data.amplitudeKey,
+    stonfiUrl: data.stonfiUrl,
   };
 }
 

@@ -43,7 +43,13 @@ export interface DnsRecord {
      * @type {Array<string>}
      * @memberof DnsRecord
      */
-    site: Array<string>;
+    sites: Array<string>;
+    /**
+     * tonstorage bag id
+     * @type {string}
+     * @memberof DnsRecord
+     */
+    storage?: string;
 }
 
 /**
@@ -51,7 +57,7 @@ export interface DnsRecord {
  */
 export function instanceOfDnsRecord(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "site" in value;
+    isInstance = isInstance && "sites" in value;
 
     return isInstance;
 }
@@ -68,7 +74,8 @@ export function DnsRecordFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         
         'wallet': !exists(json, 'wallet') ? undefined : WalletDNSFromJSON(json['wallet']),
         'nextResolver': !exists(json, 'next_resolver') ? undefined : json['next_resolver'],
-        'site': json['site'],
+        'sites': json['sites'],
+        'storage': !exists(json, 'storage') ? undefined : json['storage'],
     };
 }
 
@@ -83,7 +90,8 @@ export function DnsRecordToJSON(value?: DnsRecord | null): any {
         
         'wallet': WalletDNSToJSON(value.wallet),
         'next_resolver': value.nextResolver,
-        'site': value.site,
+        'sites': value.sites,
+        'storage': value.storage,
     };
 }
 

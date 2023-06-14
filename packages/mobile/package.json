@@ -23,8 +23,9 @@
     "icons": "node scripts/generate_icons.js"
   },
   "dependencies": {
+    "@alexzunik/rn-native-portals-reborn": "^1.0.5",
     "@amplitude/analytics-browser": "^1.6.7",
-    "@bogoslavskiy/react-native-steezy": "^1.0.2",
+    "@bogoslavskiy/react-native-steezy": "^1.0.4",
     "@gorhom/bottom-sheet": "^4.4.4",
     "@rainbow-me/animated-charts": "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#b0872b97e43c694414b37c95c042e44b92e2c0e9",
     "@react-native-async-storage/async-storage": "^1.15.5",
@@ -54,7 +55,7 @@
     "date-fns": "^2.23.0",
     "domain-from-partial-url": "^1.1.0",
     "dotenv": "^16.0.3",
-    "expo": "~48.0.9",
+    "expo": "~48.0.15",
     "expo-blur": "~12.2.2",
     "expo-local-authentication": "~13.2.1",
     "expo-modules-core": "~1.2.6",
@@ -80,7 +81,7 @@
     "qrcode": "^1.4.4",
     "query-string": "^7.0.1",
     "react": "18.2.0",
-    "react-native": "0.71.4",
+    "react-native": "0.71.7",
     "react-native-camera": "^4.2.1",
     "react-native-console-time-polyfill": "^1.2.3",
     "react-native-crypto": "^2.2.0",
@@ -146,6 +147,7 @@
     "metro-react-native-babel-preset": "0.73.8",
     "patch-package": "^6.4.7",
     "postinstall-postinstall": "^2.1.0",
+    "prettier": "^2.8.7",
     "react-native-codegen": "^0.69.1",
     "react-test-renderer": "18.2.0",
     "typescript": "^4.9.4"

@@ -1,4 +1,4 @@
-import { List } from '$uikit';
+import { List } from '$uikit/List/old/List';
 import React, { FC, memo } from 'react';
 import { ISearchSuggest } from '../../types';
 import { SearchSuggestCell } from '../SearchSuggestCell/SearchSuggestCell';

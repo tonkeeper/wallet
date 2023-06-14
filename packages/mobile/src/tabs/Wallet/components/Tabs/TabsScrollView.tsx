@@ -26,7 +26,7 @@ export const TabsScrollView = (props: TabsScrollViewProps) => {
     correctIntermediateHeaderState 
   } = useTabCtx();
   const { index } = useCurrentTab();
-  const tabBarHeight = useBottomTabBarHeight();
+  const tabBarHeight = 0;
   const [contentSize, setContentSize] = useState(0);
   const safeArea = useSafeAreaInsets();
   

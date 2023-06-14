@@ -7,9 +7,10 @@ import {
   InternalNotification,
   Screen,
   Text,
+  List,
   View,
+  SwapIcon,
 } from '$uikit';
-import { List } from '$uikit/List/new';
 import { useNavigation } from '$libs/navigation';
 import { ScanQRButton } from '../../components/ScanQRButton';
 import { RefreshControl, useWindowDimensions } from 'react-native';
@@ -20,7 +21,6 @@ import { maskifyAddress, ns } from '$utils';
 import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
 import { useIsFocused } from '@react-navigation/native';
-import _ from 'lodash';
 import { useBalance, useRates } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
 import { TonIcon } from '../../components/TonIcon';
@@ -28,24 +28,27 @@ import { CryptoCurrencies } from '$shared/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Tabs } from './components/Tabs';
 import * as S from '../../core/Balances/Balances.style';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
 import { useTonkens } from './hooks/useTokens';
-import { useNFTs } from './hooks/useNFTs';
 import { useWallet } from './hooks/useWallet';
-import { useTheme } from '$hooks';
+import { useApprovedNfts, useTheme } from '$hooks';
+import { ApprovalCell } from '$core/ApprovalCell/components/ApprovalCell';
 import { Steezy } from '$styles';
 import { BalancesList } from './components/BalancesList';
+import { DevFeature, useDevFeatureEnabled } from '$store';
+import { useFlags } from '$utils/flags';
 
 export const WalletScreen = memo(() => {
+  const flags = useFlags(['disable_swap']);
   const [tab, setTab] = useState<string>('tokens');
   const tabBarHeight = useBottomTabBarHeight();
   const dispatch = useDispatch();
   const theme = useTheme();
   const nav = useNavigation();
   const tokens = useTonkens();
-  const nfts = useNFTs();
+  const { enabled: nfts } = useApprovedNfts();
   const wallet = useWallet();
 
   const balance = useBalance(tokens.total.fiat);
@@ -64,21 +67,21 @@ export const WalletScreen = memo(() => {
     return () => clearTimeout(timer);
   }, [dispatch]);
 
-  const handlePressSell = React.useCallback(() => {
+  const handlePressSwap = React.useCallback(() => {
     if (wallet) {
-      nav.openModal('Exchange', { category: 'sell' });
+      nav.openModal('Swap');
     } else {
       openRequireWalletModal();
     }
-  }, [wallet]);
+  }, [nav, wallet]);
 
   const handlePressBuy = React.useCallback(() => {
     if (wallet) {
-      nav.openModal('Exchange', { category: 'buy' });
+      nav.openModal('Exchange');
     } else {
       openRequireWalletModal();
     }
-  }, [wallet]);
+  }, [nav, wallet]);
 
   const handlePressSend = React.useCallback(() => {
     if (wallet) {
@@ -86,7 +89,7 @@ export const WalletScreen = memo(() => {
     } else {
       openRequireWalletModal();
     }
-  }, [wallet]);
+  }, [nav, wallet]);
 
   const handlePressRecevie = React.useCallback(() => {
     if (wallet) {
@@ -97,7 +100,7 @@ export const WalletScreen = memo(() => {
     } else {
       openRequireWalletModal();
     }
-  }, [wallet]);
+  }, [nav, wallet]);
 
   const handleCreateWallet = () => openRequireWalletModal();
 
@@ -105,7 +108,7 @@ export const WalletScreen = memo(() => {
     dispatch(walletActions.refreshBalancesPage(true));
   }, [dispatch]);
 
-  const ListHeader = (
+  const ListHeader = (visibleApproval?: boolean) => (
     <View style={styles.mainSection} pointerEvents="box-none">
       {notifications.map((notification, i) => (
         <InternalNotification
@@ -136,11 +139,6 @@ export const WalletScreen = memo(() => {
       </View>
       <IconButtonList>
         <IconButton
-          onPress={handlePressBuy}
-          iconName="ic-plus-28"
-          title={t('wallet.buy_btn')}
-        />
-        <IconButton
           onPress={handlePressSend}
           iconName="ic-arrow-up-28"
           title={t('wallet.send_btn')}
@@ -151,11 +149,19 @@ export const WalletScreen = memo(() => {
           title={t('wallet.receive_btn')}
         />
         <IconButton
-          onPress={handlePressSell}
-          iconName="ic-minus-28"
-          title={t('wallet.sell_btn')}
+          onPress={handlePressBuy}
+          iconName="ic-plus-28"
+          title={t('wallet.buy_btn')}
         />
+        {!flags.disable_swap && (
+          <IconButton
+            onPress={handlePressSwap}
+            icon={<SwapIcon animated />}
+            title={t('wallet.swap_btn')}
+          />
+        )}
       </IconButtonList>
+      {wallet && visibleApproval && <ApprovalCell />}
     </View>
   );
 
@@ -168,7 +174,7 @@ export const WalletScreen = memo(() => {
           rightContent={<ScanQRButton />}
         />
         <Screen.ScrollView indent={false}>
-          {ListHeader}
+          {ListHeader()}
           <List>
             <List.Item
               title="Toncoin"
@@ -218,7 +224,7 @@ export const WalletScreen = memo(() => {
         />
         <View style={{ flex: 1 }}>
           <Tabs.Header>
-            {ListHeader}
+            {ListHeader()}
             <Tabs.Bar
               onChange={({ value }) => setTab(value)}
               value={tab}
@@ -231,6 +237,9 @@ export const WalletScreen = memo(() => {
           <Tabs.PagerView>
             <Tabs.Section index={0}>
               <BalancesList
+                ListHeaderComponent={wallet ? (
+                  <ApprovalCell withoutSpacer style={{ paddingHorizontal: ns(16), paddingBottom: ns(16) }}/>
+                ): undefined}
                 balance={balance}
                 tokens={tokens}
                 rates={rates}
@@ -241,6 +250,9 @@ export const WalletScreen = memo(() => {
             </Tabs.Section>
             <Tabs.Section index={1}>
               <Tabs.FlashList
+                ListHeaderComponent={wallet ? (
+                   <ApprovalCell withoutSpacer style={{ paddingHorizontal: ns(6), paddingBottom: ns(16) }}/>
+                ): undefined}
                 contentContainerStyle={styles.scrollContainer.static}
                 estimatedItemSize={1000}
                 numColumns={3}
@@ -275,7 +287,7 @@ export const WalletScreen = memo(() => {
           rightContent={<ScanQRButton />}
         />
         <BalancesList
-          ListHeaderComponent={ListHeader}
+          ListHeaderComponent={ListHeader(true)}
           handleRefresh={handleRefresh}
           isRefreshing={isRefreshing}
           isFocused={isFocused}
@@ -292,7 +304,7 @@ export const WalletScreen = memo(() => {
     return <Screen>{renderEmpty()}</Screen>;
   } else if (tokens.list.length <= 2) {
     return <Screen>{renderCompact()}</Screen>;
-  } else if (tokens.list.length + nfts.length + 1 > 10) {
+  } else if (nfts.length && tokens.list.length + nfts.length + 1 > 10) {
     return <Screen>{renderTabs()}</Screen>;
   } else {
     return <Screen>{renderCompact()}</Screen>;

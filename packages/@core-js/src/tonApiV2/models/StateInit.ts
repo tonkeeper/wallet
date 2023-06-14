@@ -24,19 +24,7 @@ export interface StateInit {
      * @type {string}
      * @memberof StateInit
      */
-    code?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof StateInit
-     */
-    data?: string;
-    /**
-     * 
-     * @type {{ [key: string]: string; }}
-     * @memberof StateInit
-     */
-    library: { [key: string]: string; };
+    boc: string;
 }
 
 /**
@@ -44,7 +32,7 @@ export interface StateInit {
  */
 export function instanceOfStateInit(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "library" in value;
+    isInstance = isInstance && "boc" in value;
 
     return isInstance;
 }
@@ -59,9 +47,7 @@ export function StateInitFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     }
     return {
         
-        'code': !exists(json, 'code') ? undefined : json['code'],
-        'data': !exists(json, 'data') ? undefined : json['data'],
-        'library': json['library'],
+        'boc': json['boc'],
     };
 }
 
@@ -74,9 +60,7 @@ export function StateInitToJSON(value?: StateInit | null): any {
     }
     return {
         
-        'code': value.code,
-        'data': value.data,
-        'library': value.library,
+        'boc': value.boc,
     };
 }
 

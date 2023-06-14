@@ -232,3 +232,12 @@ export async function getSavedLogs(): Promise<LogItem[]> {
 export async function setSavedLogs(logs: LogItem[]) {
   await AsyncStorage.setItem('logs', JSON.stringify(logs));
 }
+
+export async function getSwapShownCount() {
+  const stored = Number(await AsyncStorage.getItem('swap_shown_count')) || 0;
+  return stored;
+}
+
+export async function setSwapShownCount(count: number) {
+  await AsyncStorage.setItem('swap_shown_count', `${count}`);
+}
