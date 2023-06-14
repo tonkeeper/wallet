@@ -1,19 +1,15 @@
 import { useFiatRate, useInstance, useTranslator } from '$hooks';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
-import { CryptoCurrencies, CryptoCurrency, getServerConfig } from '$shared/constants';
 import {
-  walletActions,
-  walletBalancesSelector,
-  walletWalletSelector,
-} from '$store/wallet';
+  CryptoCurrencies,
+  CryptoCurrency,
+  Decimals,
+  getServerConfig,
+} from '$shared/constants';
+import { walletActions } from '$store/wallet';
 import { NavBar, Text } from '$uikit';
-import {
-  formatInputAmount,
-  isValidAddress,
-  maskifyAddress,
-  parseLocaleNumber,
-} from '$utils';
+import { isValidAddress, maskifyAddress, parseLocaleNumber } from '$utils';
 import React, {
   FC,
   useCallback,
@@ -23,17 +19,17 @@ import React, {
   useState,
 } from 'react';
 import { useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { SendAmount, SendProps, SendRecipient, SendSteps } from './Send.interface';
 import { AddressStep } from './steps/AddressStep/AddressStep';
 import { AmountStep } from './steps/AmountStep/AmountStep';
 import { ConfirmStep } from './steps/ConfirmStep/ConfirmStep';
-import BigNumber from 'bignumber.js';
-import { Alert, Keyboard } from 'react-native';
+import { Keyboard } from 'react-native';
 import { favoritesActions } from '$store/favorites';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { Configuration, AccountsApi, Account } from '@tonkeeper/core';
 import { DismissedActionError } from './steps/ConfirmStep/DismissedActionError';
+import { formatter } from '$utils/formatter';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {
@@ -44,7 +40,6 @@ export const Send: FC<SendProps> = ({ route }) => {
     amount: initialAmount = '0',
     fee: initialFee = '0',
     isInactive: initialIsInactive = false,
-    withGoBack,
   } = route.params;
 
   const initialAddress =
@@ -74,9 +69,6 @@ export const Send: FC<SendProps> = ({ route }) => {
     return new AccountsApi(tonApiConfiguration);
   });
 
-  const balances = useSelector(walletBalancesSelector);
-  const wallet = useSelector(walletWalletSelector);
-
   const [{ currency, isJetton }, setCurrency] = useState({
     currency: initialCurrency || CryptoCurrencies.Ton,
     isJetton: !!initialIsJetton,
@@ -87,7 +79,12 @@ export const Send: FC<SendProps> = ({ route }) => {
   );
   const [recipientAccountInfo, setRecipientAccountInfo] = useState<Account | null>(null);
 
-  const [amount, setAmount] = useState<SendAmount>({ value: initialAmount, all: false });
+  const [amount, setAmount] = useState<SendAmount>({
+    value: formatter.format(initialAmount, {
+      decimals: Decimals[CryptoCurrencies.Ton],
+    }),
+    all: false,
+  });
 
   const [comment, setComment] = useState(initalComment.replace(/\0/g, ''));
 

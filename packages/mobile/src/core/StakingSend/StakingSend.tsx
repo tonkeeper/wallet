@@ -6,7 +6,7 @@ import { Ton } from '$libs/Ton';
 import { AppStackRouteNames } from '$navigation';
 import { AppStackParamList } from '$navigation/AppStack';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
-import { CryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { getStakingPoolByAddress, Toast, useStakingStore } from '$store';
 import { walletSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
@@ -23,6 +23,7 @@ import { shallow } from 'zustand/shallow';
 import { AmountStep, ConfirmStep } from './steps';
 import { StakingSendSteps, StakingTransactionType } from './types';
 import { getStakeSignRawMessage, getWithdrawalFee } from './utils';
+import { formatter } from '$utils/formatter';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
@@ -59,7 +60,7 @@ export const StakingSend: FC<Props> = (props) => {
   const pool = useStakingStore((s) => getStakingPoolByAddress(s, poolAddress), shallow);
   const poolStakingInfo = useStakingStore((s) => s.stakingInfo[pool.address], shallow);
 
-  const isTfPool = pool.implementation === 'tf'
+  const isTfPool = pool.implementation === 'tf';
 
   const { apy } = pool;
 
@@ -96,7 +97,11 @@ export const StakingSend: FC<Props> = (props) => {
   const operations = useInstance(() => new NFTOperations(wallet));
 
   const [amount, setAmount] = useState<SendAmount>({
-    value: isWithdrawalConfrim ? isTfPool ? stakingBalance : readyWithdraw : '0',
+    value: isWithdrawalConfrim
+      ? formatter.format(isTfPool ? stakingBalance : readyWithdraw, {
+          decimals: Decimals[CryptoCurrencies.Ton],
+        })
+      : '0',
     all: false,
   });
 
