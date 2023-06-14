@@ -8,12 +8,13 @@ import {
   TokenApprovalStatus,
   TokenApprovalType,
 } from '$store/zustand/tokenApproval/types';
-import { ListButton, Spacer } from '$uikit';
+import { Button, ListButton, Spacer } from '$uikit';
 import { CellItem, Content, ContentType } from '$core/ManageTokens/ManageTokens.types';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { useApprovedNfts } from '$hooks';
 import { JettonVerification, NFTModel } from '$store/models';
 import { Address } from '$libs/Ton';
+import { approveAll } from '$store/zustand/tokenApproval/helpers';
 
 const baseNftCellData = (nft: NFTModel) => ({
   type: ContentType.Cell,
@@ -73,6 +74,24 @@ export function useNftData() {
         id: 'pending',
         type: ContentType.Title,
         title: t('approval.pending'),
+        rightContent: pending.length >= 5 && (
+          <Button
+            onPress={() =>
+              approveAll(
+                pending.map((nft) => ({
+                  address: new Address(nft.collection?.address || nft.address).toString(
+                    false,
+                  ),
+                  isCollection: !!nft.collection?.address,
+                })),
+              )
+            }
+            mode="secondary"
+            size="navbar_small"
+          >
+            {t('approval.approve_all')}
+          </Button>
+        ),
       });
 
       content.push(

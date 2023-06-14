@@ -341,6 +341,7 @@
     "verify_description_token": "This token is from unknown issuer. To detect counterfeits, verify the token ID with the issuer's official source. You can change token visibility later in settings.",
     "verify_description_collection": "These tokens are from unknown issuer. To detect counterfeits, verify the collection ID with the issuer's official source. You can change token visibility later in settings.",
     "accepted": "Accepted",
+    "approve_all": "Accept all",
     "approve_token": "Approve incoming token \"%{name}\"",
     "approve_two_tokens": "Approve incoming tokens \"%{name1}\" and \"%{name2}\"",
     "approve_many": "Approve %{count} incoming tokens",
