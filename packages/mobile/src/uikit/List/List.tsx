@@ -26,7 +26,7 @@ export const List = memo<ListProps>((props) => {
 
         const child = node as React.ReactElement;
         return (
-          <>
+          <View key={i}>
             {!compact && i === 0 && <Spacer y={8} />}
             {compact && i > 0 && <ListSeparator />}
             {React.cloneElement(child, {
@@ -37,7 +37,7 @@ export const List = memo<ListProps>((props) => {
             })}
             {/* @ts-ignore **/}
             {!compact && i === arr.length - 1 && <Spacer y={8} />}
-          </>
+          </View>
         );
       });
   }, [compact, props.children]);
