@@ -19,6 +19,7 @@ import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 
 interface TabsPagerViewProps {
   initialPage?: number;
+  children: React.ReactNode;
 }
 
 const AnimatedPagerView = Animated.createAnimatedComponent(PagerView);
