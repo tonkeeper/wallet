@@ -1,6 +1,7 @@
 import { SpacerSizes } from '$uikit';
 import { ListSeparatorProps } from '$uikit/List/ListSeparator';
 import { ListItemProps } from '$uikit/List/ListItem';
+import { ReactNode } from 'react';
 
 export enum ContentType {
   Title,
@@ -12,6 +13,7 @@ export enum ContentType {
 export type TitleItem = {
   type: ContentType.Title;
   title: string;
+  rightContent?: ReactNode;
   id: string;
 };
 

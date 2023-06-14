@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { t } from '$translation';
 import { formatter } from '$utils/formatter';
 import { openApproveTokenModal } from '$core/ModalContainer/ApproveToken/ApproveToken';
@@ -6,10 +6,11 @@ import {
   TokenApprovalStatus,
   TokenApprovalType,
 } from '$store/zustand/tokenApproval/types';
-import { ListButton, Spacer } from '$uikit';
+import { Button, ListButton, Spacer } from '$uikit';
 import { CellItem, Content, ContentType } from '$core/ManageTokens/ManageTokens.types';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { useJettonBalances } from '$hooks';
+import { approveAll } from '$store/zustand/tokenApproval/helpers';
 
 const baseJettonCellData = (jettonBalance) => ({
   type: ContentType.Cell,
@@ -44,6 +45,17 @@ export function useJettonData() {
       content.push({
         id: 'pending_title',
         type: ContentType.Title,
+        rightContent: pending.length >= 5 && (
+          <Button
+            onPress={() =>
+              approveAll(pending.map((token) => ({ address: token.jettonAddress })))
+            }
+            mode="secondary"
+            size="navbar_small"
+          >
+            {t('approval.approve_all')}
+          </Button>
+        ),
         title: t('approval.pending'),
       });
 

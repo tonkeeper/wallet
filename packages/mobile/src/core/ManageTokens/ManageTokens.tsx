@@ -44,9 +44,12 @@ const FLashListItem = ({
   switch (item.type) {
     case ContentType.Title:
       return (
-        <SText style={styles.flashListTitle} variant="h3" color="textPrimary">
-          {item.title}
-        </SText>
+        <View style={styles.titleContainer}>
+          <SText style={styles.flashListTitle} variant="h3" color="textPrimary">
+            {item.title}
+          </SText>
+          {item.rightContent}
+        </View>
       );
     case ContentType.Spacer:
       return <Spacer y={item.bottom} />;
@@ -302,5 +305,10 @@ const styles = Steezy.create(({ safeArea, corners, colors }) => ({
   showAllButtonWrap: {
     alignItems: 'center',
     marginTop: 16,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 }));
