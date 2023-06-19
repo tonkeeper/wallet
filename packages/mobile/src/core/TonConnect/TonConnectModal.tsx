@@ -171,7 +171,11 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
           const notifications_token =
             useNotificationsStore.getState().notifications_token;
           if (!notifications_token) {
-            const proof = await createTonProofForTonkeeper(address, privateKey);
+            const proof = await createTonProofForTonkeeper(
+              address,
+              privateKey,
+              walletStateInit,
+            );
             const connectApi = new ConnectApi(
               new Configuration({
                 basePath: getServerConfig('tonapiV2Endpoint'),
@@ -180,6 +184,9 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
                 },
               }),
             );
+            if (proof.error) {
+              return;
+            }
             const token = await connectApi.tonConnectProof({
               tonConnectProofRequest: proof,
             });

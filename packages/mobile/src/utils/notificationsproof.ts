@@ -11,6 +11,7 @@ import { Address } from '$libs/Ton';
 export async function createTonProofForTonkeeper(
   addressRaw: string,
   secretKey: Uint8Array,
+  walletStateInit: string,
 ) {
   try {
     const address = new Address(addressRaw).toString(false);
@@ -72,6 +73,7 @@ export async function createTonProofForTonkeeper(
         },
         signature,
         payload,
+        stateInit: walletStateInit,
       },
     };
   } catch (e) {

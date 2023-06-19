@@ -134,6 +134,10 @@ export const ActivityScreen: FC = () => {
   }, [dispatch, isEventsLoading, canLoadMore]);
 
   const renderNotificationsHeader = useCallback(() => {
+    if (!notifications.length) {
+      return null;
+    }
+
     return (
       <View style={styles.notificationsHeader}>
         <Spacer y={12} />
