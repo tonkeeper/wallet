@@ -21,6 +21,7 @@ export interface ListItemProps {
   compact?: boolean;
   isLast?: boolean;
   isFirst?: boolean;
+  disabled?: boolean;
 
   valueStyle?: StyleProp<TextStyle>;
 
@@ -110,7 +111,7 @@ export const ListItem = memo<ListItemProps>((props) => {
       onPressOut={handlePressOut}
       onPressIn={handlePressIn}
       onPress={props.onPress}
-      disabled={!props.onPress}
+      disabled={!props.onPress || props.disabled}
     >
       <View style={[styles.container.static, compact && styles.containerCompact.static]}>
         {hasLeftContent && (

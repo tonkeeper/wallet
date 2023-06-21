@@ -54,6 +54,10 @@ export function lowerCaseFirstLetter(string: string) {
   return string.charAt(0).toLowerCase() + string.slice(1);
 }
 
+export function bytesToMegabytes(bytes: number) {
+  return (bytes / 1024 / 1024).toFixed(2);
+}
+
 export const Memo: <T>(c: T) => T = memo; // Fix generic.
 
 export * from './parseTonLink';

@@ -37,8 +37,10 @@ import { useApprovedNfts, useTheme } from '$hooks';
 import { ApprovalCell } from '$core/ApprovalCell/components/ApprovalCell';
 import { Steezy } from '$styles';
 import { BalancesList } from './components/BalancesList';
-import { DevFeature, useDevFeatureEnabled } from '$store';
 import { useFlags } from '$utils/flags';
+import { useUpdatesStore } from '$store/zustand/updates/useUpdatesStore';
+import { UpdatesCell } from '$core/ApprovalCell/Updates/UpdatesCell';
+import { UpdateState } from '$store/zustand/updates/types';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -50,6 +52,8 @@ export const WalletScreen = memo(() => {
   const tokens = useTonkens();
   const { enabled: nfts } = useApprovedNfts();
   const wallet = useWallet();
+  const shouldUpdate =
+    useUpdatesStore((state) => state.update.state) !== UpdateState.NOT_STARTED;
 
   const balance = useBalance(tokens.total.fiat);
   const rates = useRates();
@@ -122,6 +126,7 @@ export const WalletScreen = memo(() => {
         />
       ))}
       <View style={styles.amount} pointerEvents="box-none">
+        {shouldUpdate && <UpdatesCell />}
         <Text variant="num2">{balance.total.fiat}</Text>
         <View style={styles.walletSpace} />
         {wallet && (
@@ -237,9 +242,14 @@ export const WalletScreen = memo(() => {
           <Tabs.PagerView>
             <Tabs.Section index={0}>
               <BalancesList
-                ListHeaderComponent={wallet ? (
-                  <ApprovalCell withoutSpacer style={{ paddingHorizontal: ns(16), paddingBottom: ns(16) }}/>
-                ): undefined}
+                ListHeaderComponent={
+                  wallet ? (
+                    <ApprovalCell
+                      withoutSpacer
+                      style={{ paddingHorizontal: ns(16), paddingBottom: ns(16) }}
+                    />
+                  ) : undefined
+                }
                 balance={balance}
                 tokens={tokens}
                 rates={rates}
@@ -250,9 +260,14 @@ export const WalletScreen = memo(() => {
             </Tabs.Section>
             <Tabs.Section index={1}>
               <Tabs.FlashList
-                ListHeaderComponent={wallet ? (
-                   <ApprovalCell withoutSpacer style={{ paddingHorizontal: ns(6), paddingBottom: ns(16) }}/>
-                ): undefined}
+                ListHeaderComponent={
+                  wallet ? (
+                    <ApprovalCell
+                      withoutSpacer
+                      style={{ paddingHorizontal: ns(6), paddingBottom: ns(16) }}
+                    />
+                  ) : undefined
+                }
                 contentContainerStyle={styles.scrollContainer.static}
                 estimatedItemSize={1000}
                 numColumns={3}

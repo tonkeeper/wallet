@@ -3,41 +3,57 @@ import { t } from '$translation';
 import { Modal, useNavigation } from '$libs/navigation';
 import { push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
-import { Button, Icon, Text, View } from '$uikit';
-import { Linking, Platform } from 'react-native';
-import { Base64, delay } from '$utils';
+import { Button, Icon, Spacer, Text, View } from '$uikit';
+import { bytesToMegabytes, delay } from '$utils';
 import { Steezy } from '$styles';
+import { useUpdatesStore } from '$store/zustand/updates/useUpdatesStore';
 
 export const UpdateAppModal = memo(() => {
   const nav = useNavigation();
+  const meta = useUpdatesStore((state) => state.meta);
+  const { declineUpdate, startUpdate } = useUpdatesStore((state) => state.actions);
 
-  const handleOpenSettings = useCallback(async () => {
+  const handleRemindLater = useCallback(async () => {
     nav.goBack();
     await delay(400);
-    if (Platform.OS === 'ios') {
-      return Linking.openURL(Base64.decodeToStr('QXBwLXByZWZzOnJvb3Q='));
-    }
-    Linking.sendIntent('android.settings.DATE_SETTINGS');
-  }, []);
+    declineUpdate();
+  }, [nav, declineUpdate]);
+
+  const handleUpdate = useCallback(async () => {
+    nav.goBack();
+    await delay(400);
+    startUpdate();
+  }, [nav, startUpdate]);
 
   return (
     <Modal>
       <Modal.Header />
       <Modal.Content>
         <View style={styles.wrap}>
-          <Icon style={{ marginBottom: 12 }} name={'ic-exclamationmark-circle-84'} />
+          <Icon colorless style={{ marginBottom: 12 }} name={'ic-tonkeeper-update-128'} />
           <Text textAlign="center" variant="h2" style={{ marginBottom: 4 }}>
-            {t('txActions.signRaw.wrongTime.title')}
+            {t('update.title')}
           </Text>
-          <Text variant="body1" color="foregroundSecondary" textAlign="center">
-            {t('txActions.signRaw.wrongTime.description')}
+          <Spacer y={4} />
+          <Text variant="body1" color="textSecondary" textAlign="center">
+            {t('update.version', { version: meta?.version })}
+            <Text color="textTertiary"> · </Text>
+            {t('update.mb', { size: bytesToMegabytes(meta?.size || 0) })}
+          </Text>
+          <Spacer y={4} />
+          <Text variant="body1" color="textSecondary" textAlign="center">
+            {t('update.description')}
           </Text>
         </View>
       </Modal.Content>
       <Modal.Footer>
         <View style={styles.footerWrap}>
-          <Button mode="secondary" onPress={handleOpenSettings}>
-            {t('txActions.signRaw.wrongTime.button')}
+          <Button mode="primary" onPress={handleUpdate}>
+            {t('update.download')}
+          </Button>
+          <Spacer y={16} />
+          <Button mode="secondary" onPress={handleRemindLater}>
+            {t('update.remindLater')}
           </Button>
         </View>
       </Modal.Footer>

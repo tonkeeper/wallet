@@ -123,9 +123,18 @@ android {
         applicationId "com.ton_keeper"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 327
-        versionName "3.2.1"
+        versionCode 320
+        versionName "3.1"
         missingDimensionStrategy 'react-native-camera', 'general'
+    }
+
+    packagingOptions {
+        pickFirst '**/armeabi-v7a/libc++_shared.so'
+        pickFirst '**/x86/libc++_shared.so'
+        pickFirst '**/arm64-v8a/libc++_shared.so'
+        pickFirst '**/x86_64/libc++_shared.so'
+        pickFirst '**/x86/libjsc.so'
+        pickFirst '**/armeabi-v7a/libjsc.so'
     }
 
     splits {

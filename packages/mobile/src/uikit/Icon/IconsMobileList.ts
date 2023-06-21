@@ -7,6 +7,7 @@ export const MobileIconsList = {
   'ic-star-12': require('$assets/icons/png/ic-star-12.png'),
   'ic-up-12': require('$assets/icons/png/ic-up-12.png'),
   'ic-notification-128': require('$assets/icons/png/ic-notification-128.png'),
+  'ic-tonkeeper-update-128': require('$assets/icons/png/ic-tonkeeper-update-128.png'),
   'ic-appearance-16': require('$assets/icons/png/ic-appearance-16.png'),
   'ic-arrow-down-16': require('$assets/icons/png/ic-arrow-down-16.png'),
   'ic-arrow-up-16': require('$assets/icons/png/ic-arrow-up-16.png'),
