@@ -27,7 +27,7 @@ export const UpdateAppModal = memo(() => {
 
   return (
     <Modal>
-      <Modal.Header />
+      <Modal.Header onClose={declineUpdate} />
       <Modal.Content>
         <View style={styles.wrap}>
           <Icon colorless style={{ marginBottom: 12 }} name={'ic-tonkeeper-update-128'} />
