@@ -3,6 +3,6 @@ import { useUpdatesStore } from '$store/zustand/updates/useUpdatesStore';
 
 export function getUpdatePath() {
   return (
-    RNFS.DocumentDirectoryPath + `keeper_${useUpdatesStore.getState().meta?.version}.apk`
+    RNFS.DocumentDirectoryPath + `/keeper_${useUpdatesStore.getState().meta?.version}.apk`
   );
 }

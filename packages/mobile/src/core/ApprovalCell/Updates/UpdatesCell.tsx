@@ -12,7 +12,7 @@ const UpdatesCellComponent: React.FC = () => {
   const progress = useUpdatesStore((state) => state.update.progress);
   const startUpdate = useUpdatesStore((state) => state.actions.startUpdate);
 
-  const handleInstall = React.useCallback(() => {
+  const handleInstall = React.useCallback(async () => {
     installApk(getUpdatePath());
   }, []);
 
@@ -25,16 +25,16 @@ const UpdatesCellComponent: React.FC = () => {
       case UpdateState.DOWNLOADING:
         return t('update.downloading', { progress });
       case UpdateState.DOWNLOADED:
-        return t('true');
+        return t('update.tap');
       case UpdateState.ERRORED:
-        return 'Errored';
+        return t('update.retry');
       default:
         return '';
     }
   }, [state, progress]);
 
   return (
-    <List indent={false}>
+    <List>
       <List.Item
         disabled={[UpdateState.DOWNLOADING, UpdateState.NOT_STARTED].includes(state)}
         title={`Tonkeeper ${version}`}

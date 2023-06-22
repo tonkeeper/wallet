@@ -54,7 +54,7 @@ public class ApkInstallModule extends ReactContextBaseJavaModule {
       PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
         PackageInstaller.SessionParams.MODE_FULL_INSTALL);
       params.setAppPackageName("com.jbig.tonkeeper");
-      // set params
+
       int sessionId = packageInstaller.createSession(params);
       PackageInstaller.Session session = packageInstaller.openSession(sessionId);
       OutputStream out = session.openWrite("COSU", 0, -1);
@@ -66,6 +66,9 @@ public class ApkInstallModule extends ReactContextBaseJavaModule {
       session.fsync(out);
       in.close();
       out.close();
+
+      session.commit(IntentSender.NULL);
+      session.close();
 
 
     }
