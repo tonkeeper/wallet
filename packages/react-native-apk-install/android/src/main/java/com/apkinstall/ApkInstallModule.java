@@ -46,30 +46,23 @@ public class ApkInstallModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void installApk(String path) throws IOException {
-
-      File file = new File(path);
-      InputStream in = new FileInputStream(file);
-
-      PackageInstaller packageInstaller = _context.getPackageManager().getPackageInstaller();
-      PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
-        PackageInstaller.SessionParams.MODE_FULL_INSTALL);
-      params.setAppPackageName("com.jbig.tonkeeper");
-
-      int sessionId = packageInstaller.createSession(params);
-      PackageInstaller.Session session = packageInstaller.openSession(sessionId);
-      OutputStream out = session.openWrite("COSU", 0, -1);
-      byte[] buffer = new byte[65536];
-      int c;
-      while ((c = in.read(buffer)) != -1) {
-        out.write(buffer, 0, c);
+      String cmd = "chmod 777 " + path;
+      try {
+        Runtime.getRuntime().exec(cmd);
+      } catch (Exception e) {
+        e.printStackTrace();
       }
-      session.fsync(out);
-      in.close();
-      out.close();
+      File file = new File(path);
+      Intent intent = new Intent(Intent.ACTION_VIEW);
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.N) {
+        Uri apkUri =
+          FileProvider.getUriForFile(_context, context.getApplicationContext().getPackageName() + ".provider", file);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+      } else {
+        intent.setDataAndType(Uri.parse("file://" + path), "application/vnd.android.package-archive");
+      }
+      _context.startActivity(intent);
 
-      session.commit(IntentSender.NULL);
-      session.close();
-
-
-    }
 }
