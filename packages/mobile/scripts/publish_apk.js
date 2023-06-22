@@ -32,6 +32,27 @@ exec(
   },
 );
 
+function updateMetadata() {
+  console.log('updateMetadata');
+  exec(
+    `ssh ${process.env['TONKEEPER_APK_HOSTNAME']} "node ~/tonendpoint/scripts/update-metadata.js"`,
+    (err, stdout, stderr) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+
+      if (stdout) {
+        console.log(`stdout: ${stdout}`);
+      }
+
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+      }
+    },
+  );
+}
+
 function setVersion() {
   console.log('setVersion', version);
   exec(
@@ -47,6 +68,8 @@ function setVersion() {
       } else {
         createSymlink();
       }
+
+      updateMetadata();
     },
   );
 }

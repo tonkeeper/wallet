@@ -56,6 +56,7 @@ export const UpdateAppModal = memo(() => {
             {t('update.remindLater')}
           </Button>
         </View>
+        <Spacer y={16} />
       </Modal.Footer>
     </Modal>
   );

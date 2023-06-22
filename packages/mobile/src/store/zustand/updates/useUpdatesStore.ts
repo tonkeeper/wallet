@@ -55,8 +55,14 @@ export const useUpdatesStore = create(
             },
             progressDivider: 1,
           });
-          await download.promise;
-          set({ update: { state: UpdateState.DOWNLOADED, progress: 100 } });
+          const res = await download.promise;
+
+          if (200 <= res.statusCode && res.statusCode < 300) {
+            set({ update: { state: UpdateState.DOWNLOADED, progress: 100 } });
+            return;
+          }
+
+          set({ update: { state: UpdateState.ERRORED, progress: 0 } });
         },
         declineUpdate: () => {
           set({ declinedAt: Date.now() });
