@@ -125,8 +125,8 @@ export const WalletScreen = memo(() => {
           onClose={notification.onClose}
         />
       ))}
+      {shouldUpdate && <UpdatesCell />}
       <View style={styles.amount} pointerEvents="box-none">
-        {shouldUpdate && <UpdatesCell />}
         <Text variant="num2">{balance.total.fiat}</Text>
         <View style={styles.walletSpace} />
         {wallet && (

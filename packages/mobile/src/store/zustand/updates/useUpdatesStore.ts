@@ -49,7 +49,7 @@ export const useUpdatesStore = create(
               set({
                 update: {
                   state: UpdateState.DOWNLOADING,
-                  progress: Math.round(res.bytesWritten / res.contentLength),
+                  progress: Math.round((res.bytesWritten / res.contentLength) * 100),
                 },
               });
             },
