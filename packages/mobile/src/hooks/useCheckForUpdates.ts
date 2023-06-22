@@ -7,7 +7,7 @@ import { Platform } from 'react-native';
 import Config from 'react-native-config';
 
 const SHOULD_CHECK_FOR_UPDATES =
-  Platform.OS === 'android' && Config.CHECK_FOR_UPDATES !== 'true';
+  Platform.OS === 'android' && Config.CHECK_FOR_UPDATES === 'true';
 
 export function useCheckForUpdates() {
   const wallet = useSelector(walletWalletSelector);
