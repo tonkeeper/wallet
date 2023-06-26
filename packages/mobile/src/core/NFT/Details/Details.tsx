@@ -8,6 +8,7 @@ import { maskifyTonAddress } from '$utils';
 import { getServerConfig } from '$shared/constants';
 import { openDAppBrowser } from '$navigation';
 import { Toast } from '$store';
+import { format } from 'date-fns';
 
 export const Details: React.FC<DetailsProps> = ({
   tokenId,
@@ -15,6 +16,7 @@ export const Details: React.FC<DetailsProps> = ({
   contractAddress,
   standard,
   ownerAddress,
+  expiringAt,
 }) => {
   const t = useTranslator();
 
@@ -38,6 +40,13 @@ export const Details: React.FC<DetailsProps> = ({
       value: maskifyTonAddress(ownerAddress),
       copyableValue: ownerAddress,
     });
+
+    if (expiringAt && expiringAt > 0) {
+      result.push({
+        label: t('dns_expiration_date'),
+        value: format(expiringAt, 'dd MMM yyyy'),
+      });
+    }
 
     result.push({
       label: t('nft_contract_address'),
@@ -66,8 +75,9 @@ export const Details: React.FC<DetailsProps> = ({
       });
     }
 
+
     return result;
-  }, [t, tokenId, chain, contractAddress, standard, ownerAddress]);
+  }, [t, tokenId, chain, contractAddress, standard, ownerAddress, expiringAt]);
 
   return (
     <S.Container>

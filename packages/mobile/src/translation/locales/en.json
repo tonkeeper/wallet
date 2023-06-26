@@ -113,6 +113,15 @@
 
   "spam_action": "Spam",
 
+  "dns_renew_toast_success": "Domain renewed for 1 year",
+  "dns_expiration_date": "Expiration date",
+  "dns_renew_until_btn": "Renew until %{untilDate}",
+  "dns_renew_in_progress_btn": "Domain renew in progress…",
+  "dns_renew_valid_caption": {
+    "one": "Valid for %{count} more day",
+    "other": "Valid for %{count} more days"
+  },
+
   "nft_title": "NFTs",
   "nft_about_dns": "TON DNS is a service that allows users to assign a human-readable name to crypto wallets, smart contracts, and websites. \n\nWith TON DNS, access to decentralized services is analogous to access to websites on the internet.",
   "nft_marketplace_banner_title": "Your NFT tokens will be stored here",
