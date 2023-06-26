@@ -17,6 +17,7 @@ import { ActivityScreen } from '../../../tabs/Activity/ActivityScreen';
 import { WalletScreen } from '../../../tabs/Wallet/WalletScreen';
 import Animated from 'react-native-reanimated';
 import { FONT } from '$styled';
+import { useLoadExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -25,6 +26,7 @@ export const TabStack: FC = () => {
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
 
+  useLoadExpiringDomains();
   useNotificationsSubscribe();
   usePreloadChart();
 

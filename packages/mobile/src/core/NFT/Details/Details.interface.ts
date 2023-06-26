@@ -4,4 +4,5 @@ export interface DetailsProps {
   standard?: string;
   chain?: string;
   ownerAddress: string;
+  expiringAt?: number;
 }

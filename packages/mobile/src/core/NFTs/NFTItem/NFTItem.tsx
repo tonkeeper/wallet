@@ -38,7 +38,7 @@ export const NFTItem: React.FC<NFTItemProps> = ({ item, isLastInRow }) => {
       return (
         <S.DNSBackground>
           <Text style={S.textStyles.domainText} numberOfLines={4} ellipsizeMode="tail">
-            {item.dns?.replace('.ton', '')}
+            qwe{item.dns?.replace('.ton', '')}
           </Text>
           <Text style={[S.textStyles.domainZoneText, S.textStyles.domainText]}>
             {'.ton'}
