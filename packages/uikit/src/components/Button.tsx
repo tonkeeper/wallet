@@ -28,6 +28,7 @@ export interface ButtonProps {
   indentBottom?: boolean;
   indent?: boolean;
   stretch?: boolean;
+  style?: ViewStyle;
 }
 
 export const Button = memo<ButtonProps>((props) => {
@@ -43,6 +44,7 @@ export const Button = memo<ButtonProps>((props) => {
     indentBottom,
     indentTop,
     indent,
+    style,
   } = props;
 
   const router = useRouter();
@@ -84,7 +86,7 @@ export const Button = memo<ButtonProps>((props) => {
   }, [navigate, onPress, disabled]);
 
   return (
-    <View style={containerStyle}>
+    <View style={[containerStyle, style]}>
       <Pressable disabled={disabled || loading} onPress={handlePress} style={buttonStyle}>
         {loading ? (
           <Loader size="medium" color="iconPrimary" />

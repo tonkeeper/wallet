@@ -1,177 +1,97 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { Linking, RefreshControl, StyleSheet, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
-import { useNetInfo } from '@react-native-community/netinfo';
-import { useIsFocused } from '@react-navigation/native';
-
-import * as S from '../../core/Balances/Balances.style';
-import { Button, Loader, Screen, ScrollHandler, Text } from '$uikit';
-import {
-  useAppStateActive,
-  usePrevious,
-  useJettonBalances,
-  useTheme,
-  useTranslator,
-} from '$hooks';
-import { walletActions, walletSelector } from '$store/wallet';
+import React, { memo, useMemo, useRef } from 'react';
+import { StyleSheet, View, ViewabilityConfig } from 'react-native';
 import { ns } from '$utils';
-import {
-  CryptoCurrencies,
-  isServerConfigLoaded,
-  NavBarHeight,
-  SecondaryCryptoCurrencies,
-  TabletMaxWidth,
-} from '$shared/constants';
+import { getServerConfig } from '$shared/constants';
 import { openRequireWalletModal } from '$navigation';
-import { eventsActions, eventsSelector } from '$store/events';
-import { mainActions } from '$store/main';
-import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
-import { getLastRefreshedAt } from '$database';
-import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import { useNavigation } from '$libs/navigation';
+import { useInfiniteQuery } from 'react-query';
+import { network } from '$libs/network';
+import { useWallet } from '../../tabs/Wallet/hooks/useWallet';
+import { t } from '$translation';
+import { Screen, Text, Button } from '@tonkeeper/uikit';
+import { EventsMapper } from './EventMapper';
+import { Events } from './Events.types';
+import { HistoryItem } from './components/HistoryItem';
+import { Skeleton } from '$uikit/Skeleton';
 
-export const ActivityScreen: FC = () => {
-  const nav = useNavigation();
-  const t = useTranslator();
-  const dispatch = useDispatch();
-  const theme = useTheme();
-  const tabBarHeight = useBottomTabBarHeight();
-  const { currencies, isRefreshing, isLoaded, balances, wallet, oldWalletBalances } =
-    useSelector(walletSelector);
-  const {
-    isLoading: isEventsLoading,
-    eventsInfo,
-    canLoadMore,
-  } = useSelector(eventsSelector);
+type GetAccountEvents = {
+  account_id: string;
+  before_lt?: number;
+  limit?: number;
+};
 
-  const netInfo = useNetInfo();
-  const prevNetInfo = usePrevious(netInfo);
+const getAccountEvents = async (params: GetAccountEvents) => {
+  const host = getServerConfig('tonapiIOEndpoint');
+  const authorization = `Bearer ${getServerConfig('tonApiV2Key')}`;
 
-  const { enabled: jettonBalances } = useJettonBalances();
-  const isFocused = useIsFocused();
+  const fetchParams: Omit<GetAccountEvents, 'account_id'> = { limit: 50  };
 
-  const isEventsLoadingMore = !isRefreshing && isEventsLoading && !!wallet;
+  if (params.before_lt) {
+    fetchParams.before_lt = params.before_lt;
+  }
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      dispatch(mainActions.mainStackInited());
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [dispatch]);
-
-  useAppStateActive(() => {
-    dispatch(mainActions.getTimeSynced());
-    getLastRefreshedAt().then((ts) => {
-      if (Date.now() - ts > 60 * 1000) {
-        dispatch(walletActions.refreshBalancesPage());
-      }
-    });
+  console.log('@FETCH');
+  const { data } = await network.get(`${host}/v2/accounts/${params.account_id}/events`, {
+    headers: { Authorization: authorization },
+    params: fetchParams,
   });
 
-  const handleRefresh = useCallback(() => {
-    dispatch(walletActions.refreshBalancesPage(true));
-  }, [dispatch]);
-
-  const otherCurrencies = useMemo(() => {
-    const list = [...SecondaryCryptoCurrencies];
-    if (wallet && wallet.ton.isLockup()) {
-      list.unshift(CryptoCurrencies.TonRestricted, CryptoCurrencies.TonLocked);
-    }
-
-    return list.filter((item) => {
-      if (item === CryptoCurrencies.Ton) {
-        return false;
-      }
-
-      if (
-        [CryptoCurrencies.TonLocked, CryptoCurrencies.TonRestricted].indexOf(item) > -1
-      ) {
-        return true;
-      }
-
-      if (+balances[item] > 0) {
-        return true;
-      }
-
-      return currencies.indexOf(item) > -1;
-    });
-  }, [currencies, balances, wallet]);
-
-  const initialData = useMemo(() => {
-    const result: {
-      isFirst?: boolean;
-      title?: string;
-      data: any;
-      footer?: React.ReactElement;
-    }[] = [];
-    return result;
-  }, [otherCurrencies, oldWalletBalances, jettonBalances, wallet?.ton]);
-
-  const handleLoadMore = useCallback(() => {
-    if (isEventsLoading || !canLoadMore) {
-      return;
-    }
-
-    dispatch(eventsActions.loadEvents({ isLoadMore: true }));
-  }, [dispatch, isEventsLoading, canLoadMore]);
-
-  function renderFooter() {
-    return (
-      <>
-        {isEventsLoadingMore ? (
-          <S.LoaderMoreWrap>
-            <Loader size="medium" />
-          </S.LoaderMoreWrap>
-        ) : null}
-        {!wallet && <S.CreateWalletButtonHelper />}
-        <View style={{ height: LargeNavBarInteractiveDistance }} />
-        <S.BottomSpace />
-      </>
-    );
+  if (data.Error) {
+    throw data.Error;
   }
 
-  function renderContent() {
-    if (!isLoaded) {
-      return (
-        <S.LoaderWrap style={{ paddingBottom: tabBarHeight }}>
-          <Loader size="medium" />
-        </S.LoaderWrap>
-      );
-    }
-
-    return (
-      <TransactionsList
-        refreshControl={
-          <RefreshControl
-            onRefresh={handleRefresh}
-            refreshing={isRefreshing && isFocused}
-            tintColor={theme.colors.foregroundPrimary}
-            progressBackgroundColor={theme.colors.foregroundPrimary}
-          />
-        }
-        eventsInfo={eventsInfo}
-        initialData={initialData}
-        renderFooter={renderFooter}
-        onEndReached={isEventsLoading || !canLoadMore ? undefined : handleLoadMore}
-        contentContainerStyle={{
-          width: '100%',
-          maxWidth: ns(TabletMaxWidth),
-          alignSelf: 'center',
-          paddingTop: ns(NavBarHeight) + ns(4),
-          paddingHorizontal: ns(16),
-          paddingBottom: tabBarHeight - ns(20),
-        }}
-      />
-    );
+  if (data) {
+    return data;
   }
+};
 
-  useEffect(() => {
-    if (netInfo.isConnected && prevNetInfo.isConnected === false) {
-      dispatch(mainActions.dismissBadHosts());
-      handleRefresh();
-    }
-  }, [netInfo.isConnected, prevNetInfo.isConnected, handleRefresh, dispatch]);
+const useAccountEvents = () => {
+  const wallet = useWallet();
+
+  const { data, error, isLoading, isFetchingNextPage, fetchNextPage } = useInfiniteQuery<{
+    events: Events;
+  }>({
+    queryKey: ['wallet_events'],
+    getNextPageParam: ({ events }) => ({
+      lastLt: events[events.length - 1].lt,
+    }),
+    queryFn: ({ pageParam }) =>
+      getAccountEvents({
+        account_id: wallet?.address.rawAddress ?? '',
+        before_lt: pageParam?.lastLt ?? undefined,
+      }),
+  });
+
+  console.log(data?.pages.map((e) => e.events))
+
+  const data1 = useMemo(() => {
+    return (
+      data?.pages
+        .map((data) => data.events).flat()
+        .map((event) => ({
+          ...event,
+          actions: event.actions.map((action) =>
+            EventsMapper(event, action.simple_preview),
+          ),
+        })) ?? []
+    );
+  }, [data]);
+
+  return {
+    fetchMore: fetchNextPage,
+    isLoadingMore: isFetchingNextPage,
+    isLoading: isLoading && !isFetchingNextPage,
+    error,
+    events: data1,
+  };
+};
+
+export const ActivityScreen = memo(() => {
+  const { events, error, isLoading, isLoadingMore, fetchMore } = useAccountEvents();
+  const nav = useNavigation();
+  const wallet = useWallet();
+
+  console.log(events.length);
 
   const handlePressRecevie = React.useCallback(() => {
     if (wallet) {
@@ -192,29 +112,30 @@ export const ActivityScreen: FC = () => {
     }
   }, [wallet]);
 
-  if (isLoaded && (!wallet || Object.keys(eventsInfo).length < 1)) {
+  if (!wallet || (!isLoading && events.length < 1)) {
     return (
       <Screen>
         <View style={styles.emptyContainer}>
-          <Text variant="h2" style={{ textAlign: 'center', marginBottom: ns(4) }}>
+          <Text type="h2" style={{ textAlign: 'center', marginBottom: ns(4) }}>
             {t('activity.empty_transaction_title')}
           </Text>
-          <Text variant="body1" color="textSecondary">
+          <Text type="body1" color="textSecondary">
             {t('activity.empty_transaction_caption')}
           </Text>
-
           <View style={styles.emptyButtons}>
             <Button
+              title={t('activity.buy_toncoin_btn')}
               style={{ marginRight: ns(12) }}
               onPress={handlePressBuy}
-              size="medium_rounded"
-              mode="secondary"
-            >
-              {t('activity.buy_toncoin_btn')}
-            </Button>
-            <Button onPress={handlePressRecevie} size="medium_rounded" mode="secondary">
-              {t('activity.receive_btn')}
-            </Button>
+              color="secondary"
+              size="small"
+            />
+            <Button
+              title={t('activity.receive_btn')}
+              onPress={handlePressRecevie}
+              color="secondary"
+              size="small"
+            />
           </View>
         </View>
       </Screen>
@@ -222,13 +143,50 @@ export const ActivityScreen: FC = () => {
   }
 
   return (
-    <S.Wrap>
-      <ScrollHandler navBarTitle={t('activity.screen_title')}>
-        {renderContent()}
-      </ScrollHandler>
-    </S.Wrap>
+    <Screen>
+      <Screen.LargeHeader title={t('activity.screen_title')} />
+      <EventsList
+        onFetchMore={fetchMore}
+        events={events} 
+      />
+    </Screen>
   );
-};
+});
+
+interface EventsListProps {
+  events: any;
+  onFetchMore?: () => void;
+  estimatedItemSize?: number;
+}
+
+const EventsList = memo<EventsListProps>((props) => {
+  const { events, estimatedItemSize = 200, onFetchMore } = props;
+
+  const viewabilityConfig = useRef<ViewabilityConfig>({
+    waitForInteraction: true,
+    itemVisiblePercentThreshold: 50,
+    minimumViewTime: 1000,
+  }).current;
+
+  return (
+    <Screen.FlashList
+      estimatedItemSize={estimatedItemSize}
+      data={events}
+      keyExtractor={(item) => item.event_id}
+      onEndReached={onFetchMore}
+      onEndReachedThreshold={0.01}
+      viewabilityConfig={viewabilityConfig}
+      renderItem={({ item }) => {
+        return <HistoryItem event={item} />;
+      }}
+      ListFooterComponent={
+        <View style={{ paddingHorizontal: 16 }}>
+          <Skeleton.List />
+        </View>
+      }
+    />
+  );
+});
 
 const styles = StyleSheet.create({
   emptyContainer: {
