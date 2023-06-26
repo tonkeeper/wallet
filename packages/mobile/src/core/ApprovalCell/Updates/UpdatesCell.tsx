@@ -48,8 +48,9 @@ const UpdatesCellComponent: React.FC = () => {
   }, [state]);
 
   return (
-    <List indent={false} style={styles.container}>
+    <List indent={false} style={styles.list}>
       <List.Item
+        containerStyle={styles.container}
         disabled={[UpdateState.DOWNLOADING, UpdateState.NOT_STARTED].includes(state)}
         title={`Tonkeeper ${version}`}
         subtitle={description}
@@ -67,8 +68,11 @@ const UpdatesCellComponent: React.FC = () => {
 };
 
 const styles = Steezy.create(({ colors }) => ({
-  container: {
+  list: {
     backgroundColor: colors.backgroundContentTint,
+  },
+  container: {
+    paddingVertical: 12,
   },
 }));
 

@@ -30,7 +30,7 @@ export const UpdateAppModal = memo(() => {
       <Modal.Header onClose={declineUpdate} />
       <Modal.Content>
         <View style={styles.wrap}>
-          <Icon colorless style={{ marginBottom: 12 }} name={'ic-tonkeeper-update-128'} />
+          <Icon colorless style={{ marginBottom: 16 }} name={'ic-tonkeeper-update-128'} />
           <Text textAlign="center" variant="h2" style={{ marginBottom: 4 }}>
             {t('update.title')}
           </Text>
