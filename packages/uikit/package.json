@@ -7,8 +7,7 @@
     "icons": "node ./scripts/generateIcons.js"
   },
   "dependencies": {
-    "@bogoslavskiy/react-native-steezy": "^1.0.2",
-
+    "@bogoslavskiy/react-native-steezy": "^1.0.4",
     "@tonkeeper/router": "1.0.0",
     "expo-linear-gradient": "^12.1.2",
     "lodash": "^4.17.21",
