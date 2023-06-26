@@ -23,9 +23,6 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
   const t = useTranslator();
 
   const expiringDomains = useExpiringDomains((state) => state.domains);
-
-  console.log(expiringDomains);
-
   const isTonDiamondsNft = checkIsTonDiamondsNFT(item);
   const isOnSale = useMemo(() => !!item.sale, [item.sale]);
   const isTG = (item.dns || item.name)?.endsWith('.t.me');
