@@ -5,7 +5,7 @@ import { openManageTokens } from '$navigation';
 import { t } from '$translation';
 import { useApprovedNfts, useJettonBalances } from '$hooks';
 import { groupByCollection } from '$core/ManageTokens/hooks/useNftData';
-import { NFTModel } from '$store/models';
+import { ViewStyle } from 'react-native';
 
 function getStringForTokensApproval(pending: any) {
   if (pending.length === 1) {
@@ -20,10 +20,21 @@ function getStringForTokensApproval(pending: any) {
     return t('approval.approve_many', { count: pending.length });
   }
 }
-const ApprovalCellComponent: React.FC = () => {
-  const handleApproveTokens = useCallback(openManageTokens, []);
+
+interface ApprovalCellProps {
+  withoutSpacer?: boolean;
+  style?: ViewStyle;
+}
+
+const ApprovalCellComponent: React.FC<ApprovalCellProps> = ({ withoutSpacer, style }) => {
   const { pending: jettonsPending } = useJettonBalances();
   const { pending: nftsPending } = useApprovedNfts();
+  const handleApproveTokens = useCallback(() => {
+    if (!jettonsPending.length) {
+      return openManageTokens('collectibles');
+    }
+    openManageTokens();
+  }, [jettonsPending]);
 
   const pending = useMemo(() => {
     return [...jettonsPending, ...nftsPending];
@@ -65,8 +76,8 @@ const ApprovalCellComponent: React.FC = () => {
   }
 
   return (
-    <>
-      <Spacer y={16} />
+    <View style={style}>
+      {!withoutSpacer && <Spacer y={16} />}
       <List indent={false} style={styles.container}>
         <List.Item
           chevronColor="iconSecondary"
@@ -84,7 +95,7 @@ const ApprovalCellComponent: React.FC = () => {
           chevron
         />
       </List>
-    </>
+    </View>
   );
 };
 

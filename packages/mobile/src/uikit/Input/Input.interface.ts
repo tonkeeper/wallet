@@ -1,7 +1,8 @@
-import { ReactElement, ReactNode, Ref } from 'react';
+import { ReactElement, ReactNode, RefObject } from 'react';
 import { TextInputProps } from './TextInput';
 
 import { css } from '$styled';
+import { TextInput } from 'react-native-gesture-handler';
 
 export interface InputContentSize {
   width: number;
@@ -10,7 +11,7 @@ export interface InputContentSize {
 
 export interface InputProps
   extends Omit<TextInputProps, 'onContentSizeChange' | 'value'> {
-  innerRef?: Ref<any>;
+  innerRef?: RefObject<TextInput>;
   inputStyle?: ReturnType<typeof css>;
   wrapperStyle?: ReturnType<typeof css>;
   isFailed?: boolean;

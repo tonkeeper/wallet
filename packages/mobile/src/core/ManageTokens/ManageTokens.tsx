@@ -23,6 +23,7 @@ import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
+import { useParams } from '$navigation';
 
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 
@@ -43,9 +44,12 @@ const FLashListItem = ({
   switch (item.type) {
     case ContentType.Title:
       return (
-        <SText style={styles.flashListTitle} variant="h3" color="textPrimary">
-          {item.title}
-        </SText>
+        <View style={styles.titleContainer}>
+          <SText style={styles.flashListTitle} variant="h3" color="textPrimary">
+            {item.title}
+          </SText>
+          {item.rightContent}
+        </View>
       );
     case ContentType.Spacer:
       return <Spacer y={item.bottom} />;
@@ -105,8 +109,9 @@ const DraggableFLashListItem = ({ item, drag, isActive }: { item: Content }) => 
 };
 
 export const ManageTokens: FC = () => {
+  const params = useParams<{ initialTab?: string }>();
   const { bottom: bottomInset } = useSafeAreaInsets();
-  const [tab, setTab] = useState<string>('tokens');
+  const [tab, setTab] = useState<string>(params?.initialTab || 'tokens');
   const jettonData = useJettonData();
   const nftData = useNftData();
   const hasWatchedCollectiblesTab = useTokenApprovalStore(
@@ -218,7 +223,7 @@ export const ManageTokens: FC = () => {
                 ]}
               />
             </Tabs.Header>
-            <Tabs.PagerView>
+            <Tabs.PagerView initialPage={tab === 'collectibles' ? 1 : 0}>
               <Tabs.Section index={0}>{renderJettonList()}</Tabs.Section>
               <Tabs.Section index={1}>
                 <AnimatedFlashList
@@ -300,5 +305,10 @@ const styles = Steezy.create(({ safeArea, corners, colors }) => ({
   showAllButtonWrap: {
     alignItems: 'center',
     marginTop: 16,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 }));

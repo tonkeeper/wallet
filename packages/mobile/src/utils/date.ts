@@ -11,7 +11,7 @@ import {
   startOfYesterday,
 } from 'date-fns';
 
-import {capitalizeFirstLetter} from "$utils/string";
+import { capitalizeFirstLetter } from '$utils/string';
 
 const dateFnsLocale: Record<string, any> = {
   ru,
@@ -98,4 +98,18 @@ export function formatSubscriptionPeriod(intervalSec: number) {
       }),
     });
   }
+}
+
+export const ONE_YEAR_SEC = 31622400; // 1 year in seconds = 60 * 60 * 24 * 366
+export const ONE_YEAR_MILISEC = ONE_YEAR_SEC * 1000;
+
+export function getCountOfDays(start: number, end: number) {
+  const date1 = new Date(start);
+  const date2 = new Date(end);
+
+  const oneDay = 1000 * 60 * 60 * 24;
+  const diffInTime = date2.getTime() - date1.getTime();
+  const diffInDays = Math.round(diffInTime / oneDay);
+
+  return diffInDays;
 }

@@ -2,7 +2,7 @@ import React, { FC, isValidElement, useMemo } from 'react';
 
 import * as S from './List.style';
 import { ListCellProps, ListProps } from './List.interface';
-import { Separator } from '$uikit';
+import { Separator, View } from '$uikit';
 
 export const ListCell: FC<ListCellProps> = ({
   label,
@@ -41,12 +41,12 @@ export const List: FC<ListProps> = ({ children, align = 'right', separator = tru
       }
 
       return (
-        <>
+        <View key={i}>
           {separator && i > 0 && <Separator />}
           {React.cloneElement(item, {
             align,
           })}
-        </>
+        </View>
       );
     });
   }, [align, children, separator]);

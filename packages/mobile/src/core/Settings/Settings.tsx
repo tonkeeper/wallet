@@ -9,7 +9,7 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
 import { Icon, PopupSelect, ScrollHandler, Spacer, Text, List } from '$uikit';
-import { useIsHasJettons, useNavigation, useTranslator } from '$hooks';
+import { useNavigation, useTranslator, useShouldShowTokensButton } from '$hooks';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
 import {
@@ -54,7 +54,7 @@ import { useNotifications } from '$hooks/useNotifications';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
 import { useAllAddresses } from '$hooks/useAllAddresses';
 import { useFlags } from '$utils/flags';
-import { DevFeature, SearchEngine, useBrowserStore, useDevFeatureEnabled } from '$store';
+import { SearchEngine, useBrowserStore } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
 import { Steezy } from '$styles';
 
@@ -81,8 +81,7 @@ export const Settings: FC = () => {
   const version = useSelector(walletVersionSelector);
   const allTonAddesses = useAllAddresses();
   const showV4R1 = useSelector(showV4R1Selector);
-  const hasJettons = useIsHasJettons();
-  const tokenApproval = useDevFeatureEnabled(DevFeature.TokenApproval);
+  const shouldShowTokensButton = useShouldShowTokensButton();
 
   const searchEngine = useBrowserStore((state) => state.searchEngine);
   const setSearchEngine = useBrowserStore((state) => state.actions.setSearchEngine);
@@ -254,7 +253,7 @@ export const Settings: FC = () => {
                 onPress={handleSecurity}
               />
             )}
-            {hasJettons && (
+            {shouldShowTokensButton && (
               <List.Item
                 value={
                   <Icon
@@ -264,7 +263,7 @@ export const Settings: FC = () => {
                   />
                 }
                 title={t('settings_jettons_list')}
-                onPress={tokenApproval ? handleManageTokens : handleJettonsList}
+                onPress={handleManageTokens}
               />
             )}
             {hasSubscriptions && (

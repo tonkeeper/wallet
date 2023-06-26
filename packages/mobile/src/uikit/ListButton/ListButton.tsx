@@ -3,6 +3,8 @@ import { View } from '$uikit';
 import { Steezy } from '$styles';
 import Svg, { Path, Rect } from 'react-native-svg';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity as NativeTouchableOpacity } from 'react-native';
+import { isAndroid } from '$utils';
 
 export interface ListButtonProps {
   type: 'add' | 'remove';
@@ -20,6 +22,8 @@ const PlusIcon = () => (
   </Svg>
 );
 
+const TouchableOpacityComponent = isAndroid ? NativeTouchableOpacity : TouchableOpacity;
+
 const MinusIcon = () => (
   <Svg width="12" height="2" viewBox="0 0 12 2" fill="none">
     <Rect width="12" height="2" rx="1" fill="white" />
@@ -27,7 +31,7 @@ const MinusIcon = () => (
 );
 export const ListButton: React.FC<ListButtonProps> = (props) => {
   return (
-    <TouchableOpacity
+    <TouchableOpacityComponent
       hitSlop={{ top: 8, bottom: 8, right: 8, left: 8 }}
       activeOpacity={0.6}
       style={styles.container.static}
@@ -36,7 +40,7 @@ export const ListButton: React.FC<ListButtonProps> = (props) => {
       <View style={styles.icon}>
         {props.type === 'add' ? <PlusIcon /> : <MinusIcon />}
       </View>
-    </TouchableOpacity>
+    </TouchableOpacityComponent>
   );
 };
 

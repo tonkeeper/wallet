@@ -2,9 +2,8 @@ import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 import * as _ from 'lodash';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useDispatch, useSelector } from 'react-redux';
-import { TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { TapGestureHandler } from 'react-native-gesture-handler';
+import { TapGestureHandler, TextInput } from 'react-native-gesture-handler';
 
 import * as CreateWalletStyle from '../CreateWallet/CreateWallet.style';
 import { Button, Input, NavBar, NavBarHelper, Text } from '$uikit';
@@ -197,9 +196,7 @@ export const CheckSecretWords: FC = () => {
       >
         <NavBarHelper />
         <TapGestureHandler numberOfTaps={5} onActivated={handleShowConfigInput}>
-          <S.HeaderTitle>
-            {t('check_words_title')}
-          </S.HeaderTitle>
+          <S.HeaderTitle>{t('check_words_title')}</S.HeaderTitle>
         </TapGestureHandler>
         <CreateWalletStyle.CaptionWrapper>
           <Text variant="body1" color="foregroundSecondary" textAlign="center">
@@ -236,6 +233,7 @@ export const CheckSecretWords: FC = () => {
               autoCapitalize="none"
               isFailed={failed[0]}
               onBlur={handleBlur(0)}
+              withClearButton={false}
             />
           </S.InputWrap>
           <S.InputWrap>

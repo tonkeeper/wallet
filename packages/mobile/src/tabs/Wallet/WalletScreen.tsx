@@ -50,7 +50,6 @@ export const WalletScreen = memo(() => {
   const tokens = useTonkens();
   const { enabled: nfts } = useApprovedNfts();
   const wallet = useWallet();
-  const tokenApproval = useDevFeatureEnabled(DevFeature.TokenApproval);
 
   const balance = useBalance(tokens.total.fiat);
   const rates = useRates();
@@ -109,7 +108,7 @@ export const WalletScreen = memo(() => {
     dispatch(walletActions.refreshBalancesPage(true));
   }, [dispatch]);
 
-  const ListHeader = (
+  const ListHeader = (visibleApproval?: boolean) => (
     <View style={styles.mainSection} pointerEvents="box-none">
       {notifications.map((notification, i) => (
         <InternalNotification
@@ -162,7 +161,7 @@ export const WalletScreen = memo(() => {
           />
         )}
       </IconButtonList>
-      {tokenApproval && wallet && <ApprovalCell />}
+      {wallet && visibleApproval && <ApprovalCell />}
     </View>
   );
 
@@ -175,7 +174,7 @@ export const WalletScreen = memo(() => {
           rightContent={<ScanQRButton />}
         />
         <Screen.ScrollView indent={false}>
-          {ListHeader}
+          {ListHeader()}
           <List>
             <List.Item
               title="Toncoin"
@@ -225,7 +224,7 @@ export const WalletScreen = memo(() => {
         />
         <View style={{ flex: 1 }}>
           <Tabs.Header>
-            {ListHeader}
+            {ListHeader()}
             <Tabs.Bar
               onChange={({ value }) => setTab(value)}
               value={tab}
@@ -238,6 +237,9 @@ export const WalletScreen = memo(() => {
           <Tabs.PagerView>
             <Tabs.Section index={0}>
               <BalancesList
+                ListHeaderComponent={wallet ? (
+                  <ApprovalCell withoutSpacer style={{ paddingHorizontal: ns(16), paddingBottom: ns(16) }}/>
+                ): undefined}
                 balance={balance}
                 tokens={tokens}
                 rates={rates}
@@ -248,6 +250,9 @@ export const WalletScreen = memo(() => {
             </Tabs.Section>
             <Tabs.Section index={1}>
               <Tabs.FlashList
+                ListHeaderComponent={wallet ? (
+                   <ApprovalCell withoutSpacer style={{ paddingHorizontal: ns(6), paddingBottom: ns(16) }}/>
+                ): undefined}
                 contentContainerStyle={styles.scrollContainer.static}
                 estimatedItemSize={1000}
                 numColumns={3}
@@ -282,7 +287,7 @@ export const WalletScreen = memo(() => {
           rightContent={<ScanQRButton />}
         />
         <BalancesList
-          ListHeaderComponent={ListHeader}
+          ListHeaderComponent={ListHeader(true)}
           handleRefresh={handleRefresh}
           isRefreshing={isRefreshing}
           isFocused={isFocused}

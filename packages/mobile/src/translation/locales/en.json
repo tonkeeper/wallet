@@ -113,6 +113,15 @@
 
   "spam_action": "Spam",
 
+  "dns_renew_toast_success": "Domain renewed for 1 year",
+  "dns_expiration_date": "Expiration date",
+  "dns_renew_until_btn": "Renew until %{untilDate}",
+  "dns_renew_in_progress_btn": "Domain renew in progress…",
+  "dns_renew_valid_caption": {
+    "one": "Valid for %{count} more day",
+    "other": "Valid for %{count} more days"
+  },
+
   "nft_title": "NFTs",
   "nft_about_dns": "TON DNS is a service that allows users to assign a human-readable name to crypto wallets, smart contracts, and websites. \n\nWith TON DNS, access to decentralized services is analogous to access to websites on the internet.",
   "nft_marketplace_banner_title": "Your NFT tokens will be stored here",
@@ -341,6 +350,7 @@
     "verify_description_token": "This token is from unknown issuer. To detect counterfeits, verify the token ID with the issuer's official source. You can change token visibility later in settings.",
     "verify_description_collection": "These tokens are from unknown issuer. To detect counterfeits, verify the collection ID with the issuer's official source. You can change token visibility later in settings.",
     "accepted": "Accepted",
+    "approve_all": "Accept all",
     "approve_token": "Approve incoming token \"%{name}\"",
     "approve_two_tokens": "Approve incoming tokens \"%{name1}\" and \"%{name2}\"",
     "approve_many": "Approve %{count} incoming tokens",
@@ -496,7 +506,7 @@
   "create_wallet_generating": "Generating wallet...",
   "create_wallet_generated": "Your wallet has\njust been created!",
   "create_wallet_title": "Grab a pen and a piece of paper",
-  "create_wallet_caption": "We strongly recommend you write down the recovery phrase because it’s the only way to have access to and recover your wallet in case of loosing your device. Do not send it to yourself via email or take a screenshot. It’s safer when kept offline.",
+  "create_wallet_caption": "We strongly recommend you write down the recovery phrase because it’s the only way to have access to and recover your wallet in case of losing your device. Do not send it to yourself via email or take a screenshot. It’s safer when kept offline.",
   "create_wallet_continue_button": "Continue",
 
   "secret_words_title": "Your recovery phrase",

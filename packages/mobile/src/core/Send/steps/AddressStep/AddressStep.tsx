@@ -12,7 +12,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Keyboard, TextInput } from 'react-native';
+import { Keyboard } from 'react-native';
 import * as S from './AddressStep.style';
 import {
   BottomButtonWrap,
@@ -30,6 +30,7 @@ import { Account } from '@tonkeeper/core';
 import { Tonapi } from '$libs/Tonapi';
 import { AddressInput, AddressSuggests, CommentInput } from './components';
 import { useCommentMaxLength } from '$core/Send/hooks';
+import { TextInput } from 'react-native-gesture-handler';
 
 const TonWeb = require('tonweb');
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import PagerView from 'react-native-pager-view';
@@ -17,7 +17,10 @@ import funny from '$assets/funny.json';
 import { Haptics, ns } from '$utils';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 
-interface TabsPagerViewProps {}
+interface TabsPagerViewProps {
+  initialPage?: number;
+  children: React.ReactNode;
+}
 
 const AnimatedPagerView = Animated.createAnimatedComponent(PagerView);
 
@@ -47,6 +50,8 @@ export const TabsPagerView: React.FC<TabsPagerViewProps> = (props) => {
     const setPage = (index: number) => {
       requestAnimationFrame(() => refPagerView.current?.setPage(index));
     };
+
+    pageOffset.value = props.initialPage ?? 0;
 
     setPageFN(setPage);
   }, []);
@@ -98,7 +103,7 @@ export const TabsPagerView: React.FC<TabsPagerViewProps> = (props) => {
         onPageSelected={(ev) => {
           setNativeActiveIndex(ev.nativeEvent.position);
         }}
-        initialPage={0}
+        initialPage={props.initialPage ?? 0}
         scrollEnabled={true}
         // overScrollMode="always"
         overdrag

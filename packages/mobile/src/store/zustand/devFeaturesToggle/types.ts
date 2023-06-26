@@ -1,7 +1,5 @@
 export enum DevFeature {
   UseHttpProtocol = 'UseHttpProtocol',
-  Staking = 'Staking',
-  TokenApproval = 'TokenApproval',
 }
 
 export interface IDevFeaturesToggleStore {

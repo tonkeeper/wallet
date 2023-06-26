@@ -110,7 +110,10 @@ export const TabsFlashList = (props: FlashListProps<any>) => {
       ref={ref}
       {...props}
       ListHeaderComponent={
-        <Animated.View style={headerOffsetStyle}/>
+        <>
+          <Animated.View style={headerOffsetStyle}/>
+          {props.ListHeaderComponent}
+        </>
       }
       ListFooterComponent={
         <Animated.View style={heightOffsetStyle}/>
