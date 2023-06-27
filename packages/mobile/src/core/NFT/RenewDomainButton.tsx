@@ -108,7 +108,7 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
               })}
         </Button>
         <Text
-          color={days <= 4 ? 'accentNegative' : 'textSecondary'}
+          color={days <= 30 ? 'accentNegative' : 'textSecondary'}
           variant="body2"
           textAlign="center"
         >
