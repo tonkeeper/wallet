@@ -114,14 +114,14 @@
   "spam_action": "Спам",
 
   "dns_renew_toast_success": "Домен продлён на 1 год",
-  "dns_expiration_date": "Дата окончания аренды",
+  "dns_expiration_date": "Истекает",
   "dns_renew_until_btn": "Продлить до %{untilDate}",
   "dns_renew_in_progress_btn": "Выполняется продление домена…",
   "dns_renew_valid_caption": {
-    "one": "Действителен ещё %{count} день",
-    "few": "Действителен ещё %{count} дня",
-    "other": "Действителен ещё %{count} дней",
-    "many": "Действителен ещё %{count} дней"
+    "one": "Истекает через %{count} день",
+    "few": "Истекает через %{count} дня",
+    "other": "Истекает через %{count} дней",
+    "many": "Истекает через %{count} дней"
   },
 
   "nft_title": "NFT",

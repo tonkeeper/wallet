@@ -118,8 +118,8 @@
   "dns_renew_until_btn": "Renew until %{untilDate}",
   "dns_renew_in_progress_btn": "Domain renew in progress…",
   "dns_renew_valid_caption": {
-    "one": "Valid for %{count} more day",
-    "other": "Valid for %{count} more days"
+    "one": "Expires in %{count} day",
+    "other": "Expires in %{count} days"
   },
 
   "nft_title": "NFTs",

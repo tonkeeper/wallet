@@ -1,8 +1,6 @@
 import {
   forwardRef,
-  memo,
   useCallback,
-  useEffect,
   useImperativeHandle,
   useState,
 } from 'react';
@@ -11,14 +9,14 @@ import { Button } from '$uikit/Button/Button';
 import { Text } from '$uikit/Text/Text';
 import { t } from '$translation';
 import { format } from 'date-fns';
-import { ONE_YEAR_MILISEC, getCountOfDays } from '$utils/date';
-import { useDeeplinking } from '$libs/deeplinking';
+import { ONE_YEAR_MILISEC, getCountOfDays, getLocale } from '$utils/date';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 import { getTimeSec } from '$utils/getTimeSec';
 import { Ton } from '$libs/Ton';
-import { useWallet } from '../../tabs/Wallet/hooks/useWallet';
+
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 import { compareAddresses } from '$utils/address';
+import { useWallet } from '$hooks';
 
 export type RenewDomainButtonRef = {
   renewUpdated: () => void;
@@ -33,8 +31,7 @@ interface RenewDomainButtonProps {
   onSend: () => void;
 }
 
-export const RenewDomainButton = memo(
-  forwardRef<RenewDomainButtonRef, RenewDomainButtonProps>((props, ref) => {
+export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainButtonProps>((props, ref) => {
     const { disabled, expiringAt, loading, onSend, domainAddress, ownerAddress } = props;
     const [isPending, setIsPending] = useState(false);
     const wallet = useWallet();
@@ -44,7 +41,7 @@ export const RenewDomainButton = memo(
     }));
 
     const openRenew = useCallback(() => {
-      if (!wallet) {
+      if (!wallet || !wallet.address?.rawAddress) {
         return;
       }
 
@@ -57,7 +54,7 @@ export const RenewDomainButton = memo(
           messages: [
             {
               address: domainAddress,
-              amount: Ton.toNano('0.005'),
+              amount: Ton.toNano('0.02'),
             },
           ],
         },
@@ -70,24 +67,21 @@ export const RenewDomainButton = memo(
         () => {
           setIsPending(true);
           onSend();
-        }
-      )
+        },
+      );
     }, [wallet, ownerAddress]);
 
     const handlePressButton = useCallback(() => {
-      if (!wallet) {
+      if (!wallet || !wallet.address?.rawAddress) {
         return;
       }
 
       if (!compareAddresses(wallet.address.rawAddress, ownerAddress)) {
-        return openAddressMismatchModal(
-          openRenew,
-          ownerAddress,
-        );
+        return openAddressMismatchModal(openRenew, ownerAddress);
       } else {
         openRenew();
       }
-    }, [ownerAddress, openRenew]);
+    }, [wallet, ownerAddress, openRenew]);
 
     if (loading) {
       return null;
@@ -101,14 +95,16 @@ export const RenewDomainButton = memo(
         <Button
           disabled={disabled || isPending}
           style={{ marginBottom: 12 }}
-          onPress={handlePressButton}
+          onPress={() => handlePressButton()}
           mode="secondary"
           size="large"
         >
           {isPending
             ? t('dns_renew_in_progress_btn')
             : t('dns_renew_until_btn', {
-                untilDate: format(expiringAt, 'dd MMM yyyy'),
+                untilDate: format(+new Date() + ONE_YEAR_MILISEC, 'dd MMM yyyy', {
+                  locale: getLocale(),
+                }),
               })}
         </Button>
         <Text
@@ -120,8 +116,8 @@ export const RenewDomainButton = memo(
         </Text>
       </View>
     );
-  }),
-);
+  });
+
 
 const styles = StyleSheet.create({
   container: {
