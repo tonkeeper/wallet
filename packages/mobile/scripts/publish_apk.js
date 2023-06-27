@@ -1,6 +1,6 @@
 const { exec } = require('child_process');
 const buildInfo = require('../android/app/build/outputs/apk/release/output-metadata.json');
-require('dotenv').config()
+require('dotenv').config();
 
 const version = buildInfo.elements[0].versionName;
 console.info('Publish version:', version);
@@ -12,23 +12,46 @@ const path = pathExp.join('/');
 const inPath = `${path}/android/app/build/outputs/apk/release/app-release.apk`;
 const outPath = `/var/uploads/apk/tonkeeper-${version}.apk`;
 
-
 console.info('Publishing..');
-exec(`rsync -avzh ${inPath} ${process.env['TONKEEPER_APK_HOSTNAME']}:${outPath}`, (err, stdout, stderr) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
+exec(
+  `rsync -avzh ${inPath} ${process.env['TONKEEPER_APK_HOSTNAME']}:${outPath}`,
+  (err, stdout, stderr) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
 
-  if (stdout) {
-    console.log(`stdout: ${stdout}`);
-    setVersion();
-  }
+    if (stdout) {
+      console.log(`stdout: ${stdout}`);
+      setVersion();
+    }
 
-  if (stderr) {
-    console.log(`stderr: ${stderr}`);
-  }
-});
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+    }
+  },
+);
+
+function updateMetadata() {
+  console.log('updateMetadata');
+  exec(
+    `ssh ${process.env['TONKEEPER_APK_HOSTNAME']} "node ~/tonendpoint/scripts/update-metadata.js"`,
+    (err, stdout, stderr) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+
+      if (stdout) {
+        console.log(`stdout: ${stdout}`);
+      }
+
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+      }
+    },
+  );
+}
 
 function setVersion() {
   console.log('setVersion', version);
@@ -45,6 +68,8 @@ function setVersion() {
       } else {
         createSymlink();
       }
+
+      updateMetadata();
     },
   );
 }

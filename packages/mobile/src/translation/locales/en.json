@@ -813,5 +813,16 @@
         "value": "≈ %{value} TON"
       }
     }
+  },
+  "update": {
+    "title": "Update Tonkeeper",
+    "version": "Version {{version}}",
+    "description": "A new version of Tonkeeper is available. You can download it now.",
+    "mb": "{{size}} MB",
+    "download": "Download",
+    "downloading": "Downloading… {{progress}}%",
+    "remindLater": "Remind me later",
+    "tap": "Tap to update",
+    "retry": "Download error. Tap to retry."
   }
 }
