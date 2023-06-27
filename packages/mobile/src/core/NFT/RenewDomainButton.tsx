@@ -95,7 +95,7 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
         <Button
           disabled={disabled || isPending}
           style={{ marginBottom: 12 }}
-          onPress={() => handlePressButton()}
+          onPress={handlePressButton}
           mode="secondary"
           size="large"
         >
