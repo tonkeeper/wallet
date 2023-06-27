@@ -195,7 +195,7 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
   }, [record.walletAddress, props.isTGUsername]);
 
   return (
-    <View style={{ marginBottom: 8 }}>
+    <View style={{ marginBottom: 4 }}>
       <Button
         style={{ marginBottom: 12 }}
         onPress={handlePressButton}

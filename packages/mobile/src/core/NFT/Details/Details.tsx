@@ -4,7 +4,7 @@ import { DetailsProps } from './Details.interface';
 import { useTranslator } from '$hooks';
 import { Highlight, Separator, Text } from '$uikit';
 import Clipboard from '@react-native-community/clipboard';
-import { maskifyTonAddress } from '$utils';
+import { getLocale, maskifyTonAddress } from '$utils';
 import { getServerConfig } from '$shared/constants';
 import { openDAppBrowser } from '$navigation';
 import { Toast } from '$store';
@@ -44,7 +44,7 @@ export const Details: React.FC<DetailsProps> = ({
     if (expiringAt && expiringAt > 0) {
       result.push({
         label: t('dns_expiration_date'),
-        value: format(expiringAt, 'dd MMM yyyy'),
+        value: format(expiringAt, 'dd MMM yyyy', { locale: getLocale() }),
       });
     }
 
