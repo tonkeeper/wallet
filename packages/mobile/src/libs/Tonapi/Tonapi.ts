@@ -2,6 +2,7 @@ import { getServerConfig } from '$shared/constants';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
 import { Ton } from '$libs/Ton/Ton';
+import { network } from '$libs/network';
 
 const prepareHeaders = (restHeaders?: { [key: string]: string }) => {
   return {
@@ -199,6 +200,36 @@ async function getBalances(pubkey: string) {
   return balances;
 }
 
+
+type GetExpiringDNSParams = {
+  account_id: string;
+  period: number;
+};
+
+const getExpiringDNS = async (params: GetExpiringDNSParams) => {
+  return await network.get(`https://tonapi.io/v2/accounts/${params.account_id}/dns/expiring`, {
+    headers: {
+      Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+    },
+    params: {
+      period: params.period
+    }
+  });
+};
+
+const getDNSLastFillTime = async (domainAddress: string): Promise<number> => {
+  const { data } = await network.get(
+    `https://tonapi.io/v2/blockchain/accounts/${domainAddress}/methods/get_last_fill_up_time`,
+    {
+      headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+      },
+    },
+  );
+
+  return data?.decoded.last_fill_up_time || 0;
+};
+
 export const Tonapi = {
   getJettonBalances,
   getBulkInfo,
@@ -208,4 +239,6 @@ export const Tonapi = {
   resolveDns,
   estimateTx,
   sendBoc,
+  getExpiringDNS,
+  getDNSLastFillTime,
 };

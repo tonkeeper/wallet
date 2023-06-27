@@ -23,6 +23,7 @@ export type IconNames =
   | 'ic-done-16'
   | 'ic-done-bold-16'
   | 'ic-ellipsis-16'
+  | 'ic-fire-badge-16'
   | 'ic-getgems-16'
   | 'ic-globe-16'
   | 'ic-information-circle-16'
@@ -94,6 +95,8 @@ export type IconNames =
   | 'ic-xmark-28'
   | 'ic-checkmark-circle-32'
   | 'ic-exclamationmark-circle-32'
+  | 'ic-fire-badge-32'
+  | 'ic-sale-badge-32'
   | 'ic-delete-36'
   | 'ic-exclamationmark-triangle-36'
   | 'ic-faceid-36'
@@ -138,6 +141,7 @@ export const AllIcons = [
   'ic-done-16',
   'ic-done-bold-16',
   'ic-ellipsis-16',
+  'ic-fire-badge-16',
   'ic-getgems-16',
   'ic-globe-16',
   'ic-information-circle-16',
@@ -209,6 +213,8 @@ export const AllIcons = [
   'ic-xmark-28',
   'ic-checkmark-circle-32',
   'ic-exclamationmark-circle-32',
+  'ic-fire-badge-32',
+  'ic-sale-badge-32',
   'ic-delete-36',
   'ic-exclamationmark-triangle-36',
   'ic-faceid-36',
@@ -254,6 +260,7 @@ export const IconSizes = {
   'ic-done-16': 16,
   'ic-done-bold-16': 16,
   'ic-ellipsis-16': 16,
+  'ic-fire-badge-16': 16,
   'ic-getgems-16': 16,
   'ic-globe-16': 16,
   'ic-information-circle-16': 16,
@@ -325,6 +332,8 @@ export const IconSizes = {
   'ic-xmark-28': 28,
   'ic-checkmark-circle-32': 32,
   'ic-exclamationmark-circle-32': 32,
+  'ic-fire-badge-32': 32,
+  'ic-sale-badge-32': 32,
   'ic-delete-36': 36,
   'ic-exclamationmark-triangle-36': 36,
   'ic-faceid-36': 36,
