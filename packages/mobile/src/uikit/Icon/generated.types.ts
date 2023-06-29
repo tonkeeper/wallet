@@ -19,6 +19,7 @@ export type IconNames =
   | 'ic-close-16'
   | 'ic-code-16'
   | 'ic-copy-16'
+  | 'ic-disconnect-16'
   | 'ic-doc-16'
   | 'ic-done-16'
   | 'ic-done-bold-16'
@@ -31,12 +32,14 @@ export type IconNames =
   | 'ic-loader-small-16'
   | 'ic-magnifying-glass-16'
   | 'ic-pencil-16'
+  | 'ic-refresh-16'
   | 'ic-sale-badge-16'
   | 'ic-share-16'
   | 'ic-sliders-16'
   | 'ic-swap-16'
   | 'ic-telegram-16'
   | 'ic-time-16'
+  | 'ic-trash-bin-16'
   | 'ic-twitter-16'
   | 'ic-verification-16'
   | 'ic-verification-secondary-16'
@@ -137,6 +140,7 @@ export const AllIcons = [
   'ic-close-16',
   'ic-code-16',
   'ic-copy-16',
+  'ic-disconnect-16',
   'ic-doc-16',
   'ic-done-16',
   'ic-done-bold-16',
@@ -149,12 +153,14 @@ export const AllIcons = [
   'ic-loader-small-16',
   'ic-magnifying-glass-16',
   'ic-pencil-16',
+  'ic-refresh-16',
   'ic-sale-badge-16',
   'ic-share-16',
   'ic-sliders-16',
   'ic-swap-16',
   'ic-telegram-16',
   'ic-time-16',
+  'ic-trash-bin-16',
   'ic-twitter-16',
   'ic-verification-16',
   'ic-verification-secondary-16',
@@ -256,6 +262,7 @@ export const IconSizes = {
   'ic-close-16': 16,
   'ic-code-16': 16,
   'ic-copy-16': 16,
+  'ic-disconnect-16': 16,
   'ic-doc-16': 16,
   'ic-done-16': 16,
   'ic-done-bold-16': 16,
@@ -268,12 +275,14 @@ export const IconSizes = {
   'ic-loader-small-16': 16,
   'ic-magnifying-glass-16': 16,
   'ic-pencil-16': 16,
+  'ic-refresh-16': 16,
   'ic-sale-badge-16': 16,
   'ic-share-16': 16,
   'ic-sliders-16': 16,
   'ic-swap-16': 16,
   'ic-telegram-16': 16,
   'ic-time-16': 16,
+  'ic-trash-bin-16': 16,
   'ic-twitter-16': 16,
   'ic-verification-16': 16,
   'ic-verification-secondary-16': 16,

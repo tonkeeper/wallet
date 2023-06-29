@@ -4,3 +4,4 @@ export * from './appsList';
 export * from './devFeaturesToggle';
 export * from './browser';
 export * from './staking';
+export * from './notifications';

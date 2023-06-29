@@ -94,7 +94,7 @@ function* subscribeWorker(action: SubscribeAction) {
         subscription_address: prepared.subscriptionAddress,
         fee: prepared.fee,
         startAt: prepared.startAt,
-      }
+      },
     });
 
     yield put(eventsActions.pollEvents());
@@ -124,7 +124,7 @@ function* unsubscribeWorker(action: UnsubscribeAction) {
 
     const host = getServerConfig('subscriptionsHost');
     yield call(network.post, `${host}/v1/subscribe/cancel/${subscription.id}`, {
-      params: { signed_tx: signedTx }
+      params: { signed_tx: signedTx },
     });
 
     yield put(eventsActions.pollEvents());

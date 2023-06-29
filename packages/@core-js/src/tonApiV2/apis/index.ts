@@ -4,6 +4,7 @@ export * from './AccountsApi';
 export * from './BlockchainApi';
 export * from './ConnectApi';
 export * from './DNSApi';
+export * from './EmulationApi';
 export * from './EventsApi';
 export * from './JettonsApi';
 export * from './NFTApi';

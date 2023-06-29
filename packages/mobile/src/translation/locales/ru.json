@@ -602,7 +602,7 @@
   "reminder_notifications_later_button": "Позже",
 
   "ton_login_title": "Войти в %{name}",
-  "ton_login_caption": "%{name} запрашивает доступ к адресу вашего кошелька",
+  "ton_login_caption": "%{name} запрашивает доступ к адресу вашего кошелька\u2028",
   "ton_login_connect_button": "Подключить кошелёк",
   "ton_login_back_to_button": "Вернуться в %{name}",
   "ton_login_success": "Готово",
@@ -846,6 +846,19 @@
     "remindLater": "Напомнить позже",
     "tap": "Нажмите, чтобы обновить",
     "retry": "Ошибка загрузки. Нажмите, чтобы повторить попытку."
+  },
+
+  "notifications": {
+    "notifications": "Уведомления",
+    "from_connected": "От ваших приложений",
+    "mute_notifications": "Отключить уведомления",
+    "disconnect_app": "Отключить %{app_name}",
+    "report": "Пожаловаться",
+    "muted": "Отмена",
+    "disconnected_app": "Disconnected app",
+    "earlier": "Ранее",
+    "apps": "Приложения",
+    "allow_notifications": "Разрешить уведомления"
   }
 }
 
