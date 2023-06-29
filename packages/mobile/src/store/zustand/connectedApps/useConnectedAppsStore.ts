@@ -6,6 +6,7 @@ import { IConnectedAppsStore, TonConnectBridgeType } from './types';
 import { Tonapi } from '$libs/Tonapi';
 import messaging from '@react-native-firebase/messaging';
 import { useNotificationsStore } from '$store/zustand';
+import * as SecureStore from 'expo-secure-store';
 
 const initialState: Omit<IConnectedAppsStore, 'actions'> = {
   connectedApps: {
@@ -139,7 +140,7 @@ export const useConnectedAppsStore = create(
               return { connectedApps };
             });
           },
-          enableNotifications: (
+          enableNotifications: async (
             chainName,
             walletAddress,
             url,
@@ -147,7 +148,7 @@ export const useConnectedAppsStore = create(
             firebase_token,
           ) => {
             const fixedUrl = getFixedLastSlashUrl(url);
-            const token = useNotificationsStore.getState().notifications_token;
+            const token = await SecureStore.getItemAsync('proof_token');
 
             if (!token) {
               return;
@@ -179,9 +180,9 @@ export const useConnectedAppsStore = create(
               return { connectedApps };
             });
           },
-          disableNotifications: (chainName, walletAddress, url, firebase_token) => {
+          disableNotifications: async (chainName, walletAddress, url, firebase_token) => {
             const fixedUrl = getFixedLastSlashUrl(url);
-            const token = useNotificationsStore.getState().notifications_token;
+            const token = await SecureStore.getItemAsync('proof_token');
 
             if (!token) {
               return;

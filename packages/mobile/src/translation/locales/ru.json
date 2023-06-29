@@ -846,6 +846,19 @@
     "remindLater": "Напомнить позже",
     "tap": "Нажмите, чтобы обновить",
     "retry": "Ошибка загрузки. Нажмите, чтобы повторить попытку."
+  },
+
+  "notifications": {
+    "notifications": "Уведомления",
+    "from_connected": "От ваших приложений",
+    "mute_notifications": "Отключить уведомления",
+    "disconnect_app": "Отключить %{app_name}",
+    "report": "Пожаловаться",
+    "muted": "Отмена",
+    "disconnected_app": "Disconnected app",
+    "earlier": "Ранее",
+    "apps": "Приложения",
+    "allow_notifications": "Разрешить уведомления"
   }
 }
 

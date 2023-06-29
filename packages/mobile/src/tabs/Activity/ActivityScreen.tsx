@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { RefreshControl } from 'react-native';
+import { LayoutAnimation, RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useNetInfo } from '@react-native-community/netinfo';
@@ -17,21 +17,10 @@ import {
   Text,
   View,
 } from '$uikit';
-import {
-  useAppStateActive,
-  usePrevious,
-  useJettonBalances,
-  useTheme,
-  useTranslator,
-} from '$hooks';
+import { useAppStateActive, usePrevious, useTheme, useTranslator } from '$hooks';
 import { walletActions, walletSelector } from '$store/wallet';
 import { ns } from '$utils';
-import {
-  CryptoCurrencies,
-  NavBarHeight,
-  SecondaryCryptoCurrencies,
-  TabletMaxWidth,
-} from '$shared/constants';
+import { NavBarHeight, TabletMaxWidth } from '$shared/constants';
 import { openNotificationsScreen, openRequireWalletModal } from '$navigation';
 import { eventsActions, eventsSelector } from '$store/events';
 import { mainActions } from '$store/main';
@@ -42,6 +31,7 @@ import { useNavigation } from '$libs/navigation';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { Steezy } from '$styles';
 import { Notification } from '$core/Notifications/Notification';
+import { getNewNotificationsCount } from '$core/Notifications/NotificationsActivity';
 
 export const ActivityScreen: FC = () => {
   const nav = useNavigation();
@@ -49,19 +39,18 @@ export const ActivityScreen: FC = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
-  const { currencies, isRefreshing, isLoaded, balances, wallet, oldWalletBalances } =
-    useSelector(walletSelector);
+  const { isRefreshing, isLoaded, wallet } = useSelector(walletSelector);
   const {
     isLoading: isEventsLoading,
     eventsInfo,
     canLoadMore,
   } = useSelector(eventsSelector);
   const notifications = useNotificationsStore((state) => state.notifications);
+  const lastSeenAt = useNotificationsStore((state) => state.last_seen);
 
   const netInfo = useNetInfo();
   const prevNetInfo = usePrevious(netInfo);
 
-  const { enabled: jettonBalances } = useJettonBalances();
   const isFocused = useIsFocused();
 
   const isEventsLoadingMore = !isRefreshing && isEventsLoading && !!wallet;
@@ -90,31 +79,6 @@ export const ActivityScreen: FC = () => {
     openNotificationsScreen();
   }, []);
 
-  const otherCurrencies = useMemo(() => {
-    const list = [...SecondaryCryptoCurrencies];
-    if (wallet && wallet.ton.isLockup()) {
-      list.unshift(CryptoCurrencies.TonRestricted, CryptoCurrencies.TonLocked);
-    }
-
-    return list.filter((item) => {
-      if (item === CryptoCurrencies.Ton) {
-        return false;
-      }
-
-      if (
-        [CryptoCurrencies.TonLocked, CryptoCurrencies.TonRestricted].indexOf(item) > -1
-      ) {
-        return true;
-      }
-
-      if (+balances[item] > 0) {
-        return true;
-      }
-
-      return currencies.indexOf(item) > -1;
-    });
-  }, [currencies, balances, wallet]);
-
   const initialData = useMemo(() => {
     const result: {
       isFirst?: boolean;
@@ -133,17 +97,29 @@ export const ActivityScreen: FC = () => {
     dispatch(eventsActions.loadEvents({ isLoadMore: true }));
   }, [dispatch, isEventsLoading, canLoadMore]);
 
+  const onRemoveNotification = useCallback(() => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+  }, []);
+
   const renderNotificationsHeader = useCallback(() => {
     if (!notifications.length) {
       return null;
     }
 
+    const newNotificationsCount = getNewNotificationsCount(notifications, lastSeenAt);
+
     return (
       <View style={styles.notificationsHeader}>
         <Spacer y={12} />
-        {notifications.slice(0, 2).map((notification) => (
-          <Notification notification={notification} key={notification.received_at} />
-        ))}
+        {notifications
+          .slice(0, Math.min(newNotificationsCount, 2))
+          .map((notification) => (
+            <Notification
+              onRemove={onRemoveNotification}
+              notification={notification}
+              key={notification.received_at}
+            />
+          ))}
         <List style={styles.listStyle.static}>
           <List.Item
             leftContent={
@@ -152,21 +128,21 @@ export const ActivityScreen: FC = () => {
               </View>
             }
             rightContent={
-              notifications.length > 2 && (
+              newNotificationsCount > 0 ? (
                 <View style={styles.notificationsCount}>
-                  <Text variant="label2">{notifications.length}</Text>
+                  <Text variant="label2">{newNotificationsCount}</Text>
                 </View>
-              )
+              ) : null
             }
             onPress={handleOpenNotificationsScreen}
-            title={'Notifications'}
-            subtitle={'From connected services'}
+            title={t('notifications.notifications')}
+            subtitle={t('notifications.from_connected')}
             chevron
           />
         </List>
       </View>
     );
-  }, [notifications]);
+  }, [notifications, lastSeenAt, handleOpenNotificationsScreen, t, onRemoveNotification]);
 
   function renderFooter() {
     return (
@@ -307,7 +283,8 @@ const styles = Steezy.create(({ colors }) => ({
   },
   notificationsCount: {
     backgroundColor: colors.backgroundContentTint,
-    width: 24,
+    minWidth: 24,
+    paddingHorizontal: 7,
     height: 24,
     borderRadius: 12,
     alignItems: 'center',

@@ -1,25 +1,26 @@
-import { Icon, List, Spacer, View } from '$uikit';
+import { Icon, List, Spacer, Text, View } from '$uikit';
 import React, { useCallback, useRef } from 'react';
 import { Steezy } from '$styles';
 import { INotification } from '$store/zustand/notifications/types';
 import { disableNotifications, useConnectedAppsList } from '$store';
 import { format } from '$utils';
-import { Swipeable } from 'react-native-gesture-handler';
-import { TouchableOpacity } from 'react-native';
+import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
 import { IconProps } from '$uikit/Icon/Icon';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { t } from '$translation';
 import { isToday } from 'date-fns';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import _ from 'lodash';
 import { TonConnect } from '$tonconnect';
 import messaging from '@react-native-firebase/messaging';
 import { useSelector } from 'react-redux';
 import { walletAddressSelector } from '$store/wallet';
 import { openDAppBrowser } from '$navigation';
+import { Animated } from 'react-native';
 
 interface NotificationProps {
   notification: INotification;
+  onRemove?: () => void;
+  closeOtherSwipeable?: React.MutableRefObject<(() => void) | null>;
 }
 
 type Options = {
@@ -34,7 +35,7 @@ export const ActionButton: React.FC<{ icon: IconProps['name']; onPress: () => vo
 ) => (
   <TouchableOpacity onPress={props.onPress} activeOpacity={0.7}>
     <View style={styles.actionButton}>
-      <Icon name={props.icon} />
+      <Icon color="iconSecondary" name={props.icon} />
     </View>
   </TouchableOpacity>
 );
@@ -48,15 +49,27 @@ export const Notification: React.FC<NotificationProps> = (props) => {
   const deleteNotification = useNotificationsStore(
     (state) => state.actions.deleteNotificationByReceivedAt,
   );
+  const listItemRef = useRef(null);
+
+  const handleDelete = useCallback(() => {
+    deleteNotification(props.notification.received_at);
+    props.onRemove?.();
+  }, [deleteNotification, props]);
+
   const swipeableRef = useRef(null);
 
-  const subtitle =
-    (props.notification.name || app?.name || t('notifications.disconnected_app')) +
-    ' · ' +
-    format(
-      props.notification.received_at,
-      isToday(props.notification.received_at) ? 'HH:mm' : 'd MMM, HH:mm',
-    );
+  const subtitle = (
+    <Text variant="body2" color={'textSecondary'} numberOfLines={1}>
+      {props.notification.name || app?.name || t('notifications.disconnected_app')}
+      <Text variant="body2" color="textTertiary">
+        {' · '}
+      </Text>
+      {format(
+        props.notification.received_at,
+        isToday(props.notification.received_at) ? 'HH:mm' : 'd MMM, HH:mm',
+      )}
+    </Text>
+  );
 
   const handleOpenSettings = useCallback(async () => {
     const options: Options = [
@@ -98,22 +111,29 @@ export const Notification: React.FC<NotificationProps> = (props) => {
     );
   }, [app, showActionSheetWithOptions, walletAddress.ton]);
 
-  const renderRightActions = useCallback(() => {
-    return (
-      <View style={styles.rightActionsContainer}>
-        {app && (
-          <>
-            <ActionButton icon="ic-ellipsis-16" onPress={handleOpenSettings} />
-            <Spacer x={12} />
-          </>
-        )}
-        <ActionButton
-          onPress={() => deleteNotification(props.notification.received_at)}
-          icon="ic-trash-bin-16"
-        />
-      </View>
-    );
-  }, [app, deleteNotification, handleOpenSettings, props.notification.received_at]);
+  const renderRightActions = useCallback(
+    (progress) => {
+      const opacity = progress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 1],
+      });
+      return (
+        <Animated.View
+          onLayout={(e) => e}
+          style={[styles.rightActionsContainer.static, { opacity }]}
+        >
+          {app && (
+            <>
+              <ActionButton icon="ic-ellipsis-16" onPress={handleOpenSettings} />
+              <Spacer x={12} />
+            </>
+          )}
+          <ActionButton onPress={handleDelete} icon="ic-trash-bin-16" />
+        </Animated.View>
+      );
+    },
+    [app, handleDelete, handleOpenSettings],
+  );
 
   const handleOpenInWebView = useCallback(() => {
     if (!props.notification.link) {
@@ -122,8 +142,24 @@ export const Notification: React.FC<NotificationProps> = (props) => {
     openDAppBrowser(props.notification.link);
   }, [props.notification.link]);
 
+  const handleCloseOtherSwipeables = useCallback(() => {
+    if (!props.closeOtherSwipeable) {
+      return;
+    }
+    if (props.closeOtherSwipeable.current) {
+      props.closeOtherSwipeable.current?.();
+    }
+    props.closeOtherSwipeable.current = () => swipeableRef.current?.close();
+  }, [props.closeOtherSwipeable]);
+
   return (
-    <Swipeable ref={swipeableRef} renderRightActions={renderRightActions}>
+    <Swipeable
+      waitFor={listItemRef}
+      overshootFriction={6}
+      ref={swipeableRef}
+      onSwipeableWillOpen={handleCloseOtherSwipeables}
+      renderRightActions={renderRightActions}
+    >
       <List style={styles.listStyle.static}>
         <List.Item
           disabled={!props.notification.link}

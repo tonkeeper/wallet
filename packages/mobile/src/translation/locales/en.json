@@ -828,10 +828,15 @@
   },
 
   "notifications": {
+    "notifications": "Notifications",
+    "from_connected": "From connected services",
     "mute_notifications": "Mute notifications",
     "disconnect_app": "Disconnect %{app_name}",
     "report": "Report",
     "muted": "Muted",
-    "disconnected_app": "Disconnected app"
+    "disconnected_app": "Disconnected app",
+    "earlier": "Earlier",
+    "apps": "Apps",
+    "allow_notifications": "Allow notifications"
   }
 }

@@ -31,7 +31,11 @@ if (__DEV__) {
 }
 
 async function handleDappMessage(remoteMessage) {
-  if (!remoteMessage.data?.type) {
+  if (
+    !['bridge_dapp_notification', 'console_dapp_notification'].includes(
+      remoteMessage.data?.type,
+    )
+  ) {
     return null;
   }
   useNotificationsStore.getState().actions.addNotification({

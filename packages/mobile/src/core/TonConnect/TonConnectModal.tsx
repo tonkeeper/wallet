@@ -29,12 +29,13 @@ import { t } from '$translation';
 import { TonConnectModalProps } from './models';
 import { useEffect } from 'react';
 import { Modal, useNavigation } from '$libs/navigation';
-import { store, Toast, useConnectedAppsStore, useNotificationsStore } from '$store';
+import { store, Toast, useNotificationsStore } from '$store';
 import { openRequireWalletModal, push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 import { mainSelector } from '$store/main';
 import { createTonProofForTonkeeper } from '$utils/notificationsproof';
-import { ConnectApi, Configuration } from '@tonkeeper/core';
+import { WalletApi, Configuration } from '@tonkeeper/core';
+import * as SecureStore from 'expo-secure-store';
 
 export const TonConnectModal = (props: TonConnectModalProps) => {
   const animation = useTonConnectAnimation();
@@ -168,15 +169,15 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
         );
 
         if (withNotifications) {
-          const notifications_token =
-            useNotificationsStore.getState().notifications_token;
-          if (!notifications_token) {
+          const proof_token = await SecureStore.getItemAsync('proof_token');
+
+          if (!proof_token) {
             const proof = await createTonProofForTonkeeper(
               address,
               privateKey,
               walletStateInit,
             );
-            const connectApi = new ConnectApi(
+            const walletApi = new WalletApi(
               new Configuration({
                 basePath: getServerConfig('tonapiV2Endpoint'),
                 headers: {
@@ -187,13 +188,12 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
             if (proof.error) {
               return;
             }
-            const token = await connectApi.tonConnectProof({
+            const token = await walletApi.tonConnectProof({
               tonConnectProofRequest: proof,
             });
-
-            await useNotificationsStore
-              .getState()
-              .actions.setNotificationsToken(token.token);
+            SecureStore.setItemAsync('proof_token', token.token, {
+              requireAuthentication: false,
+            });
           }
         }
 
@@ -341,7 +341,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
             <>
               <List indent={false}>
                 <List.ItemWithCheckbox
-                  title="Allow notifications"
+                  title={t('notifications.allow_notifications')}
                   checked={withNotifications}
                   onChange={handleSwitchNotifications}
                 />

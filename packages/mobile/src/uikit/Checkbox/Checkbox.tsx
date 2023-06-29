@@ -3,6 +3,7 @@ import { Icon } from '$uikit';
 import { Steezy } from '$styles';
 import Animated, {
   interpolateColor,
+  SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -14,6 +15,10 @@ export interface CheckboxProps {
   checked: boolean;
   onChange: () => void;
   disabled?: boolean;
+  /*
+    Used to change opacity when user press on ListItem
+   */
+  isPressedListItem?: SharedValue<boolean>;
 }
 
 const STouchableOpacity = Steezy.withStyle(TouchableOpacity);
@@ -38,6 +43,14 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
     };
   });
 
+  const opacityStyle = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(props.isPressedListItem?.value ? 0.6 : 1, {
+        duration: 50,
+      }),
+    };
+  }, [props.isPressedListItem]);
+
   const iconStyle = useAnimatedStyle(() => {
     return {
       opacity: colorProgress.value,
@@ -52,7 +65,7 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
 
   return (
     <STouchableOpacity onPress={onChange} activeOpacity={0.6}>
-      <Animated.View style={[styles.checkbox.static, animatedStyle]}>
+      <Animated.View style={[styles.checkbox.static, opacityStyle, animatedStyle]}>
         <Animated.View style={iconStyle}>
           <Icon name="ic-done-bold-16" color="foregroundPrimary" />
         </Animated.View>

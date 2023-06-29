@@ -4,7 +4,12 @@ import { Steezy, StyleProp } from '$styles';
 import { View, SText, Icon, Pressable } from '$uikit';
 import { DarkTheme, TonThemeColor } from '$styled';
 import FastImage from 'react-native-fast-image';
-import Animated, { useSharedValue } from 'react-native-reanimated';
+import Animated, {
+  SharedValue,
+  useDerivedValue,
+  useSharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { isAndroid } from '$utils';
 import { TextProps } from '$uikit/Text/Text';
@@ -21,12 +26,15 @@ export interface ListItemProps {
   imageStyle?: StyleProp<ViewStyle>;
   compact?: boolean;
   isLast?: boolean;
+  underlayColor?: string;
   isFirst?: boolean;
   disabled?: boolean;
   titleProps?: TextProps;
   leftContentStyle?: StyleProp<ViewStyle>;
-  disabled?: boolean;
-
+  /*
+    Shared value that will be updated when user press on ListItem
+ */
+  isPressedSharedValue?: SharedValue<boolean>;
   valueStyle?: StyleProp<TextStyle>;
   containerStyle?: StyleProp<ViewStyle>;
 
@@ -51,6 +59,10 @@ export const ListItem = memo<ListItemProps>((props) => {
   const handlePressOut = useCallback(() => {
     isPressed.value = false;
   }, []);
+
+  useDerivedValue(() => {
+    props.isPressedSharedValue && (props.isPressedSharedValue.value = isPressed.value);
+  }, [isPressed]);
 
   const leftContent = React.useMemo(() => {
     if (typeof props.leftContent === 'function') {
@@ -113,7 +125,7 @@ export const ListItem = memo<ListItemProps>((props) => {
 
   return (
     <TouchableComponent
-      underlayColor={DarkTheme.colors.backgroundHighlighted}
+      underlayColor={props.underlayColor ?? DarkTheme.colors.backgroundHighlighted}
       onPressOut={handlePressOut}
       onPressIn={handlePressIn}
       onPress={props.onPress}
