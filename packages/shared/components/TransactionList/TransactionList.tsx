@@ -1,36 +1,56 @@
-import { memo, useRef } from 'react';
+import { View } from 'react-native';
+import { Screen, Loader, Steezy, List } from '@tonkeeper/uikit';
+import { memo } from 'react';
+import { TransactionItem } from './TransactionItem';
+import { ClientEvent, ClientEventType } from './DataTypes';
 
 interface EventsListProps {
-  events: any;
+  events: ClientEvent[];
   onFetchMore?: () => void;
   estimatedItemSize?: number;
 }
 
-const TransactionsList = memo<EventsListProps>((props) => {
-  const { events, estimatedItemSize = 200, onFetchMore } = props;
+type TransactionRenderItemOptions = {
+  item: ClientEvent;
+};
 
-  const viewabilityConfig = useRef<ViewabilityConfig>({
-    waitForInteraction: true,
-    itemVisiblePercentThreshold: 50,
-    minimumViewTime: 1000,
-  }).current;
+function RenderItem({ item }: TransactionRenderItemOptions) {
+  switch (item.type) {
+    case ClientEventType.Date:
+      return <List.Header title={item.date} style={styles.date} />;
+    case ClientEventType.Action:
+      return (
+        <TransactionItem item={item} />
+      );
+  }
+}
+
+export const TransactionsList = memo<EventsListProps>((props) => {
+  const { events, estimatedItemSize = 500, onFetchMore } = props;
 
   return (
     <Screen.FlashList
       estimatedItemSize={estimatedItemSize}
-      data={events}
-      keyExtractor={(item) => item.event_id}
-      onEndReached={onFetchMore}
+      keyExtractor={(item) => item.id}
       onEndReachedThreshold={0.01}
-      viewabilityConfig={viewabilityConfig}
-      renderItem={({ item }) => {
-        return <TransactionItem event={item} />;
-      }}
+      onEndReached={onFetchMore}
+      renderItem={RenderItem}
+      data={events}
       ListFooterComponent={
-        <View style={{ paddingHorizontal: 16 }}>
-          <Skeleton.List />
+        <View style={styles.moreLoader.static}>
+          <Loader size="medium" />
         </View>
       }
     />
   );
+});
+
+const styles = Steezy.create({
+  date: {
+    marginHorizontal: 16,
+  },
+  moreLoader: {
+    paddingTop: 8,
+    paddingBottom: 16,
+  }
 });

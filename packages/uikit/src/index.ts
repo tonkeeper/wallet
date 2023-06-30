@@ -9,6 +9,7 @@ export { Spacer } from './components/Spacer';
 export { Text } from './components/Text';
 export { List } from './components/List';
 export { View } from './components/View';
+export { Loader } from './components/Loader';
 
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';
 export { PagerView } from './containers/PagerView';

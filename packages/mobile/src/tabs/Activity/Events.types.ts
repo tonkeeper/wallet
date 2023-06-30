@@ -1,6 +1,6 @@
-export type Events = AccountEvent[];
+export type ServerEvents = ServerAccountEvent[];
 
-export type AccountEvent = {
+export type ServerAccountEvent = {
   event_id: string;
   account: Account;
   timestamp: number;
@@ -18,7 +18,7 @@ export type Account = {
   name?: string;
 };
 
-export enum ActionType {
+export enum EventActionType {
   TonTransfer = 'TonTransfer',
   JettonTransfer = 'JettonTransfer',
   NftItemTransfer = 'NftItemTransfer',
@@ -28,11 +28,11 @@ export enum ActionType {
   AuctionBid = 'AuctionBid',
   NftPurchase = 'NftPurchase',
   SmartContractExec = 'SmartContractExec',
-  Unknown = 'Unknown'
-};
+  Unknown = 'Unknown',
+}
 
 export type EventAction = {
-  type: ActionType;
+  type: EventActionType;
   status: string;
   simple_preview: SimplePreview;
 

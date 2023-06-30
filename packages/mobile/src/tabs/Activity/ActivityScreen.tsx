@@ -1,206 +1,115 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { LayoutAnimation, RefreshControl } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
-import { useNetInfo } from '@react-native-community/netinfo';
-import { useIsFocused } from '@react-navigation/native';
-
-import * as S from '../../core/Balances/Balances.style';
-import {
-  Button,
-  Icon,
-  List,
-  Loader,
-  Screen,
-  ScrollHandler,
-  Spacer,
-  Text,
-  View,
-} from '$uikit';
-import { useAppStateActive, usePrevious, useTheme, useTranslator } from '$hooks';
-import { walletActions, walletSelector } from '$store/wallet';
+import React, { memo } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { ns } from '$utils';
-import { NavBarHeight, TabletMaxWidth } from '$shared/constants';
-import { openNotificationsScreen, openRequireWalletModal } from '$navigation';
-import { eventsActions, eventsSelector } from '$store/events';
-import { mainActions } from '$store/main';
-import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
-import { getLastRefreshedAt } from '$database';
-import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
+import { getServerConfig } from '$shared/constants';
+import { openRequireWalletModal } from '$navigation';
 import { useNavigation } from '$libs/navigation';
-import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
-import { Steezy } from '$styles';
-import { Notification } from '$core/Notifications/Notification';
-import { getNewNotificationsCount } from '$core/Notifications/NotificationsActivity';
+import { useInfiniteQuery } from 'react-query';
+import { network } from '$libs/network';
 
-export const ActivityScreen: FC = () => {
-  const nav = useNavigation();
-  const t = useTranslator();
-  const dispatch = useDispatch();
-  const theme = useTheme();
-  const tabBarHeight = useBottomTabBarHeight();
-  const { isRefreshing, isLoaded, wallet } = useSelector(walletSelector);
-  const {
-    isLoading: isEventsLoading,
-    eventsInfo,
-    canLoadMore,
-  } = useSelector(eventsSelector);
-  const notifications = useNotificationsStore((state) => state.notifications);
-  const lastSeenAt = useNotificationsStore((state) => state.last_seen);
+import { t } from '$translation';
+import { Screen, Text, Button } from '@tonkeeper/uikit';
+import { EventsMapper } from './EventMapper';
+import { TransactionsList } from '@tonkeeper/shared/components/TransactionList'
+import { walletWalletSelector } from "$store/wallet";
+import { useSelector } from "react-redux";
+import { ServerEvents } from './Events.types';
 
-  const netInfo = useNetInfo();
-  const prevNetInfo = usePrevious(netInfo);
+export type WalletAddress = {
+  friendly: string;
+  raw: string;
+  version: string;
+}
 
-  const isFocused = useIsFocused();
+export const useWallet = (): { address: WalletAddress } | null => {
+  const wallet = useSelector(walletWalletSelector);
 
-  const isEventsLoadingMore = !isRefreshing && isEventsLoading && !!wallet;
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      dispatch(mainActions.mainStackInited());
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [dispatch]);
-
-  useAppStateActive(() => {
-    dispatch(mainActions.getTimeSynced());
-    getLastRefreshedAt().then((ts) => {
-      if (Date.now() - ts > 60 * 1000) {
-        dispatch(walletActions.refreshBalancesPage());
+  if (wallet && wallet.address) {
+    return { 
+      address: {
+        friendly: wallet.address.friendlyAddress,
+        raw: wallet.address.rawAddress,
+        version: wallet.address.version,
       }
-    });
+    };
+  }
+
+  return null;
+};
+
+//
+//
+//
+
+type GetAccountEvents = {
+  account_id: string;
+  before_lt?: number;
+  limit?: number;
+};
+
+
+const getAccountEvents = async (params: GetAccountEvents) => {
+  const host = getServerConfig('tonapiIOEndpoint');
+  const authorization = `Bearer ${getServerConfig('tonApiV2Key')}`;
+
+  const fetchParams: Omit<GetAccountEvents, 'account_id'> = { limit: 50  };
+
+  if (params.before_lt) {
+    fetchParams.before_lt = params.before_lt;
+  }
+
+  console.log('@FETCH');
+  const { data } = await network.get(`${host}/v2/accounts/${params.account_id}/events`, {
+    headers: { Authorization: authorization },
+    params: fetchParams,
   });
 
-  const handleRefresh = useCallback(() => {
-    dispatch(walletActions.refreshBalancesPage(true));
-  }, [dispatch]);
-
-  const handleOpenNotificationsScreen = useCallback(() => {
-    openNotificationsScreen();
-  }, []);
-
-  const initialData = useMemo(() => {
-    const result: {
-      isFirst?: boolean;
-      title?: string;
-      data: any;
-      footer?: React.ReactElement;
-    }[] = [];
-    return result;
-  }, []);
-
-  const handleLoadMore = useCallback(() => {
-    if (isEventsLoading || !canLoadMore) {
-      return;
-    }
-
-    dispatch(eventsActions.loadEvents({ isLoadMore: true }));
-  }, [dispatch, isEventsLoading, canLoadMore]);
-
-  const onRemoveNotification = useCallback(() => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-  }, []);
-
-  const renderNotificationsHeader = useCallback(() => {
-    if (!notifications.length) {
-      return null;
-    }
-
-    const newNotificationsCount = getNewNotificationsCount(notifications, lastSeenAt);
-
-    return (
-      <View style={styles.notificationsHeader}>
-        <Spacer y={12} />
-        {notifications
-          .slice(0, Math.min(newNotificationsCount, 2))
-          .map((notification) => (
-            <Notification
-              onRemove={onRemoveNotification}
-              notification={notification}
-              key={notification.received_at}
-            />
-          ))}
-        <List style={styles.listStyle.static}>
-          <List.Item
-            leftContent={
-              <View style={styles.iconContainer}>
-                <Icon name={'ic-bell-28'} color={'iconSecondary'} />
-              </View>
-            }
-            rightContent={
-              newNotificationsCount > 0 ? (
-                <View style={styles.notificationsCount}>
-                  <Text variant="label2">{newNotificationsCount}</Text>
-                </View>
-              ) : null
-            }
-            onPress={handleOpenNotificationsScreen}
-            title={t('notifications.notifications')}
-            subtitle={t('notifications.from_connected')}
-            chevron
-          />
-        </List>
-      </View>
-    );
-  }, [notifications, lastSeenAt, handleOpenNotificationsScreen, t, onRemoveNotification]);
-
-  function renderFooter() {
-    return (
-      <>
-        {isEventsLoadingMore ? (
-          <S.LoaderMoreWrap>
-            <Loader size="medium" />
-          </S.LoaderMoreWrap>
-        ) : null}
-        {!wallet && <S.CreateWalletButtonHelper />}
-        <View style={{ height: LargeNavBarInteractiveDistance }} />
-        <S.BottomSpace />
-      </>
-    );
+  if (data.Error) {
+    throw data.Error;
   }
 
-  function renderContent() {
-    if (!isLoaded) {
-      return (
-        <S.LoaderWrap style={{ paddingBottom: tabBarHeight }}>
-          <Loader size="medium" />
-        </S.LoaderWrap>
-      );
-    }
-
-    return (
-      <TransactionsList
-        renderHeader={renderNotificationsHeader}
-        refreshControl={
-          <RefreshControl
-            onRefresh={handleRefresh}
-            refreshing={isRefreshing && isFocused}
-            tintColor={theme.colors.foregroundPrimary}
-            progressBackgroundColor={theme.colors.foregroundPrimary}
-          />
-        }
-        eventsInfo={eventsInfo}
-        initialData={initialData}
-        renderFooter={renderFooter}
-        onEndReached={isEventsLoading || !canLoadMore ? undefined : handleLoadMore}
-        contentContainerStyle={{
-          width: '100%',
-          maxWidth: ns(TabletMaxWidth),
-          alignSelf: 'center',
-          paddingTop: ns(NavBarHeight) + ns(4),
-          paddingHorizontal: ns(16),
-          paddingBottom: tabBarHeight - ns(20),
-        }}
-      />
-    );
+  if (data) {
+    return data;
   }
+};
 
-  useEffect(() => {
-    if (netInfo.isConnected && prevNetInfo.isConnected === false) {
-      dispatch(mainActions.dismissBadHosts());
-      handleRefresh();
-    }
-  }, [netInfo.isConnected, prevNetInfo.isConnected, handleRefresh, dispatch]);
+const useAccountEvents = () => {
+  const wallet = useWallet();
+
+  const { data, error, isLoading, isFetchingNextPage, fetchNextPage } = useInfiniteQuery<{
+    events: ServerEvents;
+  }>({
+    queryKey: ['wallet_events'],
+    getNextPageParam: ({ events }) => ({
+      lastLt: events[events.length - 1].lt,
+    }),
+    queryFn: ({ pageParam }) =>
+      getAccountEvents({
+        account_id: wallet?.address.raw ?? '',
+        before_lt: pageParam?.lastLt ?? undefined,
+      }),
+  });
+
+  const originalEvents = data?.pages
+    .map((data) => data.events).flat();
+
+  const events = EventsMapper(originalEvents ?? [], wallet?.address!);
+
+  return {
+    fetchMore: fetchNextPage,
+    isLoadingMore: isFetchingNextPage,
+    isLoading: isLoading && !isFetchingNextPage,
+    error,
+    events: events,
+  };
+};
+
+export const ActivityScreen = memo(() => {
+  const { events, error, isLoading, fetchMore } = useAccountEvents();
+  const nav = useNavigation();
+  const wallet = useWallet();
+
+  console.log(events.length);
 
   const handlePressRecevie = React.useCallback(() => {
     if (wallet) {
@@ -221,29 +130,30 @@ export const ActivityScreen: FC = () => {
     }
   }, [wallet]);
 
-  if (isLoaded && (!wallet || Object.keys(eventsInfo).length < 1)) {
+  if (!wallet || (!isLoading && events.length < 1)) {
     return (
       <Screen>
         <View style={styles.emptyContainer}>
-          <Text variant="h2" style={{ textAlign: 'center', marginBottom: ns(4) }}>
+          <Text type="h2" style={{ textAlign: 'center', marginBottom: ns(4) }}>
             {t('activity.empty_transaction_title')}
           </Text>
-          <Text variant="body1" color="textSecondary">
+          <Text type="body1" color="textSecondary">
             {t('activity.empty_transaction_caption')}
           </Text>
-
           <View style={styles.emptyButtons}>
             <Button
+              title={t('activity.buy_toncoin_btn')}
               style={{ marginRight: ns(12) }}
               onPress={handlePressBuy}
-              size="medium_rounded"
-              mode="secondary"
-            >
-              {t('activity.buy_toncoin_btn')}
-            </Button>
-            <Button onPress={handlePressRecevie} size="medium_rounded" mode="secondary">
-              {t('activity.receive_btn')}
-            </Button>
+              color="secondary"
+              size="small"
+            />
+            <Button
+              title={t('activity.receive_btn')}
+              onPress={handlePressRecevie}
+              color="secondary"
+              size="small"
+            />
           </View>
         </View>
       </Screen>
@@ -251,15 +161,18 @@ export const ActivityScreen: FC = () => {
   }
 
   return (
-    <S.Wrap>
-      <ScrollHandler navBarTitle={t('activity.screen_title')}>
-        {renderContent()}
-      </ScrollHandler>
-    </S.Wrap>
+    <Screen>
+      <Screen.LargeHeader title={t('activity.screen_title')} />
+      <TransactionsList
+        // onFetchMore={fetchMore}
+        events={events} 
+      />
+    </Screen>
   );
-};
+});
 
-const styles = Steezy.create(({ colors }) => ({
+
+const styles = StyleSheet.create({
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -270,28 +183,4 @@ const styles = Steezy.create(({ colors }) => ({
     flexDirection: 'row',
     marginTop: ns(24),
   },
-  iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.backgroundContentTint,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  notificationsHeader: {
-    marginHorizontal: -16,
-  },
-  notificationsCount: {
-    backgroundColor: colors.backgroundContentTint,
-    minWidth: 24,
-    paddingHorizontal: 7,
-    height: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 8,
-  },
-  listStyle: {
-    marginBottom: 8,
-  },
-}));
+});

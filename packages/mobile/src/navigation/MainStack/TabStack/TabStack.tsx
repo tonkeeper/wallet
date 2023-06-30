@@ -23,7 +23,7 @@ import { ActivityStack } from '$navigation/ActivityStack/ActivityStack';
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
 export const TabStack: FC = () => {
-  const { bottomSeparatorStyle } = useContext(ScrollPositionContext);
+  // const { bottomSeparatorStyle } = useContext(ScrollPositionContext);
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
 
@@ -34,8 +34,8 @@ export const TabStack: FC = () => {
 
   const tabBarStyle = { height: ns(64) + (safeArea.bottom > 0 ? ns(20) : 0) };
   const containerTabStyle = useMemo(
-    () => [tabBarStyle, styles.tabBarContainer, bottomSeparatorStyle],
-    [safeArea.bottom, bottomSeparatorStyle, tabBarStyle],
+    () => [tabBarStyle, styles.tabBarContainer],
+    [safeArea.bottom, tabBarStyle],
   );
 
   return (
@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     position: 'absolute',
     borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'transparent',
     left: 0,
     right: 0,
     bottom: 0,

@@ -25,7 +25,7 @@ interface ListItemProps {
   chevron?: boolean;
   leftContent?: LeftContentFN | React.ReactNode;
   navigate?: string;
-  subtitleNumberOfLines: number;
+  subtitleNumberOfLines?: number;
   onPress?: () => void;
 }
 

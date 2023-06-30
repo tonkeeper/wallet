@@ -41,7 +41,7 @@
     "@react-navigation/native": "^6.0.11",
     "@react-navigation/native-stack": "^6.7.0",
     "@reduxjs/toolkit": "^1.6.1",
-    "@shopify/flash-list": "^1.4.1",
+    "@shopify/flash-list": "^1.4.3",
     "@tonapps/tonlogin-client": "0.2.5",
     "@tonconnect/protocol": "^2.2.5",
     "@tonkeeper/core": "0.1.0",

@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {},
   "dependencies": {
+    "@tonkeeper/uikit": "*",
+    "@tonkeeper/router": "*",
     "react-native-web": "~0.18.10",
     "react-native": "0.71.7",
     "react": "18.2.0"
