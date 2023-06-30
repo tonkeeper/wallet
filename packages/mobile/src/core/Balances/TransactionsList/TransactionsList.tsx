@@ -1,5 +1,6 @@
 import React, { forwardRef, ReactElement, ReactNode, useCallback, useMemo } from 'react';
 import {
+  FlatListProps,
   SectionList,
   SectionListProps,
   SectionListRenderItemInfo,
@@ -40,8 +41,8 @@ const AnimatedSectionList =
   Animated.createAnimatedComponent<SectionListProps<any>>(SectionList);
 
 export interface TransactionsListProps {
-  renderHeader?: ReactNode;
-  renderFooter?: ReactNode;
+  renderHeader?: FlatListProps<any>['ListHeaderComponent'];
+  renderFooter?: FlatListProps<any>['ListFooterComponent'];
   refreshControl?: ReactElement;
   eventsInfo: EventsMap;
   initialData: any[];

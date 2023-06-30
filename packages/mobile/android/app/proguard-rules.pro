@@ -9,3 +9,6 @@
 
 
 # Add any project specific keep options here:
+
+-keep class com.ton_keeper.BuildConfig { *; }
+

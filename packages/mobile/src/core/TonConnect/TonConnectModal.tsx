@@ -1,19 +1,20 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import axios from 'axios';
 import queryString from 'query-string';
 import TonWeb from 'tonweb';
 import { useDispatch, useSelector } from 'react-redux';
 import { Linking, StyleSheet } from 'react-native';
 import { useTheme } from '$hooks';
-import { SelectableVersionsConfig } from '$shared/constants';
+import { getServerConfig, SelectableVersionsConfig } from '$shared/constants';
 import { walletSelector } from '$store/wallet';
-import { Button, Icon, Loader, Text, TransitionOpacity } from '$uikit';
+import { Button, Icon, List, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
   debugLog,
   delay,
   getDomainFromURL,
   maskifyTonAddress,
   triggerNotificationSuccess,
+  triggerSelection,
 } from '$utils';
 import { UnlockVaultError } from '$store/wallet/sagas';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
@@ -28,10 +29,13 @@ import { t } from '$translation';
 import { TonConnectModalProps } from './models';
 import { useEffect } from 'react';
 import { Modal, useNavigation } from '$libs/navigation';
-import { store, Toast } from '$store';
+import { store, Toast, useNotificationsStore } from '$store';
 import { openRequireWalletModal, push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 import { mainSelector } from '$store/main';
+import { createTonProofForTonkeeper } from '$utils/notificationsproof';
+import { WalletApi, Configuration } from '@tonkeeper/core';
+import * as SecureStore from 'expo-secure-store';
 
 export const TonConnectModal = (props: TonConnectModalProps) => {
   const animation = useTonConnectAnimation();
@@ -39,10 +43,16 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const nav = useNavigation();
+  const [withNotifications, setWithNotifications] = React.useState(false);
 
   const { version } = useSelector(walletSelector);
   const { isTestnet } = useSelector(mainSelector);
   const maskedAddress = maskifyTonAddress(animation.address);
+
+  const handleSwitchNotifications = useCallback(() => {
+    triggerSelection();
+    setWithNotifications((prev) => !prev);
+  }, []);
 
   const closeModal = () => nav.goBack();
 
@@ -158,7 +168,40 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
           walletStateInit,
         );
 
-        requestPromise.resolve({ address, replyItems });
+        if (withNotifications) {
+          const proof_token = await SecureStore.getItemAsync('proof_token');
+
+          if (!proof_token) {
+            const proof = await createTonProofForTonkeeper(
+              address,
+              privateKey,
+              walletStateInit,
+            );
+            const walletApi = new WalletApi(
+              new Configuration({
+                basePath: getServerConfig('tonapiV2Endpoint'),
+                headers: {
+                  Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+                },
+              }),
+            );
+            if (proof.error) {
+              return;
+            }
+            const token = await walletApi.tonConnectProof({
+              tonConnectProofRequest: proof,
+            });
+            SecureStore.setItemAsync('proof_token', token.token, {
+              requireAuthentication: false,
+            });
+          }
+        }
+
+        requestPromise.resolve({
+          address,
+          replyItems,
+          notificationsEnabled: withNotifications,
+        });
       }
 
       if (props.protocolVersion === 1 && props.request.return_url) {
@@ -179,7 +222,15 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
       debugLog('[TonLogin]:', error);
       Toast.fail(message);
     }
-  }, [animation, dispatch, props, sendToCallbackUrl, unlockVault]);
+  }, [
+    animation,
+    closeModal,
+    isTestnet,
+    props,
+    sendToCallbackUrl,
+    unlockVault,
+    withNotifications,
+  ]);
 
   const handleBackToService = React.useCallback(async () => {
     if (props.protocolVersion !== 1) {
@@ -279,7 +330,6 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
             <Text color="foregroundSecondary" variant="body1" textAlign="center">
               {t('ton_login_caption', { name: domain })}
               <Text color="foregroundTertiary" variant="body1" textAlign="center">
-                {' '}
                 {maskedAddress}{' '}
               </Text>
               {SelectableVersionsConfig[version]
@@ -287,6 +337,18 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
                 : null}
             </Text>
           </S.Content>
+          {isTonConnectV2 ? (
+            <>
+              <List indent={false}>
+                <List.ItemWithCheckbox
+                  title={t('notifications.allow_notifications')}
+                  checked={withNotifications}
+                  onChange={handleSwitchNotifications}
+                />
+              </List>
+              <Spacer y={16} />
+            </>
+          ) : null}
           <S.Footer isTonConnectV2={isTonConnectV2}>
             <TransitionOpacity
               style={styles.actionContainer}

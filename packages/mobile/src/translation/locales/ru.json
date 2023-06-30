@@ -114,14 +114,14 @@
   "spam_action": "Спам",
 
   "dns_renew_toast_success": "Домен продлён на 1 год",
-  "dns_expiration_date": "Дата окончания аренды",
+  "dns_expiration_date": "Истекает",
   "dns_renew_until_btn": "Продлить до %{untilDate}",
   "dns_renew_in_progress_btn": "Выполняется продление домена…",
   "dns_renew_valid_caption": {
-    "one": "Действителен ещё %{count} день",
-    "few": "Действителен ещё %{count} дня",
-    "other": "Действителен ещё %{count} дней",
-    "many": "Действителен ещё %{count} дней"
+    "one": "Истекает через %{count} день",
+    "few": "Истекает через %{count} дня",
+    "other": "Истекает через %{count} дней",
+    "many": "Истекает через %{count} дней"
   },
 
   "nft_title": "NFT",
@@ -602,7 +602,7 @@
   "reminder_notifications_later_button": "Позже",
 
   "ton_login_title": "Войти в %{name}",
-  "ton_login_caption": "%{name} запрашивает доступ к адресу вашего кошелька",
+  "ton_login_caption": "%{name} запрашивает доступ к адресу вашего кошелька\u2028",
   "ton_login_connect_button": "Подключить кошелёк",
   "ton_login_back_to_button": "Вернуться в %{name}",
   "ton_login_success": "Готово",
@@ -834,5 +834,31 @@
         "value": "≈ %{value} TON"
       }
     }
+  },
+
+  "update": {
+    "title": "Обновление Tonkeeper",
+    "version": "Версия {{version}}",
+    "description": "Доступна новая версия Tonkeeper. Вы можете скачать её прямо сейчас.",
+    "mb": "{{size}} МБ",
+    "download": "Скачать",
+    "downloading": "Скачивание… {{progress}}%",
+    "remindLater": "Напомнить позже",
+    "tap": "Нажмите, чтобы обновить",
+    "retry": "Ошибка загрузки. Нажмите, чтобы повторить попытку."
+  },
+
+  "notifications": {
+    "notifications": "Уведомления",
+    "from_connected": "От ваших приложений",
+    "mute_notifications": "Отключить уведомления",
+    "disconnect_app": "Отключить %{app_name}",
+    "report": "Пожаловаться",
+    "muted": "Отмена",
+    "disconnected_app": "Disconnected app",
+    "earlier": "Ранее",
+    "apps": "Приложения",
+    "allow_notifications": "Разрешить уведомления"
   }
 }
+

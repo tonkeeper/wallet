@@ -16,6 +16,7 @@ import {
   IConnectedAppConnection,
   removeInjectedConnection,
   removeRemoteConnection,
+  enableNotifications,
 } from '$store';
 import { debugLog } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
@@ -39,6 +40,7 @@ import { TCEventID } from './EventID';
 import { DAppManifest } from './models';
 import { SendTransactionError } from './SendTransactionError';
 import { TonConnectRemoteBridge } from './TonConnectRemoteBridge';
+import messaging from '@react-native-firebase/messaging';
 
 class TonConnectService {
   checkProtocolVersionCapability(protocolVersion: number) {
@@ -110,8 +112,8 @@ class TonConnectService {
       const manifest = await this.getManifest(request);
 
       try {
-        const { address, replyItems } = await new Promise<TonConnectModalResponse>(
-          (resolve, reject) =>
+        const { address, replyItems, notificationsEnabled } =
+          await new Promise<TonConnectModalResponse>((resolve, reject) =>
             openTonConnect({
               protocolVersion: protocolVersion as 2,
               manifest,
@@ -119,7 +121,7 @@ class TonConnectService {
               requestPromise: { resolve, reject },
               hideImmediately: !!webViewUrl,
             }),
-        );
+          );
 
         saveAppConnection(
           address,
@@ -127,6 +129,7 @@ class TonConnectService {
             name: manifest.name,
             url: manifest.url,
             icon: manifest.iconUrl,
+            notificationsEnabled,
           },
           webViewUrl
             ? { type: TonConnectBridgeType.Injected, replyItems }
@@ -137,6 +140,11 @@ class TonConnectService {
                 replyItems,
               },
         );
+
+        if (notificationsEnabled) {
+          const token = await messaging().getToken();
+          enableNotifications(address, manifest.url, clientSessionId, token);
+        }
 
         return {
           id: TCEventID.getId(),

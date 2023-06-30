@@ -4,9 +4,15 @@ import { Steezy, StyleProp } from '$styles';
 import { View, SText, Icon, Pressable } from '$uikit';
 import { DarkTheme, TonThemeColor } from '$styled';
 import FastImage from 'react-native-fast-image';
-import Animated, { useSharedValue } from 'react-native-reanimated';
+import Animated, {
+  SharedValue,
+  useDerivedValue,
+  useSharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { isAndroid } from '$utils';
+import { TextProps } from '$uikit/Text/Text';
 
 type LeftContentFN = (isPressed: Animated.SharedValue<boolean>) => React.ReactNode;
 
@@ -20,23 +26,31 @@ export interface ListItemProps {
   imageStyle?: StyleProp<ViewStyle>;
   compact?: boolean;
   isLast?: boolean;
+  underlayColor?: string;
   isFirst?: boolean;
-
+  disabled?: boolean;
+  titleProps?: TextProps;
+  leftContentStyle?: StyleProp<ViewStyle>;
+  /*
+    Shared value that will be updated when user press on ListItem
+ */
+  isPressedSharedValue?: SharedValue<boolean>;
   valueStyle?: StyleProp<TextStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
 
   picture?: string;
 
   chevron?: boolean;
 
   leftContent?: LeftContentFN | React.ReactNode;
-  rightContent?: () => React.ReactNode;
+  rightContent?: () => React.ReactElement;
 
   onPress?: () => void;
 }
 
 export const ListItem = memo<ListItemProps>((props) => {
   const isPressed = useSharedValue(false);
-  const { compact = true } = props;
+  const { compact = true, titleProps = {} } = props;
 
   const handlePressIn = useCallback(() => {
     isPressed.value = true;
@@ -46,13 +60,17 @@ export const ListItem = memo<ListItemProps>((props) => {
     isPressed.value = false;
   }, []);
 
+  useDerivedValue(() => {
+    props.isPressedSharedValue && (props.isPressedSharedValue.value = isPressed.value);
+  }, [isPressed]);
+
   const leftContent = React.useMemo(() => {
     if (typeof props.leftContent === 'function') {
       return props.leftContent(isPressed);
     }
 
     return props.leftContent;
-  }, [props.leftContent]);
+  }, [isPressed, props.leftContent]);
 
   const hasLeftContent = !!leftContent || !!props.picture;
   const pictureSource = { uri: props.picture };
@@ -69,6 +87,7 @@ export const ListItem = memo<ListItemProps>((props) => {
               color={compact ? 'textPrimary' : 'textSecondary'}
               numberOfLines={1}
               ellipsizeMode="tail"
+              {...titleProps}
             >
               {props.title}
             </SText>
@@ -106,15 +125,21 @@ export const ListItem = memo<ListItemProps>((props) => {
 
   return (
     <TouchableComponent
-      underlayColor={DarkTheme.colors.backgroundHighlighted}
+      underlayColor={props.underlayColor ?? DarkTheme.colors.backgroundHighlighted}
       onPressOut={handlePressOut}
       onPressIn={handlePressIn}
       onPress={props.onPress}
-      disabled={!props.onPress}
+      disabled={!props.onPress || props.disabled}
     >
-      <View style={[styles.container.static, compact && styles.containerCompact.static]}>
+      <View
+        style={[
+          styles.container.static,
+          compact && styles.containerCompact.static,
+          props.containerStyle,
+        ]}
+      >
         {hasLeftContent && (
-          <View style={styles.leftContent}>
+          <View style={[styles.leftContent, props.leftContentStyle]}>
             {leftContent}
             {!!props.picture && (
               <View style={[styles.pictureContainer, props.imageStyle]}>
@@ -141,9 +166,12 @@ export const ListItem = memo<ListItemProps>((props) => {
             props.subvalue
           )}
 
-          {props.chevron && (
-            <Icon color={props.chevronColor} name="ic-chevron-right-16" />
-          )}
+          <View style={styles.rightContent}>
+            {props.rightContent}
+            {props.chevron && (
+              <Icon color={props.chevronColor} name="ic-chevron-right-16" />
+            )}
+          </View>
         </View>
       </View>
     </TouchableComponent>
@@ -200,5 +228,9 @@ const styles = Steezy.create(({ colors }) => ({
   subvalueText: {
     color: colors.textSecondary,
     textAlign: 'right',
+  },
+  rightContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 }));

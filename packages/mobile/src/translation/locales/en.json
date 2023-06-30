@@ -118,8 +118,8 @@
   "dns_renew_until_btn": "Renew until %{untilDate}",
   "dns_renew_in_progress_btn": "Domain renew in progress…",
   "dns_renew_valid_caption": {
-    "one": "Valid for %{count} more day",
-    "other": "Valid for %{count} more days"
+    "one": "Expires in %{count} day",
+    "other": "Expires in %{count} days"
   },
 
   "nft_title": "NFTs",
@@ -390,6 +390,7 @@
     "about_dapps_learn_more": "Learn more",
     "actions": {
       "refresh": "Refresh",
+      "mute": "Mute",
       "share": "Share",
       "copy_link": "Copy link",
       "disconnect": "Disconnect"
@@ -586,7 +587,7 @@
   "reminder_notifications_later_button": "Later",
 
   "ton_login_title": "Connect to %{name}?",
-  "ton_login_caption": "%{name} is requesting access to your wallet address",
+  "ton_login_caption": "%{name} is requesting access to your wallet address\u2028",
   "ton_login_connect_button": "Connect wallet",
   "ton_login_back_to_button": "Back to %{name}",
   "ton_login_success": "Done",
@@ -813,5 +814,29 @@
         "value": "≈ %{value} TON"
       }
     }
+  },
+  "update": {
+    "title": "Update Tonkeeper",
+    "version": "Version {{version}}",
+    "description": "A new version of Tonkeeper is available. You can download it now.",
+    "mb": "{{size}} MB",
+    "download": "Download",
+    "downloading": "Downloading… {{progress}}%",
+    "remindLater": "Remind me later",
+    "tap": "Tap to update",
+    "retry": "Download error. Tap to retry."
+  },
+
+  "notifications": {
+    "notifications": "Notifications",
+    "from_connected": "From connected services",
+    "mute_notifications": "Mute notifications",
+    "disconnect_app": "Disconnect %{app_name}",
+    "report": "Report",
+    "muted": "Muted",
+    "disconnected_app": "Disconnected app",
+    "earlier": "Earlier",
+    "apps": "Apps",
+    "allow_notifications": "Allow notifications"
   }
 }

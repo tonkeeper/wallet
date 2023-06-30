@@ -10,4 +10,5 @@ export const Wrap = styled.View`
 
 export const FooterWrap = styled.View`
   padding-horizontal: ${ns(16)}px;
+  padding-bottom: ${ns(16)}px;
 `;

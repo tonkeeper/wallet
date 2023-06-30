@@ -1,26 +1,31 @@
 import React, { useCallback, useRef } from 'react';
-import { InternalNotification, NavBar, ScrollHandler, SwitchItem } from '$uikit';
+import { InternalNotification, NavBar, Screen, SwitchItem, Text, View } from '$uikit';
 import { debugLog, ns } from '$utils';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import Animated from 'react-native-reanimated';
-import { Linking, View } from 'react-native';
+import { Linking } from 'react-native';
 import { CellSection } from '$shared/components';
 import { getSubscribeStatus, SUBSCRIBE_STATUS } from '$utils/messaging';
-import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { NotificationsStatus, useNotificationStatus } from '$hooks/useNotificationStatus';
 import messaging from '@react-native-firebase/messaging';
 import { useNotifications } from '$hooks/useNotifications';
 import { t } from '$translation';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
-import { Toast, ToastSize } from '$store';
+import { Toast, ToastSize, useConnectedAppsList, useConnectedAppsStore } from '$store';
+import { Steezy } from '$styles';
+import { getChainName } from '$shared/dynamicConfig';
+import { walletAddressSelector } from '$store/wallet';
+import FastImage from 'react-native-fast-image';
+import * as SecureStore from 'expo-secure-store';
+import { useObtainProofToken } from '$hooks';
 
 export const Notifications: React.FC = () => {
-  const dispatch = useDispatch();
+  const address = useSelector(walletAddressSelector);
   const handleOpenSettings = useCallback(() => Linking.openSettings(), []);
   const notifications = useNotifications();
   const tabBarHeight = useBottomTabBarHeight();
   const isSwitchFrozen = useRef(false);
-
+  const obtainProofToken = useObtainProofToken();
   const notificationStatus = useNotificationStatus();
   const notificationsBadge = useNotificationsBadge();
   const shouldEnableNotifications = notificationStatus === NotificationsStatus.DENIED;
@@ -47,7 +52,7 @@ export const Notifications: React.FC = () => {
     if (notificationsBadge.isVisible) {
       notificationsBadge.hide();
     }
-  }, [notificationsBadge.isVisible]);
+  }, [notificationsBadge, notificationsBadge.isVisible]);
 
   const handleToggleNotifications = React.useCallback(async (value: boolean) => {
     if (isSwitchFrozen.current) {
@@ -75,40 +80,99 @@ export const Notifications: React.FC = () => {
     }
   }, []);
 
+  const connectedApps = useConnectedAppsList();
+  const { enableNotifications, disableNotifications } = useConnectedAppsStore(
+    (state) => state.actions,
+  );
+
+  const handleSwitchNotifications = React.useCallback(
+    async (value: boolean, url: string, session_id: string | undefined) => {
+      await obtainProofToken();
+      const token = await messaging().getToken();
+      if (value) {
+        return enableNotifications(getChainName(), address.ton, url, session_id, token);
+      }
+      disableNotifications(getChainName(), address.ton, url, token);
+    },
+    [obtainProofToken, disableNotifications, address.ton, enableNotifications],
+  );
+
   return (
-    <>
-      <NavBar>{t('notifications_title')}</NavBar>
-      <ScrollHandler>
-        <Animated.ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingHorizontal: ns(16),
-            paddingBottom: tabBarHeight,
-          }}
-          scrollEventThrottle={16}
-        >
-          {shouldEnableNotifications && (
-            <View style={{ marginBottom: 16 }}>
-              <InternalNotification
-                title={t('notifications_disabled_title')}
-                caption={t('notifications_disabled_description')}
-                action={t('notifications_disabled_action')}
-                mode={'warning'}
-                onPress={handleOpenSettings}
-              />
-            </View>
-          )}
-          <CellSection>
-            <SwitchItem
-              title={t('notifications_switch_title')}
-              subtitle={t('notification_switch_description')}
-              disabled={shouldEnableNotifications}
-              onChange={handleToggleNotifications}
-              value={isSubscribeNotifications}
+    <Screen>
+      <Screen.Header title={t('notifications_title')} />
+      <Screen.ScrollView
+        contentContainerStyle={{
+          paddingHorizontal: ns(16),
+          paddingBottom: tabBarHeight,
+        }}
+      >
+        {shouldEnableNotifications && (
+          <View style={{ marginBottom: 16 }}>
+            <InternalNotification
+              title={t('notifications_disabled_title')}
+              caption={t('notifications_disabled_description')}
+              action={t('notifications_disabled_action')}
+              mode={'warning'}
+              onPress={handleOpenSettings}
             />
-          </CellSection>
-        </Animated.ScrollView>
-      </ScrollHandler>
-    </>
+          </View>
+        )}
+        <CellSection sectionStyle={styles.notificationsSection.static}>
+          <SwitchItem
+            title={t('notifications_switch_title')}
+            subtitle={t('notification_switch_description')}
+            disabled={shouldEnableNotifications}
+            onChange={handleToggleNotifications}
+            value={isSubscribeNotifications}
+          />
+        </CellSection>
+        {connectedApps.length ? (
+          <>
+            <View style={styles.title}>
+              <Text variant="h3">{t('notifications.apps')}</Text>
+            </View>
+            <CellSection>
+              {connectedApps.map((app) => (
+                <SwitchItem
+                  icon={
+                    <FastImage
+                      source={{ uri: app.icon }}
+                      style={styles.imageStyle.static}
+                    />
+                  }
+                  key={app.url}
+                  title={app.name}
+                  disabled={!isSubscribeNotifications}
+                  value={!!app.notificationsEnabled}
+                  onChange={() =>
+                    handleSwitchNotifications(
+                      !app.notificationsEnabled,
+                      app.url,
+                      // @ts-ignore
+                      app.connections[0]?.clientSessionId,
+                    )
+                  }
+                />
+              ))}
+            </CellSection>
+          </>
+        ) : null}
+      </Screen.ScrollView>
+    </Screen>
   );
 };
+
+const styles = Steezy.create({
+  title: {
+    paddingVertical: 14,
+  },
+  imageStyle: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    marginRight: 16,
+  },
+  notificationsSection: {
+    marginBottom: 16,
+  },
+});

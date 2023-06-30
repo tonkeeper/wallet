@@ -6,29 +6,35 @@ import React, { FC, memo, useCallback, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Share from 'react-native-share';
 import * as S from './BrowserNavBar.style';
+import { PopupSelectItemProps } from '$uikit/PopupSelect/PopupSelect.interface';
+import { Toast } from '$store';
 
 enum PopupActionType {
   REFRESH,
   SHARE,
   COPY_LINK,
   DISCONNECT,
+  MUTE,
 }
 
 interface PopupAction {
   type: PopupActionType;
   label: string;
+  icon?: PopupSelectItemProps['icon'];
 }
 
 interface Props {
   title: string;
   url: string;
   isConnected: boolean;
+  isNotificationsEnabled: boolean;
   walletAddress: string;
   canGoBack: boolean;
   onBackPress: () => void;
   onTitlePress: () => void;
   onRefreshPress: () => void;
   disconnect: () => Promise<void>;
+  unsubscribeFromNotifications: () => Promise<void>;
 }
 
 const BrowserNavBarComponent: FC<Props> = (props) => {
@@ -36,12 +42,14 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
     title,
     url,
     isConnected,
+    isNotificationsEnabled,
     walletAddress,
     canGoBack,
     onBackPress,
     onTitlePress,
     onRefreshPress,
     disconnect,
+    unsubscribeFromNotifications,
   } = props;
 
   const t = useTranslator();
@@ -61,26 +69,41 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
       {
         type: PopupActionType.REFRESH,
         label: t('browser.actions.refresh'),
+        icon: 'ic-refresh-16',
       },
+    ];
+
+    if (isNotificationsEnabled) {
+      items.push({
+        type: PopupActionType.MUTE,
+        label: t('browser.actions.mute'),
+        icon: 'ic-disconnect-16',
+      });
+    }
+
+    items.push(
       {
         type: PopupActionType.SHARE,
         label: t('browser.actions.share'),
+        icon: 'ic-share-16',
       },
       {
         type: PopupActionType.COPY_LINK,
         label: t('browser.actions.copy_link'),
+        icon: 'ic-copy-16',
       },
-    ];
+    );
 
     if (isConnected) {
       items.push({
         type: PopupActionType.DISCONNECT,
         label: t('browser.actions.disconnect'),
+        icon: 'ic-disconnect-16',
       });
     }
 
     return items;
-  }, [isConnected, t]);
+  }, [isConnected, isNotificationsEnabled, t]);
 
   const handlePressAction = useCallback(
     (action: PopupAction) => {
@@ -98,9 +121,13 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
           return copyText(url);
         case PopupActionType.DISCONNECT:
           return disconnect();
+        case PopupActionType.MUTE:
+          Toast.success(t('notifications.muted'));
+          unsubscribeFromNotifications();
+          return;
       }
     },
-    [copyText, disconnect, onRefreshPress, url],
+    [copyText, disconnect, onRefreshPress, unsubscribeFromNotifications, url],
   );
 
   return (

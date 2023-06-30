@@ -57,7 +57,7 @@ import {
   setLastRefreshedAt,
   setMigrationState,
 } from '$database';
-import { batchActions, Toast, useStakingStore } from '$store';
+import { batchActions, Toast, useNotificationsStore, useStakingStore } from '$store';
 import { subscriptionsActions } from '$store/subscriptions';
 import { t } from '$translation';
 import { initHandler } from '$store/main/sagas';
@@ -579,6 +579,7 @@ function* cleanWalletWorker() {
     yield call(saveFavorites, []);
     yield call(saveHiddenRecentAddresses, []);
     yield call(useStakingStore.getState().actions.reset);
+    yield call(useNotificationsStore.getState().actions.reset);
 
     yield put(
       batchActions(

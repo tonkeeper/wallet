@@ -79,6 +79,12 @@ export enum SettingsStackRouteNames {
   ChooseCurrency = 'ChooseCurrency',
 }
 
+export enum ActivityStackRouteNames {
+  Activity = 'Settings',
+  NotificationsActivity = 'NotificationsActivity',
+  Notifications = 'Notifications',
+}
+
 export enum ResetPinStackRouteNames {
   ResetPin = 'ResetPin',
   SetupBiometry = 'ResetPinSetupBiometry',

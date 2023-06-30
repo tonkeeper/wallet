@@ -1,9 +1,10 @@
-import React from "react";
-import { Switch, StyleSheet, View } from "react-native";
-import { Highlight } from "./Highlight/Highlight";
-import { Text } from "./Text/Text";
+import React, { ReactNode } from 'react';
+import { Switch, StyleSheet, View } from 'react-native';
+import { Highlight } from './Highlight/Highlight';
+import { Text } from './Text/Text';
 
 interface SwitchItemProps {
+  icon?: ReactNode;
   title: string;
   subtitle?: string;
   value: boolean;
@@ -12,56 +13,41 @@ interface SwitchItemProps {
 }
 
 export const SwitchItem: React.FC<SwitchItemProps> = (props) => {
-  const { title, onChange, value, disabled, subtitle } = props;
+  const { icon, title, onChange, value, disabled, subtitle } = props;
 
-  const handleToggle = React.useCallback(
-    () => onChange(!value), 
-    [value]
-  )
+  const handleToggle = React.useCallback(() => onChange(!value), [value]);
 
   return (
     <Highlight onPress={handleToggle} style={styles.container} isDisabled={disabled}>
       <View style={styles.row}>
+        {icon}
         <View style={styles.titleContainer}>
-          <Text
-            variant="label1"
-            color="foregroundPrimary"
-            lineHeight={24}
-          >
+          <Text variant="label1" color="foregroundPrimary" lineHeight={24}>
             {title}
           </Text>
           {!!subtitle && (
-            <Text
-              color="foregroundSecondary"
-              variant="body2"
-              lineHeight={20}
-            >
+            <Text color="foregroundSecondary" variant="body2" lineHeight={20}>
               {subtitle}
             </Text>
           )}
         </View>
-        <Switch 
-          value={value} 
-          onChange={handleToggle} 
-          disabled={disabled}
-        />
+        <Switch value={value} onChange={handleToggle} disabled={disabled} />
       </View>
-      
     </Highlight>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    paddingVertical: 12.5
+    paddingVertical: 16,
   },
   row: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   titleContainer: {
     flex: 1,
-    marginRight: 16
-  }
+    marginRight: 16,
+  },
 });
