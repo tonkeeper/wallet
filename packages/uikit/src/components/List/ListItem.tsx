@@ -2,14 +2,14 @@ import Animated, { useSharedValue } from 'react-native-reanimated';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import React, { memo, useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
-import { Steezy, useTheme } from '../../styles';
+import { Steezy, StyleProp, useTheme } from '../../styles';
 import { useRouter } from '@tonkeeper/router';
 import { TextStyle } from 'react-native';
 import { Pressable } from '../Pressable';
 import { isAndroid } from '../../utils';
+import { SText } from '../Text';
 import { Icon } from '../Icon';
 import { View } from '../View';
-import { Text } from '../Text';
 
 type LeftContentFN = (isPressed: Animated.SharedValue<boolean>) => React.ReactNode;
 
@@ -19,7 +19,7 @@ interface ListItemProps {
   value?: string | React.ReactNode;
   subvalue?: string | React.ReactNode;
   label?: string | React.ReactNode;
-  valueStyle?: TextStyle;
+  valueStyle?: StyleProp<TextStyle>;
   picture?: string;
   pictureCorner?: 'full' | 'small';
   chevron?: boolean;
@@ -86,58 +86,58 @@ export const ListItem = memo<ListItemProps>((props) => {
           </View>
         )}
         <View style={styles.title}>
-          <View style={styles.titleTextContainer}>
+          <View style={styles.titleSTextContainer}>
             {typeof props.title === 'string' ? (
-              <Text
-                style={styles.titleText.static}
+              <SText
+                style={styles.titleSText.static}
                 type="label1"
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
                 {props.title}
-              </Text>
+              </SText>
             ) : (
               props.title
             )}
             {typeof props.label === 'string' ? (
-              <Text
-                style={styles.labelText.static}
+              <SText
+                style={styles.labelSText.static}
                 color="textTertiary"
                 numberOfLines={1}
                 type="label1"
               >
                 {props.label}
-              </Text>
+              </SText>
             ) : (
               props.label
             )}
           </View>
 
           {typeof props.subtitle === 'string' ? (
-            <Text
+            <SText
               numberOfLines={subtitleNumberOfLines}
               color="textSecondary"
               type="body2"
             >
               {props.subtitle}
-            </Text>
+            </SText>
           ) : (
             props.subtitle
           )}
         </View>
         <View style={styles.valueContainer}>
           {typeof props.value === 'string' ? (
-            <Text type="label1" style={[styles.valueText.static, props.valueStyle]}>
+            <SText type="label1" style={[styles.valueSText.static, props.valueStyle]}>
               {`  ${props.value}`}
-            </Text>
+            </SText>
           ) : (
             props.value
           )}
 
           {typeof props.subvalue === 'string' ? (
-            <Text type="body2" color="textSecondary">
+            <SText type="body2" color="textSecondary">
               {props.subvalue}
-            </Text>
+            </SText>
           ) : (
             props.subvalue
           )}
@@ -182,23 +182,23 @@ const styles = Steezy.create(({ colors }) => ({
     flexGrow: 1,
     flexShrink: 1,
   },
-  titleText: {
+  titleSText: {
     flexShrink: 1,
   },
-  titleTextContainer: {
+  titleSTextContainer: {
     flexDirection: 'row',
   },
-  labelText: {
+  labelSText: {
     marginLeft: 4,
   },
   valueContainer: {
     alignItems: 'flex-end',
   },
-  valueText: {
+  valueSText: {
     textAlign: 'right',
     flexShrink: 1,
   },
-  subvalueText: {
+  subvalueSText: {
     color: colors.textSecondary,
     textAlign: 'right',
   },

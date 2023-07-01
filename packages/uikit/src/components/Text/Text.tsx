@@ -2,7 +2,7 @@ import { Text as NativeText, TextProps as NativeTextProps, TextStyle } from 'rea
 import Animated, { AnimateProps } from 'react-native-reanimated';
 import { FontWeights, TTextTypes, TextTypes } from './TextStyles';
 import { pickBy, identity } from 'lodash';
-import { useTheme } from '../../styles';
+import { Steezy, useTheme } from '../../styles';
 import { memo, useMemo } from 'react';
 import { nfs } from '../../utils';
 
@@ -68,3 +68,5 @@ export const Text = memo<TextProps>((props) => {
     </TextComponent>
   );
 });
+
+export const SText = Steezy.withStyle(Text);

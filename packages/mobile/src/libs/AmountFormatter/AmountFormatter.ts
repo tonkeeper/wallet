@@ -16,6 +16,7 @@ type AmountFormatOptions = {
   decimals?: number;
   currency?: string;
   currencySeparator?: 'thin' | 'wide'; // Default thin;
+  symbol?: string;
   withoutTruncate?: boolean;
   ignoreZeroTruncate?: boolean;
   absolute?: boolean;
@@ -99,6 +100,10 @@ export class AmountFormatter {
       } else {
         suffix = this.spaces[currencySeparator] + options.currency;
       }
+    }
+
+    if (options.symbol) {
+      suffix = this.spaces['wide'] + options.symbol;
     }
 
     const { decimalSeparator, groupingSeparator } = this.getLocaleFormat();

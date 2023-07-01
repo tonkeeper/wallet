@@ -14,14 +14,9 @@ import { TransactionsList } from '@tonkeeper/shared/components/TransactionList'
 import { walletWalletSelector } from "$store/wallet";
 import { useSelector } from "react-redux";
 import { ServerEvents } from './Events.types';
+import { AddressFormats } from '@tonkeeper/core';
 
-export type WalletAddress = {
-  friendly: string;
-  raw: string;
-  version: string;
-}
-
-export const useWallet = (): { address: WalletAddress } | null => {
+export const useWallet = (): { address: AddressFormats } | null => {
   const wallet = useSelector(walletWalletSelector);
 
   if (wallet && wallet.address) {
@@ -29,7 +24,6 @@ export const useWallet = (): { address: WalletAddress } | null => {
       address: {
         friendly: wallet.address.friendlyAddress,
         raw: wallet.address.rawAddress,
-        version: wallet.address.version,
       }
     };
   }
@@ -93,7 +87,7 @@ const useAccountEvents = () => {
   const originalEvents = data?.pages
     .map((data) => data.events).flat();
 
-  const events = EventsMapper(originalEvents ?? [], wallet?.address!);
+  const events = EventsMapper(originalEvents ?? [], wallet?.address?.raw!);
 
   return {
     fetchMore: fetchNextPage,
@@ -164,13 +158,12 @@ export const ActivityScreen = memo(() => {
     <Screen>
       <Screen.LargeHeader title={t('activity.screen_title')} />
       <TransactionsList
-        // onFetchMore={fetchMore}
+        onFetchMore={fetchMore}
         events={events} 
       />
     </Screen>
   );
 });
-
 
 const styles = StyleSheet.create({
   emptyContainer: {

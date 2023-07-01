@@ -19,6 +19,7 @@ import { FONT } from '$styled';
 import { useCheckForUpdates } from '$hooks/useCheckForUpdates';
 import { useLoadExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { ActivityStack } from '$navigation/ActivityStack/ActivityStack';
+import { OldActivityScreen } from '../../../tabs/Activity/OldActivityScreen';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -95,7 +96,7 @@ export const TabStack: FC = () => {
         }}
       />
       <Tab.Screen
-        component={DAppsExplore}
+        component={OldActivityScreen}
         name={TabsStackRouteNames.Explore}
         options={{
           tabBarLabel: t('tab_browser'),
