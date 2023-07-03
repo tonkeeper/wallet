@@ -3,7 +3,6 @@ import {
   TokenApprovalType,
 } from '$store/zustand/tokenApproval/types';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
-import { Address } from '$libs/Ton';
 
 export function approveAll(addresses: { address: string; isCollection?: boolean }[]) {
   addresses.map((address) => {

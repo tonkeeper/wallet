@@ -24,7 +24,7 @@ const baseNftCellData = (nft: NFTModel) => ({
     borderRadius: 8,
   },
   subtitle: nft.collection
-    ? t('approval.token_count', { count: nft.count })
+    ? t('approval.token_count', { count: (nft as any).count })
     : t('approval.single_token'),
   onPress: () =>
     openApproveTokenModal({
@@ -35,7 +35,7 @@ const baseNftCellData = (nft: NFTModel) => ({
       verification: nft.isApproved
         ? JettonVerification.WHITELIST
         : JettonVerification.NONE,
-      tokenAddress: nft.collection?.address || new Address(nft.address).toString(false),
+      tokenAddress: nft.collection?.address || nft.address,
       image: nft.content.image.baseUrl,
       name: nft.collection?.name,
     }),
@@ -79,9 +79,7 @@ export function useNftData() {
             onPress={() =>
               approveAll(
                 pending.map((nft) => ({
-                  address: new Address(nft.collection?.address || nft.address).toString(
-                    false,
-                  ),
+                  address: nft.collection?.address || nft.address,
                   isCollection: !!nft.collection?.address,
                 })),
               )
@@ -136,8 +134,7 @@ export function useNftData() {
                     type="remove"
                     onPress={() =>
                       updateTokenStatus(
-                        nft.collection?.address ||
-                          new Address(nft.address).toString(false),
+                        nft.collection?.address || nft.address,
                         TokenApprovalStatus.Declined,
                         nft.collection?.address
                           ? TokenApprovalType.Collection
@@ -188,8 +185,7 @@ export function useNftData() {
                     type="add"
                     onPress={() =>
                       updateTokenStatus(
-                        nft.collection?.address ||
-                          new Address(nft.address).toString(false),
+                        nft.collection?.address || nft.address,
                         TokenApprovalStatus.Approved,
                         nft.collection?.address
                           ? TokenApprovalType.Collection
