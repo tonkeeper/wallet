@@ -1,16 +1,11 @@
-import {
-  excludedJettonsSelector,
-  jettonsBalancesSelector,
-  sortedJettonsSelector,
-} from '$store/jettons';
+import { jettonsBalancesSelector, sortedJettonsSelector } from '$store/jettons';
 import { JettonBalanceModel, JettonVerification } from '$store/models';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { walletWalletSelector } from '$store/wallet';
-import { Address } from '$libs/Ton';
+import { Address } from '@tonkeeper/core';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
-import { DevFeature, useDevFeatureEnabled } from '$store';
 
 export interface IBalances {
   pending: JettonBalanceModel[];
@@ -23,7 +18,6 @@ export const useJettonBalances = (withZeroBalances?: boolean) => {
   const sortedJettons =
     useSelector(sortedJettonsSelector)[wallet?.vault?.getVersion?.() || ''];
   const approvalStatuses = useTokenApprovalStore();
-  const excludedJettons = useSelector(excludedJettonsSelector);
 
   const jettons = useMemo(() => {
     const balances: IBalances = {
@@ -33,7 +27,8 @@ export const useJettonBalances = (withZeroBalances?: boolean) => {
     };
 
     jettonBalances.forEach((jetton) => {
-      const approvalStatus = approvalStatuses.tokens[jetton.jettonAddress];
+      const jettonAddress = Address(jetton.jettonAddress).toRaw();
+      const approvalStatus = approvalStatuses.tokens[jettonAddress];
       const isWhitelisted = jetton.verification === JettonVerification.WHITELIST;
       const isBlacklisted = jetton.verification === JettonVerification.BLACKLIST;
       const isEnabled =
@@ -59,8 +54,8 @@ export const useJettonBalances = (withZeroBalances?: boolean) => {
     if (sortedJettons) {
       balances.enabled = balances.enabled.sort(
         (a, b) =>
-          sortedJettons.indexOf(new Address(a.jettonAddress).format({ raw: true })) -
-          sortedJettons.indexOf(new Address(b.jettonAddress).format({ raw: true })),
+          sortedJettons.indexOf(Address(a.jettonAddress).toRaw()) -
+          sortedJettons.indexOf(Address(b.jettonAddress).toRaw()),
       );
     }
 

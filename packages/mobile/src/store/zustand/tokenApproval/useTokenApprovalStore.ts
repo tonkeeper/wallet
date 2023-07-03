@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ITokenApprovalStore, TokenApprovalStatus, TokenApprovalType } from './types';
+import { Address } from '@tonkeeper/core';
 
 const initialState: Omit<ITokenApprovalStore, 'actions'> = {
   tokens: {},
@@ -15,9 +16,9 @@ export const useTokenApprovalStore = create(
       actions: {
         removeTokenStatus: (address: string) => {
           const { tokens } = getState();
-
-          if (tokens[address]) {
-            delete tokens[address];
+          const rawAddress = Address(address).toRaw();
+          if (tokens[rawAddress]) {
+            delete tokens[rawAddress];
             set({ tokens });
           }
         },
@@ -30,18 +31,19 @@ export const useTokenApprovalStore = create(
           type: TokenApprovalType,
         ) => {
           const { tokens } = getState();
-          const token = { ...tokens[address] };
+          const rawAddress = Address(address).toRaw();
+          const token = { ...tokens[rawAddress] };
 
           if (token) {
             token.current = status;
             token.updated_at = Date.now();
 
-            set({ tokens: { ...tokens, [address]: token } });
+            set({ tokens: { ...tokens, [rawAddress]: token } });
           } else {
             set({
               tokens: {
                 ...tokens,
-                [address]: {
+                [rawAddress]: {
                   type,
                   current: status,
                   updated_at: Date.now(),
@@ -58,6 +60,19 @@ export const useTokenApprovalStore = create(
       getStorage: () => AsyncStorage,
       partialize: ({ tokens, hasWatchedCollectiblesTab }) =>
         ({ tokens, hasWatchedCollectiblesTab } as ITokenApprovalStore),
+      version: 2,
+      migrate: (persistedState) => {
+        const newState = persistedState as any;
+        if (!newState?.tokens) {
+          return newState;
+        }
+        newState.tokens = Object.entries(newState.tokens).reduce((acc, [key, value]) => {
+          const newKey = Address(key).toRaw();
+          acc[newKey] = value;
+          return acc;
+        }, {});
+        return newState;
+      },
     },
   ),
 );
