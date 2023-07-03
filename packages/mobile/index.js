@@ -20,6 +20,7 @@ import { store, useNotificationsStore } from './src/store';
 import { getAttachScreenFromStorage } from '$navigation/AttachScreen';
 import crashlytics from '@react-native-firebase/crashlytics';
 import messaging from '@react-native-firebase/messaging';
+import { delay } from 'redux-saga/effects';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -42,6 +43,8 @@ async function handleDappMessage(remoteMessage) {
     ...remoteMessage.data,
     received_at: parseInt(remoteMessage.data.sent_at) || Date.now(),
   });
+  await delay(1000);
+  return;
 }
 
 messaging().setBackgroundMessageHandler(handleDappMessage);

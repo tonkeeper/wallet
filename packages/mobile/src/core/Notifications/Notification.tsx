@@ -3,7 +3,7 @@ import React, { useCallback, useRef } from 'react';
 import { Steezy } from '$styles';
 import { INotification } from '$store/zustand/notifications/types';
 import { disableNotifications, useConnectedAppsList } from '$store';
-import { format } from '$utils';
+import { format, getDomainFromURL } from '$utils';
 import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
 import { IconProps } from '$uikit/Icon/Icon';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
@@ -42,7 +42,9 @@ export const ActionButton: React.FC<{ icon: IconProps['name']; onPress: () => vo
 
 export const Notification: React.FC<NotificationProps> = (props) => {
   const app = useConnectedAppsList().find(
-    (app) => app.url === props.notification.dapp_url,
+    (app) =>
+      props.notification.dapp_url &&
+      getDomainFromURL(app.url) === getDomainFromURL(props.notification.dapp_url),
   );
   const walletAddress = useSelector(walletAddressSelector);
   const { showActionSheetWithOptions } = useActionSheet();
@@ -172,7 +174,7 @@ export const Notification: React.FC<NotificationProps> = (props) => {
             numberOfLines: 4,
             style: styles.cellTitle.static,
           }}
-          title={props.notification.title}
+          title={props.notification.message}
           subtitle={subtitle}
         />
       </List>
