@@ -21,9 +21,13 @@ export function useApprovedNfts() {
       disabled: [],
     };
     Object.values(myNfts).forEach((item) => {
-      const rawAddress =
-        item?.collection?.address || new Address(item.address).toString(false);
-      const approvalStatus = approvalStatuses[rawAddress];
+      const collectionAddress = item?.collection?.address;
+      const nftAddress = new Address(item.address).toString(false);
+
+      // get approval status using collection address if it exists, otherwise use nft address
+      const approvalStatus =
+        (collectionAddress && approvalStatuses[collectionAddress]) ||
+        approvalStatuses[nftAddress];
       if (
         (item.isApproved && !approvalStatus) ||
         approvalStatus?.current === TokenApprovalStatus.Approved
