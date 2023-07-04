@@ -65,6 +65,7 @@ import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 import { clearSubscribeStatus } from '$utils/messaging';
 import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 import { useSwapStore } from '$store/zustand/swap';
+import * as SecureStore from 'expo-secure-store';
 
 SplashScreen.preventAutoHideAsync()
   .then((result) =>
@@ -257,6 +258,7 @@ export function* resetAll(isTestnet: boolean) {
   yield call(JettonsCache.clearAll, getWalletName());
   yield call(useJettonEventsStore.getState().actions.clearStore);
   yield call(useNotificationsStore.getState().actions.reset);
+  yield call(SecureStore.deleteItemAsync, 'proof_token');
   yield put(
     batchActions(
       mainActions.resetMain(),

@@ -21,6 +21,7 @@ interface NotificationProps {
   notification: INotification;
   onRemove?: () => void;
   closeOtherSwipeable?: React.MutableRefObject<(() => void) | null>;
+  lastSwipeableId?: React.MutableRefObject<number | null>;
 }
 
 type Options = {
@@ -145,45 +146,54 @@ export const Notification: React.FC<NotificationProps> = (props) => {
   }, [props.notification.link]);
 
   const handleCloseOtherSwipeables = useCallback(() => {
-    if (!props.closeOtherSwipeable) {
+    if (!props.closeOtherSwipeable || !props.lastSwipeableId) {
       return;
     }
-    if (props.closeOtherSwipeable.current) {
+    if (
+      props.closeOtherSwipeable.current &&
+      props.lastSwipeableId.current !== props.notification.received_at
+    ) {
       props.closeOtherSwipeable.current?.();
     }
     props.closeOtherSwipeable.current = () => swipeableRef.current?.close();
+    props.lastSwipeableId.current = props.notification.received_at;
   }, [props.closeOtherSwipeable]);
 
   return (
-    <Swipeable
-      waitFor={listItemRef}
-      overshootFriction={6}
-      ref={swipeableRef}
-      onSwipeableWillOpen={handleCloseOtherSwipeables}
-      renderRightActions={renderRightActions}
-    >
-      <List style={styles.listStyle.static}>
-        <List.Item
-          disabled={!props.notification.link}
-          onPress={handleOpenInWebView}
-          imageStyle={styles.imageStyle.static}
-          leftContentStyle={styles.leftContentStyle.static}
-          picture={props.notification.icon_url || app?.icon}
-          titleProps={{
-            variant: 'body2',
-            numberOfLines: 4,
-            style: styles.cellTitle.static,
-          }}
-          title={props.notification.message}
-          subtitle={subtitle}
-        />
-      </List>
-    </Swipeable>
+    <View style={styles.containerStyle}>
+      <Swipeable
+        waitFor={listItemRef}
+        overshootFriction={6}
+        ref={swipeableRef}
+        onSwipeableWillOpen={handleCloseOtherSwipeables}
+        renderRightActions={renderRightActions}
+      >
+        <List style={styles.listStyle.static}>
+          <List.Item
+            disabled={!props.notification.link}
+            onPress={handleOpenInWebView}
+            imageStyle={styles.imageStyle.static}
+            leftContentStyle={styles.leftContentStyle.static}
+            picture={props.notification.icon_url || app?.icon}
+            titleProps={{
+              variant: 'body2',
+              numberOfLines: 4,
+              style: styles.cellTitle.static,
+            }}
+            title={props.notification.message}
+            subtitle={subtitle}
+          />
+        </List>
+      </Swipeable>
+    </View>
   );
 };
 
 const styles = Steezy.create(({ colors }) => ({
   listStyle: {
+    marginBottom: 0,
+  },
+  containerStyle: {
     marginBottom: 8,
   },
   leftContentStyle: {

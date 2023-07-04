@@ -32,6 +32,10 @@ if (__DEV__) {
 }
 
 async function handleDappMessage(remoteMessage) {
+  // handle data-only messages
+  if (remoteMessage.notification?.body) {
+    return null;
+  }
   if (
     !['bridge_dapp_notification', 'console_dapp_notification'].includes(
       remoteMessage.data?.type,
@@ -39,11 +43,13 @@ async function handleDappMessage(remoteMessage) {
   ) {
     return null;
   }
+
+  await useNotificationsStore.persist.rehydrate();
   useNotificationsStore.getState().actions.addNotification({
     ...remoteMessage.data,
     received_at: parseInt(remoteMessage.data.sent_at) || Date.now(),
   });
-  await delay(1000);
+  await useNotificationsStore.persist.rehydrate();
   return;
 }
 
@@ -61,4 +67,13 @@ setNativeExceptionHandler((exceptionString) => {
 
 store.dispatch(mainActions.init());
 
-AppRegistry.registerComponent(appName, () => gestureHandlerRootHOC(App));
+function HeadlessCheck({ isHeadless }) {
+  if (isHeadless) {
+    // App has been launched in the background by iOS, ignore
+    return null;
+  }
+
+  return <App />;
+}
+
+AppRegistry.registerComponent(appName, () => gestureHandlerRootHOC(HeadlessCheck));

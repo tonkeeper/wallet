@@ -11,6 +11,7 @@ import Animated, {
 import { useTheme } from '$hooks';
 import { useEffect } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Platform, TouchableOpacity as NTouchableOpacity } from 'react-native';
 export interface CheckboxProps {
   checked: boolean;
   onChange: () => void;
@@ -21,7 +22,10 @@ export interface CheckboxProps {
   isPressedListItem?: SharedValue<boolean>;
 }
 
-const STouchableOpacity = Steezy.withStyle(TouchableOpacity);
+const TouchableComponent =
+  Platform.OS === 'android' ? NTouchableOpacity : TouchableOpacity;
+
+const STouchableOpacity = Steezy.withStyle(TouchableComponent);
 
 const Checkbox: React.FC<CheckboxProps> = (props) => {
   const { checked, onChange } = props;

@@ -27,6 +27,7 @@ export const NotificationsActivity: React.FC = () => {
   const updateLastSeen = useNotificationsStore((state) => state.actions.updateLastSeen);
   const list = useRef<FlashList<Element | null> | null>(null);
   const closeOtherSwipeable = useRef<null | (() => void)>(null);
+  const lastSwipeableId = useRef<null | number>(null);
 
   const handleOpenNotificationSettings = useCallback(() => {
     openNotifications();
@@ -81,6 +82,7 @@ export const NotificationsActivity: React.FC = () => {
         case ActivityListItem.Notification:
           return (
             <Notification
+              lastSwipeableId={lastSwipeableId}
               closeOtherSwipeable={closeOtherSwipeable}
               onRemove={handleRemove}
               notification={props.item.item}
