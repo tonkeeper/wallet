@@ -4,6 +4,7 @@
 #import <React/RCTLinkingManager.h>
 #import <Firebase.h>
 // #import "ton_keeper-Swift.h"
+#import "RNFBMessagingModule.h"
 
 @implementation AppDelegate
 
@@ -23,7 +24,7 @@
 
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
-  self.initialProps = @{};
+  self.initialProps = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:launchOptions];
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }

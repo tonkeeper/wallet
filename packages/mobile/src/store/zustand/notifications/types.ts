@@ -1,5 +1,5 @@
 export interface INotification {
-  title: string;
+  message: string;
   dapp_url?: string;
   received_at: number;
   icon_url?: string;

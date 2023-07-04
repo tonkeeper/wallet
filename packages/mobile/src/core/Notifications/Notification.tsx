@@ -3,7 +3,7 @@ import React, { useCallback, useRef } from 'react';
 import { Steezy } from '$styles';
 import { INotification } from '$store/zustand/notifications/types';
 import { disableNotifications, useConnectedAppsList } from '$store';
-import { format } from '$utils';
+import { format, getDomainFromURL } from '$utils';
 import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
 import { IconProps } from '$uikit/Icon/Icon';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
@@ -21,6 +21,7 @@ interface NotificationProps {
   notification: INotification;
   onRemove?: () => void;
   closeOtherSwipeable?: React.MutableRefObject<(() => void) | null>;
+  lastSwipeableId?: React.MutableRefObject<number | null>;
 }
 
 type Options = {
@@ -42,7 +43,9 @@ export const ActionButton: React.FC<{ icon: IconProps['name']; onPress: () => vo
 
 export const Notification: React.FC<NotificationProps> = (props) => {
   const app = useConnectedAppsList().find(
-    (app) => app.url === props.notification.dapp_url,
+    (app) =>
+      props.notification.dapp_url &&
+      getDomainFromURL(app.url) === getDomainFromURL(props.notification.dapp_url),
   );
   const walletAddress = useSelector(walletAddressSelector);
   const { showActionSheetWithOptions } = useActionSheet();
@@ -143,45 +146,54 @@ export const Notification: React.FC<NotificationProps> = (props) => {
   }, [props.notification.link]);
 
   const handleCloseOtherSwipeables = useCallback(() => {
-    if (!props.closeOtherSwipeable) {
+    if (!props.closeOtherSwipeable || !props.lastSwipeableId) {
       return;
     }
-    if (props.closeOtherSwipeable.current) {
+    if (
+      props.closeOtherSwipeable.current &&
+      props.lastSwipeableId.current !== props.notification.received_at
+    ) {
       props.closeOtherSwipeable.current?.();
     }
     props.closeOtherSwipeable.current = () => swipeableRef.current?.close();
+    props.lastSwipeableId.current = props.notification.received_at;
   }, [props.closeOtherSwipeable]);
 
   return (
-    <Swipeable
-      waitFor={listItemRef}
-      overshootFriction={6}
-      ref={swipeableRef}
-      onSwipeableWillOpen={handleCloseOtherSwipeables}
-      renderRightActions={renderRightActions}
-    >
-      <List style={styles.listStyle.static}>
-        <List.Item
-          disabled={!props.notification.link}
-          onPress={handleOpenInWebView}
-          imageStyle={styles.imageStyle.static}
-          leftContentStyle={styles.leftContentStyle.static}
-          picture={props.notification.icon_url || app?.icon}
-          titleProps={{
-            variant: 'body2',
-            numberOfLines: 4,
-            style: styles.cellTitle.static,
-          }}
-          title={props.notification.title}
-          subtitle={subtitle}
-        />
-      </List>
-    </Swipeable>
+    <View style={styles.containerStyle}>
+      <Swipeable
+        waitFor={listItemRef}
+        overshootFriction={6}
+        ref={swipeableRef}
+        onSwipeableWillOpen={handleCloseOtherSwipeables}
+        renderRightActions={renderRightActions}
+      >
+        <List style={styles.listStyle.static}>
+          <List.Item
+            disabled={!props.notification.link}
+            onPress={handleOpenInWebView}
+            imageStyle={styles.imageStyle.static}
+            leftContentStyle={styles.leftContentStyle.static}
+            picture={props.notification.icon_url || app?.icon}
+            titleProps={{
+              variant: 'body2',
+              numberOfLines: 4,
+              style: styles.cellTitle.static,
+            }}
+            title={props.notification.message}
+            subtitle={subtitle}
+          />
+        </List>
+      </Swipeable>
+    </View>
   );
 };
 
 const styles = Steezy.create(({ colors }) => ({
   listStyle: {
+    marginBottom: 0,
+  },
+  containerStyle: {
     marginBottom: 8,
   },
   leftContentStyle: {

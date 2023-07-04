@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { useDeeplinking } from '$libs/deeplinking';
 import { getToken } from '$utils/messaging';
+import { openDAppBrowser } from '$navigation';
 
 export const useNotificationsResolver = () => {
   const { isMainStackInited } = useSelector(mainSelector);
@@ -27,9 +28,13 @@ export const useNotificationsResolver = () => {
       );
 
       const deeplink = remoteMessage.data?.deeplink;
+      const link = remoteMessage.data?.link;
+      const dapp_url = remoteMessage.data?.dapp_url;
 
       if (deeplink) {
         deeplinking.resolve(deeplink);
+      } else if (link || dapp_url) {
+        openDAppBrowser((link || dapp_url) as string);
       } else {
         nav.navigate('Balances');
       }
