@@ -22,6 +22,9 @@ export const useUpdatesStore = create(
       ...initialState,
       actions: {
         fetchMeta: async () => {
+          if (getState().update.state !== UpdateState.NOT_STARTED) {
+            return;
+          }
           set({ isLoading: true });
           const oldMeta = getState().meta;
           const res = await fetch(
@@ -39,6 +42,10 @@ export const useUpdatesStore = create(
               getState().declinedAt < Date.now() - 7 * 24 * 60 * 60 * 1000)
           ) {
             set({ shouldUpdate: true, declinedAt: undefined });
+          } else {
+            try {
+              RNFS.unlink(getUpdatePath());
+            } catch (e) {}
           }
         },
         startUpdate: async () => {
@@ -72,8 +79,19 @@ export const useUpdatesStore = create(
     {
       name: 'updates',
       getStorage: () => AsyncStorage,
-      partialize: ({ isLoading, meta, declinedAt }) =>
-        ({ meta, declinedAt, isLoading } as IUpdatesStore),
+      partialize: ({ isLoading, update: { state, progress }, meta, declinedAt }) =>
+        ({
+          meta,
+          update: {
+            progress,
+            state:
+              state === UpdateState.DOWNLOADED
+                ? UpdateState.DOWNLOADED
+                : UpdateState.NOT_STARTED,
+          },
+          declinedAt,
+          isLoading,
+        } as IUpdatesStore),
     },
   ),
 );
