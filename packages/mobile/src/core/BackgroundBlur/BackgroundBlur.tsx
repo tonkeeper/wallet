@@ -1,5 +1,9 @@
 import { BlurView } from 'expo-blur';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { useAppState } from '$hooks';
 import { FullWindowOverlay } from 'react-native-screens';
 import { Steezy } from '$styles';
@@ -7,17 +11,22 @@ import { StyleSheet } from 'react-native';
 import React, { useEffect } from 'react';
 import { View } from '$uikit';
 
+const ANIMATION_DURATION = 100;
+
 export const BackgroundBlur: React.FC = () => {
   const state = useAppState();
   const [shouldHideOverlay, setShouldHideOverlay] = React.useState(true);
+  const opacity = useSharedValue(0);
 
   useEffect(() => {
     if (state === 'active') {
-      setTimeout(() => setShouldHideOverlay(true), 100);
+      opacity.value = withTiming(0, { duration: ANIMATION_DURATION });
+      setTimeout(() => setShouldHideOverlay(true), ANIMATION_DURATION);
     } else {
+      opacity.value = withTiming(1, { duration: ANIMATION_DURATION });
       setShouldHideOverlay(false);
     }
-  }, [state]);
+  }, [opacity, state]);
 
   const containerStyle = useAnimatedStyle(() => {
     return {
@@ -26,9 +35,9 @@ export const BackgroundBlur: React.FC = () => {
       bottom: 0,
       right: 0,
       left: 0,
-      opacity: withTiming(state === 'active' ? 0 : 1, { duration: 100 }),
+      opacity: opacity.value,
     };
-  }, [state]);
+  }, [opacity]);
 
   if (shouldHideOverlay) {
     return null;
