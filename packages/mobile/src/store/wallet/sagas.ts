@@ -580,6 +580,7 @@ function* cleanWalletWorker() {
     yield call(saveHiddenRecentAddresses, []);
     yield call(useStakingStore.getState().actions.reset);
     yield call(useNotificationsStore.getState().actions.reset);
+    yield call(SecureStore.deleteItemAsync, 'proof_token');
 
     yield put(
       batchActions(

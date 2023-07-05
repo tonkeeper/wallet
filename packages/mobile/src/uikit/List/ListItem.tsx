@@ -121,7 +121,7 @@ export const ListItem = memo<ListItemProps>((props) => {
         )}
       </View>
     );
-  }, [props.title, compact, props.label, props.subtitle]);
+  }, [props.title, props.label, props.subtitle, compact, titleProps]);
 
   return (
     <TouchableComponent
