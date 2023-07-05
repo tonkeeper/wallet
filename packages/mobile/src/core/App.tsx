@@ -15,6 +15,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { PortalDestination } from '@alexzunik/rn-native-portals-reborn';
 import { isAndroid } from '$utils';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import { BackgroundBlur } from '$core/BackgroundBlur/BackgroundBlur';
 
 const TonThemeProvider: FC = ({ children }) => {
   const accent = useSelector(accentSelector);
@@ -49,6 +50,7 @@ export const App: FC = () => {
                 <AppNavigator />
               </ScrollPositionProvider>
               <ToastComponent />
+              <BackgroundBlur />
               {isAndroid ? (
                 <View
                   style={{
