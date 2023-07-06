@@ -29,6 +29,7 @@ import { useNavigation } from '$libs/navigation';
 import { useSwapStore } from '$store/zustand/swap';
 import { shallow } from 'zustand/shallow';
 import { useFlags } from '$utils/flags';
+import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const theme = useTheme();
@@ -74,16 +75,20 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
       <S.HeaderWrap>
         <S.FlexRow>
           <S.JettonAmountWrapper>
-            <Text variant="h2">
+            <HideableAmount variant="h2">
               {formatter.format(jetton.balance, {
                 decimals: jetton.metadata.decimals,
                 currency: jetton.metadata.symbol,
                 currencySeparator: 'wide',
               })}
-            </Text>
-            <Text style={{ marginTop: 2 }} variant="body2" color="foregroundSecondary">
+            </HideableAmount>
+            <HideableAmount
+              style={{ marginTop: 2 }}
+              variant="body2"
+              color="foregroundSecondary"
+            >
               {total || t('jetton_token')}
-            </Text>
+            </HideableAmount>
             {price ? (
               <Text style={{ marginTop: 12 }} variant="body2" color="foregroundSecondary">
                 {t('jetton_price')} {price}
@@ -117,7 +122,17 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         <S.Divider style={{ marginBottom: 10 }} />
       </S.HeaderWrap>
     );
-  }, [jetton, total, t, price, handleSend, handleReceive, showSwap, handlePressSwap]);
+  }, [
+    jetton,
+    total,
+    t,
+    price,
+    handleSend,
+    handleReceive,
+    showSwap,
+    flags.disable_swap,
+    handlePressSwap,
+  ]);
 
   const renderFooter = useCallback(() => {
     if (Object.values(events).length === 0 && isLoading) {

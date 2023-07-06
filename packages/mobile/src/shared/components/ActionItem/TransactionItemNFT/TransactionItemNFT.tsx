@@ -9,6 +9,10 @@ import { Icon, Text } from '$uikit';
 import { useTranslator } from '$hooks';
 import { View } from 'react-native';
 import { DarkTheme } from '$styled';
+import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { BlurView } from 'expo-blur';
+import { HideableImage } from '$core/HideableAmount/HideableImage';
+import { Steezy } from '$styles';
 
 export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
   const nft = useNFT(keyPair);
@@ -39,10 +43,10 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
         ) : null}
         {!isDNS && nft.content?.image?.baseUrl ? (
           <S.Pressable onPress={handleOpenNftItem}>
-            <S.Image
-              source={{
-                uri: nft.content.image.baseUrl,
-              }}
+            <HideableImage
+              imageStyle={styles.image.static}
+              style={styles.imageContainer.static}
+              uri={nft.content.image.baseUrl}
             />
           </S.Pressable>
         ) : null}
@@ -54,17 +58,21 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
             onPress={handleOpenNftItem}
           >
             <S.TextWrap>
-              <Text numberOfLines={1} variant="body2">
+              <HideableAmount stars="* * * *" numberOfLines={1} variant="body2">
                 {(isDNS && nft.dns) || nft.name || maskifyTonAddress(nft.address)}
-              </Text>
+              </HideableAmount>
               <S.CollectionNameWrap withIcon={nft.isApproved}>
-                <Text color="foregroundSecondary" numberOfLines={1} variant="body2">
+                <HideableAmount
+                  color="foregroundSecondary"
+                  numberOfLines={1}
+                  variant="body2"
+                >
                   {isDNS
                     ? 'TON DNS'
                     : nft?.collection
                     ? nft.collection.name
                     : t('nft_single_nft')}
-                </Text>
+                </HideableAmount>
                 {nft.isApproved && (
                   <View style={{ flex: 1, marginRight: ns(8) }}>
                     <Icon
@@ -81,3 +89,18 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
     </S.Wrap>
   );
 };
+
+const styles = Steezy.create({
+  imageContainer: {
+    zIndex: 2,
+    width: 64,
+    height: 64,
+    backgroundColor: DarkTheme.colors.backgroundQuaternary,
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
+  },
+  image: {
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
+  },
+});

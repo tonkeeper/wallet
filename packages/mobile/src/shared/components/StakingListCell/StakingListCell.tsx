@@ -7,6 +7,7 @@ import React, { FC, memo, useCallback } from 'react';
 import { ImageRequireSource } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import * as S from './StakingListCell.style';
+import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 
 interface Props {
   id: string;
@@ -61,10 +62,17 @@ const StakingListCellComponent: FC<Props> = (props) => {
             <S.RightContainer>
               {balanceValue ? (
                 <>
-                  <S.Title textAlign="right">
+                  <HideableAmount variant="label1" numberOfLines={1} textAlign="right">
                     {stakingFormatter.format(balanceValue, { decimals: 2 })} TON
-                  </S.Title>
-                  <S.SubTitle textAlign="right">{balance.fiatInfo.amount}</S.SubTitle>
+                  </HideableAmount>
+                  <HideableAmount
+                    variant="body2"
+                    color={'foregroundSecondary'}
+                    numberOfLines={1}
+                    textAlign="right"
+                  >
+                    {balance.fiatInfo.amount}
+                  </HideableAmount>
                 </>
               ) : (
                 <Icon name="ic-chevron-right-16" />

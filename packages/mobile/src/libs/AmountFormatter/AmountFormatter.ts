@@ -12,16 +12,18 @@ type AmountFormatterOptions = {
   getLocaleFormat?: () => LocaleFormat;
 };
 
-type AmountFormatOptions = {
+export type AmountFormatOptions = {
   decimals?: number;
   currency?: string;
   currencySeparator?: 'thin' | 'wide'; // Default thin;
   withoutTruncate?: boolean;
   ignoreZeroTruncate?: boolean;
   absolute?: boolean;
+  withPositivePrefix?: boolean;
+  prefix?: string;
 };
 
-type AmountNumber = string | number | BigNumber;
+export type AmountNumber = string | number | BigNumber;
 
 export class AmountFormatter {
   private getDefaultDecimals: (bn: BigNumber) => number;
@@ -74,7 +76,12 @@ export class AmountFormatter {
   }
 
   public format(amount: AmountNumber = 0, options: AmountFormatOptions = {}) {
-    const { currencySeparator = 'thin', absolute = false } = options;
+    const {
+      prefix: prefixFromOptions,
+      withPositivePrefix,
+      currencySeparator = 'thin',
+      absolute = false,
+    } = options;
     let bn = this.toBN(amount);
 
     const decimals = options.decimals ?? this.getDefaultDecimals(bn);
@@ -86,6 +93,8 @@ export class AmountFormatter {
       if (!absolute) {
         prefix += '− ';
       }
+    } else if (withPositivePrefix && !bn.isZero()) {
+      prefix += '+ ';
     }
 
     if (options.currency) {
@@ -107,7 +116,7 @@ export class AmountFormatter {
       decimalSeparator,
       fractionGroupSize: 2,
       groupSize: 3,
-      prefix,
+      prefix: prefixFromOptions ?? prefix,
       suffix,
     };
 

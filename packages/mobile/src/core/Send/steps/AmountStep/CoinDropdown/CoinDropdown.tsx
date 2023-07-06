@@ -1,5 +1,4 @@
 import { useJettonBalances } from '$hooks';
-import { AmountInputRef } from '$shared/components';
 import {
   CryptoCurrencies,
   CryptoCurrency,
@@ -11,9 +10,9 @@ import { walletSelector } from '$store/wallet';
 import { Steezy } from '$styles';
 import { CurrencyIcon, Highlight, Icon, PopupSelect, Spacer, Text, View } from '$uikit';
 import { ns } from '$utils';
-import { formatter } from '$utils/formatter';
 import React, { FC, memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
 
 type CoinItem =
   | { isJetton: false; currency: string; balance: string; decimals: number }
@@ -37,6 +36,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
   const { currencies, balances } = useSelector(walletSelector);
 
   const { enabled: jettons } = useJettonBalances();
+  const format = useHideableFormatter();
 
   const coins = useMemo((): CoinItem[] => {
     const list = [
@@ -109,7 +109,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
                   : item.currency.toUpperCase()}
               </Text>
               {'  '}
-              <Text color="foregroundSecondary">{formatter.format(item.balance)}</Text>
+              <Text color="foregroundSecondary">{format(item.balance)}</Text>
             </Text>
           </>
         )}

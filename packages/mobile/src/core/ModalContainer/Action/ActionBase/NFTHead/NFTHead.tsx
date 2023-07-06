@@ -7,6 +7,10 @@ import { Icon, Text } from '$uikit';
 import _ from 'lodash';
 import { openNFT } from '$navigation';
 import { dnsToUsername } from '$utils/dnsToUsername';
+import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { HideableImage } from '$core/HideableAmount/HideableImage';
+import { Steezy } from '$styles';
+import { DARK_COLORS, RADIUS } from '$styled';
 
 export const NFTHead: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
   const t = useTranslator();
@@ -27,20 +31,24 @@ export const NFTHead: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
     <S.Wrap activeOpacity={0.6} onPress={handleOpenNftItem}>
       {isDNS ? <S.GlobeIcon /> : null}
       {!isDNS && nft?.content?.image?.baseUrl ? (
-        <S.Image source={{ uri: nft?.content?.image?.baseUrl }} />
+        <HideableImage
+          imageStyle={styles.image.static}
+          style={styles.imageContainer.static}
+          uri={nft?.content?.image?.baseUrl}
+        />
       ) : null}
       <S.NameWrapper>
-        <Text numberOfLines={1} variant="h2">
+        <HideableAmount stars="* * * *" numberOfLines={1} variant="h2">
           {isTG
             ? dnsToUsername(nft.dns)
             : nft.dns || nft.name || t('nft_transaction_head_placeholder')}
-        </Text>
+        </HideableAmount>
       </S.NameWrapper>
       {nft?.collection?.name ? (
         <S.CollectionWrapper>
-          <Text numberOfLines={1} color="foregroundSecondary" variant="body1">
+          <HideableAmount numberOfLines={1} color="foregroundSecondary" variant="body1">
             {isDNS ? 'TON DNS' : nft.collection.name}
-          </Text>
+          </HideableAmount>
           {nft?.isApproved ? (
             <Icon style={{ marginLeft: 4 }} name="ic-verification-secondary-16" />
           ) : null}
@@ -49,3 +57,18 @@ export const NFTHead: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
     </S.Wrap>
   );
 };
+
+const styles = Steezy.create({
+  imageContainer: {
+    marginTop: 16,
+    zIndex: 2,
+    height: 96,
+    width: 96,
+    backgroundColor: DARK_COLORS.backgroundTertiary,
+    marginBottom: 20,
+    borderRadius: RADIUS.large,
+  },
+  image: {
+    borderRadius: RADIUS.large,
+  },
+});
