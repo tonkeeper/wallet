@@ -3,16 +3,11 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { HideableAmountContext } from '$core/HideableAmount/HideableAmountProvider';
-import Animated, {
-  Extrapolation,
-  interpolate,
-  interpolateColor,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Steezy } from '$styles';
-import { Highlight, Pressable, View } from '$uikit';
+import { Pressable, View } from '$uikit';
 import { useTheme } from '$hooks';
-import { isAndroid } from '$utils';
+import { Haptics, isAndroid } from '$utils';
 import { DarkTheme } from '$styled';
 
 const TouchableComponent = isAndroid ? Pressable : TouchableHighlight;
@@ -24,6 +19,7 @@ export const ShowBalance: React.FC<{ amount: string }> = ({ amount }) => {
 
   const handleToggleHideAmounts = useCallback(() => {
     hideAmounts();
+    Haptics.impactHeavy();
   }, [hideAmounts]);
 
   const touchableOpacityStyle = useAnimatedStyle(() => {
