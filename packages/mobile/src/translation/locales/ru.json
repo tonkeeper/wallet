@@ -406,6 +406,7 @@
     "about_dapps_learn_more": "Подробнее",
     "actions": {
       "refresh": "Обновить",
+      "mute": "Заглушить",
       "share": "Поделиться",
       "copy_link": "Скопировать ссылку",
       "disconnect": "Отключить"
@@ -460,8 +461,8 @@
   "account_deleted": "Аккаунт удалён",
 
   "notifications_title": "Уведомления",
-  "notifications_switch_title": "Уведомления",
-  "notification_switch_description": "Получайте уведомления при получении TON, токенов и NFT",
+  "notifications_switch_title": "Push-уведомления",
+  "notification_switch_description": "Получайте уведомления при получении TON, токенов, NFT и уведомления от подключенных приложений.",
   "notifications_disabled_title": "Уведомления отключены",
   "notifications_disabled_description": "Вы отключили уведомления в настройках устройства. Чтобы ничего не пропустить разрешите уведомления.",
   "notifications_disabled_action": "Открыть настройки",
@@ -602,7 +603,7 @@
   "reminder_notifications_later_button": "Позже",
 
   "ton_login_title": "Войти в %{name}",
-  "ton_login_caption": "%{name} запрашивает доступ к адресу вашего кошелька\u2028",
+  "ton_login_caption": "%{name} запрашивает доступ к адресу вашего кошелька\n",
   "ton_login_connect_button": "Подключить кошелёк",
   "ton_login_back_to_button": "Вернуться в %{name}",
   "ton_login_success": "Готово",
@@ -858,7 +859,18 @@
     "disconnected_app": "Disconnected app",
     "earlier": "Ранее",
     "apps": "Приложения",
-    "allow_notifications": "Разрешить уведомления"
+    "apps_description": "Уведомления от подключенных приложений в вашей активности",
+    "allow_notifications": "Разрешить уведомления",
+    "placeholder": {
+      "title": "Уведомления будут отображаться здесь",
+      "description": "Исследуйте приложения и сервисы в браузере Tonkeeper."
+    },
+    "alert": {
+      "title": "Вы уверены, что хотите открыть внешнюю ссылку?",
+      "description": "Адрес ссылки из уведомления не совпадает с адресом приложения.",
+      "open": "Открыть всё равно",
+      "cancel": "Отмена"
+    }
   }
 }
 

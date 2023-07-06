@@ -5,8 +5,8 @@ import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { IConnectedAppsStore, TonConnectBridgeType } from './types';
 import { Tonapi } from '$libs/Tonapi';
 import messaging from '@react-native-firebase/messaging';
-import { useNotificationsStore } from '$store/zustand';
 import * as SecureStore from 'expo-secure-store';
+import { useNotificationsStore } from '$store/zustand';
 
 const initialState: Omit<IConnectedAppsStore, 'actions'> = {
   connectedApps: {
@@ -56,12 +56,7 @@ export const useConnectedAppsStore = create(
           removeInjectedConnection: async (chainName, walletAddress, url) => {
             const fixedUrl = getFixedLastSlashUrl(url);
 
-            get().actions.disableNotifications(
-              chainName,
-              walletAddress,
-              url,
-              await messaging().getToken(),
-            );
+            get().actions.disableNotifications(chainName, walletAddress, url);
 
             set(({ connectedApps }) => {
               const keys = Object.keys(connectedApps[chainName][walletAddress] || {});
@@ -101,12 +96,7 @@ export const useConnectedAppsStore = create(
           ) => {
             const fixedUrl = getFixedLastSlashUrl(url);
 
-            get().actions.disableNotifications(
-              chainName,
-              walletAddress,
-              url,
-              await messaging().getToken(),
-            );
+            get().actions.disableNotifications(chainName, walletAddress, url);
 
             set(({ connectedApps }) => {
               const keys = Object.keys(connectedApps[chainName][walletAddress] || {});
@@ -188,6 +178,8 @@ export const useConnectedAppsStore = create(
               return;
             }
 
+            useNotificationsStore.getState().actions.removeNotificationsByDappUrl(url);
+
             Tonapi.unsubscribeFromNotifications(token, {
               firebase_token,
               app_url: fixedUrl,
@@ -212,8 +204,10 @@ export const useConnectedAppsStore = create(
               return { connectedApps };
             });
           },
-          removeApp: (chainName, walletAddress, url) => {
+          removeApp: async (chainName, walletAddress, url) => {
             const fixedUrl = getFixedLastSlashUrl(url);
+
+            get().actions.disableNotifications(chainName, walletAddress, url);
 
             set(({ connectedApps }) => {
               const keys = Object.keys(connectedApps[chainName][walletAddress] || {});

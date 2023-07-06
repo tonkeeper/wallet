@@ -47,6 +47,7 @@ export const ActivityScreen: FC = () => {
   } = useSelector(eventsSelector);
   const notifications = useNotificationsStore((state) => state.notifications);
   const lastSeenAt = useNotificationsStore((state) => state.last_seen);
+  const removeRedDot = useNotificationsStore((state) => state.actions.removeRedDot);
 
   const netInfo = useNetInfo();
   const prevNetInfo = usePrevious(netInfo);
@@ -54,6 +55,12 @@ export const ActivityScreen: FC = () => {
   const isFocused = useIsFocused();
 
   const isEventsLoadingMore = !isRefreshing && isEventsLoading && !!wallet;
+
+  useEffect(() => {
+    if (isFocused) {
+      removeRedDot();
+    }
+  }, [isFocused, removeRedDot]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -221,7 +228,10 @@ export const ActivityScreen: FC = () => {
     }
   }, [wallet]);
 
-  if (isLoaded && (!wallet || Object.keys(eventsInfo).length < 1)) {
+  if (
+    isLoaded &&
+    (!wallet || (Object.keys(eventsInfo).length < 1 && notifications.length < 1))
+  ) {
     return (
       <Screen>
         <View style={styles.emptyContainer}>

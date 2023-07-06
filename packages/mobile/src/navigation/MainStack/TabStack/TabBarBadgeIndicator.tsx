@@ -1,24 +1,11 @@
 import { useTheme } from '$hooks';
-import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
-import { getCurrentRoute } from '$navigation/helper';
-import { SettingsStackRouteNames } from '$navigation/navigationNames';
 import { ns } from '$utils';
 import React from 'react';
 import { View } from 'react-native';
-import { useSelector } from "react-redux";
-import { walletWalletSelector } from "$store/wallet";
 
-export const TabBarBadgeIndicator = () => {
+export const TabBarBadgeIndicator: React.FC<{ isVisible: boolean }> = ({ isVisible }) => {
   const theme = useTheme();
-  const notificationsBadge = useNotificationsBadge();
-  const route = getCurrentRoute();
-  const wallet = useSelector(walletWalletSelector);
-
-  if (
-    !!wallet &&
-    notificationsBadge.isVisible &&
-    route.name !== SettingsStackRouteNames.Notifications
-  ) {
+  if (isVisible) {
     return (
       <View
         style={{
@@ -35,4 +22,4 @@ export const TabBarBadgeIndicator = () => {
   }
 
   return null;
-}
+};
