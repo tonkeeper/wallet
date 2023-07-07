@@ -163,7 +163,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
               onChange={handlePressAction}
               renderItem={(item) => <Text variant="label1">{item.label}</Text>}
               keyExtractor={(item) => item.label}
-              autoWidth={true}
+              autoWidth
               minWidth={180}
             >
               <S.ActionItemTouchable
