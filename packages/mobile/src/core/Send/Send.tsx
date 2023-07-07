@@ -49,10 +49,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     if (initialAmount !== '0' && initialFee !== '0') {
       return SendSteps.CONFIRM;
     }
-    if (initialAddress) {
-      return SendSteps.AMOUNT;
-    }
-  }, [initialAmount, initialFee, initialAddress]);
+  }, [initialAmount, initialFee]);
 
   const t = useTranslator();
 
