@@ -1,9 +1,8 @@
-import { createContext, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext } from 'react';
 import { SharedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 
-// @ts-ignore
-export const HideableAmountContext = createContext<SharedValue<number>>(null);
+export const HideableAmountContext = createContext<SharedValue<number> | null>(null);
 
 const ANIMATION_DURATION = 300;
 
@@ -22,4 +21,14 @@ export const HideableAmountProvider: React.FC<{ children: ReactNode }> = ({
       {children}
     </HideableAmountContext.Provider>
   );
+};
+
+export const useHideableAmount = () => {
+  const context = useContext(HideableAmountContext);
+
+  if (context === null) {
+    throw new Error('Need wrap HideableAmountContext');
+  }
+
+  return context;
 };

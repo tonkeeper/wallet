@@ -1,6 +1,9 @@
 import { StyleProp, ViewStyle, StyleSheet, ImageStyle } from 'react-native';
 import React, { memo, ReactNode, useContext } from 'react';
-import { HideableAmountContext } from '$core/HideableAmount/HideableAmountProvider';
+import {
+  HideableAmountContext,
+  useHideableAmount,
+} from '$core/HideableAmount/HideableAmountProvider';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { View } from '$uikit';
 import Animated from 'react-native-reanimated';
@@ -23,7 +26,7 @@ const HideableImageComponent: React.FC<HideableImageProps> = ({
   imageStyle,
   image,
 }) => {
-  const animationProgress = useContext(HideableAmountContext);
+  const animationProgress = useHideableAmount();
   const blurContainerStyle = useAnimatedStyle(() => {
     return {
       opacity: animationProgress.value,

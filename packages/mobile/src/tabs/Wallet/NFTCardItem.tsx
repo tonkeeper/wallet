@@ -1,8 +1,7 @@
 import { useTranslator } from '$hooks';
 import { openNFT } from '$navigation';
-import { DarkTheme } from '$styles';
-import { Steezy } from '$styles';
-import { View, Icon, Pressable } from '$uikit';
+import { DarkTheme, Steezy } from '$styles';
+import { Icon, Pressable, View } from '$uikit';
 import { checkIsTonDiamondsNFT, maskifyTonAddress } from '$utils';
 import { useFlags } from '$utils/flags';
 import _ from 'lodash';
@@ -10,7 +9,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import * as S from '../../core/NFTs/NFTItem/NFTItem.style';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { Address } from '$libs/Ton';
-import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { AnimationDirection, HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { HideableImage } from '$core/HideableAmount/HideableImage';
 
 interface NFTCardItemProps {
@@ -74,10 +73,20 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
         )}
       </HideableImage>
       <View style={styles.info}>
-        <HideableAmount stars="* * * *" variant="label2" numberOfLines={1}>
+        <HideableAmount
+          animationDirection={AnimationDirection.Left}
+          stars="* * * *"
+          variant="label2"
+          numberOfLines={1}
+        >
           {title}
         </HideableAmount>
-        <HideableAmount variant="body3" color="textSecondary" numberOfLines={1}>
+        <HideableAmount
+          animationDirection={AnimationDirection.Left}
+          variant="body3"
+          color="textSecondary"
+          numberOfLines={1}
+        >
           {isDNS
             ? 'TON DNS'
             : item?.collection

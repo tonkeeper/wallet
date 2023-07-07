@@ -1,17 +1,28 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Text } from '$uikit';
 import { TextProps } from '$uikit/Text/Text';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { Steezy } from '$styles';
-import { HideableAmountContext } from '$core/HideableAmount/HideableAmountProvider';
+import { useHideableAmount } from '$core/HideableAmount/HideableAmountProvider';
 
-const HideableAmountComponent: React.FC<TextProps & { stars?: string }> = ({
+export enum AnimationDirection {
+  Left = -1,
+  Right = 1,
+  None = 0,
+}
+
+const HideableAmountComponent: React.FC<
+  TextProps & { stars?: string; animationDirection?: AnimationDirection }
+> = ({
   children,
   style,
+  animationDirection = AnimationDirection.Right,
   stars = '* * *',
   ...rest
 }) => {
-  const animationProgress = useContext(HideableAmountContext);
+  const animationProgress = useHideableAmount();
+
+  const translateXTo = 10 * animationDirection;
 
   const amountStyle = useAnimatedStyle(() => {
     return {
@@ -19,7 +30,7 @@ const HideableAmountComponent: React.FC<TextProps & { stars?: string }> = ({
       opacity: interpolate(animationProgress.value, [0, 0.5], [1, 0]),
       transform: [
         {
-          translateX: interpolate(animationProgress.value, [0, 0.5], [0, 10]),
+          translateX: interpolate(animationProgress.value, [0, 0.5], [0, translateXTo]),
         },
         {
           scale: interpolate(animationProgress.value, [0, 0.5], [1, 0.85]),
@@ -34,7 +45,7 @@ const HideableAmountComponent: React.FC<TextProps & { stars?: string }> = ({
       opacity: interpolate(animationProgress.value, [1, 0.5], [1, 0]),
       transform: [
         {
-          translateX: interpolate(animationProgress.value, [1, 0.5], [0, 10]),
+          translateX: interpolate(animationProgress.value, [1, 0.5], [0, translateXTo]),
         },
         {
           scale: interpolate(animationProgress.value, [1, 0.5], [1, 0.85]),

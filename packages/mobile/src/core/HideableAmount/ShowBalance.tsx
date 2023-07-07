@@ -1,8 +1,11 @@
 import React, { useCallback, useContext } from 'react';
-import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { AnimationDirection, HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
-import { HideableAmountContext } from '$core/HideableAmount/HideableAmountProvider';
+import {
+  HideableAmountContext,
+  useHideableAmount,
+} from '$core/HideableAmount/HideableAmountProvider';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Steezy } from '$styles';
 import { Pressable, View } from '$uikit';
@@ -14,7 +17,7 @@ const TouchableComponent = isAndroid ? Pressable : TouchableHighlight;
 
 export const ShowBalance: React.FC<{ amount: string }> = ({ amount }) => {
   const hideAmounts = usePrivacyStore((state) => state.actions.toggleHiddenAmounts);
-  const animationProgress = useContext(HideableAmountContext);
+  const animationProgress = useHideableAmount();
   const { colors } = useTheme();
 
   const handleToggleHideAmounts = useCallback(() => {
@@ -39,7 +42,9 @@ export const ShowBalance: React.FC<{ amount: string }> = ({ amount }) => {
     <View style={styles.container}>
       <Animated.View style={touchableOpacityStyle}>
         <TouchableOpacity activeOpacity={0.6} onPress={handleToggleHideAmounts}>
-          <HideableAmount variant="num2">{amount}</HideableAmount>
+          <HideableAmount animationDirection={AnimationDirection.None} variant="num2">
+            {amount}
+          </HideableAmount>
         </TouchableOpacity>
       </Animated.View>
       <Animated.View style={[pressableStyle, styles.starsContainer.static]}>
@@ -48,7 +53,11 @@ export const ShowBalance: React.FC<{ amount: string }> = ({ amount }) => {
           underlayColor={DarkTheme.colors.backgroundHighlighted}
           onPress={handleToggleHideAmounts}
         >
-          <HideableAmount style={styles.stars.static} variant="num2">
+          <HideableAmount
+            animationDirection={AnimationDirection.None}
+            style={styles.stars.static}
+            variant="num2"
+          >
             {amount}
           </HideableAmount>
         </TouchableComponent>
