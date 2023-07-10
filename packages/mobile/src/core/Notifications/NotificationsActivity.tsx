@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Button, Icon, Screen, Text, View } from '$uikit';
+import { Button, Icon, Screen, Spacer, Text, View } from '$uikit';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { Notification } from '$core/Notifications/Notification';
 import { Steezy } from '$styles';
@@ -8,6 +8,7 @@ import { t } from '$translation';
 import { INotification } from '$store';
 import { FlashList } from '@shopify/flash-list';
 import { LayoutAnimation } from 'react-native';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 export enum ActivityListItem {
   Notification = 'Notification',
@@ -18,8 +19,33 @@ export function getNewNotificationsCount(
   notifications: INotification[],
   lastSeenAt: number,
 ) {
+  return notifications.filter((notification) => notification.received_at > lastSeenAt)
+    .length;
+}
+
+export function getIndexForEarlierTitle(
+  notifications: INotification[],
+  lastSeenAt: number,
+) {
   return notifications.findIndex((notification) => notification.received_at < lastSeenAt);
 }
+
+export const ListEmpty: React.FC = () => {
+  const tabbarHeight = useBottomTabBarHeight();
+  return (
+    <View style={[styles.emptyContainer, { marginBottom: tabbarHeight }]}>
+      <View>
+        <Text textAlign="center" variant="h2">
+          {t('notifications.placeholder.title')}
+        </Text>
+        <Spacer y={4} />
+        <Text textAlign="center" variant="body1" color="textSecondary">
+          {t('notifications.placeholder.description')}
+        </Text>
+      </View>
+    </View>
+  );
+};
 
 export const NotificationsActivity: React.FC = () => {
   const notifications = useNotificationsStore((state) => state.notifications);
@@ -28,6 +54,7 @@ export const NotificationsActivity: React.FC = () => {
   const list = useRef<FlashList<Element | null> | null>(null);
   const closeOtherSwipeable = useRef<null | (() => void)>(null);
   const lastSwipeableId = useRef<null | number>(null);
+  const tabBarHeight = useBottomTabBarHeight();
 
   const handleOpenNotificationSettings = useCallback(() => {
     openNotifications();
@@ -44,7 +71,7 @@ export const NotificationsActivity: React.FC = () => {
         };
       });
 
-    const indexToPushTitle = getNewNotificationsCount(notifications, lastSeenAt);
+    const indexToPushTitle = getIndexForEarlierTitle(notifications, lastSeenAt);
 
     // divide notifications into two groups: earlier and not seen before
     if (![0, -1].includes(indexToPushTitle)) {
@@ -108,14 +135,19 @@ export const NotificationsActivity: React.FC = () => {
         }
         title={'Notifications'}
       />
-      <Screen.FlashList
-        ref={list}
-        estimatedItemSize={87}
-        keyExtractor={(item) => item.id}
-        renderItem={renderNotificationsItem}
-        contentContainerStyle={{ paddingBottom: 8 }}
-        data={flashListData}
-      />
+      {flashListData.length === 0 ? (
+        <ListEmpty />
+      ) : (
+        <Screen.FlashList
+          ref={list}
+          estimatedItemSize={87}
+          keyExtractor={(item) => item.id}
+          renderItem={renderNotificationsItem}
+          contentContainerStyle={{ paddingBottom: tabBarHeight + 8 }}
+          data={flashListData}
+          ListEmptyComponent={ListEmpty}
+        />
+      )}
     </Screen>
   );
 };
@@ -124,5 +156,10 @@ const styles = Steezy.create({
   titleStyle: {
     marginVertical: 14,
     marginHorizontal: 16,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

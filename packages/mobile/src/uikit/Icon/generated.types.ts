@@ -11,6 +11,7 @@ export type IconNames =
   | 'ic-appearance-16'
   | 'ic-arrow-down-16'
   | 'ic-arrow-up-16'
+  | 'ic-bell-disable-16'
   | 'ic-chevron-16'
   | 'ic-chevron-down-16'
   | 'ic-chevron-left-16'
@@ -132,6 +133,7 @@ export const AllIcons = [
   'ic-appearance-16',
   'ic-arrow-down-16',
   'ic-arrow-up-16',
+  'ic-bell-disable-16',
   'ic-chevron-16',
   'ic-chevron-down-16',
   'ic-chevron-left-16',
@@ -254,6 +256,7 @@ export const IconSizes = {
   'ic-appearance-16': 16,
   'ic-arrow-down-16': 16,
   'ic-arrow-up-16': 16,
+  'ic-bell-disable-16': 16,
   'ic-chevron-16': 16,
   'ic-chevron-down-16': 16,
   'ic-chevron-left-16': 16,

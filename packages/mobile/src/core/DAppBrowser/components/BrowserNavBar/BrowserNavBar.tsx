@@ -77,7 +77,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
       items.push({
         type: PopupActionType.MUTE,
         label: t('browser.actions.mute'),
-        icon: 'ic-disconnect-16',
+        icon: 'ic-bell-disable-16',
       });
     }
 

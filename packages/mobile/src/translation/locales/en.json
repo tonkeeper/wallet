@@ -445,8 +445,8 @@
   "account_deleted": "Account deleted",
 
   "notifications_title": "Notifications",
-  "notifications_switch_title": "Notifications",
-  "notification_switch_description": "Get notifications when you receive TON, tokens and NFTs",
+  "notifications_switch_title": "Push notifications",
+  "notification_switch_description": "Get notifications when you receive TON, tokens and NFTs. Notifications from connected apps.",
   "notifications_disabled_title": "Notifications are disabled",
   "notifications_disabled_description": "You turned off notifications in your phone’s settings. To activate notifications, go to Settings on this device.",
   "notifications_disabled_action": "Open Settings",
@@ -837,6 +837,17 @@
     "disconnected_app": "Disconnected app",
     "earlier": "Earlier",
     "apps": "Apps",
-    "allow_notifications": "Allow notifications"
+    "apps_description": "Notifications from connected apps in your activity",
+    "allow_notifications": "Allow notifications",
+    "placeholder": {
+      "title": "Notifications will be shown here",
+      "description": "Explore apps and services in Tonkeeper browser."
+    },
+    "alert": {
+      "title": "Are you sure you want to open an external link?",
+      "description": "Link address from the notification doesn't match with app address.",
+      "open": "Open anyway",
+      "cancel": "Cancel"
+    }
   }
 }
