@@ -5,16 +5,13 @@ import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
 import {
   compareAddresses,
-  format,
+  format as formatDate,
   fromNano,
   maskifyAddress,
   maskifyTonAddress,
-  toLocaleNumber,
-  truncateDecimal,
 } from '$utils';
 import BigNumber from 'bignumber.js';
 import { useTranslator } from '$hooks/useTranslator';
-import { formatCryptoCurrency } from '$utils/currency';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import {
   ActionBaseProps,
@@ -29,6 +26,7 @@ import { Text } from '$uikit';
 import { useFiatRate } from './useFiatRate';
 import { fiatCurrencySelector } from '$store/main';
 import { useGetJettonPrice } from './useJettonPrice';
+import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
 
 export function usePrepareDetailedAction(
   rawAction: Action,
@@ -40,6 +38,7 @@ export function usePrepareDetailedAction(
   const fiatRate = useFiatRate(CryptoCurrencies.Ton);
   const fiatCurrency = useSelector(fiatCurrencySelector);
   const getJettonPrice = useGetJettonPrice();
+  const format = useHideableFormatter();
 
   return useMemo(() => {
     const action = rawAction[ActionType[rawAction.type]];
@@ -74,17 +73,15 @@ export function usePrepareDetailedAction(
         );
       }
       const amount = TonWeb.utils.fromNano(new BigNumber(action.amount).abs().toString());
-      label =
-        prefix +
-        ' ' +
-        formatter.format(amount, {
-          withoutTruncate: true,
-          decimals: Decimals[CryptoCurrencies.Ton],
-          currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
-          currencySeparator: 'wide',
-        });
+      label = format(amount, {
+        prefix: `${prefix} `,
+        withoutTruncate: true,
+        decimals: Decimals[CryptoCurrencies.Ton],
+        currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
+        currencySeparator: 'wide',
+      });
       fiatValue = !isFailed
-        ? formatter.format(fiatRate.today * parseFloat(amount), {
+        ? format(fiatRate.today * parseFloat(amount), {
             currency: fiatCurrency,
             currencySeparator: 'wide',
           })
@@ -111,15 +108,13 @@ export function usePrepareDetailedAction(
         action.jetton.address &&
         new TonWeb.Address(action.jetton.address).toString(true, true, true);
       const amount = fromNano(action.amount, action.jetton?.decimals ?? 9);
-      label =
-        prefix +
-        ' ' +
-        formatter.format(amount, {
-          withoutTruncate: true,
-          decimals: action.jetton.decimals ?? 9,
-          currency: action.jetton?.symbol || '',
-          currencySeparator: 'wide',
-        });
+      label = format(amount, {
+        prefix: `${prefix} `,
+        withoutTruncate: true,
+        decimals: action.jetton.decimals ?? 9,
+        currency: action.jetton?.symbol || '',
+        currencySeparator: 'wide',
+      });
       const jettonPrice = getJettonPrice(jettonAddress, amount);
       fiatValue =
         !isFailed && jettonPrice.total_numeric
@@ -134,26 +129,22 @@ export function usePrepareDetailedAction(
       const amount = TonWeb.utils.fromNano(new BigNumber(action.amount).abs().toString());
       if (compareAddresses(action.beneficiary.address, address.ton)) {
         sentLabelTranslationString = 'transaction_receive_date';
-        label =
-          '+' +
-          ' ' +
-          formatter.format(amount, {
-            withoutTruncate: true,
-            decimals: Decimals[CryptoCurrencies.Ton],
-            currency: CryptoCurrencies.Ton.toUpperCase(),
-            currencySeparator: 'wide',
-          });
+        label = format(amount, {
+          prefix: `+ `,
+          withoutTruncate: true,
+          decimals: Decimals[CryptoCurrencies.Ton],
+          currency: CryptoCurrencies.Ton.toUpperCase(),
+          currencySeparator: 'wide',
+        });
       } else {
         sentLabelTranslationString = 'transaction_subscription_date';
-        label =
-          '-' +
-          ' ' +
-          formatter.format(amount, {
-            withoutTruncate: true,
-            decimals: Decimals[CryptoCurrencies.Ton],
-            currency: CryptoCurrencies.Ton.toUpperCase(),
-            currencySeparator: 'wide',
-          });
+        label = formatter.format(amount, {
+          prefix: `- `,
+          withoutTruncate: true,
+          decimals: Decimals[CryptoCurrencies.Ton],
+          currency: CryptoCurrencies.Ton.toUpperCase(),
+          currencySeparator: 'wide',
+        });
       }
       fiatValue = !isFailed
         ? formatter.format(fiatRate.today * parseFloat(amount), {
@@ -183,15 +174,13 @@ export function usePrepareDetailedAction(
       const amount = TonWeb.utils.fromNano(
         new BigNumber(action.amount.value).abs().toString(),
       );
-      label =
-        '-' +
-        ' ' +
-        formatter.format(amount, {
-          withoutTruncate: true,
-          decimals: Decimals[CryptoCurrencies.Ton],
-          currency: CryptoCurrencies.Ton.toUpperCase(),
-          currencySeparator: 'wide',
-        });
+      label = format(amount, {
+        prefix: `- `,
+        withoutTruncate: true,
+        decimals: Decimals[CryptoCurrencies.Ton],
+        currency: CryptoCurrencies.Ton.toUpperCase(),
+        currencySeparator: 'wide',
+      });
 
       infoRows.push({
         label: t('transaction_bid_dns'),
@@ -284,7 +273,7 @@ export function usePrepareDetailedAction(
       label,
       eventId: event.eventId,
       sentLabel: t(sentLabelTranslationString, {
-        date: format(
+        date: formatDate(
           event.timestamp * 1000,
           differenceInCalendarYears(event.timestamp, new Date()) === 0
             ? 'd MMM, HH:mm'
@@ -311,5 +300,18 @@ export function usePrepareDetailedAction(
     }
 
     return actionProps;
-  }, [rawAction, address.ton, event, t, subscriptionsInfo]);
+  }, [
+    rawAction,
+    address.ton,
+    subscriptionsInfo,
+    event.inProgress,
+    event.fee,
+    event.eventId,
+    event.timestamp,
+    event.isScam,
+    t,
+    fiatRate.today,
+    fiatCurrency,
+    getJettonPrice,
+  ]);
 }

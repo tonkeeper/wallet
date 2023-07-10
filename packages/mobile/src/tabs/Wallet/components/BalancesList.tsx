@@ -15,6 +15,7 @@ import { NFTsList } from '../components/NFTsList';
 import { useTheme } from '$hooks';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StakingWidget } from './StakingWidget';
+import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 
 enum ContentType {
   Token,
@@ -81,9 +82,25 @@ const RenderItem = ({ item }: { item: Content }) => {
             onPress={item.onPress}
             title={item.title}
             picture={item.picture}
-            value={item.value}
+            value={
+              <HideableAmount
+                style={styles.valueText.static}
+                variant="label1"
+                stars=" * * *"
+              >{` ${item.value}`}</HideableAmount>
+            }
             label={item.label}
-            subvalue={item.subvalue}
+            subvalue={
+              item.subvalue && (
+                <HideableAmount
+                  style={styles.subvalueText.static}
+                  variant="body2"
+                  color="textSecondary"
+                >
+                  {item.subvalue}
+                </HideableAmount>
+              )
+            }
             subtitle={
               item.rate ? (
                 <ListItemRate
@@ -279,6 +296,14 @@ const styles = Steezy.create(({ colors, corners }) => ({
     overflow: 'hidden',
     backgroundColor: colors.backgroundContent,
     marginHorizontal: 16,
+  },
+  valueText: {
+    textAlign: 'right',
+    flexShrink: 1,
+  },
+  subvalueText: {
+    color: colors.textSecondary,
+    textAlign: 'right',
   },
 
   container: {

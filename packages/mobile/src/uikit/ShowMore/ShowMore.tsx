@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
 import { Text } from '$uikit';
 import { useTranslator } from '$hooks';
-import {TouchableOpacity, View} from 'react-native';
-import LinearGradient from "react-native-linear-gradient";
-import {changeAlphaValue, convertHexToRGBA, ns} from "$utils";
+import { TouchableOpacity, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { changeAlphaValue, convertHexToRGBA, ns } from '$utils';
 
 export interface ShowMoreProps {
   maxLines: number;
@@ -14,7 +14,11 @@ export interface ShowMoreProps {
   backgroundColor?: string;
 }
 
-export const ShowMore: React.FC<ShowMoreProps> = ({ maxLines, text, backgroundColor = '#1D2633' }) => {
+export const ShowMore: React.FC<ShowMoreProps> = ({
+  maxLines,
+  text,
+  backgroundColor = '#1D2633',
+}) => {
   const t = useTranslator();
 
   const [showEllipsize, setShowEllipsize] = useState(false);
@@ -47,7 +51,7 @@ export const ShowMore: React.FC<ShowMoreProps> = ({ maxLines, text, backgroundCo
           end={{ x: 1, y: 1 }}
           colors={[
             changeAlphaValue(convertHexToRGBA(backgroundColor), 0),
-            convertHexToRGBA(backgroundColor)
+            convertHexToRGBA(backgroundColor),
           ]}
           style={{ width: ns(24), height: ns(20) }}
         />

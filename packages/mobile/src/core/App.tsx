@@ -15,6 +15,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { PortalDestination } from '@alexzunik/rn-native-portals-reborn';
 import { isAndroid } from '$utils';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import { HideableAmountProvider } from '$core/HideableAmount/HideableAmountProvider';
 import { BackgroundBlur } from '$core/BackgroundBlur/BackgroundBlur';
 
 const TonThemeProvider: FC = ({ children }) => {
@@ -47,7 +48,9 @@ export const App: FC = () => {
           <TonThemeProvider>
             <SafeAreaProvider>
               <ScrollPositionProvider>
-                <AppNavigator />
+                <HideableAmountProvider>
+                  <AppNavigator />
+                </HideableAmountProvider>
               </ScrollPositionProvider>
               <ToastComponent />
               <BackgroundBlur />

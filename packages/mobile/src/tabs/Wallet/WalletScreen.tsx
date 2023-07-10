@@ -41,6 +41,9 @@ import { useFlags } from '$utils/flags';
 import { useUpdatesStore } from '$store/zustand/updates/useUpdatesStore';
 import { UpdatesCell } from '$core/ApprovalCell/Updates/UpdatesCell';
 import { UpdateState } from '$store/zustand/updates/types';
+import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
+import { ShowBalance } from '$core/HideableAmount/ShowBalance';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -54,7 +57,6 @@ export const WalletScreen = memo(() => {
   const wallet = useWallet();
   const shouldUpdate =
     useUpdatesStore((state) => state.update.state) !== UpdateState.NOT_STARTED;
-
   const balance = useBalance(tokens.total.fiat);
   const rates = useRates();
 
@@ -127,7 +129,7 @@ export const WalletScreen = memo(() => {
       ))}
       {shouldUpdate && <UpdatesCell />}
       <View style={styles.amount} pointerEvents="box-none">
-        <Text variant="num2">{balance.total.fiat}</Text>
+        <ShowBalance amount={balance.total.fiat} />
         <View style={styles.walletSpace} />
         {wallet && (
           <TouchableOpacity
