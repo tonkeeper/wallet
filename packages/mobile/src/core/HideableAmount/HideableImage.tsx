@@ -1,11 +1,8 @@
-import { StyleProp, ViewStyle, StyleSheet, ImageStyle } from 'react-native';
-import React, { memo, ReactNode, useContext } from 'react';
-import {
-  HideableAmountContext,
-  useHideableAmount,
-} from '$core/HideableAmount/HideableAmountProvider';
+import { StyleProp, ViewStyle, StyleSheet, ImageStyle, Platform } from 'react-native';
+import React, { memo, ReactNode } from 'react';
+import { useHideableAmount } from '$core/HideableAmount/HideableAmountProvider';
 import { useAnimatedStyle } from 'react-native-reanimated';
-import { View } from '$uikit';
+import { DominantColorBackground, View } from '$uikit';
 import Animated from 'react-native-reanimated';
 import { Steezy } from '$styles';
 import { BlurView } from 'expo-blur';
@@ -43,7 +40,11 @@ const HideableImageComponent: React.FC<HideableImageProps> = ({
           blurContainerStyle,
         ]}
       >
-        <BlurView style={[StyleSheet.absoluteFill]} intensity={70} />
+        {Platform.OS === 'ios' ? (
+          <BlurView style={[StyleSheet.absoluteFill]} intensity={70} />
+        ) : (
+          <DominantColorBackground style={StyleSheet.absoluteFill} uri={uri} />
+        )}
       </Animated.View>
       {image ?? (
         <FastImage
