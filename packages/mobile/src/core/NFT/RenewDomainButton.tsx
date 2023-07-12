@@ -54,7 +54,7 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
           messages: [
             {
               address: domainAddress,
-              amount: Ton.toNano('0.005'),
+              amount: Ton.toNano('0.02'),
             },
           ],
         },
