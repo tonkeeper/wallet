@@ -21,7 +21,7 @@ import { useAppStateActive, usePrevious, useTheme, useTranslator } from '$hooks'
 import { walletActions, walletSelector } from '$store/wallet';
 import { ns } from '$utils';
 import { NavBarHeight, TabletMaxWidth } from '$shared/constants';
-import { openNotificationsScreen, openRequireWalletModal } from '$navigation';
+import { openRequireWalletModal } from '$navigation';
 import { eventsActions, eventsSelector } from '$store/events';
 import { mainActions } from '$store/main';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
@@ -30,8 +30,6 @@ import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsLi
 import { useNavigation } from '$libs/navigation';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { Steezy } from '$styles';
-import { Notification } from '$core/Notifications/Notification';
-import { getNewNotificationsCount } from '$core/Notifications/NotificationsActivity';
 
 export const ActivityScreen: FC = () => {
   const nav = useNavigation();
@@ -45,9 +43,9 @@ export const ActivityScreen: FC = () => {
     eventsInfo,
     canLoadMore,
   } = useSelector(eventsSelector);
-  const notifications = useNotificationsStore((state) => state.notifications);
-  const lastSeenAt = useNotificationsStore((state) => state.last_seen);
-  const removeRedDot = useNotificationsStore((state) => state.actions.removeRedDot);
+  // const notifications = useNotificationsStore((state) => state.notifications);
+  // const lastSeenAt = useNotificationsStore((state) => state.last_seen);
+  // const removeRedDot = useNotificationsStore((state) => state.actions.removeRedDot);
 
   const netInfo = useNetInfo();
   const prevNetInfo = usePrevious(netInfo);
@@ -56,11 +54,11 @@ export const ActivityScreen: FC = () => {
 
   const isEventsLoadingMore = !isRefreshing && isEventsLoading && !!wallet;
 
-  useEffect(() => {
-    if (isFocused) {
-      removeRedDot();
-    }
-  }, [isFocused, removeRedDot]);
+  // useEffect(() => {
+  //   if (isFocused) {
+  //     removeRedDot();
+  //   }
+  // }, [isFocused, removeRedDot]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -81,10 +79,6 @@ export const ActivityScreen: FC = () => {
   const handleRefresh = useCallback(() => {
     dispatch(walletActions.refreshBalancesPage(true));
   }, [dispatch]);
-
-  const handleOpenNotificationsScreen = useCallback(() => {
-    openNotificationsScreen();
-  }, []);
 
   const initialData = useMemo(() => {
     const result: {
@@ -108,48 +102,6 @@ export const ActivityScreen: FC = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   }, []);
 
-  const renderNotificationsHeader = useCallback(() => {
-    if (!notifications.length) {
-      return null;
-    }
-
-    const newNotificationsCount = getNewNotificationsCount(notifications, lastSeenAt);
-
-    return (
-      <View style={styles.notificationsHeader}>
-        <Spacer y={12} />
-        {notifications
-          .slice(0, Math.min(newNotificationsCount, 2))
-          .map((notification) => (
-            <Notification
-              onRemove={onRemoveNotification}
-              notification={notification}
-              key={notification.received_at}
-            />
-          ))}
-        <List style={styles.listStyle.static}>
-          <List.Item
-            leftContent={
-              <View style={styles.iconContainer}>
-                <Icon name={'ic-bell-28'} color={'iconSecondary'} />
-              </View>
-            }
-            rightContent={
-              newNotificationsCount > 0 ? (
-                <View style={styles.notificationsCount}>
-                  <Text variant="label2">{newNotificationsCount}</Text>
-                </View>
-              ) : null
-            }
-            onPress={handleOpenNotificationsScreen}
-            title={t('notifications.notifications')}
-            subtitle={t('notifications.from_connected')}
-            chevron
-          />
-        </List>
-      </View>
-    );
-  }, [notifications, lastSeenAt, handleOpenNotificationsScreen, t, onRemoveNotification]);
 
   function renderFooter() {
     return (
@@ -177,7 +129,6 @@ export const ActivityScreen: FC = () => {
 
     return (
       <TransactionsList
-        renderHeader={renderNotificationsHeader}
         refreshControl={
           <RefreshControl
             onRefresh={handleRefresh}
@@ -230,7 +181,7 @@ export const ActivityScreen: FC = () => {
 
   if (
     isLoaded &&
-    (!wallet || (Object.keys(eventsInfo).length < 1 && notifications.length < 1))
+    (!wallet || (Object.keys(eventsInfo).length < 1))
   ) {
     return (
       <Screen>

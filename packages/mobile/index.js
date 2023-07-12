@@ -32,6 +32,7 @@ if (__DEV__) {
 
 async function handleDappMessage(remoteMessage) {
   // handle data-only messages
+  return;
   if (remoteMessage.notification?.body) {
     return null;
   }
