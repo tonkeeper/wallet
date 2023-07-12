@@ -124,7 +124,7 @@ export const Notifications: React.FC = () => {
             value={isSubscribeNotifications}
           />
         </CellSection>
-        {connectedApps.length ? (
+        {/* {connectedApps.length ? (
           <>
             <View style={styles.title}>
               <Text variant="h3">{t('notifications.apps')}</Text>
@@ -155,7 +155,7 @@ export const Notifications: React.FC = () => {
               ))}
             </CellSection>
           </>
-        ) : null}
+        ) : null} */}
       </Screen.ScrollView>
     </Screen>
   );
