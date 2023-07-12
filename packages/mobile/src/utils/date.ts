@@ -109,7 +109,7 @@ export function getCountOfDays(start: number, end: number) {
 
   const oneDay = 1000 * 60 * 60 * 24;
   const diffInTime = date2.getTime() - date1.getTime();
-  const diffInDays = Math.round(diffInTime / oneDay);
+  const diffInDays = Math.ceil(diffInTime / oneDay);
 
   return diffInDays;
 }
