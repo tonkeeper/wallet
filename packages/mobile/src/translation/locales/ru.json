@@ -380,6 +380,8 @@
     "token_copied": "ID токена скопирован"
   },
 
+  
+
   "activity": {
     "screen_title": "Активность",
     "sent": "Отправить",
@@ -389,6 +391,13 @@
     "buy_toncoin_btn": "Купить Toncoin",
     "receive_btn": "Получить",
     "failed_transaction": "Неуспешно"
+  },
+
+  "transactions": {
+    "nft_purchase": "Покупка NFT",
+    "subscription": "Подписка",
+    "unsubscription": "Отмена подписки",
+    "smartcontract_exec": "Вызов контракта"
   },
 
   "browser": {

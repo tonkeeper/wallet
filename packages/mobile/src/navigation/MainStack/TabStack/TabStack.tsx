@@ -6,7 +6,7 @@ import { StyleSheet } from 'react-native';
 import { DAppsExplore } from '$core';
 import { TabsStackRouteNames } from '$navigation';
 import { TabStackParamList } from './TabStack.interface';
-import { Icon, ScrollPositionContext, View } from '$uikit';
+import { Icon, View } from '@tonkeeper/uikit';
 import { usePreloadChart, useTheme } from '$hooks';
 import { isAndroid, nfs, ns, trackEvent } from '$utils';
 import { t } from '$translation';

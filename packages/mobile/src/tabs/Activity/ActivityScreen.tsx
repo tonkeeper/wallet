@@ -10,9 +10,9 @@ import { network } from '$libs/network';
 import { t } from '$translation';
 import { Screen, Text, Button } from '@tonkeeper/uikit';
 import { EventsMapper } from './EventMapper';
-import { TransactionsList } from '@tonkeeper/shared/components/TransactionList'
-import { walletWalletSelector } from "$store/wallet";
-import { useSelector } from "react-redux";
+import { TransactionsList } from '@tonkeeper/shared/components/TransactionList';
+import { walletWalletSelector } from '$store/wallet';
+import { useSelector } from 'react-redux';
 import { ServerEvents } from './Events.types';
 import { AddressFormats } from '@tonkeeper/core';
 
@@ -20,11 +20,11 @@ export const useWallet = (): { address: AddressFormats } | null => {
   const wallet = useSelector(walletWalletSelector);
 
   if (wallet && wallet.address) {
-    return { 
+    return {
       address: {
         friendly: wallet.address.friendlyAddress,
         raw: wallet.address.rawAddress,
-      }
+      },
     };
   }
 
@@ -36,17 +36,20 @@ export const useWallet = (): { address: AddressFormats } | null => {
 //
 
 type GetAccountEvents = {
+  walletOnly: boolean;
   account_id: string;
   before_lt?: number;
   limit?: number;
 };
 
-
 const getAccountEvents = async (params: GetAccountEvents) => {
   const host = getServerConfig('tonapiIOEndpoint');
   const authorization = `Bearer ${getServerConfig('tonApiV2Key')}`;
 
-  const fetchParams: Omit<GetAccountEvents, 'account_id'> = { limit: 50  };
+  const fetchParams: Omit<GetAccountEvents, 'account_id'> = {
+    walletOnly: true,
+    limit: 50,
+  };
 
   if (params.before_lt) {
     fetchParams.before_lt = params.before_lt;
@@ -79,13 +82,13 @@ const useAccountEvents = () => {
     }),
     queryFn: ({ pageParam }) =>
       getAccountEvents({
+        walletOnly: true,
         account_id: wallet?.address.raw ?? '',
         before_lt: pageParam?.lastLt ?? undefined,
       }),
   });
 
-  const originalEvents = data?.pages
-    .map((data) => data.events).flat();
+  const originalEvents = data?.pages.map((data) => data.events).flat();
 
   const events = EventsMapper(originalEvents ?? [], wallet?.address?.raw!);
 
@@ -157,10 +160,7 @@ export const ActivityScreen = memo(() => {
   return (
     <Screen>
       <Screen.LargeHeader title={t('activity.screen_title')} />
-      <TransactionsList
-        onFetchMore={fetchMore}
-        events={events} 
-      />
+      <TransactionsList onFetchMore={fetchMore} events={events} />
     </Screen>
   );
 });

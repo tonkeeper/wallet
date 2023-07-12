@@ -4,7 +4,7 @@ import {
   ServerAccountEvent,
   EventAction,
   EventActionType,
-  TonTransfer,
+  TonTransferAction,
   MergedEventAction,
 } from './Events.types';
 import { differenceInCalendarMonths } from 'date-fns';
@@ -18,7 +18,7 @@ import {
   GroupedActionsByDate,
 } from '@tonkeeper/shared/components/TransactionList/DataTypes';
 
-const getSenderAccount = (isReceive: boolean, action: TonTransfer) => {
+const getSenderAccount = (isReceive: boolean, action: TonTransferAction) => {
   const senderAccount = isReceive ? action.sender : action.recipient;
   if (senderAccount) {
     if (senderAccount.name) {
@@ -132,8 +132,8 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
 
     const senderAccount = getSenderAccount(isReceive, input.action?.data);
     const arrowIcon = isReceive ? 'ic-tray-arrow-down-28' : 'ic-tray-arrow-up-28';
-    const amountPrefix = isReceive ? '+ ' : '− ';
-    const sendOrReceive = isReceive
+    const amountPrefix = isReceive ? '+' : '−';
+    const sendOrReceiveTitle = isReceive
       ? t('transaction_type_receive')
       : t('transaction_type_sent');
 
@@ -143,36 +143,37 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
 
         action.iconName = arrowIcon;
         action.subtitle = senderAccount;
-        action.title = sendOrReceive;
+        action.title = sendOrReceiveTitle;
 
-        const amount = formatter.fromNano(data.amount);
-        action.value = amountPrefix + formatter.format(amount, { symbol: 'TON' });
-
+        action.value = formatter.format(formatter.fromNano(data.amount), {
+          prefix: amountPrefix,
+          postfix: 'TON',
+        });
         break;
       }
       case EventActionType.JettonTransfer: {
         const data = input.action.data;
-        
+
         const decimalsAmount = fromNano(data.amount, data.jetton.decimals ?? 9);
-        const amount = formatter.format(decimalsAmount.toString(), {
-          symbol: data.jetton?.symbol,
+        const value = formatter.format(decimalsAmount.toString(), {
+          prefix: amountPrefix,
+          postfix: data.jetton?.symbol,
         });
 
         action.iconName = arrowIcon;
-        action.title = sendOrReceive;
+        action.title = sendOrReceiveTitle;
         action.subtitle = senderAccount;
-        action.value = amountPrefix + amount;
-        
-          
+        action.value = value;
         break;
       }
       case EventActionType.NftItemTransfer: {
         const data = input.action.data;
-        
+
         action.iconName = arrowIcon;
-        action.title = sendOrReceive;
+        action.title = sendOrReceiveTitle;
         action.subtitle = senderAccount;
         action.value = 'NFT';
+        action.nftAddress = data.nft;
 
         // bottomContent = (
         //   <TransactionItemNFT
@@ -184,8 +185,20 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
         // );
         break;
       }
+      case EventActionType.NftPurchase:
+        const data = input.action.data;
+
+        action.iconName = arrowIcon;
+        action.title = t('transactions.nft_purchase');
+        action.subtitle = senderAccount;
+        action.value = formatter.format(formatter.fromNano(data.amount.value), {
+          prefix: amountPrefix,
+          postfix: data.amount.token_name,
+        });
+        break;
       case EventActionType.ContractDeploy: {
         const data = input.action.data;
+
         const isInitialized = Address.compare(data.address, input.walletAddress);
         action.iconName = isInitialized ? 'ic-donemark-28' : 'ic-gear-28';
         action.title = isInitialized
@@ -197,27 +210,41 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
         const data = input.action.data;
 
         action.iconName = 'ic-bell-28';
-        action.title = t('transinput.action_type_subscription');
+        action.title = t('transactions.subscription');
+        action.subtitle = data.beneficiary.name ?? '';
+        action.value = formatter.format(formatter.fromNano(data.amount), {
+          prefix: amountPrefix,
+          postfix: 'TON',
+        });
         break;
       }
       case EventActionType.UnSubscribe: {
         const data = input.action.data;
 
-        action.iconName = 'ic-bell-28';
-        action.title = t('transinput.action_type_unsubscription');
+        action.iconName = 'ic-xmark-28';
+        action.title = t('transactions.unsubscription');
+        action.subtitle = data.beneficiary.name ?? '';
+        break;
+      }
+      case EventActionType.SmartContractExec: {
+        const data = input.action.data;
+
+        action.iconName = 'ic-gear-28';
+        action.title = t('transactions.smartcontract_exec');
+        action.subtitle = Address(data.contract.address).maskify();
+        action.value = formatter.format(formatter.fromNano(data.ton_attached), {
+          prefix: amountPrefix,
+          postfix: 'TON',
+        });
         break;
       }
       case EventActionType.AuctionBid: {
         const data = input.action.data;
-
+        
         break;
       }
-      // case EventActionType.NftPurchase:
-      //   break;
-      // case EventActionType.SmartContractExec:
-      //   break;
-      default: 
-        console.log(input.action.type)
+      default:
+      // console.log(input.action.type)
     }
 
     return action;

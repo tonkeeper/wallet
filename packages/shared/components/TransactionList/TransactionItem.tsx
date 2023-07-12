@@ -1,7 +1,8 @@
 import React, { memo } from 'react';
-import { Icon, IconNames, List, Steezy, View, useTheme } from '@tonkeeper/uikit';
+import { Icon, IconNames, List, Steezy, View, useTheme, Text } from '@tonkeeper/uikit';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { ListSeparator } from '@tonkeeper/uikit/src/components/List/ListSeparator';
+import { Address } from '@tonkeeper/core';
 
 interface TransactionItemProps {
   item: any;
@@ -21,13 +22,29 @@ export const TransactionItem = memo<TransactionItemProps>((props) => {
       <List.Item
         onPress={() => {}}
         title={item.title}
-        subtitle={item.subtitle}
         value={item.value}
         valueStyle={item.isReceive && styles.receiveValue}
         subvalue={item.subvalue}
         leftContent={(isPressed) => (
           <LeftIcon iconName={item.iconName} isPressed={isPressed} />
         )}
+        subtitle={
+          <View>
+            <Text
+              numberOfLines={1}
+              color="textSecondary"
+              type="body2"
+            >
+              {item.subtitle}
+            </Text>
+            {item.nftAddress || item.nft && (
+              <NFTTransactionContent
+                nftAddress={item.nftAddress}
+                nft={item.nft}
+              />
+            )}
+          </View>
+        }
       />
       {!item.bottomCorner && <ListSeparator />}
     </View>

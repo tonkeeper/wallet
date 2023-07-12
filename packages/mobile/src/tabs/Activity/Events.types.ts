@@ -36,16 +36,15 @@ export type EventAction = {
   status: string;
   simple_preview: SimplePreview;
 
-  TonTransfer?: TonTransfer; //
-  JettonTransfer?: JettonTransfer; //
+  TonTransfer?: TonTransferAction; //
+  JettonTransfer?: JettonTransferAction;
   NftItemTransfer?: NftItemTransferAction;
   ContractDeploy?: ContractDeployAction;
   Subscribe?: SubscriptionAction;
   UnSubscribe?: UnSubscriptionAction;
   AuctionBid?: AuctionBidAction;
-  NftPurchase?: any;//NftPurchaseAction;
-  SmartContractExec?: SmartContractExec; //
-  Unknown?: any;//UnknownAction;
+  NftPurchase?: NftPurchaseAction;
+  SmartContractExec?: SmartContractExecAction;
 };
 
 //
@@ -54,12 +53,12 @@ export type EventAction = {
 
 export type TonTransferActionData = {
   type: EventActionType.TonTransfer;
-  data: TonTransfer;
+  data: TonTransferAction;
 };
 
 export type JettonTransferActionData = {
   type: EventActionType.JettonTransfer;
-  data: JettonTransfer;
+  data: JettonTransferAction;
 };
 
 export type NftItemTransferActionData = {
@@ -89,16 +88,17 @@ export type AuctionBidActionData = {
 
 export type NftPurchaseActionData = {
   type: EventActionType.NftPurchase;
-  data: any;
+  data: NftPurchaseAction;
 };
 
 export type SmartContractExecActionData = {
   type: EventActionType.SmartContractExec;
-  data: SmartContractExec;
+  data: SmartContractExecAction;
 };
 
 export type UnknownActionData = {
   type: EventActionType.Unknown;
+  data: undefined;
 };
 
 type BaseEventAction = {
@@ -106,7 +106,7 @@ type BaseEventAction = {
   status: string;
 };
 
-type EventActions = 
+type EventActions =
   | TonTransferActionData
   | JettonTransferActionData
   | NftItemTransferActionData
@@ -115,9 +115,18 @@ type EventActions =
   | UnSubscribeActionData
   | AuctionBidActionData
   | NftPurchaseActionData
-  | UnknownActionData;
+  | UnknownActionData
+  | SmartContractExecActionData;
 
 export type MergedEventAction = BaseEventAction & EventActions;
+
+export interface NftPurchaseAction {
+  auction_type: string;
+  amount: Amount;
+  nft: Nft;
+  seller: Account;
+  buyer: Account;
+}
 
 export interface Price {
   value: string;
@@ -125,7 +134,7 @@ export interface Price {
 }
 
 export interface AuctionBidAction {
-  auctionType: AuctionBidActionAuctionType;
+  auction_type: AuctionBidActionAuctionType;
   amount: Price;
   nft?: any; // TODO:
   beneficiary: Account;
@@ -178,13 +187,13 @@ export interface UnSubscriptionAction {
   beneficiary: Account;
 }
 
-export type TonTransfer = {
+export type TonTransferAction = {
   sender: Account;
   recipient: Account;
   amount: number;
 };
 
-export type JettonTransfer = {
+export type JettonTransferAction = {
   sender: Account;
   recipient: Account;
   senders_wallet: string;
@@ -211,7 +220,7 @@ export type SimplePreview = {
   value_image?: string;
 };
 
-export type SmartContractExec = {
+export type SmartContractExecAction = {
   executor: Account;
   contract: Account;
   ton_attached: number;
@@ -227,3 +236,42 @@ export type Fee = {
   deposit: number;
   refund: number;
 };
+
+export interface Amount {
+  value: string;
+  token_name: string;
+}
+
+export interface Nft {
+  address: string;
+  index: number;
+  owner: Account;
+  collection: NftCollection;
+  verified: boolean;
+  metadata: NftMetadata;
+  previews: NftPreview[];
+  approved_by: any[];
+}
+
+export interface NftCollection {
+  address: string;
+  name: string;
+}
+
+export interface NftMetadata {
+  name: string;
+  image: string;
+  attributes: NftAttribute[];
+  description: string;
+  marketplace: string;
+}
+
+export interface NftAttribute {
+  trait_type: string;
+  value: string;
+}
+
+export interface NftPreview {
+  resolution: string;
+  url: string;
+}

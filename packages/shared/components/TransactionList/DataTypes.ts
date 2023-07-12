@@ -31,6 +31,7 @@ export type ClientEventAction = {
   subtitle?: string;
   isReceive?: boolean;
   timestamp: number;
+  nftAddress?: string;
 };
 
 export type ClientEvent = ClientEventDate | ClientEventAction;

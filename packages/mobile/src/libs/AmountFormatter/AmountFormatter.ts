@@ -16,7 +16,8 @@ type AmountFormatOptions = {
   decimals?: number;
   currency?: string;
   currencySeparator?: 'thin' | 'wide'; // Default thin;
-  symbol?: string;
+  prefix?: string;
+  postfix?: string;
   withoutTruncate?: boolean;
   ignoreZeroTruncate?: boolean;
   absolute?: boolean;
@@ -102,8 +103,12 @@ export class AmountFormatter {
       }
     }
 
-    if (options.symbol) {
-      suffix = this.spaces['wide'] + options.symbol;
+    if (options.postfix) {
+      suffix = this.spaces['wide'] + options.postfix;
+    }
+
+    if (options.prefix) {
+      prefix = options.prefix + this.spaces['thin'];
     }
 
     const { decimalSeparator, groupingSeparator } = this.getLocaleFormat();
@@ -128,17 +133,4 @@ export class AmountFormatter {
 
     return bn.toFormat(2, BigNumber.ROUND_DOWN, formatConf);
   }
-
-  // public formatAmount(amount: AmountNumber = 0, options: AmountFormatOptions = {}) {
-  //   const bn = this.toBN(amount);
-  //   const decimals = options.decimals ?? this.getDefaultDecimals(bn);
-  //   const nano = bn.shiftedBy(decimals ?? 9);
-
-  //   return {
-  //     formatted: this.format(bn),
-  //     nano: nano.toString(10),
-  //     raw: bn.toString(10),
-  //     fiat: '',
-  //   };
-  // }
 }
