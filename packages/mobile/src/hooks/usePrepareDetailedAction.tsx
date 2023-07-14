@@ -138,7 +138,7 @@ export function usePrepareDetailedAction(
         });
       } else {
         sentLabelTranslationString = 'transaction_subscription_date';
-        label = formatter.format(amount, {
+        label = format(amount, {
           prefix: `- `,
           withoutTruncate: true,
           decimals: Decimals[CryptoCurrencies.Ton],
@@ -147,7 +147,7 @@ export function usePrepareDetailedAction(
         });
       }
       fiatValue = !isFailed
-        ? formatter.format(fiatRate.today * parseFloat(amount), {
+        ? format(fiatRate.today * parseFloat(amount), {
             currency: fiatCurrency.toLocaleUpperCase(),
             currencySeparator: 'wide',
           })
@@ -310,6 +310,7 @@ export function usePrepareDetailedAction(
     event.timestamp,
     event.isScam,
     t,
+    format,
     fiatRate.today,
     fiatCurrency,
     getJettonPrice,

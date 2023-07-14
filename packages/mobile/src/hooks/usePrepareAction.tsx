@@ -107,31 +107,25 @@ export function usePrepareAction(
           ? t('transaction_type_subscription')
           : t('transaction_type_unsubscription');
       }
-      label = isSubscription ? prefix + ' ' + format(amount.toString()) : '-';
+      label = isSubscription
+        ? format(amount.toString(), {
+            prefix: `${prefix} `,
+            currencySeparator: 'wide',
+            currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
+          })
+        : '-';
       type = isSubscription ? 'subscription' : 'unsubscription';
-      currency = isSubscription
-        ? formatCryptoCurrency(
-            '',
-            CryptoCurrencies.Ton,
-            Decimals[CryptoCurrencies.Ton],
-            undefined,
-            true,
-          ).trim()
-        : '';
     }
 
     if (ActionType.AuctionBid === ActionType[rawAction.type]) {
       const amount = TonWeb.utils.fromNano(Math.abs(action.amount.value).toString());
-      label = prefix + ' ' + format(amount.toString());
+      label = format(amount.toString(), {
+        prefix: `${prefix} `,
+        currencySeparator: 'wide',
+        currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
+      });
       typeLabel = t('transaction_type_bid');
       type = action.auctionType === 'DNS.tg' ? 'tg_dns' : 'sent';
-      currency = formatCryptoCurrency(
-        '',
-        CryptoCurrencies.Ton,
-        Decimals[CryptoCurrencies.Ton],
-        undefined,
-        true,
-      ).trim();
     }
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
