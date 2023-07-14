@@ -31,6 +31,7 @@ export const TonIcon = memo<TonIconProps>((props) => {
   const accent = useSelector(accentSelector);
 
   const shouldShowCustomTonIcon = showDiamond && accent !== AccentKey.default;
+  const isTransparent = transparent ?? shouldShowCustomTonIcon;
 
   const containerSize = containerSizes[size];
   const iconSize = iconSizes[size];
@@ -39,13 +40,13 @@ export const TonIcon = memo<TonIconProps>((props) => {
     width: containerSize,
     height: containerSize,
     borderRadius: containerSize / 2,
-  }), []);
+  }), [containerSize]);
 
   const containerStyle =  useMemo(() => [
     styles.container,
-    transparent && styles.backgroundTransparent,
+    isTransparent && styles.backgroundTransparent,
     sizeStyle,
-  ], []);
+  ], [isTransparent, sizeStyle]);
 
   return (
     <View style={containerStyle}>
@@ -68,7 +69,7 @@ const styles = Steezy.create(({ colors }) => ({
     backgroundColor: '#0088CC',
     justifyContent: 'center',
     alignItems: 'center',
-    overflow: 'hidden',
+    // overflow: 'hidden',
   },
   backgroundTransparent: {
     backgroundColor: colors.backgroundContentTint

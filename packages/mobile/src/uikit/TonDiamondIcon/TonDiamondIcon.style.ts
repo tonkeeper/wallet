@@ -11,6 +11,7 @@ export const IconContainer = styled.View<{ size: number; isDefault?: boolean }>`
       : theme.colors.backgroundTertiary};
   width: ${({ size }) => ns(size)}px;
   height: ${({ size }) => ns(size)}px;
+  border-radius: ${({ size }) => ns(size / 2)}px;
   align-items: center;
   justify-content: center;
   position: relative;
