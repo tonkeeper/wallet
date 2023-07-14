@@ -14,9 +14,12 @@ import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/Sign
 import { getTimeSec } from '$utils/getTimeSec';
 import { Ton } from '$libs/Ton';
 
+import TonWeb from 'tonweb';
+
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 import { compareAddresses } from '$utils/address';
 import { useWallet } from '$hooks';
+import { Base64 } from '$utils';
 
 export type RenewDomainButtonRef = {
   renewUpdated: () => void;
@@ -40,12 +43,18 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
       renewUpdated: () => setIsPending(false),
     }));
 
-    const openRenew = useCallback(() => {
+    const openRenew = useCallback(async () => {
       if (!wallet || !wallet.address?.rawAddress) {
         return;
       }
 
       const valid_until = getTimeSec() + 10 * 60;
+
+      const payload = new TonWeb.boc.Cell();
+
+      payload.bits.writeUint(0x4eb1f0f9, 32);
+      payload.bits.writeUint(0, 64)
+      payload.bits.writeUint(0, 256);
 
       openSignRawModal(
         {
@@ -55,6 +64,7 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
             {
               address: domainAddress,
               amount: Ton.toNano('0.02'),
+              payload: Base64.encodeBytes(await payload.toBoc())
             },
           ],
         },
