@@ -65,7 +65,7 @@ const RenderItem = ({ item }: { item: Content }) => {
         if (typeof item.tonIcon === 'object') {
           return <TonIcon {...item.tonIcon} />;
         } else if (typeof item.tonIcon === 'boolean') {
-          return <TonIcon />;
+          return <TonIcon showDiamond />;
         }
       };
 
