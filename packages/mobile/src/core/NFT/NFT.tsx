@@ -250,6 +250,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
             )}
             {isDNS && (
               <RenewDomainButton
+                disabled={isOnSale}
                 ref={renewDomainButtonRef}
                 ownerAddress={nft.ownerAddress}
                 domainAddress={nft.address}
