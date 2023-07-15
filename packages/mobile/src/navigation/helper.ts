@@ -9,6 +9,7 @@ import {
 import * as LocalAuthentication from 'expo-local-authentication';
 
 import {
+  ActivityStackRouteNames,
   AppStackRouteNames,
   MainStackRouteNames,
   ResetPinStackRouteNames,
@@ -505,6 +506,10 @@ export function openEditFavorite(props: Omit<AddEditFavoriteAddressProps, 'isEdi
     ...props,
     isEdit: true,
   });
+}
+
+export function openNotificationsScreen() {
+  navigate(ActivityStackRouteNames.NotificationsActivity);
 }
 
 export function openLinkingDomain(params: {

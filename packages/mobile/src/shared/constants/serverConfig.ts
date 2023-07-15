@@ -61,7 +61,8 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     cachedMediaSalt: data.cachedMediaSalt,
     NFTOnExplorerUrl: data.NFTOnExplorerUrl || 'https://tonscan.org/nft/%s',
     directSupportUrl: data.directSupportUrl,
-    transactionExplorer: 'https://tonapi.io/transaction/%s',
+    transactionExplorer:
+      data.transactionExplorer || 'https://tonviewer.com/transaction/%s',
     flags: data.flags || {},
     amplitudeKey: data.amplitudeKey,
     stonfiUrl: data.stonfiUrl,

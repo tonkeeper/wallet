@@ -91,6 +91,14 @@ export const Badges = styled.View`
   align-items: center;
 `;
 
+export const FireBadge = styled.View`
+  position: absolute;
+  bottom: ${0}px;
+  right: ${0}px;
+  flex-direction: row;
+  align-items: center;
+`;
+
 export const OnSaleBadge = styled.View`
   position: absolute;
   top: ${0}px;

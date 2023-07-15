@@ -12,6 +12,7 @@ import { RefreshControl } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { shallow } from 'zustand/shallow';
 import * as S from './StakingPoolDetails.style';
+import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPoolDetails>;
@@ -79,12 +80,12 @@ export const StakingPoolDetails: FC<Props> = (props) => {
             <S.BalanceContainer>
               <Text variant="label1">{t('staking.details.balance')}</Text>
               <S.BalanceRight>
-                <Text variant="label1">
+                <HideableAmount variant="label1">
                   {stakingFormatter.format(balance.amount)} TON
-                </Text>
-                <Text variant="body2" color="foregroundSecondary">
+                </HideableAmount>
+                <HideableAmount variant="body2" color="foregroundSecondary">
                   {balance.fiatInfo.amount}
-                </Text>
+                </HideableAmount>
               </S.BalanceRight>
             </S.BalanceContainer>
             <Spacer y={16} />
@@ -93,12 +94,12 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                 <S.BalanceContainer>
                   <Text variant="label1">{t('staking.details.pendingDeposit')}</Text>
                   <S.BalanceRight>
-                    <Text variant="label1">
+                    <HideableAmount variant="label1">
                       {stakingFormatter.format(pendingDeposit.amount)} TON
-                    </Text>
-                    <Text variant="body2" color="foregroundSecondary">
+                    </HideableAmount>
+                    <HideableAmount variant="body2" color="foregroundSecondary">
                       {pendingDeposit.fiatInfo.amount}
-                    </Text>
+                    </HideableAmount>
                   </S.BalanceRight>
                 </S.BalanceContainer>
                 <Spacer y={16} />
@@ -109,12 +110,12 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                 <S.BalanceContainer>
                   <Text variant="label1">{t('staking.details.pendingWithdraw')}</Text>
                   <S.BalanceRight>
-                    <Text variant="label1">
+                    <HideableAmount variant="label1">
                       {stakingFormatter.format(pendingWithdraw.amount)} TON
-                    </Text>
-                    <Text variant="body2" color="foregroundSecondary">
+                    </HideableAmount>
+                    <HideableAmount variant="body2" color="foregroundSecondary">
                       {pendingWithdraw.fiatInfo.amount}
-                    </Text>
+                    </HideableAmount>
                   </S.BalanceRight>
                 </S.BalanceContainer>
                 <Spacer y={16} />
@@ -135,12 +136,12 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                         </Text>
                       </S.Flex>
                       <S.BalanceRight>
-                        <Text variant="label1">
+                        <HideableAmount variant="label1">
                           {stakingFormatter.format(readyWithdraw.amount)} TON
-                        </Text>
-                        <Text variant="body2" color="foregroundSecondary">
+                        </HideableAmount>
+                        <HideableAmount variant="body2" color="foregroundSecondary">
                           {readyWithdraw.fiatInfo.amount}
-                        </Text>
+                        </HideableAmount>
                       </S.BalanceRight>
                     </S.BalanceTouchableContent>
                   </S.BalanceTouchable>

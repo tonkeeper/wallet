@@ -3,6 +3,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { IConnectedAppsStore, TonConnectBridgeType } from './types';
+import { Tonapi } from '$libs/Tonapi';
+import messaging from '@react-native-firebase/messaging';
+import * as SecureStore from 'expo-secure-store';
+import { useNotificationsStore } from '$store/zustand';
 
 const initialState: Omit<IConnectedAppsStore, 'actions'> = {
   connectedApps: {
@@ -14,7 +18,7 @@ const initialState: Omit<IConnectedAppsStore, 'actions'> = {
 export const useConnectedAppsStore = create(
   subscribeWithSelector(
     persist<IConnectedAppsStore>(
-      (set) => ({
+      (set, get) => ({
         ...initialState,
         actions: {
           saveAppConnection: (chainName, walletAddress, appData, connection) => {
@@ -49,8 +53,10 @@ export const useConnectedAppsStore = create(
               return { connectedApps };
             });
           },
-          removeInjectedConnection: (chainName, walletAddress, url) => {
+          removeInjectedConnection: async (chainName, walletAddress, url) => {
             const fixedUrl = getFixedLastSlashUrl(url);
+
+            get().actions.disableNotifications(chainName, walletAddress, url);
 
             set(({ connectedApps }) => {
               const keys = Object.keys(connectedApps[chainName][walletAddress] || {});
@@ -82,8 +88,15 @@ export const useConnectedAppsStore = create(
               return { connectedApps };
             });
           },
-          removeRemoteConnection: (chainName, walletAddress, url, clientSessionId) => {
+          removeRemoteConnection: async (
+            chainName,
+            walletAddress,
+            url,
+            clientSessionId,
+          ) => {
             const fixedUrl = getFixedLastSlashUrl(url);
+
+            get().actions.disableNotifications(chainName, walletAddress, url);
 
             set(({ connectedApps }) => {
               const keys = Object.keys(connectedApps[chainName][walletAddress] || {});
@@ -117,8 +130,84 @@ export const useConnectedAppsStore = create(
               return { connectedApps };
             });
           },
-          removeApp: (chainName, walletAddress, url) => {
+          enableNotifications: async (
+            chainName,
+            walletAddress,
+            url,
+            session_id,
+            firebase_token,
+          ) => {
             const fixedUrl = getFixedLastSlashUrl(url);
+            const token = await SecureStore.getItemAsync('proof_token');
+
+            if (!token) {
+              return;
+            }
+
+            Tonapi.subscribeToNotifications(token, {
+              app_url: fixedUrl,
+              session_id: session_id,
+              account: walletAddress,
+              commercial: true,
+              firebase_token,
+            });
+
+            set(({ connectedApps }) => {
+              const keys = Object.keys(connectedApps[chainName][walletAddress] || {});
+
+              const apps = Object.values(connectedApps[chainName][walletAddress] || {});
+
+              const index = apps.findIndex((app) =>
+                fixedUrl.startsWith(getFixedLastSlashUrl(app.url)),
+              );
+
+              const hash = keys[index];
+
+              if (connectedApps[chainName][walletAddress]?.[hash]) {
+                connectedApps[chainName][walletAddress][hash].notificationsEnabled = true;
+              }
+
+              return { connectedApps };
+            });
+          },
+          disableNotifications: async (chainName, walletAddress, url, firebase_token) => {
+            const fixedUrl = getFixedLastSlashUrl(url);
+            const token = await SecureStore.getItemAsync('proof_token');
+
+            if (!token) {
+              return;
+            }
+
+            useNotificationsStore.getState().actions.removeNotificationsByDappUrl(url);
+
+            Tonapi.unsubscribeFromNotifications(token, {
+              firebase_token,
+              app_url: fixedUrl,
+            });
+
+            set(({ connectedApps }) => {
+              const keys = Object.keys(connectedApps[chainName][walletAddress] || {});
+
+              const apps = Object.values(connectedApps[chainName][walletAddress] || {});
+
+              const index = apps.findIndex((app) =>
+                fixedUrl.startsWith(getFixedLastSlashUrl(app.url)),
+              );
+
+              const hash = keys[index];
+
+              if (connectedApps[chainName][walletAddress]?.[hash]) {
+                connectedApps[chainName][walletAddress][hash].notificationsEnabled =
+                  false;
+              }
+
+              return { connectedApps };
+            });
+          },
+          removeApp: async (chainName, walletAddress, url) => {
+            const fixedUrl = getFixedLastSlashUrl(url);
+
+            get().actions.disableNotifications(chainName, walletAddress, url);
 
             set(({ connectedApps }) => {
               const keys = Object.keys(connectedApps[chainName][walletAddress] || {});

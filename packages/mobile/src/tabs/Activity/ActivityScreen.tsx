@@ -1,28 +1,26 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { Linking, RefreshControl, StyleSheet, View } from 'react-native';
+import { LayoutAnimation, RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useIsFocused } from '@react-navigation/native';
 
 import * as S from '../../core/Balances/Balances.style';
-import { Button, Loader, Screen, ScrollHandler, Text } from '$uikit';
 import {
-  useAppStateActive,
-  usePrevious,
-  useJettonBalances,
-  useTheme,
-  useTranslator,
-} from '$hooks';
+  Button,
+  Icon,
+  List,
+  Loader,
+  Screen,
+  ScrollHandler,
+  Spacer,
+  Text,
+  View,
+} from '$uikit';
+import { useAppStateActive, usePrevious, useTheme, useTranslator } from '$hooks';
 import { walletActions, walletSelector } from '$store/wallet';
 import { ns } from '$utils';
-import {
-  CryptoCurrencies,
-  isServerConfigLoaded,
-  NavBarHeight,
-  SecondaryCryptoCurrencies,
-  TabletMaxWidth,
-} from '$shared/constants';
+import { NavBarHeight, TabletMaxWidth } from '$shared/constants';
 import { openRequireWalletModal } from '$navigation';
 import { eventsActions, eventsSelector } from '$store/events';
 import { mainActions } from '$store/main';
@@ -30,6 +28,8 @@ import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { getLastRefreshedAt } from '$database';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import { useNavigation } from '$libs/navigation';
+import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
+import { Steezy } from '$styles';
 
 export const ActivityScreen: FC = () => {
   const nav = useNavigation();
@@ -37,21 +37,28 @@ export const ActivityScreen: FC = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
-  const { currencies, isRefreshing, isLoaded, balances, wallet, oldWalletBalances } =
-    useSelector(walletSelector);
+  const { isRefreshing, isLoaded, wallet } = useSelector(walletSelector);
   const {
     isLoading: isEventsLoading,
     eventsInfo,
     canLoadMore,
   } = useSelector(eventsSelector);
+  // const notifications = useNotificationsStore((state) => state.notifications);
+  // const lastSeenAt = useNotificationsStore((state) => state.last_seen);
+  // const removeRedDot = useNotificationsStore((state) => state.actions.removeRedDot);
 
   const netInfo = useNetInfo();
   const prevNetInfo = usePrevious(netInfo);
 
-  const { enabled: jettonBalances } = useJettonBalances();
   const isFocused = useIsFocused();
 
   const isEventsLoadingMore = !isRefreshing && isEventsLoading && !!wallet;
+
+  // useEffect(() => {
+  //   if (isFocused) {
+  //     removeRedDot();
+  //   }
+  // }, [isFocused, removeRedDot]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -73,31 +80,6 @@ export const ActivityScreen: FC = () => {
     dispatch(walletActions.refreshBalancesPage(true));
   }, [dispatch]);
 
-  const otherCurrencies = useMemo(() => {
-    const list = [...SecondaryCryptoCurrencies];
-    if (wallet && wallet.ton.isLockup()) {
-      list.unshift(CryptoCurrencies.TonRestricted, CryptoCurrencies.TonLocked);
-    }
-
-    return list.filter((item) => {
-      if (item === CryptoCurrencies.Ton) {
-        return false;
-      }
-
-      if (
-        [CryptoCurrencies.TonLocked, CryptoCurrencies.TonRestricted].indexOf(item) > -1
-      ) {
-        return true;
-      }
-
-      if (+balances[item] > 0) {
-        return true;
-      }
-
-      return currencies.indexOf(item) > -1;
-    });
-  }, [currencies, balances, wallet]);
-
   const initialData = useMemo(() => {
     const result: {
       isFirst?: boolean;
@@ -106,7 +88,7 @@ export const ActivityScreen: FC = () => {
       footer?: React.ReactElement;
     }[] = [];
     return result;
-  }, [otherCurrencies, oldWalletBalances, jettonBalances, wallet?.ton]);
+  }, []);
 
   const handleLoadMore = useCallback(() => {
     if (isEventsLoading || !canLoadMore) {
@@ -115,6 +97,11 @@ export const ActivityScreen: FC = () => {
 
     dispatch(eventsActions.loadEvents({ isLoadMore: true }));
   }, [dispatch, isEventsLoading, canLoadMore]);
+
+  const onRemoveNotification = useCallback(() => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+  }, []);
+
 
   function renderFooter() {
     return (
@@ -192,7 +179,10 @@ export const ActivityScreen: FC = () => {
     }
   }, [wallet]);
 
-  if (isLoaded && (!wallet || Object.keys(eventsInfo).length < 1)) {
+  if (
+    isLoaded &&
+    (!wallet || (Object.keys(eventsInfo).length < 1))
+  ) {
     return (
       <Screen>
         <View style={styles.emptyContainer}>
@@ -230,7 +220,7 @@ export const ActivityScreen: FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const styles = Steezy.create(({ colors }) => ({
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -241,4 +231,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: ns(24),
   },
-});
+  iconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.backgroundContentTint,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  notificationsHeader: {
+    marginHorizontal: -16,
+  },
+  notificationsCount: {
+    backgroundColor: colors.backgroundContentTint,
+    minWidth: 24,
+    paddingHorizontal: 7,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  listStyle: {
+    marginBottom: 8,
+  },
+}));

@@ -16,18 +16,45 @@ import { App } from '$core/App';
 import { name as appName } from './app.json';
 import { debugLog } from './src/utils';
 import { mainActions } from './src/store/main';
-import { store } from './src/store';
+import { store, useNotificationsStore } from './src/store';
 import { getAttachScreenFromStorage } from '$navigation/AttachScreen';
 import crashlytics from '@react-native-firebase/crashlytics';
+import messaging from '@react-native-firebase/messaging';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
-  'ViewPropTypes will be removed from React Native. Migrate to ViewPropTypes exported from \'deprecated-react-native-prop-types\'.'
+  "ViewPropTypes will be removed from React Native. Migrate to ViewPropTypes exported from 'deprecated-react-native-prop-types'.",
 ]);
 
 if (__DEV__) {
   getAttachScreenFromStorage();
 }
+
+async function handleDappMessage(remoteMessage) {
+  // handle data-only messages
+  return;
+  if (remoteMessage.notification?.body) {
+    return null;
+  }
+  if (
+    !['bridge_dapp_notification', 'console_dapp_notification'].includes(
+      remoteMessage.data?.type,
+    )
+  ) {
+    return null;
+  }
+
+  await useNotificationsStore.persist.rehydrate();
+  useNotificationsStore.getState().actions.addNotification({
+    ...remoteMessage.data,
+    received_at: parseInt(remoteMessage.data.sent_at) || Date.now(),
+  });
+  await useNotificationsStore.persist.rehydrate();
+  return;
+}
+
+messaging().setBackgroundMessageHandler(handleDappMessage);
+messaging().onMessage(handleDappMessage);
 
 setJSExceptionHandler((error, isFatal) => {
   crashlytics().recordError(error, error.toString());
@@ -40,4 +67,13 @@ setNativeExceptionHandler((exceptionString) => {
 
 store.dispatch(mainActions.init());
 
-AppRegistry.registerComponent(appName, () => gestureHandlerRootHOC(App));
+function HeadlessCheck({ isHeadless }) {
+  if (isHeadless) {
+    // App has been launched in the background by iOS, ignore
+    return null;
+  }
+
+  return <App />;
+}
+
+AppRegistry.registerComponent(appName, () => gestureHandlerRootHOC(HeadlessCheck));

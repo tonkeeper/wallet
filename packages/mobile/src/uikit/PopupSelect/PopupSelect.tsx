@@ -42,6 +42,7 @@ export const PopupSelectItem = Memo(
     children,
     onPress,
     value,
+    icon,
     checked,
     autoWidth,
     onChangeWidth,
@@ -55,10 +56,11 @@ export const PopupSelectItem = Memo(
         onChangeWidth?.(
           e.nativeEvent.layout.width +
             ns(isAndroid ? 14 : ScreenWidth <= SMALL_DEVICES_WIDTH ? 6 : 0) +
-            ns(checked ? 32 : 0),
+            ns(checked ? 32 : 0) +
+            ns(icon ? 32 : 0),
         );
       },
-      [autoWidth, checked, onChangeWidth],
+      [autoWidth, checked, icon, onChangeWidth],
     );
 
     const contentContainerStyle = useMemo(
@@ -82,9 +84,10 @@ export const PopupSelectItem = Memo(
           <View style={contentContainerStyle}>
             <S.ItemCont onLayout={onLayout}>{children}</S.ItemCont>
           </View>
-          <S.ItemCheckedWrap>
+          <S.ItemIconWrap>
             {checked && <Icon name="ic-done-16" color="accentPrimary" />}
-          </S.ItemCheckedWrap>
+            {icon && <Icon name={icon} color="accentPrimary" />}
+          </S.ItemIconWrap>
         </S.Item>
       </Highlight>
     );
@@ -261,6 +264,7 @@ export function PopupSelectComponent<T>(props: PopupSelectProps<T>) {
                   keyboardShouldPersistTaps="handled"
                   renderItem={({ item, index }) => (
                     <PopupSelectItem
+                      icon={item.icon}
                       checked={item === selected}
                       value={item}
                       onPress={(value) => {

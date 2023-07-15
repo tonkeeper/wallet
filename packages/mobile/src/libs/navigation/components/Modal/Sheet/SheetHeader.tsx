@@ -11,21 +11,22 @@ import { ns } from '$utils';
 export interface SheetHeaderProps {
   title?: string;
   gradient?: boolean;
+  onClose?: () => void;
 }
 
 export const SheetHeader = React.memo<SheetHeaderProps>((props) => {
-  const { gradient, title } = props;
+  const { gradient, title, onClose } = props;
   const { measureHeader, close } = useSheetInternal();
   const theme = useTheme();
-  
+
   const hasTitle = !!title;
 
   React.useLayoutEffect(() => {
     if (hasTitle) {
       measureHeader({
         nativeEvent: {
-          layout: { height: ns(64) }
-        }
+          layout: { height: ns(64) },
+        },
       });
     }
   }, [hasTitle]);
@@ -33,28 +34,28 @@ export const SheetHeader = React.memo<SheetHeaderProps>((props) => {
   return (
     <Wrap absolute={!hasTitle}>
       {gradient && (
-        <Gradient 
-          colors={[theme.colors.backgroundPrimary, 'rgba(16, 22, 31, 0)']} 
+        <Gradient
+          colors={[theme.colors.backgroundPrimary, 'rgba(16, 22, 31, 0)']}
           locations={[0, 1]}
         />
       )}
       <View style={{ flexDirection: 'row', flex: 1 }}>
         {hasTitle && (
           <HeaderTitle>
-            <Text variant="h3">
-              {title}
-            </Text>
+            <Text variant="h3">{title}</Text>
           </HeaderTitle>
         )}
 
         <View style={{ flex: 1 }} />
-        
-        <HeaderCloseButtonWrap onPress={close}>
+
+        <HeaderCloseButtonWrap
+          onPress={() => {
+            close();
+            onClose?.();
+          }}
+        >
           <HeaderCloseButton>
-            <Icon
-              name="ic-close-16"
-              color="foregroundPrimary"
-            />
+            <Icon name="ic-close-16" color="foregroundPrimary" />
           </HeaderCloseButton>
         </HeaderCloseButtonWrap>
       </View>
@@ -68,7 +69,7 @@ export const Gradient = styled(LinearGradient)`
   width: 100%;
   height: ${ns(46)}px;
   border-top-left-radius: ${ns(RADIUS.normal)}px;
-  border-top-right-radius: ${ns(RADIUS.normal)}px; 
+  border-top-right-radius: ${ns(RADIUS.normal)}px;
 `;
 
 export const HeaderCloseButtonWrap = styled.TouchableOpacity.attrs({
@@ -82,8 +83,8 @@ export const HeaderCloseButtonWrap = styled.TouchableOpacity.attrs({
 
 export const Wrap = styled.View<{ absolute: boolean }>`
   height: ${ns(64)}px;
-  ${({ absolute }) => 
-    absolute 
+  ${({ absolute }) =>
+    absolute
       ? `
         position: absolute;
         top: 0;
@@ -91,8 +92,7 @@ export const Wrap = styled.View<{ absolute: boolean }>`
         left: 0;
         z-index: 3;
       `
-      : null
-  }
+      : null}
 `;
 
 export const HeaderCloseButton = styled.View`

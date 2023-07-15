@@ -11,8 +11,7 @@ export const Wrap = styled(Animated.View)`
   margin-bottom: ${ns(16)}px;
 `;
 
-export const BadgeWrap = styled.View`
-`;
+export const BadgeWrap = styled.View``;
 
 export const MediaContainer = styled.View<{ height: number }>`
   z-index: 2;
@@ -33,14 +32,28 @@ export const Image = styled(FastImage).attrs({
 export const Lottie = styled(LottieView).attrs({
   resizeMode: 'cover',
 })`
-  flex: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
 `;
 
 export const Video = styled(RNVideo).attrs({
   resizeMode: 'cover',
   posterResizeMode: 'cover',
 })`
-  flex: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
 `;
 
 export const TextWrap = styled.View`

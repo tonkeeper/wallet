@@ -1,11 +1,16 @@
-import React, { FC, forwardRef, PropsWithChildren, useMemo } from 'react';
+import React, { FC, forwardRef, PropsWithChildren, ReactNode, useMemo } from 'react';
 
 import * as S from './CellSection.style';
 import { CellProps } from './CellSection.interface';
-import { useTheme } from '$hooks';
 import { Icon, Separator, Text } from '$uikit';
+import { StyleProp, ViewStyle } from 'react-native';
 
-export const CellSection: FC = ({ children }) => {
+export interface CellSectionProps {
+  sectionStyle?: StyleProp<ViewStyle>;
+  children: ReactNode;
+}
+
+export const CellSection: FC<CellSectionProps> = ({ children, sectionStyle }) => {
   const items = useMemo(() => {
     return React.Children.map(children, (node, i) => {
       if (!React.isValidElement(node)) {
@@ -18,7 +23,7 @@ export const CellSection: FC = ({ children }) => {
     });
   }, [children]);
 
-  return <S.Section>{items}</S.Section>;
+  return <S.Section style={sectionStyle}>{items}</S.Section>;
 };
 
 export const CellSectionItem = forwardRef<any, PropsWithChildren<CellProps>>(
@@ -45,7 +50,9 @@ export const CellSectionItem = forwardRef<any, PropsWithChildren<CellProps>>(
         >
           <S.SectionItemInner>
             <S.SectionItemTitleWrap>
-              {content ? content : (
+              {content ? (
+                content
+              ) : (
                 <Text style={{ flex: 1 }} variant="label1">
                   {children}
                 </Text>

@@ -4,14 +4,19 @@ import { ActionItemBaseProps } from '$shared/components/ActionItem/ActionItemBas
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
-import { compareAddresses, format, fromNano, maskifyTonAddress } from '$utils';
+import {
+  compareAddresses,
+  format as formatDate,
+  fromNano,
+  maskifyTonAddress,
+} from '$utils';
 import { useTranslator } from '$hooks/useTranslator';
 import { formatCryptoCurrency } from '$utils/currency';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { TransactionItemNFT } from '$shared/components/ActionItem/TransactionItemNFT/TransactionItemNFT';
 import { subscriptionsSelector } from '$store/subscriptions';
 import { Action } from 'tonapi-sdk-js';
-import { formatter } from '$utils/formatter';
+import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
 
 export function usePrepareAction(
   rawAction: Action,
@@ -20,6 +25,7 @@ export function usePrepareAction(
   const { address } = useSelector(walletSelector);
   const t = useTranslator();
   const { subscriptionsInfo } = useSelector(subscriptionsSelector);
+  const format = useHideableFormatter();
 
   return useMemo(() => {
     const action = rawAction[ActionType[rawAction.type]];
@@ -48,20 +54,16 @@ export function usePrepareAction(
     let label;
     let type;
     let typeLabel;
-    let currency;
     let bottomContent;
     if (ActionType.TonTransfer === ActionType[rawAction.type]) {
       const amount = TonWeb.utils.fromNano(Math.abs(action.amount).toString());
-      label = prefix + ' ' + formatter.format(amount.toString());
+      label = format(amount.toString(), {
+        prefix: `${prefix} `,
+        currencySeparator: 'wide',
+        currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
+      });
       type = isReceive ? 'receive' : 'sent';
       typeLabel = t(`transaction_type_${type}`);
-      currency = formatCryptoCurrency(
-        '',
-        CryptoCurrencies.Ton,
-        Decimals[CryptoCurrencies.Ton],
-        undefined,
-        true,
-      ).trim();
     }
 
     if (ActionType.NftItemTransfer === ActionType[rawAction.type]) {
@@ -78,16 +80,13 @@ export function usePrepareAction(
 
     if (ActionType.JettonTransfer === ActionType[rawAction.type]) {
       const amount = fromNano(action.amount, action.jetton?.decimals ?? 9);
-      label = prefix + ' ' + formatter.format(amount.toString());
+      label = format(amount.toString(), {
+        prefix: `${prefix} `,
+        currencySeparator: 'wide',
+        currency: action.jetton?.symbol,
+      });
       type = isReceive ? 'receive' : 'sent';
       typeLabel = t(`transaction_type_${type}`);
-      currency = formatCryptoCurrency(
-        '',
-        action.jetton?.symbol,
-        Decimals[CryptoCurrencies.Ton],
-        undefined,
-        true,
-      ).trim();
     }
 
     if (
@@ -108,31 +107,25 @@ export function usePrepareAction(
           ? t('transaction_type_subscription')
           : t('transaction_type_unsubscription');
       }
-      label = isSubscription ? prefix + ' ' + formatter.format(amount.toString()) : '-';
+      label = isSubscription
+        ? format(amount.toString(), {
+            prefix: `${prefix} `,
+            currencySeparator: 'wide',
+            currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
+          })
+        : '-';
       type = isSubscription ? 'subscription' : 'unsubscription';
-      currency = isSubscription
-        ? formatCryptoCurrency(
-            '',
-            CryptoCurrencies.Ton,
-            Decimals[CryptoCurrencies.Ton],
-            undefined,
-            true,
-          ).trim()
-        : '';
     }
 
     if (ActionType.AuctionBid === ActionType[rawAction.type]) {
       const amount = TonWeb.utils.fromNano(Math.abs(action.amount.value).toString());
-      label = prefix + ' ' + formatter.format(amount.toString());
+      label = format(amount.toString(), {
+        prefix: `${prefix} `,
+        currencySeparator: 'wide',
+        currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
+      });
       typeLabel = t('transaction_type_bid');
       type = action.auctionType === 'DNS.tg' ? 'tg_dns' : 'sent';
-      currency = formatCryptoCurrency(
-        '',
-        CryptoCurrencies.Ton,
-        Decimals[CryptoCurrencies.Ton],
-        undefined,
-        true,
-      ).trim();
     }
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
@@ -150,7 +143,6 @@ export function usePrepareAction(
       type,
       typeLabel,
       label,
-      currency,
       labelColor,
       bottomContent,
       infoRows: [],
@@ -160,7 +152,7 @@ export function usePrepareAction(
     };
 
     const transactionDate = new Date(event.timestamp * 1000);
-    let formattedDate = format(transactionDate, 'HH:mm');
+    let formattedDate = formatDate(transactionDate, 'HH:mm');
 
     const accountToDisplay = isReceive ? action.sender : action.recipient;
     if (
@@ -207,9 +199,10 @@ export function usePrepareAction(
   }, [
     rawAction,
     address.ton,
-    event.inProgress,
     event.isScam,
+    event.inProgress,
     event.timestamp,
+    format,
     t,
     subscriptionsInfo,
   ]) as ActionItemBaseProps;

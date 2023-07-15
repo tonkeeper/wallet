@@ -4,14 +4,7 @@ import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter'
 import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
-import {
-  compareAddresses,
-  debugLog,
-  delay,
-  lowerCaseFirstLetter,
-  ns,
-  truncateDecimal,
-} from '$utils';
+import { compareAddresses, debugLog, delay, lowerCaseFirstLetter, ns } from '$utils';
 import { t } from '$translation';
 import { AccountEvent, Action, ActionTypeEnum } from 'tonapi-sdk-js';
 import { SignRawAction } from './SignRawAction';
@@ -30,6 +23,7 @@ import {
 import { TonConnectRemoteBridge } from '$tonconnect';
 import { formatter } from '$utils/formatter';
 import { CryptoCurrencies } from '$shared/constants';
+import { approveAll } from '$store/zustand/tokenApproval/helpers';
 
 interface SignRawModalProps {
   action: Awaited<ReturnType<NFTOperations['signRaw']>>;
@@ -46,25 +40,6 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const unlockVault = useUnlockVault();
 
-  const handleConfirm = onConfirm(async ({ startLoading }) => {
-    const vault = await unlockVault();
-    const privateKey = await vault.getTonPrivateKey();
-
-    startLoading();
-
-    await action.send(privateKey, async (boc) => {
-      if (onSuccess) {
-        await delay(1750);
-
-        onSuccess(boc);
-      }
-    });
-  });
-
-  const hasWarning = useMemo(() => {
-    return !accountEvent;
-  }, [accountEvent]);
-
   const actions = useMemo(() => {
     if (!accountEvent || accountEvent?.actions?.[0]?.type === 'Unknown') {
       return params.messages.map((message) => ({
@@ -78,6 +53,42 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 
     return accountEvent.actions;
   }, [accountEvent, params.messages]);
+
+  const tokensToApprove = useMemo(() => {
+    const tokens = actions
+      .map((action) => ({
+        address:
+          (action.type === 'ContractDeploy' && action[action.type].address) ||
+          action[action.type]?.nft?.collection?.address ||
+          action[action.type]?.nft?.address ||
+          action[action.type]?.nft ||
+          action[action.type]?.jetton?.address,
+        isCollection: !!action[action.type]?.nft?.collection?.address,
+      }))
+      .filter((token) => !!token.address);
+
+    return tokens;
+  }, [actions]);
+
+  const handleConfirm = onConfirm(async ({ startLoading }) => {
+    const vault = await unlockVault();
+    const privateKey = await vault.getTonPrivateKey();
+
+    startLoading();
+
+    await action.send(privateKey, async (boc) => {
+      if (onSuccess) {
+        await delay(1750);
+        approveAll(tokensToApprove);
+
+        onSuccess(boc);
+      }
+    });
+  });
+
+  const hasWarning = useMemo(() => {
+    return !accountEvent;
+  }, [accountEvent]);
 
   const headerTitle = useMemo(() => {
     if (actions.length > 1) {

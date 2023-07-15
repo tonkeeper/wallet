@@ -48,7 +48,7 @@ export const ItemCont = styled.View`
   padding-horizontal: ${ns(16)}px;
 `;
 
-export const ItemCheckedWrap = styled.View`
+export const ItemIconWrap = styled.View`
   width: ${ns(16)}px;
   position: absolute;
   right: ${ns(16)}px;

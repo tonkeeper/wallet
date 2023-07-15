@@ -8,6 +8,7 @@ import {
   IConnectedAppConnectionRemote,
 } from './types';
 import { useConnectedAppsStore } from './useConnectedAppsStore';
+import messaging from '@react-native-firebase/messaging';
 
 export const saveAppConnection = (
   walletAddress: string,
@@ -17,6 +18,41 @@ export const saveAppConnection = (
   useConnectedAppsStore
     .getState()
     .actions.saveAppConnection(getChainName(), walletAddress, appData, connection);
+};
+
+export const enableNotifications = async (
+  walletAddress: string,
+  url: IConnectedApp['url'],
+  sessionId: string | undefined,
+) => {
+  try {
+    const firebaseToken = await messaging().getToken();
+    useConnectedAppsStore
+      .getState()
+      .actions.enableNotifications(
+        getChainName(),
+        walletAddress,
+        url,
+        sessionId,
+        firebaseToken,
+      );
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const disableNotifications = async (
+  walletAddress: string,
+  url: IConnectedApp['url'],
+) => {
+  try {
+    const firebaseToken = await messaging().getToken();
+    useConnectedAppsStore
+      .getState()
+      .actions.disableNotifications(getChainName(), walletAddress, url, firebaseToken);
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export const removeConnectedApp = (url: string) => {

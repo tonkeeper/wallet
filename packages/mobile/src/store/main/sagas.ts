@@ -8,7 +8,7 @@ import BigNumber from 'bignumber.js';
 
 import { mainActions, mainSelector } from './index';
 import { Wallet } from '$blockchain';
-import { batchActions, Toast } from '$store';
+import { batchActions, Toast, useNotificationsStore } from '$store';
 import { walletActions, walletSelector } from '$store/wallet';
 import { ratesActions } from '$store/rates';
 import * as SplashScreen from 'expo-splash-screen';
@@ -65,6 +65,7 @@ import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 import { clearSubscribeStatus } from '$utils/messaging';
 import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 import { useSwapStore } from '$store/zustand/swap';
+import * as SecureStore from 'expo-secure-store';
 
 SplashScreen.preventAutoHideAsync()
   .then((result) =>
@@ -256,6 +257,8 @@ export function* resetAll(isTestnet: boolean) {
   yield call(clearSubscribeStatus);
   yield call(JettonsCache.clearAll, getWalletName());
   yield call(useJettonEventsStore.getState().actions.clearStore);
+  yield call(useNotificationsStore.getState().actions.reset);
+  yield call(SecureStore.deleteItemAsync, 'proof_token');
   yield put(
     batchActions(
       mainActions.resetMain(),

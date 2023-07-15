@@ -21,6 +21,7 @@ import { jettonsActions } from '$store/jettons';
 import { Switch } from 'react-native-gesture-handler';
 import { DevFeature, Toast, useDevFeaturesToggle } from '$store';
 import { tags } from '$translation';
+// import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 
 export const DevMenu: FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
@@ -29,6 +30,7 @@ export const DevMenu: FC = () => {
   const t = useTranslator();
   const isTestnet = useSelector(isTestnetSelector);
   const alwaysShowV4R1 = useSelector(alwaysShowV4R1Selector);
+  // const addNotification = useNotificationsStore((state) => state.actions.addNotification);
 
   const handleToggleTestnet = useCallback(() => {
     Alert.alert(t('settings_network_alert_title'), '', [
@@ -86,6 +88,15 @@ export const DevMenu: FC = () => {
   const handleEditConfig = useCallback(() => {
     nav.navigate('EditConfig');
   }, [nav]);
+
+  const handlePushNotification = useCallback(() => {
+    // addNotification({
+    //   message: 'Test notification added',
+    //   dapp_url: 'https://getgems.io',
+    //   received_at: Date.now(),
+    //   link: 'https://getgems.io',
+    // });
+  }, []);
 
   const handleCopyVersion = useCallback(() => {
     Clipboard.setString(DeviceInfo.getVersion() + ` (${DeviceInfo.getBuildNumber()})`);
@@ -179,6 +190,11 @@ export const DevMenu: FC = () => {
             </CellSectionItem>
             <CellSectionItem onPress={handleClearEventsCache}>
               Clear events cache
+            </CellSectionItem>
+          </CellSection>
+          <CellSection>
+            <CellSectionItem onPress={handlePushNotification}>
+              Push notification
             </CellSectionItem>
           </CellSection>
         </Animated.ScrollView>

@@ -1,14 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import { useNavigation } from './useNavigation';
 import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { useDeeplinking } from '$libs/deeplinking';
+import { getToken } from '$utils/messaging';
+import { openDAppBrowser } from '$navigation';
+import { getDomainFromURL } from '$utils';
+import { Alert } from 'react-native';
+import { t } from '$translation';
 
 export const useNotificationsResolver = () => {
   const { isMainStackInited } = useSelector(mainSelector);
   const nav = useNavigation();
   const deeplinking = useDeeplinking();
+
+  useEffect(() => {
+    getToken();
+  }, []);
 
   React.useEffect(() => {
     if (!isMainStackInited) {
@@ -22,9 +31,33 @@ export const useNotificationsResolver = () => {
       );
 
       const deeplink = remoteMessage.data?.deeplink;
+      const link = remoteMessage.data?.link;
+      const dapp_url = remoteMessage.data?.dapp_url;
 
       if (deeplink) {
         deeplinking.resolve(deeplink);
+      } else if (link) {
+        if (!dapp_url || getDomainFromURL(link) === getDomainFromURL(dapp_url)) {
+          openDAppBrowser(link);
+        } else {
+          Alert.alert(
+            t('notifications.alert.title'),
+            t('notifications.alert.description'),
+            [
+              {
+                text: t('notifications.alert.open'),
+                onPress: () => openDAppBrowser(link),
+                style: 'destructive',
+              },
+              {
+                text: t('notifications.alert.cancel'),
+                style: 'cancel',
+              },
+            ],
+          );
+        }
+      } else if (dapp_url) {
+        openDAppBrowser(dapp_url);
       } else {
         nav.navigate('Balances');
       }

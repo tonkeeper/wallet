@@ -6,6 +6,9 @@ import { useTranslator } from '$hooks';
 import { isIOS, ns } from '$utils';
 import Clipboard from '@react-native-community/clipboard';
 import { Toast } from '$store';
+import { HideableImage } from '$core/HideableAmount/HideableImage';
+import { Steezy } from '$styles';
+import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 
 export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
   uri,
@@ -33,30 +36,39 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
     // TODO: remove that workaround then lottie on ios is fixed
     if (lottieUri && !isIOS) {
       return (
-        <S.Lottie
-          source={{
-            uri: lottieUri,
-          }}
-          loop={true}
-          autoPlay={true}
+        <HideableImage
+          style={styles.image.static}
+          image={
+            <S.Lottie
+              style={styles.image.static}
+              source={{ uri: lottieUri }}
+              loop={true}
+              autoPlay={true}
+            />
+          }
         />
       );
     }
 
     if (videoUri) {
       return (
-        <S.Video
-          source={{ uri: videoUri }}
-          poster={uri}
-          muted={true}
-          repeat={true}
-          playWhenInactive={true}
+        <HideableImage
+          style={styles.image.static}
+          image={
+            <S.Video
+              source={{ uri: videoUri }}
+              poster={uri}
+              muted={true}
+              repeat={true}
+              playWhenInactive={true}
+            />
+          }
         />
       );
     }
 
     if (uri) {
-      return <S.Image source={{ uri }} />;
+      return <HideableImage style={styles.image.static} uri={uri} />;
     }
 
     return null;
@@ -78,19 +90,23 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
       <S.TextWrap>
         {title ? (
           <S.TitleWrap disabled={!copyableTitle} onPress={handleCopyTitle}>
-            <Text style={{ alignItems: 'center', marginRight: ns(8) }} variant="h2">
+            <HideableAmount
+              stars="* * * *"
+              style={{ alignItems: 'center', marginRight: ns(8) }}
+              variant="h2"
+            >
               {title}
-            </Text>
+            </HideableAmount>
             {isOnSale ? <Badge>{t('nft_on_sale').toUpperCase()}</Badge> : null}
           </S.TitleWrap>
         ) : null}
         <S.Row>
           <S.CollectionWrapper>
-            <Text color="foregroundSecondary" variant="body2">
+            <HideableAmount color="foregroundSecondary" variant="body2">
               {collection == null
                 ? t('nft_single_nft')
                 : collection || t('nft_unnamed_collection')}
-            </Text>
+            </HideableAmount>
           </S.CollectionWrapper>
           {isVerified && <Icon name="ic-verification-16" colorless />}
         </S.Row>
@@ -104,3 +120,9 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
     </S.Wrap>
   );
 };
+
+const styles = Steezy.create({
+  image: {
+    flex: 1,
+  },
+});

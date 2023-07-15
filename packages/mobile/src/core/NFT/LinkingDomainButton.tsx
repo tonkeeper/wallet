@@ -195,7 +195,7 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
   }, [record.walletAddress, props.isTGUsername]);
 
   return (
-    <View style={{ marginBottom: 8 }}>
+    <View style={{ marginBottom: 4 }}>
       <Button
         style={{ marginBottom: 12 }}
         onPress={handlePressButton}
@@ -209,7 +209,7 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
       {!loading && (
         <>
           {needClaim && (
-            <Text variant="body2" color="foregroundSecondary">
+            <Text variant="body2" color="foregroundSecondary" style={{ marginBottom: 6 }}>
               {t(
                 props.isTGUsername
                   ? 'nft_link_username_caption'
@@ -218,7 +218,7 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
             </Text>
           )}
           {isLinkedOtherAddress && (
-            <Text variant="body2" color="accentOrange">
+            <Text variant="body2" color="accentOrange" style={{ marginBottom: 6 }}>
               {t(
                 props.isTGUsername
                   ? 'nft_link_username_mismatch_warn'

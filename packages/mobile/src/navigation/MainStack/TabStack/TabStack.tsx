@@ -13,10 +13,14 @@ import { t } from '$translation';
 import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
 import { TabBarBadgeIndicator } from './TabBarBadgeIndicator';
 import { useNotificationsSubscribe } from '$hooks/useNotificationsSubscribe';
-import { ActivityScreen } from '../../../tabs/Activity/ActivityScreen';
 import { WalletScreen } from '../../../tabs/Wallet/WalletScreen';
 import Animated from 'react-native-reanimated';
 import { FONT } from '$styled';
+import { useCheckForUpdates } from '$hooks/useCheckForUpdates';
+import { useLoadExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
+import { ActivityStack } from '$navigation/ActivityStack/ActivityStack';
+import { useNotificationsStore } from '$store';
+import { NotificationsIndicator } from '$navigation/MainStack/TabStack/NotificationsIndicator';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -24,9 +28,12 @@ export const TabStack: FC = () => {
   const { bottomSeparatorStyle } = useContext(ScrollPositionContext);
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
+  // const shouldShowRedDot = useNotificationsStore((state) => state.should_show_red_dot);
 
+  useLoadExpiringDomains();
   useNotificationsSubscribe();
   usePreloadChart();
+  useCheckForUpdates();
 
   const tabBarStyle = { height: ns(64) + (safeArea.bottom > 0 ? ns(20) : 0) };
   const containerTabStyle = useMemo(
@@ -83,11 +90,16 @@ export const TabStack: FC = () => {
         }}
       />
       <Tab.Screen
-        component={ActivityScreen}
+        component={ActivityStack}
         name={TabsStackRouteNames.Activity}
         options={{
           tabBarLabel: t('activity.screen_title'),
-          tabBarIcon: ({ color }) => <Icon colorHex={color} name="ic-flash-28" />,
+          tabBarIcon: ({ color }) => (
+            <View style={styles.settingsIcon}>
+              <Icon colorHex={color} name="ic-flash-28" />
+              {/* <TabBarBadgeIndicator isVisible={shouldShowRedDot} /> */}
+            </View>
+          ),
         }}
       />
       <Tab.Screen
@@ -111,7 +123,7 @@ export const TabStack: FC = () => {
           tabBarIcon: ({ color }) => (
             <View style={styles.settingsIcon}>
               <Icon colorHex={color} name="ic-settings-28" />
-              <TabBarBadgeIndicator />
+              <NotificationsIndicator />
             </View>
           ),
         }}
