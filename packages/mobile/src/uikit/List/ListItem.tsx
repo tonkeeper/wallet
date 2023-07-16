@@ -23,7 +23,7 @@ export interface ListItemProps {
   subvalue?: string | React.ReactNode;
   label?: string | React.ReactNode;
   chevronColor?: TonThemeColor;
-  imageStyle?: StyleProp<ViewStyle>;
+  pictureStyle?: StyleProp<ViewStyle>;
   compact?: boolean;
   isLast?: boolean;
   underlayColor?: string;
@@ -142,7 +142,7 @@ export const ListItem = memo<ListItemProps>((props) => {
           <View style={[styles.leftContent, props.leftContentStyle]}>
             {leftContent}
             {!!props.picture && (
-              <View style={[styles.pictureContainer, props.imageStyle]}>
+              <View style={[styles.pictureContainer, props.pictureStyle]}>
                 <FastImage style={[styles.picture.static]} source={pictureSource} />
               </View>
             )}

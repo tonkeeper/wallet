@@ -6,11 +6,11 @@ import { PageViewExternalHeader } from './PageViewExternalHeader';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { PageIndexContext } from './hooks/usePageIndex';
 import { PagerViewTabBar } from './PagerViewTabBar';
-import { PageViewFunny } from './PageViewFunny';
-import React, { memo, useMemo } from 'react';
+import React, { forwardRef, memo, useMemo } from 'react';
 
 import PagerView from 'react-native-pager-view';
 import Animated from 'react-native-reanimated';
+import { useMergeRefs } from '@tonkeeper/mobile/src/utils';
 
 const AnimatedPagerView = Animated.createAnimatedComponent(PagerView);
 
@@ -25,63 +25,66 @@ interface PagerViewContainerProps {
   children?: React.ReactNode;
   tabBarStyle?: ViewStyle;
   hideFunny?: boolean;
+  ref?: React.Ref<PagerView>;
 }
 
-export const PagerViewContainer = memo<PagerViewContainerProps>((props) => {
-  const { hideBottomSeparator } = props;
-  const pager = usePagerViewHandler();
+export const PagerViewContainer = memo<PagerViewContainerProps>(
+  forwardRef((props, ref) => {
+    const { hideBottomSeparator } = props;
+    const pager = usePagerViewHandler();
+    const setRef = useMergeRefs(ref, pager.pagerViewRef);
 
-  const elements = useMemo(() => {
-    const accumulator: Elements = { header: null, pages: [], tabs: [] };
-    return React.Children.toArray(props.children).reduce((acc, child) => {
-      if (React.isValidElement(child)) {
-        if (child.type === PageViewExternalHeader) {
-          acc.header = child.props.children;
-        }
+    const elements = useMemo(() => {
+      const accumulator: Elements = { header: null, pages: [], tabs: [] };
+      return React.Children.toArray(props.children).reduce((acc, child) => {
+        if (React.isValidElement(child)) {
+          if (child.type === PageViewExternalHeader) {
+            acc.header = child.props.children;
+          }
 
-        if (child.type === PageViewExternalPage) {
-          const props: PageViewExternalPageProps = child.props;
-          acc.pages.push(props.children);
+          if (child.type === PageViewExternalPage) {
+            const props: PageViewExternalPageProps = child.props;
+            acc.pages.push(props.children);
 
-          if (props.tabLabel) {
-            acc.tabs.push({ label: props.tabLabel });
+            if (props.tabLabel) {
+              acc.tabs.push({ label: props.tabLabel });
+            }
           }
         }
-      }
 
-      return acc;
-    }, accumulator);
-  }, [props.children]);
+        return acc;
+      }, accumulator);
+    }, [props.children]);
 
-  return (
-    <PagerViewContext.Provider value={pager}>
-      <View style={styles.pagerView}>
-        <PagerViewInternalHeader>
-          {elements.header}
-          <PagerViewTabBar style={props.tabBarStyle} tabs={elements.tabs} />
-        </PagerViewInternalHeader>
-        {/* {!props.hideFunny && <PageViewFunny />} */}
-        <AnimatedPagerView
-          onPageScroll={pager.horizontalScrollHandler}
-          ref={pager.pagerViewRef}
-          style={styles.pagerView}
-          initialPage={0}
-          scrollEnabled
-          overdrag
-        >
-          {elements.pages.map((children, index) => (
-            <View key={`pager-view-page-${index}`}>
-              <PageIndexContext.Provider value={index}>
-                {children}
-              </PageIndexContext.Provider>
-            </View>
-          ))}
-        </AnimatedPagerView>
-        {!hideBottomSeparator && <ScreenBottomSeparator />}
-      </View>
-    </PagerViewContext.Provider>
-  );
-});
+    return (
+      <PagerViewContext.Provider value={pager}>
+        <View style={styles.pagerView}>
+          <PagerViewInternalHeader>
+            {elements.header}
+            <PagerViewTabBar style={props.tabBarStyle} tabs={elements.tabs} />
+          </PagerViewInternalHeader>
+          <AnimatedPagerView
+            onPageScroll={pager.horizontalScrollHandler}
+            ref={setRef}
+            style={styles.pagerView}
+            initialPage={0}
+            scrollEnabled
+            overdrag
+          >
+            {elements.pages.map((children, index) => (
+              <View key={`pager-view-page-${index}`}>
+                <PageIndexContext.Provider value={index}>
+                  {children}
+                </PageIndexContext.Provider>
+              </View>
+            ))}
+          </AnimatedPagerView>
+          {!hideBottomSeparator && <ScreenBottomSeparator />}
+        </View>
+      </PagerViewContext.Provider>
+    );
+  }),
+);
 
 const styles = StyleSheet.create({
   pagerView: {

@@ -71,7 +71,7 @@ const FLashListItem = ({
       return (
         <View style={containerStyle}>
           <List.Item
-            imageStyle={item.imageStyle}
+            pictureStyle={item.imageStyle}
             chevron={item.chevron}
             chevronColor={item.chevronColor}
             title={item.title}

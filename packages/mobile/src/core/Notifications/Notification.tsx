@@ -171,7 +171,7 @@ export const Notification: React.FC<NotificationProps> = (props) => {
           <List.Item
             disabled={!props.notification.link}
             onPress={handleOpenInWebView}
-            imageStyle={styles.imageStyle.static}
+            pictureStyle={styles.imageStyle.static}
             leftContentStyle={styles.leftContentStyle.static}
             picture={props.notification.icon_url || app?.icon}
             titleProps={{

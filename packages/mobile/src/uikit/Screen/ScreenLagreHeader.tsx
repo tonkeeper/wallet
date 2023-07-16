@@ -1,13 +1,11 @@
 import React, { memo } from 'react';
-import {
-  LargeNavBar,
-} from '$uikit/LargeNavBar/LargeNavBar';
+import { LargeNavBar } from '$uikit/LargeNavBar/LargeNavBar';
 
 import { NavBar } from '$uikit';
 import { Dimensions } from 'react-native';
 import { TabletMaxWidth } from '$shared/constants';
-import { useScreenScroll } from './context/ScreenScrollContext';
 import { LargeNavBarProps } from '$uikit/LargeNavBar/LargeNavBar.interface';
+import { SharedValue } from 'react-native-reanimated';
 
 const { width: deviceWidth } = Dimensions.get('window');
 
@@ -15,21 +13,20 @@ interface ScreenLargeHeaderProps extends LargeNavBarProps {
   navBarTitle: string;
   isLargeNavBar?: boolean;
   navBarRight?: React.ReactNode;
+  scrollTop: SharedValue<number>;
 }
 
 export const ScreenLargeHeader = memo<ScreenLargeHeaderProps>((props) => {
   const {
-    children,
     navBarTitle,
     navBarRight,
     bottomComponent,
     onPress,
     isLargeNavBar = true,
-    hitSlop
+    hitSlop,
+    scrollTop,
   } = props;
 
-  const { contentScrollY } = useScreenScroll();
-  
   const isBigScreen = deviceWidth > TabletMaxWidth;
   const shouldRenderLargeNavBar = !isBigScreen && isLargeNavBar;
 
@@ -39,10 +36,10 @@ export const ScreenLargeHeader = memo<ScreenLargeHeaderProps>((props) => {
         <LargeNavBar
           onPress={onPress}
           bottomComponent={bottomComponent}
-          scrollTop={contentScrollY}
+          scrollTop={scrollTop}
           rightContent={navBarRight}
           hitSlop={hitSlop}
-          position="absolute"
+          position="relative"
         >
           {navBarTitle}
         </LargeNavBar>
@@ -50,7 +47,7 @@ export const ScreenLargeHeader = memo<ScreenLargeHeaderProps>((props) => {
       {!!navBarTitle && !shouldRenderLargeNavBar && (
         <NavBar
           hideBackButton={isLargeNavBar && isBigScreen}
-          scrollTop={contentScrollY}
+          scrollTop={scrollTop}
           rightContent={navBarRight}
         >
           {navBarTitle}

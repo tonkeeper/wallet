@@ -45,6 +45,7 @@ export const TabsPagerView: React.FC<TabsPagerViewProps> = (props) => {
   const { setPageFN, pageOffset, setNativeActiveIndex } = useTabCtx();
   const refPagerView = useRef<PagerView>(null);
   const tabBarHeight = useBottomTabBarHeight();
+  const numOfTabs = useMemo(() => React.Children.count(props.children), [props.children]);
 
   React.useEffect(() => {
     const setPage = (index: number) => {
@@ -78,9 +79,14 @@ export const TabsPagerView: React.FC<TabsPagerViewProps> = (props) => {
       transform: [
         {
           translateX:
-            pageOffset.value > 2
+            pageOffset.value > numOfTabs
               ? 50
-              : interpolate(pageOffset.value, [1.8, 1.9], [50, -80], Extrapolate.CLAMP),
+              : interpolate(
+                  pageOffset.value,
+                  [numOfTabs - 0.2, numOfTabs - 0.1],
+                  [50, -80],
+                  Extrapolate.CLAMP,
+                ),
         },
       ],
     };

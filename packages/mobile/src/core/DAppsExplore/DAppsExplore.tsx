@@ -1,286 +1,204 @@
-import { useTheme, useTranslator } from '$hooks';
-import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
-import {
-  openDAppsSearch,
-  openRequireWalletModal,
-  openScanQR,
-  TabsStackRouteNames,
-} from '$navigation';
-import { IsTablet, LargeNavBarHeight, TabletMaxWidth } from '$shared/constants';
-import { store, useAppsListStore } from '$store';
-import { Icon, LargeNavBar, NavBar } from '$uikit';
-import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
-import { deviceWidth, ns } from '$utils';
+import { useTranslator } from '$hooks';
+import { openDAppBrowser, openDAppsSearch, TabsStackRouteNames } from '$navigation';
+import { useAppsListStore, useConnectedAppsList } from '$store';
 import { useFlags } from '$utils/flags';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react';
-import { LayoutChangeEvent, StyleSheet } from 'react-native';
-import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
-import Animated, {
-  Extrapolation,
-  interpolate,
-  useAnimatedStyle,
-  useDerivedValue,
-} from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {
-  ConnectedApps,
-  PopularApps,
-  SearchButton,
-  AboutDApps,
-  TopTabs,
-  TopTabsHeight,
-} from './components';
+import React, { memo, useCallback, useEffect, useRef } from 'react';
+import { SearchButton, AboutDApps } from './components';
 import * as S from './DAppsExplore.style';
-import { NavBarSpacerHeight } from './DAppsExplore.style';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { TabStackParamList } from '$navigation/MainStack/TabStack/TabStack.interface';
-
-const OFFSET = ns(16);
-
-const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
+import { PagerView, Screen, Steezy, View } from '@tonkeeper/uikit';
+import { List } from '$uikit';
+import { ScanQRButton } from '../../components/ScanQRButton';
+import { Alert } from 'react-native';
+import { TonConnect } from '$tonconnect/TonConnect';
+import { AppItem } from './components/AppItem/AppItem';
+import { trackEvent } from '$utils';
+import { FlashList, FlashListProps } from '@shopify/flash-list';
+import { ListSeparator } from '@tonkeeper/uikit/src/components/List/ListSeparator';
+import { SText } from '$uikit';
 
 export type DAppsExploreProps = NativeStackScreenProps<
   TabStackParamList,
   TabsStackRouteNames.Explore
 >;
 
-const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
+export const DAppsExplore = memo<DAppsExploreProps>((props) => {
   const { initialCategory } = props.route?.params || {};
   const { setParams } = props.navigation;
 
   const flags = useFlags(['disable_dapps']);
-
+  const refPagerView = useRef<any>();
   const t = useTranslator();
   const tabBarHeight = useBottomTabBarHeight();
-  const deeplinking = useDeeplinking();
-
-  const theme = useTheme();
-
   const { categories } = useAppsListStore();
-
-  const [connectedAppsHeight, setConnectedAppsHeight] = useState(0);
-  const [scrollViewHeight, setScrollViewHeight] = useState(0);
-  const [popularAppsHeight, setPopularAppsHeight] = useState(0);
-
-  const tabsSnapOffset = connectedAppsHeight + LargeNavBarHeight + 4;
-
-  const { top: topInset } = useSafeAreaInsets();
-
-  const [activeCategory, setActiveCategory] = useState('featured');
+  const connectedApps = useConnectedAppsList();
 
   useEffect(() => {
-    if (initialCategory) {
-      setActiveCategory(initialCategory);
+    if (initialCategory && categories.length > 0) {
+      const idx = categories.findIndex((category) => category.id === initialCategory);
+      requestAnimationFrame(() => refPagerView.current?.setPage(idx));
       setParams({ initialCategory: undefined });
     }
-  }, [initialCategory]);
-
-  const { isSnapPointReached, scrollRef, scrollTop, scrollHandler } = useScrollHandler(
-    tabsSnapOffset,
-    true,
-  );
-
-  const handlePressOpenScanQR = React.useCallback(() => {
-    if (store.getState().wallet.wallet) {
-      openScanQR((str) => {
-        const resolver = deeplinking.getResolver(str, {
-          delay: 200,
-          origin: DeeplinkOrigin.QR_CODE,
-        });
-        if (resolver) {
-          resolver();
-          return true;
-        }
-
-        return false;
-      });
-    } else {
-      openRequireWalletModal();
-    }
-  }, [deeplinking]);
+  }, [categories, initialCategory, setParams]);
 
   const handleSearchPress = useCallback(() => {
     openDAppsSearch();
   }, []);
 
-  const handleScrollViewLayout = useCallback((event: LayoutChangeEvent) => {
-    setScrollViewHeight(event.nativeEvent.layout.height);
-  }, []);
+  const handleOpenDapp = useCallback(
+    (url, name) => () => {
+      trackEvent('click_dapp', { url, name });
 
-  const handleConnectedAppsLayout = useCallback((event: LayoutChangeEvent) => {
-    setConnectedAppsHeight(event.nativeEvent.layout.height);
-  }, []);
-
-  const contentHeight = popularAppsHeight + tabsSnapOffset + TopTabsHeight - OFFSET;
-
-  const bottomDividerStyle = useAnimatedStyle(() => ({
-    opacity:
-      contentHeight > scrollViewHeight &&
-      scrollTop.value + scrollViewHeight < contentHeight
-        ? 1
-        : 0,
-  }));
-
-  const topTabsDividerStyle = useAnimatedStyle(() => ({
-    opacity: scrollTop.value > tabsSnapOffset ? 1 : 0,
-  }));
-
-  const navBarOpacity = useDerivedValue(() =>
-    interpolate(
-      scrollTop.value,
-      [
-        connectedAppsHeight + NavBarSpacerHeight,
-        connectedAppsHeight + NavBarSpacerHeight + LargeNavBarHeight / 3.5,
-      ],
-      [1, 0],
-      Extrapolation.CLAMP,
-    ),
+      openDAppBrowser(url);
+    },
+    [],
   );
 
-  const topTabsContainerStyle = useAnimatedStyle(() => ({
-    backgroundColor:
-      navBarOpacity.value === 0 ? theme.colors.backgroundPrimary : 'transparent',
-  }));
-
-  const tabScrollView = useRef<ScrollView>(null);
-
-  const navBarRight = (
-    <TouchableOpacity
-      onPress={handlePressOpenScanQR}
-      style={styles.scanButton}
-      activeOpacity={0.6}
-      hitSlop={{
-        top: 26,
-        bottom: 26,
-        left: 26,
-        right: 26,
-      }}
-    >
-      <Icon name="ic-viewfinder-28" color="accentPrimary" />
-    </TouchableOpacity>
-  );
-
-  const isBigScreen = deviceWidth > TabletMaxWidth;
+  if (flags.disable_dapps) {
+    return (
+      <Screen>
+        <Screen.LargeHeader rightContent={<ScanQRButton />} title={t('browser.title')} />
+        <Screen.ScrollView>
+          <S.ContentWrapper>
+            <S.Content>
+              <AboutDApps />
+            </S.Content>
+          </S.ContentWrapper>
+        </Screen.ScrollView>
+      </Screen>
+    );
+  }
 
   return (
-    <S.Wrap>
-      <S.ScrollViewContainer topInset={topInset}>
-        <AnimatedScrollView
-          ref={scrollRef}
-          onLayout={handleScrollViewLayout}
-          onScroll={scrollHandler}
-          showsVerticalScrollIndicator={false}
-          // eslint-disable-next-line react-native/no-inline-styles
-          contentContainerStyle={{
-            minHeight:
-              !flags.disable_dapps && scrollViewHeight > 0
-                ? scrollViewHeight + tabsSnapOffset
-                : undefined,
-          }}
-          scrollEventThrottle={16}
-          stickyHeaderIndices={[0, 3]}
-          // snapToOffsets={
-          //   isSnapPointReached || tabsSnapOffset > scrollViewHeight / 2
-          //     ? undefined
-          //     : [tabsSnapOffset]
-          // }
-        >
-          {isBigScreen ? (
-            <NavBar
-              hideBackButton
-              scrollTop={scrollTop}
-              rightContent={navBarRight}
-              withBackground={IsTablet}
-            >
-              {t('browser.title')}
-            </NavBar>
-          ) : (
-            <LargeNavBar
-              scrollTop={scrollTop}
-              rightContent={navBarRight}
-              safeArea={false}
-              opacity={navBarOpacity}
-            >
-              {t('browser.title')}
-            </LargeNavBar>
-          )}
-          <S.NavBarSpacer />
-          {!flags.disable_dapps ? (
-            <S.ContentWrapper>
-              <S.Content onLayout={handleConnectedAppsLayout}>
-                <ConnectedApps />
-              </S.Content>
-            </S.ContentWrapper>
-          ) : null}
-          {!flags.disable_dapps ? (
-            <S.ContentWrapper>
-              <S.Content>
-                <Animated.View style={topTabsContainerStyle}>
-                  <TopTabs
-                    ref={tabScrollView}
-                    tabs={categories}
-                    selectedId={activeCategory}
-                    onChange={(value) => {
-                      scrollRef.current?.scrollTo({
-                        y: Math.min(scrollTop.value, tabsSnapOffset),
-                        animated: false,
-                      });
-                      setActiveCategory(value);
-                    }}
-                  />
-                </Animated.View>
-                <S.TopTabsDivider style={topTabsDividerStyle} />
-              </S.Content>
-            </S.ContentWrapper>
-          ) : null}
-          {!flags.disable_dapps ? (
-            <S.ContentWrapper>
-              <S.Content
-                onLayout={(event) =>
-                  setPopularAppsHeight(event.nativeEvent.layout.height)
-                }
-              >
-                <PopularApps
-                  onChangeStep={(step) => {
-                    if (step >= 2) {
-                      tabScrollView.current?.scrollToEnd();
-                    } else {
-                      tabScrollView.current?.scrollTo({ x: 0 });
-                    }
-                  }}
-                  activeCategory={activeCategory}
-                  setActiveCategory={setActiveCategory}
+    <Screen>
+      <Screen.LargeHeader rightContent={<ScanQRButton />} title={t('browser.title')} />
+      <PagerView ref={refPagerView}>
+        <PagerView.Header>
+          <View style={styles.connectedContainer}>
+            {connectedApps.map((app, index) => (
+              <AppItem
+                key={`${app.name}_${app.url}`}
+                index={index}
+                name={app.name}
+                iconUri={app.icon}
+                onPress={() => {
+                  trackEvent('click_dapp', { url: app.url, name: app.name });
+                  openDAppBrowser(app.url);
+                }}
+                onLongPress={() => {
+                  Alert.alert(t('browser.remove_alert.title', { name: app.name }), '', [
+                    {
+                      text: t('cancel'),
+                      style: 'cancel',
+                    },
+                    {
+                      text: t('browser.remove_alert.approve_button'),
+                      style: 'destructive',
+                      onPress: () => TonConnect.disconnect(app.url),
+                    },
+                  ]);
+                }}
+              />
+            ))}
+          </View>
+        </PagerView.Header>
+        {categories.map((category) => (
+          <PagerView.Page key={category.id} tabLabel={category.title}>
+            <ScrollableList
+              ScrollableComponent={PagerView.FlashList}
+              estimatedItemSize={1000}
+              data={category.apps}
+              renderItem={({ item }) => (
+                <List.Item
+                  onPress={handleOpenDapp(item.url, item.name)}
+                  picture={item.icon}
+                  pictureStyle={styles.picture.static}
+                  chevron
+                  title={item.name}
+                  subtitle={
+                    <SText variant="body2" numberOfLines={2} color={'textSecondary'}>
+                      {item.description}
+                    </SText>
+                  }
                 />
-              </S.Content>
-            </S.ContentWrapper>
-          ) : null}
-          {flags.disable_dapps ? (
-            <S.ContentWrapper>
-              <S.Content>
-                <AboutDApps />
-              </S.Content>
-            </S.ContentWrapper>
-          ) : null}
-        </AnimatedScrollView>
-      </S.ScrollViewContainer>
+              )}
+            />
+          </PagerView.Page>
+        ))}
+      </PagerView>
       <S.ContentWrapper>
         <S.Content>
           <S.SearchBarContainer tabBarHeight={tabBarHeight}>
-            <S.SearchBarDivider style={bottomDividerStyle} />
             <SearchButton onPress={handleSearchPress} />
           </S.SearchBarContainer>
         </S.Content>
       </S.ContentWrapper>
-    </S.Wrap>
+    </Screen>
+  );
+});
+interface ScrollableList extends FlashListProps<any> {
+  ScrollableComponent?: any;
+}
+
+const WrapRenderItem = (renderItem, countItems, info) => {
+  const isLast = info.index === countItems - 1;
+  const isFirst = info.index === 0;
+
+  const containerStyle = [
+    isFirst && scrollableListStyles.firstListItem,
+    isLast && scrollableListStyles.lastListItem,
+    scrollableListStyles.containerListItem,
+  ];
+
+  return (
+    <View style={containerStyle}>
+      {renderItem(info)}
+      {!isLast && <ListSeparator />}
+    </View>
   );
 };
 
-export const DAppsExplore = memo(DAppsExploreComponent);
+const ScrollableList = memo<ScrollableList>((props) => {
+  const { data, ScrollableComponent, ...other } = props;
+  const Component = ScrollableComponent ?? FlashList;
 
-const styles = StyleSheet.create({
-  scanButton: {
-    zIndex: 3,
-    marginRight: ns(2),
+  return (
+    <Component
+      {...other}
+      data={data}
+      getItemType={(item) => item.type}
+      renderItem={(info) => WrapRenderItem(props.renderItem, data?.length, info)}
+    />
+  );
+});
+
+const scrollableListStyles = Steezy.create(({ corners, colors }) => ({
+  firstListItem: {
+    borderTopLeftRadius: corners.medium,
+    borderTopRightRadius: corners.medium,
+  },
+  lastListItem: {
+    borderBottomLeftRadius: corners.medium,
+    borderBottomRightRadius: corners.medium,
+  },
+  containerListItem: {
+    overflow: 'hidden',
+    backgroundColor: colors.backgroundContent,
+    marginHorizontal: 16,
+  },
+}));
+
+const styles = Steezy.create({
+  connectedContainer: {
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  picture: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
   },
 });

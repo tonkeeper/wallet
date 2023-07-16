@@ -1,4 +1,4 @@
-import React, { FC, useContext, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,7 +11,6 @@ import { usePreloadChart, useTheme } from '$hooks';
 import { isAndroid, nfs, ns, trackEvent } from '$utils';
 import { t } from '$translation';
 import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
-import { TabBarBadgeIndicator } from './TabBarBadgeIndicator';
 import { useNotificationsSubscribe } from '$hooks/useNotificationsSubscribe';
 import { WalletScreen } from '../../../tabs/Wallet/WalletScreen';
 import Animated from 'react-native-reanimated';
@@ -19,7 +18,6 @@ import { FONT } from '$styled';
 import { useCheckForUpdates } from '$hooks/useCheckForUpdates';
 import { useLoadExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { ActivityStack } from '$navigation/ActivityStack/ActivityStack';
-import { useNotificationsStore } from '$store';
 import { NotificationsIndicator } from '$navigation/MainStack/TabStack/NotificationsIndicator';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();

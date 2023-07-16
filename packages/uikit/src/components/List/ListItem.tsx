@@ -4,14 +4,12 @@ import React, { memo, useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
 import { Steezy, StyleProp, useTheme } from '../../styles';
 import { useRouter } from '@tonkeeper/router';
-import { TextStyle } from 'react-native';
+import { TextStyle, ViewStyle } from 'react-native';
 import { Pressable } from '../Pressable';
 import { isAndroid } from '../../utils';
 import { SText as Text } from '../Text';
 import { Icon } from '../Icon';
 import { View } from '../View';
-
-
 
 interface ListItemProps {
   title?: string | React.ReactNode;
@@ -21,6 +19,7 @@ interface ListItemProps {
   label?: string | React.ReactNode;
   valueStyle?: StyleProp<TextStyle>;
   picture?: string;
+  pictureStyle?: StyleProp<ViewStyle>;
   pictureCorner?: 'full' | 'small';
   chevron?: boolean;
   leftContent?: React.ReactNode;
@@ -37,7 +36,14 @@ function isString<T>(str: T) {
 }
 
 export const ListItem = memo<ListItemProps>((props) => {
-  const { onPress, onPressIn, onPressOut, navigate, pictureCorner = 'full', subtitleNumberOfLines = 1 } = props;
+  const {
+    onPress,
+    onPressIn,
+    onPressOut,
+    navigate,
+    pictureCorner = 'full',
+    subtitleNumberOfLines = 1,
+  } = props;
   const router = useRouter();
   const theme = useTheme();
 
@@ -68,7 +74,11 @@ export const ListItem = memo<ListItemProps>((props) => {
             {props.leftContent}
             {!!props.picture && (
               <View
-                style={[styles.pictureContainer, pictureCorners[pictureCorner].static]}
+                style={[
+                  styles.pictureContainer,
+                  pictureCorners[pictureCorner].static,
+                  props.pictureStyle,
+                ]}
               >
                 <FastImage style={styles.picture.static} source={pictureSource} />
               </View>
