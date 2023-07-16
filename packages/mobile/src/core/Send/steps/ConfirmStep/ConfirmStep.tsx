@@ -254,8 +254,8 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
               <S.ItemLabel>{t('confirm_sending_amount')}</S.ItemLabel>
               <S.ItemContent>
                 <S.ItemValue numberOfLines={1}>{amountValue}</S.ItemValue>
-                {fiatValue.fiatInfo.avaivable ? (
-                  <S.ItemSubValue>≈ {fiatValue.fiatInfo.amount}</S.ItemSubValue>
+                {fiatValue.formatted.totalFiat ? (
+                  <S.ItemSubValue>≈ {fiatValue.formatted.totalFiat}</S.ItemSubValue>
                 ) : null}
               </S.ItemContent>
             </S.Item>
@@ -265,7 +265,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
               <S.ItemContent>
                 <S.ItemValue numberOfLines={1}>{feeValue}</S.ItemValue>
                 {fee !== '0' ? (
-                  <S.ItemSubValue>≈ {fiatFee.fiatInfo.amount}</S.ItemSubValue>
+                  <S.ItemSubValue>≈ {fiatFee.formatted.totalFiat}</S.ItemSubValue>
                 ) : null}
               </S.ItemContent>
             </S.Item>

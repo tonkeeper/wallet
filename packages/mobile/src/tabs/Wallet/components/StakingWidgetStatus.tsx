@@ -15,6 +15,7 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
   const { pool, poolStakingInfo } = props;
 
   const {
+    stakingJetton,
     balance,
     pendingDeposit,
     pendingWithdraw,
@@ -45,7 +46,7 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
     <>
       {hasReadyWithdraw ? (
         <StakingListCell
-          id={`readyWithdraw_${poolStakingInfo.pool}`}
+          id={`readyWithdraw_${pool.address}`}
           name={t('staking.details.readyWithdraw')}
           description={t('staking.details.tap_to_collect')}
           balance={readyWithdraw.amount}
@@ -57,7 +58,7 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
       ) : null}
       {!hasReadyWithdraw && hasPendingWithdraw ? (
         <StakingListCell
-          id={`pendingWithdraw_${poolStakingInfo.pool}`}
+          id={`pendingWithdraw_${pool.address}`}
           name={t('staking.details.pendingWithdraw')}
           description={isCooldown ? pool.name : formattedDuration}
           balance={pendingWithdraw.amount}
@@ -69,7 +70,7 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
       ) : null}
       {hasPendingDeposit ? (
         <StakingListCell
-          id={`pendingDeposit_${poolStakingInfo.pool}`}
+          id={`pendingDeposit_${pool.address}`}
           name={t('staking.details.pendingDeposit')}
           description={pool.name}
           balance={pendingDeposit.amount}
@@ -81,10 +82,11 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
       ) : null}
       {hasDeposit ? (
         <StakingListCell
-          id={`amount_${poolStakingInfo.pool}`}
+          id={`amount_${pool.address}`}
           name={t('staking.details.balance')}
           description={pool.name}
           balance={balance.amount}
+          stakingJetton={stakingJetton}
           iconSource={iconSource}
           numberOfLines={1}
           separator={true}

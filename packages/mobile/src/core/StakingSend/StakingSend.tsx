@@ -1,7 +1,7 @@
 import { NFTOperations } from '$core/ModalContainer/NFTOperations/NFTOperations';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { SendAmount } from '$core/Send/Send.interface';
-import { useFiatValue, useInstance, useTranslator, useWallet } from '$hooks';
+import { useFiatValue, useInstance, usePoolInfo, useTranslator, useWallet } from '$hooks';
 import { Ton } from '$libs/Ton';
 import { AppStackRouteNames } from '$navigation';
 import { AppStackParamList } from '$navigation/AppStack';
@@ -51,6 +51,7 @@ export const StakingSend: FC<Props> = (props) => {
     },
   } = props;
 
+  const isDeposit = transactionType === StakingTransactionType.DEPOSIT;
   const isWithdrawal = transactionType === StakingTransactionType.WITHDRAWAL;
   const isWithdrawalConfrim =
     transactionType === StakingTransactionType.WITHDRAWAL_CONFIRM;
@@ -60,11 +61,23 @@ export const StakingSend: FC<Props> = (props) => {
   const pool = useStakingStore((s) => getStakingPoolByAddress(s, poolAddress), shallow);
   const poolStakingInfo = useStakingStore((s) => s.stakingInfo[pool.address], shallow);
 
-  const isTfPool = pool.implementation === 'tf';
+  const poolInfo = usePoolInfo(pool, poolStakingInfo);
+
+  const currency =
+    !isDeposit && poolInfo.stakingJetton
+      ? (poolInfo.stakingJetton.jettonAddress as CryptoCurrencies)
+      : CryptoCurrencies.Ton;
+
+  const decimals = isDeposit ? Decimals[CryptoCurrencies.Ton] : poolInfo.balance.decimals;
+
+  const isJetton = !isDeposit && !!poolInfo.stakingJetton;
+
+  const symbol = isDeposit ? 'TON' : poolInfo.balance.symbol;
+
+  const isWhalesPool = pool.implementation === 'whales';
 
   const { apy } = pool;
 
-  const stakingBalance = Ton.fromNano(poolStakingInfo?.amount ?? '0');
   const pendingDeposit = Ton.fromNano(poolStakingInfo?.pendingDeposit ?? '0');
   const readyWithdraw = Ton.fromNano(poolStakingInfo?.readyWithdraw ?? '0');
 
@@ -98,8 +111,8 @@ export const StakingSend: FC<Props> = (props) => {
 
   const [amount, setAmount] = useState<SendAmount>({
     value: isWithdrawalConfrim
-      ? formatter.format(isTfPool ? stakingBalance : readyWithdraw, {
-          decimals: Decimals[CryptoCurrencies.Ton],
+      ? formatter.format(isWhalesPool ? readyWithdraw : poolInfo.balance.amount, {
+          decimals,
         })
       : '0',
     all: false,
@@ -112,10 +125,12 @@ export const StakingSend: FC<Props> = (props) => {
 
   const estimatedCurrentReward = useMemo(() => {
     const apyBN = new BigNumber(apy).dividedBy(100);
-    const bigNum = new BigNumber(stakingBalance).plus(new BigNumber(pendingDeposit));
+    const bigNum = new BigNumber(poolInfo.balance.totalTon).plus(
+      new BigNumber(pendingDeposit),
+    );
 
     return bigNum.multipliedBy(apyBN);
-  }, [apy, pendingDeposit, stakingBalance]);
+  }, [apy, pendingDeposit, poolInfo.balance.totalTon]);
 
   const estimatedTopUpReward = useMemo(() => {
     const apyBN = new BigNumber(apy).dividedBy(100);
@@ -153,7 +168,9 @@ export const StakingSend: FC<Props> = (props) => {
         pool,
         Ton.toNano(parseLocaleNumber(amount.value)),
         transactionType,
+        walletAddress,
         amount.all,
+        poolInfo.stakingJetton,
       );
 
       const action = await operations.signRaw(
@@ -183,7 +200,16 @@ export const StakingSend: FC<Props> = (props) => {
     } finally {
       setPreparing(false);
     }
-  }, [amount, operations, pool, t, transactionType, walletAddress]);
+  }, [
+    amount.all,
+    amount.value,
+    operations,
+    pool,
+    poolInfo.stakingJetton,
+    t,
+    transactionType,
+    walletAddress,
+  ]);
 
   const totalFee = useMemo(() => {
     const fee = new BigNumber(Ton.fromNano(accountEvent?.fee.total.toString() ?? '0'));
@@ -265,7 +291,9 @@ export const StakingSend: FC<Props> = (props) => {
               isWithdrawal={isWithdrawal}
               isPreparing={isPreparing}
               amount={amount}
-              stakingBalance={stakingBalance}
+              currency={currency}
+              isJetton={isJetton}
+              stakingBalance={poolInfo.balance.amount}
               stepsScrollTop={stepsScrollTop}
               afterTopUpReward={afterTopUpReward}
               currentReward={currentReward}
@@ -282,6 +310,10 @@ export const StakingSend: FC<Props> = (props) => {
               pool={pool}
               totalFee={totalFee}
               amount={amount}
+              symbol={symbol}
+              currency={currency}
+              decimals={decimals}
+              isJetton={isJetton}
               stepsScrollTop={stepsScrollTop}
               sendTx={sendTx}
               {...stepProps}

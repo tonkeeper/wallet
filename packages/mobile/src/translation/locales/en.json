@@ -722,6 +722,7 @@
       "RUB": "Russian Ruble",
       "AED": "United Arab Emirates Dirham",
       "UAH": "Ukrainian hryvnia",
+      "KZT": "Kazakhstani Tenge",
       "UZS": "Uzbekistani sum",
       "GBP": "Great Britain Pound",
       "CHF": "Swiss Franc",
@@ -749,6 +750,9 @@
     "withdraw": "Withdraw",
     "deposit": "Deposit",
     "transaction": "Transaction",
+    "active": "Active",
+    "recommended": "Most profitable",
+    "other": "Other",
     "warning": {
       "title": "Warning",
       "desc": "Staking based on third-party smart contracts. We are not responsible for their work.",
@@ -802,12 +806,10 @@
         "label": "Recipient address"
       },
       "amount": {
-        "label": "Amount",
-        "value": "%{value} TON"
+        "label": "Amount"
       },
       "withdraw_amount": {
-        "label": "Withdraw amount",
-        "value": "%{value} TON"
+        "label": "Withdraw amount"
       },
       "fee": {
         "label": "Fee",

@@ -2,7 +2,7 @@ import { CryptoCurrencies } from '$shared/constants';
 import { useSelector } from 'react-redux';
 import { fiatCurrencySelector } from '$store/main';
 import { useFiatRate } from '$hooks/useFiatRate';
-import { useWalletInfo } from '$hooks';
+import { useGetTokenPrice, useTokenPrice, useWalletInfo } from '$hooks';
 import { useCallback, useMemo } from 'react';
 import {
   isLockupWalletSelector,
@@ -24,45 +24,22 @@ export type Rate = {
 };
 
 // TODO: rewrite
-export const useRates = (): Rate => {
-  const { fiatInfo } = useWalletInfo(CryptoCurrencies.Ton);
-
-  const fiatCurrency = useSelector(fiatCurrencySelector);
-
-  const fiatPrice = useMemo(() => {
-    const price = fiatInfo.fiatRate;
-
-    return formatter.format(price.toFixed(2), {
-      ignoreZeroTruncate: true,
-      currency: fiatCurrency,
-      decimals: 2,
-    });
-  }, [fiatCurrency, fiatInfo.fiatRate]);
-
-  return {
-    percent: fiatInfo.percent,
-    trend: fiatInfo.trend,
-    price: fiatPrice,
-  };
-};
-
-// TODO: rewrite
 const useAmountToFiat = () => {
-  const fiatRate = useFiatRate(CryptoCurrencies.Ton);
+  const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
   const fiatCurrency = useSelector(fiatCurrencySelector);
 
   const amountToFiat = useCallback(
     (amount: string, fiatAmountToSum?: number) => {
-      if (fiatRate && +fiatRate.today > 0) {
+      if (tonPrice.fiat > 0) {
         const fiat = new BigNumber(amount)
-          .multipliedBy(fiatRate.today)
+          .multipliedBy(tonPrice.fiat)
           .plus(fiatAmountToSum ?? 0);
         return formatter.format(fiat, { currency: fiatCurrency });
       } else {
         return '-';
       }
     },
-    [fiatRate, fiatCurrency],
+    [tonPrice.fiat, fiatCurrency],
   );
 
   return amountToFiat;
@@ -74,7 +51,7 @@ export const useBalance = (tokensTotal: number) => {
   const oldWalletBalances = useSelector(walletOldBalancesSelector);
   const isLockup = useSelector(isLockupWalletSelector);
   const amountToFiat = useAmountToFiat();
-  const getPrice = useGetPrice();
+  const getTokenPrice = useGetTokenPrice();
 
   const stakingBalance = useStakingStore((s) => {
     const balance = s.stakingBalance;
@@ -134,18 +111,19 @@ export const useBalance = (tokensTotal: number) => {
     }
 
     return lockupList.map((item) => {
-      const price = getPrice(item.type);
+      const amount = balances[item.type];
+      const price = getTokenPrice(item.type, amount);
 
       return {
         type: item.type,
         amount: {
           nano: item.amount,
-          formatted: price.amount,
-          fiat: price.fiatInfo.amount,
+          formatted: formatter.format(amount),
+          fiat: price.totalFiat,
         },
       };
     });
-  }, [balances, getPrice]);
+  }, [balances, getTokenPrice]);
 
   const ton = useMemo(() => {
     const balance = balances[CryptoCurrencies.Ton] ?? '0';

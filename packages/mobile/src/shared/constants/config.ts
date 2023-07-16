@@ -38,6 +38,7 @@ export enum FiatCurrencies {
   Inr = 'inr',
   Jpy = 'jpy',
   Uah = 'uah',
+  Kzt = 'kzt',
   Uzs = 'uzs',
 }
 
@@ -135,6 +136,10 @@ export const FiatCurrencySymbolsConfig = {
   },
   [FiatCurrencies.Uah]: {
     symbol: '₴',
+    side: 'end',
+  },
+  [FiatCurrencies.Kzt]: {
+    symbol: '₸',
     side: 'end',
   },
   [FiatCurrencies.Uzs]: {
@@ -254,4 +259,4 @@ export const telegramNumbersAddress = {
   testnet: 'EQAOQdwdw8kGftJCSFgOErM1mBjYPe4DBPq8-AhF6vr9si5N',
 };
 
-export const KNOWN_STAKING_IMPLEMENTATIONS = ['whales', 'tf'];
+export const KNOWN_STAKING_IMPLEMENTATIONS = ['whales', 'tf', 'liquidTF'];

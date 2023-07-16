@@ -1,8 +1,7 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
 import {
-  Button,
   Icon,
   ScrollHandler,
   Text,
@@ -15,15 +14,14 @@ import {
 import { delay, maskifyTonAddress, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
-import { useTheme, useTranslator } from '$hooks';
+import { useTheme, useTokenPrice, useTranslator } from '$hooks';
 import { openDAppBrowser, openReceive, openSend } from '$navigation';
-import { CryptoCurrencies, getServerConfig, Opacity } from '$shared/constants';
+import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { useSelector } from 'react-redux';
 import { useJettonEvents } from '$hooks/useJettonEvents';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
-import { Linking, RefreshControl } from 'react-native';
+import { RefreshControl } from 'react-native';
 import { walletAddressSelector } from '$store/wallet';
-import { useJettonPrice } from '$hooks/useJettonPrice';
 import { formatter } from '$utils/formatter';
 import { useNavigation } from '$libs/navigation';
 import { useSwapStore } from '$store/zustand/swap';
@@ -41,7 +39,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     jetton.jettonAddress,
   );
   const address = useSelector(walletAddressSelector);
-  const { price, total } = useJettonPrice(jetton.jettonAddress, jetton.balance);
+  const jettonPrice = useTokenPrice(jetton.jettonAddress, jetton.balance);
 
   const nav = useNavigation();
 
@@ -87,11 +85,11 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
               variant="body2"
               color="foregroundSecondary"
             >
-              {total || t('jetton_token')}
+              {jettonPrice.formatted.totalFiat || t('jetton_token')}
             </HideableAmount>
-            {price ? (
+            {jettonPrice.formatted.fiat ? (
               <Text style={{ marginTop: 12 }} variant="body2" color="foregroundSecondary">
-                {t('jetton_price')} {price}
+                {t('jetton_price')} {jettonPrice.formatted.fiat}
               </Text>
             ) : null}
           </S.JettonAmountWrapper>
@@ -124,9 +122,8 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     );
   }, [
     jetton,
-    total,
     t,
-    price,
+    jettonPrice,
     handleSend,
     handleReceive,
     showSwap,

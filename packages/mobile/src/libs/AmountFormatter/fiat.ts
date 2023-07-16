@@ -11,6 +11,7 @@ export enum FiatCurrencies {
   Inr = 'inr',
   Jpy = 'jpy',
   Uah = 'uah',
+  Kzt = 'kzt',
   Uzs = 'uzs',
 }
 
@@ -33,6 +34,10 @@ export const FiatCurrencySymbolsConfig = {
   },
   [FiatCurrencies.Uah]: {
     symbol: '₴',
+    side: 'end',
+  },
+  [FiatCurrencies.Kzt]: {
+    symbol: '₸',
     side: 'end',
   },
   [FiatCurrencies.Uzs]: {

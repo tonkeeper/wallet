@@ -1,5 +1,5 @@
 import { AppStackRouteNames, openRequireWalletModal } from '$navigation';
-import { CryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { formatter, stakingFormatter } from '$utils/formatter';
 import { PoolInfo, AccountStakingInfo } from '@tonkeeper/core';
 import BigNumber from 'bignumber.js';
@@ -9,8 +9,10 @@ import { useTranslator } from './useTranslator';
 import { useNavigation } from '$libs/navigation';
 import { StakingTransactionType } from '$core/StakingSend/types';
 import { useWallet } from './useWallet';
-import { Address } from '$libs/Ton';
+import { Address, Ton } from '$libs/Ton';
 import { useCopyText } from './useCopyText';
+import { useSelector } from 'react-redux';
+import { jettonsBalancesSelector } from '$store/jettons';
 
 export interface PoolDetailsItem {
   label: string;
@@ -27,10 +29,34 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
 
   const wallet = useWallet();
 
+  const jettonBalances = useSelector(jettonsBalancesSelector);
+
+  const stakingJetton = useMemo(() => {
+    if (pool.implementation === 'liquidTF' && pool.liquidJettonMaster) {
+      const jetton = jettonBalances.find(
+        (item) =>
+          Ton.formatAddress(item.jettonAddress, { raw: true }) ===
+          pool.liquidJettonMaster,
+      );
+
+      return jetton;
+    }
+
+    return undefined;
+  }, [jettonBalances, pool.implementation, pool.liquidJettonMaster]);
+
+  const currency = stakingJetton ? stakingJetton.jettonAddress : CryptoCurrencies.Ton;
+
   const balance = useFiatValue(
-    CryptoCurrencies.Ton,
-    stakingFormatter.fromNano(poolStakingInfo?.amount ?? '0'),
+    currency as CryptoCurrencies,
+    stakingJetton
+      ? stakingJetton.balance
+      : stakingFormatter.fromNano(poolStakingInfo?.amount ?? '0'),
+    stakingJetton ? stakingJetton.metadata.decimals : Decimals[CryptoCurrencies.Ton],
+    !!stakingJetton,
+    stakingJetton ? stakingJetton.metadata.symbol! : 'TON',
   );
+
   const pendingDeposit = useFiatValue(
     CryptoCurrencies.Ton,
     stakingFormatter.fromNano(poolStakingInfo?.pendingDeposit ?? '0'),
@@ -44,7 +70,9 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
     stakingFormatter.fromNano(poolStakingInfo?.readyWithdraw ?? '0'),
   );
 
-  const hasDeposit = new BigNumber(balance.amount).isGreaterThan(0);
+  const hasDeposit = new BigNumber(
+    stakingJetton ? stakingJetton.balance : balance.amount,
+  ).isGreaterThan(0);
   const hasPendingDeposit = new BigNumber(pendingDeposit.amount).isGreaterThan(0);
   const hasPendingWithdraw = new BigNumber(pendingWithdraw.amount).isGreaterThan(0);
   const hasReadyWithdraw = new BigNumber(readyWithdraw.amount).isGreaterThan(0);
@@ -128,6 +156,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
 
   return {
     infoRows,
+    stakingJetton,
     balance,
     pendingDeposit,
     pendingWithdraw,

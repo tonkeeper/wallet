@@ -23,10 +23,9 @@ import { subscriptionsSelector } from '$store/subscriptions';
 import { Action } from 'tonapi-sdk-js';
 import { formatter } from '$utils/formatter';
 import { Text } from '$uikit';
-import { useFiatRate } from './useFiatRate';
 import { fiatCurrencySelector } from '$store/main';
-import { useGetJettonPrice } from './useJettonPrice';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
+import { useGetTokenPrice, useTokenPrice } from './useTokenPrice';
 
 export function usePrepareDetailedAction(
   rawAction: Action,
@@ -35,10 +34,11 @@ export function usePrepareDetailedAction(
   const { address } = useSelector(walletSelector);
   const t = useTranslator();
   const { subscriptionsInfo } = useSelector(subscriptionsSelector);
-  const fiatRate = useFiatRate(CryptoCurrencies.Ton);
+  const tokenPrice = useTokenPrice(CryptoCurrencies.Ton);
   const fiatCurrency = useSelector(fiatCurrencySelector);
-  const getJettonPrice = useGetJettonPrice();
+
   const format = useHideableFormatter();
+  const getTokenPrice = useGetTokenPrice();
 
   return useMemo(() => {
     const action = rawAction[ActionType[rawAction.type]];
@@ -81,7 +81,7 @@ export function usePrepareDetailedAction(
         currencySeparator: 'wide',
       });
       fiatValue = !isFailed
-        ? format(fiatRate.today * parseFloat(amount), {
+        ? format(tokenPrice.fiat * parseFloat(amount), {
             currency: fiatCurrency,
             currencySeparator: 'wide',
           })
@@ -115,10 +115,10 @@ export function usePrepareDetailedAction(
         currency: action.jetton?.symbol || '',
         currencySeparator: 'wide',
       });
-      const jettonPrice = getJettonPrice(jettonAddress, amount);
+      const jettonPrice = getTokenPrice(jettonAddress, amount);
       fiatValue =
-        !isFailed && jettonPrice.total_numeric
-          ? formatter.format(jettonPrice.total_numeric, {
+        !isFailed && jettonPrice.totalFiat
+          ? formatter.format(jettonPrice.totalFiat, {
               currency: fiatCurrency,
               currencySeparator: 'wide',
             })
@@ -130,7 +130,7 @@ export function usePrepareDetailedAction(
       if (compareAddresses(action.beneficiary.address, address.ton)) {
         sentLabelTranslationString = 'transaction_receive_date';
         label = format(amount, {
-          prefix: `+ `,
+          prefix: '+ ',
           withoutTruncate: true,
           decimals: Decimals[CryptoCurrencies.Ton],
           currency: CryptoCurrencies.Ton.toUpperCase(),
@@ -139,7 +139,7 @@ export function usePrepareDetailedAction(
       } else {
         sentLabelTranslationString = 'transaction_subscription_date';
         label = format(amount, {
-          prefix: `- `,
+          prefix: '- ',
           withoutTruncate: true,
           decimals: Decimals[CryptoCurrencies.Ton],
           currency: CryptoCurrencies.Ton.toUpperCase(),
@@ -147,7 +147,7 @@ export function usePrepareDetailedAction(
         });
       }
       fiatValue = !isFailed
-        ? format(fiatRate.today * parseFloat(amount), {
+        ? format(tokenPrice.fiat * parseFloat(amount), {
             currency: fiatCurrency.toLocaleUpperCase(),
             currencySeparator: 'wide',
           })
@@ -175,7 +175,7 @@ export function usePrepareDetailedAction(
         new BigNumber(action.amount.value).abs().toString(),
       );
       label = format(amount, {
-        prefix: `- `,
+        prefix: '- ',
         withoutTruncate: true,
         decimals: Decimals[CryptoCurrencies.Ton],
         currency: CryptoCurrencies.Ton.toUpperCase(),
@@ -252,7 +252,7 @@ export function usePrepareDetailedAction(
             absolute: true,
           })
           .trim(),
-        subvalue: formatter.format(fiatRate.today * parseFloat(amount), {
+        subvalue: formatter.format(tokenPrice.fiat * parseFloat(amount), {
           currency: fiatCurrency,
           currencySeparator: 'wide',
         }),
@@ -311,8 +311,8 @@ export function usePrepareDetailedAction(
     event.isScam,
     t,
     format,
-    fiatRate.today,
+    tokenPrice.fiat,
     fiatCurrency,
-    getJettonPrice,
+    getTokenPrice,
   ]);
 }
