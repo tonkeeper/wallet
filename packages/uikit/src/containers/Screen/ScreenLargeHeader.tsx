@@ -223,10 +223,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     zIndex: 2,
     height: ScreenLargeHeaderHeight,
-    alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: ns(16),
-    paddingTop: ns(16),
+    paddingTop: ns(32),
   },
   rightContent: {
     position: 'absolute',

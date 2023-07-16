@@ -191,6 +191,7 @@ export type TonTransferAction = {
   sender: Account;
   recipient: Account;
   amount: number;
+  comment?: string;
 };
 
 export type JettonTransferAction = {

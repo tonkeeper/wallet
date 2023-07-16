@@ -375,6 +375,13 @@
     "failed_transaction": "Failed"
   },
 
+  "transactions": {
+    "nft_purchase": "NFT Purchase",
+    "subscription": "Subscribed",
+    "unsubscription": "Unsubscribed",
+    "smartcontract_exec": "Call contract"
+  },
+
   "browser": {
     "title": "Browser",
     "search_label": "Search or enter address",

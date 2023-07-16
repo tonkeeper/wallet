@@ -1,6 +1,5 @@
-import BigNumber from 'bignumber.js';
-import { Ton } from '../Ton/Ton';
 import { FiatCurrencySymbolsConfig } from './fiat';
+import BigNumber from 'bignumber.js';
 
 type LocaleFormat = {
   groupingSeparator: string;
@@ -58,8 +57,11 @@ export class AmountFormatter {
     return bn.shiftedBy(decimals ?? 9).toString(10);
   }
 
-  public fromNano(amount: AmountNumber) {
-    return Ton.fromNano(amount);
+  public fromNano(amount: AmountNumber, decimals: number = 9) {
+    return new BigNumber(amount ?? 0)
+      .shiftedBy(-decimals)
+      .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
+      .toString(10);
   }
 
   private toBN(amount: AmountNumber = 0) {
@@ -132,5 +134,10 @@ export class AmountFormatter {
     }
 
     return bn.toFormat(2, BigNumber.ROUND_DOWN, formatConf);
+  }
+
+  public formatNano(amount: AmountNumber = 0, options: AmountFormatOptions = {}) {
+    const { decimals, ...other } = options;
+    return this.format(this.fromNano(amount, decimals), other);
   }
 }

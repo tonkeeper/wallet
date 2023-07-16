@@ -36,14 +36,7 @@ export const AppStackComponent: FC = () => {
           }}
         />
       );
-    } else if (!isUnlocked && wallet && !attachedScreen.pathname) {
-      return (
-        <Stack.Screen
-          name={AppStackRouteNames.MainAccessConfirmation}
-          component={AccessConfirmation}
-        />
-      );
-    } else {
+    }else {
       return <Stack.Screen name={AppStackRouteNames.MainStack} component={MainStack} />;
     }
   }

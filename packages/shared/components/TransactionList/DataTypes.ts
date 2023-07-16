@@ -25,13 +25,14 @@ export type ClientEventAction = {
   bottomCorner?: boolean;
   topCorner?: boolean;
   iconName: IconNames;
-  title: string;
-  value?: string;
-  subvalue?: string;
-  subtitle?: string;
+  operation: string;
+  amount?: string;
+  senderAccount?: string;
+  time?: string;
   isReceive?: boolean;
   timestamp: number;
   nftAddress?: string;
+  comment?: string;
 };
 
 export type ClientEvent = ClientEventDate | ClientEventAction;

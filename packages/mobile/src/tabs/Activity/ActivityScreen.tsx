@@ -76,7 +76,7 @@ const useAccountEvents = () => {
   const { data, error, isLoading, isFetchingNextPage, fetchNextPage } = useInfiniteQuery<{
     events: ServerEvents;
   }>({
-    queryKey: ['wallet_events'],
+    queryKey: ['wallet_events', wallet?.address.raw],
     getNextPageParam: ({ events }) => ({
       lastLt: events[events.length - 1].lt,
     }),

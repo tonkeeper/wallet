@@ -1,6 +1,8 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '$translation';
-import { List, Screen, Spacer, SpacerSizes, View } from '$uikit';
+import { Screen, Spacer, SpacerSizes, View } from '$uikit';
+import { List } from '@tonkeeper/uikit';
+// import { List } from '$uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -15,6 +17,7 @@ import { NFTsList } from '../components/NFTsList';
 import { useTheme } from '$hooks';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StakingWidget } from './StakingWidget';
+
 
 enum ContentType {
   Token,

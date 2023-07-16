@@ -1,7 +1,7 @@
 import { ns } from '../../../utils';
 
 export const ScreenLargeHeaderDistance = ns(20);
-export const ScreenLargeHeaderHeight = ns(88);
+export const ScreenLargeHeaderHeight = ns(84);
 export const ScreenHeaderHeight = ns(64);
 
 export const HeaderButtonHitSlop = {

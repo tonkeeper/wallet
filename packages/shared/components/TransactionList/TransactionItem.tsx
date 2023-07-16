@@ -1,15 +1,35 @@
+import Animated, { useAnimatedStyle,useSharedValue,interpolateColor } from 'react-native-reanimated';
+import { Icon, List, Steezy, View, useTheme, Text, ListSeparator } from '@tonkeeper/uikit';
+import { TransactionNFTItem } from './TransactionNFTItem';
 import React, { memo } from 'react';
-import { Icon, IconNames, List, Steezy, View, useTheme, Text } from '@tonkeeper/uikit';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { ListSeparator } from '@tonkeeper/uikit/src/components/List/ListSeparator';
-import { Address } from '@tonkeeper/core';
 
 interface TransactionItemProps {
   item: any;
 }
 
-export const TransactionItem = memo<TransactionItemProps>((props) => {
-  const { item } = props;
+const useBackgroundHighlighted = () => {
+  const theme = useTheme();
+  const isPressed = useSharedValue(0);
+  const onPressIn = () => (isPressed.value = 0);
+  const onPressOut = () => (isPressed.value = 1);
+
+  const backgroundStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      isPressed.value,
+      [0, 1],
+      [theme.backgroundContentTint, theme.backgroundHighlighted],
+    ),
+  }));
+
+  return {
+    backgroundStyle,
+    onPressOut,
+    onPressIn,
+  };
+};
+
+export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
+  const { onPressOut, onPressIn, backgroundStyle } = useBackgroundHighlighted();
 
   const containerStyle = [
     item.bottomCorner && styles.bottomCorner,
@@ -17,31 +37,36 @@ export const TransactionItem = memo<TransactionItemProps>((props) => {
     styles.containerListItem,
   ];
 
+  // console.log(item.nftAddress || item.nft);
+
   return (
     <View style={containerStyle}>
       <List.Item
+        onPressOut={onPressOut}
+        onPressIn={onPressIn}
         onPress={() => {}}
-        title={item.title}
-        value={item.value}
+        title={item.operation}
+        value={item.amount}
         valueStyle={item.isReceive && styles.receiveValue}
-        subvalue={item.subvalue}
-        leftContent={(isPressed) => (
-          <LeftIcon iconName={item.iconName} isPressed={isPressed} />
-        )}
-        subtitle={
+        subvalue={item.time}
+        subtitle={item.senderAccount}
+        leftContent={
+          <Animated.View style={[styles.icon.static, backgroundStyle]}>
+            {item.iconName && <Icon name={item.iconName} color="iconSecondary" />}
+          </Animated.View>
+        }
+        content={
           <View>
-            <Text
-              numberOfLines={1}
-              color="textSecondary"
-              type="body2"
-            >
-              {item.subtitle}
-            </Text>
-            {item.nftAddress || item.nft && (
-              <NFTTransactionContent
+            {item.nftAddress && (
+              <TransactionNFTItem
                 nftAddress={item.nftAddress}
                 nft={item.nft}
               />
+            )}
+            {item.comment && (
+              <Animated.View style={[styles.comment.static, backgroundStyle]}>
+                <Text type="body2">{item.comment}</Text>
+              </Animated.View>
             )}
           </View>
         }
@@ -50,26 +75,6 @@ export const TransactionItem = memo<TransactionItemProps>((props) => {
     </View>
   );
 });
-
-
-const LeftIcon = (props: {
-  isPressed: Animated.SharedValue<boolean>;
-  iconName: IconNames;
-}) => {
-  const theme = useTheme();
-
-  const backgroundStyle = useAnimatedStyle(() => ({
-    backgroundColor: props.isPressed.value
-      ? theme.backgroundHighlighted
-      : theme.backgroundContentTint,
-  }));
-
-  return (
-    <Animated.View style={[styles.icon.static, backgroundStyle]}>
-      {props.iconName && <Icon name={props.iconName} color="iconSecondary" />}
-    </Animated.View>
-  );
-};
 
 const styles = Steezy.create(({ colors, corners }) => ({
   icon: {
@@ -96,5 +101,13 @@ const styles = Steezy.create(({ colors, corners }) => ({
     overflow: 'hidden',
     backgroundColor: colors.backgroundContent,
     marginHorizontal: 16,
+  },
+  comment: {
+    alignSelf: 'flex-start',
+    marginTop: 8,
+    paddingHorizontal: 12,
+    borderRadius: 18,
+    paddingTop: 7.5,
+    paddingBottom: 8.5,
   },
 }));

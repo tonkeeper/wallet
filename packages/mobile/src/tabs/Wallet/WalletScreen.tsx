@@ -7,10 +7,12 @@ import {
   InternalNotification,
   Screen,
   Text,
-  List,
   View,
   SwapIcon,
 } from '$uikit';
+
+import { List } from '@tonkeeper/uikit';
+
 import { useNavigation } from '$libs/navigation';
 import { ScanQRButton } from '../../components/ScanQRButton';
 import { RefreshControl, useWindowDimensions } from 'react-native';

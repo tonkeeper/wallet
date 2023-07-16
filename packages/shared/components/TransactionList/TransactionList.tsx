@@ -1,5 +1,5 @@
-import { View } from 'react-native';
-import { Screen, Loader, Steezy, List } from '@tonkeeper/uikit';
+import { StyleSheet, View } from 'react-native';
+import { Screen, Loader, List, Spacer } from '@tonkeeper/uikit';
 import { memo } from 'react';
 import { TransactionItem } from './TransactionItem';
 import { ClientEvent, ClientEventType } from './DataTypes';
@@ -12,16 +12,21 @@ interface EventsListProps {
 
 type TransactionRenderItemOptions = {
   item: ClientEvent;
+  index: number
 };
 
-function RenderItem({ item }: TransactionRenderItemOptions) {
+function RenderItem({ item, index }: TransactionRenderItemOptions) {
+  const isFirstElement = index === 0;
   switch (item.type) {
     case ClientEventType.Date:
-      return <List.Header title={item.date} style={styles.date} />;
-    case ClientEventType.Action:
       return (
-        <TransactionItem item={item} />
+        <View>
+          {!isFirstElement && <Spacer y={8}/>}
+          <List.Header title={item.date} style={styles.date} />       
+        </View>
       );
+    case ClientEventType.Action:
+      return <TransactionItem item={item} />;
   }
 }
 
@@ -37,7 +42,7 @@ export const TransactionsList = memo<EventsListProps>((props) => {
       renderItem={RenderItem}
       data={events}
       ListFooterComponent={
-        <View style={styles.moreLoader.static}>
+        <View style={styles.moreLoader}>
           <Loader size="medium" />
         </View>
       }
@@ -45,12 +50,13 @@ export const TransactionsList = memo<EventsListProps>((props) => {
   );
 });
 
-const styles = Steezy.create({
+const styles = StyleSheet.create({
   date: {
     marginHorizontal: 16,
+    marginVertical: 4,
   },
   moreLoader: {
     paddingTop: 8,
     paddingBottom: 16,
-  }
+  },
 });

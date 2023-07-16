@@ -7,7 +7,7 @@ export { Lottie } from './components/Lottie';
 export { Button } from './components/Button';
 export { Spacer } from './components/Spacer';
 export { Text } from './components/Text';
-export { List } from './components/List';
+export { List, ListSeparator } from './components/List';
 export { View } from './components/View';
 export { Loader } from './components/Loader';
 

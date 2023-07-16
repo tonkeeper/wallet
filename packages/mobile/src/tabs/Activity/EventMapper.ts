@@ -1,8 +1,7 @@
 import { t } from '$translation';
-import { format, formatDate, fromNano, getLocale } from '$utils';
+import { format, formatDate, getLocale } from '$utils';
 import {
   ServerAccountEvent,
-  EventAction,
   EventActionType,
   TonTransferAction,
   MergedEventAction,
@@ -115,12 +114,12 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
   const action: ClientEventAction = {
     type: ClientEventType.Action,
     id: `input.action-${input.event.event_id}-${input.actionIndex}`,
-    title: input.action.simple_preview.name || 'Unknown',
-    subtitle: input.action.simple_preview.description,
+    operation: input.action.simple_preview.name || 'Unknown',
+    senderAccount: input.action.simple_preview.description,
     timestamp: input.event.timestamp,
     iconName: 'ic-gear-28',
-    subvalue: time,
-    value: '−',
+    amount: '−',
+    time,
   };
 
   try {
@@ -142,10 +141,10 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
         const data = input.action.data;
 
         action.iconName = arrowIcon;
-        action.subtitle = senderAccount;
-        action.title = sendOrReceiveTitle;
-
-        action.value = formatter.format(formatter.fromNano(data.amount), {
+        action.senderAccount = senderAccount;
+        action.operation = sendOrReceiveTitle;
+        action.comment = data.comment;
+        action.amount = formatter.formatNano(data.amount, {
           prefix: amountPrefix,
           postfix: 'TON',
         });
@@ -154,46 +153,35 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
       case EventActionType.JettonTransfer: {
         const data = input.action.data;
 
-        const decimalsAmount = fromNano(data.amount, data.jetton.decimals ?? 9);
-        const value = formatter.format(decimalsAmount.toString(), {
-          prefix: amountPrefix,
-          postfix: data.jetton?.symbol,
-        });
-
         action.iconName = arrowIcon;
-        action.title = sendOrReceiveTitle;
-        action.subtitle = senderAccount;
-        action.value = value;
+        action.operation = sendOrReceiveTitle;
+        action.senderAccount = senderAccount;
+        action.amount = formatter.formatNano(data.amount, {
+          decimals: data.jetton.decimals,
+          postfix: data.jetton?.symbol,
+          prefix: amountPrefix,
+        });
         break;
       }
       case EventActionType.NftItemTransfer: {
         const data = input.action.data;
 
         action.iconName = arrowIcon;
-        action.title = sendOrReceiveTitle;
-        action.subtitle = senderAccount;
-        action.value = 'NFT';
+        action.operation = sendOrReceiveTitle;
+        action.senderAccount = senderAccount;
+        action.amount = 'NFT';
         action.nftAddress = data.nft;
-
-        // bottomContent = (
-        //   <TransactionItemNFT
-        //     keyPair={{
-        //       currency: CryptoCurrencies.Ton,
-        //       address: Address(data.nft).toFriendly()
-        //     }}
-        //   />
-        // );
         break;
       }
       case EventActionType.NftPurchase:
         const data = input.action.data;
 
         action.iconName = arrowIcon;
-        action.title = t('transactions.nft_purchase');
-        action.subtitle = senderAccount;
-        action.value = formatter.format(formatter.fromNano(data.amount.value), {
-          prefix: amountPrefix,
+        action.operation = t('transactions.nft_purchase');
+        action.senderAccount = senderAccount;
+        action.amount = formatter.formatNano(data.amount.value, {
           postfix: data.amount.token_name,
+          prefix: amountPrefix,
         });
         break;
       case EventActionType.ContractDeploy: {
@@ -201,7 +189,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
 
         const isInitialized = Address.compare(data.address, input.walletAddress);
         action.iconName = isInitialized ? 'ic-donemark-28' : 'ic-gear-28';
-        action.title = isInitialized
+        action.operation = isInitialized
           ? t('transinput.action_type_wallet_initialized')
           : t('transinput.action_type_contract_deploy');
         break;
@@ -210,9 +198,9 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
         const data = input.action.data;
 
         action.iconName = 'ic-bell-28';
-        action.title = t('transactions.subscription');
-        action.subtitle = data.beneficiary.name ?? '';
-        action.value = formatter.format(formatter.fromNano(data.amount), {
+        action.operation = t('transactions.subscription');
+        action.senderAccount = data.beneficiary.name ?? '';
+        action.amount = formatter.formatNano(data.amount, {
           prefix: amountPrefix,
           postfix: 'TON',
         });
@@ -222,17 +210,17 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
         const data = input.action.data;
 
         action.iconName = 'ic-xmark-28';
-        action.title = t('transactions.unsubscription');
-        action.subtitle = data.beneficiary.name ?? '';
+        action.operation = t('transactions.unsubscription');
+        action.senderAccount = data.beneficiary.name ?? '';
         break;
       }
       case EventActionType.SmartContractExec: {
         const data = input.action.data;
 
         action.iconName = 'ic-gear-28';
-        action.title = t('transactions.smartcontract_exec');
-        action.subtitle = Address(data.contract.address).maskify();
-        action.value = formatter.format(formatter.fromNano(data.ton_attached), {
+        action.operation = t('transactions.smartcontract_exec');
+        action.senderAccount = Address(data.contract.address).maskify();
+        action.amount = formatter.formatNano(data.ton_attached, {
           prefix: amountPrefix,
           postfix: 'TON',
         });
@@ -240,7 +228,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
       }
       case EventActionType.AuctionBid: {
         const data = input.action.data;
-        
+
         break;
       }
       default:
