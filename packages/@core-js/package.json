@@ -1,25 +1,13 @@
 {
   "name": "@tonkeeper/core",
   "version": "0.1.0",
-  "author": "Nikita Kuznetsov <nkuz915@gmail.com>",
-  "description": "Core features and state for tonkeeper web wallet",
   "main": "src/index.ts",
   "scripts": {
-    "build": "rm -fr dist && yarn generate:sdkV1 && yarn generate:sdkV2 && tsc",
-    "start": "tsc -w",
-    "generate:sdkV1": "rm -fr src/tonApiV1 && docker build -f Dockerfile.apiV1 . -t tonapisdk && docker run --rm --user=$(id -u):$(id -g) -v \"$PWD\":/local tonapisdk",
-    "generate:sdkV2": "rm -fr src/tonApiV2 && docker build -f Dockerfile.apiV2 . -t tonapisdk && docker run --rm --user=$(id -u):$(id -g) -v \"$PWD\":/local tonapisdk",
-    "build:pkg": "rm -fr dist && tsc"
+    "codegen": "npx swagger-typescript-api -p  https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/openapi.yml -o ./src/TonAPI -n generated.types.ts --no-client"
   },
   "license": "ISC",
   "devDependencies": {
     "typescript": "^4.9.4"
   },
-  "dependencies": {
-    "@aws-crypto/sha256-js": "^3.0.0",
-    "bignumber.js": "^9.1.1",
-    "ton": "^13.3.0",
-    "ton-core": "^0.47.1",
-    "ton-crypto": "^3.2.0"
-  }
+  "dependencies": {}
 }
