@@ -76,6 +76,7 @@ export const Picture = styled(FastImage)`
 
 export const Container = styled(Animated.View)`
   padding-horizontal: ${ns(16)}px;
+  padding-bottom: ${ns(16)}px;
 `;
 
 export const Content = styled.View`
@@ -128,5 +129,4 @@ export const NoticeText = styled(Text).attrs(() => ({
   textAlign: 'center',
 }))`
   margin-top: ${ns(16)}px;
-  padding: 0 ${ns(16)}px;
 `;

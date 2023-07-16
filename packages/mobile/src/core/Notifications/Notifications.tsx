@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { InternalNotification, NavBar, Screen, SwitchItem, Text, View } from '$uikit';
+import { InternalNotification, Screen, Spacer, SwitchItem, Text, View } from '$uikit';
 import { debugLog, ns } from '$utils';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Linking } from 'react-native';
@@ -16,7 +16,6 @@ import { Steezy } from '$styles';
 import { getChainName } from '$shared/dynamicConfig';
 import { walletAddressSelector } from '$store/wallet';
 import FastImage from 'react-native-fast-image';
-import * as SecureStore from 'expo-secure-store';
 import { useObtainProofToken } from '$hooks';
 
 export const Notifications: React.FC = () => {
@@ -88,11 +87,10 @@ export const Notifications: React.FC = () => {
   const handleSwitchNotifications = React.useCallback(
     async (value: boolean, url: string, session_id: string | undefined) => {
       await obtainProofToken();
-      const token = await messaging().getToken();
       if (value) {
-        return enableNotifications(getChainName(), address.ton, url, session_id, token);
+        return enableNotifications(getChainName(), address.ton, url, session_id);
       }
-      disableNotifications(getChainName(), address.ton, url, token);
+      disableNotifications(getChainName(), address.ton, url);
     },
     [obtainProofToken, disableNotifications, address.ton, enableNotifications],
   );
@@ -126,10 +124,12 @@ export const Notifications: React.FC = () => {
             value={isSubscribeNotifications}
           />
         </CellSection>
-        {connectedApps.length ? (
+        {/* {connectedApps.length ? (
           <>
             <View style={styles.title}>
               <Text variant="h3">{t('notifications.apps')}</Text>
+              <Spacer y={4} />
+              <Text variant="body2">{t('notifications.apps_description')}</Text>
             </View>
             <CellSection>
               {connectedApps.map((app) => (
@@ -142,7 +142,6 @@ export const Notifications: React.FC = () => {
                   }
                   key={app.url}
                   title={app.name}
-                  disabled={!isSubscribeNotifications}
                   value={!!app.notificationsEnabled}
                   onChange={() =>
                     handleSwitchNotifications(
@@ -156,7 +155,7 @@ export const Notifications: React.FC = () => {
               ))}
             </CellSection>
           </>
-        ) : null}
+        ) : null} */}
       </Screen.ScrollView>
     </Screen>
   );

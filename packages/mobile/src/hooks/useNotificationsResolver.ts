@@ -6,6 +6,9 @@ import { mainSelector } from '$store/main';
 import { useDeeplinking } from '$libs/deeplinking';
 import { getToken } from '$utils/messaging';
 import { openDAppBrowser } from '$navigation';
+import { getDomainFromURL } from '$utils';
+import { Alert } from 'react-native';
+import { t } from '$translation';
 
 export const useNotificationsResolver = () => {
   const { isMainStackInited } = useSelector(mainSelector);
@@ -33,8 +36,28 @@ export const useNotificationsResolver = () => {
 
       if (deeplink) {
         deeplinking.resolve(deeplink);
-      } else if (link || dapp_url) {
-        openDAppBrowser((link || dapp_url) as string);
+      } else if (link) {
+        if (!dapp_url || getDomainFromURL(link) === getDomainFromURL(dapp_url)) {
+          openDAppBrowser(link);
+        } else {
+          Alert.alert(
+            t('notifications.alert.title'),
+            t('notifications.alert.description'),
+            [
+              {
+                text: t('notifications.alert.open'),
+                onPress: () => openDAppBrowser(link),
+                style: 'destructive',
+              },
+              {
+                text: t('notifications.alert.cancel'),
+                style: 'cancel',
+              },
+            ],
+          );
+        }
+      } else if (dapp_url) {
+        openDAppBrowser(dapp_url);
       } else {
         nav.navigate('Balances');
       }

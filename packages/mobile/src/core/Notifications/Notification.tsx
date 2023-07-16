@@ -79,8 +79,7 @@ export const Notification: React.FC<NotificationProps> = (props) => {
       app?.notificationsEnabled && {
         option: t('notifications.mute_notifications'),
         action: async () => {
-          const firebaseToken = await messaging().getToken();
-          disableNotifications(walletAddress.ton, app.url, firebaseToken);
+          disableNotifications(walletAddress.ton, app.url);
         },
       },
       app && {

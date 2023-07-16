@@ -19,7 +19,6 @@ export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
     typeLabel,
     type,
     infoRows,
-    currency,
     labelColor = 'foregroundPrimary',
     bottomContent,
     isSpam,
@@ -113,9 +112,6 @@ export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
                 >
                   {label}
                 </S.LargeText>
-                {currency ? (
-                  <S.LargeText color={labelColor}>{` ${currency}`}</S.LargeText>
-                ) : null}
               </S.Group>
             </S.Item>
             {infoRows?.map((row, i) => (

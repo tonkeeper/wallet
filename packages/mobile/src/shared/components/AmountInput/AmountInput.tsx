@@ -21,6 +21,7 @@ import * as S from './AmountInput.style';
 import { Button, Text } from '$uikit';
 import { SwapButton } from '../SwapButton';
 import { formatter } from '$utils/formatter';
+import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
 
 export type AmountInputRef = TextInput & { value: string };
 
@@ -51,6 +52,8 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     setAmount,
   } = props;
 
+  const format = useHideableFormatter();
+
   const textInputRef = useRef<TextInput | null>(null);
 
   const { fiatCurrency } = useSelector(mainSelector);
@@ -70,7 +73,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
         : decimals;
 
       return {
-        remainingBalance: formatter.format(remainingBalanceBigNum, {
+        remainingBalance: format(remainingBalanceBigNum, {
           decimals: remainingBalanceDecimals,
           currency: currencyTitle,
           currencySeparator: 'wide',

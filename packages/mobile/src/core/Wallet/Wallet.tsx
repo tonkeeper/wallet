@@ -41,6 +41,8 @@ import { groupAndFilterTonActivityItems } from '$utils/transactions';
 import { formatter } from '$utils/formatter';
 import { Toast } from '$store';
 import { useFlags } from '$utils/flags';
+import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { TonIcon } from '../../components/TonIcon';
 
 const exploreActions = [
   {
@@ -241,24 +243,22 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
             <S.TokenInfoWrap>
               <S.FlexRow>
                 <S.AmountWrapper>
-                  <Text variant="h2">
+                  <HideableAmount variant="h2">
                     {formatter.format(amount, {
                       currency: currencyUpper,
                       currencySeparator: 'wide',
                       decimals: Decimals[currency]!,
                     })}
-                  </Text>
-                  <Text
+                  </HideableAmount>
+                  <HideableAmount
                     style={{ marginTop: 2 }}
                     variant="body2"
                     color="foregroundSecondary"
                   >
                     {formattedFiatAmount}
-                  </Text>
+                  </HideableAmount>
                 </S.AmountWrapper>
-                <S.IconWrapper>
-                  <Icon size={40} name="ic-ton-28" color="constantLight" />
-                </S.IconWrapper>
+                <TonIcon size="medium" showDiamond />
               </S.FlexRow>
               <S.Divider style={{ marginBottom: ns(16) }} />
               <S.ActionsContainer>

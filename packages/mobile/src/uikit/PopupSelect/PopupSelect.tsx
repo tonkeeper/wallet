@@ -56,10 +56,11 @@ export const PopupSelectItem = Memo(
         onChangeWidth?.(
           e.nativeEvent.layout.width +
             ns(isAndroid ? 14 : ScreenWidth <= SMALL_DEVICES_WIDTH ? 6 : 0) +
-            ns(checked ? 32 : 0),
+            ns(checked ? 32 : 0) +
+            ns(icon ? 32 : 0),
         );
       },
-      [autoWidth, checked, onChangeWidth],
+      [autoWidth, checked, icon, onChangeWidth],
     );
 
     const contentContainerStyle = useMemo(

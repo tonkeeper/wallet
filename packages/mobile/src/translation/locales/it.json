@@ -415,7 +415,7 @@
     "import_wallet_title": "Inserisci la tua\frase di recupero",
     "import_wallet_caption": "Per ripristinare l'accesso al tuo wallet, inserisci le 24 parole di recupero segrete che ti sono state fornite quando hai creato il tuo wallet.",
     "import_wallet_wrong_words_err": "Frase errata",
-    "import_wallet_reset_caption": "Ripristina l'accesso al tuo wallet\u2028 immettendo 24 parole segrete che hai annotato e creando il wallet.",
+    "import_wallet_reset_caption": "Ripristina l'accesso al tuo wallet\n immettendo 24 parole segrete che hai annotato e creando il wallet.",
   
     "create_wallet_generating": "Generazione del wallet...",
     "create_wallet_generated": "Il tuo portafoglio è\nappena stato creato!",

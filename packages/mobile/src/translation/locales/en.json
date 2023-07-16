@@ -453,7 +453,7 @@
 
   "notifications_title": "Notifications",
   "notifications_switch_title": "Notifications",
-  "notification_switch_description": "Get notifications when you receive TON, tokens and NFTs",
+  "notification_switch_description": "Get notifications when you receive TON, tokens and NFTs.",
   "notifications_disabled_title": "Notifications are disabled",
   "notifications_disabled_description": "You turned off notifications in your phone’s settings. To activate notifications, go to Settings on this device.",
   "notifications_disabled_action": "Open Settings",
@@ -509,7 +509,7 @@
   "import_wallet_title": "Enter your\nrecovery phrase",
   "import_wallet_caption": "To restore access to your wallet, enter the 24 secret recovery words given to you when you created your wallet.",
   "import_wallet_wrong_words_err": "Incorrect phrase",
-  "import_wallet_reset_caption": "Please restore access to your wallet\u2028by entering 24 secret words you wrote down then creating the wallet.",
+  "import_wallet_reset_caption": "Please restore access to your wallet\n8by entering 24 secret words you wrote down then creating the wallet.",
 
   "create_wallet_generating": "Generating wallet...",
   "create_wallet_generated": "Your wallet has\njust been created!",
@@ -594,7 +594,7 @@
   "reminder_notifications_later_button": "Later",
 
   "ton_login_title": "Connect to %{name}?",
-  "ton_login_caption": "%{name} is requesting access to your wallet address\u2028",
+  "ton_login_caption": "%{name} is requesting access to your wallet address ",
   "ton_login_connect_button": "Connect wallet",
   "ton_login_back_to_button": "Back to %{name}",
   "ton_login_success": "Done",
@@ -844,6 +844,17 @@
     "disconnected_app": "Disconnected app",
     "earlier": "Earlier",
     "apps": "Apps",
-    "allow_notifications": "Allow notifications"
+    "apps_description": "Notifications from connected apps in your activity",
+    "allow_notifications": "Allow notifications",
+    "placeholder": {
+      "title": "Notifications will be shown here",
+      "description": "Explore apps and services in Tonkeeper browser."
+    },
+    "alert": {
+      "title": "Are you sure you want to open an external link?",
+      "description": "Link address from the notification doesn't match with app address.",
+      "open": "Open anyway",
+      "cancel": "Cancel"
+    }
   }
 }

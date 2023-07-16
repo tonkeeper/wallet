@@ -11,6 +11,7 @@ export const MobileIconsList = {
   'ic-appearance-16': require('$assets/icons/png/ic-appearance-16.png'),
   'ic-arrow-down-16': require('$assets/icons/png/ic-arrow-down-16.png'),
   'ic-arrow-up-16': require('$assets/icons/png/ic-arrow-up-16.png'),
+  'ic-bell-disable-16': require('$assets/icons/png/ic-bell-disable-16.png'),
   'ic-chevron-16': require('$assets/icons/png/ic-chevron-16.png'),
   'ic-chevron-down-16': require('$assets/icons/png/ic-chevron-down-16.png'),
   'ic-chevron-left-16': require('$assets/icons/png/ic-chevron-left-16.png'),

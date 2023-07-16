@@ -142,8 +142,7 @@ class TonConnectService {
         );
 
         if (notificationsEnabled) {
-          const token = await messaging().getToken();
-          enableNotifications(address, manifest.url, clientSessionId, token);
+          enableNotifications(address, manifest.url, clientSessionId);
         }
 
         return {
@@ -227,6 +226,7 @@ class TonConnectService {
             name: connectedApp.name,
             url: connectedApp.url,
             icon: connectedApp.icon,
+            notificationsEnabled: connectedApp.notificationsEnabled,
           },
           { type: TonConnectBridgeType.Injected, replyItems },
         );

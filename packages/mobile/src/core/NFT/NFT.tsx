@@ -35,10 +35,11 @@ import { RenewDomainButton, RenewDomainButtonRef } from './RenewDomainButton';
 import { Tonapi } from '$libs/Tonapi';
 import { Toast } from '$store';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
+import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 
 export const NFT: React.FC<NFTProps> = ({ route }) => {
   const flags = useFlags(['disable_nft_markets', 'disable_apperance']);
-
+  const hiddenAmounts = usePrivacyStore((state) => state.hiddenAmounts);
   const dispatch = useDispatch();
   const nav = useNavigation();
   const address = useSelector(walletAddressSelector);
@@ -85,9 +86,9 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
         setExpiringAt(timeInMilisec + ONE_YEAR_MILISEC);
         setLastFill(timeInMilisec);
         renewDomainButtonRef.current?.renewUpdated();
-        Toast.show(t('dns_renew_toast_success'))
+        Toast.show(t('dns_renew_toast_success'));
         expiringDomains.remove(nft.address);
-        
+
         clearInterval(timer);
       }
     }, 5000);
@@ -167,7 +168,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
         scrollTop={scrollTop}
         titleProps={{ numberOfLines: 1 }}
       >
-        {title}
+        {hiddenAmounts ? '* * * *' : title}
       </NavBar>
       <S.ContentWrap>
         <Animated.ScrollView
@@ -192,7 +193,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
               title={(!isTG && nft.dns) || nft.name}
               collection={isDNS ? 'TON DNS' : nft.collection?.name}
               isVerified={isDNS || nft.isApproved}
-              description={nft.description}
+              description={!hiddenAmounts ? nft.description : '* * *'}
               isOnSale={isOnSale}
               bottom={
                 isTG ? (
@@ -210,7 +211,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
               }
             />
           ) : null}
-          {nft.collection ? (
+          {!hiddenAmounts && nft.collection ? (
             <About
               collection={isDNS ? 'TON DNS' : nft.collection.name}
               description={isDNS ? t('nft_about_dns') : nft.collection.description}
@@ -249,6 +250,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
             )}
             {isDNS && (
               <RenewDomainButton
+                disabled={isOnSale}
                 ref={renewDomainButtonRef}
                 ownerAddress={nft.ownerAddress}
                 domainAddress={nft.address}
@@ -268,7 +270,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
               </Button>
             ) : null}
           </S.ButtonWrap>
-          <Properties properties={nft.attributes} />
+          {!hiddenAmounts && <Properties properties={nft.attributes} />}
           <Details
             ownerAddress={nft.ownerAddressToDisplay || nft.ownerAddress}
             contractAddress={nft.address}

@@ -58,6 +58,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     const tokens = actions
       .map((action) => ({
         address:
+          (action.type === 'ContractDeploy' && action[action.type].address) ||
           action[action.type]?.nft?.collection?.address ||
           action[action.type]?.nft?.address ||
           action[action.type]?.nft ||

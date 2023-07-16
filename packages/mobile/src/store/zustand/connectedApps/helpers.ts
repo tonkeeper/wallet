@@ -8,7 +8,7 @@ import {
   IConnectedAppConnectionRemote,
 } from './types';
 import { useConnectedAppsStore } from './useConnectedAppsStore';
-import app from '@tonkeeper/web/src/App';
+import messaging from '@react-native-firebase/messaging';
 
 export const saveAppConnection = (
   walletAddress: string,
@@ -20,31 +20,39 @@ export const saveAppConnection = (
     .actions.saveAppConnection(getChainName(), walletAddress, appData, connection);
 };
 
-export const enableNotifications = (
+export const enableNotifications = async (
   walletAddress: string,
   url: IConnectedApp['url'],
   sessionId: string | undefined,
-  firebaseToken: string,
 ) => {
-  useConnectedAppsStore
-    .getState()
-    .actions.enableNotifications(
-      getChainName(),
-      walletAddress,
-      url,
-      sessionId,
-      firebaseToken,
-    );
+  try {
+    const firebaseToken = await messaging().getToken();
+    useConnectedAppsStore
+      .getState()
+      .actions.enableNotifications(
+        getChainName(),
+        walletAddress,
+        url,
+        sessionId,
+        firebaseToken,
+      );
+  } catch (e) {
+    console.log(e);
+  }
 };
 
-export const disableNotifications = (
+export const disableNotifications = async (
   walletAddress: string,
   url: IConnectedApp['url'],
-  firebaseToken: string,
 ) => {
-  useConnectedAppsStore
-    .getState()
-    .actions.disableNotifications(getChainName(), walletAddress, url, firebaseToken);
+  try {
+    const firebaseToken = await messaging().getToken();
+    useConnectedAppsStore
+      .getState()
+      .actions.disableNotifications(getChainName(), walletAddress, url, firebaseToken);
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export const removeConnectedApp = (url: string) => {
