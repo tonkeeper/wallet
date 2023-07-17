@@ -14,7 +14,7 @@ import { Icon, ScrollHandler, Spacer, Text } from '$uikit';
 import { List } from '$uikit/List/old/List';
 import { calculatePoolBalance, getPoolIcon } from '$utils';
 import { RouteProp } from '@react-navigation/native';
-import { PoolInfo } from '@tonkeeper/core';
+import { PoolInfo } from '@tonkeeper/core/src/legacy';
 import BigNumber from 'bignumber.js';
 import React, { FC, useCallback, useMemo } from 'react';
 import { RefreshControl } from 'react-native-gesture-handler';

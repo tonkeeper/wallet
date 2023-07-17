@@ -25,7 +25,7 @@ import { AmountStep } from './steps/AmountStep/AmountStep';
 import { ConfirmStep } from './steps/ConfirmStep/ConfirmStep';
 import { Keyboard } from 'react-native';
 import { favoritesActions } from '$store/favorites';
-import { Account, AccountsApi, Configuration } from '@tonkeeper/core';
+import { Account, AccountsApi, Configuration } from '@tonkeeper/core/src/legacy';
 import { DismissedActionError } from './steps/ConfirmStep/DismissedActionError';
 import { formatter } from '$utils/formatter';
 import { PagerView, Screen } from '@tonkeeper/uikit';

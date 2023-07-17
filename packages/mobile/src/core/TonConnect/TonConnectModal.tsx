@@ -34,7 +34,7 @@ import { openRequireWalletModal, push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 import { mainSelector } from '$store/main';
 import { createTonProofForTonkeeper } from '$utils/notificationsproof';
-import { WalletApi, Configuration } from '@tonkeeper/core';
+import { WalletApi, Configuration } from '@tonkeeper/core/src/legacy';
 import * as SecureStore from 'expo-secure-store';
 
 export const TonConnectModal = (props: TonConnectModalProps) => {

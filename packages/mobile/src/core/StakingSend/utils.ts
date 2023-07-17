@@ -1,7 +1,7 @@
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import { Address, Ton } from '$libs/Ton';
 import { encodeBytes } from '$utils/base64';
-import { PoolInfo } from '@tonkeeper/core';
+import { PoolInfo } from '@tonkeeper/core/src/legacy';
 import BN from 'bn.js';
 import TonWeb from 'tonweb';
 import { StakingTransactionType } from './types';

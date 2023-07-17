@@ -1,7 +1,7 @@
 import { AppStackRouteNames, openRequireWalletModal } from '$navigation';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { formatter, stakingFormatter } from '$utils/formatter';
-import { PoolInfo, AccountStakingInfo } from '@tonkeeper/core';
+import { PoolInfo, AccountStakingInfo } from '@tonkeeper/core/src/legacy';
 import BigNumber from 'bignumber.js';
 import { useCallback, useMemo } from 'react';
 import { useFiatValue } from './useFiatValue';

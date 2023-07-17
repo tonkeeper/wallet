@@ -1,6 +1,6 @@
 import { FiatCurrencies, getServerConfig } from '$shared/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Configuration, RatesApi } from '@tonkeeper/core';
+import { Configuration, RatesApi } from '@tonkeeper/core/src/legacy';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { IRatesStore, TRates } from './types';

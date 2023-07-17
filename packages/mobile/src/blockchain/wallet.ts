@@ -13,7 +13,7 @@ import { Ton } from '$libs/Ton';
 import axios from 'axios';
 import { Tonapi } from '$libs/Tonapi';
 import { Address } from '$store/wallet/interface';
-import { AccountEvent, Configuration, BlockchainApi, AccountsApi } from '@tonkeeper/core';
+import { AccountEvent, Configuration, BlockchainApi, AccountsApi } from '@tonkeeper/core/src/legacy';
 import {
   SendApi,
   Configuration as V1Configuration,

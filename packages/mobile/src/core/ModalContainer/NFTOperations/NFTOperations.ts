@@ -27,7 +27,7 @@ import { getServerConfig } from '$shared/constants';
 import { SendApi, Configuration as ConfigurationV1 } from 'tonapi-sdk-js';
 import axios from 'axios';
 import { Tonapi } from '$libs/Tonapi';
-import { AccountEvent, Configuration, NFTApi } from '@tonkeeper/core';
+import { AccountEvent, Configuration, NFTApi } from '@tonkeeper/core/src/legacy';
 
 const { NftCollection, NftItem, NftSale } = TonWeb.token.nft;
 

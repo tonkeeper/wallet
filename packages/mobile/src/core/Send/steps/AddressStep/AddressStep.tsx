@@ -26,7 +26,7 @@ import {
   WordHintsPopupRef,
 } from '$shared/components/ImportWalletForm/WordHintsPopup';
 import { AddressStepProps } from './AddressStep.interface';
-import { Account } from '@tonkeeper/core';
+import { Account } from '@tonkeeper/core/src/legacy';
 import { Tonapi } from '$libs/Tonapi';
 import { AddressInput, AddressSuggests, CommentInput } from './components';
 import { useCommentMaxLength } from '$core/Send/hooks';

@@ -19,7 +19,7 @@ import {
   parseLocaleNumber,
   truncateDecimal,
 } from '$utils';
-import { PoolInfo } from '@tonkeeper/core';
+import { PoolInfo } from '@tonkeeper/core/src/legacy';
 import { Address } from '$libs/Ton';
 import { formatter, stakingFormatter } from '$utils/formatter';
 

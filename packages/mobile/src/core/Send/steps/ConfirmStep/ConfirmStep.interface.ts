@@ -1,6 +1,6 @@
 import { SendAmount, SendRecipient, SendSteps } from '$core/Send/Send.interface';
 import { CryptoCurrency } from '$shared/constants';
-import { Account } from '@tonkeeper/core';
+import { Account } from '@tonkeeper/core/src/legacy';
 
 export interface ConfirmStepProps {
   active: boolean;

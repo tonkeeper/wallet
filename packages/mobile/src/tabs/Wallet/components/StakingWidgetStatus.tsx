@@ -1,7 +1,7 @@
 import { usePoolInfo, useStakingCycle, useTranslator } from '$hooks';
 import { StakingListCell } from '$shared/components';
 import { getPoolIcon } from '$utils';
-import { AccountStakingInfo, PoolInfo } from '@tonkeeper/core';
+import { AccountStakingInfo, PoolInfo } from '@tonkeeper/core/src/legacy';
 import React, { FC, Fragment, memo, useCallback } from 'react';
 import { useNavigation } from '$libs/navigation';
 import { MainStackRouteNames } from '$navigation';

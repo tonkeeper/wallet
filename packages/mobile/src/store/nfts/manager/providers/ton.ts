@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { allSettled } from 'bluebird';
 import { proxyMedia } from '$utils/proxyMedia';
 import { debugLog } from '$utils';
-import { Configuration, NFTApi, AccountsApi } from '@tonkeeper/core';
+import { Configuration, NFTApi, AccountsApi } from '@tonkeeper/core/src/legacy';
 
 export class TonProvider extends BaseProvider {
   public readonly name = 'TonProvider';

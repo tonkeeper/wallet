@@ -4,7 +4,7 @@ import { Buffer } from 'buffer';
 import nacl from 'tweetnacl';
 import naclUtils from 'tweetnacl-util';
 const { createHash } = require('react-native-crypto');
-import { ConnectApi, Configuration } from '@tonkeeper/core';
+import { ConnectApi, Configuration } from '@tonkeeper/core/src/legacy';
 import { getServerConfigSafe } from '$shared/constants';
 import { Address } from '$libs/Ton';
 

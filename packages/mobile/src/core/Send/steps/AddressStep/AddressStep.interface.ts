@@ -1,6 +1,6 @@
 import { SendRecipient, SendAmount } from '../../Send.interface';
 import React from 'react';
-import { Account } from '@tonkeeper/core';
+import { Account } from '@tonkeeper/core/src/legacy';
 
 export interface AddressStepProps {
   recipient: SendRecipient | null;

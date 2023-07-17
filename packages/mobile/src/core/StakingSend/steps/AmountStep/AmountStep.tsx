@@ -25,7 +25,7 @@ import { CryptoCurrencies } from '$shared/constants';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
 import { StakingSendSteps } from '$core/StakingSend/types';
-import { PoolInfo } from '@tonkeeper/core';
+import { PoolInfo } from '@tonkeeper/core/src/legacy';
 import { Ton } from '$libs/Ton';
 import { stakingFormatter } from '$utils/formatter';
 

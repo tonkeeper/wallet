@@ -2,7 +2,7 @@ import { KNOWN_STAKING_IMPLEMENTATIONS, getServerConfig } from '$shared/constant
 import { DevFeature, store, useDevFeaturesToggle } from '$store';
 import { calculatePoolBalance } from '$utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Configuration, StakingApi } from '@tonkeeper/core';
+import { Configuration, StakingApi } from '@tonkeeper/core/src/legacy';
 import BigNumber from 'bignumber.js';
 import TonWeb from 'tonweb';
 import { create } from 'zustand';
