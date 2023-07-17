@@ -1,19 +1,27 @@
-type TonAPIToken = string | (() => string);
-type TonAPIHost = string | (() => string);
+import { TonAPIGenerated } from './TonAPIGenerated';
 
 type TonAPIOptions = {
-  token: TonAPIToken;
-  host: TonAPIHost;
-}
+  baseUrl: string | (() => string);
+  token?: string | (() => string);
+};
 
-export class TonAPI {
-  private token: TonAPIToken;
-  private host: TonAPIHost;
-  
-  constructor(options: TonAPIOptions) {
-    this.token = options.token;
-    this.host = options.host;
+export class TonAPI extends TonAPIGenerated<any> {
+  constructor(opts: TonAPIOptions) {
+    super({
+      baseApiParams: {
+        secure: true,
+      },
+      securityWorker: () => {
+        const baseUrl = typeof opts.baseUrl === 'function' ? opts.baseUrl() : opts.baseUrl;
+        const token = typeof opts.token === 'function' ? opts.token() : opts.token;
+
+        return {
+          baseUrl,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+      },
+    });
   }
-
-  
 }

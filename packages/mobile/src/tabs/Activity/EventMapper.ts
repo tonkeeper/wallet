@@ -1,9 +1,7 @@
 import { t } from '$translation';
 import { format, formatDate, getLocale } from '$utils';
 import {
-  ServerAccountEvent,
   EventActionType,
-  TonTransferAction,
   MergedEventAction,
 } from './Events.types';
 import { differenceInCalendarMonths } from 'date-fns';
@@ -16,6 +14,7 @@ import {
   ClientEventType,
   GroupedActionsByDate,
 } from '@tonkeeper/shared/components/TransactionList/DataTypes';
+import { AccountEvent, AccountEvents, TonTransferAction } from '@tonkeeper/core/src/TonAPI/TonAPIGenerated';
 
 const getSenderAccount = (isReceive: boolean, action: TonTransferAction) => {
   const senderAccount = isReceive ? action.sender : action.recipient;
@@ -41,7 +40,7 @@ function getGroupDate(timestamp: number) {
   return format(new Date(ts), 'LLLL');
 }
 
-export function EventsMapper(events: ServerAccountEvent[], walletAddress: string) {
+export function EventsMapper(events: AccountEvent[], walletAddress: string) {
   const groupedActions = events.reduce<GroupedActionsByDate>((groups, event) => {
     const date = getGroupDate(event.timestamp);
 
@@ -72,7 +71,7 @@ export function EventsMapper(events: ServerAccountEvent[], walletAddress: string
   }, [] as ClientEvent[]);
 }
 
-export function EventMapper(event: ServerAccountEvent, walletAddress: string) {
+export function EventMapper(event: AccountEvent, walletAddress: string) {
   const countAction = event.actions.length;
   const actions = event.actions.reduce((actions, serverAction, index) => {
     const actionData = serverAction[serverAction.type] as MergedEventAction;

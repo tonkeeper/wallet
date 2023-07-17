@@ -18,6 +18,9 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { HideableAmountProvider } from '$core/HideableAmount/HideableAmountProvider';
 import { BackgroundBlur } from '$core/BackgroundBlur/BackgroundBlur';
 
+import { TonAPIProvider } from '@tonkeeper/core';
+import { tonapi } from '@tonkeeper/shared/tonapi';
+
 const TonThemeProvider: FC = ({ children }) => {
   const accent = useSelector(accentSelector);
 
@@ -45,29 +48,31 @@ export const App: FC = () => {
     <StoreProvider {...{ store }}>
       <ActionSheetProvider>
         <QueryClientProvider client={queryClient}>
-          <TonThemeProvider>
-            <SafeAreaProvider>
-              <ScrollPositionProvider>
-                <HideableAmountProvider>
-                  <AppNavigator />
-                </HideableAmountProvider>
-              </ScrollPositionProvider>
-              <ToastComponent />
-              <BackgroundBlur />
-              {isAndroid ? (
-                <View
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                  }}
-                >
-                  <PortalDestination name="popupPortal" />
-                </View>
-              ) : null}
-            </SafeAreaProvider>
-          </TonThemeProvider>
+          <TonAPIProvider tonapi={tonapi}>
+            <TonThemeProvider>
+              <SafeAreaProvider>
+                <ScrollPositionProvider>
+                  <HideableAmountProvider>
+                    <AppNavigator />
+                  </HideableAmountProvider>
+                </ScrollPositionProvider>
+                <ToastComponent />
+                <BackgroundBlur />
+                {isAndroid ? (
+                  <View
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                    }}
+                  >
+                    <PortalDestination name="popupPortal" />
+                  </View>
+                ) : null}
+              </SafeAreaProvider>
+            </TonThemeProvider>
+          </TonAPIProvider>
         </QueryClientProvider>
       </ActionSheetProvider>
     </StoreProvider>

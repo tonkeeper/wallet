@@ -10,8 +10,8 @@ interface TransactionItemProps {
 const useBackgroundHighlighted = () => {
   const theme = useTheme();
   const isPressed = useSharedValue(0);
-  const onPressIn = () => (isPressed.value = 0);
-  const onPressOut = () => (isPressed.value = 1);
+  const onPressIn = () => (isPressed.value = 1);
+  const onPressOut = () => (isPressed.value = 0);
 
   const backgroundStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(

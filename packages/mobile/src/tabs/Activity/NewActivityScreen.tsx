@@ -1,11 +1,8 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ns } from '$utils';
-import { getServerConfig } from '$shared/constants';
 import { openRequireWalletModal } from '$navigation';
 import { useNavigation } from '$libs/navigation';
-import { useInfiniteQuery } from 'react-query';
-import { network } from '$libs/network';
 
 import { t } from '$translation';
 import { Screen, Text, Button } from '@tonkeeper/uikit';
@@ -13,10 +10,11 @@ import { EventsMapper } from './EventMapper';
 import { TransactionsList } from '@tonkeeper/shared/components/TransactionList';
 import { walletWalletSelector } from '$store/wallet';
 import { useSelector } from 'react-redux';
-import { ServerEvents } from './Events.types';
 import { AddressFormats } from '@tonkeeper/core';
 
-export const useWallet = (): { address: AddressFormats } | null => {
+import { useEventsByAccount } from '@tonkeeper/core/src/query/useEventsByAccount';
+
+export const useWallet = () => {
   const wallet = useSelector(walletWalletSelector);
 
   if (wallet && wallet.address) {
@@ -28,85 +26,33 @@ export const useWallet = (): { address: AddressFormats } | null => {
     };
   }
 
-  return null;
+  return {} as { address: AddressFormats };
 };
 
-//
-//
-//
-
-type GetAccountEvents = {
-  walletOnly: boolean;
-  account_id: string;
-  before_lt?: number;
-  limit?: number;
-};
-
-const getAccountEvents = async (params: GetAccountEvents) => {
-  const host = getServerConfig('tonapiIOEndpoint');
-  const authorization = `Bearer ${getServerConfig('tonApiV2Key')}`;
-
-  const fetchParams: Omit<GetAccountEvents, 'account_id'> = {
-    walletOnly: true,
-    limit: 50,
-  };
-
-  if (params.before_lt) {
-    fetchParams.before_lt = params.before_lt;
-  }
-
-  console.log('@FETCH');
-  const { data } = await network.get(`${host}/v2/accounts/${params.account_id}/events`, {
-    headers: { Authorization: authorization },
-    params: fetchParams,
-  });
-
-  if (data.Error) {
-    throw data.Error;
-  }
-
-  if (data) {
-    return data;
-  }
-};
-
-const useAccountEvents = () => {
+export const useMaybeWallet = () => {
   const wallet = useWallet();
 
-  const { data, error, isLoading, isFetchingNextPage, fetchNextPage } = useInfiniteQuery<{
-    events: ServerEvents;
-  }>({
-    queryKey: ['wallet_events', wallet?.address.raw],
-    getNextPageParam: ({ events }) => ({
-      lastLt: events[events.length - 1].lt,
-    }),
-    queryFn: ({ pageParam }) =>
-      getAccountEvents({
-        walletOnly: true,
-        account_id: wallet?.address.raw ?? '',
-        before_lt: pageParam?.lastLt ?? undefined,
-      }),
-  });
+  if (!wallet.address) {
+    return null;
+  }
 
-  const originalEvents = data?.pages.map((data) => data.events).flat();
-
-  const events = EventsMapper(originalEvents ?? [], wallet?.address?.raw!);
-
-  return {
-    fetchMore: fetchNextPage,
-    isLoadingMore: isFetchingNextPage,
-    isLoading: isLoading && !isFetchingNextPage,
-    error,
-    events: events,
-  };
+  return wallet;
 };
+
+//
+//
+//
 
 export const ActivityScreen = memo(() => {
-  const { events, error, isLoading, fetchMore } = useAccountEvents();
-  const nav = useNavigation();
   const wallet = useWallet();
+  const { data, error, isLoading, fetchMore } = useEventsByAccount(wallet.address.raw);
+  const nav = useNavigation();
+  
+  const events = EventsMapper(data ?? [], wallet?.address?.raw!);
 
-  console.log(events.length);
+  if (error) {
+    console.error('error', error);
+  }
 
   const handlePressRecevie = React.useCallback(() => {
     if (wallet) {

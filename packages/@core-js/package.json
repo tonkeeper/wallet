@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "main": "src/index.ts",
   "scripts": {
-    "codegen": "npx swagger-typescript-api -p  https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/openapi.yml -o ./src/TonAPI -n generated.types.ts --no-client"
+    "codegen": "node ./scripts/swagger"
   },
   "license": "ISC",
   "devDependencies": {
+    "swagger-typescript-api": "^13.0.0",
     "typescript": "^4.9.4"
   },
   "dependencies": {}

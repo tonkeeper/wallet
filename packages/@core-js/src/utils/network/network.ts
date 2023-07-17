@@ -17,7 +17,7 @@ export type NetworkResponse<TData = any> = {
   data: TData;
 }
 
-function createNetworkMethod(method: NetworkMethods) {
+export function createNetworkMethod(method: NetworkMethods) {
   return async <T = any>(url: string, options: NetworkOptions): Promise<NetworkResponse<T>>  => {
     const fetchOptions: RequestInit = { method, headers: options.headers ?? {} };
 
