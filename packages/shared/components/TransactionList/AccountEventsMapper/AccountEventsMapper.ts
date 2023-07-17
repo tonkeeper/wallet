@@ -1,46 +1,23 @@
-import { t } from '$translation';
-import { format, formatDate, getLocale } from '$utils';
-import {
-  EventActionType,
-  MergedEventAction,
-} from './Events.types';
-import { differenceInCalendarMonths } from 'date-fns';
+import { formatTransactionsPeriodDate, formatDate } from '@tonkeeper/shared/utils/date';
+import { AccountEvent, ActionTypeEnum } from '@tonkeeper/core/src/TonAPI';
+import { formatter } from '@tonkeeper/shared/formatter';
+import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
-import { formatter } from '$utils/formatter';
-
 import {
+  getGroupDate,
+  detectReceive,
+  getSenderAccount,
+} from './AccountEventsMapper.utils';
+import {
+  ActionsData,
+  ActionsWithData,
   ClientEvent,
   ClientEventAction,
   ClientEventType,
   GroupedActionsByDate,
-} from '@tonkeeper/shared/components/TransactionList/DataTypes';
-import { AccountEvent, AccountEvents, TonTransferAction } from '@tonkeeper/core/src/TonAPI/TonAPIGenerated';
+} from './AccountEventsMapper.types';
 
-const getSenderAccount = (isReceive: boolean, action: TonTransferAction) => {
-  const senderAccount = isReceive ? action.sender : action.recipient;
-  if (senderAccount) {
-    if (senderAccount.name) {
-      return senderAccount.name;
-    }
-
-    return Address(senderAccount.address).maskify();
-  }
-
-  return '';
-};
-
-function getGroupDate(timestamp: number) {
-  const ts = timestamp * 1000;
-  const now = new Date();
-
-  if (differenceInCalendarMonths(now, new Date(ts)) < 1) {
-    return format(new Date(ts), 'd MMMM', { locale: getLocale() });
-  }
-
-  return format(new Date(ts), 'LLLL');
-}
-
-export function EventsMapper(events: AccountEvent[], walletAddress: string) {
+export function AccountEventsMapper(events: AccountEvent[], walletAddress: string) {
   const groupedActions = events.reduce<GroupedActionsByDate>((groups, event) => {
     const date = getGroupDate(event.timestamp);
 
@@ -57,12 +34,12 @@ export function EventsMapper(events: AccountEvent[], walletAddress: string) {
   return Object.keys(groupedActions).reduce((acc, date) => {
     const actions = groupedActions[date];
     const txTime = actions[0].timestamp * 1000;
-    const formattedDate = formatDate(new Date(txTime));
+    const formatDatetedDate = formatTransactionsPeriodDate(new Date(txTime));
 
     acc.push({
       type: ClientEventType.Date,
-      id: `date-${formattedDate}`,
-      date: formattedDate,
+      id: `date-${formatDatetedDate}`,
+      date: formatDatetedDate,
     });
 
     acc.push(...actions);
@@ -73,43 +50,50 @@ export function EventsMapper(events: AccountEvent[], walletAddress: string) {
 
 export function EventMapper(event: AccountEvent, walletAddress: string) {
   const countAction = event.actions.length;
-  const actions = event.actions.reduce((actions, serverAction, index) => {
-    const actionData = serverAction[serverAction.type] as MergedEventAction;
-    const action = EventsActionMapper({
-      actionIndex: index,
-      walletAddress,
-      event,
-      action: {
-        data: actionData,
-        ...serverAction,
-      },
-    });
+  const actions = event.actions.reduce<ClientEventAction[]>(
+    (actions, serverAction, index) => {
+      const actionByType = serverAction[serverAction.type] as ActionsData['data'];
+      const actionWithData = Object.assign(serverAction, {
+        type: serverAction.type,
+        data: actionByType,
+      }) as ActionsWithData;
 
-    if (index === 0) {
-      action.topCorner = true;
-    }
+      const action = EventsActionMapper({
+        action: actionWithData,
+        actionIndex: index,
+        walletAddress,
+        event,
+      });
 
-    if (index === countAction - 1) {
-      action.bottomCorner = true;
-    }
+      if (index === 0) {
+        action.topCorner = true;
+      }
 
-    actions.push(action);
+      if (index === countAction - 1) {
+        action.bottomCorner = true;
+      }
 
-    return actions;
-  }, [] as ClientEventAction[]);
+      actions.push(action);
+
+      return actions;
+    },
+    [],
+  );
 
   return actions;
 }
 
 type EventsActionMapperInput = {
   walletAddress: string;
-  action: MergedEventAction;
+  action: ActionsWithData;
   actionIndex: number;
-  event: any;
+  event: AccountEvent;
 };
 
 export function EventsActionMapper(input: EventsActionMapperInput): ClientEventAction {
-  const time = format(new Date(input.event.timestamp * 1000), 'HH:mm');
+  const time = formatDate(new Date(input.event.timestamp * 1000), 'HH:mm');
+
+  // By default SimplePreview
   const action: ClientEventAction = {
     type: ClientEventType.Action,
     id: `input.action-${input.event.event_id}-${input.actionIndex}`,
@@ -122,34 +106,31 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
   };
 
   try {
-    const isReceive =
-      input.action?.data?.recipient &&
-      Address.compare(input.action.data.recipient.address, input.walletAddress);
-
-    action.isReceive = isReceive;
-
-    const senderAccount = getSenderAccount(isReceive, input.action?.data);
+    const isReceive = detectReceive(input.walletAddress, input.action.data);
+    const senderAccount = getSenderAccount(isReceive, input.action.data);
     const arrowIcon = isReceive ? 'ic-tray-arrow-down-28' : 'ic-tray-arrow-up-28';
     const amountPrefix = isReceive ? '+' : '−';
     const sendOrReceiveTitle = isReceive
       ? t('transaction_type_receive')
       : t('transaction_type_sent');
 
+    action.isReceive = isReceive;
+
     switch (input.action.type) {
-      case EventActionType.TonTransfer: {
+      case ActionTypeEnum.TonTransfer: {
         const data = input.action.data;
 
         action.iconName = arrowIcon;
         action.senderAccount = senderAccount;
         action.operation = sendOrReceiveTitle;
-        action.comment = data.comment;
+        action.comment = data.comment?.trim();
         action.amount = formatter.formatNano(data.amount, {
           prefix: amountPrefix,
           postfix: 'TON',
         });
         break;
       }
-      case EventActionType.JettonTransfer: {
+      case ActionTypeEnum.JettonTransfer: {
         const data = input.action.data;
 
         action.iconName = arrowIcon;
@@ -162,7 +143,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
         });
         break;
       }
-      case EventActionType.NftItemTransfer: {
+      case ActionTypeEnum.NftItemTransfer: {
         const data = input.action.data;
 
         action.iconName = arrowIcon;
@@ -172,7 +153,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
         action.nftAddress = data.nft;
         break;
       }
-      case EventActionType.NftPurchase:
+      case ActionTypeEnum.NftPurchase:
         const data = input.action.data;
 
         action.iconName = arrowIcon;
@@ -183,7 +164,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
           prefix: amountPrefix,
         });
         break;
-      case EventActionType.ContractDeploy: {
+      case ActionTypeEnum.ContractDeploy: {
         const data = input.action.data;
 
         const isInitialized = Address.compare(data.address, input.walletAddress);
@@ -193,7 +174,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
           : t('transinput.action_type_contract_deploy');
         break;
       }
-      case EventActionType.Subscribe: {
+      case ActionTypeEnum.Subscribe: {
         const data = input.action.data;
 
         action.iconName = 'ic-bell-28';
@@ -205,7 +186,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
         });
         break;
       }
-      case EventActionType.UnSubscribe: {
+      case ActionTypeEnum.UnSubscribe: {
         const data = input.action.data;
 
         action.iconName = 'ic-xmark-28';
@@ -213,7 +194,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
         action.senderAccount = data.beneficiary.name ?? '';
         break;
       }
-      case EventActionType.SmartContractExec: {
+      case ActionTypeEnum.SmartContractExec: {
         const data = input.action.data;
 
         action.iconName = 'ic-gear-28';
@@ -225,7 +206,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
         });
         break;
       }
-      case EventActionType.AuctionBid: {
+      case ActionTypeEnum.AuctionBid: {
         const data = input.action.data;
 
         break;

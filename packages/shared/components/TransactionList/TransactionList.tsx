@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { Screen, Loader, List, Spacer } from '@tonkeeper/uikit';
 import { memo } from 'react';
 import { TransactionItem } from './TransactionItem';
-import { ClientEvent, ClientEventType } from './DataTypes';
+import { ClientEvent, ClientEventType } from './AccountEventsMapper/AccountEventsMapper.types';
 
 interface EventsListProps {
   events: ClientEvent[];

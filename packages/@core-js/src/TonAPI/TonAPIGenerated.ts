@@ -483,7 +483,7 @@ export interface MethodExecutionResult {
 
 export interface TvmStackRecord {
   /** @example "cell" */
-  type: 'cell' | 'num' | 'nan' | 'null' | 'tuple';
+  type: TvmStackRecordTypeEnum;
   /** @example "te6cckEBAQEAJAAAQ4ARPeUceMlv4l12d6jdLpIzzbAV6amYXNZeZK2aicQdC/Apj8aJ" */
   cell?: string;
   /** @example "" */
@@ -621,7 +621,7 @@ export interface NftItem {
   previews?: ImagePreview[];
   /** @example "crypto.ton" */
   dns?: string;
-  approved_by: ('getgems' | 'tonkeeper')[];
+  approved_by: NftItemApprovedByEnum[];
 }
 
 export interface NftItems {
@@ -630,7 +630,7 @@ export interface NftItems {
 
 export interface Refund {
   /** @example "DNS.ton" */
-  type: 'DNS.ton' | 'DNS.tg' | 'GetGems';
+  type: RefundTypeEnum;
   /** @example "0:da6b1b6663a0e4d18cc8574ccd9db5296e367dd9324706f3bbd9eb1cd2caf0bf" */
   origin: string;
 }
@@ -659,22 +659,9 @@ export interface ValueFlow {
 
 export interface Action {
   /** @example "TonTransfer" */
-  type:
-    | 'TonTransfer'
-    | 'JettonTransfer'
-    | 'NftItemTransfer'
-    | 'ContractDeploy'
-    | 'Subscribe'
-    | 'UnSubscribe'
-    | 'AuctionBid'
-    | 'NftPurchase'
-    | 'DepositStake'
-    | 'RecoverStake'
-    | 'STONfiSwap'
-    | 'SmartContractExec'
-    | 'Unknown';
+  type: ActionTypeEnum;
   /** @example "ok" */
-  status: 'ok' | 'failed' | 'pending';
+  status: ActionStatusEnum;
   TonTransfer?: TonTransferAction;
   ContractDeploy?: ContractDeployAction;
   JettonTransfer?: JettonTransferAction;
@@ -791,7 +778,7 @@ export interface UnSubscriptionAction {
 }
 
 export interface AuctionBidAction {
-  auction_type: 'DNS.ton' | 'DNS.tg' | 'NUMBER.tg' | 'getgems';
+  auction_type: AuctionBidActionAuctionTypeEnum;
   amount: Price;
   nft?: NftItem;
   beneficiary: AccountAddress;
@@ -832,7 +819,7 @@ export interface STONfiSwapAction {
 }
 
 export interface NftPurchaseAction {
-  auction_type: 'DNS.tg' | 'getgems' | 'basic';
+  auction_type: NftPurchaseActionAuctionTypeEnum;
   amount: Price;
   nft: NftItem;
   seller: AccountAddress;
@@ -1182,7 +1169,7 @@ export interface PoolInfo {
   name: string;
   /** @format int64 */
   total_amount: number;
-  implementation: 'whales' | 'tf' | 'liquidTF';
+  implementation: PoolInfoImplementationEnum;
   /**
    * APY in percent
    * @example 5.31
@@ -1295,6 +1282,71 @@ export interface AccountInfoByStateInit {
 export interface Seqno {
   /** @format uint32 */
   seqno: number;
+}
+
+/** @example "cell" */
+export enum TvmStackRecordTypeEnum {
+  Cell = 'cell',
+  Num = 'num',
+  Nan = 'nan',
+  Null = 'null',
+  Tuple = 'tuple',
+}
+
+/** @example "getgems" */
+export enum NftItemApprovedByEnum {
+  Getgems = 'getgems',
+  Tonkeeper = 'tonkeeper',
+}
+
+/** @example "DNS.ton" */
+export enum RefundTypeEnum {
+  DNSTon = 'DNS.ton',
+  DNSTg = 'DNS.tg',
+  GetGems = 'GetGems',
+}
+
+/** @example "TonTransfer" */
+export enum ActionTypeEnum {
+  TonTransfer = 'TonTransfer',
+  JettonTransfer = 'JettonTransfer',
+  NftItemTransfer = 'NftItemTransfer',
+  ContractDeploy = 'ContractDeploy',
+  Subscribe = 'Subscribe',
+  UnSubscribe = 'UnSubscribe',
+  AuctionBid = 'AuctionBid',
+  NftPurchase = 'NftPurchase',
+  DepositStake = 'DepositStake',
+  RecoverStake = 'RecoverStake',
+  STONfiSwap = 'STONfiSwap',
+  SmartContractExec = 'SmartContractExec',
+  Unknown = 'Unknown',
+}
+
+/** @example "ok" */
+export enum ActionStatusEnum {
+  Ok = 'ok',
+  Failed = 'failed',
+  Pending = 'pending',
+}
+
+export enum AuctionBidActionAuctionTypeEnum {
+  DNSTon = 'DNS.ton',
+  DNSTg = 'DNS.tg',
+  NUMBERTg = 'NUMBER.tg',
+  Getgems = 'getgems',
+}
+
+export enum NftPurchaseActionAuctionTypeEnum {
+  DNSTg = 'DNS.tg',
+  Getgems = 'getgems',
+  Basic = 'basic',
+}
+
+export enum PoolInfoImplementationEnum {
+  Whales = 'whales',
+  Tf = 'tf',
+  LiquidTF = 'liquidTF',
 }
 
 export interface GetAccountTransactionsParams {

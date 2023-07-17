@@ -8,4 +8,5 @@ generateApi({
   extractRequestParams: true,
   apiClassName: 'TonAPIGenerated',
   moduleNameIndex: 1,
+  extractEnums: true,
 });

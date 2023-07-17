@@ -1,59 +1,25 @@
-import React, { memo, useMemo } from 'react';
+import { Screen, Text, Button } from '@tonkeeper/uikit';
 import { StyleSheet, View } from 'react-native';
-import { ns } from '$utils';
+import { t } from '@tonkeeper/shared/i18n';
+import React, { memo } from 'react';
+
+import { TransactionsList } from '@tonkeeper/shared/components/TransactionList';
+import { useEventsByAccount } from '@tonkeeper/core/src/query/useEventsByAccount';
+import { AccountEventsMapper } from '@tonkeeper/shared/components/TransactionList/AccountEventsMapper'
+import { useWallet } from '../useWallet';
+
+// TODO: 
 import { openRequireWalletModal } from '$navigation';
 import { useNavigation } from '$libs/navigation';
 
-import { t } from '$translation';
-import { Screen, Text, Button } from '@tonkeeper/uikit';
-import { EventsMapper } from './EventMapper';
-import { TransactionsList } from '@tonkeeper/shared/components/TransactionList';
-import { walletWalletSelector } from '$store/wallet';
-import { useSelector } from 'react-redux';
-import { AddressFormats } from '@tonkeeper/core';
-
-import { useEventsByAccount } from '@tonkeeper/core/src/query/useEventsByAccount';
-
-export const useWallet = () => {
-  const wallet = useSelector(walletWalletSelector);
-
-  if (wallet && wallet.address) {
-    return {
-      address: {
-        friendly: wallet.address.friendlyAddress,
-        raw: wallet.address.rawAddress,
-      },
-    };
-  }
-
-  return {} as { address: AddressFormats };
-};
-
-export const useMaybeWallet = () => {
-  const wallet = useWallet();
-
-  if (!wallet.address) {
-    return null;
-  }
-
-  return wallet;
-};
-
-//
-//
-//
 
 export const ActivityScreen = memo(() => {
   const wallet = useWallet();
   const { data, error, isLoading, fetchMore } = useEventsByAccount(wallet.address.raw);
+
+  const events = AccountEventsMapper(data ?? [], wallet.address.raw);
+
   const nav = useNavigation();
-  
-  const events = EventsMapper(data ?? [], wallet?.address?.raw!);
-
-  if (error) {
-    console.error('error', error);
-  }
-
   const handlePressRecevie = React.useCallback(() => {
     if (wallet) {
       nav.go('Receive', {
@@ -77,7 +43,7 @@ export const ActivityScreen = memo(() => {
     return (
       <Screen>
         <View style={styles.emptyContainer}>
-          <Text type="h2" style={{ textAlign: 'center', marginBottom: ns(4) }}>
+          <Text type="h2" style={{ textAlign: 'center', marginBottom: 4 }}>
             {t('activity.empty_transaction_title')}
           </Text>
           <Text type="body1" color="textSecondary">
@@ -86,7 +52,7 @@ export const ActivityScreen = memo(() => {
           <View style={styles.emptyButtons}>
             <Button
               title={t('activity.buy_toncoin_btn')}
-              style={{ marginRight: ns(12) }}
+              style={{ marginRight: 12 }}
               onPress={handlePressBuy}
               color="secondary"
               size="small"
@@ -106,7 +72,10 @@ export const ActivityScreen = memo(() => {
   return (
     <Screen>
       <Screen.LargeHeader title={t('activity.screen_title')} />
-      <TransactionsList onFetchMore={fetchMore} events={events} />
+      <TransactionsList 
+        onFetchMore={fetchMore} 
+        events={events} 
+      />
     </Screen>
   );
 });
@@ -120,6 +89,6 @@ const styles = StyleSheet.create({
   },
   emptyButtons: {
     flexDirection: 'row',
-    marginTop: ns(24),
+    marginTop: 24,
   },
 });

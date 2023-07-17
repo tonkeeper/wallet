@@ -1,4 +1,4 @@
-import { FiatCurrencySymbolsConfig } from './fiat';
+import { FiatCurrencySymbolsConfig } from './FiatCurrencyConfig';
 import BigNumber from 'bignumber.js';
 
 type LocaleFormat = {
@@ -21,7 +21,6 @@ export type AmountFormatOptions = {
   ignoreZeroTruncate?: boolean;
   absolute?: boolean;
   withPositivePrefix?: boolean;
-  prefix?: string;
 };
 
 export type AmountNumber = string | number | BigNumber;
@@ -70,7 +69,7 @@ export class AmountFormatter {
     return BigNumber.isBigNumber(amount) ? amount : new BigNumber(amount);
   }
 
-  public parseFormatted(stringNumber) {
+  public parseFormatted(stringNumber: string) {
     const NUMBER_DIVIDER = ' ';
     const { decimalSeparator, groupingSeparator } = this.getLocaleFormat();
     return stringNumber
@@ -80,12 +79,7 @@ export class AmountFormatter {
   }
 
   public format(amount: AmountNumber = 0, options: AmountFormatOptions = {}) {
-    const {
-      prefix: prefixFromOptions,
-      withPositivePrefix,
-      currencySeparator = 'thin',
-      absolute = false,
-    } = options;
+    const { withPositivePrefix, currencySeparator = 'thin', absolute = false } = options;
     let bn = this.toBN(amount);
 
     const decimals = options.decimals ?? this.getDefaultDecimals(bn);
@@ -128,7 +122,7 @@ export class AmountFormatter {
       decimalSeparator,
       fractionGroupSize: 2,
       groupSize: 3,
-      prefix: prefixFromOptions ?? prefix,
+      prefix,
       suffix,
     };
 
