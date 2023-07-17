@@ -53,9 +53,10 @@ export const useBalance = (tokensTotal: number) => {
   const amountToFiat = useAmountToFiat();
   const getTokenPrice = useGetTokenPrice();
 
-  const stakingBalance = useStakingStore((s) => {
-    const balance = s.stakingBalance;
+  const _stakingBalance = useStakingStore((s) => s.stakingBalance, shallow);
 
+  const stakingBalance = useMemo(() => {
+    const balance = _stakingBalance;
     const formatted = formatter.format();
     return {
       amount: {
@@ -64,7 +65,7 @@ export const useBalance = (tokensTotal: number) => {
         formatted,
       },
     };
-  }, shallow);
+  }, [_stakingBalance, amountToFiat]);
 
   const oldVersions = useMemo(() => {
     if (isLockup) {
@@ -156,10 +157,13 @@ export const useBalance = (tokensTotal: number) => {
     };
   }, [ton, stakingBalance, lockup, amountToFiat, tokensTotal]);
 
-  return {
-    oldVersions,
-    lockup,
-    total,
-    ton,
-  };
+  return useMemo(
+    () => ({
+      oldVersions,
+      lockup,
+      total,
+      ton,
+    }),
+    [oldVersions, lockup, total, ton],
+  );
 };

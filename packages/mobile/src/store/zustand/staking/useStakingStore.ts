@@ -9,6 +9,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { IStakingStore, StakingApiStatus, StakingInfo, StakingProvider } from './types';
 import { i18n } from '$translation';
+import _ from 'lodash';
 
 const getStakingApi = () => {
   return new StakingApi(
@@ -175,7 +176,9 @@ export const useStakingStore = create(
               return;
             }
 
-            set({ ...nextState });
+            if (!silent || !_.isEqual(nextState.stakingInfo, getState().stakingInfo)) {
+              set({ ...nextState });
+            }
           } catch (e) {
             console.log('fetchPools error', e.response);
           } finally {

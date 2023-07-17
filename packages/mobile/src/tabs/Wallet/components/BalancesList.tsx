@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { t } from '$translation';
 import { List, Screen, Spacer, SpacerSizes, View } from '$uikit';
 import { Steezy } from '$styles';
@@ -27,7 +27,7 @@ enum ContentType {
 
 type TokenItem = {
   type: ContentType.Token;
-
+  key: string;
   isFirst?: boolean;
   isLast?: boolean;
 
@@ -43,16 +43,19 @@ type TokenItem = {
 };
 
 type SpacerItem = {
+  key: string;
   type: ContentType.Spacer;
   bottom: SpacerSizes;
 };
 
 type NFTCardsRowItem = {
+  key: string;
   type: ContentType.NFTCardsRow;
   items: any; // TODO:
 };
 
 type StakingItem = {
+  key: string;
   type: ContentType.Staking;
 };
 
@@ -160,7 +163,7 @@ export const BalancesList = memo<BalancesListProps>(
           }),
         );
       },
-      [],
+      [dispatch],
     );
 
     const data = useMemo(() => {
@@ -169,6 +172,7 @@ export const BalancesList = memo<BalancesListProps>(
       // Tokens
       content.push({
         type: ContentType.Token,
+        key: 'ton',
         title: 'Toncoin',
         onPress: () => openWallet(CryptoCurrencies.Ton),
         value: balance.ton.amount.formatted,
@@ -184,6 +188,7 @@ export const BalancesList = memo<BalancesListProps>(
       content.push(
         ...balance.oldVersions.map((item) => ({
           type: ContentType.Token,
+          key: 'old_' + item.version,
           onPress: handleMigrate(item.version),
           title: t('wallet.old_wallet_title'),
           tonIcon: { transparent: true },
@@ -211,16 +216,19 @@ export const BalancesList = memo<BalancesListProps>(
       }
 
       content.push({
+        key: 'staking',
         type: ContentType.Staking,
       });
 
       content.push({
+        key: 'spacer_staking',
         type: ContentType.Spacer,
         bottom: 32,
       });
 
       content.push(
         ...tokens.list.map((item, index) => ({
+          key: 'token_' + item.address.rawAddress,
           isFirst: index === 0,
           type: ContentType.Token,
           onPress: () => openJetton(item.address.rawAddress),
@@ -248,6 +256,7 @@ export const BalancesList = memo<BalancesListProps>(
 
       if (nfts) {
         content.push({
+          key: 'spacer_nft',
           type: ContentType.Spacer,
           bottom: 32,
         });
@@ -255,6 +264,7 @@ export const BalancesList = memo<BalancesListProps>(
         const numColumns = 3;
         for (let i = 0; i < Math.ceil(nfts.length / numColumns); i++) {
           content.push({
+            key: 'nft_' + i,
             type: ContentType.NFTCardsRow,
             items: nfts.slice(i * numColumns, i * numColumns + numColumns),
           });
@@ -262,6 +272,7 @@ export const BalancesList = memo<BalancesListProps>(
       }
 
       content.push({
+        key: 'spacer_bottom',
         type: ContentType.Spacer,
         bottom: 12,
       });

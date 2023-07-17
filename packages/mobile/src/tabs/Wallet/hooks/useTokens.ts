@@ -83,10 +83,13 @@ export const useTonkens = (): {
     [tokens],
   );
 
-  return {
-    list: tokens,
-    total: {
-      fiat: fiatTotal,
-    },
-  };
+  return useMemo(
+    () => ({
+      list: tokens,
+      total: {
+        fiat: fiatTotal,
+      },
+    }),
+    [tokens, fiatTotal],
+  );
 };
