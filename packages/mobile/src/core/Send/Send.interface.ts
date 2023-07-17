@@ -8,9 +8,9 @@ export interface SendProps {
 }
 
 export enum SendSteps {
-  ADDRESS = 'ADDRESS',
-  AMOUNT = 'AMOUNT',
-  CONFIRM = 'CONFIRM',
+  ADDRESS = 0,
+  AMOUNT = 1,
+  CONFIRM = 2,
 }
 
 export enum SuggestedAddressType {

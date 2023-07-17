@@ -8,8 +8,6 @@ import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
 import { ConfirmStepProps } from './ConfirmStep.interface';
 import * as S from './ConfirmStep.style';
 import BigNumber from 'bignumber.js';
-import { useAnimatedScrollHandler } from 'react-native-reanimated';
-import { SendSteps } from '$core/Send/Send.interface';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { formatter } from '$utils/formatter';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -24,8 +22,6 @@ import { useSelector } from 'react-redux';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
-    stepsScrollTop,
-    active,
     currency,
     currencyTitle,
     recipient,
@@ -33,6 +29,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     decimals,
     isJetton,
     fee,
+    active,
     isInactive,
     amount,
     comment,
@@ -126,13 +123,6 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     sendTx,
   ]);
 
-  const scrollHandler = useAnimatedScrollHandler((event) => {
-    stepsScrollTop.value = {
-      ...stepsScrollTop.value,
-      [SendSteps.CONFIRM]: event.contentOffset.y,
-    };
-  });
-
   const feeCurrency = useMemo(() => {
     const tokenConfig = getTokenConfig(currency as CryptoCurrency);
     if (tokenConfig && tokenConfig.blockchain === 'ethereum') {
@@ -211,7 +201,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
 
   return (
     <S.Container>
-      <StepScrollView onScroll={scrollHandler} active={active}>
+      <StepScrollView active={active}>
         <S.Content>
           <S.Center>
             <S.IconContainer>{Logo}</S.IconContainer>

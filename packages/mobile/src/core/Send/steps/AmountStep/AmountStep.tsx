@@ -14,12 +14,12 @@ import { CoinDropdown } from './CoinDropdown';
 const AmountStepComponent: FC<AmountStepProps> = (props) => {
   const {
     isPreparing,
-    active,
     recipient,
     decimals,
     balance,
     currency,
     currencyTitle,
+    active,
     amount,
     fiatRate,
     setAmount,

@@ -8,7 +8,7 @@ import { PageIndexContext } from './hooks/usePageIndex';
 import { PagerViewTabBar } from './PagerViewTabBar';
 import React, { forwardRef, memo, useMemo } from 'react';
 
-import PagerView from 'react-native-pager-view';
+import PagerView, { PagerViewOnPageSelectedEvent } from 'react-native-pager-view';
 import Animated from 'react-native-reanimated';
 import { useMergeRefs } from '@tonkeeper/mobile/src/utils';
 
@@ -26,6 +26,9 @@ interface PagerViewContainerProps {
   tabBarStyle?: ViewStyle;
   hideFunny?: boolean;
   ref?: React.Ref<PagerView>;
+  initialPage?: number;
+  scrollEnabled?: boolean;
+  onPageSelected?: (e: PagerViewOnPageSelectedEvent) => void;
 }
 
 export const PagerViewContainer = memo<PagerViewContainerProps>(
@@ -61,14 +64,17 @@ export const PagerViewContainer = memo<PagerViewContainerProps>(
         <View style={styles.pagerView}>
           <PagerViewInternalHeader>
             {elements.header}
-            <PagerViewTabBar style={props.tabBarStyle} tabs={elements.tabs} />
+            {elements.tabs.length ? (
+              <PagerViewTabBar style={props.tabBarStyle} tabs={elements.tabs} />
+            ) : null}
           </PagerViewInternalHeader>
           <AnimatedPagerView
             onPageScroll={pager.horizontalScrollHandler}
             ref={setRef}
             style={styles.pagerView}
-            initialPage={0}
-            scrollEnabled
+            initialPage={props.initialPage ?? 0}
+            scrollEnabled={props.scrollEnabled ?? true}
+            onPageSelected={props.onPageSelected}
             overdrag
           >
             {elements.pages.map((children, index) => (

@@ -1,4 +1,9 @@
-import Animated, { Extrapolate, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Extrapolate,
+  interpolate,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Icon, IconNames } from '../../components/Icon';
@@ -29,10 +34,12 @@ export interface ScreenHeaderProps {
   title?: string;
   onBackPress?: () => void;
   onGoBack?: () => void;
+  showCloseButton?: boolean;
 }
 
 export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
   const {
+    showCloseButton,
     backButtonPosition = 'left',
     backButtonIcon = 'back',
     hideBackButton,

@@ -23,10 +23,9 @@ export const usePagerViewHandler = () => {
 
   const measureHeader = (event: LayoutChangeEvent) => {
     const headerOffset = isLargeHeader.value ? ScreenHeaderHeight : 0;
-    headerEjectionPoint.value = event.nativeEvent.layout.height - (isLargeHeader.value ? 64 : 0);
+    headerEjectionPoint.value =
+      event.nativeEvent.layout.height - (isLargeHeader.value ? 64 : 0);
     headerHeight.value = event.nativeEvent.layout.height;
-
-    console.log('@', event.nativeEvent.layout.height);
   };
 
   useEffect(() => {

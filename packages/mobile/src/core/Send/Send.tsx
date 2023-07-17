@@ -1,6 +1,5 @@
 import { useFiatRate, useInstance, useTranslator } from '$hooks';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
-import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import {
   CryptoCurrencies,
   CryptoCurrency,
@@ -16,9 +15,9 @@ import React, {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
-import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { SendAmount, SendProps, SendRecipient, SendSteps } from './Send.interface';
 import { AddressStep } from './steps/AddressStep/AddressStep';
@@ -26,10 +25,11 @@ import { AmountStep } from './steps/AmountStep/AmountStep';
 import { ConfirmStep } from './steps/ConfirmStep/ConfirmStep';
 import { Keyboard } from 'react-native';
 import { favoritesActions } from '$store/favorites';
-import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { Configuration, AccountsApi, Account } from '@tonkeeper/core';
+import { Account, AccountsApi, Configuration } from '@tonkeeper/core';
 import { DismissedActionError } from './steps/ConfirmStep/DismissedActionError';
 import { formatter } from '$utils/formatter';
+import { PagerView, Screen } from '@tonkeeper/uikit';
+import { PagerViewOnPageSelectedEvent } from 'react-native-pager-view';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {
@@ -41,6 +41,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     fee: initialFee = '0',
     isInactive: initialIsInactive = false,
   } = route.params;
+  const refPagerView = useRef<any>(null);
 
   const initialAddress =
     propsAddress && isValidAddress(propsAddress) ? propsAddress : null;
@@ -86,7 +87,6 @@ export const Send: FC<SendProps> = ({ route }) => {
   const [comment, setComment] = useState(initalComment.replace(/\0/g, ''));
 
   const [isPreparing, setPreparing] = useState(false);
-  const [isSending, setSending] = useState(false);
 
   const [fee, setFee] = useState(initialFee);
 
@@ -99,33 +99,30 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   const fiatRate = useFiatRate(currency as CryptoCurrency, isJetton);
 
-  const stepViewRef = useRef<StepViewRef>(null);
+  const [currentStep, setCurrentStep] = useState<SendSteps>(SendSteps.ADDRESS);
 
-  const [currentStep, setCurrentStep] = useState<{ id: SendSteps; index: number }>({
-    id: SendSteps.ADDRESS,
-    index: 0,
-  });
-
-  const stepsScrollTop = useSharedValue(
-    Object.keys(SendSteps).reduce(
-      (acc, cur) => ({ ...acc, [cur]: 0 }),
-      {} as Record<SendSteps, number>,
-    ),
+  const handleBack = useCallback(
+    () => refPagerView.current?.setPage(currentStep - 1),
+    [currentStep],
   );
 
-  const scrollTop = useDerivedValue<number>(
-    () => stepsScrollTop.value[currentStep.id] || 0,
-  );
-
-  const handleBack = useCallback(() => stepViewRef.current?.goBack(), []);
-
-  const handleChangeStep = useCallback((id: string | number, index: number) => {
-    setCurrentStep({ id: id as SendSteps, index });
+  const handleChangeStep = useCallback((e: PagerViewOnPageSelectedEvent) => {
+    setCurrentStep(e.nativeEvent.position as SendSteps);
   }, []);
 
   const goToAmount = useCallback(() => {
-    stepViewRef.current?.go(SendSteps.AMOUNT);
+    requestAnimationFrame(() => refPagerView.current?.setPage(SendSteps.AMOUNT));
   }, []);
+
+  const isSwipingAllowed = useMemo(() => {
+    if (currentStep === SendSteps.ADDRESS) {
+      return !!recipient;
+    } else if (currentStep === SendSteps.AMOUNT) {
+      return amount.value !== '0';
+    } else {
+      return true;
+    }
+  }, [amount.value, currentStep, recipient]);
 
   const onChangeCurrency = useCallback(
     (
@@ -161,8 +158,7 @@ export const Send: FC<SendProps> = ({ route }) => {
         onNext: (details) => {
           setFee(details.fee);
           setInactive(details.isInactive);
-
-          stepViewRef.current?.go(SendSteps.CONFIRM);
+          requestAnimationFrame(() => refPagerView.current?.setPage(SendSteps.CONFIRM));
         },
       }),
     );
@@ -182,7 +178,6 @@ export const Send: FC<SendProps> = ({ route }) => {
         return onFail(new DismissedActionError());
       }
 
-      setSending(true);
       dispatch(
         walletActions.sendCoins({
           currency: currency as CryptoCurrency,
@@ -195,11 +190,9 @@ export const Send: FC<SendProps> = ({ route }) => {
           decimals,
           onDone: () => {
             dispatch(favoritesActions.restoreHiddenAddress(recipient.address));
-            setSending(false);
             onDone();
           },
           onFail: () => {
-            setSending(false);
             onFail(new DismissedActionError());
           },
         }),
@@ -242,10 +235,10 @@ export const Send: FC<SendProps> = ({ route }) => {
     fetchRecipientAccountInfo();
   }, [fetchRecipientAccountInfo]);
 
-  const isAddressStep = currentStep.id === SendSteps.ADDRESS;
-  const isConfirmStep = currentStep.id === SendSteps.CONFIRM;
+  const isAddressStep = currentStep === SendSteps.ADDRESS;
+  const isConfirmStep = currentStep === SendSteps.CONFIRM;
 
-  const hideBackButton = currentStep.index === 0;
+  const hideBackButton = currentStep === 0;
 
   const navBarTitle = isAddressStep
     ? t('send_screen_steps.address.title')
@@ -273,84 +266,71 @@ export const Send: FC<SendProps> = ({ route }) => {
   );
 
   return (
-    <>
+    <Screen>
       <NavBar
         isModal
         isClosedButton
         isForceBackIcon
         hideBackButton={hideBackButton}
         hideTitle={isConfirmStep}
-        scrollTop={scrollTop}
         subtitle={subtitle}
         onBackPress={handleBack}
       >
         {navBarTitle}
       </NavBar>
-      <StepView
-        ref={stepViewRef}
-        backDisabled={isSending || isPreparing}
-        onChangeStep={handleChangeStep}
-        initialStepId={initialStepId}
-        useBackHandler
-        swipeBackEnabled
+      <PagerView
+        scrollEnabled={isSwipingAllowed}
+        onPageSelected={handleChangeStep}
+        initialPage={initialStepId}
+        ref={refPagerView}
       >
-        <StepViewItem id={SendSteps.ADDRESS}>
-          {(stepProps) => (
-            <AddressStep
-              recipient={recipient}
-              decimals={decimals}
-              stepsScrollTop={stepsScrollTop}
-              setRecipient={setRecipient}
-              setRecipientAccountInfo={setRecipientAccountInfo}
-              recipientAccountInfo={recipientAccountInfo}
-              comment={comment}
-              setComment={setComment}
-              setAmount={setAmount}
-              onContinue={goToAmount}
-              {...stepProps}
-            />
-          )}
-        </StepViewItem>
-
-        <StepViewItem id={SendSteps.AMOUNT}>
-          {(stepProps) => (
-            <AmountStep
-              isPreparing={isPreparing}
-              recipient={recipient}
-              decimals={decimals}
-              balance={balance}
-              currency={currency}
-              onChangeCurrency={onChangeCurrency}
-              currencyTitle={currencyTitle}
-              amount={amount}
-              fiatRate={fiatRate.today}
-              setAmount={setAmount}
-              onContinue={prepareConfirmSending}
-              {...stepProps}
-            />
-          )}
-        </StepViewItem>
-
-        <StepViewItem id={SendSteps.CONFIRM}>
-          {(stepProps) => (
-            <ConfirmStep
-              stepsScrollTop={stepsScrollTop}
-              currencyTitle={currencyTitle}
-              currency={currency}
-              recipient={recipient}
-              recipientAccountInfo={recipientAccountInfo}
-              amount={amount}
-              decimals={decimals}
-              isJetton={isJetton}
-              fee={fee}
-              isInactive={isInactive}
-              comment={comment}
-              onConfirm={handleSend}
-              {...stepProps}
-            />
-          )}
-        </StepViewItem>
-      </StepView>
-    </>
+        <PagerView.Page>
+          <AddressStep
+            active={currentStep === SendSteps.ADDRESS}
+            recipient={recipient}
+            decimals={decimals}
+            setRecipient={setRecipient}
+            setRecipientAccountInfo={setRecipientAccountInfo}
+            recipientAccountInfo={recipientAccountInfo}
+            comment={comment}
+            setComment={setComment}
+            setAmount={setAmount}
+            onContinue={goToAmount}
+          />
+        </PagerView.Page>
+        <PagerView.Page>
+          <AmountStep
+            active={currentStep === SendSteps.AMOUNT}
+            isPreparing={isPreparing}
+            recipient={recipient}
+            decimals={decimals}
+            balance={balance}
+            currency={currency}
+            onChangeCurrency={onChangeCurrency}
+            currencyTitle={currencyTitle}
+            amount={amount}
+            fiatRate={fiatRate.today}
+            setAmount={setAmount}
+            onContinue={prepareConfirmSending}
+          />
+        </PagerView.Page>
+        <PagerView.Page>
+          <ConfirmStep
+            active={currentStep === SendSteps.CONFIRM}
+            currencyTitle={currencyTitle}
+            currency={currency}
+            recipient={recipient}
+            recipientAccountInfo={recipientAccountInfo}
+            amount={amount}
+            decimals={decimals}
+            isJetton={isJetton}
+            fee={fee}
+            isInactive={isInactive}
+            comment={comment}
+            onConfirm={handleSend}
+          />
+        </PagerView.Page>
+      </PagerView>
+    </Screen>
   );
 };

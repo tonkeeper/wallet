@@ -1,12 +1,9 @@
 import { SendAmount, SendRecipient, SendSteps } from '$core/Send/Send.interface';
-import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
 import { CryptoCurrency } from '$shared/constants';
-import React from 'react';
-import { SharedValue } from 'react-native-reanimated';
 import { Account } from '@tonkeeper/core';
 
-export interface ConfirmStepProps extends StepComponentProps {
-  stepsScrollTop: SharedValue<Record<SendSteps, number>>;
+export interface ConfirmStepProps {
+  active: boolean;
   currencyTitle: string;
   currency: CryptoCurrency | string;
   recipient: SendRecipient | null;

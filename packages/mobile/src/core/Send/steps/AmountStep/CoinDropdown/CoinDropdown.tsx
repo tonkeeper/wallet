@@ -13,6 +13,7 @@ import { ns } from '$utils';
 import React, { FC, memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
+import { Platform } from 'react-native';
 
 type CoinItem =
   | { isJetton: false; currency: string; balance: string; decimals: number }
@@ -93,7 +94,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
         keyExtractor={(item) => item.currency}
         width={ns(220)}
         maxHeight={ns(216)}
-        asFullWindowOverlay
+        asFullWindowOverlay={Platform.OS === 'android'}
         renderItem={(item) => (
           <>
             {item.isJetton ? (

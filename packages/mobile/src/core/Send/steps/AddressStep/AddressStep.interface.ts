@@ -1,15 +1,13 @@
-import { SendRecipient, SendAmount, SendSteps } from '../../Send.interface';
-import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
+import { SendRecipient, SendAmount } from '../../Send.interface';
 import React from 'react';
-import { SharedValue } from 'react-native-reanimated';
 import { Account } from '@tonkeeper/core';
 
-export interface AddressStepProps extends StepComponentProps {
+export interface AddressStepProps {
   recipient: SendRecipient | null;
   decimals: number;
-  stepsScrollTop: SharedValue<Record<SendSteps, number>>;
   comment: string;
-  recipientAccountInfo: AccountRepr | null;
+  active: boolean;
+  recipientAccountInfo: Account | null;
   setRecipient: React.Dispatch<React.SetStateAction<SendRecipient | null>>;
   setRecipientAccountInfo: React.Dispatch<React.SetStateAction<Account | null>>;
   setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;

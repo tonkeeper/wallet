@@ -7,8 +7,6 @@ const ICON_SIZE = ns(96);
 
 export const Container = styled(Animated.View)`
   flex: 1;
-  max-height: 100%;
-  position: relative;
 `;
 
 export const Content = styled.View`

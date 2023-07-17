@@ -19,7 +19,7 @@ import {
   BottomButtonWrapHelper,
   StepScrollView,
 } from '$shared/components';
-import { SendSteps, SuggestedAddress, SuggestedAddressType } from '../../Send.interface';
+import { SuggestedAddress, SuggestedAddressType } from '../../Send.interface';
 import { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import {
   WordHintsPopup,
@@ -39,15 +39,14 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
   const {
     recipient,
     decimals,
-    stepsScrollTop,
     comment,
     recipientAccountInfo,
     setRecipient,
+    active,
     setRecipientAccountInfo,
     setAmount,
     setComment,
     onContinue,
-    active,
   } = props;
 
   const commentInputRef = useRef<TextInput>(null);
@@ -77,10 +76,6 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
   const scrollHandler = useAnimatedScrollHandler((event) => {
     scrollY.value = event.contentOffset.y;
-    stepsScrollTop.value = {
-      ...stepsScrollTop.value,
-      [SendSteps.ADDRESS]: event.contentOffset.y,
-    };
   });
 
   const wordHintsRef = useRef<WordHintsPopupRef>(null);
