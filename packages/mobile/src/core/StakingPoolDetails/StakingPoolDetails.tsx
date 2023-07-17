@@ -93,7 +93,13 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                   {stakingFormatter.format(balance.amount)} {balance.symbol}
                 </HideableAmount>
                 <HideableAmount variant="body2" color="foregroundSecondary">
-                  {balance.formatted.totalFiat}
+                  {!!stakingJetton && balance.formatted.totalTon ? (
+                    <>
+                      {balance.formatted.totalTon}
+                      <Text color="textTertiary"> · </Text>
+                    </>
+                  ) : null}
+                  {balance.formatted.totalFiat ?? '-'}
                 </HideableAmount>
               </S.BalanceRight>
             </S.BalanceContainer>

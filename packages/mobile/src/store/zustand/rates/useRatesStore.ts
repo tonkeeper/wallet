@@ -46,6 +46,16 @@ export const useRatesStore = create(
 
             const rates = response.rates as TRates;
 
+            // rates['EQAiQ2XK7BXePLwemeo-u4wNyjg-wxGeySmaFGEP7R2MhUWs'] = {
+            //   prices: {
+            //     ...Object.keys(rates.TON.prices).reduce((result, key) => {
+            //       result[key] = rates.TON.prices[key] * 1.5;
+            //       return result;
+            //     }, {}),
+            //   },
+            //   diff_24h: rates.TON.diff_24h,
+            // };
+
             set({ rates });
           } catch (e) {
             console.log('rates error', e);
