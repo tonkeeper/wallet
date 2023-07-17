@@ -397,7 +397,9 @@
     "nft_purchase": "Покупка NFT",
     "subscription": "Подписка",
     "unsubscription": "Отмена подписки",
-    "smartcontract_exec": "Вызов контракта"
+    "smartcontract_exec": "Вызов контракта",
+    "unknown": "Неизвестно",
+    "unknown_description": "Что-то произошло, но мы не смогли распознать"
   },
 
   "browser": {

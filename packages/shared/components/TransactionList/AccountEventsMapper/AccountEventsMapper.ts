@@ -208,11 +208,16 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
       }
       case ActionTypeEnum.AuctionBid: {
         const data = input.action.data;
-
+        
+        break;
+      }
+      case ActionTypeEnum.Unknown: {
+        action.operation = t('transactions.unknown');
+        action.senderAccount = t('transactions.unknown_description');
         break;
       }
       default:
-      // console.log(input.action.type)
+       console.log(input.action.type)
     }
 
     return action;

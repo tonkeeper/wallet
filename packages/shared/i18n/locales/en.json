@@ -379,7 +379,9 @@
     "nft_purchase": "NFT Purchase",
     "subscription": "Subscribed",
     "unsubscription": "Unsubscribed",
-    "smartcontract_exec": "Call contract"
+    "smartcontract_exec": "Call contract",
+    "unknown": "Unknown",
+    "unknown_description": "Something happened but we couldn't recognize"
   },
 
   "browser": {
