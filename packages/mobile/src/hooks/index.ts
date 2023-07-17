@@ -6,7 +6,6 @@ export { useKeyboardHeight, useReanimatedKeyboardHeight } from './useKeyboardHei
 export { useExitAppBackHandler } from './useExitAppBackHandler';
 export { useDate } from './useDate';
 export { useAppStateActive } from './useAppStateActive';
-export { useFiatRate } from './useFiatRate';
 export { useEvent } from './useEvent';
 export { usePrepareAction } from './usePrepareAction';
 export { usePrepareDetailedAction } from './usePrepareDetailedAction';
@@ -28,7 +27,9 @@ export { useStaking } from './useStaking';
 export { useStakingRefreshControl } from './useStakingRefreshControl';
 export { usePoolInfo } from './usePoolInfo';
 export { useStakingCycle } from './useStakingCycle';
+export { useStakingStatuses } from './useStakingStatuses';
 export { useApprovedNfts } from './useApprovedNfts';
 export { useShouldShowTokensButton } from './useShouldShowTokensButton';
 export { useWebViewBridge } from './jsBridge';
 export { useObtainProofToken } from './useObtainProofToken';
+export * from './useTokenPrice';

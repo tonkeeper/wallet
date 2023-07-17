@@ -33,7 +33,12 @@ export const ListCell: FC<ListCellProps> = ({
  * @description
  *  Use new List instead
  */
-export const List: FC<ListProps> = ({ children, align = 'right', separator = true }) => {
+export const List: FC<ListProps> = ({
+  children,
+  align = 'right',
+  separator = true,
+  ...viewProps
+}) => {
   const content = useMemo(() => {
     return React.Children.map(children, (item, i) => {
       if (!isValidElement(item)) {
@@ -51,5 +56,5 @@ export const List: FC<ListProps> = ({ children, align = 'right', separator = tru
     });
   }, [align, children, separator]);
 
-  return <S.Wrap>{content}</S.Wrap>;
+  return <S.Wrap {...viewProps}>{content}</S.Wrap>;
 };

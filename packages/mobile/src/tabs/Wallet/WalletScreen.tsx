@@ -21,7 +21,7 @@ import { maskifyAddress, ns } from '$utils';
 import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
 import { useIsFocused } from '@react-navigation/native';
-import { useBalance, useRates } from './hooks/useBalance';
+import { useBalance } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
 import { TonIcon } from '../../components/TonIcon';
 import { CryptoCurrencies } from '$shared/constants';
@@ -33,7 +33,7 @@ import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
 import { useTonkens } from './hooks/useTokens';
 import { useWallet } from './hooks/useWallet';
-import { useApprovedNfts, useTheme } from '$hooks';
+import { useApprovedNfts, useTheme, useTokenPrice } from '$hooks';
 import { ApprovalCell } from '$core/ApprovalCell/components/ApprovalCell';
 import { Steezy } from '$styles';
 import { BalancesList } from './components/BalancesList';
@@ -58,7 +58,7 @@ export const WalletScreen = memo(() => {
   const shouldUpdate =
     useUpdatesStore((state) => state.update.state) !== UpdateState.NOT_STARTED;
   const balance = useBalance(tokens.total.fiat);
-  const rates = useRates();
+  const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
 
   const { isRefreshing, isLoaded } = useSelector(walletSelector);
   const isFocused = useIsFocused();
@@ -188,7 +188,12 @@ export const WalletScreen = memo(() => {
               onPress={() => openWallet(CryptoCurrencies.Ton)}
               leftContent={<TonIcon />}
               chevron
-              subtitle={<ListItemRate price={rates.price} trend={rates.trend} />}
+              subtitle={
+                <ListItemRate
+                  price={tonPrice.formatted.fiat ?? '-'}
+                  trend={tonPrice.fiatDiff.trend}
+                />
+              }
             />
           </List>
         </Screen.ScrollView>
@@ -254,7 +259,7 @@ export const WalletScreen = memo(() => {
                 }
                 balance={balance}
                 tokens={tokens}
-                rates={rates}
+                tonPrice={tonPrice}
                 handleRefresh={handleRefresh}
                 isRefreshing={isRefreshing}
                 isFocused={isFocused}
@@ -310,7 +315,7 @@ export const WalletScreen = memo(() => {
           isFocused={isFocused}
           balance={balance}
           tokens={tokens}
-          rates={rates}
+          tonPrice={tonPrice}
           nfts={nfts}
         />
       </>

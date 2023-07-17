@@ -1,4 +1,4 @@
-import { useFiatRate, useInstance, useTranslator } from '$hooks';
+import { useFiatRate, useInstance, useTokenPrice, useTranslator } from '$hooks';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import {
@@ -97,7 +97,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     isJetton,
   );
 
-  const fiatRate = useFiatRate(currency as CryptoCurrency, isJetton);
+  const tokenPrice = useTokenPrice(currency);
 
   const stepViewRef = useRef<StepViewRef>(null);
 
@@ -323,7 +323,7 @@ export const Send: FC<SendProps> = ({ route }) => {
               onChangeCurrency={onChangeCurrency}
               currencyTitle={currencyTitle}
               amount={amount}
-              fiatRate={fiatRate.today}
+              fiatRate={tokenPrice.fiat}
               setAmount={setAmount}
               onContinue={prepareConfirmSending}
               {...stepProps}

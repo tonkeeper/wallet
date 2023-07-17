@@ -1,5 +1,5 @@
 import { usePoolInfo, useStakingRefreshControl, useTranslator } from '$hooks';
-import { MainStackRouteNames, openDAppBrowser } from '$navigation';
+import { MainStackRouteNames, openDAppBrowser, openSend } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
 import { BottomButtonWrap, BottomButtonWrapHelper, NextCycle } from '$shared/components';
 import { getServerConfig, KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
@@ -34,6 +34,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
 
   const {
     infoRows,
+    stakingJetton,
     balance,
     pendingDeposit,
     pendingWithdraw,
@@ -55,6 +56,14 @@ export const StakingPoolDetails: FC<Props> = (props) => {
   const handleOpenExplorer = useCallback(() => {
     openDAppBrowser(getServerConfig('accountExplorer').replace('%s', pool.address));
   }, [pool.address]);
+
+  const handleSendPress = useCallback(() => {
+    if (!stakingJetton) {
+      return;
+    }
+
+    openSend(stakingJetton.jettonAddress, undefined, undefined, undefined, true);
+  }, [stakingJetton]);
 
   const isImplemeted = KNOWN_STAKING_IMPLEMENTATIONS.includes(pool.implementation);
 
@@ -81,13 +90,27 @@ export const StakingPoolDetails: FC<Props> = (props) => {
               <Text variant="label1">{t('staking.details.balance')}</Text>
               <S.BalanceRight>
                 <HideableAmount variant="label1">
-                  {stakingFormatter.format(balance.amount)} TON
+                  {stakingFormatter.format(balance.amount)} {balance.symbol}
                 </HideableAmount>
                 <HideableAmount variant="body2" color="foregroundSecondary">
-                  {balance.fiatInfo.amount}
+                  {!!stakingJetton && balance.formatted.totalTon ? (
+                    <>
+                      {balance.formatted.totalTon}
+                      <Text color="textTertiary"> · </Text>
+                    </>
+                  ) : null}
+                  {balance.formatted.totalFiat ?? '-'}
                 </HideableAmount>
               </S.BalanceRight>
             </S.BalanceContainer>
+            {!!stakingJetton && hasDeposit ? (
+              <>
+                <Spacer y={16} />
+                <Button mode="secondary" onPress={handleSendPress}>
+                  {t('send_title', { currency: balance.symbol })}
+                </Button>
+              </>
+            ) : null}
             <Spacer y={16} />
             {hasPendingDeposit ? (
               <>
@@ -98,7 +121,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                       {stakingFormatter.format(pendingDeposit.amount)} TON
                     </HideableAmount>
                     <HideableAmount variant="body2" color="foregroundSecondary">
-                      {pendingDeposit.fiatInfo.amount}
+                      {pendingDeposit.formatted.totalFiat}
                     </HideableAmount>
                   </S.BalanceRight>
                 </S.BalanceContainer>
@@ -114,7 +137,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                       {stakingFormatter.format(pendingWithdraw.amount)} TON
                     </HideableAmount>
                     <HideableAmount variant="body2" color="foregroundSecondary">
-                      {pendingWithdraw.fiatInfo.amount}
+                      {pendingWithdraw.formatted.totalFiat}
                     </HideableAmount>
                   </S.BalanceRight>
                 </S.BalanceContainer>
@@ -140,7 +163,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                           {stakingFormatter.format(readyWithdraw.amount)} TON
                         </HideableAmount>
                         <HideableAmount variant="body2" color="foregroundSecondary">
-                          {readyWithdraw.fiatInfo.amount}
+                          {readyWithdraw.formatted.totalFiat}
                         </HideableAmount>
                       </S.BalanceRight>
                     </S.BalanceTouchableContent>

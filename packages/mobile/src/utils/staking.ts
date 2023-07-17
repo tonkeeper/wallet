@@ -1,5 +1,6 @@
 import {
   epn2IconSource,
+  liquidTfIconSource,
   tfIconSource,
   tkPoolIconSource,
   tkSecondPoolIconSource,
@@ -16,6 +17,10 @@ import BigNumber from 'bignumber.js';
 import { ImageRequireSource } from 'react-native';
 
 export const getPoolIcon = (pool: PoolInfo): ImageRequireSource | null => {
+  if (pool.implementation === 'liquidTF') {
+    return liquidTfIconSource;
+  }
+
   switch (pool.address) {
     case '0:00ff9fdd8b3b80d70e8ea734d262f5e1bd4c184c33535bf3190dd67408629e7a':
       return tkPoolIconSource;
@@ -42,6 +47,9 @@ export const getImplementationIcon = (implementation: string) => {
   }
   if (implementation === 'tf') {
     return tfIconSource;
+  }
+  if (implementation === 'liquidTF') {
+    return liquidTfIconSource;
   }
 };
 

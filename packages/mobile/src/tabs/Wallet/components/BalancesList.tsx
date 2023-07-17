@@ -4,7 +4,7 @@ import { List, Screen, Spacer, SpacerSizes, View } from '$uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { openJetton, openJettonsList, openWallet } from '$navigation';
+import { openJetton, openWallet } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { Rate } from '../hooks/useBalance';
 import { ListItemRate } from '../components/ListItemRate';
@@ -12,7 +12,7 @@ import { TonIcon, TonIconProps } from '../../../components/TonIcon';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { Tabs } from '../components/Tabs';
 import { NFTsList } from '../components/NFTsList';
-import { useTheme } from '$hooks';
+import { TokenPrice, useTheme } from '$hooks';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StakingWidget } from './StakingWidget';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
@@ -128,7 +128,7 @@ const RenderItem = ({ item }: { item: Content }) => {
 interface BalancesListProps {
   tokens: any; // TODO:
   balance: any; // TODO:
-  rates: Rate;
+  tonPrice: TokenPrice;
   nfts?: any; // TODO:
   handleRefresh: () => void;
   isRefreshing: boolean;
@@ -141,7 +141,7 @@ export const BalancesList = memo<BalancesListProps>(
   ({
     tokens,
     balance,
-    rates,
+    tonPrice,
     nfts,
     handleRefresh,
     isRefreshing,
@@ -175,9 +175,9 @@ export const BalancesList = memo<BalancesListProps>(
         subvalue: balance.ton.amount.fiat,
         tonIcon: true,
         rate: {
-          percent: rates.percent,
-          price: rates.price,
-          trend: rates.trend,
+          percent: tonPrice.fiatDiff.percent,
+          price: tonPrice.formatted.fiat ?? '-',
+          trend: tonPrice.fiatDiff.trend,
         },
       });
 
@@ -190,9 +190,9 @@ export const BalancesList = memo<BalancesListProps>(
           value: item.amount.formatted,
           subvalue: item.amount.fiat,
           rate: {
-            percent: rates.percent,
-            price: rates.price,
-            trend: rates.trend,
+            percent: tonPrice.fiatDiff.percent,
+            price: tonPrice.formatted.fiat ?? '-',
+            trend: tonPrice.fiatDiff.trend,
           },
         })),
       );
@@ -205,13 +205,23 @@ export const BalancesList = memo<BalancesListProps>(
             title: LockupNames[item.type],
             value: item.amount.formatted,
             subvalue: item.amount.fiat,
-            subtitle: rates.price,
+            subtitle: tonPrice.formatted.fiat ?? '-',
           })),
         );
       }
 
+      content.push({
+        type: ContentType.Staking,
+      });
+
+      content.push({
+        type: ContentType.Spacer,
+        bottom: 32,
+      });
+
       content.push(
-        ...tokens.list.map((item) => ({
+        ...tokens.list.map((item, index) => ({
+          isFirst: index === 0,
           type: ContentType.Token,
           onPress: () => openJetton(item.address.rawAddress),
           picture: item.iconUrl,
@@ -222,6 +232,8 @@ export const BalancesList = memo<BalancesListProps>(
           rate: item.rate.price
             ? {
                 price: item.rate.price,
+                percent: item.price.fiatDiff.percent,
+                trend: item.price.fiatDiff.trend,
               }
             : undefined,
         })),
@@ -233,10 +245,6 @@ export const BalancesList = memo<BalancesListProps>(
       // Make list; set corners
       firstTonkenElement.isFirst = true;
       lastTokenElement.isLast = true;
-
-      content.push({
-        type: ContentType.Staking,
-      });
 
       if (nfts) {
         content.push({
@@ -259,7 +267,7 @@ export const BalancesList = memo<BalancesListProps>(
       });
 
       return content;
-    }, [balance.oldVersions, rates, tokens.list]);
+    }, [balance, handleMigrate, nfts, tokens.list, tonPrice]);
 
     const ListComponent = nfts ? Screen.FlashList : Tabs.FlashList;
 

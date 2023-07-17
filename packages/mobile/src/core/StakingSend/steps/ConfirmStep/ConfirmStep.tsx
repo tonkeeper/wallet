@@ -28,6 +28,10 @@ interface Props extends StepComponentProps {
   pool: PoolInfo;
   totalFee?: string;
   amount: SendAmount;
+  symbol: string;
+  currency: CryptoCurrencies;
+  decimals: number;
+  isJetton: boolean;
   stepsScrollTop: SharedValue<Record<StakingSendSteps, number>>;
   sendTx: () => Promise<void>;
 }
@@ -48,15 +52,32 @@ const getActionName = (
 };
 
 const ConfirmStepComponent: FC<Props> = (props) => {
-  const { transactionType, active, pool, totalFee, amount, stepsScrollTop, sendTx } =
-    props;
+  const {
+    transactionType,
+    active,
+    pool,
+    totalFee,
+    amount,
+    symbol,
+    currency,
+    decimals,
+    isJetton,
+    stepsScrollTop,
+    sendTx,
+  } = props;
 
   const isWithdrawalConfrim =
     transactionType === StakingTransactionType.WITHDRAWAL_CONFIRM;
 
   const address = useMemo(() => new Address(pool.address), [pool.address]);
 
-  const fiatValue = useFiatValue(CryptoCurrencies.Ton, parseLocaleNumber(amount.value));
+  const fiatValue = useFiatValue(
+    currency,
+    parseLocaleNumber(amount.value),
+    decimals,
+    isJetton,
+    symbol,
+  );
   const fiatFee = useFiatValue(CryptoCurrencies.Ton, totalFee || '0');
 
   const { bottom: bottomInset } = useSafeAreaInsets();
@@ -135,11 +156,9 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                   <S.ItemLabel>{t('staking.confirm.withdraw_amount.label')}</S.ItemLabel>
                   <S.ItemContent>
                     <S.ItemValue>
-                      {t('staking.confirm.withdraw_amount.value', {
-                        value: stakingFormatter.format(fiatValue.amount),
-                      })}
+                      {stakingFormatter.format(fiatValue.amount)} {fiatValue.symbol}
                     </S.ItemValue>
-                    <S.ItemSubValue>≈ {fiatValue.fiatInfo.amount}</S.ItemSubValue>
+                    <S.ItemSubValue>≈ {fiatValue.formatted.totalFiat}</S.ItemSubValue>
                   </S.ItemContent>
                 </S.Item>
                 <Separator />
@@ -150,11 +169,9 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                   <S.ItemLabel>{t('staking.confirm.amount.label')}</S.ItemLabel>
                   <S.ItemContent>
                     <S.ItemValue>
-                      {t('staking.confirm.amount.value', {
-                        value: stakingFormatter.format(fiatValue.amount),
-                      })}
+                      {stakingFormatter.format(fiatValue.amount)} {fiatValue.symbol}
                     </S.ItemValue>
-                    <S.ItemSubValue>≈ {fiatValue.fiatInfo.amount}</S.ItemSubValue>
+                    <S.ItemSubValue>≈ {fiatValue.formatted.totalFiat}</S.ItemSubValue>
                   </S.ItemContent>
                 </S.Item>
                 <Separator />
@@ -169,7 +186,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                       value: truncateDecimal(totalFee, 1),
                     })}
                   </S.ItemValue>
-                  <S.ItemSubValue>≈ {fiatFee.fiatInfo.amount}</S.ItemSubValue>
+                  <S.ItemSubValue>≈ {fiatFee.formatted.totalFiat}</S.ItemSubValue>
                 </S.ItemContent>
               </S.Item>
             ) : null}

@@ -1,5 +1,5 @@
 import { useFiatValue } from '$hooks';
-import { CryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { Steezy } from '$styles';
 import { Icon, Separator, View } from '$uikit';
 import { stakingFormatter } from '$utils/formatter';
@@ -8,12 +8,14 @@ import { ImageRequireSource } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import * as S from './StakingListCell.style';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { JettonBalanceModel } from '$store/models';
 
 interface Props {
   id: string;
   name: string;
   description?: string;
   balance?: string;
+  stakingJetton?: JettonBalanceModel;
   iconSource?: Source | ImageRequireSource | null;
   separator?: boolean;
   isWidget?: boolean;
@@ -26,6 +28,7 @@ const StakingListCellComponent: FC<Props> = (props) => {
     name,
     description,
     balance: balanceValue,
+    stakingJetton,
     iconSource,
     separator,
     id,
@@ -34,7 +37,15 @@ const StakingListCellComponent: FC<Props> = (props) => {
     onPress,
   } = props;
 
-  const balance = useFiatValue(CryptoCurrencies.Ton, balanceValue || '0');
+  const currency = stakingJetton ? stakingJetton.jettonAddress : CryptoCurrencies.Ton;
+
+  const balance = useFiatValue(
+    currency as CryptoCurrencies,
+    stakingJetton ? stakingJetton.balance : balanceValue || '0',
+    stakingJetton ? stakingJetton.metadata.decimals : Decimals[CryptoCurrencies.Ton],
+    !!stakingJetton,
+    stakingJetton ? stakingJetton.metadata.symbol! : 'TON',
+  );
 
   const handlePress = useCallback(() => {
     onPress?.(id, name);
@@ -63,7 +74,8 @@ const StakingListCellComponent: FC<Props> = (props) => {
               {balanceValue ? (
                 <>
                   <HideableAmount variant="label1" numberOfLines={1} textAlign="right">
-                    {stakingFormatter.format(balanceValue, { decimals: 2 })} TON
+                    {stakingFormatter.format(balanceValue, { decimals: 2 })}{' '}
+                    {balance.symbol}
                   </HideableAmount>
                   <HideableAmount
                     variant="body2"
@@ -71,7 +83,7 @@ const StakingListCellComponent: FC<Props> = (props) => {
                     numberOfLines={1}
                     textAlign="right"
                   >
-                    {balance.fiatInfo.amount}
+                    {balance.formatted.totalFiat}
                   </HideableAmount>
                 </>
               ) : (

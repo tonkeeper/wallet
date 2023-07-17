@@ -5,6 +5,7 @@ import { PoolInfo } from '@tonkeeper/core';
 import BN from 'bn.js';
 import TonWeb from 'tonweb';
 import { StakingTransactionType } from './types';
+import { JettonBalanceModel } from '$store/models';
 
 const { Cell } = TonWeb.boc;
 
@@ -13,55 +14,101 @@ export function getRandomQueryId() {
 }
 
 export const createWhalesAddStakeCommand = async () => {
-  const addStakeCommand = new Cell();
-  addStakeCommand.bits.writeUint(2077040623, 32);
-  addStakeCommand.bits.writeUint(getRandomQueryId(), 64); // Query ID
-  addStakeCommand.bits.writeCoins(100000); // Gas
+  const command = new Cell();
+  command.bits.writeUint(2077040623, 32);
+  command.bits.writeUint(getRandomQueryId(), 64); // Query ID
+  command.bits.writeCoins(100000); // Gas
 
-  return encodeBytes(await addStakeCommand.toBoc());
+  return encodeBytes(await command.toBoc());
 };
 
 export const createWhalesWithdrawStakeCell = async (amount: BN) => {
-  const addStakeCommand = new Cell();
-  addStakeCommand.bits.writeUint(3665837821, 32);
-  addStakeCommand.bits.writeUint(getRandomQueryId(), 64); // Query ID
-  addStakeCommand.bits.writeCoins(100000); // Gas
-  addStakeCommand.bits.writeCoins(amount); // Amount
+  const command = new Cell();
+  command.bits.writeUint(3665837821, 32);
+  command.bits.writeUint(getRandomQueryId(), 64); // Query ID
+  command.bits.writeCoins(100000); // Gas
+  command.bits.writeCoins(amount); // Amount
 
-  return encodeBytes(await addStakeCommand.toBoc());
+  return encodeBytes(await command.toBoc());
+};
+
+export const createLiquidTfAddStakeCommand = async () => {
+  const command = new Cell();
+  command.bits.writeUint(0x47d54391, 32);
+  command.bits.writeUint(getRandomQueryId(), 64); // Query ID
+
+  return encodeBytes(await command.toBoc());
+};
+
+export const createLiquidTfWithdrawStakeCell = async (amount: BN, address: string) => {
+  const customPayload = new Cell();
+  customPayload.bits.writeUint(1, 1);
+  customPayload.bits.writeUint(0, 1);
+
+  const payload = new Cell();
+  payload.bits.writeUint(0x595f07bc, 32);
+  payload.bits.writeUint(getRandomQueryId(), 64); // Query ID
+  payload.bits.writeCoins(amount); // Amount
+  payload.bits.writeAddress(new Address(address));
+  payload.bits.writeBit(1);
+  payload.refs.push(customPayload);
+
+  return encodeBytes(await payload.toBoc());
 };
 
 export const createTfAddStakeCommand = async () => {
-  const addStakeCommand = new Cell();
-  addStakeCommand.bits.writeUint(0, 32);
-  addStakeCommand.bits.writeString('d');
+  const command = new Cell();
+  command.bits.writeUint(0, 32);
+  command.bits.writeString('d');
 
-  return encodeBytes(await addStakeCommand.toBoc());
+  return encodeBytes(await command.toBoc());
 };
 
 export const createTfWithdrawStakeCell = async () => {
-  const addStakeCommand = new Cell();
-  addStakeCommand.bits.writeUint(0, 32);
-  addStakeCommand.bits.writeString('w');
+  const command = new Cell();
+  command.bits.writeUint(0, 32);
+  command.bits.writeString('w');
 
-  return encodeBytes(await addStakeCommand.toBoc());
+  return encodeBytes(await command.toBoc());
 };
 
 export const getStakeSignRawMessage = async (
   pool: PoolInfo,
   amount: BN,
   transactionType: StakingTransactionType,
+  responseAddress: string,
   isWithdrawAll?: boolean,
+  stakingJetton?: JettonBalanceModel,
 ): Promise<SignRawMessage> => {
   const withdrawalFee = getWithdrawalFee(pool);
 
-  const address = new Address(pool.address).format({ bounce: true });
+  const address = new Address(
+    stakingJetton && transactionType !== StakingTransactionType.DEPOSIT
+      ? stakingJetton.walletAddress
+      : pool.address,
+  ).format({ bounce: true });
 
   if (pool.implementation === 'whales') {
     const payload =
       transactionType === StakingTransactionType.DEPOSIT
         ? await createWhalesAddStakeCommand()
         : await createWhalesWithdrawStakeCell(isWithdrawAll ? Ton.toNano(0) : amount);
+
+    return {
+      address,
+      amount: transactionType === StakingTransactionType.DEPOSIT ? amount : withdrawalFee,
+      payload,
+    };
+  }
+
+  if (pool.implementation === 'liquidTF') {
+    const payload =
+      transactionType === StakingTransactionType.DEPOSIT
+        ? await createLiquidTfAddStakeCommand()
+        : await createLiquidTfWithdrawStakeCell(
+            isWithdrawAll ? Ton.toNano(0) : amount,
+            responseAddress,
+          );
 
     return {
       address,
@@ -91,7 +138,7 @@ export const getWithdrawalFee = (pool: PoolInfo): BN => {
     return Ton.toNano('0.2');
   }
 
-  if (pool.implementation === 'tf') {
+  if (['tf', 'liquidTF'].includes(pool.implementation)) {
     return Ton.toNano('1');
   }
 

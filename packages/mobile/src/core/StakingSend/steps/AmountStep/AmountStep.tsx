@@ -1,7 +1,7 @@
 import {
-  useFiatRate,
   useFiatValue,
   useReanimatedKeyboardHeight,
+  useTokenPrice,
   useTranslator,
 } from '$hooks';
 import { Button, Separator, Spacer, Text } from '$uikit';
@@ -35,6 +35,8 @@ interface Props extends StepComponentProps {
   stakingBalance: string;
   isPreparing: boolean;
   amount: SendAmount;
+  currency: CryptoCurrencies;
+  isJetton: boolean;
   stepsScrollTop: SharedValue<Record<StakingSendSteps, number>>;
   afterTopUpReward: ReturnType<typeof useFiatValue>;
   currentReward: ReturnType<typeof useFiatValue>;
@@ -50,6 +52,8 @@ const AmountStepComponent: FC<Props> = (props) => {
     isPreparing,
     active,
     amount,
+    currency,
+    isJetton,
     stepsScrollTop,
     afterTopUpReward,
     currentReward,
@@ -57,13 +61,13 @@ const AmountStepComponent: FC<Props> = (props) => {
     onContinue,
   } = props;
 
-  const fiatRate = useFiatRate(CryptoCurrencies.Ton);
+  const tokenPrice = useTokenPrice(currency);
 
   const {
     decimals,
     balance: walletBalance,
     currencyTitle,
-  } = useCurrencyToSend(CryptoCurrencies.Ton);
+  } = useCurrencyToSend(currency, isJetton);
 
   const minAmount = isWithdrawal ? '0' : Ton.fromNano(pool.minStake);
 
@@ -137,7 +141,7 @@ const AmountStepComponent: FC<Props> = (props) => {
                 currencyTitle,
                 amount,
                 minAmount,
-                fiatRate: fiatRate.today,
+                fiatRate: tokenPrice.fiat,
                 setAmount,
               }}
             />
@@ -161,7 +165,6 @@ const AmountStepComponent: FC<Props> = (props) => {
                         value: stakingFormatter.format(afterTopUpReward.amount),
                       })}
                     </S.ItemValue>
-                    <S.ItemSubValue>{afterTopUpReward.fiatInfo.amount}</S.ItemSubValue>
                   </S.ItemContent>
                 </S.Item>
                 <Separator />
@@ -175,7 +178,6 @@ const AmountStepComponent: FC<Props> = (props) => {
                         value: stakingFormatter.format(currentReward.amount),
                       })}
                     </S.ItemValue>
-                    <S.ItemSubValue>{currentReward.fiatInfo.amount}</S.ItemSubValue>
                   </S.ItemContent>
                 </S.Item>
               </S.Table>
