@@ -43,9 +43,6 @@ function* loadRatesWorker(action: LoadRatesAction) {
 
     const { today, yesterday } = resp.data.data;
 
-    //mock
-    today['EQDYKJ-0nSXr_17rEDNZKRdEn-O_tl-BeJl1dnzuTOmk5LkT'] = '21000.0';
-
     yield put(
       batchActions(
         ratesActions.setRates(today),
