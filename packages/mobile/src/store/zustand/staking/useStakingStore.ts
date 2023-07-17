@@ -1,14 +1,15 @@
 import { KNOWN_STAKING_IMPLEMENTATIONS, getServerConfig } from '$shared/constants';
-import { store } from '$store';
-import { i18n } from '$translation';
+import { DevFeature, store, useDevFeaturesToggle } from '$store';
 import { calculatePoolBalance } from '$utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Configuration, PoolInfo, StakingApi } from '@tonkeeper/core';
+import { Configuration, StakingApi } from '@tonkeeper/core';
 import BigNumber from 'bignumber.js';
 import TonWeb from 'tonweb';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { IStakingStore, StakingApiStatus, StakingInfo, StakingProvider } from './types';
+import { i18n } from '$translation';
+import _ from 'lodash';
 
 const getStakingApi = () => {
   return new StakingApi(
@@ -64,6 +65,7 @@ export const useStakingStore = create(
               getStakingApi().stakingPools({
                 availableFor: rawAddress,
                 acceptLanguage: i18n.locale,
+                includeUnverified: true,
               }),
               getStakingApi().poolsByNominators({
                 accountId: rawAddress!,
@@ -74,13 +76,14 @@ export const useStakingStore = create(
 
             let nextState: Partial<IStakingStore> = {};
 
+            const tonstakersEnabled =
+              useDevFeaturesToggle.getState().devFeatures[DevFeature.Tonstakers];
+
             if (poolsResponse.status === 'fulfilled') {
               const { implementations } = poolsResponse.value;
 
               pools = poolsResponse.value.pools
-                .filter(
-                  (pool) => !!pool.name && pool.maxNominators > pool.currentNominators,
-                )
+                .filter((pool) => tonstakersEnabled || pool.implementation !== 'liquidTF')
                 .map((pool) => {
                   if (pool.implementation !== 'whales') {
                     return pool;
@@ -173,7 +176,9 @@ export const useStakingStore = create(
               return;
             }
 
-            set({ ...nextState });
+            if (!silent || !_.isEqual(nextState.stakingInfo, getState().stakingInfo)) {
+              set({ ...nextState });
+            }
           } catch (e) {
             console.log('fetchPools error', e.response);
           } finally {

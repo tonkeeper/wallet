@@ -74,6 +74,7 @@ import { Cache as JettonsCache } from '$store/jettons/manager/cache';
 import { Tonapi } from '$libs/Tonapi';
 import { clearSubscribeStatus } from '$utils/messaging';
 import { useJettonEventsStore } from '$store/zustand/jettonEvents';
+import { useRatesStore } from '$store/zustand/rates';
 
 function* generateVaultWorker() {
   try {
@@ -292,6 +293,7 @@ function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
     // yield put(jettonsActions.getIsFeatureEnabled());
     yield put(jettonsActions.loadJettons());
     yield put(ratesActions.loadRates({ onlyCache: false }));
+    useRatesStore.getState().actions.fetchRates();
     yield put(mainActions.loadNotifications());
     yield call(useStakingStore.getState().actions.fetchPools);
     yield call(setLastRefreshedAt, Date.now());

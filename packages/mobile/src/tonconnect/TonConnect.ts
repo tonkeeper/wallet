@@ -63,6 +63,7 @@ class TonConnectService {
 
   async getManifest(request: ConnectRequest) {
     try {
+      console.log('request.manifestUrl', request.manifestUrl);
       const { data: manifest } = await axios.get<DAppManifest>(request.manifestUrl);
 
       const isValid =

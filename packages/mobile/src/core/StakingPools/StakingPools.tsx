@@ -23,6 +23,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { shallow } from 'zustand/shallow';
 import * as S from './StakingPools.style';
 import { logEvent } from '@amplitude/analytics-browser';
+import { useSelector } from 'react-redux';
+import { jettonsBalancesSelector } from '$store/jettons';
 
 const calculateBalance = (pool: PoolInfo, stakingInfo: StakingInfo) => {
   const amount = new BigNumber(Ton.fromNano(stakingInfo[pool.address]?.amount || '0'));
@@ -52,6 +54,8 @@ export const StakingPools: FC<Props> = (props) => {
   const pools = useStakingStore((s) => getStakingPoolsByProvider(s, providerId), shallow);
   const stakingInfo = useStakingStore((s) => s.stakingInfo, shallow);
 
+  const jettonBalances = useSelector(jettonsBalancesSelector);
+
   const t = useTranslator();
   const nav = useNavigation();
   const { bottom: bottomInset } = useSafeAreaInsets();
@@ -60,13 +64,23 @@ export const StakingPools: FC<Props> = (props) => {
 
   const list = useMemo(() => {
     return pools.map((pool) => {
-      const balance = calculatePoolBalance(pool, stakingInfo);
+      const stakingJetton = jettonBalances.find(
+        (item) =>
+          Ton.formatAddress(item.jettonAddress, { raw: true }) ===
+          pool.liquidJettonMaster,
+      );
+
+      const balance = stakingJetton
+        ? new BigNumber(stakingJetton.balance)
+        : calculatePoolBalance(pool, stakingInfo);
+
       return {
         ...pool,
+        stakingJetton,
         balance: balance.isGreaterThan(0) ? balance.toString() : undefined,
       };
     });
-  }, [pools, stakingInfo]);
+  }, [jettonBalances, pools, stakingInfo]);
 
   const handleWarningPress = useCallback(() => {
     if (!provider.url) {
@@ -127,6 +141,7 @@ export const StakingPools: FC<Props> = (props) => {
                   id={pool.address}
                   name={pool.name}
                   balance={pool.balance}
+                  stakingJetton={pool.stakingJetton}
                   description={t('staking.staking_pool_desc', {
                     apy: pool.apy.toFixed(2),
                   })}

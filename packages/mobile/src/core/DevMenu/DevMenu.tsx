@@ -19,7 +19,7 @@ import { eventsActions } from '$store/events';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { Switch } from 'react-native-gesture-handler';
-import { DevFeature, Toast, useDevFeaturesToggle } from '$store';
+import { DevFeature, Toast, useDevFeaturesToggle, useStakingStore } from '$store';
 import { tags } from '$translation';
 // import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 
@@ -113,6 +113,12 @@ export const DevMenu: FC = () => {
     toggleFeature(DevFeature.UseHttpProtocol);
   }, [toggleFeature]);
 
+  const toggleTonstakers = useCallback(() => {
+    toggleFeature(DevFeature.Tonstakers);
+
+    useStakingStore.getState().actions.fetchPools();
+  }, [toggleFeature]);
+
   return (
     <S.Wrap>
       <NavBar>Dev Menu</NavBar>
@@ -142,6 +148,16 @@ export const DevMenu: FC = () => {
               }
             >
               Use HTTP protocol in browser
+            </CellSectionItem>
+            <CellSectionItem
+              indicator={
+                <Switch
+                  value={devFeatures[DevFeature.Tonstakers]}
+                  onChange={toggleTonstakers}
+                />
+              }
+            >
+              Enable Tonstakers
             </CellSectionItem>
             {__DEV__ && (
               <>

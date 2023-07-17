@@ -1,4 +1,4 @@
-import { useTranslator } from '$hooks';
+import { useStakingStatuses, useTranslator } from '$hooks';
 import { MainStackRouteNames } from '$navigation';
 import { StakingListCell } from '$shared/components';
 import { View } from '$uikit';
@@ -18,31 +18,16 @@ const StakingWidgetComponent: FC = () => {
 
   const maxApy = useStakingStore((s) => s.maxApy);
 
-  const stakingInfo = useStakingStore(
-    (s) =>
-      s.pools
-        .map((pool) => ({ info: s.stakingInfo[pool.address], pool }))
-        .filter(({ info }) => !!info),
-    shallow,
-  );
-
-  const hasPools = useStakingStore(
-    (s) => s.pools.some((pool) => pool.implementation === 'whales'),
-    shallow,
-  );
+  const stakingInfo = useStakingStatuses();
 
   const handleStakingPress = useCallback(() => {
     logEvent('staking_open');
     nav.push(MainStackRouteNames.Staking);
   }, [nav]);
 
-  if (!hasPools) {
-    return null;
-  }
-
   return (
     <View style={styles.container}>
-      <List separator={false}>
+      <List style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }} separator={false}>
         {stakingInfo.map((item) => (
           <StakingWidgetStatus
             key={item.pool.address}
@@ -73,6 +58,6 @@ export const StakingWidget = memo(StakingWidgetComponent);
 const styles = Steezy.create({
   container: {
     paddingHorizontal: 16,
-    paddingTop: 32,
+    // paddingTop: 32,
   },
 });

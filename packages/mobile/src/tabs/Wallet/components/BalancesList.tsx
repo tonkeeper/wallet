@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { t } from '$translation';
 import { Screen, Spacer, SpacerSizes, View } from '$uikit';
 import { List } from '@tonkeeper/uikit';
@@ -6,7 +6,7 @@ import { List } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { openJetton, openJettonsList, openWallet } from '$navigation';
+import { openJetton, openWallet } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { Rate } from '../hooks/useBalance';
 import { ListItemRate } from '../components/ListItemRate';
@@ -14,7 +14,7 @@ import { TonIcon, TonIconProps } from '../../../components/TonIcon';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { Tabs } from '../components/Tabs';
 import { NFTsList } from '../components/NFTsList';
-import { useTheme } from '$hooks';
+import { TokenPrice, useTheme } from '$hooks';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StakingWidget } from './StakingWidget';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
@@ -30,7 +30,7 @@ enum ContentType {
 
 type TokenItem = {
   type: ContentType.Token;
-
+  key: string;
   isFirst?: boolean;
   isLast?: boolean;
 
@@ -46,16 +46,19 @@ type TokenItem = {
 };
 
 type SpacerItem = {
+  key: string;
   type: ContentType.Spacer;
   bottom: SpacerSizes;
 };
 
 type NFTCardsRowItem = {
+  key: string;
   type: ContentType.NFTCardsRow;
   items: any; // TODO:
 };
 
 type StakingItem = {
+  key: string;
   type: ContentType.Staking;
 };
 
@@ -131,7 +134,7 @@ const RenderItem = ({ item }: { item: Content }) => {
 interface BalancesListProps {
   tokens: any; // TODO:
   balance: any; // TODO:
-  rates: Rate;
+  tonPrice: TokenPrice;
   nfts?: any; // TODO:
   handleRefresh: () => void;
   isRefreshing: boolean;
@@ -144,7 +147,7 @@ export const BalancesList = memo<BalancesListProps>(
   ({
     tokens,
     balance,
-    rates,
+    tonPrice,
     nfts,
     handleRefresh,
     isRefreshing,
@@ -163,7 +166,7 @@ export const BalancesList = memo<BalancesListProps>(
           }),
         );
       },
-      [],
+      [dispatch],
     );
 
     const data = useMemo(() => {
@@ -172,30 +175,32 @@ export const BalancesList = memo<BalancesListProps>(
       // Tokens
       content.push({
         type: ContentType.Token,
+        key: 'ton',
         title: 'Toncoin',
         onPress: () => openWallet(CryptoCurrencies.Ton),
         value: balance.ton.amount.formatted,
         subvalue: balance.ton.amount.fiat,
         tonIcon: true,
         rate: {
-          percent: rates.percent,
-          price: rates.price,
-          trend: rates.trend,
+          percent: tonPrice.fiatDiff.percent,
+          price: tonPrice.formatted.fiat ?? '-',
+          trend: tonPrice.fiatDiff.trend,
         },
       });
 
       content.push(
         ...balance.oldVersions.map((item) => ({
           type: ContentType.Token,
+          key: 'old_' + item.version,
           onPress: handleMigrate(item.version),
           title: t('wallet.old_wallet_title'),
           tonIcon: { transparent: true },
           value: item.amount.formatted,
           subvalue: item.amount.fiat,
           rate: {
-            percent: rates.percent,
-            price: rates.price,
-            trend: rates.trend,
+            percent: tonPrice.fiatDiff.percent,
+            price: tonPrice.formatted.fiat ?? '-',
+            trend: tonPrice.fiatDiff.trend,
           },
         })),
       );
@@ -208,13 +213,26 @@ export const BalancesList = memo<BalancesListProps>(
             title: LockupNames[item.type],
             value: item.amount.formatted,
             subvalue: item.amount.fiat,
-            subtitle: rates.price,
+            subtitle: tonPrice.formatted.fiat ?? '-',
           })),
         );
       }
 
+      content.push({
+        key: 'staking',
+        type: ContentType.Staking,
+      });
+
+      content.push({
+        key: 'spacer_staking',
+        type: ContentType.Spacer,
+        bottom: 32,
+      });
+
       content.push(
-        ...tokens.list.map((item) => ({
+        ...tokens.list.map((item, index) => ({
+          key: 'token_' + item.address.rawAddress,
+          isFirst: index === 0,
           type: ContentType.Token,
           onPress: () => openJetton(item.address.rawAddress),
           picture: item.iconUrl,
@@ -225,6 +243,8 @@ export const BalancesList = memo<BalancesListProps>(
           rate: item.rate.price
             ? {
                 price: item.rate.price,
+                percent: item.price.fiatDiff.percent,
+                trend: item.price.fiatDiff.trend,
               }
             : undefined,
         })),
@@ -237,12 +257,9 @@ export const BalancesList = memo<BalancesListProps>(
       firstTonkenElement.isFirst = true;
       lastTokenElement.isLast = true;
 
-      content.push({
-        type: ContentType.Staking,
-      });
-
       if (nfts) {
         content.push({
+          key: 'spacer_nft',
           type: ContentType.Spacer,
           bottom: 32,
         });
@@ -250,6 +267,7 @@ export const BalancesList = memo<BalancesListProps>(
         const numColumns = 3;
         for (let i = 0; i < Math.ceil(nfts.length / numColumns); i++) {
           content.push({
+            key: 'nft_' + i,
             type: ContentType.NFTCardsRow,
             items: nfts.slice(i * numColumns, i * numColumns + numColumns),
           });
@@ -257,12 +275,13 @@ export const BalancesList = memo<BalancesListProps>(
       }
 
       content.push({
+        key: 'spacer_bottom',
         type: ContentType.Spacer,
         bottom: 12,
       });
 
       return content;
-    }, [balance.oldVersions, rates, tokens.list]);
+    }, [balance, handleMigrate, nfts, tokens.list, tonPrice]);
 
     const ListComponent = nfts ? Screen.FlashList : Tabs.FlashList;
 

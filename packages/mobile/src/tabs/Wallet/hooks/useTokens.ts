@@ -1,5 +1,4 @@
-import { useJettonBalances } from '$hooks';
-import { useGetJettonPrice } from '$hooks/useJettonPrice';
+import { TokenPrice, useGetTokenPrice, useJettonBalances } from '$hooks';
 import { formatter } from '$utils/formatter';
 import { useMemo } from 'react';
 import TonWeb from 'tonweb';
@@ -23,6 +22,7 @@ type TokenInfo = {
     value: string;
     formatted: string;
   };
+  price: TokenPrice;
   rate: {
     price: string | null;
     total: string | null;
@@ -38,11 +38,11 @@ export const useTonkens = (): {
   canEdit: boolean;
 } => {
   const { enabled: jettonBalances } = useJettonBalances();
-  const getJettonPrice = useGetJettonPrice();
+  const getTokenPrice = useGetTokenPrice();
 
   const tokens = useMemo(() => {
     return jettonBalances.map((item) => {
-      const rate = getJettonPrice(item.jettonAddress, item.balance);
+      const rate = getTokenPrice(item.jettonAddress, item.balance);
       const tokenInfo: TokenInfo = {
         address: {
           friendlyAddress: new TonWeb.utils.Address(item.jettonAddress).toString(
@@ -62,12 +62,17 @@ export const useTonkens = (): {
           value: item.balance,
           formatted: formatter.format(item.balance),
         },
-        rate,
+        price: rate,
+        rate: {
+          price: rate.formatted.fiat,
+          total: rate.formatted.totalFiat,
+          total_numeric: rate.totalFiat,
+        },
       };
 
       return tokenInfo;
     }) as TokenInfo[];
-  }, [jettonBalances, getJettonPrice]);
+  }, [jettonBalances, getTokenPrice]);
 
   const fiatTotal = useMemo(
     () =>
@@ -78,10 +83,13 @@ export const useTonkens = (): {
     [tokens],
   );
 
-  return {
-    list: tokens,
-    total: {
-      fiat: fiatTotal,
-    },
-  };
+  return useMemo(
+    () => ({
+      list: tokens,
+      total: {
+        fiat: fiatTotal,
+      },
+    }),
+    [tokens, fiatTotal],
+  );
 };

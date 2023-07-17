@@ -6,12 +6,12 @@ import { Dimensions } from 'react-native';
 import { ActionButtonProps, BalanceItemProps } from './BalanceItem.interface';
 import * as S from './BalanceItem.style';
 import { CurrencyIcon, Icon, Text } from '$uikit';
-import { useJettonBalances, useTranslator, useWalletInfo } from '$hooks';
+import { useJettonBalances, useTokenPrice, useTranslator, useWalletInfo } from '$hooks';
 import { walletWalletSelector } from '$store/wallet';
 import { openReceive, openRequireWalletModal, openSend, openWallet } from '$navigation';
 import { Chart } from '$shared/components';
 import { format, ns } from '$utils';
-import { ratesChartsSelector, ratesRatesSelector } from '$store/rates';
+import { ratesChartsSelector } from '$store/rates';
 import {
   CryptoCurrencies,
   CurrencyLongName,
@@ -21,8 +21,8 @@ import {
 } from '$shared/constants';
 import { formatCryptoCurrency, formatFiatCurrencyAmount } from '$utils/currency';
 import { fiatCurrencySelector } from '$store/main';
-import { getRate } from '$hooks/useFiatRate';
 import { useNavigation } from '$libs/navigation';
+import BigNumber from 'bignumber.js';
 
 const ScreenWidth = Dimensions.get('window').width;
 
@@ -58,14 +58,14 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
   }, [currency]);
 
   const wallet = useSelector(walletWalletSelector);
-  const rates = useSelector(ratesRatesSelector);
+  const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
   const charts = useSelector(ratesChartsSelector);
   const fiatCurrency = useSelector(fiatCurrencySelector);
   const nav = useNavigation();
 
   const { enabled: availableJettons } = useJettonBalances();
 
-  const { amount, fiatInfo } = useWalletInfo(currency);
+  const { amount, tokenPrice } = useWalletInfo(currency);
 
   const handleOpen = useCallback(() => {
     //openAccessConfirmation();
@@ -107,7 +107,7 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
     const fiatRate =
       fiatCurrency === FiatCurrencies.Usd
         ? 1
-        : getRate(rates, CryptoCurrencies.Usdt, fiatCurrency);
+        : new BigNumber(tonPrice.fiat).dividedBy(tonPrice.usd).toNumber();
     const firstPrice = points.length > 0 ? points[0].y * fiatRate : 0;
     const lastPrice = points.length > 0 ? points[points.length - 1].y * fiatRate : 0;
 
@@ -120,7 +120,7 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
       firstPrice: formatFiatCurrencyAmount(firstPrice.toFixed(2), fiatCurrency),
       lastPrice: formatFiatCurrencyAmount(lastPrice.toFixed(2), fiatCurrency),
     };
-  }, [charts, currency, fiatCurrency, rates, t]);
+  }, [charts, currency, fiatCurrency, t, tonPrice]);
 
   const isDisabled = useMemo(() => {
     return (
@@ -169,13 +169,13 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
                 </Text>
               </S.CryptoInfo>
               <S.FiatInfo>
-                <Text variant="label1">{fiatInfo.amount}</Text>
+                <Text variant="label1">{tokenPrice.formatted.totalFiat ?? '-'}</Text>
                 <Text
-                  color={fiatInfo.color}
+                  color={tokenPrice.fiatDiff.color}
                   variant="body2"
                   style={{ flexDirection: 'row' }}
                 >
-                  {fiatInfo.percent}&nbsp;
+                  {tokenPrice.fiatDiff.percent}&nbsp;
                   <Text color="foregroundTertiary" variant="body2">
                     ·
                   </Text>

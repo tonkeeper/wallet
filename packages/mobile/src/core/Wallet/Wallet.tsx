@@ -144,7 +144,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   const currencyUpper = useMemo(() => {
     return currency?.toUpperCase();
   }, [currency]);
-  const { amount, formattedFiatAmount } = useWalletInfo(currency);
+  const { amount, tokenPrice } = useWalletInfo(currency);
 
   const handleReceive = useCallback(() => {
     if (!wallet) {
@@ -255,7 +255,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
                     variant="body2"
                     color="foregroundSecondary"
                   >
-                    {formattedFiatAmount}
+                    {tokenPrice.formatted.totalFiat ?? '-'}
                   </HideableAmount>
                 </S.AmountWrapper>
                 <TonIcon size="medium" showDiamond />
@@ -348,11 +348,13 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     amount,
     currencyUpper,
     currency,
-    formattedFiatAmount,
-    handleOpenExchange,
-    t,
+    tokenPrice,
     handleSend,
+    t,
     handleReceive,
+    handleOpenExchange,
+    flags.disable_swap,
+    handlePressSwap,
     wallet,
     handleDeploy,
     lockupDeploy,

@@ -1,4 +1,4 @@
-import { useFiatRate, useInstance, useTranslator } from '$hooks';
+import { useInstance, useTokenPrice, useTranslator } from '$hooks';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import {
   CryptoCurrencies,
@@ -97,7 +97,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     isJetton,
   );
 
-  const fiatRate = useFiatRate(currency as CryptoCurrency, isJetton);
+  const tokenPrice = useTokenPrice(currency);
 
   const [currentStep, setCurrentStep] = useState<SendSteps>(SendSteps.ADDRESS);
 
@@ -309,7 +309,7 @@ export const Send: FC<SendProps> = ({ route }) => {
             onChangeCurrency={onChangeCurrency}
             currencyTitle={currencyTitle}
             amount={amount}
-            fiatRate={fiatRate.today}
+            fiatRate={tokenPrice.fiat}
             setAmount={setAmount}
             onContinue={prepareConfirmSending}
           />

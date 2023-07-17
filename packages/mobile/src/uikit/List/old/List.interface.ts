@@ -1,4 +1,6 @@
-export interface ListProps {
+import { ViewProps } from 'react-native';
+
+export interface ListProps extends ViewProps {
   align?: 'left' | 'right';
   separator?: boolean;
 }

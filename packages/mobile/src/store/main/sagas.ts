@@ -66,6 +66,7 @@ import { clearSubscribeStatus } from '$utils/messaging';
 import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 import { useSwapStore } from '$store/zustand/swap';
 import * as SecureStore from 'expo-secure-store';
+import { useRatesStore } from '$store/zustand/rates';
 
 SplashScreen.preventAutoHideAsync()
   .then((result) =>
@@ -240,6 +241,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
 function* loadRates(onlyCache = false) {
   try {
     yield put(ratesActions.loadRates({ onlyCache }));
+    useRatesStore.getState().actions.fetchRates();
   } catch (e) {}
 }
 
