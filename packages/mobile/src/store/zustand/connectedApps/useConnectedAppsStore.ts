@@ -130,15 +130,10 @@ export const useConnectedAppsStore = create(
               return { connectedApps };
             });
           },
-          enableNotifications: async (
-            chainName,
-            walletAddress,
-            url,
-            session_id,
-            firebase_token,
-          ) => {
+          enableNotifications: async (chainName, walletAddress, url, session_id) => {
             const fixedUrl = getFixedLastSlashUrl(url);
             const token = await SecureStore.getItemAsync('proof_token');
+            const firebase_token = await messaging().getToken();
 
             if (!token) {
               return;
@@ -170,10 +165,10 @@ export const useConnectedAppsStore = create(
               return { connectedApps };
             });
           },
-          disableNotifications: async (chainName, walletAddress, url, firebase_token) => {
+          disableNotifications: async (chainName, walletAddress, url) => {
             const fixedUrl = getFixedLastSlashUrl(url);
             const token = await SecureStore.getItemAsync('proof_token');
-
+            const firebase_token = await messaging().getToken();
             if (!token) {
               return;
             }
