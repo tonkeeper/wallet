@@ -30,6 +30,7 @@ import { DismissedActionError } from './steps/ConfirmStep/DismissedActionError';
 import { formatter } from '$utils/formatter';
 import { PagerView, Screen } from '@tonkeeper/uikit';
 import { PagerViewOnPageSelectedEvent } from 'react-native-pager-view';
+import BigNumber from 'bignumber.js';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {
@@ -118,11 +119,12 @@ export const Send: FC<SendProps> = ({ route }) => {
     if (currentStep === SendSteps.ADDRESS) {
       return !!recipient;
     } else if (currentStep === SendSteps.AMOUNT) {
-      return amount.value !== '0';
+      const bigNum = new BigNumber(parseLocaleNumber(amount.value));
+      return !bigNum.isZero() && bigNum.isLessThanOrEqualTo(balance);
     } else {
       return true;
     }
-  }, [amount.value, currentStep, recipient]);
+  }, [amount.value, balance, currentStep, recipient]);
 
   const onChangeCurrency = useCallback(
     (
