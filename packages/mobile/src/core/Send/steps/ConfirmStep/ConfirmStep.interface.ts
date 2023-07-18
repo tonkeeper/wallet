@@ -15,4 +15,5 @@ export interface ConfirmStepProps {
   isInactive: boolean;
   comment: string;
   onConfirm: () => Promise<void>;
+  isPreparing: boolean;
 }

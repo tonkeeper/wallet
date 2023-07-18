@@ -132,6 +132,7 @@ interface ActionFooterProps {
   confirmTitle?: string;
   onPressConfirm: () => Promise<void>;
   onCloseModal?: () => void;
+  disabled?: boolean;
 }
 
 export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>(
@@ -194,7 +195,10 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
                 <Spacer x={16} />
               </>
             ) : null}
-            <S.ActionButton onPress={() => props.onPressConfirm()}>
+            <S.ActionButton
+              disabled={props.disabled}
+              onPress={() => props.onPressConfirm()}
+            >
               {props.confirmTitle ?? t('nft_confirm_operation')}
             </S.ActionButton>
           </View>

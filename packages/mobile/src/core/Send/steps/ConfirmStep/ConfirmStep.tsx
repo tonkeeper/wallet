@@ -19,6 +19,7 @@ import { openInactiveInfo } from '$navigation';
 import { Alert } from 'react-native';
 import { walletBalancesSelector, walletWalletSelector } from '$store/wallet';
 import { useSelector } from 'react-redux';
+import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -28,6 +29,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     recipientAccountInfo,
     decimals,
     isJetton,
+    isPreparing,
     fee,
     active,
     isInactive,
@@ -253,8 +255,14 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
             <S.Item>
               <S.ItemLabel>{t('confirm_sending_fee')}</S.ItemLabel>
               <S.ItemContent>
-                <S.ItemValue numberOfLines={1}>{feeValue}</S.ItemValue>
-                {fee !== '0' ? (
+                {fee === '0' || isPreparing ? (
+                  <S.ItemSkeleton>
+                    <SkeletonLine />
+                  </S.ItemSkeleton>
+                ) : (
+                  <S.ItemValue numberOfLines={1}>{feeValue}</S.ItemValue>
+                )}
+                {fee !== '0' && !isPreparing ? (
                   <S.ItemSubValue>≈ {fiatFee.formatted.totalFiat}</S.ItemSubValue>
                 ) : null}
               </S.ItemContent>
@@ -308,6 +316,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
       </StepScrollView>
       <S.FooterContainer bottomInset={bottomInset}>
         <ActionFooter
+          disabled={isPreparing || !active}
           withCloseButton={false}
           confirmTitle={t('confirm_sending_submit')}
           onPressConfirm={handleConfirm}

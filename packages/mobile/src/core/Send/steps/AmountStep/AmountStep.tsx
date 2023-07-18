@@ -13,7 +13,6 @@ import { CoinDropdown } from './CoinDropdown';
 
 const AmountStepComponent: FC<AmountStepProps> = (props) => {
   const {
-    isPreparing,
     recipient,
     decimals,
     balance,
@@ -95,7 +94,7 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
         </S.CoinContainer>
       </S.AmountContainer>
       <Spacer y={40} />
-      <Button disabled={!isReadyToContinue} isLoading={isPreparing} onPress={onContinue}>
+      <Button disabled={!isReadyToContinue} onPress={onContinue}>
         {t('continue')}
       </Button>
     </S.Container>

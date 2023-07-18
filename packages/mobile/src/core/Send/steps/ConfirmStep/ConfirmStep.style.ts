@@ -36,6 +36,10 @@ export const ItemContent = styled.View`
   padding-left: ${ns(16)}px;
 `;
 
+export const ItemSkeleton = styled.View`
+  align-self: flex-end;
+`;
+
 export const ItemValue = styled(Text).attrs({
   variant: 'label1',
   textAlign: 'right',

@@ -107,12 +107,12 @@ export const Send: FC<SendProps> = ({ route }) => {
     [currentStep],
   );
 
-  const handleChangeStep = useCallback((e: PagerViewOnPageSelectedEvent) => {
-    setCurrentStep(e.nativeEvent.position as SendSteps);
-  }, []);
-
   const goToAmount = useCallback(() => {
     requestAnimationFrame(() => refPagerView.current?.setPage(SendSteps.AMOUNT));
+  }, []);
+
+  const goToConfirm = useCallback(() => {
+    requestAnimationFrame(() => refPagerView.current?.setPage(SendSteps.CONFIRM));
   }, []);
 
   const isSwipingAllowed = useMemo(() => {
@@ -160,7 +160,6 @@ export const Send: FC<SendProps> = ({ route }) => {
         onNext: (details) => {
           setFee(details.fee);
           setInactive(details.isInactive);
-          requestAnimationFrame(() => refPagerView.current?.setPage(SendSteps.CONFIRM));
         },
       }),
     );
@@ -173,6 +172,18 @@ export const Send: FC<SendProps> = ({ route }) => {
     jettonWalletAddress,
     recipient,
   ]);
+
+  const handleChangeStep = useCallback(
+    (e: PagerViewOnPageSelectedEvent) => {
+      setCurrentStep(e.nativeEvent.position as SendSteps);
+      if (e.nativeEvent.position === SendSteps.CONFIRM) {
+        prepareConfirmSending();
+      } else {
+        setFee('0');
+      }
+    },
+    [prepareConfirmSending],
+  );
 
   const doSend = useCallback(
     (onDone: () => void, onFail: (e?: Error) => void) => {
@@ -303,7 +314,6 @@ export const Send: FC<SendProps> = ({ route }) => {
         <PagerView.Page>
           <AmountStep
             active={currentStep === SendSteps.AMOUNT}
-            isPreparing={isPreparing}
             recipient={recipient}
             decimals={decimals}
             balance={balance}
@@ -313,11 +323,12 @@ export const Send: FC<SendProps> = ({ route }) => {
             amount={amount}
             fiatRate={tokenPrice.fiat}
             setAmount={setAmount}
-            onContinue={prepareConfirmSending}
+            onContinue={goToConfirm}
           />
         </PagerView.Page>
         <PagerView.Page>
           <ConfirmStep
+            isPreparing={isPreparing}
             active={currentStep === SendSteps.CONFIRM}
             currencyTitle={currencyTitle}
             currency={currency}

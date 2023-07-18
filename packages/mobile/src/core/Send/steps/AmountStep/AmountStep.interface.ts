@@ -2,7 +2,6 @@ import { SendRecipient, SendAmount } from '../../Send.interface';
 import React from 'react';
 
 export interface AmountStepProps {
-  isPreparing: boolean;
   recipient: SendRecipient | null;
   decimals: number;
   balance: string;
