@@ -40,6 +40,19 @@ export enum FiatCurrencies {
   Uah = 'uah',
   Kzt = 'kzt',
   Uzs = 'uzs',
+  // Irr = 'irr',
+  Brl = 'brl',
+  Cad = 'cad',
+  Byn = 'byn',
+  Sgd = 'sgd',
+  Thb = 'thb',
+  Vnd = 'vnd',
+  Ngn = 'ngn',
+  Bdt = 'bdt',
+  Try = 'try',
+  Ils = 'ils',
+  Dkk = 'dkk',
+  Gel = 'gel',
 }
 
 export type FiatCurrency = (typeof FiatCurrencies)[keyof typeof FiatCurrencies];
@@ -130,49 +143,93 @@ export const FiatCurrencySymbolsConfig = {
     symbol: '₽',
     side: 'end',
   },
-  [FiatCurrencies.Aed]: {
-    symbol: 'DH',
+  [FiatCurrencies.Idr]: {
+    symbol: 'Rp',
     side: 'end',
   },
   [FiatCurrencies.Uah]: {
     symbol: '₴',
     side: 'end',
   },
-  [FiatCurrencies.Kzt]: {
-    symbol: '₸',
-    side: 'end',
-  },
   [FiatCurrencies.Uzs]: {
     symbol: 'Sum',
-    side: 'end',
-  },
-  [FiatCurrencies.Gbp]: {
-    symbol: '£',
-    side: 'start',
-  },
-  [FiatCurrencies.Chf]: {
-    symbol: '₣',
-    side: 'start',
-  },
-  [FiatCurrencies.Cny]: {
-    symbol: '¥',
-    side: 'start',
-  },
-  [FiatCurrencies.Krw]: {
-    symbol: '₩',
-    side: 'start',
-  },
-  [FiatCurrencies.Idr]: {
-    symbol: 'Rp',
     side: 'end',
   },
   [FiatCurrencies.Inr]: {
     symbol: '₹',
     side: 'start',
   },
+  [FiatCurrencies.Gbp]: {
+    symbol: '£',
+    side: 'start',
+  },
+  [FiatCurrencies.Aed]: {
+    symbol: 'DH',
+    side: 'end',
+  },
+  [FiatCurrencies.Cny]: {
+    symbol: '¥',
+    side: 'start',
+  },
+  /*  [FiatCurrencies.Irr]: {
+    symbol: '₸',
+    side: 'end',
+  },*/
+  [FiatCurrencies.Byn]: {
+    symbol: 'Br',
+    side: 'end',
+  },
+  [FiatCurrencies.Brl]: {
+    symbol: 'R$',
+    side: 'end',
+  },
+  [FiatCurrencies.Try]: {
+    symbol: '₺',
+    side: 'end',
+  },
+  [FiatCurrencies.Kzt]: {
+    symbol: '₸',
+    side: 'end',
+  },
+  [FiatCurrencies.Ngn]: {
+    symbol: '₦',
+    side: 'end',
+  },
+  [FiatCurrencies.Krw]: {
+    symbol: '₩',
+    side: 'start',
+  },
+  [FiatCurrencies.Thb]: {
+    symbol: '฿',
+    side: 'end',
+  },
+  [FiatCurrencies.Bdt]: {
+    symbol: '৳',
+    side: 'end',
+  },
+  [FiatCurrencies.Chf]: {
+    symbol: '₣',
+    side: 'start',
+  },
   [FiatCurrencies.Jpy]: {
     symbol: '¥',
     side: 'start',
+  },
+  [FiatCurrencies.Cad]: {
+    symbol: '$',
+    side: 'end',
+  },
+  [FiatCurrencies.Ils]: {
+    symbol: '₪',
+    side: 'end',
+  },
+  [FiatCurrencies.Gel]: {
+    symbol: '₾',
+    side: 'end',
+  },
+  [FiatCurrencies.Vnd]: {
+    symbol: '₫',
+    side: 'end',
   },
 };
 
