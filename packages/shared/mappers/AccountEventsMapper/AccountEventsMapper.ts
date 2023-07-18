@@ -1,25 +1,25 @@
-import { formatTransactionsPeriodDate, formatDate } from '@tonkeeper/shared/utils/date';
+import { detectReceive, getSenderAccount } from './AccountEventsMapper.utils';
 import { AccountEvent, ActionTypeEnum } from '@tonkeeper/core/src/TonAPI';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
 import {
-  getGroupDate,
-  detectReceive,
-  getSenderAccount,
-} from './AccountEventsMapper.utils';
-import {
   ActionsData,
   ActionsWithData,
-  ClientEvent,
-  ClientEventAction,
-  ClientEventType,
+  MappedEvent,
+  MappedEventAction,
+  MappedEventItemType,
   GroupedActionsByDate,
 } from './AccountEventsMapper.types';
+import {
+  formatTransactionTime,
+  getDateForGroupTansactions,
+  formatTransactionsGroupDate,
+} from '@tonkeeper/shared/utils/date';
 
-export function AccountEventsMapper(events: AccountEvent[], walletAddress: string) {
+export function AccountEventsMapper(events: AccountEvent[], walletAddress: string = '') {
   const groupedActions = events.reduce<GroupedActionsByDate>((groups, event) => {
-    const date = getGroupDate(event.timestamp);
+    const date = getDateForGroupTansactions(event.timestamp);
 
     if (!groups[date]) {
       groups[date] = [];
@@ -31,13 +31,13 @@ export function AccountEventsMapper(events: AccountEvent[], walletAddress: strin
     return groups;
   }, {});
 
-  return Object.keys(groupedActions).reduce((acc, date) => {
+  return Object.keys(groupedActions).reduce<MappedEvent[]>((acc, date) => {
     const actions = groupedActions[date];
     const txTime = actions[0].timestamp * 1000;
-    const formatDatetedDate = formatTransactionsPeriodDate(new Date(txTime));
+    const formatDatetedDate = formatTransactionsGroupDate(new Date(txTime));
 
     acc.push({
-      type: ClientEventType.Date,
+      type: MappedEventItemType.Date,
       id: `date-${formatDatetedDate}`,
       date: formatDatetedDate,
     });
@@ -45,12 +45,12 @@ export function AccountEventsMapper(events: AccountEvent[], walletAddress: strin
     acc.push(...actions);
 
     return acc;
-  }, [] as ClientEvent[]);
+  }, []);
 }
 
 export function EventMapper(event: AccountEvent, walletAddress: string) {
   const countAction = event.actions.length;
-  const actions = event.actions.reduce<ClientEventAction[]>(
+  const actions = event.actions.reduce<MappedEventAction[]>(
     (actions, serverAction, index) => {
       const actionByType = serverAction[serverAction.type] as ActionsData['data'];
       const actionWithData = Object.assign(serverAction, {
@@ -90,12 +90,12 @@ type EventsActionMapperInput = {
   event: AccountEvent;
 };
 
-export function EventsActionMapper(input: EventsActionMapperInput): ClientEventAction {
-  const time = formatDate(new Date(input.event.timestamp * 1000), 'HH:mm');
+export function EventsActionMapper(input: EventsActionMapperInput): MappedEventAction {
+  const time = formatTransactionTime(new Date(input.event.timestamp * 1000));
 
   // By default SimplePreview
-  const action: ClientEventAction = {
-    type: ClientEventType.Action,
+  const action: MappedEventAction = {
+    type: MappedEventItemType.Action,
     id: `input.action-${input.event.event_id}-${input.actionIndex}`,
     operation: input.action.simple_preview.name || 'Unknown',
     senderAccount: input.action.simple_preview.description,
@@ -208,7 +208,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
       }
       case ActionTypeEnum.AuctionBid: {
         const data = input.action.data;
-        
+
         break;
       }
       case ActionTypeEnum.Unknown: {
@@ -217,7 +217,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): ClientEventA
         break;
       }
       default:
-       console.log(input.action.type)
+        console.log(input.action.type);
     }
 
     return action;

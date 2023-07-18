@@ -108,21 +108,19 @@ export type WalletAddress = {
   version: string;
 };
 
-export enum ClientEventType {
+export enum MappedEventItemType {
   Action = 'Action',
   Date = 'Date',
 }
 
-export type ClientEvents = ClientEvent[];
-
-export type ClientEventDate = {
-  type: ClientEventType.Date;
+export type MappedEventDate = {
+  type: MappedEventItemType.Date;
   id: string;
   date: string;
 };
 
-export type ClientEventAction = {
-  type: ClientEventType.Action;
+export type MappedEventAction = {
+  type: MappedEventItemType.Action;
   id: string;
   bottomCorner?: boolean;
   topCorner?: boolean;
@@ -137,6 +135,8 @@ export type ClientEventAction = {
   comment?: string;
 };
 
-export type ClientEvent = ClientEventDate | ClientEventAction;
+export type GroupedActionsByDate = { [date: string]: MappedEventAction[] };
 
-export type GroupedActionsByDate = { [date: string]: ClientEventAction[] };
+export type MappedEvent = MappedEventDate | MappedEventAction;
+
+export type MappedEventActions = MappedEvent[];

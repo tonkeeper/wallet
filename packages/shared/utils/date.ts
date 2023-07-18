@@ -2,17 +2,17 @@ import { enUS, ru } from 'date-fns/locale';
 import { i18n, t } from '../i18n';
 import {
   differenceInCalendarMonths,
-  differenceInYears,
   format as dateFnsFormat,
   startOfToday,
   startOfYesterday,
+  differenceInCalendarYears,
 } from 'date-fns';
 
 const dateFnsLocales = { ru, en: enUS };
 
 const getFNSLocale = () => {
   return dateFnsLocales[i18n.locale] ?? enUS;
-}
+};
 
 export function formatDate(date: number | Date, formatString: string, options?: any) {
   return dateFnsFormat(date, formatString, {
@@ -25,31 +25,55 @@ export function capitalizeFirstLetter(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export function formatTransactionsPeriodDate(date: Date) {
-  const now = new Date();
-  const dateString = formatDate(date, 'dd MM yyyy');
+export const isToday = (date: Date) => {
+  return formatDate(date, 'dd MM yyyy') === formatDate(startOfToday(), 'dd MM yyyy');
+};
+export const isYesterday = (date: Date) => {
+  return formatDate(date, 'dd MM yyyy') === formatDate(startOfYesterday(), 'dd MM yyyy');
+};
+export const isThisYear = (date: Date) => {
+  return differenceInCalendarYears(new Date(), date) < 1;
+};
+export const isThisMonth = (date: Date) => {
+  return differenceInCalendarMonths(new Date(), date) < 1;
+};
 
-  if (dateString === formatDate(startOfToday(), 'dd MM yyyy')) {
+export function getDateForGroupTansactions(timestamp: number) {
+  const ts = new Date(timestamp * 1000);
+  const now = new Date();
+
+  if (differenceInCalendarMonths(now, ts) < 1) {
+    return formatDate(ts, 'd MMMM');
+  }
+
+  return formatDate(ts, 'LLLL yyyy');
+}
+
+export function formatTransactionsGroupDate(date: Date) {
+  if (isToday(date)) {
     return t('today');
-  } else if (dateString === formatDate(startOfYesterday(), 'dd MM yyyy')) {
+  } else if (isYesterday(date)) {
     return t('yesterday');
   } else {
-    if (differenceInCalendarMonths(now, date) < 1) {
-      return formatDate(date, 'd MMMM', {
-        locale: getFNSLocale(),
-      });
-    } else if (differenceInYears(now, date) < 1) {
-      return capitalizeFirstLetter(
-        formatDate(date, 'LLLL', {
-          locale: getFNSLocale(),
-        }),
-      );
+    if (isThisMonth(date)) {
+      return formatDate(date, 'd MMMM');
+    } else if (isThisYear(date)) {
+      return capitalizeFirstLetter(formatDate(date, 'LLLL'));
     } else {
-      return capitalizeFirstLetter(
-        formatDate(date, 'LLLL yyyy', {
-          locale: getFNSLocale(),
-        }),
-      );
+      return capitalizeFirstLetter(formatDate(date, 'LLLL yyyy'));
     }
   }
+}
+
+export function formatTransactionTime(date: Date) {
+  const shortMonth = formatDate(date, 'MMM').replace('.', '') + ',';
+  const month = i18n.locale === 'en' ? capitalizeFirstLetter(shortMonth) : shortMonth;
+  const time = formatDate(date, 'HH:mm');
+  const day = formatDate(date, 'dd');
+
+  if (isThisMonth(date)) {
+    return time;
+  }
+
+  return `${day} ${month} ${time}`;
 }

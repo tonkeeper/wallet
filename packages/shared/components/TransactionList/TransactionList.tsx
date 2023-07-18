@@ -1,50 +1,83 @@
-import { StyleSheet, View } from 'react-native';
-import { Screen, Loader, List, Spacer } from '@tonkeeper/uikit';
-import { memo } from 'react';
+import { RefreshControl, StyleSheet, View } from 'react-native';
+import { Screen, Loader, List, Spacer, useTheme } from '@tonkeeper/uikit';
 import { TransactionItem } from './TransactionItem';
-import { ClientEvent, ClientEventType } from './AccountEventsMapper/AccountEventsMapper.types';
+import { memo } from 'react';
+import {
+  MappedEvent,
+  MappedEventItemType,
+} from '@tonkeeper/shared/mappers/AccountEventsMapper';
 
 interface EventsListProps {
-  events: ClientEvent[];
+  events: MappedEvent[];
   onFetchMore?: () => void;
+  onRefresh?: () => void;
+  fetchMoreEnd?: boolean;
+  refreshing?: boolean;
+  loading?: boolean;
   estimatedItemSize?: number;
 }
 
 type TransactionRenderItemOptions = {
-  item: ClientEvent;
-  index: number
+  item: MappedEvent;
+  index: number;
 };
 
 function RenderItem({ item, index }: TransactionRenderItemOptions) {
   const isFirstElement = index === 0;
   switch (item.type) {
-    case ClientEventType.Date:
+    case MappedEventItemType.Date:
       return (
         <View>
-          {!isFirstElement && <Spacer y={8}/>}
-          <List.Header title={item.date} style={styles.date} />       
+          {!isFirstElement && <Spacer y={8} />}
+          <List.Header title={item.date} style={styles.date} />
         </View>
       );
-    case ClientEventType.Action:
+    case MappedEventItemType.Action:
       return <TransactionItem item={item} />;
   }
 }
 
 export const TransactionsList = memo<EventsListProps>((props) => {
-  const { events, estimatedItemSize = 500, onFetchMore } = props;
+  const theme = useTheme();
+  const {
+    estimatedItemSize = 500,
+    fetchMoreEnd,
+    onFetchMore,
+    refreshing,
+    onRefresh,
+    loading,
+    events,
+  } = props;
 
   return (
     <Screen.FlashList
+      refreshControl={
+        <RefreshControl
+          onRefresh={onRefresh}
+          refreshing={!!refreshing}
+          tintColor={theme.constantWhite}
+          progressBackgroundColor={theme.constantWhite}
+        />
+      }
       estimatedItemSize={estimatedItemSize}
       keyExtractor={(item) => item.id}
       onEndReachedThreshold={0.01}
       onEndReached={onFetchMore}
       renderItem={RenderItem}
       data={events}
+      ListEmptyComponent={
+        loading ? (
+          <View style={styles.emptyContainer}>
+            <Loader size="medium" />
+          </View>
+        ) : undefined
+      }
       ListFooterComponent={
-        <View style={styles.moreLoader}>
-          <Loader size="medium" />
-        </View>
+        !fetchMoreEnd && !loading ? (
+          <View style={styles.moreLoader}>
+            <Loader size="medium" />
+          </View>
+        ) : undefined
       }
     />
   );
@@ -58,5 +91,10 @@ const styles = StyleSheet.create({
   moreLoader: {
     paddingTop: 8,
     paddingBottom: 16,
+  },
+  emptyContainer: {
+    paddingTop: 72,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

@@ -1,26 +1,39 @@
-import { useMemo } from 'react';
-import { AccountEvents, GetEventsByAccountParams } from '../TonAPI/TonAPIGenerated';
-import { useInfiniteQuery } from 'react-query';
+import { AccountEvents } from '../TonAPI/TonAPIGenerated';
+import { useInfiniteQuery, useQueryClient, InfiniteData } from 'react-query';
 import { useTonAPI } from '../TonAPI';
+import { useMemo, useState, useCallback } from 'react';
 
-export const useEventsByAccount = (accountId: string) => {
+type Options<TData = unknown, TModifiedData = unknown> = {
+  fetchMoreParams: (data: TData) => Record<string, any>;
+  modify?: (data: TData) => TModifiedData;
+  fetchMoreEnd?: (data: TData) => boolean;
+};
+
+export const useEventsByAccount = <TData = AccountEvents, TModifiedData = TData>(
+  accountId: string,
+  options: Options<TData, TModifiedData>,
+) => {
+  const { modify = (data) => data } = options;
+  const queryKey = ['events', accountId];
+  const [fetchMoreEnd, setFetchMoreEnd] = useState(false);
+  const queryClient = useQueryClient();
   const tonapi = useTonAPI();
 
-  const { data, error, isLoading, isFetchingNextPage, fetchNextPage } = useInfiniteQuery<AccountEvents>({
+  const {
+    data,
+    error,
+    isLoading,
+    isFetchingNextPage,
+    isRefetching,
+    fetchNextPage,
+    refetch,
+  } = useInfiniteQuery<TModifiedData>({
+    getNextPageParam: (data) =>
+      data ? options.fetchMoreParams(data as TData) : undefined,
     queryKey: ['events', accountId],
-    // cacheTime: Infinity,
-    getNextPageParam: ({ events }) => {
-      if (events[events.length - 1]?.lt) {
-        return {
-          lastLt: events[events?.length - 1].lt,
-        }
-      }
-
-      return {};      
-    },
-    queryFn: async ({ pageParam }) => {
+    queryFn: async (lastPage) => {
       const { data, error } = await tonapi.accounts.getEventsByAccount({
-        before_lt: pageParam?.lastLt ?? undefined,
+        ...lastPage.pageParam,
         subject_only: true,
         accountId,
         limit: 50,
@@ -30,19 +43,53 @@ export const useEventsByAccount = (accountId: string) => {
         throw error;
       }
 
-      return data;
+      const result = data as TData;
+
+      if (options.fetchMoreEnd) {
+        const isFetchMoreEnd = options.fetchMoreEnd(result);
+        if (isFetchMoreEnd) {
+          setFetchMoreEnd(true);
+        }
+      }
+
+      return data as TModifiedData; //modify((data as TData)) as TModifiedData;
     },
+    // select: () => {
+
+    // }
   });
 
   const flatData = useMemo(() => {
     return data?.pages.map((data) => data.events).flat();
   }, [data]);
 
+  const modifed = useMemo(() => {
+    return (flatData ? modify(flatData as TData) : flatData) as TModifiedData;
+  }, [flatData]);
+
+  const fetchMore = useCallback(() => {
+    if (!isFetchingNextPage && !fetchMoreEnd) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, fetchMoreEnd, isFetchingNextPage]);
+
+  const refresh = useCallback(async () => {
+    await refetch({ refetchPage: (_, index) => index === 0 });
+    queryClient.setQueryData<InfiniteData<any>>(queryKey, (data) => {
+      return Object.assign(data ?? {}, {
+        pages: data?.pages.filter((_, index) => index !== 1),
+      }) as InfiniteData<any>;
+    });
+  }, [queryClient]);
+
   return {
-    fetchMore: fetchNextPage,
-    isLoadingMore: isFetchingNextPage,
-    isLoading: isLoading && !isFetchingNextPage,
-    data: flatData,
+    loadingMore: isFetchingNextPage,
+    refreshing: isRefetching,
+    loading: isLoading,
+    data: modifed,
+    fetchMoreEnd,
+    fetchMore,
+    refresh,
     error,
   };
 };

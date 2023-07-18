@@ -1,23 +1,22 @@
+import { AccountEventsMapper } from '@tonkeeper/shared/mappers/AccountEventsMapper';
+import { useEventsByAccount } from '@tonkeeper/core/src/query/useEventsByAccount';
+import { TransactionsList } from '@tonkeeper/shared/components';
 import { Screen, Text, Button } from '@tonkeeper/uikit';
 import { StyleSheet, View } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
+import { useWallet } from '../useWallet';
 import React, { memo } from 'react';
 
-import { TransactionsList } from '@tonkeeper/shared/components/TransactionList';
-import { useEventsByAccount } from '@tonkeeper/core/src/query/useEventsByAccount';
-import { AccountEventsMapper } from '@tonkeeper/shared/components/TransactionList/AccountEventsMapper'
-import { useWallet } from '../useWallet';
-
-// TODO: 
 import { openRequireWalletModal } from '$navigation';
 import { useNavigation } from '$libs/navigation';
 
-
 export const ActivityScreen = memo(() => {
   const wallet = useWallet();
-  const { data, error, isLoading, fetchMore } = useEventsByAccount(wallet.address.raw);
-
-  const events = AccountEventsMapper(data ?? [], wallet.address.raw);
+  const events = useEventsByAccount(wallet.address.raw, {
+    modify: (data) => AccountEventsMapper(data ?? [], wallet.address.raw),
+    fetchMoreParams: (lastPage) => ({ before_lt: lastPage.next_from }),
+    fetchMoreEnd: (data) => data.events.length < 1,
+  });
 
   const nav = useNavigation();
   const handlePressRecevie = React.useCallback(() => {
@@ -39,11 +38,11 @@ export const ActivityScreen = memo(() => {
     }
   }, [wallet]);
 
-  if (!wallet || (!isLoading && events.length < 1)) {
+  if (!events.loading && events.data.length < 1) {
     return (
       <Screen>
         <View style={styles.emptyContainer}>
-          <Text type="h2" style={{ textAlign: 'center', marginBottom: 4 }}>
+          <Text type="h2" style={styles.emptyTitleText}>
             {t('activity.empty_transaction_title')}
           </Text>
           <Text type="body1" color="textSecondary">
@@ -52,7 +51,7 @@ export const ActivityScreen = memo(() => {
           <View style={styles.emptyButtons}>
             <Button
               title={t('activity.buy_toncoin_btn')}
-              style={{ marginRight: 12 }}
+              style={styles.emptyFirstButton}
               onPress={handlePressBuy}
               color="secondary"
               size="small"
@@ -72,9 +71,13 @@ export const ActivityScreen = memo(() => {
   return (
     <Screen>
       <Screen.LargeHeader title={t('activity.screen_title')} />
-      <TransactionsList 
-        onFetchMore={fetchMore} 
-        events={events} 
+      <TransactionsList
+        fetchMoreEnd={events.fetchMoreEnd}
+        onFetchMore={events.fetchMore}
+        refreshing={events.refreshing}
+        onRefresh={events.refresh}
+        loading={events.loading}
+        events={events.data}
       />
     </Screen>
   );
@@ -90,5 +93,12 @@ const styles = StyleSheet.create({
   emptyButtons: {
     flexDirection: 'row',
     marginTop: 24,
+  },
+  emptyTitleText: {
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  emptyFirstButton: {
+    marginRight: 12,
   },
 });
