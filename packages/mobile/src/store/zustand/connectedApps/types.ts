@@ -72,5 +72,9 @@ export interface IConnectedAppsStore {
       walletAddress: string,
       url: string,
     ) => void;
+    updateNotificationsSubscription: (
+      chainName: 'mainnet' | 'testnet',
+      walletAddress: string,
+    ) => void;
   };
 }

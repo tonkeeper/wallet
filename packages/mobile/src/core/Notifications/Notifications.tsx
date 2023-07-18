@@ -28,7 +28,9 @@ export const Notifications: React.FC = () => {
   const notificationStatus = useNotificationStatus();
   const notificationsBadge = useNotificationsBadge();
   const shouldEnableNotifications = notificationStatus === NotificationsStatus.DENIED;
-
+  const updateNotificationsSubscription = useConnectedAppsStore(
+    (state) => state.actions.updateNotificationsSubscription,
+  );
   const [isSubscribeNotifications, setIsSubscribeNotifications] = React.useState(false);
 
   React.useEffect(() => {
@@ -53,31 +55,36 @@ export const Notifications: React.FC = () => {
     }
   }, [notificationsBadge, notificationsBadge.isVisible]);
 
-  const handleToggleNotifications = React.useCallback(async (value: boolean) => {
-    if (isSwitchFrozen.current) {
-      return;
-    }
-
-    try {
-      isSwitchFrozen.current = true;
-      setIsSubscribeNotifications(value);
-
-      const isSuccess = value
-        ? await notifications.subscribe()
-        : await notifications.unsubscribe();
-
-      if (!isSuccess) {
-        // Revert
-        setIsSubscribeNotifications(!value);
+  const handleToggleNotifications = React.useCallback(
+    async (value: boolean) => {
+      if (isSwitchFrozen.current) {
+        return;
       }
-    } catch (err) {
-      Toast.fail(t('notifications_not_supported'), { size: ToastSize.Small });
-      debugLog('[NotificationsSettings]', err);
-      setIsSubscribeNotifications(!value); // Revert
-    } finally {
-      isSwitchFrozen.current = false;
-    }
-  }, []);
+
+      try {
+        isSwitchFrozen.current = true;
+        setIsSubscribeNotifications(value);
+
+        const isSuccess = value
+          ? await notifications.subscribe()
+          : await notifications.unsubscribe();
+
+        updateNotificationsSubscription(getChainName(), address.ton);
+
+        if (!isSuccess) {
+          // Revert
+          setIsSubscribeNotifications(!value);
+        }
+      } catch (err) {
+        Toast.fail(t('notifications_not_supported'), { size: ToastSize.Small });
+        debugLog('[NotificationsSettings]', err);
+        setIsSubscribeNotifications(!value); // Revert
+      } finally {
+        isSwitchFrozen.current = false;
+      }
+    },
+    [address.ton, notifications, updateNotificationsSubscription],
+  );
 
   const connectedApps = useConnectedAppsList();
   const { enableNotifications, disableNotifications } = useConnectedAppsStore(
@@ -129,7 +136,9 @@ export const Notifications: React.FC = () => {
             <View style={styles.title}>
               <Text variant="h3">{t('notifications.apps')}</Text>
               <Spacer y={4} />
-              <Text variant="body2">{t('notifications.apps_description')}</Text>
+              <Text color="textSecondary" variant="body2">
+                {t('notifications.apps_description')}
+              </Text>
             </View>
             <CellSection>
               {connectedApps.map((app) => (

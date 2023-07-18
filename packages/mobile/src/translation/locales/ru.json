@@ -462,7 +462,7 @@
 
   "notifications_title": "Уведомления",
   "notifications_switch_title": "Уведомления",
-  "notification_switch_description": "Получайте уведомления при получении TON, токенов и NFT",
+  "notification_switch_description": "Получайте уведомления при получении TON, токенов, NFT и уведомления от подключенных приложений.",
   "notifications_disabled_title": "Уведомления отключены",
   "notifications_disabled_description": "Вы отключили уведомления в настройках устройства. Чтобы ничего не пропустить разрешите уведомления.",
   "notifications_disabled_action": "Открыть настройки",

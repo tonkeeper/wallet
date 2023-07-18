@@ -7,6 +7,7 @@ import { Tonapi } from '$libs/Tonapi';
 import messaging from '@react-native-firebase/messaging';
 import * as SecureStore from 'expo-secure-store';
 import { useNotificationsStore } from '$store/zustand';
+import { getSubscribeStatus, SUBSCRIBE_STATUS } from '$utils/messaging';
 
 const initialState: Omit<IConnectedAppsStore, 'actions'> = {
   connectedApps: {
@@ -139,11 +140,13 @@ export const useConnectedAppsStore = create(
               return;
             }
 
+            const subscribeStatus = await getSubscribeStatus();
             Tonapi.subscribeToNotifications(token, {
               app_url: fixedUrl,
               session_id: session_id,
               account: walletAddress,
               commercial: true,
+              silent: subscribeStatus === SUBSCRIBE_STATUS.SUBSCRIBED,
               firebase_token,
             });
 
@@ -164,6 +167,22 @@ export const useConnectedAppsStore = create(
 
               return { connectedApps };
             });
+          },
+          updateNotificationsSubscription: async (chainName, walletAddress) => {
+            const apps = get().connectedApps[chainName][walletAddress] || {};
+            const appsWithEnabledNotifications = Object.values(apps).filter(
+              (app) => app.notificationsEnabled,
+            );
+
+            appsWithEnabledNotifications.map((app) =>
+              get().actions.enableNotifications(
+                chainName,
+                walletAddress,
+                app.url,
+                // @ts-ignore
+                app.connections[0]?.clientSessionId,
+              ),
+            );
           },
           disableNotifications: async (chainName, walletAddress, url) => {
             const fixedUrl = getFixedLastSlashUrl(url);
