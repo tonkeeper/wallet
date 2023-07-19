@@ -92,13 +92,14 @@ type EventsActionMapperInput = {
 
 export function EventsActionMapper(input: EventsActionMapperInput): MappedEventAction {
   const time = formatTransactionTime(new Date(input.event.timestamp * 1000));
-
-  // By default SimplePreview
+  
+  // SimplePreview by default
   const action: MappedEventAction = {
     type: MappedEventItemType.Action,
     id: `input.action-${input.event.event_id}-${input.actionIndex}`,
     operation: input.action.simple_preview.name || 'Unknown',
     senderAccount: input.action.simple_preview.description,
+    inProgress: input.event.in_progress,
     timestamp: input.event.timestamp,
     iconName: 'ic-gear-28',
     amount: '−',

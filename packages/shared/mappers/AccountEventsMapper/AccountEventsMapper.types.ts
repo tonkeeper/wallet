@@ -6,6 +6,7 @@ import {
   ContractDeployAction,
   DepositStakeAction,
   JettonTransferAction,
+  NftItem,
   NftItemTransferAction,
   NftPurchaseAction,
   RecoverStakeAction,
@@ -122,6 +123,7 @@ export type MappedEventDate = {
 export type MappedEventAction = {
   type: MappedEventItemType.Action;
   id: string;
+  inProgress?: boolean;
   bottomCorner?: boolean;
   topCorner?: boolean;
   iconName: IconNames;
@@ -132,6 +134,7 @@ export type MappedEventAction = {
   isReceive?: boolean;
   timestamp: number;
   nftAddress?: string;
+  nftItem?: NftItem;
   comment?: string;
 };
 

@@ -1,10 +1,23 @@
-import Animated, { useAnimatedStyle,useSharedValue,interpolateColor } from 'react-native-reanimated';
-import { Icon, List, Steezy, View, useTheme, Text, ListSeparator } from '@tonkeeper/uikit';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  interpolateColor,
+} from 'react-native-reanimated';
+import {
+  Icon,
+  List,
+  Steezy,
+  View,
+  useTheme,
+  Text,
+  ListSeparator,
+} from '@tonkeeper/uikit';
+import { MappedEventAction } from '../../mappers/AccountEventsMapper';
 import { TransactionNFTItem } from './TransactionNFTItem';
 import React, { memo } from 'react';
 
 interface TransactionItemProps {
-  item: any;
+  item: MappedEventAction;
 }
 
 const useBackgroundHighlighted = () => {
@@ -37,8 +50,6 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
     styles.containerListItem,
   ];
 
-  // console.log(item.nftAddress || item.nft);
-
   return (
     <View style={containerStyle}>
       <List.Item
@@ -53,15 +64,17 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
         leftContent={
           <Animated.View style={[styles.icon.static, backgroundStyle]}>
             {item.iconName && <Icon name={item.iconName} color="iconSecondary" />}
+            {item.inProgress && (
+              <View style={styles.sending}>
+                <Icon name="ic-clock-16" colorHex="#FFF" />
+              </View>
+            )}
           </Animated.View>
         }
         content={
           <View>
             {item.nftAddress && (
-              <TransactionNFTItem
-                nftAddress={item.nftAddress}
-                nft={item.nft}
-              />
+              <TransactionNFTItem nftAddress={item.nftAddress} nftItem={item.nftItem} />
             )}
             {item.comment && (
               <Animated.View style={[styles.comment.static, backgroundStyle]}>
@@ -109,5 +122,14 @@ const styles = Steezy.create(({ colors, corners }) => ({
     borderRadius: 18,
     paddingTop: 7.5,
     paddingBottom: 8.5,
+  },
+  sending: {
+    backgroundColor: colors.iconSecondary,
+    borderRadius: 16 / 2,
+    height: 16,
+    width: 16,
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
   },
 }));
