@@ -220,6 +220,7 @@
   "send_invalid_recipient_title": "Неверный получатель",
   "send_invalid_recipient_caption": "Домен не существует или адрес кошелька к нему не привязан. Введите действительный адрес домена или кошелька.",
   "send_all_warning_title": "Вы уверены, что хотите отправить весь свой баланс?",
+  "send_liquid_jetton_warning_title": "Вы уверены, что хотите отправить часть своего стейкинг баланса?",
 
   "send_screen_steps": {
     "address": {
@@ -766,9 +767,9 @@
     "withdraw": "Вывести",
     "deposit": "Депозит",
     "transaction": "Транзакция",
-    "active": "Active",
-    "recommended": "Most profitable",
-    "other": "Other",
+    "active": "Активные",
+    "recommended": "Наиболее прибыльный",
+    "other": "Другие",
     "warning": {
       "title": "Предупреждение",
       "desc": "Стейкинг основан на сторонних смарт-контрактах. Мы не несем ответственность за их работу.",
