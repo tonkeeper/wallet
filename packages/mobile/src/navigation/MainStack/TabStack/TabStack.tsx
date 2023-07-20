@@ -21,6 +21,7 @@ import { useLoadExpiringDomains } from '$store/zustand/domains/useExpiringDomain
 import { ActivityStack } from '$navigation/ActivityStack/ActivityStack';
 import { useNotificationsStore } from '$store';
 import { NotificationsIndicator } from '$navigation/MainStack/TabStack/NotificationsIndicator';
+import { useFetchMethodsToBuy } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -31,6 +32,7 @@ export const TabStack: FC = () => {
   // const shouldShowRedDot = useNotificationsStore((state) => state.should_show_red_dot);
 
   useLoadExpiringDomains();
+  useFetchMethodsToBuy();
   useNotificationsSubscribe();
   usePreloadChart();
   useCheckForUpdates();

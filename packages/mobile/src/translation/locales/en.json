@@ -406,7 +406,9 @@
 
   "exchange_modal": {
     "title": "Buy or sell",
-    "other_ways_to_buy": "Other ways to buy"
+    "other_ways_to_buy": "Other ways to buy",
+    "show_all": "Show all",
+    "hide": "Hide"
   },
 
   "exchange_title": "Buy TON",
@@ -728,6 +730,17 @@
       "GBP": "Great Britain Pound",
       "CHF": "Swiss Franc",
       "CNY": "China Yuan",
+      "BYN": "Belarusian Ruble",
+      "CAD": "Canadian Dollar",
+      "IRR": "Iranian Rial",
+      "TRY": "Turkish Lira",
+      "THB": "Thai Baht",
+      "VND": "Vietnamese Dong",
+      "BDT": "Bangladeshi Taka",
+      "NGN": "Nigerian Naira",
+      "BRL": "Brazilian Real",
+      "ILS": "Israeli Shekel",
+      "GEL": "Georgian Lari",
       "KRW": "South Korean Won",
       "IDR": "Indonesian Rupiah",
       "INR": "Indian Rupee",
@@ -852,5 +865,8 @@
       "open": "Open anyway",
       "cancel": "Cancel"
     }
+  },
+  "choose_country": {
+    "title": "Choose your country"
   }
 }
