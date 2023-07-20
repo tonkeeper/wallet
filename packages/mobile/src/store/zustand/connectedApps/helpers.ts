@@ -8,7 +8,6 @@ import {
   IConnectedAppConnectionRemote,
 } from './types';
 import { useConnectedAppsStore } from './useConnectedAppsStore';
-import messaging from '@react-native-firebase/messaging';
 
 export const saveAppConnection = (
   walletAddress: string,
@@ -26,16 +25,9 @@ export const enableNotifications = async (
   sessionId: string | undefined,
 ) => {
   try {
-    const firebaseToken = await messaging().getToken();
     useConnectedAppsStore
       .getState()
-      .actions.enableNotifications(
-        getChainName(),
-        walletAddress,
-        url,
-        sessionId,
-        firebaseToken,
-      );
+      .actions.enableNotifications(getChainName(), walletAddress, url, sessionId);
   } catch (e) {
     console.log(e);
   }
@@ -46,10 +38,9 @@ export const disableNotifications = async (
   url: IConnectedApp['url'],
 ) => {
   try {
-    const firebaseToken = await messaging().getToken();
     useConnectedAppsStore
       .getState()
-      .actions.disableNotifications(getChainName(), walletAddress, url, firebaseToken);
+      .actions.disableNotifications(getChainName(), walletAddress, url);
   } catch (e) {
     console.log(e);
   }

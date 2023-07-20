@@ -29,7 +29,7 @@ export const TabStack: FC = () => {
   const { bottomSeparatorStyle } = useContext(ScrollPositionContext);
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
-  // const shouldShowRedDot = useNotificationsStore((state) => state.should_show_red_dot);
+  const shouldShowRedDot = useNotificationsStore((state) => state.should_show_red_dot);
 
   useLoadExpiringDomains();
   useFetchMethodsToBuy();
@@ -99,7 +99,7 @@ export const TabStack: FC = () => {
           tabBarIcon: ({ color }) => (
             <View style={styles.settingsIcon}>
               <Icon colorHex={color} name="ic-flash-28" />
-              {/* <TabBarBadgeIndicator isVisible={shouldShowRedDot} /> */}
+              <TabBarBadgeIndicator isVisible={shouldShowRedDot} />
             </View>
           ),
         }}

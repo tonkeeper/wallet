@@ -184,6 +184,7 @@ export interface SubscribeToNotificationsRequest {
   firebase_token: string;
   session_id?: string;
   commercial: boolean;
+  silent: boolean;
 }
 async function subscribeToNotifications(
   token: string,
@@ -254,21 +255,23 @@ async function getBalances(pubkey: string) {
   return balances;
 }
 
-
 type GetExpiringDNSParams = {
   account_id: string;
   period: number;
 };
 
 const getExpiringDNS = async (params: GetExpiringDNSParams) => {
-  return await network.get(`https://tonapi.io/v2/accounts/${params.account_id}/dns/expiring`, {
-    headers: {
-      Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+  return await network.get(
+    `https://tonapi.io/v2/accounts/${params.account_id}/dns/expiring`,
+    {
+      headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+      },
+      params: {
+        period: params.period,
+      },
     },
-    params: {
-      period: params.period
-    }
-  });
+  );
 };
 
 const getDNSLastFillTime = async (domainAddress: string): Promise<number> => {

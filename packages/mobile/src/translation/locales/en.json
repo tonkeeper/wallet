@@ -448,8 +448,8 @@
   "account_deleted": "Account deleted",
 
   "notifications_title": "Notifications",
-  "notifications_switch_title": "Notifications",
-  "notification_switch_description": "Get notifications when you receive TON, tokens and NFTs.",
+  "notifications_switch_title": "Push notifications",
+  "notification_switch_description": "Get notifications when you receive TON, tokens and NFTs. Notifications from connected apps.",
   "notifications_disabled_title": "Notifications are disabled",
   "notifications_disabled_description": "You turned off notifications in your phone’s settings. To activate notifications, go to Settings on this device.",
   "notifications_disabled_action": "Open Settings",
