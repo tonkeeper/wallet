@@ -1,16 +1,6 @@
 {
   "country": [
     {
-      "ru": "Абхазия",
-      "fullname": "Республика Абхазия",
-      "en": "Abkhazia",
-      "alpha2": "AB",
-      "alpha3": "ABH",
-      "iso": 895,
-      "location": "Азия",
-      "location-precise": "Закавказье"
-    },
-    {
       "ru": "Австралия",
       "fullname": "",
       "en": "Australia",
@@ -2469,16 +2459,6 @@
       "iso": 239,
       "location": "",
       "location-precise": "Южный океан"
-    },
-    {
-      "ru": "Южная Осетия",
-      "fullname": "Республика Южная Осетия",
-      "en": "South Ossetia",
-      "alpha2": "OS",
-      "alpha3": "OST",
-      "iso": 896,
-      "location": "Азия",
-      "location-precise": "Закавказье"
     },
     {
       "ru": "Южный Судан",
