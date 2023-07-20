@@ -17,5 +17,6 @@ export interface ConfirmStepProps extends StepComponentProps {
   fee: string;
   isInactive: boolean;
   comment: string;
+  isLiquidJetton: boolean;
   onConfirm: () => Promise<void>;
 }

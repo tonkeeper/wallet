@@ -36,6 +36,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     isInactive,
     amount,
     comment,
+    isLiquidJetton,
     onConfirm: sendTx,
   } = props;
 
@@ -90,6 +91,25 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     [t],
   );
 
+  const showLiquidJettonAlert = useCallback(
+    () =>
+      new Promise((resolve, reject) =>
+        Alert.alert(t('send_liquid_jetton_warning_title'), undefined, [
+          {
+            text: t('cancel'),
+            style: 'cancel',
+            onPress: reject,
+          },
+          {
+            text: t('continue'),
+            onPress: resolve,
+            style: 'destructive',
+          },
+        ]),
+      ),
+    [t],
+  );
+
   const handleConfirm = useCallback(async () => {
     try {
       const amountWithFee = new BigNumber(parseLocaleNumber(amount.value)).plus(fee);
@@ -107,6 +127,10 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
         await showAllBalanceAlert();
       }
 
+      if (isLiquidJetton) {
+        await showLiquidJettonAlert();
+      }
+
       onConfirm(async ({ startLoading }) => {
         startLoading();
 
@@ -120,9 +144,11 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     currency,
     wallet,
     balances,
+    isLiquidJetton,
     onConfirm,
     showLockupAlert,
     showAllBalanceAlert,
+    showLiquidJettonAlert,
     sendTx,
   ]);
 

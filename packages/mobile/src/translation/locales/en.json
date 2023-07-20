@@ -221,6 +221,7 @@
   "send_invalid_recipient_title": "Invalid recipient",
   "send_invalid_recipient_caption": "The domain does not exist or the wallet address is not linked to it",
   "send_all_warning_title": "Are you sure you want to send all your balance?",
+  "send_liquid_jetton_warning_title": "Are you sure you want to send a part of your staking balance?",
 
   "send_screen_steps": {
     "address": {
