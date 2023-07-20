@@ -20,6 +20,7 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
   const isBot = methodId.endsWith('_bot');
 
   const handlePress = useCallback(() => {
+    if (!method) return null;
     if (isBot) {
       openExchangeMethodModal(methodId, () => {
         Linking.openURL(method.action_button.url);
@@ -27,9 +28,10 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
     } else {
       openExchangeMethodModal(methodId);
     }
-  }, [isBot, method.action_button.url, methodId]);
+  }, [isBot, method, methodId]);
 
   function renderBadge() {
+    if (!method) return null;
     if (method.badge) {
       let backgroundColor = theme.colors.accentPrimary;
       if (method.badgeStyle === 'red') {
@@ -46,9 +48,9 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
     }
   }
 
-  if (method.disabled) {
+  if (!method || method.disabled) {
     return null;
-  } // TODO:
+  }
 
   return (
     <S.Wrap>

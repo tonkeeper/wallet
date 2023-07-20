@@ -9,6 +9,7 @@ export interface NavBarProps {
   rightContent?: ReactNode;
   hideBackButton?: boolean;
   hideTitle?: boolean;
+  forceBigTitle?: boolean;
   isClosedButton?: boolean;
   isBottomButton?: boolean;
   onBackPress?: () => void;

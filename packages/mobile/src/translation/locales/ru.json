@@ -421,7 +421,9 @@
 
   "exchange_modal": {
     "title": "Купить или продать",
-    "other_ways_to_buy": "Другие способы покупки"
+    "other_ways_to_buy": "Другие способы покупки",
+    "show_all": "Показать всё",
+    "hide": "Скрыть"
   },
 
   "exchange_title": "Купить TON",
@@ -886,5 +888,8 @@
       "open": "Открыть всё равно",
       "cancel": "Отмена"
     }
+  },
+  "choose_country": {
+    "title": "Выберите вашу страну"
   }
 }

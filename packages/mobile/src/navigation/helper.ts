@@ -492,6 +492,10 @@ export async function openMarketplaces(props?: MarketplacesModalProps) {
   });
 }
 
+export async function openChooseCountry() {
+  navigate(AppStackRouteNames.ChooseCountry);
+}
+
 export function openAddFavorite(props: Omit<AddEditFavoriteAddressProps, 'isEdit'>) {
   navigate(AppStackRouteNames.ModalContainer, {
     modalName: ModalName.ADD_EDIT_FAVORITE_ADDRESS,

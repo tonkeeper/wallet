@@ -52,7 +52,6 @@ import {
 } from '$store/main/interface';
 import { withRetry } from '$store/retry';
 import { InternalNotificationModel } from '$store/models';
-import { exchangeActions } from '$store/exchange';
 import { Cache } from '$store/events/manager/cache';
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
 import { getWalletName } from '$shared/dynamicConfig';
@@ -61,7 +60,6 @@ import { initStats, trackEvent, trackFirstLaunch } from '$utils';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { favoritesActions } from '$store/favorites';
-import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 import { clearSubscribeStatus } from '$utils/messaging';
 import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 import { useSwapStore } from '$store/zustand/swap';
@@ -220,7 +218,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   yield put(mainActions.loadNotifications());
 
   yield fork(loadRates);
-  yield put(exchangeActions.loadMethods());
   yield put(nftsActions.loadMarketplaces());
   yield put(favoritesActions.loadSuggests());
   yield put(mainActions.getTimeSynced());
