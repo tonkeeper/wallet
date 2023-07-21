@@ -10,5 +10,6 @@ export const useWallet = () => {
       return { address: wallet.address };
     }
     return null;
-  }, [wallet]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wallet?.address]);
 };
