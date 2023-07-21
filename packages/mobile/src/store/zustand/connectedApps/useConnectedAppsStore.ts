@@ -146,7 +146,7 @@ export const useConnectedAppsStore = create(
               session_id: session_id,
               account: walletAddress,
               commercial: true,
-              silent: subscribeStatus === SUBSCRIBE_STATUS.SUBSCRIBED,
+              silent: subscribeStatus !== SUBSCRIBE_STATUS.SUBSCRIBED,
               firebase_token,
             });
 
