@@ -40,7 +40,7 @@ export enum FiatCurrencies {
   Uah = 'uah',
   Kzt = 'kzt',
   Uzs = 'uzs',
-  // Irr = 'irr',
+  Irr = 'irr',
   Brl = 'brl',
   Cad = 'cad',
   Byn = 'byn',
@@ -171,10 +171,10 @@ export const FiatCurrencySymbolsConfig = {
     symbol: '¥',
     side: 'start',
   },
-  /*  [FiatCurrencies.Irr]: {
-    symbol: '₸',
+  [FiatCurrencies.Irr]: {
+    symbol: 'IRR',
     side: 'end',
-  },*/
+  },
   [FiatCurrencies.Byn]: {
     symbol: 'Br',
     side: 'end',

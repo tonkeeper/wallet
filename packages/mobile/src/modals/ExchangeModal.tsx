@@ -93,7 +93,7 @@ export const ExchangeModal = () => {
                           mode="secondary"
                           onPress={handleShowAll}
                         >
-                          {t('exchange_modal.show_all')}
+                          {t(showAll ? 'exchange_modal.hide' : 'exchange_modal.show_all')}
                         </Button>
                       </View>
                     ) : null}

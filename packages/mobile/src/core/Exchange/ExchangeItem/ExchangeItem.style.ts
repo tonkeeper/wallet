@@ -30,7 +30,7 @@ const radius = (topRadius: boolean, bottomRadius: boolean) => {
 };
 
 export const Card = styled(Pressable).attrs(({ theme }) => ({
-  underlayColor: theme.colors.backgroundTertiary
+  underlayColor: theme.colors.backgroundTertiary,
 }))<{ topRadius: boolean; bottomRadius: boolean }>`
   overflow: hidden;
   padding: ${hNs(16)}px ${ns(16)}px;
@@ -55,7 +55,7 @@ export const Icon = styled(FastImage).attrs({
 })`
   width: ${ns(44)}px;
   height: ${hNs(44)}px;
-  border-radius: ${ns(44 / 2)}px;
+  border-radius: ${ns(12)}px;
   margin-right: ${ns(16)}px;
 `;
 
