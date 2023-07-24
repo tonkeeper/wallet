@@ -20,6 +20,8 @@ import { useLoadExpiringDomains } from '$store/zustand/domains/useExpiringDomain
 import { ActivityStack } from '$navigation/ActivityStack/ActivityStack';
 import { NotificationsIndicator } from '$navigation/MainStack/TabStack/NotificationsIndicator';
 import { useFetchMethodsToBuy } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
+import { useNotificationsStore } from '$store/zustand/notifications';
+import { TabBarBadgeIndicator } from './TabBarBadgeIndicator';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 

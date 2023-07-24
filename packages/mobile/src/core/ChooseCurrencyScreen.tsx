@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { mainActions, mainSelector } from '$store/main';
 import { t } from '$translation';
 import { CellSection, CellSectionItem } from '$shared/components';
-import { FiatCurrencySymbolsConfig, FiatCurrencies } from '$libs/AmountFormatter/fiat';
+import { FiatCurrencySymbolsConfig, FiatCurrencies } from '@tonkeeper/core';
 
 export const ChooseCurrencyScreen: React.FC = () => {
   const { fiatCurrency } = useSelector(mainSelector);
