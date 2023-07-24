@@ -92,8 +92,10 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   const [isInactive, setInactive] = useState(initialIsInactive);
 
-  const { balance, currencyTitle, decimals, jettonWalletAddress, isLiquidJetton } =
-    useCurrencyToSend(currency, isJetton);
+  const { balance, currencyTitle, decimals, jettonWalletAddress } = useCurrencyToSend(
+    currency,
+    isJetton,
+  );
 
   const tokenPrice = useTokenPrice(currency);
 
@@ -343,7 +345,6 @@ export const Send: FC<SendProps> = ({ route }) => {
               fee={fee}
               isInactive={isInactive}
               comment={comment}
-              isLiquidJetton={isLiquidJetton}
               onConfirm={handleSend}
               {...stepProps}
             />

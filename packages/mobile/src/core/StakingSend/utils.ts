@@ -106,15 +106,10 @@ export const getStakeSignRawMessage = async (
     const payload =
       transactionType === StakingTransactionType.DEPOSIT
         ? await createLiquidTfAddStakeCommand()
-        : await createLiquidTfWithdrawStakeCell(
-            isSendAll ? Ton.toNano(0) : amount,
-            responseAddress,
-          );
+        : await createLiquidTfWithdrawStakeCell(amount, responseAddress);
 
     const amountWithFee = Ton.toNano(
-      new BigNumber(Ton.fromNano(withdrawalFee))
-        .plus(Ton.fromNano(withdrawalFee))
-        .toString(),
+      new BigNumber(Ton.fromNano(amount)).plus(Ton.fromNano(withdrawalFee)).toString(),
     );
 
     const depositAmount =
