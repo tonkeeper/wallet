@@ -11,7 +11,7 @@ export const Logos = styled.View`
   justify-content: center;
   align-items: center;
   margin-top: ${ns(48)}px;
-  margin-bottom: ${ns(32)}px;
+  margin-bottom: ${ns(20)}px;
 `;
 
 export const TonLogo = styled.View`
@@ -85,7 +85,7 @@ export const Content = styled.View`
 `;
 
 export const TitleWrapper = styled.View`
-  margin-bottom: ${ns(8)}px;
+  margin-bottom: ${ns(4)}px;
 `;
 
 export const Center = styled.View<{ isTonConnectV2: boolean }>`

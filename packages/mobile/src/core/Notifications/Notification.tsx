@@ -176,7 +176,7 @@ export const Notification: React.FC<NotificationProps> = (props) => {
             picture={props.notification.icon_url || app?.icon}
             titleProps={{
               variant: 'body2',
-              numberOfLines: 4,
+              numberOfLines: 3,
               style: styles.cellTitle.static,
             }}
             title={props.notification.message}

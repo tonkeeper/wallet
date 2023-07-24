@@ -1,5 +1,13 @@
 import React, { useCallback, useRef } from 'react';
-import { InternalNotification, Screen, Spacer, SwitchItem, Text, View } from '$uikit';
+import {
+  InternalNotification,
+  Screen,
+  Separator,
+  Spacer,
+  SwitchItem,
+  Text,
+  View,
+} from '$uikit';
 import { debugLog, ns } from '$utils';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Linking } from 'react-native';
@@ -15,8 +23,7 @@ import { Toast, ToastSize, useConnectedAppsList, useConnectedAppsStore } from '$
 import { Steezy } from '$styles';
 import { getChainName } from '$shared/dynamicConfig';
 import { walletAddressSelector } from '$store/wallet';
-import FastImage from 'react-native-fast-image';
-import { useObtainProofToken } from '$hooks';
+import { SwitchDAppNotifications } from '$core/Notifications/SwitchDAppNotifications';
 
 export const Notifications: React.FC = () => {
   const address = useSelector(walletAddressSelector);
@@ -24,7 +31,6 @@ export const Notifications: React.FC = () => {
   const notifications = useNotifications();
   const tabBarHeight = useBottomTabBarHeight();
   const isSwitchFrozen = useRef(false);
-  const obtainProofToken = useObtainProofToken();
   const notificationStatus = useNotificationStatus();
   const notificationsBadge = useNotificationsBadge();
   const shouldEnableNotifications = notificationStatus === NotificationsStatus.DENIED;
@@ -87,20 +93,6 @@ export const Notifications: React.FC = () => {
   );
 
   const connectedApps = useConnectedAppsList();
-  const { enableNotifications, disableNotifications } = useConnectedAppsStore(
-    (state) => state.actions,
-  );
-
-  const handleSwitchNotifications = React.useCallback(
-    async (value: boolean, url: string, session_id: string | undefined) => {
-      await obtainProofToken();
-      if (value) {
-        return enableNotifications(getChainName(), address.ton, url, session_id);
-      }
-      disableNotifications(getChainName(), address.ton, url);
-    },
-    [obtainProofToken, disableNotifications, address.ton, enableNotifications],
-  );
 
   return (
     <Screen>
@@ -142,25 +134,10 @@ export const Notifications: React.FC = () => {
             </View>
             <CellSection>
               {connectedApps.map((app) => (
-                <SwitchItem
-                  icon={
-                    <FastImage
-                      source={{ uri: app.icon }}
-                      style={styles.imageStyle.static}
-                    />
-                  }
-                  key={app.url}
-                  title={app.name}
-                  value={!!app.notificationsEnabled}
-                  onChange={() =>
-                    handleSwitchNotifications(
-                      !app.notificationsEnabled,
-                      app.url,
-                      // @ts-ignore
-                      app.connections[0]?.clientSessionId,
-                    )
-                  }
-                />
+                <View key={app.url}>
+                  <SwitchDAppNotifications app={app} />
+                  <Separator />
+                </View>
               ))}
             </CellSection>
           </>
@@ -173,12 +150,6 @@ export const Notifications: React.FC = () => {
 const styles = Steezy.create({
   title: {
     paddingVertical: 14,
-  },
-  imageStyle: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    marginRight: 16,
   },
   notificationsSection: {
     marginBottom: 16,

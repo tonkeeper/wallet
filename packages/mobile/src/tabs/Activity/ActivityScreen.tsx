@@ -46,8 +46,11 @@ export const ActivityScreen: FC = () => {
     canLoadMore,
   } = useSelector(eventsSelector);
   const notifications = useNotificationsStore((state) => state.notifications);
-  const lastSeenAt = useNotificationsStore((state) => state.last_seen);
+  const lastSeenAt = useNotificationsStore((state) => state.last_seen_activity_screen);
   const removeRedDot = useNotificationsStore((state) => state.actions.removeRedDot);
+  const updateLastSeenActivityScreen = useNotificationsStore(
+    (state) => state.actions.updateLastSeenActivityScreen,
+  );
 
   const netInfo = useNetInfo();
   const prevNetInfo = usePrevious(netInfo);
@@ -108,6 +111,12 @@ export const ActivityScreen: FC = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   }, []);
 
+  useEffect(() => {
+    if (isFocused) {
+      return () => updateLastSeenActivityScreen();
+    }
+  }, [isFocused, updateLastSeenActivityScreen]);
+
   const renderNotificationsHeader = useCallback(() => {
     if (!notifications.length) {
       return null;
@@ -135,7 +144,7 @@ export const ActivityScreen: FC = () => {
               </View>
             }
             rightContent={
-              newNotificationsCount > 0 ? (
+              newNotificationsCount - 2 > 0 ? (
                 <View style={styles.notificationsCount}>
                   <Text variant="label2">{newNotificationsCount}</Text>
                 </View>
