@@ -1,6 +1,6 @@
+import { NftItem } from '../TonAPI/TonAPIGenerated';
 import { useQuery } from 'react-query';
 import { useTonAPI } from '../TonAPI';
-import { NftItem } from '../TonAPI/TonAPIGenerated';
 
 type UseNftItemByAddressOptions = {
   existingNft?: NftItem;
@@ -16,6 +16,7 @@ export const useNftItemByAddress = (
   return useQuery({
     enabled: !!cacheKey,
     queryKey: ['nfts', cacheKey],
+    initialData: options.existingNft,
     cacheTime: Infinity,
     queryFn: async () => {
       if (options.existingNft) {

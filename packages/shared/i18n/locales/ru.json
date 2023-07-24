@@ -399,7 +399,11 @@
     "unsubscription": "Отмена подписки",
     "smartcontract_exec": "Вызов контракта",
     "unknown": "Неизвестно",
-    "unknown_description": "Что-то произошло, но мы не смогли распознать"
+    "unknown_description": "Что-то произошло, но мы не смогли распознать",
+    "swap": "Обмен",
+    "wallet_initialized": "Кошелёк инициализирован",
+    "contract_deploy": "Создание контракта",
+    "spam": "Спам"
   },
 
   "browser": {

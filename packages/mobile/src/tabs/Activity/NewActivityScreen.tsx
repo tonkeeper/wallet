@@ -38,7 +38,8 @@ export const ActivityScreen = memo(() => {
     }
   }, [wallet]);
 
-  if (!events.loading && events.data.length < 1) {
+
+  if (!events.loading && events?.data?.length < 1) {
     return (
       <Screen>
         <View style={styles.emptyContainer}>

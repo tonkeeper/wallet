@@ -45,6 +45,8 @@ export const useEventsByAccount = <TData = AccountEvents, TModifiedData = TData>
 
       const result = data as TData;
 
+      // console.warn(data.events[0].in_progress)
+
       if (options.fetchMoreEnd) {
         const isFetchMoreEnd = options.fetchMoreEnd(result);
         if (isFetchMoreEnd) {
@@ -69,7 +71,7 @@ export const useEventsByAccount = <TData = AccountEvents, TModifiedData = TData>
 
   const fetchMore = useCallback(() => {
     if (!isFetchingNextPage && !fetchMoreEnd) {
-      fetchNextPage();
+      return fetchNextPage();
     }
   }, [fetchNextPage, fetchMoreEnd, isFetchingNextPage]);
 

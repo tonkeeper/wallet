@@ -72,11 +72,13 @@ export type IconNames =
   | 'ic-secure-28'
   | 'ic-settings-28'
   | 'ic-shield-28'
+  | 'ic-shopping-bag-28'
   | 'ic-speed-28'
   | 'ic-staking-28'
   | 'ic-star-28'
   | 'ic-success-28'
   | 'ic-swap-28'
+  | 'ic-swap-horizontal-alternative-28'
   | 'ic-telegram-28'
   | 'ic-ticket-28'
   | 'ic-ton-28'
@@ -182,11 +184,13 @@ export const AllIcons = [
   'ic-secure-28',
   'ic-settings-28',
   'ic-shield-28',
+  'ic-shopping-bag-28',
   'ic-speed-28',
   'ic-staking-28',
   'ic-star-28',
   'ic-success-28',
   'ic-swap-28',
+  'ic-swap-horizontal-alternative-28',
   'ic-telegram-28',
   'ic-ticket-28',
   'ic-ton-28',
@@ -293,11 +297,13 @@ export const IconSizes = {
   'ic-secure-28': 28,
   'ic-settings-28': 28,
   'ic-shield-28': 28,
+  'ic-shopping-bag-28': 28,
   'ic-speed-28': 28,
   'ic-staking-28': 28,
   'ic-star-28': 28,
   'ic-success-28': 28,
   'ic-swap-28': 28,
+  'ic-swap-horizontal-alternative-28': 28,
   'ic-telegram-28': 28,
   'ic-ticket-28': 28,
   'ic-ton-28': 28,

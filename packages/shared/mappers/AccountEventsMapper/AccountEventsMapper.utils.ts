@@ -1,19 +1,22 @@
+import { AccountAddress } from '@tonkeeper/core/src/TonAPI';
 import { ActionsData } from './AccountEventsMapper.types';
 import { Address } from '@tonkeeper/core';
 
-export function getSenderAccount(isReceive: boolean, data: ActionsData['data']) {
+export function findSenderAccount(isReceive: boolean, data: ActionsData['data']) {
   if (data && ('sender' in data || 'recipient' in data)) {
     const senderAccount = isReceive ? data.sender : data.recipient;
-    if (senderAccount) {
-      if (senderAccount.name) {
-        return senderAccount.name;
-      }
-
-      return Address(senderAccount.address).maskify();
-    }
+    return getSenderAddress(senderAccount);
   }
 
   return '';
+}
+
+export function getSenderAddress(senderAccount: AccountAddress) {
+  if (senderAccount.name) {
+    return senderAccount.name;
+  }
+
+  return Address(senderAccount.address).maskify();
 }
 
 export function detectReceive(walletAddress: string, data: ActionsData['data']) {

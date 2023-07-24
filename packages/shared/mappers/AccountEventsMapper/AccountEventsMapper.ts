@@ -1,4 +1,4 @@
-import { detectReceive, getSenderAccount } from './AccountEventsMapper.utils';
+import { detectReceive, findSenderAccount, getSenderAddress } from './AccountEventsMapper.utils';
 import { AccountEvent, ActionTypeEnum } from '@tonkeeper/core/src/TonAPI';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { t } from '@tonkeeper/shared/i18n';
@@ -92,7 +92,7 @@ type EventsActionMapperInput = {
 
 export function EventsActionMapper(input: EventsActionMapperInput): MappedEventAction {
   const time = formatTransactionTime(new Date(input.event.timestamp * 1000));
-  
+
   // SimplePreview by default
   const action: MappedEventAction = {
     type: MappedEventItemType.Action,
@@ -102,13 +102,14 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
     inProgress: input.event.in_progress,
     timestamp: input.event.timestamp,
     iconName: 'ic-gear-28',
+    isScam: false,
     amount: '−',
     time,
   };
 
   try {
     const isReceive = detectReceive(input.walletAddress, input.action.data);
-    const senderAccount = getSenderAccount(isReceive, input.action.data);
+    const senderAccount = findSenderAccount(isReceive, input.action.data);
     const arrowIcon = isReceive ? 'ic-tray-arrow-down-28' : 'ic-tray-arrow-up-28';
     const amountPrefix = isReceive ? '+' : '−';
     const sendOrReceiveTitle = isReceive
@@ -157,9 +158,10 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
       case ActionTypeEnum.NftPurchase:
         const data = input.action.data;
 
-        action.iconName = arrowIcon;
+        action.nftItem = data.nft;
+        action.iconName = 'ic-shopping-bag-28';
         action.operation = t('transactions.nft_purchase');
-        action.senderAccount = senderAccount;
+        action.senderAccount = getSenderAddress(data.seller);
         action.amount = formatter.formatNano(data.amount.value, {
           postfix: data.amount.token_name,
           prefix: amountPrefix,
@@ -170,9 +172,10 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
         const isInitialized = Address.compare(data.address, input.walletAddress);
         action.iconName = isInitialized ? 'ic-donemark-28' : 'ic-gear-28';
+        action.senderAccount = Address(data.address).maskify();
         action.operation = isInitialized
-          ? t('transinput.action_type_wallet_initialized')
-          : t('transinput.action_type_contract_deploy');
+          ? t('transactions.wallet_initialized')
+          : t('transactions.contract_deploy');
         break;
       }
       case ActionTypeEnum.Subscribe: {
@@ -210,6 +213,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
       case ActionTypeEnum.AuctionBid: {
         const data = input.action.data;
 
+        console.log(input.action.type);
         break;
       }
       case ActionTypeEnum.Unknown: {
@@ -217,8 +221,35 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
         action.senderAccount = t('transactions.unknown_description');
         break;
       }
-      default:
-        console.log(input.action.type);
+      case ActionTypeEnum.JettonSwap: {
+        const data = input.action.data;
+
+        action.iconName = 'ic-swap-horizontal-alternative-28';
+        action.operation = t('transactions.swap');
+        action.senderAccount = data.user_wallet.name
+          ? data.user_wallet.name
+          : Address(data.user_wallet.address).maskify();
+        action.isReceive = true;
+        action.amount = formatter.formatNano(data.amount_in, {
+          decimals: data.jetton_master_in.decimals,
+          postfix: data.jetton_master_in.symbol,
+          prefix: '+',
+        });
+        action.amount2 = formatter.formatNano(data.amount_out, {
+          decimals: data.jetton_master_out.decimals,
+          postfix: data.jetton_master_out.symbol,
+          prefix: '−',
+        });
+        break;
+      }
+    }
+
+    if (input.event.is_scam) {
+      action.operation = t('transactions.spam');
+      action.comment = undefined;
+      action.nftItem = undefined;
+      action.nftAddress = undefined;
+      action.isScam = true;
     }
 
     return action;

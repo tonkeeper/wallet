@@ -10,6 +10,7 @@ export { Text } from './components/Text';
 export { List, ListSeparator } from './components/List';
 export { View } from './components/View';
 export { Loader } from './components/Loader';
+export { Pressable } from './components/Pressable';
 
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';
 export { PagerView } from './containers/PagerView';

@@ -4,7 +4,7 @@ export const useRouter = () => {
   const nav = useNavigation<any>();
 
   return {
-    navigate: (route: string) => nav.navigate(route),
+    navigate: (route: string, opts?: Record<string, any>) => nav.navigate(route, opts),
     goBack: () => nav.goBack(),
   };
 };

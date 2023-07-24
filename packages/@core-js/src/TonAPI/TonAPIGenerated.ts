@@ -672,7 +672,7 @@ export interface Action {
   NftPurchase?: NftPurchaseAction;
   DepositStake?: DepositStakeAction;
   RecoverStake?: RecoverStakeAction;
-  STONfiSwap?: STONfiSwapAction;
+  JettonSwap?: JettonSwapAction;
   SmartContractExec?: SmartContractAction;
   /** shortly describes what this action is about. */
   simple_preview: ActionSimplePreview;
@@ -692,6 +692,7 @@ export interface TonTransferAction {
    * From accounting with love."
    */
   comment?: string;
+  encrypted_comment?: EncryptedComment;
   refund?: Refund;
 }
 
@@ -720,6 +721,7 @@ export interface NftItemTransferAction {
    * From accounting with love."
    */
   comment?: string;
+  encrypted_comment?: EncryptedComment;
   /**
    * raw hex encoded payload
    * @example "0234de3e21d21b3ee21f3"
@@ -745,6 +747,7 @@ export interface JettonTransferAction {
    * From accounting with love."
    */
   comment?: string;
+  encrypted_comment?: EncryptedComment;
   refund?: Refund;
   jetton: JettonPreview;
 }
@@ -803,13 +806,14 @@ export interface RecoverStakeAction {
   staker: AccountAddress;
 }
 
-export interface STONfiSwapAction {
+export interface JettonSwapAction {
+  dex: JettonSwapActionDexEnum;
   /** @example "1660050553" */
   amount_in: string;
   /** @example "1660050553" */
   amount_out: string;
   user_wallet: AccountAddress;
-  stonfi_router: AccountAddress;
+  router: AccountAddress;
   /** @example "0:dea8f638b789172ce36d10a20318125e52c649aa84893cd77858224fe2b9b0ee" */
   jetton_wallet_in: string;
   jetton_master_in: JettonPreview;
@@ -1284,6 +1288,47 @@ export interface Seqno {
   seqno: number;
 }
 
+export interface BlockRaw {
+  /**
+   * @format uint32
+   * @example 4294967295
+   */
+  workchain: number;
+  /**
+   * @format uint64
+   * @example 9223372036854776000
+   */
+  shard: number;
+  /**
+   * @format uint32
+   * @example 30699640
+   */
+  seqno: number;
+  /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+  root_hash: string;
+  /** @example "A6A0BD6608672B11B79538A50B2204E748305C12AA0DED9C16CF0006CE3AF8DB" */
+  file_hash: string;
+}
+
+export interface InitStateRaw {
+  /**
+   * @format uint32
+   * @example 4294967295
+   */
+  workchain: number;
+  /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+  root_hash: string;
+  /** @example "A6A0BD6608672B11B79538A50B2204E748305C12AA0DED9C16CF0006CE3AF8DB" */
+  file_hash: string;
+}
+
+export interface EncryptedComment {
+  /** @example "simple" */
+  encryption_type: string;
+  /** @example "A6A0BD6608672B...CE3AF8DB" */
+  cipher_text: string;
+}
+
 /** @example "cell" */
 export enum TvmStackRecordTypeEnum {
   Cell = 'cell',
@@ -1318,7 +1363,7 @@ export enum ActionTypeEnum {
   NftPurchase = 'NftPurchase',
   DepositStake = 'DepositStake',
   RecoverStake = 'RecoverStake',
-  STONfiSwap = 'STONfiSwap',
+  JettonSwap = 'JettonSwap',
   SmartContractExec = 'SmartContractExec',
   Unknown = 'Unknown',
 }
@@ -1335,6 +1380,11 @@ export enum AuctionBidActionAuctionTypeEnum {
   DNSTg = 'DNS.tg',
   NUMBERTg = 'NUMBER.tg',
   Getgems = 'getgems',
+}
+
+export enum JettonSwapActionDexEnum {
+  Stonfi = 'stonfi',
+  Dedust = 'dedust',
 }
 
 export enum NftPurchaseActionAuctionTypeEnum {
@@ -1632,6 +1682,143 @@ export interface GetRatesParams {
    * @example "ton,usd,rub"
    */
   currencies: string;
+}
+
+export interface GetMasterchainInfoExtLiteServerParams {
+  /**
+   * mode
+   * @format uint32
+   * @example 0
+   */
+  mode: number;
+}
+
+export interface GetBlockHeaderLiteServerParams {
+  /**
+   * mode
+   * @format uint32
+   * @example 0
+   */
+  mode: number;
+  /**
+   * block ID: (workchain,shard,seqno,root_hash,file_hash)
+   * @example "(-1,8000000000000000,4234234,3E575DAB1D25...90D8,47192E5C46C...BB29)"
+   */
+  blockId: string;
+}
+
+export interface GetShardInfoLiteServerParams {
+  /**
+   * workchain
+   * @format uint32
+   * @example 1
+   */
+  workchain: number;
+  /**
+   * shard
+   * @format uint64
+   * @example 1
+   */
+  shard: number;
+  /**
+   * exact
+   * @example false
+   */
+  exact: boolean;
+  /**
+   * block ID: (workchain,shard,seqno,root_hash,file_hash)
+   * @example "(-1,8000000000000000,4234234,3E575DAB1D25...90D8,47192E5C46C...BB29)"
+   */
+  blockId: string;
+}
+
+export interface GetTransactionsLiteServerParams {
+  /**
+   * count
+   * @format uint32
+   * @example 100
+   */
+  count: number;
+  /**
+   * lt
+   * @format uint64
+   * @example 23814011000000
+   */
+  lt: number;
+  /**
+   * hash
+   * @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85"
+   */
+  hash: string;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  accountId: string;
+}
+
+export interface GetListBlockTransactionsLiteServerParams {
+  /**
+   * mode
+   * @format uint32
+   * @example 0
+   */
+  mode: number;
+  /**
+   * count
+   * @format uint32
+   * @example 100
+   */
+  count: number;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  account_id?: string;
+  /**
+   * lt
+   * @format uint64
+   * @example 23814011000000
+   */
+  lt?: number;
+  /**
+   * block ID: (workchain,shard,seqno,root_hash,file_hash)
+   * @example "(-1,8000000000000000,4234234,3E575DAB1D25...90D8,47192E5C46C...BB29)"
+   */
+  blockId: string;
+}
+
+export interface GetBlockProofLiteServerParams {
+  /**
+   * known block: (workchain,shard,seqno,root_hash,file_hash)
+   * @example "(-1,8000000000000000,4234234,3E575DAB1D25...90D8,47192E5C46C...BB29)"
+   */
+  known_block: string;
+  /**
+   * target block: (workchain,shard,seqno,root_hash,file_hash)
+   * @example "(-1,8000000000000000,4234234,3E575DAB1D25...90D8,47192E5C46C...BB29)"
+   */
+  target_block?: string;
+  /**
+   * mode
+   * @format uint32
+   * @example 0
+   */
+  mode: number;
+}
+
+export interface GetConfigAllLiteServerParams {
+  /**
+   * mode
+   * @format uint32
+   * @example 0
+   */
+  mode: number;
+  /**
+   * block ID: (workchain,shard,seqno,root_hash,file_hash)
+   * @example "(-1,8000000000000000,4234234,3E575DAB1D25...90D8,47192E5C46C...BB29)"
+   */
+  blockId: string;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -3126,6 +3313,518 @@ export class TonAPIGenerated<
         }
       >({
         path: `/v2/pubkeys/${publicKey}/wallets`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+  };
+  liteserver = {
+    /**
+     * @description Get masterchain info
+     *
+     * @tags Lite Server
+     * @name GetMasterchainInfoLiteServer
+     * @request GET:/v2/liteserver/get_masterchain_info
+     */
+    getMasterchainInfoLiteServer: (params: RequestParams = {}) =>
+      this.request<
+        {
+          last: BlockRaw;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          state_root_hash: string;
+          init: InitStateRaw;
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/get_masterchain_info`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get masterchain info ext
+     *
+     * @tags Lite Server
+     * @name GetMasterchainInfoExtLiteServer
+     * @request GET:/v2/liteserver/get_masterchain_info_ext
+     */
+    getMasterchainInfoExtLiteServer: (
+      query: GetMasterchainInfoExtLiteServerParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /**
+           * @format uint32
+           * @example 0
+           */
+          mode: number;
+          /**
+           * @format uint32
+           * @example 257
+           */
+          version: number;
+          /**
+           * @format uint64
+           * @example 7
+           */
+          capabilities: number;
+          last: BlockRaw;
+          /**
+           * @format uint32
+           * @example 1687938199
+           */
+          last_utime: number;
+          /**
+           * @format uint32
+           * @example 1687938204
+           */
+          now: number;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          state_root_hash: string;
+          init: InitStateRaw;
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/get_masterchain_info_ext`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get time
+     *
+     * @tags Lite Server
+     * @name GetTimeLiteServer
+     * @request GET:/v2/liteserver/get_time
+     */
+    getTimeLiteServer: (params: RequestParams = {}) =>
+      this.request<
+        {
+          /**
+           * @format uint32
+           * @example 1687146728
+           */
+          time: number;
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/get_time`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get block
+     *
+     * @tags Lite Server
+     * @name GetBlockLiteServer
+     * @request GET:/v2/liteserver/get_block/{block_id}
+     */
+    getBlockLiteServer: (blockId: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          id: BlockRaw;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          data: string;
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/get_block/${blockId}`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get block state
+     *
+     * @tags Lite Server
+     * @name GetStateLiteServer
+     * @request GET:/v2/liteserver/get_state/{block_id}
+     */
+    getStateLiteServer: (blockId: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          id: BlockRaw;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          root_hash: string;
+          /** @example "A6A0BD6608672B11B79538A50B2204E748305C12AA0DED9C16CF0006CE3AF8DB" */
+          file_hash: string;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          data: string;
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/get_state/${blockId}`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get block header
+     *
+     * @tags Lite Server
+     * @name GetBlockHeaderLiteServer
+     * @request GET:/v2/liteserver/get_block_header/{block_id}
+     */
+    getBlockHeaderLiteServer: (
+      { blockId, ...query }: GetBlockHeaderLiteServerParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          id: BlockRaw;
+          /**
+           * @format uint32
+           * @example 0
+           */
+          mode: number;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          header_proof: string;
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/get_block_header/${blockId}`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Send message
+     *
+     * @tags Lite Server
+     * @name SendMessageLiteServer
+     * @request POST:/v2/liteserver/send_message
+     */
+    sendMessageLiteServer: (
+      data: {
+        body: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /**
+           * @format uint32
+           * @example 200
+           */
+          code: number;
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/send_message`,
+        method: 'POST',
+        body: data,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get account state
+     *
+     * @tags Lite Server
+     * @name GetAccountStateLiteServer
+     * @request GET:/v2/liteserver/get_account_state/{account_id}
+     */
+    getAccountStateLiteServer: (accountId: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          id: BlockRaw;
+          shardblk: BlockRaw;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          shard_proof: string;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          proof: string;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          state: string;
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/get_account_state/${accountId}`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get shard info
+     *
+     * @tags Lite Server
+     * @name GetShardInfoLiteServer
+     * @request GET:/v2/liteserver/get_shard_info/{block_id}
+     */
+    getShardInfoLiteServer: (
+      { blockId, ...query }: GetShardInfoLiteServerParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          id: BlockRaw;
+          shardblk: BlockRaw;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          shard_proof: string;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          shard_descr: string;
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/get_shard_info/${blockId}`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get all shards info
+     *
+     * @tags Lite Server
+     * @name GetAllShardsInfoLiteServer
+     * @request GET:/v2/liteserver/get_all_shards_info/{block_id}
+     */
+    getAllShardsInfoLiteServer: (blockId: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          id: BlockRaw;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          proof: string;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          data: string;
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/get_all_shards_info/${blockId}`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get transactions
+     *
+     * @tags Lite Server
+     * @name GetTransactionsLiteServer
+     * @request GET:/v2/liteserver/get_transactions/{account_id}
+     */
+    getTransactionsLiteServer: (
+      { accountId, ...query }: GetTransactionsLiteServerParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          ids: BlockRaw[];
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          transactions: string;
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/get_transactions/${accountId}`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get list block transactions
+     *
+     * @tags Lite Server
+     * @name GetListBlockTransactionsLiteServer
+     * @request GET:/v2/liteserver/list_block_transactions/{block_id}
+     */
+    getListBlockTransactionsLiteServer: (
+      { blockId, ...query }: GetListBlockTransactionsLiteServerParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          id: BlockRaw;
+          /**
+           * @format uint32
+           * @example 100
+           */
+          req_count: number;
+          /** @example true */
+          incomplete: boolean;
+          ids: {
+            /**
+             * @format uint32
+             * @example 0
+             */
+            mode: number;
+            /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+            account?: string;
+            /** @format uint64 */
+            lt?: number;
+            /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+            hash?: string;
+          }[];
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          proof: string;
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/list_block_transactions/${blockId}`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get block proof
+     *
+     * @tags Lite Server
+     * @name GetBlockProofLiteServer
+     * @request GET:/v2/liteserver/get_block_proof
+     */
+    getBlockProofLiteServer: (
+      query: GetBlockProofLiteServerParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** @example true */
+          complete: boolean;
+          from: BlockRaw;
+          to: BlockRaw;
+          steps: {
+            lite_server_block_link_back: {
+              /** @example false */
+              to_key_block: boolean;
+              from: BlockRaw;
+              to: BlockRaw;
+              /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+              dest_proof: string;
+              /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+              proof: string;
+              /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+              state_proof: string;
+            };
+            lite_server_block_link_forward: {
+              /** @example false */
+              to_key_block: boolean;
+              from: BlockRaw;
+              to: BlockRaw;
+              /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+              dest_proof: string;
+              /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+              config_proof: string;
+              signatures: {
+                /** @format uint32 */
+                validator_set_hash: number;
+                /** @format uint32 */
+                catchain_seqno: number;
+                signatures: {
+                  /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+                  node_id_short: string;
+                  /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+                  signature: string;
+                }[];
+              };
+            };
+          }[];
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/get_block_proof`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get config all
+     *
+     * @tags Lite Server
+     * @name GetConfigAllLiteServer
+     * @request GET:/v2/liteserver/get_config_all/{block_id}
+     */
+    getConfigAllLiteServer: (
+      { blockId, ...query }: GetConfigAllLiteServerParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /**
+           * @format uint32
+           * @example 0
+           */
+          mode: number;
+          id: BlockRaw;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          state_proof: string;
+          /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+          config_proof: string;
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/get_config_all/${blockId}`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get shard block proof
+     *
+     * @tags Lite Server
+     * @name GetShardBlockProofLiteServer
+     * @request GET:/v2/liteserver/get_shard_block_proof/{block_id}
+     */
+    getShardBlockProofLiteServer: (blockId: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          masterchain_id: BlockRaw;
+          links: {
+            id: BlockRaw;
+            /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
+            proof: string;
+          }[];
+        },
+        {
+          error: string;
+        }
+      >({
+        path: `/v2/liteserver/get_shard_block_proof/${blockId}`,
         method: 'GET',
         format: 'json',
         ...params,

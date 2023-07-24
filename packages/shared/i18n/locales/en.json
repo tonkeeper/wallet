@@ -381,7 +381,11 @@
     "unsubscription": "Unsubscribed",
     "smartcontract_exec": "Call contract",
     "unknown": "Unknown",
-    "unknown_description": "Something happened but we couldn't recognize"
+    "unknown_description": "Something happened but we couldn't recognize",
+    "swap": "Swap",
+    "wallet_initialized": "Wallet initialized",
+    "contract_deploy": "Contract Deploy",
+    "spam": "Spam"
   },
 
   "browser": {

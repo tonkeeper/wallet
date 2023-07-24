@@ -1,10 +1,9 @@
-import Animated, { useSharedValue } from 'react-native-reanimated';
-import { TouchableHighlight } from 'react-native-gesture-handler';
+import { TouchableHighlight as TouchableGestureHighlight } from 'react-native-gesture-handler';
+import { TextStyle, ViewStyle, TouchableHighlight } from 'react-native';
 import React, { memo, useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
 import { Steezy, StyleProp, useTheme } from '../../styles';
 import { useRouter } from '@tonkeeper/router';
-import { TextStyle, ViewStyle } from 'react-native';
 import { Pressable } from '../Pressable';
 import { isAndroid } from '../../utils';
 import { SText as Text } from '../Text';
@@ -25,6 +24,7 @@ interface ListItemProps {
   leftContent?: React.ReactNode;
   navigate?: string;
   subtitleNumberOfLines?: number;
+  gestureHandler?: boolean;
   content?: React.ReactNode;
   onPress?: () => void;
   onPressIn?: () => void;
@@ -43,6 +43,7 @@ export const ListItem = memo<ListItemProps>((props) => {
     navigate,
     pictureCorner = 'full',
     subtitleNumberOfLines = 1,
+    gestureHandler,
   } = props;
   const router = useRouter();
   const theme = useTheme();
@@ -58,7 +59,11 @@ export const ListItem = memo<ListItemProps>((props) => {
   const hasLeftContent = !!props.leftContent || !!props.picture;
   const pictureSource = { uri: props.picture };
 
-  const TouchableComponent = isAndroid ? Pressable : TouchableHighlight;
+  const TouchableComponent = isAndroid
+    ? Pressable
+    : gestureHandler
+    ? TouchableGestureHighlight
+    : TouchableHighlight;
 
   return (
     <TouchableComponent
@@ -139,14 +144,14 @@ export const ListItem = memo<ListItemProps>((props) => {
             </View>
             {isString(props.subvalue) ? (
               <Text type="body2" color="textSecondary">
-                {props.subvalue}
+                {` ${props.subvalue}`}
               </Text>
             ) : (
               props.subvalue
             )}
           </View>
-          {props.content}
           {props.chevron && <Icon name="ic-chevron-right-16" color="iconPrimary" />}
+          {props.content}
         </View>
       </View>
     </TouchableComponent>

@@ -15,6 +15,7 @@ import {
 import { MappedEventAction } from '../../mappers/AccountEventsMapper';
 import { TransactionNFTItem } from './TransactionNFTItem';
 import React, { memo } from 'react';
+import { SText } from '@tonkeeper/uikit/src/components/Text';
 
 interface TransactionItemProps {
   item: MappedEventAction;
@@ -58,9 +59,25 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
         onPress={() => {}}
         title={item.operation}
         value={item.amount}
-        valueStyle={item.isReceive && styles.receiveValue}
-        subvalue={item.time}
         subtitle={item.senderAccount}
+        valueStyle={[
+          item.isReceive && styles.receiveValue,
+          item.isScam && styles.scamAmountText,
+        ]}
+        subvalue={
+          item.amount2 ? (
+            <View>
+              <SText type="label1" style={styles.amount}>
+                {item.amount2}
+              </SText>
+              <SText style={styles.timeText} type="body2" color="textSecondary">
+                {item.time}
+              </SText>
+            </View>
+          ) : (
+            item.time
+          )
+        }
         leftContent={
           <Animated.View style={[styles.icon.static, backgroundStyle]}>
             {item.iconName && <Icon name={item.iconName} color="iconSecondary" />}
@@ -73,10 +90,14 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
         }
         content={
           <View>
-            {item.nftAddress && (
-              <TransactionNFTItem nftAddress={item.nftAddress} nftItem={item.nftItem} />
+            {(!!item.nftAddress || !!item.nftItem) && (
+              <TransactionNFTItem
+                highlightStyle={backgroundStyle}
+                nftAddress={item.nftAddress}
+                nftItem={item.nftItem}
+              />
             )}
-            {item.comment && (
+            {!!item.comment && (
               <Animated.View style={[styles.comment.static, backgroundStyle]}>
                 <Text type="body2">{item.comment}</Text>
               </Animated.View>
@@ -100,6 +121,12 @@ const styles = Steezy.create(({ colors, corners }) => ({
   },
   receiveValue: {
     color: colors.accentGreen,
+    textAlign: 'right',
+  },
+  amount: {
+    textAlign: 'right',
+    marginTop: -3,
+    marginBottom: -1.5,
   },
   topCorner: {
     borderTopLeftRadius: corners.medium,
@@ -122,6 +149,12 @@ const styles = Steezy.create(({ colors, corners }) => ({
     borderRadius: 18,
     paddingTop: 7.5,
     paddingBottom: 8.5,
+  },
+  timeText: {
+    textAlign: 'right',
+  },
+  scamAmountText: {
+    color: colors.textTertiary,
   },
   sending: {
     backgroundColor: colors.iconSecondary,

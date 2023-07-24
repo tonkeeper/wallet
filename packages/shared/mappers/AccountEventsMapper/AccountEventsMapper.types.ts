@@ -5,12 +5,12 @@ import {
   AuctionBidAction,
   ContractDeployAction,
   DepositStakeAction,
+  JettonSwapAction,
   JettonTransferAction,
   NftItem,
   NftItemTransferAction,
   NftPurchaseAction,
   RecoverStakeAction,
-  STONfiSwapAction,
   SmartContractAction,
   SubscriptionAction,
   TonTransferAction,
@@ -78,8 +78,8 @@ export type RecoverStakeActionData = {
 };
 
 export type STONfiSwapActionData = {
-  type: ActionTypeEnum.STONfiSwap;
-  data: STONfiSwapAction;
+  type: ActionTypeEnum.JettonSwap;
+  data: JettonSwapAction;
 };
 
 export type ActionsData =
@@ -129,6 +129,7 @@ export type MappedEventAction = {
   iconName: IconNames;
   operation: string;
   amount?: string;
+  amount2?: string;
   senderAccount?: string;
   time?: string;
   isReceive?: boolean;
@@ -136,6 +137,7 @@ export type MappedEventAction = {
   nftAddress?: string;
   nftItem?: NftItem;
   comment?: string;
+  isScam?: boolean;
 };
 
 export type GroupedActionsByDate = { [date: string]: MappedEventAction[] };
