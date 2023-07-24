@@ -6,6 +6,7 @@ import { getDomainFromURL } from '$utils';
 
 const initialState: Omit<INotificationsStore, 'actions'> = {
   last_seen: Date.now(),
+  last_seen_activity_screen: Date.now(),
   should_show_red_dot: false,
   notifications: [],
 };
@@ -16,6 +17,8 @@ export const useNotificationsStore = create(
       ...initialState,
       actions: {
         updateLastSeen: () => set({ last_seen: new Date().getTime() }),
+        updateLastSeenActivityScreen: () =>
+          set({ last_seen_activity_screen: new Date().getTime() }),
         addNotification: (notification: INotification) =>
           set((state) => ({
             notifications: [notification, ...state.notifications],

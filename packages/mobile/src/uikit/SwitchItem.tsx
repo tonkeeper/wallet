@@ -22,7 +22,12 @@ export const SwitchItem: React.FC<SwitchItemProps> = (props) => {
       <View style={styles.row}>
         {icon}
         <View style={styles.titleContainer}>
-          <Text variant="label1" color="foregroundPrimary" lineHeight={24}>
+          <Text
+            variant="label1"
+            numberOfLines={1}
+            color="foregroundPrimary"
+            lineHeight={24}
+          >
             {title}
           </Text>
           {!!subtitle && (
