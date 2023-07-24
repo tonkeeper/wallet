@@ -29,7 +29,7 @@ $ yarn start:mobile
 $ yarn run:android
 ```
 
-More information about android build in [android readme](android/README.md).
+More information about android build in [android readme](packages/mobile/android/README.md).
 
 
 ## Adding icons

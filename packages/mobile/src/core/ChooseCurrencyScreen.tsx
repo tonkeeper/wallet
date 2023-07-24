@@ -1,24 +1,22 @@
 import React from 'react';
 import { Icon, Screen, Text } from '$uikit';
 import { StyleSheet, View } from 'react-native';
-import { FiatCurrency, FiatCurrencySymbolsConfig } from '$shared/constants';
 import { ns } from '$utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { mainActions, mainSelector } from '$store/main';
 import { t } from '$translation';
 import { CellSection, CellSectionItem } from '$shared/components';
-import { useTheme } from '$hooks';
+import { FiatCurrencySymbolsConfig, FiatCurrencies } from '$libs/AmountFormatter/fiat';
 
 export const ChooseCurrencyScreen: React.FC = () => {
   const { fiatCurrency } = useSelector(mainSelector);
   const dispatch = useDispatch();
-  const theme = useTheme();
   const currencies = React.useMemo(() => {
-    return Object.keys(FiatCurrencySymbolsConfig) as FiatCurrency[];
+    return Object.keys(FiatCurrencySymbolsConfig) as FiatCurrencies[];
   }, []);
 
   const handleChangeCurrency = React.useCallback(
-    (currency: FiatCurrency) => {
+    (currency: FiatCurrencies) => {
       dispatch(mainActions.setFiatCurrency(currency));
     },
     [dispatch],
@@ -30,18 +28,15 @@ export const ChooseCurrencyScreen: React.FC = () => {
       <Screen.ScrollView>
         <CellSection>
           {currencies.map((currency) => (
-            <CellSectionItem 
+            <CellSectionItem
               onPress={() => handleChangeCurrency(currency)}
               key={`currency-${currency}`}
               inlineContent={
                 <>
                   {fiatCurrency === currency && (
-                    <Icon 
-                      name="ic-donemark-thin-28"
-                      color="accentPrimary"
-                    />
+                    <Icon name="ic-donemark-thin-28" color="accentPrimary" />
                   )}
-                 </>
+                </>
               }
               content={
                 <View style={styles.item}>
@@ -52,7 +47,7 @@ export const ChooseCurrencyScreen: React.FC = () => {
                     variant="body1"
                   >
                     {t(`choose_currency.currencies.${currency.toUpperCase()}`)}
-                  </Text> 
+                  </Text>
                 </View>
               }
             />
@@ -66,9 +61,9 @@ export const ChooseCurrencyScreen: React.FC = () => {
 const styles = StyleSheet.create({
   item: {
     flex: 1,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   currencyCaptionText: {
-    paddingLeft: ns(8)
-  }
+    paddingLeft: ns(8),
+  },
 });

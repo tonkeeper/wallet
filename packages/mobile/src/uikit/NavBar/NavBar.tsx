@@ -35,6 +35,7 @@ export const NavBar: FC<NavBarProps> = (props) => {
     rightContent = null,
     hideBackButton = false,
     hideTitle = false,
+    forceBigTitle = false,
     isClosedButton = false,
     onBackPress = undefined,
     onGoBack = undefined,
@@ -139,7 +140,8 @@ export const NavBar: FC<NavBarProps> = (props) => {
     [hasSubtitle],
   );
 
-  const isSmallTitle = typeof children === 'string' && children.length > 18;
+  const isSmallTitle =
+    !forceBigTitle && typeof children === 'string' && children.length > 18;
 
   return (
     <S.Wrap

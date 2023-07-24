@@ -14,6 +14,7 @@ export interface ConfirmStepProps {
   fee: string;
   isInactive: boolean;
   comment: string;
+  isLiquidJetton: boolean;
   onConfirm: () => Promise<void>;
   isPreparing: boolean;
 }

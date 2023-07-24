@@ -45,7 +45,7 @@ export function useObtainProofToken() {
       const token = await walletApi.tonConnectProof({
         tonConnectProofRequest: proof,
       });
-      SecureStore.setItemAsync('proof_token', token.token, {
+      await SecureStore.setItemAsync('proof_token', token.token, {
         requireAuthentication: false,
       });
       return true;

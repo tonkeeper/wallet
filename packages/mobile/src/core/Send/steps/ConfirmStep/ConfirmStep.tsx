@@ -3,7 +3,7 @@ import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { getTokenConfig } from '$shared/dynamicConfig';
 import { Highlight, Icon, Separator, Spacer, Text } from '$uikit';
-import { maskifyAddress, parseLocaleNumber } from '$utils';
+import { isAndroid, isIOS, maskifyAddress, parseLocaleNumber } from '$utils';
 import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
 import { ConfirmStepProps } from './ConfirmStep.interface';
 import * as S from './ConfirmStep.style';
@@ -20,6 +20,7 @@ import { Alert } from 'react-native';
 import { walletBalancesSelector, walletWalletSelector } from '$store/wallet';
 import { useSelector } from 'react-redux';
 import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
+import { useStakingStore } from '$store';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -49,7 +50,9 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const balances = useSelector(walletBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
 
-  const { Logo } = useCurrencyToSend(currency, isJetton, 96);
+  const { Logo, isLiquidJetton } = useCurrencyToSend(currency, isJetton, 96);
+
+  const isLiquidJettonWarningShown = useStakingStore((s) => s.isLiquidJettonWarningShown);
 
   const showLockupAlert = useCallback(
     () =>
@@ -89,6 +92,32 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     [t],
   );
 
+  const showLiquidJettonAlert = useCallback(
+    () =>
+      new Promise<void>((resolve, reject) =>
+        Alert.alert(
+          isIOS ? t('send_liquid_jetton_warning_title') : '',
+          isIOS ? undefined : t('send_liquid_jetton_warning_title'),
+          [
+            {
+              text: t('cancel'),
+              style: 'cancel',
+              onPress: reject,
+            },
+            {
+              text: t('continue'),
+              onPress: () => {
+                useStakingStore.getState().actions.setLiquidJettonWarningShown(true);
+                resolve();
+              },
+              style: 'destructive',
+            },
+          ],
+        ),
+      ),
+    [t],
+  );
+
   const handleConfirm = useCallback(async () => {
     try {
       const amountWithFee = new BigNumber(parseLocaleNumber(amount.value)).plus(fee);
@@ -106,6 +135,10 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
         await showAllBalanceAlert();
       }
 
+      if (isLiquidJetton && !isLiquidJettonWarningShown) {
+        await showLiquidJettonAlert();
+      }
+
       onConfirm(async ({ startLoading }) => {
         startLoading();
 
@@ -119,9 +152,12 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     currency,
     wallet,
     balances,
+    isLiquidJetton,
+    isLiquidJettonWarningShown,
     onConfirm,
     showLockupAlert,
     showAllBalanceAlert,
+    showLiquidJettonAlert,
     sendTx,
   ]);
 

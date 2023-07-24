@@ -9,6 +9,7 @@ import { openDAppBrowser } from '$navigation';
 import { getDomainFromURL } from '$utils';
 import { Alert } from 'react-native';
 import { t } from '$translation';
+import { useNotificationsStore } from '$store';
 
 export const useNotificationsResolver = () => {
   const { isMainStackInited } = useSelector(mainSelector);
@@ -29,6 +30,8 @@ export const useNotificationsResolver = () => {
         'Notification caused app to open from background state:',
         remoteMessage,
       );
+
+      useNotificationsStore.getState().actions.removeRedDot();
 
       const deeplink = remoteMessage.data?.deeplink;
       const link = remoteMessage.data?.link;

@@ -19,6 +19,7 @@ import { useCheckForUpdates } from '$hooks/useCheckForUpdates';
 import { useLoadExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { ActivityStack } from '$navigation/ActivityStack/ActivityStack';
 import { NotificationsIndicator } from '$navigation/MainStack/TabStack/NotificationsIndicator';
+import { useFetchMethodsToBuy } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -26,9 +27,10 @@ export const TabStack: FC = () => {
   // const { bottomSeparatorStyle } = useContext(ScrollPositionContext);
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
-  // const shouldShowRedDot = useNotificationsStore((state) => state.should_show_red_dot);
+  const shouldShowRedDot = useNotificationsStore((state) => state.should_show_red_dot);
 
   useLoadExpiringDomains();
+  useFetchMethodsToBuy();
   useNotificationsSubscribe();
   usePreloadChart();
   useCheckForUpdates();
@@ -95,7 +97,7 @@ export const TabStack: FC = () => {
           tabBarIcon: ({ color }) => (
             <View style={styles.settingsIcon}>
               <Icon colorHex={color} name="ic-flash-28" />
-              {/* <TabBarBadgeIndicator isVisible={shouldShowRedDot} /> */}
+              <TabBarBadgeIndicator isVisible={shouldShowRedDot} />
             </View>
           ),
         }}

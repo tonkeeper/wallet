@@ -221,6 +221,7 @@
   "send_invalid_recipient_title": "Invalid recipient",
   "send_invalid_recipient_caption": "The domain does not exist or the wallet address is not linked to it",
   "send_all_warning_title": "Are you sure you want to send all your balance?",
+  "send_liquid_jetton_warning_title": "Are you sure you want to send a part of your staking balance?",
 
   "send_screen_steps": {
     "address": {
@@ -418,7 +419,9 @@
 
   "exchange_modal": {
     "title": "Buy or sell",
-    "other_ways_to_buy": "Other ways to buy"
+    "other_ways_to_buy": "Other ways to buy",
+    "show_all": "Show all",
+    "hide": "Hide"
   },
 
   "exchange_title": "Buy TON",
@@ -458,8 +461,8 @@
   "account_deleted": "Account deleted",
 
   "notifications_title": "Notifications",
-  "notifications_switch_title": "Notifications",
-  "notification_switch_description": "Get notifications when you receive TON, tokens and NFTs.",
+  "notifications_switch_title": "Push notifications",
+  "notification_switch_description": "Get notifications when you receive TON, tokens and NFTs. Notifications from connected apps.",
   "notifications_disabled_title": "Notifications are disabled",
   "notifications_disabled_description": "You turned off notifications in your phone’s settings. To activate notifications, go to Settings on this device.",
   "notifications_disabled_action": "Open Settings",
@@ -740,6 +743,17 @@
       "GBP": "Great Britain Pound",
       "CHF": "Swiss Franc",
       "CNY": "China Yuan",
+      "BYN": "Belarusian Ruble",
+      "CAD": "Canadian Dollar",
+      "IRR": "Iranian Rial",
+      "TRY": "Turkish Lira",
+      "THB": "Thai Baht",
+      "VND": "Vietnamese Dong",
+      "BDT": "Bangladeshi Taka",
+      "NGN": "Nigerian Naira",
+      "BRL": "Brazilian Real",
+      "ILS": "Israeli Shekel",
+      "GEL": "Georgian Lari",
       "KRW": "South Korean Won",
       "IDR": "Indonesian Rupiah",
       "INR": "Indian Rupee",
@@ -864,5 +878,8 @@
       "open": "Open anyway",
       "cancel": "Cancel"
     }
+  },
+  "choose_country": {
+    "title": "Choose your country"
   }
 }

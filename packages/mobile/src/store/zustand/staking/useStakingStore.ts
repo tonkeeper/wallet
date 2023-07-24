@@ -30,6 +30,7 @@ const initialState: Omit<IStakingStore, 'actions'> = {
   providers: [],
   maxApy: null,
   stakingBalance: '0',
+  isLiquidJettonWarningShown: false,
 };
 
 export const useStakingStore = create(
@@ -187,13 +188,29 @@ export const useStakingStore = create(
         },
         reset: () =>
           set({ stakingInfo: {}, stakingBalance: '0', status: StakingApiStatus.Idle }),
+        setLiquidJettonWarningShown: (isLiquidJettonWarningShown) =>
+          set({ isLiquidJettonWarningShown }),
       },
     }),
     {
       name: 'staking',
       getStorage: () => AsyncStorage,
-      partialize: ({ pools, providers, stakingInfo, maxApy, stakingBalance }) =>
-        ({ pools, providers, stakingInfo, maxApy, stakingBalance } as IStakingStore),
+      partialize: ({
+        pools,
+        providers,
+        stakingInfo,
+        maxApy,
+        stakingBalance,
+        isLiquidJettonWarningShown,
+      }) =>
+        ({
+          pools,
+          providers,
+          stakingInfo,
+          maxApy,
+          stakingBalance,
+          isLiquidJettonWarningShown,
+        } as IStakingStore),
     },
   ),
 );

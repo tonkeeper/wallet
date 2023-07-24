@@ -29,7 +29,7 @@ import { t } from '$translation';
 import { TonConnectModalProps } from './models';
 import { useEffect } from 'react';
 import { Modal, useNavigation } from '$libs/navigation';
-import { store, Toast } from '$store';
+import { store, Toast, useNotificationsStore } from '$store';
 import { openRequireWalletModal, push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 import { mainSelector } from '$store/main';
@@ -337,7 +337,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
                 : null}
             </Text>
           </S.Content>
-          {/* {isTonConnectV2 ? (
+          {isTonConnectV2 ? (
             <>
               <List indent={false}>
                 <List.ItemWithCheckbox
@@ -348,7 +348,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
               </List>
               <Spacer y={16} />
             </>
-          ) : null} */}
+          ) : null}
           <S.Footer isTonConnectV2={isTonConnectV2}>
             <TransitionOpacity
               style={styles.actionContainer}

@@ -6,6 +6,7 @@ import BN from 'bn.js';
 import TonWeb from 'tonweb';
 import { StakingTransactionType } from './types';
 import { JettonBalanceModel } from '$store/models';
+import BigNumber from 'bignumber.js';
 
 const { Cell } = TonWeb.boc;
 
@@ -77,7 +78,7 @@ export const getStakeSignRawMessage = async (
   amount: BN,
   transactionType: StakingTransactionType,
   responseAddress: string,
-  isWithdrawAll?: boolean,
+  isSendAll?: boolean,
   stakingJetton?: JettonBalanceModel,
 ): Promise<SignRawMessage> => {
   const withdrawalFee = getWithdrawalFee(pool);
@@ -92,7 +93,7 @@ export const getStakeSignRawMessage = async (
     const payload =
       transactionType === StakingTransactionType.DEPOSIT
         ? await createWhalesAddStakeCommand()
-        : await createWhalesWithdrawStakeCell(isWithdrawAll ? Ton.toNano(0) : amount);
+        : await createWhalesWithdrawStakeCell(isSendAll ? Ton.toNano(0) : amount);
 
     return {
       address,
@@ -105,14 +106,21 @@ export const getStakeSignRawMessage = async (
     const payload =
       transactionType === StakingTransactionType.DEPOSIT
         ? await createLiquidTfAddStakeCommand()
-        : await createLiquidTfWithdrawStakeCell(
-            isWithdrawAll ? Ton.toNano(0) : amount,
-            responseAddress,
-          );
+        : await createLiquidTfWithdrawStakeCell(amount, responseAddress);
+
+    const amountWithFee = Ton.toNano(
+      new BigNumber(Ton.fromNano(amount)).plus(Ton.fromNano(withdrawalFee)).toString(),
+    );
+
+    const depositAmount =
+      pool.implementation === 'liquidTF' && !isSendAll ? amountWithFee : amount;
 
     return {
       address,
-      amount: transactionType === StakingTransactionType.DEPOSIT ? amount : withdrawalFee,
+      amount:
+        transactionType === StakingTransactionType.DEPOSIT
+          ? depositAmount
+          : withdrawalFee,
       payload,
     };
   }

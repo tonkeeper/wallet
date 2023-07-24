@@ -41,6 +41,7 @@ export interface ListItemProps {
   picture?: string;
 
   chevron?: boolean;
+  checkmark?: boolean;
 
   leftContent?: LeftContentFN | React.ReactNode;
   rightContent?: () => React.ReactElement;
@@ -170,6 +171,9 @@ export const ListItem = memo<ListItemProps>((props) => {
             {props.rightContent}
             {props.chevron && (
               <Icon color={props.chevronColor} name="ic-chevron-right-16" />
+            )}
+            {props.checkmark && (
+              <Icon color={'accentPrimary'} name="ic-donemark-thin-28" />
             )}
           </View>
         </View>

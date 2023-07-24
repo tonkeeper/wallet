@@ -24,8 +24,10 @@ export interface IStakingStore {
   providers: StakingProvider[];
   stakingInfo: StakingInfo;
   stakingBalance: string;
+  isLiquidJettonWarningShown: boolean;
   actions: {
     fetchPools: (silent?: boolean) => Promise<void>;
     reset: () => void;
+    setLiquidJettonWarningShown: (value: boolean) => void;
   };
 }

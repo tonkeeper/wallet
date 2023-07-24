@@ -7,15 +7,18 @@ import styled, { RADIUS } from '$styled';
 import { Icon, Text } from '$uikit';
 import { useTheme } from '$hooks';
 import { ns } from '$utils';
+import { IconNames } from '$uikit/Icon/generated.types';
 
 export interface SheetHeaderProps {
   title?: string;
   gradient?: boolean;
   onClose?: () => void;
+  iconLeft?: IconNames;
+  onIconLeftPress?: () => void;
 }
 
 export const SheetHeader = React.memo<SheetHeaderProps>((props) => {
-  const { gradient, title, onClose } = props;
+  const { gradient, title, onClose, iconLeft, onIconLeftPress } = props;
   const { measureHeader, close } = useSheetInternal();
   const theme = useTheme();
 
@@ -40,6 +43,18 @@ export const SheetHeader = React.memo<SheetHeaderProps>((props) => {
         />
       )}
       <View style={{ flexDirection: 'row', flex: 1 }}>
+        {iconLeft ? (
+          <HeaderCloseButtonWrap
+            onPress={() => {
+              onIconLeftPress?.();
+            }}
+          >
+            <HeaderCloseButton>
+              <Icon name={iconLeft} color="foregroundPrimary" />
+            </HeaderCloseButton>
+          </HeaderCloseButtonWrap>
+        ) : null}
+        {iconLeft && <View style={{ flex: 1 }} />}
         {hasTitle && (
           <HeaderTitle>
             <Text variant="h3">{title}</Text>

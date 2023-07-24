@@ -5,6 +5,7 @@ export enum AppStackRouteNames {
   MainStack = 'MainStack',
   Receive = 'Receive',
   Send = 'Send',
+  ChooseCountry = 'ChooseCountry',
   ScanQR = 'ScanQR',
   RequireWalletModal = 'RequireWalletModal',
   Subscription = 'Subscription',

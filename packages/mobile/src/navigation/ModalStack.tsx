@@ -32,6 +32,7 @@ import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewCon
 import { ActionModal } from '$core/ModalContainer/Action/Action';
 import { ExchangeModal } from '$modals/ExchangeModal';
 import { Swap } from '$core/Swap/Swap';
+import { ChooseCountry } from '$core/ChooseCountry/ChooseCountry';
 
 const Stack = createModalStackNavigator();
 
@@ -59,6 +60,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NFT} path="NFTItemDetails" />
       <Stack.Modal component={Receive} path={AppStackRouteNames.Receive} />
       <Stack.Modal component={Send} path={AppStackRouteNames.Send} />
+      <Stack.Modal component={ChooseCountry} path={AppStackRouteNames.ChooseCountry} />
       <Stack.Modal component={StakingSend} path={AppStackRouteNames.StakingSend} />
       <Stack.Modal component={ScanQR} path={AppStackRouteNames.ScanQR} />
       <Stack.Modal component={Swap} path={AppStackRouteNames.Swap} />

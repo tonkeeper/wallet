@@ -10,8 +10,10 @@ export interface INotification {
 export interface INotificationsStore {
   notifications: INotification[];
   last_seen: number;
+  last_seen_activity_screen: number;
   should_show_red_dot: boolean;
   actions: {
+    updateLastSeenActivityScreen: () => void;
     updateLastSeen: () => void;
     addNotification: (notification: INotification) => void;
     reset: () => void;
