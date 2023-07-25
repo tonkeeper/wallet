@@ -41,7 +41,6 @@ import {
   WalletGetUnlockedVaultAction,
 } from '$store/wallet/interface';
 import { eventsActions } from '$store/events';
-import { ratesActions } from '$store/rates';
 import {
   clearHiddenNotification,
   clearPrimaryFiatCurrency,
@@ -292,7 +291,6 @@ function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     // yield put(jettonsActions.getIsFeatureEnabled());
     yield put(jettonsActions.loadJettons());
-    yield put(ratesActions.loadRates({ onlyCache: false }));
     useRatesStore.getState().actions.fetchRates();
     yield put(mainActions.loadNotifications());
     yield call(useStakingStore.getState().actions.fetchPools);

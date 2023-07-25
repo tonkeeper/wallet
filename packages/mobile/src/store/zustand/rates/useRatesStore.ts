@@ -64,7 +64,7 @@ export const useRatesStore = create(
       },
     }),
     {
-      name: 'rates',
+      name: 'rates-v2',
       getStorage: () => AsyncStorage,
       partialize: ({ rates }) => ({ rates } as IRatesStore),
     },

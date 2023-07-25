@@ -6,7 +6,6 @@ import { toLocaleNumber } from '$utils';
 import { formatter } from '$utils/formatter';
 import BigNumber from 'bignumber.js';
 import { useCallback, useMemo } from 'react';
-import { getNumberFormatSettings } from 'react-native-localize';
 import { useSelector } from 'react-redux';
 import { shallow } from 'zustand/shallow';
 
