@@ -424,13 +424,12 @@ export class NFTOperations {
       },
       estimateFee: async () => {
         const methods = await signRawMethods();
-        const feeInfo = await methods.estimateFee();
-        const fee = new BigNumber(feeInfo.source_fees.in_fwd_fee)
-          .plus(feeInfo.source_fees.storage_fee)
-          .plus(feeInfo.source_fees.gas_fee)
-          .plus(feeInfo.source_fees.fwd_fee)
-          .toNumber();
-        return truncateDecimal(Ton.fromNano(fee.toString()), 1, true);
+        const queryMsg = await methods.getQuery();
+        const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
+        const feeInfo = await Tonapi.estimateTx(boc);
+        const fee = new BigNumber(feeInfo.fee.total).toNumber();
+
+        return truncateDecimal(Ton.fromNano(fee.toString()), 2, true);
       },
       send: async (secretKey: Uint8Array, onDone?: (boc: string) => void) => {
         const methods = await signRawMethods(secretKey);
@@ -538,11 +537,10 @@ export class NFTOperations {
 
         let feeNano: BigNumber;
         try {
-          const feeInfo = await transfer.estimateFee();
-          feeNano = new BigNumber(feeInfo.source_fees.in_fwd_fee)
-            .plus(feeInfo.source_fees.storage_fee)
-            .plus(feeInfo.source_fees.gas_fee)
-            .plus(feeInfo.source_fees.fwd_fee);
+          const query = await transfer.getQuery();
+          const boc = Base64.encodeBytes(await query.toBoc(false));
+          const feeInfo = await Tonapi.estimateTx(boc);
+          feeNano = new BigNumber(feeInfo.fee.total);
         } catch (e) {
           throw new NFTOperationError(t('send_fee_estimation_error'));
         }
