@@ -264,7 +264,6 @@ export function* resetAll(isTestnet: boolean) {
       walletActions.resetVersion(),
       nftsActions.resetNFTs(),
       jettonsActions.resetJettons(),
-      ratesActions.resetRates(),
       mainActions.setTestnet(isTestnet),
       subscriptionsActions.reset(),
     ),
