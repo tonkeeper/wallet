@@ -1,30 +1,21 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { subMonths } from 'date-fns';
-import { Dimensions } from 'react-native';
 
 import { ActionButtonProps, BalanceItemProps } from './BalanceItem.interface';
 import * as S from './BalanceItem.style';
 import { CurrencyIcon, Icon, Text } from '$uikit';
-import { useJettonBalances, useTokenPrice, useTranslator, useWalletInfo } from '$hooks';
+import { useJettonBalances, useTranslator, useWalletInfo } from '$hooks';
 import { walletWalletSelector } from '$store/wallet';
 import { openReceive, openRequireWalletModal, openSend, openWallet } from '$navigation';
-import { Chart } from '$shared/components';
-import { format, ns } from '$utils';
-import { ratesChartsSelector } from '$store/rates';
+import { ns } from '$utils';
 import {
   CryptoCurrencies,
   CurrencyLongName,
   Decimals,
-  FiatCurrencies,
   getServerConfigSafe,
 } from '$shared/constants';
-import { formatCryptoCurrency, formatFiatCurrencyAmount } from '$utils/currency';
-import { fiatCurrencySelector } from '$store/main';
+import { formatCryptoCurrency } from '$utils/currency';
 import { useNavigation } from '$libs/navigation';
-import BigNumber from 'bignumber.js';
-
-const ScreenWidth = Dimensions.get('window').width;
 
 const ActionButton: FC<ActionButtonProps> = (props) => {
   const { children, onPress, icon, isLast, iconStyle } = props;
@@ -58,9 +49,6 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
   }, [currency]);
 
   const wallet = useSelector(walletWalletSelector);
-  const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
-  const charts = useSelector(ratesChartsSelector);
-  const fiatCurrency = useSelector(fiatCurrencySelector);
   const nav = useNavigation();
 
   const { enabled: availableJettons } = useJettonBalances();
@@ -98,29 +86,6 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
       openSend(currency);
     }
   }, [currency, availableJettons, wallet]);
-
-  const chartData = useMemo(() => {
-    const width = ScreenWidth - ns(16) * 4;
-    const fromDate = format(subMonths(new Date(), 1), 'd MMM');
-    //const toDate = format(new Date(), 'd MMM');
-    const points = charts[currency] || [];
-    const fiatRate =
-      fiatCurrency === FiatCurrencies.Usd
-        ? 1
-        : new BigNumber(tonPrice.fiat).dividedBy(tonPrice.usd).toNumber();
-    const firstPrice = points.length > 0 ? points[0].y * fiatRate : 0;
-    const lastPrice = points.length > 0 ? points[points.length - 1].y * fiatRate : 0;
-
-    return {
-      width,
-      height: width * 0.15,
-      fromDate,
-      toDate: t('today'),
-      points: points,
-      firstPrice: formatFiatCurrencyAmount(firstPrice.toFixed(2), fiatCurrency),
-      lastPrice: formatFiatCurrencyAmount(lastPrice.toFixed(2), fiatCurrency),
-    };
-  }, [charts, currency, fiatCurrency, t, tonPrice]);
 
   const isDisabled = useMemo(() => {
     return (
@@ -184,35 +149,6 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
               </S.FiatInfo>
             </S.Info>
           </S.Cont>
-          {showActions && (
-            <>
-              <S.ChartWrap>
-                <Chart
-                  points={chartData.points}
-                  width={chartData.width}
-                  height={chartData.height}
-                />
-              </S.ChartWrap>
-              <S.ChartDates>
-                <S.ChartDatesItem>
-                  <Text style={{ textAlign: 'left' }} variant="label2">
-                    {chartData.firstPrice}
-                  </Text>
-                  <Text color="foregroundSecondary" variant="body2">
-                    {chartData.fromDate}
-                  </Text>
-                </S.ChartDatesItem>
-                <S.ChartDatesItem>
-                  <Text style={{ textAlign: 'right' }} variant="label2">
-                    {chartData.lastPrice}
-                  </Text>
-                  <Text color="foregroundSecondary" variant="body2">
-                    {chartData.toDate}
-                  </Text>
-                </S.ChartDatesItem>
-              </S.ChartDates>
-            </>
-          )}
         </S.Wrap>
       </S.Container>
       {showActions && (

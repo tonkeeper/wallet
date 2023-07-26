@@ -10,7 +10,6 @@ import { mainActions, mainSelector } from './index';
 import { Wallet } from '$blockchain';
 import { batchActions, Toast, useNotificationsStore } from '$store';
 import { walletActions, walletSelector } from '$store/wallet';
-import { ratesActions } from '$store/rates';
 import * as SplashScreen from 'expo-splash-screen';
 import { eventsActions } from '$store/events';
 import {
@@ -155,7 +154,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
       ),
     );
 
-    yield fork(loadRates, true);
+    yield fork(loadRates);
 
     SplashScreen.hideAsync();
 
@@ -170,7 +169,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   trackFirstLaunch();
   trackEvent('launch_app');
 
-  yield fork(loadRates, true);
+  yield fork(loadRates);
 
   const wallet = yield call(Wallet.load);
 
@@ -235,9 +234,8 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   }
 }
 
-function* loadRates(onlyCache = false) {
+function* loadRates() {
   try {
-    yield put(ratesActions.loadRates({ onlyCache }));
     useRatesStore.getState().actions.fetchRates();
   } catch (e) {}
 }
