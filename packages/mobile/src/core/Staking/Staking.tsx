@@ -1,5 +1,5 @@
 import { useStakingRefreshControl, useTranslator } from '$hooks';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { MainStackRouteNames } from '$navigation';
 import { StakingListCell } from '$shared/components';
 import { StakingProvider, useStakingStore } from '$store';

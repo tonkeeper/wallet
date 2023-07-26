@@ -10,11 +10,11 @@ import { AccountEvent, Action, ActionTypeEnum } from 'tonapi-sdk-js';
 import { SignRawAction } from './SignRawAction';
 import { store, Toast } from '$store';
 import * as S from '../NFTOperations.styles';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 import { Ton } from '$libs/Ton';
 import { copyText } from '$hooks/useCopyText';
 import { push } from '$navigation';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
+import { SheetActions } from '@tonkeeper/router';
 import BigNumber from 'bignumber.js';
 import {
   checkIsInsufficient,

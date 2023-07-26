@@ -8,7 +8,7 @@ import { useWallet } from '../useWallet';
 import React, { memo } from 'react';
 
 import { openRequireWalletModal } from '$navigation';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 
 export const ActivityScreen = memo(() => {
   const wallet = useWallet();

@@ -14,7 +14,7 @@ import { UnlockVaultError } from '$store/wallet/sagas';
 import { useDispatch, useSelector } from 'react-redux';
 import { t } from '$translation';
 import * as S from './NFTOperations.styles';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { eventsActions } from '$store/events';
 import axios from 'axios';
 import { isTimeSyncedSelector } from '$store/main';

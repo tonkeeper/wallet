@@ -4,7 +4,7 @@ import { StakingListCell } from '$shared/components';
 import { View } from '$uikit';
 import { List } from '$uikit/List/old/List';
 import React, { FC, memo, useCallback } from 'react';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { Steezy } from '$styles';
 import { useStakingStore } from '$store';
 import { shallow } from 'zustand/shallow';

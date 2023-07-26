@@ -15,7 +15,7 @@ import {
 import { useBottomSheet } from '@gorhom/bottom-sheet';
 import { Keyboard, StyleSheet, ViewProps } from 'react-native';
 import { BottomSheetVariables } from '@gorhom/bottom-sheet/lib/typescript/types';
-import { isAndroid } from '$utils';
+import { isAndroid } from '../../../utils';
 
 export interface BottomSheetBackdropProps
   extends Pick<ViewProps, 'style'>,
@@ -23,8 +23,7 @@ export interface BottomSheetBackdropProps
 
 export type BackdropPressBehavior = 'none' | 'close' | 'collapse' | number;
 
-export interface BottomSheetDefaultBackdropProps
-  extends BottomSheetBackdropProps {
+export interface BottomSheetDefaultBackdropProps extends BottomSheetBackdropProps {
   opacity?: number;
   appearsOnIndex?: number;
   disappearsOnIndex?: number;
@@ -56,10 +55,8 @@ const BottomSheetBackdropComponent = ({
   //#region defaults
   const opacity = _providedOpacity ?? DEFAULT_OPACITY;
   const appearsOnIndex = _providedAppearsOnIndex ?? DEFAULT_APPEARS_ON_INDEX;
-  const disappearsOnIndex =
-    _providedDisappearsOnIndex ?? DEFAULT_DISAPPEARS_ON_INDEX;
-  const enableTouchThrough =
-    _providedEnableTouchThrough ?? DEFAULT_ENABLE_TOUCH_THROUGH;
+  const disappearsOnIndex = _providedDisappearsOnIndex ?? DEFAULT_DISAPPEARS_ON_INDEX;
+  const enableTouchThrough = _providedEnableTouchThrough ?? DEFAULT_ENABLE_TOUCH_THROUGH;
   //#endregion
 
   //#region variables
@@ -91,20 +88,19 @@ const BottomSheetBackdropComponent = ({
         pointerEvents: shouldDisableTouchability ? 'none' : 'auto',
       });
     },
-    []
+    [],
   );
   //#endregion
 
   //#region tap gesture
-  const gestureHandler =
-    useAnimatedGestureHandler<TapGestureHandlerGestureEvent>(
-      {
-        onFinish: () => {
-          runOnJS(handleOnPress)();
-        },
+  const gestureHandler = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>(
+    {
+      onFinish: () => {
+        runOnJS(handleOnPress)();
       },
-      [handleOnPress]
-    );
+    },
+    [handleOnPress],
+  );
   //#endregion
 
   //#region styles
@@ -113,13 +109,13 @@ const BottomSheetBackdropComponent = ({
       animatedIndex.value,
       [-1, disappearsOnIndex, appearsOnIndex],
       [0, 0, opacity],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     ),
     flex: 1,
   }));
   const containerStyle = useMemo(
     () => [styles.container, style, containerAnimatedStyle],
-    [style, containerAnimatedStyle]
+    [style, containerAnimatedStyle],
   );
   //#endregion
 
@@ -132,7 +128,7 @@ const BottomSheetBackdropComponent = ({
       }
       runOnJS(handleContainerTouchability)(shouldDisableTouchability);
     },
-    [disappearsOnIndex]
+    [disappearsOnIndex],
   );
   //#endregion
 
@@ -168,7 +164,5 @@ export const styles = StyleSheet.create({
   },
 });
 
-const SheetBackdrop = memo(BottomSheetBackdropComponent);
-SheetBackdrop.displayName = 'BottomSheetBackdrop';
-
-export default SheetBackdrop;
+export const SheetModalBackdrop = memo(BottomSheetBackdropComponent);
+SheetModalBackdrop.displayName = 'BottomSheetBackdrop';

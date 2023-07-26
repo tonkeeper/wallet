@@ -1,11 +1,10 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '$translation';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 import { openExploreTab, push } from '$navigation';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
+import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { Button, Icon, Text } from '$uikit';
 import * as S from './InsufficientFunds.style';
-import { useNavigation } from '$libs/navigation';
 import { debugLog, delay, formatAmountAndLocalize, fromNano, truncateDecimal } from '$utils';
 import BigNumber from 'bignumber.js';
 import { CryptoCurrencies, Decimals } from '$shared/constants';

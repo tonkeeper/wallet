@@ -1,8 +1,8 @@
-import { ReactNode, memo } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { memo } from 'react';
 
 interface ScreenModalFooterProps {
-  children?: ReactNode;
+  children?: React.ReactNode;
 }
 
 export const ScreenModalFooter = memo<ScreenModalFooterProps>((props) => {

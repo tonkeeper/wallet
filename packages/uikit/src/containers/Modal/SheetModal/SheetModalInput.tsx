@@ -5,10 +5,10 @@ import { useBottomSheetInternal } from '@gorhom/bottom-sheet';
 import { isAndroid, useMergeRefs } from '../../../utils';
 
 export type SheetModalInputProps = TextInputProps;
-export type SheetModalTextInputRef = TextInput;
+export type SheetModalInputRef = TextInput;
 
-const SheetTextInputComponent = React.forwardRef<
-  SheetModalTextInputRef, 
+const SheetModalInputComponent = React.forwardRef<
+  SheetModalInputRef,
   SheetModalInputProps
 >(({ onFocus, onBlur, autoFocus, ...rest }, ref) => {
   const { shouldHandleKeyboardEvents } = useBottomSheetInternal();
@@ -24,23 +24,23 @@ const SheetTextInputComponent = React.forwardRef<
   // }, []);
 
   const handleOnFocus = React.useCallback(
-    args => {
+    (args) => {
       shouldHandleKeyboardEvents.value = true;
       if (onFocus) {
         onFocus(args);
       }
     },
-    [onFocus, shouldHandleKeyboardEvents]
+    [onFocus, shouldHandleKeyboardEvents],
   );
 
   const handleOnBlur = React.useCallback(
-    args => {
+    (args) => {
       shouldHandleKeyboardEvents.value = false;
       if (onBlur) {
         onBlur(args);
       }
     },
-    [onBlur, shouldHandleKeyboardEvents]
+    [onBlur, shouldHandleKeyboardEvents],
   );
 
   return (
@@ -54,5 +54,6 @@ const SheetTextInputComponent = React.forwardRef<
   );
 });
 
-export const SheetModalInput = isAndroid ? TextInput : React.memo(SheetTextInputComponent);
-SheetModalInput.displayName = 'SheetInput';
+export const SheetModalInput = isAndroid
+  ? TextInput
+  : React.memo(SheetModalInputComponent);

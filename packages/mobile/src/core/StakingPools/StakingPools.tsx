@@ -1,5 +1,5 @@
 import { useStakingRefreshControl, useTranslator } from '$hooks';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { Ton } from '$libs/Ton';
 import { MainStackRouteNames, openDAppBrowser } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';

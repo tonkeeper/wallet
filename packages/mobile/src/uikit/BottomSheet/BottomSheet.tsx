@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import { StyleSheet, useWindowDimensions, TouchableOpacity, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@tonkeeper/router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BottomSheetBehavior from 'reanimated-bottom-sheet';
 import Animated from 'react-native-reanimated';

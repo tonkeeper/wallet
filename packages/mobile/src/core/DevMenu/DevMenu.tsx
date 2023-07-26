@@ -11,7 +11,7 @@ import { ns } from '$utils';
 import { NavBar, PopupSelect, ScrollHandler, Text } from '$uikit';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
-import { useNavigation, useTranslator } from '$hooks';
+import { useTranslator } from '$hooks';
 import { openLogs } from '$navigation';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { EventsDB, JettonsDB, MainDB, NFTsDB } from '$database';
@@ -22,6 +22,7 @@ import { Switch } from 'react-native-gesture-handler';
 import { DevFeature, Toast, useDevFeaturesToggle, useStakingStore } from '$store';
 import { tags } from '$translation';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
+import { useNavigation } from '@tonkeeper/router';
 
 export const DevMenu: FC = () => {
   const tabBarHeight = useBottomTabBarHeight();

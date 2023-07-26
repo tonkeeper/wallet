@@ -27,7 +27,7 @@ import { mainActions } from '$store/main';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { getLastRefreshedAt } from '$database';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { Steezy } from '$styles';
 import { Notification } from '$core/Notifications/Notification';

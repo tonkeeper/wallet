@@ -13,7 +13,7 @@ import { t } from '$translation';
 import { CryptoCurrencies } from '$shared/constants';
 import { useDispatch } from 'react-redux';
 import { nftsActions } from '$store/nfts';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 import { CaptionWrap } from '../NFTOperations.styles';
 import { formatter } from '$utils/formatter';
 

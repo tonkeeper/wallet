@@ -32,7 +32,7 @@ import { Linking, Platform, RefreshControl, View } from 'react-native';
 import { delay, ns } from '$utils';
 import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
 import { t } from '$translation';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { Chart } from '$shared/components/Chart/new/Chart';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';

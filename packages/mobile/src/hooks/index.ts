@@ -14,7 +14,6 @@ export { useExchangeMethodInfo } from './useExchangeMethodInfo';
 export { useInstance } from './useInstance';
 export { useWallet } from './useWallet';
 export { useVault } from './useVault';
-export { useNavigation } from './useNavigation';
 export { useJettonByWalletAddress } from './useJettonByWalletAddress';
 export { useValidateAddress } from './useValidateAddress';
 export { useCopyText } from './useCopyText';

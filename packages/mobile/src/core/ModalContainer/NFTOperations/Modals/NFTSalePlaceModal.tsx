@@ -11,7 +11,7 @@ import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
 import { t } from '$translation';
 import { Ton } from '$libs/Ton';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 
 type NFTSalePlaceModalProps = TxRequestBody<NftSalePlaceParams>;
 

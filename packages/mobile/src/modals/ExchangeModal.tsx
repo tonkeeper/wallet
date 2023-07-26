@@ -6,7 +6,7 @@ import { ExchangeItem } from '../core/Exchange/ExchangeItem/ExchangeItem';
 import { useTranslator } from '$hooks';
 import { getServerConfigSafe } from '$shared/constants';
 import { LayoutAnimation } from 'react-native';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { CategoryType } from '$store/zustand/methodsToBuy/types';

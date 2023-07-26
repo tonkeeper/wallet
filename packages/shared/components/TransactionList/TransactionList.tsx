@@ -51,14 +51,16 @@ export const TransactionsList = memo<EventsListProps>((props) => {
 
   return (
     <Screen.FlashList
-      refreshControl={
-        <RefreshControl
-          onRefresh={onRefresh}
-          refreshing={!!refreshing}
-          tintColor={theme.constantWhite}
-          progressBackgroundColor={theme.constantWhite}
-        />
-      }
+      // refreshControl={
+      //   <RefreshControl
+      //     onRefresh={onRefresh}
+      //     refreshing={!!refreshing}
+      //     tintColor={theme.constantWhite}
+      //     progressBackgroundColor={theme.constantWhite}
+      //   />
+      // }
+      onRefresh={onRefresh}
+      refreshing={!!refreshing}
       estimatedItemSize={estimatedItemSize}
       keyExtractor={(item) => item.id}
       onEndReachedThreshold={0.01}

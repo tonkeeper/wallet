@@ -6,7 +6,7 @@ import { ExchangeItem } from './ExchangeItem/ExchangeItem';
 import { useTranslator } from '$hooks';
 import { getServerConfig, getServerConfigSafe } from '$shared/constants';
 import { Linking } from 'react-native';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 
 export const OldExchange: FC = () => {

@@ -1,5 +1,5 @@
-import { Modal, useNavigation } from '$libs/navigation';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
+import { Modal } from '@tonkeeper/uikit';
+import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { push } from '$navigation';
 import React, { memo, useCallback, useMemo } from 'react';
 import {

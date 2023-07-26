@@ -9,7 +9,8 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
 import { Icon, PopupSelect, ScrollHandler, Spacer, Text, List } from '$uikit';
-import { useNavigation, useTranslator, useShouldShowTokensButton } from '$hooks';
+import { useTranslator, useShouldShowTokensButton } from '$hooks';
+import { useNavigation } from '@tonkeeper/router';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
 import {

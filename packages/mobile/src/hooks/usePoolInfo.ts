@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js';
 import { useCallback, useMemo } from 'react';
 import { useFiatValue } from './useFiatValue';
 import { useTranslator } from './useTranslator';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { StakingTransactionType } from '$core/StakingSend/types';
 import { useWallet } from './useWallet';
 import { Address, Ton } from '$libs/Ton';

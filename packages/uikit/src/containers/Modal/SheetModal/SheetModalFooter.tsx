@@ -3,11 +3,12 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useBottomSheetInternal } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useSheetInternal } from './SheetsProvider';
-import { useTheme } from '$hooks';
+import { useTheme } from '../../../styles';
+
+import { useSheetInternal } from '@tonkeeper/router';
 
 export type SheetModalFooterProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   relative?: boolean;
   style?: ViewStyle;
   height?: number;
@@ -17,7 +18,7 @@ export const SheetModalFooter = React.memo((props: SheetModalFooterProps) => {
   const { style, children, height, relative } = props;
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
-  
+
   const {
     animatedContainerHeight,
     animatedContentHeight,
@@ -32,25 +33,26 @@ export const SheetModalFooter = React.memo((props: SheetModalFooterProps) => {
     const contentHeight = animatedContentHeight.value - footerHeight.value;
     const position = animatedPosition.value;
 
-    const footerTranslateY =  Math.max(0, containerHeight - position) - footerHeight.value;       
+    const footerTranslateY = Math.max(0, containerHeight - position) - footerHeight.value;
 
-    const value = animatedIndex.value < 0 
-      ? Math.max(contentHeight, footerTranslateY) 
-      : Math.max(0, footerTranslateY);
+    const value =
+      animatedIndex.value < 0
+        ? Math.max(contentHeight, footerTranslateY)
+        : Math.max(0, footerTranslateY);
 
     const translateY = value > 0 ? value : -999;
 
     return { transform: [{ translateY }] };
   });
 
-  const contentStyle = { 
+  const contentStyle = {
     paddingBottom: safeArea.bottom,
-    backgroundColor: theme.colors.backgroundPrimary,
-    height
+    backgroundColor: theme.backgroundContent,
+    height,
   };
 
-  const containerStyle = !relative 
-    ? [styles.absolute, containerAnimatedStyle] 
+  const containerStyle = !relative
+    ? [styles.absolute, containerAnimatedStyle]
     : undefined;
 
   return (
@@ -59,14 +61,12 @@ export const SheetModalFooter = React.memo((props: SheetModalFooterProps) => {
       onLayout={measureFooter}
       style={containerStyle}
     >
-      <View style={[style, contentStyle]}>
-        {children}
-      </View>
+      <View style={[style, contentStyle]}>{children}</View>
     </Animated.View>
   );
 });
 
-SheetFooter.displayName = 'BottomSheetFooter';
+SheetModalFooter.displayName = 'BottomSheetModalFooter';
 
 const styles = StyleSheet.create({
   absolute: {

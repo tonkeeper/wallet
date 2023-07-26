@@ -3,11 +3,10 @@ import {
   useNavigation as useNativeNavigation,
 } from '@react-navigation/native';
 import { SheetRoutesContext } from '../context/SheetRoutesContext';
-import { SheetActions, useCloseModal } from '../components/Modal/Sheet/SheetsProvider';
+import { SheetActions, useCloseModal } from '../SheetsProvider';
 import { nanoid } from 'nanoid/non-secure';
 import { useContext } from 'react';
-import { throttle } from '$utils/throttle';
-import { delay, isAndroid } from '$utils';
+import { throttle, delay, isAndroid } from '../utils';
 import { Keyboard } from 'react-native';
 
 export const useNavigation = () => {
@@ -20,7 +19,17 @@ export const useNavigation = () => {
   const reset = () => {};
 
   const navigate = throttle((path: string, params?: any) => {
-    nav.navigate(path, params);
+    const find = sheetRoutes.find((el) => el.path === path);
+    if (find) {
+      push('SheetsProvider', {
+        $$action: SheetActions.ADD,
+        component: find.component,
+        params: params,
+        path,
+      });
+    } else {
+      nav.navigate(path, params);
+    }
   }, 1000);
 
   const go = throttle((path: string, params?: any) => {

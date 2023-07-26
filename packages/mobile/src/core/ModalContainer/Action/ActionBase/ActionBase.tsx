@@ -9,7 +9,7 @@ import { ActionBaseProps } from './ActionBase.interface';
 import { useTranslator } from '$hooks';
 import { openDAppBrowser, openSubscription } from '$navigation';
 import { getServerConfig } from '$shared/constants';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 import { Toast } from '$store';
 
 export const ActionBase: FC<ActionBaseProps> = ({

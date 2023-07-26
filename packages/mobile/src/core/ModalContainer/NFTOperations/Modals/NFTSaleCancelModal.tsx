@@ -9,7 +9,7 @@ import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
 import { t } from '$translation';
-import { Modal } from '$libs/navigation/components/Modal';
+import { Modal } from '@tonkeeper/uikit';
 
 type NFTSaleCancelModalProps = TxRequestBody<NftSaleCancelParams>;
 

@@ -3,7 +3,7 @@ import { StakingListCell } from '$shared/components';
 import { getPoolIcon } from '$utils';
 import { AccountStakingInfo, PoolInfo } from '@tonkeeper/core/src/legacy';
 import React, { FC, Fragment, memo, useCallback } from 'react';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { MainStackRouteNames } from '$navigation';
 
 interface Props {

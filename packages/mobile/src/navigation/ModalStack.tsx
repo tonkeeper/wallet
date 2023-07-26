@@ -1,7 +1,7 @@
 import React from 'react';
 import { SecurityMigrationStack } from './SecurityMigrationStack/SecurityMigrationStack';
 import { ResetPinStack } from './ResetPinStack/ResetPinStack';
-import { createModalStackNavigator } from '$libs/navigation';
+import { createModalStackNavigator } from '@tonkeeper/router';
 import { NFTSingleDeployModal } from '$core/ModalContainer/NFTOperations/Modals/NFTSingleDeployModal';
 import { NFTTransferModal } from '$core/ModalContainer/NFTOperations/Modals/NFTTransferModal';
 import { NFTSaleCancelModal } from '$core/ModalContainer/NFTOperations/Modals/NFTSaleCancelModal';
@@ -33,8 +33,10 @@ import { ActionModal } from '$core/ModalContainer/Action/Action';
 import { ExchangeModal } from '$modals/ExchangeModal';
 import { Swap } from '$core/Swap/Swap';
 import { ChooseCountry } from '$core/ChooseCountry/ChooseCountry';
+import { TransactionModal } from '@tonkeeper/shared/modals/TransactionModal';
+import { ProvidersWithNavigation } from './Providers';
 
-const Stack = createModalStackNavigator();
+const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
 export const ModalStack = React.memo(() => (
   <Stack.Navigator>
@@ -55,6 +57,7 @@ export const ModalStack = React.memo(() => (
       />
       <Stack.Modal component={SignRawModal} path="SignRaw" />
       <Stack.Modal component={NewConfirmSending} path="NewConfirmSending" />
+      <Stack.Modal component={TransactionModal} path="transaction" />
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal component={NFT} path="NFTItemDetails" />

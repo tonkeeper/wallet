@@ -1,12 +1,11 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { t } from '$translation';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 import { push } from '$navigation';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
 import { Button, Icon, Text } from '$uikit';
 import * as S from './AddressMismatch.style';
 import { useWallet } from '$hooks';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation, SheetActions } from '@tonkeeper/router';
 import { Ton } from '$libs/Ton';
 import { compareAddresses, delay } from '$utils';
 import { walletActions } from '$store/wallet';

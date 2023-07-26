@@ -14,10 +14,11 @@ import {
 } from '@tonkeeper/uikit';
 import { MappedEventAction } from '../../mappers/AccountEventsMapper';
 import { TransactionNFTItem } from './TransactionNFTItem';
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { SText } from '@tonkeeper/uikit/src/components/Text';
 import FastImage from 'react-native-fast-image';
 import { t } from '../../i18n';
+import { useNavigation } from '@tonkeeper/router';
 
 interface TransactionItemProps {
   item: MappedEventAction;
@@ -46,6 +47,7 @@ const useBackgroundHighlighted = () => {
 
 export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
   const { onPressOut, onPressIn, backgroundStyle } = useBackgroundHighlighted();
+  const router = useNavigation();
 
   const containerStyle = [
     item.bottomCorner && styles.bottomCorner,
@@ -53,12 +55,16 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
     styles.containerListItem,
   ];
 
+  const handlePress = useCallback(() => {
+    router.navigate('transaction', { transactionId: item.id })
+  }, [item]);
+
   return (
     <View style={containerStyle}>
       <List.Item
         onPressOut={onPressOut}
         onPressIn={onPressIn}
-        onPress={() => {}}
+        onPress={handlePress}
         title={item.operation}
         value={item.amount}
         subtitle={item.senderAccount}

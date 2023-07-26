@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import messaging from '@react-native-firebase/messaging';
-import { useNavigation } from './useNavigation';
+import { useNavigation } from '@tonkeeper/router';
 import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { useDeeplinking } from '$libs/deeplinking';

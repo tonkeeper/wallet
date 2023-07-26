@@ -23,7 +23,7 @@ import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsLi
 import { RefreshControl } from 'react-native';
 import { walletAddressSelector } from '$store/wallet';
 import { formatter } from '$utils/formatter';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { useSwapStore } from '$store/zustand/swap';
 import { shallow } from 'zustand/shallow';
 import { useFlags } from '$utils/flags';

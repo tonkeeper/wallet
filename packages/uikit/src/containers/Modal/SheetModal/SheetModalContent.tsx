@@ -2,13 +2,14 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 import { SCROLLABLE_TYPE, useBottomSheetInternal } from '@gorhom/bottom-sheet';
 import { BottomSheetViewProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetView/types';
-import { useSheetInternal } from './SheetsProvider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export type SheetModalContentProps = BottomSheetViewProps & { 
-  disabledInertia?: boolean 
+import { useSheetInternal } from '@tonkeeper/router';
+
+export type SheetModalContentProps = BottomSheetViewProps & {
+  disabledInertia?: boolean;
   safeArea?: boolean;
-}
+};
 
 export const SheetModalContent = React.memo<SheetModalContentProps>((props) => {
   const {
@@ -20,17 +21,15 @@ export const SheetModalContent = React.memo<SheetModalContentProps>((props) => {
     ...rest
   } = props;
 
-  const {
-    animatedScrollableContentOffsetY,
-    animatedScrollableType,
-  } = useBottomSheetInternal();
+  const { animatedScrollableContentOffsetY, animatedScrollableType } =
+    useBottomSheetInternal();
 
   const safeAreaInsets = useSafeAreaInsets();
   const { measureContent } = useSheetInternal();
 
   React.useEffect(() => {
     if (disabledInertia) {
-      // 
+      //
     }
 
     animatedScrollableContentOffsetY.value = 0;
@@ -40,9 +39,9 @@ export const SheetModalContent = React.memo<SheetModalContentProps>((props) => {
   const safeAreaStyle = { paddingBottom: safeAreaInsets.bottom };
 
   return (
-    <Animated.View 
+    <Animated.View
       onLayout={measureContent}
-      style={[safeArea && safeAreaStyle, style]} 
+      style={[safeArea && safeAreaStyle, style]}
       {...rest}
     >
       {children}
@@ -50,4 +49,4 @@ export const SheetModalContent = React.memo<SheetModalContentProps>((props) => {
   );
 });
 
-SheetContent.displayName = 'BottomSheetView';
+SheetModalContent.displayName = 'BottomSheetView';

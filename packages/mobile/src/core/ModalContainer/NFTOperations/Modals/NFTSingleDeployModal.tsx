@@ -10,7 +10,7 @@ import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
 import {debugLog, toLocaleNumber} from '$utils';
 import { t } from '$translation';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 
 type NFTSingleDeployModal = TxRequestBody<NftSingleDeployParams>;
 

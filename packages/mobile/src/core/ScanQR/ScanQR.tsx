@@ -23,7 +23,7 @@ import {
 } from '$utils';
 import { BottomButtonWrap, BottomButtonWrapHelper } from '$shared/components';
 import { useTheme, useTranslator } from '$hooks';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@tonkeeper/router';
 
 export const ScanQR: FC<ScanQRProps> = ({ route }) => {
   const nav = useNavigation();

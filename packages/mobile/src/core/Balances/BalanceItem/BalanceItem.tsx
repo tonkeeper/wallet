@@ -21,7 +21,7 @@ import {
 } from '$shared/constants';
 import { formatCryptoCurrency, formatFiatCurrencyAmount } from '$utils/currency';
 import { fiatCurrencySelector } from '$store/main';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import BigNumber from 'bignumber.js';
 
 const ScreenWidth = Dimensions.get('window').width;

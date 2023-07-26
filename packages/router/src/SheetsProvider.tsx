@@ -3,8 +3,8 @@ import { nanoid } from '@reduxjs/toolkit';
 import { SheetMeasurements, useSheetMeasurements } from './useSheetMeasurements';
 import { useNavigation } from '@react-navigation/native';
 import { Keyboard } from 'react-native';
-import { ModalBehaviorContext } from '$libs/navigation/context/ModalBehaviorContext';
-import { delay, isAndroid } from '$utils';
+import { ModalBehaviorContext } from './context/ModalBehaviorContext';
+import { isAndroid } from './utils/constants';
 
 export type BottomSheetRefs = {
   scrollRef?: React.MutableRefObject<HTMLDivElement>;

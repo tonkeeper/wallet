@@ -1,9 +1,8 @@
-import { MappedEvent } from '../mappers/AccountEventsMapper';
-import { StyleSheet } from 'react-native';
+import { Steezy, Modal, View } from '@tonkeeper/uikit';
 import { memo } from 'react';
 
 // type TransactionModalParams = {
-//   eventId: string;
+//   transactionId: string;
 // };
 
 // export const TransactionModalController = createRouteController<TransactionModalParams>(
@@ -26,21 +25,25 @@ import { memo } from 'react';
 // );
 
 interface TransactionModalProps {
-  event: MappedEvent;
+  transactionId: string;
 }
 
-export const TransactionModal = memo<TransactionModalProps>(({ event }) => {
+export const TransactionModal = memo<TransactionModalProps>((props) => {
+  const { transactionId } = props;
+
   return (
     <Modal>
       <Modal.Header />
       <Modal.Content>
-        
+        <View style={{ height: 200 }}>
+
+        </View>
         
       </Modal.Content>
     </Modal>
   );
 });
 
-const styles = StyleSheet.create({
+const styles = Steezy.create({
   container: {},
 });

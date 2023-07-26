@@ -12,7 +12,7 @@ import { isAndroid } from '$utils';
 import { walletWalletSelector } from '$store/wallet';
 import { useAttachScreen } from '$navigation/AttachScreen';
 import { useNotificationsResolver } from '$hooks/useNotificationsResolver';
-import { withModalStack } from '$libs/navigation';
+import { withModalStack } from '@tonkeeper/router';
 import { ModalStack } from '$navigation/ModalStack';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();

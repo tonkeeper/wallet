@@ -11,7 +11,7 @@ import { walletActions, walletSelector } from '$store/wallet';
 import { formatCryptoCurrency } from '$utils/currency';
 import { getTokenConfig } from '$shared/dynamicConfig';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 import {
   NFTOperationFooter,
   useNFTOperationState,
