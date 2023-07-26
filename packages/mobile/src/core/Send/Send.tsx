@@ -28,7 +28,7 @@ import { Keyboard } from 'react-native';
 import { favoritesActions } from '$store/favorites';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { Configuration, AccountsApi, Account } from '@tonkeeper/core';
-import { DismissedActionError } from './steps/ConfirmStep/DismissedActionError';
+import { DismissedActionError } from './steps/ConfirmStep/ActionErrors';
 import { formatter } from '$utils/formatter';
 
 export const Send: FC<SendProps> = ({ route }) => {

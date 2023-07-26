@@ -4,9 +4,16 @@ import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter'
 import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
-import { compareAddresses, debugLog, delay, lowerCaseFirstLetter, ns } from '$utils';
+import {
+  calculateActionsTotalAmount,
+  calculateMessageTransferAmount,
+  debugLog,
+  delay,
+  lowerCaseFirstLetter,
+  ns,
+} from '$utils';
 import { t } from '$translation';
-import { AccountEvent, Action, ActionTypeEnum } from 'tonapi-sdk-js';
+import { AccountEvent, ActionTypeEnum } from 'tonapi-sdk-js';
 import { SignRawAction } from './SignRawAction';
 import { store, Toast } from '$store';
 import * as S from '../NFTOperations.styles';
@@ -15,7 +22,6 @@ import { Ton } from '$libs/Ton';
 import { copyText } from '$hooks/useCopyText';
 import { push } from '$navigation';
 import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
-import BigNumber from 'bignumber.js';
 import {
   checkIsInsufficient,
   openInsufficientFundsModal,
@@ -125,7 +131,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     if (fee) {
       return {
         fee:
-          `≈ ` +
+          '≈ ' +
           formatter.format(Ton.fromNano(fee.total.toString()), {
             currencySeparator: 'wide',
             currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
@@ -197,33 +203,6 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     </Modal>
   );
 });
-
-function calculateMessageTransferAmount(messages) {
-  if (!messages) {
-    return 0;
-  }
-  return messages.reduce(
-    (acc, message) => new BigNumber(acc).plus(new BigNumber(message.amount)).toString(),
-    '0',
-  );
-}
-
-function calculateActionsTotalAmount(address: string, actions: Action[]) {
-  if (!actions.length) {
-    return 0;
-  }
-  return actions.reduce((acc, action) => {
-    if (
-      action[ActionTypeEnum.TonTransfer] &&
-      compareAddresses(address, action[ActionTypeEnum.TonTransfer].sender.address)
-    ) {
-      return new BigNumber(acc)
-        .plus(new BigNumber(action[ActionTypeEnum.TonTransfer].amount))
-        .toString();
-    }
-    return acc;
-  }, '0');
-}
 
 export const openSignRawModal = async (
   params: SignRawParams,

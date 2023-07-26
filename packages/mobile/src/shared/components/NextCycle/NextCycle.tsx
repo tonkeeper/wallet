@@ -4,14 +4,16 @@ import React, { FC, memo, useCallback } from 'react';
 import * as S from './NextCycle.style';
 import { LayoutChangeEvent } from 'react-native';
 import { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { PoolInfo } from '@tonkeeper/core';
 
 interface Props {
-  cycleStart: number;
-  cycleEnd: number;
+  pool: PoolInfo;
 }
 
 const NextCycleComponent: FC<Props> = (props) => {
-  const { cycleEnd, cycleStart } = props;
+  const {
+    pool: { cycleEnd, cycleStart, implementation },
+  } = props;
 
   const t = useTranslator();
 
@@ -33,7 +35,7 @@ const NextCycleComponent: FC<Props> = (props) => {
     width: interpolate(progress.value, [0, 1], [0, containerWidth.value]),
   }));
 
-  if (isCooldown) {
+  if (isCooldown && implementation !== 'liquidTF') {
     return (
       <S.Container>
         <S.Row>
@@ -57,7 +59,9 @@ const NextCycleComponent: FC<Props> = (props) => {
         <Text color="foregroundSecondary">{formattedDuration}</Text>
       </S.Row>
       <Text variant="body2" color="foregroundSecondary">
-        {t('staking.details.next_cycle.desc')}
+        {implementation === 'liquidTF'
+          ? t('staking.details.next_cycle.desc_liquid')
+          : t('staking.details.next_cycle.desc')}
       </Text>
     </S.Container>
   );
