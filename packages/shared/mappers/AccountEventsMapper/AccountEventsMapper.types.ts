@@ -138,6 +138,8 @@ export type MappedEventAction = {
   nftItem?: NftItem;
   comment?: string;
   isScam?: boolean;
+  picture?: string | null;
+  isFailed?: boolean;
 };
 
 export type GroupedActionsByDate = { [date: string]: MappedEventAction[] };

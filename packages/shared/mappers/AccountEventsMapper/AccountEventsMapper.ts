@@ -1,5 +1,14 @@
-import { detectReceive, findSenderAccount, getSenderAddress } from './AccountEventsMapper.utils';
-import { AccountEvent, ActionTypeEnum } from '@tonkeeper/core/src/TonAPI';
+import {
+  detectReceive,
+  findSenderAccount,
+  getSenderAddress,
+  getSenderPicture,
+} from './AccountEventsMapper.utils';
+import {
+  AccountEvent,
+  ActionStatusEnum,
+  ActionTypeEnum,
+} from '@tonkeeper/core/src/TonAPI';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
@@ -118,12 +127,14 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
     action.isReceive = isReceive;
 
+    action.picture = senderAccount.picture;
+
     switch (input.action.type) {
       case ActionTypeEnum.TonTransfer: {
         const data = input.action.data;
 
         action.iconName = arrowIcon;
-        action.senderAccount = senderAccount;
+        action.senderAccount = senderAccount.address;
         action.operation = sendOrReceiveTitle;
         action.comment = data.comment?.trim();
         action.amount = formatter.formatNano(data.amount, {
@@ -137,7 +148,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
         action.iconName = arrowIcon;
         action.operation = sendOrReceiveTitle;
-        action.senderAccount = senderAccount;
+        action.senderAccount = senderAccount.address;
         action.amount = formatter.formatNano(data.amount, {
           decimals: data.jetton.decimals,
           postfix: data.jetton?.symbol,
@@ -150,7 +161,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
         action.iconName = arrowIcon;
         action.operation = sendOrReceiveTitle;
-        action.senderAccount = senderAccount;
+        action.senderAccount = senderAccount.address;
         action.amount = 'NFT';
         action.nftAddress = data.nft;
         break;
@@ -162,6 +173,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
         action.iconName = 'ic-shopping-bag-28';
         action.operation = t('transactions.nft_purchase');
         action.senderAccount = getSenderAddress(data.seller);
+        action.picture = getSenderPicture(data.seller);
         action.amount = formatter.formatNano(data.amount.value, {
           postfix: data.amount.token_name,
           prefix: amountPrefix,
@@ -213,6 +225,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
       case ActionTypeEnum.AuctionBid: {
         const data = input.action.data;
 
+        // TODO: need backend fixes;
         console.log(input.action.type);
         break;
       }
@@ -250,6 +263,12 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
       action.nftItem = undefined;
       action.nftAddress = undefined;
       action.isScam = true;
+    }
+
+    if (input.action.status === ActionStatusEnum.Failed) {
+      action.iconName = 'ic-exclamationmark-circle-28';
+      action.picture = null;
+      action.isFailed = true;
     }
 
     return action;

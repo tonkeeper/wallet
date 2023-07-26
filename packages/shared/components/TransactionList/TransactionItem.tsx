@@ -16,6 +16,8 @@ import { MappedEventAction } from '../../mappers/AccountEventsMapper';
 import { TransactionNFTItem } from './TransactionNFTItem';
 import React, { memo } from 'react';
 import { SText } from '@tonkeeper/uikit/src/components/Text';
+import FastImage from 'react-native-fast-image';
+import { t } from '../../i18n';
 
 interface TransactionItemProps {
   item: MappedEventAction;
@@ -80,11 +82,23 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
         }
         leftContent={
           <Animated.View style={[styles.icon.static, backgroundStyle]}>
-            {item.iconName && <Icon name={item.iconName} color="iconSecondary" />}
-            {item.inProgress && (
-              <View style={styles.sending}>
-                <Icon name="ic-clock-16" colorHex="#FFF" />
-              </View>
+            {!!item.picture ? (
+              <FastImage
+                resizeMode="cover"
+                source={{
+                  uri: item.picture,
+                }}
+                style={{ width: 44, height: 44, borderRadius: 44 / 2 }}
+              />
+            ) : (
+              <>
+                {item.iconName && <Icon name={item.iconName} color="iconSecondary" />}
+                {item.inProgress && (
+                  <View style={styles.sending}>
+                    <Icon name="ic-clock-16" colorHex="#FFF" />
+                  </View>
+                )}
+              </>
             )}
           </Animated.View>
         }
@@ -101,6 +115,11 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
               <Animated.View style={[styles.comment.static, backgroundStyle]}>
                 <Text type="body2">{item.comment}</Text>
               </Animated.View>
+            )}
+            {item.isFailed && (
+              <Text type="body2" color="accentOrange" style={styles.failedText.static}>
+                {t('transactions.failed')}
+              </Text>
             )}
           </View>
         }
@@ -152,6 +171,9 @@ const styles = Steezy.create(({ colors, corners }) => ({
   },
   timeText: {
     textAlign: 'right',
+  },
+  failedText: {
+    marginTop: 8,
   },
   scamAmountText: {
     color: colors.textTertiary,

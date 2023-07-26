@@ -386,7 +386,8 @@
     "swap": "Swap",
     "wallet_initialized": "Wallet initialized",
     "contract_deploy": "Contract Deploy",
-    "spam": "Spam"
+    "spam": "Spam",
+    "failed": "Failed"
   },
 
   "browser": {

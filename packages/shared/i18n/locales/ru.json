@@ -404,7 +404,8 @@
     "swap": "Обмен",
     "wallet_initialized": "Кошелёк инициализирован",
     "contract_deploy": "Создание контракта",
-    "spam": "Спам"
+    "spam": "Спам",
+    "failed": "Неуспешно"
   },
 
   "browser": {

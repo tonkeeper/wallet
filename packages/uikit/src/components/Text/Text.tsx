@@ -11,7 +11,8 @@ export type TextColors =
   | 'textSecondary'
   | 'textTertiary'
   | 'textAccent'
-  | 'textPrimaryAlternate';
+  | 'textPrimaryAlternate'
+  | 'accentOrange';
 
 export interface TextProps extends AnimateProps<NativeTextProps> {
   type?: TTextTypes;

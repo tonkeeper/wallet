@@ -38,6 +38,7 @@ import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 
 export const NFT: React.FC<NFTProps> = ({ route }) => {
+  const { address: nftAddress } = route.params.keyPair;
   const flags = useFlags(['disable_nft_markets', 'disable_apperance']);
   const hiddenAmounts = usePrivacyStore((state) => state.hiddenAmounts);
   const dispatch = useDispatch();
@@ -45,6 +46,9 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
   const address = useSelector(walletAddressSelector);
   const nftFromHistory = useNFT(route.params.keyPair);
   const [nft, setNft] = useState(nftFromHistory);
+
+  // const { data: nftFromHistory } = useNftItemByAddress(nftAddress);
+  // const [nft, setNft] = useState(nftFromHistory!);
 
   const [expiringAt, setExpiringAt] = useState(0);
   const [lastFill, setLastFill] = useState(0);
