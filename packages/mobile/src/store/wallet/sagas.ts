@@ -590,7 +590,6 @@ function* cleanWalletWorker() {
         eventsActions.resetEvents(),
         nftsActions.resetNFTs(),
         jettonsActions.resetJettons(),
-        ratesActions.resetRates(),
         subscriptionsActions.reset(),
       ),
     );
