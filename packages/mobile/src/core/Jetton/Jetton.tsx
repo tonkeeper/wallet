@@ -3,15 +3,15 @@ import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
 import {
   Icon,
-  ScrollHandler,
-  Text,
+  IconButton,
   PopupMenu,
   PopupMenuItem,
-  IconButton,
+  ScrollHandler,
   Skeleton,
   SwapIcon,
+  Text,
 } from '$uikit';
-import { delay, maskifyTonAddress, ns } from '$utils';
+import { delay, maskifyTonAddress, ns, trackEvent } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
 import { useTheme, useTokenPrice, useTranslator } from '$hooks';
@@ -28,6 +28,7 @@ import { useSwapStore } from '$store/zustand/swap';
 import { shallow } from 'zustand/shallow';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { Events, SendAnalyticsFrom } from '$store/models';
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const theme = useTheme();
@@ -46,7 +47,12 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const showSwap = useSwapStore((s) => !!s.assets[jetton.jettonAddress], shallow);
 
   const handleSend = useCallback(() => {
-    openSend(jetton.jettonAddress, undefined, undefined, undefined, true);
+    trackEvent(Events.SendOpen, { from: SendAnalyticsFrom.TokenScreen });
+    openSend({
+      currency: jetton.jettonAddress,
+      isJetton: true,
+      from: SendAnalyticsFrom.TokenScreen,
+    });
   }, [jetton.jettonAddress]);
 
   const handleReceive = useCallback(() => {

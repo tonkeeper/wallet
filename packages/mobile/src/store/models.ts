@@ -283,3 +283,14 @@ export interface FavoriteModel {
   address: string;
   domain?: string;
 }
+
+export enum Events {
+  SendSuccess = 'send_success',
+  SendOpen = 'send_open',
+}
+
+export enum SendAnalyticsFrom {
+  WalletScreen = 'WalletScreen',
+  TonScreen = 'TonScreen',
+  TokenScreen = 'TokenScreen',
+}

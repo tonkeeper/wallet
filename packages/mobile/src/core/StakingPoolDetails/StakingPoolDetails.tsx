@@ -62,7 +62,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
       return;
     }
 
-    openSend(stakingJetton.jettonAddress, undefined, undefined, undefined, true);
+    openSend({ currency: stakingJetton.jettonAddress, isJetton: true });
   }, [stakingJetton]);
 
   const isImplemeted = KNOWN_STAKING_IMPLEMENTATIONS.includes(pool.implementation);
