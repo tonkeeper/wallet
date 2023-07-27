@@ -284,7 +284,7 @@ export const BalancesList = memo<BalancesListProps>(
 
     return (
       <ListComponent
-        drawDistance={1500}
+        drawDistance={750}
         ListHeaderComponent={ListHeaderComponent}
         getItemType={(item) => item.type}
         renderItem={RenderItem}

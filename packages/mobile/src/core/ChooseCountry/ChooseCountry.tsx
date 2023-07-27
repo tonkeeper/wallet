@@ -79,7 +79,7 @@ export const ChooseCountry: React.FC = () => {
       </NavBar>
       <Screen.FlashList
         onLayout={goToIndex}
-        drawDistance={2500}
+        drawDistance={750}
         ItemSeparatorComponent={ListSeparatorItem}
         keyExtractor={(item) => item.code}
         ref={listRef}
