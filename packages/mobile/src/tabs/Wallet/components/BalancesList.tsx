@@ -284,10 +284,11 @@ export const BalancesList = memo<BalancesListProps>(
 
     return (
       <ListComponent
+        drawDistance={1500}
         ListHeaderComponent={ListHeaderComponent}
         getItemType={(item) => item.type}
         renderItem={RenderItem}
-        estimatedItemSize={500}
+        estimatedItemSize={76}
         data={data}
         refreshControl={
           <RefreshControl

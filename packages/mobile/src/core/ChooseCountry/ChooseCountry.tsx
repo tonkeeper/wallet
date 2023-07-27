@@ -10,6 +10,12 @@ import { t } from '$translation';
 
 const CELL_SIZE = 56;
 
+const ListSeparatorItem = () => (
+  <View style={styles.separatorContainer}>
+    <ListSeparator />
+  </View>
+);
+
 const RenderItem = ({
   item,
 }: {
@@ -37,13 +43,13 @@ const RenderItem = ({
         onPress={handleSelectCountry}
         title={item.name}
       />
-      {!item.isLast && <ListSeparator />}
     </View>
   );
 };
 
+const countriesList = getCountries();
+
 export const ChooseCountry: React.FC = () => {
-  const countriesList = getCountries();
   const { bottom: bottomInset } = useSafeAreaInsets();
   const selectedCountry = useMethodsToBuyStore((state) => state.selectedCountry);
   const listRef = useRef();
@@ -73,6 +79,9 @@ export const ChooseCountry: React.FC = () => {
       </NavBar>
       <Screen.FlashList
         onLayout={goToIndex}
+        drawDistance={2500}
+        ItemSeparatorComponent={ListSeparatorItem}
+        keyExtractor={(item) => item.code}
         ref={listRef}
         contentContainerStyle={{ paddingBottom: bottomInset + 16 }}
         estimatedItemSize={CELL_SIZE}
@@ -95,6 +104,9 @@ const styles = Steezy.create(({ corners, colors }) => ({
   containerListItem: {
     overflow: 'hidden',
     backgroundColor: colors.backgroundContent,
+    marginHorizontal: 16,
+  },
+  separatorContainer: {
     marginHorizontal: 16,
   },
 }));
