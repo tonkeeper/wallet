@@ -19,7 +19,7 @@ import {
   TabsStackRouteNames,
 } from '$navigation/navigationNames';
 import { CryptoCurrencies, CryptoCurrency } from '$shared/constants';
-import { SubscriptionModel } from '$store/models';
+import { SendAnalyticsFrom, SubscriptionModel } from '$store/models';
 import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
 import { NFTKeyPair } from '$store/nfts/interface';
 import { DeployModalProps } from '$core/ModalContainer/NFTOperations/Modals/DeployModal';
@@ -141,16 +141,29 @@ export function openExploreTab(initialCategory?: string) {
   navigate(TabsStackRouteNames.Explore, { initialCategory });
 }
 
-export function openSend(
-  currency?: CryptoCurrency | string,
-  address?: string,
-  comment?: string,
-  withGoBack?: boolean,
-  isJetton?: boolean,
-  amount?: string,
-  fee?: string,
-  isInactive?: boolean,
-) {
+export interface OpenSendParams {
+  currency?: CryptoCurrency | string;
+  address?: string;
+  comment?: string;
+  withGoBack?: boolean;
+  isJetton?: boolean;
+  amount?: string;
+  fee?: string;
+  isInactive?: boolean;
+  from?: SendAnalyticsFrom;
+}
+
+export function openSend({
+  currency,
+  address,
+  comment,
+  withGoBack,
+  isJetton,
+  amount,
+  fee,
+  isInactive,
+  from,
+}: OpenSendParams = {}) {
   navigate(AppStackRouteNames.Send, {
     currency,
     address,
@@ -160,6 +173,7 @@ export function openSend(
     amount,
     fee,
     isInactive,
+    from,
   });
 }
 

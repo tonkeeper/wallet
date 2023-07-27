@@ -366,16 +366,16 @@ export const Balances: FC = () => {
 
   const handlePressOpenScanQR = React.useCallback(() => {
     if (store.getState().wallet.wallet) {
-      openScanQR((str) => {
-        if (isValidAddress(str)) {
+      openScanQR((addr) => {
+        if (isValidAddress(addr)) {
           setTimeout(() => {
-            openSend(CryptoCurrencies.Ton, str);
+            openSend({ currency: CryptoCurrencies.Ton, address: addr });
           }, 200);
 
           return true;
         }
 
-        const resolver = deeplinking.getResolver(str, {
+        const resolver = deeplinking.getResolver(addr, {
           delay: 200,
           origin: DeeplinkOrigin.QR_CODE,
         });
