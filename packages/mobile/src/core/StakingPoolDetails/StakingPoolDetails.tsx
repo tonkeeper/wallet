@@ -13,6 +13,8 @@ import Animated from 'react-native-reanimated';
 import { shallow } from 'zustand/shallow';
 import * as S from './StakingPoolDetails.style';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { trackEvent } from '$utils';
+import { Events, SendAnalyticsFrom } from '$store/models';
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPoolDetails>;
@@ -62,7 +64,12 @@ export const StakingPoolDetails: FC<Props> = (props) => {
       return;
     }
 
-    openSend({ currency: stakingJetton.jettonAddress, isJetton: true });
+    trackEvent(Events.SendOpen, { from: SendAnalyticsFrom.StakingPoolDetails });
+    openSend({
+      currency: stakingJetton.jettonAddress,
+      isJetton: true,
+      from: SendAnalyticsFrom.StakingPoolDetails,
+    });
   }, [stakingJetton]);
 
   const isImplemeted = KNOWN_STAKING_IMPLEMENTATIONS.includes(pool.implementation);
