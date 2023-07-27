@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import messaging from '@react-native-firebase/messaging';
 import { useNavigation } from './useNavigation';
 import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
@@ -10,14 +10,13 @@ import { getDomainFromURL } from '$utils';
 import { Alert } from 'react-native';
 import { t } from '$translation';
 import { useNotificationsStore } from '$store';
-import RemoteMessage = FirebaseMessagingTypes.RemoteMessage;
 
 export const useNotificationsResolver = () => {
   const { isMainStackInited } = useSelector(mainSelector);
   const nav = useNavigation();
   const deeplinking = useDeeplinking();
 
-  function handleNotification(remoteMessage: RemoteMessage) {
+  function handleNotification(remoteMessage) {
     console.log('Notification caused app to open from background state:', remoteMessage);
 
     useNotificationsStore.getState().actions.removeRedDot();
