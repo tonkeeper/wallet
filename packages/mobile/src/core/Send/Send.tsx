@@ -1,4 +1,4 @@
-import { useFiatRate, useInstance, useTokenPrice, useTranslator } from '$hooks';
+import { useInstance, useTokenPrice, useTranslator } from '$hooks';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import {
@@ -9,7 +9,7 @@ import {
 } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { NavBar, Text } from '$uikit';
-import { isValidAddress, maskifyAddress, parseLocaleNumber } from '$utils';
+import { isValidAddress, maskifyAddress, parseLocaleNumber, trackEvent } from '$utils';
 import React, {
   FC,
   useCallback,
@@ -30,6 +30,7 @@ import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { Configuration, AccountsApi, Account } from '@tonkeeper/core';
 import { DismissedActionError } from './steps/ConfirmStep/ActionErrors';
 import { formatter } from '$utils/formatter';
+import { Events } from '$store/models';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {
@@ -40,6 +41,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     amount: initialAmount = '0',
     fee: initialFee = '0',
     isInactive: initialIsInactive = false,
+    from,
   } = route.params;
 
   const initialAddress =
@@ -194,6 +196,7 @@ export const Send: FC<SendProps> = ({ route }) => {
           jettonWalletAddress,
           decimals,
           onDone: () => {
+            trackEvent(Events.SendSuccess, { from });
             dispatch(favoritesActions.restoreHiddenAddress(recipient.address));
             setSending(false);
             onDone();
@@ -211,6 +214,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       currency,
       decimals,
       dispatch,
+      from,
       isJetton,
       jettonWalletAddress,
       recipient,

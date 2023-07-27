@@ -83,7 +83,7 @@ export const BalanceItem: FC<BalanceItemProps> = (props) => {
     if (availableJettons.length > 0) {
       openSend();
     } else {
-      openSend(currency);
+      openSend({ currency });
     }
   }, [currency, availableJettons, wallet]);
 
