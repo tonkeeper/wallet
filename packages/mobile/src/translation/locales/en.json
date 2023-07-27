@@ -782,6 +782,7 @@
       "next_cycle": {
         "title": "Next cycle",
         "desc": "All transactions take effect once the cycle ends",
+        "desc_liquid": "All withdrawal requests take effects once the cycle ends",
         "time": "in %{time}"
       },
       "cooldown": {
@@ -829,6 +830,11 @@
         "label": "Fee",
         "value": "≈ %{value} TON"
       }
+    },
+    "withdrawal_fee_warning": {
+      "title": "You will have not enough funds for withdraw",
+      "message": "Please leave at least 1 TON on your balance.",
+      "continue": "Continue anyway"
     }
   },
   "update": {

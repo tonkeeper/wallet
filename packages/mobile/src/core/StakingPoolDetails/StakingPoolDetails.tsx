@@ -179,7 +179,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                 <Spacer y={16} />
               </>
             ) : null}
-            <NextCycle cycleStart={pool.cycleStart} cycleEnd={pool.cycleEnd} />
+            <NextCycle pool={pool} />
             <Spacer y={16} />
             {detailsVisible ? (
               <>
