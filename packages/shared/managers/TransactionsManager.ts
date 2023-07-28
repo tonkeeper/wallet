@@ -33,6 +33,10 @@ class TransactionsManager {
     });
   }
 
+  public getCachedById() {
+    
+  }
+
   public refetch() {
     // await queryClient.refetchQueries({
     //   refetchPage: (_, index) => index === 0,

@@ -54,11 +54,13 @@ export const useEventsByAccount = <TData = AccountEvents, TModifiedData = TData>
         }
       }
 
-      return data as TModifiedData; //modify((data as TData)) as TModifiedData;
-    },
-    // select: () => {
 
-    // }
+      data.events.map((event) => {
+        queryClient.setQueryData(['account_event', event.event_id], event);
+      });
+
+      return data as TModifiedData; //modify((data as TData)) as TModifiedData;
+    }
   });
 
   const flatData = useMemo(() => {

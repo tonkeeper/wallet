@@ -6,8 +6,10 @@ import {
 } from './AccountEventsMapper.utils';
 import {
   AccountEvent,
+  Action,
   ActionStatusEnum,
   ActionTypeEnum,
+  Event,
 } from '@tonkeeper/core/src/TonAPI';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { t } from '@tonkeeper/shared/i18n';
@@ -57,18 +59,21 @@ export function AccountEventsMapper(events: AccountEvent[], walletAddress: strin
   }, []);
 }
 
+export function mergeActionWithData(inputAction: Action) {
+  const action = { ...inputAction };
+  const actionByType = action[action.type] as ActionsData['data'];
+  return Object.assign(action, {
+    type: action.type,
+    data: actionByType,
+  }) as ActionsWithData;
+}
+
 export function EventMapper(event: AccountEvent, walletAddress: string) {
   const countAction = event.actions.length;
   const actions = event.actions.reduce<MappedEventAction[]>(
     (actions, serverAction, index) => {
-      const actionByType = serverAction[serverAction.type] as ActionsData['data'];
-      const actionWithData = Object.assign(serverAction, {
-        type: serverAction.type,
-        data: actionByType,
-      }) as ActionsWithData;
-
       const action = EventsActionMapper({
-        action: actionWithData,
+        action: mergeActionWithData(serverAction),
         actionIndex: index,
         walletAddress,
         event,
@@ -105,7 +110,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
   // SimplePreview by default
   const action: MappedEventAction = {
     type: MappedEventItemType.Action,
-    id: `input.action-${input.event.event_id}-${input.actionIndex}`,
+    id: `${input.event.event_id}_${input.actionIndex}`,
     operation: input.action.simple_preview.name || 'Unknown',
     senderAccount: input.action.simple_preview.description,
     inProgress: input.event.in_progress,
@@ -277,3 +282,163 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
     return action;
   }
 }
+
+// type EventActionDetailsMapperInput = {
+//   walletAddress: string;
+//   event: AccountEvent;
+//   action: Action;
+// };
+
+// function EventActionDetailsMapper(input: EventActionDetailsMapperInput) {
+//   const time = formatTransactionTime(new Date(input.event.timestamp * 1000));
+//   const action = mergeActionWithData(input.action);
+
+//   // SimplePreview by default
+//   const details: MappedEventAction = {
+//     type: MappedEventItemType.Action,
+//     id: `${input.event.event_id}_${input.actionIndex}`,
+//     operation: input.action.simple_preview.name || 'Unknown',
+//     senderAccount: input.action.simple_preview.description,
+//     inProgress: input.event.in_progress,
+//     timestamp: input.event.timestamp,
+//     iconName: 'ic-gear-28',
+//     isScam: false,
+//     amount: '−',
+//     time,
+//   };
+
+//   try {
+//     switch (action.type) {
+//       case ActionTypeEnum.TonTransfer: {
+//         const data = action.data;
+  
+//         details.iconName = arrowIcon;
+//         details.senderAccount = senderAccount.address;
+//         details.operation = sendOrReceiveTitle;
+//         details.comment = data.comment?.trim();
+//         details.amount = formatter.formatNano(data.amount, {
+//           prefix: amountPrefix,
+//           postfix: 'TON',
+//         });
+//         break;
+//       }
+//       case ActionTypeEnum.JettonTransfer: {
+//         const data = action.data;
+  
+//         details.iconName = arrowIcon;
+//         details.operation = sendOrReceiveTitle;
+//         details.senderAccount = senderAccount.address;
+//         details.amount = formatter.formatNano(data.amount, {
+//           decimals: data.jetton.decimals,
+//           postfix: data.jetton?.symbol,
+//           prefix: amountPrefix,
+//         });
+//         break;
+//       }
+//       case ActionTypeEnum.NftItemTransfer: {
+//         const data = action.data;
+  
+//         details.iconName = arrowIcon;
+//         details.operation = sendOrReceiveTitle;
+//         details.senderAccount = senderAccount.address;
+//         details.amount = 'NFT';
+//         details.nftAddress = data.nft;
+//         break;
+//       }
+//       case ActionTypeEnum.NftPurchase:
+//         const data = action.data;
+  
+//         details.nftItem = data.nft;
+//         details.iconName = 'ic-shopping-bag-28';
+//         details.operation = t('transactions.nft_purchase');
+//         details.senderAccount = getSenderAddress(data.seller);
+//         details.picture = getSenderPicture(data.seller);
+//         details.amount = formatter.formatNano(data.amount.value, {
+//           postfix: data.amount.token_name,
+//           prefix: amountPrefix,
+//         });
+//         break;
+//       case ActionTypeEnum.ContractDeploy: {
+//         const data = action.data;
+  
+//         const isInitialized = Address.compare(data.address, input.walletAddress);
+//         details.iconName = isInitialized ? 'ic-donemark-28' : 'ic-gear-28';
+//         details.senderAccount = Address(data.address).maskify();
+//         details.operation = isInitialized
+//           ? t('transactions.wallet_initialized')
+//           : t('transactions.contract_deploy');
+//         break;
+//       }
+//       case ActionTypeEnum.Subscribe: {
+//         const data = action.data;
+  
+//         details.iconName = 'ic-bell-28';
+//         details.operation = t('transactions.subscription');
+//         details.senderAccount = data.beneficiary.name ?? '';
+//         details.amount = formatter.formatNano(data.amount, {
+//           prefix: amountPrefix,
+//           postfix: 'TON',
+//         });
+//         break;
+//       }
+//       case ActionTypeEnum.UnSubscribe: {
+//         const data = action.data;
+  
+//         details.iconName = 'ic-xmark-28';
+//         details.operation = t('transactions.unsubscription');
+//         details.senderAccount = data.beneficiary.name ?? '';
+//         break;
+//       }
+//       case ActionTypeEnum.SmartContractExec: {
+//         const data = action.data;
+  
+//         details.iconName = 'ic-gear-28';
+//         details.operation = t('transactions.smartcontract_exec');
+//         details.senderAccount = Address(data.contract.address).maskify();
+//         details.amount = formatter.formatNano(data.ton_attached, {
+//           prefix: amountPrefix,
+//           postfix: 'TON',
+//         });
+//         break;
+//       }
+//       case ActionTypeEnum.AuctionBid: {
+//         const data = action.data;
+  
+//         // TODO: need backend fixes;
+//         console.log(input.action.type);
+//         break;
+//       }
+//       case ActionTypeEnum.Unknown: {
+//         details.operation = t('transactions.unknown');
+//         details.senderAccount = t('transactions.unknown_description');
+//         break;
+//       }
+//       case ActionTypeEnum.JettonSwap: {
+//         const data = action.data;
+  
+//         details.iconName = 'ic-swap-horizontal-alternative-28';
+//         details.operation = t('transactions.swap');
+//         details.senderAccount = data.user_wallet.name
+//           ? data.user_wallet.name
+//           : Address(data.user_wallet.address).maskify();
+//           details.isReceive = true;
+//         details.amount = formatter.formatNano(data.amount_in, {
+//           decimals: data.jetton_master_in.decimals,
+//           postfix: data.jetton_master_in.symbol,
+//           prefix: '+',
+//         });
+//         details.amount2 = formatter.formatNano(data.amount_out, {
+//           decimals: data.jetton_master_out.decimals,
+//           postfix: data.jetton_master_out.symbol,
+//           prefix: '−',
+//         });
+//         break;
+//       }
+//     }
+
+//     return details;
+//   } catch (err) {
+//     console.log('[EventActionDetailsMapper]:', err);
+//     return details;
+//   }
+// }

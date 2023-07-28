@@ -1,21 +1,22 @@
 import { Steezy, Modal, View } from '@tonkeeper/uikit';
-import { memo } from 'react';
 import { useTransaction } from '@tonkeeper/core/src/query/useTransaction';
-import { formatter } from '../formatter';
+import { memo } from 'react';
+import { usePrepareDetailedAction } from '$hooks';
+import { ActionBase } from '$core/ModalContainer/Action/ActionBase/ActionBase';
 
-type TransactionModalParams = {
-  transactionId: string;
-};
+// type TransactionModalParams = {
+//   transactionId: string;
+// };
 
 // export const TransactionModalController = createRouteController<TransactionModalParams>(
 //   async (router, params) => {
 //     try {
-//       const cachedEvent = transactions.getCachedById(params.eventId);
+//       const cachedEvent = accountEvents.getCachedEventById(params.eventId);
 //       if (cachedEvent) {
 //         return router.pass(cachedEvent);
 //       } else {
 //         Toast.loading();
-//         const event = await transactions.fetchById(params.eventId);
+//         const event = await accountEvents.fetchEventById(params.eventId);
 //         Toast.hide();
 
 //         return router.pass(event);
@@ -32,20 +33,14 @@ interface TransactionModalProps {
 
 export const TransactionModal = memo<TransactionModalProps>((props) => {
   const { transactionId } = props;
-  const t = useTransaction(transactionId);
+  const transaction = useTransaction(transactionId);
+  const actionProps = usePrepareDetailedAction(transaction.action, transaction.event);
 
-  return (
-    <Modal>
-      <Modal.Header />
-      <Modal.Content>
-        <View style={{ height: 200 }}>
-
-        </View>
-      </Modal.Content>
-    </Modal>
-  );
+  return <ActionBase {...actionProps} />;
 });
 
 const styles = Steezy.create({
-  container: {},
+  container: {
+    padding: 16,
+  },
 });
