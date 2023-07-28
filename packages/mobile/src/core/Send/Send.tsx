@@ -8,7 +8,7 @@ import {
 } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { NavBar, Text } from '$uikit';
-import { isValidAddress, maskifyAddress, parseLocaleNumber } from '$utils';
+import { isValidAddress, maskifyAddress, parseLocaleNumber, trackEvent } from '$utils';
 import React, {
   FC,
   useCallback,
@@ -25,11 +25,12 @@ import { AmountStep } from './steps/AmountStep/AmountStep';
 import { ConfirmStep } from './steps/ConfirmStep/ConfirmStep';
 import { Keyboard } from 'react-native';
 import { favoritesActions } from '$store/favorites';
-import { Account, AccountsApi, Configuration } from '@tonkeeper/core/src/legacy';
-import { DismissedActionError } from './steps/ConfirmStep/DismissedActionError';
-import { formatter } from '$utils/formatter';
 import { PagerView, Screen } from '@tonkeeper/uikit';
 import { PagerViewOnPageSelectedEvent } from 'react-native-pager-view';
+import { Configuration, AccountsApi, Account } from '@tonkeeper/core/src/legacy';
+import { DismissedActionError } from './steps/ConfirmStep/ActionErrors';
+import { formatter } from '$utils/formatter';
+import { Events } from '$store/models';
 import BigNumber from 'bignumber.js';
 
 export const Send: FC<SendProps> = ({ route }) => {
@@ -41,6 +42,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     amount: initialAmount = '0',
     fee: initialFee = '0',
     isInactive: initialIsInactive = false,
+    from,
   } = route.params;
   const refPagerView = useRef<any>(null);
 
@@ -202,6 +204,7 @@ export const Send: FC<SendProps> = ({ route }) => {
           jettonWalletAddress,
           decimals,
           onDone: () => {
+            trackEvent(Events.SendSuccess, { from });
             dispatch(favoritesActions.restoreHiddenAddress(recipient.address));
             onDone();
           },
@@ -217,6 +220,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       currency,
       decimals,
       dispatch,
+      from,
       isJetton,
       jettonWalletAddress,
       recipient,

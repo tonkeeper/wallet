@@ -10,7 +10,7 @@ import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { getStakingPoolByAddress, Toast, useStakingStore } from '$store';
 import { walletSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
-import { parseLocaleNumber } from '$utils';
+import { calculateActionsTotalAmount, parseLocaleNumber } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
 import { RouteProp } from '@react-navigation/native';
 import axios from 'axios';
@@ -24,6 +24,12 @@ import { AmountStep, ConfirmStep } from './steps';
 import { StakingSendSteps, StakingTransactionType } from './types';
 import { getStakeSignRawMessage, getWithdrawalFee } from './utils';
 import { formatter } from '$utils/formatter';
+import {
+  checkIsInsufficient,
+  openInsufficientFundsModal,
+} from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { Alert } from 'react-native';
+import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
@@ -235,12 +241,52 @@ export const StakingSend: FC<Props> = (props) => {
   }, [accountEvent, pool, transactionType]);
 
   const sendTx = useCallback(async () => {
-    if (!actionRef.current) {
+    if (!actionRef.current || !accountEvent) {
       return Promise.reject();
     }
 
+    const cancel = () => Promise.reject(new CanceledActionError());
+
     try {
       setSending(true);
+
+      const totalAmount = calculateActionsTotalAmount(address.ton, accountEvent.actions);
+      const checkResult = await checkIsInsufficient(totalAmount);
+      if (checkResult.insufficient) {
+        openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
+        return cancel();
+      }
+
+      if (checkResult.balance !== null) {
+        const isEnoughToWithdraw = new BigNumber(checkResult.balance)
+          .minus(new BigNumber(totalAmount))
+          .isGreaterThanOrEqualTo(Ton.toNano(1));
+
+        if (!isEnoughToWithdraw) {
+          const shouldContinue = await new Promise((res) =>
+            Alert.alert(
+              t('staking.withdrawal_fee_warning.title'),
+              t('staking.withdrawal_fee_warning.message'),
+              [
+                {
+                  text: t('staking.withdrawal_fee_warning.continue'),
+                  onPress: () => res(true),
+                  style: 'destructive',
+                },
+                {
+                  text: t('cancel'),
+                  onPress: () => res(false),
+                  style: 'cancel',
+                },
+              ],
+            ),
+          );
+
+          if (!shouldContinue) {
+            return cancel();
+          }
+        }
+      }
 
       const vault = await unlockVault();
       const privateKey = await vault.getTonPrivateKey();
@@ -251,7 +297,7 @@ export const StakingSend: FC<Props> = (props) => {
     } finally {
       setSending(false);
     }
-  }, [unlockVault]);
+  }, [accountEvent, address.ton, t, unlockVault]);
 
   useEffect(() => {
     if (isWithdrawalConfrim) {

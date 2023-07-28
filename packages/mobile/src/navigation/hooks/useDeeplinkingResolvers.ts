@@ -284,14 +284,20 @@ export function useDeeplinkingResolvers() {
       if (!isValidAddress(query.jetton)) {
         return Toast.fail(t('transfer_deeplink_address_error'));
       }
-      openSend(query.jetton, address, comment, resolveParams.withGoBack, true);
+      openSend({
+        currency: query.jetton,
+        address,
+        comment,
+        withGoBack: resolveParams.withGoBack,
+        isJetton: true,
+      });
     } else {
-      openSend(currency, address, comment, false);
+      openSend({ currency, address, comment, isJetton: false });
     }
   });
 
   deeplinking.add('/transfer', () => {
-    openSend(CryptoCurrencies.Ton);
+    openSend({ currency: CryptoCurrencies.Ton });
   });
 
   const resolveTxType = async (txRequest: TxRequest) => {

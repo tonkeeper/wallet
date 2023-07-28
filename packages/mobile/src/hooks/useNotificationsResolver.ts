@@ -16,6 +16,44 @@ export const useNotificationsResolver = () => {
   const nav = useNavigation();
   const deeplinking = useDeeplinking();
 
+  function handleNotification(remoteMessage) {
+    console.log('Notification caused app to open from background state:', remoteMessage);
+
+    useNotificationsStore.getState().actions.removeRedDot();
+
+    const deeplink = remoteMessage.data?.deeplink;
+    const link = remoteMessage.data?.link;
+    const dapp_url = remoteMessage.data?.dapp_url;
+
+    if (deeplink) {
+      deeplinking.resolve(deeplink);
+    } else if (link) {
+      if (!dapp_url || getDomainFromURL(link) === getDomainFromURL(dapp_url)) {
+        openDAppBrowser(link);
+      } else {
+        Alert.alert(
+          t('notifications.alert.title'),
+          t('notifications.alert.description'),
+          [
+            {
+              text: t('notifications.alert.open'),
+              onPress: () => openDAppBrowser(link),
+              style: 'destructive',
+            },
+            {
+              text: t('notifications.alert.cancel'),
+              style: 'cancel',
+            },
+          ],
+        );
+      }
+    } else if (dapp_url) {
+      openDAppBrowser(dapp_url);
+    } else {
+      nav.navigate('Balances');
+    }
+  }
+
   useEffect(() => {
     getToken();
   }, []);
@@ -25,58 +63,15 @@ export const useNotificationsResolver = () => {
       return;
     }
 
-    messaging().onNotificationOpenedApp((remoteMessage) => {
-      console.log(
-        'Notification caused app to open from background state:',
-        remoteMessage,
-      );
-
-      useNotificationsStore.getState().actions.removeRedDot();
-
-      const deeplink = remoteMessage.data?.deeplink;
-      const link = remoteMessage.data?.link;
-      const dapp_url = remoteMessage.data?.dapp_url;
-
-      if (deeplink) {
-        deeplinking.resolve(deeplink);
-      } else if (link) {
-        if (!dapp_url || getDomainFromURL(link) === getDomainFromURL(dapp_url)) {
-          openDAppBrowser(link);
-        } else {
-          Alert.alert(
-            t('notifications.alert.title'),
-            t('notifications.alert.description'),
-            [
-              {
-                text: t('notifications.alert.open'),
-                onPress: () => openDAppBrowser(link),
-                style: 'destructive',
-              },
-              {
-                text: t('notifications.alert.cancel'),
-                style: 'cancel',
-              },
-            ],
-          );
-        }
-      } else if (dapp_url) {
-        openDAppBrowser(dapp_url);
-      } else {
-        nav.navigate('Balances');
-      }
-    });
+    messaging().onNotificationOpenedApp((remoteMessage) =>
+      handleNotification(remoteMessage),
+    );
 
     messaging()
       .getInitialNotification()
       .then((remoteMessage) => {
         if (remoteMessage) {
-          console.log('Notification caused app to open from quit state:', remoteMessage);
-
-          const deeplink = remoteMessage.data?.deeplink;
-
-          if (deeplink) {
-            deeplinking.resolve(deeplink);
-          }
+          handleNotification(remoteMessage);
         }
       });
   }, [isMainStackInited]);

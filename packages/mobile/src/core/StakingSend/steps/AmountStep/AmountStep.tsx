@@ -148,7 +148,7 @@ const AmountStepComponent: FC<Props> = (props) => {
           </S.InputContainer>
           <Spacer y={16} />
           {isWithdrawal ? (
-            <NextCycle cycleStart={pool.cycleStart} cycleEnd={pool.cycleEnd} />
+            <NextCycle pool={pool} />
           ) : (
             <>
               <S.TitleContainer>

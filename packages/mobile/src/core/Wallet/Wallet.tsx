@@ -28,7 +28,7 @@ import {
   walletWalletSelector,
 } from '$store/wallet';
 import { Linking, Platform, RefreshControl, View } from 'react-native';
-import { delay, ns } from '$utils';
+import { delay, ns, trackEvent } from '$utils';
 import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
 import { t } from '$translation';
 import { useNavigation } from '@tonkeeper/router';
@@ -41,6 +41,7 @@ import { Toast } from '$store';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { TonIcon } from '../../components/TonIcon';
+import { Events, SendAnalyticsFrom } from '$store/models';
 
 const exploreActions = [
   {
@@ -156,8 +157,9 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     if (!wallet) {
       return openRequireWalletModal();
     }
+    trackEvent(Events.SendOpen, { from: SendAnalyticsFrom.TonScreen });
 
-    openSend(currency);
+    openSend({ currency, from: SendAnalyticsFrom.TonScreen });
   }, [currency, wallet]);
 
   const handleOpenExchange = useCallback(() => {

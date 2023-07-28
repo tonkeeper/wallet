@@ -19,7 +19,10 @@ import { eventsActions } from '$store/events';
 import axios from 'axios';
 import { isTimeSyncedSelector } from '$store/main';
 import { Toast } from '$store';
-import { DismissedActionError } from '$core/Send/steps/ConfirmStep/DismissedActionError';
+import {
+  CanceledActionError,
+  DismissedActionError,
+} from '$core/Send/steps/ConfirmStep/ActionErrors';
 
 enum States {
   INITIAL,
@@ -99,6 +102,8 @@ export const useActionFooter = () => {
       if (error instanceof DismissedActionError) {
         ref.current?.setState(States.ERROR);
         await delay(1750);
+        ref.current?.setState(States.INITIAL);
+      } else if (error instanceof CanceledActionError) {
         ref.current?.setState(States.INITIAL);
       } else if (error instanceof UnlockVaultError) {
         Toast.fail(error?.message);
