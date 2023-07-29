@@ -408,6 +408,11 @@
     "failed": "Неуспешно"
   },
 
+  "transactionDetails": {
+    "received_time": "Received on %{time}",
+    "sent_time": "Sent on %{time}"
+  },
+
   "browser": {
     "title": "Браузер",
     "search_label": "Поиск",

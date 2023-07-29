@@ -12,6 +12,7 @@ type AppConfigVars = {
   tonapiV2Endpoint: string;
   tonApiV2Key: string;
   tonApiKey: string;
+  transactionExplorer: string;
 };
 
 const defaultConfig: Partial<AppConfigVars> = {

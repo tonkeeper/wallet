@@ -1,3 +1,7 @@
+import { formatter } from '@tonkeeper/shared/formatter';
+import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
+import BigNumber from 'bignumber.js';
 import {
   detectReceive,
   findSenderAccount,
@@ -9,11 +13,7 @@ import {
   Action,
   ActionStatusEnum,
   ActionTypeEnum,
-  Event,
 } from '@tonkeeper/core/src/TonAPI';
-import { formatter } from '@tonkeeper/shared/formatter';
-import { t } from '@tonkeeper/shared/i18n';
-import { Address } from '@tonkeeper/core';
 import {
   ActionsData,
   ActionsWithData,
@@ -21,11 +21,13 @@ import {
   MappedEventAction,
   MappedEventItemType,
   GroupedActionsByDate,
+  TransactionDetails,
 } from './AccountEventsMapper.types';
 import {
   formatTransactionTime,
   getDateForGroupTansactions,
   formatTransactionsGroupDate,
+  formatTransactionDetailsTime,
 } from '@tonkeeper/shared/utils/date';
 
 export function AccountEventsMapper(events: AccountEvent[], walletAddress: string = '') {
@@ -48,7 +50,7 @@ export function AccountEventsMapper(events: AccountEvent[], walletAddress: strin
     const formatDatetedDate = formatTransactionsGroupDate(new Date(txTime));
 
     acc.push({
-      type: MappedEventItemType.Date,
+      contentType: MappedEventItemType.Date,
       id: `date-${formatDatetedDate}`,
       date: formatDatetedDate,
     });
@@ -109,13 +111,14 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
   // SimplePreview by default
   const action: MappedEventAction = {
-    type: MappedEventItemType.Action,
+    contentType: MappedEventItemType.Action,
     id: `${input.event.event_id}_${input.actionIndex}`,
     operation: input.action.simple_preview.name || 'Unknown',
-    senderAccount: input.action.simple_preview.description,
+    subtitle: input.action.simple_preview.description,
     inProgress: input.event.in_progress,
     timestamp: input.event.timestamp,
     iconName: 'ic-gear-28',
+    type: 'SimplePreview',
     isScam: false,
     amount: '−',
     time,
@@ -124,6 +127,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
   try {
     const isReceive = detectReceive(input.walletAddress, input.action.data);
     const senderAccount = findSenderAccount(isReceive, input.action.data);
+    const senderAddress = senderAccount.address.masked;
     const arrowIcon = isReceive ? 'ic-tray-arrow-down-28' : 'ic-tray-arrow-up-28';
     const amountPrefix = isReceive ? '+' : '−';
     const sendOrReceiveTitle = isReceive
@@ -131,7 +135,6 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
       : t('transaction_type_sent');
 
     action.isReceive = isReceive;
-
     action.picture = senderAccount.picture;
 
     switch (input.action.type) {
@@ -139,7 +142,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
         const data = input.action.data;
 
         action.iconName = arrowIcon;
-        action.senderAccount = senderAccount.address;
+        action.subtitle = senderAddress;
         action.operation = sendOrReceiveTitle;
         action.comment = data.comment?.trim();
         action.amount = formatter.formatNano(data.amount, {
@@ -153,7 +156,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
         action.iconName = arrowIcon;
         action.operation = sendOrReceiveTitle;
-        action.senderAccount = senderAccount.address;
+        action.subtitle = senderAddress;
         action.amount = formatter.formatNano(data.amount, {
           decimals: data.jetton.decimals,
           postfix: data.jetton?.symbol,
@@ -166,7 +169,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
         action.iconName = arrowIcon;
         action.operation = sendOrReceiveTitle;
-        action.senderAccount = senderAccount.address;
+        action.subtitle = senderAddress;
         action.amount = 'NFT';
         action.nftAddress = data.nft;
         break;
@@ -177,7 +180,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
         action.nftItem = data.nft;
         action.iconName = 'ic-shopping-bag-28';
         action.operation = t('transactions.nft_purchase');
-        action.senderAccount = getSenderAddress(data.seller);
+        action.subtitle = getSenderAddress(data.seller).masked;
         action.picture = getSenderPicture(data.seller);
         action.amount = formatter.formatNano(data.amount.value, {
           postfix: data.amount.token_name,
@@ -189,7 +192,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
         const isInitialized = Address.compare(data.address, input.walletAddress);
         action.iconName = isInitialized ? 'ic-donemark-28' : 'ic-gear-28';
-        action.senderAccount = Address(data.address).maskify();
+        action.subtitle = Address(data.address).maskify();
         action.operation = isInitialized
           ? t('transactions.wallet_initialized')
           : t('transactions.contract_deploy');
@@ -200,7 +203,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
         action.iconName = 'ic-bell-28';
         action.operation = t('transactions.subscription');
-        action.senderAccount = data.beneficiary.name ?? '';
+        action.subtitle = data.beneficiary.name ?? '';
         action.amount = formatter.formatNano(data.amount, {
           prefix: amountPrefix,
           postfix: 'TON',
@@ -212,7 +215,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
         action.iconName = 'ic-xmark-28';
         action.operation = t('transactions.unsubscription');
-        action.senderAccount = data.beneficiary.name ?? '';
+        action.subtitle = data.beneficiary.name ?? '';
         break;
       }
       case ActionTypeEnum.SmartContractExec: {
@@ -220,7 +223,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
         action.iconName = 'ic-gear-28';
         action.operation = t('transactions.smartcontract_exec');
-        action.senderAccount = Address(data.contract.address).maskify();
+        action.subtitle = Address(data.contract.address).maskify();
         action.amount = formatter.formatNano(data.ton_attached, {
           prefix: amountPrefix,
           postfix: 'TON',
@@ -236,7 +239,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
       }
       case ActionTypeEnum.Unknown: {
         action.operation = t('transactions.unknown');
-        action.senderAccount = t('transactions.unknown_description');
+        action.subtitle = t('transactions.unknown_description');
         break;
       }
       case ActionTypeEnum.JettonSwap: {
@@ -244,7 +247,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
         action.iconName = 'ic-swap-horizontal-alternative-28';
         action.operation = t('transactions.swap');
-        action.senderAccount = data.user_wallet.name
+        action.subtitle = data.user_wallet.name
           ? data.user_wallet.name
           : Address(data.user_wallet.address).maskify();
         action.isReceive = true;
@@ -262,7 +265,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
       }
     }
 
-    if (input.event.is_scam) {
+    if (isReceive && input.event.is_scam) {
       action.operation = t('transactions.spam');
       action.comment = undefined;
       action.nftItem = undefined;
@@ -276,6 +279,8 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
       action.isFailed = true;
     }
 
+    action.type = input.action.type;
+
     return action;
   } catch (err) {
     console.log(err);
@@ -283,162 +288,208 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
   }
 }
 
-// type EventActionDetailsMapperInput = {
-//   walletAddress: string;
-//   event: AccountEvent;
-//   action: Action;
-// };
+type EventActionDetailsMapperInput = {
+  walletAddress: string;
+  event: AccountEvent;
+  action: Action;
+};
 
-// function EventActionDetailsMapper(input: EventActionDetailsMapperInput) {
-//   const time = formatTransactionTime(new Date(input.event.timestamp * 1000));
-//   const action = mergeActionWithData(input.action);
+let i = 0
 
-//   // SimplePreview by default
-//   const details: MappedEventAction = {
-//     type: MappedEventItemType.Action,
-//     id: `${input.event.event_id}_${input.actionIndex}`,
-//     operation: input.action.simple_preview.name || 'Unknown',
-//     senderAccount: input.action.simple_preview.description,
-//     inProgress: input.event.in_progress,
-//     timestamp: input.event.timestamp,
-//     iconName: 'ic-gear-28',
-//     isScam: false,
-//     amount: '−',
-//     time,
-//   };
+export function EventActionDetailsMapper(input: EventActionDetailsMapperInput) {
+  const action = mergeActionWithData(input.action);
+  const date = new Date(input.event.timestamp * 1000);
+  const transaction: TransactionDetails = {
+    type: action.type,
+    id: input.event.event_id,
+    operation: input.action.simple_preview.name || 'Unknown',
+    inProgress: input.event.in_progress,
+    timestamp: input.event.timestamp,
 
-//   try {
-//     switch (action.type) {
-//       case ActionTypeEnum.TonTransfer: {
-//         const data = action.data;
-  
-//         details.iconName = arrowIcon;
-//         details.senderAccount = senderAccount.address;
-//         details.operation = sendOrReceiveTitle;
-//         details.comment = data.comment?.trim();
-//         details.amount = formatter.formatNano(data.amount, {
-//           prefix: amountPrefix,
-//           postfix: 'TON',
-//         });
-//         break;
-//       }
-//       case ActionTypeEnum.JettonTransfer: {
-//         const data = action.data;
-  
-//         details.iconName = arrowIcon;
-//         details.operation = sendOrReceiveTitle;
-//         details.senderAccount = senderAccount.address;
-//         details.amount = formatter.formatNano(data.amount, {
-//           decimals: data.jetton.decimals,
-//           postfix: data.jetton?.symbol,
-//           prefix: amountPrefix,
-//         });
-//         break;
-//       }
-//       case ActionTypeEnum.NftItemTransfer: {
-//         const data = action.data;
-  
-//         details.iconName = arrowIcon;
-//         details.operation = sendOrReceiveTitle;
-//         details.senderAccount = senderAccount.address;
-//         details.amount = 'NFT';
-//         details.nftAddress = data.nft;
-//         break;
-//       }
-//       case ActionTypeEnum.NftPurchase:
-//         const data = action.data;
-  
-//         details.nftItem = data.nft;
-//         details.iconName = 'ic-shopping-bag-28';
-//         details.operation = t('transactions.nft_purchase');
-//         details.senderAccount = getSenderAddress(data.seller);
-//         details.picture = getSenderPicture(data.seller);
-//         details.amount = formatter.formatNano(data.amount.value, {
-//           postfix: data.amount.token_name,
-//           prefix: amountPrefix,
-//         });
-//         break;
-//       case ActionTypeEnum.ContractDeploy: {
-//         const data = action.data;
-  
-//         const isInitialized = Address.compare(data.address, input.walletAddress);
-//         details.iconName = isInitialized ? 'ic-donemark-28' : 'ic-gear-28';
-//         details.senderAccount = Address(data.address).maskify();
-//         details.operation = isInitialized
-//           ? t('transactions.wallet_initialized')
-//           : t('transactions.contract_deploy');
-//         break;
-//       }
-//       case ActionTypeEnum.Subscribe: {
-//         const data = action.data;
-  
-//         details.iconName = 'ic-bell-28';
-//         details.operation = t('transactions.subscription');
-//         details.senderAccount = data.beneficiary.name ?? '';
-//         details.amount = formatter.formatNano(data.amount, {
-//           prefix: amountPrefix,
-//           postfix: 'TON',
-//         });
-//         break;
-//       }
-//       case ActionTypeEnum.UnSubscribe: {
-//         const data = action.data;
-  
-//         details.iconName = 'ic-xmark-28';
-//         details.operation = t('transactions.unsubscription');
-//         details.senderAccount = data.beneficiary.name ?? '';
-//         break;
-//       }
-//       case ActionTypeEnum.SmartContractExec: {
-//         const data = action.data;
-  
-//         details.iconName = 'ic-gear-28';
-//         details.operation = t('transactions.smartcontract_exec');
-//         details.senderAccount = Address(data.contract.address).maskify();
-//         details.amount = formatter.formatNano(data.ton_attached, {
-//           prefix: amountPrefix,
-//           postfix: 'TON',
-//         });
-//         break;
-//       }
-//       case ActionTypeEnum.AuctionBid: {
-//         const data = action.data;
-  
-//         // TODO: need backend fixes;
-//         console.log(input.action.type);
-//         break;
-//       }
-//       case ActionTypeEnum.Unknown: {
-//         details.operation = t('transactions.unknown');
-//         details.senderAccount = t('transactions.unknown_description');
-//         break;
-//       }
-//       case ActionTypeEnum.JettonSwap: {
-//         const data = action.data;
-  
-//         details.iconName = 'ic-swap-horizontal-alternative-28';
-//         details.operation = t('transactions.swap');
-//         details.senderAccount = data.user_wallet.name
-//           ? data.user_wallet.name
-//           : Address(data.user_wallet.address).maskify();
-//           details.isReceive = true;
-//         details.amount = formatter.formatNano(data.amount_in, {
-//           decimals: data.jetton_master_in.decimals,
-//           postfix: data.jetton_master_in.symbol,
-//           prefix: '+',
-//         });
-//         details.amount2 = formatter.formatNano(data.amount_out, {
-//           decimals: data.jetton_master_out.decimals,
-//           postfix: data.jetton_master_out.symbol,
-//           prefix: '−',
-//         });
-//         break;
-//       }
-//     }
+    isScam: false,
+    amount: '−',
+  };
 
-//     return details;
-//   } catch (err) {
-//     console.log('[EventActionDetailsMapper]:', err);
-//     return details;
-//   }
-// }
+
+
+
+
+  try {
+    const isReceive = detectReceive(input.walletAddress, action.data);
+    const senderAccount = findSenderAccount(isReceive, action.data);
+    const amountPrefix = isReceive ? '+' : '−';
+    const sendOrReceiveTitle = isReceive
+      ? t('transaction_type_receive')
+      : t('transaction_type_sent');
+
+    transaction.isReceive = isReceive;
+
+    transaction.picture = senderAccount.picture;
+    
+    const feeLabel = new BigNumber(input.event.extra).isLessThan(0)
+          ? t('transaction_refund')
+          : t('transaction_fee');
+
+    const timeLangKey = isReceive ? 'received_time' : 'sent_time';
+    transaction.time = t(`transactionDetails.${timeLangKey}`, {
+      time: formatTransactionDetailsTime(date)
+    });
+
+    // const fiat = formatter.format(tokenPrice.fiat * parseFloat(amount), {
+    //   currency: fiatCurrency,
+    //   currencySeparator: 'wide',
+    // });
+    
+    transaction.fee = formatter.formatNano(input.event.extra, {
+      formatDecimals: 9,
+      postfix: 'TON',
+      absolute: true,
+    });
+
+    
+    switch (action.type) {
+      case ActionTypeEnum.TonTransfer: {
+        const data = action.data;
+
+        
+        transaction.sender = senderAccount.address;
+        transaction.operation = sendOrReceiveTitle;
+        transaction.comment = data.comment?.trim();
+
+        
+        transaction.title = formatter.formatNano(data.amount, {
+          prefix: amountPrefix,
+          formatDecimals: 9,
+          withoutTruncate: true,
+          postfix: 'TON',
+        });
+
+
+        break;
+      }
+      case ActionTypeEnum.JettonTransfer: {
+        const data = action.data;
+
+        transaction.operation = sendOrReceiveTitle;
+        transaction.sender = senderAccount.address;
+
+        transaction.amount = formatter.formatNano(data.amount, {
+          decimals: data.jetton.decimals,
+          postfix: data.jetton?.symbol,
+          prefix: amountPrefix,
+        });
+        break;
+      }
+      case ActionTypeEnum.NftItemTransfer: {
+        const data = action.data;
+
+        transaction.operation = sendOrReceiveTitle;
+        transaction.sender = senderAccount.address;
+
+        transaction.amount = 'NFT';
+        transaction.nftAddress = data.nft;
+        break;
+      }
+      case ActionTypeEnum.NftPurchase:
+        const data = action.data;
+
+        transaction.nftItem = data.nft;
+
+        transaction.operation = t('transactions.nft_purchase');
+        transaction.sender = getSenderAddress(data.seller);
+
+        transaction.picture = getSenderPicture(data.seller);
+        transaction.amount = formatter.formatNano(data.amount.value, {
+          postfix: data.amount.token_name,
+          prefix: amountPrefix,
+        });
+        break;
+      case ActionTypeEnum.ContractDeploy: {
+        const data = action.data;
+
+        const isInitialized = Address.compare(data.address, input.walletAddress);
+        const friendlyAddress = Address(data.address).toFriendly();
+        transaction.sender = {
+          masked: Address.maskify(friendlyAddress),
+          friendly: friendlyAddress
+        };
+
+        transaction.operation = isInitialized
+          ? t('transactions.wallet_initialized')
+          : t('transactions.contract_deploy');
+        break;
+      }
+      // case ActionTypeEnum.Subscribe: {
+      //   const data = action.data;
+
+      //   transaction.operation = t('transactions.subscription');
+      //   transaction.subtitle = data.beneficiary.name ?? '';
+      //   transaction.amount = formatter.formatNano(data.amount, {
+      //     prefix: amountPrefix,
+      //     postfix: 'TON',
+      //   });
+      //   break;
+      // }
+      // case ActionTypeEnum.UnSubscribe: {
+      //   const data = action.data;
+
+      //   transaction.operation = t('transactions.unsubscription');
+      //   transaction.subtitle = data.beneficiary.name ?? '';
+      //   break;
+      // }
+      case ActionTypeEnum.SmartContractExec: {
+        const data = action.data;
+
+        transaction.operation = t('transactions.smartcontract_exec');
+        const friendlyAddress = Address(data.contract.address).toFriendly();
+        transaction.sender = {
+          masked: Address.maskify(friendlyAddress),
+          friendly: friendlyAddress
+        };
+
+        transaction.amount = formatter.formatNano(data.ton_attached, {
+          prefix: amountPrefix,
+          postfix: 'TON',
+        });
+        break;
+      }
+      case ActionTypeEnum.AuctionBid: {
+        const data = action.data;
+
+        // TODO: need backend fixes;
+        console.log(input.action.type);
+        break;
+      }
+      case ActionTypeEnum.Unknown: {
+        transaction.operation = t('transactions.unknown');
+        transaction.subtitle = t('transactions.unknown_description');
+        break;
+      }
+      case ActionTypeEnum.JettonSwap: {
+        const data = action.data;
+
+        transaction.operation = t('transactions.swap');
+        transaction.subtitle = data.user_wallet.name
+          ? data.user_wallet.name
+          : Address(data.user_wallet.address).maskify();
+        transaction.isReceive = true;
+        transaction.amount = formatter.formatNano(data.amount_in, {
+          decimals: data.jetton_master_in.decimals,
+          postfix: data.jetton_master_in.symbol,
+          prefix: '+',
+        });
+        transaction.amount2 = formatter.formatNano(data.amount_out, {
+          decimals: data.jetton_master_out.decimals,
+          postfix: data.jetton_master_out.symbol,
+          prefix: '−',
+        });
+        break;
+      }
+    }
+
+    return transaction;
+  } catch (err) {
+    console.log('[EventActionDetailsMapper]:', err);
+    return transaction;
+  }
+}

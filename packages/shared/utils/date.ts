@@ -77,3 +77,18 @@ export function formatTransactionTime(date: Date) {
 
   return `${day} ${month} ${time}`;
 }
+
+export function formatTransactionDetailsTime(date: Date) {
+  const shortMonth = formatDate(date, 'MMM').replace('.', '') + ',';
+  const month = i18n.locale === 'en' ? capitalizeFirstLetter(shortMonth) : shortMonth;
+  const time = formatDate(date, 'HH:mm');
+  const day = formatDate(date, 'dd');
+  const year = formatDate(date, 'yyyy');
+
+
+  if (isThisYear(date)) {
+    return `${day} ${month} ${time}`;
+  } 
+  
+  return `${day} ${month} ${year}, ${time}`;
+}

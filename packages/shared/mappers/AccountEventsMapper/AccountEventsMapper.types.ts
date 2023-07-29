@@ -16,6 +16,7 @@ import {
   TonTransferAction,
   UnSubscriptionAction,
 } from '@tonkeeper/core/src/TonAPI';
+import { SenderAddress } from './AccountEventsMapper.utils';
 
 export type TonTransferActionData = {
   type: ActionTypeEnum.TonTransfer;
@@ -115,13 +116,15 @@ export enum MappedEventItemType {
 }
 
 export type MappedEventDate = {
-  type: MappedEventItemType.Date;
+  contentType: MappedEventItemType.Date;
   id: string;
   date: string;
 };
 
 export type MappedEventAction = {
-  type: MappedEventItemType.Action;
+  contentType: MappedEventItemType.Action;
+  type: ActionTypeEnum | 'SimplePreview';
+  subtitle?: string;
   id: string;
   inProgress?: boolean;
   bottomCorner?: boolean;
@@ -130,7 +133,6 @@ export type MappedEventAction = {
   operation: string;
   amount?: string;
   amount2?: string;
-  senderAccount?: string;
   time?: string;
   isReceive?: boolean;
   timestamp: number;
@@ -141,6 +143,28 @@ export type MappedEventAction = {
   picture?: string | null;
   isFailed?: boolean;
 };
+
+export type TransactionDetails = {
+  type: ActionTypeEnum;
+  id: string;
+  inProgress?: boolean;
+  sender?: SenderAddress;
+
+
+  operation: string;
+  amount?: string;
+  amount2?: string;
+  time?: string;
+  isReceive?: boolean;
+  timestamp: number;
+  nftAddress?: string;
+  nftItem?: NftItem;
+  comment?: string;
+  isScam?: boolean;
+  picture?: string | null;
+  isFailed?: boolean;
+};
+
 
 export type GroupedActionsByDate = { [date: string]: MappedEventAction[] };
 

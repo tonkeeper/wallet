@@ -23,6 +23,10 @@ export type AmountFormatOptions = {
   withPositivePrefix?: boolean;
 };
 
+export type AmountFormatNanoOptions = AmountFormatOptions & {
+  formatDecimals?: number;
+};
+
 export type AmountNumber = string | number | BigNumber;
 
 export class AmountFormatter {
@@ -139,8 +143,9 @@ export class AmountFormatter {
     return bn.toFormat(2, BigNumber.ROUND_DOWN, formatConf);
   }
 
-  public formatNano(amount: AmountNumber = 0, options: AmountFormatOptions = {}) {
-    const { decimals, ...other } = options;
-    return this.format(this.fromNano(amount, decimals), other);
+  public formatNano(amount: AmountNumber = 0, options: AmountFormatNanoOptions = {}) {
+    const { decimals, formatDecimals, ...other } = options;
+    const formatOptions = Object.assign(other, { decimals: formatDecimals });
+    return this.format(this.fromNano(amount, decimals), formatOptions);
   }
 }

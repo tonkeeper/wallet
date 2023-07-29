@@ -13,7 +13,7 @@ interface ListProps {
 }
 
 export const List = memo<ListProps>((props) => {
-  const { indent = true } = props;
+  const { indent = true, style } = props;
 
   const items = useMemo(() => {
     return React.Children.map(props.children, (node, i) => {
@@ -37,7 +37,7 @@ export const List = memo<ListProps>((props) => {
       {props.headerTitle && (
         <ListHeader title={props.headerTitle} />
       )}
-      <View style={[styles.container, props.style, indent && styles.indentHorizontal]}>
+      <View style={[styles.container, style, indent && styles.indentHorizontal]}>
         {items}
       </View>
     </>

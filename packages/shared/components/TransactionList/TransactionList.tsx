@@ -24,7 +24,7 @@ type TransactionRenderItemOptions = {
 
 function RenderItem({ item, index }: TransactionRenderItemOptions) {
   const isFirstElement = index === 0;
-  switch (item.type) {
+  switch (item.contentType) {
     case MappedEventItemType.Date:
       return (
         <View>
@@ -40,7 +40,7 @@ function RenderItem({ item, index }: TransactionRenderItemOptions) {
 export const TransactionsList = memo<EventsListProps>((props) => {
   const theme = useTheme();
   const {
-    estimatedItemSize = 500,
+    estimatedItemSize = 76,
     fetchMoreEnd,
     onFetchMore,
     refreshing,

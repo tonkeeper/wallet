@@ -49,6 +49,7 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
   const { onPressOut, onPressIn, backgroundStyle } = useBackgroundHighlighted();
   const router = useNavigation();
 
+  const isSimplePreview = item.type === 'SimplePreview';
   const containerStyle = [
     item.bottomCorner && styles.bottomCorner,
     item.topCorner && styles.topCorner,
@@ -56,8 +57,10 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
   ];
 
   const handlePress = useCallback(() => {
-    router.navigate('transaction', { transactionId: item.id })
-  }, [item]);
+    if (!isSimplePreview) {
+      router.navigate('transaction', { transactionId: item.id });
+    }
+  }, [isSimplePreview, item]);
 
   return (
     <View style={containerStyle}>
@@ -66,8 +69,8 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
         onPressIn={onPressIn}
         onPress={handlePress}
         title={item.operation}
+        subtitle={item.subtitle}
         value={item.amount}
-        subtitle={item.senderAccount}
         valueStyle={[
           item.isReceive && styles.receiveValue,
           item.isScam && styles.scamAmountText,

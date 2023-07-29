@@ -2,7 +2,7 @@ import { useQueryClient } from 'react-query';
 import { useTonAPI } from '../TonAPI';
 import { useMemo } from 'react';
 
-export const useTransaction = (transactionId: string, options?: any) => {
+export const useTransaction = (transactionId: string, options: any = {}) => {
   const queryClient = useQueryClient();
   const tonapi = useTonAPI();
 
@@ -19,8 +19,9 @@ export const useTransaction = (transactionId: string, options?: any) => {
     if (event) {
       const action = event.actions[actionIndex];
 
+
+      return options?.modify({ action, event });
       
-      return { action, event };
     }
     
     
