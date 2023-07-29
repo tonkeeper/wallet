@@ -2,7 +2,7 @@ import ReactNativeHapticFeedback, {
   HapticFeedbackTypes,
 } from 'react-native-haptic-feedback';
 
-const triggerHapticFeedback = (method: HapticFeedbackTypes) => () => {
+const triggerHapticFeedback = (method: HapticFeedbackTypes) => {
   ReactNativeHapticFeedback.trigger(method, {
     enableVibrateFallback: false,
     ignoreAndroidSystemSettings: false,

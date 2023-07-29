@@ -33,8 +33,9 @@ import { AccessConfirmation, Intro } from '$core';
 import { ModalStack } from '$navigation/ModalStack';
 import { withModalStack } from '@tonkeeper/router';
 
-const Stack = createNativeStackNavigator<MainStackParamList>();
+import { StartScreen } from '@tonkeeper/shared/screens/StartScreen';
 
+const Stack = createNativeStackNavigator<MainStackParamList>();
 
 export const MainStack: FC = () => {
   const attachedScreen = useAttachScreen();
@@ -50,7 +51,6 @@ export const MainStack: FC = () => {
   const initialRouteName = !attachedScreen.pathname
     ? MainStackRouteNames.Tabs
     : MainStackRouteNames.DevStack;
-
 
   function renderRoot() {
     if (isIntroShown) {
@@ -77,7 +77,7 @@ export const MainStack: FC = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName={initialRouteName}
+      // initialRouteName={initialRouteName}
       screenOptions={{
         headerShown: false,
         gestureEnabled: true,
@@ -87,6 +87,7 @@ export const MainStack: FC = () => {
         fullScreenGestureEnabled: true,
       }}
     >
+      {/* <Stack.Screen name="/start" component={StartScreen} /> */}
       {renderRoot()}
       <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />
@@ -129,7 +130,6 @@ export const MainStack: FC = () => {
     </Stack.Navigator>
   );
 };
-
 
 export const AppStack = withModalStack({
   RootStack: MainStack,
