@@ -30,6 +30,7 @@ export const TabStack: FC = () => {
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
   const shouldShowRedDot = useNotificationsStore((state) => state.should_show_red_dot);
+  const removeRedDot = useNotificationsStore((state) => state.actions.removeRedDot);
 
   useLoadExpiringDomains();
   useFetchMethodsToBuy();
@@ -94,6 +95,11 @@ export const TabStack: FC = () => {
       <Tab.Screen
         component={ActivityStack}
         name={TabsStackRouteNames.Activity}
+        listeners={{
+          tabPress: (e) => {
+            removeRedDot();
+          },
+        }}
         options={{
           tabBarLabel: t('activity.screen_title'),
           tabBarIcon: ({ color }) => (
