@@ -13,10 +13,11 @@ export interface SheetModalHeaderProps {
   iconLeft?: IconNames;
   gradient?: boolean;
   title?: string;
+  center?: boolean;
 }
 
 export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
-  const { gradient, title, onClose, iconLeft, onIconLeftPress } = props;
+  const { gradient, title, onClose, iconLeft, onIconLeftPress, center } = props;
   const { measureHeader, close } = useSheetInternal();
   const theme = useTheme();
 
@@ -55,14 +56,12 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
             </View>
           </TouchableOpacity>
         ) : null}
-        {iconLeft && <View style={{ flex: 1 }} />}
+   
         {hasTitle && (
-          <View style={styles.headerTitle}>
-            <Text type="h3">{title}</Text>
+          <View style={[styles.headerTitle, center && styles.titleByCenter]}>
+            <Text type="h3" textAlign={center ? 'center' : 'left'}>{title}</Text>
           </View>
         )}
-
-        <View style={{ flex: 1 }} />
 
         <TouchableOpacity
           style={styles.closeButton}
@@ -96,6 +95,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     justifyContent: 'center',
   },
+  titleByCenter: {
+    flex: 1,
+    marginHorizontal: 24,
+    textAlign: 'center'
+  },
   gradient: {
     position: 'absolute',
     top: 0,
@@ -109,12 +113,17 @@ const styles = StyleSheet.create({
     height: 64,
     alignItems: 'center',
     justifyContent: 'center',
+
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    zIndex: 2,
   },
   close: {
     width: 32,
     height: 32,
     borderRadius: 32 / 2,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center',   
   },
 });

@@ -34,6 +34,8 @@ import { ExchangeModal } from '$modals/ExchangeModal';
 import { Swap } from '$core/Swap/Swap';
 import { ChooseCountry } from '$core/ChooseCountry/ChooseCountry';
 import { TransactionModal } from '@tonkeeper/shared/modals/TransactionModal';
+import { SwitchWalletModal } from '@tonkeeper/shared/modals/SwitchWalletModal';
+import { AddWalletModal } from '@tonkeeper/shared/modals/AddWalletModal';
 import { ProvidersWithNavigation } from './Providers';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
@@ -58,6 +60,8 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={SignRawModal} path="SignRaw" />
       <Stack.Modal component={NewConfirmSending} path="NewConfirmSending" />
       <Stack.Modal component={TransactionModal} path="transaction" />
+      <Stack.Modal component={SwitchWalletModal} path="/switch-wallet" />
+      <Stack.Modal component={AddWalletModal} path="/add-wallet" />
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal component={NFT} path="NFTItemDetails" />

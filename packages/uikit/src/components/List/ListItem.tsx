@@ -21,11 +21,13 @@ interface ListItemProps {
   pictureStyle?: StyleProp<ViewStyle>;
   pictureCorner?: 'full' | 'small';
   chevron?: boolean;
+  leftContentStyle?: StyleProp<ViewStyle>;
   leftContent?: React.ReactNode;
   navigate?: string;
   subtitleNumberOfLines?: number;
   gestureHandler?: boolean;
   content?: React.ReactNode;
+  rightContent?: React.ReactNode;
   onPress?: () => void;
   onPressIn?: () => void;
   onPressOut?: () => void;
@@ -43,7 +45,9 @@ export const ListItem = memo<ListItemProps>((props) => {
     navigate,
     pictureCorner = 'full',
     subtitleNumberOfLines = 1,
+    leftContentStyle,
     gestureHandler,
+    rightContent
   } = props;
   const router = useRouter();
   const theme = useTheme();
@@ -75,7 +79,7 @@ export const ListItem = memo<ListItemProps>((props) => {
     >
       <View style={styles.container.static}>
         {hasLeftContent && (
-          <View style={styles.leftContent}>
+          <View style={[styles.leftContent, leftContentStyle]}>
             {props.leftContent}
             {!!props.picture && (
               <View
@@ -150,9 +154,11 @@ export const ListItem = memo<ListItemProps>((props) => {
               props.subvalue
             )}
           </View>
-          {props.chevron && <Icon name="ic-chevron-right-16" color="iconPrimary" />}
+          
           {props.content}
         </View>
+        {props.chevron && <Icon name="ic-chevron-right-16" color="iconTertiary" />}
+        {rightContent}
       </View>
     </TouchableComponent>
   );

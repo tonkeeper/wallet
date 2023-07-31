@@ -11,7 +11,7 @@ import {
   SwapIcon,
 } from '$uikit';
 
-import { List } from '@tonkeeper/uikit';
+import { Icon, List } from '@tonkeeper/uikit';
 
 import { useNavigation } from '@tonkeeper/router';
 import { ScanQRButton } from '../../components/ScanQRButton';
@@ -47,6 +47,7 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { ShowBalance } from '$core/HideableAmount/ShowBalance';
 import { Events, SendAnalyticsFrom } from '$store/models';
+import { useWallet as useNewWallet } from '@tonkeeper/core';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -65,6 +66,8 @@ export const WalletScreen = memo(() => {
 
   const { isRefreshing, isLoaded } = useSelector(walletSelector);
   const isFocused = useIsFocused();
+
+  const newWallet = useNewWallet();
 
   const notifications = useInternalNotifications();
 
@@ -181,7 +184,18 @@ export const WalletScreen = memo(() => {
       <>
         <Screen.Header
           backButton={false}
-          title={t('wallet.screen_title')}
+          title={
+            <TouchableOpacity
+              style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
+              onPress={() => nav.navigate('/switch-wallet')}
+              activeOpacity={0.6}
+            >
+              <Text variant="h3" textAlign="center">
+                {newWallet.name}
+              </Text>
+              <Icon name="ic-chevron-down-16" color="iconSecondary" style={{ marginLeft: 4 }} />
+            </TouchableOpacity>
+          }
           rightContent={<ScanQRButton />}
         />
         <Screen.ScrollView indent={false}>
@@ -201,13 +215,13 @@ export const WalletScreen = memo(() => {
             />
           </List>
         </Screen.ScrollView>
-        {isLoaded && !wallet && (
+        {/* {isLoaded && !wallet && (
           <S.CreateWalletButtonWrap style={{ bottom: tabBarHeight }}>
             <S.CreateWalletButtonContainer skipHeader={false}>
               <Button onPress={handleCreateWallet}>{t('balances_setup_wallet')}</Button>
             </S.CreateWalletButtonContainer>
           </S.CreateWalletButtonWrap>
-        )}
+        )} */}
       </>
     );
   }

@@ -89,16 +89,6 @@ export const useNavigation = () => {
     }
   };
 
-  // Deprecated
-  const openBottomSheet = (component: any, params?: any) => {
-    push('SheetsProvider', {
-      $$action: SheetActions.ADD,
-      component: component,
-      params: params,
-      path: nanoid(),
-    });
-  };
-
   return {
     replaceModal,
     openModal,
@@ -111,8 +101,7 @@ export const useNavigation = () => {
     reset,
     push,
     go,
-
-    // Deprecated
-    openBottomSheet,
   };
 };
+
+export const useRouter = useNavigation;

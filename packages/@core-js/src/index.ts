@@ -6,3 +6,4 @@ export * from './utils/AmountFormatter';
 export * from './utils/AppConfig';
 export * from './utils/network';
 
+export * from './useWallet';

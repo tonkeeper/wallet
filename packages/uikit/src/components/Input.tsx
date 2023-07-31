@@ -5,6 +5,7 @@ import { Steezy, useTheme } from '../styles';
 import { Font } from './Text/TextStyles';
 import { isAndroid } from '../utils';
 import { View } from './View';
+import { Text } from './Text';
 import Animated, {
   useAnimatedStyle,
   interpolateColor,
@@ -33,7 +34,7 @@ type FocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 
 interface InputProps extends TextInputProps {
   onLayout?: (ev: LayoutChangeEvent) => void;
-  onChangeText: (text: string) => void;
+  onChangeText?: (text: string) => void;
   indentBottom?: WithDefault<boolean, false>;
   disableAutoMarkValid?: boolean;
   leftContent?: React.ReactNode;
@@ -42,7 +43,7 @@ interface InputProps extends TextInputProps {
   placeholder?: string;
   multiline?: boolean;
   invalid?: boolean;
-  label?: boolean;
+  label?: string;
 }
 
 export interface InputRef {
@@ -60,6 +61,11 @@ enum InputState {
   Focused = 1,
   Invalid = 2,
 }
+
+const LARGE_LABEL_FONT_SIZE = 16;
+const SMALL_LABEL_FONT_SIZE = 12;
+
+const ANIM_DURATION = 100;
 
 export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
   const {
@@ -203,6 +209,28 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
     ),
   }));
 
+  const hasValue = !!inputValue;
+  const shouldAnimate = hasLabel && hasValue;
+
+  const labelContainerStyle = useAnimatedStyle(
+    () => ({
+      paddingTop: withTiming(shouldAnimate ? 4 : 18.8, { duration: ANIM_DURATION }),
+    }),
+    [shouldAnimate],
+  );
+
+  const labelTextStyle = useAnimatedStyle(
+    () => ({
+      fontSize: withTiming(
+        shouldAnimate ? SMALL_LABEL_FONT_SIZE : LARGE_LABEL_FONT_SIZE,
+        {
+          duration: ANIM_DURATION,
+        },
+      ),
+    }),
+    [shouldAnimate],
+  );
+
   return (
     <Animated.View
       onLayout={onLayout}
@@ -215,6 +243,11 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
     >
       <Animated.View style={[styles.invalidBg.static, invalidBgStyle]} />
       {!!leftContent && <View style={styles.leftContent}>{leftContent}</View>}
+      <Animated.View style={[styles.labelContainer.static, labelContainerStyle]}>
+        <Text type="body1" reanimated style={labelTextStyle} color="textSecondary">
+          {label}
+        </Text>
+      </Animated.View>
       <TextInput
         {...rest}
         selectionColor={invalid ? colors.accentRed : colors.accentBlue}
@@ -245,8 +278,8 @@ const inputPaddings = {
       paddingBottom: 18.5,
     },
     other: {
-      paddingTop: 22.5,
-      paddingBottom: 22,
+      paddingTop: 20.5,
+      paddingBottom: 20,
     },
   },
   withoutLabel: {
@@ -267,7 +300,7 @@ const styles = Steezy.create(({ colors, corners }) => ({
     borderRadius: corners.medium,
     borderWidth: InputBorderWidth,
     flexDirection: 'row',
-    position: 'relative'
+    position: 'relative',
   },
   indentBottom: {
     marginBottom: 16,
@@ -303,5 +336,13 @@ const styles = Steezy.create(({ colors, corners }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-  }
+  },
+  labelContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: 16 - InputBorderWidth,
+  },
 }));

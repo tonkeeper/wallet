@@ -6,10 +6,10 @@ import { useReanimatedKeyboardHeight,  } from '../utils/keyboard';
 interface KeyboardSpacerProps {}
 
 export const KeyboardSpacer = memo<KeyboardSpacerProps>((props) => {
-  const { keyboardHeight } = useReanimatedKeyboardHeight();
+  const { height } = useReanimatedKeyboardHeight();
 
   const style = useAnimatedStyle(() => ({
-    height: keyboardHeight.value,
+    height: height.value,
   }));
 
   return <Animated.View style={style} />;

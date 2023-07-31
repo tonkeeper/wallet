@@ -11,7 +11,7 @@ import { useScreenScroll } from './context/ScreenScrollContext';
 import { ScreenLargeHeader } from './ScreenLagreHeader';
 
 interface ScreenHeaderProps {
-  title?: string;
+  title?: string | React.ReactNode;
   rightContent?: React.ReactNode;
   backButton?: boolean;
   large?: boolean;

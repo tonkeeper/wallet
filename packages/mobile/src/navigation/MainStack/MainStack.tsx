@@ -89,7 +89,7 @@ export const MainStack: FC = () => {
       }}
     >
        <Stack.Screen name="/start" component={StartScreen} /> 
-      <Stack.Screen name="/import" component={ImportWalletScreen} />
+      <Stack.Screen name="/import" component={ImportWalletScreen} options={{ keyboardHandlingEnabled: false }}/>
       {renderRoot()}
       <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />

@@ -166,13 +166,17 @@ export const NavBar: FC<NavBarProps> = (props) => {
             </S.BackButton>
           </S.BackButtonContainer>
           <S.CenterContent style={titleAnimatedStyle}>
-            <S.Title
-              variant={isSmallTitle ? 'label1' : 'h3'}
-              numberOfLines={1}
-              {...titleProps}
-            >
-              {children}
-            </S.Title>
+            {typeof children === 'string' ? (
+              <S.Title
+                variant={isSmallTitle ? 'label1' : 'h3'}
+                numberOfLines={1}
+                {...titleProps}
+              >
+                {children}
+              </S.Title>
+            ) : (
+              children
+            )}
             <Animated.View style={subtitleAnimatedStyle}>
               {subtitle ? (
                 <S.Subtitle

@@ -3,9 +3,12 @@ import { CreatePasscodePage } from './CreatePasscodePage';
 import { RecoveryPhrasePage } from './EnterWordsPage/RecoveryPhrasePage';
 import { Screen, Steezy, PagerView } from '@tonkeeper/uikit';
 import { memo } from 'react';
+import { WalletNamePage } from './WalletNamePage';
+import { useNavigation } from '@tonkeeper/router';
 
 export const ImportWalletScreen = memo(() => {
   const wizard = usePagerViewWizard({ steps: 2 });
+  const nav = useNavigation();
 
   return (
     <Screen>
@@ -21,7 +24,11 @@ export const ImportWalletScreen = memo(() => {
           />
         </PagerView.Page>
         <PagerView.Page>
-          <CreatePasscodePage />
+          <WalletNamePage 
+            onNext={() => nav.navigate('Tabs')}
+          />
+          
+          {/* <CreatePasscodePage /> */}
         </PagerView.Page>
       </PagerViewWizard>
     </Screen>
