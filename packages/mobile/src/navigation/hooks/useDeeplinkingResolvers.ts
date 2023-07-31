@@ -37,9 +37,10 @@ import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/A
 import { openTonConnect } from '$core/TonConnect/TonConnectModal';
 import { useCallback, useRef } from 'react';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
-import { jettonsBalancesSelector } from '$store/jettons';
 import BigNumber from 'bignumber.js';
 import { Tonapi } from '$libs/Tonapi';
+import { checkFundsAndOpenNFTTransfer } from '$core/ModalContainer/NFTOperations/Modals/NFTTransferModal';
+import { openNFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -291,13 +292,26 @@ export function useDeeplinkingResolvers() {
         withGoBack: resolveParams.withGoBack,
         isJetton: true,
       });
+    } else if (query.nft) {
+      if (!isValidAddress(query.nft)) {
+        return Toast.fail(t('transfer_deeplink_nft_address_error'));
+      }
+      await checkFundsAndOpenNFTTransfer(query.nft, address);
     } else {
       openSend({ currency, address, comment, isJetton: false });
     }
   });
 
-  deeplinking.add('/transfer', () => {
-    openSend({ currency: CryptoCurrencies.Ton });
+  deeplinking.add('/transfer', async ({ query }) => {
+    const nft = query.nft;
+    if (nft) {
+      if (!isValidAddress(nft)) {
+        return Toast.fail(t('transfer_deeplink_nft_address_error'));
+      }
+      await openNFTTransferInputAddressModal({ nftAddress: nft });
+    } else {
+      openSend({ currency: CryptoCurrencies.Ton });
+    }
   });
 
   const resolveTxType = async (txRequest: TxRequest) => {

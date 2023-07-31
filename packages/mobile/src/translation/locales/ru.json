@@ -765,6 +765,7 @@
   },
 
   "transfer_deeplink_address_error": "Неверный адрес получателя",
+  "transfer_deeplink_nft_address_error": "Неверный адрес NFT",
   "transfer_deeplink_amount_error": "Некорректный запрос суммы",
 
   "confirm": "Подтвердить",
