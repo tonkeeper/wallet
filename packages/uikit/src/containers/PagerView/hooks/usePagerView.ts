@@ -1,7 +1,7 @@
 import { createContext, useCallback, useRef, useContext, useEffect } from 'react';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 import { ScreenHeaderHeight } from '../../Screen/utils/constants';
 import { usePagerScrollHandler } from './usePagerScrollHandler';
-import { useSharedValue } from 'react-native-reanimated';
 import { useScreenScroll } from '../../Screen/hooks';
 import { LayoutChangeEvent } from 'react-native';
 import PagerView from 'react-native-pager-view';
@@ -11,7 +11,8 @@ export const tabIndicatorWidth = ns(24);
 
 type ScrollTo = (y: number, animated?: boolean) => void;
 
-export const usePagerViewHandler = () => {
+
+export const usePagerViewHandler = (externalPageOffset?: Animated.SharedValue<number>) => {
   const { headerEjectionPoint, isLargeHeader } = useScreenScroll();
   const isScrollInMomentum = useSharedValue(false);
   const pagerViewRef = useRef<PagerView>(null);
@@ -80,6 +81,10 @@ export const usePagerViewHandler = () => {
       'worklet';
       pageOffset.value = event.offset + event.position;
       activeIndex.value = Math.abs(event.position);
+
+      if (externalPageOffset) {
+        externalPageOffset.value = pageOffset.value;
+      }
     },
   });
 

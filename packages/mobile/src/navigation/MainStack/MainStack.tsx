@@ -34,6 +34,7 @@ import { ModalStack } from '$navigation/ModalStack';
 import { withModalStack } from '@tonkeeper/router';
 
 import { StartScreen } from '@tonkeeper/shared/screens/StartScreen';
+import { ImportWalletScreen } from '@tonkeeper/shared/screens/ImportWalletScreen';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -87,7 +88,8 @@ export const MainStack: FC = () => {
         fullScreenGestureEnabled: true,
       }}
     >
-      {/* <Stack.Screen name="/start" component={StartScreen} /> */}
+       <Stack.Screen name="/start" component={StartScreen} /> 
+      <Stack.Screen name="/import" component={ImportWalletScreen} />
       {renderRoot()}
       <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />

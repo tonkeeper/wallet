@@ -7,3 +7,5 @@ export { useRouter } from './hooks/useRouter';
 export { useSheetInternal, SheetActions } from './SheetsProvider';
 
 export { useModalBehavior } from './context/ModalBehaviorContext';
+
+export { useFocusEffect } from './hooks/useFocusEffect';

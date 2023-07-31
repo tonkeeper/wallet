@@ -12,8 +12,10 @@ interface ScreenScrollView extends ScrollViewProps {
   indent?: boolean;
 }
 
+export type ScreenScrollViewRef = Animated.ScrollView;
+
 export const ScreenScrollView = memo(
-  forwardRef<Animated.ScrollView, ScreenScrollView>((props, ref) => {
+  forwardRef<ScreenScrollViewRef, ScreenScrollView>((props, ref) => {
     const { indent, hideBottomSeparator, contentContainerStyle, ...other } = props;
     const {
       detectContentSize,

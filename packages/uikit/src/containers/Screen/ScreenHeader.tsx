@@ -1,19 +1,21 @@
-import Animated, {
-  Extrapolate,
-  interpolate,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Icon, IconNames } from '../../components/Icon';
 import { ScreenHeaderHeight } from './utils/constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, memo } from 'react';
+import { isString } from '../../utils/strings';
 import { useRouter } from '@tonkeeper/router';
 import { Text } from '../../components/Text';
 import { useScreenScroll } from './hooks';
 import { useTheme } from '../../styles';
+import Animated, {
+  Extrapolate,
+  interpolate,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
+
 
 type BackButtonIcon = 'back' | 'close' | 'down';
 
@@ -31,7 +33,7 @@ export interface ScreenHeaderProps {
   hideTitle?: boolean;
   gradient?: boolean;
   isModal?: boolean;
-  title?: string;
+  title?: string | React.ReactNode;
   onBackPress?: () => void;
   onGoBack?: () => void;
   showCloseButton?: boolean;
@@ -75,11 +77,12 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
     [hideBackButton],
   );
 
+  const hasTitle = !!title;
   const titleAnimatedStyle = useAnimatedStyle(
     () => ({
-      opacity: withTiming(title && !hideTitle ? 1 : 0),
+      opacity: withTiming(hasTitle && !hideTitle ? 1 : 0),
     }),
-    [title, hideTitle],
+    [hasTitle, hideTitle],
   );
 
   const ejectionOpacityStyle = useAnimatedStyle(() => {
@@ -163,19 +166,25 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
         <Animated.View style={[styles.innerContainer, ejectionOpacityStyle, borderStyle]}>
           <View style={styles.content}>
             {!hideBackButton && !isBackButtonRight && backButtonSlot}
-            <Text
-              style={[styles.titleText, titleAnimatedStyle]}
-              type={isSmallTitle ? 'label1' : 'h3'}
-              textAlign="center"
-              numberOfLines={1}
-              reanimated
-            >
-              {title}
-            </Text>
-            {rightContentSlot && (
-              <View style={styles.rightContent}>{rightContentSlot}</View>
+            {isString(title) ? (
+              <Text
+                style={[styles.title, titleAnimatedStyle]}
+                type={isSmallTitle ? 'label1' : 'h3'}
+                textAlign="center"
+                numberOfLines={1}
+                reanimated
+              >
+                {title}
+              </Text>
+            ) : (
+              <View style={styles.title}>
+                {title}
+              </View>
             )}
           </View>
+          {rightContentSlot && (
+            <View style={styles.rightContent}>{rightContentSlot}</View>
+          )}
         </Animated.View>
       </Animated.View>
     </React.Fragment>
@@ -214,7 +223,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
   },
-  titleText: {
+  title: {
     marginHorizontal: ScreenHeaderHeight - 24,
     zIndex: 1,
     flex: 1,

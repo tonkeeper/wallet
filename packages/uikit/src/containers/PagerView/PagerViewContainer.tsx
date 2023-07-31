@@ -20,21 +20,26 @@ type Elements = {
   tabs: { label: string }[];
 };
 
+export type PagerViewRef = PagerView;
+export type PagerViewSelectedEvent = PagerViewOnPageSelectedEvent;
+
 interface PagerViewContainerProps {
   hideBottomSeparator?: boolean;
   children?: React.ReactNode;
   tabBarStyle?: ViewStyle;
   hideFunny?: boolean;
-  ref?: React.Ref<PagerView>;
+  ref?: React.Ref<PagerViewRef>;
   initialPage?: number;
   scrollEnabled?: boolean;
   onPageSelected?: (e: PagerViewOnPageSelectedEvent) => void;
+  pageOffset?: Animated.SharedValue<number>;
+  overdrag?: boolean;
 }
 
 export const PagerViewContainer = memo<PagerViewContainerProps>(
   forwardRef((props, ref) => {
-    const { hideBottomSeparator } = props;
-    const pager = usePagerViewHandler();
+    const { hideBottomSeparator, pageOffset, overdrag = true } = props;
+    const pager = usePagerViewHandler(pageOffset);
     const setRef = useMergeRefs(ref, pager.pagerViewRef);
 
     const elements = useMemo(() => {
@@ -70,12 +75,13 @@ export const PagerViewContainer = memo<PagerViewContainerProps>(
           </PagerViewInternalHeader>
           <AnimatedPagerView
             onPageScroll={pager.horizontalScrollHandler}
-            ref={setRef}
-            style={styles.pagerView}
-            initialPage={props.initialPage ?? 0}
             scrollEnabled={props.scrollEnabled ?? true}
             onPageSelected={props.onPageSelected}
-            overdrag
+            initialPage={props.initialPage ?? 0}
+            style={styles.pagerView}
+            overdrag={overdrag}
+            disableRightScroll
+            ref={setRef}
           >
             {elements.pages.map((children, index) => (
               <View key={`pager-view-page-${index}`}>
