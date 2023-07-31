@@ -749,6 +749,7 @@
   },
 
   "transfer_deeplink_address_error": "Incorrect recipient address",
+  "transfer_deeplink_nft_address_error": "Incorrect NFT address",
   "transfer_deeplink_amount_error": "Incorrect amount request",
 
   "confirm": "Confirm",

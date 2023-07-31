@@ -16,6 +16,19 @@ import { nftsActions } from '$store/nfts';
 import { Modal } from '$libs/navigation';
 import { CaptionWrap } from '../NFTOperations.styles';
 import { formatter } from '$utils/formatter';
+import { goBack, navigate, push } from '$navigation';
+import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
+import {
+  ApproveToken,
+  ApproveTokenModalParams,
+} from '$core/ModalContainer/ApproveToken/ApproveToken';
+import { Ton } from '$libs/Ton';
+import { walletWalletSelector } from '$store/wallet';
+import { store, Toast } from '$store';
+import {
+  checkIsInsufficient,
+  openInsufficientFundsModal,
+} from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 
 type NFTTransferModalProps = TxRequestBody<NftTransferParams>;
 
@@ -182,3 +195,74 @@ export const NFTTransferModal = ({
     </Modal>
   );
 };
+
+export const openNFTTransfer = async (params: NFTTransferModalProps) => {
+  push('SheetsProvider', {
+    $$action: SheetActions.ADD,
+    component: NFTTransferModal,
+    path: 'NFTTransfer',
+    params,
+  });
+
+  return true;
+};
+
+export async function checkFundsAndOpenNFTTransfer(
+  nftAddress: string,
+  newOwnerAddress: string,
+) {
+  const transferParams = {
+    newOwnerAddress,
+    nftItemAddress: nftAddress,
+    amount: Ton.toNano('1'),
+    forwardAmount: '1',
+  };
+
+  const wallet = walletWalletSelector(store.getState());
+
+  if (!wallet) {
+    console.log('no wallet');
+    return;
+  }
+
+  Toast.loading();
+
+  let fee = '0';
+  try {
+    const operations = new NFTOperations(wallet);
+    fee = await operations
+      .transfer(transferParams as any)
+      .then((operation) => operation.estimateFee());
+  } catch (e) {}
+
+  // compare balance and transfer amount, because transfer will fail
+  if (fee === '0') {
+    const checkResult = await checkIsInsufficient(transferParams.amount);
+    if (checkResult.insufficient) {
+      Toast.hide();
+      return openInsufficientFundsModal({
+        totalAmount: transferParams.amount,
+        balance: checkResult.balance,
+      });
+    }
+  }
+
+  if (parseFloat(fee) < 0) {
+    transferParams.amount = Ton.toNano('0.05');
+  } else {
+    transferParams.amount = Ton.toNano(fee).add(Ton.toNano('0.01'));
+  }
+
+  Toast.hide();
+
+  openNFTTransfer({
+    type: 'nft-transfer',
+    // expires in 100 minutes
+    expires_sec: Date.now() / 1000 + 6000,
+    response_options: {
+      onDone: () => setTimeout(goBack, 850),
+    } as any,
+    params: transferParams,
+    fee,
+  });
+}
