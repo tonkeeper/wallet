@@ -18,7 +18,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslator } from '$hooks';
 import { Properties } from '$core/NFT/Properties/Properties';
 import { Details } from '$core/NFT/Details/Details';
-import { About } from '$core/NFT/About/About';
 import { NFTProps } from '$core/NFT/NFT.interface';
 import { useNFT } from '$hooks/useNFT';
 import { Platform, Share, View, TouchableOpacity } from 'react-native';
@@ -194,6 +193,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
               collection={isDNS ? 'TON DNS' : nft.collection?.name}
               isVerified={isDNS || nft.isApproved}
               description={!hiddenAmounts ? nft.description : '* * *'}
+              collectionDescription={!hiddenAmounts && nft.collection?.description}
               isOnSale={isOnSale}
               bottom={
                 isTG ? (
@@ -209,12 +209,6 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
                   </View>
                 ) : null
               }
-            />
-          ) : null}
-          {!hiddenAmounts && nft.collection ? (
-            <About
-              collection={isDNS ? 'TON DNS' : nft.collection.name}
-              description={isDNS ? t('nft_about_dns') : nft.collection.description}
             />
           ) : null}
           {isTonDiamondsNft && !flags.disable_apperance ? (

@@ -8,6 +8,7 @@ export interface ImageWithTitleProps {
   collection?: string;
   isVerified?: boolean;
   description?: string;
+  collectionDescription?: string;
   isOnSale: boolean;
   bottom?: ReactNode;
   copyableTitle?: boolean;

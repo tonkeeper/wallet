@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import * as S from './ImageWithTitle.style';
 import { ImageWithTitleProps } from '$core/NFT/ImageWithTitle/ImageWithTitle.interface';
-import { Badge, Icon, ShowMore, Text } from '$uikit';
+import { Badge, Icon, Separator, ShowMore, Spacer, Text, View } from '$uikit';
 import { useTranslator } from '$hooks';
 import { isIOS, ns } from '$utils';
 import Clipboard from '@react-native-community/clipboard';
@@ -16,6 +16,7 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
   videoUri,
   title,
   collection,
+  collectionDescription,
   isVerified,
   description,
   isOnSale,
@@ -115,6 +116,16 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
             <ShowMore maxLines={2} text={description} />
           </S.DescriptionWrap>
         ) : null}
+        <View style={styles.separatorContainer}>
+          <Separator leftOffset={0} />
+        </View>
+        <Text variant="label1">{t('nft_about_collection')}</Text>
+        {collectionDescription ? (
+          <>
+            <Spacer y={8} />
+            <ShowMore maxLines={3} text={collectionDescription} />
+          </>
+        ) : null}
         {bottom}
       </S.TextWrap>
     </S.Wrap>
@@ -124,5 +135,9 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
 const styles = Steezy.create({
   image: {
     flex: 1,
+  },
+  separatorContainer: {
+    marginHorizontal: -16,
+    marginVertical: 14,
   },
 });
