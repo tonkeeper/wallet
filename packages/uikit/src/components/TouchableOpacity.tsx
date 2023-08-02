@@ -15,7 +15,7 @@ interface TouchableOpacityProps extends WithStyleProp<TGenericTouchableProps> {
 }
 
 export const TouchableOpacity = memo<TouchableOpacityProps>((props) => {
-  const { gestureHandler, ...other } = props;
+  const { gestureHandler, activeOpacity = 0.6, ...other } = props;
   const style = Steezy.useStyle(props.style);
 
   const Component = gestureHandler

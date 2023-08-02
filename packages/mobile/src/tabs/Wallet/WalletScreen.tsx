@@ -9,10 +9,9 @@ import {
   Text,
   View,
   SwapIcon,
-  Input,
 } from '$uikit';
 
-import { Icon, List, Spacer } from '@tonkeeper/uikit';
+import { Icon, List } from '@tonkeeper/uikit';
 
 import { useNavigation } from '@tonkeeper/router';
 import { ScanQRButton } from '../../components/ScanQRButton';
@@ -49,8 +48,6 @@ import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { ShowBalance } from '$core/HideableAmount/ShowBalance';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { useWallet as useNewWallet } from '@tonkeeper/core';
-
-import { Input as NewInput } from '@tonkeeper/uikit';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -182,7 +179,6 @@ export const WalletScreen = memo(() => {
     </View>
   );
 
-  const [inputValue, setInputValue] = useState('');
   function renderEmpty() {
     return (
       <>
@@ -204,31 +200,7 @@ export const WalletScreen = memo(() => {
         />
         <Screen.ScrollView indent={false}>
           {ListHeader()}
-          <View style={{ paddingHorizontal: 16 }}>
-          <Input 
-            label="Wallet name"
-            value={inputValue}
-            onChangeText={(text) => setInputValue(text)}
-            withPasteButton
-            withClearButton
-            // rightContent={
-            //   <S.ScanQRTouchable disabled={!canScanQR} onPress={handleScanQR}>
-            //     <Icon name="ic-viewfinder-28" color="accentPrimary" />
-            //   </S.ScanQRTouchable>
-            // }
-          />
-          <Spacer y={16} />
-          <NewInput 
-            label="Wallet name"
-            withPasteButton
-            withClearButton
-            withScanButton
-            onScanPress={() => {
-              console.log('SCAN PRESS')
-            }}
-          />
-          </View>
-          {/* <List>
+          <List>
             <List.Item
               title="Toncoin"
               onPress={() => openWallet(CryptoCurrencies.Ton)}
@@ -241,7 +213,7 @@ export const WalletScreen = memo(() => {
                 />
               }
             />
-          </List> */}
+          </List>
         </Screen.ScrollView>
         {/* {isLoaded && !wallet && (
           <S.CreateWalletButtonWrap style={{ bottom: tabBarHeight }}>

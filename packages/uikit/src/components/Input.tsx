@@ -1,10 +1,12 @@
 import { WithDefault } from 'react-native/Libraries/Types/CodegenTypes';
 import { TextInputRef, TextInput, TextInputProps } from './TextInput';
 import Clipboard from '@react-native-community/clipboard';
+import { TouchableOpacity } from './TouchableOpacity';
 import { corners } from '../styles/constants';
 import { Steezy, useTheme } from '../styles';
 import { Font } from './Text/TextStyles';
 import { isAndroid } from '../utils';
+import { Icon } from './Icon';
 import { View } from './View';
 import { Text } from './Text';
 import Animated, {
@@ -30,7 +32,6 @@ import {
   useMemo,
   useRef,
 } from 'react';
-import { TextStyle } from 'react-native';
 
 type FocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 
@@ -41,7 +42,9 @@ interface InputProps extends TextInputProps {
   indentBottom?: WithDefault<boolean, false>;
   disableAutoMarkValid?: boolean;
   leftContent?: React.ReactNode;
+  pasteButtonTitle?: string;
   withPasteButton?: boolean;
+  withClearButton?: boolean;
   withScanButton?: boolean;
   autoFocusDelay?: number;
   defaultValue?: string;
@@ -70,15 +73,17 @@ enum InputState {
 const LABEL_SCALE_RATIO = 0.8;
 const ANIM_DURATION = 100;
 
-
 export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
   const {
     onChangeText,
+    onScanPress,
     onLayout,
     onFocus,
     onBlur,
     disableAutoMarkValid,
+    pasteButtonTitle,
     withPasteButton,
+    withClearButton,
     withScanButton,
     autoFocusDelay,
     indentBottom,
@@ -93,10 +98,15 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
   } = props;
   const state = useSharedValue(InputState.Unfocused);
   const [isFocused, setFocused] = useState(false);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(defaultValue ?? '');
   const [invalid, setInvalid] = useState(false);
   const inputRef = useRef<TextInputRef>(null);
+  const hasValueAnim = useSharedValue(0);
   const colors = useTheme();
+
+  const hasLabel = !!label;
+  const hasValue = !!inputValue;
+  const shouldAnimate = hasLabel && hasValue;
 
   useImperativeHandle(ref, () => ({
     focus() {
@@ -180,8 +190,6 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
     [onBlur, setFocused],
   );
 
-  const hasLabel = !!label;
-
   const containerStaticStyle = {
     backgroundColor: colors.fieldBackground,
     borderRadius: corners.medium,
@@ -192,10 +200,11 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
     () => [
       styles.input,
       hasLabel ? styles.inputWithLabel : styles.inputWithoutLabel,
-      { textAlignVertical: multiline ? 'top' : 'center' } as TextStyle,
+      multiline && styles.inputMiltiline,
+      withClearButton && styles.inputWithClearButton,
       style,
     ],
-    [style, hasLabel, multiline],
+    [style, hasLabel, multiline, withClearButton],
   );
 
   const invalidBgStyle = useAnimatedStyle(() => {
@@ -215,19 +224,6 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
     ),
   }));
 
-  const hasValue = !!inputValue;
-  const shouldAnimate = hasLabel && hasValue;
-
-  const labelAnim = useSharedValue(0);
-  useEffect(() => {
-    labelAnim.value = withTiming(shouldAnimate ? 1 : 0, { duration: ANIM_DURATION });
-  }, [hasValue]);
-
-  const [labelWidth, setLabelWidth] = useState(0);
-  const measureLabel = useCallback((ev: LayoutChangeEvent) => {
-    setLabelWidth(ev.nativeEvent.layout.width);
-  }, []);
-
   const handlePastePress = useCallback(async () => {
     try {
       const str = await Clipboard.getString();
@@ -243,31 +239,42 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
     inputRef.current?.focus();
   }, [inputRef]);
 
+  useEffect(() => {
+    hasValueAnim.value = withTiming(shouldAnimate ? 1 : 0, { duration: ANIM_DURATION });
+  }, [hasValue]);
+
   const labelContainerStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        translateX: interpolate(
-          labelAnim.value,
-          [0, 1],
-          [0, Math.round(labelWidth * LABEL_SCALE_RATIO) / 2 - labelWidth / 2],
-        ),
+        translateX: interpolate(hasValueAnim.value, [0, 1], [0, -30]),
       },
       {
-        translateY: interpolate(labelAnim.value, [0, 1], [0, -13]),
+        translateY: interpolate(hasValueAnim.value, [0, 1], [0, -13]),
       },
       {
-        scale: interpolate(labelAnim.value, [0, 1], [1, LABEL_SCALE_RATIO]),
+        scale: interpolate(hasValueAnim.value, [0, 1], [1, LABEL_SCALE_RATIO]),
       },
     ],
   }));
 
   const labelShiftStyle = useAnimatedStyle(() => ({
-    height: interpolate(labelAnim.value, [0, 1], [0, 8]),
+    height: interpolate(hasValueAnim.value, [0, 1], [0, 8]),
   }));
 
   const inputHeightCompensatorStyle = useAnimatedStyle(() => ({
-    marginBottom: interpolate(labelAnim.value, [0, 1], [0, -8]),
+    marginBottom: interpolate(hasValueAnim.value, [0, 1], [0, -8]),
   }));
+
+  const rightContentStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(hasValueAnim.value, [0, 1], [1, 0]),
+  }));
+
+  const clearButtonStyle = useAnimatedStyle(() => {
+    const value = isFocused ? hasValueAnim.value : 0;
+    return {
+      opacity: interpolate(value, [0, 1], [0, 1]),
+    };
+  }, [isFocused]);
 
   return (
     <TouchableWithoutFeedback onPress={handlePressInput}>
@@ -283,7 +290,7 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
         <Animated.View style={[styles.invalidBg.static, invalidBgStyle]} />
         {!!leftContent && <View style={styles.leftContent}>{leftContent}</View>}
         <View style={styles.labelContainer}>
-          <Animated.View onLayout={measureLabel} style={labelContainerStyle}>
+          <Animated.View style={labelContainerStyle}>
             <Text type="body1" color="textSecondary">
               {label}
             </Text>
@@ -310,6 +317,39 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
           />
           <Animated.View style={inputHeightCompensatorStyle} />
         </View>
+        <Animated.View
+          style={[styles.rightСontent.static, rightContentStyle]}
+          pointerEvents={hasValue ? 'none' : 'auto'}
+        >
+          {withPasteButton && (
+            <TouchableOpacity style={styles.rightButton} onPress={handlePastePress}>
+              <Text type="label1" color="textAccent">
+                {pasteButtonTitle ?? 'Paste'}
+              </Text>
+            </TouchableOpacity>
+          )}
+          {withScanButton && (
+            <TouchableOpacity
+              style={[styles.rightButton, styles.scanButton]}
+              onPress={onScanPress}
+            >
+              <Icon name="ic-viewfinder-28" color="accentBlue" />
+            </TouchableOpacity>
+          )}
+        </Animated.View>
+        {withClearButton && (
+          <Animated.View
+            style={[styles.rightСontent.static, clearButtonStyle]}
+            pointerEvents={hasValue && isFocused ? 'auto' : 'none'}
+          >
+            <TouchableOpacity
+              style={[styles.rightButton, styles.clearButton]}
+              onPress={handlePressClear}
+            >
+              <Icon name="ic-xmark-circle-16" color="iconSecondary" />
+            </TouchableOpacity>
+          </Animated.View>
+        )}
       </Animated.View>
     </TouchableWithoutFeedback>
   );
@@ -324,8 +364,8 @@ const inputPaddings = {
       paddingBottom: 18.5,
     },
     other: {
-      paddingTop: 20.5,
-      paddingBottom: 20,
+      paddingTop: 21,
+      paddingBottom: 20.5,
     },
   },
   withoutLabel: {
@@ -336,6 +376,16 @@ const inputPaddings = {
     other: {
       paddingTop: 16.5,
       paddingBottom: 16,
+    },
+  },
+  withMultiline: {
+    android: {
+      paddingTop: 14,
+      paddingBottom: 14.5,
+    },
+    other: {
+      paddingTop: 16.5,
+      paddingBottom: 20.5,
     },
   },
 };
@@ -356,10 +406,10 @@ const styles = Steezy.create(({ colors, corners }) => ({
   },
   input: {
     fontSize: 16,
-    // lineHeight: 24,
     fontFamily: Font.Regular,
     color: colors.textPrimary,
     paddingHorizontal: 16 - InputBorderWidth,
+    textAlignVertical: 'center',
     paddingVertical: 0,
     flexGrow: 1,
     margin: 0,
@@ -367,6 +417,17 @@ const styles = Steezy.create(({ colors, corners }) => ({
     borderWidth: 0,
     marginTop: 0,
     marginBottom: 0,
+  },
+  inputMiltiline: {
+    textAlignVertical: 'top',
+    lineHeight: 24,
+    ...inputPaddings.withMultiline.other,
+    // ...isAndroid
+    //   ? inputPaddings.withLabel.android
+    //   : inputPaddings.withLabel.other,
+  },
+  inputWithClearButton: {
+    paddingRight: 52 - InputBorderWidth,
   },
   inputWithLabel: isAndroid
     ? inputPaddings.withLabel.android
@@ -394,5 +455,26 @@ const styles = Steezy.create(({ colors, corners }) => ({
     justifyContent: 'center',
     height: 63 - InputBorderWidth,
     paddingHorizontal: 16 - InputBorderWidth,
+  },
+  rightСontent: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    zIndex: 4,
+  },
+  rightButton: {
+    paddingHorizontal: 16 - InputBorderWidth,
+    height: '100%',
+    justifyContent: 'center',
+  },
+  scanButton: {
+    paddingHorizontal: 14 - InputBorderWidth,
+  },
+  clearButton: {
+    paddingHorizontal: 20 - InputBorderWidth,
   },
 }));
