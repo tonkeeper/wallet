@@ -1,30 +1,36 @@
 import { Screen, Button, Spacer, Steezy, Text, View, Input } from '@tonkeeper/uikit';
 import { InputNumberPrefix } from '../../../components/InputNumberPrefix';
-import { TapGestureHandler } from 'react-native-gesture-handler';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { usePhraseInputs } from './usePhraseInputs';
 import { bip39 } from '@tonkeeper/core/src/bip39';
 import Animated from 'react-native-reanimated';
-import { Keyboard, Pressable } from 'react-native';
+import { Pressable } from 'react-native';
 
 const inputsCount = Array(24).fill(0);
 
-type NextOptions = {
-  phrase: string;
-  config?: string; // TODO: add types
-};
-
 interface RecoveryPhrasePageProps {
-  onNext: (options: NextOptions) => void;
+  onComplete: (phrase: string, config?: string) => void;
+  shown: boolean;
 }
 
 export const RecoveryPhrasePage = memo<RecoveryPhrasePageProps>((props) => {
-  const { onNext } = props;
+  const { onComplete, shown } = props;
   const inputs = usePhraseInputs();
 
   const [isConfigInputShown, setConfigInputShown] = useState(false);
   const [isRestoring, setRestoring] = useState(false);
   const [config, setConfig] = useState('');
+
+  useEffect(() => {
+    if (shown) {
+      const lastField = inputs.getRef(24);
+      if (!!lastField?.getValue()) {
+        inputs.getRef(24)?.focus();
+      } else {
+        inputs.getRef(0)?.focus();
+      }
+    }
+  }, [shown]);
 
   const handleShowConfigInput = useCallback(() => {
     setConfigInputShown(true);
@@ -64,11 +70,11 @@ export const RecoveryPhrasePage = memo<RecoveryPhrasePageProps>((props) => {
       return;
     }
 
-    Keyboard.dismiss();
-
     const phrase = Object.values(values).join(' ');
-    onNext({ phrase, config });
-  }, [onNext, isRestoring, isConfigInputShown, config]);
+
+    onComplete(phrase, config);
+    
+  }, [onComplete, isRestoring, isConfigInputShown, config]);
 
   const handleInputSubmit = useCallback(
     (index: number) => () => {
@@ -110,8 +116,6 @@ export const RecoveryPhrasePage = memo<RecoveryPhrasePageProps>((props) => {
         {inputsCount.map((_, index) => (
           <Input
             key={`input-${index}`}
-            autoFocus={index === 0}
-            autoFocusDelay={500}
             renderToHardwareTextureAndroid
             leftContent={<InputNumberPrefix index={index} />}
             returnKeyType={index === 23 ? 'done' : 'next'}

@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider as StoreProvider, useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components/native';
@@ -45,38 +46,40 @@ const queryClient = new QueryClient();
 
 export const App: FC = () => {
   return (
-    <WalletProvider>
-      <StoreProvider {...{ store }}>
-        <ActionSheetProvider>
-          <QueryClientProvider client={queryClient}>
-            <TonAPIProvider tonapi={tonapi}>
-              <TonThemeProvider>
-                <SafeAreaProvider>
-                  <ScrollPositionProvider>
-                    <HideableAmountProvider>
-                      <AppNavigator />
-                    </HideableAmountProvider>
-                  </ScrollPositionProvider>
-                  <ToastComponent />
-                  <BackgroundBlur />
-                  {isAndroid ? (
-                    <View
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                      }}
-                    >
-                      <PortalDestination name="popupPortal" />
-                    </View>
-                  ) : null}
-                </SafeAreaProvider>
-              </TonThemeProvider>
-            </TonAPIProvider>
-          </QueryClientProvider>
-        </ActionSheetProvider>
-      </StoreProvider>
-    </WalletProvider>
+    <KeyboardProvider>
+      <WalletProvider>
+        <StoreProvider {...{ store }}>
+          <ActionSheetProvider>
+            <QueryClientProvider client={queryClient}>
+              <TonAPIProvider tonapi={tonapi}>
+                <TonThemeProvider>
+                  <SafeAreaProvider>
+                    <ScrollPositionProvider>
+                      <HideableAmountProvider>
+                        <AppNavigator />
+                      </HideableAmountProvider>
+                    </ScrollPositionProvider>
+                    <ToastComponent />
+                    <BackgroundBlur />
+                    {isAndroid ? (
+                      <View
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                        }}
+                      >
+                        <PortalDestination name="popupPortal" />
+                      </View>
+                    ) : null}
+                  </SafeAreaProvider>
+                </TonThemeProvider>
+              </TonAPIProvider>
+            </QueryClientProvider>
+          </ActionSheetProvider>
+        </StoreProvider>
+      </WalletProvider>
+    </KeyboardProvider>
   );
 };

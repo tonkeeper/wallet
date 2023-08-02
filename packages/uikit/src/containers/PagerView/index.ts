@@ -5,6 +5,7 @@ import { PageViewExternalHeader } from './PageViewExternalHeader';
 import { PageViewExternalPage } from './PageViewExternalPage';
 
 export { PagerViewRef, PagerViewSelectedEvent } from './PagerViewContainer';
+export { usePagerViewSteps } from './hooks/usePagerViewSteps';
 
 export const PagerView = Object.assign(PagerViewContainer, {
   Header: PageViewExternalHeader,

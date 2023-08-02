@@ -6,6 +6,9 @@
   "scripts": {
     "icons": "node ./scripts/generateIcons.js"
   },
+  "peerDependencies": {
+    "react-native-reanimated": "*"
+  },
   "dependencies": {
     "@bogoslavskiy/react-native-steezy": "^1.0.4",
     "@tonkeeper/router": "1.0.0",

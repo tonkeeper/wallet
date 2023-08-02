@@ -1,18 +1,17 @@
-import { useTheme } from '@tonkeeper/uikit';
 import { StyleSheet, View } from 'react-native';
+import { useTheme } from '../styles';
 import { memo } from 'react';
 import Animated, {
   Extrapolate,
   interpolate,
   useAnimatedStyle,
-  interpolateColor
+  interpolateColor,
 } from 'react-native-reanimated';
-
 
 interface StepIndicatorProps {
   pageOffset: Animated.SharedValue<number>;
-  itemsLength: number;
-  interval: number;
+  offsetInterval: number;
+  steps: number;
 }
 
 const INDICATOR_WIDTH = 16;
@@ -20,17 +19,17 @@ const INDICATOR_HEIGHT = 4;
 const INDICATOR_EXPANDED_SIZE = 24;
 
 export const StepIndicator = memo((props: StepIndicatorProps) => {
-  const { pageOffset, interval, itemsLength } = props;
+  const { pageOffset, offsetInterval, steps } = props;
 
   return (
     <View style={styles.container}>
-      {Array(itemsLength)
+      {Array(steps)
         .fill(0)
         .map((_, index) => (
           <Indicator
             key={`step-indicator-${index}`}
             pageOffset={pageOffset}
-            interval={interval}
+            offsetInterval={offsetInterval}
             index={index}
           />
         ))}
@@ -40,15 +39,19 @@ export const StepIndicator = memo((props: StepIndicatorProps) => {
 
 interface IndicatorProps {
   pageOffset: Animated.SharedValue<number>;
-  interval: number;
+  offsetInterval: number;
   index: number;
 }
 
 const Indicator = memo((props: IndicatorProps) => {
-  const { pageOffset, interval, index } = props;
+  const { pageOffset, offsetInterval, index } = props;
   const theme = useTheme();
 
-  const inputRange = [(index - 1) * interval, index * interval, (index + 1) * interval];
+  const inputRange = [
+    (index - 1) * offsetInterval,
+    index * offsetInterval,
+    (index + 1) * offsetInterval,
+  ];
 
   const dotAnimationStyle = useAnimatedStyle(() => ({
     width: interpolate(

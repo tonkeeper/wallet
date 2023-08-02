@@ -98,6 +98,7 @@
     "react-native-haptic-feedback": "^1.11.0",
     "react-native-image-colors": "^2.3.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
+    "react-native-keyboard-controller": "^1.5.8",
     "react-native-linear-gradient": "^2.6.2",
     "react-native-localize": "^2.2.4",
     "react-native-minimizer": "1.3.0",

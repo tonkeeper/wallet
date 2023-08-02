@@ -6,11 +6,12 @@ import { PageViewExternalHeader } from './PageViewExternalHeader';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { PageIndexContext } from './hooks/usePageIndex';
 import { PagerViewTabBar } from './PagerViewTabBar';
-import React, { forwardRef, memo, useMemo } from 'react';
+import React, { forwardRef, memo, useCallback, useMemo } from 'react';
 
 import PagerView, { PagerViewOnPageSelectedEvent } from 'react-native-pager-view';
 import Animated from 'react-native-reanimated';
 import { useMergeRefs } from '@tonkeeper/mobile/src/utils';
+import { useScreenScroll } from '../Screen/hooks';
 
 const AnimatedPagerView = Animated.createAnimatedComponent(PagerView);
 
@@ -31,6 +32,7 @@ interface PagerViewContainerProps {
   ref?: React.Ref<PagerViewRef>;
   initialPage?: number;
   scrollEnabled?: boolean;
+  disableRightScroll?: boolean;
   onPageSelected?: (e: PagerViewOnPageSelectedEvent) => void;
   pageOffset?: Animated.SharedValue<number>;
   overdrag?: boolean;
@@ -38,9 +40,18 @@ interface PagerViewContainerProps {
 
 export const PagerViewContainer = memo<PagerViewContainerProps>(
   forwardRef((props, ref) => {
-    const { hideBottomSeparator, pageOffset, overdrag = true } = props;
+    const { hideBottomSeparator, pageOffset, overdrag = true, disableRightScroll, onPageSelected } = props;
     const pager = usePagerViewHandler(pageOffset);
     const setRef = useMergeRefs(ref, pager.pagerViewRef);
+    const { scrollY } = useScreenScroll();
+
+    const handlePageSelected = useCallback((ev: PagerViewSelectedEvent) => {
+      if (onPageSelected) {
+        onPageSelected(ev);
+      }
+
+      scrollY.value = 0;
+    }, [onPageSelected]);
 
     const elements = useMemo(() => {
       const accumulator: Elements = { header: null, pages: [], tabs: [] };
@@ -49,7 +60,7 @@ export const PagerViewContainer = memo<PagerViewContainerProps>(
           if (child.type === PageViewExternalHeader) {
             acc.header = child.props.children;
           }
-
+          
           if (child.type === PageViewExternalPage) {
             const props: PageViewExternalPageProps = child.props;
             acc.pages.push(props.children);
@@ -76,11 +87,11 @@ export const PagerViewContainer = memo<PagerViewContainerProps>(
           <AnimatedPagerView
             onPageScroll={pager.horizontalScrollHandler}
             scrollEnabled={props.scrollEnabled ?? true}
-            onPageSelected={props.onPageSelected}
+            disableRightScroll={disableRightScroll}
             initialPage={props.initialPage ?? 0}
+            onPageSelected={handlePageSelected}
             style={styles.pagerView}
             overdrag={overdrag}
-            disableRightScroll
             ref={setRef}
           >
             {elements.pages.map((children, index) => (

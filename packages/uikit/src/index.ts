@@ -14,9 +14,15 @@ export { Pressable } from './components/Pressable';
 export { KeyboardSpacer } from './components/KeyboardSpacer';
 export { Input, InputRef } from './components/Input';
 export { TextInputRef } from './components/TextInput';
+export { StepIndicator } from './components/StepIndicator';
 
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';
-export { PagerView, PagerViewRef, PagerViewSelectedEvent } from './containers/PagerView';
+export {
+  PagerView,
+  PagerViewRef,
+  PagerViewSelectedEvent,
+  usePagerViewSteps,
+} from './containers/PagerView';
 export { Screen, ScreenScrollViewRef } from './containers/Screen';
 export { Modal } from './containers/Modal';
 
@@ -24,4 +30,3 @@ export { useReanimatedKeyboardHeight } from './utils/keyboard';
 
 export * from './utils';
 export * from './styles';
-

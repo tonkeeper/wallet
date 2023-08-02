@@ -15,8 +15,12 @@ export const useNavigation = () => {
   const closeModal = useCloseModal();
 
   const setParams = () => {};
-  const setOptions = () => {};
+  const setOptions = nav.setOptions;
   const reset = () => {};
+
+  const replace = (path: string, params?: any) => {
+    nav.dispatch(StackActions.replace(path, params));
+  };
 
   const navigate = throttle((path: string, params?: any) => {
     const find = sheetRoutes.find((el) => el.path === path);
@@ -92,7 +96,7 @@ export const useNavigation = () => {
   return {
     replaceModal,
     openModal,
-
+    replace,
     globalGoBack,
     setOptions,
     setParams,

@@ -1,4 +1,4 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["./"],
+  "include": ["./", "../uikit/src/containers/PagerView/hooks/usePagerViewSteps.ts", "../uikit/src/components/StepIndicator.tsx"],
 }

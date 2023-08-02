@@ -23,6 +23,7 @@ export const ScreenScrollView = memo(
       scrollHandler,
       headerOffsetStyle,
       scrollRef,
+      scrollY,
       headerEjectionPoint,
     } = useScreenScroll();
     const tabBarHeight = useBottomTabBarHeight();
@@ -32,6 +33,9 @@ export const ScreenScrollView = memo(
 
     useEffect(() => {
       headerEjectionPoint.value = 0;
+      return () => {
+        scrollY.value = 0;
+      }
     }, []);
 
     const contentStyle = useMemo(() => {

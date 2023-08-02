@@ -1,4 +1,4 @@
-import { PagerViewWizard, usePagerViewWizard } from '../../components/PagerViewWizard';
+import { PagerViewWizard, usePagerViewWizard } from '@tonkeeper/uikit/src/containers/PagerView/hooks/usePagerViewSteps';
 import { Screen, Steezy, PagerView } from '@tonkeeper/uikit';
 import { memo } from 'react';
 

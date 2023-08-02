@@ -1,5 +1,6 @@
 import { WithDefault } from 'react-native/Libraries/Types/CodegenTypes';
 import { TextInputRef, TextInput, TextInputProps } from './TextInput';
+import Clipboard from '@react-native-community/clipboard';
 import { corners } from '../styles/constants';
 import { Steezy, useTheme } from '../styles';
 import { Font } from './Text/TextStyles';
@@ -18,6 +19,7 @@ import {
   TextInputFocusEventData,
   NativeSyntheticEvent,
   LayoutChangeEvent,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {
   useImperativeHandle,
@@ -35,9 +37,12 @@ type FocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 interface InputProps extends TextInputProps {
   onLayout?: (ev: LayoutChangeEvent) => void;
   onChangeText?: (text: string) => void;
+  onScanPress?: () => void;
   indentBottom?: WithDefault<boolean, false>;
   disableAutoMarkValid?: boolean;
   leftContent?: React.ReactNode;
+  withPasteButton?: boolean;
+  withScanButton?: boolean;
   autoFocusDelay?: number;
   defaultValue?: string;
   placeholder?: string;
@@ -62,10 +67,9 @@ enum InputState {
   Invalid = 2,
 }
 
-const LARGE_LABEL_FONT_SIZE = 16;
-const SMALL_LABEL_FONT_SIZE = 12;
-
+const LABEL_SCALE_RATIO = 0.8;
 const ANIM_DURATION = 100;
+
 
 export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
   const {
@@ -74,6 +78,8 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
     onFocus,
     onBlur,
     disableAutoMarkValid,
+    withPasteButton,
+    withScanButton,
     autoFocusDelay,
     indentBottom,
     defaultValue,
@@ -212,64 +218,104 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
   const hasValue = !!inputValue;
   const shouldAnimate = hasLabel && hasValue;
 
-  const labelContainerStyle = useAnimatedStyle(
-    () => ({
-      paddingTop: withTiming(shouldAnimate ? 4 : 18.8, { duration: ANIM_DURATION }),
-    }),
-    [shouldAnimate],
-  );
+  const labelAnim = useSharedValue(0);
+  useEffect(() => {
+    labelAnim.value = withTiming(shouldAnimate ? 1 : 0, { duration: ANIM_DURATION });
+  }, [hasValue]);
 
-  const labelTextStyle = useAnimatedStyle(
-    () => ({
-      fontSize: withTiming(
-        shouldAnimate ? SMALL_LABEL_FONT_SIZE : LARGE_LABEL_FONT_SIZE,
-        {
-          duration: ANIM_DURATION,
-        },
-      ),
-    }),
-    [shouldAnimate],
-  );
+  const [labelWidth, setLabelWidth] = useState(0);
+  const measureLabel = useCallback((ev: LayoutChangeEvent) => {
+    setLabelWidth(ev.nativeEvent.layout.width);
+  }, []);
+
+  const handlePastePress = useCallback(async () => {
+    try {
+      const str = await Clipboard.getString();
+      setInputValue(str);
+    } catch {}
+  }, []);
+
+  const handlePressClear = useCallback(() => {
+    setInputValue('');
+  }, []);
+
+  const handlePressInput = useCallback(() => {
+    inputRef.current?.focus();
+  }, [inputRef]);
+
+  const labelContainerStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX: interpolate(
+          labelAnim.value,
+          [0, 1],
+          [0, Math.round(labelWidth * LABEL_SCALE_RATIO) / 2 - labelWidth / 2],
+        ),
+      },
+      {
+        translateY: interpolate(labelAnim.value, [0, 1], [0, -13]),
+      },
+      {
+        scale: interpolate(labelAnim.value, [0, 1], [1, LABEL_SCALE_RATIO]),
+      },
+    ],
+  }));
+
+  const labelShiftStyle = useAnimatedStyle(() => ({
+    height: interpolate(labelAnim.value, [0, 1], [0, 8]),
+  }));
+
+  const inputHeightCompensatorStyle = useAnimatedStyle(() => ({
+    marginBottom: interpolate(labelAnim.value, [0, 1], [0, -8]),
+  }));
 
   return (
-    <Animated.View
-      onLayout={onLayout}
-      style={[
-        styles.container.static,
-        containerStaticStyle,
-        focusBorderStyle,
-        indentBottom && styles.indentBottom.static,
-      ]}
-    >
-      <Animated.View style={[styles.invalidBg.static, invalidBgStyle]} />
-      {!!leftContent && <View style={styles.leftContent}>{leftContent}</View>}
-      <Animated.View style={[styles.labelContainer.static, labelContainerStyle]}>
-        <Text type="body1" reanimated style={labelTextStyle} color="textSecondary">
-          {label}
-        </Text>
+    <TouchableWithoutFeedback onPress={handlePressInput}>
+      <Animated.View
+        onLayout={onLayout}
+        style={[
+          indentBottom && styles.indentBottom.static,
+          styles.container.static,
+          containerStaticStyle,
+          focusBorderStyle,
+        ]}
+      >
+        <Animated.View style={[styles.invalidBg.static, invalidBgStyle]} />
+        {!!leftContent && <View style={styles.leftContent}>{leftContent}</View>}
+        <View style={styles.labelContainer}>
+          <Animated.View onLayout={measureLabel} style={labelContainerStyle}>
+            <Text type="body1" color="textSecondary">
+              {label}
+            </Text>
+          </Animated.View>
+        </View>
+        <View style={styles.inputContainer}>
+          <Animated.View style={labelShiftStyle} />
+          <TextInput
+            {...rest}
+            selectionColor={invalid ? colors.accentRed : colors.accentBlue}
+            placeholder={!hasLabel ? placeholder : undefined}
+            placeholderTextColor={colors.textSecondary}
+            onChangeText={handleChangeText}
+            keyboardAppearance="dark"
+            allowFontScaling={false}
+            scrollEnabled={false}
+            multiline={multiline}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            disableFullscreenUI
+            style={inputStyle}
+            value={inputValue}
+            ref={inputRef}
+          />
+          <Animated.View style={inputHeightCompensatorStyle} />
+        </View>
       </Animated.View>
-      <TextInput
-        {...rest}
-        selectionColor={invalid ? colors.accentRed : colors.accentBlue}
-        placeholder={!hasLabel ? placeholder : undefined}
-        placeholderTextColor={colors.textSecondary}
-        onChangeText={handleChangeText}
-        keyboardAppearance="dark"
-        allowFontScaling={false}
-        scrollEnabled={false}
-        multiline={multiline}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        disableFullscreenUI
-        style={inputStyle}
-        value={inputValue}
-        ref={inputRef}
-      />
-    </Animated.View>
+    </TouchableWithoutFeedback>
   );
 });
 
-export const InputBorderWidth = 2;
+export const InputBorderWidth = 1.5;
 
 const inputPaddings = {
   withLabel: {
@@ -304,6 +350,9 @@ const styles = Steezy.create(({ colors, corners }) => ({
   },
   indentBottom: {
     marginBottom: 16,
+  },
+  inputContainer: {
+    flexGrow: 1,
   },
   input: {
     fontSize: 16,
@@ -340,9 +389,10 @@ const styles = Steezy.create(({ colors, corners }) => ({
   labelContainer: {
     position: 'absolute',
     top: 0,
-    left: 0,
     right: 0,
-    bottom: 0,
+    left: 0,
+    justifyContent: 'center',
+    height: 63 - InputBorderWidth,
     paddingHorizontal: 16 - InputBorderWidth,
   },
 }));
