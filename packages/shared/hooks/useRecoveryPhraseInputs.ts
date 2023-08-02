@@ -1,13 +1,13 @@
-import {
-  InputRef,
-  ScreenScrollViewRef,
-  useReanimatedKeyboardHeight,
-} from '@tonkeeper/uikit';
 import { LayoutChangeEvent } from 'react-native';
 import { useCallback, useRef } from 'react';
 import { bip39 } from '@tonkeeper/core/src/bip39';
+import {
+  useReanimatedKeyboardHeight,
+  ScreenScrollViewRef,
+  InputRef,
+} from '@tonkeeper/uikit';
 
-export function usePhraseInputs() {
+export function useRecoveryPhraseInputs() {
   const positions = useRef<{ [key in string]: number }>({});
   const refs = useRef<{ [key in string]: InputRef }>({});
   const scrollViewRef = useRef<ScreenScrollViewRef>(null);

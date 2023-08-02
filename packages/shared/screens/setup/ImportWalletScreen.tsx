@@ -11,11 +11,11 @@ import {
   Screen,
 } from '@tonkeeper/uikit';
 
-import { RecoveryPhrasePage } from './EnterWordsPage/RecoveryPhrasePage';
-import { SetupNotificationsPage } from './SetupNotificationsPage';
-import { SetupWalletNamePage } from './SetupWalletNamePage';
-import { SetupPasscodePage } from './SetupPasscodePage';
-import { SetupBiometryPage } from './SetupBiometryPage';
+import { SetupRecoveryPhrasePage } from './pages/SetupRecoveryPhrasePage';
+import { SetupNotificationsPage } from './pages/SetupNotificationsPage';
+import { SetupWalletNamePage } from './pages/SetupWalletNamePage';
+import { SetupPasscodePage } from './pages/SetupPasscodePage';
+import { SetupBiometryPage } from './pages/SetupBiometryPage';
 
 import { delay } from '@tonkeeper/uikit/src/utils/delay';
 
@@ -91,7 +91,7 @@ export const ImportWalletScreen = memo(() => {
       {hasWallet ? (
         <PagerView {...steps.props}>
           <PagerView.Page>
-            <RecoveryPhrasePage
+            <SetupRecoveryPhrasePage
               shown={steps.pageIndex === 0}
               onComplete={(phrase, lockup: any) => {
                 setPhrase(phrase);
@@ -116,7 +116,7 @@ export const ImportWalletScreen = memo(() => {
       ) : (
         <PagerView {...steps.props}>
           <PagerView.Page>
-            <RecoveryPhrasePage
+            <SetupRecoveryPhrasePage
               shown={steps.pageIndex === 0}
               onComplete={(phrase, lockup: any) => {
                 setPhrase(phrase);

@@ -1,11 +1,11 @@
 import { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 
-interface HintsProps {
+interface CreateWalletScreenProps {
 
 }
 
-export const Hints = memo<HintsProps>((props) => {
+export const CreateWalletScreen = memo<CreateWalletScreenProps>((props) => {
   return (
     <View style={styles.container}>
       

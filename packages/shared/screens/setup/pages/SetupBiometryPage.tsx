@@ -1,7 +1,7 @@
 import { Steezy, View, Text, Spacer, Button, Lottie } from '@tonkeeper/uikit';
 import { Platform } from 'react-native';
 import { memo, useMemo } from 'react';
-import { t } from '../../i18n';
+import { t } from '../../../i18n';
 
 // TODO:
 import * as LocalAuthentication from 'expo-local-authentication';

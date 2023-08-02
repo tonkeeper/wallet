@@ -1,10 +1,10 @@
-import { PasscodeDots, PasscodeDotsRef } from '../../components/Passcode/PasscodeDots';
-import { PasscodeKeyboard } from '../../components/Passcode/PasscodeKeyboad';
+import { PasscodeDots, PasscodeDotsRef } from '../../../components/Passcode/PasscodeDots';
+import { PasscodeKeyboard } from '../../../components/Passcode/PasscodeKeyboad';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { delay } from '@tonkeeper/uikit/src/utils/delay';
 import { Steezy, View, Text } from '@tonkeeper/uikit';
 import { useWindowDimensions } from 'react-native';
-import { t } from '../../i18n';
+import { t } from '../../../i18n';
 import Animated, {
   Easing,
   interpolate,

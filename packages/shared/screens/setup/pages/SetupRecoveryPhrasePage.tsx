@@ -1,21 +1,22 @@
 import { Screen, Button, Spacer, Steezy, Text, View, Input } from '@tonkeeper/uikit';
+import { useRecoveryPhraseInputs } from '../../../hooks/useRecoveryPhraseInputs';
 import { InputNumberPrefix } from '../../../components/InputNumberPrefix';
 import { memo, useCallback, useEffect, useState } from 'react';
-import { usePhraseInputs } from './usePhraseInputs';
+
 import { bip39 } from '@tonkeeper/core/src/bip39';
 import Animated from 'react-native-reanimated';
 import { Pressable } from 'react-native';
 
 const inputsCount = Array(24).fill(0);
 
-interface RecoveryPhrasePageProps {
+interface SetupPhrasePageProps {
   onComplete: (phrase: string, config?: string) => void;
   shown: boolean;
 }
 
-export const RecoveryPhrasePage = memo<RecoveryPhrasePageProps>((props) => {
+export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
   const { onComplete, shown } = props;
-  const inputs = usePhraseInputs();
+  const inputs = useRecoveryPhraseInputs();
 
   const [isConfigInputShown, setConfigInputShown] = useState(false);
   const [isRestoring, setRestoring] = useState(false);
@@ -23,9 +24,9 @@ export const RecoveryPhrasePage = memo<RecoveryPhrasePageProps>((props) => {
 
   useEffect(() => {
     if (shown) {
-      const lastField = inputs.getRef(24);
+      const lastField = inputs.getRef(23);
       if (!!lastField?.getValue()) {
-        inputs.getRef(24)?.focus();
+        inputs.getRef(23)?.focus();
       } else {
         inputs.getRef(0)?.focus();
       }
@@ -73,7 +74,6 @@ export const RecoveryPhrasePage = memo<RecoveryPhrasePageProps>((props) => {
     const phrase = Object.values(values).join(' ');
 
     onComplete(phrase, config);
-    
   }, [onComplete, isRestoring, isConfigInputShown, config]);
 
   const handleInputSubmit = useCallback(

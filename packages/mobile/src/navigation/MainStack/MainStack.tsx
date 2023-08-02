@@ -33,8 +33,8 @@ import { AccessConfirmation, Intro } from '$core';
 import { ModalStack } from '$navigation/ModalStack';
 import { withModalStack } from '@tonkeeper/router';
 
+import { ImportWalletScreen } from '@tonkeeper/shared/screens/setup/ImportWalletScreen';
 import { StartScreen } from '@tonkeeper/shared/screens/StartScreen';
-import { ImportWalletScreen } from '@tonkeeper/shared/screens/ImportWalletScreen';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -89,7 +89,7 @@ export const MainStack: FC = () => {
       }}
     >
        <Stack.Screen name="/start" component={StartScreen} /> 
-      <Stack.Screen name="/import" component={ImportWalletScreen} options={{ keyboardHandlingEnabled: false }}/>
+      <Stack.Screen name="/import" component={ImportWalletScreen} />
       {renderRoot()}
       <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />

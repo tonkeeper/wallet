@@ -1,5 +1,5 @@
 import { Steezy, View, Text, Spacer, Button, Icon } from '@tonkeeper/uikit';
-import { t } from '../../i18n';
+import { t } from '../../../i18n';
 import { memo } from 'react';
 
 interface SetupNotificationsPageProps {
