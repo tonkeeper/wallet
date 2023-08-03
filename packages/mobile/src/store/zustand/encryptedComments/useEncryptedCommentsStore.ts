@@ -22,9 +22,10 @@ export const useEncryptedCommentsStore = create(
       },
     }),
     {
-      name: 'encryptedComments21dfde2eddde336',
+      name: 'encryptedComments',
       getStorage: () => AsyncStorage,
-      partialize: ({ decryptedComments }) => ({} as IEcryptedCommentsStore),
+      partialize: ({ decryptedComments }) =>
+        ({ decryptedComments } as IEcryptedCommentsStore),
     },
   ),
 );
