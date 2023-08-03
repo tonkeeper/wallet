@@ -89,6 +89,8 @@
 		C4D3ADBE292E6980001723FC /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D3ADBD292E6980001723FC /* AppError.swift */; };
 		C4D3ADC1292E6B6D001723FC /* RoutingErrorCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D3ADC0292E6B6D001723FC /* RoutingErrorCode.swift */; };
 		C4F5F2052927C85B00D08D79 /* PassCode.strings in Resources */ = {isa = PBXBuildFile; fileRef = C4F5F2072927C85B00D08D79 /* PassCode.strings */; };
+		E651E3E92A7B6593008C9BCE /* SpoilerViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E651E3E82A7B6593008C9BCE /* SpoilerViewManager.swift */; };
+		E651E3EC2A7B6693008C9BCE /* SpoilerViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E651E3EB2A7B6693008C9BCE /* SpoilerViewManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -199,6 +201,8 @@
 		C4FB2EE22912AF2700CB35D0 /* OpenSSL.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = OpenSSL.xcframework; sourceTree = "<group>"; };
 		C4FB2EE32912AF2700CB35D0 /* TON.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = TON.xcframework; sourceTree = "<group>"; };
 		C6251834116392B3FC02BA37 /* Pods-ton_keeper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ton_keeper.debug.xcconfig"; path = "Target Support Files/Pods-ton_keeper/Pods-ton_keeper.debug.xcconfig"; sourceTree = "<group>"; };
+		E651E3E82A7B6593008C9BCE /* SpoilerViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerViewManager.swift; sourceTree = "<group>"; };
+		E651E3EB2A7B6693008C9BCE /* SpoilerViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SpoilerViewManager.m; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ton_keeper-ton_keeperTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -661,6 +665,7 @@
 			isa = PBXGroup;
 			children = (
 				C4D3ADBB292E66D5001723FC /* ActionButton.swift */,
+				E651E3EA2A7B65AB008C9BCE /* SpoilerView */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -716,6 +721,15 @@
 				203A6A032760BD6700817B71 /* Montserrat-ThinItalic.ttf */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		E651E3EA2A7B65AB008C9BCE /* SpoilerView */ = {
+			isa = PBXGroup;
+			children = (
+				E651E3E82A7B6593008C9BCE /* SpoilerViewManager.swift */,
+				E651E3EB2A7B6693008C9BCE /* SpoilerViewManager.m */,
+			);
+			path = SpoilerView;
 			sourceTree = "<group>";
 		};
 		F725F67D0D4B970B9615D4F3 /* Pods */ = {
@@ -1072,6 +1086,7 @@
 				C4A5635D2918CFDB001DDA44 /* UIColor+Hex.swift in Sources */,
 				C44A3F98291D3C2700C1D830 /* UIWindow+Transition.swift in Sources */,
 				C4380874292BCFE600FF5669 /* R.generated.swift in Sources */,
+				E651E3E92A7B6593008C9BCE /* SpoilerViewManager.swift in Sources */,
 				C4B6F030291012DE0070E2BE /* KeychainServiceError.swift in Sources */,
 				C4A563BE2919522D001DDA44 /* PassCodeCircleView.swift in Sources */,
 				1C610F328FB84275E2FB6D32 /* ExpoModulesProvider.swift in Sources */,
@@ -1115,6 +1130,7 @@
 				C4B6F03C291012DE0070E2BE /* File.swift in Sources */,
 				C4A563A52918D49C001DDA44 /* Theme.swift in Sources */,
 				C4B6F03D291012DE0070E2BE /* main.m in Sources */,
+				E651E3EC2A7B6693008C9BCE /* SpoilerViewManager.m in Sources */,
 				C4D3ADC1292E6B6D001723FC /* RoutingErrorCode.swift in Sources */,
 				C4B6F045291012DE0070E2BE /* UserDefaultsService.swift in Sources */,
 				C4B6F042291012DE0070E2BE /* UserDefaults+SaveStruct.swift in Sources */,

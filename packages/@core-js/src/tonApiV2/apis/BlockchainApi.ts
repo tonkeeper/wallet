@@ -17,7 +17,7 @@ import * as runtime from '../runtime';
 import type {
   Block,
   Config,
-  GetBlock401Response,
+  GetBlockDefaultResponse,
   MethodExecutionResult,
   RawAccount,
   SendMessageRequest,
@@ -30,8 +30,8 @@ import {
     BlockToJSON,
     ConfigFromJSON,
     ConfigToJSON,
-    GetBlock401ResponseFromJSON,
-    GetBlock401ResponseToJSON,
+    GetBlockDefaultResponseFromJSON,
+    GetBlockDefaultResponseToJSON,
     MethodExecutionResultFromJSON,
     MethodExecutionResultToJSON,
     RawAccountFromJSON,
@@ -73,6 +73,10 @@ export interface GetRawAccountRequest {
 
 export interface GetTransactionRequest {
     transactionId: string;
+}
+
+export interface GetTransactionByMessageHashRequest {
+    msgId: string;
 }
 
 export interface SendMessageOperationRequest {
@@ -200,6 +204,20 @@ export interface BlockchainApiInterface {
      * Get transaction data
      */
     getTransaction(requestParameters: GetTransactionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Transaction>;
+
+    /**
+     * Get transaction data by message hash
+     * @param {string} msgId message ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BlockchainApiInterface
+     */
+    getTransactionByMessageHashRaw(requestParameters: GetTransactionByMessageHashRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Transaction>>;
+
+    /**
+     * Get transaction data by message hash
+     */
+    getTransactionByMessageHash(requestParameters: GetTransactionByMessageHashRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Transaction>;
 
     /**
      * Get validators
@@ -484,6 +502,36 @@ export class BlockchainApi extends runtime.BaseAPI implements BlockchainApiInter
      */
     async getTransaction(requestParameters: GetTransactionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Transaction> {
         const response = await this.getTransactionRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get transaction data by message hash
+     */
+    async getTransactionByMessageHashRaw(requestParameters: GetTransactionByMessageHashRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Transaction>> {
+        if (requestParameters.msgId === null || requestParameters.msgId === undefined) {
+            throw new runtime.RequiredError('msgId','Required parameter requestParameters.msgId was null or undefined when calling getTransactionByMessageHash.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/v2/blockchain/messages/{msg_id}/transaction`.replace(`{${"msg_id"}}`, encodeURIComponent(String(requestParameters.msgId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => TransactionFromJSON(jsonValue));
+    }
+
+    /**
+     * Get transaction data by message hash
+     */
+    async getTransactionByMessageHash(requestParameters: GetTransactionByMessageHashRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Transaction> {
+        const response = await this.getTransactionByMessageHashRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

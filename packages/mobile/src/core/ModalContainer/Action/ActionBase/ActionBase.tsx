@@ -3,14 +3,15 @@ import { StyleSheet, View } from 'react-native';
 import Clipboard from '@react-native-community/clipboard';
 
 import * as S from './ActionBase.style';
-import { Highlight, Icon, Separator, Spacer, Text } from '$uikit';
+import { Highlight, Icon, Separator, Spacer, SpoilerView, Text } from '$uikit';
 import { ns } from '$utils';
-import { ActionBaseProps } from './ActionBase.interface';
+import { ActionBaseProps, InfoRows } from './ActionBase.interface';
 import { useTranslator } from '$hooks';
 import { openDAppBrowser, openSubscription } from '$navigation';
 import { getServerConfig } from '$shared/constants';
 import { Modal } from '$libs/navigation';
 import { Toast } from '$store';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 export const ActionBase: FC<ActionBaseProps> = ({
   infoRows,
@@ -24,16 +25,35 @@ export const ActionBase: FC<ActionBaseProps> = ({
   sentLabel,
   eventId,
   fiatValue,
+  encryptedComment,
+  decryptedComment,
+  handleDecryptComment,
 }) => {
   const [isClosed, setClosed] = useState(false);
   const t = useTranslator();
 
+  const isCommentRow = useCallback(
+    (item: InfoRows[0]) => item.label === t('transaction_message'),
+    [t],
+  );
+
   const handlePress = useCallback(
-    (item) => () => {
-      Clipboard.setString(item.value);
+    (item: InfoRows[0]) => () => {
+      let value = item.value as string;
+
+      if (isCommentRow(item)) {
+        if (encryptedComment && !decryptedComment) {
+          return;
+        }
+        if (decryptedComment) {
+          value = decryptedComment;
+        }
+      }
+
+      Clipboard.setString(value);
       Toast.success(t('copied'));
     },
-    [t],
+    [decryptedComment, encryptedComment, isCommentRow, t],
   );
 
   const handleOpenSubscription = useCallback(() => {
@@ -64,6 +84,30 @@ export const ActionBase: FC<ActionBaseProps> = ({
         </S.SendButton>
       );
     }
+  }
+
+  const encryptedCommentLength = encryptedComment
+    ? encryptedComment.cipherText.length / 2 - 64
+    : 0;
+
+  const encryptedCommentMock = 's'.repeat(encryptedCommentLength);
+
+  function renderEncryptedComment(item: InfoRows[0]) {
+    return (
+      <S.ItemContent>
+        <TouchableWithoutFeedback
+          onPress={decryptedComment ? handlePress(item) : handleDecryptComment}
+        >
+          <S.EncryptedCommentContainer>
+            <SpoilerView isOn={!decryptedComment}>
+              <S.EncryptedCommentText>
+                {decryptedComment ?? encryptedCommentMock}
+              </S.EncryptedCommentText>
+            </SpoilerView>
+          </S.EncryptedCommentContainer>
+        </TouchableWithoutFeedback>
+      </S.ItemContent>
+    );
   }
 
   return (
@@ -128,18 +172,33 @@ export const ActionBase: FC<ActionBaseProps> = ({
               i > 0 && <Separator key={'sep_' + item.label} />,
               <Highlight key={item.label} onPress={handlePress(item)}>
                 <S.Item>
-                  <S.ItemLabel numberOfLines={1}>{item.label}</S.ItemLabel>
+                  <S.ItemInline>
+                    <S.ItemLabel numberOfLines={1}>{item.label}</S.ItemLabel>
+                    {isCommentRow(item) && encryptedComment ? (
+                      <>
+                        <Spacer x={4} />
+                        <S.EncryptedIcon />
+                      </>
+                    ) : null}
+                  </S.ItemInline>
                   <S.ItemValueWrapper>
-                    <S.ItemValue>{item.preparedValue || item.value}</S.ItemValue>
-                    {item.subvalue && <Text variant="body2" color="textSecondary">{item.subvalue}</Text>}
-                  </ S.ItemValueWrapper>
+                    {isCommentRow(item) && encryptedComment ? (
+                      renderEncryptedComment(item)
+                    ) : (
+                      <S.ItemValue>{item.preparedValue || item.value}</S.ItemValue>
+                    )}
+
+                    {item.subvalue && (
+                      <Text variant="body2" color="textSecondary">
+                        {item.subvalue}
+                      </Text>
+                    )}
+                  </S.ItemValueWrapper>
                 </S.Item>
               </Highlight>,
             ])}
           </S.Table>
-          <View style={styles.buttonContainer}>
-            {renderFooterButton()}
-          </View>
+          <View style={styles.buttonContainer}>{renderFooterButton()}</View>
         </View>
       </Modal.Content>
     </Modal>
@@ -148,6 +207,6 @@ export const ActionBase: FC<ActionBaseProps> = ({
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    paddingBottom: 16
-  }
+    paddingBottom: 16,
+  },
 });

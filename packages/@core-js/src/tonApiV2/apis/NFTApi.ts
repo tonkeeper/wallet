@@ -16,7 +16,7 @@
 import * as runtime from '../runtime';
 import type {
   GetAccountsRequest,
-  GetBlock401Response,
+  GetBlockDefaultResponse,
   NftCollection,
   NftCollections,
   NftItem,
@@ -25,8 +25,8 @@ import type {
 import {
     GetAccountsRequestFromJSON,
     GetAccountsRequestToJSON,
-    GetBlock401ResponseFromJSON,
-    GetBlock401ResponseToJSON,
+    GetBlockDefaultResponseFromJSON,
+    GetBlockDefaultResponseToJSON,
     NftCollectionFromJSON,
     NftCollectionToJSON,
     NftCollectionsFromJSON,

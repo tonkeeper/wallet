@@ -16,32 +16,32 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface GetBlock401Response
+ * @interface GetBlockDefaultResponse
  */
-export interface GetBlock401Response {
+export interface GetBlockDefaultResponse {
     /**
      * 
      * @type {string}
-     * @memberof GetBlock401Response
+     * @memberof GetBlockDefaultResponse
      */
     error: string;
 }
 
 /**
- * Check if a given object implements the GetBlock401Response interface.
+ * Check if a given object implements the GetBlockDefaultResponse interface.
  */
-export function instanceOfGetBlock401Response(value: object): boolean {
+export function instanceOfGetBlockDefaultResponse(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "error" in value;
 
     return isInstance;
 }
 
-export function GetBlock401ResponseFromJSON(json: any): GetBlock401Response {
-    return GetBlock401ResponseFromJSONTyped(json, false);
+export function GetBlockDefaultResponseFromJSON(json: any): GetBlockDefaultResponse {
+    return GetBlockDefaultResponseFromJSONTyped(json, false);
 }
 
-export function GetBlock401ResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetBlock401Response {
+export function GetBlockDefaultResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetBlockDefaultResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -51,7 +51,7 @@ export function GetBlock401ResponseFromJSONTyped(json: any, ignoreDiscriminator:
     };
 }
 
-export function GetBlock401ResponseToJSON(value?: GetBlock401Response | null): any {
+export function GetBlockDefaultResponseToJSON(value?: GetBlockDefaultResponse | null): any {
     if (value === undefined) {
         return undefined;
     }

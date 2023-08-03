@@ -1,5 +1,5 @@
 import { CryptoCurrency, FiatCurrency } from '$shared/constants';
-import { AccountEvent } from 'tonapi-sdk-js';
+import { AccountEvent } from '@tonkeeper/core';
 
 export type TransactionType =
   | 'receive'

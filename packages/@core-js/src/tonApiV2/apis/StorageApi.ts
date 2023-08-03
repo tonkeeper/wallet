@@ -15,12 +15,12 @@
 
 import * as runtime from '../runtime';
 import type {
-  GetBlock401Response,
+  GetBlockDefaultResponse,
   GetStorageProviders200Response,
 } from '../models/index';
 import {
-    GetBlock401ResponseFromJSON,
-    GetBlock401ResponseToJSON,
+    GetBlockDefaultResponseFromJSON,
+    GetBlockDefaultResponseToJSON,
     GetStorageProviders200ResponseFromJSON,
     GetStorageProviders200ResponseToJSON,
 } from '../models/index';

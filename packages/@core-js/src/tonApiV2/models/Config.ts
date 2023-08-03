@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { ValidatorsSet } from './ValidatorsSet';
+import {
+    ValidatorsSetFromJSON,
+    ValidatorsSetFromJSONTyped,
+    ValidatorsSetToJSON,
+} from './ValidatorsSet';
+
 /**
  * 
  * @export
@@ -24,7 +31,67 @@ export interface Config {
      * @type {string}
      * @memberof Config
      */
-    boc: string;
+    raw: string;
+    /**
+     * config address
+     * @type {string}
+     * @memberof Config
+     */
+    _0: string;
+    /**
+     * elector address
+     * @type {string}
+     * @memberof Config
+     */
+    _1: string;
+    /**
+     * minter address
+     * @type {string}
+     * @memberof Config
+     */
+    _2: string;
+    /**
+     * dns root address
+     * @type {string}
+     * @memberof Config
+     */
+    _4: string;
+    /**
+     * 
+     * @type {ValidatorsSet}
+     * @memberof Config
+     */
+    _32?: ValidatorsSet;
+    /**
+     * 
+     * @type {ValidatorsSet}
+     * @memberof Config
+     */
+    _33?: ValidatorsSet;
+    /**
+     * 
+     * @type {ValidatorsSet}
+     * @memberof Config
+     */
+    _34?: ValidatorsSet;
+    /**
+     * 
+     * @type {ValidatorsSet}
+     * @memberof Config
+     */
+    _35?: ValidatorsSet;
+    /**
+     * 
+     * @type {ValidatorsSet}
+     * @memberof Config
+     */
+    _36?: ValidatorsSet;
+    /**
+     * 
+     * @type {ValidatorsSet}
+     * @memberof Config
+     */
+    _37?: ValidatorsSet;
 }
 
 /**
@@ -32,7 +99,11 @@ export interface Config {
  */
 export function instanceOfConfig(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "boc" in value;
+    isInstance = isInstance && "raw" in value;
+    isInstance = isInstance && "_0" in value;
+    isInstance = isInstance && "_1" in value;
+    isInstance = isInstance && "_2" in value;
+    isInstance = isInstance && "_4" in value;
 
     return isInstance;
 }
@@ -47,7 +118,17 @@ export function ConfigFromJSONTyped(json: any, ignoreDiscriminator: boolean): Co
     }
     return {
         
-        'boc': json['boc'],
+        'raw': json['raw'],
+        '_0': json['0'],
+        '_1': json['1'],
+        '_2': json['2'],
+        '_4': json['4'],
+        '_32': !exists(json, '32') ? undefined : ValidatorsSetFromJSON(json['32']),
+        '_33': !exists(json, '33') ? undefined : ValidatorsSetFromJSON(json['33']),
+        '_34': !exists(json, '34') ? undefined : ValidatorsSetFromJSON(json['34']),
+        '_35': !exists(json, '35') ? undefined : ValidatorsSetFromJSON(json['35']),
+        '_36': !exists(json, '36') ? undefined : ValidatorsSetFromJSON(json['36']),
+        '_37': !exists(json, '37') ? undefined : ValidatorsSetFromJSON(json['37']),
     };
 }
 
@@ -60,7 +141,17 @@ export function ConfigToJSON(value?: Config | null): any {
     }
     return {
         
-        'boc': value.boc,
+        'raw': value.raw,
+        '0': value._0,
+        '1': value._1,
+        '2': value._2,
+        '4': value._4,
+        '32': ValidatorsSetToJSON(value._32),
+        '33': ValidatorsSetToJSON(value._33),
+        '34': ValidatorsSetToJSON(value._34),
+        '35': ValidatorsSetToJSON(value._35),
+        '36': ValidatorsSetToJSON(value._36),
+        '37': ValidatorsSetToJSON(value._37),
     };
 }
 

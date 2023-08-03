@@ -1,10 +1,11 @@
 import React from 'react';
-import { Action, ActionTypeEnum } from 'tonapi-sdk-js';
 import {
+  Action,
+  ActionTypeEnum,
   TonTransferAction as TonTransferActionData,
   NftItemTransferAction as NftTransferActionData,
   AuctionBidAction as SDKAuctionBidAction,
-} from 'tonapi-sdk-js';
+} from '@tonkeeper/core';
 import * as S from '../NFTOperations.styles';
 import { Highlight, Separator, Skeleton, Text } from '$uikit';
 import { copyText } from '$hooks/useCopyText';

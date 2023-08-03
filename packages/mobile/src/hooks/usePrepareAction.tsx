@@ -11,18 +11,24 @@ import {
   maskifyTonAddress,
 } from '$utils';
 import { useTranslator } from '$hooks/useTranslator';
-import { formatCryptoCurrency } from '$utils/currency';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { TransactionItemNFT } from '$shared/components/ActionItem/TransactionItemNFT/TransactionItemNFT';
 import { subscriptionsSelector } from '$store/subscriptions';
-import { Action } from 'tonapi-sdk-js';
+import { Action } from '@tonkeeper/core';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
+import { useEncryptedCommentsStore } from '$store';
+import { shallow } from 'zustand/shallow';
 
 export function usePrepareAction(
   rawAction: Action,
   event: EventModel,
 ): ActionItemBaseProps {
   const { address } = useSelector(walletSelector);
+  const actionKey = event.eventId + rawAction.type;
+  const decryptedComment: string | undefined = useEncryptedCommentsStore(
+    (s) => s.decryptedComments[actionKey],
+    shallow,
+  );
   const t = useTranslator();
   const { subscriptionsInfo } = useSelector(subscriptionsSelector);
   const format = useHideableFormatter();
@@ -140,13 +146,17 @@ export function usePrepareAction(
     }
 
     const actionProps: ActionItemBaseProps = {
+      actionKey,
       type,
       typeLabel,
       label,
       labelColor,
       bottomContent,
       infoRows: [],
+      sender: action.sender,
       comment: (!event.isScam && action.comment) || '',
+      encryptedComment: event.isScam ? undefined : action.encryptedComment,
+      decryptedComment: event.isScam ? undefined : decryptedComment,
       isInProgress: event.inProgress,
       isSpam: event.isScam,
     };
@@ -199,9 +209,11 @@ export function usePrepareAction(
   }, [
     rawAction,
     address.ton,
+    actionKey,
     event.isScam,
     event.inProgress,
     event.timestamp,
+    decryptedComment,
     format,
     t,
     subscriptionsInfo,

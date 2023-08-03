@@ -12,7 +12,7 @@ export type Address = {
   friendlyAddress: string;
   rawAddress: string;
   version: string;
-}
+};
 
 export interface WalletState {
   isLoaded: boolean;
@@ -37,17 +37,13 @@ export type RestoreWalletAction = PayloadAction<{
   onDone: () => void;
   onFail: () => void;
 }>;
-export type TransferCoinsAction = PayloadAction<{
-  currency: CryptoCurrency;
-  address: string;
-  amount: string;
-}>;
 export type SetAddressesAction = PayloadAction<{ [index: string]: string }>;
 export type ConfirmSendCoinsAction = PayloadAction<{
   currency: CryptoCurrency;
   amount: string;
   address: string;
   comment?: string;
+  isCommentEncrypted?: boolean;
   onEnd?: () => void;
   onInsufficientFunds?: (params: InsufficientFundsParams) => void;
   onNext: (info: { fee: string; isInactive: boolean }) => void;
@@ -60,6 +56,7 @@ export type SendCoinsAction = PayloadAction<{
   amount: string;
   address: string;
   comment: string;
+  isCommentEncrypted?: boolean;
   isJetton?: boolean;
   jettonWalletAddress?: string;
   isSendAll?: boolean;

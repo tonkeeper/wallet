@@ -18,7 +18,7 @@ import BigNumber from 'bignumber.js';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { AccountEvent } from 'tonapi-sdk-js';
+import { AccountEvent } from '@tonkeeper/core';
 import { shallow } from 'zustand/shallow';
 import { AmountStep, ConfirmStep } from './steps';
 import { StakingSendSteps, StakingTransactionType } from './types';

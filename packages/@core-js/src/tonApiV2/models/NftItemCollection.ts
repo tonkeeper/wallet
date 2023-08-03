@@ -31,6 +31,12 @@ export interface NftItemCollection {
      * @memberof NftItemCollection
      */
     name: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NftItemCollection
+     */
+    description: string;
 }
 
 /**
@@ -40,6 +46,7 @@ export function instanceOfNftItemCollection(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "address" in value;
     isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "description" in value;
 
     return isInstance;
 }
@@ -56,6 +63,7 @@ export function NftItemCollectionFromJSONTyped(json: any, ignoreDiscriminator: b
         
         'address': json['address'],
         'name': json['name'],
+        'description': json['description'],
     };
 }
 
@@ -70,6 +78,7 @@ export function NftItemCollectionToJSON(value?: NftItemCollection | null): any {
         
         'address': value.address,
         'name': value.name,
+        'description': value.description,
     };
 }
 

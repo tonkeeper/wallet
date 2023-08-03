@@ -20,12 +20,14 @@ import {
 import { NFTHead } from '$core/ModalContainer/Action/ActionBase/NFTHead/NFTHead';
 import { differenceInCalendarYears } from 'date-fns';
 import { subscriptionsSelector } from '$store/subscriptions';
-import { Action } from 'tonapi-sdk-js';
+import { Action } from '@tonkeeper/core';
 import { formatter } from '$utils/formatter';
 import { Text } from '$uikit';
 import { fiatCurrencySelector } from '$store/main';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
 import { useGetTokenPrice, useTokenPrice } from './useTokenPrice';
+import { useEncryptedCommentsStore } from '$store';
+import { shallow } from 'zustand/shallow';
 
 export function usePrepareDetailedAction(
   rawAction: Action,
@@ -39,6 +41,12 @@ export function usePrepareDetailedAction(
 
   const format = useHideableFormatter();
   const getTokenPrice = useGetTokenPrice();
+
+  const actionKey = event.eventId + rawAction.type;
+  const decryptedComment: string | undefined = useEncryptedCommentsStore(
+    (s) => s.decryptedComments[actionKey],
+    shallow,
+  );
 
   return useMemo(() => {
     const action = rawAction[ActionType[rawAction.type]];
@@ -259,7 +267,7 @@ export function usePrepareDetailedAction(
       });
     }
 
-    if (action.comment) {
+    if (action.comment || action.encryptedComment) {
       infoRows.push({
         label: t('transaction_message'),
         preparedValue: action.comment,
@@ -284,6 +292,8 @@ export function usePrepareDetailedAction(
       isSpam: event.isScam,
       isFailed: false,
       comment: action.comment,
+      encryptedComment: event.isScam ? undefined : action.encryptedComment,
+      decryptedComment: event.isScam ? undefined : decryptedComment,
       jettonAddress,
       recipientAddress,
       infoRows,
@@ -310,6 +320,7 @@ export function usePrepareDetailedAction(
     event.timestamp,
     event.isScam,
     t,
+    decryptedComment,
     format,
     tokenPrice.fiat,
     fiatCurrency,

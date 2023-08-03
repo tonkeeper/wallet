@@ -61,13 +61,13 @@ export interface AuctionBidAction {
      * @type {AccountAddress}
      * @memberof AuctionBidAction
      */
-    beneficiary: AccountAddress;
+    bidder: AccountAddress;
     /**
      * 
      * @type {AccountAddress}
      * @memberof AuctionBidAction
      */
-    bidder: AccountAddress;
+    auction: AccountAddress;
 }
 
 
@@ -90,8 +90,8 @@ export function instanceOfAuctionBidAction(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "auctionType" in value;
     isInstance = isInstance && "amount" in value;
-    isInstance = isInstance && "beneficiary" in value;
     isInstance = isInstance && "bidder" in value;
+    isInstance = isInstance && "auction" in value;
 
     return isInstance;
 }
@@ -109,8 +109,8 @@ export function AuctionBidActionFromJSONTyped(json: any, ignoreDiscriminator: bo
         'auctionType': json['auction_type'],
         'amount': PriceFromJSON(json['amount']),
         'nft': !exists(json, 'nft') ? undefined : NftItemFromJSON(json['nft']),
-        'beneficiary': AccountAddressFromJSON(json['beneficiary']),
         'bidder': AccountAddressFromJSON(json['bidder']),
+        'auction': AccountAddressFromJSON(json['auction']),
     };
 }
 
@@ -126,8 +126,8 @@ export function AuctionBidActionToJSON(value?: AuctionBidAction | null): any {
         'auction_type': value.auctionType,
         'amount': PriceToJSON(value.amount),
         'nft': NftItemToJSON(value.nft),
-        'beneficiary': AccountAddressToJSON(value.beneficiary),
         'bidder': AccountAddressToJSON(value.bidder),
+        'auction': AccountAddressToJSON(value.auction),
     };
 }
 

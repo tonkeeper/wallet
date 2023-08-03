@@ -29,7 +29,7 @@ export const AccessConfirmation: FC = () => {
   const dispatch = useDispatch();
   const notifications = useNotifications();
   const { bottom: bottomInset } = useSafeAreaInsets();
-  const params = useParams<{ onGoBack: () => void }>();
+  const params = useParams<{ onGoBack: () => void; withoutBiometryOnOpen: boolean }>();
   const [value, setValue] = useState('');
 
   const [isBiometryFailed, setBiometryFailed] = useState(false);
@@ -151,6 +151,10 @@ export const AccessConfirmation: FC = () => {
   }, [dispatch, isUnlock, triggerError, wallet]);
 
   useEffect(() => {
+    if (params.withoutBiometryOnOpen) {
+      return;
+    }
+
     MainDB.isBiometryEnabled().then((isEnabled) => {
       if (isEnabled) {
         handleBiometry();

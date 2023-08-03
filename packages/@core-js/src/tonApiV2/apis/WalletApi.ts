@@ -15,14 +15,14 @@
 
 import * as runtime from '../runtime';
 import type {
-  GetBlock401Response,
+  GetBlockDefaultResponse,
   GetWalletBackup200Response,
   TonConnectProof200Response,
   TonConnectProofRequest,
 } from '../models/index';
 import {
-    GetBlock401ResponseFromJSON,
-    GetBlock401ResponseToJSON,
+    GetBlockDefaultResponseFromJSON,
+    GetBlockDefaultResponseToJSON,
     GetWalletBackup200ResponseFromJSON,
     GetWalletBackup200ResponseToJSON,
     TonConnectProof200ResponseFromJSON,

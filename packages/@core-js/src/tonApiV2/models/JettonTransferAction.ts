@@ -19,6 +19,12 @@ import {
     AccountAddressFromJSONTyped,
     AccountAddressToJSON,
 } from './AccountAddress';
+import type { EncryptedComment } from './EncryptedComment';
+import {
+    EncryptedCommentFromJSON,
+    EncryptedCommentFromJSONTyped,
+    EncryptedCommentToJSON,
+} from './EncryptedComment';
 import type { JettonPreview } from './JettonPreview';
 import {
     JettonPreviewFromJSON,
@@ -76,6 +82,12 @@ export interface JettonTransferAction {
     comment?: string;
     /**
      * 
+     * @type {EncryptedComment}
+     * @memberof JettonTransferAction
+     */
+    encryptedComment?: EncryptedComment;
+    /**
+     * 
      * @type {Refund}
      * @memberof JettonTransferAction
      */
@@ -117,6 +129,7 @@ export function JettonTransferActionFromJSONTyped(json: any, ignoreDiscriminator
         'recipientsWallet': json['recipients_wallet'],
         'amount': json['amount'],
         'comment': !exists(json, 'comment') ? undefined : json['comment'],
+        'encryptedComment': !exists(json, 'encrypted_comment') ? undefined : EncryptedCommentFromJSON(json['encrypted_comment']),
         'refund': !exists(json, 'refund') ? undefined : RefundFromJSON(json['refund']),
         'jetton': JettonPreviewFromJSON(json['jetton']),
     };
@@ -137,6 +150,7 @@ export function JettonTransferActionToJSON(value?: JettonTransferAction | null):
         'recipients_wallet': value.recipientsWallet,
         'amount': value.amount,
         'comment': value.comment,
+        'encrypted_comment': EncryptedCommentToJSON(value.encryptedComment),
         'refund': RefundToJSON(value.refund),
         'jetton': JettonPreviewToJSON(value.jetton),
     };
