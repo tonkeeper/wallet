@@ -19,17 +19,20 @@ import {
   BottomButtonWrapHelper,
   StepScrollView,
 } from '$shared/components';
-import { SendSteps, SuggestedAddress, SuggestedAddressType } from '../../Send.interface';
+import {
+  AccountWithPubKey,
+  SendSteps,
+  SuggestedAddress,
+  SuggestedAddressType,
+} from '../../Send.interface';
 import { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import {
   WordHintsPopup,
   WordHintsPopupRef,
 } from '$shared/components/ImportWalletForm/WordHintsPopup';
 import { AddressStepProps } from './AddressStep.interface';
-import { Account } from '@tonkeeper/core';
 import { Tonapi } from '$libs/Tonapi';
 import { AddressInput, AddressSuggests, CommentInput } from './components';
-import { useCommentMaxLength } from '$core/Send/hooks';
 import { TextInput } from 'react-native-gesture-handler';
 
 const TonWeb = require('tonweb');
@@ -41,25 +44,25 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     decimals,
     stepsScrollTop,
     comment,
+    isCommentEncrypted,
     recipientAccountInfo,
     setRecipient,
     setRecipientAccountInfo,
     setAmount,
     setComment,
+    setCommentEncrypted,
     onContinue,
     active,
   } = props;
 
   const commentInputRef = useRef<TextInput>(null);
 
-  const dynamicMaxLength = useCommentMaxLength(comment);
-
   const isCommentRequired = !!recipientAccountInfo?.memoRequired;
+  const isAbleToEncryptComment = recipientAccountInfo
+    ? !isCommentRequired && !!recipientAccountInfo.publicKey
+    : true;
 
-  const commentError =
-    comment.length > dynamicMaxLength || (isCommentRequired && comment.length === 0);
-
-  const isReadyToContinue = !!recipient && !commentError;
+  const isReadyToContinue = !!recipient;
 
   const t = useTranslator();
 
@@ -115,7 +118,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
   );
 
   const updateRecipient = useCallback(
-    async (value: string, accountInfo?: Partial<Account>) => {
+    async (value: string, accountInfo?: Partial<AccountWithPubKey>) => {
       setRecipientAccountInfo(null);
 
       if (value.length === 0) {
@@ -171,7 +174,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
         if (isValidAddress(value)) {
           if (accountInfo) {
-            setRecipientAccountInfo(accountInfo as Account);
+            setRecipientAccountInfo(accountInfo as AccountWithPubKey);
           }
 
           setRecipient({ address: value });
@@ -281,7 +284,10 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           <CommentInput
             innerRef={commentInputRef}
             isCommentRequired={isCommentRequired}
+            isAbleToEncryptComment={isAbleToEncryptComment}
             comment={comment}
+            isCommentEncrypted={isCommentEncrypted}
+            setCommentEncrypted={setCommentEncrypted}
             setComment={setComment}
             onSubmit={handleCommentSubmit}
           />

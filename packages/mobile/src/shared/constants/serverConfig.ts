@@ -3,7 +3,6 @@ export interface ServerConfig {
   tonkeeperEndpoint: string;
   tonEndpoint: string;
   tonEndpointAPIKey: string;
-  tonApiEndpoint: string;
   neocryptoWebView: string;
   supportLink: string;
   isExchangeEnabled: string;
@@ -39,7 +38,6 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     tonkeeperEndpoint: data.tonkeeperEndpoint || 'https://api.tonkeeper.com',
     tonEndpoint: data.tonEndpoint || 'https://toncenter.com/api/v2/jsonRPC',
     tonEndpointAPIKey: data.tonEndpointAPIKey,
-    tonApiEndpoint: data.tonApiEndpoint || 'https://toncenter.com/api/v2',
     neocryptoWebView: data.neocryptoWebView,
     supportLink: data.supportLink || 'mailto:support@tonkeeper.com',
     isExchangeEnabled: data.isExchangeEnabled,

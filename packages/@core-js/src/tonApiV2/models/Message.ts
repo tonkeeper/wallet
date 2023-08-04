@@ -127,7 +127,7 @@ export interface Message {
      * @type {any}
      * @memberof Message
      */
-    decodedBody: any | null;
+    decodedBody?: any | null;
 }
 
 /**
@@ -144,7 +144,6 @@ export function instanceOfMessage(value: object): boolean {
     isInstance = isInstance && "ihrFee" in value;
     isInstance = isInstance && "importFee" in value;
     isInstance = isInstance && "createdAt" in value;
-    isInstance = isInstance && "decodedBody" in value;
 
     return isInstance;
 }
@@ -174,7 +173,7 @@ export function MessageFromJSONTyped(json: any, ignoreDiscriminator: boolean): M
         'init': !exists(json, 'init') ? undefined : StateInitFromJSON(json['init']),
         'rawBody': !exists(json, 'raw_body') ? undefined : json['raw_body'],
         'decodedOpName': !exists(json, 'decoded_op_name') ? undefined : json['decoded_op_name'],
-        'decodedBody': json['decoded_body'],
+        'decodedBody': !exists(json, 'decoded_body') ? undefined : json['decoded_body'],
     };
 }
 

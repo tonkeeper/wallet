@@ -19,6 +19,12 @@ import {
     AccountAddressFromJSONTyped,
     AccountAddressToJSON,
 } from './AccountAddress';
+import type { EncryptedComment } from './EncryptedComment';
+import {
+    EncryptedCommentFromJSON,
+    EncryptedCommentFromJSONTyped,
+    EncryptedCommentToJSON,
+} from './EncryptedComment';
 import type { Refund } from './Refund';
 import {
     RefundFromJSON,
@@ -57,6 +63,12 @@ export interface NftItemTransferAction {
      */
     comment?: string;
     /**
+     * 
+     * @type {EncryptedComment}
+     * @memberof NftItemTransferAction
+     */
+    encryptedComment?: EncryptedComment;
+    /**
      * raw hex encoded payload
      * @type {string}
      * @memberof NftItemTransferAction
@@ -94,6 +106,7 @@ export function NftItemTransferActionFromJSONTyped(json: any, ignoreDiscriminato
         'recipient': !exists(json, 'recipient') ? undefined : AccountAddressFromJSON(json['recipient']),
         'nft': json['nft'],
         'comment': !exists(json, 'comment') ? undefined : json['comment'],
+        'encryptedComment': !exists(json, 'encrypted_comment') ? undefined : EncryptedCommentFromJSON(json['encrypted_comment']),
         'payload': !exists(json, 'payload') ? undefined : json['payload'],
         'refund': !exists(json, 'refund') ? undefined : RefundFromJSON(json['refund']),
     };
@@ -112,6 +125,7 @@ export function NftItemTransferActionToJSON(value?: NftItemTransferAction | null
         'recipient': AccountAddressToJSON(value.recipient),
         'nft': value.nft,
         'comment': value.comment,
+        'encrypted_comment': EncryptedCommentToJSON(value.encryptedComment),
         'payload': value.payload,
         'refund': RefundToJSON(value.refund),
     };

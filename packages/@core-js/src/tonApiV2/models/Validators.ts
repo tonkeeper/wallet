@@ -31,7 +31,7 @@ export interface Validators {
      * @type {Array<Validator>}
      * @memberof Validators
      */
-    transactions?: Array<Validator>;
+    validators: Array<Validator>;
 }
 
 /**
@@ -39,6 +39,7 @@ export interface Validators {
  */
 export function instanceOfValidators(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "validators" in value;
 
     return isInstance;
 }
@@ -53,7 +54,7 @@ export function ValidatorsFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
-        'transactions': !exists(json, 'transactions') ? undefined : ((json['transactions'] as Array<any>).map(ValidatorFromJSON)),
+        'validators': ((json['validators'] as Array<any>).map(ValidatorFromJSON)),
     };
 }
 
@@ -66,7 +67,7 @@ export function ValidatorsToJSON(value?: Validators | null): any {
     }
     return {
         
-        'transactions': value.transactions === undefined ? undefined : ((value.transactions as Array<any>).map(ValidatorToJSON)),
+        'validators': ((value.validators as Array<any>).map(ValidatorToJSON)),
     };
 }
 

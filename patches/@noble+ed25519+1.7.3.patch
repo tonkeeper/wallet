@@ -1,0 +1,44 @@
+diff --git a/node_modules/@noble/ed25519/lib/crypto.js b/node_modules/@noble/ed25519/lib/crypto.js
+new file mode 100644
+index 0000000..872358f
+--- /dev/null
++++ b/node_modules/@noble/ed25519/lib/crypto.js
+@@ -0,0 +1,4 @@
++const nodeCrypto = require("crypto");
++
++exports.node = nodeCrypto;
++exports.web = typeof self === 'object' && 'crypto' in self ? self.crypto : undefined;
+\ No newline at end of file
+diff --git a/node_modules/@noble/ed25519/lib/crypto.native.js b/node_modules/@noble/ed25519/lib/crypto.native.js
+new file mode 100644
+index 0000000..a1c3f15
+--- /dev/null
++++ b/node_modules/@noble/ed25519/lib/crypto.native.js
+@@ -0,0 +1,3 @@
++const nodeCrypto = require("react-native-crypto");
++
++exports.node = nodeCrypto;
+diff --git a/node_modules/@noble/ed25519/lib/index.js b/node_modules/@noble/ed25519/lib/index.js
+index ce32e52..292f1e0 100644
+--- a/node_modules/@noble/ed25519/lib/index.js
++++ b/node_modules/@noble/ed25519/lib/index.js
+@@ -2,7 +2,7 @@
+ /*! noble-ed25519 - MIT License (c) 2019 Paul Miller (paulmillr.com) */
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.utils = exports.curve25519 = exports.getSharedSecret = exports.sync = exports.verify = exports.sign = exports.getPublicKey = exports.Signature = exports.Point = exports.RistrettoPoint = exports.ExtendedPoint = exports.CURVE = void 0;
+-const nodeCrypto = require("crypto");
++const crypto = require('./crypto');
+ const _0n = BigInt(0);
+ const _1n = BigInt(1);
+ const _2n = BigInt(2);
+@@ -822,10 +822,6 @@ exports.curve25519 = {
+         return exports.curve25519.scalarMult(privateKey, exports.curve25519.BASE_POINT_U);
+     },
+ };
+-const crypto = {
+-    node: nodeCrypto,
+-    web: typeof self === 'object' && 'crypto' in self ? self.crypto : undefined,
+-};
+ exports.utils = {
+     bytesToHex,
+     hexToBytes,

@@ -25,12 +25,6 @@ import {
     ActionFromJSONTyped,
     ActionToJSON,
 } from './Action';
-import type { Fee } from './Fee';
-import {
-    FeeFromJSON,
-    FeeFromJSONTyped,
-    FeeToJSON,
-} from './Fee';
 
 /**
  * An event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
@@ -62,12 +56,6 @@ export interface AccountEvent {
      * @memberof AccountEvent
      */
     actions: Array<Action>;
-    /**
-     * 
-     * @type {Fee}
-     * @memberof AccountEvent
-     */
-    fee: Fee;
     /**
      * scam
      * @type {boolean}
@@ -103,7 +91,6 @@ export function instanceOfAccountEvent(value: object): boolean {
     isInstance = isInstance && "account" in value;
     isInstance = isInstance && "timestamp" in value;
     isInstance = isInstance && "actions" in value;
-    isInstance = isInstance && "fee" in value;
     isInstance = isInstance && "isScam" in value;
     isInstance = isInstance && "lt" in value;
     isInstance = isInstance && "inProgress" in value;
@@ -126,7 +113,6 @@ export function AccountEventFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'account': AccountAddressFromJSON(json['account']),
         'timestamp': json['timestamp'],
         'actions': ((json['actions'] as Array<any>).map(ActionFromJSON)),
-        'fee': FeeFromJSON(json['fee']),
         'isScam': json['is_scam'],
         'lt': json['lt'],
         'inProgress': json['in_progress'],
@@ -147,7 +133,6 @@ export function AccountEventToJSON(value?: AccountEvent | null): any {
         'account': AccountAddressToJSON(value.account),
         'timestamp': value.timestamp,
         'actions': ((value.actions as Array<any>).map(ActionToJSON)),
-        'fee': FeeToJSON(value.fee),
         'is_scam': value.isScam,
         'lt': value.lt,
         'in_progress': value.inProgress,

@@ -7,7 +7,7 @@ import * as SecureStore from 'expo-secure-store';
 import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet/index';
 import {
   EncryptedVault,
-  jettonTransferForwardAmount,
+  jettonTransferAmount,
   UnlockedVault,
   Vault,
   Wallet,
@@ -36,7 +36,6 @@ import {
   RestoreWalletAction,
   SendCoinsAction,
   ToggleBiometryAction,
-  TransferCoinsAction,
   WaitMigrationAction,
   WalletGetUnlockedVaultAction,
 } from '$store/wallet/interface';
@@ -74,6 +73,10 @@ import { Tonapi } from '$libs/Tonapi';
 import { clearSubscribeStatus } from '$utils/messaging';
 import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 import { useRatesStore } from '$store/zustand/rates';
+import { Cell } from 'ton-core';
+import nacl from 'tweetnacl';
+import { encryptMessageComment } from '@tonkeeper/core';
+import TonWeb from 'tonweb';
 
 function* generateVaultWorker() {
   try {
@@ -223,23 +226,6 @@ function* loadBalancesWorker() {
   }
 }
 
-function* transferCoinsWorker(action: TransferCoinsAction) {
-  try {
-    const { address, amount, currency } = action.payload;
-    const { wallet } = yield select(walletSelector);
-
-    const unlockedVault = yield call([wallet, 'unlock']);
-
-    if (currency === CryptoCurrencies.Ton) {
-      const res = yield call([wallet.ton, 'transfer'], address, amount, unlockedVault);
-      Alert.alert('RES', `${JSON.stringify(res)}`);
-    }
-  } catch (e) {
-    console.log(e);
-    yield call(Alert.alert, 'Send coins error', JSON.stringify(e));
-  }
-}
-
 function* checkLegacyBalances() {
   try {
     const balances: any = [];
@@ -308,6 +294,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
       currency,
       amount,
       comment = '',
+      isCommentEncrypted = false,
       onEnd,
       onNext,
       onInsufficientFunds,
@@ -321,7 +308,31 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
     }
 
     const { wallet } = yield select(walletSelector);
-    const tokenConfig = getTokenConfig(currency);
+
+    const walletAddress = wallet.address.rawAddress;
+
+    let commentValue: Cell | string = comment;
+
+    if (isCommentEncrypted && comment.length > 0) {
+      try {
+        const tempKeyPair = nacl.sign.keyPair();
+        const tempEncryptedCommentCell = yield call(
+          encryptMessageComment,
+          comment,
+          tempKeyPair.publicKey,
+          tempKeyPair.publicKey,
+          tempKeyPair.secretKey,
+          walletAddress,
+        );
+
+        commentValue = tempEncryptedCommentCell;
+      } catch (e) {
+        onEnd?.();
+        yield delay(300);
+        yield call(Toast.fail, t('send_fee_estimation_error'));
+        return;
+      }
+    }
 
     let isUninit = false;
     let fee: string = '0';
@@ -334,7 +345,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
           address,
           toNano(amount, decimals),
           wallet.vault,
-          comment,
+          commentValue,
         );
       } else {
         if (currency === CryptoCurrencies.Ton) {
@@ -343,7 +354,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
             address,
             amount,
             wallet.vault,
-            comment,
+            commentValue,
           );
           isUninit = yield call([wallet.ton, 'isInactiveAddress'], address);
         }
@@ -367,7 +378,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
 
     if (onNext) {
       if (isEstimateFeeError && onInsufficientFunds) {
-        const amountNano = isJetton ? jettonTransferForwardAmount : toNano(amount);
+        const amountNano = isJetton ? jettonTransferAmount.toString() : toNano(amount);
         const address = yield call([wallet.ton, 'getAddress']);
         const { balance } = yield call(Tonapi.getWalletInfo, address);
         if (new BigNumber(amountNano).gt(new BigNumber(balance))) {
@@ -398,6 +409,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       amount,
       address,
       comment,
+      isCommentEncrypted,
       onDone,
       onFail,
       isSendAll,
@@ -420,6 +432,27 @@ function* sendCoinsWorker(action: SendCoinsAction) {
 
     const unlockedVault = yield call(walletGetUnlockedVault);
 
+    const walletAddress = wallet.address.rawAddress;
+
+    let commentValue: Cell | string = comment;
+
+    if (isCommentEncrypted && comment.length > 0) {
+      const secretKey = yield call([unlockedVault, 'getTonPrivateKey']);
+
+      const recipientPubKey = yield call([wallet.ton, 'getPublicKeyByAddress'], address);
+
+      const encryptedCommentCell = yield call(
+        encryptMessageComment,
+        comment,
+        wallet.vault.tonPublicKey,
+        recipientPubKey,
+        secretKey,
+        walletAddress,
+      );
+
+      commentValue = encryptedCommentCell;
+    }
+
     if (isJetton) {
       yield call(
         [wallet.ton, 'jettonTransfer'],
@@ -427,7 +460,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         address,
         toNano(amount, decimals),
         unlockedVault,
-        comment,
+        commentValue,
       );
     } else if (currency === CryptoCurrencies.Ton) {
       yield call(
@@ -435,7 +468,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         address,
         amount,
         unlockedVault,
-        comment,
+        commentValue,
         isSendAll ? 128 : 3,
       );
     } else {
@@ -456,6 +489,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
     onDone();
   } catch (e) {
     action.payload.onFail();
+    console.error(e);
     e && debugLog(e.message);
 
     if (e && e.message === 'wrong_time') {
@@ -608,11 +642,14 @@ let WaitAccessConfirmationPromise: {
   reject: () => void;
 } | null = null;
 let ConfirmationVaultInst: EncryptedVault | UnlockedVault | null = null;
-export function waitAccessConfirmation(vault: EncryptedVault | UnlockedVault) {
+export function waitAccessConfirmation(
+  vault: EncryptedVault | UnlockedVault,
+  withoutBiometryOnOpen?: boolean,
+) {
   return new Promise<UnlockedVault>((resolve, reject) => {
     ConfirmationVaultInst = vault; // can't pass as navigation prop, because vault is non-serializable
     WaitAccessConfirmationPromise = { resolve, reject };
-    openAccessConfirmation();
+    openAccessConfirmation(withoutBiometryOnOpen);
   });
 }
 
@@ -643,9 +680,29 @@ export class UnlockVaultError extends Error {}
 export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
   try {
     const isNewFlow = yield call(MainDB.isNewSecurityFlow);
+    const isBiometryEnabled = yield call(MainDB.isBiometryEnabled);
+
     const { wallet } = yield select(walletSelector);
+
     if (isNewFlow) {
-      const vault = yield call(waitAccessConfirmation, wallet.vault);
+      let withoutBiometryOnOpen = false;
+
+      if (isBiometryEnabled) {
+        try {
+          const unlockedVault = yield call([wallet.vault, 'unlock']);
+
+          action?.payload?.onDone?.(unlockedVault);
+          return unlockedVault;
+        } catch {
+          withoutBiometryOnOpen = true;
+        }
+      }
+
+      const vault = yield call(
+        waitAccessConfirmation,
+        wallet.vault,
+        withoutBiometryOnOpen,
+      );
       action?.payload?.onDone?.(vault);
       return vault;
     } else {
@@ -930,7 +987,6 @@ export function* walletSaga() {
     takeLatest(walletActions.createWallet, createWalletWorker),
     takeLatest(walletActions.loadBalances, loadBalancesWorker),
     takeLatest(walletActions.restoreWallet, restoreWalletWorker),
-    takeLatest(walletActions.transferCoins, transferCoinsWorker),
     takeLatest(walletActions.switchVersion, switchVersionWorker),
     takeLatest(walletActions.refreshBalancesPage, refreshBalancesPageWorker),
     takeLatest(walletActions.confirmSendCoins, confirmSendCoinsWorker),

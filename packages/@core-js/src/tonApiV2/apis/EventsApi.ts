@@ -16,13 +16,13 @@
 import * as runtime from '../runtime';
 import type {
   Event,
-  GetBlock401Response,
+  GetBlockDefaultResponse,
 } from '../models/index';
 import {
     EventFromJSON,
     EventToJSON,
-    GetBlock401ResponseFromJSON,
-    GetBlock401ResponseToJSON,
+    GetBlockDefaultResponseFromJSON,
+    GetBlockDefaultResponseToJSON,
 } from '../models/index';
 
 export interface GetEventRequest {

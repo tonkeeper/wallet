@@ -432,11 +432,13 @@ export function openFontLicense() {
   push(SettingsStackRouteNames.FontLicense);
 }
 
-export function openAccessConfirmation() {
+export function openAccessConfirmation(withoutBiometryOnOpen?: boolean) {
   if (getCurrentRoute()?.name === SecurityMigrationStackRouteNames.SecurityMigration) {
     navigate(SecurityMigrationStackRouteNames.AccessConfirmation);
   } else {
-    navigate(AppStackRouteNames.AccessConfirmation);
+    navigate(AppStackRouteNames.AccessConfirmation, {
+      withoutBiometryOnOpen,
+    });
   }
 }
 

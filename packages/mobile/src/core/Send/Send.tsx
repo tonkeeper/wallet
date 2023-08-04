@@ -20,15 +20,21 @@ import React, {
 } from 'react';
 import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { SendAmount, SendProps, SendRecipient, SendSteps } from './Send.interface';
+import {
+  AccountWithPubKey,
+  SendAmount,
+  SendProps,
+  SendRecipient,
+  SendSteps,
+} from './Send.interface';
 import { AddressStep } from './steps/AddressStep/AddressStep';
 import { AmountStep } from './steps/AmountStep/AmountStep';
 import { ConfirmStep } from './steps/ConfirmStep/ConfirmStep';
 import { Keyboard } from 'react-native';
 import { favoritesActions } from '$store/favorites';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { Configuration, AccountsApi, Account } from '@tonkeeper/core';
 import { DismissedActionError } from './steps/ConfirmStep/ActionErrors';
+import { Configuration, AccountsApi } from '@tonkeeper/core';
 import { formatter } from '$utils/formatter';
 import { Events } from '$store/models';
 
@@ -76,7 +82,8 @@ export const Send: FC<SendProps> = ({ route }) => {
   const [recipient, setRecipient] = useState<SendRecipient | null>(
     initialAddress ? { address: initialAddress } : null,
   );
-  const [recipientAccountInfo, setRecipientAccountInfo] = useState<Account | null>(null);
+  const [recipientAccountInfo, setRecipientAccountInfo] =
+    useState<AccountWithPubKey | null>(null);
 
   const [amount, setAmount] = useState<SendAmount>({
     value: formatter.format(initialAmount, {
@@ -86,6 +93,8 @@ export const Send: FC<SendProps> = ({ route }) => {
   });
 
   const [comment, setComment] = useState(initalComment.replace(/\0/g, ''));
+
+  const [isCommentEncrypted, setCommentEncrypted] = useState(false);
 
   const [isPreparing, setPreparing] = useState(false);
   const [isSending, setSending] = useState(false);
@@ -159,6 +168,8 @@ export const Send: FC<SendProps> = ({ route }) => {
         isJetton,
         jettonWalletAddress,
         decimals,
+        comment,
+        isCommentEncrypted,
         onEnd: () => setPreparing(false),
         onNext: (details) => {
           setFee(details.fee);
@@ -170,9 +181,11 @@ export const Send: FC<SendProps> = ({ route }) => {
     );
   }, [
     amount.value,
+    comment,
     currency,
     decimals,
     dispatch,
+    isCommentEncrypted,
     isJetton,
     jettonWalletAddress,
     recipient,
@@ -185,6 +198,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       }
 
       setSending(true);
+
       dispatch(
         walletActions.sendCoins({
           currency: currency as CryptoCurrency,
@@ -192,6 +206,7 @@ export const Send: FC<SendProps> = ({ route }) => {
           isSendAll: amount.all,
           address: recipient.address,
           comment,
+          isCommentEncrypted,
           isJetton,
           jettonWalletAddress,
           decimals,
@@ -209,12 +224,14 @@ export const Send: FC<SendProps> = ({ route }) => {
       );
     },
     [
-      amount,
+      amount.all,
+      amount.value,
       comment,
       currency,
       decimals,
       dispatch,
       from,
+      isCommentEncrypted,
       isJetton,
       jettonWalletAddress,
       recipient,
@@ -233,8 +250,27 @@ export const Send: FC<SendProps> = ({ route }) => {
       return;
     }
 
+    const accountId = recipient.address;
+
     try {
-      const accountInfo = await accountsApi.getAccount({ accountId: recipient.address });
+      const [accountInfoResponse, pubKeyResponse] = await Promise.allSettled([
+        accountsApi.getAccount({ accountId }),
+        accountsApi.getPublicKeyByAccountID({ accountId }),
+      ]);
+
+      if (accountInfoResponse.status === 'rejected') {
+        throw new Error(accountInfoResponse.reason);
+      }
+
+      const accountInfo: AccountWithPubKey = { ...accountInfoResponse.value };
+
+      if (pubKeyResponse.status === 'fulfilled') {
+        accountInfo.publicKey = pubKeyResponse.value.publicKey;
+      }
+
+      if (!accountInfo.publicKey || accountInfo.memoRequired) {
+        setCommentEncrypted(false);
+      }
 
       setRecipientAccountInfo(accountInfo);
     } catch {}
@@ -308,6 +344,8 @@ export const Send: FC<SendProps> = ({ route }) => {
               setRecipientAccountInfo={setRecipientAccountInfo}
               recipientAccountInfo={recipientAccountInfo}
               comment={comment}
+              isCommentEncrypted={isCommentEncrypted}
+              setCommentEncrypted={setCommentEncrypted}
               setComment={setComment}
               setAmount={setAmount}
               onContinue={goToAmount}
@@ -349,6 +387,7 @@ export const Send: FC<SendProps> = ({ route }) => {
               fee={fee}
               isInactive={isInactive}
               comment={comment}
+              isCommentEncrypted={isCommentEncrypted}
               onConfirm={handleSend}
               {...stepProps}
             />

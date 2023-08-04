@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { SubscriptionModel } from '$store/models';
+import { EncryptedComment } from '@tonkeeper/core';
 
 export type InfoRows = {
   label: ReactNode;
@@ -10,6 +11,8 @@ export type InfoRows = {
 
 export interface ActionBaseProps {
   comment?: string;
+  encryptedComment?: EncryptedComment;
+  decryptedComment?: string;
   eventId: string;
   jettonAddress?: string;
   recipientAddress?: string;
@@ -24,4 +27,5 @@ export interface ActionBaseProps {
   shouldShowSendToRecipientButton: boolean;
   shouldShowOpenSubscriptionButton: boolean;
   fiatValue?: string;
+  handleDecryptComment?: () => void;
 }

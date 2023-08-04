@@ -15,12 +15,12 @@
 
 import * as runtime from '../runtime';
 import type {
-  GetBlock401Response,
+  GetBlockDefaultResponse,
   Trace,
 } from '../models/index';
 import {
-    GetBlock401ResponseFromJSON,
-    GetBlock401ResponseToJSON,
+    GetBlockDefaultResponseFromJSON,
+    GetBlockDefaultResponseToJSON,
     TraceFromJSON,
     TraceToJSON,
 } from '../models/index';

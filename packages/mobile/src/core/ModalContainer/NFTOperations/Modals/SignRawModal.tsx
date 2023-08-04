@@ -13,7 +13,7 @@ import {
   ns,
 } from '$utils';
 import { t } from '$translation';
-import { AccountEvent, ActionTypeEnum } from 'tonapi-sdk-js';
+import { AccountEvent, ActionTypeEnum } from '@tonkeeper/core';
 import { SignRawAction } from './SignRawAction';
 import { store, Toast } from '$store';
 import * as S from '../NFTOperations.styles';

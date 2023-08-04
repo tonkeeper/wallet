@@ -1,44 +1,42 @@
-import { useCommentMaxLength } from '$core/Send/hooks';
 import { useTranslator } from '$hooks';
 import { FormItem, Input, Text } from '$uikit';
 import React, { FC, RefObject, memo, useCallback, useEffect, useState } from 'react';
-import * as S from './CommentInput.style';
 import { TextInput } from 'react-native-gesture-handler';
 
 interface Props {
   innerRef?: RefObject<TextInput>;
   comment: string;
+  isAbleToEncryptComment: boolean;
   isCommentRequired: boolean;
+  isCommentEncrypted: boolean;
   setComment: React.Dispatch<React.SetStateAction<string>>;
+  setCommentEncrypted: React.Dispatch<React.SetStateAction<boolean>>;
   onSubmit: () => void;
 }
 
 const CommentInputComponent: FC<Props> = (props) => {
-  const { innerRef, comment, isCommentRequired, setComment, onSubmit } = props;
+  const {
+    innerRef,
+    comment,
+    isAbleToEncryptComment,
+    isCommentRequired,
+    isCommentEncrypted,
+    setComment,
+    setCommentEncrypted,
+    onSubmit,
+  } = props;
 
   const t = useTranslator();
 
   const [commentRequiredError, setCommentRequiredError] = useState(false);
 
-  const dynamicMaxLength = useCommentMaxLength(comment);
+  const toggleEncrypted = useCallback(() => {
+    setCommentEncrypted((s) => !s);
+  }, [setCommentEncrypted]);
 
-  const commentCharactersLeftCount = dynamicMaxLength - comment.length;
-
-  const commentCharactersExceededCount = comment.length - dynamicMaxLength;
-
-  const commentCharactersLeftText =
-    commentCharactersLeftCount >= 0 && commentCharactersLeftCount < 25
-      ? t('send_screen_steps.comfirm.comment_characters_left', {
-          count: commentCharactersLeftCount,
-        })
-      : null;
-
-  const commentCharactersExceededText =
-    commentCharactersExceededCount > 0
-      ? t('send_screen_steps.comfirm.comment_characters_exceeded', {
-          count: commentCharactersExceededCount,
-        })
-      : null;
+  const commentVisibilityText = isCommentEncrypted
+    ? t('send_screen_steps.comfirm.comment_description_encrypted')
+    : t('send_screen_steps.comfirm.comment_description');
 
   const commentDescription =
     comment.length > 0 || isCommentRequired ? (
@@ -48,32 +46,19 @@ const CommentInputComponent: FC<Props> = (props) => {
             {t('send_screen_steps.comfirm.comment_required_text')}
           </Text>
         ) : null}
-        {comment.length > 0 && !isCommentRequired
-          ? t('send_screen_steps.comfirm.comment_description')
-          : null}
-        {commentCharactersLeftText || commentCharactersExceededText ? '\n' : null}
-        {isCommentRequired && (commentCharactersLeftText || commentCharactersExceededText)
-          ? '\n'
-          : null}
-        {commentCharactersLeftText ? (
-          <Text variant="body2" color="accentOrange">
-            {commentCharactersLeftText}
-          </Text>
-        ) : null}
-        {commentCharactersExceededText ? (
-          <Text variant="body2" color="accentNegative">
-            {commentCharactersExceededText}
-          </Text>
+        {comment.length > 0 && !isCommentRequired ? commentVisibilityText : null}
+        {comment.length > 0 && isAbleToEncryptComment ? (
+          <>
+            {' '}
+            <Text color="accentPrimary" variant="body2" onPress={toggleEncrypted}>
+              {isCommentEncrypted
+                ? t('send_screen_steps.comfirm.comment_decrypt')
+                : t('send_screen_steps.comfirm.comment_encrypt')}
+            </Text>
+          </>
         ) : null}
       </Text>
     ) : undefined;
-
-  const commentInputValue = (
-    <>
-      {comment.slice(0, dynamicMaxLength)}
-      <S.CommentExceededValue>{comment.slice(dynamicMaxLength)}</S.CommentExceededValue>
-    </>
-  );
 
   const handleCommentChange = useCallback(
     (text: string) => {
@@ -94,7 +79,8 @@ const CommentInputComponent: FC<Props> = (props) => {
       <Input
         innerRef={innerRef}
         isFailed={commentRequiredError}
-        value={commentInputValue}
+        isSuccessful={isCommentEncrypted}
+        value={comment}
         onChangeText={handleCommentChange}
         label={
           isCommentRequired

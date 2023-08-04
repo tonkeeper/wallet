@@ -37,6 +37,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     isInactive,
     amount,
     comment,
+    isCommentEncrypted,
     onConfirm: sendTx,
   } = props;
 
@@ -309,9 +310,17 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
               <>
                 <Separator />
                 <S.Item>
-                  <S.ItemLabel>
-                    {t('send_screen_steps.comfirm.comment_label')}
-                  </S.ItemLabel>
+                  <S.ItemInline>
+                    <S.ItemLabel>
+                      {t('send_screen_steps.comfirm.comment_label')}
+                    </S.ItemLabel>
+                    {isCommentEncrypted ? (
+                      <>
+                        <Spacer x={4} />
+                        <Icon name="ic-lock-16" color="accentPositive" />
+                      </>
+                    ) : null}
+                  </S.ItemInline>
                   <S.ItemContent>
                     <S.ItemValue>{comment}</S.ItemValue>
                   </S.ItemContent>
