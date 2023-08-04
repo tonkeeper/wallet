@@ -834,7 +834,7 @@
     },
     "withdrawal_fee_warning": {
       "title": "You will have not enough funds for withdraw",
-      "message": "Please leave at least 1 TON on your balance.",
+      "message": "Please leave at least {{amount}} TON on your balance.",
       "continue": "Continue anyway"
     }
   },
