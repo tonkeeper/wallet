@@ -250,21 +250,12 @@
       "comment_label": "Комментарий",
       "comment_label_required": "Обязательный комментарий",
       "comment_required_text": "Обязательно укажите memo или тег при отправке на биржу. ",
-      "comment_description": "Комментарий виден всем.",
+      "comment_description": "Будет виден всем.",
+      "comment_description_encrypted": "Будет виден только получателю и вам.",
+      "comment_encrypt": "Зашифровать комментарий",
+      "comment_decrypt": "Расшифровать",
       "details_label": "Детали",
-      "details_max_balance_label": "Отправка всего баланса %{currency}",
-      "comment_characters_left": {
-        "zero": "Осталось %{count} символов.",
-        "one": "Остался %{count} символ.",
-        "few": "Осталось %{count} символа.",
-        "many": "Осталось %{count} символов."
-      },
-      "comment_characters_exceeded": {
-        "zero": "Длина текста превышена на %{count} символов.",
-        "one": "Длина текста превышена на %{count} символ.",
-        "few": "Длина текста превышена на %{count} символa.",
-        "many": "Длина текста превышена на %{count} символов."
-      }
+      "details_max_balance_label": "Отправка всего баланса %{currency}"
     },
     "done": {
       "title": "%{currency} отправлен!",
@@ -786,7 +777,10 @@
   },
 
   "transfer_deeplink_address_error": "Неверный адрес получателя",
+  "transfer_deeplink_nft_address_error": "Неверный адрес NFT",
   "transfer_deeplink_amount_error": "Некорректный запрос суммы",
+
+  "decryption_error": "Ошибка расшифровки",
 
   "confirm": "Подтвердить",
 
@@ -877,7 +871,7 @@
     },
     "withdrawal_fee_warning": {
       "title": "У вас не останется для вывода",
-      "message": "Пожалуйста, оставьте минимум 1 TON на вашем балансе.",
+      "message": "Пожалуйста, оставьте минимум {{amount}} TON на вашем балансе.",
       "continue": "Продолжить всё равно"
     }
   },

@@ -152,3 +152,15 @@ export const getWithdrawalFee = (pool: PoolInfo): BN => {
 
   return Ton.toNano(0);
 };
+
+export const getWithdrawalAlertFee = (pool: PoolInfo): BN => {
+  if (pool.implementation === 'whales') {
+    return Ton.toNano('0.4');
+  }
+
+  if (['tf', 'liquidTF'].includes(pool.implementation)) {
+    return Ton.toNano('1');
+  }
+
+  return Ton.toNano(0);
+};

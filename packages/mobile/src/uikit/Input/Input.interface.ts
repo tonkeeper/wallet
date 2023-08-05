@@ -15,6 +15,7 @@ export interface InputProps
   inputStyle?: ReturnType<typeof css>;
   wrapperStyle?: ReturnType<typeof css>;
   isFailed?: boolean;
+  isSuccessful?: boolean;
   value?: string | ReactElement;
   onContentSizeChange?: (contentSize: InputContentSize) => void;
   label?: string;

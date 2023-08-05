@@ -18,11 +18,11 @@ import BigNumber from 'bignumber.js';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { AccountEvent } from 'tonapi-sdk-js';
+import { AccountEvent } from '@tonkeeper/core';
 import { shallow } from 'zustand/shallow';
 import { AmountStep, ConfirmStep } from './steps';
 import { StakingSendSteps, StakingTransactionType } from './types';
-import { getStakeSignRawMessage, getWithdrawalFee } from './utils';
+import { getStakeSignRawMessage, getWithdrawalAlertFee, getWithdrawalFee } from './utils';
 import { formatter } from '$utils/formatter';
 import {
   checkIsInsufficient,
@@ -258,15 +258,19 @@ export const StakingSend: FC<Props> = (props) => {
       }
 
       if (checkResult.balance !== null) {
+        const withdrawalAlertFee = getWithdrawalAlertFee(pool);
+
         const isEnoughToWithdraw = new BigNumber(checkResult.balance)
           .minus(new BigNumber(totalAmount))
           .isGreaterThanOrEqualTo(Ton.toNano(1));
 
-        if (!isEnoughToWithdraw) {
+        if (!isEnoughToWithdraw && isDeposit) {
           const shouldContinue = await new Promise((res) =>
             Alert.alert(
               t('staking.withdrawal_fee_warning.title'),
-              t('staking.withdrawal_fee_warning.message'),
+              t('staking.withdrawal_fee_warning.message', {
+                amount: formatter.format(Ton.fromNano(withdrawalAlertFee)),
+              }),
               [
                 {
                   text: t('staking.withdrawal_fee_warning.continue'),
@@ -297,7 +301,7 @@ export const StakingSend: FC<Props> = (props) => {
     } finally {
       setSending(false);
     }
-  }, [accountEvent, address.ton, t, unlockVault]);
+  }, [accountEvent, address.ton, isDeposit, pool, t, unlockVault]);
 
   useEffect(() => {
     if (isWithdrawalConfrim) {

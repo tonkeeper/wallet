@@ -10,3 +10,5 @@ export * from './useWallet';
 export * from './Tonkeeper';
 
 export * from './Vault';
+export * from './tonApiV2';
+export * from './service';

@@ -7,6 +7,7 @@
     ]
   },
   "scripts": {
+    "postinstall": "patch-package",
     "pods": "cd packages && cd mobile && yarn pods",
     "icons": "cd packages && cd mobile && yarn icons",
     "codegen": "cd packages/@core-js && yarn codegen",

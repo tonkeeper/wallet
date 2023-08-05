@@ -3,7 +3,6 @@ import { LayoutAnimation, RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useIsFocused } from '@react-navigation/native';
 
 import * as S from '../../core/Balances/Balances.style';
 import {
@@ -32,6 +31,7 @@ import { useNotificationsStore } from '$store/zustand/notifications/useNotificat
 import { Steezy } from '$styles';
 import { Notification } from '$core/Notifications/Notification';
 import { getNewNotificationsCount } from '$core/Notifications/NotificationsActivity';
+import { useIsFocused } from '@react-navigation/native';
 
 export const ActivityScreen: FC = () => {
   const nav = useNavigation();
@@ -47,23 +47,15 @@ export const ActivityScreen: FC = () => {
   } = useSelector(eventsSelector);
   const notifications = useNotificationsStore((state) => state.notifications);
   const lastSeenAt = useNotificationsStore((state) => state.last_seen_activity_screen);
-  const removeRedDot = useNotificationsStore((state) => state.actions.removeRedDot);
   const updateLastSeenActivityScreen = useNotificationsStore(
     (state) => state.actions.updateLastSeenActivityScreen,
   );
+  const isFocused = useIsFocused();
 
   const netInfo = useNetInfo();
   const prevNetInfo = usePrevious(netInfo);
 
-  const isFocused = useIsFocused();
-
   const isEventsLoadingMore = !isRefreshing && isEventsLoading && !!wallet;
-
-  useEffect(() => {
-    if (isFocused) {
-      removeRedDot();
-    }
-  }, [isFocused, removeRedDot]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -146,7 +138,7 @@ export const ActivityScreen: FC = () => {
             rightContent={
               newNotificationsCount - 2 > 0 ? (
                 <View style={styles.notificationsCount}>
-                  <Text variant="label2">{newNotificationsCount}</Text>
+                  <Text variant="label2">{newNotificationsCount - 2}</Text>
                 </View>
               ) : null
             }

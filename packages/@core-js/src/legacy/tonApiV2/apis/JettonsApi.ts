@@ -15,18 +15,26 @@
 
 import * as runtime from '../runtime';
 import type {
-  GetBlock401Response,
+  GetBlockDefaultResponse,
   JettonInfo,
+  Jettons,
 } from '../models/index';
 import {
-    GetBlock401ResponseFromJSON,
-    GetBlock401ResponseToJSON,
+    GetBlockDefaultResponseFromJSON,
+    GetBlockDefaultResponseToJSON,
     JettonInfoFromJSON,
     JettonInfoToJSON,
+    JettonsFromJSON,
+    JettonsToJSON,
 } from '../models/index';
 
 export interface GetJettonInfoRequest {
     accountId: string;
+}
+
+export interface GetJettonsRequest {
+    limit?: number;
+    offset?: number;
 }
 
 /**
@@ -49,6 +57,21 @@ export interface JettonsApiInterface {
      * Get jetton metadata by jetton master address
      */
     getJettonInfo(requestParameters: GetJettonInfoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<JettonInfo>;
+
+    /**
+     * Get a list of all indexed jetton masters in the blockchain.
+     * @param {number} [limit] 
+     * @param {number} [offset] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof JettonsApiInterface
+     */
+    getJettonsRaw(requestParameters: GetJettonsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Jettons>>;
+
+    /**
+     * Get a list of all indexed jetton masters in the blockchain.
+     */
+    getJettons(requestParameters: GetJettonsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Jettons>;
 
 }
 
@@ -84,6 +107,40 @@ export class JettonsApi extends runtime.BaseAPI implements JettonsApiInterface {
      */
     async getJettonInfo(requestParameters: GetJettonInfoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<JettonInfo> {
         const response = await this.getJettonInfoRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get a list of all indexed jetton masters in the blockchain.
+     */
+    async getJettonsRaw(requestParameters: GetJettonsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Jettons>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.limit !== undefined) {
+            queryParameters['limit'] = requestParameters.limit;
+        }
+
+        if (requestParameters.offset !== undefined) {
+            queryParameters['offset'] = requestParameters.offset;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/v2/jettons`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => JettonsFromJSON(jsonValue));
+    }
+
+    /**
+     * Get a list of all indexed jetton masters in the blockchain.
+     */
+    async getJettons(requestParameters: GetJettonsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Jettons> {
+        const response = await this.getJettonsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

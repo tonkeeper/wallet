@@ -19,7 +19,7 @@ import type {
   DnsRecord,
   DomainBids,
   DomainInfo,
-  GetBlock401Response,
+  GetBlockDefaultResponse,
 } from '../models/index';
 import {
     AuctionsFromJSON,
@@ -30,8 +30,8 @@ import {
     DomainBidsToJSON,
     DomainInfoFromJSON,
     DomainInfoToJSON,
-    GetBlock401ResponseFromJSON,
-    GetBlock401ResponseToJSON,
+    GetBlockDefaultResponseFromJSON,
+    GetBlockDefaultResponseToJSON,
 } from '../models/index';
 
 export interface DnsInfoRequest {

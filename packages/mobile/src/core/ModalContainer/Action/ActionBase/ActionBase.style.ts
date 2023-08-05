@@ -1,6 +1,6 @@
 import styled from '$styled';
 import { ns } from '$utils';
-import { Button, Text } from '$uikit';
+import { Button, Icon, Text } from '$uikit';
 
 export const InfoWrap = styled.View`
   padding: ${ns(16)}px;
@@ -45,10 +45,38 @@ export const Item = styled.View`
   overflow: hidden;
 `;
 
+export const ItemInline = styled.View`
+  flex-direction: row;
+`;
+
+export const ItemContent = styled.View`
+  flex: 1;
+  align-items: flex-end;
+`;
+
 export const ItemLabel = styled(Text).attrs({
   color: 'foregroundSecondary',
   variant: 'body1',
 })``;
+
+export const EncryptedIcon = styled(Icon).attrs({
+  name: 'ic-lock-16',
+  color: 'accentPositive',
+})`
+  margin-top: ${ns(4)}px;
+`;
+
+export const EncryptedCommentContainer = styled.View`
+  margin-left: ${ns(10)}px;
+  flex: 1;
+  overflow: hidden;
+`;
+
+export const EncryptedCommentText = styled(Text).attrs({
+  variant: 'label1',
+})`
+  text-align: right;
+`;
 
 export const ItemValue = styled(Text).attrs({
   variant: 'label1',

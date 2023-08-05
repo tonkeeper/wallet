@@ -251,11 +251,12 @@
       "comment_label": "Comment",
       "comment_label_required": "Required comment",
       "comment_required_text": "You must include the note from the exchange for transfer. Without it your funds will be lost. ",
-      "comment_description": "The comment is visible to everyone.",
+      "comment_description": "Will be visible to everyone.",
+      "comment_description_encrypted": "Will be visible only to recipient and you.",
+      "comment_encrypt": "Encrypt comment",
+      "comment_decrypt": "Decrypt",
       "details_label": "Details",
-      "details_max_balance_label": "Sending max. balance of %{currency}",
-      "comment_characters_left": "%{count} characters left.",
-      "comment_characters_exceeded": "Message size has been exceeded by %{count} characters."
+      "details_max_balance_label": "Sending max. balance of %{currency}"
     },
     "done": {
       "title": "%{currency} sent!",
@@ -763,7 +764,10 @@
   },
 
   "transfer_deeplink_address_error": "Incorrect recipient address",
+  "transfer_deeplink_nft_address_error": "Incorrect NFT address",
   "transfer_deeplink_amount_error": "Incorrect amount request",
+
+  "decryption_error": "Decryption error",
 
   "confirm": "Confirm",
 
@@ -847,7 +851,7 @@
     },
     "withdrawal_fee_warning": {
       "title": "You will have not enough funds for withdraw",
-      "message": "Please leave at least 1 TON on your balance.",
+      "message": "Please leave at least {{amount}} TON on your balance.",
       "continue": "Continue anyway"
     }
   },

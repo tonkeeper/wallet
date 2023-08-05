@@ -22,7 +22,7 @@ import type {
   DomainNames,
   FoundAccounts,
   GetAccountsRequest,
-  GetBlock401Response,
+  GetBlockDefaultResponse,
   GetPublicKeyByAccountID200Response,
   JettonsBalances,
   NftItems,
@@ -44,8 +44,8 @@ import {
     FoundAccountsToJSON,
     GetAccountsRequestFromJSON,
     GetAccountsRequestToJSON,
-    GetBlock401ResponseFromJSON,
-    GetBlock401ResponseToJSON,
+    GetBlockDefaultResponseFromJSON,
+    GetBlockDefaultResponseToJSON,
     GetPublicKeyByAccountID200ResponseFromJSON,
     GetPublicKeyByAccountID200ResponseToJSON,
     JettonsBalancesFromJSON,
@@ -79,6 +79,7 @@ export interface GetEventsByAccountRequest {
     accountId: string;
     limit: number;
     acceptLanguage?: string;
+    subjectOnly?: boolean;
     beforeLt?: number;
     startDate?: number;
     endDate?: number;
@@ -205,6 +206,7 @@ export interface AccountsApiInterface {
      * @param {string} accountId account ID
      * @param {number} limit 
      * @param {string} [acceptLanguage] 
+     * @param {boolean} [subjectOnly] filter actions where requested account is not real subject (for example sender or reciver jettons)
      * @param {number} [beforeLt] omit this parameter to get last events
      * @param {number} [startDate] 
      * @param {number} [endDate] 
@@ -504,6 +506,10 @@ export class AccountsApi extends runtime.BaseAPI implements AccountsApiInterface
         }
 
         const queryParameters: any = {};
+
+        if (requestParameters.subjectOnly !== undefined) {
+            queryParameters['subject_only'] = requestParameters.subjectOnly;
+        }
 
         if (requestParameters.beforeLt !== undefined) {
             queryParameters['before_lt'] = requestParameters.beforeLt;

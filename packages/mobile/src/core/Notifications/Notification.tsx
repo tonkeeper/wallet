@@ -15,7 +15,7 @@ import messaging from '@react-native-firebase/messaging';
 import { useSelector } from 'react-redux';
 import { walletAddressSelector } from '$store/wallet';
 import { openDAppBrowser } from '$navigation';
-import { Animated } from 'react-native';
+import { Alert, Animated } from 'react-native';
 
 interface NotificationProps {
   notification: INotification;
@@ -141,8 +141,27 @@ export const Notification: React.FC<NotificationProps> = (props) => {
     if (!props.notification.link) {
       return;
     }
-    openDAppBrowser(props.notification.link);
-  }, [props.notification.link]);
+
+    if (
+      !props.notification.dapp_url ||
+      getDomainFromURL(props.notification.link) ===
+        getDomainFromURL(props.notification.dapp_url)
+    ) {
+      openDAppBrowser(props.notification.link);
+    } else {
+      Alert.alert(t('notifications.alert.title'), t('notifications.alert.description'), [
+        {
+          text: t('notifications.alert.open'),
+          onPress: () => openDAppBrowser(props.notification.link),
+          style: 'destructive',
+        },
+        {
+          text: t('notifications.alert.cancel'),
+          style: 'cancel',
+        },
+      ]);
+    }
+  }, [props.notification.dapp_url, props.notification.link]);
 
   const handleCloseOtherSwipeables = useCallback(() => {
     if (!props.closeOtherSwipeable || !props.lastSwipeableId) {

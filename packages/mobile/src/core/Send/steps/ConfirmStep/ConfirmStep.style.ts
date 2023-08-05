@@ -26,6 +26,11 @@ export const Item = styled.View`
   overflow: hidden;
 `;
 
+export const ItemInline = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+
 export const ItemLabel = styled(Text).attrs({
   color: 'foregroundSecondary',
   variant: 'body1',

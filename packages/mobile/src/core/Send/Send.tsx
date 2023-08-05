@@ -1,5 +1,6 @@
 import { useInstance, useTokenPrice, useTranslator } from '$hooks';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
+import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import {
   CryptoCurrencies,
   CryptoCurrency,
@@ -15,23 +16,27 @@ import React, {
   useEffect,
   useLayoutEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
+import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { SendAmount, SendProps, SendRecipient, SendSteps } from './Send.interface';
+import {
+  AccountWithPubKey,
+  SendAmount,
+  SendProps,
+  SendRecipient,
+  SendSteps,
+} from './Send.interface';
 import { AddressStep } from './steps/AddressStep/AddressStep';
 import { AmountStep } from './steps/AmountStep/AmountStep';
 import { ConfirmStep } from './steps/ConfirmStep/ConfirmStep';
 import { Keyboard } from 'react-native';
 import { favoritesActions } from '$store/favorites';
-import { PagerView, Screen } from '@tonkeeper/uikit';
-import { PagerViewOnPageSelectedEvent } from 'react-native-pager-view';
-import { Configuration, AccountsApi, Account } from '@tonkeeper/core/src/legacy';
+import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { DismissedActionError } from './steps/ConfirmStep/ActionErrors';
+import { Configuration, AccountsApi } from '@tonkeeper/core/src/legacy';
 import { formatter } from '$utils/formatter';
 import { Events } from '$store/models';
-import BigNumber from 'bignumber.js';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {
@@ -44,7 +49,6 @@ export const Send: FC<SendProps> = ({ route }) => {
     isInactive: initialIsInactive = false,
     from,
   } = route.params;
-  const refPagerView = useRef<any>(null);
 
   const initialAddress =
     propsAddress && isValidAddress(propsAddress) ? propsAddress : null;
@@ -78,7 +82,8 @@ export const Send: FC<SendProps> = ({ route }) => {
   const [recipient, setRecipient] = useState<SendRecipient | null>(
     initialAddress ? { address: initialAddress } : null,
   );
-  const [recipientAccountInfo, setRecipientAccountInfo] = useState<Account | null>(null);
+  const [recipientAccountInfo, setRecipientAccountInfo] =
+    useState<AccountWithPubKey | null>(null);
 
   const [amount, setAmount] = useState<SendAmount>({
     value: formatter.format(initialAmount, {
@@ -89,7 +94,10 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   const [comment, setComment] = useState(initalComment.replace(/\0/g, ''));
 
+  const [isCommentEncrypted, setCommentEncrypted] = useState(false);
+
   const [isPreparing, setPreparing] = useState(false);
+  const [isSending, setSending] = useState(false);
 
   const [fee, setFee] = useState(initialFee);
 
@@ -102,31 +110,33 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   const tokenPrice = useTokenPrice(currency);
 
-  const [currentStep, setCurrentStep] = useState<SendSteps>(SendSteps.ADDRESS);
+  const stepViewRef = useRef<StepViewRef>(null);
 
-  const handleBack = useCallback(
-    () => refPagerView.current?.setPage(currentStep - 1),
-    [currentStep],
+  const [currentStep, setCurrentStep] = useState<{ id: SendSteps; index: number }>({
+    id: SendSteps.ADDRESS,
+    index: 0,
+  });
+
+  const stepsScrollTop = useSharedValue(
+    Object.keys(SendSteps).reduce(
+      (acc, cur) => ({ ...acc, [cur]: 0 }),
+      {} as Record<SendSteps, number>,
+    ),
   );
 
+  const scrollTop = useDerivedValue<number>(
+    () => stepsScrollTop.value[currentStep.id] || 0,
+  );
+
+  const handleBack = useCallback(() => stepViewRef.current?.goBack(), []);
+
+  const handleChangeStep = useCallback((id: string | number, index: number) => {
+    setCurrentStep({ id: id as SendSteps, index });
+  }, []);
+
   const goToAmount = useCallback(() => {
-    requestAnimationFrame(() => refPagerView.current?.setPage(SendSteps.AMOUNT));
+    stepViewRef.current?.go(SendSteps.AMOUNT);
   }, []);
-
-  const goToConfirm = useCallback(() => {
-    requestAnimationFrame(() => refPagerView.current?.setPage(SendSteps.CONFIRM));
-  }, []);
-
-  const isSwipingAllowed = useMemo(() => {
-    if (currentStep === SendSteps.ADDRESS) {
-      return !!recipient;
-    } else if (currentStep === SendSteps.AMOUNT) {
-      const bigNum = new BigNumber(parseLocaleNumber(amount.value));
-      return !bigNum.isZero() && bigNum.isLessThanOrEqualTo(balance);
-    } else {
-      return true;
-    }
-  }, [amount.value, balance, currentStep, recipient]);
 
   const onChangeCurrency = useCallback(
     (
@@ -158,40 +168,36 @@ export const Send: FC<SendProps> = ({ route }) => {
         isJetton,
         jettonWalletAddress,
         decimals,
+        comment,
+        isCommentEncrypted,
         onEnd: () => setPreparing(false),
         onNext: (details) => {
           setFee(details.fee);
           setInactive(details.isInactive);
+
+          stepViewRef.current?.go(SendSteps.CONFIRM);
         },
       }),
     );
   }, [
     amount.value,
+    comment,
     currency,
     decimals,
     dispatch,
+    isCommentEncrypted,
     isJetton,
     jettonWalletAddress,
     recipient,
   ]);
-
-  const handleChangeStep = useCallback(
-    (e: PagerViewOnPageSelectedEvent) => {
-      setCurrentStep(e.nativeEvent.position as SendSteps);
-      if (e.nativeEvent.position === SendSteps.CONFIRM) {
-        prepareConfirmSending();
-      } else {
-        setFee('0');
-      }
-    },
-    [prepareConfirmSending],
-  );
 
   const doSend = useCallback(
     (onDone: () => void, onFail: (e?: Error) => void) => {
       if (!recipient) {
         return onFail(new DismissedActionError());
       }
+
+      setSending(true);
 
       dispatch(
         walletActions.sendCoins({
@@ -200,27 +206,32 @@ export const Send: FC<SendProps> = ({ route }) => {
           isSendAll: amount.all,
           address: recipient.address,
           comment,
+          isCommentEncrypted,
           isJetton,
           jettonWalletAddress,
           decimals,
           onDone: () => {
             trackEvent(Events.SendSuccess, { from });
             dispatch(favoritesActions.restoreHiddenAddress(recipient.address));
+            setSending(false);
             onDone();
           },
           onFail: () => {
+            setSending(false);
             onFail(new DismissedActionError());
           },
         }),
       );
     },
     [
-      amount,
+      amount.all,
+      amount.value,
       comment,
       currency,
       decimals,
       dispatch,
       from,
+      isCommentEncrypted,
       isJetton,
       jettonWalletAddress,
       recipient,
@@ -239,8 +250,27 @@ export const Send: FC<SendProps> = ({ route }) => {
       return;
     }
 
+    const accountId = recipient.address;
+
     try {
-      const accountInfo = await accountsApi.getAccount({ accountId: recipient.address });
+      const [accountInfoResponse, pubKeyResponse] = await Promise.allSettled([
+        accountsApi.getAccount({ accountId }),
+        accountsApi.getPublicKeyByAccountID({ accountId }),
+      ]);
+
+      if (accountInfoResponse.status === 'rejected') {
+        throw new Error(accountInfoResponse.reason);
+      }
+
+      const accountInfo: AccountWithPubKey = { ...accountInfoResponse.value };
+
+      if (pubKeyResponse.status === 'fulfilled') {
+        accountInfo.publicKey = pubKeyResponse.value.publicKey;
+      }
+
+      if (!accountInfo.publicKey || accountInfo.memoRequired) {
+        setCommentEncrypted(false);
+      }
 
       setRecipientAccountInfo(accountInfo);
     } catch {}
@@ -252,10 +282,10 @@ export const Send: FC<SendProps> = ({ route }) => {
     fetchRecipientAccountInfo();
   }, [fetchRecipientAccountInfo]);
 
-  const isAddressStep = currentStep === SendSteps.ADDRESS;
-  const isConfirmStep = currentStep === SendSteps.CONFIRM;
+  const isAddressStep = currentStep.id === SendSteps.ADDRESS;
+  const isConfirmStep = currentStep.id === SendSteps.CONFIRM;
 
-  const hideBackButton = currentStep === 0;
+  const hideBackButton = currentStep.index === 0;
 
   const navBarTitle = isAddressStep
     ? t('send_screen_steps.address.title')
@@ -283,71 +313,87 @@ export const Send: FC<SendProps> = ({ route }) => {
   );
 
   return (
-    <Screen>
+    <>
       <NavBar
         isModal
         isClosedButton
         isForceBackIcon
         hideBackButton={hideBackButton}
         hideTitle={isConfirmStep}
+        scrollTop={scrollTop}
         subtitle={subtitle}
         onBackPress={handleBack}
       >
         {navBarTitle}
       </NavBar>
-      <PagerView
-        scrollEnabled={isSwipingAllowed}
-        onPageSelected={handleChangeStep}
-        initialPage={initialStepId}
-        ref={refPagerView}
+      <StepView
+        ref={stepViewRef}
+        backDisabled={isSending || isPreparing}
+        onChangeStep={handleChangeStep}
+        initialStepId={initialStepId}
+        useBackHandler
+        swipeBackEnabled
       >
-        <PagerView.Page>
-          <AddressStep
-            active={currentStep === SendSteps.ADDRESS}
-            recipient={recipient}
-            decimals={decimals}
-            setRecipient={setRecipient}
-            setRecipientAccountInfo={setRecipientAccountInfo}
-            recipientAccountInfo={recipientAccountInfo}
-            comment={comment}
-            setComment={setComment}
-            setAmount={setAmount}
-            onContinue={goToAmount}
-          />
-        </PagerView.Page>
-        <PagerView.Page>
-          <AmountStep
-            active={currentStep === SendSteps.AMOUNT}
-            recipient={recipient}
-            decimals={decimals}
-            balance={balance}
-            currency={currency}
-            onChangeCurrency={onChangeCurrency}
-            currencyTitle={currencyTitle}
-            amount={amount}
-            fiatRate={tokenPrice.fiat}
-            setAmount={setAmount}
-            onContinue={goToConfirm}
-          />
-        </PagerView.Page>
-        <PagerView.Page>
-          <ConfirmStep
-            isPreparing={isPreparing}
-            active={currentStep === SendSteps.CONFIRM}
-            currencyTitle={currencyTitle}
-            currency={currency}
-            recipient={recipient}
-            recipientAccountInfo={recipientAccountInfo}
-            amount={amount}
-            decimals={decimals}
-            isJetton={isJetton}
-            fee={fee}
-            isInactive={isInactive}
-            comment={comment}
-            onConfirm={handleSend}
-          />
-        </PagerView.Page>
-      </PagerView>
-    </Screen>
+        <StepViewItem id={SendSteps.ADDRESS}>
+          {(stepProps) => (
+            <AddressStep
+              recipient={recipient}
+              decimals={decimals}
+              stepsScrollTop={stepsScrollTop}
+              setRecipient={setRecipient}
+              setRecipientAccountInfo={setRecipientAccountInfo}
+              recipientAccountInfo={recipientAccountInfo}
+              comment={comment}
+              isCommentEncrypted={isCommentEncrypted}
+              setCommentEncrypted={setCommentEncrypted}
+              setComment={setComment}
+              setAmount={setAmount}
+              onContinue={goToAmount}
+              {...stepProps}
+            />
+          )}
+        </StepViewItem>
+
+        <StepViewItem id={SendSteps.AMOUNT}>
+          {(stepProps) => (
+            <AmountStep
+              isPreparing={isPreparing}
+              recipient={recipient}
+              decimals={decimals}
+              balance={balance}
+              currency={currency}
+              onChangeCurrency={onChangeCurrency}
+              currencyTitle={currencyTitle}
+              amount={amount}
+              fiatRate={tokenPrice.fiat}
+              setAmount={setAmount}
+              onContinue={prepareConfirmSending}
+              {...stepProps}
+            />
+          )}
+        </StepViewItem>
+
+        <StepViewItem id={SendSteps.CONFIRM}>
+          {(stepProps) => (
+            <ConfirmStep
+              stepsScrollTop={stepsScrollTop}
+              currencyTitle={currencyTitle}
+              currency={currency}
+              recipient={recipient}
+              recipientAccountInfo={recipientAccountInfo}
+              amount={amount}
+              decimals={decimals}
+              isJetton={isJetton}
+              fee={fee}
+              isInactive={isInactive}
+              comment={comment}
+              isCommentEncrypted={isCommentEncrypted}
+              onConfirm={handleSend}
+              {...stepProps}
+            />
+          )}
+        </StepViewItem>
+      </StepView>
+    </>
   );
 };

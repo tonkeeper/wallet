@@ -19,6 +19,12 @@ import {
     AccountAddressFromJSONTyped,
     AccountAddressToJSON,
 } from './AccountAddress';
+import type { EncryptedComment } from './EncryptedComment';
+import {
+    EncryptedCommentFromJSON,
+    EncryptedCommentFromJSONTyped,
+    EncryptedCommentToJSON,
+} from './EncryptedComment';
 import type { Refund } from './Refund';
 import {
     RefundFromJSON,
@@ -58,6 +64,12 @@ export interface TonTransferAction {
     comment?: string;
     /**
      * 
+     * @type {EncryptedComment}
+     * @memberof TonTransferAction
+     */
+    encryptedComment?: EncryptedComment;
+    /**
+     * 
      * @type {Refund}
      * @memberof TonTransferAction
      */
@@ -90,6 +102,7 @@ export function TonTransferActionFromJSONTyped(json: any, ignoreDiscriminator: b
         'recipient': AccountAddressFromJSON(json['recipient']),
         'amount': json['amount'],
         'comment': !exists(json, 'comment') ? undefined : json['comment'],
+        'encryptedComment': !exists(json, 'encrypted_comment') ? undefined : EncryptedCommentFromJSON(json['encrypted_comment']),
         'refund': !exists(json, 'refund') ? undefined : RefundFromJSON(json['refund']),
     };
 }
@@ -107,6 +120,7 @@ export function TonTransferActionToJSON(value?: TonTransferAction | null): any {
         'recipient': AccountAddressToJSON(value.recipient),
         'amount': value.amount,
         'comment': value.comment,
+        'encrypted_comment': EncryptedCommentToJSON(value.encryptedComment),
         'refund': RefundToJSON(value.refund),
     };
 }

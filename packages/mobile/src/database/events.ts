@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { EventModel } from '$store/models';
 import { getWalletName } from '$shared/dynamicConfig';
-import { AccountEvent } from 'tonapi-sdk-js';
+import { AccountEvent } from '@tonkeeper/core';
 
 export class EventsDB {
   static async getEvents() {

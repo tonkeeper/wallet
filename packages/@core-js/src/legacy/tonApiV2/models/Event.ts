@@ -19,12 +19,6 @@ import {
     ActionFromJSONTyped,
     ActionToJSON,
 } from './Action';
-import type { Fee } from './Fee';
-import {
-    FeeFromJSON,
-    FeeFromJSONTyped,
-    FeeToJSON,
-} from './Fee';
 import type { ValueFlow } from './ValueFlow';
 import {
     ValueFlowFromJSON,
@@ -56,12 +50,6 @@ export interface Event {
      * @memberof Event
      */
     actions: Array<Action>;
-    /**
-     * 
-     * @type {Array<Fee>}
-     * @memberof Event
-     */
-    fees: Array<Fee>;
     /**
      * 
      * @type {Array<ValueFlow>}
@@ -96,7 +84,6 @@ export function instanceOfEvent(value: object): boolean {
     isInstance = isInstance && "eventId" in value;
     isInstance = isInstance && "timestamp" in value;
     isInstance = isInstance && "actions" in value;
-    isInstance = isInstance && "fees" in value;
     isInstance = isInstance && "valueFlow" in value;
     isInstance = isInstance && "isScam" in value;
     isInstance = isInstance && "lt" in value;
@@ -118,7 +105,6 @@ export function EventFromJSONTyped(json: any, ignoreDiscriminator: boolean): Eve
         'eventId': json['event_id'],
         'timestamp': json['timestamp'],
         'actions': ((json['actions'] as Array<any>).map(ActionFromJSON)),
-        'fees': ((json['fees'] as Array<any>).map(FeeFromJSON)),
         'valueFlow': ((json['value_flow'] as Array<any>).map(ValueFlowFromJSON)),
         'isScam': json['is_scam'],
         'lt': json['lt'],
@@ -138,7 +124,6 @@ export function EventToJSON(value?: Event | null): any {
         'event_id': value.eventId,
         'timestamp': value.timestamp,
         'actions': ((value.actions as Array<any>).map(ActionToJSON)),
-        'fees': ((value.fees as Array<any>).map(FeeToJSON)),
         'value_flow': ((value.valueFlow as Array<any>).map(ValueFlowToJSON)),
         'is_scam': value.isScam,
         'lt': value.lt,

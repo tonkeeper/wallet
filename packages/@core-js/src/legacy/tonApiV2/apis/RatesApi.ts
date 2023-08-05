@@ -15,15 +15,23 @@
 
 import * as runtime from '../runtime';
 import type {
-  GetBlock401Response,
+  GetBlockDefaultResponse,
+  GetChartRates200Response,
   GetRates200Response,
 } from '../models/index';
 import {
-    GetBlock401ResponseFromJSON,
-    GetBlock401ResponseToJSON,
+    GetBlockDefaultResponseFromJSON,
+    GetBlockDefaultResponseToJSON,
+    GetChartRates200ResponseFromJSON,
+    GetChartRates200ResponseToJSON,
     GetRates200ResponseFromJSON,
     GetRates200ResponseToJSON,
 } from '../models/index';
+
+export interface GetChartRatesRequest {
+    token: string;
+    currency?: string;
+}
 
 export interface GetRatesRequest {
     tokens: string;
@@ -37,6 +45,21 @@ export interface GetRatesRequest {
  * @interface RatesApiInterface
  */
 export interface RatesApiInterface {
+    /**
+     * Get chart by token
+     * @param {string} token accept jetton master address
+     * @param {string} [currency] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof RatesApiInterface
+     */
+    getChartRatesRaw(requestParameters: GetChartRatesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetChartRates200Response>>;
+
+    /**
+     * Get chart by token
+     */
+    getChartRates(requestParameters: GetChartRatesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetChartRates200Response>;
+
     /**
      * Get the token price to the currency
      * @param {string} tokens accept ton and jetton master addresses, separated by commas
@@ -58,6 +81,44 @@ export interface RatesApiInterface {
  * 
  */
 export class RatesApi extends runtime.BaseAPI implements RatesApiInterface {
+
+    /**
+     * Get chart by token
+     */
+    async getChartRatesRaw(requestParameters: GetChartRatesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetChartRates200Response>> {
+        if (requestParameters.token === null || requestParameters.token === undefined) {
+            throw new runtime.RequiredError('token','Required parameter requestParameters.token was null or undefined when calling getChartRates.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.token !== undefined) {
+            queryParameters['token'] = requestParameters.token;
+        }
+
+        if (requestParameters.currency !== undefined) {
+            queryParameters['currency'] = requestParameters.currency;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/v2/rates/chart`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetChartRates200ResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Get chart by token
+     */
+    async getChartRates(requestParameters: GetChartRatesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetChartRates200Response> {
+        const response = await this.getChartRatesRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Get the token price to the currency

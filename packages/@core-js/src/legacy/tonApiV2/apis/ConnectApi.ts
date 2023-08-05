@@ -17,7 +17,7 @@ import * as runtime from '../runtime';
 import type {
   AccountInfoByStateInit,
   GetAccountInfoByStateInitRequest,
-  GetBlock401Response,
+  GetBlockDefaultResponse,
   GetTonConnectPayload200Response,
 } from '../models/index';
 import {
@@ -25,8 +25,8 @@ import {
     AccountInfoByStateInitToJSON,
     GetAccountInfoByStateInitRequestFromJSON,
     GetAccountInfoByStateInitRequestToJSON,
-    GetBlock401ResponseFromJSON,
-    GetBlock401ResponseToJSON,
+    GetBlockDefaultResponseFromJSON,
+    GetBlockDefaultResponseToJSON,
     GetTonConnectPayload200ResponseFromJSON,
     GetTonConnectPayload200ResponseToJSON,
 } from '../models/index';
