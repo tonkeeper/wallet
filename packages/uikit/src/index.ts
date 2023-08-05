@@ -1,3 +1,4 @@
+// Components
 export { TouchableOpacity } from './components/TouchableOpacity';
 export { IconButtonList } from './components/IconButtonList';
 export { IconButton } from './components/IconButton';
@@ -16,17 +17,22 @@ export { Input, InputRef } from './components/Input';
 export { TextInputRef } from './components/TextInput';
 export { StepIndicator } from './components/StepIndicator';
 
+// Containers
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';
+export { Screen, ScreenScrollViewRef } from './containers/Screen';
+export { Modal } from './containers/Modal';
 export {
   PagerView,
   PagerViewRef,
   PagerViewSelectedEvent,
   usePagerViewSteps,
 } from './containers/PagerView';
-export { Screen, ScreenScrollViewRef } from './containers/Screen';
-export { Modal } from './containers/Modal';
 
+// Hooks
 export { useReanimatedKeyboardHeight } from './utils/keyboard';
+export { useValueRef } from '../hooks/useValueRef';
 
+// Other
+export { createExternalRef } from './utils/createExternalRef';
 export * from './utils';
 export * from './styles';

@@ -1,5 +1,7 @@
+import { WithDefault } from 'react-native/Libraries/Types/CodegenTypes';
+import { Haptics, Text } from '@tonkeeper/uikit';
 import { StyleSheet, View } from 'react-native';
-import { Haptics } from '@tonkeeper/uikit';
+import { PasscodeDot } from './PasscodeDot';
 import {
   useImperativeHandle,
   useCallback,
@@ -17,21 +19,22 @@ import Animated, {
   withTiming,
   runOnJS,
 } from 'react-native-reanimated';
-import { PasscodeDot } from './PasscodeDot';
 
-interface PasscodeDotsProps {
+interface PasscodeInputProps {
+  length?: WithDefault<number, 4>;
   value: string;
+  label: string;
 }
 
-export type PasscodeDotsRef = {
+export type PasscodeInputRef = {
   triggerError: () => void;
   triggerSuccess: () => void;
   clearState: () => void;
 };
 
-export const PasscodeDots = forwardRef<PasscodeDotsRef, PasscodeDotsProps>(
+export const PasscodeInput = forwardRef<PasscodeInputRef, PasscodeInputProps>(
   (props, ref) => {
-    const { value } = props;
+    const { value, label, length = 4 } = props;
 
     const [isError, setError] = useState(false);
     const [isSuccess, setSuccess] = useState(false);
@@ -76,8 +79,8 @@ export const PasscodeDots = forwardRef<PasscodeDotsRef, PasscodeDotsProps>(
     }));
 
     const dotsCount = useMemo(() => {
-      return new Array(4).fill(0);
-    }, []);
+      return new Array(length).fill(0);
+    }, [length]);
 
     const style = useAnimatedStyle(() => ({
       transform: [
@@ -89,17 +92,20 @@ export const PasscodeDots = forwardRef<PasscodeDotsRef, PasscodeDotsProps>(
 
     return (
       <View style={styles.container}>
-        <Animated.View style={[styles.dots, style]}>
-          {dotsCount.map((_, i) => (
-            <PasscodeDot
-              key={i}
-              index={i}
-              isActive={value.length > i && !isError}
-              isError={isError}
-              isSuccess={isSuccess}
-            />
-          ))}
-        </Animated.View>
+        <Text type="h3">{label}</Text>
+        <View style={styles.dotsContainer}>
+          <Animated.View style={[styles.dots, style]}>
+            {dotsCount.map((_, i) => (
+              <PasscodeDot
+                key={i}
+                index={i}
+                isActive={value.length > i && !isError}
+                isError={isError}
+                isSuccess={isSuccess}
+              />
+            ))}
+          </Animated.View>
+        </View>
       </View>
     );
   },
@@ -107,10 +113,16 @@ export const PasscodeDots = forwardRef<PasscodeDotsRef, PasscodeDotsProps>(
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
+    justifyContent: 'center',
     flex: 1,
+  },
+  dotsContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
+    marginTop: 20,
+    height: 12,
   },
   dots: {
     flexDirection: 'row',

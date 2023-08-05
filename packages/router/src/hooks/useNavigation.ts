@@ -9,8 +9,16 @@ import { useContext } from 'react';
 import { throttle, delay, isAndroid } from '../utils';
 import { Keyboard } from 'react-native';
 
+const useWrapNavigation = () => {
+  try {
+    return useNativeNavigation<any>();
+  } catch (err) {
+    return {};
+  }
+}
+
 export const useNavigation = () => {
-  const nav = useNativeNavigation<any>();
+  const nav = useWrapNavigation();
   const sheetRoutes = useContext(SheetRoutesContext);
   const closeModal = useCloseModal();
 

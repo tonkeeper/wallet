@@ -1,4 +1,3 @@
-import { useFocusEffect } from '@react-navigation/native';
 import { memo, useCallback, useEffect } from 'react';
 import { useTheme } from '@tonkeeper/uikit';
 import { StyleSheet } from 'react-native';
@@ -52,11 +51,11 @@ export const PasscodeDot = memo<PasscodeDotProps>((props) => {
     }
   }, [isActive, scale, isSuccess]);
 
-  useFocusEffect(
+  // useFocusEffect(
     useCallback(() => {
       colorVal.value = 0;
     }, [colorVal]),
-  );
+  // );
 
   useEffect(() => {
     if (isError) {

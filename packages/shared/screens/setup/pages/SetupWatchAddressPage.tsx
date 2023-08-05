@@ -2,15 +2,14 @@ import { Button, Input, InputRef, Spacer, Steezy, Text, View } from '@tonkeeper/
 import { InputAccessoryView, ScrollView } from 'react-native';
 import { memo, useEffect, useRef, useState } from 'react';
 
-interface SetupWalletNamePageProps {
-  onButtonPress: (name: string) => void;
-  loading: boolean;
+interface SetupWatchAddressPageProps {
+  onButtonPress: (address: string) => void;
   shown: boolean;
 }
 
-export const SetupWalletNamePage = memo<SetupWalletNamePageProps>((props) => {
-  const { onButtonPress, shown, loading } = props;
-  const [name, setName] = useState('');
+export const SetupWatchAddressPage = memo<SetupWatchAddressPageProps>((props) => {
+  const { onButtonPress, shown } = props;
+  const [address, setAddress] = useState('');
   const inputRef = useRef<InputRef>(null);
 
   useEffect(() => {
@@ -28,26 +27,34 @@ export const SetupWalletNamePage = memo<SetupWalletNamePageProps>((props) => {
     >
       <View style={styles.info}>
         <Text type="h2" textAlign="center">
-          Name your wallet
+          Watch address
         </Text>
         <Spacer y={4} />
         <Text type="body1" color="textSecondary" textAlign="center">
-          Wallet name is stored locally on your device. It will only be visible to you.
+          Monitor wallet activity without recovery phrase. You will be notified of any
+          transactions from this wallet.
         </Text>
       </View>
       <Input
         ref={inputRef}
-        inputAccessoryViewID="wallet_name"
-        label="Wallet name"
-        onChangeText={(name) => setName(name)}
+        inputAccessoryViewID="wallet_address"
+        label="Address"
+        onChangeText={(address) => setAddress(address)}
         keyboardType="ascii-capable"
         textContentType="none"
         autoComplete="off"
         autoCorrect={false}
+        multiline
+        withClearButton
+        withPasteButton
+        withScanButton
+        onScanPress={() => {
+          // TODO: add scanner
+        }}
       />
-      <InputAccessoryView nativeID="wallet_name">
+      <InputAccessoryView nativeID="wallet_address">
         <View style={styles.buttonContainer}>
-          <Button onPress={() => onButtonPress(name)} title="Continue" loading={loading} />
+          <Button onPress={() => onButtonPress(address)} title="Continue" />
         </View>
       </InputAccessoryView>
     </ScrollView>

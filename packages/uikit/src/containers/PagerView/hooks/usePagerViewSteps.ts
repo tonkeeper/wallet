@@ -1,6 +1,6 @@
 import { PagerViewRef, PagerViewSelectedEvent } from '../PagerViewContainer';
-import { useSharedValue } from 'react-native-reanimated';
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { useSharedValue } from 'react-native-reanimated';
 import { useRouter } from '@tonkeeper/router';
 
 export const usePagerViewSteps = (initialPageIndex: number = 0) => {

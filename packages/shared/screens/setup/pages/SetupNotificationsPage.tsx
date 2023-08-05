@@ -3,12 +3,12 @@ import { t } from '../../../i18n';
 import { memo } from 'react';
 
 interface SetupNotificationsPageProps {
-  onEnable: () => void;
+  onButtonPress: () => void;
   loading: boolean;
 }
 
 export const SetupNotificationsPage = memo<SetupNotificationsPageProps>((props) => {
-  const { onEnable, loading } = props;
+  const { onButtonPress, loading } = props;
 
   return (
     <View style={styles.container}>
@@ -27,7 +27,7 @@ export const SetupNotificationsPage = memo<SetupNotificationsPageProps>((props) 
       <View style={styles.button}>
         <Button
           title={t('setup_notifications_enable_button')}
-          onPress={onEnable}
+          onPress={onButtonPress}
           loading={loading}
         />
       </View>

@@ -7,11 +7,11 @@ import { t } from '../../../i18n';
 import * as LocalAuthentication from 'expo-local-authentication';
 
 interface SetupBiometryPageProps {
-  onEnable: () => void;
+  onButtonPress: () => void;
 }
 
 export const SetupBiometryPage = memo<SetupBiometryPageProps>((props) => {
-  const { onEnable } = props;
+  const { onButtonPress } = props;
 
   const biometryType = LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION; //detectBiometryType(types);
   const isTouchId =
@@ -50,7 +50,7 @@ export const SetupBiometryPage = memo<SetupBiometryPageProps>((props) => {
       <View style={styles.button}>
         <Button
           title={t('setup_biometry_enable_button', { biometryType: biometryName })}
-          onPress={onEnable}
+          onPress={onButtonPress}
         />
       </View>
     </View>

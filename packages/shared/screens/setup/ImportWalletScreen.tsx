@@ -93,7 +93,7 @@ export const ImportWalletScreen = memo(() => {
           <PagerView.Page>
             <SetupRecoveryPhrasePage
               shown={steps.pageIndex === 0}
-              onComplete={(phrase, lockup: any) => {
+              onButtonPress={(phrase, lockup: any) => {
                 setPhrase(phrase);
                 if (lockup) {
                   setLockupConfig(lockup);
@@ -105,7 +105,7 @@ export const ImportWalletScreen = memo(() => {
           <PagerView.Page>
             <SetupWalletNamePage
               shown={steps.pageIndex === 1}
-              onComplete={(name) => {
+              onButtonPress={(name) => {
                 setName(name);
                 importWallet();
               }}
@@ -118,7 +118,7 @@ export const ImportWalletScreen = memo(() => {
           <PagerView.Page>
             <SetupRecoveryPhrasePage
               shown={steps.pageIndex === 0}
-              onComplete={(phrase, lockup: any) => {
+              onButtonPress={(phrase, lockup: any) => {
                 setPhrase(phrase);
                 if (lockup) {
                   setLockupConfig(lockup);
@@ -130,17 +130,17 @@ export const ImportWalletScreen = memo(() => {
           <PagerView.Page>
             <SetupPasscodePage
               shown={steps.pageIndex === 1}
-              onComplete={(passcode) => {
+              onButtonPress={(passcode) => {
                 setPasscode(passcode);
                 steps.next();
               }}
             />
           </PagerView.Page>
           <PagerView.Page>
-            <SetupBiometryPage onEnable={setupBiometry} />
+            <SetupBiometryPage onButtonPress={setupBiometry} />
           </PagerView.Page>
           <PagerView.Page>
-            <SetupNotificationsPage onEnable={setupNotifications} loading={loading} />
+            <SetupNotificationsPage onButtonPress={setupNotifications} loading={loading} />
           </PagerView.Page>
         </PagerView>
       )}

@@ -1,9 +1,9 @@
-import { PasscodeDots, PasscodeDotsRef } from '../../../components/Passcode/PasscodeDots';
-import { PasscodeKeyboard } from '../../../components/Passcode/PasscodeKeyboad';
+import { PasscodeInput, PasscodeInputRef } from '../../../components/PasscodeInput';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { PasscodeKeyboard } from '../../../components/PasscodeKeyboad';
 import { delay } from '@tonkeeper/uikit/src/utils/delay';
-import { Steezy, View, Text } from '@tonkeeper/uikit';
 import { useWindowDimensions } from 'react-native';
+import { Steezy, View } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import Animated, {
   Easing,
@@ -16,7 +16,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 interface SetupPasscodePageProps {
-  onComplete: (passcode: string) => void;
+  onButtonPress: (passcode: string) => void;
   shown: boolean;
 }
 
@@ -27,11 +27,11 @@ enum PasscodeState {
 }
 
 export const SetupPasscodePage = memo<SetupPasscodePageProps>((props) => {
-  const { shown, onComplete } = props;
+  const { onButtonPress } = props;
 
   const validateOldPin = false;
   const onPinCreated = async (passcode: string) => {
-    onComplete(passcode);
+    onButtonPress(passcode);
     await delay(500);
     pinRef.current?.clearState();
     setValue1('');
@@ -44,8 +44,8 @@ export const SetupPasscodePage = memo<SetupPasscodePageProps>((props) => {
   };
 
   const dimensions = useWindowDimensions();
-  const pinRef = useRef<PasscodeDotsRef>(null);
-  const oldPinRef = useRef<PasscodeDotsRef>(null);
+  const pinRef = useRef<PasscodeInputRef>(null);
+  const oldPinRef = useRef<PasscodeInputRef>(null);
   const [step, setStep] = useState(
     validateOldPin ? PasscodeState.Current : PasscodeState.Create,
   );
@@ -176,31 +176,25 @@ export const SetupPasscodePage = memo<SetupPasscodePageProps>((props) => {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.steps.static, stepsStyle]}>
-        <View style={[styles.step, stepStyle]}>
-          <View style={styles.pinWrap}>
-            <Text type="h3">{t('create_pin_current_title')}</Text>
-            <View style={styles.pin}>
-              <PasscodeDots value={value0} ref={oldPinRef} />
-            </View>
-          </View>
+        <View style={stepStyle}>
+          <PasscodeInput
+            label={t('create_pin_current_title')}
+            value={value0}
+            ref={oldPinRef}
+          />
         </View>
-        <View style={[styles.step, stepStyle]}>
-          <View style={styles.pinWrap}>
-            <Text type="h3">
-              {validateOldPin ? t('create_pin_new_title') : 'Create passcode'}
-            </Text>
-            <View style={styles.pin}>
-              <PasscodeDots value={value1} />
-            </View>
-          </View>
+        <View style={stepStyle}>
+          <PasscodeInput
+            label={validateOldPin ? t('create_pin_new_title') : 'Create passcode'}
+            value={value1}
+          />
         </View>
-        <View style={[styles.step, stepStyle]}>
-          <View style={styles.pinWrap}>
-            <Text type="h3">{t('create_pin_repeat_title')}</Text>
-            <View style={styles.pin}>
-              <PasscodeDots value={value2} ref={pinRef} />
-            </View>
-          </View>
+        <View style={stepStyle}>
+          <PasscodeInput
+            label={t('create_pin_repeat_title')}
+            value={value2}
+            ref={pinRef}
+          />
         </View>
       </Animated.View>
       <PasscodeKeyboard onChange={handleKeyboard} disabled={isAnimating} value={value} />
@@ -218,17 +212,5 @@ const styles = Steezy.create(({ safeArea }) => ({
     paddingBottom: 2.5,
     flexDirection: 'row',
     flex: 1,
-  },
-  step: {
-    flex: 0,
-  },
-  pinWrap: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  pin: {
-    marginTop: 20,
-    height: 12,
   },
 }));

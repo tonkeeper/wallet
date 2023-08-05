@@ -7,3 +7,6 @@ export * from './utils/AppConfig';
 export * from './utils/network';
 
 export * from './useWallet';
+export * from './Tonkeeper';
+
+export * from './Vault';

@@ -10,12 +10,12 @@ import { Pressable } from 'react-native';
 const inputsCount = Array(24).fill(0);
 
 interface SetupPhrasePageProps {
-  onComplete: (phrase: string, config?: string) => void;
+  onButtonPress: (phrase: string, config?: string) => void;
   shown: boolean;
 }
 
 export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
-  const { onComplete, shown } = props;
+  const { onButtonPress, shown } = props;
   const inputs = useRecoveryPhraseInputs();
 
   const [isConfigInputShown, setConfigInputShown] = useState(false);
@@ -73,8 +73,8 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
 
     const phrase = Object.values(values).join(' ');
 
-    onComplete(phrase, config);
-  }, [onComplete, isRestoring, isConfigInputShown, config]);
+    onButtonPress(phrase, config);
+  }, [onButtonPress, isRestoring, isConfigInputShown, config]);
 
   const handleInputSubmit = useCallback(
     (index: number) => () => {

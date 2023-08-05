@@ -5,6 +5,7 @@ import { useLogoAnimation } from './animations/useLogoAnimation';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated from 'react-native-reanimated';
 import { memo, useMemo } from 'react';
+import { tonkeeper } from '../../tonkeeper';
 
 export const StartScreen = memo(() => {
   const { start, logoRotateStyle, logoPosStyle } = useLogoAnimation();
@@ -37,7 +38,16 @@ export const StartScreen = memo(() => {
           </Text>
         </View>
         <View style={styles.buttons}>
-          <Button title="Create new wallet" navigate="/create" />
+          <Button
+            title="Create new wallet"
+            onPress={async () => {
+              console.log('start await ');
+
+              const privateKey = await tonkeeper.wallet.getPrivateKey();
+
+              console.log('!end', privateKey);
+            }}
+          />
           <Spacer y={16} />
           <Button color="secondary" title="Import existing wallet" navigate="/import" />
         </View>

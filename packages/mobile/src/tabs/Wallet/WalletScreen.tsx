@@ -18,7 +18,7 @@ import { ScanQRButton } from '../../components/ScanQRButton';
 import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
-import { openRequireWalletModal, openWallet } from '$navigation';
+import { openCreateWallet, openRequireWalletModal, openWallet } from '$navigation';
 import { maskifyAddress, ns, trackEvent } from '$utils';
 import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
@@ -215,13 +215,13 @@ export const WalletScreen = memo(() => {
             />
           </List>
         </Screen.ScrollView>
-        {/* {isLoaded && !wallet && (
+        {isLoaded && !wallet && (
           <S.CreateWalletButtonWrap style={{ bottom: tabBarHeight }}>
             <S.CreateWalletButtonContainer skipHeader={false}>
-              <Button onPress={handleCreateWallet}>{t('balances_setup_wallet')}</Button>
+              <Button onPress={() => openCreateWallet()}>{t('balances_setup_wallet')}</Button>
             </S.CreateWalletButtonContainer>
           </S.CreateWalletButtonWrap>
-        )} */}
+        )}
       </>
     );
   }
