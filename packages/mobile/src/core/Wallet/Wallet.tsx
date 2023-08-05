@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { WalletProps } from './Wallet.interface';
 import * as S from './Wallet.style';
+import * as BalancesStyle from '../Balances/Balances.style';
 import { useTheme, useTranslator, useWalletInfo } from '$hooks';
 import {
   Button,
@@ -34,6 +35,7 @@ import { t } from '$translation';
 import { useNavigation } from '@tonkeeper/router';
 import { Chart } from '$shared/components/Chart/new/Chart';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import { eventsActions, eventsSelector } from '$store/events';
 import { groupAndFilterTonActivityItems } from '$utils/transactions';
 import { formatter } from '$utils/formatter';

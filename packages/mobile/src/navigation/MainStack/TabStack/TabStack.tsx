@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useContext, useMemo } from 'react';
 import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,11 +6,12 @@ import { StyleSheet } from 'react-native';
 import { DAppsExplore } from '$core';
 import { TabsStackRouteNames } from '$navigation';
 import { TabStackParamList } from './TabStack.interface';
-import { Icon, View } from '@tonkeeper/uikit';
+import { Icon, ScrollPositionContext, View } from '$uikit';
 import { usePreloadChart, useTheme } from '$hooks';
 import { isAndroid, nfs, ns, trackEvent } from '$utils';
 import { t } from '$translation';
 import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
+import { TabBarBadgeIndicator } from './TabBarBadgeIndicator';
 import { useNotificationsSubscribe } from '$hooks/useNotificationsSubscribe';
 import { WalletScreen } from '../../../tabs/Wallet/WalletScreen';
 import Animated from 'react-native-reanimated';
@@ -18,18 +19,18 @@ import { FONT } from '$styled';
 import { useCheckForUpdates } from '$hooks/useCheckForUpdates';
 import { useLoadExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { ActivityStack } from '$navigation/ActivityStack/ActivityStack';
+import { useNotificationsStore } from '$store';
 import { NotificationsIndicator } from '$navigation/MainStack/TabStack/NotificationsIndicator';
 import { useFetchMethodsToBuy } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
-import { useNotificationsStore } from '$store/zustand/notifications';
-import { TabBarBadgeIndicator } from './TabBarBadgeIndicator';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
 export const TabStack: FC = () => {
-  // const { bottomSeparatorStyle } = useContext(ScrollPositionContext);
+  const { bottomSeparatorStyle } = useContext(ScrollPositionContext);
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
   const shouldShowRedDot = useNotificationsStore((state) => state.should_show_red_dot);
+  const removeRedDot = useNotificationsStore((state) => state.actions.removeRedDot);
 
   useLoadExpiringDomains();
   useFetchMethodsToBuy();
@@ -39,8 +40,8 @@ export const TabStack: FC = () => {
 
   const tabBarStyle = { height: ns(64) + (safeArea.bottom > 0 ? ns(20) : 0) };
   const containerTabStyle = useMemo(
-    () => [tabBarStyle, styles.tabBarContainer],
-    [safeArea.bottom, tabBarStyle],
+    () => [tabBarStyle, styles.tabBarContainer, bottomSeparatorStyle],
+    [safeArea.bottom, bottomSeparatorStyle, tabBarStyle],
   );
 
   return (
@@ -94,6 +95,11 @@ export const TabStack: FC = () => {
       <Tab.Screen
         component={ActivityStack}
         name={TabsStackRouteNames.Activity}
+        listeners={{
+          tabPress: (e) => {
+            removeRedDot();
+          },
+        }}
         options={{
           tabBarLabel: t('activity.screen_title'),
           tabBarIcon: ({ color }) => (
@@ -140,7 +146,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     position: 'absolute',
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'transparent',
     left: 0,
     right: 0,
     bottom: 0,

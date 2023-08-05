@@ -15,7 +15,7 @@ import { DeleteAccountDone } from '$core/DeleteAccountDone/DeleteAccountDone';
 import { EditConfig } from '$core/EditConfig/EditConfig';
 import { useRemoteBridge } from '$tonconnect';
 import { ManageTokens } from '$core/ManageTokens/ManageTokens';
-import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
+import { Wallet } from '$core/Wallet/Wallet';
 import { Staking } from '$core/Staking/Staking';
 import { StakingPools } from '$core/StakingPools/StakingPools';
 import { StakingPoolDetails } from '$core/StakingPoolDetails/StakingPoolDetails';
@@ -80,7 +80,7 @@ export const MainStack: FC = () => {
 
   return (
     <Stack.Navigator
-      // initialRouteName={initialRouteName}
+      initialRouteName={initialRouteName}
       screenOptions={{
         headerShown: false,
         gestureEnabled: true,
@@ -90,12 +90,8 @@ export const MainStack: FC = () => {
         fullScreenGestureEnabled: true,
       }}
     >
-      <Stack.Screen name="/start" component={StartScreen} />
-      <Stack.Screen name="/create" component={CreateWalletScreen} />
-      <Stack.Screen name="/import" component={ImportWalletScreen} />
-      <Stack.Screen name="/import/watch" component={ImportWatchWalletScreen} />
       {renderRoot()}
-      <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
+      <Stack.Screen name={MainStackRouteNames.Wallet} component={Wallet} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />
       <Stack.Screen name={MainStackRouteNames.StakingPools} component={StakingPools} />
       <Stack.Screen
