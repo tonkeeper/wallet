@@ -27,7 +27,7 @@ import {
   checkIsInsufficient,
   openInsufficientFundsModal,
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
-import { TonConnectRemoteBridge } from '$tonconnect';
+import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { formatter } from '$utils/formatter';
 import { CryptoCurrencies } from '$shared/constants';
 import { approveAll } from '$store/zustand/tokenApproval/helpers';
