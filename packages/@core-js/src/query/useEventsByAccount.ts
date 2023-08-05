@@ -31,6 +31,7 @@ export const useEventsByAccount = <TData = AccountEvents, TModifiedData = TData>
     getNextPageParam: (data) =>
       data ? options.fetchMoreParams(data as TData) : undefined,
     queryKey: ['events', accountId],
+    enabled: !!accountId,
     queryFn: async (lastPage) => {
       const { data, error } = await tonapi.accounts.getEventsByAccount({
         ...lastPage.pageParam,

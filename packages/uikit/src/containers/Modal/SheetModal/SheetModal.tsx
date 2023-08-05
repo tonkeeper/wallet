@@ -1,4 +1,4 @@
-import { forwardRef, memo, useEffect, useMemo, useRef } from 'react';
+import { forwardRef, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import DefaultBottomSheet, {
   BottomSheetModal,
   BottomSheetBackdropProps,
@@ -46,13 +46,21 @@ export const SheetModal = memo(
 
     const topInset = !isAndroid ? StatusBarHeight + safeArea.top : 0;
 
+    const handleClose = useCallback(async () => {
+      removeFromStack();
+      if (props.onClose) {
+        props.onClose();
+      }
+    }, [props.onClose]);
+
     return (
       <DefaultBottomSheet
+        {...props}
         backdropComponent={BackdropSheetComponent}
         contentHeight={contentHeight}
         handleHeight={handleHeight}
         enablePanDownToClose={true}
-        onClose={removeFromStack}
+        onClose={handleClose}
         snapPoints={snapPoints}
         handleComponent={null}
         topInset={topInset}
@@ -62,7 +70,6 @@ export const SheetModal = memo(
           borderRadius: 18,
           backgroundColor: theme.backgroundPage,
         }}
-        {...props}
       >
         {props.children}
       </DefaultBottomSheet>

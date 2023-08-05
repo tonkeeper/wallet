@@ -25,7 +25,7 @@ import {
   useTonConnectAnimation,
 } from './useTonConnectAnimation';
 import * as S from './TonConnect.style';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { TonConnectModalProps } from './models';
 import { useEffect } from 'react';
 import { Modal } from '@tonkeeper/uikit';

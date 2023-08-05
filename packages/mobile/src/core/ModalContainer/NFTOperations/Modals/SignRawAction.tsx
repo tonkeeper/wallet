@@ -5,12 +5,12 @@ import {
   TonTransferAction as TonTransferActionData,
   NftItemTransferAction as NftTransferActionData,
   AuctionBidAction as SDKAuctionBidAction,
-} from '@tonkeeper/core';
+} from '@tonkeeper/core/src/legacy';
 import * as S from '../NFTOperations.styles';
 import { Highlight, Separator, Skeleton, Text } from '$uikit';
 import { copyText } from '$hooks/useCopyText';
 import { Address, Ton } from '$libs/Ton';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { ListHeader } from '$uikit';
 import { dnsToUsername } from '$utils/dnsToUsername';
 import { useDownloadNFT } from '../useDownloadNFT';

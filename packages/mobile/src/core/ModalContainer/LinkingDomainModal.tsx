@@ -1,8 +1,7 @@
 import { useInstance } from '$hooks/useInstance';
 import { useCopyText } from '$hooks/useCopyText';
-import { t } from '$translation';
-import { BottomSheet, Highlight, Separator, Skeleton, Text } from '$uikit';
-import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
+import { t } from '@tonkeeper/shared/i18n';
+import { Highlight, Separator, Skeleton, Text } from '$uikit';
 import { Base64, maskifyAddress, truncateDecimal } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import React, { useEffect } from 'react';
@@ -12,10 +11,14 @@ import * as S from './NFTOperations/NFTOperations.styles';
 import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { TouchableOpacity } from 'react-native';
-import { openReplaceDomainAddress } from '$navigation';
+
 import { store, Toast } from '$store';
 import { Wallet } from 'blockchain';
 import { Tonapi } from '$libs/Tonapi';
+import { Modal } from '@tonkeeper/uikit';
+import { push } from '$navigation/imperative';
+import { SheetActions, useNavigation } from '@tonkeeper/router';
+import { openReplaceDomainAddress } from './NFTOperations/ReplaceDomainAddressModal';
 
 const TonWeb = require('tonweb');
 
@@ -50,7 +53,7 @@ export class LinkingDomainActions {
     this.domainAddress = domainAddress;
     this.walletAddress = walletAddress;
   }
-  
+
   /**
    * Calculates fee. Returns human-readable string or 0 in case of error
    */
@@ -68,7 +71,7 @@ export class LinkingDomainActions {
   }
 
   public updateWalletAddress(address: string | undefined) {
-      this.walletAddress = address;
+    this.walletAddress = address;
   }
 
   /**
@@ -81,17 +84,17 @@ export class LinkingDomainActions {
     const address = this.walletAddress && new TonWeb.Address(this.walletAddress);
 
     const payload = await TonWeb.dns.DnsItem.createChangeContentEntryBody({
-      category: TonWeb.dns.DNS_CATEGORY_WALLET, 
-      value: address ? TonWeb.dns.createSmartContractAddressRecord(address) : null
+      category: TonWeb.dns.DNS_CATEGORY_WALLET,
+      value: address ? TonWeb.dns.createSmartContractAddressRecord(address) : null,
     });
-    
+
     const tx = curWallet.methods.transfer({
       toAddress: this.domainAddress,
       amount: this.transferAmount,
       seqno: seqno,
-      payload, 
+      payload,
       sendMode: 3,
-      secretKey
+      secretKey,
     });
 
     const queryMsg = await tx.getQuery();
@@ -101,15 +104,15 @@ export class LinkingDomainActions {
   }
 }
 
-export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({ 
+export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
   walletAddress: defaultWalletAddress,
-  domainAddress, 
+  domainAddress,
   domain,
   fee: initialFee,
-  onDone 
+  onDone,
 }) => {
+  const nav = useNavigation();
   const [walletAddress, setWalletAddress] = React.useState(defaultWalletAddress);
-  const bottomSheetRef = React.useRef<BottomSheetRef>(null);
   const [fee] = React.useState(initialFee);
   const copyText = useCopyText();
   const [isDisabled, setIsDisabled] = React.useState(false);
@@ -128,96 +131,108 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
   const handleConfirm = onConfirm(async ({ startLoading }) => {
     const vault = await unlockVault();
     const privateKey = await vault.getTonPrivateKey();
-    
+
     startLoading();
     setIsDisabled(true);
-    
+
     const boc = await linkingActions.createBoc(privateKey);
     await Tonapi.sendBoc(boc);
   });
 
   const handleReplace = React.useCallback(() => {
-    openReplaceDomainAddress({ 
+    openReplaceDomainAddress({
       domain,
       onReplace: (address) => {
         setWalletAddress(address);
-      }
+      },
     });
   }, []);
 
   return (
-    <BottomSheet
-      ref={bottomSheetRef}
-      indentBottom={false}
-      title={walletAddress ? t('dns_link_title') : t('dns_unlink_title')}
-    > 
-      <S.Container>
-        <S.Info>
-          {!!walletAddress && (
-            <>
-              <S.InfoItem>
-                <S.InfoItemLabel>
-                  {
-                    walletAddress === defaultWalletAddress
-                      ? t('dns_current_address') 
-                      : t('dns_wallet_address')
-                  }
-                </S.InfoItemLabel>
-                <S.InfoItemValue>
-                  <TouchableOpacity 
-                    disabled={isDisabled}
-                    style={{ alignItems: 'flex-end' }}
-                    onPress={handleReplace}
-                    activeOpacity={0.6}
-                  >
-                    <Text variant="body1">              
-                      {maskifyAddress(walletAddress)}
-                    </Text>
-                    <Text 
-                      variant="body2"
-                      color={isDisabled ? "foregroundTertiary" : "accentPrimary"}
+    <Modal>
+      <Modal.Header title={walletAddress ? t('dns_link_title') : t('dns_unlink_title')} />
+      <Modal.Content safeArea>
+        <S.Container>
+          <S.Info>
+            {!!walletAddress && (
+              <>
+                <S.InfoItem>
+                  <S.InfoItemLabel>
+                    {walletAddress === defaultWalletAddress
+                      ? t('dns_current_address')
+                      : t('dns_wallet_address')}
+                  </S.InfoItemLabel>
+                  <S.InfoItemValue>
+                    <TouchableOpacity
+                      disabled={isDisabled}
+                      style={{ alignItems: 'flex-end' }}
+                      onPress={handleReplace}
+                      activeOpacity={0.6}
                     >
-                      {t('dns_replace_button')}
-                    </Text>
-                  </TouchableOpacity>
+                      <Text variant="body1">{maskifyAddress(walletAddress)}</Text>
+                      <Text
+                        variant="body2"
+                        color={isDisabled ? 'foregroundTertiary' : 'accentPrimary'}
+                      >
+                        {t('dns_replace_button')}
+                      </Text>
+                    </TouchableOpacity>
+                  </S.InfoItemValue>
+                </S.InfoItem>
+                <Separator />
+              </>
+            )}
+            <Highlight onPress={() => copyText(fee)}>
+              <S.InfoItem>
+                <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
+                <S.InfoItemValue>
+                  {!!fee ? (
+                    <Text variant="body1">≈ {fee} TON</Text>
+                  ) : (
+                    <Skeleton.Line width={80} />
+                  )}
                 </S.InfoItemValue>
               </S.InfoItem>
-              <Separator />
-            </>
-          )}
-          <Highlight onPress={() => copyText(fee)}>
-            <S.InfoItem>
-              <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
-              <S.InfoItemValue>                 
-                {!!fee ? (
-                  <Text variant="body1">
-                    ≈ {fee} TON
-                  </Text>
-                ) : (
-                  <Skeleton.Line width={80} />
-                )}
-              </S.InfoItemValue>
-            </S.InfoItem>
-          </Highlight>
-        </S.Info>
-      </S.Container>
-      <ActionFooter 
-        ref={footerRef} 
-        onPressConfirm={handleConfirm}
-        responseOptions={{
-          onDone: () => {
-            if (onDone) {
-              onDone({ walletAddress: walletAddress });
-            }
+            </Highlight>
+          </S.Info>
+        </S.Container>
+        <ActionFooter
+          ref={footerRef}
+          onPressConfirm={handleConfirm}
+          responseOptions={
+            {
+              onDone: () => {
+                if (onDone) {
+                  onDone({ walletAddress: walletAddress });
+                }
 
-            const toastText = walletAddress ? t('dns_address_linked') : t('dns_address_unlinked');
-            Toast.success(toastText);
+                const toastText = walletAddress
+                  ? t('dns_address_linked')
+                  : t('dns_address_unlinked');
+                Toast.success(toastText);
+              },
+            } as any
           }
-        } as any}
-        onCloseModal={() => {
-          bottomSheetRef.current?.close();
-        }}
-      />
-    </BottomSheet>
+          onCloseModal={() => {
+            nav.goBack()
+          }}
+        />
+      </Modal.Content>
+    </Modal>
   );
 };
+
+export function openLinkingDomain(params: {
+  walletAddress?: string;
+  domainAddress: string;
+  domain: string;
+  fee?: string;
+  onDone?: (options: { walletAddress?: string }) => void;
+}) {
+  push('SheetsProvider', {
+    $$action: SheetActions.ADD,
+    component: LinkingDomainModal,
+    params,
+    path: 'LINKING_DOMAIN',
+  });
+}

@@ -12,7 +12,7 @@ import {
   ns,
 } from '$utils';
 import { debugLog } from '$utils/debugLog';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { AccountEvent, ActionTypeEnum } from '@tonkeeper/core/src/legacy';
 import { SignRawAction } from './SignRawAction';
 import { store, Toast } from '$store';
@@ -22,7 +22,6 @@ import { Ton } from '$libs/Ton';
 import { copyText } from '$hooks/useCopyText';
 import { push } from '$navigation/imperative';
 import { SheetActions } from '@tonkeeper/router';
-import BigNumber from 'bignumber.js';
 import {
   checkIsInsufficient,
   openInsufficientFundsModal,

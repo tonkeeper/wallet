@@ -1,7 +1,6 @@
 import { useAllAddresses } from '$hooks/useAllAddresses';
-import { openLinkingDomain } from '$navigation';
 import { walletVersionSelector } from '$store/wallet';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { Button, Text } from '$uikit';
 import { maskifyAddress, toNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
@@ -12,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Tonapi } from '$libs/Tonapi';
 import { favoritesActions } from '$store/favorites';
 import { DOMAIN_ADDRESS_NOT_FOUND } from '$core/Send/hooks/useSuggestedAddresses';
-import { LinkingDomainActions } from '$core/ModalContainer/LinkingDomainModal';
+import { LinkingDomainActions, openLinkingDomain } from '$core/ModalContainer/LinkingDomainModal';
 import { Toast } from '$store';
 import { checkIsInsufficient, openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 

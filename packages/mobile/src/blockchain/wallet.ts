@@ -8,7 +8,7 @@ import { UnlockedVault, Vault } from './vault';
 import { compareAddresses } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { getChainName, getWalletName } from '$shared/dynamicConfig';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 
 import axios from 'axios';

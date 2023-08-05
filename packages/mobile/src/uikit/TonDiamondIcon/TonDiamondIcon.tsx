@@ -15,10 +15,11 @@ interface Props {
   size: number;
   disabled?: boolean;
   iconAnimatedStyle?: any;//AnimatedStyleProp<ViewStyle>;
+  rounded?: boolean;
 }
 
 const TonDiamondIconComponent: FC<Props> = (props) => {
-  const { id, nftIcon, size, disabled, iconAnimatedStyle } = props;
+  const { id, nftIcon, size, disabled, iconAnimatedStyle, rounded = true } = props;
 
   const accent = AppearanceAccents[id];
 
@@ -33,7 +34,7 @@ const TonDiamondIconComponent: FC<Props> = (props) => {
   const isDefault = accent.id === AccentKey.default;
 
   return (
-    <S.IconContainer size={size} isDefault={isDefault}>
+    <S.IconContainer size={size} isDefault={isDefault} rounded={rounded}>
       {!isDefault ? <S.BlurBackground color={color} size={size} /> : null}
       <S.DiamondContainer disabled={disabled} style={[iconAnimatedStyle]}>
         {uri ? (

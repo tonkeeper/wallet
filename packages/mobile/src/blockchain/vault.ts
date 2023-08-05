@@ -7,7 +7,7 @@ import { getServerConfig } from '$shared/constants';
 import { MainDB } from '$database';
 import { debugLog } from '$utils/debugLog';
 import * as SecureStore from 'expo-secure-store';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 import { wordlist } from '$libs/Ton/mnemonic/wordlist';
 import { Tonapi } from '$libs/Tonapi';

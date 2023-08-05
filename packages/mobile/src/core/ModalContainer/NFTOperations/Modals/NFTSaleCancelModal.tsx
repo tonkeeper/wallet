@@ -11,7 +11,7 @@ import { useDownloadNFT } from '../useDownloadNFT';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { Modal } from '@tonkeeper/uikit';
 
 type NFTSaleCancelModalProps = TxRequestBody<NftSaleCancelParams>;

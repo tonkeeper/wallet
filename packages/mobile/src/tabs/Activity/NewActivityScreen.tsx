@@ -20,7 +20,7 @@ export const ActivityScreen = memo(() => {
 
   const nav = useNavigation();
   const handlePressRecevie = React.useCallback(() => {
-    if (wallet) {
+    if (!!wallet.address.raw) {
       nav.go('Receive', {
         currency: 'ton',
         isFromMainScreen: true,
@@ -28,18 +28,17 @@ export const ActivityScreen = memo(() => {
     } else {
       openRequireWalletModal();
     }
-  }, [wallet]);
+  }, [wallet.address.raw]);
 
   const handlePressBuy = React.useCallback(() => {
-    if (wallet) {
+    if (!!wallet.address.raw) {
       nav.openModal('Exchange', { category: 'buy' });
     } else {
       openRequireWalletModal();
     }
   }, [wallet]);
 
-
-  if (!events.loading && events?.data?.length < 1) {
+  if (!wallet.address.raw || !events.loading && events?.data?.length < 1) {
     return (
       <Screen>
         <View style={styles.emptyContainer}>

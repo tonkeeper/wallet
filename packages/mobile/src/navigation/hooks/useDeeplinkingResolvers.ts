@@ -22,7 +22,7 @@ import {
 } from '../helper';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { getTimeSec } from '$utils/getTimeSec';
 import { TonLoginClient } from '@tonapps/tonlogin-client';
 import { useNavigation } from '@tonkeeper/router';

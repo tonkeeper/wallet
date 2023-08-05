@@ -12,7 +12,7 @@ import { getTimeSec } from '$utils/getTimeSec';
 import { TxBodyOptions, TxResponseOptions } from './TXRequest.types';
 import { UnlockVaultError } from '$store/wallet/sagas';
 import { useDispatch, useSelector } from 'react-redux';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import * as S from './NFTOperations.styles';
 import { useNavigation } from '@tonkeeper/router';
 import { eventsActions } from '$store/events';

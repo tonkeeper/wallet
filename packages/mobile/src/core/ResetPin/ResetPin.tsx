@@ -89,7 +89,7 @@ export const ResetPin: FC = () => {
           }
         })
         .catch((err) => {
-          console.log('ERR', err);
+          console.log('ERR2', err);
           debugLog('supportedAuthenticationTypesAsync', err.message);
           doCreateWallet(pin);
         });

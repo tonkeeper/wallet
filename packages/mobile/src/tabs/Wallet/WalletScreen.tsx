@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import {
   Button,
   IconButton,

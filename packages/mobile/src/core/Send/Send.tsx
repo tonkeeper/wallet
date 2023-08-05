@@ -39,6 +39,7 @@ import { Configuration, AccountsApi } from '@tonkeeper/core/src/legacy';
 import { formatter } from '$utils/formatter';
 import { Events } from '$store/models';
 import { trackEvent } from '$utils/stats';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {

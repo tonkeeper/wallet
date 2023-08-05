@@ -7,7 +7,7 @@ import { Address } from '$libs/Ton';
 import { Tabs } from '../../tabs/Wallet/components/Tabs';
 import { Steezy } from '$styles';
 import { FlashList } from '@shopify/flash-list';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';

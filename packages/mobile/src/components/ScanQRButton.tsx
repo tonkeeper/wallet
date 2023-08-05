@@ -6,6 +6,7 @@ import { openScanQR, openSend } from '$navigation';
 import { isValidAddress } from '$utils';
 import { CryptoCurrencies } from '$shared/constants';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 
 
 export const ScanQRButton = memo(() => {

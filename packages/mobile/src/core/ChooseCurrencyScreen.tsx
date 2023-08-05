@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { ns } from '$utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { mainActions, mainSelector } from '$store/main';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { FiatCurrencySymbolsConfig, FiatCurrencies } from '@tonkeeper/core';
 

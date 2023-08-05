@@ -3,7 +3,7 @@ import { Button, Icon, Screen, Spacer, Text } from '$uikit';
 import * as S from '$core/SetupNotifications/SetupNotifications.style';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { openSetupWalletDone } from '$navigation';
 import { ns } from '$utils';
 import { debugLog } from '$utils/debugLog';

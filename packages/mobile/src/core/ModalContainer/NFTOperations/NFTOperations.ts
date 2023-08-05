@@ -21,7 +21,7 @@ import { NFTOperationError } from './NFTOperationError';
 import { GetGemsSaleContract } from './GetGemsSaleContract';
 import { Cell } from 'tonweb/dist/types/boc/cell';
 import { Address } from 'tonweb/dist/types/utils/address';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 import { getServerConfig } from '$shared/constants';
 import { SendApi, Configuration as ConfigurationV1 } from 'tonapi-sdk-js';

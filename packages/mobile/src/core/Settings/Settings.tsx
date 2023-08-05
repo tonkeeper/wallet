@@ -14,7 +14,7 @@ import { useNavigation } from '@tonkeeper/router';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
 import {
-  openAppearance,
+
   openDeleteAccountDone,
   openDevMenu,
   openJettonsListSettingsStack,
@@ -60,6 +60,7 @@ import AnimatedLottieView from 'lottie-react-native';
 import { Steezy } from '$styles';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
+import { openAppearance } from '$core/ModalContainer/AppearanceBottomSheet';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);

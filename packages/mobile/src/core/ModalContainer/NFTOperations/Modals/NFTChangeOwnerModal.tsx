@@ -11,7 +11,7 @@ import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
 import { maskifyAddress, toLocaleNumber} from '$utils';
 import { debugLog } from '$utils/debugLog';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { Modal } from '@tonkeeper/uikit';
 
 type NFTChangeOwnerModalProps = TxRequestBody<NftChangeOwnerParams>;

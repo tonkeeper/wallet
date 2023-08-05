@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { Screen, Spacer, SpacerSizes, View } from '$uikit';
 import { List } from '@tonkeeper/uikit';
 // import { List } from '$uikit';

@@ -4,10 +4,10 @@ import { ExchangeItemProps } from './ExchangeItem.interface';
 import * as S from './ExchangeItem.style';
 import { useExchangeMethodInfo } from '$hooks/useExchangeMethodInfo';
 import { useTheme } from '$hooks/useTheme';
-import { openExchangeMethodModal } from '$navigation';
 import { Icon, Text } from '$uikit';
 import { Linking } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
+import { openExchangeMethodModal } from '$core/ModalContainer/ExchangeMethod/ExchangeMethod';
 
 export const ExchangeItem: FC<ExchangeItemProps> = ({
   methodId,

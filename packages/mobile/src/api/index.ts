@@ -3,7 +3,7 @@ import { i18n } from '$translation';
 import { Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { getIsTestnet } from '$database';
 import { getServerConfigSafe } from '$shared/constants/serverConfig';
 

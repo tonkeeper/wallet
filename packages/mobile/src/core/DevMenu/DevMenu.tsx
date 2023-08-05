@@ -19,7 +19,7 @@ import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { Switch } from 'react-native-gesture-handler';
 import { DevFeature, Toast, useDevFeaturesToggle, useStakingStore } from '$store';
-import { t, tags } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { useNavigation } from '@tonkeeper/router';
 
@@ -176,7 +176,7 @@ export const DevMenu: FC = () => {
               Force show v4r1
             </CellSectionItem>
           </CellSection>
-          <CellSection>
+          {/* <CellSection>
             <PopupSelect
               items={['auto', ...tags.map((lang) => lang.tag)]}
               selected={devLanguage || 'auto'}
@@ -195,7 +195,7 @@ export const DevMenu: FC = () => {
                 Language
               </CellSectionItem>
             </PopupSelect>
-          </CellSection>
+          </CellSection> */}
           <CellSection>
             <CellSectionItem onPress={handleClearJettonsCache}>
               Clear jettons cache

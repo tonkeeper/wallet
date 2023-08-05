@@ -3,7 +3,7 @@ import React, { memo, useCallback, useLayoutEffect, useMemo, useState } from 're
 import { useValidateAddress } from '$hooks/useValidateAddress';
 import { Button, Icon, Input, Loader, Text } from '$uikit';
 import * as S from './NFTTransferInputAddressModal.style';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import {
   asyncDebounce,
   compareAddresses,

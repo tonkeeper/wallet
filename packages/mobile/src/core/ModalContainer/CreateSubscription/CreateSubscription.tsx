@@ -161,7 +161,7 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
           setFee(Ton.fromNano(res.fee.toString()));
         })
         .catch((err) => {
-          console.log('ERR', err);
+          console.log('ERR10', err);
         });
     }
   }, [info, wallet]);

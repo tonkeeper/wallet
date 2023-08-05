@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import {
   ImageType,
   openApproveTokenModal,

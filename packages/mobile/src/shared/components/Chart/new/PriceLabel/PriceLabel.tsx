@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { Text } from '$uikit/Text/Text';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { format } from 'date-fns';

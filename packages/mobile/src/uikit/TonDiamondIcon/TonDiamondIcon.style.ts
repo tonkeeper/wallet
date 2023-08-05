@@ -4,14 +4,14 @@ import Animated from 'react-native-reanimated';
 
 const BLUR_SHAPE_SOURCE = require('./blur.png');
 
-export const IconContainer = styled.View<{ size: number; isDefault?: boolean }>`
+export const IconContainer = styled.View<{ size: number; isDefault?: boolean; rounded: boolean }>`
   background: ${({ theme, isDefault }) =>
     isDefault
       ? changeAlphaValue(convertHexToRGBA(theme.colors.backgroundTertiary), 0.56)
       : theme.colors.backgroundTertiary};
   width: ${({ size }) => ns(size)}px;
   height: ${({ size }) => ns(size)}px;
-  border-radius: ${({ size }) => ns(size / 2)}px;
+  border-radius: ${({ size, rounded }) => rounded ? ns(size / 2) : 0}px;
   align-items: center;
   justify-content: center;
   position: relative;

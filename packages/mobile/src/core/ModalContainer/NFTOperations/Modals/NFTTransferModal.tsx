@@ -12,7 +12,7 @@ import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
 import { maskifyAddress, toLocaleNumber } from '$utils';
 import { debugLog } from '$utils/debugLog';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { CryptoCurrencies } from '$shared/constants';
 import { useDispatch } from 'react-redux';
 import { nftsActions } from '$store/nfts';

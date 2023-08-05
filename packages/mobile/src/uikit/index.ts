@@ -6,6 +6,7 @@ export { InlineHeader } from './InlineHeader/InlineHeader';
 export { Highlight } from './Highlight/Highlight';
 export { Modal } from './Modal/Modal';
 export { Input } from './Input/Input';
+export { FormItem } from './FormItem/FormItem';
 export { Loader } from './Loader/Loader';
 export { Button } from './Button/Button';
 export { ToastComponent } from './Toast/new/ToastComponent';

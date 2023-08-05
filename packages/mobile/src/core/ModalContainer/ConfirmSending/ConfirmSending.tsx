@@ -16,15 +16,13 @@ import {
 import { formatCryptoCurrency } from '$utils/currency';
 import { getTokenConfig } from '$shared/dynamicConfig';
 import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
-import {
-  openInactiveInfo,
-  openReminderEnableNotificationsModal,
-} from '$navigation';
 import { ns, maskifyAddress } from '$utils';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { favoritesFavoritesSelector } from '$store/favorites';
 import { goBack } from '$navigation/imperative';
 import { t } from '@tonkeeper/shared/i18n';
+import { openReminderEnableNotificationsModal } from '../ReminderEnableNotificationsModal';
+import { openInactiveInfo } from '../InfoAboutInactive/InfoAboutInactive';
 
 export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
   const {

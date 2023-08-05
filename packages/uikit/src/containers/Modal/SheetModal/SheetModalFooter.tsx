@@ -47,7 +47,7 @@ export const SheetModalFooter = React.memo((props: SheetModalFooterProps) => {
 
   const contentStyle = {
     paddingBottom: safeArea.bottom,
-    backgroundColor: theme.backgroundContent,
+    backgroundColor: theme.backgroundPage,
     height,
   };
 

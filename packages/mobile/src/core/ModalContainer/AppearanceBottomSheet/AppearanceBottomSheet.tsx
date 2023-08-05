@@ -1,5 +1,5 @@
 import { useDimensions } from '$hooks/useDimensions';
-import { openMarketplaces } from '$navigation';
+
 import { mainActions, accentSelector, accentTonIconSelector } from '$store/main';
 import { NFTModel, TonDiamondMetadata } from '$store/models';
 import { nftsSelector } from '$store/nfts';
@@ -10,7 +10,6 @@ import {
   AppearanceAccents,
   getAccentIdByDiamondsNFT,
 } from '$styled';
-import { BottomSheet } from '$uikit';
 import { checkIsTonDiamondsNFT, ns } from '$utils';
 import React, {
   FC,
@@ -29,11 +28,14 @@ import { AppearanceBottomSheetProps } from './AppearanceBottomSheet.interface';
 import * as S from './AppearanceBottomSheet.style';
 import { CustomButton } from './CustomButton/CustomButton';
 import { t } from '@tonkeeper/shared/i18n';
+import { Modal, View } from '@tonkeeper/uikit';
+import { SheetActions, useNavigation } from '@tonkeeper/router';
+import { push } from '$navigation/imperative';
+import { openMarketplaces } from '../Marketplaces/Marketplaces';
 
 const AppearanceBottomSheetComponent: FC<AppearanceBottomSheetProps> = (props) => {
   const { selectedAccentNFTAddress } = props;
-
-  const [isClosed, setClosed] = useState(false);
+  const nav = useNavigation();
 
   const flatListRef = useRef<FlatList>(null);
 
@@ -140,7 +142,7 @@ const AppearanceBottomSheetComponent: FC<AppearanceBottomSheetProps> = (props) =
     dispatch(mainActions.setAccent(selectedAccent.id));
     dispatch(mainActions.setTonCustomIcon(selectedAccent?.nftIcon || null));
 
-    setClosed(true);
+    nav.goBack();
   }, [dispatch, selectedAccent]);
 
   const openDiamondsNFTCollection = useCallback(() => {
@@ -164,30 +166,44 @@ const AppearanceBottomSheetComponent: FC<AppearanceBottomSheetProps> = (props) =
   }, []);
 
   return (
-    <BottomSheet title={t('appearance_title')} triggerClose={isClosed}>
-      <S.Description>{t('appearance_description')}</S.Description>
-      <FlatList
-        ref={flatListRef}
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => `${item.id}_${item.nftIcon?.uri || 'local'}`}
-        contentContainerStyle={{ paddingHorizontal: ns(16) }}
-        ItemSeparatorComponent={S.Divider}
-        horizontal={true}
-        data={accents}
-        renderItem={renderItem}
-      />
-      <S.ButtonContainer>
-        <CustomButton
-          isUnavailableAccent={!isReadyToChange}
-          accents={accents}
-          selectedAccentIndex={selectedAccentIndex}
-          onPress={isReadyToChange ? changeAccent : openDiamondsNFTCollection}
-        >
-          {buttonText}
-        </CustomButton>
-      </S.ButtonContainer>
-    </BottomSheet>
+    <Modal>
+      <Modal.Header title={t('appearance_title')} />
+      <Modal.Content safeArea>
+        <View style={{ marginBottom: 16 }}>
+          <S.Description>{t('appearance_description')}</S.Description>
+          <FlatList
+            ref={flatListRef}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => `${item.id}_${item.nftIcon?.uri || 'local'}`}
+            contentContainerStyle={{ paddingHorizontal: ns(16) }}
+            ItemSeparatorComponent={S.Divider}
+            horizontal={true}
+            data={accents}
+            renderItem={renderItem}
+          />
+          <S.ButtonContainer>
+            <CustomButton
+              isUnavailableAccent={!isReadyToChange}
+              accents={accents}
+              selectedAccentIndex={selectedAccentIndex}
+              onPress={isReadyToChange ? changeAccent : openDiamondsNFTCollection}
+            >
+              {buttonText}
+            </CustomButton>
+          </S.ButtonContainer>
+        </View>
+      </Modal.Content>
+    </Modal>
   );
 };
 
 export const AppearanceBottomSheet = memo(AppearanceBottomSheetComponent);
+
+export function openAppearance(props?: AppearanceBottomSheetProps) {
+  push('SheetsProvider', {
+    $$action: SheetActions.ADD,
+    component: AppearanceBottomSheet,
+    params: props,
+    path: 'APPEARANCE',
+  });
+}

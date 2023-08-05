@@ -8,7 +8,7 @@ import { getToken } from '$utils/messaging';
 import { openDAppBrowser } from '$navigation';
 import { getDomainFromURL } from '$utils';
 import { Alert } from 'react-native';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { useNotificationsStore } from '$store';
 
 export const useNotificationsResolver = () => {

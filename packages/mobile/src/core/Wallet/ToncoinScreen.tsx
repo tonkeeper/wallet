@@ -25,7 +25,7 @@ import {
 import { Linking, Platform, View } from 'react-native';
 import { delay, ns } from '$utils';
 import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { useNavigation } from '@tonkeeper/router';
 import { Chart } from '$shared/components/Chart/new/Chart';
 import { formatter } from '$utils/formatter';

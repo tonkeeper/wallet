@@ -3,7 +3,7 @@ import { openJetton, openJettonsList } from '$navigation';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { Steezy } from '$styles';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { Button, View } from '$uikit';
 import { List } from '$uikit';
 import { TonIcon } from '../../../components/TonIcon';

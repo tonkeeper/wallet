@@ -45,7 +45,7 @@ export const CreatePin: FC<CreatePinProps> = () => {
           }
         })
         .catch((err) => {
-          console.log('ERR', err);
+          console.log('ERR1', err);
           debugLog('supportedAuthenticationTypesAsync', err.message);
           doCreateWallet(pin);
         });

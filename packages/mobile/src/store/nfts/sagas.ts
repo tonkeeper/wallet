@@ -69,7 +69,7 @@ function* loadNFTsWorker(action: LoadNFTsAction) {
     yield put(nftsActions.setCanLoadMore(yield call([manager, 'canLoadMore'])));
   } catch (e) {
     e && debugLog(e.message);
-    console.log('ERR', e);
+    console.log('ERR5', e);
   }
 }
 
@@ -97,7 +97,7 @@ function* loadNFTWorker(action: LoadNFTAction) {
     );
   } catch (e) {
     e && debugLog(e.message);
-    console.log('ERR', e);
+    console.log('ERR7', e);
   }
 }
 

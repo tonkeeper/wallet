@@ -10,7 +10,7 @@ import { getTokenStatus } from '$store/zustand/tokenApproval/selectors';
 import { JettonVerification } from '$store/models';
 import { Button, Icon, Spacer, Text, View, List } from '$uikit';
 import { Steezy } from '$styles';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { format, maskifyAddress, triggerImpactLight } from '$utils';
 import FastImage from 'react-native-fast-image';
 import { Toast } from '$store';

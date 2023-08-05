@@ -10,16 +10,11 @@ import {
   SetupWalletStackRouteNames,
   TabsStackRouteNames,
 } from '$navigation/navigationNames';
-import { CryptoCurrencies, CryptoCurrency } from '$shared/constants';
+import { CryptoCurrency } from '$shared/constants';
 import { SendAnalyticsFrom, SubscriptionModel } from '$store/models';
 import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
 import { NFTKeyPair } from '$store/nfts/interface';
 import { DeployModalProps } from '$core/ModalContainer/NFTOperations/Modals/DeployModal';
-import { mergeRefs } from '$utils/mergeRefs';
-import { shouldOpenReminderNotifications } from '$utils/messaging';
-import { AppearanceBottomSheetProps } from '$core/ModalContainer/AppearanceBottomSheet/AppearanceBottomSheet.interface';
-import { ExchangeDB } from '$core/ModalContainer/ExchangeMethod/ExchangeDB';
-import { MarketplacesModalProps } from '$core/ModalContainer/Marketplaces/Marketplaces.interface';
 import { AddEditFavoriteAddressProps } from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress.interface';
 import _ from 'lodash';
 import { getCurrentRoute, navigate, push, replace } from './imperative';
@@ -105,8 +100,6 @@ export function openDAppBrowser(url: string) {
 export function openScanQR(onScan: (url: string) => void) {
   navigate(AppStackRouteNames.ScanQR, { onScan });
 }
-
-
 
 export function openSecretWords() {
   navigate(AppStackRouteNames.SetupWalletStack, {
@@ -235,26 +228,6 @@ export function openBuyFiat(currency: CryptoCurrency, methodId: string) {
   });
 }
 
-export async function openExchangeMethodModal(methodId: string, onContinue?: () => void) {
-  const isShowDetails = await ExchangeDB.isShowDetails(methodId);
-  if (isShowDetails) {
-    push(AppStackRouteNames.ModalContainer, {
-      modalName: ModalName.EXCHANGE_METHOD,
-      key: 'EXCHANGE_METHOD',
-      methodId,
-      onContinue,
-    });
-  } else {
-    if (onContinue) {
-      onContinue();
-
-      return;
-    }
-
-    openBuyFiat(CryptoCurrencies.Ton, methodId);
-  }
-}
-
 export function openCreateSubscription(invoiceId: string) {
   navigate(AppStackRouteNames.ModalContainer, {
     modalName: ModalName.CREATE_SUBSCRIPTION,
@@ -272,20 +245,6 @@ export function openSubscription(
     key: 'SUBSCRIPTION',
     subscription,
     fee,
-  });
-}
-
-export function openInactiveInfo() {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.INFO_ABOUT_INACTIVE,
-    key: 'INFO_ABOUT_INACTIVE',
-  });
-}
-
-export function openAppearance(props?: AppearanceBottomSheetProps) {
-  navigate(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.APPEARANCE,
-    ...props,
   });
 }
 
@@ -389,22 +348,6 @@ export function openJetton(jettonAddress: string) {
   });
 }
 
-export async function openReminderEnableNotificationsModal() {
-  const shouldOpen = await shouldOpenReminderNotifications();
-  if (shouldOpen) {
-    push(AppStackRouteNames.ModalContainer, {
-      modalName: ModalName.REMINDER_ENABLE_NOTIFICATIONS,
-    });
-  }
-}
-
-export async function openMarketplaces(props?: MarketplacesModalProps) {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.MARKETPLACES,
-    ...props,
-  });
-}
-
 export async function openChooseCountry() {
   navigate(AppStackRouteNames.ChooseCountry);
 }
@@ -427,27 +370,4 @@ export function openEditFavorite(props: Omit<AddEditFavoriteAddressProps, 'isEdi
 
 export function openNotificationsScreen() {
   navigate(ActivityStackRouteNames.NotificationsActivity);
-}
-
-export function openLinkingDomain(params: {
-  walletAddress?: string;
-  domainAddress: string;
-  domain: string;
-  fee?: string;
-  onDone?: (options: { walletAddress?: string }) => void;
-}) {
-  navigate(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.LINKING_DOMAIN,
-    ...params,
-  });
-}
-
-export function openReplaceDomainAddress(params: {
-  domain: string;
-  onReplace: (address: string) => void;
-}) {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.REPLACE_DOMAIN_ADDRESS,
-    ...params,
-  });
 }

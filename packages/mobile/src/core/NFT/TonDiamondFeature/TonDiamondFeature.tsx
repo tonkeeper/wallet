@@ -3,10 +3,11 @@ import { TonDiamondFeatureProps } from './TonDiamondFeature.interface';
 import * as S from './TonDiamondFeature.style';
 import { t } from '@tonkeeper/shared/i18n';
 import { FeatureButton } from './FeatureButton/FeatureButton';
-import { openAppearance } from '$navigation';
+
 import { useCallback } from 'react';
 import { AppearanceAccents, getAccentIdByDiamondsNFT } from '$styled';
 import { Text } from '$uikit';
+import { openAppearance } from '$core/ModalContainer/AppearanceBottomSheet';
 
 export const TonDiamondFeature: React.FC<TonDiamondFeatureProps> = ({ nft }) => {
   

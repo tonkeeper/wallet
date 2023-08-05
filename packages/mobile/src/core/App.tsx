@@ -74,7 +74,7 @@ export function App() {
                         <AppNavigator />
                       </HideableAmountProvider>
                     </ScrollPositionProvider>
-                    <MobilePasscodeScreen locked={tonkeeper.securitySettings.locked} />
+                    {/* <MobilePasscodeScreen locked={tonkeeper.securitySettings.locked} /> */}
                     <ToastComponent />
                     <BackgroundBlur />
                     {isAndroid ? (

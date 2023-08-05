@@ -96,7 +96,7 @@ function* loadEventsWorker(action: LoadEventsAction) {
     );
   } catch (e) {
     e && debugLog(e.message);
-    console.log('ERR', e);
+    console.log('ERR3', e);
   }
 }
 

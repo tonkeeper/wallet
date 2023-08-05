@@ -10,7 +10,7 @@ import { Icon, ScrollPositionContext, View } from '$uikit';
 import { usePreloadChart } from '$hooks/usePreloadChart';
 import { useTheme } from '$hooks/useTheme';
 import { isAndroid, nfs, ns } from '$utils';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
 import { TabBarBadgeIndicator } from './TabBarBadgeIndicator';
 import { useNotificationsSubscribe } from '$hooks/useNotificationsSubscribe';

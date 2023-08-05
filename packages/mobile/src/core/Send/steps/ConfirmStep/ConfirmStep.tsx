@@ -4,7 +4,7 @@ import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { getTokenConfig } from '$shared/dynamicConfig';
 import { Highlight, Icon, Separator, Spacer, Text } from '$uikit';
-import { isAndroid, isIOS, maskifyAddress, parseLocaleNumber } from '$utils';
+import { isIOS, maskifyAddress, parseLocaleNumber } from '$utils';
 import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
 import { ConfirmStepProps } from './ConfirmStep.interface';
 import * as S from './ConfirmStep.style';
@@ -16,13 +16,13 @@ import {
   ActionFooter,
   useActionFooter,
 } from '$core/ModalContainer/NFTOperations/NFTOperationFooter';
-import { openInactiveInfo } from '$navigation';
 import { Alert } from 'react-native';
 import { walletBalancesSelector, walletWalletSelector } from '$store/wallet';
 import { useSelector } from 'react-redux';
 import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { useStakingStore } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
+import { openInactiveInfo } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {

@@ -47,7 +47,7 @@ function* loadJettonMetaWorker(action: LoadJettonMetaAction) {
     );
   } catch (e) {
     e && debugLog(e.message);
-    console.log('ERR', e);
+    console.log('ERR4', e);
   }
 }
 
@@ -106,7 +106,7 @@ function* loadJettonsWorker() {
     yield call(JettonsDB.saveJettons, balances);
   } catch (e) {
     e && debugLog(e.message);
-    console.log('ERR', e);
+    console.log('ERR6', e);
   } finally {
     yield put(jettonsActions.setIsLoading(false));
   }

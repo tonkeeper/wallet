@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect } from 'react';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { Modal } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
 import { SheetActions, useNavigation } from '@tonkeeper/router';

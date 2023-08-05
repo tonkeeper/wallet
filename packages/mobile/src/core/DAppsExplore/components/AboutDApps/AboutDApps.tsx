@@ -1,4 +1,4 @@
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { Button, Text } from '$uikit';
 import { ns } from '$utils';
 import React from 'react';

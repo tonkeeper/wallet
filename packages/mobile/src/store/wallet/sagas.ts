@@ -57,7 +57,7 @@ import {
 } from '$database';
 import { batchActions, Toast, useNotificationsStore, useStakingStore } from '$store';
 import { subscriptionsActions } from '$store/subscriptions';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { initHandler } from '$store/main/sagas';
 import { getTokenConfig, getWalletName } from '$shared/dynamicConfig';
 import { withRetryCtx } from '$store/retry';

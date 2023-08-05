@@ -7,7 +7,7 @@ import {
 import { View, StyleSheet } from 'react-native';
 import { Button } from '$uikit/Button/Button';
 import { Text } from '$uikit/Text/Text';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { format } from 'date-fns';
 import { ONE_YEAR_MILISEC, getCountOfDays, getLocale } from '$utils/date';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';

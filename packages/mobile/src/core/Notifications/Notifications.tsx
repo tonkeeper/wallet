@@ -18,7 +18,7 @@ import { useSelector } from 'react-redux';
 import { NotificationsStatus, useNotificationStatus } from '$hooks/useNotificationStatus';
 import messaging from '@react-native-firebase/messaging';
 import { useNotifications } from '$hooks/useNotifications';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
 import { Toast, ToastSize, useConnectedAppsList, useConnectedAppsStore } from '$store';
 import { Steezy } from '$styles';

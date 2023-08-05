@@ -56,6 +56,7 @@ const AccentItemComponent: FC<Props> = (props) => {
           size={ACCENT_ITEM_WIDTH}
           disabled={!accent?.available}
           iconAnimatedStyle={iconAnimatedStyle}
+          rounded={false}
         />
         <S.InfoContainer>
           <S.Name>{t(`appearance_accent_name.${accent.id}`)}</S.Name>

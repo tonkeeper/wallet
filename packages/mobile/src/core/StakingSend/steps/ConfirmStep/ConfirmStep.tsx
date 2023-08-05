@@ -14,12 +14,8 @@ import {
 } from '$core/ModalContainer/NFTOperations/NFTOperationFooter';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CryptoCurrencies } from '$shared/constants';
-import {
-  getImplementationIcon,
-  getPoolIcon,
-  parseLocaleNumber,
-  truncateDecimal,
-} from '$utils';
+import { parseLocaleNumber, truncateDecimal } from '$utils';
+import { getImplementationIcon, getPoolIcon } from '$utils/staking';
 import { PoolInfo } from '@tonkeeper/core/src/legacy';
 import { Address } from '$libs/Ton';
 import { stakingFormatter } from '$utils/formatter';
@@ -38,10 +34,7 @@ interface Props extends StepComponentProps {
   sendTx: () => Promise<void>;
 }
 
-const getActionName = (
-  transactionType: StakingTransactionType,
-  t: any,
-) => {
+const getActionName = (transactionType: StakingTransactionType, t: any) => {
   switch (transactionType) {
     case StakingTransactionType.WITHDRAWAL:
       return t('staking.withdrawal_request');
@@ -90,8 +83,6 @@ const ConfirmStepComponent: FC<Props> = (props) => {
       [StakingSendSteps.CONFIRM]: event.contentOffset.y,
     };
   });
-
-  
 
   const { footerRef, onConfirm } = useActionFooter();
 
