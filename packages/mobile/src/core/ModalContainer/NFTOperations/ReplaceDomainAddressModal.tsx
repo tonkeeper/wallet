@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { useValidateAddress } from '$hooks';
+import { useValidateAddress } from '$hooks/useValidateAddress';
 import { BottomSheet, Button, Input, Text } from '$uikit';
 import * as S from '../NFTTransferInputAddressModal/NFTTransferInputAddressModal.style';
 import { t } from '$translation';

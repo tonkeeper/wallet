@@ -7,20 +7,20 @@ import { walletActions } from '$store/wallet';
 import {
   Base64,
   compareAddresses,
-  debugLog,
   delay,
   fromNano,
   isValidAddress,
 } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import {
-  getCurrentRoute,
+
   openCreateSubscription,
   openDeploy,
-  openRequireWalletModal,
   openSend,
 } from '../helper';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 
 import { t } from '$translation';
 import { getTimeSec } from '$utils/getTimeSec';
@@ -41,6 +41,7 @@ import BigNumber from 'bignumber.js';
 import { Tonapi } from '$libs/Tonapi';
 import { checkFundsAndOpenNFTTransfer } from '$core/ModalContainer/NFTOperations/Modals/NFTTransferModal';
 import { openNFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
+import { getCurrentRoute } from '$navigation/imperative';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;

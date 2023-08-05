@@ -1,4 +1,5 @@
-import { useCopyText, useFiatValue, useTranslator } from '$hooks';
+import { useCopyText } from '$hooks/useCopyText';
+import { useFiatValue } from '$hooks/useFiatValue';
 import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { getTokenConfig } from '$shared/dynamicConfig';
@@ -21,6 +22,7 @@ import { walletBalancesSelector, walletWalletSelector } from '$store/wallet';
 import { useSelector } from 'react-redux';
 import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { useStakingStore } from '$store';
+import { t } from '@tonkeeper/shared/i18n';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -43,8 +45,6 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const { footerRef, onConfirm } = useActionFooter();
 
   const { bottom: bottomInset } = useSafeAreaInsets();
-
-  const t = useTranslator();
 
   const copyText = useCopyText();
 

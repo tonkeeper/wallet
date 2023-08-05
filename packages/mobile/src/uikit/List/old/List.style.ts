@@ -1,7 +1,7 @@
 import styled from '$styled';
 import { nfs, ns } from '$utils';
-import { Highlight } from '$uikit';
-import { Text } from '$uikit/Text/Text';
+import { Highlight } from '../../Highlight/Highlight';
+import { Text } from '../../Text/Text';
 
 export const Wrap = styled.View`
   background: ${({ theme }) => theme.colors.backgroundSecondary};

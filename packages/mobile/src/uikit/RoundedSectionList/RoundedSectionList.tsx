@@ -4,8 +4,9 @@ import { SectionList } from 'react-native';
 import {
   RoundedSectionListItem,
   RoundedSectionListProps,
-} from '$uikit/RoundedSectionList/RoundedSectionList.interface';
-import { InlineHeader, Separator } from '$uikit';
+} from '../RoundedSectionList/RoundedSectionList.interface';
+import { InlineHeader } from '../InlineHeader/InlineHeader';
+import { Separator } from '../Separator/Separator'
 import { RADIUS } from '$styled';
 import { ns } from '$utils';
 import * as S from './RoundedSectionList.style';

@@ -1,11 +1,3 @@
-import { createRef } from 'react';
-import { StackActions } from '@react-navigation/routers';
-import {
-  NavigationContainerRef,
-  CommonActions,
-  useRoute,
-  createNavigationContainerRef,
-} from '@react-navigation/native';
 import * as LocalAuthentication from 'expo-local-authentication';
 
 import {
@@ -30,98 +22,7 @@ import { ExchangeDB } from '$core/ModalContainer/ExchangeMethod/ExchangeDB';
 import { MarketplacesModalProps } from '$core/ModalContainer/Marketplaces/Marketplaces.interface';
 import { AddEditFavoriteAddressProps } from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress.interface';
 import _ from 'lodash';
-
-export const navigationRef_depreceted = createRef<NavigationContainerRef>();
-export const navigationRef = createNavigationContainerRef();
-
-export const setNavigationRef = mergeRefs(navigationRef_depreceted, navigationRef);
-
-let navigationIsReady = false;
-export const getCurrentRouteName = () => {
-  if (navigationIsReady) {
-    return navigationRef.getCurrentRoute()?.name;
-  }
-
-  return null;
-};
-
-export const onNavigationReady = () => {
-  navigationIsReady = true;
-};
-
-export function getCurrentRoute() {
-  if (!navigationRef_depreceted.current) {
-    return null;
-  }
-
-  const state = navigationRef_depreceted.current.getRootState();
-  let route = state?.routes?.[state.index];
-
-  while (route?.state?.index !== undefined && route?.state?.index !== null) {
-    route = route.state.routes[route.state.index];
-  }
-
-  return route ?? null;
-}
-
-export function navigate(name: string, params?: any) {
-  navigationRef_depreceted.current?.navigate(name, params);
-}
-
-export function replace(name: string, params?: any) {
-  navigationRef_depreceted.current?.dispatch(StackActions.replace(name, params));
-}
-
-export function push(routeName: string, params?: any) {
-  navigationRef_depreceted.current?.dispatch(StackActions.push(routeName, params));
-}
-
-export function popToTop() {
-  navigationRef_depreceted.current?.dispatch(StackActions.popToTop());
-}
-
-export function popTo(count: number) {
-  navigationRef_depreceted.current?.dispatch(StackActions.pop(count));
-}
-
-export function goBack() {
-  navigationRef_depreceted.current?.goBack();
-}
-
-export function reset(screenName: string) {
-  navigationRef_depreceted.current?.dispatch(
-    CommonActions.reset({
-      index: 0,
-      routes: [{ name: screenName }],
-    }),
-  );
-}
-
-export function openBalancesTab() {
-  navigate(TabsStackRouteNames.Balances);
-}
-
-export function openWallet(currency: CryptoCurrency) {
-  _.throttle(() => {
-    navigate(MainStackRouteNames.Wallet, {
-      currency,
-    });
-  }, 1000)();
-}
-
-export function openEditCoins() {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.EDIT_COINS,
-    key: 'EDIT_COINS',
-  });
-}
-
-export function openRequireWalletModal() {
-  navigate(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.REQUIRE_WALLET,
-    key: 'REQUIRE_WALLET',
-  });
-}
+import { getCurrentRoute, navigate, push, replace } from './imperative';
 
 export function openReceive(
   currency: CryptoCurrency,
@@ -205,11 +106,7 @@ export function openScanQR(onScan: (url: string) => void) {
   navigate(AppStackRouteNames.ScanQR, { onScan });
 }
 
-export function openCreateWallet() {
-  navigate(AppStackRouteNames.SetupWalletStack, {
-    screen: SetupWalletStackRouteNames.CreateWallet,
-  });
-}
+
 
 export function openSecretWords() {
   navigate(AppStackRouteNames.SetupWalletStack, {
@@ -554,8 +451,3 @@ export function openReplaceDomainAddress(params: {
     ...params,
   });
 }
-
-export const useParams = <T>(): Partial<T> => {
-  const route = useRoute();
-  return route.params ?? {};
-};

@@ -4,19 +4,18 @@ import * as S from './AddEditFavoriteAddress.style';
 import { AddEditFavoriteAddressProps } from './AddEditFavoriteAddress.interface';
 import { BottomSheet, Input, Text } from '$uikit';
 import { List, ListCell } from '$uikit/List/old/List';
-import { useCopyText, useTranslator } from '$hooks';
+import { useCopyText } from '$hooks/useCopyText';
 import { Alert, Keyboard } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { favoritesActions } from '$store/favorites';
 import { isAndroid, maskifyAddress } from '$utils';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { t } from '@tonkeeper/shared/i18n';
 
 const MAX_LENGTH = 24;
 
 const AddEditFavoriteAddressComponent: FC<AddEditFavoriteAddressProps> = (props) => {
   const { address, name: initialName, domain, isEdit, onSave } = props;
-
-  const t = useTranslator();
 
   const copyText = useCopyText();
 

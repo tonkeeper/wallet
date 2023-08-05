@@ -1,4 +1,4 @@
-import { useStakingStatuses, useTranslator } from '$hooks';
+import { useStakingStatuses } from '$hooks/useStakingStatuses';
 import { MainStackRouteNames } from '$navigation';
 import { StakingListCell } from '$shared/components';
 import { View } from '$uikit';
@@ -10,9 +10,10 @@ import { useStakingStore } from '$store';
 import { shallow } from 'zustand/shallow';
 import { StakingWidgetStatus } from './StakingWidgetStatus';
 import { logEvent } from '@amplitude/analytics-browser';
+import { t } from '@tonkeeper/shared/i18n';
 
 const StakingWidgetComponent: FC = () => {
-  const t = useTranslator();
+  
 
   const nav = useNavigation();
 

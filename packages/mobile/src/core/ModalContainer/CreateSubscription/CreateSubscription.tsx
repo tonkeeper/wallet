@@ -19,13 +19,16 @@ import {
 import { subscriptionsActions } from '$store/subscriptions';
 import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
 import { formatCryptoCurrency } from '$utils/currency';
-import { useTheme, useTranslator, useWalletInfo } from '$hooks';
-import { eventsEventsInfoSelector, eventsSelector } from '$store/events';
-import { walletSelector, walletWalletSelector } from '$store/wallet';
+import { useTheme } from '$hooks/useTheme';
+import { useWalletInfo } from '$hooks/useWalletInfo';
+
+import { eventsEventsInfoSelector } from '$store/events';
+import { walletWalletSelector } from '$store/wallet';
 import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { Toast } from '$store';
 import { network } from '$libs/network';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   invoiceId = null,
@@ -35,7 +38,7 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
 }) => {
   const dispatch = useDispatch();
   const theme = useTheme();
-  const t = useTranslator();
+  
 
   const wallet = useSelector(walletWalletSelector);
   const { amount: balance } = useWalletInfo(CryptoCurrencies.Ton);

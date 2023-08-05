@@ -4,7 +4,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useAppState } from '$hooks';
+import { useAppState } from '$hooks/useAppState';
 import { FullWindowOverlay } from 'react-native-screens';
 import { Steezy } from '$styles';
 import { StyleSheet } from 'react-native';

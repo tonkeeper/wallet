@@ -1,8 +1,10 @@
-import { useCopyText, useInstance } from '$hooks';
+import { useInstance } from '$hooks/useInstance';
+import { useCopyText } from '$hooks/useCopyText';
 import { t } from '$translation';
 import { BottomSheet, Highlight, Separator, Skeleton, Text } from '$uikit';
 import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
-import { Base64, debugLog, maskifyAddress, truncateDecimal } from '$utils';
+import { Base64, maskifyAddress, truncateDecimal } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import React, { useEffect } from 'react';
 import { ActionFooter, useActionFooter } from './NFTOperations/NFTOperationFooter';
 import { useUnlockVault } from './NFTOperations/useUnlockVault';

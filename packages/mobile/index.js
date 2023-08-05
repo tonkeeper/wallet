@@ -14,7 +14,7 @@ import {
 
 import { App } from '$core/App';
 import { name as appName } from './app.json';
-import { debugLog } from './src/utils';
+import { debugLog } from './src/utils/debugLog';
 import { mainActions } from './src/store/main';
 import { store, useNotificationsStore } from './src/store';
 import { getAttachScreenFromStorage } from '$navigation/AttachScreen';

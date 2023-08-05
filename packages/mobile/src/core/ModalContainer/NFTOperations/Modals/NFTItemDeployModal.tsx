@@ -1,7 +1,9 @@
 import React from 'react';
 import { useDownloadCollectionMeta } from '../useDownloadCollectionMeta';
 import { useDownloadMetaFromUri } from '../useDownloadMetaFromUri';
-import { useCopyText, useInstance, useWallet } from '$hooks';
+import { useCopyText } from '$hooks/useCopyText';
+import { useInstance } from '$hooks/useInstance';
+import { useWallet} from '$hooks/useWallet';
 import { Highlight, Separator, Skeleton, Text } from '$uikit';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftItemDeployParams, TxRequestBody } from '../TXRequest.types';
@@ -9,7 +11,8 @@ import { NFTItemMeta } from '../useDownloadNFT';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import {debugLog, maskifyAddress, toLocaleNumber} from '$utils';
+import { maskifyAddress, toLocaleNumber} from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { t } from '$translation';
 import { Modal } from '@tonkeeper/uikit';
 

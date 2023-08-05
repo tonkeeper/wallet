@@ -1,8 +1,11 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import { useCopyText, useInstance, useWallet } from '$hooks';
+import { useCopyText } from '$hooks/useCopyText';
+import { useInstance } from '$hooks/useInstance';
+import { useWallet} from '$hooks/useWallet';
 import { Highlight, Icon, Separator, Skeleton, Text } from '$uikit';
-import { debugLog, delay, maskifyAddress, retry, toLocaleNumber } from '$utils';
+import { delay, maskifyAddress, retry, toLocaleNumber } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftSalePlaceGetgemsParams, TxRequestBody } from '../TXRequest.types';
 import { useDownloadNFT } from '../useDownloadNFT';
@@ -160,8 +163,7 @@ export const NFTSalePlaceGetgemsModal = ({
         <S.Container>
           <S.Center>
             <S.NFTItemPreview>
-              {isDNS ? <S.GlobeIcon /> : null}
-              {!isDNS && <S.Image uri={item?.data?.metadata?.image} resize={512} />}
+              <S.Image uri={item?.data?.metadata?.image} resize={512} />
             </S.NFTItemPreview>
             <S.CaptionWrap>
               <S.Caption>{caption}</S.Caption>

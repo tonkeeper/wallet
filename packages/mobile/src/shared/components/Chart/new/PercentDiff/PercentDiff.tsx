@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Text } from '$uikit/Text/Text';
 import { TonThemeColor } from '$styled';
 import { FiatCurrencies } from '$shared/constants';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { toLocaleNumber } from '$utils';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';

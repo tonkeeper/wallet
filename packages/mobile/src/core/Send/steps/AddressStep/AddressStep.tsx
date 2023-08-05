@@ -1,5 +1,5 @@
 import { useSuggestedAddresses } from '../../hooks/useSuggestedAddresses';
-import { useReanimatedKeyboardHeight, useTranslator } from '$hooks';
+import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
 import { Ton } from '$libs/Ton';
 import { Button, FormItem } from '$uikit';
 import { asyncDebounce, formatInputAmount, isValidAddress, parseTonLink } from '$utils';
@@ -34,6 +34,7 @@ import { AddressStepProps } from './AddressStep.interface';
 import { Tonapi } from '$libs/Tonapi';
 import { AddressInput, AddressSuggests, CommentInput } from './components';
 import { TextInput } from 'react-native-gesture-handler';
+import { t } from '@tonkeeper/shared/i18n';
 
 const TonWeb = require('tonweb');
 
@@ -63,7 +64,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
   const isReadyToContinue = !!recipient;
 
-  const t = useTranslator();
+  
 
   const { keyboardHeightStyle } = useReanimatedKeyboardHeight();
 

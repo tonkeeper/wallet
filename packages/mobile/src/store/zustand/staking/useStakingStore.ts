@@ -1,12 +1,14 @@
 import { KNOWN_STAKING_IMPLEMENTATIONS, getServerConfig } from '$shared/constants';
-import { DevFeature, store, useDevFeaturesToggle } from '$store';
-import { calculatePoolBalance } from '$utils';
+import { store } from '$store';
+import { useDevFeaturesToggle } from '../devFeaturesToggle/useDevFeaturesToggle';
+import { DevFeature } from '../devFeaturesToggle/types';
+import { calculatePoolBalance } from '$utils/staking';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Configuration, StakingApi } from '@tonkeeper/core/src/legacy';
 import BigNumber from 'bignumber.js';
 import TonWeb from 'tonweb';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { IStakingStore, StakingApiStatus, StakingInfo, StakingProvider } from './types';
 import { i18n } from '$translation';
 import _ from 'lodash';
@@ -194,7 +196,7 @@ export const useStakingStore = create(
     }),
     {
       name: 'staking',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: ({
         pools,
         providers,

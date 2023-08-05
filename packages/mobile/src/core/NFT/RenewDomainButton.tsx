@@ -18,7 +18,7 @@ import TonWeb from 'tonweb';
 
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 import { compareAddresses } from '$utils/address';
-import { useWallet } from '$hooks';
+import { useWallet } from '$hooks/useWallet';
 import { Base64 } from '$utils';
 
 export type RenewDomainButtonRef = {

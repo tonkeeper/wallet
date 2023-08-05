@@ -1,4 +1,5 @@
-import { Icon, Text, Separator } from '$uikit';
+import { Icon } from '../Icon/Icon';
+import { Text } from '../Text/Text';
 import React, { FC, memo, ReactNode } from 'react';
 import * as S from './TokenListItem.style';
 

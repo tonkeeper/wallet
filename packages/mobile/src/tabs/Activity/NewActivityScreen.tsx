@@ -7,7 +7,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { useWallet } from '../useWallet';
 import React, { memo } from 'react';
 
-import { openRequireWalletModal } from '$navigation';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { useNavigation } from '@tonkeeper/router';
 
 export const ActivityScreen = memo(() => {

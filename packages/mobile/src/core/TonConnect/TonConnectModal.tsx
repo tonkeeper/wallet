@@ -4,18 +4,18 @@ import queryString from 'query-string';
 import TonWeb from 'tonweb';
 import { useDispatch, useSelector } from 'react-redux';
 import { Linking, StyleSheet } from 'react-native';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { getServerConfig, SelectableVersionsConfig } from '$shared/constants';
 import { walletSelector } from '$store/wallet';
 import { Button, Icon, List, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
-  debugLog,
   delay,
   getDomainFromURL,
   maskifyTonAddress,
   triggerNotificationSuccess,
   triggerSelection,
 } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { UnlockVaultError } from '$store/wallet/sagas';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import {
@@ -30,7 +30,8 @@ import { TonConnectModalProps } from './models';
 import { useEffect } from 'react';
 import { Modal } from '@tonkeeper/uikit';
 import { store, Toast, useNotificationsStore } from '$store';
-import { openRequireWalletModal, push } from '$navigation';
+import { push } from '$navigation/imperative';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { mainSelector } from '$store/main';
 import { createTonProofForTonkeeper } from '$utils/notificationsproof';

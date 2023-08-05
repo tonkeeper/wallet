@@ -3,7 +3,7 @@ import { Text } from '$uikit/Text/Text';
 import { t } from '$translation';
 import { TouchableOpacity, View } from 'react-native';
 import { Haptics, ns } from '$utils';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { ChartPeriod } from '$store/zustand/chart';
 
 export interface PeriodSelectorProps {

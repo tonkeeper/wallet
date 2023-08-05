@@ -1,4 +1,5 @@
-import { useCopyText, useFiatValue, useTranslator } from '$hooks';
+import { useCopyText } from '$hooks/useCopyText';
+import { useFiatValue } from '$hooks/useFiatValue';
 import { Highlight, Separator, Spacer, Text } from '$uikit';
 import React, { FC, memo, useCallback, useMemo } from 'react';
 import * as S from './ConfirmStep.style';
@@ -21,7 +22,8 @@ import {
 } from '$utils';
 import { PoolInfo } from '@tonkeeper/core/src/legacy';
 import { Address } from '$libs/Ton';
-import { formatter, stakingFormatter } from '$utils/formatter';
+import { stakingFormatter } from '$utils/formatter';
+import { t } from '@tonkeeper/shared/i18n';
 
 interface Props extends StepComponentProps {
   transactionType: StakingTransactionType;
@@ -38,7 +40,7 @@ interface Props extends StepComponentProps {
 
 const getActionName = (
   transactionType: StakingTransactionType,
-  t: ReturnType<typeof useTranslator>,
+  t: any,
 ) => {
   switch (transactionType) {
     case StakingTransactionType.WITHDRAWAL:
@@ -89,7 +91,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
     };
   });
 
-  const t = useTranslator();
+  
 
   const { footerRef, onConfirm } = useActionFooter();
 

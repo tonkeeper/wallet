@@ -1,5 +1,7 @@
 import React from 'react';
-import { useCopyText, useInstance, useWallet } from '$hooks';
+import { useCopyText } from '$hooks/useCopyText';
+import { useInstance } from '$hooks/useInstance';
+import { useWallet} from '$hooks/useWallet';
 import { Highlight, Separator, Skeleton, Text } from '$uikit';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftSingleDeployParams, TxRequestBody } from '../TXRequest.types';
@@ -8,7 +10,8 @@ import { NFTItemMeta } from '../useDownloadNFT';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import {debugLog, toLocaleNumber} from '$utils';
+import { toLocaleNumber} from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { t } from '$translation';
 import { Modal } from '@tonkeeper/uikit';
 

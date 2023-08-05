@@ -9,7 +9,7 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
 import { Icon, PopupSelect, ScrollHandler, Spacer, Text, List } from '$uikit';
-import { useTranslator, useShouldShowTokensButton } from '$hooks';
+import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
@@ -58,6 +58,7 @@ import { useFlags } from '$utils/flags';
 import { SearchEngine, useBrowserStore } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
 import { Steezy } from '$styles';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -69,7 +70,7 @@ export const Settings: FC = () => {
     'disable_feedback_button',
   ]);
 
-  const t = useTranslator();
+  
   const nav = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
   const notificationsBadge = useNotificationsBadge();

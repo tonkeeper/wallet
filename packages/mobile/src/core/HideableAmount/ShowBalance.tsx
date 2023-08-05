@@ -9,7 +9,7 @@ import {
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Steezy } from '$styles';
 import { Pressable, View } from '$uikit';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { Haptics, isAndroid } from '$utils';
 import { DarkTheme } from '$styled';
 

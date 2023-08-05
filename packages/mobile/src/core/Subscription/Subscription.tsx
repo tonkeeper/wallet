@@ -8,10 +8,10 @@ import {Button, Modal, Separator, Text} from '$uikit';
 import * as S from './Subscription.style';
 import { format, ns } from '$utils';
 import { subscriptionsActions } from '$store/subscriptions';
-import { goBack } from '$navigation';
+import { goBack } from '$navigation/imperative';
 import { Linking } from 'react-native';
-import { useTranslator } from '$hooks';
 import {Ton} from "$libs/Ton";
+import { t } from '@tonkeeper/shared/i18n';
 
 export const Subscription: FC<SubscriptionProps> = ({ route }) => {
   const {
@@ -28,7 +28,6 @@ export const Subscription: FC<SubscriptionProps> = ({ route }) => {
   const isEdit = !!id;
 
   const { bottom: bottomInset } = useSafeAreaInsets();
-  const t = useTranslator();
   const dispatch = useDispatch();
   const [isSending, setSending] = useState(false);
   const [isSuccess, setSuccess] = useState(false);

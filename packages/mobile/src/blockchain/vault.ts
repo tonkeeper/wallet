@@ -5,7 +5,7 @@ import scrypt from 'react-native-scrypt';
 import BN from 'bn.js';
 import { getServerConfig } from '$shared/constants';
 import { MainDB } from '$database';
-import { debugLog } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import * as SecureStore from 'expo-secure-store';
 import { t } from '$translation';
 import { Ton } from '$libs/Ton';

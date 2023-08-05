@@ -1,4 +1,4 @@
-import { useReanimatedKeyboardHeight, useTranslator } from '$hooks';
+import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
 import { Button, Spacer } from '$uikit';
 import React, { FC, memo, useEffect, useMemo, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import { AmountStepProps } from './AmountStep.interface';
 import { walletWalletSelector } from '$store/wallet';
 import { AmountInput, AmountInputRef } from '$shared/components';
 import { CoinDropdown } from './CoinDropdown';
+import { t } from '@tonkeeper/shared/i18n';
 
 const AmountStepComponent: FC<AmountStepProps> = (props) => {
   const {
@@ -42,7 +43,7 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
 
   const { bottom: bottomInset } = useSafeAreaInsets();
 
-  const t = useTranslator();
+  
 
   const isFirstRender = useRef(true);
 

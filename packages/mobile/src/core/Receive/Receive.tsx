@@ -10,13 +10,13 @@ import * as S from './Receive.style';
 import { CurrencyIcon, Icon, NavBar, Text } from '$uikit';
 import { walletSelector } from '$store/wallet';
 import { deviceWidth, ns, triggerImpactLight } from '$utils';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { CryptoCurrencies, TabletModalsWidth } from '$shared/constants';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { Toast } from '$store';
 
 export const Receive: FC<ReceiveProps> = ({ route }) => {
-  const t = useTranslator();
+  
   const qrSize = Math.min(deviceWidth, TabletModalsWidth) - ns(64) * 2 - ns(16) - ns(12);
   const { currency, jettonAddress, isJetton, isFromMainScreen } = route.params;
   const { currencyTitle, Logo } = useCurrencyToSend(

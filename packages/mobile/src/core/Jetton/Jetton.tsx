@@ -14,7 +14,8 @@ import {
 import { delay, maskifyTonAddress, ns, trackEvent } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
-import { useTheme, useTokenPrice, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
+import { useTokenPrice } from '$hooks/useTokenPrice';
 import { openDAppBrowser, openReceive, openSend } from '$navigation';
 import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { useSelector } from 'react-redux';
@@ -29,13 +30,13 @@ import { shallow } from 'zustand/shallow';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { Events, SendAnalyticsFrom } from '$store/models';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const theme = useTheme();
   const flags = useFlags(['disable_swap']);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const jetton = useJetton(route.params.jettonAddress);
-  const t = useTranslator();
   const { events, isRefreshing, isLoading, refreshJettonEvents } = useJettonEvents(
     jetton.jettonAddress,
   );

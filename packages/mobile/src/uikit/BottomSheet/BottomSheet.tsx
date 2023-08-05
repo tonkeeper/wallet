@@ -3,7 +3,7 @@ import { StyleSheet, useWindowDimensions, TouchableOpacity, View } from 'react-n
 import { useNavigation } from '@tonkeeper/router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BottomSheetBehavior from 'reanimated-bottom-sheet';
-import Animated from 'react-native-reanimated';
+import Animated, { interpolate, useSharedValue } from 'react-native-reanimated';
 
 import { ns, statusBarHeight } from '$utils';
 import { Header } from './Header/Header';
@@ -11,7 +11,7 @@ import { Content } from './Content/Content';
 import { BottomSheetProps, BottomSheetRef } from './BottomSheet.interface';
 import * as HeaderS from './Header/Header.style';
 import { Icon } from '$uikit/Icon/Icon';
-import { useReanimatedKeyboardHeight } from '$hooks';
+import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
 
 export const BottomSheet = React.forwardRef<BottomSheetRef, BottomSheetProps>(
   (props, ref) => {
@@ -32,7 +32,7 @@ export const BottomSheet = React.forwardRef<BottomSheetRef, BottomSheetProps>(
 
     const { top } = useSafeAreaInsets();
     const { height: deviceHeight } = useWindowDimensions();
-    const navigation = useNavigation<any>();
+    const navigation = useNavigation();
     const closeTimer = useRef<any>(0);
     const onCloseDone = useRef<(() => void) | null>(null);
     const [isOpened, setOpened] = useState(false);
@@ -65,7 +65,8 @@ export const BottomSheet = React.forwardRef<BottomSheetRef, BottomSheetProps>(
     }, [props.skipCheckSnapPoints, contentHeight, deviceHeight, top]);
 
     const bottomSheetRef = useRef<BottomSheetBehavior>(null);
-    const fall = useRef(new Animated.Value(1)).current;
+    // const fall = useRef(new Animated.Value(1)).current;
+    const fall = useSharedValue(1);
 
     const handleOpenEnd = useCallback(() => {
       setOpened(true);
@@ -154,10 +155,10 @@ export const BottomSheet = React.forwardRef<BottomSheetRef, BottomSheetProps>(
               style={{
                 flex: 1,
                 backgroundColor: '#000',
-                opacity: fall.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0.72, 0],
-                }),
+                opacity: interpolate(fall.value,
+                  [0, 1],
+                  [0.72, 0],
+                ),
               }}
             />
           </TouchableOpacity>

@@ -24,9 +24,9 @@ import * as S from './TransactionsList.style';
 import { EventsMap } from '$store/events/interface';
 import { differenceInCalendarMonths } from 'date-fns';
 import { EventModel, JettonBalanceModel } from '$store/models';
-import { openEditCoins, openJetton, openJettonsList } from '$navigation';
+import { openJetton, openJettonsList } from '$navigation';
 import { Address, Ton } from '$libs/Ton';
-import { useApprovedNfts, useJettonBalances, useTranslator } from '$hooks';
+import { useJettonBalances } from '$hooks/useJettonBalances';
 import { walletActions, walletSelector } from '$store/wallet';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
@@ -36,9 +36,11 @@ import { ActionItem } from '$shared/components/ActionItem/ActionItem';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
 import { useNftData } from '$core/ManageTokens/hooks/useNftData';
-import { AccountAddress, decryptMessageComment, EncryptedComment } from '@tonkeeper/core';
+import { decryptMessageComment } from '@tonkeeper/core';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { Toast, useEncryptedCommentsStore } from '$store';
+import { AccountAddress, EncryptedComment } from '@tonkeeper/core/src/TonAPI';
+import { t } from '@tonkeeper/shared/i18n';
 
 const AnimatedSectionList =
   Animated.createAnimatedComponent<SectionListProps<any>>(SectionList);
@@ -75,7 +77,6 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
     },
     ref,
   ) => {
-    const t = useTranslator();
     const dispatch = useDispatch();
     const { enabled } = useJettonBalances(true);
 
@@ -91,7 +92,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
     }, []);
 
     const handleAddCoin = useCallback(() => {
-      openEditCoins();
+
     }, []);
 
     const handleMigrate = useCallback(

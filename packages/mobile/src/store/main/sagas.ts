@@ -40,7 +40,7 @@ import {
   setSavedLogs,
   setSavedServerConfig,
 } from '$database';
-import { openRequireWalletModal } from '$navigation';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { subscriptionsActions } from '$store/subscriptions';
 import {
   HideNotificationAction,
@@ -55,7 +55,7 @@ import { Cache } from '$store/events/manager/cache';
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
 import { getWalletName } from '$shared/dynamicConfig';
 import { destroyEventsManager } from '$store/events/sagas';
-import { initStats, trackEvent, trackFirstLaunch } from '$utils';
+import { initStats, trackEvent, trackFirstLaunch } from '$utils/stats';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { favoritesActions } from '$store/favorites';

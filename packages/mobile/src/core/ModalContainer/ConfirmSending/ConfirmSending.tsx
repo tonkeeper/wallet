@@ -7,25 +7,24 @@ import { ConfirmSendingProps } from './ConfirmSending.interface';
 import { BottomSheet, Button, Icon, Text } from '$uikit';
 import { List, ListCell } from '$uikit/List/old/List';
 import * as S from './ConfirmSending.style';
-import { useTranslator } from '$hooks';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import {
   walletActions,
   walletBalancesSelector,
-  walletSelector,
   walletWalletSelector,
 } from '$store/wallet';
 import { formatCryptoCurrency } from '$utils/currency';
 import { getTokenConfig } from '$shared/dynamicConfig';
 import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
 import {
-  goBack,
   openInactiveInfo,
   openReminderEnableNotificationsModal,
 } from '$navigation';
 import { ns, maskifyAddress } from '$utils';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
-import { favoritesFavoritesSelector, favoritesSelector } from '$store/favorites';
+import { favoritesFavoritesSelector } from '$store/favorites';
+import { goBack } from '$navigation/imperative';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
   const {
@@ -39,8 +38,6 @@ export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
     isJetton,
     domain,
   } = props;
-
-  const t = useTranslator();
 
   const dispatch = useDispatch();
 

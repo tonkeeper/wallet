@@ -1,5 +1,5 @@
 import { SuggestedAddress, SuggestedAddressType } from '../../../../Send.interface';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { Icon, PopupSelect, Text } from '$uikit';
 import React, { FC, memo, useCallback, useMemo } from 'react';
 import * as S from './AddressSuggestCell.style';
@@ -35,7 +35,7 @@ interface Props {
 const AddressSuggestCellComponent: FC<Props> = (props) => {
   const { separator, scrollY, suggest, onPress } = props;
 
-  const t = useTranslator();
+  
 
   const dispatch = useDispatch();
 

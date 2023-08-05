@@ -1,4 +1,4 @@
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { openNFT } from '$navigation';
 import { DarkTheme, Steezy } from '$styles';
 import { Icon, Pressable, View } from '$uikit';
@@ -21,7 +21,7 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
   const { item } = props;
 
   const flags = useFlags(['disable_apperance']);
-  const t = useTranslator();
+  
 
   const expiringDomains = useExpiringDomains((state) => state.domains);
   const isTonDiamondsNft = checkIsTonDiamondsNFT(item);

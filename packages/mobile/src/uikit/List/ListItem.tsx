@@ -1,18 +1,20 @@
 import React, { memo, useCallback } from 'react';
 import { TextStyle, ViewStyle } from 'react-native';
 import { Steezy, StyleProp } from '$styles';
-import { View, SText, Icon, Pressable } from '$uikit';
+import { View } from '@tonkeeper/uikit';
+import { SText } from '../StyledNativeComponents';
+import { Icon } from '../Icon/Icon';
+import { Pressable } from '../Pressable';
 import { DarkTheme, TonThemeColor } from '$styled';
 import FastImage from 'react-native-fast-image';
 import Animated, {
   SharedValue,
   useDerivedValue,
   useSharedValue,
-  useAnimatedStyle,
 } from 'react-native-reanimated';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { isAndroid } from '$utils';
-import { TextProps } from '$uikit/Text/Text';
+import { TextProps } from '../Text/Text';
 
 type LeftContentFN = (isPressed: Animated.SharedValue<boolean>) => React.ReactNode;
 

@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useLayoutEffect, useMemo, useState } from 'react';
 
-import { useValidateAddress } from '$hooks';
+import { useValidateAddress } from '$hooks/useValidateAddress';
 import { Button, Icon, Input, Loader, Text } from '$uikit';
 import * as S from './NFTTransferInputAddressModal.style';
 import { t } from '$translation';
@@ -20,9 +20,10 @@ import { Tonapi } from '$libs/Tonapi';
 import TonWeb from 'tonweb';
 import { Toast } from '$store';
 import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { openScanQR, push } from '$navigation';
+import { openScanQR } from '$navigation';
 import { checkFundsAndOpenNFTTransfer } from '$core/ModalContainer/NFTOperations/Modals/NFTTransferModal';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
+import { SheetActions } from '@tonkeeper/router';
+import { push } from '$navigation/imperative';
 
 export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalProps>(
   ({ nftAddress }) => {

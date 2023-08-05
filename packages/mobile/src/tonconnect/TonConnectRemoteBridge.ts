@@ -25,7 +25,8 @@ import { DeeplinkOrigin } from '$libs/deeplinking';
 import Minimizer from 'react-native-minimizer';
 import { Linking } from 'react-native';
 import { TCEventID } from './EventID';
-import { AppStackRouteNames, getCurrentRoute, goBack } from '$navigation';
+import { AppStackRouteNames } from '$navigation';
+import { getCurrentRoute, goBack } from '$navigation/imperative';
 import { delay } from '$utils';
 
 class TonConnectRemoteBridgeService {

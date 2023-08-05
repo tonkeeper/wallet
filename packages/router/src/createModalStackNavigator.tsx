@@ -27,11 +27,6 @@ import {
   WithPath,
 } from './types';
 
-// DEPRECATED
-// import { AppStackRouteNames } from '$navigation';
-// import { ModalContainer } from '$core';
-// import { ProvidersWithNavigation } from '$navigation/Providers';
-
 const isValidKey = (key: unknown) =>
   key === undefined || (typeof key === 'string' && key !== '');
 
@@ -93,11 +88,11 @@ const getRouteConfigsFromChildren = (children: React.ReactNode, props?: any) => 
   return configs;
 };
 
-export function createModalStackNavigator(ProvidersWithNavigation) {
+export function createModalStackNavigator(ProvidersWithNavigation, ModalContainer) {
   const Stack = createNativeStackNavigator();
 
   return {
-    Navigator: createModalNavigator(Stack, ProvidersWithNavigation),
+    Navigator: createModalNavigator(Stack, ProvidersWithNavigation, ModalContainer),
     Group: ModalGroup,
     Modal: ModalScreen,
   };
@@ -118,7 +113,7 @@ type ModalNavigatorProps = Omit<
   screenOptions?: NativeStackNavigationOptions;
 };
 
-function createModalNavigator(Stack: any, ProvidersWithNavigation: any) {
+function createModalNavigator(Stack: any, ProvidersWithNavigation: any, ModalContainer: any) {
   const sheetsProviderOptions = {
     presentation: 'transparentModal',
     gestureEnabled: false,
@@ -160,16 +155,16 @@ function createModalNavigator(Stack: any, ProvidersWithNavigation: any) {
               name="SheetsProvider"
             />
 
-            {/* DEPRECATED
+            {/* DEPRECATED */}
             <Stack.Screen
               options={sheetsProviderOptions}
-              name={AppStackRouteNames.ModalContainer}
+              name={'ModalContainer'}
               component={ModalContainer}
               initialParams={{
                 modalName: null,
                 message: null,
               }}
-            /> */}
+            />
 
             {routes.native.map((route, index) => (
               <Stack.Screen

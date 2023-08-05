@@ -11,7 +11,6 @@ import {
   maskifyTonAddress,
 } from '$utils';
 import BigNumber from 'bignumber.js';
-import { useTranslator } from '$hooks/useTranslator';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import {
   ActionBaseProps,
@@ -28,13 +27,14 @@ import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter'
 import { useGetTokenPrice, useTokenPrice } from './useTokenPrice';
 import { useEncryptedCommentsStore } from '$store';
 import { shallow } from 'zustand/shallow';
+import { t } from '@tonkeeper/shared/i18n';
 
 export function usePrepareDetailedAction(
   rawAction: Action,
   event: EventModel,
 ): ActionBaseProps {
   const { address } = useSelector(walletSelector);
-  const t = useTranslator();
+  
   const { subscriptionsInfo } = useSelector(subscriptionsSelector);
   const tokenPrice = useTokenPrice(CryptoCurrencies.Ton);
   const fiatCurrency = useSelector(fiatCurrencySelector);

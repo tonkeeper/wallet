@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 
 import { InlineHeaderProps } from './InlineHeader.interface';
 import * as S from './InlineHeader.style';
-import {Text} from "$uikit/Text/Text";
+import {Text} from "../Text/Text";
 
 export const InlineHeader: FC<InlineHeaderProps> = ({ skipMargin = false, children }) => {
   return (

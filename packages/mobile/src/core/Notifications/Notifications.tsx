@@ -8,7 +8,8 @@ import {
   Text,
   View,
 } from '$uikit';
-import { debugLog, ns } from '$utils';
+import { ns } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Linking } from 'react-native';
 import { CellSection } from '$shared/components';

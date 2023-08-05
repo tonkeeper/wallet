@@ -6,7 +6,7 @@ import { List } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { openJetton, openWallet } from '$navigation';
+import { openJetton } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { Rate } from '../hooks/useBalance';
 import { ListItemRate } from '../components/ListItemRate';
@@ -14,10 +14,12 @@ import { TonIcon, TonIconProps } from '../../../components/TonIcon';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { Tabs } from '../components/Tabs';
 import { NFTsList } from '../components/NFTsList';
-import { TokenPrice, useTheme } from '$hooks';
+import { TokenPrice } from '$hooks/useTokenPrice';
+import { useTheme } from '$hooks/useTheme';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StakingWidget } from './StakingWidget';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { openWallet } from '$core/Wallet/Wallet';
 
 
 enum ContentType {

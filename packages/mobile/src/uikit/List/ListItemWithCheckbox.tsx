@@ -3,7 +3,7 @@ import { ListItem, ListItemProps } from '$uikit/List/ListItem';
 import Checkbox, { CheckboxProps } from '$uikit/Checkbox/Checkbox';
 import { View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 
 export type ListItemWithCheckboxProps = ListItemProps & CheckboxProps;
 

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { BottomSheet, Loader } from '$uikit';
 import * as S from './Marketplaces.style';
 import { MarketplaceItem } from './MarketplaceItem/MarketplaceItem';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { nftsSelector } from '$store/nfts';
 import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
 import { delay, getDiamondsCollectionMarketUrl } from '$utils';
@@ -13,7 +13,7 @@ import { MarketplacesModalProps } from './Marketplaces.interface';
 export const Marketplaces: FC<MarketplacesModalProps> = (props) => {
   const { accentKey } = props;
 
-  const t = useTranslator();
+  
 
   const { isMarketplacesLoading, marketplaces: data } = useSelector(nftsSelector);
 

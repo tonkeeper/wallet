@@ -1,4 +1,4 @@
-const { SearchIndexer } = require('$utils');
+const { SearchIndexer } = require('$utils/searchIndexer');
 
 const EN = [
   'abandon',

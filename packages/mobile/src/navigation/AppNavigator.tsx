@@ -6,7 +6,7 @@ import { StatusBar } from 'react-native';
 import { setNavigationRef, onNavigationReady } from './helper';
 import { AppStack } from './MainStack';
 import { mainSelector } from '$store/main';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { ProvidersWithoutNavigation } from './Providers';
 
 export const AppNavigator: FC = () => {

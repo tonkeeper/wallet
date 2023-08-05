@@ -1,10 +1,12 @@
-import { usePoolInfo, useStakingCycle, useTranslator } from '$hooks';
+import { usePoolInfo } from '$hooks/usePoolInfo';
+import { useStakingCycle } from '$hooks/useStakingCycle';
 import { StakingListCell } from '$shared/components';
 import { getPoolIcon } from '$utils';
 import { AccountStakingInfo, PoolInfo } from '@tonkeeper/core/src/legacy';
-import React, { FC, Fragment, memo, useCallback } from 'react';
+import React, { FC, memo, useCallback } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { MainStackRouteNames } from '$navigation';
+import { t } from '@tonkeeper/shared/i18n';
 
 interface Props {
   pool: PoolInfo;
@@ -33,7 +35,6 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
     hasPendingWithdraw,
   );
 
-  const t = useTranslator();
   const nav = useNavigation();
 
   const iconSource = getPoolIcon(pool);

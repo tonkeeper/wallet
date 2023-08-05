@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import * as S from './Details.style';
 import { DetailsProps } from './Details.interface';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { Highlight, Separator, Text } from '$uikit';
 import Clipboard from '@react-native-community/clipboard';
 import { getLocale, maskifyTonAddress } from '$utils';
@@ -18,7 +18,7 @@ export const Details: React.FC<DetailsProps> = ({
   ownerAddress,
   expiringAt,
 }) => {
-  const t = useTranslator();
+  
 
   const handleOpenExplorer = useCallback(() => {
     openDAppBrowser(getServerConfig('NFTOnExplorerUrl').replace('%s', contractAddress));

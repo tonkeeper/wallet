@@ -1,11 +1,11 @@
-import { useTheme, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import {
   openDAppsSearch,
-  openRequireWalletModal,
   openScanQR,
   TabsStackRouteNames,
 } from '$navigation';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { IsTablet, LargeNavBarHeight, TabletMaxWidth } from '$shared/constants';
 import { store, useAppsListStore } from '$store';
 import { Icon, LargeNavBar, NavBar } from '$uikit';
@@ -35,6 +35,7 @@ import * as S from './DAppsExplore.style';
 import { NavBarSpacerHeight } from './DAppsExplore.style';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { TabStackParamList } from '$navigation/MainStack/TabStack/TabStack.interface';
+import { t } from '@tonkeeper/shared/i18n';
 
 const OFFSET = ns(16);
 
@@ -50,8 +51,6 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
   const { setParams } = props.navigation;
 
   const flags = useFlags(['disable_dapps']);
-
-  const t = useTranslator();
   const tabBarHeight = useBottomTabBarHeight();
   const deeplinking = useDeeplinking();
 

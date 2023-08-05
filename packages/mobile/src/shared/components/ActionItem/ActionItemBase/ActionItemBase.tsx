@@ -2,13 +2,14 @@ import React, { FC, useCallback, useMemo } from 'react';
 
 import * as S from './ActionItemBase.style';
 import { ns } from '$utils';
-import { useTheme, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { Badge, Icon, SpoilerView, Text } from '$uikit';
 import { ActionItemBaseProps } from './ActionItemBase.interface';
 import { Image, View } from 'react-native';
 import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { DarkTheme } from '$styled';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
   const {
@@ -28,7 +29,7 @@ export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
     handleOpenAction,
     handleDecryptComment,
   } = props;
-  const t = useTranslator();
+  
   const theme = useTheme();
   const pressed = useSharedValue(false);
 

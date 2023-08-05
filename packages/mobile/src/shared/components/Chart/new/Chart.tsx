@@ -7,7 +7,9 @@ import {
   stepInterpolation,
 } from '@rainbow-me/animated-charts';
 import { Dimensions, View } from 'react-native';
-import { useTheme, useTokenPrice } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
+import { usePrepareAction } from '$hooks/usePrepareAction';
+import { useTokenPrice } from '$hooks/useTokenPrice'
 import { useSelector } from 'react-redux';
 import { fiatCurrencySelector } from '$store/main';
 import { CryptoCurrencies, FiatCurrencies } from '$shared/constants';

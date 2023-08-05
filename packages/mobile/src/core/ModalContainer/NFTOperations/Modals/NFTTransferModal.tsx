@@ -1,5 +1,7 @@
 import React from 'react';
-import { useCopyText, useInstance, useWallet } from '$hooks';
+import { useCopyText } from '$hooks/useCopyText';
+import { useInstance } from '$hooks/useInstance';
+import { useWallet} from '$hooks/useWallet';
 import { Highlight, Icon, Separator, Skeleton, Text } from '$uikit';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { useDownloadCollectionMeta } from '../useDownloadCollectionMeta';
@@ -8,20 +10,16 @@ import { useDownloadNFT } from '../useDownloadNFT';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import { debugLog, maskifyAddress, toLocaleNumber } from '$utils';
+import { maskifyAddress, toLocaleNumber } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { t } from '$translation';
 import { CryptoCurrencies } from '$shared/constants';
 import { useDispatch } from 'react-redux';
 import { nftsActions } from '$store/nfts';
 import { Modal } from '@tonkeeper/uikit';
-import { CaptionWrap } from '../NFTOperations.styles';
 import { formatter } from '$utils/formatter';
-import { goBack, navigate, push } from '$navigation';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
-import {
-  ApproveToken,
-  ApproveTokenModalParams,
-} from '$core/ModalContainer/ApproveToken/ApproveToken';
+import { goBack, push } from '$navigation/imperative';
+import { SheetActions } from '@tonkeeper/router';
 import { Ton } from '$libs/Ton';
 import { walletWalletSelector } from '$store/wallet';
 import { store, Toast } from '$store';
@@ -114,8 +112,7 @@ export const NFTTransferModal = ({
         <S.Container>
           <S.Center>
             <S.NFTItemPreview>
-              {isDNS ? <S.GlobeIcon /> : null}
-              {!isDNS && <S.Image uri={item?.data?.metadata?.image} resize={512} />}
+              <S.Image uri={item?.data?.metadata?.image} resize={512} />
             </S.NFTItemPreview>
             <S.CaptionWrap>
               <S.Caption>{caption}</S.Caption>

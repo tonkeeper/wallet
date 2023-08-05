@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { getColors, ImageColorsResult } from 'react-native-image-colors';
-import { View } from '$uikit';
+import { View } from '@tonkeeper/uikit';
 import { StyleProp, ViewStyle } from 'react-native';
 import { DARK_COLORS } from '$styled';
 

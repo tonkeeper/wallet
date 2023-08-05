@@ -2,9 +2,9 @@ import React, { FC, useCallback } from 'react';
 
 import { ModalProps } from './Modal.interface';
 import * as S from './Modal.style';
-import { goBack } from '$navigation';
-import { Icon } from '$uikit/Icon/Icon';
-import { useTheme } from '$hooks';
+import { goBack } from '$navigation/imperative';
+import { Icon } from '../Icon/Icon';
+import { useTheme } from '$hooks/useTheme';
 
 export const Modal: FC<ModalProps> = (props) => {
   const { title, children, skipDismissButton = false } = props;

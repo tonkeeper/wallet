@@ -6,7 +6,6 @@ import {
 } from '$styled';
 import React, { FC, memo } from 'react';
 import { ViewStyle } from 'react-native';
-import { AnimatedStyleProp } from 'react-native-reanimated';
 import { IconFromUri } from './IconFromUri';
 import * as S from './TonDiamondIcon.style';
 
@@ -15,7 +14,7 @@ interface Props {
   nftIcon?: AccentNFTIcon;
   size: number;
   disabled?: boolean;
-  iconAnimatedStyle?: AnimatedStyleProp<ViewStyle>;
+  iconAnimatedStyle?: any;//AnimatedStyleProp<ViewStyle>;
 }
 
 const TonDiamondIconComponent: FC<Props> = (props) => {

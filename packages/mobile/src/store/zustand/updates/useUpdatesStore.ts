@@ -1,7 +1,7 @@
 import { getServerConfig } from '$shared/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { IUpdatesStore, UpdateState } from './types';
 import DeviceInfo from 'react-native-device-info';
 import RNFS from 'react-native-fs';
@@ -78,7 +78,7 @@ export const useUpdatesStore = create(
     }),
     {
       name: 'updates',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ isLoading, update: { state, progress }, meta, declinedAt }) =>
         ({
           meta,

@@ -1,4 +1,5 @@
-import { useInstance, useTokenPrice, useTranslator } from '$hooks';
+import { useInstance } from '$hooks/useInstance';
+import { useTokenPrice } from '$hooks/useTokenPrice'
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import {
@@ -58,8 +59,6 @@ export const Send: FC<SendProps> = ({ route }) => {
       return SendSteps.CONFIRM;
     }
   }, [initialAmount, initialFee]);
-
-  const t = useTranslator();
 
   const dispatch = useDispatch();
 

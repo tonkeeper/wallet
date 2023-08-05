@@ -1,5 +1,5 @@
 import React from 'react';
-import { openJetton, openJettonsList, openWallet } from '$navigation';
+import { openJetton, openJettonsList } from '$navigation';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { Steezy } from '$styles';
@@ -10,6 +10,7 @@ import { TonIcon } from '../../../components/TonIcon';
 import { memo, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { ListItemRate } from './ListItemRate';
+import { openWallet } from '$core/Wallet/Wallet';
 
 interface TokenListProps {
   tokens: any; // TODO: add types

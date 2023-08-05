@@ -2,10 +2,11 @@ import React, { memo, useMemo } from 'react';
 import { Icon, TouchableOpacity } from '$uikit';
 import { Steezy } from '$styles';
 import { store } from '$store';
-import { openRequireWalletModal, openScanQR, openSend } from '$navigation';
+import { openScanQR, openSend } from '$navigation';
 import { isValidAddress } from '$utils';
 import { CryptoCurrencies } from '$shared/constants';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
+
 
 export const ScanQRButton = memo(() => {
   const deeplinking = useDeeplinking();

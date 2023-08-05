@@ -10,7 +10,7 @@ import {
   SecretWords,
   SetupWalletDone,
 } from '$core';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { isAndroid } from '$utils';
 import { SetupNotifications } from '$core/SetupNotifications/SetupNotifications';
 

@@ -1,4 +1,5 @@
-import { TokenPrice, useGetTokenPrice, useJettonBalances } from '$hooks';
+import { TokenPrice, useGetTokenPrice } from '$hooks/useTokenPrice';
+import { useJettonBalances } from '$hooks/useJettonBalances';
 import { formatter } from '$utils/formatter';
 import { useMemo } from 'react';
 import TonWeb from 'tonweb';

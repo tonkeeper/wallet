@@ -10,14 +10,14 @@ import {
   fromNano,
   maskifyTonAddress,
 } from '$utils';
-import { useTranslator } from '$hooks/useTranslator';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { TransactionItemNFT } from '$shared/components/ActionItem/TransactionItemNFT/TransactionItemNFT';
 import { subscriptionsSelector } from '$store/subscriptions';
-import { Action } from '@tonkeeper/core';
+import { Action } from '@tonkeeper/core/src/legacy';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
 import { useEncryptedCommentsStore } from '$store';
 import { shallow } from 'zustand/shallow';
+import { t } from '@tonkeeper/shared/i18n';
 
 export function usePrepareAction(
   rawAction: Action,
@@ -29,7 +29,7 @@ export function usePrepareAction(
     (s) => s.decryptedComments[actionKey],
     shallow,
   );
-  const t = useTranslator();
+  
   const { subscriptionsInfo } = useSelector(subscriptionsSelector);
   const format = useHideableFormatter();
 

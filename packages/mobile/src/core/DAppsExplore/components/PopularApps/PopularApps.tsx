@@ -5,7 +5,7 @@ import { List } from '$uikit/List/old/List';
 import { PopularAppCell } from '../PopularAppCell/PopularAppCell';
 import * as S from './PopularApps.style';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 
 interface Props {
   activeCategory: string;
@@ -24,8 +24,6 @@ const PopularAppsComponent: FC<Props> = (props) => {
     moreUrl,
     actions: { fetchPopularApps },
   } = useAppsListStore();
-
-  const t = useTranslator();
 
   const handleChangeStep = useCallback(
     (currentStepId: string | number, currentStepIndex: number) => {

@@ -1,4 +1,3 @@
-import { useTheme, useTranslator } from '$hooks';
 import { AccentModel } from '$styled';
 import { Icon, TonDiamondIcon } from '$uikit';
 import React, { FC, memo, useCallback } from 'react';
@@ -10,6 +9,7 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 import * as S from './AccentItem.style';
+import { t } from '@tonkeeper/shared/i18n';
 
 interface Props {
   accent: AccentModel;
@@ -22,10 +22,6 @@ export const ACCENT_ITEM_WIDTH = 132;
 
 const AccentItemComponent: FC<Props> = (props) => {
   const { accent, selected, isLastAvailable, onPress } = props;
-
-  const theme = useTheme();
-
-  const t = useTranslator();
 
   const color = accent.colors.accentPrimary;
 

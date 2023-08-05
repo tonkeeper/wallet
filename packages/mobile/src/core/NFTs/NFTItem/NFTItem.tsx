@@ -5,14 +5,14 @@ import { openNFT } from '$navigation';
 import { checkIsTonDiamondsNFT, maskifyTonAddress } from '$utils';
 import _ from 'lodash';
 import { Icon, Text } from '$uikit';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { useFlags } from '$utils/flags';
 import { View } from 'react-native';
 import { dnsToUsername } from '$utils/dnsToUsername';
 
 export const NFTItem: React.FC<NFTItemProps> = ({ item, isLastInRow }) => {
   const flags = useFlags(['disable_apperance']);
-  const t = useTranslator();
+  
 
   const isTonDiamondsNft = checkIsTonDiamondsNFT(item);
   const isOnSale = useMemo(() => !!item.sale, [item.sale]);

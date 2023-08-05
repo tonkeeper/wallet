@@ -1,7 +1,7 @@
 import { Steezy, Modal, View } from '@tonkeeper/uikit';
 import { useTransaction } from '@tonkeeper/core/src/query/useTransaction';
 import { memo } from 'react';
-import { usePrepareDetailedAction } from '$hooks';
+import { usePrepareDetailedAction } from '$hooks/usePrepareDetailedAction';
 import { ActionBase } from '$core/ModalContainer/Action/ActionBase/ActionBase';
 
 // type TransactionModalParams = {

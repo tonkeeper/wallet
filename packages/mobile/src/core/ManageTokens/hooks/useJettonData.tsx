@@ -9,7 +9,7 @@ import {
 import { Button, ListButton, Spacer } from '$uikit';
 import { CellItem, Content, ContentType } from '$core/ManageTokens/ManageTokens.types';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
-import { useJettonBalances } from '$hooks';
+import { useJettonBalances } from '$hooks/useJettonBalances';
 import { approveAll } from '$store/zustand/tokenApproval/helpers';
 
 const baseJettonCellData = (jettonBalance) => ({

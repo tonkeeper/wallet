@@ -1,5 +1,4 @@
-import { useTranslator, useCopyText } from '$hooks';
-import { goBack } from '$navigation';
+import { useCopyText } from '$hooks/useCopyText';
 import { Icon, PopupSelect, Text } from '$uikit';
 import { getDomainFromURL, maskifyAddress } from '$utils';
 import React, { FC, memo, useCallback, useMemo } from 'react';
@@ -8,6 +7,8 @@ import Share from 'react-native-share';
 import * as S from './BrowserNavBar.style';
 import { PopupSelectItemProps } from '$uikit/PopupSelect/PopupSelect.interface';
 import { Toast } from '$store';
+import { goBack } from '$navigation/imperative';
+import { t } from '@tonkeeper/shared/i18n';
 
 enum PopupActionType {
   REFRESH,
@@ -52,7 +53,6 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
     unsubscribeFromNotifications,
   } = props;
 
-  const t = useTranslator();
 
   const copyText = useCopyText();
 

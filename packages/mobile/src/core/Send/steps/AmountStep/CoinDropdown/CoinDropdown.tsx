@@ -1,4 +1,4 @@
-import { useJettonBalances } from '$hooks';
+import { useJettonBalances } from '$hooks/useJettonBalances';
 import {
   CryptoCurrencies,
   CryptoCurrency,

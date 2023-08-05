@@ -7,20 +7,20 @@ import { NFTOperations } from '../NFTOperations';
 import {
   calculateActionsTotalAmount,
   calculateMessageTransferAmount,
-  debugLog,
   delay,
   lowerCaseFirstLetter,
   ns,
 } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { t } from '$translation';
-import { AccountEvent, ActionTypeEnum } from '@tonkeeper/core';
+import { AccountEvent, ActionTypeEnum } from '@tonkeeper/core/src/legacy';
 import { SignRawAction } from './SignRawAction';
 import { store, Toast } from '$store';
 import * as S from '../NFTOperations.styles';
 import { Modal } from '@tonkeeper/uikit';
 import { Ton } from '$libs/Ton';
 import { copyText } from '$hooks/useCopyText';
-import { push } from '$navigation';
+import { push } from '$navigation/imperative';
 import { SheetActions } from '@tonkeeper/router';
 import BigNumber from 'bignumber.js';
 import {

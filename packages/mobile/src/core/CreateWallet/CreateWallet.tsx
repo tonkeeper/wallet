@@ -14,13 +14,15 @@ import LottieView from 'lottie-react-native';
 
 import * as S from './CreateWallet.style';
 import { walletActions, walletSelector } from '$store/wallet';
-import {Button, NavBar, Text} from '$uikit';
-import { useTranslator } from '$hooks';
+import { Text } from '$uikit/Text/Text';
+import { Button, } from '$uikit/Button/Button';
+import { NavBar } from '$uikit/NavBar/NavBar';
 import { deviceWidth, ns, triggerNotificationSuccess } from '$utils';
-import { openSecretWords } from '$navigation';
+import { AppStackRouteNames, SetupWalletStackRouteNames, openSecretWords } from '$navigation';
+import { navigate } from '$navigation/imperative';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const CreateWallet: FC = () => {
-  const t = useTranslator();
   const dispatch = useDispatch();
   const { bottom } = useSafeAreaInsets();
   const { generatedVault } = useSelector(walletSelector);
@@ -195,3 +197,9 @@ export const CreateWallet: FC = () => {
     </S.Wrap>
   );
 };
+
+export function openCreateWallet() {
+  navigate(AppStackRouteNames.SetupWalletStack, {
+    screen: SetupWalletStackRouteNames.CreateWallet,
+  });
+}

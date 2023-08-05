@@ -5,8 +5,6 @@ export { CurrencyIcon } from './CurrencyIcon/CurrencyIcon';
 export { InlineHeader } from './InlineHeader/InlineHeader';
 export { Highlight } from './Highlight/Highlight';
 export { Modal } from './Modal/Modal';
-export { Form } from './Form/Form';
-export { FormItem } from './FormItem/FormItem';
 export { Input } from './Input/Input';
 export { Loader } from './Loader/Loader';
 export { Button } from './Button/Button';

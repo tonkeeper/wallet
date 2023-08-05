@@ -3,7 +3,7 @@ import LottieView from 'lottie-react-native';
 
 import { Text } from '$uikit';
 import * as CreateWalletStyle from '$core/CreateWallet/CreateWallet.style';
-import { goBack, popToTop } from '$navigation';
+import { goBack, popToTop } from '$navigation/imperative';
 import * as S from './DeleteAccountDone.style';
 import { ns } from '$utils';
 import { t } from '$translation';

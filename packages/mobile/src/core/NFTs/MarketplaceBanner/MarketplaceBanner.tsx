@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import * as S from './MarketplaceBanner.style';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import {Button, ScrollPositionContext, Text} from '$uikit';
 import { MarketplaceBannerProps } from './MarketplaceBanner.interface';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
@@ -27,7 +27,7 @@ export const MarketplaceBanner: React.FC<MarketplaceBannerProps> = ({
   onButtonPress,
 }) => {
   const flags = useFlags(['disable_nft_markets']);
-  const t = useTranslator();
+  
   const tabBarHeight = useBottomTabBarHeight();
   const { changeEnd } = useContext(ScrollPositionContext);
   const { top: topInset } = useSafeAreaInsets();

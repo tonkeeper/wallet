@@ -16,7 +16,7 @@ import { batchActions } from '$store';
 import { EventsMap, LoadEventsAction } from '$store/events/interface';
 import { getWalletName } from '$shared/dynamicConfig';
 import { EventsManager } from '$store/events/manager';
-import { debugLog } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { jettonsActions } from '$store/jettons';
 import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 

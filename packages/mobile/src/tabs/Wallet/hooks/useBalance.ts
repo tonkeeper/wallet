@@ -1,8 +1,7 @@
 import { CryptoCurrencies } from '$shared/constants';
 import { useSelector } from 'react-redux';
 import { fiatCurrencySelector } from '$store/main';
-import { useFiatRate } from '$hooks/useFiatRate';
-import { useGetTokenPrice, useTokenPrice, useWalletInfo } from '$hooks';
+import { useGetTokenPrice, useTokenPrice } from '$hooks/useTokenPrice';
 import { useCallback, useMemo } from 'react';
 import {
   isLockupWalletSelector,
@@ -11,7 +10,6 @@ import {
   walletVersionSelector,
 } from '$store/wallet';
 import { Ton } from '$libs/Ton';
-import { useGetPrice } from '$hooks/useWalletInfo';
 import BigNumber from 'bignumber.js';
 import { formatter } from '$utils/formatter';
 import { useStakingStore } from '$store';

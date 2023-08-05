@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from 'react';
 import { Button, Loader, Spacer, View } from '$uikit';
 import * as S from '../core/Exchange/Exchange.style';
 import { ExchangeItem } from '../core/Exchange/ExchangeItem/ExchangeItem';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { getServerConfigSafe } from '$shared/constants';
 import { LayoutAnimation } from 'react-native';
 import { Modal } from '@tonkeeper/uikit';
@@ -13,7 +13,7 @@ import { CategoryType } from '$store/zustand/methodsToBuy/types';
 import { openChooseCountry } from '$navigation';
 
 export const ExchangeModal = () => {
-  const t = useTranslator();
+  
 
   const [showAll, setShowAll] = React.useState(false);
   const { categories, defaultLayout, layoutByCountry, selectedCountry } =

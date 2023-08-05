@@ -3,11 +3,11 @@ import React, { FC, useCallback, useState } from 'react';
 import { InfoAboutInactiveProps } from './InfoAboutInactive.interface';
 import { BottomSheet, Button } from '$uikit';
 import * as S from './InfoAboutInactive.style';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { ns } from '$utils';
 
 export const InfoAboutInactive: FC<InfoAboutInactiveProps> = () => {
-  const t = useTranslator();
+  
   const [isClosed, setClosed] = useState(false);
 
   const handleGoBack = useCallback(() => {

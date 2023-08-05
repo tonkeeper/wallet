@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { compareAddresses } from './address';
-import { Action, ActionTypeEnum } from '@tonkeeper/core';
+import { Action, ActionTypeEnum } from '@tonkeeper/core/src/legacy';
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 
 export const calculateActionsTotalAmount = (address: string, actions: Action[]) => {

@@ -1,5 +1,5 @@
 import { SendRecipient } from '../../../../Send.interface';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { openScanQR } from '$navigation';
 import { WordHintsPopupRef } from '$shared/components/ImportWalletForm/WordHintsPopup';
 import { Icon, Input, Loader, Text } from '$uikit';
@@ -52,7 +52,7 @@ const AddressInputComponent: FC<Props> = (props) => {
 
   const canScanQR = value.length === 0;
 
-  const t = useTranslator();
+  
 
   const textInputRef = useRef<TextInput>(null);
 

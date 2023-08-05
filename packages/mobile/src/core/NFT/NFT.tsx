@@ -15,7 +15,7 @@ import {
   ns,
 } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { Properties } from '$core/NFT/Properties/Properties';
 import { Details } from '$core/NFT/Details/Details';
 import { About } from '$core/NFT/About/About';
@@ -98,7 +98,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
     }, 5000);
   }, [lastFill]);
 
-  const t = useTranslator();
+  
   const scrollTop = useSharedValue(0);
   const scrollRef = useRef<Animated.ScrollView>(null);
   const { bottom: bottomInset } = useSafeAreaInsets();

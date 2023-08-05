@@ -5,7 +5,7 @@ import { walletSelector } from '$store/wallet';
 import { batchActions } from '$store';
 import { getWalletName } from '$shared/dynamicConfig';
 import { JettonsManager } from '$store/jettons/manager';
-import { debugLog } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { jettonsActions, jettonsSelector } from '$store/jettons/index';
 import { JettonsDB, MainDB } from '$database';
 import {

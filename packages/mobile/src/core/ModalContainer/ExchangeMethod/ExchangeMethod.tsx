@@ -3,10 +3,11 @@ import { Linking } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { ExchangeMethodProps } from './ExchangeMethod.interface';
-import { useExchangeMethodInfo } from '$hooks';
+import { useExchangeMethodInfo } from '$hooks/useExchangeMethodInfo';
 import { BottomSheet, Button, Text } from '$uikit';
 import * as S from './ExchangeMethod.style';
-import { openBuyFiat, openRequireWalletModal } from '$navigation';
+import { openBuyFiat } from '$navigation';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletSelector } from '$store/wallet';
 import { CheckmarkItem } from '$uikit/CheckmarkItem';

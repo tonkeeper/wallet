@@ -10,7 +10,7 @@ import React, { forwardRef, memo, useCallback, useMemo } from 'react';
 
 import PagerView, { PagerViewOnPageSelectedEvent } from 'react-native-pager-view';
 import Animated from 'react-native-reanimated';
-import { useMergeRefs } from '@tonkeeper/mobile/src/utils';
+import { useMergeRefs } from '../../utils';
 import { useScreenScroll } from '../Screen/hooks';
 
 const AnimatedPagerView = Animated.createAnimatedComponent(PagerView);

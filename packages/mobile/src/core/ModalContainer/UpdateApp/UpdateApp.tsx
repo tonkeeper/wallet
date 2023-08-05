@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { t } from '$translation';
 import { Modal } from '@tonkeeper/uikit';
-import { push } from '$navigation';
+import { push } from '$navigation/imperative';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { Button, Icon, Spacer, Text, View } from '$uikit';
 import { bytesToMegabytes, delay } from '$utils';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from '$uikit';
+import { View } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import Svg, { Path, Rect } from 'react-native-svg';
 import { TouchableOpacity } from 'react-native-gesture-handler';

@@ -1,6 +1,5 @@
 import { Modal } from '@tonkeeper/uikit';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
-import { push } from '$navigation';
 import React, { memo, useCallback, useMemo } from 'react';
 import {
   TokenApprovalStatus,
@@ -18,6 +17,7 @@ import { Toast } from '$store';
 import Clipboard from '@react-native-community/clipboard';
 import { Address } from '$libs/Ton';
 import { TranslateOptions } from 'i18n-js';
+import { push } from '$navigation/imperative';
 
 export enum ImageType {
   ROUND = 'round',

@@ -7,18 +7,16 @@ import {
   InternalNotification,
   Screen,
   Text,
+  List,
   View,
   SwapIcon,
 } from '$uikit';
-
-import { Icon, List } from '@tonkeeper/uikit';
-
 import { useNavigation } from '@tonkeeper/router';
 import { ScanQRButton } from '../../components/ScanQRButton';
 import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
-import { openCreateWallet, openRequireWalletModal, openWallet } from '$navigation';
+
 import { maskifyAddress, ns, trackEvent } from '$utils';
 import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
@@ -35,7 +33,9 @@ import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
 import { useTonkens } from './hooks/useTokens';
 import { useWallet } from './hooks/useWallet';
-import { useApprovedNfts, useTheme, useTokenPrice } from '$hooks';
+import { useApprovedNfts } from '$hooks/useApprovedNfts';
+import { useTheme } from '$hooks/useTheme';
+import { useTokenPrice } from '$hooks/useTokenPrice';
 import { ApprovalCell } from '$core/ApprovalCell/components/ApprovalCell';
 import { Steezy } from '$styles';
 import { BalancesList } from './components/BalancesList';
@@ -47,7 +47,8 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { ShowBalance } from '$core/HideableAmount/ShowBalance';
 import { Events, SendAnalyticsFrom } from '$store/models';
-import { useWallet as useNewWallet } from '@tonkeeper/core';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
+import { openWallet } from '$core/Wallet/Wallet';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -66,8 +67,6 @@ export const WalletScreen = memo(() => {
 
   const { isRefreshing, isLoaded } = useSelector(walletSelector);
   const isFocused = useIsFocused();
-
-  const newWallet = useNewWallet();
 
   const notifications = useInternalNotifications();
 
@@ -184,18 +183,7 @@ export const WalletScreen = memo(() => {
       <>
         <Screen.Header
           backButton={false}
-          title={
-            <TouchableOpacity
-              style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
-              onPress={() => nav.navigate('/switch-wallet')}
-              activeOpacity={0.6}
-            >
-              <Text variant="h3" textAlign="center">
-                {newWallet.name}
-              </Text>
-              <Icon name="ic-chevron-down-16" color="iconSecondary" style={{ marginLeft: 4 }} />
-            </TouchableOpacity>
-          }
+          title={t('wallet.screen_title')}
           rightContent={<ScanQRButton />}
         />
         <Screen.ScrollView indent={false}>
@@ -218,7 +206,7 @@ export const WalletScreen = memo(() => {
         {isLoaded && !wallet && (
           <S.CreateWalletButtonWrap style={{ bottom: tabBarHeight }}>
             <S.CreateWalletButtonContainer skipHeader={false}>
-              <Button onPress={() => openCreateWallet()}>{t('balances_setup_wallet')}</Button>
+              <Button onPress={handleCreateWallet}>{t('balances_setup_wallet')}</Button>
             </S.CreateWalletButtonContainer>
           </S.CreateWalletButtonWrap>
         )}

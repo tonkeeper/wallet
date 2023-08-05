@@ -1,4 +1,4 @@
-import { useDimensions, useTranslator } from '$hooks';
+import { useDimensions } from '$hooks/useDimensions';
 import { openMarketplaces } from '$navigation';
 import { mainActions, accentSelector, accentTonIconSelector } from '$store/main';
 import { NFTModel, TonDiamondMetadata } from '$store/models';
@@ -28,6 +28,7 @@ import { AccentItem, ACCENT_ITEM_WIDTH } from './AccentItem/AccentItem';
 import { AppearanceBottomSheetProps } from './AppearanceBottomSheet.interface';
 import * as S from './AppearanceBottomSheet.style';
 import { CustomButton } from './CustomButton/CustomButton';
+import { t } from '@tonkeeper/shared/i18n';
 
 const AppearanceBottomSheetComponent: FC<AppearanceBottomSheetProps> = (props) => {
   const { selectedAccentNFTAddress } = props;
@@ -39,8 +40,6 @@ const AppearanceBottomSheetComponent: FC<AppearanceBottomSheetProps> = (props) =
   const {
     window: { width: windowWidth },
   } = useDimensions();
-
-  const t = useTranslator();
 
   const dispatch = useDispatch();
 

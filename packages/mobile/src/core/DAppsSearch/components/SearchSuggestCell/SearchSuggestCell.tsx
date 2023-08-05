@@ -1,10 +1,10 @@
 import { SearchSuggestSource } from '$core/DAppsSearch/types';
-import { useTranslator } from '$hooks';
 import { Icon, Separator } from '$uikit';
 import { getDomainFromURL, getUrlTitle, trackEvent } from '$utils';
 import axios from 'axios';
 import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as S from './SearchSuggestCell.style';
+import { t } from '@tonkeeper/shared/i18n';
 
 interface Props {
   url: string;
@@ -22,8 +22,6 @@ const SearchSuggestCellComponent: FC<Props> = (props) => {
   const [fetchedTitle, setFetchedTitle] = useState('');
 
   const lastFetchedUrl = useRef('');
-
-  const t = useTranslator();
 
   const handlePress = useCallback(() => {
     if ([SearchSuggestSource.APP, SearchSuggestSource.HISTORY].includes(source)) {

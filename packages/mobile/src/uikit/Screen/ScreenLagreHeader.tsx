@@ -1,10 +1,10 @@
 import React, { memo } from 'react';
-import { LargeNavBar } from '$uikit/LargeNavBar/LargeNavBar';
+import { LargeNavBar } from '../LargeNavBar/LargeNavBar';
 
-import { NavBar } from '$uikit';
+import { NavBar } from '../NavBar/NavBar';
 import { Dimensions } from 'react-native';
 import { TabletMaxWidth } from '$shared/constants';
-import { LargeNavBarProps } from '$uikit/LargeNavBar/LargeNavBar.interface';
+import { LargeNavBarProps } from '../LargeNavBar/LargeNavBar.interface';
 import { SharedValue } from 'react-native-reanimated';
 
 const { width: deviceWidth } = Dimensions.get('window');

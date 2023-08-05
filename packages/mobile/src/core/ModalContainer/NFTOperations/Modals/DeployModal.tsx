@@ -2,16 +2,20 @@ import React, { FC, useCallback, useRef, useState } from 'react';
 import { BottomSheet, Button, CurrencyIcon, Text } from '$uikit';
 import { List, ListCell } from '$uikit/List/old/List';
 import * as S from './DeployModal.style';
-import { useInstance, useTranslator, useWallet } from '$hooks';
+import { useInstance } from '$hooks/useInstance';
+import { useWallet } from '$hooks/useWallet';
+
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { formatCryptoCurrency } from '$utils/currency';
 import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
 import { DeployParams, TxResponseOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
-import { debugLog, toLocaleNumber } from '$utils';
+import { toLocaleNumber } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { useDispatch } from 'react-redux';
 import { Toast } from '$store';
+import { t } from '@tonkeeper/shared/i18n';
 
 export type DeployModalProps = {
   params: DeployParams;
@@ -21,7 +25,7 @@ export type DeployModalProps = {
 export const DeployModal: FC<DeployModalProps> = (props) => {
   const { address, amount, text } = props.params;
 
-  const t = useTranslator();
+  
   const dispatch = useDispatch();
   const bottomSheetRef = useRef<BottomSheetRef>(null);
   const [isSent, setSent] = useState(false);

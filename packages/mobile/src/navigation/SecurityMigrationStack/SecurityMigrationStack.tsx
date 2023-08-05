@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { SecurityMigrationStackRouteNames } from '$navigation';
 import {
   AccessConfirmation,

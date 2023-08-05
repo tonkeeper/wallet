@@ -1,4 +1,4 @@
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { Icon } from '$uikit';
 import React, { FC, memo, useCallback } from 'react';
 import { Insets } from 'react-native';

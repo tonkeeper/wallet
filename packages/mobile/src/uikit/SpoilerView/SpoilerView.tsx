@@ -1,4 +1,4 @@
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { TonThemeColor } from '$styled';
 import { isAndroid } from '$utils';
 import React, { FC, memo } from 'react';

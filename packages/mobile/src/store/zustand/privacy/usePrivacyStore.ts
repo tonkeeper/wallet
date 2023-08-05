@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { IPrivacyStore } from './types';
 
 const initialState: Omit<IPrivacyStore, 'actions'> = {
@@ -19,7 +19,7 @@ export const usePrivacyStore = create(
     }),
     {
       name: 'privacy',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ hiddenAmounts }) => ({ hiddenAmounts } as IPrivacyStore),
     },
   ),

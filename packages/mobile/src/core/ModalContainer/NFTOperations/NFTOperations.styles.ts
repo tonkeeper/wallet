@@ -1,8 +1,8 @@
 import { TouchableOpacity, StyleSheet, Image as RNImage } from 'react-native';
 import LottieView from 'lottie-react-native';
-import styled, { RADIUS } from '$styled';
-import { Button, Text, ProxyImage, Icon } from '$uikit';
-import { nfs, ns } from '$utils';
+import styled from '$styled';
+import { Button, Text, ProxyImage } from '$uikit';
+import { ns } from '$utils';
 
 export const Container = styled.View`
   padding-horizontal: 16px;
@@ -161,14 +161,6 @@ export const styles = StyleSheet.create({
     marginBottom: 4,
   },
 });
-
-export const GlobeIcon = styled(Icon).attrs({
-  name: 'globe-96',
-  colorless: true,
-  imageStyle: {
-    borderRadius: ns(RADIUS.large),
-  },
-})``;
 
 export const WaringContainer = styled.View`
   background: ${({ theme }) => theme.colors.backgroundSecondary};

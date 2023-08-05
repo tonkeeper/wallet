@@ -2,10 +2,12 @@ import React, { FC, useCallback } from 'react';
 
 import { ExchangeItemProps } from './ExchangeItem.interface';
 import * as S from './ExchangeItem.style';
-import { useExchangeMethodInfo, useTheme, useTranslator } from '$hooks';
+import { useExchangeMethodInfo } from '$hooks/useExchangeMethodInfo';
+import { useTheme } from '$hooks/useTheme';
 import { openExchangeMethodModal } from '$navigation';
 import { Icon, Text } from '$uikit';
 import { Linking } from 'react-native';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const ExchangeItem: FC<ExchangeItemProps> = ({
   methodId,
@@ -14,8 +16,6 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
 }) => {
   const method = useExchangeMethodInfo(methodId);
   const theme = useTheme();
-
-  const t = useTranslator();
 
   const isBot = methodId.endsWith('_bot');
 

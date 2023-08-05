@@ -5,7 +5,7 @@ import {
   VisibilityReducer,
   ModalContainerProps,
 } from './ModalContainer.interface';
-import { EditCoins } from './EditCoins/EditCoins';
+
 import { RequireWallet } from './RequireWallet/RequireWallet';
 import { ConfirmSending } from '$core/ModalContainer/ConfirmSending/ConfirmSending';
 import { ExchangeMethod } from '$core/ModalContainer/ExchangeMethod/ExchangeMethod';
@@ -45,7 +45,6 @@ export const ModalContainer: FC<ModalContainerProps> = (props) => {
 
   return (
     <>
-      {visibility[ModalName.EDIT_COINS] && <EditCoins {...props} {...route.params} />}
       {visibility[ModalName.REQUIRE_WALLET] && (
         <RequireWallet {...props} {...route.params} />
       )}

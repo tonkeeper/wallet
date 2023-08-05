@@ -6,7 +6,7 @@ import * as React from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { useTabCtx } from './TabsContainer';
-import { goBack } from '$navigation';
+import { goBack } from '$navigation/imperative';
 
 interface TabsHeaderProps {
   style?: Style;

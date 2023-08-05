@@ -23,7 +23,8 @@ import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
-import { useParams } from '$navigation';
+import { useParams } from '$navigation/imperative';
+
 
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 

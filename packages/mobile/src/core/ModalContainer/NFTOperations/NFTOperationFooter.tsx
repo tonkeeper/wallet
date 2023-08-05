@@ -2,11 +2,11 @@ import React from 'react';
 import { Alert, Linking, View } from 'react-native';
 import { Icon, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
-  debugLog,
   delay,
   triggerNotificationError,
   triggerNotificationSuccess,
 } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { NFTOperationError } from './NFTOperationError';
 import { getTimeSec } from '$utils/getTimeSec';
 import { TxBodyOptions, TxResponseOptions } from './TXRequest.types';

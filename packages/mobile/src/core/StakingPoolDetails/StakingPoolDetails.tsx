@@ -1,4 +1,5 @@
-import { usePoolInfo, useStakingRefreshControl, useTranslator } from '$hooks';
+import { usePoolInfo } from '$hooks/usePoolInfo';
+import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
 import { MainStackRouteNames, openDAppBrowser, openSend } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
 import { BottomButtonWrap, BottomButtonWrapHelper, NextCycle } from '$shared/components';
@@ -15,6 +16,7 @@ import * as S from './StakingPoolDetails.style';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { trackEvent } from '$utils';
 import { Events, SendAnalyticsFrom } from '$store/models';
+import { t } from 'i18n-js';
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPoolDetails>;
@@ -30,7 +32,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
   const pool = useStakingStore((s) => getStakingPoolByAddress(s, poolAddress), shallow);
   const poolStakingInfo = useStakingStore((s) => s.stakingInfo[pool.address], shallow);
 
-  const t = useTranslator();
+  
 
   const refreshControl = useStakingRefreshControl();
 

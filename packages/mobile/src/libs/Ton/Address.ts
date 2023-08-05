@@ -1,5 +1,6 @@
 import TonWeb from 'tonweb';
-import { debugLog, maskifyAddress } from '$utils';
+import { maskifyAddress } from '$utils/address';
+import { debugLog } from '$utils/debugLog';
 
 export interface AddressFormatOptions {
   raw?: boolean;

@@ -1,7 +1,7 @@
-import { useTranslator } from '$hooks';
 import { Icon } from '$uikit';
 import React, { FC, memo } from 'react';
 import * as S from './SearchButton.style';
+import { t } from '@tonkeeper/shared/i18n';
 
 interface Props {
   onPress?: () => void;
@@ -9,8 +9,6 @@ interface Props {
 
 const SearchButtonComponent: FC<Props> = (props) => {
   const { onPress } = props;
-
-  const t = useTranslator();
 
   return (
     <S.Touchable onPress={onPress}>

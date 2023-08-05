@@ -1,11 +1,11 @@
-import { useStakingRefreshControl, useTranslator } from '$hooks';
+import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
 import { useNavigation } from '@tonkeeper/router';
 import { MainStackRouteNames } from '$navigation';
 import { StakingListCell } from '$shared/components';
 import { StakingProvider, useStakingStore } from '$store';
 import { ScrollHandler, Spacer, Text } from '$uikit';
 import { List } from '$uikit/List/old/List';
-import { calculatePoolBalance, getImplementationIcon, getPoolIcon } from '$utils';
+import { calculatePoolBalance, getImplementationIcon, getPoolIcon } from '$utils/staking';
 import { formatter } from '$utils/formatter';
 import BigNumber from 'bignumber.js';
 import React, { FC, useCallback, useMemo } from 'react';
@@ -18,11 +18,12 @@ import { jettonsBalancesSelector } from '$store/jettons';
 import { useSelector } from 'react-redux';
 import { Ton } from '$libs/Ton';
 import { logEvent } from '@amplitude/analytics-browser';
+import { t } from '@tonkeeper/shared/i18n';
 
 interface Props {}
 
 export const Staking: FC<Props> = () => {
-  const t = useTranslator();
+  
 
   const nav = useNavigation();
 

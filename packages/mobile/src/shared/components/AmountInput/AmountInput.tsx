@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { formatInputAmount, parseLocaleNumber } from '$utils';
 import { cryptoToFiat, fiatToCrypto, trimZeroDecimals } from '$utils/currency';
-import { useTheme, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { getNumberFormatSettings } from 'react-native-localize';
 import {
   Extrapolation,
@@ -22,6 +22,7 @@ import { Button, Text } from '$uikit';
 import { SwapButton } from '../SwapButton';
 import { formatter } from '$utils/formatter';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
+import { t } from '@tonkeeper/shared/i18n';
 
 export type AmountInputRef = TextInput & { value: string };
 
@@ -92,7 +93,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const theme = useTheme();
 
-  const t = useTranslator();
+  
 
   const [value, setValue] = useState(amount.value);
 

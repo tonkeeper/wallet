@@ -1,5 +1,5 @@
 import React, { FC, useCallback } from 'react';
-import { usePrepareAction } from '$hooks';
+import { usePrepareAction } from '$hooks/usePrepareAction';
 import { ActionItemProps } from './ActionItem.interface';
 import { ActionItemBase } from '$shared/components/ActionItem/ActionItemBase/ActionItemBase';
 import { useNavigation } from '@tonkeeper/router';

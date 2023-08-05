@@ -9,13 +9,13 @@ import { subscriptionsSelector } from '$store/subscriptions';
 import { openSubscription } from '$navigation';
 import { format, ns } from '$utils';
 import { SubscriptionModel } from '$store/models';
-import { useTheme, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {Ton} from "$libs/Ton";
+import { t } from '@tonkeeper/shared/i18n';
 
 export const Subscriptions: FC = () => {
   const theme = useTheme();
-  const t = useTranslator();
   const { subscriptionsInfo } = useSelector(subscriptionsSelector);
   const { bottom: bottomInset } = useSafeAreaInsets();
 

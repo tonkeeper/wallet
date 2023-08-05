@@ -1,13 +1,13 @@
 import React from 'react';
 import * as S from './Properties.style';
 import { PropertiesProps } from '$core/NFT/Properties/Properties.interface';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import Animated from 'react-native-reanimated';
 import { ns } from '$utils';
 import {Text} from "$uikit";
 
 export const Properties: React.FC<PropertiesProps> = ({ properties }) => {
-  const t = useTranslator();
+  
 
   function renderPropertyItem(item) {
     return (

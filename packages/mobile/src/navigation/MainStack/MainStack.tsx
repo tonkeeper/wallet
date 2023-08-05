@@ -5,7 +5,8 @@ import { MainStackParamList } from './MainStack.interface';
 import { AppStackRouteNames, MainStackRouteNames } from '$navigation';
 import { TabStack } from './TabStack/TabStack';
 
-import { useStaking, useTheme } from '$hooks';
+import { useStaking } from '$hooks/useStaking';
+import { useTheme } from '$hooks/useTheme';
 import { DevStack } from '../DevStack/DevStack';
 import { useAttachScreen } from '../AttachScreen';
 import { SetupNotifications } from '$core/SetupNotifications/SetupNotifications';

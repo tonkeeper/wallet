@@ -15,17 +15,17 @@ import {
   setLastEnteredPasscode,
 } from '$store/wallet/sagas';
 import { EncryptedVault } from '$blockchain';
-import { AppStackRouteNames, goBack, openResetPin, useParams } from '$navigation';
+import { AppStackRouteNames, openResetPin } from '$navigation';
 import { walletActions, walletWalletSelector } from '$store/wallet';
 import { mainActions } from '$store/main';
-import { useTranslator } from '$hooks';
 import { MainDB } from '$database';
 import { useNotifications } from '$hooks/useNotifications';
 import { Toast, ToastSize } from '$store';
+import { goBack, useParams } from '$navigation/imperative';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const AccessConfirmation: FC = () => {
   const route = useRoute();
-  const t = useTranslator();
   const dispatch = useDispatch();
   const notifications = useNotifications();
   const { bottom: bottomInset } = useSafeAreaInsets();

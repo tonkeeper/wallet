@@ -2,7 +2,7 @@ import { memo, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { WalletProps } from './Wallet.interface';
 import * as S from './Wallet.style';
-import { useWalletInfo } from '$hooks';
+import { useWalletInfo } from '$hooks/useWalletInfo';
 import {
   Button,
   Icon,
@@ -15,9 +15,9 @@ import {
 import {
   openDAppBrowser,
   openReceive,
-  openRequireWalletModal,
   openSend,
 } from '$navigation';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import {
   walletActions,
   walletWalletSelector,

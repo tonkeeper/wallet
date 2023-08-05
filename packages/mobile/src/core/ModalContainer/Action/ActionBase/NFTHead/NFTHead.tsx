@@ -2,8 +2,7 @@ import React, { useCallback } from 'react';
 import * as S from './NFTHead.style';
 import { useNFT } from '$hooks/useNFT';
 import { NFTKeyPair } from '$store/nfts/interface';
-import { useTranslator } from '$hooks';
-import { Icon, Text } from '$uikit';
+import { Icon } from '$uikit';
 import _ from 'lodash';
 import { openNFT } from '$navigation';
 import { dnsToUsername } from '$utils/dnsToUsername';
@@ -11,9 +10,9 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { HideableImage } from '$core/HideableAmount/HideableImage';
 import { Steezy } from '$styles';
 import { DARK_COLORS, RADIUS } from '$styled';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const NFTHead: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
-  const t = useTranslator();
   const nft = useNFT(keyPair);
 
   const isTG = (nft.dns || nft.name)?.endsWith('.t.me');
@@ -29,8 +28,7 @@ export const NFTHead: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
   }
   return (
     <S.Wrap activeOpacity={0.6} onPress={handleOpenNftItem}>
-      {isDNS ? <S.GlobeIcon /> : null}
-      {!isDNS && nft?.content?.image?.baseUrl ? (
+      {nft?.content?.image?.baseUrl ? (
         <HideableImage
           imageStyle={styles.image.static}
           style={styles.imageContainer.static}

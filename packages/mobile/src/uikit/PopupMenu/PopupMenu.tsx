@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Modal, View } from 'react-native';
-import { Separator } from '$uikit/Separator/Separator';
-import { Highlight } from '$uikit/Highlight/Highlight';
+import { Separator } from '../Separator/Separator';
+import { Highlight } from '../Highlight/Highlight';
 import { deviceHeight, Memo, ns } from '$utils';
 import * as S from './PopupMenu.style';
-import { usePopupAnimation } from '$uikit/PopupSelect/usePopupAnimation';
-import { PopupMenuProps, PopupMenuItemProps } from '$uikit/PopupMenu/PopupMenu.interface';
-import { Text } from '$uikit/Text/Text';
+import { usePopupAnimation } from '../PopupSelect/usePopupAnimation';
+import { PopupMenuProps, PopupMenuItemProps } from '../PopupMenu/PopupMenu.interface';
+import { Text } from '../Text/Text';
 
 export const PopupMenuItem = Memo(
   ({ icon, onPress, text, onCloseMenu, shouldCloseMenu }: PopupMenuItemProps) => {

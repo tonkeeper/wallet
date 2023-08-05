@@ -1,5 +1,4 @@
-import { useTranslator } from '$hooks';
-import { goBack, openDAppBrowser } from '$navigation';
+import { openDAppBrowser } from '$navigation';
 import { IsTablet, NavBarHeight } from '$shared/constants';
 import { Button, ScrollHandler, Text } from '$uikit';
 import { ns, trackEvent } from '$utils';
@@ -13,6 +12,8 @@ import * as S from './DAppsSearch.style';
 import { useSearchSuggests } from './hooks/useSearchSuggests';
 import { useWebSearchSuggests } from './hooks/useWebSearchSuggests';
 import { SearchSuggestSource } from './types';
+import { goBack } from '$navigation/imperative';
+import { t } from '@tonkeeper/shared/i18n';
 
 export interface DAppsSearchProps {
   initialQuery?: string;
@@ -30,8 +31,6 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
   const { bottom: bottomInset } = useSafeAreaInsets();
 
   const scrollViewHeight = useSharedValue(0);
-
-  const t = useTranslator();
 
   const openUrl = useCallback(
     (url: string) => {

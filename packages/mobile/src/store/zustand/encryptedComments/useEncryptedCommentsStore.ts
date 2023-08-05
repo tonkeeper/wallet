@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { IEcryptedCommentsStore } from './types';
 
 const initialState: Omit<IEcryptedCommentsStore, 'actions'> = {
@@ -23,7 +23,7 @@ export const useEncryptedCommentsStore = create(
     }),
     {
       name: 'encryptedComments',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ decryptedComments }) =>
         ({ decryptedComments } as IEcryptedCommentsStore),
     },
