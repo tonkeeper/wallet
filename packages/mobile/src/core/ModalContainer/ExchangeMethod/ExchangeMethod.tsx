@@ -13,7 +13,7 @@ import { walletSelector } from '$store/wallet';
 import { CheckmarkItem } from '$uikit/CheckmarkItem';
 import { t } from '$translation';
 import { ExchangeDB } from './ExchangeDB';
-import { trackEvent } from '$utils';
+import { trackEvent } from '$utils/stats';
 
 export const ExchangeMethod: FC<ExchangeMethodProps> = ({ methodId, onContinue }) => {
   const method = useExchangeMethodInfo(methodId);

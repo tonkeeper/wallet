@@ -10,7 +10,7 @@ import {
 } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { NavBar, Text } from '$uikit';
-import { isValidAddress, maskifyAddress, parseLocaleNumber, trackEvent } from '$utils';
+import { isValidAddress, maskifyAddress, parseLocaleNumber } from '$utils';
 import React, {
   FC,
   useCallback,
@@ -38,6 +38,7 @@ import { DismissedActionError } from './steps/ConfirmStep/ActionErrors';
 import { Configuration, AccountsApi } from '@tonkeeper/core/src/legacy';
 import { formatter } from '$utils/formatter';
 import { Events } from '$store/models';
+import { trackEvent } from '$utils/stats';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {

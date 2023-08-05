@@ -14,9 +14,9 @@ import Animated from 'react-native-reanimated';
 import { shallow } from 'zustand/shallow';
 import * as S from './StakingPoolDetails.style';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { trackEvent } from '$utils';
+import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
-import { t } from 'i18n-js';
+import { t } from '@tonkeeper/shared/i18n';
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPoolDetails>;

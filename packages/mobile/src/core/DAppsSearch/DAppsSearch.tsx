@@ -1,7 +1,7 @@
 import { openDAppBrowser } from '$navigation';
 import { IsTablet, NavBarHeight } from '$shared/constants';
 import { Button, ScrollHandler, Text } from '$uikit';
-import { ns, trackEvent } from '$utils';
+import { ns } from '$utils';
 import React, { FC, memo, useCallback, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -14,6 +14,7 @@ import { useWebSearchSuggests } from './hooks/useWebSearchSuggests';
 import { SearchSuggestSource } from './types';
 import { goBack } from '$navigation/imperative';
 import { t } from '@tonkeeper/shared/i18n';
+import { trackEvent } from '$utils/stats';
 
 export interface DAppsSearchProps {
   initialQuery?: string;

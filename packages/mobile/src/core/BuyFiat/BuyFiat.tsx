@@ -14,9 +14,10 @@ import { useTheme } from '$hooks/useTheme';
 
 import { getServerConfig } from '$shared/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { deviceWidth, isAndroid, trackEvent } from '$utils';
+import { deviceWidth, isAndroid } from '$utils';
 import { useDeeplinking } from '$libs/deeplinking';
 import { goBack } from '$navigation/imperative';
+import { trackEvent } from '$utils/stats';
 
 export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
   const currency = route.params.currency;

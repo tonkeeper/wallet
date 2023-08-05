@@ -5,7 +5,7 @@ import * as S from './AppsList.style';
 import { APPS_ITEMS_IN_ROW } from '$core/DAppsExplore/constants';
 import { Icon } from '$uikit';
 import { AppItemSkeleton } from '../AppItem/AppItemSkeleton';
-import { trackEvent } from '$utils';
+import { trackEvent } from '$utils/stats';
 import { t } from '@tonkeeper/shared/i18n';
 
 interface Props {

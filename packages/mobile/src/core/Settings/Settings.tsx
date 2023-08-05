@@ -45,7 +45,7 @@ import {
   maskifyAddress,
   ns,
   throttle,
-  trackEvent,
+
   useHasDiamondsOnBalance,
 } from '$utils';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
@@ -59,6 +59,7 @@ import { SearchEngine, useBrowserStore } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
 import { Steezy } from '$styles';
 import { t } from '@tonkeeper/shared/i18n';
+import { trackEvent } from '$utils/stats';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);

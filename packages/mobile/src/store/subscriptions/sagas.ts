@@ -9,10 +9,11 @@ import { getSubscriptions, saveSubscriptions } from '$database';
 import { SubscriptionModel } from '$store/models';
 import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { store, Toast } from '$store';
-import { fuzzifyNumber, trackEvent } from '$utils';
+import { fuzzifyNumber } from '$utils';
 import { Ton } from '$libs/Ton';
 import { eventsActions } from '$store/events';
 import { network } from '$libs/network';
+import { trackEvent } from '$utils/stats';
 
 export async function reloadSubscriptionsFromServer(address: string) {
   try {

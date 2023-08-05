@@ -32,7 +32,7 @@ import {
   walletWalletSelector,
 } from '$store/wallet';
 import { Linking, Platform, RefreshControl, View } from 'react-native';
-import { delay, ns, trackEvent } from '$utils';
+import { delay, ns } from '$utils';
 import { CryptoCurrencies, CryptoCurrency, Decimals, getServerConfig } from '$shared/constants';
 import { t } from '@tonkeeper/shared/i18n';
 import { useNavigation } from '@tonkeeper/router';
@@ -49,6 +49,7 @@ import { TonIcon } from '../../components/TonIcon';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import _ from 'lodash';
 import { navigate } from '$navigation/imperative';
+import { trackEvent } from '$utils/stats';
 
 const exploreActions = [
   {

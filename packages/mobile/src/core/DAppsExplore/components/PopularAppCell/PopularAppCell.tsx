@@ -1,6 +1,6 @@
 import { openDAppBrowser } from '$navigation';
 import { Icon, Separator } from '$uikit';
-import { trackEvent } from '$utils';
+import { trackEvent } from '$utils/stats';
 import React, { FC, memo, useCallback } from 'react';
 import * as S from './popularAppCell.style';
 

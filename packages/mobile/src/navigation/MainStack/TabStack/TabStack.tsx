@@ -9,7 +9,7 @@ import { TabStackParamList } from './TabStack.interface';
 import { Icon, ScrollPositionContext, View } from '$uikit';
 import { usePreloadChart } from '$hooks/usePreloadChart';
 import { useTheme } from '$hooks/useTheme';
-import { isAndroid, nfs, ns, trackEvent } from '$utils';
+import { isAndroid, nfs, ns } from '$utils';
 import { t } from '$translation';
 import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
 import { TabBarBadgeIndicator } from './TabBarBadgeIndicator';
@@ -23,6 +23,7 @@ import { ActivityStack } from '$navigation/ActivityStack/ActivityStack';
 import { useNotificationsStore } from '$store';
 import { NotificationsIndicator } from '$navigation/MainStack/TabStack/NotificationsIndicator';
 import { useFetchMethodsToBuy } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
+import { trackEvent } from '$utils/stats';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 

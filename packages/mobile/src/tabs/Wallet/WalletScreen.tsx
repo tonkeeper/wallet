@@ -17,7 +17,7 @@ import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { maskifyAddress, ns, trackEvent } from '$utils';
+import { maskifyAddress, ns } from '$utils';
 import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
 import { useIsFocused } from '@react-navigation/native';
@@ -49,6 +49,7 @@ import { ShowBalance } from '$core/HideableAmount/ShowBalance';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { openWallet } from '$core/Wallet/Wallet';
+import { trackEvent } from '$utils/stats';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
