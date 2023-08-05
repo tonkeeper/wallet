@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider as StoreProvider, useSelector } from 'react-redux';
@@ -25,7 +25,7 @@ import { tonapi } from '@tonkeeper/shared/tonapi';
 import { MobilePasscodeScreen } from '@tonkeeper/shared/screens/MobilePasscodeScreen';
 import { tonkeeper } from '@tonkeeper/shared/tonkeeper';
 
-const TonThemeProvider: FC = ({ children }) => {
+const TonThemeProvider = ({ children }) => {
   const accent = useSelector(accentSelector);
 
   const accentColors = AppearanceAccents[accent].colors;

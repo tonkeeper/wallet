@@ -6,12 +6,11 @@ import * as S from './AddressSuggestCell.style';
 import { differenceInCalendarYears, isToday, isYesterday } from 'date-fns';
 import { format, isAndroid, maskifyAddress } from '$utils';
 import { Alert, Keyboard } from 'react-native';
-import { openAddFavorite, openEditFavorite } from '$navigation';
 import { useDispatch } from 'react-redux';
 import { favoritesActions } from '$store/favorites';
 import Animated from 'react-native-reanimated';
 import { Separator } from '$uikit/Separator/Separator.style';
-import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
+import { openAddFavorite, openEditFavorite } from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress';
 
 enum SuggestActionType {
   ADD,

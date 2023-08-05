@@ -26,7 +26,6 @@ import {
   ScanQR,
   Send,
   StakingSend,
-  ModalContainer,
 } from '$core';
 import { WebView } from '$core/WebView/WebView';
 import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewConfirmSending';
@@ -38,20 +37,8 @@ import { TransactionModal } from '@tonkeeper/shared/modals/TransactionModal';
 import { SwitchWalletModal } from '@tonkeeper/shared/modals/SwitchWalletModal';
 import { AddWalletModal } from '@tonkeeper/shared/modals/AddWalletModal';
 import { ProvidersWithNavigation } from './Providers';
-import { ReplaceDomainAddressModal } from '$core/ModalContainer/NFTOperations/ReplaceDomainAddressModal';
-import { LinkingDomainModal } from '$core/ModalContainer/LinkingDomainModal';
-import { AddEditFavoriteAddress } from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress';
-import { Marketplaces } from '$core/ModalContainer/Marketplaces/Marketplaces';
-import { AppearanceBottomSheet } from '$core/ModalContainer/AppearanceBottomSheet';
-import { ReminderEnableNotificationsModal } from '$core/ModalContainer/ReminderEnableNotificationsModal';
-import { InfoAboutInactive } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
-import { CreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
-import { ExchangeMethod } from '$core/ModalContainer/ExchangeMethod/ExchangeMethod';
-import { DeployModal } from '$core/ModalContainer/NFTOperations/Modals/DeployModal';
-import { ConfirmSending } from '$core/ModalContainer/ConfirmSending/ConfirmSending';
-import { RequireWallet } from '$core/ModalContainer/RequireWallet/RequireWallet';
 
-const Stack = createModalStackNavigator(ProvidersWithNavigation, ModalContainer);
+const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
 export const ModalStack = React.memo(() => (
   <Stack.Navigator>
@@ -74,7 +61,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NewConfirmSending} path="NewConfirmSending" />
       <Stack.Modal component={TransactionModal} path="transaction" />
       <Stack.Modal component={SwitchWalletModal} path="/switch-wallet" />
-      <Stack.Modal component={AddWalletModal} path="/add-wallet" />    
+      <Stack.Modal component={AddWalletModal} path="/add-wallet" />
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal component={NFT} path="NFTItemDetails" />

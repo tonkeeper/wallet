@@ -6,13 +6,13 @@ import { getUnixTime } from 'date-fns';
 import * as S from './Subscriptions.style';
 import {Icon, NavBar, RoundedSectionList, ScrollHandler, Text} from '$uikit';
 import { subscriptionsSelector } from '$store/subscriptions';
-import { openSubscription } from '$navigation';
 import { format, ns } from '$utils';
 import { SubscriptionModel } from '$store/models';
 import { useTheme } from '$hooks/useTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {Ton} from "$libs/Ton";
 import { t } from '@tonkeeper/shared/i18n';
+import { openSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
 
 export const Subscriptions: FC = () => {
   const theme = useTheme();

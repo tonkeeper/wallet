@@ -4,22 +4,11 @@ import { useDispatch } from 'react-redux';
 import { DeeplinkingResolver, useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
-import {
-  Base64,
-  compareAddresses,
-  delay,
-  fromNano,
-  isValidAddress,
-} from '$utils';
+import { Base64, compareAddresses, delay, fromNano, isValidAddress } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
-import {
-
-  openCreateSubscription,
-  openDeploy,
-  openSend,
-} from '../helper';
+import { openSend } from '../helper';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 
 import { t } from '@tonkeeper/shared/i18n';
@@ -43,6 +32,8 @@ import { checkFundsAndOpenNFTTransfer } from '$core/ModalContainer/NFTOperations
 import { openNFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
 import { getCurrentRoute } from '$navigation/imperative';
 import { IConnectQrQuery } from '$tonconnect/models';
+import { openDeprecatedConfirmSending } from '$core/ModalContainer/ConfirmSending/ConfirmSending';
+import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -241,11 +232,7 @@ export function useDeeplinkingResolvers() {
                 isJetton: true,
               };
 
-              nav.push(AppStackRouteNames.ModalContainer, {
-                modalName: ModalName.CONFIRM_SENDING,
-                key: 'CONFIRM_SENDING',
-                ...options,
-              });
+              openDeprecatedConfirmSending(options);
             },
           }),
         );
@@ -272,9 +259,7 @@ export function useDeeplinkingResolvers() {
               if (options.methodId) {
                 nav.openModal('NewConfirmSending', options);
               } else {
-                nav.push(AppStackRouteNames.ModalContainer, {
-                  modalName: ModalName.CONFIRM_SENDING,
-                  key: 'CONFIRM_SENDING',
+                openDeprecatedConfirmSending({
                   ...options,
                   withGoBack: resolveParams.withGoBack ?? false,
                 });
@@ -376,9 +361,6 @@ export function useDeeplinkingResolvers() {
       case 'sign-raw-payload':
         const { params, ...options } = txBody;
         await openSignRawModal(params, options);
-        break;
-      case 'deploy':
-        openDeploy(txBody);
         break;
     }
   };

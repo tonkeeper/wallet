@@ -88,11 +88,11 @@ const getRouteConfigsFromChildren = (children: React.ReactNode, props?: any) => 
   return configs;
 };
 
-export function createModalStackNavigator(ProvidersWithNavigation, ModalContainer) {
+export function createModalStackNavigator(ProvidersWithNavigation) {
   const Stack = createNativeStackNavigator();
 
   return {
-    Navigator: createModalNavigator(Stack, ProvidersWithNavigation, ModalContainer),
+    Navigator: createModalNavigator(Stack, ProvidersWithNavigation),
     Group: ModalGroup,
     Modal: ModalScreen,
   };
@@ -113,7 +113,7 @@ type ModalNavigatorProps = Omit<
   screenOptions?: NativeStackNavigationOptions;
 };
 
-function createModalNavigator(Stack: any, ProvidersWithNavigation: any, ModalContainer: any) {
+function createModalNavigator(Stack: any, ProvidersWithNavigation: any) {
   const sheetsProviderOptions = {
     presentation: 'transparentModal',
     gestureEnabled: false,
@@ -154,18 +154,6 @@ function createModalNavigator(Stack: any, ProvidersWithNavigation: any, ModalCon
               component={SheetContainer}
               name="SheetsProvider"
             />
-
-            {/* DEPRECATED */}
-            <Stack.Screen
-              options={sheetsProviderOptions}
-              name={'ModalContainer'}
-              component={ModalContainer}
-              initialParams={{
-                modalName: null,
-                message: null,
-              }}
-            />
-
             {routes.native.map((route, index) => (
               <Stack.Screen
                 {...route.restProps}

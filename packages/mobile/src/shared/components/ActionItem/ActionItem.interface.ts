@@ -1,4 +1,4 @@
-import { AccountAddress, AccountEvent, Action, EncryptedComment } from '@tonkeeper/core';
+import { AccountAddress, AccountEvent, Action, EncryptedComment } from '@tonkeeper/core/src/legacy';
 
 export interface ActionItemProps {
   event: AccountEvent;

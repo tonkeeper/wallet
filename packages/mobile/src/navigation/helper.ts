@@ -1,5 +1,4 @@
 import * as LocalAuthentication from 'expo-local-authentication';
-
 import {
   ActivityStackRouteNames,
   AppStackRouteNames,
@@ -11,11 +10,8 @@ import {
   TabsStackRouteNames,
 } from '$navigation/navigationNames';
 import { CryptoCurrency } from '$shared/constants';
-import { SendAnalyticsFrom, SubscriptionModel } from '$store/models';
-import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
+import { SendAnalyticsFrom } from '$store/models';
 import { NFTKeyPair } from '$store/nfts/interface';
-import { DeployModalProps } from '$core/ModalContainer/NFTOperations/Modals/DeployModal';
-import { AddEditFavoriteAddressProps } from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress.interface';
 import _ from 'lodash';
 import { getCurrentRoute, navigate, push, replace } from './imperative';
 
@@ -70,14 +66,6 @@ export function openSend({
     fee,
     isInactive,
     from,
-  });
-}
-
-export function openDeploy(props: DeployModalProps) {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.DEPLOY,
-    key: 'DEPLOY',
-    ...props,
   });
 }
 
@@ -228,26 +216,6 @@ export function openBuyFiat(currency: CryptoCurrency, methodId: string) {
   });
 }
 
-export function openCreateSubscription(invoiceId: string) {
-  navigate(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.CREATE_SUBSCRIPTION,
-    key: 'CREATE_SUBSCRIPTION',
-    invoiceId,
-  });
-}
-
-export function openSubscription(
-  subscription: SubscriptionModel,
-  fee: string | null = null,
-) {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.SUBSCRIPTION,
-    key: 'SUBSCRIPTION',
-    subscription,
-    fee,
-  });
-}
-
 export function openSubscriptions() {
   navigate(MainStackRouteNames.Subscriptions);
 }
@@ -350,22 +318,6 @@ export function openJetton(jettonAddress: string) {
 
 export async function openChooseCountry() {
   navigate(AppStackRouteNames.ChooseCountry);
-}
-
-export function openAddFavorite(props: Omit<AddEditFavoriteAddressProps, 'isEdit'>) {
-  navigate(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.ADD_EDIT_FAVORITE_ADDRESS,
-    ...props,
-    isEdit: false,
-  });
-}
-
-export function openEditFavorite(props: Omit<AddEditFavoriteAddressProps, 'isEdit'>) {
-  navigate(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.ADD_EDIT_FAVORITE_ADDRESS,
-    ...props,
-    isEdit: true,
-  });
 }
 
 export function openNotificationsScreen() {
