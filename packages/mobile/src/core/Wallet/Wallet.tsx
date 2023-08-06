@@ -17,13 +17,7 @@ import {
   Loader,
   SwapIcon,
 } from '$uikit';
-import {
-  MainStackRouteNames,
- 
-  openDAppBrowser,
-  openReceive,
-  openSend,
-} from '$navigation';
+import { MainStackRouteNames, openDAppBrowser, openReceive, openSend } from '$navigation';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import {
   walletActions,
@@ -33,7 +27,12 @@ import {
 } from '$store/wallet';
 import { Linking, Platform, RefreshControl, View } from 'react-native';
 import { delay, ns } from '$utils';
-import { CryptoCurrencies, CryptoCurrency, Decimals, getServerConfig } from '$shared/constants';
+import {
+  CryptoCurrencies,
+  CryptoCurrency,
+  Decimals,
+  getServerConfig,
+} from '$shared/constants';
 import { t } from '@tonkeeper/shared/i18n';
 import { useNavigation } from '@tonkeeper/router';
 import { Chart } from '$shared/components/Chart/new/Chart';
@@ -368,6 +367,17 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     handleOpenAction,
   ]);
 
+  const [render, setRender] = useState(false);
+  useEffect(() => {
+    delay(0).then(() => {
+      setRender(true);
+    });
+  }, []);
+
+  if (!render) {
+    return null;
+  }
+  
   return (
     <S.Wrap>
       <ScrollHandler

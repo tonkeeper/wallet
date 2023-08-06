@@ -14,7 +14,7 @@ import {
 } from '@tonkeeper/uikit';
 import { MappedEventAction } from '../../mappers/AccountEventsMapper';
 import { TransactionNFTItem } from './TransactionNFTItem';
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { SText } from '@tonkeeper/uikit/src/components/Text';
 import FastImage from 'react-native-fast-image';
 import { t } from '../../i18n';
@@ -50,11 +50,14 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
   const router = useNavigation();
 
   const isSimplePreview = item.type === 'SimplePreview';
-  const containerStyle = [
-    item.bottomCorner && styles.bottomCorner,
-    item.topCorner && styles.topCorner,
-    styles.containerListItem,
-  ];
+  const containerStyle = useMemo(
+    () => [
+      item.bottomCorner && styles.bottomCorner,
+      item.topCorner && styles.topCorner,
+      styles.containerListItem,
+    ],
+    [item.bottomCorner, item.topCorner],
+  );
 
   const handlePress = useCallback(() => {
     if (!isSimplePreview) {

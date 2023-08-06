@@ -247,7 +247,6 @@ const styles = StyleSheet.create({
     top: 0,
     right: 0,
     zIndex: 2,
-    marginRight: 16,
   },
   backButton: {
     justifyContent: 'center',

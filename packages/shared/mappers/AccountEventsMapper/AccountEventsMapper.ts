@@ -220,10 +220,9 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
       }
       case ActionTypeEnum.SmartContractExec: {
         const data = input.action.data;
-
         action.iconName = 'ic-gear-28';
         action.operation = t('transactions.smartcontract_exec');
-        action.subtitle = Address(data.contract.address).toShort();
+        action.subtitle = data.operation;//Address(data.contract.address).toShort();
         action.amount = formatter.formatNano(data.ton_attached, {
           prefix: amountPrefix,
           postfix: 'TON',
@@ -432,6 +431,7 @@ export function EventActionDetailsMapper(input: EventActionDetailsMapperInput) {
       case ActionTypeEnum.SmartContractExec: {
         const data = action.data;
 
+        console.log(data.operation);
         transaction.operation = t('transactions.smartcontract_exec');
         const friendlyAddress = Address(data.contract.address).toFriendly();
         transaction.sender = {

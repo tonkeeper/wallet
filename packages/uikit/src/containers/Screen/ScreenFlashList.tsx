@@ -15,7 +15,7 @@ export type ScreenScrollListProps = FlashListProps<any> & {
 };
 
 export const ScreenScrollList = memo<ScreenScrollListProps>(forwardRef((props, ref) => {
-  const { contentContainerStyle, hideBottomSeparator, ListHeaderComponent, ...other } = props;
+  const { contentContainerStyle, hideBottomSeparator, ListHeaderComponent, showsVerticalScrollIndicator = false, ...other } = props;
   const { detectContentSize, detectLayoutSize, scrollHandler, headerOffsetStyle, scrollRef, headerEjectionPoint } = useScreenScroll();
   const tabBarHeight = useBottomTabBarHeight();
   const setRef = useMergeRefs(scrollRef, ref);
@@ -43,10 +43,10 @@ export const ScreenScrollList = memo<ScreenScrollListProps>(forwardRef((props, r
   return (
     <View style={styles.container}>
       <AnimatedFlashList
-        onContentSizeChange={detectContentSize}
+        showsVerticalScrollIndicator={showsVerticalScrollIndicator}
+        // onContentSizeChange={detectContentSize}
         ListHeaderComponent={HeaderComponent}
         contentContainerStyle={contentStyle}
-        showsVerticalScrollIndicator={false}
         onLayout={detectLayoutSize}
         scrollEventThrottle={16}
         onScroll={scrollHandler}

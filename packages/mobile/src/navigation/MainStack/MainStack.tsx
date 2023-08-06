@@ -38,6 +38,7 @@ import { ImportWatchWalletScreen } from '@tonkeeper/shared/screens/setup/ImportW
 import { ImportWalletScreen } from '@tonkeeper/shared/screens/setup/ImportWalletScreen';
 import { CreateWalletScreen } from '@tonkeeper/shared/screens/setup/CreateWalletScreen';
 import { StartScreen } from '@tonkeeper/shared/screens/StartScreen';
+import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -91,6 +92,8 @@ export const MainStack: FC = () => {
         fullScreenGestureEnabled: true,
       }}
     >
+
+
       {renderRoot()}
       <Stack.Screen name={MainStackRouteNames.Wallet} component={Wallet} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />

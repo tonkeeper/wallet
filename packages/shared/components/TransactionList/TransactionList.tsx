@@ -7,7 +7,7 @@ import {
   MappedEventItemType,
 } from '@tonkeeper/shared/mappers/AccountEventsMapper';
 
-interface EventsListProps {
+interface TransactionsListProps {
   events: MappedEvent[];
   onFetchMore?: () => void;
   onRefresh?: () => void;
@@ -15,6 +15,8 @@ interface EventsListProps {
   refreshing?: boolean;
   loading?: boolean;
   estimatedItemSize?: number;
+  ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null | undefined;
+  ListFooterComponent?: React.ComponentType<any> | React.ReactElement | null | undefined;
 }
 
 type TransactionRenderItemOptions = {
@@ -37,9 +39,9 @@ function RenderItem({ item, index }: TransactionRenderItemOptions) {
   }
 }
 
-export const TransactionsList = memo<EventsListProps>((props) => {
-  const theme = useTheme();
+export const TransactionsList = memo<TransactionsListProps>((props) => {
   const {
+    ListHeaderComponent,
     estimatedItemSize = 76,
     fetchMoreEnd,
     onFetchMore,
@@ -63,10 +65,11 @@ export const TransactionsList = memo<EventsListProps>((props) => {
       refreshing={!!refreshing}
       estimatedItemSize={estimatedItemSize}
       keyExtractor={(item) => item.id}
-      onEndReachedThreshold={0.01}
+      onEndReachedThreshold={0.02}
       onEndReached={onFetchMore}
       renderItem={RenderItem}
       data={events}
+      decelerationRate="normal"
       ListEmptyComponent={
         loading ? (
           <View style={styles.emptyContainer}>
@@ -74,15 +77,24 @@ export const TransactionsList = memo<EventsListProps>((props) => {
           </View>
         ) : undefined
       }
+      ListHeaderComponent={ListHeaderComponent}
       ListFooterComponent={
-        !fetchMoreEnd && !loading ? (
-          <View style={styles.moreLoader}>
-            <Loader size="medium" />
-          </View>
-        ) : undefined
+        props.ListFooterComponent ?? <Footer loading={!fetchMoreEnd && !loading} />
       }
     />
   );
+});
+
+const Footer = memo(({ loading }: { loading: boolean }) => {
+  if (loading) {
+    return (
+      <View style={styles.moreLoader}>
+        <Loader size="medium" />
+      </View>
+    );
+  }
+
+  return null;
 });
 
 const styles = StyleSheet.create({
@@ -95,7 +107,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   emptyContainer: {
-    paddingTop: 72,
+    paddingTop: 120,
     alignItems: 'center',
     justifyContent: 'center',
   },
