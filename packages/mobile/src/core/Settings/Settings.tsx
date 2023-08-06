@@ -59,7 +59,7 @@ import AnimatedLottieView from 'lottie-react-native';
 import { Steezy } from '$styles';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
-import { openAppearance } from '$core/ModalContainer/AppearanceBottomSheet';
+import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 import { Address } from '@tonkeeper/core';
 
 export const Settings: FC = () => {

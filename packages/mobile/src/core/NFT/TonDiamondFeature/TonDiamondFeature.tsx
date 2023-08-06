@@ -7,7 +7,7 @@ import { FeatureButton } from './FeatureButton/FeatureButton';
 import { useCallback } from 'react';
 import { AppearanceAccents, getAccentIdByDiamondsNFT } from '$styled';
 import { Text } from '$uikit';
-import { openAppearance } from '$core/ModalContainer/AppearanceBottomSheet';
+import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 
 export const TonDiamondFeature: React.FC<TonDiamondFeatureProps> = ({ nft }) => {
   

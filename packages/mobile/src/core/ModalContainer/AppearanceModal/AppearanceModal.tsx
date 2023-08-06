@@ -1,5 +1,5 @@
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDimensions } from '$hooks/useDimensions';
-
 import { mainActions, accentSelector, accentTonIconSelector } from '$store/main';
 import { NFTModel, TonDiamondMetadata } from '$store/models';
 import { nftsSelector } from '$store/nfts';
@@ -11,21 +11,12 @@ import {
   getAccentIdByDiamondsNFT,
 } from '$styled';
 import { checkIsTonDiamondsNFT, ns } from '$utils';
-import React, {
-  FC,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
 import { ListRenderItem } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
 import { AccentItem, ACCENT_ITEM_WIDTH } from './AccentItem/AccentItem';
-import { AppearanceBottomSheetProps } from './AppearanceBottomSheet.interface';
-import * as S from './AppearanceBottomSheet.style';
+import { AppearanceModalProps } from './AppearanceModal.interface';
+import * as S from './AppearanceModal.style';
 import { CustomButton } from './CustomButton/CustomButton';
 import { t } from '@tonkeeper/shared/i18n';
 import { Modal, View } from '@tonkeeper/uikit';
@@ -33,7 +24,7 @@ import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { push } from '$navigation/imperative';
 import { openMarketplaces } from '../Marketplaces/Marketplaces';
 
-const AppearanceBottomSheetComponent: FC<AppearanceBottomSheetProps> = (props) => {
+const AppearanceModal = memo<AppearanceModalProps>((props) => {
   const { selectedAccentNFTAddress } = props;
   const nav = useNavigation();
 
@@ -195,14 +186,12 @@ const AppearanceBottomSheetComponent: FC<AppearanceBottomSheetProps> = (props) =
       </Modal.Content>
     </Modal>
   );
-};
+});
 
-export const AppearanceBottomSheet = memo(AppearanceBottomSheetComponent);
-
-export function openAppearance(props?: AppearanceBottomSheetProps) {
+export function openAppearance(props?: AppearanceModalProps) {
   push('SheetsProvider', {
     $$action: SheetActions.ADD,
-    component: AppearanceBottomSheet,
+    component: AppearanceModal,
     params: props,
     path: 'APPEARANCE',
   });
