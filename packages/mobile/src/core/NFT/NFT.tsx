@@ -35,6 +35,7 @@ import { Tonapi } from '$libs/Tonapi';
 import { Toast } from '$store';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
+import { ProgrammableButtons } from '$core/NFT/ProgrammableButtons/ProgrammableButtons';
 
 export const NFT: React.FC<NFTProps> = ({ route }) => {
   const flags = useFlags(['disable_nft_markets', 'disable_apperance']);
@@ -263,6 +264,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
                 {t('nft_open_in_marketplace')}
               </Button>
             ) : null}
+            <ProgrammableButtons buttons={nft.metadata.buttons} />
           </S.ButtonWrap>
           {!hiddenAmounts && <Properties properties={nft.attributes} />}
           <Details

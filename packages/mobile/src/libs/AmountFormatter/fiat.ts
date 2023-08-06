@@ -13,7 +13,7 @@ export enum FiatCurrencies {
   Uah = 'uah',
   Kzt = 'kzt',
   Uzs = 'uzs',
-  // Irr = 'irr',
+  Irr = 'irr',
   Brl = 'brl',
   Cad = 'cad',
   Byn = 'byn',
