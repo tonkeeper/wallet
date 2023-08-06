@@ -179,7 +179,7 @@ export const Staking: FC<Props> = () => {
             ) : null}
             {data.otherList.length > 0 ? (
               <>
-                {data.activeList.length > 0 || data.recommendedList.length > 0 ? (
+                {activePools.length > 0 || data.recommendedList.length > 0 ? (
                   <S.TitleContainer>
                     <Text variant="h3">{t('staking.other')}</Text>
                   </S.TitleContainer>
