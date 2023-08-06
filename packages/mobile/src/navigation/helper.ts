@@ -1,13 +1,4 @@
-import { createRef } from 'react';
-import { StackActions } from '@react-navigation/routers';
-import {
-  NavigationContainerRef,
-  CommonActions,
-  useRoute,
-  createNavigationContainerRef,
-} from '@react-navigation/native';
 import * as LocalAuthentication from 'expo-local-authentication';
-
 import {
   ActivityStackRouteNames,
   AppStackRouteNames,
@@ -18,110 +9,11 @@ import {
   SetupWalletStackRouteNames,
   TabsStackRouteNames,
 } from '$navigation/navigationNames';
-import { CryptoCurrencies, CryptoCurrency } from '$shared/constants';
-import { SendAnalyticsFrom, SubscriptionModel } from '$store/models';
-import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
+import { CryptoCurrency } from '$shared/constants';
+import { SendAnalyticsFrom } from '$store/models';
 import { NFTKeyPair } from '$store/nfts/interface';
-import { DeployModalProps } from '$core/ModalContainer/NFTOperations/Modals/DeployModal';
-import { mergeRefs } from '$utils/mergeRefs';
-import { shouldOpenReminderNotifications } from '$utils/messaging';
-import { AppearanceBottomSheetProps } from '$core/ModalContainer/AppearanceBottomSheet/AppearanceBottomSheet.interface';
-import { ExchangeDB } from '$core/ModalContainer/ExchangeMethod/ExchangeDB';
-import { MarketplacesModalProps } from '$core/ModalContainer/Marketplaces/Marketplaces.interface';
-import { AddEditFavoriteAddressProps } from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress.interface';
 import _ from 'lodash';
-
-export const navigationRef_depreceted = createRef<NavigationContainerRef>();
-export const navigationRef = createNavigationContainerRef();
-
-export const setNavigationRef = mergeRefs(navigationRef_depreceted, navigationRef);
-
-let navigationIsReady = false;
-export const getCurrentRouteName = () => {
-  if (navigationIsReady) {
-    return navigationRef.getCurrentRoute()?.name;
-  }
-
-  return null;
-};
-
-export const onNavigationReady = () => {
-  navigationIsReady = true;
-};
-
-export function getCurrentRoute() {
-  if (!navigationRef_depreceted.current) {
-    return null;
-  }
-
-  const state = navigationRef_depreceted.current.getRootState();
-  let route = state?.routes?.[state.index];
-
-  while (route?.state?.index !== undefined && route?.state?.index !== null) {
-    route = route.state.routes[route.state.index];
-  }
-
-  return route ?? null;
-}
-
-export function navigate(name: string, params?: any) {
-  navigationRef_depreceted.current?.navigate(name, params);
-}
-
-export function replace(name: string, params?: any) {
-  navigationRef_depreceted.current?.dispatch(StackActions.replace(name, params));
-}
-
-export function push(routeName: string, params?: any) {
-  navigationRef_depreceted.current?.dispatch(StackActions.push(routeName, params));
-}
-
-export function popToTop() {
-  navigationRef_depreceted.current?.dispatch(StackActions.popToTop());
-}
-
-export function popTo(count: number) {
-  navigationRef_depreceted.current?.dispatch(StackActions.pop(count));
-}
-
-export function goBack() {
-  navigationRef_depreceted.current?.goBack();
-}
-
-export function reset(screenName: string) {
-  navigationRef_depreceted.current?.dispatch(
-    CommonActions.reset({
-      index: 0,
-      routes: [{ name: screenName }],
-    }),
-  );
-}
-
-export function openBalancesTab() {
-  navigate(TabsStackRouteNames.Balances);
-}
-
-export function openWallet(currency: CryptoCurrency) {
-  _.throttle(() => {
-    navigate(MainStackRouteNames.Wallet, {
-      currency,
-    });
-  }, 1000)();
-}
-
-export function openEditCoins() {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.EDIT_COINS,
-    key: 'EDIT_COINS',
-  });
-}
-
-export function openRequireWalletModal() {
-  navigate(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.REQUIRE_WALLET,
-    key: 'REQUIRE_WALLET',
-  });
-}
+import { getCurrentRoute, navigate, push, replace } from './imperative';
 
 export function openReceive(
   currency: CryptoCurrency,
@@ -177,14 +69,6 @@ export function openSend({
   });
 }
 
-export function openDeploy(props: DeployModalProps) {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.DEPLOY,
-    key: 'DEPLOY',
-    ...props,
-  });
-}
-
 export function openDAppsSearch(
   initialQuery?: string,
   onOpenUrl?: (url: string) => void,
@@ -203,12 +87,6 @@ export function openDAppBrowser(url: string) {
 
 export function openScanQR(onScan: (url: string) => void) {
   navigate(AppStackRouteNames.ScanQR, { onScan });
-}
-
-export function openCreateWallet() {
-  navigate(AppStackRouteNames.SetupWalletStack, {
-    screen: SetupWalletStackRouteNames.CreateWallet,
-  });
 }
 
 export function openSecretWords() {
@@ -338,60 +216,6 @@ export function openBuyFiat(currency: CryptoCurrency, methodId: string) {
   });
 }
 
-export async function openExchangeMethodModal(methodId: string, onContinue?: () => void) {
-  const isShowDetails = await ExchangeDB.isShowDetails(methodId);
-  if (isShowDetails) {
-    push(AppStackRouteNames.ModalContainer, {
-      modalName: ModalName.EXCHANGE_METHOD,
-      key: 'EXCHANGE_METHOD',
-      methodId,
-      onContinue,
-    });
-  } else {
-    if (onContinue) {
-      onContinue();
-
-      return;
-    }
-
-    openBuyFiat(CryptoCurrencies.Ton, methodId);
-  }
-}
-
-export function openCreateSubscription(invoiceId: string) {
-  navigate(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.CREATE_SUBSCRIPTION,
-    key: 'CREATE_SUBSCRIPTION',
-    invoiceId,
-  });
-}
-
-export function openSubscription(
-  subscription: SubscriptionModel,
-  fee: string | null = null,
-) {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.SUBSCRIPTION,
-    key: 'SUBSCRIPTION',
-    subscription,
-    fee,
-  });
-}
-
-export function openInactiveInfo() {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.INFO_ABOUT_INACTIVE,
-    key: 'INFO_ABOUT_INACTIVE',
-  });
-}
-
-export function openAppearance(props?: AppearanceBottomSheetProps) {
-  navigate(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.APPEARANCE,
-    ...props,
-  });
-}
-
 export function openSubscriptions() {
   navigate(MainStackRouteNames.Subscriptions);
 }
@@ -492,70 +316,10 @@ export function openJetton(jettonAddress: string) {
   });
 }
 
-export async function openReminderEnableNotificationsModal() {
-  const shouldOpen = await shouldOpenReminderNotifications();
-  if (shouldOpen) {
-    push(AppStackRouteNames.ModalContainer, {
-      modalName: ModalName.REMINDER_ENABLE_NOTIFICATIONS,
-    });
-  }
-}
-
-export async function openMarketplaces(props?: MarketplacesModalProps) {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.MARKETPLACES,
-    ...props,
-  });
-}
-
 export async function openChooseCountry() {
   navigate(AppStackRouteNames.ChooseCountry);
-}
-
-export function openAddFavorite(props: Omit<AddEditFavoriteAddressProps, 'isEdit'>) {
-  navigate(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.ADD_EDIT_FAVORITE_ADDRESS,
-    ...props,
-    isEdit: false,
-  });
-}
-
-export function openEditFavorite(props: Omit<AddEditFavoriteAddressProps, 'isEdit'>) {
-  navigate(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.ADD_EDIT_FAVORITE_ADDRESS,
-    ...props,
-    isEdit: true,
-  });
 }
 
 export function openNotificationsScreen() {
   navigate(ActivityStackRouteNames.NotificationsActivity);
 }
-
-export function openLinkingDomain(params: {
-  walletAddress?: string;
-  domainAddress: string;
-  domain: string;
-  fee?: string;
-  onDone?: (options: { walletAddress?: string }) => void;
-}) {
-  navigate(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.LINKING_DOMAIN,
-    ...params,
-  });
-}
-
-export function openReplaceDomainAddress(params: {
-  domain: string;
-  onReplace: (address: string) => void;
-}) {
-  push(AppStackRouteNames.ModalContainer, {
-    modalName: ModalName.REPLACE_DOMAIN_ADDRESS,
-    ...params,
-  });
-}
-
-export const useParams = <T>(): Partial<T> => {
-  const route = useRoute();
-  return route.params ?? {};
-};

@@ -6,12 +6,13 @@ import * as S from './ActionBase.style';
 import { Highlight, Icon, Separator, Spacer, SpoilerView, Text } from '$uikit';
 import { ns } from '$utils';
 import { ActionBaseProps, InfoRows } from './ActionBase.interface';
-import { useTranslator } from '$hooks';
-import { openDAppBrowser, openSubscription } from '$navigation';
+import { openDAppBrowser } from '$navigation';
 import { getServerConfig } from '$shared/constants';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 import { Toast } from '$store';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { t } from '@tonkeeper/shared/i18n';
+import { openSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
 
 export const ActionBase: FC<ActionBaseProps> = ({
   infoRows,
@@ -30,7 +31,6 @@ export const ActionBase: FC<ActionBaseProps> = ({
   handleDecryptComment,
 }) => {
   const [isClosed, setClosed] = useState(false);
-  const t = useTranslator();
 
   const isCommentRow = useCallback(
     (item: InfoRows[0]) => item.label === t('transaction_message'),

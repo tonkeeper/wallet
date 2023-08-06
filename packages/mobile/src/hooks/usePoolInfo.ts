@@ -1,18 +1,20 @@
-import { AppStackRouteNames, openRequireWalletModal } from '$navigation';
+import { AppStackRouteNames } from '$navigation';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { formatter, stakingFormatter } from '$utils/formatter';
-import { PoolInfo, AccountStakingInfo } from '@tonkeeper/core';
+import { PoolInfo, AccountStakingInfo } from '@tonkeeper/core/src/legacy';
 import BigNumber from 'bignumber.js';
 import { useCallback, useMemo } from 'react';
 import { useFiatValue } from './useFiatValue';
-import { useTranslator } from './useTranslator';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { StakingTransactionType } from '$core/StakingSend/types';
 import { useWallet } from './useWallet';
-import { Address, Ton } from '$libs/Ton';
+import { Ton } from '$libs/Ton';
 import { useCopyText } from './useCopyText';
 import { useSelector } from 'react-redux';
 import { jettonsBalancesSelector } from '$store/jettons';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
+import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 export interface PoolDetailsItem {
   label: string;
@@ -21,8 +23,6 @@ export interface PoolDetailsItem {
 }
 
 export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo) => {
-  const t = useTranslator();
-
   const copyText = useCopyText();
 
   const nav = useNavigation();
@@ -35,7 +35,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
     if (pool.implementation === 'liquidTF' && pool.liquidJettonMaster) {
       const jetton = jettonBalances.find(
         (item) =>
-          Ton.formatAddress(item.jettonAddress, { raw: true }) ===
+          Address(item.jettonAddress).toRaw() ===
           pool.liquidJettonMaster,
       );
 
@@ -132,13 +132,13 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
       });
     }
 
-    const address = new Address(pool.address);
+    const address = Address(pool.address);
 
     rows.push({
       label: t('staking.details.pool_address.label'),
-      value: address.format({ cut: true }),
+      value: address.toShort(),
       onPress: () => {
-        copyText(address.format(), t('address_copied'));
+        copyText(address.toFriendly(), t('address_copied'));
       },
     });
 

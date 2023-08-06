@@ -1,6 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { Steezy, StyleProp } from '$styles';
-import { Spacer, View } from '$uikit';
+import { Spacer } from '../Spacer/Spacer';
+import { View } from '@tonkeeper/uikit';
 import { ListHeader } from './ListHeader';
 import { ListSeparator } from './ListSeparator';
 import { ViewStyle } from 'react-native';

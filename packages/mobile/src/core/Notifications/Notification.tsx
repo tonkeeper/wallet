@@ -7,7 +7,7 @@ import { format, getDomainFromURL } from '$utils';
 import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
 import { IconProps } from '$uikit/Icon/Icon';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { isToday } from 'date-fns';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { TonConnect } from '$tonconnect';
@@ -190,7 +190,7 @@ export const Notification: React.FC<NotificationProps> = (props) => {
           <List.Item
             disabled={!props.notification.link}
             onPress={handleOpenInWebView}
-            imageStyle={styles.imageStyle.static}
+            pictureStyle={styles.imageStyle.static}
             leftContentStyle={styles.leftContentStyle.static}
             picture={props.notification.icon_url || app?.icon}
             titleProps={{

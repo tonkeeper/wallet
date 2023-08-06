@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import {
   Button,
   IconButton,
@@ -11,13 +11,13 @@ import {
   View,
   SwapIcon,
 } from '$uikit';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { ScanQRButton } from '../../components/ScanQRButton';
 import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
-import { openRequireWalletModal, openWallet } from '$navigation';
-import { maskifyAddress, ns, trackEvent } from '$utils';
+
+import { ns } from '$utils';
 import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
 import { useIsFocused } from '@react-navigation/native';
@@ -33,7 +33,9 @@ import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
 import { useTonkens } from './hooks/useTokens';
 import { useWallet } from './hooks/useWallet';
-import { useApprovedNfts, useTheme, useTokenPrice } from '$hooks';
+import { useApprovedNfts } from '$hooks/useApprovedNfts';
+import { useTheme } from '$hooks/useTheme';
+import { useTokenPrice } from '$hooks/useTokenPrice';
 import { ApprovalCell } from '$core/ApprovalCell/components/ApprovalCell';
 import { Steezy } from '$styles';
 import { BalancesList } from './components/BalancesList';
@@ -45,6 +47,10 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { ShowBalance } from '$core/HideableAmount/ShowBalance';
 import { Events, SendAnalyticsFrom } from '$store/models';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
+import { openWallet } from '$core/Wallet/Wallet';
+import { trackEvent } from '$utils/stats';
+import { Address } from '@tonkeeper/core';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -141,7 +147,7 @@ export const WalletScreen = memo(() => {
             activeOpacity={0.6}
           >
             <Text color="textSecondary" variant="body2">
-              {maskifyAddress(wallet.address.friendlyAddress)}
+              {Address.toShort(wallet.address.friendlyAddress)}
             </Text>
           </TouchableOpacity>
         )}

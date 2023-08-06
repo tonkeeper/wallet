@@ -4,34 +4,22 @@ import { useDispatch } from 'react-redux';
 import { DeeplinkingResolver, useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
-import {
-  Base64,
-  compareAddresses,
-  debugLog,
-  delay,
-  fromNano,
-  isValidAddress,
-} from '$utils';
+import { Base64, delay, fromNano } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
-import {
-  getCurrentRoute,
-  openCreateSubscription,
-  openDeploy,
-  openRequireWalletModal,
-  openSend,
-} from '../helper';
+import { openSend } from '../helper';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { getTimeSec } from '$utils/getTimeSec';
 import { TonLoginClient } from '@tonapps/tonlogin-client';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 import { isSignRawParams } from '$utils/isSignRawParams';
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import { AppStackRouteNames } from '$navigation/navigationNames';
-import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
-import { IConnectQrQuery, TonConnectRemoteBridge } from '$tonconnect';
+import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { openTimeNotSyncedModal } from '$core/ModalContainer/TimeNotSynced/TimeNotSynced';
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 import { openTonConnect } from '$core/TonConnect/TonConnectModal';
@@ -41,6 +29,11 @@ import BigNumber from 'bignumber.js';
 import { Tonapi } from '$libs/Tonapi';
 import { checkFundsAndOpenNFTTransfer } from '$core/ModalContainer/NFTOperations/Modals/NFTTransferModal';
 import { openNFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
+import { getCurrentRoute } from '$navigation/imperative';
+import { IConnectQrQuery } from '$tonconnect/models';
+import { openDeprecatedConfirmSending } from '$core/ModalContainer/ConfirmSending/ConfirmSending';
+import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
+import { Address } from '@tonkeeper/core';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -154,7 +147,7 @@ export function useDeeplinkingResolvers() {
     const address = params.address;
     const comment = query.text ?? '';
 
-    if (!isValidAddress(address)) {
+    if (!Address.isValid(address)) {
       return Toast.fail(t('transfer_deeplink_address_error'));
     }
 
@@ -191,14 +184,14 @@ export function useDeeplinkingResolvers() {
           },
         );
       } else if (query.jetton) {
-        if (!isValidAddress(query.jetton)) {
+        if (!Address.isValid(query.jetton)) {
           return Toast.fail(t('transfer_deeplink_address_error'));
         }
 
         const currentAddress = await getWallet().ton.getAddress();
         const { balances } = await Tonapi.getJettonBalances(currentAddress);
         const jettonBalance = balances.find((balance) =>
-          compareAddresses(balance.jetton?.address, query.jetton),
+          Address.compare(balance.jetton?.address, query.jetton),
         );
 
         if (!jettonBalance) {
@@ -239,11 +232,7 @@ export function useDeeplinkingResolvers() {
                 isJetton: true,
               };
 
-              nav.push(AppStackRouteNames.ModalContainer, {
-                modalName: ModalName.CONFIRM_SENDING,
-                key: 'CONFIRM_SENDING',
-                ...options,
-              });
+              openDeprecatedConfirmSending(options);
             },
           }),
         );
@@ -270,9 +259,7 @@ export function useDeeplinkingResolvers() {
               if (options.methodId) {
                 nav.openModal('NewConfirmSending', options);
               } else {
-                nav.push(AppStackRouteNames.ModalContainer, {
-                  modalName: ModalName.CONFIRM_SENDING,
-                  key: 'CONFIRM_SENDING',
+                openDeprecatedConfirmSending({
                   ...options,
                   withGoBack: resolveParams.withGoBack ?? false,
                 });
@@ -282,7 +269,7 @@ export function useDeeplinkingResolvers() {
         );
       }
     } else if (query.jetton) {
-      if (!isValidAddress(query.jetton)) {
+      if (!Address.isValid(query.jetton)) {
         return Toast.fail(t('transfer_deeplink_address_error'));
       }
       openSend({
@@ -293,7 +280,7 @@ export function useDeeplinkingResolvers() {
         isJetton: true,
       });
     } else if (query.nft) {
-      if (!isValidAddress(query.nft)) {
+      if (!Address.isValid(query.nft)) {
         return Toast.fail(t('transfer_deeplink_nft_address_error'));
       }
       await checkFundsAndOpenNFTTransfer(query.nft, address);
@@ -305,7 +292,7 @@ export function useDeeplinkingResolvers() {
   deeplinking.add('/transfer', async ({ query }) => {
     const nft = query.nft;
     if (nft) {
-      if (!isValidAddress(nft)) {
+      if (!Address.isValid(nft)) {
         return Toast.fail(t('transfer_deeplink_nft_address_error'));
       }
       await openNFTTransferInputAddressModal({ nftAddress: nft });
@@ -336,8 +323,8 @@ export function useDeeplinkingResolvers() {
 
     if (
       txBody.params.source &&
-      isValidAddress(txBody.params.source) &&
-      !compareAddresses(txBody.params.source, await wallet.ton.getAddress())
+      Address.isValid(txBody.params.source) &&
+      !Address.compare(txBody.params.source, await wallet.ton.getAddress())
     ) {
       Toast.hide();
       return openAddressMismatchModal(
@@ -374,9 +361,6 @@ export function useDeeplinkingResolvers() {
       case 'sign-raw-payload':
         const { params, ...options } = txBody;
         await openSignRawModal(params, options);
-        break;
-      case 'deploy':
-        openDeploy(txBody);
         break;
     }
   };

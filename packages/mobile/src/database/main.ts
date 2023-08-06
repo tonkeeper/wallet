@@ -4,6 +4,7 @@ import { FiatCurrency, ServerConfig, ServerConfigVersion } from '$shared/constan
 import { getWalletName } from '$shared/dynamicConfig';
 import { LogItem } from '$store/main/interface';
 import { AccentKey, AccentNFTIcon } from '$styled';
+import { config } from '@tonkeeper/shared/config';
 
 export class MainDB {
   static async isJettonsEnabled(): Promise<boolean> {
@@ -189,6 +190,8 @@ export async function setLastRefreshedAt(ts: number) {
 export async function getSavedServerConfig(
   isTestnet: boolean,
 ): Promise<ServerConfig | null> {
+  await config.load();
+
   let key = `${getWalletName()}_server_config`;
   if (isTestnet) {
     key += '_testnet';

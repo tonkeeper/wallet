@@ -8,7 +8,8 @@ import {
   Text,
   View,
 } from '$uikit';
-import { debugLog, ns } from '$utils';
+import { ns } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Linking } from 'react-native';
 import { CellSection } from '$shared/components';
@@ -17,7 +18,7 @@ import { useSelector } from 'react-redux';
 import { NotificationsStatus, useNotificationStatus } from '$hooks/useNotificationStatus';
 import messaging from '@react-native-firebase/messaging';
 import { useNotifications } from '$hooks/useNotifications';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
 import { Toast, ToastSize, useConnectedAppsList, useConnectedAppsStore } from '$store';
 import { Steezy } from '$styles';

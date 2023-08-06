@@ -2,19 +2,19 @@ import React from 'react';
 import { Alert, Linking, View } from 'react-native';
 import { Icon, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
-  debugLog,
   delay,
   triggerNotificationError,
   triggerNotificationSuccess,
 } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { NFTOperationError } from './NFTOperationError';
 import { getTimeSec } from '$utils/getTimeSec';
 import { TxBodyOptions, TxResponseOptions } from './TXRequest.types';
 import { UnlockVaultError } from '$store/wallet/sagas';
 import { useDispatch, useSelector } from 'react-redux';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import * as S from './NFTOperations.styles';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { eventsActions } from '$store/events';
 import axios from 'axios';
 import { isTimeSyncedSelector } from '$store/main';
@@ -137,6 +137,7 @@ interface ActionFooterProps {
   confirmTitle?: string;
   onPressConfirm: () => Promise<void>;
   onCloseModal?: () => void;
+  disabled?: boolean;
 }
 
 export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>(
@@ -199,7 +200,10 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
                 <Spacer x={16} />
               </>
             ) : null}
-            <S.ActionButton onPress={() => props.onPressConfirm()}>
+            <S.ActionButton
+              disabled={props.disabled}
+              onPress={() => props.onPressConfirm()}
+            >
               {props.confirmTitle ?? t('nft_confirm_operation')}
             </S.ActionButton>
           </View>

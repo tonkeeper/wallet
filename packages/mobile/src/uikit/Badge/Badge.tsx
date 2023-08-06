@@ -1,7 +1,7 @@
 import React from 'react';
-import { Text } from '$uikit';
+import { Text } from '../Text/Text';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { ns } from '$utils';
 
 interface BadgeProps {

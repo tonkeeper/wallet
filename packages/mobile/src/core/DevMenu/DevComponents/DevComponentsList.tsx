@@ -2,8 +2,8 @@ import React from 'react';
 import { Screen } from '$uikit';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { AttachScreenButton } from '$navigation/AttachScreen';
-import { useNavigation } from '$hooks';
 import { openSetupWalletDone } from '$navigation';
+import { useNavigation } from '@tonkeeper/router';
 
 export const DevComponentList: React.FC = () => {
   const nav = useNavigation();

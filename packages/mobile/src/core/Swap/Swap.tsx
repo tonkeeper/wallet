@@ -4,13 +4,14 @@ import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/Sign
 import { getTimeSec } from '$utils/getTimeSec';
 import { useSelector } from 'react-redux';
 import { walletAddressSelector } from '$store/wallet';
-import { useNavigation, useWebViewBridge } from '$hooks';
+import { useNavigation } from '@tonkeeper/router';
 import * as S from './Swap.style';
 import { Icon } from '$uikit';
 import { getServerConfig } from '$shared/constants';
 import { getDomainFromURL } from '$utils';
 import { logEvent } from '@amplitude/analytics-browser';
 import { checkIsTimeSynced } from '$navigation/hooks/useDeeplinkingResolvers';
+import { useWebViewBridge } from '$hooks/jsBridge';
 
 interface Props {
   jettonAddress?: string;

@@ -2,7 +2,7 @@ import React, { FC, useCallback, useMemo } from 'react';
 
 import * as S from './NFTs.style';
 import { Button, ScrollHandler, AnimatedFlatList } from '$uikit';
-import { useTheme, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { RefreshControl } from 'react-native';
 import { MarketplaceBanner } from '$core/NFTs/MarketplaceBanner/MarketplaceBanner';
 import { hNs, ns } from '$utils';
@@ -15,13 +15,14 @@ import { useIsFocused } from '@react-navigation/native';
 import { openMarketplaces } from '$navigation';
 import { NUM_OF_COLUMNS } from '$core/NFTs/NFTItem/NFTItem.style';
 import { useFlags } from '$utils/flags';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const NFTs: FC = () => {
   const flags = useFlags(['disable_nft_markets']);
 
   const theme = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
-  const t = useTranslator();
+  
   const { myNfts, isLoading, canLoadMore } = useSelector(nftsSelector);
   const dispatch = useDispatch();
   const isFocused = useIsFocused();

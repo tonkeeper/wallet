@@ -1,10 +1,11 @@
-import { useStakingCycle, useTranslator } from '$hooks';
+import { useStakingCycle } from '$hooks/useStakingCycle';
 import { Text } from '$uikit';
 import React, { FC, memo, useCallback } from 'react';
 import * as S from './NextCycle.style';
 import { LayoutChangeEvent } from 'react-native';
 import { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { PoolInfo } from '@tonkeeper/core';
+import { PoolInfo } from '@tonkeeper/core/src/legacy';
+import { t } from '@tonkeeper/shared/i18n';
 
 interface Props {
   pool: PoolInfo;
@@ -15,7 +16,7 @@ const NextCycleComponent: FC<Props> = (props) => {
     pool: { cycleEnd, cycleStart, implementation },
   } = props;
 
-  const t = useTranslator();
+  
 
   const { formattedDuration, progress, isCooldown } = useStakingCycle(
     cycleStart,

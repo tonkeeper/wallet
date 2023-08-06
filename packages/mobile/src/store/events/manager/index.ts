@@ -1,7 +1,7 @@
 import { Cache } from '$store/events/manager/cache';
 import { BaseProviderInterface } from '$store/events/manager/providers/base';
 import { TonapiProvider } from '$store/events/manager/providers/tonapi';
-import { ActionType, EventModel } from '$store/models';
+import { EventModel } from '$store/models';
 import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 
 export interface EventsManagerOptions {
@@ -36,12 +36,6 @@ export class EventsManager {
     }
 
     return await this.build(ignoreCache);
-  }
-
-  private getMempoolKey(event: EventModel): string {
-    let rawAction = event.actions[0];
-    let action = rawAction[ActionType[rawAction.type]];
-    return `${action?.amount}_${action?.recipient?.address}`; // _${action?.nft?.address}_${action?.jetton?.address}_${action?.subscription}
   }
 
   async build(ignoreCache?: boolean): Promise<EventModel[]> {

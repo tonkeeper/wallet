@@ -3,15 +3,13 @@ import React, { FC, useCallback } from 'react';
 import { InlineHeader, Loader } from '$uikit';
 import * as S from './Exchange.style';
 import { ExchangeItem } from './ExchangeItem/ExchangeItem';
-import { useTranslator } from '$hooks';
 import { getServerConfig, getServerConfigSafe } from '$shared/constants';
 import { Linking } from 'react-native';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const OldExchange: FC = () => {
-  const t = useTranslator();
-
   const categories = useMethodsToBuyStore((state) => state.categories);
 
   const otherWaysAvailable = getServerConfigSafe('exchangePostUrl') !== 'none';

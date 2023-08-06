@@ -2,7 +2,7 @@ import React, { FC, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import * as S from './ImportWallet.style';
 import { NavBar } from '$uikit';
-import { useKeyboardHeight } from '$hooks';
+import { useKeyboardHeight } from '$hooks/useKeyboardHeight';
 import { walletActions } from '$store/wallet';
 import { openCreatePin } from '$navigation';
 import { ImportWalletForm } from '$shared/components';

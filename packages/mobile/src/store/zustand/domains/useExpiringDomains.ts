@@ -4,7 +4,7 @@ import { ExpiringDomains } from './types';
 import { Tonapi } from '$libs/Tonapi';
 import { useEffect } from 'react';
 import { useWallet } from '../../../tabs/Wallet/hooks/useWallet';
-import { Address } from '$libs/Ton';
+import { Address } from '@tonkeeper/core';
 
 const initialState: Omit<ExpiringDomains, 'actions'> = {
   domains: {},
@@ -17,10 +17,10 @@ export const useExpiringDomains = create(
       load: async (account_id) => {
         try {
           const { data } = await Tonapi.getExpiringDNS({
-            account_id, 
+            account_id,
             period: 30,
           });
-          
+
           const domains = {};
           for (let item of data.items) {
             domains[item.dns_item.address] = item.expiring_at;
@@ -32,12 +32,12 @@ export const useExpiringDomains = create(
         }
       },
       remove: (address) => {
-        set(({ domains }) => { 
-          const rawAddress = new Address(address).format({ raw: true });
+        set(({ domains }) => {
+          const rawAddress = Address(address).toRaw();
           const { [rawAddress]: remove, ...rest } = domains;
           return { domains: rest };
         });
-      }
+      },
     },
   })),
 );

@@ -1,15 +1,14 @@
-import { useCopyText, useFiatValue, useTranslator } from '$hooks';
+import { useCopyText } from '$hooks/useCopyText';
+import { useFiatValue } from '$hooks/useFiatValue';
 import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { getTokenConfig } from '$shared/dynamicConfig';
 import { Highlight, Icon, Separator, Spacer, Text } from '$uikit';
-import { isAndroid, isIOS, maskifyAddress, parseLocaleNumber } from '$utils';
+import { isIOS, parseLocaleNumber } from '$utils';
 import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
 import { ConfirmStepProps } from './ConfirmStep.interface';
 import * as S from './ConfirmStep.style';
 import BigNumber from 'bignumber.js';
-import { useAnimatedScrollHandler } from 'react-native-reanimated';
-import { SendSteps } from '$core/Send/Send.interface';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { formatter } from '$utils/formatter';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,23 +16,26 @@ import {
   ActionFooter,
   useActionFooter,
 } from '$core/ModalContainer/NFTOperations/NFTOperationFooter';
-import { openInactiveInfo } from '$navigation';
 import { Alert } from 'react-native';
 import { walletBalancesSelector, walletWalletSelector } from '$store/wallet';
 import { useSelector } from 'react-redux';
+import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { useStakingStore } from '$store';
+import { t } from '@tonkeeper/shared/i18n';
+import { openInactiveInfo } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
+import { Address } from '@tonkeeper/core';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
-    stepsScrollTop,
-    active,
     currency,
     currencyTitle,
     recipient,
     recipientAccountInfo,
     decimals,
     isJetton,
+    isPreparing,
     fee,
+    active,
     isInactive,
     amount,
     comment,
@@ -44,8 +46,6 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const { footerRef, onConfirm } = useActionFooter();
 
   const { bottom: bottomInset } = useSafeAreaInsets();
-
-  const t = useTranslator();
 
   const copyText = useCopyText();
 
@@ -163,13 +163,6 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     sendTx,
   ]);
 
-  const scrollHandler = useAnimatedScrollHandler((event) => {
-    stepsScrollTop.value = {
-      ...stepsScrollTop.value,
-      [SendSteps.CONFIRM]: event.contentOffset.y,
-    };
-  });
-
   const feeCurrency = useMemo(() => {
     const tokenConfig = getTokenConfig(currency as CryptoCurrency);
     if (tokenConfig && tokenConfig.blockchain === 'ethereum') {
@@ -248,7 +241,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
 
   return (
     <S.Container>
-      <StepScrollView onScroll={scrollHandler} active={active}>
+      <StepScrollView active={active}>
         <S.Content>
           <S.Center>
             <S.IconContainer>{Logo}</S.IconContainer>
@@ -281,7 +274,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
                 </S.ItemLabel>
                 <S.ItemContent>
                   <S.ItemValue numberOfLines={1}>
-                    {maskifyAddress(recipient.address, 4)}
+                    {Address.toShort(recipient.address, 4)}
                   </S.ItemValue>
                 </S.ItemContent>
               </S.Item>
@@ -300,8 +293,14 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
             <S.Item>
               <S.ItemLabel>{t('confirm_sending_fee')}</S.ItemLabel>
               <S.ItemContent>
-                <S.ItemValue numberOfLines={1}>{feeValue}</S.ItemValue>
-                {fee !== '0' ? (
+                {fee === '0' || isPreparing ? (
+                  <S.ItemSkeleton>
+                    <SkeletonLine />
+                  </S.ItemSkeleton>
+                ) : (
+                  <S.ItemValue numberOfLines={1}>{feeValue}</S.ItemValue>
+                )}
+                {fee !== '0' && !isPreparing ? (
                   <S.ItemSubValue>≈ {fiatFee.formatted.totalFiat}</S.ItemSubValue>
                 ) : null}
               </S.ItemContent>
@@ -363,6 +362,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
       </StepScrollView>
       <S.FooterContainer bottomInset={bottomInset}>
         <ActionFooter
+          disabled={isPreparing || !active}
           withCloseButton={false}
           confirmTitle={t('confirm_sending_submit')}
           onPressConfirm={handleConfirm}

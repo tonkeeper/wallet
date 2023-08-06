@@ -11,31 +11,39 @@ import {
   SwapIcon,
   Text,
 } from '$uikit';
-import { delay, maskifyTonAddress, ns, trackEvent } from '$utils';
+import { delay, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
-import { useTheme, useTokenPrice, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
+import { useTokenPrice } from '$hooks/useTokenPrice';
 import { openDAppBrowser, openReceive, openSend } from '$navigation';
 import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { useSelector } from 'react-redux';
 import { useJettonEvents } from '$hooks/useJettonEvents';
-import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
+// import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import { RefreshControl } from 'react-native';
 import { walletAddressSelector } from '$store/wallet';
 import { formatter } from '$utils/formatter';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { useSwapStore } from '$store/zustand/swap';
 import { shallow } from 'zustand/shallow';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { Events, SendAnalyticsFrom } from '$store/models';
+import { t } from '@tonkeeper/shared/i18n';
+import { trackEvent } from '$utils/stats';
+import { Address } from '@tonkeeper/core';
+import { Screen, View } from '@tonkeeper/uikit';
+import { TransactionsList } from '@tonkeeper/shared/components';
+import { AccountEventsMapper } from '@tonkeeper/shared/mappers/AccountEventsMapper';
+import { LegacyAccountEventsMapper } from '@tonkeeper/shared/mappers/AccountEventsMapper/LegacyAccountEventsMapper';
+import { useWallet } from '../../tabs/useWallet';
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const theme = useTheme();
   const flags = useFlags(['disable_swap']);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const jetton = useJetton(route.params.jettonAddress);
-  const t = useTranslator();
   const { events, isRefreshing, isLoading, refreshJettonEvents } = useJettonEvents(
     jetton.jettonAddress,
   );
@@ -45,6 +53,8 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const nav = useNavigation();
 
   const showSwap = useSwapStore((s) => !!s.assets[jetton.jettonAddress], shallow);
+
+  const walletAddr = useWallet();
 
   const handleSend = useCallback(() => {
     trackEvent(Events.SendOpen, { from: SendAnalyticsFrom.TokenScreen });
@@ -64,6 +74,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   }, [jetton.jettonAddress, nav]);
 
   const handleOpenExplorer = useCallback(async () => {
+    console.log('Press');
     await delay(200);
     openDAppBrowser(
       getServerConfig('accountExplorer').replace('%s', address.ton) +
@@ -139,73 +150,82 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
 
   const renderFooter = useCallback(() => {
     if (Object.values(events).length === 0 && isLoading) {
-      return <Skeleton.List />;
+      return <View style={{ margin: 16, }}><Skeleton.List /></View>;
     }
-    return null;
-  }, [events, isLoading]);
+    return <View style={{ height: bottomInset }} />;
+  }, [events, isLoading, bottomInset]);
 
-  const renderContent = useCallback(() => {
-    return (
-      <TransactionsList
-        refreshControl={
-          <RefreshControl
-            onRefresh={refreshJettonEvents}
-            refreshing={isRefreshing}
-            tintColor={theme.colors.foregroundPrimary}
-          />
-        }
-        withoutMarginForFirstHeader
-        eventsInfo={events}
-        initialData={[]}
-        renderHeader={renderHeader}
-        contentContainerStyle={{
-          paddingHorizontal: ns(16),
-          paddingBottom: bottomInset,
-        }}
-        renderFooter={renderFooter}
-      />
-    );
-  }, [
-    renderFooter,
-    refreshJettonEvents,
-    isRefreshing,
-    events,
-    renderHeader,
-    bottomInset,
-    theme.colors.foregroundPrimary,
-  ]);
+  // const renderContent = useCallback(() => {
+  //   return (
+  //     <TransactionsList
+  //       refreshControl={
+  //         <RefreshControl
+  //           onRefresh={refreshJettonEvents}
+  //           refreshing={isRefreshing}
+  //           tintColor={theme.colors.foregroundPrimary}
+  //         />
+  //       }
+  //       withoutMarginForFirstHeader
+  //       eventsInfo={events}
+  //       initialData={[]}
+  //       renderHeader={renderHeader}
+  //       contentContainerStyle={{
+  //         paddingHorizontal: ns(16),
+  //         paddingBottom: bottomInset,
+  //       }}
+  //       renderFooter={renderFooter}
+  //     />
+  //   );
+  // }, [
+  //   renderFooter,
+  //   refreshJettonEvents,
+  //   isRefreshing,
+  //   events,
+  //   renderHeader,
+  //   bottomInset,
+  //   theme.colors.foregroundPrimary,
+  // ]);
+
+  const mappedEvents = useMemo(() => {
+    return AccountEventsMapper(LegacyAccountEventsMapper(events), walletAddr.address.raw);
+  }, [events, walletAddr]);
 
   if (!jetton) {
     return null;
   }
 
   return (
-    <S.Wrap>
-      <S.ContentWrap>
-        <ScrollHandler
-          navBarRight={
-            <PopupMenu
-              items={[
-                <PopupMenuItem
-                  shouldCloseMenu
-                  onPress={handleOpenExplorer}
-                  text={t('jetton_open_explorer')}
-                  icon={<Icon name="ic-globe-16" color="accentPrimary" />}
-                />,
-              ]}
-            >
-              <S.HeaderViewDetailsButton onPress={() => null}>
-                <Icon name="ic-ellipsis-16" color="foregroundPrimary" />
-              </S.HeaderViewDetailsButton>
-            </PopupMenu>
-          }
-          titleProps={{ numberOfLines: 1 }}
-          isLargeNavBar={false}
-          navBarTitle={jetton.metadata?.name || maskifyTonAddress(jetton.jettonAddress)}
-        >
-          {renderContent()}
-        </ScrollHandler>
-      </S.ContentWrap>
-    </S.Wrap>
+    <Screen>
+      <Screen.Header
+        title={jetton.metadata?.name || Address.toShort(jetton.jettonAddress)}
+        rightContent={
+          <PopupMenu
+            items={[
+              <PopupMenuItem
+                shouldCloseMenu
+                onPress={handleOpenExplorer}
+                text={t('jetton_open_explorer')}
+                icon={<Icon name="ic-globe-16" color="accentPrimary" />}
+              />,
+            ]}
+          >
+            <S.HeaderViewDetailsButton onPress={() => null}>
+              <Icon name="ic-ellipsis-16" color="foregroundPrimary" />
+            </S.HeaderViewDetailsButton>
+          </PopupMenu>
+        }
+      />
+      <TransactionsList
+        ListHeaderComponent={renderHeader}
+        ListFooterComponent={renderFooter}
+        
+        // fetchMoreEnd={events.fetchMoreEnd}
+        // onFetchMore={events.fetchMore}
+        refreshing={isRefreshing}
+        onRefresh={refreshJettonEvents}
+        loading={false}
+        events={mappedEvents}
+      />
+    </Screen>
   );
 };

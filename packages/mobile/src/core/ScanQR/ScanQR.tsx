@@ -22,8 +22,9 @@ import {
   triggerSelection,
 } from '$utils';
 import { BottomButtonWrap, BottomButtonWrapHelper } from '$shared/components';
-import { useTheme, useTranslator } from '$hooks';
-import { useNavigation } from '@react-navigation/native';
+import { useTheme } from '$hooks/useTheme';
+import { useNavigation } from '@tonkeeper/router';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const ScanQR: FC<ScanQRProps> = ({ route }) => {
   const nav = useNavigation();
@@ -31,7 +32,7 @@ export const ScanQR: FC<ScanQRProps> = ({ route }) => {
   const scannerRef = useRef<QRCodeScanner>(null);
 
   const theme = useTheme();
-  const t = useTranslator();
+  
 
   const [isFlashlightOn, setFlashlightOn] = useState(false);
   const [isCameraBlocked, setCameraBlocked] = useState(false);

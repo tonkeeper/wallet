@@ -15,7 +15,7 @@ import {
 import { mainActions } from '$store/main';
 import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
 import {
-  goBack,
+
   openAccessConfirmation,
   openBackupWords,
   openCreatePin,
@@ -57,13 +57,14 @@ import {
 } from '$database';
 import { batchActions, Toast, useNotificationsStore, useStakingStore } from '$store';
 import { subscriptionsActions } from '$store/subscriptions';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { initHandler } from '$store/main/sagas';
 import { getTokenConfig, getWalletName } from '$shared/dynamicConfig';
 import { withRetryCtx } from '$store/retry';
 import { Cache } from '$store/events/manager/cache';
 import { destroyEventsManager } from '$store/events/sagas';
-import { debugLog, detectBiometryType, toNano, trackEvent } from '$utils';
+import { detectBiometryType, toNano } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { Api } from '$api';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
@@ -77,6 +78,8 @@ import { Cell } from 'ton-core';
 import nacl from 'tweetnacl';
 import { encryptMessageComment } from '@tonkeeper/core';
 import TonWeb from 'tonweb';
+import { goBack } from '$navigation/imperative';
+import { trackEvent } from '$utils/stats';
 
 function* generateVaultWorker() {
   try {

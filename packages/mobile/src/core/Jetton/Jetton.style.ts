@@ -11,7 +11,7 @@ export const Wrap = styled.View`
 
 export const HeaderWrap = styled.View`
   align-items: center;
-  padding-horizontal: ${ns(12)}px;
+  padding-horizontal: ${ns(16)}px;
 `;
 
 export const ContentWrap = styled(Animated.View)`

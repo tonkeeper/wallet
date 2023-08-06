@@ -18,12 +18,12 @@ import { PinCodeRef } from '$uikit/PinCode/PinCode.interface';
 import { deviceWidth } from '$utils';
 import { CreatePinFormProps } from './CreatePinForm.interface';
 import { walletWalletSelector } from '$store/wallet';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const CreatePinForm: FC<CreatePinFormProps> = (props) => {
   const { onPinCreated, validateOldPin = false, onVaultUnlocked } = props;
 
-  const t = useTranslator();
+  
   const wallet = useSelector(walletWalletSelector);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const pinRef = useRef<PinCodeRef>(null);

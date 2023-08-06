@@ -1,27 +1,27 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import { BottomSheet, Loader } from '$uikit';
+import { Loader } from '$uikit';
 import * as S from './Marketplaces.style';
 import { MarketplaceItem } from './MarketplaceItem/MarketplaceItem';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { nftsSelector } from '$store/nfts';
-import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
 import { delay, getDiamondsCollectionMarketUrl } from '$utils';
 import { MarketplacesModalProps } from './Marketplaces.interface';
+import { Modal, View } from '@tonkeeper/uikit';
+import { push } from '$navigation/imperative';
+import { SheetActions, useNavigation } from '@tonkeeper/router';
 
 export const Marketplaces: FC<MarketplacesModalProps> = (props) => {
   const { accentKey } = props;
-
-  const t = useTranslator();
+  const nav = useNavigation();
 
   const { isMarketplacesLoading, marketplaces: data } = useSelector(nftsSelector);
 
-  const bottomSheetRef = React.useRef<BottomSheetRef>(null);
   const handleMarketplacePress = useCallback(async () => {
-    bottomSheetRef.current?.close();
+    nav.goBack();
     await delay(300); // Close bottom sheet before system animation
-  }, [bottomSheetRef]);
+  }, []);
 
   const marketplaces = useMemo(() => {
     if (accentKey) {
@@ -66,8 +66,20 @@ export const Marketplaces: FC<MarketplacesModalProps> = (props) => {
   }
 
   return (
-    <BottomSheet ref={bottomSheetRef} title={t('nft_marketplaces_title')}>
-      {renderContent()}
-    </BottomSheet>
+    <Modal>
+      <Modal.Header title={t('nft_marketplaces_title')} />
+      <Modal.Content safeArea>
+        <View style={{ marginBottom: 16 }}>{renderContent()}</View>
+      </Modal.Content>
+    </Modal>
   );
 };
+
+export function openMarketplaces(props?: MarketplacesModalProps) {
+  push('SheetsProvider', {
+    $$action: SheetActions.ADD,
+    component: Marketplaces,
+    params: props,
+    path: 'MARKETPLACES',
+  });
+}

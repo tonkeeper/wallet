@@ -1,5 +1,5 @@
 import { CryptoCurrency, FiatCurrency } from '$shared/constants';
-import { AccountEvent } from '@tonkeeper/core';
+import { AccountEvent } from '@tonkeeper/core/src/legacy';
 
 export type TransactionType =
   | 'receive'

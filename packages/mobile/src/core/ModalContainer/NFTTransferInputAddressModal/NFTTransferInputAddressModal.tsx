@@ -1,27 +1,23 @@
 import React, { memo, useCallback, useLayoutEffect, useMemo, useState } from 'react';
 
-import { useValidateAddress } from '$hooks';
+import { useValidateAddress } from '$hooks/useValidateAddress';
 import { Button, Icon, Input, Loader, Text } from '$uikit';
 import * as S from './NFTTransferInputAddressModal.style';
-import { t } from '$translation';
-import {
-  asyncDebounce,
-  compareAddresses,
-  isAndroid,
-  isValidAddress,
-  ns,
-  parseTonLink,
-} from '$utils';
+import { t } from '@tonkeeper/shared/i18n';
+import { asyncDebounce, isAndroid, ns, parseTonLink } from '$utils';
 import { NFTTransferInputAddressModalProps } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal.interface';
 import { LoaderContainer } from '$core/Send/steps/AddressStep/components/AddressInput/AddressInput.style';
-import { Modal, useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
+import { Modal } from '@tonkeeper/uikit';
 import { Tonapi } from '$libs/Tonapi';
 import TonWeb from 'tonweb';
 import { Toast } from '$store';
 import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { openScanQR, push } from '$navigation';
+import { openScanQR } from '$navigation';
 import { checkFundsAndOpenNFTTransfer } from '$core/ModalContainer/NFTOperations/Modals/NFTTransferModal';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
+import { SheetActions } from '@tonkeeper/router';
+import { push } from '$navigation/imperative';
+import { Address } from '@tonkeeper/core';
 
 export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalProps>(
   ({ nftAddress }) => {
@@ -35,7 +31,7 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
 
     // Don't allow user to paste NFT address
     useLayoutEffect(() => {
-      if (compareAddresses(nftAddress, address)) {
+      if (Address.compare(nftAddress, address)) {
         setIsSameAddress(true);
       } else if (isSameAddress) {
         setIsSameAddress(false);
@@ -99,13 +95,13 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
         const link = parseTonLink(code);
         const isTransferOperation = link.match && link.operation === 'transfer';
 
-        if (isTransferOperation && !isValidAddress(link.address)) {
+        if (isTransferOperation && !Address.isValid(link.address)) {
           Toast.fail(t('transfer_deeplink_address_error'));
           return false;
-        } else if (isTransferOperation && isValidAddress(link.address)) {
+        } else if (isTransferOperation && Address.isValid(link.address)) {
           handleTextChange(link.address);
           return true;
-        } else if (isValidAddress(code)) {
+        } else if (Address.isValid(code)) {
           handleTextChange(code);
           return true;
         }

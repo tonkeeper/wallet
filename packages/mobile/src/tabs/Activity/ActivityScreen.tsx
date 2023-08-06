@@ -16,26 +16,29 @@ import {
   Text,
   View,
 } from '$uikit';
-import { useAppStateActive, usePrevious, useTheme, useTranslator } from '$hooks';
+import { useAppStateActive } from '$hooks/useAppStateActive';
+import { usePrevious } from '$hooks/usePrevious';
+import { useTheme } from '$hooks/useTheme';
 import { walletActions, walletSelector } from '$store/wallet';
 import { ns } from '$utils';
 import { NavBarHeight, TabletMaxWidth } from '$shared/constants';
-import { openNotificationsScreen, openRequireWalletModal } from '$navigation';
+import { openNotificationsScreen } from '$navigation';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { eventsActions, eventsSelector } from '$store/events';
 import { mainActions } from '$store/main';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { getLastRefreshedAt } from '$database';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { Steezy } from '$styles';
 import { Notification } from '$core/Notifications/Notification';
 import { getNewNotificationsCount } from '$core/Notifications/NotificationsActivity';
 import { useIsFocused } from '@react-navigation/native';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const ActivityScreen: FC = () => {
   const nav = useNavigation();
-  const t = useTranslator();
   const dispatch = useDispatch();
   const theme = useTheme();
   const tabBarHeight = useBottomTabBarHeight();

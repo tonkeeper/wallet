@@ -4,9 +4,11 @@ import { useSelector } from 'react-redux';
 import { ActionButtonProps, BalanceItemProps } from './BalanceItem.interface';
 import * as S from './BalanceItem.style';
 import { CurrencyIcon, Icon, Text } from '$uikit';
-import { useJettonBalances, useTranslator, useWalletInfo } from '$hooks';
+import { useJettonBalances } from '$hooks/useJettonBalances';
+import { useWalletInfo } from '$hooks/useWalletInfo';
 import { walletWalletSelector } from '$store/wallet';
-import { openReceive, openRequireWalletModal, openSend, openWallet } from '$navigation';
+import { openReceive, openSend } from '$navigation';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { ns } from '$utils';
 import {
   CryptoCurrencies,
@@ -14,8 +16,15 @@ import {
   Decimals,
   getServerConfigSafe,
 } from '$shared/constants';
-import { formatCryptoCurrency } from '$utils/currency';
-import { useNavigation } from '$libs/navigation';
+import { formatCryptoCurrency, formatFiatCurrencyAmount } from '$utils/currency';
+import { fiatCurrencySelector } from '$store/main';
+import { useNavigation } from '@tonkeeper/router';
+import BigNumber from 'bignumber.js';
+import { Dimensions } from 'react-native';
+import { openWallet } from '$core/Wallet/Wallet';
+import { t } from '@tonkeeper/shared/i18n';
+
+const ScreenWidth = Dimensions.get('window').width;
 
 const ActionButton: FC<ActionButtonProps> = (props) => {
   const { children, onPress, icon, isLast, iconStyle } = props;
@@ -35,7 +44,6 @@ const ActionButton: FC<ActionButtonProps> = (props) => {
 
 export const BalanceItem: FC<BalanceItemProps> = (props) => {
   const { currency, showActions = false, borderStart = true, borderEnd = true } = props;
-  const t = useTranslator();
 
   const currencyPrepared = useMemo(() => {
     let result = currency;

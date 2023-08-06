@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from '../Text/Text';
 import { Steezy } from '$styles';
-import { View } from '$uikit';
+import { View } from '@tonkeeper/uikit';
 
 interface ListHeaderProps {
   title: string;

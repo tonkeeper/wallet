@@ -11,7 +11,6 @@ import { ns } from '$utils';
 import { NavBar, PopupSelect, ScrollHandler, Text } from '$uikit';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
-import { useNavigation, useTranslator } from '$hooks';
 import { openLogs } from '$navigation';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { EventsDB, JettonsDB, MainDB, NFTsDB } from '$database';
@@ -20,14 +19,14 @@ import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { Switch } from 'react-native-gesture-handler';
 import { DevFeature, Toast, useDevFeaturesToggle, useStakingStore } from '$store';
-import { tags } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
+import { useNavigation } from '@tonkeeper/router';
 
 export const DevMenu: FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
   const nav = useNavigation();
   const dispatch = useDispatch();
-  const t = useTranslator();
   const isTestnet = useSelector(isTestnetSelector);
   const alwaysShowV4R1 = useSelector(alwaysShowV4R1Selector);
   const addNotification = useNotificationsStore((state) => state.actions.addNotification);
@@ -177,7 +176,7 @@ export const DevMenu: FC = () => {
               Force show v4r1
             </CellSectionItem>
           </CellSection>
-          <CellSection>
+          {/* <CellSection>
             <PopupSelect
               items={['auto', ...tags.map((lang) => lang.tag)]}
               selected={devLanguage || 'auto'}
@@ -196,7 +195,7 @@ export const DevMenu: FC = () => {
                 Language
               </CellSectionItem>
             </PopupSelect>
-          </CellSection>
+          </CellSection> */}
           <CellSection>
             <CellSectionItem onPress={handleClearJettonsCache}>
               Clear jettons cache

@@ -1,12 +1,12 @@
 import React from 'react';
 import { AboutProps } from './About.interface';
 import * as S from './About.style';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { ShowMore, Text } from '$uikit';
 const MAX_LENGTH = 122;
 
 export const About: React.FC<AboutProps> = ({ description, collection }) => {
-  const t = useTranslator();
+  
 
   if (!description) {
     return null;

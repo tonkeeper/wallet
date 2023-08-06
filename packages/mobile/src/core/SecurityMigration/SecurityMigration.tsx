@@ -5,12 +5,11 @@ import { useDispatch } from 'react-redux';
 import * as S from './SecurityMigration.style';
 import {Button, Text} from '$uikit';
 import { ns, platform } from '$utils';
-import { useTranslator } from '$hooks';
-import { goBack } from '$navigation';
+import { goBack } from '$navigation/imperative';
 import { walletActions } from '$store/wallet';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const SecurityMigration: FC = () => {
-  const t = useTranslator();
   const dispatch = useDispatch();
   const iconRef = useRef<LottieView>(null);
 

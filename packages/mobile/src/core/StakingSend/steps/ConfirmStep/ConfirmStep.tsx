@@ -1,4 +1,5 @@
-import { useCopyText, useFiatValue, useTranslator } from '$hooks';
+import { useCopyText } from '$hooks/useCopyText';
+import { useFiatValue } from '$hooks/useFiatValue';
 import { Highlight, Separator, Spacer, Text } from '$uikit';
 import React, { FC, memo, useCallback, useMemo } from 'react';
 import * as S from './ConfirmStep.style';
@@ -13,15 +14,12 @@ import {
 } from '$core/ModalContainer/NFTOperations/NFTOperationFooter';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CryptoCurrencies } from '$shared/constants';
-import {
-  getImplementationIcon,
-  getPoolIcon,
-  parseLocaleNumber,
-  truncateDecimal,
-} from '$utils';
-import { PoolInfo } from '@tonkeeper/core';
-import { Address } from '$libs/Ton';
-import { formatter, stakingFormatter } from '$utils/formatter';
+import { parseLocaleNumber, truncateDecimal } from '$utils';
+import { getImplementationIcon, getPoolIcon } from '$utils/staking';
+import { PoolInfo } from '@tonkeeper/core/src/legacy';
+import { stakingFormatter } from '$utils/formatter';
+import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 interface Props extends StepComponentProps {
   transactionType: StakingTransactionType;
@@ -36,10 +34,7 @@ interface Props extends StepComponentProps {
   sendTx: () => Promise<void>;
 }
 
-const getActionName = (
-  transactionType: StakingTransactionType,
-  t: ReturnType<typeof useTranslator>,
-) => {
+const getActionName = (transactionType: StakingTransactionType, t: any) => {
   switch (transactionType) {
     case StakingTransactionType.WITHDRAWAL:
       return t('staking.withdrawal_request');
@@ -69,7 +64,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
   const isWithdrawalConfrim =
     transactionType === StakingTransactionType.WITHDRAWAL_CONFIRM;
 
-  const address = useMemo(() => new Address(pool.address), [pool.address]);
+  const address = useMemo(() => Address(pool.address), [pool.address]);
 
   const fiatValue = useFiatValue(
     currency,
@@ -89,8 +84,6 @@ const ConfirmStepComponent: FC<Props> = (props) => {
     };
   });
 
-  const t = useTranslator();
-
   const { footerRef, onConfirm } = useActionFooter();
 
   const copyText = useCopyText();
@@ -102,7 +95,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
   });
 
   const handleCopyAddress = useCallback(() => {
-    copyText(address.format(), t('address_copied'));
+    copyText(address.toFriendly(), t('address_copied'));
   }, [address, copyText, t]);
 
   const handleCopyPoolName = useCallback(
@@ -142,7 +135,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
               <S.Item>
                 <S.ItemLabel>{t('staking.confirm.address.label')}</S.ItemLabel>
                 <S.ItemContent>
-                  <S.ItemValue>{address.format({ cut: true })}</S.ItemValue>
+                  <S.ItemValue>{address.toShort()}</S.ItemValue>
                 </S.ItemContent>
               </S.Item>
             </Highlight>

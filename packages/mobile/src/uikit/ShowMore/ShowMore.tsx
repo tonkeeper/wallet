@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import { Text } from '$uikit';
-import { useTranslator } from '$hooks';
+import { Text } from '../Text/Text';
 import { TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { changeAlphaValue, convertHexToRGBA, ns } from '$utils';
+import { t } from '@tonkeeper/shared/i18n';
 
 export interface ShowMoreProps {
   maxLines: number;
@@ -19,7 +19,6 @@ export const ShowMore: React.FC<ShowMoreProps> = ({
   text,
   backgroundColor = '#1D2633',
 }) => {
-  const t = useTranslator();
 
   const [showEllipsize, setShowEllipsize] = useState(false);
   const onTextLayout = useCallback(

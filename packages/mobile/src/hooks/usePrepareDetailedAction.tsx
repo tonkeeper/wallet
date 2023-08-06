@@ -3,15 +3,8 @@ import { ActionType, EventModel } from '$store/models';
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
-import {
-  compareAddresses,
-  format as formatDate,
-  fromNano,
-  maskifyAddress,
-  maskifyTonAddress,
-} from '$utils';
+import { format as formatDate, fromNano } from '$utils';
 import BigNumber from 'bignumber.js';
-import { useTranslator } from '$hooks/useTranslator';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import {
   ActionBaseProps,
@@ -20,7 +13,7 @@ import {
 import { NFTHead } from '$core/ModalContainer/Action/ActionBase/NFTHead/NFTHead';
 import { differenceInCalendarYears } from 'date-fns';
 import { subscriptionsSelector } from '$store/subscriptions';
-import { Action } from '@tonkeeper/core';
+import { Action } from '@tonkeeper/core/src/legacy';
 import { formatter } from '$utils/formatter';
 import { Text } from '$uikit';
 import { fiatCurrencySelector } from '$store/main';
@@ -28,13 +21,15 @@ import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter'
 import { useGetTokenPrice, useTokenPrice } from './useTokenPrice';
 import { useEncryptedCommentsStore } from '$store';
 import { shallow } from 'zustand/shallow';
+import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 export function usePrepareDetailedAction(
   rawAction: Action,
   event: EventModel,
 ): ActionBaseProps {
   const { address } = useSelector(walletSelector);
-  const t = useTranslator();
+
   const { subscriptionsInfo } = useSelector(subscriptionsSelector);
   const tokenPrice = useTokenPrice(CryptoCurrencies.Ton);
   const fiatCurrency = useSelector(fiatCurrencySelector);
@@ -135,7 +130,7 @@ export function usePrepareDetailedAction(
 
     if (ActionType.Subscribe === ActionType[rawAction.type]) {
       const amount = TonWeb.utils.fromNano(new BigNumber(action.amount).abs().toString());
-      if (compareAddresses(action.beneficiary.address, address.ton)) {
+      if (Address.compare(action.beneficiary.address, address.ton)) {
         sentLabelTranslationString = 'transaction_receive_date';
         label = format(amount, {
           prefix: '+ ',
@@ -168,7 +163,7 @@ export function usePrepareDetailedAction(
     }
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
-      if (compareAddresses(action.address, address.ton)) {
+      if (Address.compare(action.address, address.ton)) {
         sentLabelTranslationString = 'transaction_contract_deploy_date';
         label = t('transaction_type_wallet_initialized');
       } else {
@@ -221,7 +216,7 @@ export function usePrepareDetailedAction(
           ? t('transaction_sender_address')
           : t('transaction_recipient_address'),
         value: userFriendlyAddress,
-        preparedValue: maskifyTonAddress(userFriendlyAddress),
+        preparedValue: Address.toShort(userFriendlyAddress),
       });
     }
 
@@ -243,7 +238,7 @@ export function usePrepareDetailedAction(
       infoRows.push({
         label: t('transaction_hash'),
         value: event.eventId,
-        preparedValue: maskifyAddress(event.eventId, 8),
+        preparedValue: Address.toShort(event.eventId, 8),
       });
     }
 

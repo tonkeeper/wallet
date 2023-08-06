@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 
 import * as S from './Separator.style';
-import { SeparatorProps } from '$uikit/Separator/Separator.interface';
-import { useTheme } from '$hooks';
+import { SeparatorProps } from '../Separator/Separator.interface';
+import { useTheme } from '$hooks/useTheme';
 
 export const Separator: FC<SeparatorProps> = (props) => {
   const {

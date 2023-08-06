@@ -2,7 +2,7 @@ import React, { FC, useCallback } from 'react';
 import Animated from 'react-native-reanimated';
 
 import { Button, Icon, ScrollHandler } from '$uikit';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import * as S from './Fiat.style';
 import { openBuyFiat } from '$navigation';
 import { CryptoCurrencies } from '$shared/constants';

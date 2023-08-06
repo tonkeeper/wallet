@@ -10,18 +10,17 @@ import * as S from './SetupBiometry.style';
 import { Button, NavBar, Text } from '$uikit';
 import { ns, platform } from '$utils';
 import {
-  goBack,
   openImportSetupNotifications,
   openSetupNotifications,
   openSetupWalletDone,
-  popToTop,
   ResetPinStackRouteNames,
   SetupWalletStackRouteNames,
 } from '$navigation';
 import { walletActions } from '$store/wallet';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { getPermission } from '$utils/messaging';
 import { Toast } from '$store';
+import { goBack, popToTop } from '$navigation/imperative';
 
 const LottieFaceId = require('$assets/lottie/faceid.json');
 const LottieTouchId = require('$assets/lottie/touchid.json');
@@ -31,7 +30,7 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
 
   const routeNode = useRoute();
   const dispatch = useDispatch();
-  const t = useTranslator();
+  
   const { bottom: bottomInset } = useSafeAreaInsets();
   const iconRef = useRef<LottieView>(null);
   const isTouchId =

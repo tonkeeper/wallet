@@ -1,1 +1,0 @@
-export { TestCube } from './TestCube';

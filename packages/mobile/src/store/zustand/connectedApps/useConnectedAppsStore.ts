@@ -1,12 +1,12 @@
-import { generateAppHashFromUrl, getFixedLastSlashUrl } from '$utils';
+import { generateAppHashFromUrl, getFixedLastSlashUrl } from '$utils/url';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import { persist, subscribeWithSelector } from 'zustand/middleware';
+import { createJSONStorage, persist, subscribeWithSelector } from 'zustand/middleware';
 import { IConnectedAppsStore, TonConnectBridgeType } from './types';
 import { Tonapi } from '$libs/Tonapi';
 import messaging from '@react-native-firebase/messaging';
 import * as SecureStore from 'expo-secure-store';
-import { useNotificationsStore } from '$store/zustand';
+import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { getSubscribeStatus, SUBSCRIBE_STATUS } from '$utils/messaging';
 
 const initialState: Omit<IConnectedAppsStore, 'actions'> = {
@@ -245,7 +245,7 @@ export const useConnectedAppsStore = create(
       }),
       {
         name: 'TCApps',
-        getStorage: () => AsyncStorage,
+        storage: createJSONStorage(() => AsyncStorage),
         partialize: ({ connectedApps }) => ({ connectedApps } as IConnectedAppsStore),
       },
     ),

@@ -10,12 +10,13 @@ import {
 
 import * as S from './Card.style';
 import { CardProps } from '$core/Migration/Card/Card.interface';
-import { useTheme, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { ns } from '$utils';
 import { useCounter } from '$core/Migration/Card/useCounter';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { formatCryptoCurrency } from '$utils/currency';
 import { Text } from '$uikit';
+import { t } from '@tonkeeper/shared/i18n';
 
 const PositionOffsetHorizontal = ns(57);
 const PositionOffsetVertical = ns(28);
@@ -29,7 +30,6 @@ const amountDuration = 800;
 export const Card: FC<CardProps> = (props) => {
   const { mode, address, amount, startValue } = props;
   const theme = useTheme();
-  const t = useTranslator();
 
   const positionValue = useSharedValue(0);
   const amountValue = useCounter(

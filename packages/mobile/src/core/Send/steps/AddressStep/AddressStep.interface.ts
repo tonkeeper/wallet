@@ -8,10 +8,9 @@ import { StepComponentProps } from '$shared/components/StepView/StepView.interfa
 import React from 'react';
 import { SharedValue } from 'react-native-reanimated';
 
-export interface AddressStepProps extends StepComponentProps {
+export interface AddressStepProps {
   recipient: SendRecipient | null;
   decimals: number;
-  stepsScrollTop: SharedValue<Record<SendSteps, number>>;
   comment: string;
   isCommentEncrypted: boolean;
   recipientAccountInfo: AccountWithPubKey | null;

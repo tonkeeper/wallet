@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { ActivityStackRouteNames } from '$navigation';
 import { ActivityStackParamList } from '$navigation/ActivityStack/ActivityStack.interface';
-import { ActivityScreen } from '../../tabs/Activity/ActivityScreen';
+import { ActivityScreen } from '../../tabs/Activity/NewActivityScreen';
 import { NotificationsActivity } from '$core/Notifications/NotificationsActivity';
 import { Notifications } from '$core/Notifications/Notifications';
 

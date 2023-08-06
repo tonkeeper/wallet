@@ -1,7 +1,7 @@
 import React from 'react';
 import Clipboard from '@react-native-community/clipboard';
 import { StyleSheet, View } from 'react-native';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { Button, DevSeparator, Screen, Text } from '$uikit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ns } from '$utils';

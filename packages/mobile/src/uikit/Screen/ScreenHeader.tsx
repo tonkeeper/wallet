@@ -11,7 +11,7 @@ import { useScreenScroll } from './context/ScreenScrollContext';
 import { ScreenLargeHeader } from './ScreenLagreHeader';
 
 interface ScreenHeaderProps {
-  title?: string;
+  title?: string | React.ReactNode;
   rightContent?: React.ReactNode;
   backButton?: boolean;
   large?: boolean;
@@ -30,25 +30,19 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
     return null;
   }, [rightContent]);
 
-
   if (props.large) {
     return (
-      <ScreenLargeHeader 
+      <ScreenLargeHeader
         navBarTitle={props.title!}
-        scrollTop={screenScroll.scrollY}
+        scrollTop={tabsCtx?.scrollY ?? screenScroll.scrollY}
       />
-    )
+    );
   }
 
   return (
-    <Animated.View
-      style={[
-        { zIndex: 3 },
-        tabsCtx?.shiftMainHeaderStyle
-      ]}
-    >
-      <NavBar 
-        rightContent={rightContentContainer} 
+    <Animated.View style={[{ zIndex: 3 }, tabsCtx?.shiftMainHeaderStyle]}>
+      <NavBar
+        rightContent={rightContentContainer}
         hideBackButton={!backButton}
         fillBackground
         scrollTop={tabsCtx?.scrollY ?? screenScroll.scrollY}
@@ -58,9 +52,6 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
       </NavBar>
     </Animated.View>
   );
-
 });
 
-const styles = Steezy.create(({ colors }) => ({
-
-}));
+const styles = Steezy.create(({ colors }) => ({}));

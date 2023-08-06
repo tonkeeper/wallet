@@ -1,8 +1,8 @@
 import React, { FC, useCallback } from 'react';
-import { usePrepareAction } from '$hooks';
+import { usePrepareAction } from '$hooks/usePrepareAction';
 import { ActionItemProps } from './ActionItem.interface';
 import { ActionItemBase } from '$shared/components/ActionItem/ActionItemBase/ActionItemBase';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 
 export const ActionItem: FC<ActionItemProps> = (props) => {
   const { event, borderStart = true, borderEnd = true, action, decryptComment } = props;

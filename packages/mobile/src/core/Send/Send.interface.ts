@@ -2,16 +2,16 @@ import { RouteProp } from '@react-navigation/native';
 
 import { AppStackParamList } from '$navigation/AppStack';
 import { AppStackRouteNames } from '$navigation';
-import { Account } from '@tonkeeper/core';
+import { Account } from '@tonkeeper/core/src/legacy';
 
 export interface SendProps {
   route: RouteProp<AppStackParamList, AppStackRouteNames.Send>;
 }
 
 export enum SendSteps {
-  ADDRESS = 'ADDRESS',
-  AMOUNT = 'AMOUNT',
-  CONFIRM = 'CONFIRM',
+  ADDRESS = 0,
+  AMOUNT = 1,
+  CONFIRM = 2,
 }
 
 export enum SuggestedAddressType {

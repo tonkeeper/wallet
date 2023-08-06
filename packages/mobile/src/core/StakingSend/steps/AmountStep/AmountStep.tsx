@@ -1,9 +1,6 @@
-import {
-  useFiatValue,
-  useReanimatedKeyboardHeight,
-  useTokenPrice,
-  useTranslator,
-} from '$hooks';
+import { useFiatValue } from '$hooks/useFiatValue';
+import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
+import { useTokenPrice } from '$hooks/useTokenPrice';
 import { Button, Separator, Spacer, Text } from '$uikit';
 import React, { FC, memo, useEffect, useMemo, useRef } from 'react';
 import * as S from './AmountStep.style';
@@ -25,9 +22,10 @@ import { CryptoCurrencies } from '$shared/constants';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
 import { StakingSendSteps } from '$core/StakingSend/types';
-import { PoolInfo } from '@tonkeeper/core';
+import { PoolInfo } from '@tonkeeper/core/src/legacy';
 import { Ton } from '$libs/Ton';
 import { stakingFormatter } from '$utils/formatter';
+import { t } from '@tonkeeper/shared/i18n';
 
 interface Props extends StepComponentProps {
   pool: PoolInfo;
@@ -95,8 +93,6 @@ const AmountStepComponent: FC<Props> = (props) => {
       [StakingSendSteps.AMOUNT]: event.contentOffset.y,
     };
   });
-
-  const t = useTranslator();
 
   const textInputRef = useRef<TextInput>(null);
 

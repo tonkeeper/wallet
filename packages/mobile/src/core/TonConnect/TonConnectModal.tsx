@@ -2,20 +2,19 @@ import React, { useCallback } from 'react';
 import axios from 'axios';
 import queryString from 'query-string';
 import TonWeb from 'tonweb';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Linking, StyleSheet } from 'react-native';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { getServerConfig, SelectableVersionsConfig } from '$shared/constants';
 import { walletSelector } from '$store/wallet';
 import { Button, Icon, List, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
-  debugLog,
   delay,
   getDomainFromURL,
-  maskifyTonAddress,
   triggerNotificationSuccess,
   triggerSelection,
 } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { UnlockVaultError } from '$store/wallet/sagas';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import {
@@ -25,29 +24,30 @@ import {
   useTonConnectAnimation,
 } from './useTonConnectAnimation';
 import * as S from './TonConnect.style';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { TonConnectModalProps } from './models';
 import { useEffect } from 'react';
-import { Modal, useNavigation } from '$libs/navigation';
-import { store, Toast, useNotificationsStore } from '$store';
-import { openRequireWalletModal, push } from '$navigation';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
+import { Modal } from '@tonkeeper/uikit';
+import { store, Toast } from '$store';
+import { push } from '$navigation/imperative';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
+import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { mainSelector } from '$store/main';
 import { createTonProofForTonkeeper } from '$utils/notificationsproof';
-import { WalletApi, Configuration } from '@tonkeeper/core';
+import { WalletApi, Configuration } from '@tonkeeper/core/src/legacy';
 import * as SecureStore from 'expo-secure-store';
+import { Address } from '@tonkeeper/core';
 
 export const TonConnectModal = (props: TonConnectModalProps) => {
   const animation = useTonConnectAnimation();
   const unlockVault = useUnlockVault();
-  const dispatch = useDispatch();
   const theme = useTheme();
   const nav = useNavigation();
   const [withNotifications, setWithNotifications] = React.useState(false);
 
   const { version } = useSelector(walletSelector);
   const { isTestnet } = useSelector(mainSelector);
-  const maskedAddress = maskifyTonAddress(animation.address);
+  const maskedAddress = Address.toShort(animation.address);
 
   const handleSwitchNotifications = useCallback(() => {
     triggerSelection();

@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import React, { useEffect, useState } from 'react';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider as StoreProvider, useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components/native';
@@ -18,7 +19,13 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { HideableAmountProvider } from '$core/HideableAmount/HideableAmountProvider';
 import { BackgroundBlur } from '$core/BackgroundBlur/BackgroundBlur';
 
-const TonThemeProvider: FC = ({ children }) => {
+import { TonAPIProvider, WalletProvider } from '@tonkeeper/core';
+import { tonapi } from '@tonkeeper/shared/tonapi';
+
+import { MobilePasscodeScreen } from '@tonkeeper/shared/screens/MobilePasscodeScreen';
+import { tonkeeper } from '@tonkeeper/shared/tonkeeper';
+
+const TonThemeProvider = ({ children }) => {
   const accent = useSelector(accentSelector);
 
   const accentColors = AppearanceAccents[accent].colors;
@@ -40,36 +47,55 @@ const TonThemeProvider: FC = ({ children }) => {
 
 const queryClient = new QueryClient();
 
-export const App: FC = () => {
+export function App() {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    tonkeeper.init().then(() => {
+      setLoaded(true);
+    })
+  }, []);  
+
+  if (!loaded) {
+    return false;
+  }
+
   return (
-    <StoreProvider {...{ store }}>
-      <ActionSheetProvider>
-        <QueryClientProvider client={queryClient}>
-          <TonThemeProvider>
-            <SafeAreaProvider>
-              <ScrollPositionProvider>
-                <HideableAmountProvider>
-                  <AppNavigator />
-                </HideableAmountProvider>
-              </ScrollPositionProvider>
-              <ToastComponent />
-              <BackgroundBlur />
-              {isAndroid ? (
-                <View
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                  }}
-                >
-                  <PortalDestination name="popupPortal" />
-                </View>
-              ) : null}
-            </SafeAreaProvider>
-          </TonThemeProvider>
-        </QueryClientProvider>
-      </ActionSheetProvider>
-    </StoreProvider>
+    <KeyboardProvider>
+      <WalletProvider>
+        <StoreProvider {...{ store }}>
+          <ActionSheetProvider>
+            <QueryClientProvider client={queryClient}>
+              <TonAPIProvider tonapi={tonapi}>
+                <TonThemeProvider>
+                  <SafeAreaProvider>
+                    <ScrollPositionProvider>
+                      <HideableAmountProvider>
+                        <AppNavigator />
+                      </HideableAmountProvider>
+                    </ScrollPositionProvider>
+                    {/* <MobilePasscodeScreen locked={tonkeeper.securitySettings.locked} /> */}
+                    <ToastComponent />
+                    <BackgroundBlur />
+                    {isAndroid ? (
+                      <View
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                        }}
+                      >
+                        <PortalDestination name="popupPortal" />
+                      </View>
+                    ) : null}
+                  </SafeAreaProvider>
+                </TonThemeProvider>
+              </TonAPIProvider>
+            </QueryClientProvider>
+          </ActionSheetProvider>
+        </StoreProvider>
+      </WalletProvider>
+    </KeyboardProvider>
   );
-};
+}

@@ -7,26 +7,26 @@ import { NFTOperations } from '../NFTOperations';
 import {
   calculateActionsTotalAmount,
   calculateMessageTransferAmount,
-  debugLog,
   delay,
   lowerCaseFirstLetter,
   ns,
 } from '$utils';
-import { t } from '$translation';
-import { AccountEvent, ActionTypeEnum } from '@tonkeeper/core';
+import { debugLog } from '$utils/debugLog';
+import { t } from '@tonkeeper/shared/i18n';
+import { AccountEvent, ActionTypeEnum } from '@tonkeeper/core/src/legacy';
 import { SignRawAction } from './SignRawAction';
 import { store, Toast } from '$store';
 import * as S from '../NFTOperations.styles';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 import { Ton } from '$libs/Ton';
 import { copyText } from '$hooks/useCopyText';
-import { push } from '$navigation';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
+import { push } from '$navigation/imperative';
+import { SheetActions } from '@tonkeeper/router';
 import {
   checkIsInsufficient,
   openInsufficientFundsModal,
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
-import { TonConnectRemoteBridge } from '$tonconnect';
+import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { formatter } from '$utils/formatter';
 import { CryptoCurrencies } from '$shared/constants';
 import { approveAll } from '$store/zustand/tokenApproval/helpers';

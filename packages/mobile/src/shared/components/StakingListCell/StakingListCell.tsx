@@ -1,4 +1,4 @@
-import { useFiatValue } from '$hooks';
+import { useFiatValue } from '$hooks/useFiatValue';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { Steezy } from '$styles';
 import { Icon, Separator, View } from '$uikit';

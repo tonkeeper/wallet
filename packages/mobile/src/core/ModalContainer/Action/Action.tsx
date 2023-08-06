@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { usePrepareDetailedAction } from '$hooks';
+import { usePrepareDetailedAction } from '$hooks/usePrepareDetailedAction';
 import { ActionProps } from './Action.interface';
 import { ActionBase } from '$core/ModalContainer/Action/ActionBase/ActionBase';
 

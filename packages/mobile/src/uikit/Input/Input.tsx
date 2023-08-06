@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { css } from '$styled';
-import { useTheme, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { InputProps } from './Input.interface';
 import * as S from './Input.style';
 import { isIOS, ns } from '$utils';
@@ -21,8 +21,9 @@ import {
 } from 'react-native';
 import { Text } from '../Text/Text';
 import Clipboard from '@react-native-community/clipboard';
-import { Icon } from '$uikit/Icon/Icon';
+import { Icon } from '../Icon/Icon';
 import { TextInput } from 'react-native-gesture-handler';
+import { t } from '@tonkeeper/shared/i18n';
 
 const FocusedInputBorderWidth = ns(1.5);
 
@@ -66,8 +67,6 @@ export const Input: FC<InputProps> = (props) => {
   const ref = useRef<TextInput>(null);
 
   const inputRef = innerRef ?? ref;
-
-  const t = useTranslator();
 
   useEffect(() => {
     cancelAnimation(focusAnimation);

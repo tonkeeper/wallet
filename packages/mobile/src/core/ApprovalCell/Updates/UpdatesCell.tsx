@@ -2,7 +2,7 @@ import { Icon, List } from '$uikit';
 import React from 'react';
 import { useUpdatesStore } from '$store/zustand/updates/useUpdatesStore';
 import { UpdateState } from '$store/zustand/updates/types';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { installApk } from 'react-native-apk-install';
 import { getUpdatePath } from '$store/zustand/updates/helpers';
 import { Steezy } from '$styles';

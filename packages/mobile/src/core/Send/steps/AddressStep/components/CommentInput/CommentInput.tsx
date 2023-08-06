@@ -1,4 +1,4 @@
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { FormItem, Input, Text } from '$uikit';
 import React, { FC, RefObject, memo, useCallback, useEffect, useState } from 'react';
 import { TextInput } from 'react-native-gesture-handler';
@@ -26,7 +26,7 @@ const CommentInputComponent: FC<Props> = (props) => {
     onSubmit,
   } = props;
 
-  const t = useTranslator();
+  
 
   const [commentRequiredError, setCommentRequiredError] = useState(false);
 

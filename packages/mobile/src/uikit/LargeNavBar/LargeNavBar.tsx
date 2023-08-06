@@ -6,8 +6,8 @@ import { TouchableOpacity, View } from 'react-native';
 import * as S from './LargeNavBar.style';
 import { LargeNavBarProps } from './LargeNavBar.interface';
 import { deviceHeight, deviceWidth, hNs } from '$utils';
-import { useTheme } from '$hooks';
-import { Text } from '$uikit/Text/Text';
+import { useTheme } from '$hooks/useTheme';
+import { Text } from '../Text/Text';
 
 export const LargeNavBarInteractiveDistance = hNs(20);
 

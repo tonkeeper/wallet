@@ -1,8 +1,8 @@
 import React, { memo, useCallback, useEffect } from 'react';
-import { t } from '$translation';
-import { Modal, useNavigation } from '$libs/navigation';
-import { push } from '$navigation';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
+import { t } from '@tonkeeper/shared/i18n';
+import { Modal } from '@tonkeeper/uikit';
+import { push } from '$navigation/imperative';
+import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { MainDB } from '$database';
 import { mainActions } from '$store/main';
 import { useDispatch } from 'react-redux';

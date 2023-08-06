@@ -1,22 +1,22 @@
 import React, { useCallback } from 'react';
 import { NFTKeyPair } from '$store/nfts/interface';
 import * as S from './TransactionItemNFT.style';
-import { openNFT } from '$navigation';
+import { openNFT } from '$navigation/helper';
 import { useNFT } from '$hooks/useNFT';
-import { maskifyTonAddress, ns } from '$utils';
 import _ from 'lodash';
-import { Icon, Text } from '$uikit';
-import { useTranslator } from '$hooks';
+import { Icon } from '$uikit/Icon/Icon';
+
 import { View } from 'react-native';
-import { DarkTheme } from '$styled';
+import { DarkTheme } from '$styled/theme';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { BlurView } from 'expo-blur';
 import { HideableImage } from '$core/HideableAmount/HideableImage';
-import { Steezy } from '$styles';
+import { Steezy } from '@tonkeeper/uikit';
+import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
   const nft = useNFT(keyPair);
-  const t = useTranslator();
+
 
   // console.log(nft);
 
@@ -36,12 +36,7 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
   return (
     <S.Wrap>
       <S.Container>
-        {isDNS ? (
-          <S.Pressable onPress={handleOpenNftItem}>
-            <S.GlobeIcon />
-          </S.Pressable>
-        ) : null}
-        {!isDNS && nft.content?.image?.baseUrl ? (
+        {nft.content?.image?.baseUrl ? (
           <S.Pressable onPress={handleOpenNftItem}>
             <HideableImage
               imageStyle={styles.image.static}
@@ -59,7 +54,7 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
           >
             <S.TextWrap>
               <HideableAmount stars="* * * *" numberOfLines={1} variant="body2">
-                {(isDNS && nft.dns) || nft.name || maskifyTonAddress(nft.address)}
+                {(isDNS && nft.dns) || nft.name || Address.toShort(nft.address)}
               </HideableAmount>
               <S.CollectionNameWrap withIcon={nft.isApproved}>
                 <HideableAmount
@@ -74,9 +69,9 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
                     : t('nft_single_nft')}
                 </HideableAmount>
                 {nft.isApproved && (
-                  <View style={{ flex: 1, marginRight: ns(8) }}>
+                  <View style={{ flex: 1, marginRight: 8 }}>
                     <Icon
-                      style={{ marginLeft: ns(4) }}
+                      style={{ marginLeft: 4 }}
                       name="ic-verification-secondary-16"
                     />
                   </View>

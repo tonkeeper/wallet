@@ -1,4 +1,4 @@
-import { formatAmount, maskifyAddress } from '$utils';
+import { formatAmount } from '$utils';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
@@ -8,7 +8,7 @@ import { jettonsSelector } from '$store/jettons';
 import { JettonBalanceModel } from '$store/models';
 import { useStakingStore } from '$store';
 import { shallow } from 'zustand/shallow';
-import { Ton } from '$libs/Ton';
+import { Address } from '@tonkeeper/core';
 
 export function useCurrencyToSend(
   currency: CryptoCurrency | string,
@@ -50,13 +50,13 @@ export function useCurrencyToSend(
         balance: formatAmount(jetton?.balance, decimals),
         currencyTitle:
           jetton?.metadata?.symbol?.toUpperCase() ||
-          maskifyAddress(jetton?.jettonAddress),
+          Address.toShort(jetton?.jettonAddress),
         Logo,
         jettonWalletAddress: jetton?.walletAddress,
         isLiquidJetton: stakingPools.some(
           (pool) =>
             pool.liquidJettonMaster ===
-            Ton.formatAddress(jetton!.jettonAddress, { raw: true }),
+            Address(jetton!.jettonAddress).toRaw(),
         ),
       };
     } else {

@@ -2,7 +2,7 @@ import { Cache, NextFromPair } from '$store/events/manager/cache';
 import { BaseProvider } from '$store/events/manager/providers/base';
 import { getServerConfig } from '$shared/constants';
 import { EventModel } from '$store/models';
-import { AccountsApi, Configuration, GetEventsByAccountRequest } from '@tonkeeper/core';
+import { AccountsApi, Configuration, GetEventsByAccountRequest } from '@tonkeeper/core/src/legacy';
 import { i18n } from '$translation';
 
 export class TonapiProvider extends BaseProvider {

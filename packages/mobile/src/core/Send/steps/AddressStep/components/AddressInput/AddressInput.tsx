@@ -1,9 +1,9 @@
 import { SendRecipient } from '../../../../Send.interface';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { openScanQR } from '$navigation';
 import { WordHintsPopupRef } from '$shared/components/ImportWalletForm/WordHintsPopup';
 import { Icon, Input, Loader, Text } from '$uikit';
-import { isAndroid, isValidAddress, maskifyAddress, ns, parseTonLink } from '$utils';
+import { isAndroid, ns, parseTonLink } from '$utils';
 import React, {
   FC,
   memo,
@@ -19,6 +19,7 @@ import * as S from './AddressInput.style';
 import { InputContentSize } from '$uikit/Input/Input.interface';
 import { Toast } from '$store';
 import { TextInput } from 'react-native-gesture-handler';
+import { Address } from '@tonkeeper/core';
 
 interface Props {
   wordHintsRef: RefObject<WordHintsPopupRef>;
@@ -52,7 +53,7 @@ const AddressInputComponent: FC<Props> = (props) => {
 
   const canScanQR = value.length === 0;
 
-  const t = useTranslator();
+  
 
   const textInputRef = useRef<TextInput>(null);
 
@@ -136,7 +137,7 @@ const AddressInputComponent: FC<Props> = (props) => {
     openScanQR(async (code: string) => {
       const link = parseTonLink(code);
 
-      if (link.match && link.operation === 'transfer' && !isValidAddress(link.address)) {
+      if (link.match && link.operation === 'transfer' && !Address.isValid(link.address)) {
         Toast.fail(t('transfer_deeplink_address_error'));
         return false;
       }
@@ -192,7 +193,7 @@ const AddressInputComponent: FC<Props> = (props) => {
 
   const preparedAddress =
     recipient && (recipient.name || recipient.domain)
-      ? maskifyAddress(recipient.address)
+      ? Address.toShort(recipient.address)
       : '';
 
   const isFirstRender = useRef(true);

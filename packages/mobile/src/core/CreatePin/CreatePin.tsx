@@ -6,7 +6,8 @@ import * as SecureStore from 'expo-secure-store';
 import { CreatePinProps } from './CreatePin.interface';
 import * as S from '../AccessConfirmation/AccessConfirmation.style';
 import { NavBar } from '$uikit';
-import { debugLog, detectBiometryType } from '$utils';
+import { detectBiometryType } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { openSetupBiometry, openSetupWalletDone } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { CreatePinForm } from '$shared/components';
@@ -44,7 +45,7 @@ export const CreatePin: FC<CreatePinProps> = () => {
           }
         })
         .catch((err) => {
-          console.log('ERR', err);
+          console.log('ERR1', err);
           debugLog('supportedAuthenticationTypesAsync', err.message);
           doCreateWallet(pin);
         });

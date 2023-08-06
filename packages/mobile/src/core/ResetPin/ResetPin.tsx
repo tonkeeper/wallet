@@ -15,10 +15,12 @@ import * as SecureStore from 'expo-secure-store';
 import { NavBar } from '$uikit';
 import * as S from './ResetPin.style';
 import { CreatePinForm, ImportWalletForm } from '$shared/components';
-import { debugLog, detectBiometryType, deviceWidth } from '$utils';
-import { useKeyboardHeight } from '$hooks';
+import { detectBiometryType, deviceWidth } from '$utils';
+import { debugLog } from '$utils/debugLog';
+import { useKeyboardHeight } from '$hooks/useKeyboardHeight';
 import { walletActions } from '$store/wallet';
-import { goBack, openSetupBiometryAfterRestore, popToTop } from '$navigation';
+import { goBack, popToTop } from '$navigation/imperative';
+import { openSetupBiometryAfterRestore } from '$navigation';
 import { Toast } from '$store';
 
 export const ResetPin: FC = () => {
@@ -87,7 +89,7 @@ export const ResetPin: FC = () => {
           }
         })
         .catch((err) => {
-          console.log('ERR', err);
+          console.log('ERR2', err);
           debugLog('supportedAuthenticationTypesAsync', err.message);
           doCreateWallet(pin);
         });

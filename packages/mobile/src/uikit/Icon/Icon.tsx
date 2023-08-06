@@ -3,7 +3,7 @@ import { View, Image, ViewStyle, StyleProp, ImageStyle } from 'react-native';
 import { TonThemeColor } from '$styled';
 import { IconSizes, IconNames } from './generated.types';
 import { MobileIconsList } from './IconsMobileList';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { ns } from '$utils';
 
 export interface IconProps {

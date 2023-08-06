@@ -10,15 +10,14 @@ import { Button, Input, NavBar, NavBarHelper, Text } from '$uikit';
 import { ns, parseLockupConfig } from '$utils';
 import { walletGeneratedVaultSelector } from '$store/wallet';
 import * as S from './CheckSecretWords.style';
-import { useTranslator } from '$hooks';
 import { css } from '$styled';
 import { NavBarHeight } from '$shared/constants';
 import { openCreatePin } from '$navigation';
 import { Toast } from '$store';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const CheckSecretWords: FC = () => {
   const dispatch = useDispatch();
-  const t = useTranslator();
   const generatedVault = useSelector(walletGeneratedVaultSelector);
   const word2Ref = useRef<TextInput>(null);
   const word3Ref = useRef<TextInput>(null);

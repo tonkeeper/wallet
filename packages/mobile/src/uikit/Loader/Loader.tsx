@@ -12,7 +12,7 @@ import {
 import { LoaderProps, LoaderSizes } from './Loader.interface';
 import * as S from './Loader.style';
 import { ns } from '$utils';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { Image, ImageRequireSource } from 'react-native';
 
 const loaderSize: { [key in LoaderSizes]: number } = {

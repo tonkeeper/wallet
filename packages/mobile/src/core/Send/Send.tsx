@@ -1,4 +1,5 @@
-import { useInstance, useTokenPrice, useTranslator } from '$hooks';
+import { useInstance } from '$hooks/useInstance';
+import { useTokenPrice } from '$hooks/useTokenPrice'
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import {
@@ -9,7 +10,7 @@ import {
 } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { NavBar, Text } from '$uikit';
-import { isValidAddress, maskifyAddress, parseLocaleNumber, trackEvent } from '$utils';
+import { parseLocaleNumber } from '$utils';
 import React, {
   FC,
   useCallback,
@@ -34,9 +35,12 @@ import { Keyboard } from 'react-native';
 import { favoritesActions } from '$store/favorites';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { DismissedActionError } from './steps/ConfirmStep/ActionErrors';
-import { Configuration, AccountsApi } from '@tonkeeper/core';
+import { Configuration, AccountsApi } from '@tonkeeper/core/src/legacy';
 import { formatter } from '$utils/formatter';
 import { Events } from '$store/models';
+import { trackEvent } from '$utils/stats';
+import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {
@@ -51,15 +55,13 @@ export const Send: FC<SendProps> = ({ route }) => {
   } = route.params;
 
   const initialAddress =
-    propsAddress && isValidAddress(propsAddress) ? propsAddress : null;
+    propsAddress && Address.isValid(propsAddress) ? propsAddress : null;
 
   const initialStepId = useMemo(() => {
     if (initialAmount !== '0' && initialFee !== '0') {
       return SendSteps.CONFIRM;
     }
   }, [initialAmount, initialFee]);
-
-  const t = useTranslator();
 
   const dispatch = useDispatch();
 
@@ -291,7 +293,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     ? t('send_screen_steps.address.title')
     : t('send_screen_steps.amount.title');
 
-  const shortenedAddress = recipient ? maskifyAddress(recipient.address) : '';
+  const shortenedAddress = recipient ? Address.toShort(recipient.address) : '';
 
   const name = recipient?.domain || recipient?.name || recipientAccountInfo?.name;
 

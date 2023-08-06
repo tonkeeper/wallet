@@ -2,17 +2,16 @@ import React, { useCallback, useMemo } from 'react';
 import { NFTItemProps } from '$core/NFTs/NFTItem/NFTItem.interface';
 import * as S from './NFTItem.style';
 import { openNFT } from '$navigation';
-import { checkIsTonDiamondsNFT, maskifyTonAddress } from '$utils';
+import { checkIsTonDiamondsNFT } from '$utils';
 import _ from 'lodash';
 import { Icon, Text } from '$uikit';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { useFlags } from '$utils/flags';
-import { View } from 'react-native';
-import { dnsToUsername } from '$utils/dnsToUsername';
+import { Address } from '@tonkeeper/core';
 
 export const NFTItem: React.FC<NFTItemProps> = ({ item, isLastInRow }) => {
   const flags = useFlags(['disable_apperance']);
-  const t = useTranslator();
+  
 
   const isTonDiamondsNft = checkIsTonDiamondsNFT(item);
   const isOnSale = useMemo(() => !!item.sale, [item.sale]);
@@ -30,7 +29,7 @@ export const NFTItem: React.FC<NFTItemProps> = ({ item, isLastInRow }) => {
       return item.dns;
     }
 
-    return item.name || maskifyTonAddress(item.address);
+    return item.name || Address.toShort(item.address);
   }, [isDNS, item.dns, item.name, item.address]);
 
   const renderPicture = () => {

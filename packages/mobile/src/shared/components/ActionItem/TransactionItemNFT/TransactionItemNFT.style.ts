@@ -1,7 +1,6 @@
 import styled from '$styled';
 import { ns } from '$utils';
 import FastImage from 'react-native-fast-image';
-import { Icon } from '$uikit';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 
 export const Wrap = styled.View`
@@ -46,16 +45,6 @@ export const Image = styled(FastImage).attrs({
   border-top-left-radius: ${ns(12)}px;
   background: ${({ theme }) => theme.colors.backgroundQuaternary};
 `;
-
-export const GlobeIcon = styled(Icon).attrs({
-  size: 64,
-  name: 'globe-96',
-  colorless: true,
-  imageStyle: {
-    borderBottomLeftRadius: ns(12),
-    borderTopLeftRadius: ns(12),
-  },
-})``;
 
 export const CollectionNameWrap = styled.View<{ withIcon?: boolean }>`
   flex-direction: row;

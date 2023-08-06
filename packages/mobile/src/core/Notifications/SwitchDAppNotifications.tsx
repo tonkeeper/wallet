@@ -4,7 +4,7 @@ import React, { memo } from 'react';
 import { IConnectedApp, useConnectedAppsStore } from '$store';
 import { Steezy } from '$styles';
 import { getChainName } from '$shared/dynamicConfig';
-import { useObtainProofToken } from '$hooks';
+import { useObtainProofToken } from '$hooks/useObtainProofToken';
 import { useSelector } from 'react-redux';
 import { walletAddressSelector } from '$store/wallet';
 
