@@ -3,12 +3,7 @@ import { ActionType, EventModel } from '$store/models';
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
-import {
-  compareAddresses,
-  format as formatDate,
-  fromNano,
-  maskifyTonAddress,
-} from '$utils';
+import { format as formatDate, fromNano } from '$utils';
 import BigNumber from 'bignumber.js';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import {
@@ -135,7 +130,7 @@ export function usePrepareDetailedAction(
 
     if (ActionType.Subscribe === ActionType[rawAction.type]) {
       const amount = TonWeb.utils.fromNano(new BigNumber(action.amount).abs().toString());
-      if (compareAddresses(action.beneficiary.address, address.ton)) {
+      if (Address.compare(action.beneficiary.address, address.ton)) {
         sentLabelTranslationString = 'transaction_receive_date';
         label = format(amount, {
           prefix: '+ ',
@@ -168,7 +163,7 @@ export function usePrepareDetailedAction(
     }
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
-      if (compareAddresses(action.address, address.ton)) {
+      if (Address.compare(action.address, address.ton)) {
         sentLabelTranslationString = 'transaction_contract_deploy_date';
         label = t('transaction_type_wallet_initialized');
       } else {
@@ -221,7 +216,7 @@ export function usePrepareDetailedAction(
           ? t('transaction_sender_address')
           : t('transaction_recipient_address'),
         value: userFriendlyAddress,
-        preparedValue: maskifyTonAddress(userFriendlyAddress),
+        preparedValue: Address.toShort(userFriendlyAddress),
       });
     }
 

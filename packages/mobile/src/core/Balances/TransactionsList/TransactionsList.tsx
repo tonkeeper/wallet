@@ -9,7 +9,6 @@ import {
   ViewStyle,
 } from 'react-native';
 import {
-  compareAddresses,
   format,
   formatAmountAndLocalize,
   formatDate,
@@ -36,7 +35,7 @@ import { ActionItem } from '$shared/components/ActionItem/ActionItem';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
 import { useNftData } from '$core/ManageTokens/hooks/useNftData';
-import { decryptMessageComment } from '@tonkeeper/core';
+import { Address, decryptMessageComment } from '@tonkeeper/core';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { Toast, useEncryptedCommentsStore } from '$store';
 import { AccountAddress, EncryptedComment } from '@tonkeeper/core/src/TonAPI';
@@ -133,7 +132,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
         if (
           jettonAddress &&
           !enabled.find((enabledJetton) =>
-            compareAddresses(enabledJetton.jettonAddress, jettonAddress),
+            Address.compare(enabledJetton.jettonAddress, jettonAddress),
           )
         ) {
           continue;

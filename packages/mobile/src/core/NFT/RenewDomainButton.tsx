@@ -17,9 +17,9 @@ import { Ton } from '$libs/Ton';
 import TonWeb from 'tonweb';
 
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
-import { compareAddresses } from '$utils/address';
 import { useWallet } from '$hooks/useWallet';
 import { Base64 } from '$utils';
+import { Address } from '@tonkeeper/core';
 
 export type RenewDomainButtonRef = {
   renewUpdated: () => void;
@@ -86,7 +86,7 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
         return;
       }
 
-      if (!compareAddresses(wallet.address.rawAddress, ownerAddress)) {
+      if (!Address.compare(wallet.address.rawAddress, ownerAddress)) {
         return openAddressMismatchModal(openRenew, ownerAddress);
       } else {
         openRenew();

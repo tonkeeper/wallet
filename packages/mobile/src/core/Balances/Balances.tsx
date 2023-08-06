@@ -12,7 +12,7 @@ import { usePrevious } from '$hooks/usePrevious';
 import { useJettonBalances } from '$hooks/useJettonBalances';
 import { useTheme } from '$hooks/useTheme';
 import { walletActions, walletSelector } from '$store/wallet';
-import { isValidAddress, maskifyTonAddress, ns, triggerImpactLight } from '$utils';
+import { ns, triggerImpactLight } from '$utils';
 import {
   CryptoCurrencies,
   isServerConfigLoaded,
@@ -34,6 +34,7 @@ import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import Clipboard from '@react-native-community/clipboard';
 import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 export const Balances: FC = () => {
   const deeplinking = useDeeplinking();
@@ -365,7 +366,7 @@ export const Balances: FC = () => {
   const handlePressOpenScanQR = React.useCallback(() => {
     if (store.getState().wallet.wallet) {
       openScanQR((addr) => {
-        if (isValidAddress(addr)) {
+        if (Address.isValid(addr)) {
           setTimeout(() => {
             openSend({ currency: CryptoCurrencies.Ton, address: addr });
           }, 200);
@@ -410,7 +411,7 @@ export const Balances: FC = () => {
         bottomComponent={
           address.ton ? (
             <Text variant="body2" color="foregroundSecondary">
-              {maskifyTonAddress(address.ton)}
+              {Address.toShort(address.ton)}
             </Text>
           ) : null
         }

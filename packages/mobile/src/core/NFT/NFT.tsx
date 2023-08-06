@@ -10,8 +10,6 @@ import {
   ONE_YEAR_MILISEC,
   checkIsTelegramNumbersNFT,
   checkIsTonDiamondsNFT,
-  compareAddresses,
-  maskifyTonAddress,
   ns,
 } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -36,6 +34,7 @@ import { Tonapi } from '$libs/Tonapi';
 import { Toast } from '$store';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
+import { Address } from '@tonkeeper/core';
 
 export const NFT: React.FC<NFTProps> = ({ route }) => {
   const { address: nftAddress } = route.params.keyPair;
@@ -103,7 +102,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
   const scrollRef = useRef<Animated.ScrollView>(null);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const canTransfer = useMemo(
-    () => compareAddresses(nft.ownerAddress, address.ton),
+    () => Address.compare(nft.ownerAddress, address.ton),
     [nft.ownerAddress, address.ton],
   );
 
@@ -152,7 +151,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
       return nft.dns;
     }
 
-    return nft.name || maskifyTonAddress(nft.address);
+    return nft.name || Address.toShort(nft.address);
   }, [isDNS, nft.dns, nft.name, nft.address]);
 
   return (

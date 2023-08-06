@@ -2,7 +2,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { openNFT } from '$navigation';
 import { DarkTheme, Steezy } from '$styles';
 import { Icon, Pressable, View } from '$uikit';
-import { checkIsTonDiamondsNFT, maskifyTonAddress } from '$utils';
+import { checkIsTonDiamondsNFT } from '$utils';
 import { useFlags } from '$utils/flags';
 import _ from 'lodash';
 import React, { memo, useCallback, useMemo } from 'react';
@@ -40,7 +40,7 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
       return item.dns;
     }
 
-    return item.name || maskifyTonAddress(item.address);
+    return item.name || Address.toShort(item.address);
   }, [isDNS, item.dns, item.name, item.address]);
 
   const nftRawAddress = useMemo(

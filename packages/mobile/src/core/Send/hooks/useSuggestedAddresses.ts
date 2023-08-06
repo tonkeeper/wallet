@@ -1,5 +1,5 @@
 import { ActionType, TAction } from '$store/models';
-import { compareAddresses, SearchIndexer } from '$utils';
+import { SearchIndexer } from '$utils';
 import { favoritesActions, favoritesSelector } from '$store/favorites';
 import uniqBy from 'lodash/uniqBy';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -10,6 +10,7 @@ import { walletAddressSelector } from '$store/wallet';
 import { CryptoCurrencies } from '$shared/constants';
 import { Tonapi } from '$libs/Tonapi';
 import { useStakingStore } from '$store';
+import { Address } from '@tonkeeper/core';
 
 const TonWeb = require('tonweb');
 
@@ -69,18 +70,18 @@ export const useSuggestedAddresses = () => {
       .filter((action) => {
         if (
           !action?.recipient ||
-          compareAddresses(address[CryptoCurrencies.Ton], action.recipient.address)
+          Address.compare(address[CryptoCurrencies.Ton], action.recipient.address)
         ) {
           return false;
         }
         const isFavorite =
           favoriteAddresses.findIndex((favorite) =>
-            compareAddresses(favorite.address, action.recipient.address),
+            Address.compare(favorite.address, action.recipient.address),
           ) !== -1;
 
         const isStakingPool =
           stakingPools.findIndex((poolAddress) =>
-            compareAddresses(poolAddress, action.recipient.address),
+            Address.compare(poolAddress, action.recipient.address),
           ) !== -1;
 
         const friendlyAddress = new TonWeb.Address(action.recipient.address).toString(
@@ -135,7 +136,7 @@ export const useSuggestedAddresses = () => {
       const resolved = await Tonapi.resolveDns(favorite.domain!);
       const fetchedAddress = resolved?.wallet?.address;
 
-      if (fetchedAddress && !compareAddresses(favorite.address, fetchedAddress)) {
+      if (fetchedAddress && !Address.compare(favorite.address, fetchedAddress)) {
         dispatch(
           favoritesActions.updateFavorite({
             ...favorite,

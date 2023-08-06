@@ -3,10 +3,10 @@ import { Icon, TouchableOpacity } from '$uikit';
 import { Steezy } from '$styles';
 import { store } from '$store';
 import { openScanQR, openSend } from '$navigation';
-import { isValidAddress } from '$utils';
 import { CryptoCurrencies } from '$shared/constants';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
+import { Address } from '@tonkeeper/core';
 
 
 export const ScanQRButton = memo(() => {
@@ -25,7 +25,7 @@ export const ScanQRButton = memo(() => {
   const handlePressScanQR = React.useCallback(() => {
     if (store.getState().wallet.wallet) {
       openScanQR((address) => {
-        if (isValidAddress(address)) {
+        if (Address.isValid(address)) {
           setTimeout(() => {
             openSend({ currency: CryptoCurrencies.Ton, address });
           }, 200);

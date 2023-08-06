@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import axios from 'axios';
 import queryString from 'query-string';
 import TonWeb from 'tonweb';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Linking, StyleSheet } from 'react-native';
 import { useTheme } from '$hooks/useTheme';
 import { getServerConfig, SelectableVersionsConfig } from '$shared/constants';
@@ -11,7 +11,6 @@ import { Button, Icon, List, Loader, Spacer, Text, TransitionOpacity } from '$ui
 import {
   delay,
   getDomainFromURL,
-  maskifyTonAddress,
   triggerNotificationSuccess,
   triggerSelection,
 } from '$utils';
@@ -29,7 +28,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { TonConnectModalProps } from './models';
 import { useEffect } from 'react';
 import { Modal } from '@tonkeeper/uikit';
-import { store, Toast, useNotificationsStore } from '$store';
+import { store, Toast } from '$store';
 import { push } from '$navigation/imperative';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
@@ -37,18 +36,18 @@ import { mainSelector } from '$store/main';
 import { createTonProofForTonkeeper } from '$utils/notificationsproof';
 import { WalletApi, Configuration } from '@tonkeeper/core/src/legacy';
 import * as SecureStore from 'expo-secure-store';
+import { Address } from '@tonkeeper/core';
 
 export const TonConnectModal = (props: TonConnectModalProps) => {
   const animation = useTonConnectAnimation();
   const unlockVault = useUnlockVault();
-  const dispatch = useDispatch();
   const theme = useTheme();
   const nav = useNavigation();
   const [withNotifications, setWithNotifications] = React.useState(false);
 
   const { version } = useSelector(walletSelector);
   const { isTestnet } = useSelector(mainSelector);
-  const maskedAddress = maskifyTonAddress(animation.address);
+  const maskedAddress = Address.toShort(animation.address);
 
   const handleSwitchNotifications = useCallback(() => {
     triggerSelection();

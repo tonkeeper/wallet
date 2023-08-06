@@ -43,7 +43,7 @@ export const TransactionNFTItem = memo<TransactionNFTItemProps>((props) => {
     // TODO: Replace with NftMapper
     const isTG = nft.dns?.endsWith('.t.me');
     const isDNS = !!nft.dns && !isTG;
-    const name = (isDNS && nft.dns) || nft.metadata.name || Address.maskify(nft.address);
+    const name = (isDNS && nft.dns) || nft.metadata.name || Address.toShort(nft.address);
 
     const collectionName = isDNS
       ? 'TON DNS'

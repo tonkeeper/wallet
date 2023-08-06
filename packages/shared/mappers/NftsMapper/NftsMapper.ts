@@ -16,7 +16,7 @@ export function NftMapper(input: NftMapperInput) {
   const name =
     (isDNS && input.nft.dns) ||
     input.nft.metadata.name ||
-    Address.maskify(input.nft.address);
+    Address.toShort(input.nft.address);
 
   const collectionName = isDNS
     ? 'TON DNS'

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { DeeplinkingResolver, useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
-import { Base64, compareAddresses, delay, fromNano, isValidAddress } from '$utils';
+import { Base64, delay, fromNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
@@ -33,6 +33,7 @@ import { getCurrentRoute } from '$navigation/imperative';
 import { IConnectQrQuery } from '$tonconnect/models';
 import { openDeprecatedConfirmSending } from '$core/ModalContainer/ConfirmSending/ConfirmSending';
 import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
+import { Address } from '@tonkeeper/core';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -146,7 +147,7 @@ export function useDeeplinkingResolvers() {
     const address = params.address;
     const comment = query.text ?? '';
 
-    if (!isValidAddress(address)) {
+    if (!Address.isValid(address)) {
       return Toast.fail(t('transfer_deeplink_address_error'));
     }
 
@@ -183,14 +184,14 @@ export function useDeeplinkingResolvers() {
           },
         );
       } else if (query.jetton) {
-        if (!isValidAddress(query.jetton)) {
+        if (!Address.isValid(query.jetton)) {
           return Toast.fail(t('transfer_deeplink_address_error'));
         }
 
         const currentAddress = await getWallet().ton.getAddress();
         const { balances } = await Tonapi.getJettonBalances(currentAddress);
         const jettonBalance = balances.find((balance) =>
-          compareAddresses(balance.jetton?.address, query.jetton),
+          Address.compare(balance.jetton?.address, query.jetton),
         );
 
         if (!jettonBalance) {
@@ -268,7 +269,7 @@ export function useDeeplinkingResolvers() {
         );
       }
     } else if (query.jetton) {
-      if (!isValidAddress(query.jetton)) {
+      if (!Address.isValid(query.jetton)) {
         return Toast.fail(t('transfer_deeplink_address_error'));
       }
       openSend({
@@ -279,7 +280,7 @@ export function useDeeplinkingResolvers() {
         isJetton: true,
       });
     } else if (query.nft) {
-      if (!isValidAddress(query.nft)) {
+      if (!Address.isValid(query.nft)) {
         return Toast.fail(t('transfer_deeplink_nft_address_error'));
       }
       await checkFundsAndOpenNFTTransfer(query.nft, address);
@@ -291,7 +292,7 @@ export function useDeeplinkingResolvers() {
   deeplinking.add('/transfer', async ({ query }) => {
     const nft = query.nft;
     if (nft) {
-      if (!isValidAddress(nft)) {
+      if (!Address.isValid(nft)) {
         return Toast.fail(t('transfer_deeplink_nft_address_error'));
       }
       await openNFTTransferInputAddressModal({ nftAddress: nft });
@@ -322,8 +323,8 @@ export function useDeeplinkingResolvers() {
 
     if (
       txBody.params.source &&
-      isValidAddress(txBody.params.source) &&
-      !compareAddresses(txBody.params.source, await wallet.ton.getAddress())
+      Address.isValid(txBody.params.source) &&
+      !Address.compare(txBody.params.source, await wallet.ton.getAddress())
     ) {
       Toast.hide();
       return openAddressMismatchModal(

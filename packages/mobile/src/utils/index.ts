@@ -59,7 +59,6 @@ export * from './hapticFeedback';
 export * from './number';
 export * from './wallet';
 export * from './biometry';
-export * from './address';
 export * from './delay';
 export * from './mergeRefs';
 export * from './retry';

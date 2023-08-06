@@ -10,7 +10,7 @@ import {
 } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { NavBar, Text } from '$uikit';
-import { isValidAddress, parseLocaleNumber } from '$utils';
+import { parseLocaleNumber } from '$utils';
 import React, {
   FC,
   useCallback,
@@ -55,7 +55,7 @@ export const Send: FC<SendProps> = ({ route }) => {
   } = route.params;
 
   const initialAddress =
-    propsAddress && isValidAddress(propsAddress) ? propsAddress : null;
+    propsAddress && Address.isValid(propsAddress) ? propsAddress : null;
 
   const initialStepId = useMemo(() => {
     if (initialAmount !== '0' && initialFee !== '0') {

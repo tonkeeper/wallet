@@ -11,7 +11,7 @@ import {
   SwapIcon,
   Text,
 } from '$uikit';
-import { delay, maskifyTonAddress, ns } from '$utils';
+import { delay, ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
 import { useTheme } from '$hooks/useTheme';
@@ -32,6 +32,7 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
+import { Address } from '@tonkeeper/core';
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const theme = useTheme();
@@ -203,7 +204,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
           }
           titleProps={{ numberOfLines: 1 }}
           isLargeNavBar={false}
-          navBarTitle={jetton.metadata?.name || maskifyTonAddress(jetton.jettonAddress)}
+          navBarTitle={jetton.metadata?.name || Address.toShort(jetton.jettonAddress)}
         >
           {renderContent()}
         </ScrollHandler>

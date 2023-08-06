@@ -6,8 +6,7 @@ import { Button, Icon, Text } from '$uikit';
 import * as S from './AddressMismatch.style';
 import { useWallet } from '$hooks/useWallet';
 import { useNavigation, SheetActions } from '@tonkeeper/router';
-import { Ton } from '$libs/Ton';
-import { compareAddresses, delay } from '$utils';
+import { delay } from '$utils';
 import { walletActions } from '$store/wallet';
 import { useDispatch } from 'react-redux';
 import { SelectableVersion } from '$shared/constants';
@@ -32,7 +31,7 @@ export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () =
         return false;
       }
       let found = Object.entries(allVersions).find(([_, address]) =>
-        compareAddresses(address, props.source),
+        Address.compare(address, props.source),
       );
       if (!found) {
         return false;

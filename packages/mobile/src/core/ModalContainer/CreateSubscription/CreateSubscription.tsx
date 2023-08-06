@@ -10,7 +10,6 @@ import { Button, Icon, Loader, Text } from '$uikit';
 import { List, ListCell } from '$uikit/List/old/List';
 import { ActionType, SubscriptionModel } from '$store/models';
 import {
-  compareAddresses,
   format,
   formatSubscriptionPeriod,
   toLocaleNumber,
@@ -32,6 +31,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { push } from '$navigation/imperative';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { Modal, View } from '@tonkeeper/uikit';
+import { Address } from '@tonkeeper/core';
 
 export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   invoiceId = null,
@@ -110,7 +110,7 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
       const action = event.actions.find((action) => action[type]);
       if (
         action &&
-        compareAddresses(action.recipient.address, info?.subscriptionAddress)
+        Address.compare(action.recipient.address, info?.subscriptionAddress)
       ) {
         return event.inProgress;
       }

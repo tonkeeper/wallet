@@ -4,11 +4,12 @@ import { DetailsProps } from './Details.interface';
 import { t } from '@tonkeeper/shared/i18n';
 import { Highlight, Separator, Text } from '$uikit';
 import Clipboard from '@react-native-community/clipboard';
-import { getLocale, maskifyTonAddress } from '$utils';
+import { getLocale } from '$utils';
 import { getServerConfig } from '$shared/constants';
 import { openDAppBrowser } from '$navigation';
 import { Toast } from '$store';
 import { format } from 'date-fns';
+import { Address } from '@tonkeeper/core';
 
 export const Details: React.FC<DetailsProps> = ({
   tokenId,
@@ -37,7 +38,7 @@ export const Details: React.FC<DetailsProps> = ({
 
     result.push({
       label: t('nft_owner_address'),
-      value: maskifyTonAddress(ownerAddress),
+      value: Address.toShort(ownerAddress),
       copyableValue: ownerAddress,
     });
 
@@ -50,7 +51,7 @@ export const Details: React.FC<DetailsProps> = ({
 
     result.push({
       label: t('nft_contract_address'),
-      value: maskifyTonAddress(contractAddress),
+      value: Address.toShort(contractAddress),
       copyableValue: contractAddress,
     });
 

@@ -3,7 +3,6 @@ import { NFTKeyPair } from '$store/nfts/interface';
 import * as S from './TransactionItemNFT.style';
 import { openNFT } from '$navigation/helper';
 import { useNFT } from '$hooks/useNFT';
-import { maskifyTonAddress } from '$utils/address';
 import _ from 'lodash';
 import { Icon } from '$uikit/Icon/Icon';
 
@@ -13,6 +12,7 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { HideableImage } from '$core/HideableAmount/HideableImage';
 import { Steezy } from '@tonkeeper/uikit';
 import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
   const nft = useNFT(keyPair);
@@ -54,7 +54,7 @@ export const TransactionItemNFT: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair 
           >
             <S.TextWrap>
               <HideableAmount stars="* * * *" numberOfLines={1} variant="body2">
-                {(isDNS && nft.dns) || nft.name || maskifyTonAddress(nft.address)}
+                {(isDNS && nft.dns) || nft.name || Address.toShort(nft.address)}
               </HideableAmount>
               <S.CollectionNameWrap withIcon={nft.isApproved}>
                 <HideableAmount

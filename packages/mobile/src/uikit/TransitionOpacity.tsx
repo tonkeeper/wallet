@@ -8,6 +8,7 @@ interface TransitionOpacity {
   entranceAnimation?: boolean;
   style?: StyleProp<ViewStyle>;
   duration?: number;
+  children: React.ReactNode;
 } 
 
 export const TransitionOpacity: React.FC<TransitionOpacity> = (props) => {

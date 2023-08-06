@@ -2,7 +2,7 @@ import { useSuggestedAddresses } from '../../hooks/useSuggestedAddresses';
 import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
 import { Ton } from '$libs/Ton';
 import { Button, FormItem } from '$uikit';
-import { asyncDebounce, formatInputAmount, isValidAddress, parseTonLink } from '$utils';
+import { asyncDebounce, formatInputAmount, parseTonLink } from '$utils';
 import React, {
   FC,
   memo,
@@ -35,6 +35,7 @@ import { Tonapi } from '$libs/Tonapi';
 import { AddressInput, AddressSuggests, CommentInput } from './components';
 import { TextInput } from 'react-native-gesture-handler';
 import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 const TonWeb = require('tonweb');
 
@@ -132,7 +133,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           setDnsLoading(false);
         }
 
-        if (link.match && link.operation === 'transfer' && isValidAddress(link.address)) {
+        if (link.match && link.operation === 'transfer' && Address.isValid(link.address)) {
           if (link.query.amount && !Number.isNaN(Number(link.query.amount))) {
             const parsedAmount = Ton.fromNano(new TonWeb.utils.BN(link.query.amount));
             setAmount({
@@ -168,7 +169,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           return true;
         }
 
-        if (isValidAddress(value)) {
+        if (Address.isValid(value)) {
           if (accountInfo) {
             setRecipientAccountInfo(accountInfo as AccountWithPubKey);
           }

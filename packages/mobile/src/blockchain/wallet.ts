@@ -5,7 +5,7 @@ import { getUnixTime } from 'date-fns';
 import { store } from '$store';
 import { getServerConfig } from '$shared/constants';
 import { UnlockedVault, Vault } from './vault';
-import { compareAddresses } from '$utils';
+import { Address as AddressFormatter } from '@tonkeeper/core';
 import { debugLog } from '$utils/debugLog';
 import { getChainName, getWalletName } from '$shared/dynamicConfig';
 import { t } from '@tonkeeper/shared/i18n';
@@ -14,7 +14,12 @@ import { Ton } from '$libs/Ton';
 import axios from 'axios';
 import { Tonapi } from '$libs/Tonapi';
 import { Address as TAddress } from '$store/wallet/interface';
-import { Configuration, BlockchainApi, AccountsApi, Account } from '@tonkeeper/core/src/legacy';
+import {
+  Configuration,
+  BlockchainApi,
+  AccountsApi,
+  Account,
+} from '@tonkeeper/core/src/legacy';
 import { SendApi, Configuration as V1Configuration } from 'tonapi-sdk-js';
 import {
   externalMessage,
@@ -229,7 +234,7 @@ export class TonWallet {
 
     const subscriptionAddress = await subscription.getAddress();
 
-    const addr = Ton.formatAddress(walletAddress);
+    const addr = AddressFormatter(walletAddress).toRaw();
     const seqno = await this.getSeqno(addr);
 
     const params: any = {
@@ -431,7 +436,7 @@ export class TonWallet {
     const { balances } = await Tonapi.getJettonBalances(sender.address);
 
     const balance = balances.find((jettonBalance) =>
-      compareAddresses(jettonBalance.wallet_address.address, jettonWalletAddress),
+      AddressFormatter.compare(jettonBalance.wallet_address.address, jettonWalletAddress),
     );
 
     if (new BigNumber(balance.balance).lt(new BigNumber(amountNano))) {
@@ -458,7 +463,7 @@ export class TonWallet {
 
     if (this.isLockup()) {
       const lockupBalances = await this.getLockupBalances(sender);
-      if (new BigNumber(lockupBalances[0]).minus(amount).isLessThan(-lockupBalances[1])) {
+      if (new BigNumber(lockupBalances[0]).minus(amountNano).isLessThan(-lockupBalances[1])) {
         throw new Error(t('send_insufficient_funds'));
       }
     } else {
