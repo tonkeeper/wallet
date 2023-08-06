@@ -17,9 +17,9 @@ import { CryptoCurrencies } from '$shared/constants';
 import { parseLocaleNumber, truncateDecimal } from '$utils';
 import { getImplementationIcon, getPoolIcon } from '$utils/staking';
 import { PoolInfo } from '@tonkeeper/core/src/legacy';
-import { Address } from '$libs/Ton';
 import { stakingFormatter } from '$utils/formatter';
 import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 interface Props extends StepComponentProps {
   transactionType: StakingTransactionType;
@@ -64,7 +64,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
   const isWithdrawalConfrim =
     transactionType === StakingTransactionType.WITHDRAWAL_CONFIRM;
 
-  const address = useMemo(() => new Address(pool.address), [pool.address]);
+  const address = useMemo(() => Address(pool.address), [pool.address]);
 
   const fiatValue = useFiatValue(
     currency,
@@ -95,7 +95,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
   });
 
   const handleCopyAddress = useCallback(() => {
-    copyText(address.format(), t('address_copied'));
+    copyText(address.toFriendly(), t('address_copied'));
   }, [address, copyText, t]);
 
   const handleCopyPoolName = useCallback(
@@ -135,7 +135,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
               <S.Item>
                 <S.ItemLabel>{t('staking.confirm.address.label')}</S.ItemLabel>
                 <S.ItemContent>
-                  <S.ItemValue>{address.format({ cut: true })}</S.ItemValue>
+                  <S.ItemValue>{address.toShort()}</S.ItemValue>
                 </S.ItemContent>
               </S.Item>
             </Highlight>

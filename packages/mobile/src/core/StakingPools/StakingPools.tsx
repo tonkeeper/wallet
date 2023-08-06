@@ -26,6 +26,7 @@ import { logEvent } from '@amplitude/analytics-browser';
 import { useSelector } from 'react-redux';
 import { jettonsBalancesSelector } from '$store/jettons';
 import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 const calculateBalance = (pool: PoolInfo, stakingInfo: StakingInfo) => {
   const amount = new BigNumber(Ton.fromNano(stakingInfo[pool.address]?.amount || '0'));
@@ -67,7 +68,7 @@ export const StakingPools: FC<Props> = (props) => {
     return pools.map((pool) => {
       const stakingJetton = jettonBalances.find(
         (item) =>
-          Ton.formatAddress(item.jettonAddress, { raw: true }) ===
+          Address(item.jettonAddress).toRaw() ===
           pool.liquidJettonMaster,
       );
 

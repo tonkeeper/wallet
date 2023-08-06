@@ -13,7 +13,6 @@ import { CellItem, Content, ContentType } from '$core/ManageTokens/ManageTokens.
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { useApprovedNfts } from '$hooks/useApprovedNfts';
 import { JettonVerification, NFTModel } from '$store/models';
-import { Address } from '$libs/Ton';
 import { approveAll } from '$store/zustand/tokenApproval/helpers';
 
 const baseNftCellData = (nft: NFTModel) => ({

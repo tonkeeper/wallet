@@ -3,7 +3,6 @@ import React, { FC, useCallback, useState } from 'react';
 import { Icon, Screen, Spacer, SText, View, List, Button } from '$uikit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { JettonBalanceModel } from '$store/models';
-import { Address } from '$libs/Ton';
 import { Tabs } from '../../tabs/Wallet/components/Tabs';
 import { Steezy } from '$styles';
 import { FlashList } from '@shopify/flash-list';
@@ -24,13 +23,14 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useParams } from '$navigation/imperative';
+import { Address } from '@tonkeeper/core';
 
 
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 
 export function reorderJettons(newOrder: JettonBalanceModel[]) {
   return newOrder.map((jettonBalance) => {
-    const rawAddress = new Address(jettonBalance.jettonAddress).toString(false);
+    const rawAddress = Address(jettonBalance.jettonAddress).toRaw();
     return rawAddress;
   });
 }

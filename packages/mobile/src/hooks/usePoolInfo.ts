@@ -8,12 +8,13 @@ import { useFiatValue } from './useFiatValue';
 import { useNavigation } from '@tonkeeper/router';
 import { StakingTransactionType } from '$core/StakingSend/types';
 import { useWallet } from './useWallet';
-import { Address, Ton } from '$libs/Ton';
+import { Ton } from '$libs/Ton';
 import { useCopyText } from './useCopyText';
 import { useSelector } from 'react-redux';
 import { jettonsBalancesSelector } from '$store/jettons';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 export interface PoolDetailsItem {
   label: string;
@@ -34,7 +35,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
     if (pool.implementation === 'liquidTF' && pool.liquidJettonMaster) {
       const jetton = jettonBalances.find(
         (item) =>
-          Ton.formatAddress(item.jettonAddress, { raw: true }) ===
+          Address(item.jettonAddress).toRaw() ===
           pool.liquidJettonMaster,
       );
 
@@ -131,13 +132,13 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
       });
     }
 
-    const address = new Address(pool.address);
+    const address = Address(pool.address);
 
     rows.push({
       label: t('staking.details.pool_address.label'),
-      value: address.format({ cut: true }),
+      value: address.toShort(),
       onPress: () => {
-        copyText(address.format(), t('address_copied'));
+        copyText(address.toFriendly(), t('address_copied'));
       },
     });
 

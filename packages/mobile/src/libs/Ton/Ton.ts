@@ -1,11 +1,9 @@
-import TonWeb, { AddressType } from 'tonweb';
+import TonWeb from 'tonweb';
 import BN from 'bn.js';
 import { Cell } from 'tonweb/dist/types/boc/cell';
 import { BitStringReader } from '$utils/bitStringReader';
 import * as mnemonic from './mnemonic';
 import { toLocaleNumber } from '$utils/number';
-import { debugLog } from '$utils/debugLog';
-import { Address, AddressFormatOptions } from './Address';
 
 export class Ton {
   static toNano(value: number | string | BN) {
@@ -24,24 +22,12 @@ export class Ton {
   static formatAmount(amount: string | number, currency = 'TON') {
     return `${toLocaleNumber(Ton.fromNano(amount))} ${currency}`;
   }
-  static formatAddress(address: AddressType, opts?: AddressFormatOptions) {
-    try {
-      return new Address(address).format(opts);
-    } catch (err) {
-      debugLog('[formatAddress]', address, err);
-      return '';
-    }
-  }
-
   static mnemonic = mnemonic;
   static base64ToCell(base64?: string): Cell | undefined {
     if (base64) {
       const bytes = new Uint8Array(Buffer.from(base64, 'base64'));
       return TonWeb.boc.Cell.oneFromBoc(bytes);
     }
-  }
-  static isValidAddress(address: AddressType): boolean {
-    return Address.isValid(address);
   }
   static parseComment(cell: Cell): string | null {
     if (Buffer.isBuffer(cell)) {

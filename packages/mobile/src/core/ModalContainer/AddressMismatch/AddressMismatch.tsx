@@ -12,6 +12,7 @@ import { walletActions } from '$store/wallet';
 import { useDispatch } from 'react-redux';
 import { SelectableVersion } from '$shared/constants';
 import { push } from '$navigation/imperative';
+import { Address } from '@tonkeeper/core';
 
 export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () => void }>(
   (props) => {
@@ -72,7 +73,7 @@ export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () =
                     version: foundVersion,
                   })
                 : t('txActions.signRaw.addressMismatch.wrongWallet.description', {
-                    address: Ton.formatAddress(props.source, { cut: true }),
+                    address: Address(props.source).toShort(),
                   })}
             </Text>
           </S.Wrap>

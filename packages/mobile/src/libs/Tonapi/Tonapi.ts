@@ -1,8 +1,8 @@
 import { getServerConfig } from '$shared/constants';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
-import { Ton } from '$libs/Ton/Ton';
 import { network } from '$libs/network';
+import { Address } from '@tonkeeper/core';
 
 const prepareHeaders = (restHeaders?: { [key: string]: string }) => {
   return {
@@ -87,7 +87,7 @@ async function resolveDns(domain: string, signal?: AbortSignal) {
 
 async function getJettonBalances(address: string) {
   try {
-    if (!Ton.isValidAddress(address)) {
+    if (!Address.isValid(address)) {
       throw new Error('Wrong address');
     }
     const endpoint = getServerConfig('tonapiV2Endpoint');

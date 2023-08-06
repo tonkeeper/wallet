@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import { Ton } from '$libs/Ton';
 import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 interface Props {}
 
@@ -39,7 +40,7 @@ export const Staking: FC<Props> = () => {
     return pools.map((pool) => {
       const stakingJetton = jettonBalances.find(
         (item) =>
-          Ton.formatAddress(item.jettonAddress, { raw: true }) ===
+          Address(item.jettonAddress).toRaw() ===
           pool.liquidJettonMaster,
       );
 

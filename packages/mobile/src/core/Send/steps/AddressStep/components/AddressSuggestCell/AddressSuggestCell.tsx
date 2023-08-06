@@ -4,13 +4,14 @@ import { Icon, PopupSelect, Text } from '$uikit';
 import React, { FC, memo, useCallback, useMemo } from 'react';
 import * as S from './AddressSuggestCell.style';
 import { differenceInCalendarYears, isToday, isYesterday } from 'date-fns';
-import { format, isAndroid, maskifyAddress } from '$utils';
+import { format, isAndroid } from '$utils';
 import { Alert, Keyboard } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { favoritesActions } from '$store/favorites';
 import Animated from 'react-native-reanimated';
 import { Separator } from '$uikit/Separator/Separator.style';
 import { openAddFavorite, openEditFavorite } from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress';
+import { Address } from '@tonkeeper/core';
 
 enum SuggestActionType {
   ADD,
@@ -38,7 +39,7 @@ const AddressSuggestCellComponent: FC<Props> = (props) => {
 
   const dispatch = useDispatch();
 
-  const preparedAddress = maskifyAddress(suggest.address);
+  const preparedAddress = Address.toShort(suggest.address);
 
   const formattedDate = useMemo(() => {
     if (!suggest.timestamp) {

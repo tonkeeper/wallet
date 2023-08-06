@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCopyText } from '$hooks/useCopyText';
 import { useInstance } from '$hooks/useInstance';
-import { useWallet} from '$hooks/useWallet';
+import { useWallet } from '$hooks/useWallet';
 import { Highlight, Icon, Separator, Skeleton, Text } from '$uikit';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { useDownloadCollectionMeta } from '../useDownloadCollectionMeta';
@@ -10,7 +10,7 @@ import { useDownloadNFT } from '../useDownloadNFT';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import { maskifyAddress, toLocaleNumber } from '$utils';
+import { toLocaleNumber } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
 import { CryptoCurrencies } from '$shared/constants';
@@ -27,6 +27,7 @@ import {
   checkIsInsufficient,
   openInsufficientFundsModal,
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { Address } from '@tonkeeper/core';
 
 type NFTTransferModalProps = TxRequestBody<NftTransferParams>;
 
@@ -127,7 +128,7 @@ export const NFTTransferModal = ({
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_transfer_recipient')}</S.InfoItemLabel>
                 <S.InfoItemValueText>
-                  {maskifyAddress(params.newOwnerAddress, 6)}
+                  {Address.toShort(params.newOwnerAddress, 6)}
                 </S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
@@ -167,7 +168,7 @@ export const NFTTransferModal = ({
                 <S.DetailItem>
                   <S.DetailItemLabel>NFT item ID</S.DetailItemLabel>
                   <S.DetailItemValueText>
-                    {maskifyAddress(params.nftItemAddress, 8)}
+                    {Address.toShort(params.nftItemAddress, 8)}
                   </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>

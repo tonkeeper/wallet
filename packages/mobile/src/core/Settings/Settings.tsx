@@ -42,7 +42,6 @@ import {
 } from '$shared/constants';
 import {
   hNs,
-  maskifyAddress,
   ns,
   throttle,
 
@@ -61,6 +60,7 @@ import { Steezy } from '$styles';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { openAppearance } from '$core/ModalContainer/AppearanceBottomSheet';
+import { Address } from '@tonkeeper/core';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -350,7 +350,7 @@ export const Settings: FC = () => {
                       {SelectableVersionsConfig[version]?.label}
                     </Text>
                     <Text variant="body1" color="foregroundSecondary">
-                      {maskifyAddress(
+                      {Address.toShort(
                         allTonAddesses[SelectableVersionsConfig[version]?.label],
                       )}
                     </Text>

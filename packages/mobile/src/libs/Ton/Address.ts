@@ -1,13 +1,13 @@
 import TonWeb from 'tonweb';
-import { maskifyAddress } from '$utils/address';
 import { debugLog } from '$utils/debugLog';
+import { Address } from '@tonkeeper/core';
 
 export interface AddressFormatOptions {
   raw?: boolean;
   bounce?: boolean;
   cut?: boolean;
 }
-export class Address extends TonWeb.Address {
+export class DeprecatedAddress extends TonWeb.Address {
   format(opts: AddressFormatOptions = {}) {
     const { bounce = true, cut, raw } = opts;
 
@@ -19,7 +19,7 @@ export class Address extends TonWeb.Address {
       const addr = this.toString(true, true, bounce);
 
       if (cut) {
-        return maskifyAddress(addr);
+        return Address.toShort(addr);
       }
 
       return addr;

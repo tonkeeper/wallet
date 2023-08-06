@@ -3,7 +3,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { openScanQR } from '$navigation';
 import { WordHintsPopupRef } from '$shared/components/ImportWalletForm/WordHintsPopup';
 import { Icon, Input, Loader, Text } from '$uikit';
-import { isAndroid, isValidAddress, maskifyAddress, ns, parseTonLink } from '$utils';
+import { isAndroid, isValidAddress, ns, parseTonLink } from '$utils';
 import React, {
   FC,
   memo,
@@ -19,6 +19,7 @@ import * as S from './AddressInput.style';
 import { InputContentSize } from '$uikit/Input/Input.interface';
 import { Toast } from '$store';
 import { TextInput } from 'react-native-gesture-handler';
+import { Address } from '@tonkeeper/core';
 
 interface Props {
   wordHintsRef: RefObject<WordHintsPopupRef>;
@@ -192,7 +193,7 @@ const AddressInputComponent: FC<Props> = (props) => {
 
   const preparedAddress =
     recipient && (recipient.name || recipient.domain)
-      ? maskifyAddress(recipient.address)
+      ? Address.toShort(recipient.address)
       : '';
 
   const isFirstRender = useRef(true);

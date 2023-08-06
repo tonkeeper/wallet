@@ -3,21 +3,25 @@ import { NFTCollectionMeta } from '../useDownloadCollectionMeta';
 import { useDownloadMetaFromUri } from '../useDownloadMetaFromUri';
 import { useCopyText } from '$hooks/useCopyText';
 import { useInstance } from '$hooks/useInstance';
-import { useWallet} from '$hooks/useWallet';
+import { useWallet } from '$hooks/useWallet';
 import { Highlight, Separator, Skeleton, Text } from '$uikit';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftCollectionDeployParams, TxRequestBody } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import { maskifyAddress, toLocaleNumber} from '$utils';
+import { toLocaleNumber } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
 import { Modal } from '@tonkeeper/uikit';
+import { Address } from '@tonkeeper/core';
 
 type NFTCollectionDeployModalProps = TxRequestBody<NftCollectionDeployParams>;
 
-export const NFTCollectionDeployModal = ({ params, ...options }: NFTCollectionDeployModalProps) => {
+export const NFTCollectionDeployModal = ({
+  params,
+  ...options
+}: NFTCollectionDeployModalProps) => {
   const meta = useDownloadMetaFromUri<NFTCollectionMeta>(params.collectionContentUri);
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const [isShownDetails, setIsShownDetails] = React.useState(false);
@@ -29,11 +33,11 @@ export const NFTCollectionDeployModal = ({ params, ...options }: NFTCollectionDe
   const operations = useInstance(() => {
     return new NFTOperations(wallet);
   });
-  
+
   const toggleDetails = React.useCallback(() => {
     setIsShownDetails(!isShownDetails);
   }, [isShownDetails]);
-  
+
   React.useEffect(() => {
     operations
       .deployCollection(params)
@@ -41,14 +45,14 @@ export const NFTCollectionDeployModal = ({ params, ...options }: NFTCollectionDe
       .then((fee) => setFee(fee))
       .catch((err) => {
         setFee('0.02');
-        debugLog('[nft estimate fee]:', err)
+        debugLog('[nft estimate fee]:', err);
       });
   }, []);
 
   const handleConfirm = onConfirm(async ({ startLoading }) => {
     const vault = await unlockVault();
     const privateKey = await vault.getTonPrivateKey();
-    
+
     startLoading();
 
     const operation = await operations.deployCollection(params);
@@ -64,12 +68,7 @@ export const NFTCollectionDeployModal = ({ params, ...options }: NFTCollectionDe
         <S.Container>
           <S.Center>
             <S.NFTCollectionPreview>
-              {meta.data?.image && (
-                <S.Image 
-                  uri={meta.data.image} 
-                  resize={512}
-                />
-              )}
+              {meta.data?.image && <S.Image uri={meta.data.image} resize={512} />}
             </S.NFTCollectionPreview>
             <S.Title>{t('nft_deploy_collection_title')}</S.Title>
           </S.Center>
@@ -85,7 +84,7 @@ export const NFTCollectionDeployModal = ({ params, ...options }: NFTCollectionDe
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_royalty_address')}</S.InfoItemLabel>
                 <S.InfoItemValueText>
-                  {maskifyAddress(params.royaltyAddress, 6)}
+                  {Address.toShort(params.royaltyAddress, 6)}
                 </S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
@@ -110,27 +109,31 @@ export const NFTCollectionDeployModal = ({ params, ...options }: NFTCollectionDe
                 <S.DetailItem>
                   <S.DetailItemLabel>NFT collection ID</S.DetailItemLabel>
                   <S.DetailItemValueText>
-                    {maskifyAddress(params.royaltyAddress, 8)}
+                    {Address.toShort(params.royaltyAddress, 8)}
                   </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
               <Highlight onPress={() => copyText(params.collectionContentUri)}>
                 <S.DetailItem>
                   <S.DetailItemLabel>Collection content URI</S.DetailItemLabel>
-                  <S.DetailItemValueText>{params.collectionContentUri}</S.DetailItemValueText>
+                  <S.DetailItemValueText>
+                    {params.collectionContentUri}
+                  </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
               <Highlight onPress={() => copyText(params.nftItemContentBaseUri)}>
                 <S.DetailItem>
                   <S.DetailItemLabel>NFT item content base URI</S.DetailItemLabel>
-                  <S.DetailItemValueText>{params.nftItemContentBaseUri}</S.DetailItemValueText>
+                  <S.DetailItemValueText>
+                    {params.nftItemContentBaseUri}
+                  </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
               <Highlight onPress={() => copyText(params.nftItemCodeHex)}>
                 <S.DetailItem>
                   <S.DetailItemLabel>NFT item code HEX</S.DetailItemLabel>
                   <S.DetailItemValueText>
-                    {maskifyAddress(params.nftItemCodeHex, 8)}
+                    {Address.toShort(params.nftItemCodeHex, 8)}
                   </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
@@ -146,10 +149,7 @@ export const NFTCollectionDeployModal = ({ params, ...options }: NFTCollectionDe
         </S.Container>
       </Modal.ScrollView>
       <Modal.Footer>
-        <NFTOperationFooter
-          onPressConfirm={handleConfirm}
-          ref={footerRef} 
-        />
+        <NFTOperationFooter onPressConfirm={handleConfirm} ref={footerRef} />
       </Modal.Footer>
     </Modal>
   );

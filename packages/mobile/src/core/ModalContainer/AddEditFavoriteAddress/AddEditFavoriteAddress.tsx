@@ -8,12 +8,13 @@ import { useCopyText } from '$hooks/useCopyText';
 import { Alert, Keyboard } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { favoritesActions } from '$store/favorites';
-import { isAndroid, maskifyAddress } from '$utils';
+import { isAndroid } from '$utils';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { t } from '@tonkeeper/shared/i18n';
 import { Modal, View } from '@tonkeeper/uikit';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { push } from '$navigation/imperative';
+import { Address } from '@tonkeeper/core';
 
 const MAX_LENGTH = 24;
 
@@ -104,7 +105,7 @@ const AddEditFavoriteAddressComponent: FC<AddEditFavoriteAddressProps> = (props)
                     label={t('add_edit_favorite.address_label')}
                     onPress={handleCopy}
                   >
-                    <Text>{maskifyAddress(address, 4)}</Text>
+                    <Text>{Address.toShort(address, 4)}</Text>
                   </ListCell>
                 </List>
               ) : (

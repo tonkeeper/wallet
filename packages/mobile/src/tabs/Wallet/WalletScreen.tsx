@@ -17,7 +17,7 @@ import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { maskifyAddress, ns } from '$utils';
+import { ns } from '$utils';
 import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
 import { useIsFocused } from '@react-navigation/native';
@@ -50,6 +50,7 @@ import { Events, SendAnalyticsFrom } from '$store/models';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { openWallet } from '$core/Wallet/Wallet';
 import { trackEvent } from '$utils/stats';
+import { Address } from '@tonkeeper/core';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -146,7 +147,7 @@ export const WalletScreen = memo(() => {
             activeOpacity={0.6}
           >
             <Text color="textSecondary" variant="body2">
-              {maskifyAddress(wallet.address.friendlyAddress)}
+              {Address.toShort(wallet.address.friendlyAddress)}
             </Text>
           </TouchableOpacity>
         )}

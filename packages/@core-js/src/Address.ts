@@ -4,6 +4,7 @@ const ContractVersions = ['v3R1', 'v3R2', 'v4R1', 'v4R2'] as const;
 
 export type AddressFormats = {
   friendly: string;
+  short: string;
   raw: string;
 };
 
@@ -12,9 +13,9 @@ export type AddressesByVersion = {
 };
 
 type FormatOptions = {
-  testOnly: boolean;
-  bounceable: boolean;
-  urlSafe: boolean;
+  testOnly?: boolean;
+  bounceable?: boolean;
+  urlSafe?: boolean;
 };
 
 const defaultOptions: FormatOptions = {
@@ -23,7 +24,7 @@ const defaultOptions: FormatOptions = {
   urlSafe: true,
 };
 
-function maskifyAddress(address: string, symbolsInPart: number = 4) {
+function toShortAddress(address: string, symbolsInPart: number = 4) {
   if (!address) {
     address = '';
   }
@@ -38,36 +39,45 @@ function maskifyAddress(address: string, symbolsInPart: number = 4) {
 function AddressFactory(source: string) {
   const address = new TonWeb.Address(source);
 
-  function toObj({ bounceable, testOnly, urlSafe }: FormatOptions = defaultOptions) {
+  function toAll(options: FormatOptions = defaultOptions): AddressFormats {
+    const { bounceable, testOnly, urlSafe } = Object.assign(defaultOptions, options);
     const friendly = address.toString(true, urlSafe, bounceable, testOnly);
     const raw = address.toString(false, false, bounceable, testOnly);
+    const short = toShortAddress(friendly);
 
-    return { friendly, raw };
+    return { friendly, raw, short };
   }
 
-  function toFriendly({ bounceable, testOnly, urlSafe }: FormatOptions = defaultOptions) {
+  function toFriendly(options: FormatOptions = defaultOptions) {
+    const { bounceable, urlSafe, testOnly } = Object.assign(defaultOptions, options);
     return address.toString(true, urlSafe, bounceable, testOnly);
   }
 
-  function toRaw({ bounceable, testOnly }: FormatOptions = defaultOptions) {
+  function toRaw(options: FormatOptions = defaultOptions) {
+    const { bounceable, testOnly } = Object.assign(defaultOptions, options);
     return address.toString(false, false, bounceable, testOnly);
   }
 
   // toFriendly alias
-  function toString({ bounceable, testOnly, urlSafe }: FormatOptions = defaultOptions) {
+  function toString(options: FormatOptions = defaultOptions) {
+    const { bounceable, testOnly, urlSafe } = Object.assign(defaultOptions, options);
     return address.toString(true, urlSafe, bounceable, testOnly);
   }
 
-  function maskify(symbolsInPart: number = 4) {
+  function toShort(symbolsInPart: number = 4) {
     const friendly = toFriendly();
-    return maskifyAddress(friendly, symbolsInPart);
+    return toShortAddress(friendly, symbolsInPart);
   }
 
-  return { toObj, toFriendly, toRaw, toString, maskify };
+  function toTonWeb() {
+    return address;
+  }
+
+  return { toAll, toFriendly, toRaw, toString, toShort, toTonWeb };
 }
 
 export const Address = Object.assign(AddressFactory, {
-  maskify: maskifyAddress,
+  toShort: toShortAddress,
   isValid(address: string) {
     return TonWeb.Address.isValid(address);
   },
@@ -106,8 +116,9 @@ export const Address = Object.assign(AddressFactory, {
       const address = await wallet.getAddress();
       const friendly = address.toString(true, true, options.bounceable, options.testOnly);
       const raw = address.toString(false, false, options.bounceable, options.testOnly);
+      const short = toShortAddress(friendly);
 
-      addresses[contractVersion] = { friendly, raw };
+      addresses[contractVersion] = { friendly, raw, short };
     }
 
     return addresses;

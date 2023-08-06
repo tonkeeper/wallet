@@ -25,7 +25,7 @@ import { EventsMap } from '$store/events/interface';
 import { differenceInCalendarMonths } from 'date-fns';
 import { EventModel, JettonBalanceModel } from '$store/models';
 import { openJetton, openJettonsList } from '$navigation';
-import { Address, Ton } from '$libs/Ton';
+import { Ton } from '$libs/Ton';
 import { useJettonBalances } from '$hooks/useJettonBalances';
 import { walletActions, walletSelector } from '$store/wallet';
 import { useDispatch, useSelector } from 'react-redux';

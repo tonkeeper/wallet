@@ -3,7 +3,7 @@ import { ActionsData } from './AccountEventsMapper.types';
 import { Address } from '@tonkeeper/core';
 
 export type SenderAddress = {
-  masked: string;
+  short: string;
   friendly: string;
 }
 
@@ -20,8 +20,8 @@ export function findSenderAccount(isReceive: boolean, data: ActionsData['data'])
 
   return {
     address: {
-      masked: '',
       friendly: '',
+      short: '',
     },
     picture: null,
   };
@@ -38,14 +38,14 @@ export function getSenderPicture(senderAccount: AccountAddress) {
 export function getSenderAddress(senderAccount: AccountAddress): SenderAddress {
   if (senderAccount.name) {
     return {
-      masked: senderAccount.name,
+      short: senderAccount.name,
       friendly: senderAccount.name,
     };
   }
 
   const friendly = Address(senderAccount.address).toFriendly();
   return {
-    masked: Address.maskify(friendly),
+    short: Address(friendly).toShort(),
     friendly,
   };
 }

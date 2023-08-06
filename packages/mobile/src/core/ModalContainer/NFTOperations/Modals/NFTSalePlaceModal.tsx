@@ -2,9 +2,9 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 import { useCopyText } from '$hooks/useCopyText';
 import { useInstance } from '$hooks/useInstance';
-import { useWallet} from '$hooks/useWallet';
-import {Highlight, Icon, Separator, Skeleton, Text} from '$uikit';
-import { maskifyAddress, toLocaleNumber} from '$utils';
+import { useWallet } from '$hooks/useWallet';
+import { Highlight, Icon, Separator, Skeleton, Text } from '$uikit';
+import { toLocaleNumber } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftSalePlaceParams, TxRequestBody } from '../TXRequest.types';
@@ -15,6 +15,7 @@ import * as S from '../NFTOperations.styles';
 import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 import { Modal } from '@tonkeeper/uikit';
+import { Address } from '@tonkeeper/core';
 
 type NFTSalePlaceModalProps = TxRequestBody<NftSalePlaceParams>;
 
@@ -40,9 +41,9 @@ export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps
       .salePlace(params)
       .then((operation) => operation.estimateFee())
       .then((fee) => setTxFee(fee))
-      .catch((err) =>  {
+      .catch((err) => {
         setTxFee('0.02');
-        debugLog('[nft estimate fee]:', err)
+        debugLog('[nft estimate fee]:', err);
       });
   }, []);
 
@@ -76,9 +77,7 @@ export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps
 
   const blockchainFee = React.useMemo(() => {
     if (txfee !== '') {
-      return new BigNumber(txfee)
-        .plus(amount)
-        .toString()
+      return new BigNumber(txfee).plus(amount).toString();
     }
 
     return false;
@@ -98,9 +97,7 @@ export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps
 
   const proceeds = React.useMemo(() => {
     if (feeAndRoyalties) {
-      return new BigNumber(fullPrice)
-        .minus(feeAndRoyalties)
-        .toString()
+      return new BigNumber(fullPrice).minus(feeAndRoyalties).toString();
     }
 
     return false;
@@ -144,7 +141,7 @@ export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_marketplace_address')}</S.InfoItemLabel>
                 <S.InfoItemValueText>
-                  {maskifyAddress(params.marketplaceAddress, 6)}
+                  {Address.toShort(params.marketplaceAddress, 6)}
                 </S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
@@ -154,9 +151,7 @@ export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps
                 <S.InfoItemLabel>{t('nft_price')}</S.InfoItemLabel>
                 <S.InfoItemValue>
                   {fullPrice ? (
-                    <Text variant="body1">
-                      {toLocaleNumber(fullPrice)} TON
-                    </Text>
+                    <Text variant="body1">{toLocaleNumber(fullPrice)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}
@@ -167,11 +162,9 @@ export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps
             <Highlight onPress={() => proceeds && copyText(toLocaleNumber(proceeds))}>
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_proceeds')}</S.InfoItemLabel>
-                <S.InfoItemValue>                 
+                <S.InfoItemValue>
                   {proceeds ? (
-                    <Text variant="body1">
-                      {toLocaleNumber(proceeds)} TON
-                    </Text>
+                    <Text variant="body1">{toLocaleNumber(proceeds)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}
@@ -179,14 +172,14 @@ export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps
               </S.InfoItem>
             </Highlight>
             <Separator />
-            <Highlight onPress={() => feeAndRoyalties && copyText(toLocaleNumber(feeAndRoyalties))}>
+            <Highlight
+              onPress={() => feeAndRoyalties && copyText(toLocaleNumber(feeAndRoyalties))}
+            >
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_fee_and_royalties')}</S.InfoItemLabel>
-                <S.InfoItemValue>                 
+                <S.InfoItemValue>
                   {feeAndRoyalties ? (
-                    <Text variant="body1">
-                      {toLocaleNumber(feeAndRoyalties)} TON
-                    </Text>
+                    <Text variant="body1">{toLocaleNumber(feeAndRoyalties)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}
@@ -199,40 +192,46 @@ export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps
               <Highlight onPress={() => copyText(params.nftItemAddress)}>
                 <S.DetailItem>
                   <S.DetailItemLabel>NFT item ID</S.DetailItemLabel>
-                  <S.DetailItemValueText>{maskifyAddress(params.nftItemAddress, 8)}</S.DetailItemValueText>
+                  <S.DetailItemValueText>
+                    {Address.toShort(params.nftItemAddress, 8)}
+                  </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
               <Highlight onPress={() => copyText(toLocaleNumber(marketplaceFee))}>
                 <S.DetailItem>
                   <S.DetailItemLabel>Marketplace fee</S.DetailItemLabel>
-                  <S.DetailItemValueText>{toLocaleNumber(marketplaceFee)} TON</S.DetailItemValueText>
+                  <S.DetailItemValueText>
+                    {toLocaleNumber(marketplaceFee)} TON
+                  </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
               <Highlight onPress={() => copyText(params.royaltyAddress)}>
                 <S.DetailItem>
                   <S.DetailItemLabel>Royalty address</S.DetailItemLabel>
-                  <S.DetailItemValueText>{maskifyAddress(params.royaltyAddress, 8)}</S.DetailItemValueText>
+                  <S.DetailItemValueText>
+                    {Address.toShort(params.royaltyAddress, 8)}
+                  </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
-              <Highlight onPress={() => royaltyAmount && copyText(toLocaleNumber(royaltyAmount))}>
+              <Highlight
+                onPress={() => royaltyAmount && copyText(toLocaleNumber(royaltyAmount))}
+              >
                 <S.DetailItem>
                   <S.DetailItemLabel>Royalty</S.DetailItemLabel>
                   {royaltyAmount ? (
-                    <Text variant="body2">
-                      {toLocaleNumber(royaltyAmount)} TON
-                    </Text>
+                    <Text variant="body2">{toLocaleNumber(royaltyAmount)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}
                 </S.DetailItem>
               </Highlight>
-              <Highlight onPress={() => blockchainFee && copyText(toLocaleNumber(blockchainFee))}>
+              <Highlight
+                onPress={() => blockchainFee && copyText(toLocaleNumber(blockchainFee))}
+              >
                 <S.DetailItem>
                   <S.DetailItemLabel>Blockchain fee</S.DetailItemLabel>
                   {blockchainFee ? (
-                    <Text variant="body2">
-                      {toLocaleNumber(blockchainFee)} TON
-                    </Text>
+                    <Text variant="body2">{toLocaleNumber(blockchainFee)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}
@@ -250,10 +249,7 @@ export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps
         </S.Container>
       </Modal.ScrollView>
       <Modal.Footer>
-        <NFTOperationFooter
-          onPressConfirm={handleConfirm}
-          ref={footerRef} 
-        />
+        <NFTOperationFooter onPressConfirm={handleConfirm} ref={footerRef} />
       </Modal.Footer>
     </Modal>
   );

@@ -1,5 +1,5 @@
 import { walletWalletSelector } from '$store/wallet';
-import { AddressFormats } from '@tonkeeper/core';
+import { Address, AddressFormats } from '@tonkeeper/core';
 import { useSelector } from 'react-redux';
 
 export const useWallet = (): { address: AddressFormats } => {
@@ -8,6 +8,7 @@ export const useWallet = (): { address: AddressFormats } => {
   if (wallet && wallet.address) {
     return {
       address: {
+        short: Address.toShort(wallet.address.friendlyAddress),
         friendly: wallet.address.friendlyAddress,
         raw: wallet.address.rawAddress,
       },
@@ -17,6 +18,7 @@ export const useWallet = (): { address: AddressFormats } => {
   return {
     address: {
       friendly: '',
+      short: '',
       raw: '',
     },
   };

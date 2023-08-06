@@ -4,7 +4,6 @@ import {
   View,
   List,
   SText as Text,
-  Button,
   TonIcon,
   useTheme,
   Icon,
@@ -13,18 +12,12 @@ import {
 import Clipboard from '@react-native-community/clipboard';
 import { memo, useCallback } from 'react';
 import { useTransaction } from '@tonkeeper/core/src/query/useTransaction';
-import { formatter } from '../formatter';
 import {
   EventActionDetailsMapper,
-  EventsActionMapper,
 } from '../mappers/AccountEventsMapper';
-import { Address } from '@tonkeeper/core';
-import { t } from '../i18n';
 import { useNavigation } from '@tonkeeper/router';
 import { config } from '../config';
-import { TouchableHighlight } from 'react-native';
 import { ActionTypeEnum } from '@tonkeeper/core/src/TonAPI';
-import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
 
 type TransactionModalParams = {
   transactionId: string;
@@ -107,7 +100,7 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
             {transaction.sender && (
               <List.Item
                 onPress={copyText(transaction.sender.friendly)}
-                value={transaction.sender.masked}
+                value={transaction.sender.short}
                 label="Sender"
               />
             )}

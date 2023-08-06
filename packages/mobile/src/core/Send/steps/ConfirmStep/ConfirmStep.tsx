@@ -4,7 +4,7 @@ import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { getTokenConfig } from '$shared/dynamicConfig';
 import { Highlight, Icon, Separator, Spacer, Text } from '$uikit';
-import { isIOS, maskifyAddress, parseLocaleNumber } from '$utils';
+import { isIOS, parseLocaleNumber } from '$utils';
 import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
 import { ConfirmStepProps } from './ConfirmStep.interface';
 import * as S from './ConfirmStep.style';
@@ -23,6 +23,7 @@ import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { useStakingStore } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
 import { openInactiveInfo } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
+import { Address } from '@tonkeeper/core';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -273,7 +274,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
                 </S.ItemLabel>
                 <S.ItemContent>
                   <S.ItemValue numberOfLines={1}>
-                    {maskifyAddress(recipient.address, 4)}
+                    {Address.toShort(recipient.address, 4)}
                   </S.ItemValue>
                 </S.ItemContent>
               </S.Item>

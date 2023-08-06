@@ -1,19 +1,8 @@
+import { Address } from '@tonkeeper/core';
 import TonWeb from 'tonweb';
 
-export function maskifyAddress(address: string, symbolsInPart: number = 4) {
-  if (!address) {
-    address = '';
-  }
-
-  const initialPart = address.substring(0, symbolsInPart);
-  const finalPart = address.substring(address.length - symbolsInPart);
-  const ellipsis = '...';
-
-  return initialPart + ellipsis + finalPart;
-}
-
 export function maskifyTonAddress(address: string) {
-  return maskifyAddress(address);
+  return Address.toShort(address);
 }
 
 export const isValidAddress = (str: string) => TonWeb.Address.isValid(str);

@@ -10,7 +10,7 @@ import {
 } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { NavBar, Text } from '$uikit';
-import { isValidAddress, maskifyAddress, parseLocaleNumber } from '$utils';
+import { isValidAddress, parseLocaleNumber } from '$utils';
 import React, {
   FC,
   useCallback,
@@ -40,6 +40,7 @@ import { formatter } from '$utils/formatter';
 import { Events } from '$store/models';
 import { trackEvent } from '$utils/stats';
 import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {
@@ -292,7 +293,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     ? t('send_screen_steps.address.title')
     : t('send_screen_steps.amount.title');
 
-  const shortenedAddress = recipient ? maskifyAddress(recipient.address) : '';
+  const shortenedAddress = recipient ? Address.toShort(recipient.address) : '';
 
   const name = recipient?.domain || recipient?.name || recipientAccountInfo?.name;
 

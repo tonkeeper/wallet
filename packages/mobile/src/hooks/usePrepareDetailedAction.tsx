@@ -7,7 +7,6 @@ import {
   compareAddresses,
   format as formatDate,
   fromNano,
-  maskifyAddress,
   maskifyTonAddress,
 } from '$utils';
 import BigNumber from 'bignumber.js';
@@ -28,13 +27,14 @@ import { useGetTokenPrice, useTokenPrice } from './useTokenPrice';
 import { useEncryptedCommentsStore } from '$store';
 import { shallow } from 'zustand/shallow';
 import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 export function usePrepareDetailedAction(
   rawAction: Action,
   event: EventModel,
 ): ActionBaseProps {
   const { address } = useSelector(walletSelector);
-  
+
   const { subscriptionsInfo } = useSelector(subscriptionsSelector);
   const tokenPrice = useTokenPrice(CryptoCurrencies.Ton);
   const fiatCurrency = useSelector(fiatCurrencySelector);
@@ -243,7 +243,7 @@ export function usePrepareDetailedAction(
       infoRows.push({
         label: t('transaction_hash'),
         value: event.eventId,
-        preparedValue: maskifyAddress(event.eventId, 8),
+        preparedValue: Address.toShort(event.eventId, 8),
       });
     }
 

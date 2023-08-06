@@ -2,17 +2,18 @@ import React from 'react';
 import { useDownloadCollectionMeta } from '../useDownloadCollectionMeta';
 import { useCopyText } from '$hooks/useCopyText';
 import { useInstance } from '$hooks/useInstance';
-import { useWallet} from '$hooks/useWallet';
+import { useWallet } from '$hooks/useWallet';
 import { Highlight, Separator, Skeleton, Text } from '$uikit';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftChangeOwnerParams, TxRequestBody } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import { maskifyAddress, toLocaleNumber} from '$utils';
+import { toLocaleNumber } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
 import { Modal } from '@tonkeeper/uikit';
+import { Address } from '@tonkeeper/core';
 
 type NFTChangeOwnerModalProps = TxRequestBody<NftChangeOwnerParams>;
 
@@ -38,22 +39,22 @@ export const NFTChangeOwnerModal = ({ params, ...options }: NFTChangeOwnerModalP
       .changeOwner(params)
       .then((operation) => operation.estimateFee())
       .then((fee) => setFee(fee))
-      .catch((err) =>  {
+      .catch((err) => {
         setFee('0.02');
-        debugLog('[nft estimate fee]:', err)
+        debugLog('[nft estimate fee]:', err);
       });
   }, []);
 
   const handleConfirm = onConfirm(async ({ startLoading }) => {
     const vault = await unlockVault();
     const privateKey = await vault.getTonPrivateKey();
-    
+
     startLoading();
 
     const operation = await operations.changeOwner(params);
     await operation.send(privateKey);
   });
-  
+
   return (
     <Modal>
       <Modal.Header gradient />
@@ -61,12 +62,7 @@ export const NFTChangeOwnerModal = ({ params, ...options }: NFTChangeOwnerModalP
         <S.Container>
           <S.Center>
             <S.NFTCollectionPreview>
-              {meta.data?.image && (
-                <S.Image 
-                  uri={meta.data.image} 
-                  resize={512}
-                />
-              )}
+              {meta.data?.image && <S.Image uri={meta.data.image} resize={512} />}
             </S.NFTCollectionPreview>
             <S.Caption>{meta.data?.name ?? '...'}</S.Caption>
             <S.Title>{t('nft_change_owner_title')}</S.Title>
@@ -76,7 +72,7 @@ export const NFTChangeOwnerModal = ({ params, ...options }: NFTChangeOwnerModalP
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_new_owner_address')}</S.InfoItemLabel>
                 <S.InfoItemValueText>
-                  {maskifyAddress(params.newOwnerAddress, 6)}
+                  {Address.toShort(params.newOwnerAddress, 6)}
                 </S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
@@ -86,9 +82,7 @@ export const NFTChangeOwnerModal = ({ params, ...options }: NFTChangeOwnerModalP
                 <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
                 <S.InfoItemValue>
                   {!!fee ? (
-                    <Text variant="body1">
-                      {toLocaleNumber(fee)} TON
-                    </Text>
+                    <Text variant="body1">{toLocaleNumber(fee)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}
@@ -101,7 +95,9 @@ export const NFTChangeOwnerModal = ({ params, ...options }: NFTChangeOwnerModalP
               <Highlight onPress={() => copyText(params.nftCollectionAddress)}>
                 <S.DetailItem>
                   <S.DetailItemLabel>NFT collection ID</S.DetailItemLabel>
-                  <S.DetailItemValueText>{maskifyAddress(params.nftCollectionAddress, 8)}</S.DetailItemValueText>
+                  <S.DetailItemValueText>
+                    {Address.toShort(params.nftCollectionAddress, 8)}
+                  </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
             </S.Details>
@@ -116,10 +112,7 @@ export const NFTChangeOwnerModal = ({ params, ...options }: NFTChangeOwnerModalP
         </S.Container>
       </Modal.ScrollView>
       <Modal.Footer>
-        <NFTOperationFooter
-          onPressConfirm={handleConfirm}
-          ref={footerRef} 
-        />
+        <NFTOperationFooter onPressConfirm={handleConfirm} ref={footerRef} />
       </Modal.Footer>
     </Modal>
   );

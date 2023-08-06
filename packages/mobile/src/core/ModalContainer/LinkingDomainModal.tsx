@@ -2,7 +2,7 @@ import { useInstance } from '$hooks/useInstance';
 import { useCopyText } from '$hooks/useCopyText';
 import { t } from '@tonkeeper/shared/i18n';
 import { Highlight, Separator, Skeleton, Text } from '$uikit';
-import { Base64, maskifyAddress, truncateDecimal } from '$utils';
+import { Base64, truncateDecimal } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import React, { useEffect } from 'react';
 import { ActionFooter, useActionFooter } from './NFTOperations/NFTOperationFooter';
@@ -19,6 +19,7 @@ import { Modal } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { openReplaceDomainAddress } from './NFTOperations/ReplaceDomainAddressModal';
+import { Address } from '@tonkeeper/core';
 
 const TonWeb = require('tonweb');
 
@@ -169,7 +170,7 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
                       onPress={handleReplace}
                       activeOpacity={0.6}
                     >
-                      <Text variant="body1">{maskifyAddress(walletAddress)}</Text>
+                      <Text variant="body1">{Address.toShort(walletAddress)}</Text>
                       <Text
                         variant="body2"
                         color={isDisabled ? 'foregroundTertiary' : 'accentPrimary'}

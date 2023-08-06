@@ -11,13 +11,14 @@ import { JettonVerification } from '$store/models';
 import { Button, Icon, Spacer, Text, View, List } from '$uikit';
 import { Steezy } from '$styles';
 import { t } from '@tonkeeper/shared/i18n';
-import { format, maskifyAddress, triggerImpactLight } from '$utils';
+import { format, triggerImpactLight } from '$utils';
 import FastImage from 'react-native-fast-image';
 import { Toast } from '$store';
 import Clipboard from '@react-native-community/clipboard';
-import { Address } from '$libs/Ton';
+
 import { TranslateOptions } from 'i18n-js';
 import { push } from '$navigation/imperative';
+import { Address } from '@tonkeeper/core';
 
 export enum ImageType {
   ROUND = 'round',
@@ -189,10 +190,7 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
             <List.Item
               onPress={handleCopyAddress}
               title={translateWithPrefix('id')}
-              subtitle={maskifyAddress(
-                new Address(props.tokenAddress).toString(true, true, true),
-                6,
-              )}
+              subtitle={Address(props.tokenAddress).toShort(6)}
               value={
                 <View style={styles.copyIconContainer}>
                   <Icon name={'ic-copy-16'} />

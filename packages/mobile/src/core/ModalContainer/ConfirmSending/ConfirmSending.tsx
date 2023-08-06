@@ -15,7 +15,7 @@ import {
 } from '$store/wallet';
 import { formatCryptoCurrency } from '$utils/currency';
 import { getTokenConfig } from '$shared/dynamicConfig';
-import { ns, maskifyAddress } from '$utils';
+import { ns } from '$utils';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { favoritesFavoritesSelector } from '$store/favorites';
 import { goBack, push } from '$navigation/imperative';
@@ -24,6 +24,7 @@ import { openReminderEnableNotificationsModal } from '../ReminderEnableNotificat
 import { openInactiveInfo } from '../InfoAboutInactive/InfoAboutInactive';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { Modal, View } from '@tonkeeper/uikit';
+import { Address } from '@tonkeeper/core';
 
 export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
   const {
@@ -205,7 +206,7 @@ export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
               <>
                 <ListCell label={t('confirm_sending_recipient')}>{domain}</ListCell>
                 <ListCell label={t('confirm_sending_recipient_address')}>
-                  {favoriteName || maskifyAddress(address, 4)}
+                  {favoriteName || Address.toShort(address, 4)}
                 </ListCell>
               </>
             ) : (
@@ -222,7 +223,7 @@ export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
                       : t('confirm_sending_recipient')
                   }
                 >
-                  {maskifyAddress(address, 4)}
+                  {Address.toShort(address, 4)}
                 </ListCell>
               </>
             )}

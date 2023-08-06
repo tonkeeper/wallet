@@ -19,7 +19,6 @@ import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/Sign
 import { isSignRawParams } from '$utils/isSignRawParams';
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import { AppStackRouteNames } from '$navigation/navigationNames';
-import { ModalName } from '$core/ModalContainer/ModalContainer.interface';
 import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { openTimeNotSyncedModal } from '$core/ModalContainer/TimeNotSynced/TimeNotSynced';
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';

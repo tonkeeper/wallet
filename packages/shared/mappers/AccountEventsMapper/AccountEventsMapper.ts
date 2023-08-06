@@ -127,7 +127,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
   try {
     const isReceive = detectReceive(input.walletAddress, input.action.data);
     const senderAccount = findSenderAccount(isReceive, input.action.data);
-    const senderAddress = senderAccount.address.masked;
+    const senderAddress = senderAccount.address.short;
     const arrowIcon = isReceive ? 'ic-tray-arrow-down-28' : 'ic-tray-arrow-up-28';
     const amountPrefix = isReceive ? '+' : '−';
     const sendOrReceiveTitle = isReceive
@@ -180,7 +180,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
         action.nftItem = data.nft;
         action.iconName = 'ic-shopping-bag-28';
         action.operation = t('transactions.nft_purchase');
-        action.subtitle = getSenderAddress(data.seller).masked;
+        action.subtitle = getSenderAddress(data.seller).short;
         action.picture = getSenderPicture(data.seller);
         action.amount = formatter.formatNano(data.amount.value, {
           postfix: data.amount.token_name,
@@ -192,7 +192,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
         const isInitialized = Address.compare(data.address, input.walletAddress);
         action.iconName = isInitialized ? 'ic-donemark-28' : 'ic-gear-28';
-        action.subtitle = Address(data.address).maskify();
+        action.subtitle = Address(data.address).toShort();
         action.operation = isInitialized
           ? t('transactions.wallet_initialized')
           : t('transactions.contract_deploy');
@@ -223,7 +223,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
         action.iconName = 'ic-gear-28';
         action.operation = t('transactions.smartcontract_exec');
-        action.subtitle = Address(data.contract.address).maskify();
+        action.subtitle = Address(data.contract.address).toShort();
         action.amount = formatter.formatNano(data.ton_attached, {
           prefix: amountPrefix,
           postfix: 'TON',
@@ -249,7 +249,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
         action.operation = t('transactions.swap');
         action.subtitle = data.user_wallet.name
           ? data.user_wallet.name
-          : Address(data.user_wallet.address).maskify();
+          : Address(data.user_wallet.address).toShort();
         action.isReceive = true;
         action.amount = formatter.formatNano(data.amount_in, {
           decimals: data.jetton_master_in.decimals,
@@ -294,7 +294,7 @@ type EventActionDetailsMapperInput = {
   action: Action;
 };
 
-let i = 0
+let i = 0;
 
 export function EventActionDetailsMapper(input: EventActionDetailsMapperInput) {
   const action = mergeActionWithData(input.action);
@@ -310,10 +310,6 @@ export function EventActionDetailsMapper(input: EventActionDetailsMapperInput) {
     amount: '−',
   };
 
-
-
-
-
   try {
     const isReceive = detectReceive(input.walletAddress, action.data);
     const senderAccount = findSenderAccount(isReceive, action.data);
@@ -325,45 +321,41 @@ export function EventActionDetailsMapper(input: EventActionDetailsMapperInput) {
     transaction.isReceive = isReceive;
 
     transaction.picture = senderAccount.picture;
-    
+
     const feeLabel = new BigNumber(input.event.extra).isLessThan(0)
-          ? t('transaction_refund')
-          : t('transaction_fee');
+      ? t('transaction_refund')
+      : t('transaction_fee');
 
     const timeLangKey = isReceive ? 'received_time' : 'sent_time';
     transaction.time = t(`transactionDetails.${timeLangKey}`, {
-      time: formatTransactionDetailsTime(date)
+      time: formatTransactionDetailsTime(date),
     });
 
     // const fiat = formatter.format(tokenPrice.fiat * parseFloat(amount), {
     //   currency: fiatCurrency,
     //   currencySeparator: 'wide',
     // });
-    
+
     transaction.fee = formatter.formatNano(input.event.extra, {
       formatDecimals: 9,
       postfix: 'TON',
       absolute: true,
     });
 
-    
     switch (action.type) {
       case ActionTypeEnum.TonTransfer: {
         const data = action.data;
 
-        
         transaction.sender = senderAccount.address;
         transaction.operation = sendOrReceiveTitle;
         transaction.comment = data.comment?.trim();
 
-        
         transaction.title = formatter.formatNano(data.amount, {
           prefix: amountPrefix,
           formatDecimals: 9,
           withoutTruncate: true,
           postfix: 'TON',
         });
-
 
         break;
       }
@@ -410,8 +402,8 @@ export function EventActionDetailsMapper(input: EventActionDetailsMapperInput) {
         const isInitialized = Address.compare(data.address, input.walletAddress);
         const friendlyAddress = Address(data.address).toFriendly();
         transaction.sender = {
-          masked: Address.maskify(friendlyAddress),
-          friendly: friendlyAddress
+          short: Address.toShort(friendlyAddress),
+          friendly: friendlyAddress,
         };
 
         transaction.operation = isInitialized
@@ -443,8 +435,8 @@ export function EventActionDetailsMapper(input: EventActionDetailsMapperInput) {
         transaction.operation = t('transactions.smartcontract_exec');
         const friendlyAddress = Address(data.contract.address).toFriendly();
         transaction.sender = {
-          masked: Address.maskify(friendlyAddress),
-          friendly: friendlyAddress
+          short: Address.toShort(friendlyAddress),
+          friendly: friendlyAddress,
         };
 
         transaction.amount = formatter.formatNano(data.ton_attached, {
@@ -471,7 +463,7 @@ export function EventActionDetailsMapper(input: EventActionDetailsMapperInput) {
         transaction.operation = t('transactions.swap');
         transaction.subtitle = data.user_wallet.name
           ? data.user_wallet.name
-          : Address(data.user_wallet.address).maskify();
+          : Address(data.user_wallet.address).toShort();
         transaction.isReceive = true;
         transaction.amount = formatter.formatNano(data.amount_in, {
           decimals: data.jetton_master_in.decimals,

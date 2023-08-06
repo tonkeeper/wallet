@@ -8,9 +8,9 @@ import _ from 'lodash';
 import React, { memo, useCallback, useMemo } from 'react';
 import * as S from '../../core/NFTs/NFTItem/NFTItem.style';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
-import { Address } from '$libs/Ton';
 import { AnimationDirection, HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { HideableImage } from '$core/HideableAmount/HideableImage';
+import { Address } from '@tonkeeper/core';
 
 interface NFTCardItemProps {
   item: any;
@@ -44,7 +44,7 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
   }, [isDNS, item.dns, item.name, item.address]);
 
   const nftRawAddress = useMemo(
-    () => new Address(item.address).format({ raw: true }),
+    () => Address(item.address).toRaw(),
     [],
   );
 

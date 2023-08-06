@@ -2,9 +2,9 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 import { useCopyText } from '$hooks/useCopyText';
 import { useInstance } from '$hooks/useInstance';
-import { useWallet} from '$hooks/useWallet';
+import { useWallet } from '$hooks/useWallet';
 import { Highlight, Icon, Separator, Skeleton, Text } from '$uikit';
-import { delay, maskifyAddress, retry, toLocaleNumber } from '$utils';
+import { delay, retry, toLocaleNumber } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftSalePlaceGetgemsParams, TxRequestBody } from '../TXRequest.types';
@@ -15,6 +15,7 @@ import * as S from '../NFTOperations.styles';
 import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 import { Modal } from '@tonkeeper/uikit';
+import { Address } from '@tonkeeper/core';
 
 type NFTSalePlaceModalProps = TxRequestBody<NftSalePlaceGetgemsParams>;
 
@@ -178,7 +179,7 @@ export const NFTSalePlaceGetgemsModal = ({
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_marketplace_address')}</S.InfoItemLabel>
                 <S.InfoItemValueText>
-                  {maskifyAddress(params.marketplaceAddress, 6)}
+                  {Address.toShort(params.marketplaceAddress, 6)}
                 </S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
@@ -224,7 +225,7 @@ export const NFTSalePlaceGetgemsModal = ({
                 <S.DetailItem>
                   <S.DetailItemLabel>NFT item ID</S.DetailItemLabel>
                   <S.DetailItemValueText>
-                    {maskifyAddress(params.nftItemAddress, 8)}
+                    {Address.toShort(params.nftItemAddress, 8)}
                   </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
@@ -240,7 +241,7 @@ export const NFTSalePlaceGetgemsModal = ({
                 <S.DetailItem>
                   <S.DetailItemLabel>Royalty address</S.DetailItemLabel>
                   <S.DetailItemValueText>
-                    {maskifyAddress(params.royaltyAddress, 8)}
+                    {Address.toShort(params.royaltyAddress, 8)}
                   </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
