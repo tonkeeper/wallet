@@ -30,7 +30,7 @@
     "@craftzdog/react-native-buffer": "^6.0.5",
     "@expo/react-native-action-sheet": "^4.0.1",
     "@gorhom/bottom-sheet": "^4.4.7",
-    "@rainbow-me/animated-charts": "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#b0872b97e43c694414b37c95c042e44b92e2c0e9",
+    "@rainbow-me/animated-charts": "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#f9c2d554029e6b544f66346278405c8d55739932",
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/clipboard": "^1.5.1",
     "@react-native-community/netinfo": "^9.3.2",
