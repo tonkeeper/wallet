@@ -892,5 +892,13 @@
   },
   "choose_country": {
     "title": "Choose your country"
+  },
+  "programmable_nfts": {
+    "alert": {
+      "title": "Are you sure you want to open an external link?",
+        "description": "Visit this external link only if you trust the author of the collection.\n\n{{uri}}",
+        "open": "Open anyway",
+        "cancel": "Cancel"
+    }
   }
 }

@@ -266,7 +266,11 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
                 {t('nft_open_in_marketplace')}
               </Button>
             ) : null}
-            <ProgrammableButtons buttons={nft.metadata.buttons} />
+            <ProgrammableButtons
+              nftAddress={nft.address}
+              isApproved={nft.isApproved}
+              buttons={nft.metadata.buttons}
+            />
           </S.ButtonWrap>
           {!hiddenAmounts && <Properties properties={nft.attributes} />}
           <Details
