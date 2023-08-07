@@ -400,8 +400,8 @@
   },
 
   "transactionDetails": {
-    "received_time": "Received on %{time}",
-    "sent_time": "Sent on %{time}"
+    "received_time": "Получено  %{time}",
+    "sent_time": "Отправлено %{time}"
   },
 
   "browser": {

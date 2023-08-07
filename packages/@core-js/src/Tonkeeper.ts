@@ -1,5 +1,8 @@
 import { Wallet } from './Wallet';
 import { Vault } from './Vault';
+import { TransactionsManager } from './managers/TransactionsManager';
+import { QueryClient } from 'react-query';
+import { TonAPI } from './TonAPI';
 
 interface IStorage {
   setItem(key: string, value: string): Promise<any>;
@@ -15,6 +18,8 @@ class PermissionsManager {
 type TonkeeperOptions = {
   storage: IStorage;
   vault: Vault;
+  queryClient: QueryClient;
+  tonapi: TonAPI;
 };
 
 type SecuritySettings = {
@@ -34,14 +39,27 @@ export class Tonkeeper {
     locked: false,
   };
 
+  private queryClient: QueryClient;
   private storage: IStorage;
   private vault: Vault;
+  private tonapi: TonAPI;
+
+  public transactions: TransactionsManager;
 
   constructor(options: TonkeeperOptions) {
-    this.vault = options.vault;
     this.wallet = new Wallet(options.vault);
     this.permissions = new PermissionsManager();
+    
+    this.queryClient = options.queryClient;
     this.storage = options.storage;
+    this.tonapi = options.tonapi;
+    this.vault = options.vault;
+
+    this.transactions = new TransactionsManager(
+      this.wallet.address.raw,
+      this.queryClient,
+      this.tonapi,
+    );
   }
 
   public async init() {

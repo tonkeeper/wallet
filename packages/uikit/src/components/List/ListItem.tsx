@@ -47,7 +47,7 @@ export const ListItem = memo<ListItemProps>((props) => {
     subtitleNumberOfLines = 1,
     leftContentStyle,
     gestureHandler,
-    rightContent
+    rightContent,
   } = props;
   const router = useRouter();
   const theme = useTheme();
@@ -97,7 +97,33 @@ export const ListItem = memo<ListItemProps>((props) => {
         <View style={styles.lines}>
           <View style={styles.topLine}>
             <View style={styles.titleContainer}>
-              <View style={styles.titleWithLable}>
+              {props.title ? (
+                isString(props.title) ? (
+                  <Text
+                    style={styles.titleText}
+                    ellipsizeMode="tail"
+                    numberOfLines={1}
+                    type="label1"
+                  >
+                    {props.title}
+                  </Text>
+                ) : (
+                  props.title
+                )
+              ) : isString(props.label) ? (
+                <Text
+                  style={styles.labelText.static}
+                  color="textSecondary"
+                  numberOfLines={1}
+                  type="body1"
+                >
+                  {props.label}
+                </Text>
+              ) : (
+                props.label
+              )}
+
+              {/* <View style={styles.titleWithLable}>
                 {isString(props.title) ? (
                   <Text
                     style={styles.titleText}
@@ -122,7 +148,7 @@ export const ListItem = memo<ListItemProps>((props) => {
                 ) : (
                   props.label
                 )}
-              </View>
+              </View> */}
             </View>
             {isString(props.value) ? (
               <Text type="label1" style={props.valueStyle}>
@@ -154,7 +180,7 @@ export const ListItem = memo<ListItemProps>((props) => {
               props.subvalue
             )}
           </View>
-          
+
           {props.content}
         </View>
         {props.chevron && <Icon name="ic-chevron-right-16" color="iconTertiary" />}
@@ -217,7 +243,7 @@ const styles = Steezy.create(({ colors }) => ({
     flexShrink: 1,
   },
   labelText: {
-    marginLeft: 4,
+    // marginLeft: 4,
   },
   subvalueText: {
     color: colors.textSecondary,

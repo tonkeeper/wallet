@@ -19,6 +19,7 @@ import { SText } from '@tonkeeper/uikit/src/components/Text';
 import FastImage from 'react-native-fast-image';
 import { t } from '../../i18n';
 import { useNavigation } from '@tonkeeper/router';
+import { openTransactionDetails } from '../../modals/TransactionModal';
 
 interface TransactionItemProps {
   item: MappedEventAction;
@@ -61,7 +62,8 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
 
   const handlePress = useCallback(() => {
     if (!isSimplePreview) {
-      router.navigate('transaction', { transactionId: item.id });
+      openTransactionDetails(item.id);
+      // router.navigate('transaction', { transactionId: item.id });
     }
   }, [isSimplePreview, item]);
 

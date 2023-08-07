@@ -12,7 +12,7 @@ import { useMemo } from 'react';
 import { accentSelector } from '$store/main';
 import { ToastComponent } from '$uikit/Toast/new/ToastComponent';
 import { View } from 'react-native';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClientProvider } from 'react-query';
 import { PortalDestination } from '@alexzunik/rn-native-portals-reborn';
 import { isAndroid } from '$utils';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
@@ -23,6 +23,7 @@ import { TonAPIProvider, WalletProvider } from '@tonkeeper/core';
 import { tonapi } from '@tonkeeper/shared/tonapi';
 
 import { MobilePasscodeScreen } from '@tonkeeper/shared/screens/MobilePasscodeScreen';
+import { queryClient } from '@tonkeeper/shared/queryClient';
 import { tonkeeper } from '@tonkeeper/shared/tonkeeper';
 
 const TonThemeProvider = ({ children }) => {
@@ -44,8 +45,6 @@ const TonThemeProvider = ({ children }) => {
     </View>
   );
 };
-
-const queryClient = new QueryClient();
 
 export function App() {
   const [loaded, setLoaded] = useState(false);

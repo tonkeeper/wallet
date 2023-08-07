@@ -238,9 +238,8 @@ export const BalancesList = memo<BalancesListProps>(
           type: ContentType.Token,
           onPress: () => openJetton(item.address.rawAddress),
           picture: item.iconUrl,
-          title: item.name,
+          title: item.symbol,
           value: item.quantity.formatted,
-          label: item.symbol,
           subvalue: item.rate.total,
           rate: item.rate.price
             ? {

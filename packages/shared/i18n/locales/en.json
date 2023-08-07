@@ -391,6 +391,11 @@
     "failed": "Failed"
   },
 
+  "transactionDetails": {
+    "received_time": "Received on %{time}",
+    "sent_time": "Sent on %{time}"
+  },
+
   "browser": {
     "title": "Browser",
     "search_label": "Search or enter address",

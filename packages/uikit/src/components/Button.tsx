@@ -12,6 +12,7 @@ import { Theme, useTheme } from '../styles';
 import { Loader } from './Loader';
 import { Text } from './Text';
 import { ns } from '../utils';
+import { isString } from '../utils/strings';
 
 export type ButtonColors = 'primary' | 'secondary' | 'tertiary';
 export type ButtonSizes = 'large' | 'medium' | 'small';
@@ -19,7 +20,8 @@ export type ButtonSizes = 'large' | 'medium' | 'small';
 export interface ButtonProps {
   size?: ButtonSizes;
   color?: ButtonColors;
-  title?: string | ReactNode;
+  title?: string;
+  children?: React.ReactNode;
   onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
@@ -42,6 +44,7 @@ export const Button = memo<ButtonProps>((props) => {
     navigate,
     stretch,
     indentBottom,
+    children,
     indentTop,
     indent,
     style,
@@ -90,6 +93,8 @@ export const Button = memo<ButtonProps>((props) => {
       <Pressable disabled={disabled || loading} onPress={handlePress} style={buttonStyle}>
         {loading ? (
           <Loader size="medium" color="iconPrimary" />
+        ) : !!children ? (
+          <View style={styles.content}>{children}</View>
         ) : (
           <Text numberOfLines={1} ellipsizeMode="tail" style={titleStyle} type={textType}>
             {title}
@@ -137,6 +142,11 @@ const styles = StyleSheet.create({
   },
   indentBottom: {
     marginBottom: ns(16),
+  },
+  content: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

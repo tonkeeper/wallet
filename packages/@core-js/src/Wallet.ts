@@ -36,6 +36,9 @@ type WalletInfo = {
 
 export class Wallet {
   public identity: WalletIdentity | null = null;
+  public address = {
+    raw: '',
+  }
 
   // public current = null;
 
