@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import * as S from './ImageWithTitle.style';
 import { ImageWithTitleProps } from '$core/NFT/ImageWithTitle/ImageWithTitle.interface';
 import { Badge, Icon, Separator, ShowMore, Spacer, Text, View } from '$uikit';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { isIOS, ns } from '$utils';
 import Clipboard from '@react-native-community/clipboard';
 import { Toast } from '$store';
@@ -23,7 +23,6 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
   bottom,
   copyableTitle,
 }) => {
-  const t = useTranslator();
   const [mediaHeight, setMediaHeight] = React.useState(358);
 
   const handleMediaLayout = React.useCallback(

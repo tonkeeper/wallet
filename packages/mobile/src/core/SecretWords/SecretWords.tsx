@@ -8,12 +8,12 @@ import {Button, NavBar, NavBarHelper, Text} from '$uikit';
 import { ns } from '$utils';
 import { walletSelector } from '$store/wallet';
 import * as S from './SecretWords.style';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { openCheckSecretWords } from '$navigation';
 import {WordsItemNumberWrapper} from "./SecretWords.style";
 
 export const SecretWords: FC = () => {
-  const t = useTranslator();
+  
   const { generatedVault } = useSelector(walletSelector);
   const { bottom: bottomInset } = useSafeAreaInsets();
 

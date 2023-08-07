@@ -8,7 +8,7 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { ns } from '$utils';
 import { LayoutChangeEvent, LayoutRectangle, StyleProp, ViewStyle } from 'react-native';
 import { useTabCtx } from './TabsContainer';

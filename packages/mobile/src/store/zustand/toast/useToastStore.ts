@@ -1,4 +1,4 @@
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { Haptics } from '$utils';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';

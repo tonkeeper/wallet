@@ -23,7 +23,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import { PinCodeProps, PinCodeRef, PointProps } from './PinCode.interface';
 import * as S from './PinCode.style';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { triggerNotificationError, triggerNotificationSuccess } from '$utils';
 
 const Point: FC<PointProps> = ({ isActive, isError, isSuccess, index }) => {

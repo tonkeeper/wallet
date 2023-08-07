@@ -1,4 +1,4 @@
-import { useTheme, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { Icon } from '$uikit';
 import { isIOS, isValidUrl } from '$utils';
 import React, { FC, memo, useCallback, useRef } from 'react';
@@ -8,6 +8,7 @@ import {
   TextInputSubmitEditingEventData,
 } from 'react-native';
 import * as S from './SearchBar.style';
+import { t } from '@tonkeeper/shared/i18n';
 
 interface Props {
   query: string;
@@ -20,7 +21,6 @@ const SearchBarComponent: FC<Props> = (props) => {
 
   const textInputRef = useRef<TextInput>(null);
 
-  const t = useTranslator();
   const theme = useTheme();
 
   const isUrl = isValidUrl(query);

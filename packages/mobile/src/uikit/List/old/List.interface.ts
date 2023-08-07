@@ -9,4 +9,5 @@ export interface ListCellProps {
   label: string;
   onPress?: () => void;
   align?: 'left' | 'right';
+  children?: React.ReactNode;
 }

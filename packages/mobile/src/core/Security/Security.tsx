@@ -10,14 +10,14 @@ import * as S from './Security.style';
 import {NavBar, ScrollHandler, Text} from '$uikit';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { walletActions, walletSelector } from '$store/wallet';
-import { useTranslator } from '$hooks';
-import { openChangePin, openRequireWalletModal, openResetPin } from '$navigation';
+import { openChangePin, openResetPin } from '$navigation';
 import { detectBiometryType, ns, platform, triggerImpactLight } from '$utils';
 import { MainDB } from '$database';
 import { Toast } from '$store';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const Security: FC = () => {
-  const t = useTranslator();
   const dispatch = useDispatch();
   const tabBarHeight = useBottomTabBarHeight();
   const { wallet } = useSelector(walletSelector);

@@ -4,7 +4,8 @@ import { NFTModel } from '$store/models';
 import { useSelector } from 'react-redux';
 import { nftsSelector } from '$store/nfts';
 import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
-import { Address } from '$libs/Ton';
+import { Address } from '@tonkeeper/core';
+
 
 export interface IBalances {
   pending: NFTModel[];
@@ -22,7 +23,7 @@ export function useApprovedNfts() {
     };
     Object.values(myNfts).forEach((item) => {
       const collectionAddress = item?.collection?.address;
-      const nftAddress = new Address(item.address).toString(false);
+      const nftAddress = Address(item.address).toRaw();
 
       // get approval status using collection address if it exists, otherwise use nft address
       const approvalStatus =

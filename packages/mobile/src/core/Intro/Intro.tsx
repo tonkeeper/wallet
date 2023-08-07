@@ -4,13 +4,13 @@ import { useDispatch } from 'react-redux';
 import * as S from './Intro.style';
 import { BottomButtonWrap, BottomButtonWrapHelper } from '$shared/components';
 import {Button, Icon, Text} from '$uikit';
-import { useTheme, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { mainActions } from '$store/main';
 import { ns } from '$utils';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const Intro: FC = () => {
   const theme = useTheme();
-  const t = useTranslator();
   const dispatch = useDispatch();
 
   const handleContinue = useCallback(() => {

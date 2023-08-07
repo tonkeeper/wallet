@@ -9,12 +9,15 @@ import { Icon, Loader, NavBar } from '$uikit';
 import * as S from './BuyFiat.style';
 import { mainSelector } from '$store/main';
 import { walletAddressSelector } from '$store/wallet';
-import { useExchangeMethodInfo, useTheme } from '$hooks';
-import { goBack } from '$navigation';
+import { useExchangeMethodInfo } from '$hooks/useExchangeMethodInfo';
+import { useTheme } from '$hooks/useTheme';
+
 import { getServerConfig } from '$shared/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { deviceWidth, isAndroid, trackEvent } from '$utils';
+import { deviceWidth, isAndroid } from '$utils';
 import { useDeeplinking } from '$libs/deeplinking';
+import { goBack } from '$navigation/imperative';
+import { trackEvent } from '$utils/stats';
 
 export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
   const currency = route.params.currency;

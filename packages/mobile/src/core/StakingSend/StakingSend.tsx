@@ -1,7 +1,10 @@
 import { NFTOperations } from '$core/ModalContainer/NFTOperations/NFTOperations';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { SendAmount } from '$core/Send/Send.interface';
-import { useFiatValue, useInstance, usePoolInfo, useTranslator, useWallet } from '$hooks';
+import { useFiatValue } from '$hooks/useFiatValue';
+import { useInstance } from '$hooks/useInstance';
+import { usePoolInfo } from '$hooks/usePoolInfo';
+import { useWallet } from '$hooks/useWallet';
 import { Ton } from '$libs/Ton';
 import { AppStackRouteNames } from '$navigation';
 import { AppStackParamList } from '$navigation/AppStack';
@@ -18,11 +21,11 @@ import BigNumber from 'bignumber.js';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { AccountEvent } from 'tonapi-sdk-js';
+import { AccountEvent } from '@tonkeeper/core/src/legacy';
 import { shallow } from 'zustand/shallow';
 import { AmountStep, ConfirmStep } from './steps';
 import { StakingSendSteps, StakingTransactionType } from './types';
-import { getStakeSignRawMessage, getWithdrawalFee } from './utils';
+import { getStakeSignRawMessage, getWithdrawalAlertFee, getWithdrawalFee } from './utils';
 import { formatter } from '$utils/formatter';
 import {
   checkIsInsufficient,
@@ -30,6 +33,7 @@ import {
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { Alert } from 'react-native';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
+import { t } from '@tonkeeper/shared/i18n';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
@@ -37,7 +41,7 @@ interface Props {
 
 const getTitle = (
   transactionType: StakingTransactionType,
-  t: ReturnType<typeof useTranslator>,
+  t: any
 ) => {
   switch (transactionType) {
     case StakingTransactionType.WITHDRAWAL:
@@ -87,7 +91,7 @@ export const StakingSend: FC<Props> = (props) => {
   const pendingDeposit = Ton.fromNano(poolStakingInfo?.pendingDeposit ?? '0');
   const readyWithdraw = Ton.fromNano(poolStakingInfo?.readyWithdraw ?? '0');
 
-  const t = useTranslator();
+  
 
   const stepViewRef = useRef<StepViewRef>(null);
 
@@ -258,15 +262,19 @@ export const StakingSend: FC<Props> = (props) => {
       }
 
       if (checkResult.balance !== null) {
+        const withdrawalAlertFee = getWithdrawalAlertFee(pool);
+
         const isEnoughToWithdraw = new BigNumber(checkResult.balance)
           .minus(new BigNumber(totalAmount))
           .isGreaterThanOrEqualTo(Ton.toNano(1));
 
-        if (!isEnoughToWithdraw) {
+        if (!isEnoughToWithdraw && isDeposit) {
           const shouldContinue = await new Promise((res) =>
             Alert.alert(
               t('staking.withdrawal_fee_warning.title'),
-              t('staking.withdrawal_fee_warning.message'),
+              t('staking.withdrawal_fee_warning.message', {
+                amount: formatter.format(Ton.fromNano(withdrawalAlertFee)),
+              }),
               [
                 {
                   text: t('staking.withdrawal_fee_warning.continue'),
@@ -297,7 +305,7 @@ export const StakingSend: FC<Props> = (props) => {
     } finally {
       setSending(false);
     }
-  }, [accountEvent, address.ton, t, unlockVault]);
+  }, [accountEvent, address.ton, isDeposit, pool, t, unlockVault]);
 
   useEffect(() => {
     if (isWithdrawalConfrim) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { DevComponentList } from "$core/DevMenu/DevComponents/DevComponentsList";
-import { useTheme } from "$hooks";
+import { useTheme } from "$hooks/useTheme";
 import { DevComponents } from "$navigation/navigationNames";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DevText } from '$core/DevMenu/DevComponents/DevText';

@@ -3,18 +3,20 @@ import { useDispatch } from 'react-redux';
 import LottieView from 'lottie-react-native';
 
 import * as S from './RequireWallet.style';
-import { BottomSheet, Button, Text } from '$uikit';
-import { useTranslator } from '$hooks';
-import { ns } from '$utils';
-import { openCreateWallet, openImportWallet } from '$navigation';
+import { Text, Button, Modal, View } from '@tonkeeper/uikit';
+
+import { openImportWallet } from '$navigation/helper';
 import { walletActions } from '$store/wallet';
-import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
+import { SheetActions, useNavigation } from '@tonkeeper/router';
+import { t } from '@tonkeeper/shared/i18n';
+import { openCreateWallet } from '$core/CreateWallet/CreateWallet';
+import { push } from '$navigation/imperative';
 
 export const RequireWallet: FC = () => {
-  const t = useTranslator();
-  const bottomSheetRef = useRef<BottomSheetRef>(null);
   const iconRef = useRef<LottieView>(null);
+  const nav = useNavigation();
   const dispatch = useDispatch();
+  const destination = useRef<string | null>(null);
 
   useEffect(() => {
     dispatch(walletActions.clearGeneratedVault());
@@ -26,47 +28,67 @@ export const RequireWallet: FC = () => {
     return () => clearTimeout(timer);
   }, [dispatch]);
 
-  const handleCreate = useCallback(() => {
-    bottomSheetRef.current?.close(() => {
+  const handleClose = useCallback(() => {
+    if (destination.current === 'Create') {
       openCreateWallet();
-    });
-  }, []);
-
-  const handleRestore = useCallback(() => {
-    bottomSheetRef.current?.close(() => {
+    } else if (destination.current === 'Import') {
       openImportWallet();
-    });
+    }
   }, []);
 
   return (
-    <BottomSheet ref={bottomSheetRef} skipHeader>
-      <S.Wrap>
-        <S.LottieIcon
-          ref={iconRef}
-          source={require('$assets/lottie/logo.json')}
-          loop={false}
-          autoPlay={false}
-          autoSize={false}
-        />
-        <S.TitleWrapper>
-          <Text variant="h2" textAlign="center">
-            {t('require_create_wallet_modal_title')}
-          </Text>
-        </S.TitleWrapper>
-        <S.CaptionWrapper>
-          <Text color="foregroundSecondary" variant="body1" textAlign="center">
-            {t('require_create_wallet_modal_caption')}
-          </Text>
-        </S.CaptionWrapper>
-      </S.Wrap>
-      <S.Buttons>
-        <Button onPress={handleCreate}>
-          {t('require_create_wallet_modal_create_new')}
-        </Button>
-        <Button mode="secondary" style={{ marginTop: ns(16) }} onPress={handleRestore}>
-          {t('require_create_wallet_modal_import')}
-        </Button>
-      </S.Buttons>
-    </BottomSheet>
+    <Modal onClose={handleClose}>
+      <Modal.Header />
+      <Modal.Content safeArea>
+        <View style={{ marginBottom: 16 }}>
+          <S.Wrap>
+            <S.LottieIcon
+              ref={iconRef}
+              source={require('$assets/lottie/logo.json')}
+              loop={false}
+              autoPlay={false}
+              autoSize={false}
+            />
+            <S.TitleWrapper>
+              <Text type="h2" textAlign="center">
+                {t('require_create_wallet_modal_title')}
+              </Text>
+            </S.TitleWrapper>
+            <S.CaptionWrapper>
+              <Text color="textSecondary" type="body1" textAlign="center">
+                {t('require_create_wallet_modal_caption')}
+              </Text>
+            </S.CaptionWrapper>
+          </S.Wrap>
+          <S.Buttons>
+            <Button
+              onPress={() => {
+                destination.current = 'Create';
+                nav.goBack();
+              }}
+              title={t('require_create_wallet_modal_create_new')}
+            />
+            <Button
+              color="secondary"
+              style={{ marginTop: 16 }}
+              onPress={() => {
+                destination.current = 'Import';
+                nav.goBack();
+              }}
+              title={t('require_create_wallet_modal_import')}
+            />
+          </S.Buttons>
+        </View>
+      </Modal.Content>
+    </Modal>
   );
 };
+
+export function openRequireWalletModal() {
+  push('SheetsProvider', {
+    $$action: SheetActions.ADD,
+    component: RequireWallet,
+    params: {},
+    path: 'RequireWallet',
+  });
+}

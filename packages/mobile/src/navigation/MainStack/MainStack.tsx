@@ -2,21 +2,11 @@ import React, { FC } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { MainStackParamList } from './MainStack.interface';
-import { MainStackRouteNames } from '$navigation';
+import { AppStackRouteNames, MainStackRouteNames } from '$navigation';
 import { TabStack } from './TabStack/TabStack';
-import {
-  ImportWallet,
-  BackupWords,
-  Subscriptions,
-  Wallet,
-  CreatePin,
-  SetupWalletDone,
-  SetupBiometry,
-  Staking,
-  StakingPools,
-  StakingPoolDetails,
-} from '$core';
-import { useStaking, useTheme } from '$hooks';
+
+import { useStaking } from '$hooks/useStaking';
+import { useTheme } from '$hooks/useTheme';
 import { DevStack } from '../DevStack/DevStack';
 import { useAttachScreen } from '../AttachScreen';
 import { SetupNotifications } from '$core/SetupNotifications/SetupNotifications';
@@ -26,6 +16,29 @@ import { DeleteAccountDone } from '$core/DeleteAccountDone/DeleteAccountDone';
 import { EditConfig } from '$core/EditConfig/EditConfig';
 import { useRemoteBridge } from '$tonconnect';
 import { ManageTokens } from '$core/ManageTokens/ManageTokens';
+import { Wallet } from '$core/Wallet/Wallet';
+import { Staking } from '$core/Staking/Staking';
+import { StakingPools } from '$core/StakingPools/StakingPools';
+import { StakingPoolDetails } from '$core/StakingPoolDetails/StakingPoolDetails';
+import { BackupWords } from '$core/BackupWords/BackupWords';
+import { ImportWallet } from '$core/ImportWallet/ImportWallet';
+import { Subscriptions } from '$core/Subscriptions/Subscriptions';
+import { CreatePin } from '$core/CreatePin/CreatePin';
+import { SetupBiometry } from '$core/SetupBiometry/SetupBiometry';
+import { SetupWalletDone } from '$core/SetupWalletDone/SetupWalletDone';
+import { useSelector } from 'react-redux';
+import { mainSelector } from '$store/main';
+import { walletWalletSelector } from '$store/wallet';
+import { useNotificationsResolver } from '$hooks/useNotificationsResolver';
+import { AccessConfirmation, Intro } from '$core';
+import { ModalStack } from '$navigation/ModalStack';
+import { withModalStack } from '@tonkeeper/router';
+
+import { ImportWatchWalletScreen } from '@tonkeeper/shared/screens/setup/ImportWatchWalletScreen';
+import { ImportWalletScreen } from '@tonkeeper/shared/screens/setup/ImportWalletScreen';
+import { CreateWalletScreen } from '@tonkeeper/shared/screens/setup/CreateWalletScreen';
+import { StartScreen } from '@tonkeeper/shared/screens/StartScreen';
+import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -33,12 +46,39 @@ export const MainStack: FC = () => {
   const attachedScreen = useAttachScreen();
   const theme = useTheme();
 
+  const { isIntroShown, isUnlocked } = useSelector(mainSelector);
+  const wallet = useSelector(walletWalletSelector);
+  useNotificationsResolver();
+
   useRemoteBridge();
   useStaking();
 
   const initialRouteName = !attachedScreen.pathname
     ? MainStackRouteNames.Tabs
     : MainStackRouteNames.DevStack;
+
+  function renderRoot() {
+    if (isIntroShown) {
+      return (
+        <Stack.Screen
+          name={AppStackRouteNames.Intro}
+          component={Intro}
+          options={{
+            contentStyle: { backgroundColor: theme.colors.backgroundPrimary },
+          }}
+        />
+      );
+    } else if (!isUnlocked && wallet && !attachedScreen.pathname) {
+      return (
+        <Stack.Screen
+          name={AppStackRouteNames.MainAccessConfirmation}
+          component={AccessConfirmation}
+        />
+      );
+    } else {
+      return <Stack.Screen name={MainStackRouteNames.Tabs} component={TabStack} />;
+    }
+  }
 
   return (
     <Stack.Navigator
@@ -52,7 +92,9 @@ export const MainStack: FC = () => {
         fullScreenGestureEnabled: true,
       }}
     >
-      <Stack.Screen name={MainStackRouteNames.Tabs} component={TabStack} />
+
+
+      {renderRoot()}
       <Stack.Screen name={MainStackRouteNames.Wallet} component={Wallet} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />
       <Stack.Screen name={MainStackRouteNames.StakingPools} component={StakingPools} />
@@ -94,3 +136,8 @@ export const MainStack: FC = () => {
     </Stack.Navigator>
   );
 };
+
+export const AppStack = withModalStack({
+  RootStack: MainStack,
+  ModalStack: ModalStack,
+});

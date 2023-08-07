@@ -1,8 +1,8 @@
 import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Configuration, JettonApi } from 'tonapi-sdk-js';
+import { Configuration, AccountsApi } from '@tonkeeper/core/src/legacy';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { IJettonEventsStore } from './types';
 
 const initialState: Omit<IJettonEventsStore, 'actions'> = {
@@ -29,7 +29,7 @@ export const useJettonEventsStore = create(
               },
             },
           }));
-          const jettonApi = new JettonApi(
+          const accountsApi = new AccountsApi(
             new Configuration({
               basePath: getServerConfig('tonapiIOEndpoint'),
               headers: {
@@ -37,9 +37,9 @@ export const useJettonEventsStore = create(
               },
             }),
           );
-          const { events } = await jettonApi.getJettonHistory({
-            account: address,
-            jettonMaster,
+          const { events } = await accountsApi.getJettonsHistoryByID({
+            accountId: address,
+            jettonId: jettonMaster,
             limit: 1000,
           });
           if (!events) {
@@ -88,8 +88,8 @@ export const useJettonEventsStore = create(
       },
     }),
     {
-      name: 'jetton-events',
-      getStorage: () => AsyncStorage,
+      name: 'jetton-events1',
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ jettons }) => ({ jettons } as IJettonEventsStore),
     },
   ),

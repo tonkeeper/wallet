@@ -2,7 +2,8 @@ import React, { FC, isValidElement, useMemo } from 'react';
 
 import * as S from './List.style';
 import { ListCellProps, ListProps } from './List.interface';
-import { Separator, View } from '$uikit';
+import { Separator } from '../../Separator/Separator';
+import { View } from '../../StyledNativeComponents';
 
 export const ListCell: FC<ListCellProps> = ({
   label,

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { IMethodsToBuyStore } from './types';
 import { getCountry } from 'react-native-localize';
 import axios from 'axios';
@@ -47,7 +47,7 @@ export const useMethodsToBuyStore = create(
     }),
     {
       name: 'fiat-methods',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ selectedCountry, categories, defaultLayout, layoutByCountry }) =>
         ({
           selectedCountry,

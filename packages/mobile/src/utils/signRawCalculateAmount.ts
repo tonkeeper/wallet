@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
-import { compareAddresses } from './address';
-import { Action, ActionTypeEnum } from 'tonapi-sdk-js';
+import { Action, ActionTypeEnum } from '@tonkeeper/core/src/legacy';
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
+import { Address } from '@tonkeeper/core';
 
 export const calculateActionsTotalAmount = (address: string, actions: Action[]) => {
   if (!actions.length) {
@@ -10,7 +10,7 @@ export const calculateActionsTotalAmount = (address: string, actions: Action[]) 
   return actions.reduce((acc, action) => {
     if (
       action[ActionTypeEnum.TonTransfer] &&
-      compareAddresses(address, action[ActionTypeEnum.TonTransfer].sender.address)
+      Address.compare(address, action[ActionTypeEnum.TonTransfer].sender.address)
     ) {
       return new BigNumber(acc)
         .plus(new BigNumber(action[ActionTypeEnum.TonTransfer].amount))

@@ -1,6 +1,7 @@
 import { Ton } from '$libs/Ton';
 import { useStakingStore } from '$store';
 import { jettonsBalancesSelector } from '$store/jettons';
+import { Address } from '@tonkeeper/core';
 import { useSelector } from 'react-redux';
 import { shallow } from 'zustand/shallow';
 
@@ -16,7 +17,7 @@ export const useStakingStatuses = () => {
             !!item.info ||
             !!jettonBalances.find(
               (balance) =>
-                Ton.formatAddress(balance.jettonAddress, { raw: true }) ===
+                Address(balance.jettonAddress).toRaw() ===
                 item.pool.liquidJettonMaster,
             ),
         ),

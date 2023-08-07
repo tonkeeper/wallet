@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import messaging from '@react-native-firebase/messaging';
-import { useNavigation } from './useNavigation';
+import { useNavigation } from '@tonkeeper/router';
 import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { useDeeplinking } from '$libs/deeplinking';
@@ -8,7 +8,7 @@ import { getToken } from '$utils/messaging';
 import { openDAppBrowser } from '$navigation';
 import { getDomainFromURL } from '$utils';
 import { Alert } from 'react-native';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { useNotificationsStore } from '$store';
 
 export const useNotificationsResolver = () => {

@@ -5,12 +5,11 @@ import * as CreateWalletStyle from '../CreateWallet/CreateWallet.style';
 import {NavBar, NavBarHelper, Text} from '$uikit';
 import { ns } from '$utils';
 import * as S from './BackupWords.style';
-import { useTranslator } from '$hooks';
 import { BackupWordsProps } from './BackupWords.interface';
 import {WordsItemNumberWrapper} from "./BackupWords.style";
+import { t } from '@tonkeeper/shared/i18n';
 
 export const BackupWords: FC<BackupWordsProps> = ({ route }) => {
-  const t = useTranslator();
 
   const mnemonic = route.params.mnemonic;
 

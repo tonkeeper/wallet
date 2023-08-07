@@ -1,24 +1,20 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { t } from '$translation';
-import { Modal } from '$libs/navigation';
-import { openExploreTab, push } from '$navigation';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
+import { t } from '@tonkeeper/shared/i18n';
+import { Modal } from '@tonkeeper/uikit';
+import { openExploreTab } from '$navigation';
+import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { Button, Icon, Text } from '$uikit';
 import * as S from './InsufficientFunds.style';
-import { useNavigation } from '$libs/navigation';
 import {
-  debugLog,
   delay,
-  formatAmountAndLocalize,
   fromNano,
-  truncateDecimal,
 } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import BigNumber from 'bignumber.js';
-import { CryptoCurrencies, Decimals } from '$shared/constants';
-import { Ton } from '$libs/Ton';
 import { Tonapi } from '$libs/Tonapi';
 import { store } from '$store';
 import { formatter } from '$utils/formatter';
+import { push } from '$navigation/imperative';
 
 export interface InsufficientFundsParams {
   /**

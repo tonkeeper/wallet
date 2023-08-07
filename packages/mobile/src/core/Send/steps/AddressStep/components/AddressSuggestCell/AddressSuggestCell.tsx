@@ -1,17 +1,17 @@
 import { SuggestedAddress, SuggestedAddressType } from '../../../../Send.interface';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { Icon, PopupSelect, Text } from '$uikit';
 import React, { FC, memo, useCallback, useMemo } from 'react';
 import * as S from './AddressSuggestCell.style';
 import { differenceInCalendarYears, isToday, isYesterday } from 'date-fns';
-import { format, isAndroid, maskifyAddress } from '$utils';
+import { format, isAndroid } from '$utils';
 import { Alert, Keyboard } from 'react-native';
-import { openAddFavorite, openEditFavorite } from '$navigation';
 import { useDispatch } from 'react-redux';
 import { favoritesActions } from '$store/favorites';
 import Animated from 'react-native-reanimated';
 import { Separator } from '$uikit/Separator/Separator.style';
-import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
+import { openAddFavorite, openEditFavorite } from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress';
+import { Address } from '@tonkeeper/core';
 
 enum SuggestActionType {
   ADD,
@@ -35,11 +35,11 @@ interface Props {
 const AddressSuggestCellComponent: FC<Props> = (props) => {
   const { separator, scrollY, suggest, onPress } = props;
 
-  const t = useTranslator();
+  
 
   const dispatch = useDispatch();
 
-  const preparedAddress = maskifyAddress(suggest.address);
+  const preparedAddress = Address.toShort(suggest.address);
 
   const formattedDate = useMemo(() => {
     if (!suggest.timestamp) {

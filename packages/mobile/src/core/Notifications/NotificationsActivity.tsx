@@ -4,7 +4,7 @@ import { useNotificationsStore } from '$store/zustand/notifications/useNotificat
 import { Notification } from '$core/Notifications/Notification';
 import { Steezy } from '$styles';
 import { openNotifications } from '$navigation';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { INotification } from '$store';
 import { FlashList } from '@shopify/flash-list';
 import { LayoutAnimation } from 'react-native';

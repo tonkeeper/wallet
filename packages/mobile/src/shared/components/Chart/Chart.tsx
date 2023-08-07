@@ -3,7 +3,7 @@ import Svg, { G, Path, Circle } from 'react-native-svg';
 
 import { ChartProps } from './Chart.interface';
 import { ns } from '$utils';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { ChartPoint } from '$store/rates/interface';
 
 const SidePadding = ns(4);

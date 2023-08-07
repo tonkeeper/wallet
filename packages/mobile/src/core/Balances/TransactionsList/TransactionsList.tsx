@@ -9,7 +9,6 @@ import {
   ViewStyle,
 } from 'react-native';
 import {
-  compareAddresses,
   format,
   formatAmountAndLocalize,
   formatDate,
@@ -24,11 +23,11 @@ import * as S from './TransactionsList.style';
 import { EventsMap } from '$store/events/interface';
 import { differenceInCalendarMonths } from 'date-fns';
 import { EventModel, JettonBalanceModel } from '$store/models';
-import { openEditCoins, openJetton, openJettonsList } from '$navigation';
-import { Address, Ton } from '$libs/Ton';
-import { useApprovedNfts, useJettonBalances, useTranslator } from '$hooks';
-import { walletActions } from '$store/wallet';
-import { useDispatch } from 'react-redux';
+import { openJetton, openJettonsList } from '$navigation';
+import { Ton } from '$libs/Ton';
+import { useJettonBalances } from '$hooks/useJettonBalances';
+import { walletActions, walletSelector } from '$store/wallet';
+import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 import { BalanceItem } from '$core/Balances/BalanceItem/BalanceItem';
 import { TokenListItem } from '$uikit/TokenListItem/TokenListItem';
@@ -36,6 +35,11 @@ import { ActionItem } from '$shared/components/ActionItem/ActionItem';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
 import { useNftData } from '$core/ManageTokens/hooks/useNftData';
+import { Address, decryptMessageComment } from '@tonkeeper/core';
+import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
+import { Toast, useEncryptedCommentsStore } from '$store';
+import { AccountAddress, EncryptedComment } from '@tonkeeper/core/src/TonAPI';
+import { t } from '@tonkeeper/shared/i18n';
 
 const AnimatedSectionList =
   Animated.createAnimatedComponent<SectionListProps<any>>(SectionList);
@@ -72,16 +76,22 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
     },
     ref,
   ) => {
-    const t = useTranslator();
     const dispatch = useDispatch();
     const { enabled } = useJettonBalances(true);
+
+    const { wallet } = useSelector(walletSelector);
+    const unlockVault = useUnlockVault();
+
+    const saveDecryptedComment = useEncryptedCommentsStore(
+      (s) => s.actions.saveDecryptedComment,
+    );
 
     const handleManageJettons = useCallback(() => {
       openJettonsList();
     }, []);
 
     const handleAddCoin = useCallback(() => {
-      openEditCoins();
+
     }, []);
 
     const handleMigrate = useCallback(
@@ -122,7 +132,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
         if (
           jettonAddress &&
           !enabled.find((enabledJetton) =>
-            compareAddresses(enabledJetton.jettonAddress, jettonAddress),
+            Address.compare(enabledJetton.jettonAddress, jettonAddress),
           )
         ) {
           continue;
@@ -171,6 +181,35 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
       return result;
     }, [initialData, eventsInfo, enabled]);
 
+    const decryptComment = useCallback(
+      async (
+        actionKey: string,
+        encryptedComment?: EncryptedComment,
+        sender?: AccountAddress,
+      ) => {
+        if (!encryptedComment || !sender) {
+          return;
+        }
+
+        try {
+          const vault = await unlockVault();
+          const privateKey = await vault.getTonPrivateKey();
+
+          const comment = await decryptMessageComment(
+            Buffer.from(encryptedComment.cipherText, 'hex'),
+            wallet!.vault.tonPublicKey,
+            privateKey,
+            sender.address,
+          );
+
+          saveDecryptedComment(actionKey, comment);
+        } catch {
+          Toast.fail(t('decryption_error'));
+        }
+      },
+      [saveDecryptedComment, t, unlockVault, wallet],
+    );
+
     function renderItem({ item, index, section }: SectionListRenderItemInfo<any>) {
       const borderStart = index === 0;
       const borderEnd = section.data.length - 1 === index;
@@ -185,6 +224,7 @@ export const TransactionsList = forwardRef<any, TransactionsListProps>(
                     borderEnd={actions.length === idx + 1}
                     event={item}
                     action={action}
+                    decryptComment={decryptComment}
                   />
                   {actions.length !== idx + 1 ? <Separator /> : null}
                 </View>

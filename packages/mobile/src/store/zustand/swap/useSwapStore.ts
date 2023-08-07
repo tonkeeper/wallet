@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { ISwapStore, StonFiAsset, StonFiItem, SwapAssets } from './types';
 
 const StonFiTon = 'EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c';
@@ -75,7 +75,7 @@ export const useSwapStore = create(
     }),
     {
       name: 'swap',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ assets }) => ({ assets } as ISwapStore),
     },
   ),

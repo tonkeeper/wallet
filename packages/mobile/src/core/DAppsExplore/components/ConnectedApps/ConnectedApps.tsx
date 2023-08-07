@@ -1,12 +1,11 @@
 import React, { FC, memo } from 'react';
-import { useTranslator } from '$hooks';
 import { useConnectedAppsList } from '$store';
 import { AppsList } from '../AppsList/AppsList';
 import { Alert } from 'react-native';
 import { TonConnect } from '$tonconnect';
+import { t } from '@tonkeeper/shared/i18n';
 
 const ConnectedAppsComponent: FC = () => {
-  const t = useTranslator();
 
   const connectedApps = useConnectedAppsList();
 

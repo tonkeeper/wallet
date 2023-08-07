@@ -1,8 +1,8 @@
 import React from 'react';
-import { Text } from '$uikit';
+import { Text } from '$uikit/Text/Text';
 import { TextProps } from '$uikit/Text/Text';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
-import { Steezy } from '$styles';
+import { Steezy } from '@tonkeeper/uikit';
 import { useHideableAmount } from '$core/HideableAmount/HideableAmountProvider';
 
 export enum AnimationDirection {

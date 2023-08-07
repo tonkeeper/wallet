@@ -1,22 +1,21 @@
 import React, { FC, useCallback, useMemo, useRef } from 'react';
 import LottieView from 'lottie-react-native';
 
-import {Icon, Text} from '$uikit';
+import { Icon, Text } from '$uikit';
 import * as CreateWalletStyle from '$core/CreateWallet/CreateWallet.style';
-import { useTheme, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import {
-  getCurrentRoute,
-  goBack,
-  popToTop,
   SecurityMigrationStackRouteNames,
   SetupWalletStackRouteNames,
 } from '$navigation';
+import { getCurrentRoute, goBack, popToTop } from '$navigation/imperative';
 import * as S from './SetupWalletDone.style';
 import { ns, triggerNotificationSuccess } from '$utils';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const SetupWalletDone: FC = () => {
   const theme = useTheme();
-  const t = useTranslator();
+  
   const confettiRef = useRef<LottieView>(null);
   const checkIconRef = useRef<LottieView>(null);
 

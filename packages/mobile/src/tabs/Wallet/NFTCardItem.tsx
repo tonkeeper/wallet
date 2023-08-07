@@ -1,16 +1,16 @@
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { openNFT } from '$navigation';
 import { DarkTheme, Steezy } from '$styles';
 import { Icon, Pressable, View } from '$uikit';
-import { checkIsTonDiamondsNFT, maskifyTonAddress } from '$utils';
+import { checkIsTonDiamondsNFT } from '$utils';
 import { useFlags } from '$utils/flags';
 import _ from 'lodash';
 import React, { memo, useCallback, useMemo } from 'react';
 import * as S from '../../core/NFTs/NFTItem/NFTItem.style';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
-import { Address } from '$libs/Ton';
 import { AnimationDirection, HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { HideableImage } from '$core/HideableAmount/HideableImage';
+import { Address } from '@tonkeeper/core';
 
 interface NFTCardItemProps {
   item: any;
@@ -21,7 +21,7 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
   const { item } = props;
 
   const flags = useFlags(['disable_apperance']);
-  const t = useTranslator();
+  
 
   const expiringDomains = useExpiringDomains((state) => state.domains);
   const isTonDiamondsNft = checkIsTonDiamondsNFT(item);
@@ -40,11 +40,11 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
       return item.dns;
     }
 
-    return item.name || maskifyTonAddress(item.address);
+    return item.name || Address.toShort(item.address);
   }, [isDNS, item.dns, item.name, item.address]);
 
   const nftRawAddress = useMemo(
-    () => new Address(item.address).format({ raw: true }),
+    () => Address(item.address).toRaw(),
     [],
   );
 

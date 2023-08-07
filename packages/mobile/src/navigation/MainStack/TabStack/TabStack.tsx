@@ -7,9 +7,10 @@ import { DAppsExplore } from '$core';
 import { TabsStackRouteNames } from '$navigation';
 import { TabStackParamList } from './TabStack.interface';
 import { Icon, ScrollPositionContext, View } from '$uikit';
-import { usePreloadChart, useTheme } from '$hooks';
-import { isAndroid, nfs, ns, trackEvent } from '$utils';
-import { t } from '$translation';
+import { usePreloadChart } from '$hooks/usePreloadChart';
+import { useTheme } from '$hooks/useTheme';
+import { isAndroid, nfs, ns } from '$utils';
+import { t } from '@tonkeeper/shared/i18n';
 import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
 import { TabBarBadgeIndicator } from './TabBarBadgeIndicator';
 import { useNotificationsSubscribe } from '$hooks/useNotificationsSubscribe';
@@ -22,6 +23,7 @@ import { ActivityStack } from '$navigation/ActivityStack/ActivityStack';
 import { useNotificationsStore } from '$store';
 import { NotificationsIndicator } from '$navigation/MainStack/TabStack/NotificationsIndicator';
 import { useFetchMethodsToBuy } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
+import { trackEvent } from '$utils/stats';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -30,6 +32,7 @@ export const TabStack: FC = () => {
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
   const shouldShowRedDot = useNotificationsStore((state) => state.should_show_red_dot);
+  const removeRedDot = useNotificationsStore((state) => state.actions.removeRedDot);
 
   useLoadExpiringDomains();
   useFetchMethodsToBuy();
@@ -94,6 +97,11 @@ export const TabStack: FC = () => {
       <Tab.Screen
         component={ActivityStack}
         name={TabsStackRouteNames.Activity}
+        listeners={{
+          tabPress: (e) => {
+            removeRedDot();
+          },
+        }}
         options={{
           tabBarLabel: t('activity.screen_title'),
           tabBarIcon: ({ color }) => (

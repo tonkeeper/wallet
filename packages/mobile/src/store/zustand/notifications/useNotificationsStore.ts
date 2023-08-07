@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { INotification, INotificationsStore } from './types';
 import { getDomainFromURL } from '$utils';
 
@@ -47,7 +47,7 @@ export const useNotificationsStore = create(
     }),
     {
       name: 'notifications',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ notifications, last_seen, should_show_red_dot }) =>
         ({ notifications, last_seen, should_show_red_dot } as INotificationsStore),
     },

@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { WalletProps } from './Wallet.interface';
 import * as S from './Wallet.style';
 import * as BalancesStyle from '../Balances/Balances.style';
-import { useTheme, useTranslator, useWalletInfo } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
+import { useWalletInfo } from '$hooks/useWalletInfo';
 import {
   Button,
   Icon,
@@ -16,12 +17,8 @@ import {
   Loader,
   SwapIcon,
 } from '$uikit';
-import {
-  openDAppBrowser,
-  openReceive,
-  openRequireWalletModal,
-  openSend,
-} from '$navigation';
+import { MainStackRouteNames, openDAppBrowser, openReceive, openSend } from '$navigation';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import {
   walletActions,
   walletAddressSelector,
@@ -29,10 +26,15 @@ import {
   walletWalletSelector,
 } from '$store/wallet';
 import { Linking, Platform, RefreshControl, View } from 'react-native';
-import { delay, ns, trackEvent } from '$utils';
-import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
-import { t } from '$translation';
-import { useNavigation } from '$libs/navigation';
+import { delay, ns } from '$utils';
+import {
+  CryptoCurrencies,
+  CryptoCurrency,
+  Decimals,
+  getServerConfig,
+} from '$shared/constants';
+import { t } from '@tonkeeper/shared/i18n';
+import { useNavigation } from '@tonkeeper/router';
 import { Chart } from '$shared/components/Chart/new/Chart';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
@@ -44,6 +46,9 @@ import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { TonIcon } from '../../components/TonIcon';
 import { Events, SendAnalyticsFrom } from '$store/models';
+import _ from 'lodash';
+import { navigate } from '$navigation/imperative';
+import { trackEvent } from '$utils/stats';
 
 const exploreActions = [
   {
@@ -94,7 +99,6 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   const wallet = useSelector(walletWalletSelector);
   const address = useSelector(walletAddressSelector);
   const isRefreshing = useSelector(walletIsRefreshingSelector);
-  const t = useTranslator();
   const dispatch = useDispatch();
   const [lockupDeploy, setLockupDeploy] = useState('loading');
   const nav = useNavigation();
@@ -363,6 +367,17 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     handleOpenAction,
   ]);
 
+  const [render, setRender] = useState(false);
+  useEffect(() => {
+    delay(0).then(() => {
+      setRender(true);
+    });
+  }, []);
+
+  if (!render) {
+    return null;
+  }
+  
   return (
     <S.Wrap>
       <ScrollHandler
@@ -390,3 +405,11 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
     </S.Wrap>
   );
 };
+
+export function openWallet(currency: CryptoCurrency) {
+  _.throttle(() => {
+    navigate(MainStackRouteNames.Wallet, {
+      currency,
+    });
+  }, 1000)();
+}

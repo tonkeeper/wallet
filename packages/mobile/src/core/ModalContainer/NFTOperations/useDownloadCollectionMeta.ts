@@ -1,7 +1,7 @@
-import { debugLog } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import React from 'react';
 import { getServerConfig } from '$shared/constants';
-import { NFTApi, Configuration } from '@tonkeeper/core';
+import { NFTApi, Configuration } from '@tonkeeper/core/src/legacy';
 
 export type NFTCollectionMeta = {
   name: string;

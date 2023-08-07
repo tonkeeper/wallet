@@ -1,4 +1,4 @@
-import { AccountStakingInfo, PoolInfo } from '@tonkeeper/core';
+import { AccountStakingInfo, PoolInfo } from '@tonkeeper/core/src/legacy';
 
 export interface StakingProvider {
   id: string;

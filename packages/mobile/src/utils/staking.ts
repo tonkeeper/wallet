@@ -12,7 +12,7 @@ import {
 } from '$assets/staking';
 import { Ton } from '$libs/Ton';
 import { StakingInfo } from '$store';
-import { PoolInfo } from '@tonkeeper/core';
+import { PoolInfo } from '@tonkeeper/core/src/legacy';
 import BigNumber from 'bignumber.js';
 import { ImageRequireSource } from 'react-native';
 

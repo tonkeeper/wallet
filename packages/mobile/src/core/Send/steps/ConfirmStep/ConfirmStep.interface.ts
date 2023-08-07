@@ -1,22 +1,26 @@
-import { SendAmount, SendRecipient, SendSteps } from '$core/Send/Send.interface';
+import { Account } from '@tonkeeper/core/src/legacy';
+import {
+  AccountWithPubKey,
+  SendAmount,
+  SendRecipient,
+  SendSteps,
+} from '$core/Send/Send.interface';
 import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
 import { CryptoCurrency } from '$shared/constants';
-import React from 'react';
-import { SharedValue } from 'react-native-reanimated';
-import { Account } from '@tonkeeper/core';
 
-export interface ConfirmStepProps extends StepComponentProps {
-  stepsScrollTop: SharedValue<Record<SendSteps, number>>;
+export interface ConfirmStepProps {
+  active: boolean;
   currencyTitle: string;
   currency: CryptoCurrency | string;
   recipient: SendRecipient | null;
-  recipientAccountInfo: Account | null;
+  recipientAccountInfo: AccountWithPubKey | null;
   amount: SendAmount;
   decimals: number;
   isJetton: boolean;
   fee: string;
   isInactive: boolean;
   comment: string;
-  isLiquidJetton: boolean;
+  isCommentEncrypted: boolean;
   onConfirm: () => Promise<void>;
+  isPreparing: boolean;
 }

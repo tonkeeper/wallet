@@ -1,12 +1,13 @@
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
-import { Address, Ton } from '$libs/Ton';
+import { Ton } from '$libs/Ton';
 import { encodeBytes } from '$utils/base64';
-import { PoolInfo } from '@tonkeeper/core';
+import { PoolInfo } from '@tonkeeper/core/src/legacy';
 import BN from 'bn.js';
 import TonWeb from 'tonweb';
 import { StakingTransactionType } from './types';
 import { JettonBalanceModel } from '$store/models';
 import BigNumber from 'bignumber.js';
+import { Address } from '@tonkeeper/core';
 
 const { Cell } = TonWeb.boc;
 
@@ -50,7 +51,7 @@ export const createLiquidTfWithdrawStakeCell = async (amount: BN, address: strin
   payload.bits.writeUint(0x595f07bc, 32);
   payload.bits.writeUint(getRandomQueryId(), 64); // Query ID
   payload.bits.writeCoins(amount); // Amount
-  payload.bits.writeAddress(new Address(address));
+  payload.bits.writeAddress(Address(address).toTonWeb());
   payload.bits.writeBit(1);
   payload.refs.push(customPayload);
 
@@ -83,11 +84,11 @@ export const getStakeSignRawMessage = async (
 ): Promise<SignRawMessage> => {
   const withdrawalFee = getWithdrawalFee(pool);
 
-  const address = new Address(
+  const address = Address(
     stakingJetton && transactionType !== StakingTransactionType.DEPOSIT
       ? stakingJetton.walletAddress
       : pool.address,
-  ).format({ bounce: true });
+  ).toFriendly({ bounceable: true });
 
   if (pool.implementation === 'whales') {
     const payload =
@@ -144,6 +145,18 @@ export const getStakeSignRawMessage = async (
 export const getWithdrawalFee = (pool: PoolInfo): BN => {
   if (pool.implementation === 'whales') {
     return Ton.toNano('0.2');
+  }
+
+  if (['tf', 'liquidTF'].includes(pool.implementation)) {
+    return Ton.toNano('1');
+  }
+
+  return Ton.toNano(0);
+};
+
+export const getWithdrawalAlertFee = (pool: PoolInfo): BN => {
+  if (pool.implementation === 'whales') {
+    return Ton.toNano('0.4');
   }
 
   if (['tf', 'liquidTF'].includes(pool.implementation)) {

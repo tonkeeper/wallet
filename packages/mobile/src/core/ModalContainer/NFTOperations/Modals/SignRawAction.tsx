@@ -1,18 +1,20 @@
 import React from 'react';
-import { Action, ActionTypeEnum } from 'tonapi-sdk-js';
 import {
+  Action,
+  ActionTypeEnum,
   TonTransferAction as TonTransferActionData,
   NftItemTransferAction as NftTransferActionData,
   AuctionBidAction as SDKAuctionBidAction,
-} from 'tonapi-sdk-js';
+} from '@tonkeeper/core/src/legacy';
 import * as S from '../NFTOperations.styles';
 import { Highlight, Separator, Skeleton, Text } from '$uikit';
 import { copyText } from '$hooks/useCopyText';
-import { Address, Ton } from '$libs/Ton';
-import { t } from '$translation';
+import { Ton } from '$libs/Ton';
+import { t } from '@tonkeeper/shared/i18n';
 import { ListHeader } from '$uikit';
 import { dnsToUsername } from '$utils/dnsToUsername';
 import { useDownloadNFT } from '../useDownloadNFT';
+import { Address } from '@tonkeeper/core';
 
 interface Props {
   action: Action;
@@ -93,7 +95,7 @@ interface TonTransferActionProps {
 const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
   const { action, skipHeader, totalFee } = props;
   const amount = Ton.formatAmount(action.amount);
-  const address = new Address(action.recipient.address);
+  const address = Address(action.recipient.address).toAll();
 
   return (
     <>
@@ -109,10 +111,10 @@ const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
             </S.InfoItem>
           </Highlight>
           <Separator />
-          <Highlight onPress={() => copyText(address.format())}>
+          <Highlight onPress={() => copyText(address.friendly)}>
             <S.InfoItem>
               <S.InfoItemLabel>{t('txActions.signRaw.recipient')}</S.InfoItemLabel>
-              <S.InfoItemValueText>{address.format({ cut: true })}</S.InfoItemValueText>
+              <S.InfoItemValueText>{address.short}</S.InfoItemValueText>
             </S.InfoItem>
           </Highlight>
           {Boolean(action.comment) && (
@@ -153,7 +155,12 @@ interface NftItemTransferActionProps {
 const NftItemTransferAction = React.memo<NftItemTransferActionProps>((props) => {
   const { action, totalFee } = props;
   const item = useDownloadNFT(action.nft);
-  const address = action.recipient ? new Address(action.recipient.address) : '';
+  const address = action.recipient
+    ? Address(action.recipient.address).toAll()
+    : {
+        short: '',
+        friendly: '',
+      };
 
   const isTG = (item.data?.dns || item.data?.name)?.endsWith('.t.me');
 
@@ -187,12 +194,10 @@ const NftItemTransferAction = React.memo<NftItemTransferActionProps>((props) => 
       </S.Center>
 
       <S.Info>
-        <Highlight onPress={() => address && copyText(address.format())}>
+        <Highlight onPress={() => address && copyText(address.friendly)}>
           <S.InfoItem>
             <S.InfoItemLabel>{t('txActions.signRaw.recipient')}</S.InfoItemLabel>
-            <S.InfoItemValueText>
-              {address && address.format({ cut: true })}
-            </S.InfoItemValueText>
+            <S.InfoItemValueText>{address.short}</S.InfoItemValueText>
           </S.InfoItem>
         </Highlight>
         {Boolean(totalFee) && (
@@ -358,7 +363,7 @@ interface UnknownActionProps {
 }
 
 const UnknownAction = React.memo<UnknownActionProps>(({ action, skipHeader }) => {
-  const address = new Address(action.address);
+  const address = Address(action.address).toAll();
   const amount = Ton.formatAmount(action.amount);
 
   return (
@@ -377,10 +382,10 @@ const UnknownAction = React.memo<UnknownActionProps>(({ action, skipHeader }) =>
             </S.InfoItem>
           </Highlight>
           <Separator />
-          <Highlight onPress={() => copyText(address.format())}>
+          <Highlight onPress={() => copyText(address.friendly)}>
             <S.InfoItem>
               <S.InfoItemLabel>{t('txActions.signRaw.recipient')}</S.InfoItemLabel>
-              <S.InfoItemValueText>{address.format({ cut: true })}</S.InfoItemValueText>
+              <S.InfoItemValueText>{address.short}</S.InfoItemValueText>
             </S.InfoItem>
           </Highlight>
         </S.Info>

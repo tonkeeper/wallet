@@ -6,7 +6,7 @@ import { JettonBalanceModel, JettonMetadata } from '$store/models';
 import _ from 'lodash';
 import { fromNano } from '$utils';
 import { proxyMedia } from '$utils/proxyMedia';
-import { JettonsApi, Configuration, AccountsApi, JettonBalance } from '@tonkeeper/core';
+import { JettonsApi, Configuration, AccountsApi, JettonBalance } from '@tonkeeper/core/src/legacy';
 
 export class TonProvider extends BaseProvider {
   public readonly name = 'TonProvider';

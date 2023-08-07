@@ -3,7 +3,6 @@ import { LayoutAnimation, RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useIsFocused } from '@react-navigation/native';
 
 import * as S from '../../core/Balances/Balances.style';
 import {
@@ -17,25 +16,29 @@ import {
   Text,
   View,
 } from '$uikit';
-import { useAppStateActive, usePrevious, useTheme, useTranslator } from '$hooks';
+import { useAppStateActive } from '$hooks/useAppStateActive';
+import { usePrevious } from '$hooks/usePrevious';
+import { useTheme } from '$hooks/useTheme';
 import { walletActions, walletSelector } from '$store/wallet';
 import { ns } from '$utils';
 import { NavBarHeight, TabletMaxWidth } from '$shared/constants';
-import { openNotificationsScreen, openRequireWalletModal } from '$navigation';
+import { openNotificationsScreen } from '$navigation';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { eventsActions, eventsSelector } from '$store/events';
 import { mainActions } from '$store/main';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { getLastRefreshedAt } from '$database';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { Steezy } from '$styles';
 import { Notification } from '$core/Notifications/Notification';
 import { getNewNotificationsCount } from '$core/Notifications/NotificationsActivity';
+import { useIsFocused } from '@react-navigation/native';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const ActivityScreen: FC = () => {
   const nav = useNavigation();
-  const t = useTranslator();
   const dispatch = useDispatch();
   const theme = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
@@ -47,23 +50,15 @@ export const ActivityScreen: FC = () => {
   } = useSelector(eventsSelector);
   const notifications = useNotificationsStore((state) => state.notifications);
   const lastSeenAt = useNotificationsStore((state) => state.last_seen_activity_screen);
-  const removeRedDot = useNotificationsStore((state) => state.actions.removeRedDot);
   const updateLastSeenActivityScreen = useNotificationsStore(
     (state) => state.actions.updateLastSeenActivityScreen,
   );
+  const isFocused = useIsFocused();
 
   const netInfo = useNetInfo();
   const prevNetInfo = usePrevious(netInfo);
 
-  const isFocused = useIsFocused();
-
   const isEventsLoadingMore = !isRefreshing && isEventsLoading && !!wallet;
-
-  useEffect(() => {
-    if (isFocused) {
-      removeRedDot();
-    }
-  }, [isFocused, removeRedDot]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -146,7 +141,7 @@ export const ActivityScreen: FC = () => {
             rightContent={
               newNotificationsCount - 2 > 0 ? (
                 <View style={styles.notificationsCount}>
-                  <Text variant="label2">{newNotificationsCount}</Text>
+                  <Text variant="label2">{newNotificationsCount - 2}</Text>
                 </View>
               ) : null
             }

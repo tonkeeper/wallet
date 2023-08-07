@@ -9,11 +9,12 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
 import { Icon, PopupSelect, ScrollHandler, Spacer, Text, List } from '$uikit';
-import { useNavigation, useTranslator, useShouldShowTokensButton } from '$hooks';
+import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
+import { useNavigation } from '@tonkeeper/router';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
 import {
-  openAppearance,
+
   openDeleteAccountDone,
   openDevMenu,
   openJettonsListSettingsStack,
@@ -41,10 +42,9 @@ import {
 } from '$shared/constants';
 import {
   hNs,
-  maskifyAddress,
   ns,
   throttle,
-  trackEvent,
+
   useHasDiamondsOnBalance,
 } from '$utils';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
@@ -57,6 +57,10 @@ import { useFlags } from '$utils/flags';
 import { SearchEngine, useBrowserStore } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
 import { Steezy } from '$styles';
+import { t } from '@tonkeeper/shared/i18n';
+import { trackEvent } from '$utils/stats';
+import { openAppearance } from '$core/ModalContainer/AppearanceModal';
+import { Address } from '@tonkeeper/core';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -68,7 +72,7 @@ export const Settings: FC = () => {
     'disable_feedback_button',
   ]);
 
-  const t = useTranslator();
+  
   const nav = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
   const notificationsBadge = useNotificationsBadge();
@@ -346,7 +350,7 @@ export const Settings: FC = () => {
                       {SelectableVersionsConfig[version]?.label}
                     </Text>
                     <Text variant="body1" color="foregroundSecondary">
-                      {maskifyAddress(
+                      {Address.toShort(
                         allTonAddesses[SelectableVersionsConfig[version]?.label],
                       )}
                     </Text>

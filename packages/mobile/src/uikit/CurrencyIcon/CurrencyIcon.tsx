@@ -7,7 +7,7 @@ import { CryptoCurrencies, CurrenciesIcons } from '$shared/constants';
 import { useSelector } from 'react-redux';
 import { accentSelector, accentTonIconSelector } from '$store/main';
 import { AccentKey } from '$styled';
-import { TonDiamondIcon } from '$uikit/TonDiamondIcon/TonDiamondIcon';
+import { TonDiamondIcon } from '../TonDiamondIcon/TonDiamondIcon';
 
 export const CurrencyIcon: FC<CurrencyIconProps> = ({
   currency,

@@ -11,18 +11,19 @@ import { deviceHeight, isAndroid, ns, parseLockupConfig } from '$utils';
 import { InputItem } from './InputItem';
 import { Button, Input, NavBarHelper, Text } from '$uikit';
 import * as S from './ImportWalletForm.style';
-import { useReanimatedKeyboardHeight, useTranslator } from '$hooks';
+import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
 import { ImportWalletFormProps } from './ImportWalletForm.interface';
 import { useInputsRegistry } from './useInputRegistry';
 import { WordHintsPopup, WordHintsPopupRef } from './WordHintsPopup';
 import { Keyboard } from 'react-native';
 import { wordlist } from '$libs/Ton/mnemonic/wordlist';
 import { Toast } from '$store';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
   const { onWordsFilled } = props;
 
-  const t = useTranslator();
+  
   const { bottom: bottomInset } = useSafeAreaInsets();
   const dispatch = useDispatch();
   const inputsRegistry = useInputsRegistry();
@@ -39,6 +40,7 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
   const deferredScrollToInput = useRef<((offset: number) => void) | null>(null);
   const { keyboardHeight } = useReanimatedKeyboardHeight({
     enableOnAndroid: true,
+    animated: true,
     onWillShow: ({ height }) => {
       if (deferredScrollToInput.current) {
         deferredScrollToInput.current(height);

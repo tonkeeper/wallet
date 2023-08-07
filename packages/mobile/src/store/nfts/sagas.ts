@@ -7,7 +7,8 @@ import { batchActions } from '$store';
 import { LoadNFTAction, LoadNFTsAction } from '$store/nfts/interface';
 import { getWalletName } from '$shared/dynamicConfig';
 import { NFTsManager } from '$store/nfts/manager';
-import { checkIsTonDiamondsNFT, debugLog } from '$utils';
+import { checkIsTonDiamondsNFT } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { Api } from '$api';
 import { MarketplaceModel, NFTModel } from '$store/models';
 import { mainActions, mainSelector } from '$store/main';
@@ -68,7 +69,7 @@ function* loadNFTsWorker(action: LoadNFTsAction) {
     yield put(nftsActions.setCanLoadMore(yield call([manager, 'canLoadMore'])));
   } catch (e) {
     e && debugLog(e.message);
-    console.log('ERR', e);
+    console.log('ERR5', e);
   }
 }
 
@@ -96,7 +97,7 @@ function* loadNFTWorker(action: LoadNFTAction) {
     );
   } catch (e) {
     e && debugLog(e.message);
-    console.log('ERR', e);
+    console.log('ERR7', e);
   }
 }
 

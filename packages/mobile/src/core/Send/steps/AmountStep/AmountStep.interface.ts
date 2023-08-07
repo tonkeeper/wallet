@@ -1,13 +1,12 @@
 import { SendRecipient, SendAmount } from '../../Send.interface';
-import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
 import React from 'react';
 
-export interface AmountStepProps extends StepComponentProps {
-  isPreparing: boolean;
+export interface AmountStepProps {
   recipient: SendRecipient | null;
   decimals: number;
   balance: string;
   currency: string;
+  active: boolean;
   currencyTitle: string;
   amount: SendAmount;
   fiatRate: number;

@@ -1,8 +1,8 @@
 import { useSuggestedAddresses } from '../../hooks/useSuggestedAddresses';
-import { useReanimatedKeyboardHeight, useTranslator } from '$hooks';
+import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
 import { Ton } from '$libs/Ton';
 import { Button, FormItem } from '$uikit';
-import { asyncDebounce, formatInputAmount, isValidAddress, parseTonLink } from '$utils';
+import { asyncDebounce, formatInputAmount, parseTonLink } from '$utils';
 import React, {
   FC,
   memo,
@@ -19,18 +19,23 @@ import {
   BottomButtonWrapHelper,
   StepScrollView,
 } from '$shared/components';
-import { SendSteps, SuggestedAddress, SuggestedAddressType } from '../../Send.interface';
+import {
+  AccountWithPubKey,
+  SendSteps,
+  SuggestedAddress,
+  SuggestedAddressType,
+} from '../../Send.interface';
 import { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import {
   WordHintsPopup,
   WordHintsPopupRef,
 } from '$shared/components/ImportWalletForm/WordHintsPopup';
 import { AddressStepProps } from './AddressStep.interface';
-import { Account } from '@tonkeeper/core';
 import { Tonapi } from '$libs/Tonapi';
 import { AddressInput, AddressSuggests, CommentInput } from './components';
-import { useCommentMaxLength } from '$core/Send/hooks';
 import { TextInput } from 'react-native-gesture-handler';
+import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 const TonWeb = require('tonweb');
 
@@ -39,29 +44,28 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
   const {
     recipient,
     decimals,
-    stepsScrollTop,
     comment,
+    isCommentEncrypted,
     recipientAccountInfo,
     setRecipient,
+    active,
     setRecipientAccountInfo,
     setAmount,
     setComment,
+    setCommentEncrypted,
     onContinue,
-    active,
   } = props;
 
   const commentInputRef = useRef<TextInput>(null);
 
-  const dynamicMaxLength = useCommentMaxLength(comment);
-
   const isCommentRequired = !!recipientAccountInfo?.memoRequired;
+  const isAbleToEncryptComment = recipientAccountInfo
+    ? !isCommentRequired && !!recipientAccountInfo.publicKey
+    : true;
 
-  const commentError =
-    comment.length > dynamicMaxLength || (isCommentRequired && comment.length === 0);
+  const isReadyToContinue = !!recipient;
 
-  const isReadyToContinue = !!recipient && !commentError;
-
-  const t = useTranslator();
+  
 
   const { keyboardHeightStyle } = useReanimatedKeyboardHeight();
 
@@ -77,10 +81,6 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
   const scrollHandler = useAnimatedScrollHandler((event) => {
     scrollY.value = event.contentOffset.y;
-    stepsScrollTop.value = {
-      ...stepsScrollTop.value,
-      [SendSteps.ADDRESS]: event.contentOffset.y,
-    };
   });
 
   const wordHintsRef = useRef<WordHintsPopupRef>(null);
@@ -115,7 +115,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
   );
 
   const updateRecipient = useCallback(
-    async (value: string, accountInfo?: Partial<Account>) => {
+    async (value: string, accountInfo?: Partial<AccountWithPubKey>) => {
       setRecipientAccountInfo(null);
 
       if (value.length === 0) {
@@ -133,7 +133,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           setDnsLoading(false);
         }
 
-        if (link.match && link.operation === 'transfer' && isValidAddress(link.address)) {
+        if (link.match && link.operation === 'transfer' && Address.isValid(link.address)) {
           if (link.query.amount && !Number.isNaN(Number(link.query.amount))) {
             const parsedAmount = Ton.fromNano(new TonWeb.utils.BN(link.query.amount));
             setAmount({
@@ -169,9 +169,9 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           return true;
         }
 
-        if (isValidAddress(value)) {
+        if (Address.isValid(value)) {
           if (accountInfo) {
-            setRecipientAccountInfo(accountInfo as Account);
+            setRecipientAccountInfo(accountInfo as AccountWithPubKey);
           }
 
           setRecipient({ address: value });
@@ -281,7 +281,10 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           <CommentInput
             innerRef={commentInputRef}
             isCommentRequired={isCommentRequired}
+            isAbleToEncryptComment={isAbleToEncryptComment}
             comment={comment}
+            isCommentEncrypted={isCommentEncrypted}
+            setCommentEncrypted={setCommentEncrypted}
             setComment={setComment}
             onSubmit={handleCommentSubmit}
           />

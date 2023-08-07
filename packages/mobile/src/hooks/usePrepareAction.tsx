@@ -4,26 +4,28 @@ import { ActionItemBaseProps } from '$shared/components/ActionItem/ActionItemBas
 import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
-import {
-  compareAddresses,
-  format as formatDate,
-  fromNano,
-  maskifyTonAddress,
-} from '$utils';
-import { useTranslator } from '$hooks/useTranslator';
-import { formatCryptoCurrency } from '$utils/currency';
+import { format as formatDate, fromNano } from '$utils';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { TransactionItemNFT } from '$shared/components/ActionItem/TransactionItemNFT/TransactionItemNFT';
 import { subscriptionsSelector } from '$store/subscriptions';
-import { Action } from 'tonapi-sdk-js';
+import { Action } from '@tonkeeper/core/src/legacy';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
+import { useEncryptedCommentsStore } from '$store';
+import { shallow } from 'zustand/shallow';
+import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 export function usePrepareAction(
   rawAction: Action,
   event: EventModel,
 ): ActionItemBaseProps {
   const { address } = useSelector(walletSelector);
-  const t = useTranslator();
+  const actionKey = event.eventId + rawAction.type;
+  const decryptedComment: string | undefined = useEncryptedCommentsStore(
+    (s) => s.decryptedComments[actionKey],
+    shallow,
+  );
+
   const { subscriptionsInfo } = useSelector(subscriptionsSelector);
   const format = useHideableFormatter();
 
@@ -93,7 +95,7 @@ export function usePrepareAction(
       [ActionType.Subscribe, ActionType.UnSubscribe].includes(ActionType[rawAction.type])
     ) {
       const isSubscription = ActionType.Subscribe === ActionType[rawAction.type];
-      const isBeneficiary = compareAddresses(action.beneficiary.address, address.ton);
+      const isBeneficiary = Address.compare(action.beneficiary.address, address.ton);
       const amount = fromNano(action.amount, Decimals[CryptoCurrencies.Ton] || 9);
       if (isBeneficiary) {
         // Current user is beneficiary of this subscription, display it correctly
@@ -130,7 +132,7 @@ export function usePrepareAction(
 
     if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
       label = '-';
-      if (compareAddresses(action.address, address.ton)) {
+      if (Address.compare(action.address, address.ton)) {
         typeLabel = t('transaction_type_wallet_initialized');
         type = 'wallet_initialized';
       } else {
@@ -140,13 +142,17 @@ export function usePrepareAction(
     }
 
     const actionProps: ActionItemBaseProps = {
+      actionKey,
       type,
       typeLabel,
       label,
       labelColor,
       bottomContent,
       infoRows: [],
+      sender: action.sender,
       comment: (!event.isScam && action.comment) || '',
+      encryptedComment: event.isScam ? undefined : action.encryptedComment,
+      decryptedComment: event.isScam ? undefined : decryptedComment,
       isInProgress: event.inProgress,
       isSpam: event.isScam,
     };
@@ -170,14 +176,14 @@ export function usePrepareAction(
       actionProps.infoRows.push({
         label:
           accountToDisplay.name ||
-          maskifyTonAddress(
+          Address.toShort(
             new TonWeb.Address(accountToDisplay.address).toString(true, true, true),
           ),
         value: formattedDate,
       });
     } else if (ActionType.ContractDeploy === ActionType[rawAction.type]) {
       actionProps.infoRows.push({
-        label: maskifyTonAddress(
+        label: Address.toShort(
           new TonWeb.Address(action.address).toString(true, true, true),
         ),
         value: formattedDate,
@@ -199,9 +205,11 @@ export function usePrepareAction(
   }, [
     rawAction,
     address.ton,
+    actionKey,
     event.isScam,
     event.inProgress,
     event.timestamp,
+    decryptedComment,
     format,
     t,
     subscriptionsInfo,

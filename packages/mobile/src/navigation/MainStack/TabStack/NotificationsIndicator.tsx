@@ -1,5 +1,5 @@
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
-import { getCurrentRoute } from '$navigation/helper';
+import { getCurrentRoute } from '$navigation/imperative';
 import { SettingsStackRouteNames } from '$navigation/navigationNames';
 import React from 'react';
 import { useSelector } from 'react-redux';

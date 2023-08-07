@@ -1,7 +1,6 @@
 import styled, { RADIUS } from '$styled';
 import { hNs, ns } from '$utils';
 import FastImage from 'react-native-fast-image';
-import { Icon } from '$uikit';
 
 export const NameWrapper = styled.View`
   margin-bottom: ${ns(2)}px;
@@ -36,15 +35,5 @@ export const DNSBackground = styled.View`
   width: ${hNs(96)}px;
   border-radius: ${ns(RADIUS.large)}px;
   background: ${({ theme }) => theme.colors.accentPrimary};
-  margin-bottom: ${ns(20)}px;
-`;
-
-export const GlobeIcon = styled(Icon).attrs({
-  name: 'globe-96',
-  colorless: true,
-  imageStyle: {
-    borderRadius: ns(RADIUS.large),
-  },
-})`
   margin-bottom: ${ns(20)}px;
 `;

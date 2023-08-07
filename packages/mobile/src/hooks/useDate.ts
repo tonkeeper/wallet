@@ -5,10 +5,9 @@ import {
   formatDistanceToNow,
 } from 'date-fns';
 import { getLocale } from '$utils';
-import { useTranslator } from '$hooks/useTranslator';
+import { t } from '@tonkeeper/shared/i18n';
 
 export function useDate(ts: number): string {
-  const t = useTranslator();
 
   const date = new Date(ts * 1000);
   let dateStr: string;

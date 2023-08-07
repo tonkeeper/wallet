@@ -7,15 +7,12 @@ import { useIsFocused } from '@react-navigation/native';
 
 import * as S from './Balances.style';
 import { Button, Icon, InternalNotification, Loader, ScrollHandler, Text } from '$uikit';
-import {
-  useAppStateActive,
-  usePrevious,
-  useJettonBalances,
-  useTheme,
-  useTranslator,
-} from '$hooks';
+import { useAppStateActive } from '$hooks/useAppStateActive';
+import { usePrevious } from '$hooks/usePrevious';
+import { useJettonBalances } from '$hooks/useJettonBalances';
+import { useTheme } from '$hooks/useTheme';
 import { walletActions, walletSelector } from '$store/wallet';
-import { isValidAddress, maskifyTonAddress, ns, triggerImpactLight } from '$utils';
+import { ns, triggerImpactLight } from '$utils';
 import {
   CryptoCurrencies,
   isServerConfigLoaded,
@@ -24,7 +21,8 @@ import {
   SecondaryCryptoCurrencies,
   TabletMaxWidth,
 } from '$shared/constants';
-import { openRequireWalletModal, openScanQR, openSend } from '$navigation';
+import { openScanQR, openSend } from '$navigation';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { eventsActions, eventsSelector } from '$store/events';
 import { mainActions, mainSelector } from '$store/main';
 import { InternalNotificationProps } from '$uikit/InternalNotification/InternalNotification.interface';
@@ -35,10 +33,11 @@ import { store, Toast } from '$store';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
 import Clipboard from '@react-native-community/clipboard';
+import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 export const Balances: FC = () => {
   const deeplinking = useDeeplinking();
-  const t = useTranslator();
   const dispatch = useDispatch();
   const theme = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
@@ -367,7 +366,7 @@ export const Balances: FC = () => {
   const handlePressOpenScanQR = React.useCallback(() => {
     if (store.getState().wallet.wallet) {
       openScanQR((addr) => {
-        if (isValidAddress(addr)) {
+        if (Address.isValid(addr)) {
           setTimeout(() => {
             openSend({ currency: CryptoCurrencies.Ton, address: addr });
           }, 200);
@@ -412,7 +411,7 @@ export const Balances: FC = () => {
         bottomComponent={
           address.ton ? (
             <Text variant="body2" color="foregroundSecondary">
-              {maskifyTonAddress(address.ton)}
+              {Address.toShort(address.ton)}
             </Text>
           ) : null
         }

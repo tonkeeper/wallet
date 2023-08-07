@@ -4,16 +4,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as S from './JettonsList.style';
 import { AnimatedFlatList, ScrollHandler, Separator } from '$uikit';
 import { ns, formatAmount } from '$utils';
-import { useTranslator } from '$hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { jettonsActions, jettonsSelector } from '$store/jettons';
 import { Switch } from 'react-native';
 import { JettonBalanceModel, JettonVerification } from '$store/models';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useJettonBalancesLegacy } from '$hooks/useJettonBalancesLegacy';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const JettonsList: FC = () => {
-  const t = useTranslator();
   const { excludedJettons } = useSelector(jettonsSelector);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();

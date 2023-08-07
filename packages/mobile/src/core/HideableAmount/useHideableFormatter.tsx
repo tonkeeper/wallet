@@ -1,7 +1,7 @@
 import { formatter } from '$utils/formatter';
 import { useCallback } from 'react';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
-import { AmountFormatOptions, AmountNumber } from '$libs/AmountFormatter';
+import { AmountFormatOptions, AmountNumber } from '@tonkeeper/core';
 
 export const useHideableFormatter = () => {
   const isHidden = usePrivacyStore((state) => state.hiddenAmounts);

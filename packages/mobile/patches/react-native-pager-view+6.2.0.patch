@@ -1,0 +1,55 @@
+diff --git a/node_modules/react-native-pager-view/.DS_Store b/node_modules/react-native-pager-view/.DS_Store
+new file mode 100644
+index 0000000..7083c2c
+Binary files /dev/null and b/node_modules/react-native-pager-view/.DS_Store differ
+diff --git a/node_modules/react-native-pager-view/ios/.DS_Store b/node_modules/react-native-pager-view/ios/.DS_Store
+new file mode 100644
+index 0000000..6ed17bf
+Binary files /dev/null and b/node_modules/react-native-pager-view/ios/.DS_Store differ
+diff --git a/node_modules/react-native-pager-view/ios/ReactNativePageView.m b/node_modules/react-native-pager-view/ios/ReactNativePageView.m
+index 998e70a..463ee3d 100644
+--- a/node_modules/react-native-pager-view/ios/ReactNativePageView.m
++++ b/node_modules/react-native-pager-view/ios/ReactNativePageView.m
+@@ -1,6 +1,6 @@
+ 
+ #import "ReactNativePageView.h"
+-#import "React/RCTLog.h"
++#import <React/RCTLog.h>
+ #import <React/RCTViewManager.h>
+ 
+ #import "UIViewController+CreateExtension.h"
+@@ -468,14 +468,19 @@ - (NSString *)determineScrollDirection:(UIScrollView *)scrollView {
+ 
+ - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+     
++    if (!self.scrollEnabled) {
++        return YES;
++    }
++
+     // Recognize simultaneously only if the other gesture is RN Screen's pan gesture (one that is used to perform fullScreenGestureEnabled)
+-    if (gestureRecognizer == self.panGestureRecognizer && [NSStringFromClass([otherGestureRecognizer class]) isEqual: @"RNSPanGestureRecognizer"]) {
++    if (gestureRecognizer == self.panGestureRecognizer && ([NSStringFromClass([otherGestureRecognizer class]) isEqual: @"RNSPanGestureRecognizer"] || [NSStringFromClass([otherGestureRecognizer class]) isEqual: @"UIPanGestureRecognizer"])) {
+         UIPanGestureRecognizer* panGestureRecognizer = (UIPanGestureRecognizer*) gestureRecognizer;
+         CGPoint velocity = [panGestureRecognizer velocityInView:self];
+         BOOL isLTR = [self isLtrLayout];
+         BOOL isBackGesture = (isLTR && velocity.x > 0) || (!isLTR && velocity.x < 0);
++        BOOL isBottomGesture = velocity.y < 0;
+ 
+-        if (self.currentIndex == 0 && isBackGesture) {
++        if (self.currentIndex == 0 && (isBackGesture || isBottomGesture)) {
+             self.scrollView.panGestureRecognizer.enabled = false;
+         } else {
+             self.scrollView.panGestureRecognizer.enabled = self.scrollEnabled;
+@@ -485,6 +490,12 @@ - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecogni
+     }
+     
+     self.scrollView.panGestureRecognizer.enabled = self.scrollEnabled;
++    
++    // Allow nested scroll views to scroll simultaneously with the pager
++    if ([otherGestureRecognizer.view isKindOfClass: UIScrollView.class]) {
++        return YES;
++    }
++
+     return NO;
+ }
+ 

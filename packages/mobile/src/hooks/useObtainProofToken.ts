@@ -4,7 +4,7 @@ import { walletWalletSelector } from '$store/wallet';
 import TonWeb from 'tonweb';
 import { createTonProofForTonkeeper } from '$utils/notificationsproof';
 import * as SecureStore from 'expo-secure-store';
-import { Configuration, WalletApi } from '@tonkeeper/core';
+import { Configuration, WalletApi } from '@tonkeeper/core/src/legacy';
 import { getServerConfig } from '$shared/constants';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { isTestnetSelector } from '$store/main';

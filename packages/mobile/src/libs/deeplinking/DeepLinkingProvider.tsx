@@ -1,4 +1,5 @@
-import { debugLog, delay } from '$utils';
+import { delay } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import React from 'react';
 import {
   DeepLinkingContextValue,

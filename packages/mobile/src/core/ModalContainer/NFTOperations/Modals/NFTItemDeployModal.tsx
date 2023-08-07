@@ -1,7 +1,9 @@
 import React from 'react';
 import { useDownloadCollectionMeta } from '../useDownloadCollectionMeta';
 import { useDownloadMetaFromUri } from '../useDownloadMetaFromUri';
-import { useCopyText, useInstance, useWallet } from '$hooks';
+import { useCopyText } from '$hooks/useCopyText';
+import { useInstance } from '$hooks/useInstance';
+import { useWallet } from '$hooks/useWallet';
 import { Highlight, Separator, Skeleton, Text } from '$uikit';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftItemDeployParams, TxRequestBody } from '../TXRequest.types';
@@ -9,9 +11,11 @@ import { NFTItemMeta } from '../useDownloadNFT';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import {debugLog, maskifyAddress, toLocaleNumber} from '$utils';
-import { t } from '$translation';
-import { Modal } from '$libs/navigation';
+import { toLocaleNumber } from '$utils';
+import { debugLog } from '$utils/debugLog';
+import { t } from '@tonkeeper/shared/i18n';
+import { Modal } from '@tonkeeper/uikit';
+import { Address } from '@tonkeeper/core';
 
 type NFTItemDeployModalProps = TxRequestBody<NftItemDeployParams>;
 
@@ -30,7 +34,7 @@ export const NFTItemDeployModal = ({ params, ...options }: NFTItemDeployModalPro
   const operations = useInstance(() => {
     return new NFTOperations(wallet);
   });
-  
+
   const toggleDetails = React.useCallback(() => {
     setIsShownDetails(!isShownDetails);
   }, [isShownDetails]);
@@ -42,13 +46,13 @@ export const NFTItemDeployModal = ({ params, ...options }: NFTItemDeployModalPro
       .then((fee) => setFee(fee))
       .catch((err) => {
         setFee('0.02');
-        debugLog('[nft estimate fee]:', err)
+        debugLog('[nft estimate fee]:', err);
       });
   }, []);
   const handleConfirm = onConfirm(async ({ startLoading }) => {
     const vault = await unlockVault();
     const privateKey = await vault.getTonPrivateKey();
-    
+
     startLoading();
 
     const operation = await operations.deployItem(params);
@@ -104,7 +108,7 @@ export const NFTItemDeployModal = ({ params, ...options }: NFTItemDeployModalPro
                 <S.DetailItem>
                   <S.DetailItemLabel>NFT collection ID</S.DetailItemLabel>
                   <S.DetailItemValueText>
-                    {maskifyAddress(params.nftCollectionAddress, 8)}
+                    {Address.toShort(params.nftCollectionAddress, 8)}
                   </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
@@ -126,10 +130,7 @@ export const NFTItemDeployModal = ({ params, ...options }: NFTItemDeployModalPro
         </S.Container>
       </Modal.ScrollView>
       <Modal.Footer>
-        <NFTOperationFooter
-          onPressConfirm={handleConfirm}
-          ref={footerRef} 
-        />
+        <NFTOperationFooter onPressConfirm={handleConfirm} ref={footerRef} />
       </Modal.Footer>
     </Modal>
   );

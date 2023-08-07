@@ -18,7 +18,7 @@ import {
   removeRemoteConnection,
   enableNotifications,
 } from '$store';
-import { debugLog } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { getTimeSec } from '$utils/getTimeSec';
 import {
   AppRequest,

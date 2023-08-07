@@ -1,15 +1,18 @@
 import React from 'react';
-import { useCopyText, useInstance, useWallet } from '$hooks';
+import { useCopyText } from '$hooks/useCopyText';
+import { useInstance } from '$hooks/useInstance';
+import { useWallet} from '$hooks/useWallet';
 import {Highlight, Icon, Skeleton, Text} from '$uikit';
-import {debugLog, toLocaleNumber} from '$utils';
+import { toLocaleNumber} from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftSaleCancelParams, TxRequestBody } from '../TXRequest.types';
 import { useDownloadNFT } from '../useDownloadNFT';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import { t } from '$translation';
-import { Modal } from '$libs/navigation/components/Modal';
+import { t } from '@tonkeeper/shared/i18n';
+import { Modal } from '@tonkeeper/uikit';
 
 type NFTSaleCancelModalProps = TxRequestBody<NftSaleCancelParams>;
 
@@ -71,8 +74,7 @@ export const NFTSaleCancelModal = ({ params, ...options }: NFTSaleCancelModalPro
         <S.Container>
           <S.Center>
             <S.NFTItemPreview>
-              {isDNS ? <S.GlobeIcon /> : null}
-              {!isDNS && <S.Image uri={item?.data?.metadata?.image} resize={512} />}
+              <S.Image uri={item?.data?.metadata?.image} resize={512} />
             </S.NFTItemPreview>
             <S.CaptionWrap>
               <S.Caption>{caption}</S.Caption>

@@ -5,8 +5,8 @@ import { Steezy } from '$styles';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
-import { goBack } from '$navigation';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
+import { goBack } from '$navigation/imperative';
 
 const CELL_SIZE = 56;
 

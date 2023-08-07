@@ -1,4 +1,4 @@
-import { usePrevious, useTranslator } from "$hooks";
+import { usePrevious } from "$hooks/usePrevious";
 import { isServerConfigLoaded } from "$shared/constants";
 import { mainActions, mainSelector } from "$store/main";
 import { walletActions } from "$store/wallet";
@@ -8,9 +8,9 @@ import { MainDB } from "$database";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Linking } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { t } from "@tonkeeper/shared/i18n";
 
 export const useInternalNotifications = () => {
-  const t = useTranslator();
   const dispatch = useDispatch();
   const isConfigError = !isServerConfigLoaded();
   const [isNoSignalDismissed, setNoSignalDismissed] = useState(false);

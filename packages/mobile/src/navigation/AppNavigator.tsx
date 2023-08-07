@@ -3,10 +3,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { StatusBar } from 'react-native';
 
-import { setNavigationRef, onNavigationReady } from './helper';
-import { AppStack } from './AppStack';
+import { setNavigationRef, onNavigationReady } from './imperative';
+import { AppStack } from './MainStack';
 import { mainSelector } from '$store/main';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { ProvidersWithoutNavigation } from './Providers';
 
 export const AppNavigator: FC = () => {

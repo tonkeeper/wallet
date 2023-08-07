@@ -15,13 +15,16 @@ import * as S from './Migration.style';
 import { Button, Icon, Text } from '$uikit';
 import { deviceWidth, ns, toLocaleNumber, triggerNotificationSuccess } from '$utils';
 import { Card } from '$core/Migration/Card/Card';
-import { goBack } from '$navigation';
+
 import { MigrationProps } from './Migration.interface';
 import { walletActions } from '$store/wallet';
 import { CryptoCurrencies } from '$shared/constants';
-import { useTheme, useTokenPrice, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
+import { useTokenPrice } from '$hooks/useTokenPrice';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { mainSelector } from '$store/main';
+import { goBack } from '$navigation/imperative';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const Migration: FC<MigrationProps> = ({ route }) => {
   const {
@@ -36,7 +39,6 @@ export const Migration: FC<MigrationProps> = ({ route }) => {
 
   const dispatch = useDispatch();
   const theme = useTheme();
-  const t = useTranslator();
   const [step, setStep] = useState(migrationInProgress ? 1 : 0);
   const [cardsScale, setCardsScale] = useState(1);
   const { fiatCurrency } = useSelector(mainSelector);

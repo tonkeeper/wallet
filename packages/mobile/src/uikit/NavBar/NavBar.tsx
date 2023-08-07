@@ -9,9 +9,9 @@ import Animated, {
 
 import * as S from './NavBar.style';
 import { NavBarProps } from './NavBar.interface';
-import { goBack } from '$navigation';
+import { goBack } from '$navigation/imperative';
 import { Icon } from '../Icon/Icon';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { NavBarHeight } from '$shared/constants';
 import { hNs } from '$utils';
 import { Text } from '../Text/Text';
@@ -166,13 +166,17 @@ export const NavBar: FC<NavBarProps> = (props) => {
             </S.BackButton>
           </S.BackButtonContainer>
           <S.CenterContent style={titleAnimatedStyle}>
-            <S.Title
-              variant={isSmallTitle ? 'label1' : 'h3'}
-              numberOfLines={1}
-              {...titleProps}
-            >
-              {children}
-            </S.Title>
+            {typeof children === 'string' ? (
+              <S.Title
+                variant={isSmallTitle ? 'label1' : 'h3'}
+                numberOfLines={1}
+                {...titleProps}
+              >
+                {children}
+              </S.Title>
+            ) : (
+              children
+            )}
             <Animated.View style={subtitleAnimatedStyle}>
               {subtitle ? (
                 <S.Subtitle

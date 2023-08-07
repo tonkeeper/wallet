@@ -1,5 +1,5 @@
-import { useTheme } from '$hooks';
-import { t } from '$translation';
+import { useTheme } from '$hooks/useTheme';
+import { t } from '@tonkeeper/shared/i18n';
 import { Skeleton, Text } from '$uikit';
 import { deviceWidth, ns } from '$utils';
 import { useNetInfo } from '@react-native-community/netinfo';

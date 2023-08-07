@@ -4,28 +4,27 @@ import { Alert } from 'react-native';
 import BigNumber from 'bignumber.js';
 
 import { ConfirmSendingProps } from './ConfirmSending.interface';
-import { BottomSheet, Button, Icon, Text } from '$uikit';
+import { Button, Icon, Text } from '$uikit';
 import { List, ListCell } from '$uikit/List/old/List';
 import * as S from './ConfirmSending.style';
-import { useTranslator } from '$hooks';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import {
   walletActions,
   walletBalancesSelector,
-  walletSelector,
   walletWalletSelector,
 } from '$store/wallet';
 import { formatCryptoCurrency } from '$utils/currency';
 import { getTokenConfig } from '$shared/dynamicConfig';
-import { BottomSheetRef } from '$uikit/BottomSheet/BottomSheet.interface';
-import {
-  goBack,
-  openInactiveInfo,
-  openReminderEnableNotificationsModal,
-} from '$navigation';
-import { ns, maskifyAddress } from '$utils';
+import { ns } from '$utils';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
-import { favoritesFavoritesSelector, favoritesSelector } from '$store/favorites';
+import { favoritesFavoritesSelector } from '$store/favorites';
+import { goBack, push } from '$navigation/imperative';
+import { t } from '@tonkeeper/shared/i18n';
+import { openReminderEnableNotificationsModal } from '../ReminderEnableNotificationsModal';
+import { openInactiveInfo } from '../InfoAboutInactive/InfoAboutInactive';
+import { SheetActions, useNavigation } from '@tonkeeper/router';
+import { Modal, View } from '@tonkeeper/uikit';
+import { Address } from '@tonkeeper/core';
 
 export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
   const {
@@ -39,18 +38,14 @@ export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
     isJetton,
     domain,
   } = props;
-
-  const t = useTranslator();
+  const nav = useNavigation();
 
   const dispatch = useDispatch();
-
-  const bottomSheetRef = useRef<BottomSheetRef>(null);
 
   const [isSent, setSent] = useState(false);
   const [isSending, setSending] = useState(false);
   const balances = useSelector(walletBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
-  const [isClosed, setClosed] = useState(false);
   const favorites = useSelector(favoritesFavoritesSelector);
 
   const favoriteName = useMemo(
@@ -65,7 +60,7 @@ export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
   );
 
   const handleOpenInactiveInfo = useCallback(() => {
-    setClosed(true);
+    nav.goBack();
     setTimeout(() => {
       openInactiveInfo();
     }, 500);
@@ -83,7 +78,7 @@ export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
   }, [isSent, withGoBack]);
 
   const handleClose = useCallback(() => {
-    bottomSheetRef.current?.close();
+    nav.goBack();
   }, []);
 
   const doSend = useCallback(() => {
@@ -211,7 +206,7 @@ export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
               <>
                 <ListCell label={t('confirm_sending_recipient')}>{domain}</ListCell>
                 <ListCell label={t('confirm_sending_recipient_address')}>
-                  {favoriteName || maskifyAddress(address, 4)}
+                  {favoriteName || Address.toShort(address, 4)}
                 </ListCell>
               </>
             ) : (
@@ -228,7 +223,7 @@ export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
                       : t('confirm_sending_recipient')
                   }
                 >
-                  {maskifyAddress(address, 4)}
+                  {Address.toShort(address, 4)}
                 </ListCell>
               </>
             )}
@@ -286,13 +281,20 @@ export const ConfirmSending: FC<ConfirmSendingProps> = (props) => {
   }
 
   return (
-    <BottomSheet
-      ref={bottomSheetRef}
-      triggerClose={isClosed}
-      title={t('confirm_sending_title')}
-      skipHeader={isSent}
-    >
-      {renderContent()}
-    </BottomSheet>
+    <Modal>
+      <Modal.Header title={isSent ? undefined : t('confirm_sending_title')} />
+      <Modal.Content safeArea>
+        <View style={{ marginBottom: 16 }}>{renderContent()}</View>
+      </Modal.Content>
+    </Modal>
   );
 };
+
+export async function openDeprecatedConfirmSending(opts: any) {
+  push('SheetsProvider', {
+    $$action: SheetActions.ADD,
+    component: ConfirmSending,
+    params: opts,
+    path: 'ConfirmSending',
+  });
+}

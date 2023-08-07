@@ -2,16 +2,20 @@ import React, { FC, useCallback, useMemo } from 'react';
 
 import * as S from './ActionItemBase.style';
 import { ns } from '$utils';
-import { useTheme, useTranslator } from '$hooks';
-import { Badge, Icon, Text } from '$uikit';
+import { useTheme } from '$hooks/useTheme';
+import { Badge, Icon, SpoilerView, Text } from '$uikit';
 import { ActionItemBaseProps } from './ActionItemBase.interface';
 import { Image, View } from 'react-native';
 import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { DarkTheme } from '$styled';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
   const {
     comment,
+    encryptedComment,
+    decryptedComment,
     isInProgress,
     borderStart,
     borderEnd,
@@ -23,8 +27,9 @@ export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
     bottomContent,
     isSpam,
     handleOpenAction,
+    handleDecryptComment,
   } = props;
-  const t = useTranslator();
+  
   const theme = useTheme();
   const pressed = useSharedValue(false);
 
@@ -63,6 +68,12 @@ export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
     }),
     [pressed],
   );
+
+  const encryptedCommentLength = encryptedComment
+    ? encryptedComment.cipherText.length / 2 - 64
+    : 0;
+
+  const encryptedCommentMock = 'a'.repeat(encryptedCommentLength);
 
   return (
     <View>
@@ -125,7 +136,21 @@ export const ActionItemBase: FC<ActionItemBaseProps> = (props) => {
               </S.Item>
             ))}
             {bottomContent}
-            {comment ? (
+            {encryptedComment ? (
+              <S.Comment style={colorStyle}>
+                <TouchableWithoutFeedback
+                  onPress={handleDecryptComment}
+                  disabled={!!decryptedComment}
+                >
+                  <SpoilerView isOn={!decryptedComment}>
+                    <Text variant="body2">
+                      {decryptedComment ?? encryptedCommentMock}
+                    </Text>
+                  </SpoilerView>
+                </TouchableWithoutFeedback>
+              </S.Comment>
+            ) : null}
+            {comment && !encryptedComment ? (
               <S.Comment style={colorStyle}>
                 <Text variant="body2">{comment}</Text>
               </S.Comment>

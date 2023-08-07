@@ -11,6 +11,7 @@ export function useJettonEvents(address: JettonBalanceModel['walletAddress']) {
     isLoading = false,
     isRefreshing = false,
   } = useJettonEventsStore((state) => state.jettons[address] ?? {});
+
   const { fetchJettonEvents } = useJettonEventsStore((state) => state.actions);
 
   const retrieveJettonEvents = useCallback(

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Duration, intervalToDuration } from 'date-fns';
 import { Extrapolation, interpolate, useDerivedValue } from 'react-native-reanimated';
-import { useTranslator } from './useTranslator';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const useStakingCycle = (cycleStart: number, cycleEnd: number, enabled = true) => {
-  const t = useTranslator();
+  
 
   const [now, setNow] = useState(Date.now());
 

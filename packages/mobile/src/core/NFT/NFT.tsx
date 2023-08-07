@@ -10,12 +10,10 @@ import {
   ONE_YEAR_MILISEC,
   checkIsTelegramNumbersNFT,
   checkIsTonDiamondsNFT,
-  compareAddresses,
-  maskifyTonAddress,
   ns,
 } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTranslator } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
 import { Properties } from '$core/NFT/Properties/Properties';
 import { Details } from '$core/NFT/Details/Details';
 import { NFTProps } from '$core/NFT/NFT.interface';
@@ -28,7 +26,7 @@ import { NFTModel, TonDiamondMetadata } from '$store/models';
 import { useFlags } from '$utils/flags';
 import { LinkingDomainButton } from './LinkingDomainButton';
 import { nftsActions } from '$store/nfts';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { openDAppBrowser } from '$navigation';
 import { RenewDomainButton, RenewDomainButtonRef } from './RenewDomainButton';
 import { Tonapi } from '$libs/Tonapi';
@@ -36,8 +34,10 @@ import { Toast } from '$store';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { ProgrammableButtons } from '$core/NFT/ProgrammableButtons/ProgrammableButtons';
+import { Address } from '@tonkeeper/core';
 
 export const NFT: React.FC<NFTProps> = ({ route }) => {
+  const { address: nftAddress } = route.params.keyPair;
   const flags = useFlags(['disable_nft_markets', 'disable_apperance']);
   const hiddenAmounts = usePrivacyStore((state) => state.hiddenAmounts);
   const dispatch = useDispatch();
@@ -45,6 +45,9 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
   const address = useSelector(walletAddressSelector);
   const nftFromHistory = useNFT(route.params.keyPair);
   const [nft, setNft] = useState(nftFromHistory);
+
+  // const { data: nftFromHistory } = useNftItemByAddress(nftAddress);
+  // const [nft, setNft] = useState(nftFromHistory!);
 
   const [expiringAt, setExpiringAt] = useState(0);
   const [lastFill, setLastFill] = useState(0);
@@ -94,12 +97,11 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
     }, 5000);
   }, [lastFill]);
 
-  const t = useTranslator();
   const scrollTop = useSharedValue(0);
   const scrollRef = useRef<Animated.ScrollView>(null);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const canTransfer = useMemo(
-    () => compareAddresses(nft.ownerAddress, address.ton),
+    () => Address.compare(nft.ownerAddress, address.ton),
     [nft.ownerAddress, address.ton],
   );
 
@@ -148,7 +150,7 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
       return nft.dns;
     }
 
-    return nft.name || maskifyTonAddress(nft.address);
+    return nft.name || Address.toShort(nft.address);
   }, [isDNS, nft.dns, nft.name, nft.address]);
 
   return (

@@ -7,8 +7,6 @@ const ICON_SIZE = ns(96);
 
 export const Container = styled(Animated.View)`
   flex: 1;
-  max-height: 100%;
-  position: relative;
 `;
 
 export const Content = styled.View`
@@ -28,6 +26,11 @@ export const Item = styled.View`
   overflow: hidden;
 `;
 
+export const ItemInline = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+
 export const ItemLabel = styled(Text).attrs({
   color: 'foregroundSecondary',
   variant: 'body1',
@@ -36,6 +39,10 @@ export const ItemLabel = styled(Text).attrs({
 export const ItemContent = styled.View`
   flex: 1;
   padding-left: ${ns(16)}px;
+`;
+
+export const ItemSkeleton = styled.View`
+  align-self: flex-end;
 `;
 
 export const ItemValue = styled(Text).attrs({

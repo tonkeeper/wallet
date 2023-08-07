@@ -5,7 +5,7 @@ import { walletSelector } from '$store/wallet';
 import { batchActions } from '$store';
 import { getWalletName } from '$shared/dynamicConfig';
 import { JettonsManager } from '$store/jettons/manager';
-import { debugLog } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { jettonsActions, jettonsSelector } from '$store/jettons/index';
 import { JettonsDB, MainDB } from '$database';
 import {
@@ -47,7 +47,7 @@ function* loadJettonMetaWorker(action: LoadJettonMetaAction) {
     );
   } catch (e) {
     e && debugLog(e.message);
-    console.log('ERR', e);
+    console.log('ERR4', e);
   }
 }
 
@@ -106,7 +106,7 @@ function* loadJettonsWorker() {
     yield call(JettonsDB.saveJettons, balances);
   } catch (e) {
     e && debugLog(e.message);
-    console.log('ERR', e);
+    console.log('ERR6', e);
   } finally {
     yield put(jettonsActions.setIsLoading(false));
   }
