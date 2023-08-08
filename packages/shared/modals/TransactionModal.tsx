@@ -10,16 +10,19 @@ import { formatter } from '../formatter';
 import BigNumber from 'bignumber.js';
 import { Address } from '@tonkeeper/core';
 import {
-  Steezy,
-  Modal,
-  View,
+  Icon,
   List,
+  Modal,
+  Pressable,
+  Steezy,
   SText as Text,
   TonIcon,
-  Icon,
-  Button,
-  Spacer,
+  useTheme,
+  View,
 } from '@tonkeeper/uikit';
+import { useTransaction } from '@tonkeeper/core/src/query/useTransaction';
+import { EventActionDetailsMapper } from '../mappers/AccountEventsMapper';
+import { EncryptedComment, EncryptedCommentLayout } from '../components';
 
 type TransactionModalProps = {
   transaction: any;
@@ -132,7 +135,16 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
               value={fee}
               // subvalue={'$0.4'}
             />
-            {tx.comment && (
+            {transaction.encryptedComment && (
+              <EncryptedComment
+                transactionId={transaction.id}
+                transactionType={transaction.type}
+                encryptedComment={transaction.encryptedComment}
+                sender={transaction.sender}
+                layout={EncryptedCommentLayout.LIST_ITEM}
+              />
+            )}
+            {transaction.comment && (
               <List.Item
                 onPress={() => copyText(tx.comment)}
                 label={'Comment'}
@@ -143,8 +155,9 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
           <View style={styles.footer}>
             <Button onPress={handlePressViewExplorer} size="small" color="secondary">
               <Icon name="ic-globe-16" color="constantWhite" />
-              <Spacer x={8} />
-              <Text type="label2">Transaction</Text>
+              <Text type="label2" style={{ marginLeft: 8 }}>
+                Transaction
+              </Text>
               <Text type="label2" color="textTertiary">
                 {` ${tx.id.substring(0, 8)}`}
               </Text>

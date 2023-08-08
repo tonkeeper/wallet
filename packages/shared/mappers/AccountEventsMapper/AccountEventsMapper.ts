@@ -113,10 +113,17 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
   const action: MappedEventAction = {
     contentType: MappedEventItemType.Action,
     id: `${input.event.event_id}_${input.actionIndex}`,
+    eventId: input.event.event_id,
     operation: input.action.simple_preview.name || 'Unknown',
     subtitle: input.action.simple_preview.description,
     inProgress: input.event.in_progress,
     timestamp: input.event.timestamp,
+    encryptedComment:
+      input.action.TonTransfer?.encrypted_comment ||
+      input.action.JettonTransfer?.encrypted_comment,
+    sender:
+      input.action[input.action.type]?.sender &&
+      getSenderAddress(input.action[input.action.type].sender),
     iconName: 'ic-gear-28',
     type: 'SimplePreview',
     isScam: false,
@@ -222,7 +229,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
         const data = input.action.data;
         action.iconName = 'ic-gear-28';
         action.operation = t('transactions.smartcontract_exec');
-        action.subtitle = data.operation;//Address(data.contract.address).toShort();
+        action.subtitle = data.operation; //Address(data.contract.address).toShort();
         action.amount = formatter.formatNano(data.ton_attached, {
           prefix: amountPrefix,
           postfix: 'TON',
@@ -348,6 +355,7 @@ export function EventActionDetailsMapper(input: EventActionDetailsMapperInput) {
         transaction.sender = senderAccount.address;
         transaction.operation = sendOrReceiveTitle;
         transaction.comment = data.comment?.trim();
+        transaction.encryptedComment = data.encrypted_comment;
 
         transaction.title = formatter.formatNano(data.amount, {
           prefix: amountPrefix,
@@ -403,6 +411,7 @@ export function EventActionDetailsMapper(input: EventActionDetailsMapperInput) {
         transaction.sender = {
           short: Address.toShort(friendlyAddress),
           friendly: friendlyAddress,
+          raw: Address(data.address).toRaw(),
         };
 
         transaction.operation = isInitialized
@@ -437,6 +446,7 @@ export function EventActionDetailsMapper(input: EventActionDetailsMapperInput) {
         transaction.sender = {
           short: Address.toShort(friendlyAddress),
           friendly: friendlyAddress,
+          raw: Address(data.contract.address).toRaw(),
         };
 
         transaction.amount = formatter.formatNano(data.ton_attached, {
