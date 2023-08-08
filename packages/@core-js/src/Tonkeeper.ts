@@ -62,7 +62,9 @@ export class Tonkeeper {
     );
   }
 
-  public async init() {
+  public async init(address: string) {
+
+
     //Load data from storage
     // const info = await this.storage.load('tonkeeper');
     // if (info) {
@@ -70,14 +72,14 @@ export class Tonkeeper {
     //   //
     //   //
     // }
-    const locked = await this.storage.getItem('locked');
-    this.securitySettings.biometryEnabled =
-      (await this.storage.getItem('biometry_enabled')) === 'yes';
-    if (locked === null || Boolean(locked) === true) {
-      this.securitySettings.locked = true;
-      // await this.wallet.getPrivateKey();
-    }
-  }
+    // const locked = await this.storage.getItem('locked');
+    // this.securitySettings.biometryEnabled =
+    //   (await this.storage.getItem('biometry_enabled')) === 'yes';
+    // if (locked === null || Boolean(locked) === true) {
+    //   this.securitySettings.locked = true;
+    //   // await this.wallet.getPrivateKey();
+    // }
+
 
   public async lock() {
     this.securitySettings.locked = true;

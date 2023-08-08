@@ -1,5 +1,5 @@
 import { AccountEventsMapper } from '@tonkeeper/shared/mappers/AccountEventsMapper';
-import { useEventsByAccount } from '@tonkeeper/core/src/query/useEventsByAccount';
+
 import { TransactionsList } from '@tonkeeper/shared/components';
 import { Screen, Text, Button } from '@tonkeeper/uikit';
 import { StyleSheet, View } from 'react-native';
@@ -9,12 +9,14 @@ import React, { memo } from 'react';
 
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { useNavigation } from '@tonkeeper/router';
+import { useAccountTransactions } from '@tonkeeper/shared/query/hooks/useAccountTransactions'
+
 
 export const ActivityScreen = memo(() => {
   const wallet = useWallet();
-  const events = useEventsByAccount(wallet.address.raw, {
+  const events = useAccountTransactions(wallet.address.raw, {
     modify: (data) => AccountEventsMapper(data ?? [], wallet.address.raw),
-    fetchMoreParams: (lastPage) => ({ before_lt: lastPage.next_from }),
+    fetchMoreParams: (lastPage) => lastPage.next_from,
     fetchMoreEnd: (data) => data.events.length < 1,
   });
 

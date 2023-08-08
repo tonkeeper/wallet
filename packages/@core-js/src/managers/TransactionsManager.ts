@@ -1,7 +1,7 @@
 import EventSource from 'react-native-sse';
-import { Address, AppConfig, TonAPI } from '@tonkeeper/core';
+// import { AppConfig } from './AppConfig';
 import { QueryClient } from 'react-query';
-import { AccountEvent, Event } from '../TonAPI';
+import { AccountEvent, Event, TonAPI } from '../TonAPI';
 
 export class TransactionsManager {
   constructor(
@@ -53,12 +53,18 @@ export class TransactionsManager {
       limit: 50,
     });
 
+    // TODO: change
+    if (error) {
+      throw error;
+    }
+
     data.events.map((event) => {
       this.queryClient.setQueryData(['account_event', event.event_id], event);
     });
 
     return data.events;
   }
+
 
   public async fetchById(txId: string) {
     const { eventId, actionIndex } = this.txIdToEventId(txId);

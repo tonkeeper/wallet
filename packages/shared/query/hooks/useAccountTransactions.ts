@@ -1,7 +1,7 @@
-import { AccountEvents } from '../TonAPI/TonAPIGenerated';
 import { useInfiniteQuery, useQueryClient, InfiniteData } from 'react-query';
-import { useTonAPI } from '../TonAPI';
+import { AccountEvents, useTonAPI } from '@tonkeeper/core/src/TonAPI';
 import { useMemo, useState, useCallback } from 'react';
+import { tonkeeper } from '../../tonkeeper';
 
 type Options<TData = unknown, TModifiedData = unknown> = {
   fetchMoreParams: (data: TData) => Record<string, any>;
@@ -9,12 +9,11 @@ type Options<TData = unknown, TModifiedData = unknown> = {
   fetchMoreEnd?: (data: TData) => boolean;
 };
 
-export const useEventsByAccount = <TData = AccountEvents, TModifiedData = TData>(
-  accountId: string,
+export const useAccountTransactions = <TData = AccountEvents, TModifiedData = TData>(
   options: Options<TData, TModifiedData>,
 ) => {
   const { modify = (data) => data } = options;
-  const queryKey = ['events', accountId];
+  const queryKey = ['events', '1'];
   const [fetchMoreEnd, setFetchMoreEnd] = useState(false);
   const queryClient = useQueryClient();
   const tonapi = useTonAPI();
@@ -30,23 +29,10 @@ export const useEventsByAccount = <TData = AccountEvents, TModifiedData = TData>
   } = useInfiniteQuery<TModifiedData>({
     getNextPageParam: (data) =>
       data ? options.fetchMoreParams(data as TData) : undefined,
-    queryKey: ['events', accountId],
-    enabled: !!accountId,
+    queryKey: ['events', '1'],
     queryFn: async (lastPage) => {
-      const { data, error } = await tonapi.accounts.getEventsByAccount({
-        ...lastPage.pageParam,
-        subject_only: true,
-        accountId,
-        limit: 50,
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      const result = data as TData;
-
-      // console.warn(data.events[0].in_progress)
+      const events = await tonkeeper.transactions.fetch(lastPage.pageParam);
+      const result = events as TData;
 
       if (options.fetchMoreEnd) {
         const isFetchMoreEnd = options.fetchMoreEnd(result);
@@ -55,17 +41,12 @@ export const useEventsByAccount = <TData = AccountEvents, TModifiedData = TData>
         }
       }
 
-
-      data.events.map((event) => {
-        queryClient.setQueryData(['account_event', event.event_id], event);
-      });
-
       return data as TModifiedData; //modify((data as TData)) as TModifiedData;
     }
   });
 
   const flatData = useMemo(() => {
-    return data?.pages.map((data) => data.events).flat();
+    return data?.pages.map((data) => data.events).flat(1);
   }, [data]);
 
   const modifed = useMemo(() => {
