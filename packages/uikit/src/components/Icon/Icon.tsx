@@ -11,7 +11,8 @@ type IconColors =
   | 'iconTertiary'
   | 'iconPrimaryAlternate'
   | 'constantWhite'
-  | 'accentBlue';
+  | 'accentBlue'
+  | 'accentGreen';
 
 export interface IconProps {
   name: IconNames;

@@ -11,20 +11,16 @@ export const useTransaction = (transactionId: string, options: any = {}) => {
     const actionIndex = ids[1] ?? 0;
     const eventId = ids[0];
 
-
     const data = queryClient.getQueriesData(['account_event', eventId]);
 
-    const event = data?.[0]?.[1] as any;    
+    const event = data?.[0]?.[1] as any;
 
     if (event) {
       const action = event.actions[actionIndex];
 
-
       return options?.modify({ action, event });
-      
     }
-    
-    
+
     return {};
   }, [transactionId]);
-}
+};
