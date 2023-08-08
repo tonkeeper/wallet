@@ -401,7 +401,13 @@
 
   "transactionDetails": {
     "received_time": "Получено  %{time}",
-    "sent_time": "Отправлено %{time}"
+    "sent_time": "Отправлено %{time}",
+    "sender": "Отправитель",
+    "sender_address": "Адрес отправителя",
+    "recipient": "Получатель",
+    "recipient_address": "Адрес получателя",
+    "comment": "Комментарий",
+    "transaction": "Транзакция"
   },
 
   "browser": {

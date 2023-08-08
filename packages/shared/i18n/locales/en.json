@@ -393,7 +393,13 @@
 
   "transactionDetails": {
     "received_time": "Received on %{time}",
-    "sent_time": "Sent on %{time}"
+    "sent_time": "Sent on %{time}",
+    "sender": "Sender",
+    "sender_address": "Sender address",
+    "recipient": "Recipient",
+    "recipient_address": "Recipient address",
+    "comment": "Comment",
+    "transaction": "Transaction"
   },
 
   "browser": {

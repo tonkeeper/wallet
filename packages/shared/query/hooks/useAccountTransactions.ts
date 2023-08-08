@@ -2,17 +2,18 @@ import { useInfiniteQuery, useQueryClient, InfiniteData } from 'react-query';
 import { AccountEvents, useTonAPI } from '@tonkeeper/core/src/TonAPI';
 import { useMemo, useState, useCallback } from 'react';
 import { tonkeeper } from '../../tonkeeper';
+import { AccountEventsMapper } from '../../mappers/AccountEventsMapper';
 
 type Options<TData = unknown, TModifiedData = unknown> = {
-  fetchMoreParams: (data: TData) => Record<string, any>;
+  // fetchMoreParams: (data: TData) => Record<string, any>;
   modify?: (data: TData) => TModifiedData;
   fetchMoreEnd?: (data: TData) => boolean;
 };
 
 export const useAccountTransactions = <TData = AccountEvents, TModifiedData = TData>(
+  walletAddress: string,
   options: Options<TData, TModifiedData>,
 ) => {
-  const { modify = (data) => data } = options;
   const queryKey = ['events', '1'];
   const [fetchMoreEnd, setFetchMoreEnd] = useState(false);
   const queryClient = useQueryClient();
@@ -27,8 +28,7 @@ export const useAccountTransactions = <TData = AccountEvents, TModifiedData = TD
     fetchNextPage,
     refetch,
   } = useInfiniteQuery<TModifiedData>({
-    getNextPageParam: (data) =>
-      data ? options.fetchMoreParams(data as TData) : undefined,
+    getNextPageParam: (data) => data?.next_from,
     queryKey: ['events', '1'],
     queryFn: async (lastPage) => {
       const events = await tonkeeper.transactions.fetch(lastPage.pageParam);
@@ -41,17 +41,19 @@ export const useAccountTransactions = <TData = AccountEvents, TModifiedData = TD
         }
       }
 
-      return data as TModifiedData; //modify((data as TData)) as TModifiedData;
+      return result as TModifiedData; //modify((data as TData)) as TModifiedData;
     }
   });
 
   const flatData = useMemo(() => {
-    return data?.pages.map((data) => data.events).flat(1);
+    return data?.pages.map((data) => data?.events).flat(1);
   }, [data]);
 
   const modifed = useMemo(() => {
-    return (flatData ? modify(flatData as TData) : flatData) as TModifiedData;
-  }, [flatData]);
+
+    return AccountEventsMapper(flatData ?? [] as TData, walletAddress)
+    // return (flatData ? modify(flatData as TData) : flatData) as TModifiedData;
+  }, [flatData, walletAddress]);
 
   const fetchMore = useCallback(() => {
     if (!isFetchingNextPage && !fetchMoreEnd) {

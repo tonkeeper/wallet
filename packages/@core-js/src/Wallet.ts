@@ -1,3 +1,4 @@
+import { AddressFormats } from './Address';
 import { Vault } from './Vault';
 
 enum Network {
@@ -36,9 +37,9 @@ type WalletInfo = {
 
 export class Wallet {
   public identity: WalletIdentity | null = null;
-  public address = {
+  public address: AddressFormats = {
     raw: '',
-  }
+  };
 
   // public current = null;
 

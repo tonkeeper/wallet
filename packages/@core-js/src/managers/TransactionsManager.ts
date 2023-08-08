@@ -1,7 +1,8 @@
 import EventSource from 'react-native-sse';
 // import { AppConfig } from './AppConfig';
 import { QueryClient } from 'react-query';
-import { AccountEvent, Event, TonAPI } from '../TonAPI';
+import { AccountEvent, ActionTypeEnum, Event, TonAPI } from '../TonAPI';
+import { Address } from '../Address';
 
 export class TransactionsManager {
   constructor(
@@ -9,6 +10,10 @@ export class TransactionsManager {
     private queryClient: QueryClient,
     private tonapi: TonAPI, // private eventSource: EventSource
   ) {}
+
+  public setAccountId(accountId: string) {
+    this.accountId = accountId;
+  }
 
   // private listenAccountEvents() {
   //    // this.eventSource = new EventSource(`${config.get('tonApiKey')}/v2/sse/accounts/transactions?accounts=${this.accountId}`, {
@@ -57,12 +62,13 @@ export class TransactionsManager {
     if (error) {
       throw error;
     }
+    
 
     data.events.map((event) => {
       this.queryClient.setQueryData(['account_event', event.event_id], event);
-    });
+    });  
 
-    return data.events;
+    return data;
   }
 
 
@@ -79,6 +85,7 @@ export class TransactionsManager {
 
   private mapAccountEvent(event: Event, actionIndex: number) {
     const rawAction = event.actions[actionIndex];
+
     const action = {
       ...rawAction,
       data: rawAction[rawAction.type],
@@ -86,7 +93,7 @@ export class TransactionsManager {
 
     const isReceive = detectReceive(this.accountId, action);
 
-    return {
+    const transaction = {
       ...event,
       id: event.event_id,
 
@@ -95,7 +102,13 @@ export class TransactionsManager {
 
       isReceive,
       action: action,
-    };
+    }
+
+    if (rawAction.type === ActionTypeEnum.TonTransfer) {
+      transaction.encryptedComment = action.data.encrypted_comment
+    }
+
+    return transaction;
   }
 
   public prefetch() {

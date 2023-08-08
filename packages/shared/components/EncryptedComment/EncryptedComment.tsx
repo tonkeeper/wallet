@@ -94,8 +94,8 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
       <List.Item
         label={
           <View style={styles.encryptedCommentContainer}>
-            <Text style={styles.labelText.static} color="textTertiary" type="label1">
-              comment
+            <Text style={styles.labelText.static} color="textSecondary" type="body1">
+              {t('transactionDetails.comment')}
             </Text>
             <View style={styles.encryptedCommentIconContainer}>
               <Icon name="ic-lock-16" color="accentGreen" />
@@ -103,15 +103,17 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
           </View>
         }
         value={
-          <SpoilerView isOn={!decryptedComment}>
-            <TouchableWithoutFeedback
-              onPress={
-                decryptedComment ? copyText(decryptedComment) : handleDecryptComment
-              }
-            >
-              <Text type="label1">{decryptedComment || encryptedCommentMock}</Text>
-            </TouchableWithoutFeedback>
-          </SpoilerView>
+          <View style={styles.listItemSpoilerView}>
+            <SpoilerView isOn={!decryptedComment}>
+              <TouchableWithoutFeedback
+                onPress={
+                  decryptedComment ? copyText(decryptedComment) : handleDecryptComment
+                }
+              >
+                <Text type="label1">{decryptedComment || encryptedCommentMock}</Text>
+              </TouchableWithoutFeedback>
+            </SpoilerView>
+          </View>
         }
       />
     );
@@ -152,4 +154,7 @@ const styles = Steezy.create({
     paddingTop: 7.5,
     paddingBottom: 8.5,
   },
+  listItemSpoilerView: {
+    maxWidth: 200
+  }
 });

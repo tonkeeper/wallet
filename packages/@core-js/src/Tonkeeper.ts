@@ -3,6 +3,7 @@ import { Vault } from './Vault';
 import { TransactionsManager } from './managers/TransactionsManager';
 import { QueryClient } from 'react-query';
 import { TonAPI } from './TonAPI';
+import { Address } from './Address';
 
 interface IStorage {
   setItem(key: string, value: string): Promise<any>;
@@ -49,7 +50,7 @@ export class Tonkeeper {
   constructor(options: TonkeeperOptions) {
     this.wallet = new Wallet(options.vault);
     this.permissions = new PermissionsManager();
-    
+
     this.queryClient = options.queryClient;
     this.storage = options.storage;
     this.tonapi = options.tonapi;
@@ -63,8 +64,16 @@ export class Tonkeeper {
   }
 
   public async init(address: string) {
-
-
+    try {
+      if (address) {
+        if (Address.isValid(address)) {
+          this.transactions.setAccountId(Address(address).toRaw());
+          // this.transactions.address = ;
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
     //Load data from storage
     // const info = await this.storage.load('tonkeeper');
     // if (info) {
@@ -79,7 +88,7 @@ export class Tonkeeper {
     //   this.securitySettings.locked = true;
     //   // await this.wallet.getPrivateKey();
     // }
-
+  }
 
   public async lock() {
     this.securitySettings.locked = true;
