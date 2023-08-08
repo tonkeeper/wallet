@@ -1,23 +1,22 @@
 import {
-  Steezy,
-  Modal,
-  View,
+  Icon,
   List,
+  Modal,
+  Pressable,
+  Steezy,
   SText as Text,
   TonIcon,
   useTheme,
-  Icon,
-  Pressable,
+  View,
 } from '@tonkeeper/uikit';
 import Clipboard from '@react-native-community/clipboard';
-import { memo, useCallback } from 'react';
+import React, { memo, useCallback } from 'react';
 import { useTransaction } from '@tonkeeper/core/src/query/useTransaction';
-import {
-  EventActionDetailsMapper,
-} from '../mappers/AccountEventsMapper';
+import { EventActionDetailsMapper } from '../mappers/AccountEventsMapper';
 import { useNavigation } from '@tonkeeper/router';
 import { config } from '../config';
 import { ActionTypeEnum } from '@tonkeeper/core/src/TonAPI';
+import { EncryptedComment, EncryptedCommentLayout } from '../components';
 
 type TransactionModalParams = {
   transactionId: string;
@@ -110,6 +109,15 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
               subvalue={'$0.4'}
               label="Fee"
             />
+            {transaction.encryptedComment && (
+              <EncryptedComment
+                transactionId={transaction.id}
+                transactionType={transaction.type}
+                encryptedComment={transaction.encryptedComment}
+                sender={transaction.sender}
+                layout={EncryptedCommentLayout.LIST_ITEM}
+              />
+            )}
             {transaction.comment && (
               <List.Item
                 onPress={copyText(transaction.comment)}
@@ -134,7 +142,9 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
               }}
             >
               <Icon name="ic-globe-16" color="constantWhite" />
-              <Text type="label2" style={{ marginLeft: 8 }}>Transaction</Text>
+              <Text type="label2" style={{ marginLeft: 8 }}>
+                Transaction
+              </Text>
               <Text type="label2" color="textTertiary">
                 {' '}
                 {transaction.id.substring(0, 8)}

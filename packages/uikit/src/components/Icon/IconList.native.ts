@@ -27,6 +27,7 @@ export const IconList = {
   'ic-information-circle-16': require('../../../assets/icons/png/ic-information-circle-16.png'),
   'ic-link-bold-16': require('../../../assets/icons/png/ic-link-bold-16.png'),
   'ic-loader-small-16': require('../../../assets/icons/png/ic-loader-small-16.png'),
+  'ic-lock-16': require('../../../assets/icons/png/ic-lock-16.png'),
   'ic-magnifying-glass-16': require('../../../assets/icons/png/ic-magnifying-glass-16.png'),
   'ic-pencil-16': require('../../../assets/icons/png/ic-pencil-16.png'),
   'ic-sale-badge-16': require('../../../assets/icons/png/ic-sale-badge-16.png'),

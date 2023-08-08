@@ -122,10 +122,13 @@ export type MappedEventDate = {
 };
 
 export type MappedEventAction = {
+  sender?: SenderAddress;
+  encryptedComment?: { cipher_text: string; encryption_type: string };
   contentType: MappedEventItemType.Action;
   type: ActionTypeEnum | 'SimplePreview';
   subtitle?: string;
   id: string;
+  eventId: string;
   inProgress?: boolean;
   bottomCorner?: boolean;
   topCorner?: boolean;
@@ -149,7 +152,7 @@ export type TransactionDetails = {
   id: string;
   inProgress?: boolean;
   sender?: SenderAddress;
-
+  encryptedComment?: { cipher_text: string; encryption_type: string };
 
   operation: string;
   amount?: string;
@@ -164,7 +167,6 @@ export type TransactionDetails = {
   picture?: string | null;
   isFailed?: boolean;
 };
-
 
 export type GroupedActionsByDate = { [date: string]: MappedEventAction[] };
 
