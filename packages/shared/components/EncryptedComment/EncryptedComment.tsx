@@ -12,6 +12,7 @@ import { useUnlockVault } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOpe
 import { TouchableWithoutFeedback } from 'react-native';
 import Clipboard from '@react-native-community/clipboard';
 import Animated from 'react-native-reanimated';
+import { Account } from '@tonkeeper/core/src/TonAPI';
 
 export enum EncryptedCommentLayout {
   LIST_ITEM,
@@ -22,7 +23,7 @@ export interface EncryptedCommentProps {
   transactionId: TransactionDetails['id'];
   transactionType: TransactionDetails['type'] | 'SimplePreview';
   encryptedComment: TransactionDetails['encryptedComment'];
-  sender: NonNullable<TransactionDetails['sender']>;
+  sender: Account;
   layout: EncryptedCommentLayout;
   backgroundStyle?: { backgroundColor: string };
 }
@@ -84,7 +85,7 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
   );
 
   const handleDecryptComment = useCallback(() => {
-    decryptComment(actionKey, props.encryptedComment, props.sender.raw);
+    decryptComment(actionKey, props.encryptedComment, props.sender.address);
   }, [decryptComment]);
 
   const encryptedCommentMock = 's'.repeat(encryptedCommentLength);

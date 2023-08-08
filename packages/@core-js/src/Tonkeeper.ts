@@ -1,9 +1,8 @@
-import { Wallet } from './Wallet';
-import { Vault } from './Vault';
-import { TransactionsManager } from './managers/TransactionsManager';
 import { QueryClient } from 'react-query';
-import { TonAPI } from './TonAPI';
 import { Address } from './Address';
+import { Wallet } from './Wallet';
+import { TonAPI } from './TonAPI';
+import { Vault } from './Vault';
 
 interface IStorage {
   setItem(key: string, value: string): Promise<any>;
@@ -31,7 +30,7 @@ type SecuritySettings = {
 
 export class Tonkeeper {
   public permissions: PermissionsManager;
-  public wallet: Wallet;
+  public wallet!: Wallet;
   public wallets = [];
 
   public securitySettings: SecuritySettings = {
@@ -45,30 +44,22 @@ export class Tonkeeper {
   private vault: Vault;
   private tonapi: TonAPI;
 
-  public transactions: TransactionsManager;
-
   constructor(options: TonkeeperOptions) {
-    this.wallet = new Wallet(options.vault);
-    this.permissions = new PermissionsManager();
-
     this.queryClient = options.queryClient;
     this.storage = options.storage;
     this.tonapi = options.tonapi;
     this.vault = options.vault;
 
-    this.transactions = new TransactionsManager(
-      this.wallet.address.raw,
-      this.queryClient,
-      this.tonapi,
-    );
+    this.permissions = new PermissionsManager();
   }
 
   public async init(address: string) {
     try {
       if (address) {
         if (Address.isValid(address)) {
-          this.transactions.setAccountId(Address(address).toRaw());
-          // this.transactions.address = ;
+          this.wallet = new Wallet(this.queryClient, this.tonapi, this.vault, {
+            address: address,
+          });
         }
       }
     } catch (err) {

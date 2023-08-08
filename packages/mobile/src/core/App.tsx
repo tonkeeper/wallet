@@ -24,7 +24,6 @@ import { tonapi } from '@tonkeeper/shared/tonapi';
 
 import { MobilePasscodeScreen } from '@tonkeeper/shared/screens/MobilePasscodeScreen';
 import { queryClient } from '@tonkeeper/shared/queryClient';
-import { tonkeeper } from '@tonkeeper/shared/tonkeeper';
 
 const TonThemeProvider = ({ children }) => {
   const accent = useSelector(accentSelector);
@@ -47,17 +46,17 @@ const TonThemeProvider = ({ children }) => {
 };
 
 export function App() {
-  const [loaded, setLoaded] = useState(false);
+  // const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
-    tonkeeper.init().then(() => {
-      setLoaded(true);
-    })
-  }, []);  
+  // useEffect(() => {
+  //   tonkeeper.init().then(() => {
+  //     setLoaded(true);
+  //   })
+  // }, []);  
 
-  if (!loaded) {
-    return false;
-  }
+  // if (!loaded) {
+  //   return false;
+  // }
 
   return (
     <KeyboardProvider>

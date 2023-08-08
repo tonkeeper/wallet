@@ -1,8 +1,8 @@
 import { useInfiniteQuery, useQueryClient, InfiniteData } from 'react-query';
 import { AccountEvents, useTonAPI } from '@tonkeeper/core/src/TonAPI';
 import { useMemo, useState, useCallback } from 'react';
-import { tonkeeper } from '../../tonkeeper';
 import { AccountEventsMapper } from '../../mappers/AccountEventsMapper';
+import { tk } from '../../tonkeeper';
 
 type Options<TData = unknown, TModifiedData = unknown> = {
   // fetchMoreParams: (data: TData) => Record<string, any>;
@@ -31,7 +31,7 @@ export const useAccountTransactions = <TData = AccountEvents, TModifiedData = TD
     getNextPageParam: (data) => data?.next_from,
     queryKey: ['events', '1'],
     queryFn: async (lastPage) => {
-      const events = await tonkeeper.transactions.fetch(lastPage.pageParam);
+      const events = await tk.wallet.transactions.fetch(lastPage.pageParam);
       const result = events as TData;
 
       if (options.fetchMoreEnd) {

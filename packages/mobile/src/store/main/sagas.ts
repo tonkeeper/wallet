@@ -64,7 +64,7 @@ import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 import { useSwapStore } from '$store/zustand/swap';
 import * as SecureStore from 'expo-secure-store';
 import { useRatesStore } from '$store/zustand/rates';
-import { tonkeeper } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 SplashScreen.preventAutoHideAsync()
   .then((result) =>
@@ -210,7 +210,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     yield put(subscriptionsActions.loadSubscriptions());
     const { wallet: walletNew } = yield select(walletSelector);
     const addr = yield call([walletNew.ton, 'getAddress']);
-    yield call([tonkeeper, 'init'], addr);
+    yield call([tk, 'init'], addr);
     useSwapStore.getState().actions.fetchAssets();
   } else {
     yield put(walletActions.endLoading());

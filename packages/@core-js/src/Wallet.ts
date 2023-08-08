@@ -1,5 +1,9 @@
-import { AddressFormats } from './Address';
+import { QueryClient } from 'react-query';
+import { Address, AddressFormats } from './Address';
+import { TonAPI } from './TonAPI';
 import { Vault } from './Vault';
+
+import { TransactionsManager } from './managers/TransactionsManager';
 
 enum Network {
   mainnet = -239,
@@ -37,13 +41,23 @@ type WalletInfo = {
 
 export class Wallet {
   public identity: WalletIdentity | null = null;
-  public address: AddressFormats = {
-    raw: '',
-  };
+  public address: AddressFormats;
+  public transactions: TransactionsManager;
 
-  // public current = null;
+  constructor(
+    private queryClient: QueryClient,
+    private tonapi: TonAPI,
+    private vault: Vault,
+    walletInfo: any,
+  ) {
+    this.address = Address(walletInfo.address).toAll();
 
-  constructor(private vault: Vault) {}
+    this.transactions = new TransactionsManager(
+      this.address.raw,
+      this.queryClient,
+      this.tonapi,
+    );
+  }
 
   public async create({ name, passcode }: { passcode: string; name?: string }) {}
 
@@ -55,17 +69,7 @@ export class Wallet {
     passcode: string;
     words: string;
     name: string;
-  }) {
-
-  }
-
-  public async enableBiometry() {
-
-  }
-
-  public async disableBiometry() {
-
-  }
+  }) {}
 
   public async getPrivateKey(): Promise<string> {
     if (false) {

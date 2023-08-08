@@ -2,7 +2,7 @@ import { SheetActions, navigation, useNavigation } from '@tonkeeper/router';
 import Clipboard from '@react-native-community/clipboard';
 import { ActionTypeEnum } from '@tonkeeper/core/src/TonAPI';
 import { Fragment, memo, useCallback } from 'react';
-import { tonkeeper } from '../tonkeeper';
+import { tk } from '../tonkeeper';
 import { config } from '../config';
 import { formatTransactionDetailsTime } from '../utils/date';
 import { t } from '../i18n';
@@ -14,21 +14,19 @@ import {
   Icon,
   List,
   Modal,
-  Pressable,
   Steezy,
   SText as Text,
   TonIcon,
-  useTheme,
   View,
 } from '@tonkeeper/uikit';
 import { EncryptedComment, EncryptedCommentLayout } from '../components/EncryptedComment';
-import { useUnlockVault } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/useUnlockVault';
-import { useGetTokenPrice, useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
+import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 import { useSelector } from 'react-redux';
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
+import { Transaction } from '@tonkeeper/core/src/managers/TransactionsManager';
 
 type TransactionModalProps = {
-  transaction: any;
+  transaction: Transaction;
 };
 
 export const TransactionModal = memo<TransactionModalProps>((props) => {
@@ -39,14 +37,16 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
 
   const handlePressViewExplorer = useCallback(() => {
     nav.navigate('DAppBrowser', {
-      url: config.get('transactionExplorer').replace('%s', tx.id),
+      url: config.get('transactionExplorer').replace('%s', tx.hash),
     });
-  }, []);
+  }, [tx.hash]);
 
   // TODO: replace on useCopyText
-  const copyText = useCallback((value: string) => {
-    Clipboard.setString(value);
-    // Toast.success(t('copied')); // TODO: Move toast to shared
+  const copyText = useCallback((value?: string) => {
+    if (value) {
+      Clipboard.setString(value);
+      // Toast.success(t('copied')); // TODO: Move toast to shared
+    }
   }, []);
 
   const time = formatTransactionDetailsTime(new Date(tx.timestamp * 1000));
@@ -65,21 +65,34 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
     absolute: true,
   });
 
-  const isZeroExtra = new BigNumber(tx.extra).isLessThan(0);
+  const isZeroExtra = new BigNumber(tx.extra ?? 0).isLessThan(0);
 
-  const fiat = formatter.format(tokenPrice.fiat * parseFloat(formatter.fromNano(tx.action.data?.amount ?? 0)), {
-    currency: fiatCurrency,
-    currencySeparator: 'wide',
-  });
+  const fiat = formatter.format(
+    tokenPrice.fiat * parseFloat(formatter.fromNano(tx.action?.amount ?? 0)),
+    {
+      currency: fiatCurrency,
+      currencySeparator: 'wide',
+    },
+  );
 
-  const amount = formatter.formatNano(tx.action.data?.amount ?? 0, {
+  const amount = formatter.formatNano(tx.action?.amount ?? 0, {
     // prefix: '-',
     formatDecimals: 9,
     withoutTruncate: true,
     postfix: 'TON',
   });
 
-  
+  const timeLangKey =
+    tx.destination === 'in'
+      ? 'received_time'
+      : tx.destination === 'out'
+      ? 'sent_time'
+      : undefined;
+  const timeLabel = timeLangKey
+    ? t(`transactionDetails.${timeLangKey}`, {
+        time,
+      })
+    : time;
 
   return (
     <Modal>
@@ -93,73 +106,77 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
             <Text type="h2" style={styles.amountText}>
               {amount}
             </Text>
-            <Text type="body1" color="textSecondary" style={styles.fiatText}>{fiat}</Text>
+            <Text type="body1" color="textSecondary" style={styles.fiatText}>
+              {fiat}
+            </Text>
             <Text type="body1" color="textSecondary" style={styles.timeText}>
-              {t(`transactionDetails.${tx.isReceive ? 'received_time' : 'sent_time'}`, {
-                time,
-              })}
+              {timeLabel}
             </Text>
           </View>
           <List>
-            {tx.isReceive ? (
+            {tx.destination === 'in' ? (
               <Fragment>
-                {tx.sender?.name && (
+                {tx.action.sender?.name && (
                   <List.Item
-                    onPress={() => copyText(tx.sender.name)}
-                    value={tx.sender.name}
+                    onPress={() => copyText(tx.action.sender.name)}
+                    value={tx.action.sender.name}
                     label={t('transactionDetails.sender')}
                   />
                 )}
-                {tx.sender && (
+                {tx.action.sender && (
                   <List.Item
-                    onPress={() => copyText(Address(tx.sender.address).toFriendly())}
+                    onPress={() =>
+                      copyText(Address(tx.action.sender.address).toFriendly())
+                    }
                     label={t('transactionDetails.sender_address')}
                     subtitle={
                       <Text type="label1" numberOfLines={1} ellipsizeMode="middle">
-                        {Address(tx.sender.address).toFriendly()}
+                        {Address(tx.action.sender.address).toFriendly()}
                       </Text>
                     }
                   />
                 )}
               </Fragment>
-            ) : (
+            ) : tx.destination === 'out' ? (
               <Fragment>
-                {tx.recipient?.name && (
+                {tx.action.recipient?.name && (
                   <List.Item
-                    onPress={() => copyText(tx.recipient.name)}
-                    value={tx.recipient.name}
+                    onPress={() => copyText(tx.action.recipient.name)}
+                    value={tx.action.recipient.name}
                     label={t('transactionDetails.recipient')}
                   />
                 )}
-                {tx.recipient && (
+                {tx.action.recipient && (
                   <List.Item
-                    onPress={() => copyText(Address(tx.recipient.address).toFriendly())}
+                    onPress={() =>
+                      copyText(Address(tx.action.recipient.address).toFriendly())
+                    }
                     label={t('transactionDetails.recipient_address')}
                     subtitle={
                       <Text type="label1" numberOfLines={1} ellipsizeMode="middle">
-                        {Address(tx.recipient.address).toFriendly()}
+                        {Address(tx.action.recipient.address).toFriendly()}
                       </Text>
                     }
                   />
                 )}
               </Fragment>
-            )}
+            ) : null}
             <List.Item
               label={isZeroExtra ? t('transaction_fee') : t('transaction_refund')}
               onPress={() => copyText(fee)}
               value={fee}
               subvalue={feeFiat}
             />
-            {tx.encryptedComment && (
+            {tx.encrypted_comment && (
               <EncryptedComment
-                transactionId={tx.id}
-                transactionType={tx.type}
-                encryptedComment={tx.encryptedComment}
-                sender={tx.sender}
                 layout={EncryptedCommentLayout.LIST_ITEM}
+                encryptedComment={tx.encrypted_comment}
+                transactionType={tx.action.type}
+                transactionId={tx.hash}
+                sender={tx.sender!}
               />
             )}
-            {tx.comment && (
+            {!!tx.comment && (
               <List.Item
                 onPress={() => copyText(tx.comment)}
                 label={t('transactionDetails.comment')}
@@ -174,7 +191,7 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
                 {t('transactionDetails.transaction')}
               </Text>
               <Text type="label2" color="textTertiary">
-                {` ${tx.id.substring(0, 8)}`}
+                {` ${tx.hash.substring(0, 8)}`}
               </Text>
             </Button>
           </View>
@@ -225,12 +242,12 @@ export async function openTransactionDetails(txId: string) {
   };
 
   try {
-    const cachedTransaction = tonkeeper.transactions.getCachedById(txId);
+    const cachedTransaction = tk.wallet.transactions.getCachedById(txId);
     if (cachedTransaction) {
       openModal(cachedTransaction);
     } else {
       // Toast.loading();
-      const transaction = await tonkeeper.transactions.fetchById(txId);
+      const transaction = await tk.wallet.transactions.fetchById(txId);
       if (transaction) {
         openModal(transaction);
       }

@@ -9,13 +9,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const storage = {
   setItem: AsyncStorage.setItem,
   getItem: AsyncStorage.getItem,
-  set: AsyncStorage.setItem
+  set: AsyncStorage.setItem,
 };
 
-export const tonkeeper = new Tonkeeper({
+export const tk = new Tonkeeper({
   vault: new MobileVault(MobilePasscodeController),
   queryClient,
   tonapi,
   // sse: {},
-  storage
+  storage,
 });

@@ -1,35 +1,35 @@
 import EventSource from 'react-native-sse';
 // import { AppConfig } from './AppConfig';
 import { QueryClient } from 'react-query';
-import { AccountEvent, ActionTypeEnum, Event, TonAPI } from '../TonAPI';
+import { Account, ActionTypeEnum, Event, TonAPI } from '../TonAPI';
 import { Address } from '../Address';
 
 export class TransactionsManager {
+  sse: EventSource;
+
   constructor(
     private accountId: string,
     private queryClient: QueryClient,
-    private tonapi: TonAPI, // private eventSource: EventSource
-  ) {}
-
-  public setAccountId(accountId: string) {
-    this.accountId = accountId;
+    private tonapi: TonAPI, // private eventSource:
+  ) {
+    // this.sse = this.sse.listen(`/v2/sse/accounts/transactions?accounts=${this.accountId}`);
+    this.sse = new EventSource(
+      `https://tonapi.io/v2/sse/accounts/transactions?accounts=${this.accountId}`,
+      {
+        headers: {
+          // Authorization: `Bearer ${config.get('tonApiV2Key')}`,
+        },
+      },
+    );
+    
+    this.sse.addEventListener('open', () => {
+      console.log('[TransactionsManager]: start listen transactions for', this.accountId);
+    });
+    this.sse.addEventListener('error', (err) => {
+      console.log('[TransactionsManager]: error listen transactions', err);
+    });
+    this.sse.addEventListener('message', () => this.refetch());
   }
-
-  // private listenAccountEvents() {
-  //    // this.eventSource = new EventSource(`${config.get('tonApiKey')}/v2/sse/accounts/transactions?accounts=${this.accountId}`, {
-  //   //   headers: {
-  //   //     Authorization: `Bearer ${config.get('tonApiV2Key')}`,
-  //   //   }
-  //   // });
-  //   this.sse = this.eventSource.listen(`/v2/sse/accounts/transactions?accounts=${this.accountId}`);
-  //   this.sse.addEventListener('open', () => {
-  //     console.log('[TransactionsManager]: start listen transactions for', this.accountId);
-  //   });
-  //   this.sse.addEventListener('error', (err) => {
-  //     console.log('[TransactionsManager]: error listen transactions', err);
-  //   });
-  //   this.sse.addEventListener('message', () => this.refetch());
-  // }
 
   private txIdToEventId(txId: string) {
     const ids = txId.split('_');
@@ -62,15 +62,13 @@ export class TransactionsManager {
     if (error) {
       throw error;
     }
-    
 
     data.events.map((event) => {
       this.queryClient.setQueryData(['account_event', event.event_id], event);
-    });  
+    });
 
     return data;
   }
-
 
   public async fetchById(txId: string) {
     const { eventId, actionIndex } = this.txIdToEventId(txId);
@@ -88,24 +86,20 @@ export class TransactionsManager {
 
     const action = {
       ...rawAction,
-      data: rawAction[rawAction.type],
+      ...rawAction[rawAction.type],
     };
 
-    const isReceive = detectReceive(this.accountId, action);
+    const destination = this.defineDestination(this.accountId, action);
 
-    const transaction = {
+    const transaction: Transaction = {
       ...event,
-      id: event.event_id,
-
-      sender: action.data.sender,
-      recipient: action.data.recipient,
-
-      isReceive,
+      hash: event.event_id,
+      destination,
       action: action,
-    }
+    };
 
     if (rawAction.type === ActionTypeEnum.TonTransfer) {
-      transaction.encryptedComment = action.data.encrypted_comment
+      transaction.encrypted_comment = action.encrypted_comment;
     }
 
     return transaction;
@@ -120,19 +114,33 @@ export class TransactionsManager {
 
   public refetch() {}
 
-  public destroy() {}
-}
-
-export function detectReceive(walletAddress: string, data: ActionsData['data']) {
-  if (data && 'recipient' in data) {
-    return Address.compare(data.recipient?.address, walletAddress);
+  public destroy() {
+    this.sse.close();
   }
 
-  return false;
+  // Utils
+  private defineDestination(
+    accountId: string,
+    data: any//ActionsData['data'],
+  ): TransactionDestination {
+    if (data && 'recipient' in data) {
+      return Address.compare(data.recipient.address, accountId) ? 'in' : 'out';
+    }
+
+    return 'unknown';
+  }
 }
 
-type AccountEventDetailsMapperInput = {
-  event: Event;
-  actionIndex: number;
-  accountId: string;
+export type TransactionDestination = 'out' | 'in' | 'unknown';
+
+export type Transaction = {
+  hash: string;
+  sender?: Account;
+  recipient?: Account;
+  action: any;
+  destination: TransactionDestination;
+  timestamp: number;
+  extra?: number;
+  encrypted_comment?: any;
+  comment?: string;
 };
