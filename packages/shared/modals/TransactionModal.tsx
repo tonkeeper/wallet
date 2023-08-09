@@ -1,7 +1,6 @@
 import { SheetActions, navigation, useNavigation } from '@tonkeeper/router';
 import Clipboard from '@react-native-community/clipboard';
-import { ActionTypeEnum } from '@tonkeeper/core/src/TonAPI';
-import { Fragment, memo, useCallback } from 'react';
+import { Fragment, memo, useCallback, useMemo } from 'react';
 import { tk } from '../tonkeeper';
 import { config } from '../config';
 import { formatTransactionDetailsTime } from '../utils/date';
@@ -23,7 +22,10 @@ import { EncryptedComment, EncryptedCommentLayout } from '../components/Encrypte
 import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 import { useSelector } from 'react-redux';
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
-import { Transaction } from '@tonkeeper/core/src/managers/TransactionsManager';
+import {
+  Transaction,
+  TxActionEnum,
+} from '@tonkeeper/core/src/managers/TransactionsManager';
 
 type TransactionModalProps = {
   transaction: Transaction;
@@ -31,11 +33,11 @@ type TransactionModalProps = {
 
 export const TransactionModal = memo<TransactionModalProps>((props) => {
   const { transaction: tx } = props;
-  const nav = useNavigation();
-  const tokenPrice = useTokenPrice('ton');
   const fiatCurrency = useSelector(fiatCurrencySelector);
+  const tokenPrice = useTokenPrice('ton');
+  const nav = useNavigation();
 
-  const handlePressViewExplorer = useCallback(() => {
+  const handlePressHash = useCallback(() => {
     nav.navigate('DAppBrowser', {
       url: config.get('transactionExplorer').replace('%s', tx.hash),
     });
@@ -49,50 +51,63 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
     }
   }, []);
 
-  const time = formatTransactionDetailsTime(new Date(tx.timestamp * 1000));
+  const fee = useMemo(() => {
+    if (tx.extra) {
+      const amount = formatter.fromNano(tx.extra ?? 0, 9);
+      const fiatAmount = tokenPrice.fiat * parseFloat(amount);
 
-  const feeAmount = formatter.fromNano(tx.extra ?? 0, 9);
-  const fee = formatter.format(feeAmount, {
-    decimals: 9,
-    postfix: 'TON',
-    absolute: true,
-  });
+      return {
+        isNegative: new BigNumber(tx.extra).isLessThan(0),
+        value: formatter.format(amount, {
+          postfix: 'TON',
+          absolute: true,
+          decimals: 9,
+        }),
+        fiat: formatter.format(fiatAmount, {
+          currencySeparator: 'wide',
+          currency: fiatCurrency,
+          absolute: true,
+          decimals: 9,
+        }),
+      };
+    }
+  }, [tx.extra, tokenPrice.fiat]);
 
-  const feeFiat = formatter.format(tokenPrice.fiat * parseFloat(feeAmount), {
-    decimals: 9,
-    currency: fiatCurrency,
-    currencySeparator: 'wide',
-    absolute: true,
-  });
+  const amount = useMemo(() => {
+    if (tx.action.amount) {
+      return formatter.formatNano(tx.action.amount.value, {
+        formatDecimals: tx.action.amount.decimals ?? 9,
+        prefix: tx.destination === 'in' ? '+' : '-',
+        postfix: tx.action.amount.tokenName,
+        withoutTruncate: true,
+      });
+    }
+  }, [tx.destination, tx.action.amount]);
 
-  const isZeroExtra = new BigNumber(tx.extra ?? 0).isLessThan(0);
+  const fiatAmount = useMemo(() => {
+    if (tx.action.amount && !tx.action.amount.tokenAddress) {
+      const amount = parseFloat(formatter.fromNano(tx.action.amount.value));
+      return formatter.format(tokenPrice.fiat * amount, {
+        currency: fiatCurrency,
+      });
+    }
+  }, [tx.action.amount, tokenPrice.fiat]);
 
-  const fiat = formatter.format(
-    tokenPrice.fiat * parseFloat(formatter.fromNano(tx.action?.amount ?? 0)),
-    {
-      currency: fiatCurrency,
-      currencySeparator: 'wide',
-    },
-  );
+  const formattedTime = useMemo(() => {
+    const time = formatTransactionDetailsTime(new Date(tx.timestamp * 1000));
+    let timeLangKey: string | null = null;
+    if (tx.destination === 'in') {
+      timeLangKey = 'received_time';
+    } else if (tx.destination === 'out') {
+      timeLangKey = 'sent_time';
+    }
 
-  const amount = formatter.formatNano(tx.action?.amount ?? 0, {
-    // prefix: '-',
-    formatDecimals: 9,
-    withoutTruncate: true,
-    postfix: 'TON',
-  });
+    if (timeLangKey) {
+      return t(`transactionDetails.${timeLangKey}`, { time });
+    }
 
-  const timeLangKey =
-    tx.destination === 'in'
-      ? 'received_time'
-      : tx.destination === 'out'
-      ? 'sent_time'
-      : undefined;
-  const timeLabel = timeLangKey
-    ? t(`transactionDetails.${timeLangKey}`, {
-        time,
-      })
-    : time;
+    return time;
+  }, [tx.timestamp]);
 
   return (
     <Modal>
@@ -100,23 +115,27 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
       <Modal.Content safeArea>
         <View style={styles.container}>
           <View style={styles.infoContainer}>
-            {tx.action.type === ActionTypeEnum.TonTransfer && (
+            {tx.action.type === TxActionEnum.TonTransfer && (
               <TonIcon size="large" style={styles.tonIcon} />
             )}
-            <Text type="h2" style={styles.amountText}>
-              {amount}
-            </Text>
-            <Text type="body1" color="textSecondary" style={styles.fiatText}>
-              {fiat}
-            </Text>
+            {amount && (
+              <Text type="h2" style={styles.amountText}>
+                {amount}
+              </Text>
+            )}
+            {fiatAmount && (
+              <Text type="body1" color="textSecondary" style={styles.fiatText}>
+                {fiatAmount}
+              </Text>
+            )}
             <Text type="body1" color="textSecondary" style={styles.timeText}>
-              {timeLabel}
+              {formattedTime}
             </Text>
           </View>
           <List>
             {tx.destination === 'in' ? (
               <Fragment>
-                {tx.action.sender?.name && (
+                {!!tx.action.sender.name && (
                   <List.Item
                     onPress={() => copyText(tx.action.sender.name)}
                     value={tx.action.sender.name}
@@ -139,14 +158,14 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
               </Fragment>
             ) : tx.destination === 'out' ? (
               <Fragment>
-                {tx.action.recipient?.name && (
+                {!!tx.action.recipient?.name && (
                   <List.Item
                     onPress={() => copyText(tx.action.recipient.name)}
                     value={tx.action.recipient.name}
                     label={t('transactionDetails.recipient')}
                   />
                 )}
-                {tx.action.recipient && (
+                {!!tx.action.recipient && (
                   <List.Item
                     onPress={() =>
                       copyText(Address(tx.action.recipient.address).toFriendly())
@@ -161,16 +180,18 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
                 )}
               </Fragment>
             ) : null}
-            <List.Item
-              label={isZeroExtra ? t('transaction_fee') : t('transaction_refund')}
-              onPress={() => copyText(fee)}
-              value={fee}
-              subvalue={feeFiat}
-            />
-            {tx.encrypted_comment && (
+            {fee && (
+              <List.Item
+                label={fee?.isNegative ? t('transaction_fee') : t('transaction_refund')}
+                onPress={() => copyText(fee.value)}
+                value={fee.value}
+                subvalue={fee.fiat}
+              />
+            )}
+            {tx.action.encrypted_comment && (
               <EncryptedComment
                 layout={EncryptedCommentLayout.LIST_ITEM}
-                encryptedComment={tx.encrypted_comment}
+                encryptedComment={tx.action.encrypted_comment}
                 transactionType={tx.action.type}
                 transactionId={tx.hash}
                 sender={tx.sender!}
@@ -185,7 +206,7 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
             )}
           </List>
           <View style={styles.footer}>
-            <Button onPress={handlePressViewExplorer} size="small" color="secondary">
+            <Button onPress={handlePressHash} size="small" color="secondary">
               <Icon name="ic-globe-16" color="constantWhite" />
               <Text type="label2" style={{ marginLeft: 8 }}>
                 {t('transactionDetails.transaction')}
