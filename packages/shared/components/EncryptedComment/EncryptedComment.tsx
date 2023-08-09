@@ -90,6 +90,9 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
 
   const encryptedCommentMock = 's'.repeat(encryptedCommentLength);
 
+  // Feature not ready yet
+  return null;
+
   if (props.layout === EncryptedCommentLayout.LIST_ITEM) {
     return (
       <List.Item
