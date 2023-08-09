@@ -59,13 +59,16 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
   const commentInputRef = useRef<TextInput>(null);
 
   const isCommentRequired = !!recipientAccountInfo?.memoRequired;
-  const isAbleToEncryptComment = recipientAccountInfo
+
+  /*
+    TODO: uncomment when feature will be completely ready
+    const isAbleToEncryptComment = recipientAccountInfo
     ? !isCommentRequired && !!recipientAccountInfo.publicKey
     : true;
+  */
+  const isAbleToEncryptComment = false;
 
   const isReadyToContinue = !!recipient;
-
-  
 
   const { keyboardHeightStyle } = useReanimatedKeyboardHeight();
 
@@ -133,7 +136,11 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           setDnsLoading(false);
         }
 
-        if (link.match && link.operation === 'transfer' && Address.isValid(link.address)) {
+        if (
+          link.match &&
+          link.operation === 'transfer' &&
+          Address.isValid(link.address)
+        ) {
           if (link.query.amount && !Number.isNaN(Number(link.query.amount))) {
             const parsedAmount = Ton.fromNano(new TonWeb.utils.BN(link.query.amount));
             setAmount({
