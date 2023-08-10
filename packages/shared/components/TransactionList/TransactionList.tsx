@@ -14,6 +14,7 @@ interface TransactionsListProps {
   fetchMoreEnd?: boolean;
   refreshing?: boolean;
   loading?: boolean;
+  safeArea?: boolean;
   estimatedItemSize?: number;
   ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null | undefined;
   ListFooterComponent?: React.ComponentType<any> | React.ReactElement | null | undefined;
@@ -48,6 +49,7 @@ export const TransactionsList = memo<TransactionsListProps>(
       onFetchMore,
       refreshing,
       onRefresh,
+      safeArea,
       loading,
       events,
     } = props;
@@ -66,6 +68,7 @@ export const TransactionsList = memo<TransactionsListProps>(
         onEndReached={onFetchMore}
         renderItem={RenderItem}
         data={events}
+        safeArea={safeArea}
         decelerationRate="normal"
         ListEmptyComponent={
           loading ? (
