@@ -13,8 +13,6 @@ import { CategoryType } from '$store/zustand/methodsToBuy/types';
 import { openChooseCountry } from '$navigation';
 
 export const ExchangeModal = () => {
-  
-
   const [showAll, setShowAll] = React.useState(false);
   const { categories, defaultLayout, layoutByCountry, selectedCountry } =
     useMethodsToBuyStore((state) => state);
@@ -60,6 +58,7 @@ export const ExchangeModal = () => {
   return (
     <Modal>
       <Modal.Header
+        center
         onIconLeftPress={openChooseCountry}
         iconLeft={'ic-globe-16'}
         title={t('exchange_modal.title')}
@@ -89,6 +88,7 @@ export const ExchangeModal = () => {
                     {otherWaysAvailable && category.type === 'buy' ? (
                       <View style={styles.otherWaysContainer}>
                         <Button
+                          key={showAll ? 'hide' : 'show'}
                           size="medium_rounded"
                           mode="secondary"
                           onPress={handleShowAll}
