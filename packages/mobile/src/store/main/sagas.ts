@@ -251,6 +251,7 @@ function* completeIntroWorker() {
 }
 
 export function* resetAll(isTestnet: boolean) {
+  yield call([tk, 'destroy']);
   yield call(destroyEventsManager);
   yield call(Cache.clearAll, getWalletName());
   yield call(clearSubscribeStatus);

@@ -1,31 +1,32 @@
+import { EncryptedComment, EncryptedCommentLayout } from '../components/EncryptedComment';
 import { SheetActions, navigation, useNavigation } from '@tonkeeper/router';
-import Clipboard from '@react-native-community/clipboard';
-import { Fragment, memo, useCallback, useMemo } from 'react';
-import { tk } from '../tonkeeper';
-import { config } from '../config';
 import { formatTransactionDetailsTime } from '../utils/date';
-import { t } from '../i18n';
-import { formatter } from '../formatter';
-import BigNumber from 'bignumber.js';
+import { Fragment, memo, useCallback, useMemo } from 'react';
 import { Address } from '@tonkeeper/core';
+import { formatter } from '../formatter';
+import { config } from '../config';
+import { tk } from '../tonkeeper';
+import { t } from '../i18n';
 import {
+  SText as Text,
+  TonIcon,
   Button,
+  Steezy,
   Icon,
   List,
   Modal,
-  Steezy,
-  SText as Text,
-  TonIcon,
   View,
 } from '@tonkeeper/uikit';
-import { EncryptedComment, EncryptedCommentLayout } from '../components/EncryptedComment';
-import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
-import { useSelector } from 'react-redux';
-import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
+
 import {
   Transaction,
   TxActionEnum,
 } from '@tonkeeper/core/src/managers/TransactionsManager';
+
+import Clipboard from '@react-native-community/clipboard';
+import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
+import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
+import { useSelector } from 'react-redux';
 
 type TransactionModalProps = {
   transaction: Transaction;
@@ -53,12 +54,12 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
 
   const fee = useMemo(() => {
     if (tx.extra) {
-      const amount = formatter.fromNano(tx.extra ?? 0, 9);
-      const fiatAmount = tokenPrice.fiat * parseFloat(amount);
+      const extra = formatter.fromNano(tx.extra ?? 0, 9);
+      const fiatAmount = tokenPrice.fiat * parseFloat(extra);
 
       return {
-        isNegative: new BigNumber(tx.extra).isLessThan(0),
-        value: formatter.format(amount, {
+        isNegative: formatter.isNegative(extra),
+        value: formatter.format(extra, {
           postfix: 'TON',
           absolute: true,
           decimals: 9,
@@ -115,8 +116,18 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
       <Modal.Content safeArea>
         <View style={styles.container}>
           <View style={styles.infoContainer}>
-            {tx.action.type === TxActionEnum.TonTransfer && (
-              <TonIcon size="large" style={styles.tonIcon} />
+            {tx.is_scam ? (
+              <View style={styles.spam}>
+                <Text type="label2" color="constantWhite">
+                  {t('transactionDetails.spam')}
+                </Text>
+              </View>
+            ) : (
+              <View>
+                {tx.action.type === TxActionEnum.TonTransfer && (
+                  <TonIcon size="large" style={styles.tonIcon} />
+                )}
+              </View>
             )}
             {amount && (
               <Text type="h2" style={styles.amountText}>
@@ -139,7 +150,8 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
                   <List.Item
                     onPress={() => copyText(tx.action.sender.name)}
                     value={tx.action.sender.name}
-                    label={t('transactionDetails.sender')}
+                    titleType="secondary"
+                    title={t('transactionDetails.sender')}
                   />
                 )}
                 {tx.action.sender && (
@@ -147,7 +159,8 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
                     onPress={() =>
                       copyText(Address(tx.action.sender.address).toFriendly())
                     }
-                    label={t('transactionDetails.sender_address')}
+                    titleType="secondary"
+                    title={t('transactionDetails.sender_address')}
                     subtitle={
                       <Text type="label1" numberOfLines={1} ellipsizeMode="middle">
                         {Address(tx.action.sender.address).toFriendly()}
@@ -162,7 +175,8 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
                   <List.Item
                     onPress={() => copyText(tx.action.recipient.name)}
                     value={tx.action.recipient.name}
-                    label={t('transactionDetails.recipient')}
+                    titleType="secondary"
+                    title={t('transactionDetails.recipient')}
                   />
                 )}
                 {!!tx.action.recipient && (
@@ -170,7 +184,8 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
                     onPress={() =>
                       copyText(Address(tx.action.recipient.address).toFriendly())
                     }
-                    label={t('transactionDetails.recipient_address')}
+                    titleType="secondary"
+                    title={t('transactionDetails.recipient_address')}
                     subtitle={
                       <Text type="label1" numberOfLines={1} ellipsizeMode="middle">
                         {Address(tx.action.recipient.address).toFriendly()}
@@ -182,7 +197,8 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
             ) : null}
             {fee && (
               <List.Item
-                label={fee?.isNegative ? t('transaction_fee') : t('transaction_refund')}
+                titleType="secondary"
+                title={fee?.isNegative ? t('transaction_fee') : t('transaction_refund')}
                 onPress={() => copyText(fee.value)}
                 value={fee.value}
                 subvalue={fee.fiat}
@@ -197,11 +213,12 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
                 sender={tx.sender!}
               />
             )}
-            {!!tx.comment && (
+            {!!tx.action.comment && (
               <List.Item
                 onPress={() => copyText(tx.comment)}
-                label={t('transactionDetails.comment')}
-                value={tx.comment}
+                titleType="secondary"
+                title={t('transactionDetails.comment')}
+                value={tx.action.comment}
               />
             )}
           </List>
@@ -222,9 +239,8 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
   );
 });
 
-const styles = Steezy.create({
+const styles = Steezy.create(({ colors, corners }) => ({
   container: {
-    // padding: 16,
     paddingTop: 48,
   },
   infoContainer: {
@@ -250,7 +266,14 @@ const styles = Steezy.create({
   tonIcon: {
     marginBottom: 20,
   },
-});
+  spam: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginBottom: 12,
+    backgroundColor: colors.accentOrange,
+    borderRadius: corners.extraSmall,
+  },
+}));
 
 export async function openTransactionDetails(txId: string) {
   const openModal = (transaction: any) => {

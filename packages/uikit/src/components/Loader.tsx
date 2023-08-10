@@ -13,16 +13,18 @@ import { memo, useEffect } from 'react';
 import { useTheme } from '../styles';
 import { ns } from '../utils';
 
-export type LoaderSizes = 'medium' | 'large' | 'xlarge' | 'small';
+export type LoaderSizes = 'medium' | 'large' | 'xlarge' | 'small' | 'xsmall';
 
 const loaderSize: { [key in LoaderSizes]: number } = {
   xlarge: ns(64),
   large: ns(32),
   medium: ns(24),
   small: ns(16),
+  xsmall: ns(12),
 };
 
 const loaderIcon: { [key in LoaderSizes]: ImageRequireSource } = {
+  xsmall: require('../../assets/icons/png/ic-loader-xsmall-12.png'),
   small: require('../../assets/icons/png/ic-loader-small-16.png'),
   medium: require('../../assets/icons/png/ic-loader-medium-24.png'),
   large: require('../../assets/icons/png/ic-loader-large-32.png'),

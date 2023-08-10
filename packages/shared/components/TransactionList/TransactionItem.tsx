@@ -5,8 +5,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import {
   Icon,
+  IconButton,
   List,
   ListSeparator,
+  Loader,
   Steezy,
   Text,
   useTheme,
@@ -18,7 +20,6 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { SText } from '@tonkeeper/uikit/src/components/Text';
 import FastImage from 'react-native-fast-image';
 import { t } from '../../i18n';
-import { useNavigation } from '@tonkeeper/router';
 import { EncryptedComment, EncryptedCommentLayout } from '../EncryptedComment';
 import { SenderAddress } from '../../mappers/AccountEventsMapper/AccountEventsMapper.utils';
 import { openTransactionDetails } from '../../modals/TransactionModal';
@@ -50,7 +51,6 @@ const useBackgroundHighlighted = () => {
 
 export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
   const { onPressOut, onPressIn, backgroundStyle } = useBackgroundHighlighted();
-  const router = useNavigation();
 
   const isSimplePreview = item.type === 'SimplePreview';
   const containerStyle = useMemo(
@@ -65,7 +65,6 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
   const handlePress = useCallback(() => {
     if (!isSimplePreview) {
       openTransactionDetails(item.id);
-      // router.navigate('transaction', { transactionId: item.id });
     }
   }, [isSimplePreview, item]);
 
@@ -78,6 +77,7 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
         title={item.operation}
         subtitle={item.subtitle}
         value={item.amount}
+        subtitleNumberOfLines={item.type === 'SimplePreview' || item.type === 'Unknown' ? 2 : 1}
         valueStyle={[
           item.isReceive && styles.receiveValue,
           item.isScam && styles.scamAmountText,
@@ -110,8 +110,10 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
               <>
                 {item.iconName && <Icon name={item.iconName} color="iconSecondary" />}
                 {item.inProgress && (
-                  <View style={styles.sending}>
-                    <Icon name="ic-clock-16" colorHex="#FFF" />
+                  <View style={styles.sendingOuter}>
+                    <View style={styles.sendingInner}>
+                      <Loader size="xsmall" color="constantWhite" />
+                    </View>
                   </View>
                 )}
               </>
@@ -204,13 +206,21 @@ const styles = Steezy.create(({ colors, corners }) => ({
   scamAmountText: {
     color: colors.textTertiary,
   },
-  sending: {
-    backgroundColor: colors.iconSecondary,
-    borderRadius: 16 / 2,
-    height: 16,
-    width: 16,
+  sendingOuter: {
     position: 'absolute',
-    bottom: 0,
-    right: 0,
+    top: -6,
+    left: -6,
+    borderRadius: 18 + 2 / 2,
+
+    borderWidth: 2,
+    borderColor: colors.backgroundContent,
+  },
+  sendingInner: {
+    borderRadius: 18 / 2,
+    height: 18,
+    width: 18,
+    backgroundColor: colors.iconTertiary,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 }));

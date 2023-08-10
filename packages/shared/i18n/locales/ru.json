@@ -372,8 +372,6 @@
     "token_copied": "ID токена скопирован"
   },
 
-  
-
   "activity": {
     "screen_title": "Активность",
     "sent": "Отправить",
@@ -391,7 +389,7 @@
     "unsubscription": "Отмена подписки",
     "smartcontract_exec": "Вызов контракта",
     "unknown": "Неизвестно",
-    "unknown_description": "Что-то произошло, но мы не смогли распознать",
+    "unknown_description": "Что-то произошло, \nно мы не распознали",
     "swap": "Обмен",
     "wallet_initialized": "Кошелёк инициализирован",
     "contract_deploy": "Создание контракта",
@@ -407,7 +405,8 @@
     "recipient": "Получатель",
     "recipient_address": "Адрес получателя",
     "comment": "Комментарий",
-    "transaction": "Транзакция"
+    "transaction": "Транзакция",
+    "spam": "СПАМ"
   },
 
   "browser": {

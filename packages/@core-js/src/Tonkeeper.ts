@@ -119,4 +119,9 @@ export class Tonkeeper {
     // this.notifyUI();
     return this.storage.set('securitySettings', this.securitySettings);
   }
+
+  public destroy() {
+    this.wallet.transactions.destroy();
+    this.wallet = null;
+  }
 }

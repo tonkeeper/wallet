@@ -14,6 +14,7 @@ import { Ton } from '$libs/Ton';
 import { eventsActions } from '$store/events';
 import { network } from '$libs/network';
 import { trackEvent } from '$utils/stats';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export async function reloadSubscriptionsFromServer(address: string) {
   try {
@@ -98,6 +99,7 @@ function* subscribeWorker(action: SubscribeAction) {
       },
     });
 
+    yield call([tk.wallet.transactions, 'refetch']);
     yield put(eventsActions.pollEvents());
     onDone();
 
@@ -128,6 +130,7 @@ function* unsubscribeWorker(action: UnsubscribeAction) {
       params: { signed_tx: signedTx },
     });
 
+    yield call([tk.wallet.transactions, 'refetch']);
     yield put(eventsActions.pollEvents());
     onDone();
   } catch (e) {

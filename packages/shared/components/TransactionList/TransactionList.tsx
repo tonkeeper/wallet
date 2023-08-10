@@ -1,5 +1,5 @@
-import { RefreshControl, StyleSheet, View } from 'react-native';
-import { Screen, Loader, List, Spacer, useTheme } from '@tonkeeper/uikit';
+import { StyleSheet, View } from 'react-native';
+import { Screen, Loader, List, Spacer, RefreshControl } from '@tonkeeper/uikit';
 import { TransactionItem } from './TransactionItem';
 import { memo } from 'react';
 import {
@@ -39,51 +39,72 @@ function RenderItem({ item, index }: TransactionRenderItemOptions) {
   }
 }
 
-export const TransactionsList = memo<TransactionsListProps>((props) => {
-  const {
-    ListHeaderComponent,
-    estimatedItemSize = 76,
-    fetchMoreEnd,
-    onFetchMore,
-    refreshing,
-    onRefresh,
-    loading,
-    events,
-  } = props;
+export const TransactionsList = memo<TransactionsListProps>(
+  (props) => {
+    const {
+      ListHeaderComponent,
+      estimatedItemSize = 76,
+      fetchMoreEnd,
+      onFetchMore,
+      refreshing,
+      onRefresh,
+      loading,
+      events,
+    } = props;
 
-  return (
-    <Screen.FlashList
-      // refreshControl={
-      //   <RefreshControl
-      //     onRefresh={onRefresh}
-      //     refreshing={!!refreshing}
-      //     tintColor={theme.constantWhite}
-      //     progressBackgroundColor={theme.constantWhite}
-      //   />
-      // }
-      onRefresh={onRefresh}
-      refreshing={!!refreshing}
-      estimatedItemSize={estimatedItemSize}
-      keyExtractor={(item) => item.id}
-      onEndReachedThreshold={0.02}
-      onEndReached={onFetchMore}
-      renderItem={RenderItem}
-      data={events}
-      decelerationRate="normal"
-      ListEmptyComponent={
-        loading ? (
-          <View style={styles.emptyContainer}>
-            <Loader size="medium" />
-          </View>
-        ) : undefined
+    return (
+      <Screen.FlashList
+        refreshControl={
+          <RefreshControl
+            onRefresh={onRefresh}
+            refreshing={!!refreshing}
+          />
+        }
+        estimatedItemSize={estimatedItemSize}
+        keyExtractor={(item) => item.id}
+        onEndReachedThreshold={0.02}
+        onEndReached={onFetchMore}
+        renderItem={RenderItem}
+        data={events}
+        decelerationRate="normal"
+        ListEmptyComponent={
+          loading ? (
+            <View style={styles.emptyContainer}>
+              <Loader size="medium" />
+            </View>
+          ) : undefined
+        }
+        ListHeaderComponent={ListHeaderComponent}
+        ListFooterComponent={
+          props.ListFooterComponent ?? <Footer loading={!fetchMoreEnd && loading === false} />
+        }
+      />
+    );
+  },
+  (prevProps, nextProps) => {
+    if (prevProps.events.length !== nextProps.events.length) {
+      return false;
+    }
+
+    const prevEvent = prevProps.events[0];
+    const nextEvent = nextProps.events[0];
+
+    if (prevEvent?.id !== nextEvent?.id) {
+      return false;
+    }
+
+    if (
+      prevEvent?.contentType === MappedEventItemType.Action &&
+      nextEvent?.contentType === MappedEventItemType.Action
+    ) {
+      if (prevEvent.inProgress !== nextEvent.inProgress) {
+        return false;
       }
-      ListHeaderComponent={ListHeaderComponent}
-      ListFooterComponent={
-        props.ListFooterComponent ?? <Footer loading={!fetchMoreEnd && !loading} />
-      }
-    />
-  );
-});
+    }
+
+    return true;
+  },
+);
 
 const Footer = memo(({ loading }: { loading: boolean }) => {
   if (loading) {
@@ -107,7 +128,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   emptyContainer: {
-    paddingTop: 120,
+    paddingTop: 200,
     alignItems: 'center',
     justifyContent: 'center',
   },

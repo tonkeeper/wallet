@@ -1,7 +1,6 @@
 import { formatter } from '@tonkeeper/shared/formatter';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
-import BigNumber from 'bignumber.js';
 import {
   detectReceive,
   findSenderAccount,
@@ -21,13 +20,11 @@ import {
   MappedEventAction,
   MappedEventItemType,
   GroupedActionsByDate,
-  TransactionDetails,
 } from './AccountEventsMapper.types';
 import {
   formatTransactionTime,
   getDateForGroupTansactions,
   formatTransactionsGroupDate,
-  formatTransactionDetailsTime,
 } from '@tonkeeper/shared/utils/date';
 
 export function AccountEventsMapper(events: AccountEvent[], walletAddress: string = '') {

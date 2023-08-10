@@ -46,20 +46,8 @@ const TonThemeProvider = ({ children }) => {
 };
 
 export function App() {
-  // const [loaded, setLoaded] = useState(false);
-
-  // useEffect(() => {
-  //   tonkeeper.init().then(() => {
-  //     setLoaded(true);
-  //   })
-  // }, []);  
-
-  // if (!loaded) {
-  //   return false;
-  // }
-
   return (
-    <KeyboardProvider>
+    // <KeyboardProvider>
       <WalletProvider>
         <StoreProvider {...{ store }}>
           <ActionSheetProvider>
@@ -94,6 +82,6 @@ export function App() {
           </ActionSheetProvider>
         </StoreProvider>
       </WalletProvider>
-    </KeyboardProvider>
+    // </KeyboardProvider>
   );
 }

@@ -399,7 +399,8 @@
     "recipient": "Recipient",
     "recipient_address": "Recipient address",
     "comment": "Comment",
-    "transaction": "Transaction"
+    "transaction": "Transaction",
+    "spam": "SPAM"
   },
 
   "browser": {

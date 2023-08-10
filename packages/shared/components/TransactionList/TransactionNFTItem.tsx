@@ -95,7 +95,7 @@ export const TransactionNFTItem = memo<TransactionNFTItemProps>((props) => {
 
 const styles = Steezy.create(({ colors, corners }) => ({
   container: {
-    alignSelf: 'flex-start',
+    alignItems: 'flex-start',
     minWidth: 180,
   },
   item: {

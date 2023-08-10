@@ -3,6 +3,7 @@ export const IconList = {
   'ic-dot-12': require('../../../assets/icons/png/ic-dot-12.png'),
   'ic-down-12': require('../../../assets/icons/png/ic-down-12.png'),
   'ic-dropdown-12': require('../../../assets/icons/png/ic-dropdown-12.png'),
+  'ic-loader-xsmall-12': require('../../../assets/icons/png/ic-loader-xsmall-12.png'),
   'ic-lock-12': require('../../../assets/icons/png/ic-lock-12.png'),
   'ic-star-12': require('../../../assets/icons/png/ic-star-12.png'),
   'ic-up-12': require('../../../assets/icons/png/ic-up-12.png'),

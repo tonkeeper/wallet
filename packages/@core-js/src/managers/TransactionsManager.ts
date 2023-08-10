@@ -1,14 +1,13 @@
 import EventSource from 'react-native-sse';
-// import { AppConfig } from './AppConfig';
-import { QueryClient } from 'react-query';
+import { QueryClient, InfiniteData } from 'react-query';
 import {
   Account,
+  AccountEvent,
   Action,
   ActionTypeEnum,
   AuctionBidAction,
   ContractDeployAction,
   DepositStakeAction,
-  Event,
   JettonSwapAction,
   JettonTransferAction,
   NftItemTransferAction,
@@ -23,7 +22,9 @@ import {
 import { Address } from '../Address';
 
 export class TransactionsManager {
-  sse: EventSource;
+  private sse: EventSource;
+  public cache = undefined;
+
   constructor(
     private accountId: string,
     private queryClient: QueryClient,
@@ -48,17 +49,13 @@ export class TransactionsManager {
     this.sse.addEventListener('message', () => this.refetch());
   }
 
-  private txIdToEventId(txId: string) {
-    const ids = txId.split('_');
-    const actionIndex = Number(ids[1] ?? 0);
-    const eventId = ids[0];
-
-    return { eventId, actionIndex };
+  public get cacheKey() {
+    return ['account_events', this.accountId];
   }
 
   public getCachedById(txId: string) {
     const { eventId, actionIndex } = this.txIdToEventId(txId);
-    const event = this.queryClient.getQueryData<Event>(['account_event', eventId]);
+    const event = this.queryClient.getQueryData<AccountEvent>(['account_event', eventId]);
 
     if (event) {
       return this.mapAccountEvent(event, actionIndex);
@@ -68,7 +65,7 @@ export class TransactionsManager {
   }
 
   public async fetch(before_lt?: number) {
-    const { data, error } = await this.tonapi.accounts.getEventsByAccount({
+    const { data, error } = await this.tonapi.accounts.getAccountEvents({
       ...(!!before_lt && { before_lt }),
       accountId: this.accountId,
       subject_only: true,
@@ -89,7 +86,10 @@ export class TransactionsManager {
 
   public async fetchById(txId: string) {
     const { eventId, actionIndex } = this.txIdToEventId(txId);
-    const { data: event } = await this.tonapi.events.getEvent(eventId);
+    const { data: event } = await this.tonapi.accounts.getAccountEvent({
+      accountId: this.accountId,
+      eventId,
+    });
 
     if (event) {
       return this.mapAccountEvent(event, actionIndex);
@@ -98,7 +98,7 @@ export class TransactionsManager {
     return null;
   }
 
-  private mapAccountEvent(event: Event, actionIndex: number) {
+  private mapAccountEvent(event: AccountEvent, actionIndex: number) {
     const rawAction = event.actions[actionIndex];
     const action = {
       ...rawAction,
@@ -148,12 +148,17 @@ export class TransactionsManager {
 
   public prefetch() {
     return this.queryClient.prefetchInfiniteQuery({
-      queryFn: ({ pageParam }) => fetch(pageParam),
-      queryKey: ['events', this.accountId],
+      queryFn: () => this.fetch(),
+      queryKey: this.cacheKey,
     });
   }
 
-  public refetch() {}
+  public async refetch() {
+    await this.queryClient.refetchQueries({
+      refetchPage: (_, index) => index === 0,
+      queryKey: this.cacheKey,
+    });
+  }
 
   public destroy() {
     this.sse.close();
@@ -169,6 +174,14 @@ export class TransactionsManager {
     }
 
     return 'unknown';
+  }
+
+  private txIdToEventId(txId: string) {
+    const ids = txId.split('_');
+    const actionIndex = Number(ids[1] ?? 0);
+    const eventId = ids[0];
+
+    return { eventId, actionIndex };
   }
 }
 
@@ -280,4 +293,5 @@ export type Transaction = {
   extra?: number;
   encrypted_comment?: any;
   comment?: string;
+  is_scam: boolean;
 };
