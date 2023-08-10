@@ -45,7 +45,7 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
       <View style={{ flexDirection: 'row', flex: 1 }}>
         {iconLeft ? (
           <TouchableOpacity
-            style={styles.closeButton}
+            style={[styles.closeButton, styles.leftButton]}
             activeOpacity={0.6}
             onPress={() => {
               onIconLeftPress?.();
@@ -56,15 +56,17 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
             </View>
           </TouchableOpacity>
         ) : null}
-   
+
         {hasTitle && (
           <View style={[styles.headerTitle, center && styles.titleByCenter]}>
-            <Text type="h3" textAlign={center ? 'center' : 'left'}>{title}</Text>
+            <Text type="h3" textAlign={center ? 'center' : 'left'}>
+              {title}
+            </Text>
           </View>
         )}
 
         <TouchableOpacity
-          style={styles.closeButton}
+          style={[styles.closeButton, styles.rightButton]}
           activeOpacity={0.6}
           onPress={() => {
             close();
@@ -98,7 +100,7 @@ const styles = StyleSheet.create({
   titleByCenter: {
     flex: 1,
     marginHorizontal: 24,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   gradient: {
     position: 'absolute',
@@ -116,14 +118,19 @@ const styles = StyleSheet.create({
 
     position: 'absolute',
     top: 0,
-    right: 0,
     zIndex: 2,
+  },
+  rightButton: {
+    right: 0,
+  },
+  leftButton: {
+    left: 0,
   },
   close: {
     width: 32,
     height: 32,
     borderRadius: 32 / 2,
     alignItems: 'center',
-    justifyContent: 'center',   
+    justifyContent: 'center',
   },
 });
