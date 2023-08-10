@@ -13,7 +13,7 @@ type ScrollTo = (y: number, animated?: boolean) => void;
 
 
 export const usePagerViewHandler = (externalPageOffset?: Animated.SharedValue<number>) => {
-  const { headerEjectionPoint, isLargeHeader } = useScreenScroll();
+  const { headerEjectionPoint, headerType } = useScreenScroll();
   const isScrollInMomentum = useSharedValue(false);
   const pagerViewRef = useRef<PagerView>(null);
   const contentOffset = useSharedValue(0);
@@ -23,9 +23,9 @@ export const usePagerViewHandler = (externalPageOffset?: Animated.SharedValue<nu
   const scrollY = useSharedValue(0);
 
   const measureHeader = (event: LayoutChangeEvent) => {
-    const headerOffset = isLargeHeader.value ? ScreenHeaderHeight : 0;
+    const headerOffset = headerType === 'large' ? ScreenHeaderHeight : 0;
     headerEjectionPoint.value =
-      event.nativeEvent.layout.height - (isLargeHeader.value ? 64 : 0);
+      event.nativeEvent.layout.height - (headerType === 'large' ? 64 : 0);
     headerHeight.value = event.nativeEvent.layout.height;
   };
 

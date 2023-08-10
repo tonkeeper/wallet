@@ -1,8 +1,20 @@
+import EventSource, { EventType } from 'react-native-sse';
 import { QueryClient } from 'react-query';
 import { Address } from './Address';
 import { Wallet } from './Wallet';
 import { TonAPI } from './TonAPI';
 import { Vault } from './Vault';
+
+export type ServerSentEventsOptions = {
+  baseUrl: () => string;
+  token: () => string;
+};
+
+export type SSEListener = EventSource<EventType>;
+export declare class SSEManager {
+  constructor(options: ServerSentEventsOptions);
+  listen(url: string): SSEListener;
+}
 
 interface IStorage {
   setItem(key: string, value: string): Promise<any>;
@@ -16,10 +28,11 @@ class PermissionsManager {
 }
 
 type TonkeeperOptions = {
-  storage: IStorage;
-  vault: Vault;
+  sse: SSEManager;
   queryClient: QueryClient;
+  storage: IStorage;
   tonapi: TonAPI;
+  vault: Vault;
 };
 
 type SecuritySettings = {
@@ -39,6 +52,7 @@ export class Tonkeeper {
     locked: false,
   };
 
+  private sse: SSEManager;
   private queryClient: QueryClient;
   private storage: IStorage;
   private vault: Vault;
@@ -49,6 +63,7 @@ export class Tonkeeper {
     this.storage = options.storage;
     this.tonapi = options.tonapi;
     this.vault = options.vault;
+    this.sse = options.sse;
 
     this.permissions = new PermissionsManager();
   }
@@ -57,8 +72,8 @@ export class Tonkeeper {
     try {
       if (address) {
         if (Address.isValid(address)) {
-          // TODO: move all params to ctx. 
-          this.wallet = new Wallet(this.queryClient, this.tonapi, this.vault, {
+          // TODO: move all params to ctx.
+          this.wallet = new Wallet(this.queryClient, this.tonapi, this.vault, this.sse, {
             address: address,
           });
 
@@ -69,9 +84,6 @@ export class Tonkeeper {
       console.log(err);
     }
 
-
-
-    
     //Load data from storage
     // const info = await this.storage.load('tonkeeper');
     // if (info) {
@@ -132,7 +144,7 @@ export class Tonkeeper {
   }
 
   public destroy() {
-    this.wallet.transactions.destroy();
+    this.wallet.destroy();
     this.wallet = null!;
   }
 }

@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 export const useWalletTransactions = () => {
   const query = useInfiniteQuery({
     queryFn: (next_from) => tk.wallet.transactions.fetch(next_from),
-    initialData: tk.wallet.transactions.cache,
+    initialData: tk.wallet.transactions.persisted,
     queryKey: tk.wallet.transactions.cacheKey,
     dataExtractor: (data) => data.events,
     getCursor: (data) => data.next_from,

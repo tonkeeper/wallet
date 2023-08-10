@@ -1,25 +1,37 @@
-import Animated, { runOnJS, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 import { ScreenLargeHeaderDistance, ScreenLargeHeaderHeight } from '../utils/constants';
 import { ScrollableWrapper, getScrollTo, getScrollableNode } from '../utils/scrollable';
 import { createContext, useCallback, useRef, useContext } from 'react';
 import { LayoutChangeEvent, NativeScrollEvent } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
+import { useValueRef } from '../../../../hooks/useValueRef';
 
 export type ScrollRefComponents = FlashList<any> | Animated.ScrollView;
 export type ScrollRef<T = ScrollRefComponents> = React.RefObject<T>;
+export type HeaderTypes = 'normal' | 'large';
 
 export const useScreenScrollHandler = () => {
-  const headerEjectionPoint = useSharedValue(0);
+  const headerType = useValueRef<HeaderTypes>('normal');
   const scrollRef = useRef<ScrollableWrapper>(null);
+  const headerEjectionPoint = useSharedValue(0);
   const isContentSizeDetected = useRef(false);
-  const isLargeHeader = useSharedValue(0);
   const isEndReached = useSharedValue(0);
   const scrollY = useSharedValue(0);
   const layoutHeight = useRef(0);
 
-  const headerOffsetStyle = useAnimatedStyle(() => ({
-    height: isLargeHeader.value ? ScreenLargeHeaderHeight : 0,
-  }), [isLargeHeader.value]);
+  const defineHeaderType = headerType.setValue;
+
+  const headerOffsetStyle = useAnimatedStyle(
+    () => ({
+      height: headerType.value === 'large' ? ScreenLargeHeaderHeight : 0,
+    }),
+    [headerType.value],
+  );
 
   const detectLayoutSize = useCallback((ev: LayoutChangeEvent) => {
     layoutHeight.current = ev.nativeEvent.layout.height;
@@ -49,15 +61,13 @@ export const useScreenScrollHandler = () => {
 
     scrollY.value = event.contentOffset.y;
   };
-  
+
   const correctLargeHeader = useCallback((top: number) => {
     const scrollNode = getScrollableNode(scrollRef);
     const scrollTo = getScrollTo(scrollNode);
 
-    const y = top > ScreenLargeHeaderDistance / 2 
-      ? ScreenLargeHeaderDistance 
-      : 0;
-      
+    const y = top > ScreenLargeHeaderDistance / 2 ? ScreenLargeHeaderDistance : 0;
+
     requestAnimationFrame(() => {
       scrollTo({ y, animated: true });
     });
@@ -98,13 +108,14 @@ export const useScreenScrollHandler = () => {
   );
 
   return {
+    headerType: headerType.value,
     headerEjectionPoint,
     headerOffsetStyle,
-    isLargeHeader,
     isEndReached,
     scrollRef,
     scrollY,
     detectContentSize,
+    defineHeaderType,
     detectLayoutSize,
     scrollHandler,
     onMomentumEnd,

@@ -27,7 +27,7 @@ import { NFTModel, TonDiamondMetadata } from '$store/models';
 import { useFlags } from '$utils/flags';
 import { LinkingDomainButton } from './LinkingDomainButton';
 import { nftsActions } from '$store/nfts';
-import { useNavigation } from '@tonkeeper/router';
+import { SheetActions, navigation, useNavigation } from '@tonkeeper/router';
 import { openDAppBrowser } from '$navigation';
 import { RenewDomainButton, RenewDomainButtonRef } from './RenewDomainButton';
 import { Tonapi } from '$libs/Tonapi';
@@ -35,6 +35,8 @@ import { Toast } from '$store';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { Address } from '@tonkeeper/core';
+import { NftItem } from '@tonkeeper/core/src/TonAPI';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export const NFT: React.FC<NFTProps> = ({ route }) => {
   const { address: nftAddress } = route.params.keyPair;
@@ -97,7 +99,6 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
     }, 5000);
   }, [lastFill]);
 
-  
   const scrollTop = useSharedValue(0);
   const scrollRef = useRef<Animated.ScrollView>(null);
   const { bottom: bottomInset } = useSafeAreaInsets();
@@ -284,3 +285,29 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
     </S.Wrap>
   );
 };
+
+export async function openNftModal(nftAddress: string, nftItem?: NftItem) {
+  const openModal = (nftItem: NftItem) => {
+    navigation.push('SheetsProvider', {
+      $$action: SheetActions.ADD,
+      component: NFT,
+      params: { nftItem },
+      path: 'NFT_MODAL',
+    });
+  };
+
+  try {
+    const cachedNftItem = tk.wallet.nfts.getCachedByAddress(nftAddress, nftItem);
+    if (cachedNftItem) {
+      openModal(cachedNftItem);
+    } else {
+      Toast.loading();
+      const item = await tk.wallet.nfts.fetchByAddress(nftAddress);
+      openModal(item);
+      Toast.hide();
+    }
+  } catch (err) {
+    console.log(err);
+    Toast.fail('Error load nft');
+  }
+}

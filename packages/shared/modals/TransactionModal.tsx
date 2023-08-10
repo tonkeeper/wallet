@@ -29,8 +29,7 @@ import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
 import { useSelector } from 'react-redux';
 import { Toast } from '@tonkeeper/mobile/src/store/zustand/toast';
-import { useNftItemByAddress } from '@tonkeeper/core/src/query/useNftItemByAddress';
-import { JettonSwapAction, NftItem } from '@tonkeeper/core/src/TonAPI';
+import { JettonSwapAction } from '@tonkeeper/core/src/TonAPI';
 import { NFTHead } from '@tonkeeper/mobile/src/core/ModalContainer/Action/ActionBase/NFTHead/NFTHead';
 import FastImage from 'react-native-fast-image';
 import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
@@ -263,7 +262,7 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
             )}
             {!!tx.action.comment && (
               <List.Item
-                onPress={() => copyText(tx.comment)}
+                onPress={() => copyText(tx.action.comment)}
                 titleType="secondary"
                 title={t('transactionDetails.comment')}
                 value={tx.action.comment}
@@ -430,6 +429,6 @@ export async function openTransactionDetails(txId: string) {
     }
   } catch (err) {
     console.log(err);
-    Toast.fail('Message');
+    Toast.fail('Error load event');
   }
 }

@@ -1,5 +1,3 @@
-import EventSource from 'react-native-sse';
-import { QueryClient, InfiniteData } from 'react-query';
 import {
   Account,
   AccountEvent,
@@ -15,47 +13,24 @@ import {
   RecoverStakeAction,
   SmartContractAction,
   SubscriptionAction,
-  TonAPI,
   TonTransferAction,
   UnSubscriptionAction,
 } from '../TonAPI';
 import { Address } from '../Address';
+import { WalletContext } from '../Wallet';
 
 export class TransactionsManager {
-  private sse: EventSource;
-  public cache = undefined;
+  public persisted = undefined;
 
-  constructor(
-    private accountId: string,
-    private queryClient: QueryClient,
-    private tonapi: TonAPI, // private eventSource:
-  ) {
-    // this.sse = this.sse.listen(`/v2/sse/accounts/transactions?accounts=${this.accountId}`);
-    this.sse = new EventSource(
-      `https://tonapi.io/v2/sse/accounts/transactions?accounts=${this.accountId}`,
-      {
-        headers: {
-          // Authorization: `Bearer ${config.get('tonApiV2Key')}`,
-        },
-      },
-    );
-
-    this.sse.addEventListener('open', () => {
-      console.log('[TransactionsManager]: start listen transactions for', this.accountId);
-    });
-    this.sse.addEventListener('error', (err) => {
-      console.log('[TransactionsManager]: error listen transactions', err);
-    });
-    this.sse.addEventListener('message', () => this.refetch());
-  }
+  constructor(private context: WalletContext) {}
 
   public get cacheKey() {
-    return ['account_events', this.accountId];
+    return ['account_events', this.context.accountId];
   }
 
   public getCachedById(txId: string) {
     const { eventId, actionIndex } = this.txIdToEventId(txId);
-    const event = this.queryClient.getQueryData<AccountEvent>(['account_event', eventId]);
+    const event = this.context.queryClient.getQueryData<AccountEvent>(['account_event', eventId]);
 
     if (event) {
       return this.mapAccountEvent(event, actionIndex);
@@ -65,9 +40,9 @@ export class TransactionsManager {
   }
 
   public async fetch(before_lt?: number) {
-    const { data, error } = await this.tonapi.accounts.getAccountEvents({
+    const { data, error } = await this.context.tonapi.accounts.getAccountEvents({
       ...(!!before_lt && { before_lt }),
-      accountId: this.accountId,
+      accountId: this.context.accountId,
       subject_only: true,
       limit: 50,
     });
@@ -78,7 +53,7 @@ export class TransactionsManager {
     }
 
     data.events.map((event) => {
-      this.queryClient.setQueryData(['account_event', event.event_id], event);
+      this.context.queryClient.setQueryData(['account_event', event.event_id], event);
     });
 
     return data;
@@ -86,13 +61,13 @@ export class TransactionsManager {
 
   public async fetchById(txId: string) {
     const { eventId, actionIndex } = this.txIdToEventId(txId);
-    const { data: event } = await this.tonapi.accounts.getAccountEvent({
-      accountId: this.accountId,
+    const { data: event } = await this.context.tonapi.accounts.getAccountEvent({
+      accountId: this.context.accountId,
       eventId,
     });
 
     if (event) {
-      this.queryClient.setQueryData(['account_event', event.event_id], event);
+      this.context.queryClient.setQueryData(['account_event', event.event_id], event);
       return this.mapAccountEvent(event, actionIndex);
     }
 
@@ -130,7 +105,7 @@ export class TransactionsManager {
       };
     }
 
-    const destination = this.defineDestination(this.accountId, action);
+    const destination = this.defineDestination(this.context.accountId, action);
     const transaction: Transaction = {
       ...event,
       hash: event.event_id,
@@ -145,22 +120,18 @@ export class TransactionsManager {
     return transaction;
   }
 
-  public prefetch() {
-    return this.queryClient.prefetchInfiniteQuery({
+  public async prefetch() {
+    return this.context.queryClient.prefetchInfiniteQuery({
       queryFn: () => this.fetch(),
       queryKey: this.cacheKey,
     });
   }
 
   public async refetch() {
-    await this.queryClient.refetchQueries({
+    return this.context.queryClient.refetchQueries({
       refetchPage: (_, index) => index === 0,
       queryKey: this.cacheKey,
     });
-  }
-
-  public destroy() {
-    this.sse.close();
   }
 
   // Utils
