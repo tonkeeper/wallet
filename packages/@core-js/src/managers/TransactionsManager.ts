@@ -92,6 +92,7 @@ export class TransactionsManager {
     });
 
     if (event) {
+      this.queryClient.setQueryData(['account_event', event.event_id], event);
       return this.mapAccountEvent(event, actionIndex);
     }
 
@@ -117,16 +118,14 @@ export class TransactionsManager {
           tokenName: action.amount.token_name,
           value: action.amount.value,
         };
-      } else {
-        action.amount = undefined;
       }
     }
 
     if (action.type === ActionTypeEnum.JettonTransfer) {
       action.amount = {
         tokenAddress: action.jetton.address,
-        tokenName: action.jetton.decimals,
-        decimals: action.jetton.symbol,
+        decimals: action.jetton.decimals,
+        tokenName: action.jetton.symbol,
         value: action.amount,
       };
     }

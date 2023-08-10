@@ -27,7 +27,7 @@ export const TransactionNFTItem = memo<TransactionNFTItemProps>((props) => {
     if (address) {
       // TODO: Replace with new router
       router.navigate('NFTItemDetails', {
-        keyPair: { currency: 'ton', address },
+        keyPair: { currency: 'ton', address: Address(address).toFriendly() },
       });
     }
   }, [nftAddress, nftItem?.address]);
@@ -52,34 +52,36 @@ export const TransactionNFTItem = memo<TransactionNFTItemProps>((props) => {
       : t('nft_single_nft');
 
     return (
-      <Pressable style={styles.container.static} onPress={handlePress}>
-        <Animated.View style={[styles.item.static, props.highlightStyle]}>
-          <View style={styles.pictureContainer}>
-            <FastImage
-              resizeMode="cover"
-              source={imagesSource}
-              style={styles.picture.static}
-            />
-          </View>
-          <View style={styles.infoContainer}>
-            <Text type="body2" numberOfLines={1}>
-              {name}
-            </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text type="body2" color="textSecondary" numberOfLines={1}>
-                {collectionName}
-              </Text>
-              {nft.approved_by.length > 0 && (
-                <Icon
-                  style={styles.verificationIcon.static}
-                  name="ic-verification-secondary-16"
-                  color="iconSecondary"
-                />
-              )}
+      <View style={styles.container.static}>
+        <Pressable onPress={handlePress}>
+          <Animated.View style={[styles.item.static, props.highlightStyle]}>
+            <View style={styles.pictureContainer}>
+              <FastImage
+                resizeMode="cover"
+                source={imagesSource}
+                style={styles.picture.static}
+              />
             </View>
-          </View>
-        </Animated.View>
-      </Pressable>
+            <View style={styles.infoContainer}>
+              <Text type="body2" numberOfLines={1}>
+                {name}
+              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text type="body2" color="textSecondary" numberOfLines={1}>
+                  {collectionName}
+                </Text>
+                {nft.approved_by.length > 0 && (
+                  <Icon
+                    style={styles.verificationIcon.static}
+                    name="ic-verification-secondary-16"
+                    color="iconSecondary"
+                  />
+                )}
+              </View>
+            </View>
+          </Animated.View>
+        </Pressable>
+      </View>
     );
   }
 

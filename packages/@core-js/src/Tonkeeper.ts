@@ -57,14 +57,21 @@ export class Tonkeeper {
     try {
       if (address) {
         if (Address.isValid(address)) {
+          // TODO: move all params to ctx. 
           this.wallet = new Wallet(this.queryClient, this.tonapi, this.vault, {
             address: address,
           });
+
+          this.prefetch();
         }
       }
     } catch (err) {
       console.log(err);
     }
+
+
+
+    
     //Load data from storage
     // const info = await this.storage.load('tonkeeper');
     // if (info) {
@@ -79,6 +86,10 @@ export class Tonkeeper {
     //   this.securitySettings.locked = true;
     //   // await this.wallet.getPrivateKey();
     // }
+  }
+
+  private prefetch() {
+    this.wallet.transactions.prefetch();
   }
 
   public async lock() {
@@ -122,6 +133,6 @@ export class Tonkeeper {
 
   public destroy() {
     this.wallet.transactions.destroy();
-    this.wallet = null;
+    this.wallet = null!;
   }
 }

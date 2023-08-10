@@ -226,7 +226,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
         const data = input.action.data;
         action.iconName = 'ic-gear-28';
         action.operation = t('transactions.smartcontract_exec');
-        action.subtitle = data.operation; //Address(data.contract.address).toShort();
+        action.subtitle = Address(data.contract.address).toShort();
         action.amount = formatter.formatNano(data.ton_attached, {
           prefix: amountPrefix,
           postfix: 'TON',

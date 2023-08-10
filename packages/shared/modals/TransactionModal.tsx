@@ -1,7 +1,7 @@
 import { EncryptedComment, EncryptedCommentLayout } from '../components/EncryptedComment';
 import { SheetActions, navigation, useNavigation } from '@tonkeeper/router';
 import { formatTransactionDetailsTime } from '../utils/date';
-import { Fragment, memo, useCallback, useMemo } from 'react';
+import React, { Fragment, memo, useCallback, useMemo } from 'react';
 import { Address } from '@tonkeeper/core';
 import { formatter } from '../formatter';
 import { config } from '../config';
@@ -16,6 +16,7 @@ import {
   List,
   Modal,
   View,
+  Spacer,
 } from '@tonkeeper/uikit';
 
 import {
@@ -27,6 +28,12 @@ import Clipboard from '@react-native-community/clipboard';
 import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
 import { useSelector } from 'react-redux';
+import { Toast } from '@tonkeeper/mobile/src/store/zustand/toast';
+import { useNftItemByAddress } from '@tonkeeper/core/src/query/useNftItemByAddress';
+import { JettonSwapAction, NftItem } from '@tonkeeper/core/src/TonAPI';
+import { NFTHead } from '@tonkeeper/mobile/src/core/ModalContainer/Action/ActionBase/NFTHead/NFTHead';
+import FastImage from 'react-native-fast-image';
+import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
 
 type TransactionModalProps = {
   transaction: Transaction;
@@ -48,7 +55,7 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
   const copyText = useCallback((value?: string) => {
     if (value) {
       Clipboard.setString(value);
-      // Toast.success(t('copied')); // TODO: Move toast to shared
+      Toast.success(t('copied')); // TODO: Move toast to shared
     }
   }, []);
 
@@ -110,10 +117,12 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
     return time;
   }, [tx.timestamp]);
 
+  const Content = tx.action.comment ? Modal.ScrollView : Modal.Content;
+
   return (
     <Modal>
       <Modal.Header />
-      <Modal.Content safeArea>
+      <Content safeArea>
         <View style={styles.container}>
           <View style={styles.infoContainer}>
             {tx.is_scam ? (
@@ -127,8 +136,33 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
                 {tx.action.type === TxActionEnum.TonTransfer && (
                   <TonIcon size="large" style={styles.tonIcon} />
                 )}
+                {tx.action.type === TxActionEnum.JettonTransfer &&
+                  !!tx.action?.jetton?.image && (
+                    <>
+                      <FastImage
+                        resizeMode="cover"
+                        source={{
+                          uri: tx.action?.jetton?.image,
+                        }}
+                        style={{ width: 96, height: 96, borderRadius: 96 / 2 }}
+                      />
+                      <Spacer y={20} />
+                    </>
+                  )}
+                {tx.action.nft && (
+                  <NFTHead
+                    keyPair={{
+                      currency: 'ton',
+                      address:
+                        typeof tx.action.nft === 'string'
+                          ? Address(tx.action.nft).toFriendly()
+                          : Address(tx.action.nft.address).toFriendly(),
+                    }}
+                  />
+                )}
               </View>
             )}
+            {tx.action.type === TxActionEnum.JettonSwap && <Swap action={tx.action} />}
             {amount && (
               <Text type="h2" style={styles.amountText}>
                 {amount}
@@ -169,7 +203,7 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
                   />
                 )}
               </Fragment>
-            ) : tx.destination === 'out' ? (
+            ) : (
               <Fragment>
                 {!!tx.action.recipient?.name && (
                   <List.Item
@@ -193,8 +227,22 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
                     }
                   />
                 )}
+                {!!tx.action.user_wallet && (
+                  <List.Item
+                    onPress={() =>
+                      copyText(Address(tx.action.user_wallet.address).toFriendly())
+                    }
+                    titleType="secondary"
+                    title={t('transactionDetails.recipient_address')}
+                    subtitle={
+                      <Text type="label1" numberOfLines={1} ellipsizeMode="middle">
+                        {Address(tx.action.user_wallet.address).toFriendly()}
+                      </Text>
+                    }
+                  />
+                )}
               </Fragment>
-            ) : null}
+            )}
             {fee && (
               <List.Item
                 titleType="secondary"
@@ -219,6 +267,7 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
                 titleType="secondary"
                 title={t('transactionDetails.comment')}
                 value={tx.action.comment}
+                valueMultiline
               />
             )}
           </List>
@@ -234,10 +283,92 @@ export const TransactionModal = memo<TransactionModalProps>((props) => {
             </Button>
           </View>
         </View>
-      </Modal.Content>
+      </Content>
     </Modal>
   );
 });
+
+interface SwapProps {
+  action: JettonSwapAction;
+}
+
+// TODO: temp
+const Swap = (props: SwapProps) => {
+  console.log(props.action);
+
+  const amount = useMemo(() => {
+    const amountIn = props.action.amount_in;
+    const amountOut = props.action.amount_in;
+    return {
+      in: formatter.formatNano(amountIn, {
+        formatDecimals: props.action.jetton_master_in.decimals ?? 9,
+        postfix: props.action.jetton_master_in.symbol,
+        withoutTruncate: true,
+        prefix: '+',
+      }),
+      out: formatter.formatNano(amountOut, {
+        formatDecimals: props.action.jetton_master_out.decimals ?? 9,
+        postfix: props.action.jetton_master_out.symbol,
+        withoutTruncate: true,
+        prefix: '-',
+      }),
+    };
+  }, []);
+
+  return (
+    <View>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: -4,
+        }}
+      >
+        <View
+          style={{
+            position: 'relative',
+            left: 2,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <FastImage
+            resizeMode="cover"
+            source={{
+              uri: props.action.jetton_master_in.image,
+            }}
+            style={{ width: 72, height: 72, borderRadius: 72 / 2, marginRight: -6 }}
+          />
+          <View
+            style={{
+              borderWidth: 4,
+              borderColor: DarkTheme.backgroundPage,
+              marginLeft: -6,
+              borderRadius: 72 + 4 / 2,
+            }}
+          >
+            <FastImage
+              resizeMode="cover"
+              source={{
+                uri: props.action.jetton_master_out.image,
+              }}
+              style={{ width: 72, height: 72, borderRadius: 72 / 2 }}
+            />
+          </View>
+        </View>
+      </View>
+      <Spacer y={20} />
+      <Text type="h2" style={styles.amountText} color="textTertiary">
+        {amount.out}
+      </Text>
+      <Text type="h2" style={styles.amountText}>
+        {amount.in}
+      </Text>
+    </View>
+  );
+};
 
 const styles = Steezy.create(({ colors, corners }) => ({
   container: {
@@ -290,15 +421,15 @@ export async function openTransactionDetails(txId: string) {
     if (cachedTransaction) {
       openModal(cachedTransaction);
     } else {
-      // Toast.loading();
+      Toast.loading();
       const transaction = await tk.wallet.transactions.fetchById(txId);
       if (transaction) {
         openModal(transaction);
       }
-      // Toast.hide();
+      Toast.hide();
     }
   } catch (err) {
     console.log(err);
-    // Toast.fail('Message');
+    Toast.fail('Message');
   }
 }

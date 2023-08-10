@@ -28,6 +28,7 @@ interface ListItemProps {
   gestureHandler?: boolean;
   content?: React.ReactNode;
   rightContent?: React.ReactNode;
+  valueMultiline?: boolean;
   onPress?: () => void;
   onPressIn?: () => void;
   onPressOut?: () => void;
@@ -45,6 +46,7 @@ export const ListItem = memo<ListItemProps>((props) => {
     navigate,
     pictureCorner = 'full',
     subtitleNumberOfLines = 1,
+    valueMultiline,
     titleType = 'primary',
     leftContentStyle,
     gestureHandler,
@@ -113,7 +115,12 @@ export const ListItem = memo<ListItemProps>((props) => {
             </View>
             <View style={styles.valueContainer}>
               {isString(props.value) ? (
-                <Text type="label1" textAlign="right" style={props.valueStyle} numberOfLines={1}>
+                <Text
+                  numberOfLines={!valueMultiline ? 1 : undefined}
+                  style={props.valueStyle}
+                  textAlign="right"
+                  type="label1"
+                >
                   {`  ${props.value}`}
                 </Text>
               ) : (
