@@ -9,14 +9,17 @@ export class NftsManager {
     return ['nfts', this.ctx.accountId];
   }
 
+  public async preload() {}
+
   public getCachedByAddress(nftAddress: string, existingNftItem?: NftItem) {
     if (existingNftItem) {
       return existingNftItem;
     }
 
     const nftItem = this.ctx.queryClient.getQueryData<NftItem>(['nft', nftAddress]);
+    console.log(JSON.stringify(nftItem));
     if (nftItem) {
-      return nftItem; //this.mapNft(event, actionIndex);
+      return nftItem; //this.mapNft(nftItem);
     }
 
     return null;

@@ -6,6 +6,9 @@ import { Vault } from './Vault';
 import { TransactionsManager } from './managers/TransactionsManager';
 import { NftsManager } from './managers/NftsManager';
 import { SSEListener, SSEManager } from './Tonkeeper';
+import { SubscriptionsManager } from './managers/SubscriptionsManager';
+import { JettonsManager } from './managers/JettonsManager';
+import { BalanceManager } from './managers/BalanceManager';
 
 enum Network {
   mainnet = -239,
@@ -54,7 +57,10 @@ export class Wallet {
 
   public listener: SSEListener | null = null;
 
+  public subscriptions: SubscriptionsManager;
   public transactions: TransactionsManager;
+  public balance: BalanceManager;
+  public jettons: JettonsManager;
   public nfts: NftsManager;
 
   constructor(
@@ -72,7 +78,10 @@ export class Wallet {
       sse: this.sse,
     };
 
+    this.subscriptions = new SubscriptionsManager(context);
     this.transactions = new TransactionsManager(context);
+    this.balance = new BalanceManager(context);
+    this.jettons = new JettonsManager(context);
     this.nfts = new NftsManager(context);
 
     this.listenTransactions();
@@ -80,15 +89,7 @@ export class Wallet {
 
   public async create({ name, passcode }: { passcode: string; name?: string }) {}
 
-  public async import({
-    words,
-    passcode,
-    name,
-  }: {
-    passcode: string;
-    words: string;
-    name: string;
-  }) {}
+  public async import(options: { passcode: string; words: string; name: string }) {}
 
   public async getPrivateKey(): Promise<string> {
     if (false) {

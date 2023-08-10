@@ -208,6 +208,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
         action.iconName = 'ic-bell-28';
         action.operation = t('transactions.subscription');
         action.subtitle = data.beneficiary.name ?? '';
+        action.subscriptionAddress = data.subscription;
         action.amount = formatter.formatNano(data.amount, {
           prefix: amountPrefix,
           postfix: 'TON',
@@ -219,6 +220,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
         action.iconName = 'ic-xmark-28';
         action.operation = t('transactions.unsubscription');
+        action.subscriptionAddress = data.subscription;
         action.subtitle = data.beneficiary.name ?? '';
         break;
       }

@@ -22,15 +22,20 @@ import { WalletContext } from '../Wallet';
 export class TransactionsManager {
   public persisted = undefined;
 
-  constructor(private context: WalletContext) {}
+  constructor(private ctx: WalletContext) {}
 
   public get cacheKey() {
-    return ['account_events', this.context.accountId];
+    return ['account_events', this.ctx.accountId];
   }
+
+  public async preload() {}
 
   public getCachedById(txId: string) {
     const { eventId, actionIndex } = this.txIdToEventId(txId);
-    const event = this.context.queryClient.getQueryData<AccountEvent>(['account_event', eventId]);
+    const event = this.ctx.queryClient.getQueryData<AccountEvent>([
+      'account_event',
+      eventId,
+    ]);
 
     if (event) {
       return this.mapAccountEvent(event, actionIndex);
@@ -40,12 +45,15 @@ export class TransactionsManager {
   }
 
   public async fetch(before_lt?: number) {
-    const { data, error } = await this.context.tonapi.accounts.getAccountEvents({
+    const { data, error } = await this.ctx.tonapi.accounts.getAccountEvents({
       ...(!!before_lt && { before_lt }),
-      accountId: this.context.accountId,
+      accountId: this.ctx.accountId,
       subject_only: true,
       limit: 50,
     });
+
+    if (!before_lt) {
+    }
 
     // TODO: change
     if (error) {
@@ -53,7 +61,7 @@ export class TransactionsManager {
     }
 
     data.events.map((event) => {
-      this.context.queryClient.setQueryData(['account_event', event.event_id], event);
+      this.ctx.queryClient.setQueryData(['account_event', event.event_id], event);
     });
 
     return data;
@@ -61,19 +69,34 @@ export class TransactionsManager {
 
   public async fetchById(txId: string) {
     const { eventId, actionIndex } = this.txIdToEventId(txId);
-    const { data: event } = await this.context.tonapi.accounts.getAccountEvent({
-      accountId: this.context.accountId,
+    const { data: event } = await this.ctx.tonapi.accounts.getAccountEvent({
+      accountId: this.ctx.accountId,
       eventId,
     });
 
     if (event) {
-      this.context.queryClient.setQueryData(['account_event', event.event_id], event);
+      this.ctx.queryClient.setQueryData(['account_event', event.event_id], event);
       return this.mapAccountEvent(event, actionIndex);
     }
 
     return null;
   }
 
+  public async prefetch() {
+    return this.ctx.queryClient.prefetchInfiniteQuery({
+      queryFn: () => this.fetch(),
+      queryKey: this.cacheKey,
+    });
+  }
+
+  public async refetch() {
+    return this.ctx.queryClient.refetchQueries({
+      refetchPage: (_, index) => index === 0,
+      queryKey: this.cacheKey,
+    });
+  }
+
+  // Utils
   private mapAccountEvent(event: AccountEvent, actionIndex: number) {
     const rawAction = event.actions[actionIndex];
     const action = {
@@ -105,7 +128,7 @@ export class TransactionsManager {
       };
     }
 
-    const destination = this.defineDestination(this.context.accountId, action);
+    const destination = this.defineDestination(this.ctx.accountId, action);
     const transaction: Transaction = {
       ...event,
       hash: event.event_id,
@@ -120,21 +143,6 @@ export class TransactionsManager {
     return transaction;
   }
 
-  public async prefetch() {
-    return this.context.queryClient.prefetchInfiniteQuery({
-      queryFn: () => this.fetch(),
-      queryKey: this.cacheKey,
-    });
-  }
-
-  public async refetch() {
-    return this.context.queryClient.refetchQueries({
-      refetchPage: (_, index) => index === 0,
-      queryKey: this.cacheKey,
-    });
-  }
-
-  // Utils
   private defineDestination(
     accountId: string,
     data: any, //ActionsData['data'],

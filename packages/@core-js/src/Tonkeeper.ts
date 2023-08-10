@@ -100,8 +100,21 @@ export class Tonkeeper {
     // }
   }
 
+  private async preload() {
+    await this.wallet.subscriptions.preload();
+    await this.wallet.transactions.preload();
+    await this.wallet.balance.preload();
+    await this.wallet.jettons.preload();
+    await this.wallet.nfts.preload();
+    return true;
+  }
+
   private prefetch() {
+    this.wallet.subscriptions.prefetch();
     this.wallet.transactions.prefetch();
+    this.wallet.balance.prefetch();
+    this.wallet.jettons.prefetch();
+    this.wallet.nfts.prefetch();
   }
 
   public async lock() {

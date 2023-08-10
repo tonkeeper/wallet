@@ -1,7 +1,7 @@
 import { EncryptedComment, EncryptedCommentLayout } from '../components/EncryptedComment';
 import { SheetActions, navigation, useNavigation } from '@tonkeeper/router';
 import { formatTransactionDetailsTime } from '../utils/date';
-import React, { Fragment, memo, useCallback, useMemo } from 'react';
+import { Fragment, memo, useCallback, useMemo } from 'react';
 import { Address } from '@tonkeeper/core';
 import { formatter } from '../formatter';
 import { config } from '../config';

@@ -299,11 +299,11 @@ export async function openNftModal(nftAddress: string, nftItem?: NftItem) {
   try {
     const cachedNftItem = tk.wallet.nfts.getCachedByAddress(nftAddress, nftItem);
     if (cachedNftItem) {
-      openModal(cachedNftItem);
+      // openModal(cachedNftItem);
     } else {
       Toast.loading();
       const item = await tk.wallet.nfts.fetchByAddress(nftAddress);
-      openModal(item);
+      // openModal(item);
       Toast.hide();
     }
   } catch (err) {

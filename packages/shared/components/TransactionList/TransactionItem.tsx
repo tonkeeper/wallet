@@ -5,7 +5,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import {
   Icon,
-  IconButton,
   List,
   ListSeparator,
   Loader,
@@ -23,6 +22,7 @@ import { t } from '../../i18n';
 import { EncryptedComment, EncryptedCommentLayout } from '../EncryptedComment';
 import { SenderAddress } from '../../mappers/AccountEventsMapper/AccountEventsMapper.utils';
 import { openTransactionDetails } from '../../modals/TransactionModal';
+import { useSubscription } from '../../query/hooks/useSubscription';
 
 interface TransactionItemProps {
   item: MappedEventAction;
@@ -75,9 +75,17 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
         onPressIn={onPressIn}
         onPress={handlePress}
         title={item.operation}
-        subtitle={item.subtitle}
+        subtitle={
+          item.subscriptionAddress ? (
+            <SubscriptionMerchantName address={item.subscriptionAddress} />
+          ) : (
+            item.subtitle
+          )
+        }
         value={item.amount}
-        subtitleNumberOfLines={item.type === 'SimplePreview' || item.type === 'Unknown' ? 2 : 1}
+        subtitleNumberOfLines={
+          item.type === 'SimplePreview' || item.type === 'Unknown' ? 2 : 1
+        }
         valueStyle={[
           item.isReceive && styles.receiveValue,
           item.isScam && styles.scamAmountText,
@@ -156,6 +164,20 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
     </View>
   );
 });
+
+const SubscriptionMerchantName = ({ address }: { address: string }) => {
+  const subscription = useSubscription(address);
+
+  if (!subscription) {
+    return null;
+  }
+
+  return (
+    <Text numberOfLines={2} color="textSecondary" type="body2">
+      {subscription.merchantName}
+    </Text>
+  );
+};
 
 const styles = Steezy.create(({ colors, corners }) => ({
   icon: {
