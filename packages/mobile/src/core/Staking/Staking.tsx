@@ -16,16 +16,14 @@ import { shallow } from 'zustand/shallow';
 import * as S from './Staking.style';
 import { jettonsBalancesSelector } from '$store/jettons';
 import { useSelector } from 'react-redux';
-import { Ton } from '$libs/Ton';
 import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
+import { Ton } from '$libs/Ton';
 
 interface Props {}
 
 export const Staking: FC<Props> = () => {
-  
-
   const nav = useNavigation();
 
   const { bottom: bottomInset } = useSafeAreaInsets();
@@ -39,25 +37,30 @@ export const Staking: FC<Props> = () => {
   const poolsList = useMemo(() => {
     return pools.map((pool) => {
       const stakingJetton = jettonBalances.find(
-        (item) =>
-          Address(item.jettonAddress).toRaw() ===
-          pool.liquidJettonMaster,
+        (item) => Address(item.jettonAddress).toRaw() === pool.liquidJettonMaster,
       );
 
       const balance = stakingJetton
         ? new BigNumber(stakingJetton.balance)
         : calculatePoolBalance(pool, stakingInfo);
 
+      const pendingWithdrawal = stakingInfo[pool.address]?.pendingWithdraw;
+
       return {
         ...pool,
         stakingJetton,
-        balance: balance.isGreaterThan(0) ? balance.toString() : undefined,
+        isWithdrawal: balance.isEqualTo(0) && !!pendingWithdrawal,
+        balance: balance.isGreaterThan(0)
+          ? balance.toString()
+          : pendingWithdrawal
+          ? Ton.fromNano(pendingWithdrawal)
+          : undefined,
       };
     });
   }, [jettonBalances, pools, stakingInfo]);
 
   const activePools = useMemo(
-    () => poolsList.filter((pool) => !!pool.balance),
+    () => poolsList.filter((pool) => !!pool.balance || pool.isWithdrawal),
     [poolsList],
   );
 
@@ -96,7 +99,7 @@ export const Staking: FC<Props> = () => {
     }
 
     return { activeList, recommendedList, otherList };
-  }, [poolsList, providers, t]);
+  }, [poolsList, providers]);
 
   const refreshControl = useStakingRefreshControl();
 
@@ -145,6 +148,7 @@ export const Staking: FC<Props> = () => {
                       id={pool.address}
                       name={pool.name}
                       balance={pool.balance}
+                      isWithdrawal={pool.isWithdrawal}
                       stakingJetton={pool.stakingJetton}
                       description={t('staking.staking_pool_desc', {
                         apy: pool.apy.toFixed(2),

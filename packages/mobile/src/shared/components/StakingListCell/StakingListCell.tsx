@@ -20,6 +20,7 @@ interface Props {
   separator?: boolean;
   isWidget?: boolean;
   numberOfLines?: number;
+  isWithdrawal?: boolean;
   onPress?: (id: string, name: string) => void;
 }
 
@@ -34,6 +35,7 @@ const StakingListCellComponent: FC<Props> = (props) => {
     id,
     isWidget,
     numberOfLines,
+    isWithdrawal,
     onPress,
   } = props;
 
@@ -44,7 +46,7 @@ const StakingListCellComponent: FC<Props> = (props) => {
     stakingJetton ? stakingJetton.balance : balanceValue || '0',
     stakingJetton ? stakingJetton.metadata.decimals : Decimals[CryptoCurrencies.Ton],
     !!stakingJetton,
-    stakingJetton ? stakingJetton.metadata.symbol! : 'TON',
+    stakingJetton && !isWithdrawal ? stakingJetton.metadata.symbol! : 'TON',
   );
 
   const handlePress = useCallback(() => {
