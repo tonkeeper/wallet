@@ -23,6 +23,8 @@ import { EncryptedComment, EncryptedCommentLayout } from '../EncryptedComment';
 import { SenderAddress } from '../../mappers/AccountEventsMapper/AccountEventsMapper.utils';
 import { openActionDetails } from '../../modals/ActionDetailsModal';
 import { useSubscription } from '../../query/hooks/useSubscription';
+import { CustomActionType } from '@tonkeeper/core/src/TonAPI';
+import { openSubscription } from '@tonkeeper/mobile/src/core/ModalContainer/CreateSubscription/CreateSubscription';
 
 interface TransactionItemProps {
   item: MappedEventAction;
@@ -51,6 +53,7 @@ const useBackgroundHighlighted = () => {
 
 export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
   const { onPressOut, onPressIn, backgroundStyle } = useBackgroundHighlighted();
+  const subscription = useSubscription(item.subscriptionAddress);
 
   const isSimplePreview = item.type === 'SimplePreview';
   const containerStyle = useMemo(
@@ -63,9 +66,19 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
   );
 
   const handlePress = useCallback(() => {
-    if (!isSimplePreview) {
-      openActionDetails(item.id);
+    if (isSimplePreview || item.type === CustomActionType.Unknown) {
+      return;
     }
+
+    if (subscription && 
+      item.type === CustomActionType.Subscribe ||
+      item.type === CustomActionType.UnSubscribe 
+    ) {
+      openSubscription(subscription);
+      return;
+    }
+
+    openActionDetails(item.id);
   }, [isSimplePreview, item]);
 
   return (

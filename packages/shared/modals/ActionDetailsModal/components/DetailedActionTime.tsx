@@ -21,9 +21,9 @@ export const DetailedActionTime = memo<DetailedActionTimeProps>((props) => {
       langKey = customLangKey;
     } else {
       if (destination === 'in') {
-        langKey = 'received_time';
+        langKey = 'received_date';
       } else if (destination === 'out') {
-        langKey = 'sent_time';
+        langKey = 'sent_date';
       }
     }
 

@@ -392,16 +392,21 @@
   },
 
   "transactionDetails": {
-    "received_time": "Received on %{time}",
-    "sent_time": "Sent on %{time}",
-    "swapped_on": "Swapped on %{time}",
+    "received_date": "Received on %{time}",
+    "sent_date": "Sent on %{time}",
+    "bid_date": "Bid %{date}",
+    "purchase_date": "purchase %{time}",
+    "swapped_date": "Swapped on %{time}",
     "sender": "Sender",
     "sender_address": "Sender address",
     "recipient": "Recipient",
     "recipient_address": "Recipient address",
     "comment": "Comment",
     "transaction": "Transaction",
-    "spam": "SPAM"
+    "spam": "SPAM",
+    "address": "Address",
+    "operation": "Operation",
+    "payload": "Payload"
   },
 
   "browser": {

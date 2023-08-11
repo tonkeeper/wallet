@@ -32,7 +32,11 @@ export const TonTransferContent = memo<TonTransferContentProps>((props) => {
         <DetailedHeader isScam={event.is_scam} isHide={action.isFailed}>
           <TonIcon size="large" />
         </DetailedHeader>
-        <DetailedAmount destination={event.destination} amount={action.amount} />
+        <DetailedAmount
+          destination={event.destination}
+          hideFiat={action.isFailed}
+          amount={action.amount}
+        />
         <DetailedActionTime destination={event.destination} timestamp={event.timestamp} />
         <FailedActionLabel isFailed={action.isFailed} />
       </DetailedInfoContainer>

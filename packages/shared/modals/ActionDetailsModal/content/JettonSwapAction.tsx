@@ -53,7 +53,7 @@ export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {
         currency: fiatCurrency,
       });
     }
-  }, [action.amount_in, tokenPrice.fiat, fiatCurrency]);
+  }, [action.amount_in, tokenPrice.fiat, fiatCurrency, action.isFailed]);
 
   const sourceIn = {
     uri: action.jetton_master_in.image,
@@ -90,15 +90,17 @@ export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {
             {amount.in}
           </Text>
         </DetailedHeader>
-        {fiatAmount && (
-          <Text type="body1" color="textSecondary" style={styles.fiatText}>
-            {fiatAmount}
-          </Text>
-        )}
+        <View style={styles.fiatText}>
+          {fiatAmount && (
+            <Text type="body1" color="textSecondary">
+              {fiatAmount}
+            </Text>
+          )}
+        </View>
         <DetailedActionTime
           destination={event.destination}
           timestamp={event.timestamp}
-          langKey="swapped_on"
+          langKey="swapped_date"
         />
         <FailedActionLabel isFailed={action.isFailed} />
       </DetailedInfoContainer>

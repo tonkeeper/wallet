@@ -99,10 +99,6 @@ export class Wallet {
     }
   }
 
-  public destroy() {
-    this.listener?.close();
-  }
-
   private listenTransactions() {
     this.listener = this.sse.listen(
       `/v2/sse/accounts/transactions?accounts=${this.address.raw}`,
@@ -117,5 +113,9 @@ export class Wallet {
       console.log('[Wallet]: message receive');
       this.transactions.refetch();
     });
+  }
+
+  public destroy() {
+    this.listener?.close();
   }
 }

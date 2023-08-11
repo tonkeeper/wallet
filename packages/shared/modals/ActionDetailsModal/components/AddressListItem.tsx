@@ -79,7 +79,7 @@ export const AddressListItem = memo<AddressListItemProps>((props) => {
     return (
       <List.Item
         titleType="secondary"
-        title={t('transactionDetails.recipient_address')}
+        title={t('transactionDetails.address')}
         onPress={copyText(friendlyAddress)}
         subtitle={
           <Text type="label1" numberOfLines={1} ellipsizeMode="middle">

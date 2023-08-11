@@ -398,16 +398,21 @@
   },
 
   "transactionDetails": {
-    "received_time": "Получено  %{time}",
-    "sent_time": "Отправлено %{time}",
-    "swapped_on": "Обмен %{time}",
+    "received_date": "Получено  %{time}",
+    "sent_date": "Отправлено %{time}",
+    "swapped_date": "Обмен %{time}",
+    "purchase_date": "Покупка %{time}",
+    "bid_date": "Ставка %{date}",
     "sender": "Отправитель",
     "sender_address": "Адрес отправителя",
     "recipient": "Получатель",
     "recipient_address": "Адрес получателя",
     "comment": "Комментарий",
     "transaction": "Транзакция",
-    "spam": "СПАМ"
+    "spam": "СПАМ",
+    "address": "Адрес",
+    "operation": "Операция",
+    "payload": "Данные"
   },
 
   "browser": {

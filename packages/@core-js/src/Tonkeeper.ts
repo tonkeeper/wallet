@@ -70,6 +70,7 @@ export class Tonkeeper {
 
   public async init(address: string) {
     try {
+      this.destroy();
       if (address) {
         if (Address.isValid(address)) {
           this.wallet = new Wallet(this.queryClient, this.tonapi, this.vault, this.sse, {
@@ -160,7 +161,7 @@ export class Tonkeeper {
   }
 
   public destroy() {
-    this.wallet.destroy();
+    this.wallet?.destroy();
     this.wallet = null!;
   }
 }

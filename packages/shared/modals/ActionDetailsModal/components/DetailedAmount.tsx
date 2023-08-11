@@ -12,6 +12,7 @@ interface DetailedAmountProps {
   destination: AccountEventDestination;
   amount?: number | string;
   jettonAddress?: string;
+  hideFiat?: boolean;
   decimals?: number;
   symbol?: string;
 }
@@ -20,6 +21,7 @@ export const DetailedAmount = memo<DetailedAmountProps>((props) => {
   const {
     amount: nanoAmount,
     symbol = 'TON',
+    hideFiat,
     decimals,
     destination,
     jettonAddress,
@@ -55,7 +57,7 @@ export const DetailedAmount = memo<DetailedAmountProps>((props) => {
           {amount}
         </Text>
       )}
-      {fiatAmount && (
+      {fiatAmount && !hideFiat && (
         <Text type="body1" color="textSecondary" style={styles.fiatText}>
           {fiatAmount}
         </Text>
