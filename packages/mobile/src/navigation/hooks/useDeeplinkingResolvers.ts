@@ -8,7 +8,7 @@ import { Base64, delay, fromNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { store, Toast } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
-import { openSend } from '../helper';
+import { openBuyFiat, openSend } from '../helper';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 
 import { t } from '@tonkeeper/shared/i18n';
@@ -34,6 +34,7 @@ import { IConnectQrQuery } from '$tonconnect/models';
 import { openDeprecatedConfirmSending } from '$core/ModalContainer/ConfirmSending/ConfirmSending';
 import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
 import { Address } from '@tonkeeper/core';
+import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -131,6 +132,19 @@ export function useDeeplinkingResolvers() {
       return openRequireWalletModal();
     } else {
       nav.openModal('Exchange');
+    }
+  });
+
+  deeplinking.add('/exchange/:id', async ({ params }) => {
+    const methodId = params.id;
+    if (!getWallet()) {
+      return openRequireWalletModal();
+    } else {
+      Toast.loading();
+      // refetch methods to buy TON
+      await useMethodsToBuyStore.getState().actions.fetchMethodsToBuy();
+      Toast.hide();
+      openBuyFiat(CryptoCurrencies.Ton, methodId);
     }
   });
 
