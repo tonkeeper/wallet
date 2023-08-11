@@ -33,7 +33,7 @@ import { ActionModal } from '$core/ModalContainer/Action/Action';
 import { ExchangeModal } from '$modals/ExchangeModal';
 import { Swap } from '$core/Swap/Swap';
 import { ChooseCountry } from '$core/ChooseCountry/ChooseCountry';
-import { TransactionModal } from '@tonkeeper/shared/modals/TransactionModal';
+import { ActionDetailsModal } from '@tonkeeper/shared/modals/ActionDetailsModal';
 import { SwitchWalletModal } from '@tonkeeper/shared/modals/SwitchWalletModal';
 import { AddWalletModal } from '@tonkeeper/shared/modals/AddWalletModal';
 import { ProvidersWithNavigation } from './Providers';
@@ -59,7 +59,7 @@ export const ModalStack = React.memo(() => (
       />
       <Stack.Modal component={SignRawModal} path="SignRaw" />
       <Stack.Modal component={NewConfirmSending} path="NewConfirmSending" />
-      <Stack.Modal component={TransactionModal} path="transaction" />
+      <Stack.Modal component={ActionDetailsModal} path="transaction" />
       <Stack.Modal component={SwitchWalletModal} path="/switch-wallet" />
       <Stack.Modal component={AddWalletModal} path="/add-wallet" />
     </Stack.Group>

@@ -1,0 +1,149 @@
+import { CustomAccountEvent, JettonSwapAction } from '@tonkeeper/core/src/TonAPI';
+import { List, Steezy, View, SText as Text, Spacer } from '@tonkeeper/uikit';
+import { DetailedInfoConatiner } from '../components/DetailedInfoConatiner';
+import { DetailedActionTime } from '../components/DetailedActionTime';
+import { AddressListItem } from '../components/AddressListItem';
+import { DetailedHeader } from '../components/DetailedHeader';
+import { ExtraListItem } from '../components/ExtraListItem';
+import FastImage from 'react-native-fast-image';
+import { formatter } from '../../../formatter';
+import { memo, useMemo } from 'react';
+
+import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
+import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
+import { useSelector } from 'react-redux';
+
+interface JettonSwapContentProps {
+  event: CustomAccountEvent;
+  action: JettonSwapAction;
+}
+
+export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {
+  const { action, event } = props;
+
+  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const tokenPrice = useTokenPrice(action.jetton_master_in.address);
+  
+  const amount = useMemo(() => {
+    const amountIn = action.amount_in;
+    const amountOut = action.amount_in;
+
+    return {
+      in: formatter.formatNano(amountIn, {
+        formatDecimals: action.jetton_master_in.decimals ?? 9,
+        postfix: action.jetton_master_in.symbol,
+        withoutTruncate: true,
+        prefix: '+',
+      }),
+      out: formatter.formatNano(amountOut, {
+        formatDecimals: action.jetton_master_out.decimals ?? 9,
+        postfix: action.jetton_master_out.symbol,
+        withoutTruncate: true,
+        prefix: '-',
+      }),
+    };
+  }, [action]);
+
+  const fiatAmount = useMemo(() => {
+    if (tokenPrice.fiat) {
+      const decimals = action.jetton_master_in.decimals ?? 9;
+      const amount = parseFloat(formatter.fromNano(action.amount_in, decimals));
+      return formatter.format(tokenPrice.fiat * amount, {
+        currency: fiatCurrency,
+      });
+    }
+  }, [action.amount_in, tokenPrice.fiat, fiatCurrency]);
+
+  const sourceIn = {
+    uri: action.jetton_master_in.image,
+  };
+
+  const sourceOut = {
+    uri: action.jetton_master_out.image,
+  };
+
+  return (
+    <View>
+      <DetailedInfoConatiner>
+        <DetailedHeader>
+          <View style={styles.content}>
+            <View style={styles.swapImages}>
+              <FastImage
+                style={styles.jettonInImage.static}
+                resizeMode="cover"
+                source={sourceIn}
+              />
+              <View style={styles.jettonOutImageContainer}>
+                <FastImage
+                  style={styles.jettonOutImage.static}
+                  resizeMode="cover"
+                  source={sourceOut}
+                />
+              </View>
+            </View>
+          </View>
+          <Text type="h2" style={styles.amountText} color="textTertiary">
+            {amount.out}
+          </Text>
+          <Text type="h2" style={styles.amountText}>
+            {amount.in}
+          </Text>
+        </DetailedHeader>
+        {fiatAmount && (
+          <Text type="body1" color="textSecondary" style={styles.fiatText}>
+            {fiatAmount}
+          </Text>
+        )}
+        <DetailedActionTime
+          destination={event.destination}
+          timestamp={event.timestamp}
+          langKey="swapped_on"
+        />
+      </DetailedInfoConatiner>
+      <List>
+        <AddressListItem address={action.user_wallet.address} />
+        <ExtraListItem extra={event.extra} />
+      </List>
+    </View>
+  );
+});
+
+const styles = Steezy.create(({ colors }) => ({
+  content: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: -4,
+    marginBottom: 16,
+  },
+  amountText: {
+    textAlign: 'center',
+  },
+  swapImages: {
+    position: 'relative',
+    left: 2,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  jettonInImage: {
+    width: 72,
+    height: 72,
+    borderRadius: 72 / 2,
+    marginRight: -6,
+  },
+  jettonOutImage: {
+    width: 72,
+    height: 72,
+    borderRadius: 72 / 2,
+  },
+  jettonOutImageContainer: {
+    borderWidth: 4,
+    borderColor: colors.backgroundPage,
+    marginLeft: -6,
+    borderRadius: 72 + 4 / 2,
+  },
+  fiatText: {
+    marginTop: -16,
+  }
+}));

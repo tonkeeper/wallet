@@ -36,7 +36,7 @@ export class SSEManagerImpl implements SSEManager {
 }
 
 export const sse = new SSEManagerImpl({
-  baseUrl: () => config.get('tonapiV2Endpoint'),
+  baseUrl: () => config.get('tonapiIOEndpoint'),
   token: () => config.get('tonApiKey'),
 });
 

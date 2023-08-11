@@ -1,23 +1,11 @@
-import {
-  Account,
-  AccountEvent,
-  Action,
-  ActionTypeEnum,
-  AuctionBidAction,
-  ContractDeployAction,
-  DepositStakeAction,
-  JettonSwapAction,
-  JettonTransferAction,
-  NftItemTransferAction,
-  NftPurchaseAction,
-  RecoverStakeAction,
-  SmartContractAction,
-  SubscriptionAction,
-  TonTransferAction,
-  UnSubscriptionAction,
-} from '../TonAPI';
-import { Address } from '../Address';
 import { WalletContext } from '../Wallet';
+import { AccountEvent } from '../TonAPI';
+import { Address } from '../Address';
+import {
+  CustomAccountEventActions,
+  TransactionDestination,
+  CustomAccountEvent,
+} from '../TonAPI';
 
 export class TransactionsManager {
   public persisted = undefined;
@@ -30,15 +18,15 @@ export class TransactionsManager {
 
   public async preload() {}
 
-  public getCachedById(txId: string) {
-    const { eventId, actionIndex } = this.txIdToEventId(txId);
+  public getCachedAction(txId: string) {
+    const { eventId, actionIndex } = this.txIdToActionId(txId);
     const event = this.ctx.queryClient.getQueryData<AccountEvent>([
       'account_event',
       eventId,
     ]);
 
     if (event) {
-      return this.mapAccountEvent(event, actionIndex);
+      return this.makeCustomAccountEvent(event, actionIndex);
     }
 
     return null;
@@ -55,7 +43,7 @@ export class TransactionsManager {
     if (!before_lt) {
     }
 
-    // TODO: change
+    // TODO: change generated tonapi client
     if (error) {
       throw error;
     }
@@ -67,8 +55,8 @@ export class TransactionsManager {
     return data;
   }
 
-  public async fetchById(txId: string) {
-    const { eventId, actionIndex } = this.txIdToEventId(txId);
+  public async fetchAction(txId: string) {
+    const { eventId, actionIndex } = this.txIdToActionId(txId);
     const { data: event } = await this.ctx.tonapi.accounts.getAccountEvent({
       accountId: this.ctx.accountId,
       eventId,
@@ -76,7 +64,7 @@ export class TransactionsManager {
 
     if (event) {
       this.ctx.queryClient.setQueryData(['account_event', event.event_id], event);
-      return this.mapAccountEvent(event, actionIndex);
+      return this.makeCustomAccountEvent(event, actionIndex);
     }
 
     return null;
@@ -97,64 +85,34 @@ export class TransactionsManager {
   }
 
   // Utils
-  private mapAccountEvent(event: AccountEvent, actionIndex: number) {
+  private makeCustomAccountEvent(event: AccountEvent, actionIndex: number) {
     const rawAction = event.actions[actionIndex];
-    const action = {
+    const action: CustomAccountEventActions = {
       ...rawAction,
       ...rawAction[rawAction.type],
     };
 
-    // Extract amount
-    if (action.amount) {
-      if (typeof action.amount === 'number') {
-        action.amount = {
-          tokenName: 'TON',
-          value: action.amount,
-        };
-      } else if (typeof action.amount === 'object') {
-        action.amount = {
-          tokenName: action.amount.token_name,
-          value: action.amount.value,
-        };
-      }
-    }
-
-    if (action.type === ActionTypeEnum.JettonTransfer) {
-      action.amount = {
-        tokenAddress: action.jetton.address,
-        decimals: action.jetton.decimals,
-        tokenName: action.jetton.symbol,
-        value: action.amount,
-      };
-    }
-
     const destination = this.defineDestination(this.ctx.accountId, action);
-    const transaction: Transaction = {
+    const customEvent: CustomAccountEvent = {
       ...event,
-      hash: event.event_id,
       destination,
-      action,
     };
 
-    if (rawAction.type === ActionTypeEnum.TonTransfer) {
-      transaction.encrypted_comment = action.encrypted_comment;
-    }
-
-    return transaction;
+    return { event: customEvent, action };
   }
 
   private defineDestination(
     accountId: string,
-    data: any, //ActionsData['data'],
+    action: CustomAccountEventActions,
   ): TransactionDestination {
-    if (data && 'recipient' in data) {
-      return Address.compare(data.recipient.address, accountId) ? 'in' : 'out';
+    if (action && 'recipient' in action) {
+      return Address.compare(action.recipient?.address, accountId) ? 'in' : 'out';
     }
 
     return 'unknown';
   }
 
-  private txIdToEventId(txId: string) {
+  private txIdToActionId(txId: string) {
     const ids = txId.split('_');
     const actionIndex = Number(ids[1] ?? 0);
     const eventId = ids[0];
@@ -162,114 +120,3 @@ export class TransactionsManager {
     return { eventId, actionIndex };
   }
 }
-
-export type TransactionDestination = 'out' | 'in' | 'unknown';
-
-export const TxActionEnum = {
-  ...ActionTypeEnum,
-} as const;
-
-export type ActionAmount = {
-  tokenAddress?: string;
-  tokenName: string;
-  decimals?: number;
-  value: string;
-};
-
-export type TonTransferActionData = {
-  type: ActionTypeEnum.TonTransfer;
-  data: TonTransferAction;
-};
-
-export type JettonTransferActionData = {
-  type: ActionTypeEnum.JettonTransfer;
-  data: JettonTransferAction;
-};
-
-export type NftItemTransferActionData = {
-  type: ActionTypeEnum.NftItemTransfer;
-  data: NftItemTransferAction;
-};
-
-export type ContractDeployActionData = {
-  type: ActionTypeEnum.ContractDeploy;
-  data: ContractDeployAction;
-};
-
-export type SubscribeActionData = {
-  type: ActionTypeEnum.Subscribe;
-  data: SubscriptionAction;
-};
-
-export type UnSubscribeActionData = {
-  type: ActionTypeEnum.UnSubscribe;
-  data: UnSubscriptionAction;
-};
-
-export type AuctionBidActionData = {
-  type: ActionTypeEnum.AuctionBid;
-  data: AuctionBidAction;
-};
-
-export type NftPurchaseActionData = {
-  type: ActionTypeEnum.NftPurchase;
-  data: NftPurchaseAction;
-};
-
-export type SmartContractExecActionData = {
-  type: ActionTypeEnum.SmartContractExec;
-  data: SmartContractAction;
-};
-
-export type UnknownActionData = {
-  type: ActionTypeEnum.Unknown;
-  data: undefined;
-};
-
-export type DepositStakeActionData = {
-  type: ActionTypeEnum.DepositStake;
-  data: DepositStakeAction;
-};
-
-export type RecoverStakeActionData = {
-  type: ActionTypeEnum.RecoverStake;
-  data: RecoverStakeAction;
-};
-
-export type STONfiSwapActionData = {
-  type: ActionTypeEnum.JettonSwap;
-  data: JettonSwapAction;
-};
-
-export type ActionsData =
-  | TonTransferActionData
-  | JettonTransferActionData
-  | NftItemTransferActionData
-  | ContractDeployActionData
-  | SubscribeActionData
-  | UnSubscribeActionData
-  | AuctionBidActionData
-  | NftPurchaseActionData
-  | UnknownActionData
-  | SmartContractExecActionData
-  | DepositStakeActionData
-  | RecoverStakeActionData
-  | STONfiSwapActionData;
-
-export type ActionsWithData = Omit<Action, 'type'> &
-  ActionsData & {
-    amount?: ActionAmount;
-  };
-
-export type Transaction = {
-  hash: string;
-  sender?: Account;
-  recipient?: Account;
-  action: ActionsWithData;
-  destination: TransactionDestination;
-  timestamp: number;
-  extra?: number;
-  encrypted_comment?: any;
-  comment?: string;
-  is_scam: boolean;
-};

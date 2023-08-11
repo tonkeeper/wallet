@@ -12,7 +12,7 @@ import { useUnlockVault } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOpe
 import { TouchableWithoutFeedback } from 'react-native';
 import Clipboard from '@react-native-community/clipboard';
 import Animated from 'react-native-reanimated';
-import { Account } from '@tonkeeper/core/src/TonAPI';
+import { AccountAddress } from '@tonkeeper/core/src/TonAPI';
 
 export enum EncryptedCommentLayout {
   LIST_ITEM,
@@ -23,7 +23,7 @@ export interface EncryptedCommentProps {
   transactionId: TransactionDetails['id'];
   transactionType: TransactionDetails['type'] | 'SimplePreview';
   encryptedComment: TransactionDetails['encryptedComment'];
-  sender: Account;
+  sender: AccountAddress;
   layout: EncryptedCommentLayout;
   backgroundStyle?: { backgroundColor: string };
 }
@@ -159,6 +159,6 @@ const styles = Steezy.create({
     paddingBottom: 8.5,
   },
   listItemSpoilerView: {
-    maxWidth: 200
-  }
+    maxWidth: 200,
+  },
 });

@@ -400,6 +400,7 @@
   "transactionDetails": {
     "received_time": "Получено  %{time}",
     "sent_time": "Отправлено %{time}",
+    "swapped_on": "Обмен %{time}",
     "sender": "Отправитель",
     "sender_address": "Адрес отправителя",
     "recipient": "Получатель",

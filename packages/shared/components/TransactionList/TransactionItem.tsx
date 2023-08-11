@@ -21,7 +21,7 @@ import FastImage from 'react-native-fast-image';
 import { t } from '../../i18n';
 import { EncryptedComment, EncryptedCommentLayout } from '../EncryptedComment';
 import { SenderAddress } from '../../mappers/AccountEventsMapper/AccountEventsMapper.utils';
-import { openTransactionDetails } from '../../modals/TransactionModal';
+import { openActionDetails } from '../../modals/ActionDetailsModal';
 import { useSubscription } from '../../query/hooks/useSubscription';
 
 interface TransactionItemProps {
@@ -64,7 +64,7 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
 
   const handlePress = useCallback(() => {
     if (!isSimplePreview) {
-      openTransactionDetails(item.id);
+      openActionDetails(item.id);
     }
   }, [isSimplePreview, item]);
 

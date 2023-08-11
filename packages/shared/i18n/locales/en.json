@@ -394,6 +394,7 @@
   "transactionDetails": {
     "received_time": "Received on %{time}",
     "sent_time": "Sent on %{time}",
+    "swapped_on": "Swapped on %{time}",
     "sender": "Sender",
     "sender_address": "Sender address",
     "recipient": "Recipient",
