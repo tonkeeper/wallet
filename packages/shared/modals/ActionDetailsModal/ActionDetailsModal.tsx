@@ -18,6 +18,7 @@ import { JettonSwapContent } from './content/JettonSwapAction';
 import { SmartContractExecContent } from './content/SmartContractExecContent';
 import { AuctionBidContent } from './content/AuctionBidContent';
 import { NftPurchaseContent } from './content/NftPurchaseContent';
+import { ContractDeployContent } from './content/ContractDeployContent';
 
 type ActionDetailsModalProps = {
   action: CustomAccountEventActions;
@@ -53,7 +54,8 @@ export const ActionDetailsModal = memo<ActionDetailsModalProps>((props) => {
         return <AuctionBidContent action={action} event={event} />;
       case CustomActionType.NftPurchase:
         return <NftPurchaseContent action={action} event={event} />;
-      case CustomActionType.ContractDeploy: // 2
+      case CustomActionType.ContractDeploy:
+          return <ContractDeployContent action={action} event={event} />
       default:
         return null;
     }

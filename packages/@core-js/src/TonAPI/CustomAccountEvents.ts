@@ -56,7 +56,9 @@ export type CustomNftItemTransferAction = MakeCustomAction<
 
 export type CustomContractDeployAction = MakeCustomAction<
   CustomActionType.ContractDeploy,
-  ContractDeployAction
+  ContractDeployAction & {
+    walletInitialized: boolean;
+  }
 >;
 
 export type CustomSubscribeAction = MakeCustomAction<

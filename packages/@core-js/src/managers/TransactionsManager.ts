@@ -1,5 +1,5 @@
 import { WalletContext } from '../Wallet';
-import { AccountEvent, ActionStatusEnum } from '../TonAPI';
+import { AccountEvent, ActionStatusEnum, CustomActionType } from '../TonAPI';
 import { Address } from '../Address';
 import {
   CustomAccountEventActions,
@@ -92,8 +92,14 @@ export class TransactionsManager {
       ...rawAction,
       ...rawAction[rawAction.type],
     };
+    
 
     const destination = this.defineDestination(this.ctx.accountId, action);
+
+    if (action.type === CustomActionType.ContractDeploy) {
+      action.walletInitialized = Address.compare(action.address, this.ctx.accountId);
+    }
+
     const customEvent: CustomAccountEvent = {
       ...event,
       destination,
