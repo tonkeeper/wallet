@@ -124,6 +124,7 @@ export type MappedEventDate = {
 export type MappedEventAction = {
   sender?: SenderAddress;
   encryptedComment?: { cipher_text: string; encryption_type: string };
+  subscriptionAddress?: string;
   contentType: MappedEventItemType.Action;
   type: ActionTypeEnum | 'SimplePreview';
   subtitle?: string;

@@ -5,7 +5,7 @@ import { useLogoAnimation } from './animations/useLogoAnimation';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated from 'react-native-reanimated';
 import { memo, useMemo } from 'react';
-import { tonkeeper } from '../../tonkeeper';
+import { tk } from '../../tonkeeper';
 
 export const StartScreen = memo(() => {
   const { start, logoRotateStyle, logoPosStyle } = useLogoAnimation();
@@ -43,7 +43,7 @@ export const StartScreen = memo(() => {
             onPress={async () => {
               console.log('start await ');
 
-              const privateKey = await tonkeeper.wallet.getPrivateKey();
+              const privateKey = await tk.wallet.getPrivateKey();
 
               console.log('!end', privateKey);
             }}

@@ -18,7 +18,7 @@ import { SetupBiometryPage } from './pages/SetupBiometryPage';
 
 import { delay } from '@tonkeeper/uikit/src/utils/delay';
 import { SetupWalletNamePage } from './pages/SetupWalletNamePage';
-import { tonkeeper } from '../../tonkeeper';
+import { tk } from '../../tonkeeper';
 
 type StepsComponents = React.ComponentElement<any, any>[];
 
@@ -71,9 +71,9 @@ export const CreateWalletScreen = memo(() => {
       switch (step) {
         case CreateWalletSteps.CreatePasscode:
           passcode.setValue(data.passcode);
-          if (!tonkeeper.wallet.current) {
+          if (!tk.wallet.current) {
             startLoading();
-            await tonkeeper.wallet.create({
+            await tk.wallet.create({
               passcode: data.passcode,
             });
           }
@@ -82,18 +82,18 @@ export const CreateWalletScreen = memo(() => {
           break;
         case CreateWalletSteps.SetupWalletName:
           startLoading();
-          await tonkeeper.wallet.create({
+          await tk.wallet.create({
             passcode: passcode.value,
             name: data.name,
           });
           goToNextPage();
           break;
         case CreateWalletSteps.SetupBiometry:
-          await tonkeeper.wallet.enableBiometry();
+          await tk.wallet.enableBiometry();
           goToNextPage();
           break;
         case CreateWalletSteps.SetupNotifications:
-          await tonkeeper.notifications.requestPermission();
+          await tk.notifications.requestPermission();
           goToNextPage();
           break;
       }
@@ -103,15 +103,15 @@ export const CreateWalletScreen = memo(() => {
   const pages = useMemo(() => {
     const pages: StepsComponents = [SetupPasscodePage];
 
-    if (tonkeeper.wallets.length > 0) {
+    if (tk.wallets.length > 0) {
       pages.push(SetupWalletNamePage);
     }
 
-    if (!tonkeeper.permissions.biometry) {
+    if (!tk.permissions.biometry) {
       pages.push(SetupBiometryPage);
     }
 
-    if (!tonkeeper.permissions.notifications) {
+    if (!tk.permissions.notifications) {
       pages.push(SetupNotificationsPage);
     }
 

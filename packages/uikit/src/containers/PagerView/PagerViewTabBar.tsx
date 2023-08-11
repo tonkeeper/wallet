@@ -23,7 +23,7 @@ export const PagerViewTabBar = memo<PagerViewTabBarProps>((props) => {
   const { style, tabs } = props;
   const [tabsPositions, setTabsPositions] = useState<{ [key: string]: number }>({});
   const { pageOffset, scrollY, headerHeight, setPage } = usePagerView();
-  const { isLargeHeader } = useScreenScroll();
+  const { headerType } = useScreenScroll();
   const theme = useTheme();
 
   const handlePressTab = (index: number) => () => setPage(index);
@@ -65,7 +65,7 @@ export const PagerViewTabBar = memo<PagerViewTabBarProps>((props) => {
 
   const containerAnimatedStyle = useAnimatedStyle(() => {
     'worklet';
-    const headerOffset = isLargeHeader.value ? ScreenHeaderHeight : 0;
+    const headerOffset = headerType === 'large'? ScreenHeaderHeight : 0;
     const isHeaderEndReached = scrollY.value > headerHeight.value - headerOffset;
     const translateY = isHeaderEndReached ? scrollY.value - (headerHeight.value - headerOffset): 0;
     const borderBottomColor = isHeaderEndReached ? theme.separatorCommon : 'transparent';

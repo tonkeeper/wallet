@@ -16,6 +16,8 @@ export { KeyboardSpacer } from './components/KeyboardSpacer';
 export { Input, InputRef } from './components/Input';
 export { TextInputRef } from './components/TextInput';
 export { StepIndicator } from './components/StepIndicator';
+export { RefreshControl } from './components/RefreshControl';
+export { Toast } from './components/Toast';
 
 // Containers
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';

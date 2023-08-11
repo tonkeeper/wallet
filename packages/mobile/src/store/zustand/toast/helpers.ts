@@ -1,5 +1,6 @@
 import { IToastStore } from './types';
 import { useToastStore } from './useToastStore';
+import { Toast as NewToast } from '@tonkeeper/uikit';
 
 export const Toast: Omit<IToastStore['actions'], 'cancelAutoHide'> = {
   show: (...args) => useToastStore.getState().actions.show(...args),
@@ -9,3 +10,5 @@ export const Toast: Omit<IToastStore['actions'], 'cancelAutoHide'> = {
   hide: (...args) => useToastStore.getState().actions.hide(...args),
   clear: (...args) => useToastStore.getState().actions.clear(...args),
 };
+
+NewToast.ref.current = Toast;

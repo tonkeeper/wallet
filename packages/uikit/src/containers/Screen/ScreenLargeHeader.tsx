@@ -3,7 +3,7 @@ import Animated, { useAnimatedStyle, interpolate, SharedValue, Extrapolate } fro
 import { TouchableOpacity, Insets, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { deviceHeight, deviceWidth, ns } from '../../utils';
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useLayoutEffect } from 'react';
 import { Text } from '../../components/Text';
 import { useScreenScroll } from './hooks';
 import { useTheme } from '../../styles';
@@ -31,12 +31,14 @@ export const ScreenLargeHeader = memo<ScreenLargeHeaderProps>((props) => {
     opacity,
   } = props;
 
-  const { scrollY, isLargeHeader, headerEjectionPoint } = useScreenScroll();
+  const { scrollY, defineHeaderType, headerEjectionPoint } = useScreenScroll();
   const { top: topInset } = useSafeAreaInsets();
   const theme = useTheme();
-
-  isLargeHeader.value = 1;
-
+  
+  useLayoutEffect(() => {
+    defineHeaderType('large');
+  }, []);
+  
   const backgroundStyle = useAnimatedStyle(() => {
     return {
       opacity: scrollY.value > 0 ? 1 : 0,

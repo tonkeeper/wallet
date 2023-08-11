@@ -12,6 +12,7 @@ import { useUnlockVault } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOpe
 import { TouchableWithoutFeedback } from 'react-native';
 import Clipboard from '@react-native-community/clipboard';
 import Animated from 'react-native-reanimated';
+import { AccountAddress } from '@tonkeeper/core/src/TonAPI';
 
 export enum EncryptedCommentLayout {
   LIST_ITEM,
@@ -22,7 +23,7 @@ export interface EncryptedCommentProps {
   transactionId: TransactionDetails['id'];
   transactionType: TransactionDetails['type'] | 'SimplePreview';
   encryptedComment: TransactionDetails['encryptedComment'];
-  sender: NonNullable<TransactionDetails['sender']>;
+  sender: AccountAddress;
   layout: EncryptedCommentLayout;
   backgroundStyle?: { backgroundColor: string };
 }
@@ -84,7 +85,7 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
   );
 
   const handleDecryptComment = useCallback(() => {
-    decryptComment(actionKey, props.encryptedComment, props.sender.raw);
+    decryptComment(actionKey, props.encryptedComment, props.sender.address);
   }, [decryptComment]);
 
   const encryptedCommentMock = 's'.repeat(encryptedCommentLength);
@@ -97,8 +98,8 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
       <List.Item
         label={
           <View style={styles.encryptedCommentContainer}>
-            <Text style={styles.labelText.static} color="textTertiary" type="label1">
-              comment
+            <Text style={styles.labelText.static} color="textSecondary" type="body1">
+              {t('transactionDetails.comment')}
             </Text>
             <View style={styles.encryptedCommentIconContainer}>
               <Icon name="ic-lock-16" color="accentGreen" />
@@ -106,15 +107,17 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
           </View>
         }
         value={
-          <SpoilerView isOn={!decryptedComment}>
-            <TouchableWithoutFeedback
-              onPress={
-                decryptedComment ? copyText(decryptedComment) : handleDecryptComment
-              }
-            >
-              <Text type="label1">{decryptedComment || encryptedCommentMock}</Text>
-            </TouchableWithoutFeedback>
-          </SpoilerView>
+          <View style={styles.listItemSpoilerView}>
+            <SpoilerView isOn={!decryptedComment}>
+              <TouchableWithoutFeedback
+                onPress={
+                  decryptedComment ? copyText(decryptedComment) : handleDecryptComment
+                }
+              >
+                <Text type="label1">{decryptedComment || encryptedCommentMock}</Text>
+              </TouchableWithoutFeedback>
+            </SpoilerView>
+          </View>
         }
       />
     );
@@ -154,5 +157,8 @@ const styles = Steezy.create({
     borderRadius: 18,
     paddingTop: 7.5,
     paddingBottom: 8.5,
+  },
+  listItemSpoilerView: {
+    maxWidth: 200,
   },
 });

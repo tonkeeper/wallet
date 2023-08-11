@@ -31,7 +31,7 @@ export interface AccountAddress {
   icon?: string;
 }
 
-export interface Block {
+export interface BlockchainBlock {
   /**
    * @format int32
    * @example 0
@@ -196,7 +196,7 @@ export interface Message {
   raw_body?: string;
   /** @example "nft_transfer" */
   decoded_op_name?: string;
-  decoded_body: any;
+  decoded_body?: any;
 }
 
 /** @example "TransOrd" */
@@ -413,7 +413,7 @@ export interface AccountStorageInfo {
   due_payment: number;
 }
 
-export interface RawAccount {
+export interface BlockchainRawAccount {
   /** @example "0:da6b1b6663a0e4d18cc8574ccd9db5296e367dd9324706f3bbd9eb1cd2caf0bf" */
   address: string;
   /**
@@ -494,7 +494,7 @@ export interface TvmStackRecord {
   tuple?: TvmStackRecord[];
 }
 
-export interface Config {
+export interface BlockchainConfig {
   /** config address */
   '0': string;
   /** elector address */
@@ -612,6 +612,8 @@ export interface NftItem {
     address: string;
     /** @example "TON Diamonds" */
     name: string;
+    /** @example "Best collection in TON network" */
+    description: string;
   };
   /** @example true */
   verified: boolean;
@@ -784,8 +786,8 @@ export interface AuctionBidAction {
   auction_type: AuctionBidActionAuctionTypeEnum;
   amount: Price;
   nft?: NftItem;
-  beneficiary: AccountAddress;
   bidder: AccountAddress;
+  auction: AccountAddress;
 }
 
 export interface DepositStakeAction {
@@ -888,18 +890,18 @@ export interface AccountEvents {
   next_from: number;
 }
 
-export interface TraceId {
+export interface TraceID {
   /** @example "55e8809519cd3c49098c9ee45afdafcea7a894a74d0f628d94a115a50e045122" */
   id: string;
   /**
-   * @format int64
+   * @format uint64
    * @example 1645544908
    */
   utime: number;
 }
 
-export interface TraceIds {
-  traces: TraceId[];
+export interface TraceIDs {
+  traces: TraceID[];
 }
 
 export interface ApyHistory {
@@ -1005,7 +1007,10 @@ export interface WalletDNS {
 
 export interface DomainInfo {
   name: string;
-  /** date of expiring. optional. not all domain in ton has expiration date */
+  /**
+   * date of expiring. optional. not all domain in ton has expiration date
+   * @format int64
+   */
   expiring_at?: number;
   item?: NftItem;
 }
@@ -1216,6 +1221,18 @@ export interface PoolInfo {
    * @example "0:4a91d32d0289bda9813ae00ff7640e6c38fdce76e4583dd6afc463b70c7d767c"
    */
   liquid_jetton_master?: string;
+  /**
+   * total stake of all nominators
+   * @format int64
+   * @example 5000000000
+   */
+  nominators_stake: number;
+  /**
+   * stake of validator
+   * @format int64
+   * @example 5000000000
+   */
+  validator_stake: number;
 }
 
 export interface PoolImplementation {
@@ -1372,7 +1389,6 @@ export enum ActionTypeEnum {
 export enum ActionStatusEnum {
   Ok = 'ok',
   Failed = 'failed',
-  Pending = 'pending',
 }
 
 export enum AuctionBidActionAuctionTypeEnum {
@@ -1399,17 +1415,17 @@ export enum PoolInfoImplementationEnum {
   LiquidTF = 'liquidTF',
 }
 
-export interface GetAccountTransactionsParams {
+export interface GetBlockchainAccountTransactionsParams {
   /**
    * omit this parameter to get last transactions
    * @format int64
-   * @example ""
+   * @example 39787624000003
    */
   after_lt?: number;
   /**
    * omit this parameter to get last transactions
    * @format int64
-   * @example 0
+   * @example 39787624000003
    */
   before_lt?: number;
   /**
@@ -1426,7 +1442,7 @@ export interface GetAccountTransactionsParams {
   accountId: string;
 }
 
-export interface ExecGetMethodParams {
+export interface ExecGetMethodForBlockchainAccountParams {
   /**
    * Supported values: NaN, Null, 10-base digits for tiny int, 0x-prefixed hex digits for int257, all forms of addresses for slice, single-root base64-encoded BOC for cell
    * @example ["0:9a33970f617bcd71acf2cd28357c067aa31859c02820d8f01d74c88063a8f4d8"]
@@ -1444,7 +1460,7 @@ export interface ExecGetMethodParams {
   methodName: string;
 }
 
-export interface GetJettonsHistoryParams {
+export interface GetAccountJettonsHistoryParams {
   /**
    * omit this parameter to get last events
    * @format int64
@@ -1453,7 +1469,7 @@ export interface GetJettonsHistoryParams {
   before_lt?: number;
   /**
    * @max 1000
-   * @example 1000
+   * @example 100
    */
   limit: number;
   /**
@@ -1473,7 +1489,7 @@ export interface GetJettonsHistoryParams {
   accountId: string;
 }
 
-export interface GetJettonsHistoryByIdParams {
+export interface GetAccountJettonHistoryByIdParams {
   /**
    * omit this parameter to get last events
    * @format int64
@@ -1482,7 +1498,7 @@ export interface GetJettonsHistoryByIdParams {
   before_lt?: number;
   /**
    * @max 1000
-   * @example 1000
+   * @example 100
    */
   limit: number;
   /**
@@ -1507,7 +1523,7 @@ export interface GetJettonsHistoryByIdParams {
   jettonId: string;
 }
 
-export interface GetNftItemsByOwnerParams {
+export interface GetAccountNftItemsParams {
   /**
    * nft collection
    * @example "0:06d811f426598591b32b2c49f29f66c821368e4acb1de16762b04e0174532465"
@@ -1532,9 +1548,9 @@ export interface GetNftItemsByOwnerParams {
   accountId: string;
 }
 
-export interface GetEventsByAccountParams {
+export interface GetAccountEventsParams {
   /**
-   * filter actions where requested account is not real subject (for example sender or reciver jettons)
+   * filter actions where requested account is not real subject (for example sender or receiver jettons)
    * @default false
    */
   subject_only?: boolean;
@@ -1546,7 +1562,7 @@ export interface GetEventsByAccountParams {
   before_lt?: number;
   /**
    * @max 1000
-   * @example 1000
+   * @example 100
    */
   limit: number;
   /**
@@ -1566,9 +1582,26 @@ export interface GetEventsByAccountParams {
   accountId: string;
 }
 
-export interface GetTracesByAccountParams {
+export interface GetAccountEventParams {
   /**
-   * @format int32
+   * filter actions where requested account is not real subject (for example sender or receiver jettons)
+   * @default false
+   */
+  subject_only?: boolean;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  accountId: string;
+  /**
+   * event ID or transaction hash in hex (without 0x) or base64url format
+   * @example "97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  eventId: string;
+}
+
+export interface GetAccountTracesParams {
+  /**
    * @max 1000
    * @default 100
    * @example 100
@@ -1581,7 +1614,7 @@ export interface GetTracesByAccountParams {
   accountId: string;
 }
 
-export interface GetSearchAccountsParams {
+export interface SearchAccountsParams {
   /**
    * @minLength 3
    * @maxLength 15
@@ -1589,7 +1622,7 @@ export interface GetSearchAccountsParams {
   name: string;
 }
 
-export interface GetDnsExpiringParams {
+export interface GetAccountDnsExpiringParams {
   /**
    * number of days before expiration
    * @min 1
@@ -1658,7 +1691,7 @@ export interface GetJettonsParams {
   offset?: number;
 }
 
-export interface StakingPoolsParams {
+export interface GetStakingPoolsParams {
   /**
    * account ID
    * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
@@ -1684,7 +1717,14 @@ export interface GetRatesParams {
   currencies: string;
 }
 
-export interface GetMasterchainInfoExtLiteServerParams {
+export interface GetChartRatesParams {
+  /** accept jetton master address */
+  token: string;
+  /** @example "usd" */
+  currency?: string;
+}
+
+export interface GetRawMasterchainInfoExtParams {
   /**
    * mode
    * @format uint32
@@ -1693,7 +1733,7 @@ export interface GetMasterchainInfoExtLiteServerParams {
   mode: number;
 }
 
-export interface GetBlockHeaderLiteServerParams {
+export interface GetRawBlockchainBlockHeaderParams {
   /**
    * mode
    * @format uint32
@@ -1707,7 +1747,7 @@ export interface GetBlockHeaderLiteServerParams {
   blockId: string;
 }
 
-export interface GetShardInfoLiteServerParams {
+export interface GetRawShardInfoParams {
   /**
    * workchain
    * @format uint32
@@ -1732,7 +1772,7 @@ export interface GetShardInfoLiteServerParams {
   blockId: string;
 }
 
-export interface GetTransactionsLiteServerParams {
+export interface GetRawTransactionsParams {
   /**
    * count
    * @format uint32
@@ -1757,7 +1797,7 @@ export interface GetTransactionsLiteServerParams {
   accountId: string;
 }
 
-export interface GetListBlockTransactionsLiteServerParams {
+export interface GetRawListBlockTransactionsParams {
   /**
    * mode
    * @format uint32
@@ -1788,7 +1828,7 @@ export interface GetListBlockTransactionsLiteServerParams {
   blockId: string;
 }
 
-export interface GetBlockProofLiteServerParams {
+export interface GetRawBlockProofParams {
   /**
    * known block: (workchain,shard,seqno,root_hash,file_hash)
    * @example "(-1,8000000000000000,4234234,3E575DAB1D25...90D8,47192E5C46C...BB29)"
@@ -1807,7 +1847,7 @@ export interface GetBlockProofLiteServerParams {
   mode: number;
 }
 
-export interface GetConfigAllLiteServerParams {
+export interface GetRawConfigParams {
   /**
    * mode
    * @format uint32
@@ -2066,19 +2106,14 @@ export class TonAPIGenerated<
 > extends HttpClient<SecurityDataType> {
   blockchain = {
     /**
-     * @description Get block data
+     * @description Get blockchain block data
      *
      * @tags Blockchain
-     * @name GetBlock
+     * @name GetBlockchainBlock
      * @request GET:/v2/blockchain/blocks/{block_id}
      */
-    getBlock: (blockId: string, params: RequestParams = {}) =>
-      this.request<
-        Block,
-        {
-          error: string;
-        }
-      >({
+    getBlockchainBlock: (blockId: string, params: RequestParams = {}) =>
+      this.request<BlockchainBlock, Error>({
         path: `/v2/blockchain/blocks/${blockId}`,
         method: 'GET',
         format: 'json',
@@ -2089,16 +2124,11 @@ export class TonAPIGenerated<
      * @description Get transactions from block
      *
      * @tags Blockchain
-     * @name GetBlockTransactions
+     * @name GetBlockchainBlockTransactions
      * @request GET:/v2/blockchain/blocks/{block_id}/transactions
      */
-    getBlockTransactions: (blockId: string, params: RequestParams = {}) =>
-      this.request<
-        Transactions,
-        {
-          error: string;
-        }
-      >({
+    getBlockchainBlockTransactions: (blockId: string, params: RequestParams = {}) =>
+      this.request<Transactions, Error>({
         path: `/v2/blockchain/blocks/${blockId}/transactions`,
         method: 'GET',
         format: 'json',
@@ -2109,16 +2139,11 @@ export class TonAPIGenerated<
      * @description Get transaction data
      *
      * @tags Blockchain
-     * @name GetTransaction
+     * @name GetBlockchainTransaction
      * @request GET:/v2/blockchain/transactions/{transaction_id}
      */
-    getTransaction: (transactionId: string, params: RequestParams = {}) =>
-      this.request<
-        Transaction,
-        {
-          error: string;
-        }
-      >({
+    getBlockchainTransaction: (transactionId: string, params: RequestParams = {}) =>
+      this.request<Transaction, Error>({
         path: `/v2/blockchain/transactions/${transactionId}`,
         method: 'GET',
         format: 'json',
@@ -2129,16 +2154,11 @@ export class TonAPIGenerated<
      * @description Get transaction data by message hash
      *
      * @tags Blockchain
-     * @name GetTransactionByMessageHash
+     * @name GetBlockchainTransactionByMessageHash
      * @request GET:/v2/blockchain/messages/{msg_id}/transaction
      */
-    getTransactionByMessageHash: (msgId: string, params: RequestParams = {}) =>
-      this.request<
-        Transaction,
-        {
-          error: string;
-        }
-      >({
+    getBlockchainTransactionByMessageHash: (msgId: string, params: RequestParams = {}) =>
+      this.request<Transaction, Error>({
         path: `/v2/blockchain/messages/${msgId}/transaction`,
         method: 'GET',
         format: 'json',
@@ -2146,19 +2166,14 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get validators
+     * @description Get blockchain validators
      *
      * @tags Blockchain
-     * @name GetValidators
+     * @name GetBlockchainValidators
      * @request GET:/v2/blockchain/validators
      */
-    getValidators: (params: RequestParams = {}) =>
-      this.request<
-        Validators,
-        {
-          error: string;
-        }
-      >({
+    getBlockchainValidators: (params: RequestParams = {}) =>
+      this.request<Validators, Error>({
         path: `/v2/blockchain/validators`,
         method: 'GET',
         format: 'json',
@@ -2169,16 +2184,11 @@ export class TonAPIGenerated<
      * @description Get last known masterchain block
      *
      * @tags Blockchain
-     * @name GetMasterchainHead
+     * @name GetBlockchainMasterchainHead
      * @request GET:/v2/blockchain/masterchain-head
      */
-    getMasterchainHead: (params: RequestParams = {}) =>
-      this.request<
-        Block,
-        {
-          error: string;
-        }
-      >({
+    getBlockchainMasterchainHead: (params: RequestParams = {}) =>
+      this.request<BlockchainBlock, Error>({
         path: `/v2/blockchain/masterchain-head`,
         method: 'GET',
         format: 'json',
@@ -2189,16 +2199,11 @@ export class TonAPIGenerated<
      * @description Get low-level information about an account taken directly from the blockchain.
      *
      * @tags Blockchain
-     * @name GetRawAccount
+     * @name GetBlockchainRawAccount
      * @request GET:/v2/blockchain/accounts/{account_id}
      */
-    getRawAccount: (accountId: string, params: RequestParams = {}) =>
-      this.request<
-        RawAccount,
-        {
-          error: string;
-        }
-      >({
+    getBlockchainRawAccount: (accountId: string, params: RequestParams = {}) =>
+      this.request<BlockchainRawAccount, Error>({
         path: `/v2/blockchain/accounts/${accountId}`,
         method: 'GET',
         format: 'json',
@@ -2209,19 +2214,14 @@ export class TonAPIGenerated<
      * @description Get account transactions
      *
      * @tags Blockchain
-     * @name GetAccountTransactions
+     * @name GetBlockchainAccountTransactions
      * @request GET:/v2/blockchain/accounts/{account_id}/transactions
      */
-    getAccountTransactions: (
-      { accountId, ...query }: GetAccountTransactionsParams,
+    getBlockchainAccountTransactions: (
+      { accountId, ...query }: GetBlockchainAccountTransactionsParams,
       params: RequestParams = {},
     ) =>
-      this.request<
-        Transactions,
-        {
-          error: string;
-        }
-      >({
+      this.request<Transactions, Error>({
         path: `/v2/blockchain/accounts/${accountId}/transactions`,
         method: 'GET',
         query: query,
@@ -2233,19 +2233,14 @@ export class TonAPIGenerated<
      * @description Execute get method for account
      *
      * @tags Blockchain
-     * @name ExecGetMethod
+     * @name ExecGetMethodForBlockchainAccount
      * @request GET:/v2/blockchain/accounts/{account_id}/methods/{method_name}
      */
-    execGetMethod: (
-      { accountId, methodName, ...query }: ExecGetMethodParams,
+    execGetMethodForBlockchainAccount: (
+      { accountId, methodName, ...query }: ExecGetMethodForBlockchainAccountParams,
       params: RequestParams = {},
     ) =>
-      this.request<
-        MethodExecutionResult,
-        {
-          error: string;
-        }
-      >({
+      this.request<MethodExecutionResult, Error>({
         path: `/v2/blockchain/accounts/${accountId}/methods/${methodName}`,
         method: 'GET',
         query: query,
@@ -2257,22 +2252,19 @@ export class TonAPIGenerated<
      * @description Send message to blockchain
      *
      * @tags Blockchain
-     * @name SendMessage
+     * @name SendBlockchainMessage
      * @request POST:/v2/blockchain/message
      */
-    sendMessage: (
+    sendBlockchainMessage: (
       data: {
         /** @example "te6ccgECBQEAARUAAkWIAWTtae+KgtbrX26Bep8JSq8lFLfGOoyGR/xwdjfvpvEaHg" */
-        boc: string;
+        boc?: string;
+        /** @maxItems 10 */
+        batch?: string[];
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        void,
-        {
-          error: string;
-        }
-      >({
+      this.request<void, Error>({
         path: `/v2/blockchain/message`,
         method: 'POST',
         body: data,
@@ -2283,16 +2275,11 @@ export class TonAPIGenerated<
      * @description Get blockchain config
      *
      * @tags Blockchain
-     * @name GetConfig
+     * @name GetBlockchainConfig
      * @request GET:/v2/blockchain/config
      */
-    getConfig: (params: RequestParams = {}) =>
-      this.request<
-        Config,
-        {
-          error: string;
-        }
-      >({
+    getBlockchainConfig: (params: RequestParams = {}) =>
+      this.request<BlockchainConfig, Error>({
         path: `/v2/blockchain/config`,
         method: 'GET',
         format: 'json',
@@ -2314,12 +2301,7 @@ export class TonAPIGenerated<
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        Event,
-        {
-          error: string;
-        }
-      >({
+      this.request<Event, Error>({
         path: `/v2/events/emulate`,
         method: 'POST',
         body: data,
@@ -2335,12 +2317,7 @@ export class TonAPIGenerated<
      * @request GET:/v2/events/{event_id}
      */
     getEvent: (eventId: string, params: RequestParams = {}) =>
-      this.request<
-        Event,
-        {
-          error: string;
-        }
-      >({
+      this.request<Event, Error>({
         path: `/v2/events/${eventId}`,
         method: 'GET',
         format: 'json',
@@ -2362,12 +2339,7 @@ export class TonAPIGenerated<
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        Trace,
-        {
-          error: string;
-        }
-      >({
+      this.request<Trace, Error>({
         path: `/v2/traces/emulate`,
         method: 'POST',
         body: data,
@@ -2383,12 +2355,7 @@ export class TonAPIGenerated<
      * @request GET:/v2/traces/{trace_id}
      */
     getTrace: (traceId: string, params: RequestParams = {}) =>
-      this.request<
-        Trace,
-        {
-          error: string;
-        }
-      >({
+      this.request<Trace, Error>({
         path: `/v2/traces/${traceId}`,
         method: 'GET',
         format: 'json',
@@ -2400,22 +2367,17 @@ export class TonAPIGenerated<
      * @description Emulate sending message to blockchain
      *
      * @tags Emulation
-     * @name EmulateWalletMessage
+     * @name EmulateMessageToWallet
      * @request POST:/v2/wallet/emulate
      */
-    emulateWalletMessage: (
+    emulateMessageToWallet: (
       data: {
         /** @example "te6ccgECBQEAARUAAkWIAWTtae+KgtbrX26Bep8JSq8lFLfGOoyGR/xwdjfvpvEaHg" */
         boc: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        MessageConsequences,
-        {
-          error: string;
-        }
-      >({
+      this.request<MessageConsequences, Error>({
         path: `/v2/wallet/emulate`,
         method: 'POST',
         body: data,
@@ -2435,9 +2397,7 @@ export class TonAPIGenerated<
         {
           dump: string;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/wallet/backup`,
         method: 'GET',
@@ -2453,12 +2413,7 @@ export class TonAPIGenerated<
      * @request PUT:/v2/wallet/backup
      */
     setWalletBackup: (data: File, params: RequestParams = {}) =>
-      this.request<
-        void,
-        {
-          error: string;
-        }
-      >({
+      this.request<void, Error>({
         path: `/v2/wallet/backup`,
         method: 'PUT',
         body: data,
@@ -2500,9 +2455,7 @@ export class TonAPIGenerated<
           /** @example "NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODQ3..." */
           token: string;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/wallet/auth/proof`,
         method: 'POST',
@@ -2514,17 +2467,12 @@ export class TonAPIGenerated<
     /**
      * @description Get account seqno
      *
-     * @tags Wallets
+     * @tags Wallet
      * @name GetAccountSeqno
      * @request GET:/v2/wallet/{account_id}/seqno
      */
     getAccountSeqno: (accountId: string, params: RequestParams = {}) =>
-      this.request<
-        Seqno,
-        {
-          error: string;
-        }
-      >({
+      this.request<Seqno, Error>({
         path: `/v2/wallet/${accountId}/seqno`,
         method: 'GET',
         format: 'json',
@@ -2547,12 +2495,7 @@ export class TonAPIGenerated<
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        AccountEvent,
-        {
-          error: string;
-        }
-      >({
+      this.request<AccountEvent, Error>({
         path: `/v2/accounts/${accountId}/events/emulate`,
         method: 'POST',
         body: data,
@@ -2573,12 +2516,7 @@ export class TonAPIGenerated<
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        Accounts,
-        {
-          error: string;
-        }
-      >({
+      this.request<Accounts, Error>({
         path: `/v2/accounts/_bulk`,
         method: 'POST',
         body: data,
@@ -2594,12 +2532,7 @@ export class TonAPIGenerated<
      * @request GET:/v2/accounts/{account_id}
      */
     getAccount: (accountId: string, params: RequestParams = {}) =>
-      this.request<
-        Account,
-        {
-          error: string;
-        }
-      >({
+      this.request<Account, Error>({
         path: `/v2/accounts/${accountId}`,
         method: 'GET',
         format: 'json',
@@ -2607,19 +2540,14 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get domains for wallet account
+     * @description Get account's domains
      *
      * @tags Accounts
-     * @name DnsBackResolve
+     * @name AccountDnsBackResolve
      * @request GET:/v2/accounts/{account_id}/dns/backresolve
      */
-    dnsBackResolve: (accountId: string, params: RequestParams = {}) =>
-      this.request<
-        DomainNames,
-        {
-          error: string;
-        }
-      >({
+    accountDnsBackResolve: (accountId: string, params: RequestParams = {}) =>
+      this.request<DomainNames, Error>({
         path: `/v2/accounts/${accountId}/dns/backresolve`,
         method: 'GET',
         format: 'json',
@@ -2630,16 +2558,11 @@ export class TonAPIGenerated<
      * @description Get all Jettons balances by owner address
      *
      * @tags Accounts
-     * @name GetJettonsBalances
+     * @name GetAccountJettonsBalances
      * @request GET:/v2/accounts/{account_id}/jettons
      */
-    getJettonsBalances: (accountId: string, params: RequestParams = {}) =>
-      this.request<
-        JettonsBalances,
-        {
-          error: string;
-        }
-      >({
+    getAccountJettonsBalances: (accountId: string, params: RequestParams = {}) =>
+      this.request<JettonsBalances, Error>({
         path: `/v2/accounts/${accountId}/jettons`,
         method: 'GET',
         format: 'json',
@@ -2647,22 +2570,17 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get the transfer jettons history for account_id
+     * @description Get the transfer jettons history for account
      *
      * @tags Accounts
-     * @name GetJettonsHistory
+     * @name GetAccountJettonsHistory
      * @request GET:/v2/accounts/{account_id}/jettons/history
      */
-    getJettonsHistory: (
-      { accountId, ...query }: GetJettonsHistoryParams,
+    getAccountJettonsHistory: (
+      { accountId, ...query }: GetAccountJettonsHistoryParams,
       params: RequestParams = {},
     ) =>
-      this.request<
-        AccountEvents,
-        {
-          error: string;
-        }
-      >({
+      this.request<AccountEvents, Error>({
         path: `/v2/accounts/${accountId}/jettons/history`,
         method: 'GET',
         query: query,
@@ -2671,22 +2589,17 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get the transfer jetton history for account_id and jetton_id
+     * @description Get the transfer jetton history for account and jetton
      *
      * @tags Accounts
-     * @name GetJettonsHistoryById
+     * @name GetAccountJettonHistoryById
      * @request GET:/v2/accounts/{account_id}/jettons/{jetton_id}/history
      */
-    getJettonsHistoryById: (
-      { accountId, jettonId, ...query }: GetJettonsHistoryByIdParams,
+    getAccountJettonHistoryById: (
+      { accountId, jettonId, ...query }: GetAccountJettonHistoryByIdParams,
       params: RequestParams = {},
     ) =>
-      this.request<
-        AccountEvents,
-        {
-          error: string;
-        }
-      >({
+      this.request<AccountEvents, Error>({
         path: `/v2/accounts/${accountId}/jettons/${jettonId}/history`,
         method: 'GET',
         query: query,
@@ -2698,19 +2611,14 @@ export class TonAPIGenerated<
      * @description Get all NFT items by owner address
      *
      * @tags Accounts
-     * @name GetNftItemsByOwner
+     * @name GetAccountNftItems
      * @request GET:/v2/accounts/{account_id}/nfts
      */
-    getNftItemsByOwner: (
-      { accountId, ...query }: GetNftItemsByOwnerParams,
+    getAccountNftItems: (
+      { accountId, ...query }: GetAccountNftItemsParams,
       params: RequestParams = {},
     ) =>
-      this.request<
-        NftItems,
-        {
-          error: string;
-        }
-      >({
+      this.request<NftItems, Error>({
         path: `/v2/accounts/${accountId}/nfts`,
         method: 'GET',
         query: query,
@@ -2722,20 +2630,34 @@ export class TonAPIGenerated<
      * @description Get events for an account. Each event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      *
      * @tags Accounts
-     * @name GetEventsByAccount
+     * @name GetAccountEvents
      * @request GET:/v2/accounts/{account_id}/events
      */
-    getEventsByAccount: (
-      { accountId, ...query }: GetEventsByAccountParams,
+    getAccountEvents: (
+      { accountId, ...query }: GetAccountEventsParams,
       params: RequestParams = {},
     ) =>
-      this.request<
-        AccountEvents,
-        {
-          error: string;
-        }
-      >({
+      this.request<AccountEvents, Error>({
         path: `/v2/accounts/${accountId}/events`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get event for an account by event_id
+     *
+     * @tags Accounts
+     * @name GetAccountEvent
+     * @request GET:/v2/accounts/{account_id}/events/{event_id}
+     */
+    getAccountEvent: (
+      { accountId, eventId, ...query }: GetAccountEventParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<AccountEvent, Error>({
+        path: `/v2/accounts/${accountId}/events/${eventId}`,
         method: 'GET',
         query: query,
         format: 'json',
@@ -2746,19 +2668,14 @@ export class TonAPIGenerated<
      * @description Get traces for account
      *
      * @tags Accounts
-     * @name GetTracesByAccount
+     * @name GetAccountTraces
      * @request GET:/v2/accounts/{account_id}/traces
      */
-    getTracesByAccount: (
-      { accountId, ...query }: GetTracesByAccountParams,
+    getAccountTraces: (
+      { accountId, ...query }: GetAccountTracesParams,
       params: RequestParams = {},
     ) =>
-      this.request<
-        TraceIds,
-        {
-          error: string;
-        }
-      >({
+      this.request<TraceIDs, Error>({
         path: `/v2/accounts/${accountId}/traces`,
         method: 'GET',
         query: query,
@@ -2770,16 +2687,11 @@ export class TonAPIGenerated<
      * @description Get all subscriptions by wallet address
      *
      * @tags Accounts
-     * @name GetSubscriptionsByAccount
+     * @name GetAccountSubscriptions
      * @request GET:/v2/accounts/{account_id}/subscriptions
      */
-    getSubscriptionsByAccount: (accountId: string, params: RequestParams = {}) =>
-      this.request<
-        Subscriptions,
-        {
-          error: string;
-        }
-      >({
+    getAccountSubscriptions: (accountId: string, params: RequestParams = {}) =>
+      this.request<Subscriptions, Error>({
         path: `/v2/accounts/${accountId}/subscriptions`,
         method: 'GET',
         format: 'json',
@@ -2794,31 +2706,21 @@ export class TonAPIGenerated<
      * @request POST:/v2/accounts/{account_id}/reindex
      */
     reindexAccount: (accountId: string, params: RequestParams = {}) =>
-      this.request<
-        void,
-        {
-          error: string;
-        }
-      >({
+      this.request<void, Error>({
         path: `/v2/accounts/${accountId}/reindex`,
         method: 'POST',
         ...params,
       }),
 
     /**
-     * @description Search for accounts by name. You can find the account by the first characters of the domain.
+     * @description Search by account domain name
      *
      * @tags Accounts
-     * @name GetSearchAccounts
+     * @name SearchAccounts
      * @request GET:/v2/accounts/search
      */
-    getSearchAccounts: (query: GetSearchAccountsParams, params: RequestParams = {}) =>
-      this.request<
-        FoundAccounts,
-        {
-          error: string;
-        }
-      >({
+    searchAccounts: (query: SearchAccountsParams, params: RequestParams = {}) =>
+      this.request<FoundAccounts, Error>({
         path: `/v2/accounts/search`,
         method: 'GET',
         query: query,
@@ -2827,22 +2729,17 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get expiring .ton dns
+     * @description Get expiring account .ton dns
      *
      * @tags Accounts
-     * @name GetDnsExpiring
+     * @name GetAccountDnsExpiring
      * @request GET:/v2/accounts/{account_id}/dns/expiring
      */
-    getDnsExpiring: (
-      { accountId, ...query }: GetDnsExpiringParams,
+    getAccountDnsExpiring: (
+      { accountId, ...query }: GetAccountDnsExpiringParams,
       params: RequestParams = {},
     ) =>
-      this.request<
-        DnsExpiring,
-        {
-          error: string;
-        }
-      >({
+      this.request<DnsExpiring, Error>({
         path: `/v2/accounts/${accountId}/dns/expiring`,
         method: 'GET',
         query: query,
@@ -2854,18 +2751,16 @@ export class TonAPIGenerated<
      * @description Get public key by account id
      *
      * @tags Accounts
-     * @name GetPublicKeyByAccountId
+     * @name GetAccountPublicKey
      * @request GET:/v2/accounts/{account_id}/publickey
      */
-    getPublicKeyByAccountId: (accountId: string, params: RequestParams = {}) =>
+    getAccountPublicKey: (accountId: string, params: RequestParams = {}) =>
       this.request<
         {
           /** @example "NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODQ3..." */
           public_key: string;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/accounts/${accountId}/publickey`,
         method: 'GET',
@@ -2875,19 +2770,14 @@ export class TonAPIGenerated<
   };
   dns = {
     /**
-     * @description get full information about domain name
+     * @description Get full information about domain name
      *
      * @tags DNS
-     * @name DnsInfo
+     * @name GetDnsInfo
      * @request GET:/v2/dns/{domain_name}
      */
-    dnsInfo: (domainName: string, params: RequestParams = {}) =>
-      this.request<
-        DomainInfo,
-        {
-          error: string;
-        }
-      >({
+    getDnsInfo: (domainName: string, params: RequestParams = {}) =>
+      this.request<DomainInfo, Error>({
         path: `/v2/dns/${domainName}`,
         method: 'GET',
         format: 'json',
@@ -2902,12 +2792,7 @@ export class TonAPIGenerated<
      * @request GET:/v2/dns/{domain_name}/resolve
      */
     dnsResolve: (domainName: string, params: RequestParams = {}) =>
-      this.request<
-        DnsRecord,
-        {
-          error: string;
-        }
-      >({
+      this.request<DnsRecord, Error>({
         path: `/v2/dns/${domainName}/resolve`,
         method: 'GET',
         format: 'json',
@@ -2922,12 +2807,7 @@ export class TonAPIGenerated<
      * @request GET:/v2/dns/{domain_name}/bids
      */
     getDomainBids: (domainName: string, params: RequestParams = {}) =>
-      this.request<
-        DomainBids,
-        {
-          error: string;
-        }
-      >({
+      this.request<DomainBids, Error>({
         path: `/v2/dns/${domainName}/bids`,
         method: 'GET',
         format: 'json',
@@ -2942,12 +2822,7 @@ export class TonAPIGenerated<
      * @request GET:/v2/dns/auctions
      */
     getAllAuctions: (query: GetAllAuctionsParams, params: RequestParams = {}) =>
-      this.request<
-        Auctions,
-        {
-          error: string;
-        }
-      >({
+      this.request<Auctions, Error>({
         path: `/v2/dns/auctions`,
         method: 'GET',
         query: query,
@@ -2964,12 +2839,7 @@ export class TonAPIGenerated<
      * @request GET:/v2/nfts/collections
      */
     getNftCollections: (query: GetNftCollectionsParams, params: RequestParams = {}) =>
-      this.request<
-        NftCollections,
-        {
-          error: string;
-        }
-      >({
+      this.request<NftCollections, Error>({
         path: `/v2/nfts/collections`,
         method: 'GET',
         query: query,
@@ -2985,12 +2855,7 @@ export class TonAPIGenerated<
      * @request GET:/v2/nfts/collections/{account_id}
      */
     getNftCollection: (accountId: string, params: RequestParams = {}) =>
-      this.request<
-        NftCollection,
-        {
-          error: string;
-        }
-      >({
+      this.request<NftCollection, Error>({
         path: `/v2/nfts/collections/${accountId}`,
         method: 'GET',
         format: 'json',
@@ -3008,12 +2873,7 @@ export class TonAPIGenerated<
       { accountId, ...query }: GetItemsFromCollectionParams,
       params: RequestParams = {},
     ) =>
-      this.request<
-        NftItems,
-        {
-          error: string;
-        }
-      >({
+      this.request<NftItems, Error>({
         path: `/v2/nfts/collections/${accountId}/items`,
         method: 'GET',
         query: query,
@@ -3034,12 +2894,7 @@ export class TonAPIGenerated<
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        NftItems,
-        {
-          error: string;
-        }
-      >({
+      this.request<NftItems, Error>({
         path: `/v2/nfts/_bulk`,
         method: 'POST',
         body: data,
@@ -3055,12 +2910,7 @@ export class TonAPIGenerated<
      * @request GET:/v2/nfts/{account_id}
      */
     getNftItemByAddress: (accountId: string, params: RequestParams = {}) =>
-      this.request<
-        NftItem,
-        {
-          error: string;
-        }
-      >({
+      this.request<NftItem, Error>({
         path: `/v2/nfts/${accountId}`,
         method: 'GET',
         format: 'json',
@@ -3076,12 +2926,7 @@ export class TonAPIGenerated<
      * @request GET:/v2/jettons
      */
     getJettons: (query: GetJettonsParams, params: RequestParams = {}) =>
-      this.request<
-        Jettons,
-        {
-          error: string;
-        }
-      >({
+      this.request<Jettons, Error>({
         path: `/v2/jettons`,
         method: 'GET',
         query: query,
@@ -3097,12 +2942,7 @@ export class TonAPIGenerated<
      * @request GET:/v2/jettons/{account_id}
      */
     getJettonInfo: (accountId: string, params: RequestParams = {}) =>
-      this.request<
-        JettonInfo,
-        {
-          error: string;
-        }
-      >({
+      this.request<JettonInfo, Error>({
         path: `/v2/jettons/${accountId}`,
         method: 'GET',
         format: 'json',
@@ -3114,16 +2954,11 @@ export class TonAPIGenerated<
      * @description All pools where account participates
      *
      * @tags Staking
-     * @name PoolsByNominators
+     * @name GetAccountNominatorsPools
      * @request GET:/v2/staking/nominator/{account_id}/pools
      */
-    poolsByNominators: (accountId: string, params: RequestParams = {}) =>
-      this.request<
-        AccountStaking,
-        {
-          error: string;
-        }
-      >({
+    getAccountNominatorsPools: (accountId: string, params: RequestParams = {}) =>
+      this.request<AccountStaking, Error>({
         path: `/v2/staking/nominator/${accountId}/pools`,
         method: 'GET',
         format: 'json',
@@ -3131,21 +2966,19 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Pool info
+     * @description Stacking pool info
      *
      * @tags Staking
-     * @name StakingPoolInfo
+     * @name GetStakingPoolInfo
      * @request GET:/v2/staking/pool/{account_id}
      */
-    stakingPoolInfo: (accountId: string, params: RequestParams = {}) =>
+    getStakingPoolInfo: (accountId: string, params: RequestParams = {}) =>
       this.request<
         {
           implementation: PoolImplementation;
           pool: PoolInfo;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/staking/pool/${accountId}`,
         method: 'GET',
@@ -3154,20 +2987,18 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Pool info
+     * @description Pool history
      *
      * @tags Staking
-     * @name StakingPoolHistory
+     * @name GetStakingPoolHistory
      * @request GET:/v2/staking/pool/{account_id}/history
      */
-    stakingPoolHistory: (accountId: string, params: RequestParams = {}) =>
+    getStakingPoolHistory: (accountId: string, params: RequestParams = {}) =>
       this.request<
         {
           apy: ApyHistory[];
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/staking/pool/${accountId}/history`,
         method: 'GET',
@@ -3179,18 +3010,16 @@ export class TonAPIGenerated<
      * @description All pools available in network
      *
      * @tags Staking
-     * @name StakingPools
+     * @name GetStakingPools
      * @request GET:/v2/staking/pools
      */
-    stakingPools: (query: StakingPoolsParams, params: RequestParams = {}) =>
+    getStakingPools: (query: GetStakingPoolsParams, params: RequestParams = {}) =>
       this.request<
         {
           pools: PoolInfo[];
           implementations: Record<string, PoolImplementation>;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/staking/pools`,
         method: 'GET',
@@ -3212,9 +3041,7 @@ export class TonAPIGenerated<
         {
           providers: StorageProvider[];
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/storage/providers`,
         method: 'GET',
@@ -3236,11 +3063,31 @@ export class TonAPIGenerated<
           /** @example {} */
           rates: any;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/rates`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get chart by token
+     *
+     * @tags Rates
+     * @name GetChartRates
+     * @request GET:/v2/rates/chart
+     */
+    getChartRates: (query: GetChartRatesParams, params: RequestParams = {}) =>
+      this.request<
+        {
+          /** @example {} */
+          points: any;
+        },
+        Error
+      >({
+        path: `/v2/rates/chart`,
         method: 'GET',
         query: query,
         format: 'json',
@@ -3261,9 +3108,7 @@ export class TonAPIGenerated<
           /** @example "84jHVNLQmZsAAAAAZB0Zryi2wqVJI-KaKNXOvCijEi46YyYzkaSHyJrMPBMOkVZa" */
           payload: string;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/tonconnect/payload`,
         method: 'GET',
@@ -3284,12 +3129,7 @@ export class TonAPIGenerated<
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        AccountInfoByStateInit,
-        {
-          error: string;
-        }
-      >({
+      this.request<AccountInfoByStateInit, Error>({
         path: `/v2/tonconnect/stateinit`,
         method: 'POST',
         body: data,
@@ -3301,17 +3141,12 @@ export class TonAPIGenerated<
     /**
      * @description Get wallets by public key
      *
-     * @tags Wallets
+     * @tags Wallet
      * @name GetWalletsByPublicKey
      * @request GET:/v2/pubkeys/{public_key}/wallets
      */
     getWalletsByPublicKey: (publicKey: string, params: RequestParams = {}) =>
-      this.request<
-        Accounts,
-        {
-          error: string;
-        }
-      >({
+      this.request<Accounts, Error>({
         path: `/v2/pubkeys/${publicKey}/wallets`,
         method: 'GET',
         format: 'json',
@@ -3320,13 +3155,13 @@ export class TonAPIGenerated<
   };
   liteserver = {
     /**
-     * @description Get masterchain info
+     * @description Get raw masterchain info
      *
      * @tags Lite Server
-     * @name GetMasterchainInfoLiteServer
+     * @name GetRawMasterchainInfo
      * @request GET:/v2/liteserver/get_masterchain_info
      */
-    getMasterchainInfoLiteServer: (params: RequestParams = {}) =>
+    getRawMasterchainInfo: (params: RequestParams = {}) =>
       this.request<
         {
           last: BlockRaw;
@@ -3334,9 +3169,7 @@ export class TonAPIGenerated<
           state_root_hash: string;
           init: InitStateRaw;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/get_masterchain_info`,
         method: 'GET',
@@ -3345,14 +3178,14 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get masterchain info ext
+     * @description Get raw masterchain info ext
      *
      * @tags Lite Server
-     * @name GetMasterchainInfoExtLiteServer
+     * @name GetRawMasterchainInfoExt
      * @request GET:/v2/liteserver/get_masterchain_info_ext
      */
-    getMasterchainInfoExtLiteServer: (
-      query: GetMasterchainInfoExtLiteServerParams,
+    getRawMasterchainInfoExt: (
+      query: GetRawMasterchainInfoExtParams,
       params: RequestParams = {},
     ) =>
       this.request<
@@ -3387,9 +3220,7 @@ export class TonAPIGenerated<
           state_root_hash: string;
           init: InitStateRaw;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/get_masterchain_info_ext`,
         method: 'GET',
@@ -3399,13 +3230,13 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get time
+     * @description Get raw time
      *
      * @tags Lite Server
-     * @name GetTimeLiteServer
+     * @name GetRawTime
      * @request GET:/v2/liteserver/get_time
      */
-    getTimeLiteServer: (params: RequestParams = {}) =>
+    getRawTime: (params: RequestParams = {}) =>
       this.request<
         {
           /**
@@ -3414,9 +3245,7 @@ export class TonAPIGenerated<
            */
           time: number;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/get_time`,
         method: 'GET',
@@ -3425,22 +3254,20 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get block
+     * @description Get raw blockchain block
      *
      * @tags Lite Server
-     * @name GetBlockLiteServer
+     * @name GetRawBlockchainBlock
      * @request GET:/v2/liteserver/get_block/{block_id}
      */
-    getBlockLiteServer: (blockId: string, params: RequestParams = {}) =>
+    getRawBlockchainBlock: (blockId: string, params: RequestParams = {}) =>
       this.request<
         {
           id: BlockRaw;
           /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
           data: string;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/get_block/${blockId}`,
         method: 'GET',
@@ -3449,13 +3276,13 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get block state
+     * @description Get raw blockchain block state
      *
      * @tags Lite Server
-     * @name GetStateLiteServer
+     * @name GetRawBlockchainBlockState
      * @request GET:/v2/liteserver/get_state/{block_id}
      */
-    getStateLiteServer: (blockId: string, params: RequestParams = {}) =>
+    getRawBlockchainBlockState: (blockId: string, params: RequestParams = {}) =>
       this.request<
         {
           id: BlockRaw;
@@ -3466,9 +3293,7 @@ export class TonAPIGenerated<
           /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
           data: string;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/get_state/${blockId}`,
         method: 'GET',
@@ -3477,14 +3302,14 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get block header
+     * @description Get raw blockchain block header
      *
      * @tags Lite Server
-     * @name GetBlockHeaderLiteServer
+     * @name GetRawBlockchainBlockHeader
      * @request GET:/v2/liteserver/get_block_header/{block_id}
      */
-    getBlockHeaderLiteServer: (
-      { blockId, ...query }: GetBlockHeaderLiteServerParams,
+    getRawBlockchainBlockHeader: (
+      { blockId, ...query }: GetRawBlockchainBlockHeaderParams,
       params: RequestParams = {},
     ) =>
       this.request<
@@ -3498,9 +3323,7 @@ export class TonAPIGenerated<
           /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
           header_proof: string;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/get_block_header/${blockId}`,
         method: 'GET',
@@ -3510,13 +3333,13 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Send message
+     * @description Send raw message to blockchain
      *
      * @tags Lite Server
-     * @name SendMessageLiteServer
+     * @name SendRawMessage
      * @request POST:/v2/liteserver/send_message
      */
-    sendMessageLiteServer: (
+    sendRawMessage: (
       data: {
         body: string;
       },
@@ -3530,9 +3353,7 @@ export class TonAPIGenerated<
            */
           code: number;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/send_message`,
         method: 'POST',
@@ -3542,13 +3363,13 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get account state
+     * @description Get raw account state
      *
      * @tags Lite Server
-     * @name GetAccountStateLiteServer
+     * @name GetRawAccountState
      * @request GET:/v2/liteserver/get_account_state/{account_id}
      */
-    getAccountStateLiteServer: (accountId: string, params: RequestParams = {}) =>
+    getRawAccountState: (accountId: string, params: RequestParams = {}) =>
       this.request<
         {
           id: BlockRaw;
@@ -3560,9 +3381,7 @@ export class TonAPIGenerated<
           /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
           state: string;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/get_account_state/${accountId}`,
         method: 'GET',
@@ -3571,14 +3390,14 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get shard info
+     * @description Get raw shard info
      *
      * @tags Lite Server
-     * @name GetShardInfoLiteServer
+     * @name GetRawShardInfo
      * @request GET:/v2/liteserver/get_shard_info/{block_id}
      */
-    getShardInfoLiteServer: (
-      { blockId, ...query }: GetShardInfoLiteServerParams,
+    getRawShardInfo: (
+      { blockId, ...query }: GetRawShardInfoParams,
       params: RequestParams = {},
     ) =>
       this.request<
@@ -3590,9 +3409,7 @@ export class TonAPIGenerated<
           /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
           shard_descr: string;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/get_shard_info/${blockId}`,
         method: 'GET',
@@ -3602,13 +3419,13 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get all shards info
+     * @description Get all raw shards info
      *
      * @tags Lite Server
-     * @name GetAllShardsInfoLiteServer
+     * @name GetAllRawShardsInfo
      * @request GET:/v2/liteserver/get_all_shards_info/{block_id}
      */
-    getAllShardsInfoLiteServer: (blockId: string, params: RequestParams = {}) =>
+    getAllRawShardsInfo: (blockId: string, params: RequestParams = {}) =>
       this.request<
         {
           id: BlockRaw;
@@ -3617,9 +3434,7 @@ export class TonAPIGenerated<
           /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
           data: string;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/get_all_shards_info/${blockId}`,
         method: 'GET',
@@ -3628,14 +3443,14 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get transactions
+     * @description Get raw transactions
      *
      * @tags Lite Server
-     * @name GetTransactionsLiteServer
+     * @name GetRawTransactions
      * @request GET:/v2/liteserver/get_transactions/{account_id}
      */
-    getTransactionsLiteServer: (
-      { accountId, ...query }: GetTransactionsLiteServerParams,
+    getRawTransactions: (
+      { accountId, ...query }: GetRawTransactionsParams,
       params: RequestParams = {},
     ) =>
       this.request<
@@ -3644,9 +3459,7 @@ export class TonAPIGenerated<
           /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
           transactions: string;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/get_transactions/${accountId}`,
         method: 'GET',
@@ -3656,14 +3469,14 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get list block transactions
+     * @description Get raw list block transactions
      *
      * @tags Lite Server
-     * @name GetListBlockTransactionsLiteServer
+     * @name GetRawListBlockTransactions
      * @request GET:/v2/liteserver/list_block_transactions/{block_id}
      */
-    getListBlockTransactionsLiteServer: (
-      { blockId, ...query }: GetListBlockTransactionsLiteServerParams,
+    getRawListBlockTransactions: (
+      { blockId, ...query }: GetRawListBlockTransactionsParams,
       params: RequestParams = {},
     ) =>
       this.request<
@@ -3692,9 +3505,7 @@ export class TonAPIGenerated<
           /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
           proof: string;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/list_block_transactions/${blockId}`,
         method: 'GET',
@@ -3704,16 +3515,13 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get block proof
+     * @description Get raw block proof
      *
      * @tags Lite Server
-     * @name GetBlockProofLiteServer
+     * @name GetRawBlockProof
      * @request GET:/v2/liteserver/get_block_proof
      */
-    getBlockProofLiteServer: (
-      query: GetBlockProofLiteServerParams,
-      params: RequestParams = {},
-    ) =>
+    getRawBlockProof: (query: GetRawBlockProofParams, params: RequestParams = {}) =>
       this.request<
         {
           /** @example true */
@@ -3757,9 +3565,7 @@ export class TonAPIGenerated<
             };
           }[];
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/get_block_proof`,
         method: 'GET',
@@ -3769,14 +3575,14 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get config all
+     * @description Get raw config
      *
      * @tags Lite Server
-     * @name GetConfigAllLiteServer
+     * @name GetRawConfig
      * @request GET:/v2/liteserver/get_config_all/{block_id}
      */
-    getConfigAllLiteServer: (
-      { blockId, ...query }: GetConfigAllLiteServerParams,
+    getRawConfig: (
+      { blockId, ...query }: GetRawConfigParams,
       params: RequestParams = {},
     ) =>
       this.request<
@@ -3792,9 +3598,7 @@ export class TonAPIGenerated<
           /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
           config_proof: string;
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/get_config_all/${blockId}`,
         method: 'GET',
@@ -3804,13 +3608,13 @@ export class TonAPIGenerated<
       }),
 
     /**
-     * @description Get shard block proof
+     * @description Get raw shard block proof
      *
      * @tags Lite Server
-     * @name GetShardBlockProofLiteServer
+     * @name GetRawShardBlockProof
      * @request GET:/v2/liteserver/get_shard_block_proof/{block_id}
      */
-    getShardBlockProofLiteServer: (blockId: string, params: RequestParams = {}) =>
+    getRawShardBlockProof: (blockId: string, params: RequestParams = {}) =>
       this.request<
         {
           masterchain_id: BlockRaw;
@@ -3820,9 +3624,7 @@ export class TonAPIGenerated<
             proof: string;
           }[];
         },
-        {
-          error: string;
-        }
+        Error
       >({
         path: `/v2/liteserver/get_shard_block_proof/${blockId}`,
         method: 'GET',

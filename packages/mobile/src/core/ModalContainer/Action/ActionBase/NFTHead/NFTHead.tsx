@@ -11,6 +11,7 @@ import { HideableImage } from '$core/HideableAmount/HideableImage';
 import { Steezy } from '$styles';
 import { DARK_COLORS, RADIUS } from '$styled';
 import { t } from '@tonkeeper/shared/i18n';
+import { corners } from '@tonkeeper/uikit/src/styles/constants';
 
 export const NFTHead: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
   const nft = useNFT(keyPair);
@@ -56,17 +57,17 @@ export const NFTHead: React.FC<{ keyPair: NFTKeyPair }> = ({ keyPair }) => {
   );
 };
 
-const styles = Steezy.create({
+const styles = Steezy.create(() => ({
   imageContainer: {
-    marginTop: 16,
+    // marginTop: 16,
     zIndex: 2,
     height: 96,
     width: 96,
     backgroundColor: DARK_COLORS.backgroundTertiary,
     marginBottom: 20,
-    borderRadius: RADIUS.large,
+    borderRadius: corners.large,
   },
   image: {
-    borderRadius: RADIUS.large,
+    borderRadius: corners.large,
   },
-});
+}));

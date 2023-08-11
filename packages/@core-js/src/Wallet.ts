@@ -1,4 +1,14 @@
+import { QueryClient } from 'react-query';
+import { Address, AddressFormats } from './Address';
+import { TonAPI } from './TonAPI';
 import { Vault } from './Vault';
+
+import { TransactionsManager } from './managers/TransactionsManager';
+import { NftsManager } from './managers/NftsManager';
+import { SSEListener, SSEManager } from './Tonkeeper';
+import { SubscriptionsManager } from './managers/SubscriptionsManager';
+import { JettonsManager } from './managers/JettonsManager';
+import { BalanceManager } from './managers/BalanceManager';
 
 enum Network {
   mainnet = -239,
@@ -34,34 +44,52 @@ type WalletInfo = {
   label: string;
 };
 
+export type WalletContext = {
+  accountId: string;
+  queryClient: QueryClient;
+  sse: SSEManager;
+  tonapi: TonAPI;
+};
+
 export class Wallet {
   public identity: WalletIdentity | null = null;
+  public address: AddressFormats;
 
-  // public current = null;
+  public listener: SSEListener | null = null;
 
-  constructor(private vault: Vault) {}
+  public subscriptions: SubscriptionsManager;
+  public transactions: TransactionsManager;
+  public balance: BalanceManager;
+  public jettons: JettonsManager;
+  public nfts: NftsManager;
+
+  constructor(
+    private queryClient: QueryClient,
+    private tonapi: TonAPI,
+    private vault: Vault,
+    private sse: SSEManager,
+    walletInfo: any,
+  ) {
+    this.address = Address(walletInfo.address).toAll();
+    const context: WalletContext = {
+      accountId: this.address.raw,
+      queryClient: this.queryClient,
+      tonapi: this.tonapi,
+      sse: this.sse,
+    };
+
+    this.subscriptions = new SubscriptionsManager(context);
+    this.transactions = new TransactionsManager(context);
+    this.balance = new BalanceManager(context);
+    this.jettons = new JettonsManager(context);
+    this.nfts = new NftsManager(context);
+
+    this.listenTransactions();
+  }
 
   public async create({ name, passcode }: { passcode: string; name?: string }) {}
 
-  public async import({
-    words,
-    passcode,
-    name,
-  }: {
-    passcode: string;
-    words: string;
-    name: string;
-  }) {
-
-  }
-
-  public async enableBiometry() {
-
-  }
-
-  public async disableBiometry() {
-
-  }
+  public async import(options: { passcode: string; words: string; name: string }) {}
 
   public async getPrivateKey(): Promise<string> {
     if (false) {
@@ -69,5 +97,25 @@ export class Wallet {
     } else {
       return this.vault.exportWithPasscode('');
     }
+  }
+
+  private listenTransactions() {
+    this.listener = this.sse.listen(
+      `/v2/sse/accounts/transactions?accounts=${this.address.raw}`,
+    );
+    this.listener.addEventListener('open', () => {
+      console.log('[Wallet]: start listen transactions for', this.address.short);
+    });
+    this.listener.addEventListener('error', (err) => {
+      console.log('[Wallet]: error listen transactions', err);
+    });
+    this.listener.addEventListener('message', () => {
+      console.log('[Wallet]: message receive');
+      this.transactions.refetch();
+    });
+  }
+
+  public destroy() {
+    this.listener?.close();
   }
 }

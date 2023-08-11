@@ -8,3 +8,5 @@ export { useSheetInternal, SheetActions } from './SheetsProvider';
 export { useModalBehavior } from './context/ModalBehaviorContext';
 
 export { useFocusEffect } from './hooks/useFocusEffect';
+
+export { navigation } from './imperative';

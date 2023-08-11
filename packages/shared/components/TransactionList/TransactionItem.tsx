@@ -7,6 +7,7 @@ import {
   Icon,
   List,
   ListSeparator,
+  Loader,
   Steezy,
   Text,
   useTheme,
@@ -18,9 +19,12 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { SText } from '@tonkeeper/uikit/src/components/Text';
 import FastImage from 'react-native-fast-image';
 import { t } from '../../i18n';
-import { useNavigation } from '@tonkeeper/router';
 import { EncryptedComment, EncryptedCommentLayout } from '../EncryptedComment';
 import { SenderAddress } from '../../mappers/AccountEventsMapper/AccountEventsMapper.utils';
+import { openActionDetails } from '../../modals/ActionDetailsModal';
+import { useSubscription } from '../../query/hooks/useSubscription';
+import { CustomActionType } from '@tonkeeper/core/src/TonAPI';
+import { openSubscription } from '@tonkeeper/mobile/src/core/ModalContainer/CreateSubscription/CreateSubscription';
 
 interface TransactionItemProps {
   item: MappedEventAction;
@@ -49,7 +53,7 @@ const useBackgroundHighlighted = () => {
 
 export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
   const { onPressOut, onPressIn, backgroundStyle } = useBackgroundHighlighted();
-  const router = useNavigation();
+  const subscription = useSubscription(item.subscriptionAddress);
 
   const isSimplePreview = item.type === 'SimplePreview';
   const containerStyle = useMemo(
@@ -62,9 +66,19 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
   );
 
   const handlePress = useCallback(() => {
-    if (!isSimplePreview) {
-      router.navigate('transaction', { transactionId: item.id });
+    if (isSimplePreview || item.type === CustomActionType.Unknown) {
+      return;
     }
+
+    if (subscription && 
+      item.type === CustomActionType.Subscribe ||
+      item.type === CustomActionType.UnSubscribe 
+    ) {
+      openSubscription(subscription);
+      return;
+    }
+
+    openActionDetails(item.id);
   }, [isSimplePreview, item]);
 
   return (
@@ -74,8 +88,17 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
         onPressIn={onPressIn}
         onPress={handlePress}
         title={item.operation}
-        subtitle={item.subtitle}
+        subtitle={
+          item.subscriptionAddress ? (
+            <SubscriptionMerchantName address={item.subscriptionAddress} />
+          ) : (
+            item.subtitle
+          )
+        }
         value={item.amount}
+        subtitleNumberOfLines={
+          item.type === 'SimplePreview' || item.type === 'Unknown' ? 2 : 1
+        }
         valueStyle={[
           item.isReceive && styles.receiveValue,
           item.isScam && styles.scamAmountText,
@@ -108,8 +131,10 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
               <>
                 {item.iconName && <Icon name={item.iconName} color="iconSecondary" />}
                 {item.inProgress && (
-                  <View style={styles.sending}>
-                    <Icon name="ic-clock-16" colorHex="#FFF" />
+                  <View style={styles.sendingOuter}>
+                    <View style={styles.sendingInner}>
+                      <Loader size="xsmall" color="constantWhite" />
+                    </View>
                   </View>
                 )}
               </>
@@ -152,6 +177,20 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
     </View>
   );
 });
+
+const SubscriptionMerchantName = ({ address }: { address: string }) => {
+  const subscription = useSubscription(address);
+
+  if (!subscription) {
+    return null;
+  }
+
+  return (
+    <Text numberOfLines={2} color="textSecondary" type="body2">
+      {subscription.merchantName}
+    </Text>
+  );
+};
 
 const styles = Steezy.create(({ colors, corners }) => ({
   icon: {
@@ -202,13 +241,21 @@ const styles = Steezy.create(({ colors, corners }) => ({
   scamAmountText: {
     color: colors.textTertiary,
   },
-  sending: {
-    backgroundColor: colors.iconSecondary,
-    borderRadius: 16 / 2,
-    height: 16,
-    width: 16,
+  sendingOuter: {
     position: 'absolute',
-    bottom: 0,
-    right: 0,
+    top: -6,
+    left: -6,
+    borderRadius: 18 + 2 / 2,
+
+    borderWidth: 2,
+    borderColor: colors.backgroundContent,
+  },
+  sendingInner: {
+    borderRadius: 18 / 2,
+    height: 18,
+    width: 18,
+    backgroundColor: colors.iconTertiary,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 }));

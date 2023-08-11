@@ -54,6 +54,10 @@ export class AmountFormatter {
     }
   }
 
+  public isNegative(amount: AmountNumber) {
+    return new BigNumber(amount).isLessThan(0);
+  }
+
   public toNano(amount: number | string, decimals?: number) {
     let bn = new BigNumber(amount ?? 0);
     if (decimals) {

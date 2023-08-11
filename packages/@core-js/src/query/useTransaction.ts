@@ -17,7 +17,6 @@ export const useTransaction = (transactionId: string, options: any = {}) => {
 
     if (event) {
       const action = event.actions[actionIndex];
-
       return options?.modify({ action, event });
     }
 

@@ -1,27 +1,18 @@
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { WalletProps } from './Wallet.interface';
 import * as S from './Wallet.style';
 import { useWalletInfo } from '$hooks/useWalletInfo';
 import {
   Button,
-  Icon,
   PopupMenu,
   PopupMenuItem,
   Text,
   IconButton,
   SwapIcon,
 } from '$uikit';
-import {
-  openDAppBrowser,
-  openReceive,
-  openSend,
-} from '$navigation';
+import { openDAppBrowser, openReceive, openSend } from '$navigation';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
-import {
-  walletActions,
-  walletWalletSelector,
-} from '$store/wallet';
+import { walletActions, walletWalletSelector } from '$store/wallet';
 import { Linking, Platform, View } from 'react-native';
 import { delay, ns } from '$utils';
 import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
@@ -33,119 +24,95 @@ import { Toast } from '$store';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { TonIcon } from '../../components/TonIcon';
-import { Screen } from '@tonkeeper/uikit';
+import { Icon, IconNames, Screen } from '@tonkeeper/uikit';
 
 import { TransactionsList } from '@tonkeeper/shared/components';
-import { useEventsByAccount } from '@tonkeeper/core/src/query/useEventsByAccount';
-import { AccountEventsMapper } from '@tonkeeper/shared/mappers/AccountEventsMapper';
+import { useTonTransactions } from '@tonkeeper/shared/query/hooks/useTonTransactions';
 import { useWallet } from '../../tabs/useWallet';
 
-const exploreActions = [
-  {
-    icon: 'ic-globe-16',
-    text: 'ton.org',
-    url: 'https://ton.org',
-  },
-  {
-    icon: 'ic-twitter-16',
-    text: 'Twitter',
-    url: 'https://twitter.com/ton_blockchain',
-    scheme: 'twitter://search',
-  },
-  {
-    icon: 'ic-telegram-16',
-    text: t('wallet_chat'),
-    url: t('wallet_toncommunity_chat_link'),
-    scheme: 'tg://',
-  },
-  {
-    icon: 'ic-telegram-16',
-    text: t('wallet_community'),
-    url: t('wallet_toncommunity_link'),
-    scheme: 'tg://',
-  },
-  {
-    icon: 'ic-doc-16',
-    text: 'Whitepaper',
-    openInBrowser: Platform.OS === 'android',
-    url: 'https://ton.org/whitepaper.pdf',
-  },
-  {
-    icon: 'ic-magnifying-glass-16',
-    text: 'tonviewer.com',
-    url: 'https://tonviewer.com',
-  },
-  {
-    icon: 'ic-code-16',
-    text: t('wallet_source_code'),
-    url: 'https://github.com/ton-blockchain/ton',
-    scheme: 'github://',
-  },
-];
+export const ToncoinScreen = memo(() => {
+  const transactions = useTonTransactions();
+  const wallet = useWallet();
 
+  const handleOpenExplorer = useCallback(async () => {
+    await delay(200);
+    openDAppBrowser(
+      getServerConfig('accountExplorer').replace('%s', wallet.address.raw),
+    );
+  }, [wallet.address.raw]);
 
+  // Temp hack for slow navigation
+  const [render, setRender] = useState(false);
+  useEffect(() => {
+    delay(0).then(() => {
+      setRender(true);
+    });
+  }, []);
 
-import { AccountEvent, Action } from '@tonkeeper/core/src/TonAPI';
-
-const seeIfTonTransfer = (action: Action) => {
-  if (action.type === 'TonTransfer') {
-    return true;
-  } else if (action.type === 'ContractDeploy') {
-    if (action.ContractDeploy?.interfaces?.includes('wallet')) {
-      return true;
-    }
+  if (!render) {
+    return null;
   }
-  return false;
-};
 
-export const groupAndFilterTonActivityItems = (data: AccountEvent) => {
-  const eventsMap = [];
+  return (
+    <Screen>
+      <Screen.Header
+        title="Toncoin"
+        rightContent={
+          <PopupMenu
+            items={[
+              <PopupMenuItem
+                shouldCloseMenu
+                onPress={handleOpenExplorer}
+                text={t('jetton_open_explorer')}
+                icon={<Icon name="ic-globe-16" color="accentBlue" />}
+              />,
+            ]}
+          >
+            <S.HeaderViewDetailsButton onPress={() => null}>
+              <Icon name="ic-ellipsis-16" color="iconPrimary" />
+            </S.HeaderViewDetailsButton>
+          </PopupMenu>
+        }
+      />
+      <TransactionsList
+        ListHeaderComponent={<HeaderList />}
+        fetchMoreEnd={transactions.fetchMoreEnd}
+        onFetchMore={transactions.fetchMore}
+        refreshing={transactions.refreshing}
+        onRefresh={transactions.refresh}
+        loading={transactions.loading}
+        events={transactions.data}
+        safeArea
+      />
+    </Screen>
+  );
+});
 
-  Object.entries(data).forEach(([key, event]) => {
-    const tonTransferEvent = event.actions.every(seeIfTonTransfer);
-    if (tonTransferEvent) {
-      eventsMap.push(event);
-    }
-  });
-  return eventsMap;
-};
-
-
-export const ToncoinScreen = memo<WalletProps>(() => {
+const HeaderList = memo(() => {
+  const walletAddr = useWallet();
   const flags = useFlags(['disable_swap']);
 
   const wallet = useSelector(walletWalletSelector);
-
 
   const dispatch = useDispatch();
   const [lockupDeploy, setLockupDeploy] = useState('loading');
   const nav = useNavigation();
 
-  const walletAddr = useWallet();
-  const events = useEventsByAccount(walletAddr.address.raw, {
-    modify: (data) => {
-      const filtered = groupAndFilterTonActivityItems(data ?? []);
-      return AccountEventsMapper(filtered ?? [], walletAddr.address.raw)
-    },
-    fetchMoreParams: (lastPage) => ({ before_lt: lastPage.next_from }),
-    fetchMoreEnd: (data) => data.events.length < 1,
-  });
-
-  // useEffect(() => {
-  //   if (wallet && wallet.ton.isLockup()) {
-  //     wallet.ton
-  //       .getWalletInfo(walletAddr.address.friendly)
-  //       .then((info: any) => {
-  //         setLockupDeploy(
-  //           ['empty', 'uninit', 'nonexist'].includes(info.status) ? 'deploy' : 'deployed',
-  //         );
-  //       })
-  //       .catch((err: any) => {
-  //         Toast.fail(err.message);
-  //       });
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  useEffect(() => {
+    if (wallet && wallet.ton.isLockup()) {
+      wallet.ton
+        .getWalletInfo(walletAddr.address.friendly)
+        .then((info: any) => {
+          setLockupDeploy(
+            ['empty', 'uninit', 'nonexist'].includes(info.status) ? 'deploy' : 'deployed',
+          );
+        })
+        .catch((err: any) => {
+          Toast.fail(err.message);
+        });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleOpenAction = useCallback(async (action: any) => {
     try {
@@ -163,7 +130,6 @@ export const ToncoinScreen = memo<WalletProps>(() => {
     }
   }, []);
 
-
   const { amount, tokenPrice } = useWalletInfo(CryptoCurrencies.Ton);
 
   const handleReceive = useCallback(() => {
@@ -178,8 +144,7 @@ export const ToncoinScreen = memo<WalletProps>(() => {
     if (!wallet) {
       return openRequireWalletModal();
     }
-
-    openSend(CryptoCurrencies.Ton);
+    openSend({ currency: 'ton' });
   }, [wallet]);
 
   const handleOpenExchange = useCallback(() => {
@@ -197,10 +162,6 @@ export const ToncoinScreen = memo<WalletProps>(() => {
     }
   }, [nav, wallet]);
 
-  const handleRefresh = useCallback(() => {
-    dispatch(walletActions.refreshBalancesPage(true));
-  }, [dispatch]);
-
   const handleDeploy = useCallback(() => {
     setLockupDeploy('loading');
     dispatch(
@@ -211,12 +172,7 @@ export const ToncoinScreen = memo<WalletProps>(() => {
     );
   }, [dispatch]);
 
-  const handleOpenExplorer = useCallback(async () => {
-    await delay(200);
-    openDAppBrowser(getServerConfig('accountExplorer').replace('%s', walletAddr.address.raw));
-  }, [walletAddr.address.raw]);
-
-  const header = (
+  return (
     <>
       <S.TokenInfoWrap>
         <S.FlexRow>
@@ -270,11 +226,7 @@ export const ToncoinScreen = memo<WalletProps>(() => {
       </S.ChartWrap>
       <S.Divider style={{ marginBottom: ns(22) }} />
       <S.ExploreWrap>
-        <Text
-          style={{ marginBottom: ns(14) }}
-          variant="h3"
-          color="foregroundPrimary"
-        >
+        <Text style={{ marginBottom: ns(14) }} variant="h3" color="foregroundPrimary">
           {t('wallet_about')}
         </Text>
         <S.ExploreButtons>
@@ -284,8 +236,8 @@ export const ToncoinScreen = memo<WalletProps>(() => {
               key={action.text}
               before={
                 <Icon
-                  name={action.icon}
-                  color="foregroundPrimary"
+                  name={action.icon as IconNames}
+                  color="iconPrimary"
                   style={{ marginRight: 8 }}
                 />
               }
@@ -298,7 +250,7 @@ export const ToncoinScreen = memo<WalletProps>(() => {
           ))}
         </S.ExploreButtons>
       </S.ExploreWrap>
-      {/* {wallet && wallet.ton.isLockup() && (
+      {wallet && wallet.ton.isLockup() && (
         <View style={{ padding: ns(16) }}>
           <Button
             onPress={handleDeploy}
@@ -308,41 +260,50 @@ export const ToncoinScreen = memo<WalletProps>(() => {
             {lockupDeploy === 'deploy' ? 'Deploy Wallet' : 'Deployed'}
           </Button>
         </View>
-      )} */}
+      )}
     </>
   );
-
-  return (
-    <Screen>
-      <Screen.Header 
-        title="Toncoin"
-        rightContent={
-          <PopupMenu
-            items={[
-              <PopupMenuItem
-                shouldCloseMenu
-                onPress={handleOpenExplorer}
-                text={t('jetton_open_explorer')}
-                icon={<Icon name="ic-globe-16" color="accentPrimary" />}
-              />,
-            ]}
-          >
-            <S.HeaderViewDetailsButton onPress={() => null}>
-              <Icon name="ic-ellipsis-16" color="foregroundPrimary" />
-            </S.HeaderViewDetailsButton>
-          </PopupMenu>
-        }
-      />
-
-      <TransactionsList
-        ListHeaderComponent={header}
-        fetchMoreEnd={events.fetchMoreEnd}
-        onFetchMore={events.fetchMore}
-        refreshing={events.refreshing}
-        onRefresh={events.refresh}
-        loading={events.loading}
-        events={events.data}
-      />
-    </Screen>
-  );
 });
+
+const exploreActions = [
+  {
+    icon: 'ic-globe-16',
+    text: 'ton.org',
+    url: 'https://ton.org',
+  },
+  {
+    icon: 'ic-twitter-16',
+    text: 'Twitter',
+    url: 'https://twitter.com/ton_blockchain',
+    scheme: 'twitter://search',
+  },
+  {
+    icon: 'ic-telegram-16',
+    text: t('wallet_chat'),
+    url: t('wallet_toncommunity_chat_link'),
+    scheme: 'tg://',
+  },
+  {
+    icon: 'ic-telegram-16',
+    text: t('wallet_community'),
+    url: t('wallet_toncommunity_link'),
+    scheme: 'tg://',
+  },
+  {
+    icon: 'ic-doc-16',
+    text: 'Whitepaper',
+    openInBrowser: Platform.OS === 'android',
+    url: 'https://ton.org/whitepaper.pdf',
+  },
+  {
+    icon: 'ic-magnifying-glass-16',
+    text: 'tonviewer.com',
+    url: 'https://tonviewer.com',
+  },
+  {
+    icon: 'ic-code-16',
+    text: t('wallet_source_code'),
+    url: 'https://github.com/ton-blockchain/ton',
+    scheme: 'github://',
+  },
+];

@@ -6,11 +6,12 @@ import {
   createNavigationContainerRef,
   useRoute,
 } from '@react-navigation/native';
+import { extrernalNavigationRef } from '@tonkeeper/router/src/imperative';
 
 export const navigationRef_depreceted = createRef<any>();
 export const navigationRef = createNavigationContainerRef<any>();
 
-export const setNavigationRef = mergeRefs(navigationRef_depreceted, navigationRef);
+export const setNavigationRef = mergeRefs(navigationRef_depreceted, navigationRef, extrernalNavigationRef);
 
 let navigationIsReady = false;
 export const getCurrentRouteName = () => {

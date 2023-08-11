@@ -388,7 +388,28 @@
     "wallet_initialized": "Wallet initialized",
     "contract_deploy": "Contract Deploy",
     "spam": "Spam",
+    "bid": "Bid",
     "failed": "Failed"
+  },
+
+  "transactionDetails": {
+    "received_date": "Received on %{time}",
+    "sent_date": "Sent on %{time}",
+    "bid_date": "Bid %{time}",
+    "purchase_date": "purchase %{time}",
+    "swapped_date": "Swapped on %{time}",
+    "sender": "Sender",
+    "sender_address": "Sender address",
+    "recipient": "Recipient",
+    "recipient_address": "Recipient address",
+    "comment": "Comment",
+    "transaction": "Transaction",
+    "spam": "SPAM",
+    "address": "Address",
+    "operation": "Operation",
+    "payload": "Payload",
+    "bid_collection_name": "Issuer",
+    "bid_name": "Name"
   },
 
   "browser": {
