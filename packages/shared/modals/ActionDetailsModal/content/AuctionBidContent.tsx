@@ -5,7 +5,7 @@ import { DetailedActionTime } from '../components/DetailedActionTime';
 import { FailedActionLabel } from '../components/FailedActionLabel';
 import { DetailedAmount } from '../components/DetailedAmount';
 import { ExtraListItem } from '../components/ExtraListItem';
-import { List, View } from '@tonkeeper/uikit';
+import { List, View, copyText } from '@tonkeeper/uikit';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
 import {
@@ -54,9 +54,17 @@ export const AuctionBidContent = memo<AuctionBidContentProps>((props) => {
         <FailedActionLabel isFailed={action.isFailed} />
       </DetailedInfoContainer>
       <List>
-        {name && <ListItem titleType="secondary" title={name.title} value={name.value} />}
+        {name && (
+          <ListItem
+            onPress={copyText(name.value)}
+            titleType="secondary"
+            title={name.title}
+            value={name.value}
+          />
+        )}
         {!!collectionName && (
           <ListItem
+            onPress={copyText(collectionName)}
             titleType="secondary"
             title={t('transactionDetails.bid_collection_name')}
             value={collectionName}

@@ -1,3 +1,4 @@
+import { modifyNftName } from '@tonkeeper/core/src/managers/NftsManager';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
@@ -26,7 +27,6 @@ import {
   getDateForGroupTansactions,
   formatTransactionsGroupDate,
 } from '@tonkeeper/shared/utils/date';
-
 
 // TODO: rewrite like AccountDetailsModal
 export function AccountEventsMapper(events: AccountEvent[], walletAddress: string = '') {
@@ -239,9 +239,13 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
       }
       case ActionTypeEnum.AuctionBid: {
         const data = input.action.data;
-
-        // TODO: need backend fixes;
-        console.log(input.action.type);
+        action.iconName = 'ic-tray-arrow-up-28';
+        action.operation = t('transactions.bid');
+        action.subtitle = modifyNftName(data.nft?.metadata?.name);
+        action.amount = formatter.formatNano(data.amount.value, {
+          postfix: data.amount.token_name,
+          prefix: amountPrefix,
+        });
         break;
       }
       case ActionTypeEnum.Unknown: {

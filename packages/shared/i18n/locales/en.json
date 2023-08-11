@@ -388,6 +388,7 @@
     "wallet_initialized": "Wallet initialized",
     "contract_deploy": "Contract Deploy",
     "spam": "Spam",
+    "bid": "Bid",
     "failed": "Failed"
   },
 
