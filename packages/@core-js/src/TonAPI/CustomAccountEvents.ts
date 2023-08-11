@@ -1,5 +1,6 @@
 import {
   AccountEvent,
+  ActionSimplePreview,
   AuctionBidAction,
   ContractDeployAction,
   DepositStakeAction,
@@ -32,72 +33,88 @@ export enum CustomActionType {
   Unknown = 'Unknown',
 }
 
-export type TonTransferActionData = TonTransferAction & {
-  type: CustomActionType.TonTransfer;
+type MakeCustomAction<TType, TAction> = TAction & {
+  type: TType;
+  isFailed: boolean;
+  simple_preview: ActionSimplePreview;
 };
 
-export type JettonTransferActionData = JettonTransferAction & {
-  type: CustomActionType.JettonTransfer;
-};
+export type CustomTonTransferAction = MakeCustomAction<
+  CustomActionType.TonTransfer,
+  TonTransferAction
+>;
 
-export type NftItemTransferActionData = NftItemTransferAction & {
-  type: CustomActionType.NftItemTransfer;
-};
+export type CustomJettonTransferAction = MakeCustomAction<
+  CustomActionType.JettonTransfer,
+  JettonTransferAction
+>;
 
-export type ContractDeployActionData = ContractDeployAction & {
-  type: CustomActionType.ContractDeploy;
-};
+export type CustomNftItemTransferAction = MakeCustomAction<
+  CustomActionType.NftItemTransfer,
+  NftItemTransferAction
+>;
 
-export type SubscribeActionData = SubscriptionAction & {
-  type: CustomActionType.Subscribe;
-};
+export type CustomContractDeployAction = MakeCustomAction<
+  CustomActionType.ContractDeploy,
+  ContractDeployAction
+>;
 
-export type UnSubscribeActionData = UnSubscriptionAction & {
-  type: CustomActionType.UnSubscribe;
-};
+export type CustomSubscribeAction = MakeCustomAction<
+  CustomActionType.Subscribe,
+  SubscriptionAction
+>;
 
-export type AuctionBidActionData = AuctionBidAction & {
-  type: CustomActionType.AuctionBid;
-};
+export type CustomUnSubscribeAction = MakeCustomAction<
+  CustomActionType.UnSubscribe,
+  UnSubscriptionAction
+>;
 
-export type NftPurchaseActionData = NftPurchaseAction & {
-  type: CustomActionType.NftPurchase;
-};
+export type CustomAuctionBidAction = MakeCustomAction<
+  CustomActionType.AuctionBid,
+  AuctionBidAction
+>;
 
-export type SmartContractExecActionData = SmartContractAction & {
-  type: CustomActionType.SmartContractExec;
-};
+export type CustomNftPurchaseAction = MakeCustomAction<
+  CustomActionType.NftPurchase,
+  NftPurchaseAction
+>;
 
-export type UnknownActionData = {
-  type: CustomActionType.Unknown;
-};
+export type CustomSmartContractExecAction = MakeCustomAction<
+  CustomActionType.SmartContractExec,
+  SmartContractAction
+>;
 
-export type DepositStakeActionData = DepositStakeAction & {
-  type: CustomActionType.DepositStake;
-};
+export type CustomDepositStakeAction = MakeCustomAction<
+  CustomActionType.DepositStake,
+  DepositStakeAction
+>;
 
-export type RecoverStakeActionData = RecoverStakeAction & {
-  type: CustomActionType.RecoverStake;
-};
+export type CustomRecoverStakeAction = MakeCustomAction<
+  CustomActionType.RecoverStake,
+  RecoverStakeAction
+>;
 
-export type STONfiSwapActionData = JettonSwapAction & {
-  type: CustomActionType.JettonSwap;
-};
+export type CustomJettonSwapAction = MakeCustomAction<
+  CustomActionType.JettonSwap,
+  JettonSwapAction
+>;
+
+export type CustomUnknownAction = MakeCustomAction<CustomActionType.Unknown, {}>;
 
 export type CustomAccountEventActions =
-  | TonTransferActionData
-  | JettonTransferActionData
-  | NftItemTransferActionData
-  | ContractDeployActionData
-  | SubscribeActionData
-  | UnSubscribeActionData
-  | AuctionBidActionData
-  | NftPurchaseActionData
-  | UnknownActionData
-  | SmartContractExecActionData
-  | DepositStakeActionData
-  | RecoverStakeActionData
-  | STONfiSwapActionData;
+  | CustomTonTransferAction
+  | CustomJettonTransferAction
+  | CustomNftItemTransferAction
+  | CustomContractDeployAction
+  | CustomSubscribeAction
+  | CustomUnSubscribeAction
+  | CustomAuctionBidAction
+  | CustomNftPurchaseAction
+  | CustomUnknownAction
+  | CustomSmartContractExecAction
+  | CustomDepositStakeAction
+  | CustomRecoverStakeAction
+  | CustomJettonSwapAction;
 
 export type EventWithoutActions = Omit<AccountEvent, 'actions'>;
 

@@ -72,7 +72,6 @@ export class Tonkeeper {
     try {
       if (address) {
         if (Address.isValid(address)) {
-          // TODO: move all params to ctx.
           this.wallet = new Wallet(this.queryClient, this.tonapi, this.vault, this.sse, {
             address: address,
           });
@@ -100,6 +99,8 @@ export class Tonkeeper {
     // }
   }
 
+  // Load cache data for start app, 
+  // Invoke on start app and block ui on spalsh screen
   private async preload() {
     await this.wallet.subscriptions.preload();
     await this.wallet.transactions.preload();
@@ -109,6 +110,8 @@ export class Tonkeeper {
     return true;
   }
 
+  // Update all data, 
+  // Invoke in background after hide splash screen
   private prefetch() {
     this.wallet.subscriptions.prefetch();
     this.wallet.transactions.prefetch();

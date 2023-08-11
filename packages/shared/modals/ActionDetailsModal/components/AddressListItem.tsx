@@ -9,17 +9,18 @@ interface AddressListItemProps {
   recipient?: AccountAddress;
   sender?: AccountAddress;
   address?: string;
+  hideName?: boolean;
 }
 
 export const AddressListItem = memo<AddressListItemProps>((props) => {
-  const { destination, sender, recipient, address } = props;
+  const { destination, sender, recipient, hideName, address } = props;
 
   if (destination === 'in' && sender) {
     const senderAddress = Address(sender.address).toFriendly();
 
     return (
       <>
-        {!!sender.name && (
+        {!!sender.name && !hideName && (
           <>
             <List.Item
               titleType="secondary"

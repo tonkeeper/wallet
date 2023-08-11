@@ -1,7 +1,7 @@
-import { CustomAccountEvent, JettonSwapAction } from '@tonkeeper/core/src/TonAPI';
-import { List, Steezy, View, SText as Text, Spacer } from '@tonkeeper/uikit';
-import { DetailedInfoConatiner } from '../components/DetailedInfoConatiner';
+import { CustomAccountEvent, CustomJettonSwapAction } from '@tonkeeper/core/src/TonAPI';
+import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
 import { DetailedActionTime } from '../components/DetailedActionTime';
+import { List, Steezy, View, SText as Text } from '@tonkeeper/uikit';
 import { AddressListItem } from '../components/AddressListItem';
 import { DetailedHeader } from '../components/DetailedHeader';
 import { ExtraListItem } from '../components/ExtraListItem';
@@ -14,8 +14,8 @@ import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
 import { useSelector } from 'react-redux';
 
 interface JettonSwapContentProps {
+  action: CustomJettonSwapAction;
   event: CustomAccountEvent;
-  action: JettonSwapAction;
 }
 
 export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {
@@ -23,7 +23,7 @@ export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {
 
   const fiatCurrency = useSelector(fiatCurrencySelector);
   const tokenPrice = useTokenPrice(action.jetton_master_in.address);
-  
+
   const amount = useMemo(() => {
     const amountIn = action.amount_in;
     const amountOut = action.amount_in;
@@ -64,7 +64,7 @@ export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {
 
   return (
     <View>
-      <DetailedInfoConatiner>
+      <DetailedInfoContainer>
         <DetailedHeader>
           <View style={styles.content}>
             <View style={styles.swapImages}>
@@ -99,7 +99,7 @@ export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {
           timestamp={event.timestamp}
           langKey="swapped_on"
         />
-      </DetailedInfoConatiner>
+      </DetailedInfoContainer>
       <List>
         <AddressListItem address={action.user_wallet.address} />
         <ExtraListItem extra={event.extra} />
@@ -145,5 +145,5 @@ const styles = Steezy.create(({ colors }) => ({
   },
   fiatText: {
     marginTop: -16,
-  }
+  },
 }));

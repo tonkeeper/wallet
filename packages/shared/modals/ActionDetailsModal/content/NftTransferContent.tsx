@@ -1,5 +1,5 @@
 import { NftItemTransferAction, CustomAccountEvent } from '@tonkeeper/core/src/TonAPI';
-import { DetailedInfoConatiner } from '../components/DetailedInfoConatiner';
+import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
 import { DetailedActionTime } from '../components/DetailedActionTime';
 import { AddressListItem } from '../components/AddressListItem';
 import { DetailedHeader } from '../components/DetailedHeader';
@@ -48,7 +48,7 @@ export const NftTransferContent = memo<NftTransferContentProps>((props) => {
 
   return (
     <View>
-      <DetailedInfoConatiner>
+      <DetailedInfoContainer>
         <DetailedHeader indentButtom={false} isScam={event.is_scam}>
           <TouchableOpacity activeOpacity={0.6} onPress={handleOpenNftItem} style={styles.nft}>
             {imagesSource && (
@@ -91,8 +91,9 @@ export const NftTransferContent = memo<NftTransferContentProps>((props) => {
             )}
           </TouchableOpacity>
         </DetailedHeader>
+        
         <DetailedActionTime destination={event.destination} timestamp={event.timestamp} />
-      </DetailedInfoConatiner>
+      </DetailedInfoContainer>
       <List>
         <AddressListItem
           destination={event.destination}

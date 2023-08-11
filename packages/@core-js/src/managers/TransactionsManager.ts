@@ -1,5 +1,5 @@
 import { WalletContext } from '../Wallet';
-import { AccountEvent } from '../TonAPI';
+import { AccountEvent, ActionStatusEnum } from '../TonAPI';
 import { Address } from '../Address';
 import {
   CustomAccountEventActions,
@@ -88,6 +88,7 @@ export class TransactionsManager {
   private makeCustomAccountEvent(event: AccountEvent, actionIndex: number) {
     const rawAction = event.actions[actionIndex];
     const action: CustomAccountEventActions = {
+      isFailed: rawAction.status === ActionStatusEnum.Failed,
       ...rawAction,
       ...rawAction[rawAction.type],
     };

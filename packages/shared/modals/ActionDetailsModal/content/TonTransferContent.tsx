@@ -1,4 +1,4 @@
-import { DetailedInfoConatiner } from '../components/DetailedInfoConatiner';
+import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
 import { DetailedActionTime } from '../components/DetailedActionTime';
 import { List, TonIcon, View, copyText } from '@tonkeeper/uikit';
 import { AddressListItem } from '../components/AddressListItem';
@@ -13,13 +13,13 @@ import {
 } from '../../../components/EncryptedComment';
 import {
   ActionTypeEnum,
-  TonTransferAction,
   CustomAccountEvent,
+  CustomTonTransferAction,
 } from '@tonkeeper/core/src/TonAPI';
 
 interface TonTransferContentProps {
+  action: CustomTonTransferAction;
   event: CustomAccountEvent;
-  action: TonTransferAction;
 }
 
 export const TonTransferContent = memo<TonTransferContentProps>((props) => {
@@ -27,19 +27,19 @@ export const TonTransferContent = memo<TonTransferContentProps>((props) => {
 
   return (
     <View>
-      <DetailedInfoConatiner>
+      <DetailedInfoContainer>
         <DetailedHeader isScam={event.is_scam}>
           <TonIcon size="large" />
         </DetailedHeader>
         <DetailedAmount destination={event.destination} amount={action.amount} />
         <DetailedActionTime destination={event.destination} timestamp={event.timestamp} />
-      </DetailedInfoConatiner>
+      </DetailedInfoContainer>
       <List>
         <AddressListItem
-          // hideName={event.is_scam}
           destination={event.destination}
           recipient={action.recipient}
           sender={action.sender}
+          hideName={event.is_scam}
         />
         <ExtraListItem extra={event.extra} />
         {action.encrypted_comment && (

@@ -1,5 +1,4 @@
-import { JettonTransferAction, CustomAccountEvent } from '@tonkeeper/core/src/TonAPI';
-import { DetailedInfoConatiner } from '../components/DetailedInfoConatiner';
+import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
 import { DetailedActionTime } from '../components/DetailedActionTime';
 import { AddressListItem } from '../components/AddressListItem';
 import { DetailedAmount } from '../components/DetailedAmount';
@@ -10,10 +9,14 @@ import FastImage from 'react-native-fast-image';
 import { StyleSheet } from 'react-native';
 import { t } from '../../../i18n';
 import { memo } from 'react';
+import {
+  CustomAccountEvent,
+  CustomJettonTransferAction,
+} from '@tonkeeper/core/src/TonAPI';
 
 interface JettonTransferContentProps {
+  action: CustomJettonTransferAction;
   event: CustomAccountEvent;
-  action: JettonTransferAction;
 }
 
 export const JettonTransferContent = memo<JettonTransferContentProps>((props) => {
@@ -23,7 +26,7 @@ export const JettonTransferContent = memo<JettonTransferContentProps>((props) =>
 
   return (
     <View>
-      <DetailedInfoConatiner>
+      <DetailedInfoContainer>
         <DetailedHeader isScam={event.is_scam}>
           <FastImage style={styles.jettonImage} resizeMode="cover" source={source} />
         </DetailedHeader>
@@ -33,17 +36,14 @@ export const JettonTransferContent = memo<JettonTransferContentProps>((props) =>
           symbol={action.jetton.symbol}
           amount={action.amount}
         />
-        <DetailedActionTime
-          destination={event.destination}
-          timestamp={event.timestamp}
-        />
-      </DetailedInfoConatiner>
+        <DetailedActionTime destination={event.destination} timestamp={event.timestamp} />
+      </DetailedInfoContainer>
       <List>
         <AddressListItem
-          // hideName={event.is_scam}
           destination={event.destination}
           recipient={action.recipient}
           sender={action.sender}
+          hideName={event.is_scam}
         />
         <ExtraListItem extra={event.extra} />
         {!!action.comment && (

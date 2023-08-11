@@ -1,7 +1,7 @@
 import { PropsWithChildren, memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 
-export const DetailedInfoConatiner = memo<PropsWithChildren>((props) => {
+export const DetailedInfoContainer = memo<PropsWithChildren>((props) => {
   return (
     <View style={styles.container}>
       {props.children}
