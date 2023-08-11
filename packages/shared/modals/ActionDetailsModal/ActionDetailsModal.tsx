@@ -51,7 +51,7 @@ export const ActionDetailsModal = memo<ActionDetailsModalProps>((props) => {
         return <NftTransferContent action={action} event={event} />;
       case CustomActionType.SmartContractExec:
         return <SmartContractExecContent action={action} event={event} />;
-      case CustomActionType.AuctionBid: // 1
+      case CustomActionType.AuctionBid:
         return <AuctionBidContent action={action} event={event} />;
       case CustomActionType.NftPurchase:
         return <NftPurchaseContent action={action} event={event} />;
