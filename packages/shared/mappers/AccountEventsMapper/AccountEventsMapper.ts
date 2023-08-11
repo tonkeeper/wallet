@@ -27,6 +27,8 @@ import {
   formatTransactionsGroupDate,
 } from '@tonkeeper/shared/utils/date';
 
+
+// TODO: rewrite like AccountDetailsModal
 export function AccountEventsMapper(events: AccountEvent[], walletAddress: string = '') {
   const groupedActions = events.reduce<GroupedActionsByDate>((groups, event) => {
     const date = getDateForGroupTansactions(event.timestamp);

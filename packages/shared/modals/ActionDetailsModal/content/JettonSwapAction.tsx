@@ -2,6 +2,7 @@ import { CustomAccountEvent, CustomJettonSwapAction } from '@tonkeeper/core/src/
 import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
 import { DetailedActionTime } from '../components/DetailedActionTime';
 import { List, Steezy, View, SText as Text } from '@tonkeeper/uikit';
+import { FailedActionLabel } from '../components/FailedActionLabel';
 import { AddressListItem } from '../components/AddressListItem';
 import { DetailedHeader } from '../components/DetailedHeader';
 import { ExtraListItem } from '../components/ExtraListItem';
@@ -99,6 +100,7 @@ export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {
           timestamp={event.timestamp}
           langKey="swapped_on"
         />
+        <FailedActionLabel isFailed={action.isFailed} />
       </DetailedInfoContainer>
       <List>
         <AddressListItem address={action.user_wallet.address} />

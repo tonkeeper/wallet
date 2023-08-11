@@ -1,17 +1,21 @@
-import { NftItemTransferAction, CustomAccountEvent } from '@tonkeeper/core/src/TonAPI';
+import { Icon, List, TouchableOpacity, View, useTheme, Text } from '@tonkeeper/uikit';
+import { useNftItemByAddress } from '@tonkeeper/core/src/query/useNftItemByAddress';
 import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
 import { DetailedActionTime } from '../components/DetailedActionTime';
+import { FailedActionLabel } from '../components/FailedActionLabel';
 import { AddressListItem } from '../components/AddressListItem';
 import { DetailedHeader } from '../components/DetailedHeader';
 import { ExtraListItem } from '../components/ExtraListItem';
-import { Icon, List, TouchableOpacity, View, useTheme } from '@tonkeeper/uikit';
-import { t } from '../../../i18n';
-import { StyleSheet } from 'react-native';
 import { memo, useCallback, useMemo } from 'react';
-import { useNftItemByAddress } from '@tonkeeper/core/src/query/useNftItemByAddress';
+import { StyleSheet } from 'react-native';
+import { t } from '../../../i18n';
+import {
+  CustomAccountEvent,
+  CustomNftItemTransferAction,
+} from '@tonkeeper/core/src/TonAPI';
 
 interface NftTransferContentProps {
-  action: NftItemTransferAction;
+  action: CustomNftItemTransferAction;
   event: CustomAccountEvent;
 }
 
@@ -49,8 +53,17 @@ export const NftTransferContent = memo<NftTransferContentProps>((props) => {
   return (
     <View>
       <DetailedInfoContainer>
-        <DetailedHeader indentButtom={false} isScam={event.is_scam}>
-          <TouchableOpacity activeOpacity={0.6} onPress={handleOpenNftItem} style={styles.nft}>
+        {action.isFailed && <Text type="h2">NFT</Text>}
+        <DetailedHeader
+          isHide={action.isFailed}
+          isScam={event.is_scam}
+          indentButtom={false}
+        >
+          <TouchableOpacity
+            activeOpacity={0.6}
+            onPress={handleOpenNftItem}
+            style={styles.nft}
+          >
             {imagesSource && (
               <HideableImage
                 imageStyle={[
@@ -91,8 +104,8 @@ export const NftTransferContent = memo<NftTransferContentProps>((props) => {
             )}
           </TouchableOpacity>
         </DetailedHeader>
-        
         <DetailedActionTime destination={event.destination} timestamp={event.timestamp} />
+        <FailedActionLabel isFailed={action.isFailed} />
       </DetailedInfoContainer>
       <List>
         <AddressListItem
@@ -130,5 +143,5 @@ const styles = StyleSheet.create({
   nft: {
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
 });

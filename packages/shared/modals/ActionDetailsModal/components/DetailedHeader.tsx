@@ -6,10 +6,11 @@ interface DetailedHeaderProps {
   children: React.ReactNode;
   indentButtom?: boolean;
   isScam?: boolean;
+  isHide?: boolean;
 }
 
 export const DetailedHeader = memo<DetailedHeaderProps>((props) => {
-  const { isScam, children, indentButtom = true } = props;
+  const { isScam, children, indentButtom = true, isHide } = props;
 
   if (isScam) {
     return (
@@ -21,7 +22,11 @@ export const DetailedHeader = memo<DetailedHeaderProps>((props) => {
     );
   }
 
-  return <View style={indentButtom && styles.indentButtom}>{children}</View>;
+  if (!isHide) {
+    return <View style={indentButtom && styles.indentButtom}>{children}</View>;
+  }
+
+  return null;
 });
 
 const styles = Steezy.create(({ colors, corners }) => ({

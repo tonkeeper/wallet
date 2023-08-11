@@ -1,5 +1,6 @@
 import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
 import { DetailedActionTime } from '../components/DetailedActionTime';
+import { FailedActionLabel } from '../components/FailedActionLabel';
 import { AddressListItem } from '../components/AddressListItem';
 import { DetailedAmount } from '../components/DetailedAmount';
 import { DetailedHeader } from '../components/DetailedHeader';
@@ -27,7 +28,7 @@ export const JettonTransferContent = memo<JettonTransferContentProps>((props) =>
   return (
     <View>
       <DetailedInfoContainer>
-        <DetailedHeader isScam={event.is_scam}>
+        <DetailedHeader isScam={event.is_scam} isHide={action.isFailed}>
           <FastImage style={styles.jettonImage} resizeMode="cover" source={source} />
         </DetailedHeader>
         <DetailedAmount
@@ -37,6 +38,7 @@ export const JettonTransferContent = memo<JettonTransferContentProps>((props) =>
           amount={action.amount}
         />
         <DetailedActionTime destination={event.destination} timestamp={event.timestamp} />
+        <FailedActionLabel isFailed={action.isFailed} />
       </DetailedInfoContainer>
       <List>
         <AddressListItem

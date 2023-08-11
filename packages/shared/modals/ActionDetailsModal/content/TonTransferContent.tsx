@@ -1,5 +1,6 @@
 import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
 import { DetailedActionTime } from '../components/DetailedActionTime';
+import { FailedActionLabel } from '../components/FailedActionLabel';
 import { List, TonIcon, View, copyText } from '@tonkeeper/uikit';
 import { AddressListItem } from '../components/AddressListItem';
 import { DetailedAmount } from '../components/DetailedAmount';
@@ -28,11 +29,12 @@ export const TonTransferContent = memo<TonTransferContentProps>((props) => {
   return (
     <View>
       <DetailedInfoContainer>
-        <DetailedHeader isScam={event.is_scam}>
+        <DetailedHeader isScam={event.is_scam} isHide={action.isFailed}>
           <TonIcon size="large" />
         </DetailedHeader>
         <DetailedAmount destination={event.destination} amount={action.amount} />
         <DetailedActionTime destination={event.destination} timestamp={event.timestamp} />
+        <FailedActionLabel isFailed={action.isFailed} />
       </DetailedInfoContainer>
       <List>
         <AddressListItem
