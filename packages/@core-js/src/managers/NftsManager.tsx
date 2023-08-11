@@ -58,3 +58,19 @@ export class NftsManager {
     });
   }
 }
+
+export const domainToUsername = (name?: string) => {
+  return name ? '@' + name.replace('.t.me', '') : '';
+};
+
+export const isTelegramUsername = (name?: string) => {
+  return name?.endsWith('.t.me');
+};
+
+export const modifyNftName = (name?: string) => {
+  if (isTelegramUsername(name)) {
+    return domainToUsername(name);
+  }
+
+  return name;
+};

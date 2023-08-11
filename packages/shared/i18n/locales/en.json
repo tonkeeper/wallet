@@ -394,7 +394,7 @@
   "transactionDetails": {
     "received_date": "Received on %{time}",
     "sent_date": "Sent on %{time}",
-    "bid_date": "Bid %{date}",
+    "bid_date": "Bid %{time}",
     "purchase_date": "purchase %{time}",
     "swapped_date": "Swapped on %{time}",
     "sender": "Sender",
@@ -406,7 +406,9 @@
     "spam": "SPAM",
     "address": "Address",
     "operation": "Operation",
-    "payload": "Payload"
+    "payload": "Payload",
+    "bid_collection_name": "Issuer",
+    "bid_name": "Name"
   },
 
   "browser": {

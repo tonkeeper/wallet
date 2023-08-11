@@ -1,6 +1,17 @@
 import { CustomAccountEvent, CustomAuctionBidAction } from '@tonkeeper/core/src/TonAPI';
-import { memo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
+import { ListItem } from '@tonkeeper/uikit/src/components/List/ListItem';
+import { DetailedActionTime } from '../components/DetailedActionTime';
+import { FailedActionLabel } from '../components/FailedActionLabel';
+import { DetailedAmount } from '../components/DetailedAmount';
+import { ExtraListItem } from '../components/ExtraListItem';
+import { List, View } from '@tonkeeper/uikit';
+import { memo, useMemo } from 'react';
+import { t } from '../../../i18n';
+import {
+  domainToUsername,
+  isTelegramUsername,
+} from '@tonkeeper/core/src/managers/NftsManager';
 
 interface AuctionBidContentProps {
   action: CustomAuctionBidAction;
@@ -8,9 +19,51 @@ interface AuctionBidContentProps {
 }
 
 export const AuctionBidContent = memo<AuctionBidContentProps>((props) => {
-  return <View style={styles.container}></View>;
-});
+  const { action, event } = props;
 
-const styles = StyleSheet.create({
-  container: {},
+  const name = useMemo(() => {
+    const name = action.nft?.metadata?.name;
+    let title = t('transactionDetails.bid_name');
+    let value = name;
+
+    if (isTelegramUsername(name)) {
+      value = domainToUsername(name);
+    }
+
+    return { title, value };
+  }, []);
+
+  const collectionName = useMemo(() => {
+    return action.nft?.collection?.name;
+  }, [action]);
+
+  return (
+    <View>
+      <DetailedInfoContainer>
+        <DetailedAmount
+          destination={event.destination}
+          symbol={action.amount.token_name}
+          amount={action.amount.value}
+          hideFiat={action.isFailed}
+        />
+        <DetailedActionTime
+          langKey="bid_date"
+          destination={event.destination}
+          timestamp={event.timestamp}
+        />
+        <FailedActionLabel isFailed={action.isFailed} />
+      </DetailedInfoContainer>
+      <List>
+        {name && <ListItem titleType="secondary" title={name.title} value={name.value} />}
+        {!!collectionName && (
+          <ListItem
+            titleType="secondary"
+            title={t('transactionDetails.bid_collection_name')}
+            value={collectionName}
+          />
+        )}
+        <ExtraListItem extra={event.extra} />
+      </List>
+    </View>
+  );
 });

@@ -402,7 +402,7 @@
     "sent_date": "Отправлено %{time}",
     "swapped_date": "Обмен %{time}",
     "purchase_date": "Покупка %{time}",
-    "bid_date": "Ставка %{date}",
+    "bid_date": "Ставка %{time}",
     "sender": "Отправитель",
     "sender_address": "Адрес отправителя",
     "recipient": "Получатель",
@@ -412,7 +412,9 @@
     "spam": "СПАМ",
     "address": "Адрес",
     "operation": "Операция",
-    "payload": "Данные"
+    "payload": "Данные",
+    "bid_collection_name": "Эмитент",
+    "bid_name": "Название"
   },
 
   "browser": {

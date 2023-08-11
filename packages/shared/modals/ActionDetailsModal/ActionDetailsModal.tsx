@@ -29,7 +29,8 @@ export const ActionDetailsModal = memo<ActionDetailsModalProps>((props) => {
   const { event, action } = props;
   const nav = useNavigation();
 
-  const Content = (action as any).comment ? Modal.ScrollView : Modal.Content;
+  // TODO: need auto detect modal content size
+  const Content = (action as any).comment || (action as any).payload ? Modal.ScrollView : Modal.Content;
   const hash = ` ${event.event_id.substring(0, 8)}`;
 
   const handlePressHash = useCallback(() => {
