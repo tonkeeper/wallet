@@ -123,8 +123,8 @@ android {
         applicationId "com.ton_keeper"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 341
-        versionName "3.3"
+        versionCode 351
+        versionName "3.3.1"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
 
