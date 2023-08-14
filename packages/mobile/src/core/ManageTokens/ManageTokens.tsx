@@ -23,14 +23,14 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useParams } from '$navigation/imperative';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
 
 
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 
 export function reorderJettons(newOrder: JettonBalanceModel[]) {
   return newOrder.map((jettonBalance) => {
-    const rawAddress = Address(jettonBalance.jettonAddress).toRaw();
+    const rawAddress = Address.parse(jettonBalance.jettonAddress).toRaw();
     return rawAddress;
   });
 }
