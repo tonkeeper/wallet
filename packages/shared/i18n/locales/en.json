@@ -398,6 +398,7 @@
     "bid_date": "Bid %{time}",
     "purchase_date": "purchase %{time}",
     "swapped_date": "Swapped on %{time}",
+    "call_contract_date": "Call contract %{time}",
     "sender": "Sender",
     "sender_address": "Sender address",
     "recipient": "Recipient",
@@ -409,7 +410,10 @@
     "operation": "Operation",
     "payload": "Payload",
     "bid_collection_name": "Issuer",
-    "bid_name": "Name"
+    "bid_name": "Name",
+    "subscription_product_label": "Subscription",
+    "subscription_merchant_label": "Merchant",
+    "unsubscription_title": "Unsubscribed"
   },
 
   "browser": {

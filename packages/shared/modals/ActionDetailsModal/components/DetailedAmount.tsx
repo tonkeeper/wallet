@@ -33,7 +33,8 @@ export const DetailedAmount = memo<DetailedAmountProps>((props) => {
   const amount = useMemo(() => {
     if (nanoAmount) {
       return formatter.formatNano(nanoAmount, {
-        formatDecimals: decimals ?? 9,
+        formatDecimals: 9,
+        decimals: decimals,
         prefix: destination === 'in' ? '+' : '-',
         withoutTruncate: true,
         postfix: symbol,
@@ -43,9 +44,10 @@ export const DetailedAmount = memo<DetailedAmountProps>((props) => {
 
   const fiatAmount = useMemo(() => {
     if (nanoAmount && tokenPrice.fiat) {
-      const amount = parseFloat(formatter.fromNano(nanoAmount));
+      const amount = parseFloat(formatter.fromNano(nanoAmount, decimals));
       return formatter.format(tokenPrice.fiat * amount, {
         currency: fiatCurrency,
+        decimals: 9,
       });
     }
   }, [nanoAmount, tokenPrice.fiat, fiatCurrency]);

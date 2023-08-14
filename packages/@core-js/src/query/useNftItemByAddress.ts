@@ -22,13 +22,7 @@ export const useNftItemByAddress = (
       if (options.existingNft) {
         return options.existingNft;
       } else {
-        const { data, error } = await tonapi.nfts.getNftItemByAddress(nftAddress!);
-
-        if (error) {
-          throw error;
-        }
-
-        return data;
+        return await tonapi.nfts.getNftItemByAddress(nftAddress!);
       }
     },
   });

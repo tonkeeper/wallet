@@ -19,7 +19,7 @@ export class TransactionsManager {
   public async preload() {}
 
   public getCachedAction(txId: string) {
-    const { eventId, actionIndex } = this.txIdToActionId(txId);
+    const { eventId, actionIndex } = this.txIdToActionId(txId);    
     const event = this.ctx.queryClient.getQueryData<AccountEvent>([
       'account_event',
       eventId,
@@ -33,20 +33,12 @@ export class TransactionsManager {
   }
 
   public async fetch(before_lt?: number) {
-    const { data, error } = await this.ctx.tonapi.accounts.getAccountEvents({
+    const data = await this.ctx.tonapi.accounts.getAccountEvents({
       ...(!!before_lt && { before_lt }),
       accountId: this.ctx.accountId,
       subject_only: true,
       limit: 50,
     });
-
-    if (!before_lt) {
-    }
-
-    // TODO: change generated tonapi client
-    if (error) {
-      throw error;
-    }
 
     data.events.map((event) => {
       this.ctx.queryClient.setQueryData(['account_event', event.event_id], event);
@@ -57,7 +49,7 @@ export class TransactionsManager {
 
   public async fetchAction(txId: string) {
     const { eventId, actionIndex } = this.txIdToActionId(txId);
-    const { data: event } = await this.ctx.tonapi.accounts.getAccountEvent({
+    const event = await this.ctx.tonapi.accounts.getAccountEvent({
       accountId: this.ctx.accountId,
       eventId,
     });

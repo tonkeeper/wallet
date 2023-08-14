@@ -70,16 +70,13 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
       return;
     }
 
-    if (subscription && 
-      item.type === CustomActionType.Subscribe ||
-      item.type === CustomActionType.UnSubscribe 
-    ) {
+    if (subscription && item.type === CustomActionType.Subscribe) {
       openSubscription(subscription);
       return;
     }
 
     openActionDetails(item.id);
-  }, [isSimplePreview, item]);
+  }, [isSimplePreview, item, subscription]);
 
   return (
     <View style={containerStyle}>

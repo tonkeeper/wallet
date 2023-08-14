@@ -26,13 +26,9 @@ export class NftsManager {
   }
 
   public async fetchByAddress(nftAddress: string) {
-    const { data: nftItem, error } = await this.ctx.tonapi.nfts.getNftItemByAddress(
+    const nftItem = await this.ctx.tonapi.nfts.getNftItemByAddress(
       nftAddress,
     );
-
-    if (error) {
-      throw error;
-    }
 
     if (nftItem) {
       this.ctx.queryClient.setQueryData(['nft', nftItem.address], nftItem);

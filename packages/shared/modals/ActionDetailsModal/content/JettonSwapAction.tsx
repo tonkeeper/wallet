@@ -1,12 +1,11 @@
 import { CustomAccountEvent, CustomJettonSwapAction } from '@tonkeeper/core/src/TonAPI';
+import { List, Steezy, View, SText as Text, FastImage } from '@tonkeeper/uikit';
 import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
 import { DetailedActionTime } from '../components/DetailedActionTime';
-import { List, Steezy, View, SText as Text } from '@tonkeeper/uikit';
 import { FailedActionLabel } from '../components/FailedActionLabel';
 import { AddressListItem } from '../components/AddressListItem';
 import { DetailedHeader } from '../components/DetailedHeader';
 import { ExtraListItem } from '../components/ExtraListItem';
-import FastImage from 'react-native-fast-image';
 import { formatter } from '../../../formatter';
 import { memo, useMemo } from 'react';
 
@@ -70,13 +69,13 @@ export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {
           <View style={styles.content}>
             <View style={styles.swapImages}>
               <FastImage
-                style={styles.jettonInImage.static}
+                style={styles.jettonInImage}
                 resizeMode="cover"
                 source={sourceIn}
               />
               <View style={styles.jettonOutImageContainer}>
                 <FastImage
-                  style={styles.jettonOutImage.static}
+                  style={styles.jettonOutImage}
                   resizeMode="cover"
                   source={sourceOut}
                 />
@@ -135,11 +134,13 @@ const styles = Steezy.create(({ colors }) => ({
     height: 72,
     borderRadius: 72 / 2,
     marginRight: -6,
+    backgroundColor: colors.backgroundContent,
   },
   jettonOutImage: {
     width: 72,
     height: 72,
     borderRadius: 72 / 2,
+    backgroundColor: colors.backgroundContent,
   },
   jettonOutImageContainer: {
     borderWidth: 4,

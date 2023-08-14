@@ -28,7 +28,11 @@ export const SmartContractExecContent = memo<SmartContractExecContentProps>((pro
           hideFiat={action.isFailed}
           amount={action.ton_attached}
         />
-        <DetailedActionTime destination={event.destination} timestamp={event.timestamp} />
+        <DetailedActionTime
+          langKey="call_contract_date"
+          destination={event.destination}
+          timestamp={event.timestamp}
+        />
         <FailedActionLabel isFailed={action.isFailed} />
       </DetailedInfoContainer>
       <List>

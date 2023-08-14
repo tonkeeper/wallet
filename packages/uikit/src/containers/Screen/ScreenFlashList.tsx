@@ -4,14 +4,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenBottomSeparator } from './ScreenBottomSeparator';
 import { useBottomTabBarHeight } from '@tonkeeper/router';
 import { useScrollToTop } from '@react-navigation/native';
-import { StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View, FlatListProps } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useMergeRefs } from '../../utils';
 import { useScreenScroll } from './hooks';
 
-const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
+const AnimatedFlashList = Animated.createAnimatedComponent(FlatList);
 
-export type ScreenScrollListProps = FlashListProps<any> & {
+export type ScreenScrollListProps = FlatListProps<any> & {
   hideBottomSeparator?: boolean;
   safeArea?: boolean;
 };

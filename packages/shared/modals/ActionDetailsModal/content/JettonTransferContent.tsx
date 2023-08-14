@@ -1,13 +1,11 @@
 import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
+import { FastImage, List, Steezy, View, copyText } from '@tonkeeper/uikit';
 import { DetailedActionTime } from '../components/DetailedActionTime';
 import { FailedActionLabel } from '../components/FailedActionLabel';
 import { AddressListItem } from '../components/AddressListItem';
 import { DetailedAmount } from '../components/DetailedAmount';
 import { DetailedHeader } from '../components/DetailedHeader';
 import { ExtraListItem } from '../components/ExtraListItem';
-import { List, View, copyText } from '@tonkeeper/uikit';
-import FastImage from 'react-native-fast-image';
-import { StyleSheet } from 'react-native';
 import { t } from '../../../i18n';
 import { memo } from 'react';
 import {
@@ -63,10 +61,11 @@ export const JettonTransferContent = memo<JettonTransferContentProps>((props) =>
   );
 });
 
-const styles = StyleSheet.create({
+const styles = Steezy.create(({ colors }) => ({
   jettonImage: {
     width: 96,
     height: 96,
     borderRadius: 96 / 2,
+    backgroundColor: colors.backgroundContent,
   },
-});
+}));

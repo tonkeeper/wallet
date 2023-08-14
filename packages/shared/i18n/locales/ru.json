@@ -404,6 +404,7 @@
     "swapped_date": "Обмен %{time}",
     "purchase_date": "Покупка %{time}",
     "bid_date": "Ставка %{time}",
+    "call_contract_date": "Вызов контракта %{time}",
     "sender": "Отправитель",
     "sender_address": "Адрес отправителя",
     "recipient": "Получатель",
@@ -415,7 +416,10 @@
     "operation": "Операция",
     "payload": "Данные",
     "bid_collection_name": "Эмитент",
-    "bid_name": "Название"
+    "bid_name": "Название",
+    "subscription_product_label": "Подписка",
+    "subscription_merchant_label": "Продавец",
+    "unsubscription_title": "Отмена подписки"
   },
 
   "browser": {

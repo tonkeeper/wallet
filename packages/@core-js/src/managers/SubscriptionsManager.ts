@@ -46,7 +46,6 @@ export class SubscriptionsManager {
       queryFn: () => this.fetch(),
       queryKey: this.cacheKey,
       staleTime: Infinity,
-      cacheTime: Infinity,
     });
   }
 

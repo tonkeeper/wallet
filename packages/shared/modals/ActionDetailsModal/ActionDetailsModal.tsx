@@ -19,6 +19,7 @@ import { SmartContractExecContent } from './content/SmartContractExecContent';
 import { AuctionBidContent } from './content/AuctionBidContent';
 import { NftPurchaseContent } from './content/NftPurchaseContent';
 import { ContractDeployContent } from './content/ContractDeployContent';
+import { UnSubscribeContent } from './content/UnSubscribeContent';
 
 type ActionDetailsModalProps = {
   action: CustomAccountEventActions;
@@ -30,7 +31,8 @@ export const ActionDetailsModal = memo<ActionDetailsModalProps>((props) => {
   const nav = useNavigation();
 
   // TODO: need auto detect modal content size
-  const Content = (action as any).comment || (action as any).payload ? Modal.ScrollView : Modal.Content;
+  const Content =
+    (action as any).comment || (action as any).payload ? Modal.ScrollView : Modal.Content;
   const hash = ` ${event.event_id.substring(0, 8)}`;
 
   const handlePressHash = useCallback(() => {
@@ -56,7 +58,9 @@ export const ActionDetailsModal = memo<ActionDetailsModalProps>((props) => {
       case CustomActionType.NftPurchase:
         return <NftPurchaseContent action={action} event={event} />;
       case CustomActionType.ContractDeploy:
-          return <ContractDeployContent action={action} event={event} />
+        return <ContractDeployContent action={action} event={event} />;
+      case CustomActionType.UnSubscribe:
+        return <UnSubscribeContent action={action} event={event} />;
       default:
         return null;
     }
