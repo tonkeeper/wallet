@@ -1,7 +1,7 @@
 import { modifyNftName } from '@tonkeeper/core/src/managers/NftsManager';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { t } from '@tonkeeper/shared/i18n';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
 import {
   detectReceive,
   findSenderAccount,
@@ -198,7 +198,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
 
         const isInitialized = Address.compare(data.address, input.walletAddress);
         action.iconName = isInitialized ? 'ic-donemark-28' : 'ic-gear-28';
-        action.subtitle = Address(data.address).toShort();
+        action.subtitle = Address.parse(data.address).toShort();
         action.operation = isInitialized
           ? t('transactions.wallet_initialized')
           : t('transactions.contract_deploy');
@@ -230,7 +230,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
         const data = input.action.data;
         action.iconName = 'ic-gear-28';
         action.operation = t('transactions.smartcontract_exec');
-        action.subtitle = Address(data.contract.address).toShort();
+        action.subtitle = Address.parse(data.contract.address).toShort();
         action.amount = formatter.formatNano(data.ton_attached, {
           prefix: amountPrefix,
           postfix: 'TON',
@@ -260,7 +260,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
         action.operation = t('transactions.swap');
         action.subtitle = data.user_wallet.name
           ? data.user_wallet.name
-          : Address(data.user_wallet.address).toShort();
+          : Address.parse(data.user_wallet.address).toShort();
         action.isReceive = true;
         action.amount = formatter.formatNano(data.amount_in, {
           decimals: data.jetton_master_in.decimals,

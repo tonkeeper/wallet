@@ -1,5 +1,6 @@
 export { TonAPI, useTonAPI, TonAPIProvider } from './TonAPI';
-export * from './Address';
+// export * from './Address';
+export * from './formatters/Address';
 
 export * from './utils/AmountFormatter/FiatCurrencyConfig';
 export * from './utils/AmountFormatter';

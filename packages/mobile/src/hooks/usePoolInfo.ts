@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { jettonsBalancesSelector } from '$store/jettons';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { t } from '@tonkeeper/shared/i18n';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
 
 export interface PoolDetailsItem {
   label: string;
@@ -35,7 +35,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
     if (pool.implementation === 'liquidTF' && pool.liquidJettonMaster) {
       const jetton = jettonBalances.find(
         (item) =>
-          Address(item.jettonAddress).toRaw() ===
+          Address.parse(item.jettonAddress).toRaw() ===
           pool.liquidJettonMaster,
       );
 
@@ -132,7 +132,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
       });
     }
 
-    const address = Address(pool.address);
+    const address = Address.parse(pool.address);
 
     rows.push({
       label: t('staking.details.pool_address.label'),

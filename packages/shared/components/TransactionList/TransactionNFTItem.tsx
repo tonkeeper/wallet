@@ -30,7 +30,7 @@ export const TransactionNFTItem = memo<TransactionNFTItemProps>((props) => {
       // TODO: Replace with new router
       openNftModal(address);
       // router.navigate('NFTItemDetails', {
-      //   keyPair: { currency: 'ton', address: Address(address).toFriendly() },
+      //   keyPair: { currency: 'ton', address: Address.parse(address).toFriendly() },
       // });
     }
   }, [nftAddress, nftItem?.address]);

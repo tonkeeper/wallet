@@ -8,7 +8,7 @@ import { jettonsSelector } from '$store/jettons';
 import { JettonBalanceModel } from '$store/models';
 import { useStakingStore } from '$store';
 import { shallow } from 'zustand/shallow';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
 
 export function useCurrencyToSend(
   currency: CryptoCurrency | string,
@@ -56,7 +56,7 @@ export function useCurrencyToSend(
         isLiquidJetton: stakingPools.some(
           (pool) =>
             pool.liquidJettonMaster ===
-            Address(jetton!.jettonAddress).toRaw(),
+            Address.parse(jetton!.jettonAddress).toRaw(),
         ),
       };
     } else {

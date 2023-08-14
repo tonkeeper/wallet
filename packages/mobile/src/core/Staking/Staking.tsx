@@ -18,7 +18,7 @@ import { jettonsBalancesSelector } from '$store/jettons';
 import { useSelector } from 'react-redux';
 import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
 import { Ton } from '$libs/Ton';
 
 interface Props {}
@@ -37,7 +37,7 @@ export const Staking: FC<Props> = () => {
   const poolsList = useMemo(() => {
     return pools.map((pool) => {
       const stakingJetton = jettonBalances.find(
-        (item) => Address(item.jettonAddress).toRaw() === pool.liquidJettonMaster,
+        (item) => Address.parse(item.jettonAddress).toRaw() === pool.liquidJettonMaster,
       );
 
       const balance = stakingJetton

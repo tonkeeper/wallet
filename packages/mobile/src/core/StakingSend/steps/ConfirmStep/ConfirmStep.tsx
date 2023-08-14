@@ -19,7 +19,7 @@ import { getImplementationIcon, getPoolIcon } from '$utils/staking';
 import { PoolInfo } from '@tonkeeper/core/src/legacy';
 import { stakingFormatter } from '$utils/formatter';
 import { t } from '@tonkeeper/shared/i18n';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
 
 interface Props extends StepComponentProps {
   transactionType: StakingTransactionType;
@@ -64,7 +64,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
   const isWithdrawalConfrim =
     transactionType === StakingTransactionType.WITHDRAWAL_CONFIRM;
 
-  const address = useMemo(() => Address(pool.address), [pool.address]);
+  const address = useMemo(() => Address.parse(pool.address), [pool.address]);
 
   const fiatValue = useFiatValue(
     currency,

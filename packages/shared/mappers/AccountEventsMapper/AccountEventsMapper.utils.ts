@@ -1,6 +1,6 @@
 import { AccountAddress } from '@tonkeeper/core/src/TonAPI';
 import { ActionsData } from './AccountEventsMapper.types';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
 
 export type SenderAddress = {
   /** Sender address in short format. Might be a domain, if specified */
@@ -45,15 +45,15 @@ export function getSenderAddress(senderAccount: AccountAddress): SenderAddress {
     return {
       short: senderAccount.name,
       friendly: senderAccount.name,
-      raw: Address(senderAccount.address).toRaw(),
+      raw: Address.parse(senderAccount.address).toRaw(),
     };
   }
 
-  const friendly = Address(senderAccount.address).toFriendly();
+  const friendly = Address.parse(senderAccount.address).toFriendly();
   return {
-    short: Address(friendly).toShort(),
+    short: Address.parse(friendly).toShort(),
     friendly,
-    raw: Address(senderAccount.address).toRaw(),
+    raw: Address.parse(senderAccount.address).toRaw(),
   };
 }
 

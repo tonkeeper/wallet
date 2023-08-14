@@ -14,7 +14,7 @@ export async function createTonProofForTonkeeper(
   walletStateInit: string,
 ) {
   try {
-    const address = Address(addressRaw).toRaw();
+    const address = Address.parse(addressRaw).toRaw();
     const connectApi = new ConnectApi(
       new Configuration({
         basePath: getServerConfigSafe('tonapiV2Endpoint'),

@@ -1,6 +1,6 @@
 import { AccountAddress, AccountEventDestination } from '@tonkeeper/core/src/TonAPI';
 import { List, ListSeparator, Text, copyText } from '@tonkeeper/uikit';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
 import { t } from '../../../i18n';
 import { memo } from 'react';
 
@@ -16,7 +16,7 @@ export const AddressListItem = memo<AddressListItemProps>((props) => {
   const { destination, sender, recipient, hideName, address } = props;
 
   if (destination === 'in' && sender) {
-    const senderAddress = Address(sender.address).toFriendly();
+    const senderAddress = Address.parse(sender.address).toFriendly();
 
     return (
       <>
@@ -44,7 +44,7 @@ export const AddressListItem = memo<AddressListItemProps>((props) => {
       </>
     );
   } else if (destination === 'out' && recipient) {
-    const recipientAddress = Address(recipient.address).toFriendly();
+    const recipientAddress = Address.parse(recipient.address).toFriendly();
 
     return (
       <>
@@ -74,7 +74,7 @@ export const AddressListItem = memo<AddressListItemProps>((props) => {
   }
 
   if (address) {
-    const friendlyAddress = Address(address).toFriendly();
+    const friendlyAddress = Address.parse(address).toFriendly();
 
     return (
       <List.Item

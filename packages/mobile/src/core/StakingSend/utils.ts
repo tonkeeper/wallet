@@ -7,7 +7,7 @@ import TonWeb from 'tonweb';
 import { StakingTransactionType } from './types';
 import { JettonBalanceModel } from '$store/models';
 import BigNumber from 'bignumber.js';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
 
 const { Cell } = TonWeb.boc;
 
@@ -84,7 +84,7 @@ export const getStakeSignRawMessage = async (
 ): Promise<SignRawMessage> => {
   const withdrawalFee = getWithdrawalFee(pool);
 
-  const address = Address(
+  const address = Address.parse(
     stakingJetton && transactionType !== StakingTransactionType.DEPOSIT
       ? stakingJetton.walletAddress
       : pool.address,

@@ -1,5 +1,5 @@
 import { QueryClient } from 'react-query';
-import { Address, AddressFormats } from './Address';
+import { Address, AddressFormats } from './formatters/Address';
 import { TonAPI } from './TonAPI';
 import { Vault } from './Vault';
 
@@ -76,7 +76,10 @@ export class Wallet {
       network: walletInfo.network,
     }
 
-    this.address = Address(walletInfo.address).toAll();
+    this.address = Address.parse(walletInfo.address).toAll({
+      testOnly: walletInfo.network === WalletNetwork.testnet
+    });
+    
     const context: WalletContext = {
       accountId: this.address.raw,
       queryClient: this.queryClient,

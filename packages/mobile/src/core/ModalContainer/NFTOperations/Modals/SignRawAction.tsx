@@ -14,7 +14,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { ListHeader } from '$uikit';
 import { dnsToUsername } from '$utils/dnsToUsername';
 import { useDownloadNFT } from '../useDownloadNFT';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
 
 interface Props {
   action: Action;
@@ -95,7 +95,7 @@ interface TonTransferActionProps {
 const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
   const { action, skipHeader, totalFee } = props;
   const amount = Ton.formatAmount(action.amount);
-  const address = Address(action.recipient.address).toAll();
+  const address = Address.parse(action.recipient.address).toAll();
 
   return (
     <>
@@ -156,7 +156,7 @@ const NftItemTransferAction = React.memo<NftItemTransferActionProps>((props) => 
   const { action, totalFee } = props;
   const item = useDownloadNFT(action.nft);
   const address = action.recipient
-    ? Address(action.recipient.address).toAll()
+    ? Address.parse(action.recipient.address).toAll()
     : {
         short: '',
         friendly: '',
@@ -363,7 +363,7 @@ interface UnknownActionProps {
 }
 
 const UnknownAction = React.memo<UnknownActionProps>(({ action, skipHeader }) => {
-  const address = Address(action.address).toAll();
+  const address = Address.parse(action.address).toAll();
   const amount = Ton.formatAmount(action.amount);
 
   return (
