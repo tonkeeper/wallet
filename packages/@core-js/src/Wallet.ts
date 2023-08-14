@@ -10,21 +10,21 @@ import { SubscriptionsManager } from './managers/SubscriptionsManager';
 import { JettonsManager } from './managers/JettonsManager';
 import { BalanceManager } from './managers/BalanceManager';
 
-enum Network {
+export enum WalletNetwork {
   mainnet = -239,
   testnet = -3,
 }
 
-enum WalletKind {
-  Regular,
-  Lockup,
-  WatchOnly,
+export enum WalletKind {
+  Regular = 'Regular',
+  Lockup = 'Lockup',
+  WatchOnly = 'WatchOnly',
 }
 
 type WalletIdentity = {
-  network: Network;
+  network: WalletNetwork;
   kind: WalletKind;
-  id: () => string;
+  // id: string;
 };
 
 enum Currency {
@@ -52,7 +52,7 @@ export type WalletContext = {
 };
 
 export class Wallet {
-  public identity: WalletIdentity | null = null;
+  public identity: WalletIdentity;
   public address: AddressFormats;
 
   public listener: SSEListener | null = null;
@@ -70,6 +70,12 @@ export class Wallet {
     private sse: SSEManager,
     walletInfo: any,
   ) {
+
+    this.identity = {
+      kind: WalletKind.Regular,
+      network: walletInfo.network,
+    }
+
     this.address = Address(walletInfo.address).toAll();
     const context: WalletContext = {
       accountId: this.address.raw,

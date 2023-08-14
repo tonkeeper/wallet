@@ -1,7 +1,7 @@
 import EventSource, { EventType } from 'react-native-sse';
 import { QueryClient } from 'react-query';
 import { Address } from './Address';
-import { Wallet } from './Wallet';
+import { Wallet, WalletNetwork } from './Wallet';
 import { TonAPI } from './TonAPI';
 import { Vault } from './Vault';
 
@@ -68,12 +68,13 @@ export class Tonkeeper {
     this.permissions = new PermissionsManager();
   }
 
-  public async init(address: string) {
+  public async init(address: string, isTestnet: boolean) {
     try {
       this.destroy();
       if (address) {
         if (Address.isValid(address)) {
           this.wallet = new Wallet(this.queryClient, this.tonapi, this.vault, this.sse, {
+            network: isTestnet ? WalletNetwork.testnet : WalletNetwork.testnet,
             address: address,
           });
 
