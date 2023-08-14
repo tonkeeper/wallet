@@ -58,7 +58,6 @@ export const StakingPools: FC<Props> = (props) => {
 
   const jettonBalances = useSelector(jettonsBalancesSelector);
 
-  
   const nav = useNavigation();
   const { bottom: bottomInset } = useSafeAreaInsets();
 
@@ -67,19 +66,24 @@ export const StakingPools: FC<Props> = (props) => {
   const list = useMemo(() => {
     return pools.map((pool) => {
       const stakingJetton = jettonBalances.find(
-        (item) =>
-          Address(item.jettonAddress).toRaw() ===
-          pool.liquidJettonMaster,
+        (item) => Address(item.jettonAddress).toRaw() === pool.liquidJettonMaster,
       );
 
       const balance = stakingJetton
         ? new BigNumber(stakingJetton.balance)
         : calculatePoolBalance(pool, stakingInfo);
 
+      const pendingWithdrawal = stakingInfo[pool.address]?.pendingWithdraw;
+
       return {
         ...pool,
         stakingJetton,
-        balance: balance.isGreaterThan(0) ? balance.toString() : undefined,
+        isWithdrawal: balance.isEqualTo(0) && !!pendingWithdrawal,
+        balance: balance.isGreaterThan(0)
+          ? balance.toString()
+          : pendingWithdrawal
+          ? Ton.fromNano(pendingWithdrawal)
+          : undefined,
       };
     });
   }, [jettonBalances, pools, stakingInfo]);
@@ -143,6 +147,7 @@ export const StakingPools: FC<Props> = (props) => {
                   id={pool.address}
                   name={pool.name}
                   balance={pool.balance}
+                  isWithdrawal={pool.isWithdrawal}
                   stakingJetton={pool.stakingJetton}
                   description={t('staking.staking_pool_desc', {
                     apy: pool.apy.toFixed(2),
