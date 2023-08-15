@@ -8,6 +8,9 @@ import {
 } from '../TonAPI';
 
 export class TransactionsManager {
+  private readonly refetchTime = 15000;
+  private refetchTimer: NodeJS.Timeout | null = null;
+
   public persisted = undefined;
 
   constructor(private ctx: WalletContext) {}
@@ -19,7 +22,7 @@ export class TransactionsManager {
   public async preload() {}
 
   public getCachedAction(txId: string) {
-    const { eventId, actionIndex } = this.txIdToActionId(txId);    
+    const { eventId, actionIndex } = this.txIdToActionId(txId);
     const event = this.ctx.queryClient.getQueryData<AccountEvent>([
       'account_event',
       eventId,
@@ -40,8 +43,12 @@ export class TransactionsManager {
       limit: 50,
     });
 
-    data.events.map((event) => {
+    data.events.map((event, index) => {
       this.ctx.queryClient.setQueryData(['account_event', event.event_id], event);
+
+      if (index === 0 && event.in_progress) {
+        this.setTimerForRefetch();
+      }
     });
 
     return data;
@@ -70,6 +77,7 @@ export class TransactionsManager {
   }
 
   public async refetch() {
+    this.clearRefetchTimer();
     return this.ctx.queryClient.refetchQueries({
       refetchPage: (_, index) => index === 0,
       queryKey: this.cacheKey,
@@ -84,7 +92,6 @@ export class TransactionsManager {
       ...rawAction,
       ...rawAction[rawAction.type],
     };
-    
 
     const destination = this.defineDestination(this.ctx.accountId, action);
 
@@ -117,5 +124,19 @@ export class TransactionsManager {
     const eventId = ids[0];
 
     return { eventId, actionIndex };
+  }
+
+  private setTimerForRefetch() {
+    this.clearRefetchTimer();
+    this.refetchTimer = setTimeout(() => {
+      this.refetch();
+      this.refetchTimer = null;
+    }, this.refetchTime);
+  }
+
+  private clearRefetchTimer() {
+    if (this.refetchTimer !== null) {
+      clearTimeout(this.refetchTimer);
+    }
   }
 }
