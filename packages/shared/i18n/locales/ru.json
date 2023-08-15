@@ -399,7 +399,7 @@
   },
 
   "transactionDetails": {
-    "received_date": "Получено  %{time}",
+    "received_date": "Получено %{time}",
     "sent_date": "Отправлено %{time}",
     "swapped_date": "Обмен %{time}",
     "purchase_date": "Покупка %{time}",

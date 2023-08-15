@@ -163,6 +163,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
         action.iconName = arrowIcon;
         action.operation = sendOrReceiveTitle;
         action.subtitle = senderAddress;
+        action.comment = data.comment?.trim();
         action.amount = formatter.formatNano(data.amount, {
           decimals: data.jetton.decimals,
           postfix: data.jetton?.symbol,
