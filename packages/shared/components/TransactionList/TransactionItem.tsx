@@ -116,7 +116,7 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
         }
         leftContent={
           <Animated.View style={[styles.icon.static, backgroundStyle]}>
-            {!!item.picture ? (
+            {/* {!!item.picture ? (
               <FastImage
                 resizeMode="cover"
                 source={{
@@ -125,7 +125,7 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
                 style={{ width: 44, height: 44, borderRadius: 44 / 2 }}
               />
             ) : (
-              <>
+              <> */}
                 {item.iconName && <Icon name={item.iconName} color="iconSecondary" />}
                 {item.inProgress && (
                   <View style={styles.sendingOuter}>
@@ -134,8 +134,8 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
                     </View>
                   </View>
                 )}
-              </>
-            )}
+              {/* </>
+            )} */}
           </Animated.View>
         }
         content={
