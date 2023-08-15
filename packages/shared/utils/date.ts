@@ -69,7 +69,7 @@ export function formatTransactionTime(date: Date) {
   const shortMonth = formatDate(date, 'MMM').replace('.', '') + ',';
   const month = i18n.locale === 'en' ? capitalizeFirstLetter(shortMonth) : shortMonth;
   const time = formatDate(date, 'HH:mm');
-  const day = formatDate(date, 'dd');
+  const day = formatDate(date, 'd');
 
   if (isThisMonth(date)) {
     return time;
@@ -82,7 +82,7 @@ export function formatTransactionDetailsTime(date: Date) {
   const shortMonth = formatDate(date, 'MMM').replace('.', '') + ',';
   const month = i18n.locale === 'en' ? capitalizeFirstLetter(shortMonth) : shortMonth;
   const time = formatDate(date, 'HH:mm');
-  const day = formatDate(date, 'dd');
+  const day = formatDate(date, 'd');
   const year = formatDate(date, 'yyyy');
 
 
