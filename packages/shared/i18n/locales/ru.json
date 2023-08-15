@@ -927,5 +927,8 @@
   },
   "choose_country": {
     "title": "Выберите вашу страну"
+  },
+  "exchange": {
+    "not_exists": "TODO"
   }
 }
