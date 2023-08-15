@@ -109,6 +109,7 @@ export const IconList = {
   'ic-exclamationmark-circle-84': require('../../../assets/icons/png/ic-exclamationmark-circle-84.png'),
   'ic-settings-84': require('../../../assets/icons/png/ic-settings-84.png'),
   'globe-96': require('../../../assets/icons/png/globe-96.png'),
+  'ic-ton-96': require('../../../assets/icons/png/ic-ton-96.png'),
   'ic-loader-large-32': require('../../../assets/icons/png/ic-loader-large-32.png'),
   'ic-loader-medium-24': require('../../../assets/icons/png/ic-loader-medium-24.png'),
   'ic-loader-xlarge-64': require('../../../assets/icons/png/ic-loader-xlarge-64.png'),

@@ -23,7 +23,7 @@ import { copyText } from '$hooks/useCopyText';
 import { useIsFocused } from '@react-navigation/native';
 import { useBalance } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
-import { TonIcon } from '../../components/TonIcon';
+import { TonIcon } from '@tonkeeper/uikit';
 import { CryptoCurrencies } from '$shared/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Tabs } from './components/Tabs';

@@ -109,6 +109,7 @@ export type IconNames =
   | 'ic-exclamationmark-circle-84'
   | 'ic-settings-84'
   | 'globe-96'
+  | 'ic-ton-96'
   | 'ic-loader-large-32'
   | 'ic-loader-medium-24'
   | 'ic-loader-xlarge-64'
@@ -225,6 +226,7 @@ export const AllIcons = [
   'ic-exclamationmark-circle-84',
   'ic-settings-84',
   'globe-96',
+  'ic-ton-96',
   'ic-loader-large-32',
   'ic-loader-medium-24',
   'ic-loader-xlarge-64',
@@ -342,6 +344,7 @@ export const IconSizes = {
   'ic-exclamationmark-circle-84': 84,
   'ic-settings-84': 84,
   'globe-96': 96,
+  'ic-ton-96': 96,
   'ic-loader-large-32': 32,
   'ic-loader-medium-24': 24,
   'ic-loader-xlarge-64': 64,

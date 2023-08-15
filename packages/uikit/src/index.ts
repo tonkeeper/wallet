@@ -3,7 +3,7 @@ export { TouchableOpacity } from './components/TouchableOpacity';
 export { IconButtonList } from './components/IconButtonList';
 export { IconButton } from './components/IconButton';
 export { Icon, IconNames } from './components/Icon';
-export { TonIcon } from './components/TonIcon';
+export { TonIcon, TonIconProps } from './components/TonIcon';
 export { Lottie } from './components/Lottie';
 export { Button } from './components/Button';
 export { Spacer } from './components/Spacer';

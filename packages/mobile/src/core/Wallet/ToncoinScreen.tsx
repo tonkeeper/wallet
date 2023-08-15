@@ -23,7 +23,7 @@ import { formatter } from '$utils/formatter';
 import { Toast } from '$store';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { TonIcon } from '../../components/TonIcon';
+import { TonIcon } from '@tonkeeper/uikit';
 import { Icon, IconNames, Screen } from '@tonkeeper/uikit';
 
 import { TransactionsList } from '@tonkeeper/shared/components';
