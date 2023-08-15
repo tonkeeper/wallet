@@ -68,7 +68,7 @@ export const DetailedNftItem = memo<DetailedNftItemProps>((props) => {
                 {isDNS ? 'TON DNS' : nft.collection.name}
               </HideableAmount>
               {nft?.approved_by.length > 0 ? (
-                <Icon style={{ marginLeft: 4 }} name="ic-verification-secondary-16" />
+                <Icon style={{ marginLeft: 4 }} name="ic-verification-secondary-16" color="iconSecondary" />
               ) : null}
             </View>
           ) : null}
