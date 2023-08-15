@@ -10,3 +10,4 @@ export { useModalBehavior } from './context/ModalBehaviorContext';
 export { useFocusEffect } from './hooks/useFocusEffect';
 
 export { navigation } from './imperative';
+export { useTabPress } from './hooks/useTabPress';
