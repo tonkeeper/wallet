@@ -54,8 +54,8 @@ export const useJettonBalances = (withZeroBalances?: boolean) => {
     if (sortedJettons) {
       balances.enabled = balances.enabled.sort(
         (a, b) =>
-          sortedJettons.indexOf(Address(a.jettonAddress).toRaw()) -
-          sortedJettons.indexOf(Address(b.jettonAddress).toRaw()),
+          sortedJettons.indexOf(Address.parse(a.jettonAddress).toRaw()) -
+          sortedJettons.indexOf(Address.parse(b.jettonAddress).toRaw()),
       );
     }
 

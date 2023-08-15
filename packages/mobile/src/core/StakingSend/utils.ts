@@ -51,7 +51,7 @@ export const createLiquidTfWithdrawStakeCell = async (amount: BN, address: strin
   payload.bits.writeUint(0x595f07bc, 32);
   payload.bits.writeUint(getRandomQueryId(), 64); // Query ID
   payload.bits.writeCoins(amount); // Amount
-  payload.bits.writeAddress(Address(address).toTonWeb());
+  payload.bits.writeAddress(Address.parse(address).toTonWeb());
   payload.bits.writeBit(1);
   payload.refs.push(customPayload);
 
