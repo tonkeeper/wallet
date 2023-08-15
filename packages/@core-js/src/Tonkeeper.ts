@@ -74,7 +74,7 @@ export class Tonkeeper {
       if (address) {
         if (Address.isValid(address)) {
           this.wallet = new Wallet(this.queryClient, this.tonapi, this.vault, this.sse, {
-            network: isTestnet ? WalletNetwork.testnet : WalletNetwork.testnet,
+            network: isTestnet ? WalletNetwork.testnet : WalletNetwork.mainnet,
             address: address,
           });
 
@@ -163,6 +163,7 @@ export class Tonkeeper {
 
   public destroy() {
     this.wallet?.destroy();
+    this.queryClient.clear();
     this.wallet = null!;
   }
 }
