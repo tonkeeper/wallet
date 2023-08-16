@@ -15,7 +15,6 @@ import {
 import { mainActions } from '$store/main';
 import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
 import {
-
   openAccessConfirmation,
   openBackupWords,
   openCreatePin,
@@ -55,11 +54,17 @@ import {
   setLastRefreshedAt,
   setMigrationState,
 } from '$database';
-import { batchActions, Toast, useNotificationsStore, useStakingStore } from '$store';
+import {
+  batchActions,
+  Toast,
+  useConnectedAppsStore,
+  useNotificationsStore,
+  useStakingStore,
+} from '$store';
 import { subscriptionsActions } from '$store/subscriptions';
 import { t } from '@tonkeeper/shared/i18n';
 import { initHandler } from '$store/main/sagas';
-import { getTokenConfig, getWalletName } from '$shared/dynamicConfig';
+import { getChainName, getTokenConfig, getWalletName } from '$shared/dynamicConfig';
 import { withRetryCtx } from '$store/retry';
 import { Cache } from '$store/events/manager/cache';
 import { destroyEventsManager } from '$store/events/sagas';
@@ -150,7 +155,6 @@ function* createWalletWorker(action: CreateWalletAction) {
     const addr = yield call([wallet.ton, 'getAddress']);
     yield call([tk, 'init'], addr);
     onDone();
-    
 
     yield call(trackEvent, 'create_wallet');
   } catch (e) {
@@ -600,7 +604,11 @@ function* cleanWalletWorker() {
     yield call(clearSubscribeStatus);
     yield call(JettonsCache.clearAll, walletName);
     yield call(useJettonEventsStore.getState().actions.clearStore);
-
+    yield call(
+      useConnectedAppsStore.getState().actions.unsubscribeFromAllNotifications,
+      getChainName(),
+      wallet.address.friendlyAddress,
+    );
     if (isNewFlow) {
       try {
         yield call([wallet.vault, 'clean']);

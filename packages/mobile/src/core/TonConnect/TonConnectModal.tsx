@@ -43,7 +43,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   const unlockVault = useUnlockVault();
   const theme = useTheme();
   const nav = useNavigation();
-  const [withNotifications, setWithNotifications] = React.useState(false);
+  const [withNotifications, setWithNotifications] = React.useState(true);
 
   const { version } = useSelector(walletSelector);
   const { isTestnet } = useSelector(mainSelector);
