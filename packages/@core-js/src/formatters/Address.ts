@@ -43,7 +43,7 @@ export class Address {
     return new Address(source, options);
   }
 
-  static toShort(address: string, symbolsInPart: number = 4) {
+  static toShort(address?: string, symbolsInPart: number = 4) {
     if (!address) {
       address = '';
     }

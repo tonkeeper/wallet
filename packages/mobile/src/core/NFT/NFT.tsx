@@ -37,19 +37,20 @@ import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { Address } from '@tonkeeper/core';
 import { NftItem } from '@tonkeeper/core/src/TonAPI';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { CryptoCurrencies } from '$shared/constants';
+import TonWeb from 'tonweb';
+import { CustomNftItem } from '@tonkeeper/core/src/TonAPI/CustomNftItems';
 
-export const NFT: React.FC<NFTProps> = ({ route }) => {
-  const { address: nftAddress } = route.params.keyPair;
+export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
+  const { address: nftAddress } = route?.params?.keyPair || {};
+
   const flags = useFlags(['disable_nft_markets', 'disable_apperance']);
   const hiddenAmounts = usePrivacyStore((state) => state.hiddenAmounts);
   const dispatch = useDispatch();
   const nav = useNavigation();
   const address = useSelector(walletAddressSelector);
-  const nftFromHistory = useNFT(route.params.keyPair);
-  const [nft, setNft] = useState(nftFromHistory);
-
-  // const { data: nftFromHistory } = useNftItemByAddress(nftAddress);
-  // const [nft, setNft] = useState(nftFromHistory!);
+  const nftFromHistory = useNFT({ currency: 'ton', address: nftAddress });
+  const [nft, setNft] = useState(nftFromHistory ?? oldNftItem);
 
   const [expiringAt, setExpiringAt] = useState(0);
   const [lastFill, setLastFill] = useState(0);
@@ -287,23 +288,20 @@ export const NFT: React.FC<NFTProps> = ({ route }) => {
 };
 
 export async function openNftModal(nftAddress: string, nftItem?: NftItem) {
-  const openModal = (nftItem: NftItem) => {
-    navigation.push('SheetsProvider', {
-      $$action: SheetActions.ADD,
-      component: NFT,
-      params: { nftItem },
-      path: 'NFT_MODAL',
-    });
+  const openModal = (nftItem: CustomNftItem) => {
+    // TODO: change me
+    const oldNftItem = mapNewNftToOldNftData(nftItem, tk.wallet.address.friendly);
+    navigation.push('NFTItemDetails', { oldNftItem });
   };
 
   try {
     const cachedNftItem = tk.wallet.nfts.getCachedByAddress(nftAddress, nftItem);
     if (cachedNftItem) {
-      // openModal(cachedNftItem);
+      openModal(cachedNftItem);
     } else {
       Toast.loading();
       const item = await tk.wallet.nfts.fetchByAddress(nftAddress);
-      // openModal(item);
+      openModal(item);
       Toast.hide();
     }
   } catch (err) {
@@ -311,3 +309,39 @@ export async function openNftModal(nftAddress: string, nftItem?: NftItem) {
     Toast.fail('Error load nft');
   }
 }
+
+const mapNewNftToOldNftData = (nftItem: NftItem, walletFriendlyAddress): NFTModel => {
+  const address = new TonWeb.utils.Address(nftItem.address).toString(true, true, true);
+  const ownerAddress =
+    (nftItem.owner?.address &&
+      new TonWeb.utils.Address(nftItem.owner.address).toString(true, true, true)) ||
+    '';
+  const name =
+    typeof nftItem.metadata?.name === 'string'
+      ? nftItem.metadata.name.trim()
+      : nftItem.metadata?.name;
+
+  const baseUrl = (nftItem.previews &&
+    nftItem.previews.find((preview) => preview.resolution === '500x500')!.url)!;
+
+  return {
+    ...nftItem,
+    ownerAddressToDisplay: nftItem.sale ? walletFriendlyAddress : undefined,
+    isApproved: !!nftItem.approved_by?.length ?? false,
+    internalId: `${CryptoCurrencies.Ton}_${address}`,
+    currency: CryptoCurrencies.Ton,
+    provider: 'TonProvider',
+    content: {
+      image: {
+        baseUrl,
+      },
+    },
+    description: nftItem.metadata?.description,
+    marketplaceURL: nftItem.metadata?.marketplace && nftItem.metadata?.external_url,
+    attributes: nftItem.metadata?.attributes,
+    address,
+    name,
+    ownerAddress,
+    collection: nftItem.collection,
+  };
+};

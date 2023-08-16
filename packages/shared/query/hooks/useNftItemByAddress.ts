@@ -1,6 +1,6 @@
-import { NftItem } from '../TonAPI/TonAPIGenerated';
+import { NftItem } from '@tonkeeper/core/src/TonAPI/TonAPIGenerated';
 import { useQuery } from 'react-query';
-import { useTonAPI } from '../TonAPI';
+import { tk } from '../../tonkeeper';
 
 type UseNftItemByAddressOptions = {
   existingNft?: NftItem;
@@ -10,19 +10,23 @@ export const useNftItemByAddress = (
   nftAddress?: string,
   options: UseNftItemByAddressOptions = {},
 ) => {
-  const tonapi = useTonAPI();
   const cacheKey = nftAddress ?? options.existingNft?.address;
 
   return useQuery({
     enabled: !!cacheKey,
     queryKey: ['nfts', cacheKey],
-    initialData: options.existingNft,
+    initialData: options.existingNft
+      ? tk.wallet.nfts.makeCustomNftItem(options.existingNft)
+      : undefined,
     cacheTime: Infinity,
     queryFn: async () => {
       if (options.existingNft) {
-        return options.existingNft;
+        return tk.wallet.nfts.getCachedByAddress(
+          options.existingNft.address,
+          options.existingNft,
+        );
       } else {
-        return await tonapi.nfts.getNftItemByAddress(nftAddress!);
+        return tk.wallet.nfts.fetchByAddress(nftAddress!);
       }
     },
   });

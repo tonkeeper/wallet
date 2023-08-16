@@ -1,12 +1,9 @@
-import { useNftItemByAddress } from '@tonkeeper/core/src/query/useNftItemByAddress';
-import { Steezy, View, Text, Icon } from '@tonkeeper/uikit';
+import { useNftItemByAddress } from '../../query/hooks/useNftItemByAddress';
+import { Steezy, View, Text, Icon, Picture } from '@tonkeeper/uikit';
 import { NftItem } from '@tonkeeper/core/src/TonAPI';
 import { ViewStyle, Pressable } from 'react-native';
-import { memo, useCallback, useMemo } from 'react';
-import FastImage from 'react-native-fast-image';
+import { memo, useCallback } from 'react';
 import Animated from 'react-native-reanimated';
-import { useRouter } from '@tonkeeper/router';
-import { Address } from '@tonkeeper/core';
 import { t } from '../../i18n';
 
 import { openNftModal } from '@tonkeeper/mobile/src/core/NFT/NFT';
@@ -19,7 +16,6 @@ interface TransactionNFTItemProps {
 
 export const TransactionNFTItem = memo<TransactionNFTItemProps>((props) => {
   const { nftAddress, nftItem } = props;
-  const router = useRouter();
   const { data: nft } = useNftItemByAddress(props.nftAddress, {
     existingNft: nftItem,
   });
@@ -27,50 +23,28 @@ export const TransactionNFTItem = memo<TransactionNFTItemProps>((props) => {
   const handlePress = useCallback(() => {
     const address = nftAddress ?? nftItem?.address;
     if (address) {
-      // TODO: Replace with new router
       openNftModal(address);
-      // router.navigate('NFTItemDetails', {
-      //   keyPair: { currency: 'ton', address: Address.parse(address).toFriendly() },
-      // });
     }
   }, [nftAddress, nftItem?.address]);
 
-  const imagesSource = useMemo(() => {
-    // TODO: Replace with NftMapper
-    const image = nft?.previews?.find((preview) => preview.resolution === '100x100');
-
-    return { uri: image?.url };
-  }, [nft]);
-
   if (nft) {
-    // TODO: Replace with NftMapper
-    const isTG = nft.dns?.endsWith('.t.me');
-    const isDNS = !!nft.dns && !isTG;
-    const name = (isDNS && nft.dns) || nft.metadata.name || Address.toShort(nft.address);
-
-    const collectionName = isDNS
-      ? 'TON DNS'
-      : nft?.collection
-      ? nft.collection.name
-      : t('nft_single_nft');
-
     return (
       <Pressable onPress={handlePress} style={styles.container.static}>
         <Animated.View style={[styles.item.static, props.highlightStyle]}>
           <View style={styles.pictureContainer}>
-            <FastImage
-              resizeMode="cover"
-              source={imagesSource}
-              style={styles.picture.static}
+            <Picture
+              preview={nft.image.preview}
+              uri={nft.image.small}
+              style={styles.picture}
             />
           </View>
           <View style={styles.infoContainer}>
             <Text type="body2" numberOfLines={1}>
-              {name}
+              {nft.name}
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text type="body2" color="textSecondary" numberOfLines={1}>
-                {collectionName}
+                {nft.collection?.name || t('nft_single_nft')}
               </Text>
               {nft.approved_by.length > 0 && (
                 <Icon
@@ -120,8 +94,8 @@ const styles = Steezy.create(({ colors, corners }) => ({
   picture: {
     width: 64,
     height: 64,
-    borderBottomLeftRadius: 12, //corners.small,
-    borderTopLeftRadius: 12, //corners.small,
+    borderBottomLeftRadius: corners.small,
+    borderTopLeftRadius: corners.small,
   },
   infoContainer: {
     paddingHorizontal: 12,

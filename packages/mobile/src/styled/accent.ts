@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { SvgProps } from 'react-native-svg';
 import { COMMON_COLORS } from './colors';
 import defaultIcon from '$assets/accent/default.svg';
@@ -14,7 +13,7 @@ import fluidIcon from '$assets/accent/fluid.svg';
 import galaxyIcon from '$assets/accent/galaxy.svg';
 import cosmosIcon from '$assets/accent/cosmos.svg';
 import andromedaIcon from '$assets/accent/andromeda.svg';
-import { NFTModel, TonDiamondMetadata } from '$store/models';
+import { CustomNftItem } from '@tonkeeper/core/src/TonAPI/CustomNftItems';
 
 export type AccentNFTIconSize = 'large' | 'medium' | 'small';
 
@@ -25,7 +24,7 @@ export interface AccentNFTIcon {
 
 export interface AccentModel {
   id: AccentKey;
-  icon: FC<SvgProps>;
+  icon: React.ComponentType<SvgProps>;
   nftIcon?: AccentNFTIcon;
   colors: {
     accentPrimary: string;
@@ -167,7 +166,7 @@ export const AppearanceAccents: Record<AccentKey, AccentModel> = {
   },
 };
 
-export const getAccentIdByDiamondsNFT = (nft: NFTModel<TonDiamondMetadata>) => {
+export const getAccentIdByDiamondsNFT = (nft: CustomNftItem) => {
   switch (nft.metadata.theme.main) {
     case '#509FFA':
       return AccentKey.sky;

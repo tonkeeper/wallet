@@ -19,6 +19,7 @@ export { StepIndicator } from './components/StepIndicator';
 export { RefreshControl } from './components/RefreshControl';
 export { Toast } from './components/Toast';
 export { FastImage } from './components/FastImage';
+export { Picture } from './components/Picture';
 
 // Containers
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';
