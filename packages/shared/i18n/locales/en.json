@@ -913,5 +913,8 @@
   },
   "choose_country": {
     "title": "Choose your country"
+  },
+  "exchange": {
+    "not_exists": "Invalid exchange ID"
   }
 }
