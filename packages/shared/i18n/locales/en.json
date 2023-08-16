@@ -915,6 +915,6 @@
     "title": "Choose your country"
   },
   "exchange": {
-    "not_exists": "TODO"
+    "not_exists": "Invalid exchange ID"
   }
 }
