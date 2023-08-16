@@ -57,7 +57,7 @@ export const ScreenScrollList = memo<ScreenScrollListProps>(
     const HeaderComponent = (
       <Fragment>
         <Animated.View style={headerOffsetStyle} />
-        {ListHeaderComponent as any}
+        {typeof ListHeaderComponent === 'function' ? ListHeaderComponent() : ListHeaderComponent as any}
       </Fragment>
     );
 
