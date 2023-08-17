@@ -1,5 +1,6 @@
 {
   "react-native": {
-    "crashlytics_debug_enabled": true
+    "crashlytics_debug_enabled": true,
+    "messaging_ios_foreground_presentation_options": ["badge", "sound", "list", "banner"]
   }
 }
