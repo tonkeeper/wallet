@@ -27,6 +27,7 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
+import { useFlag } from '$utils/flags';
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPoolDetails>;
@@ -38,6 +39,8 @@ export const StakingPoolDetails: FC<Props> = (props) => {
       params: { poolAddress },
     },
   } = props;
+
+  const tonstakersBeta = useFlag('tonstakers_beta');
 
   const pool = useStakingStore((s) => getStakingPoolByAddress(s, poolAddress), shallow);
   const poolStakingInfo = useStakingStore((s) => s.stakingInfo[pool.address], shallow);
@@ -68,7 +71,9 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     handleConfirmWithdrawalPress,
   } = usePoolInfo(pool, poolStakingInfo);
 
-  const [detailsVisible, setDetailsVisible] = useState(!hasDeposit && !hasPendingDeposit);
+  const hasAnyBalance = hasDeposit || hasPendingDeposit;
+
+  const [detailsVisible, setDetailsVisible] = useState(!hasAnyBalance);
 
   const handleDetailsButtonPress = useCallback(() => setDetailsVisible(true), []);
 
@@ -110,6 +115,18 @@ export const StakingPoolDetails: FC<Props> = (props) => {
           showsVerticalScrollIndicator={false}
         >
           <S.Content>
+            {!hasAnyBalance && provider.id === 'liquidTF' && provider.url ? (
+              <>
+                <StakingWarning
+                  title={`${pool.name} Beta`}
+                  name={pool.name}
+                  url={provider.url}
+                  beta={tonstakersBeta}
+                  accent={true}
+                />
+                <Spacer y={16} />
+              </>
+            ) : null}
             <S.BalanceContainer>
               <Text variant="label1">{t('staking.details.balance')}</Text>
               <S.BalanceRight>
@@ -203,6 +220,17 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                 <S.TitleContainer>
                   <Text variant="label1">{t('staking.details.about_pool')}</Text>
                 </S.TitleContainer>
+                {hasAnyBalance && provider.id === 'liquidTF' && provider.url ? (
+                  <>
+                    <StakingWarning
+                      title={`${pool.name} Beta`}
+                      name={pool.name}
+                      url={provider.url}
+                      beta={tonstakersBeta}
+                    />
+                    <Spacer y={16} />
+                  </>
+                ) : null}
                 <S.Table>
                   {infoRows.map((item, i) => [
                     <React.Fragment key={item.label}>
@@ -225,12 +253,6 @@ export const StakingPoolDetails: FC<Props> = (props) => {
               </S.DetailsButtonContainer>
             )}
             <Spacer y={16} />
-            {provider.poolsCount === 1 && provider.url ? (
-              <>
-                <StakingWarning provider={provider} />
-                <Spacer y={16} />
-              </>
-            ) : null}
           </S.Content>
           <BottomButtonWrapHelper />
         </Animated.ScrollView>

@@ -809,6 +809,7 @@
     "warning": {
       "title": "Warning",
       "desc": "Staking based on third-party smart contracts. We are not responsible for their work.",
+      "beta_desc": "We are not responsible for the stability and staking experience. Use at your own risk.",
       "about": "About %{name}"
     },
     "details": {
