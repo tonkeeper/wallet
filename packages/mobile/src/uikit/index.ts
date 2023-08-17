@@ -46,3 +46,4 @@ export { SwapIcon } from './SwapIcon/SwapIcon';
 export { Checkbox } from './Checkbox';
 export { DominantColorBackground } from './DominantColorBackground/DominantColorBackground';
 export { SpoilerView } from './SpoilerView';
+export { Tag } from './Tag';

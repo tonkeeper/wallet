@@ -91,7 +91,7 @@ export const StakingPools: FC<Props> = (props) => {
           <S.Content bottomInset={bottomInset}>
             {provider.url ? (
               <>
-                <StakingWarning provider={provider} />
+                <StakingWarning name={provider.name} url={provider.url} />
                 <Spacer y={16} />
               </>
             ) : null}

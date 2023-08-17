@@ -2,8 +2,9 @@ import styled from '$styled';
 import { Highlight } from '$uikit';
 import { ns } from '@tonkeeper/uikit';
 
-export const WarningContainer = styled.View`
-  background: ${({ theme }) => theme.colors.backgroundTertiary};
+export const WarningContainer = styled.View<{ beta?: boolean }>`
+  background: ${({ theme, beta }) =>
+    beta ? theme.colors.accentOrange : theme.colors.backgroundTertiary};
   border-radius: ${ns(16)}px;
   overflow: hidden;
 `;
