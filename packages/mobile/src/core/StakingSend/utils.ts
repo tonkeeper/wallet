@@ -38,6 +38,7 @@ export const createLiquidTfAddStakeCommand = async () => {
   const command = new Cell();
   command.bits.writeUint(0x47d54391, 32);
   command.bits.writeUint(getRandomQueryId(), 64); // Query ID
+  command.bits.writeUint(0x000000000005b7ce, 64); // App ID
 
   return encodeBytes(await command.toBoc());
 };
