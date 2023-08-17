@@ -163,7 +163,12 @@ const AmountInputComponent: React.FC<Props> = (props) => {
       transform: [
         {
           scale: withSpring(
-            interpolate(value.length, [9, 18], [1, 0.6], Extrapolation.CLAMP),
+            interpolate(
+              value.length + Math.max(mainCurrencyCode.length - 3, 0),
+              [9, 21, 30, 40],
+              [1, 0.6, 0.5, 0.4],
+              Extrapolation.CLAMP,
+            ),
           ),
         },
       ],
