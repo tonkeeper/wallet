@@ -33,6 +33,8 @@ interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPoolDetails>;
 }
 
+const TONSTAKERS_URL = 'https://tonstakers.com';
+
 export const StakingPoolDetails: FC<Props> = (props) => {
   const {
     route: {
@@ -115,12 +117,12 @@ export const StakingPoolDetails: FC<Props> = (props) => {
           showsVerticalScrollIndicator={false}
         >
           <S.Content>
-            {!hasAnyBalance && provider.id === 'liquidTF' && provider.url ? (
+            {!hasAnyBalance && provider.id === 'liquidTF' ? (
               <>
                 <StakingWarning
                   title={`${pool.name} Beta`}
                   name={pool.name}
-                  url={provider.url}
+                  url={TONSTAKERS_URL}
                   beta={tonstakersBeta}
                   accent={true}
                 />
@@ -220,12 +222,12 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                 <S.TitleContainer>
                   <Text variant="label1">{t('staking.details.about_pool')}</Text>
                 </S.TitleContainer>
-                {hasAnyBalance && provider.id === 'liquidTF' && provider.url ? (
+                {hasAnyBalance && provider.id === 'liquidTF' ? (
                   <>
                     <StakingWarning
                       title={`${pool.name} Beta`}
                       name={pool.name}
-                      url={provider.url}
+                      url={TONSTAKERS_URL}
                       beta={tonstakersBeta}
                     />
                     <Spacer y={16} />
