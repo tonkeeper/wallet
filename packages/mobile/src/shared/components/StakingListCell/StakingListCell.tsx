@@ -1,7 +1,7 @@
 import { useFiatValue } from '$hooks/useFiatValue';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { Steezy } from '$styles';
-import { Icon, Separator, View } from '$uikit';
+import { Icon, Separator, Tag, View } from '$uikit';
 import { stakingFormatter } from '$utils/formatter';
 import React, { FC, memo, useCallback } from 'react';
 import { ImageRequireSource } from 'react-native';
@@ -21,6 +21,7 @@ interface Props {
   isWidget?: boolean;
   numberOfLines?: number;
   isWithdrawal?: boolean;
+  beta?: boolean;
   onPress?: (id: string, name: string) => void;
 }
 
@@ -36,6 +37,7 @@ const StakingListCellComponent: FC<Props> = (props) => {
     isWidget,
     numberOfLines,
     isWithdrawal,
+    beta,
     onPress,
   } = props;
 
@@ -69,7 +71,10 @@ const StakingListCellComponent: FC<Props> = (props) => {
               )}
             </View>
             <S.Content>
-              <S.Title>{name}</S.Title>
+              <S.Row>
+                <S.Title>{name}</S.Title>
+                {beta ? <Tag type="warning">Beta</Tag> : null}
+              </S.Row>
               <S.SubTitle numberOfLines={numberOfLines ?? 2}>{description}</S.SubTitle>
             </S.Content>
             <S.RightContainer>

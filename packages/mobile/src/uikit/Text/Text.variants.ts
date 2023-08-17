@@ -11,7 +11,7 @@ export const textVariants = StyleSheet.create({
   num2: {
     fontSize: nfs(28),
     lineHeight: nfs(36),
-    fontFamily: FONT.medium
+    fontFamily: FONT.medium,
   },
   h1: {
     fontSize: nfs(32),
@@ -57,6 +57,12 @@ export const textVariants = StyleSheet.create({
     fontSize: nfs(12),
     lineHeight: nfs(16),
     fontFamily: FONT.regular,
+  },
+  body4Caps: {
+    fontSize: nfs(10),
+    lineHeight: nfs(14),
+    fontFamily: FONT.medium,
+    textTransform: 'uppercase',
   },
 });
 export type TTextVariants = keyof typeof textVariants;

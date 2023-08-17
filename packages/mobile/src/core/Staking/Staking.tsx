@@ -20,6 +20,7 @@ import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/shared/Address';
 import { Ton } from '$libs/Ton';
+import { useFlag } from '$utils/flags';
 
 interface Props {}
 
@@ -33,6 +34,8 @@ export const Staking: FC<Props> = () => {
   const stakingInfo = useStakingStore((s) => s.stakingInfo, shallow);
 
   const jettonBalances = useSelector(jettonsBalancesSelector);
+
+  const tonstakersBeta = useFlag('tonstakers_beta');
 
   const poolsList = useMemo(() => {
     return pools.map((pool) => {
@@ -153,6 +156,7 @@ export const Staking: FC<Props> = () => {
                       description={t('staking.staking_pool_desc', {
                         apy: pool.apy.toFixed(2),
                       })}
+                      beta={pool.implementation === 'liquidTF' && tonstakersBeta}
                       separator={index < pools.length - 1}
                       iconSource={getPoolIcon(pool)}
                       onPress={handlePoolPress}
@@ -175,6 +179,7 @@ export const Staking: FC<Props> = () => {
                       name={provider.name}
                       iconSource={getImplementationIcon(provider.id)}
                       description={provider.description}
+                      beta={provider.id === 'liquidTF' && tonstakersBeta}
                       separator={index < providers.length - 1}
                       onPress={handleProviderPress}
                     />
@@ -198,6 +203,7 @@ export const Staking: FC<Props> = () => {
                       name={provider.name}
                       iconSource={getImplementationIcon(provider.id)}
                       description={provider.description}
+                      beta={provider.id === 'liquidTF' && tonstakersBeta}
                       separator={index < providers.length - 1}
                       onPress={handleProviderPress}
                     />
