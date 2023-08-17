@@ -31,7 +31,6 @@ import { checkFundsAndOpenNFTTransfer } from '$core/ModalContainer/NFTOperations
 import { openNFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
 import { getCurrentRoute } from '$navigation/imperative';
 import { IConnectQrQuery } from '$tonconnect/models';
-import { openDeprecatedConfirmSending } from '$core/ModalContainer/ConfirmSending/ConfirmSending';
 import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
 import { Address } from '@tonkeeper/core';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
@@ -253,7 +252,7 @@ export function useDeeplinkingResolvers() {
                 isJetton: true,
               };
 
-              openDeprecatedConfirmSending(options);
+              openSend(options);
             },
           }),
         );
@@ -274,16 +273,12 @@ export function useDeeplinkingResolvers() {
                 amount,
                 fee: details.fee,
                 isInactive: details.isInactive,
-                withGoBack: resolveParams.withGoBack,
                 methodId: resolveParams.methodId,
               };
               if (options.methodId) {
                 nav.openModal('NewConfirmSending', options);
               } else {
-                openDeprecatedConfirmSending({
-                  ...options,
-                  withGoBack: resolveParams.withGoBack ?? false,
-                });
+                openSend(options);
               }
             },
           }),
