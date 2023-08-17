@@ -104,6 +104,7 @@ export const IconList = {
   'ic-flashlight-off-56': require('../../../assets/icons/png/ic-flashlight-off-56.png'),
   'ic-flashlight-on-56': require('../../../assets/icons/png/ic-flashlight-on-56.png'),
   'ic-globe-56': require('../../../assets/icons/png/ic-globe-56.png'),
+  'ic-usdt-56': require('../../../assets/icons/png/ic-usdt-56.png'),
   'ic-camera-84': require('../../../assets/icons/png/ic-camera-84.png'),
   'ic-done-84': require('../../../assets/icons/png/ic-done-84.png'),
   'ic-exclamationmark-circle-84': require('../../../assets/icons/png/ic-exclamationmark-circle-84.png'),

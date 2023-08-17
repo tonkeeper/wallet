@@ -104,6 +104,7 @@ export type IconNames =
   | 'ic-flashlight-off-56'
   | 'ic-flashlight-on-56'
   | 'ic-globe-56'
+  | 'ic-usdt-56'
   | 'ic-camera-84'
   | 'ic-done-84'
   | 'ic-exclamationmark-circle-84'
@@ -221,6 +222,7 @@ export const AllIcons = [
   'ic-flashlight-off-56',
   'ic-flashlight-on-56',
   'ic-globe-56',
+  'ic-usdt-56',
   'ic-camera-84',
   'ic-done-84',
   'ic-exclamationmark-circle-84',
@@ -339,6 +341,7 @@ export const IconSizes = {
   'ic-flashlight-off-56': 56,
   'ic-flashlight-on-56': 56,
   'ic-globe-56': 56,
+  'ic-usdt-56': 56,
   'ic-camera-84': 84,
   'ic-done-84': 84,
   'ic-exclamationmark-circle-84': 84,

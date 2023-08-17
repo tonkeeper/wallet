@@ -24,6 +24,9 @@ import { Toast, ToastSize } from '$store';
 import { goBack, useParams } from '$navigation/imperative';
 import { t } from '@tonkeeper/shared/i18n';
 
+import { createTronAddress } from '@tonkeeper/core/src/utils/tronUtils';
+import { tk } from '@tonkeeper/shared/tonkeeper';
+
 export const AccessConfirmation: FC = () => {
   const route = useRoute();
   const dispatch = useDispatch();
@@ -131,11 +134,25 @@ export const AccessConfirmation: FC = () => {
 
     vault
       .unlock()
-      .then((unlockedVault) => {
+      .then(async (unlockedVault) => {
         pinRef.current?.triggerSuccess();
 
-        setTimeout(() => {
+        setTimeout(async () => {
+          // Lock screen
           if (isUnlock) {
+            try {
+              // Note: create tron address
+              if (!tk.wallet.address.tron) {
+                const privateKey = await (unlockedVault as any).getTonPrivateKey();
+                const tronAddress = await createTronAddress(privateKey);
+                await tk.wallet.setTronAddress(tronAddress);
+              } else {
+                console.log('skip create tron address')
+              }
+            } catch (err) {
+              console.error('[generate tron address]', err);
+            }
+
             dispatch(mainActions.setUnlocked(true));
           } else {
             goBack();

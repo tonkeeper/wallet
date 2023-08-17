@@ -8,7 +8,7 @@ import { ViewStyle } from 'react-native';
 import { TonDiamondIcon } from '@tonkeeper/mobile/src/uikit/TonDiamondIcon/TonDiamondIcon';
 import { useDiamondIcon } from '@tonkeeper/mobile/src/hooks/useDiamondIcon';
 
-type TonIconSizes = 'small' | 'medium' | 'large';
+type TonIconSizes = 'small' | 'medium' | 'large' | 'xmedium';
 
 export interface TonIconProps {
   size?: TonIconSizes;
@@ -19,6 +19,7 @@ export interface TonIconProps {
 }
 
 const containerSizes: { [key in TonIconSizes]: number } = {
+  xmedium: 56,
   medium: 64,
   small: 44,
   large: 96,

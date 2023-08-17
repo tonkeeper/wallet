@@ -39,6 +39,7 @@ import { ImportWalletScreen } from '@tonkeeper/shared/screens/setup/ImportWallet
 import { CreateWalletScreen } from '@tonkeeper/shared/screens/setup/CreateWalletScreen';
 import { StartScreen } from '@tonkeeper/shared/screens/StartScreen';
 import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
+import { TronTokenScreen } from '../../tabs/Wallet/TronTokenScreen';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -96,6 +97,7 @@ export const MainStack: FC = () => {
 
       {renderRoot()}
       <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
+      <Stack.Screen name={'TronTokenScreen'} component={TronTokenScreen} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />
       <Stack.Screen name={MainStackRouteNames.StakingPools} component={StakingPools} />
       <Stack.Screen

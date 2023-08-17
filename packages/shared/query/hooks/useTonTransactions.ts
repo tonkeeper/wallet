@@ -16,8 +16,8 @@ export const useTonTransactions = () => {
   // TODO: move to transactions manager
   const modifed = useMemo(() => {
     const data = filterOnlyTonEvents(query.data ?? []);
-    return AccountEventsMapper(data, tk.wallet.address.raw);
-  }, [query.data, tk.wallet.address.raw]);
+    return AccountEventsMapper(data, tk.wallet.address.ton.raw);
+  }, [query.data, tk.wallet.address.ton.raw]);
 
   return {
     ...query,

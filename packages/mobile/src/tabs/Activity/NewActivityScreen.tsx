@@ -25,7 +25,7 @@ export const ActivityScreen = memo(() => {
   );
 
   const handlePressRecevie = useCallback(() => {
-    if (!!wallet.address.raw) {
+    if (!!wallet.address.ton.raw) {
       nav.go('Receive', {
         currency: 'ton',
         isFromMainScreen: true,
@@ -33,15 +33,15 @@ export const ActivityScreen = memo(() => {
     } else {
       openRequireWalletModal();
     }
-  }, [wallet.address.raw]);
+  }, [wallet.address.ton.raw]);
 
   const handlePressBuy = useCallback(() => {
-    if (!!wallet.address.raw) {
+    if (!!wallet.address.ton.raw) {
       nav.openModal('Exchange', { category: 'buy' });
     } else {
       openRequireWalletModal();
     }
-  }, [wallet.address.raw]);
+  }, [wallet.address.ton.raw]);
 
   const onRemoveNotification = useCallback(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -59,7 +59,10 @@ export const ActivityScreen = memo(() => {
     openNotificationsScreen();
   }, []);
 
-  if (!wallet.address.raw || (!transactions.loading && transactions?.data?.length < 1)) {
+  if (
+    !wallet.address.ton.raw ||
+    (!transactions.loading && transactions?.data?.length < 1)
+  ) {
     return (
       <Screen>
         <View style={styles.emptyContainer}>
@@ -164,9 +167,7 @@ const styles = Steezy.create(({ colors }) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  notificationsHeader: {
-
-  },
+  notificationsHeader: {},
   notificationsCount: {
     backgroundColor: colors.backgroundContentTint,
     minWidth: 24,

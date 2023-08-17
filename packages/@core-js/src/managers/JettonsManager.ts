@@ -8,6 +8,6 @@ export class JettonsManager {
   public async preload() {}
 
   public get cacheKey() {
-    return ['jettons', this.ctx.accountId];
+    return ['jettons', this.ctx.address.ton.raw];
   }
 }

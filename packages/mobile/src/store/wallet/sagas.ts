@@ -148,7 +148,8 @@ function* createWalletWorker(action: CreateWalletAction) {
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.loadJettons());
     const addr = yield call([wallet.ton, 'getAddress']);
-    yield call([tk, 'init'], addr, getChainName() === 'testnet');
+    const data = yield call([tk, 'load']);
+    yield call([tk, 'init'], addr, getChainName() === 'testnet', data.tronAddress);
     onDone();
     
 
@@ -271,7 +272,8 @@ function* switchVersionWorker() {
 
   const addr = yield call([newWallet.ton, 'getAddress']);
   yield call([tk, 'destroy']);
-  yield call([tk, 'init'], addr, getChainName() === 'testnet');
+  const data = yield call([tk, 'load']);
+  yield call([tk, 'init'], addr, getChainName() === 'testnet', data.tronAddress);
 
   yield put(eventsActions.resetEvents());
   yield call(destroyEventsManager);
@@ -855,7 +857,8 @@ function* doMigration(wallet: Wallet, newAddress: string) {
     yield put(walletActions.setWallet(newWallet));
     const addr = yield call([newWallet.ton, 'getAddress']);
     yield call([tk, 'destroy']);
-    yield call([tk, 'init'], addr, getChainName() === 'testnet');
+    const data = yield call([tk, 'load']);
+    yield call([tk, 'init'], addr, getChainName() === 'testnet', data.tronAddress);
 
     yield put(
       batchActions(

@@ -58,7 +58,7 @@ export class AmountFormatter {
     return new BigNumber(amount).isLessThan(0);
   }
 
-  public toNano(amount: number | string, decimals?: number) {
+  static toNano(amount: number | string, decimals?: number) {
     let bn = new BigNumber(amount ?? 0);
     if (decimals) {
       bn = bn.decimalPlaces(decimals, BigNumber.ROUND_DOWN);

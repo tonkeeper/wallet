@@ -38,8 +38,8 @@ export const isThisMonth = (date: Date) => {
   return differenceInCalendarMonths(new Date(), date) < 1;
 };
 
-export function getDateForGroupTansactions(timestamp: number) {
-  const ts = new Date(timestamp * 1000);
+export function getDateForGroupTansactions(timestamp: number, skipNormalizeTimestemp?: boolean) {
+  const ts = new Date(timestamp * (skipNormalizeTimestemp ? 1 : 1000));
   const now = new Date();
 
   if (differenceInCalendarMonths(now, ts) < 1) {

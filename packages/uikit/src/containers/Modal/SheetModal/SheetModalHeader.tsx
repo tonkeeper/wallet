@@ -12,7 +12,7 @@ export interface SheetModalHeaderProps {
   onClose?: () => void;
   iconLeft?: IconNames;
   gradient?: boolean;
-  title?: string;
+  title?: string | React.ReactNode;
   center?: boolean;
 }
 

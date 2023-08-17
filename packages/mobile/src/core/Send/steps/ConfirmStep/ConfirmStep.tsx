@@ -165,11 +165,13 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
 
   const feeCurrency = useMemo(() => {
     const tokenConfig = getTokenConfig(currency as CryptoCurrency);
-    if (tokenConfig && tokenConfig.blockchain === 'ethereum') {
+    if (currency === 'usdt') {
+      return 'USDT';
+    } else if (tokenConfig && tokenConfig.blockchain === 'ethereum') {
       return CryptoCurrencies.Eth;
     } else if (isJetton) {
       return CryptoCurrencies.Ton;
-    } else {
+    }  else {
       return currency;
     }
   }, [currency, isJetton]);
@@ -182,16 +184,21 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     return parseLocaleNumber(amount.value);
   }, [amount.all, amount.value, fee, isJetton]);
 
+
+  
   const fiatValue = useFiatValue(
     currency as CryptoCurrency,
     calculatedValue,
     decimals,
     isJetton,
   );
+
+
   const fiatFee = useFiatValue(
-    CryptoCurrencies.Ton,
+    currency === 'usdt' ?  'USDT' : CryptoCurrencies.Ton,
     fee || '0',
-    Decimals[CryptoCurrencies.Ton],
+    6,
+    currency === 'usdt' ? 6 : Decimals[CryptoCurrencies.Ton],
   );
 
   const feeValue = useMemo(() => {
@@ -200,7 +207,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     }
 
     return `≈ ${formatter.format(fee, {
-      decimals: Decimals[feeCurrency],
+      decimals: currency === 'usdt' ? 6 : Decimals[feeCurrency],
       currency: feeCurrency.toUpperCase(),
       currencySeparator: 'wide',
     })}`;
@@ -251,7 +258,10 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
             </Text>
             <Spacer y={4} />
             <Text variant="h3">
-              {t('send_screen_steps.comfirm.action', { coin: currencyTitle })}
+              {/* TODO: need translation */}
+              {currencyTitle === 'USDT'
+                ? 'Transfer USDT TRC20'
+                : t('send_screen_steps.comfirm.action', { coin: currencyTitle })}
             </Text>
           </S.Center>
           <Spacer y={32} />

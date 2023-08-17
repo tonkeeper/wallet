@@ -14,8 +14,8 @@ export const useWalletTransactions = () => {
 
   // TODO: move to transactions manager
   const modifed = useMemo(() => {
-    return AccountEventsMapper(query.data ?? [], tk.wallet?.address.raw);
-  }, [query.data, tk.wallet?.address.raw]);
+    return AccountEventsMapper(query.data ?? [], tk.wallet?.address.ton.raw);
+  }, [query.data, tk.wallet?.address.ton.raw]);
 
   return {
     ...query,

@@ -21,7 +21,6 @@ import {
 } from '$shared/components';
 import {
   AccountWithPubKey,
-  SendSteps,
   SuggestedAddress,
   SuggestedAddressType,
 } from '../../Send.interface';
@@ -36,6 +35,8 @@ import { AddressInput, AddressSuggests, CommentInput } from './components';
 import { TextInput } from 'react-native-gesture-handler';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
+import { seeIfValidTronAddress } from '@tonkeeper/core/src/utils/tronUtils';
+import { CryptoCurrencies } from '$shared/constants';
 
 const TonWeb = require('tonweb');
 
@@ -48,6 +49,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     isCommentEncrypted,
     recipientAccountInfo,
     setRecipient,
+    changeBlockchain,
     active,
     setRecipientAccountInfo,
     setAmount,
@@ -168,6 +170,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
         if (favorite) {
           setRecipient({
+            blockchain: 'ton',
             address: favorite.address,
             name: favorite.name,
             domain: favorite.domain,
@@ -181,7 +184,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
             setRecipientAccountInfo(accountInfo as AccountWithPubKey);
           }
 
-          setRecipient({ address: value });
+          setRecipient({ blockchain: 'ton', address: value });
 
           return true;
         }
@@ -204,7 +207,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
             dnsAbortController = null;
             return true;
           } else if (resolvedDomain) {
-            setRecipient({ address: resolvedDomain, domain });
+            setRecipient({ address: resolvedDomain, domain, blockchain: 'ton' });
             setDnsLoading(false);
             dnsAbortController = null;
             return true;
@@ -212,6 +215,14 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
             setDnsLoading(false);
             dnsAbortController = null;
           }
+        }
+
+        if (seeIfValidTronAddress(value)) {
+          console.log('tron');
+
+          setRecipient({ address: value, blockchain: 'tron' });
+          changeBlockchain(CryptoCurrencies.Usdt);
+          return true;
         }
 
         setRecipient(null);

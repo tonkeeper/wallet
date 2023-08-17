@@ -5,10 +5,12 @@ import { Vault } from './Vault';
 
 import { TransactionsManager } from './managers/TransactionsManager';
 import { NftsManager } from './managers/NftsManager';
-import { SSEListener, SSEManager } from './Tonkeeper';
+import { EventSourceListener, ServerSentEvents, IStorage } from './Tonkeeper';
 import { SubscriptionsManager } from './managers/SubscriptionsManager';
 import { JettonsManager } from './managers/JettonsManager';
-import { BalanceManager } from './managers/BalanceManager';
+import { BalancesManager } from './managers/BalancesManager';
+import { TronAPI } from './TronAPI';
+import { TronService } from './TronService';
 
 export enum WalletNetwork {
   mainnet = -239,
@@ -44,63 +46,87 @@ type WalletInfo = {
   label: string;
 };
 
+type TronAddresses = {
+  proxy?: string;
+  owner: string;
+};
+
+export type WalletAddress = {
+  tron?: TronAddresses;
+  ton: AddressFormats;
+};
+
 export type WalletContext = {
-  accountId: string;
+  address: WalletAddress;
   queryClient: QueryClient;
-  sse: SSEManager;
+  sse: ServerSentEvents;
   tonapi: TonAPI;
+  tronapi: TronAPI;
 };
 
 export class Wallet {
   public identity: WalletIdentity;
-  public address: AddressFormats;
+  public address: WalletAddress;
 
-  public listener: SSEListener | null = null;
+  public listener: EventSourceListener | null = null;
 
   public subscriptions: SubscriptionsManager;
   public transactions: TransactionsManager;
-  public balance: BalanceManager;
+  public balances: BalancesManager;
   public jettons: JettonsManager;
   public nfts: NftsManager;
+
+  public tronService: TronService;
 
   constructor(
     private queryClient: QueryClient,
     private tonapi: TonAPI,
+    private tronapi: TronAPI,
     private vault: Vault,
-    private sse: SSEManager,
+    private sse: ServerSentEvents,
+    private storage: IStorage,
     walletInfo: any,
   ) {
-
     this.identity = {
       kind: WalletKind.Regular,
       network: walletInfo.network,
-    }
+    };
 
-    this.address = Address.parse(walletInfo.address).toAll({
-      testOnly: walletInfo.network === WalletNetwork.testnet
+    const tonAddresses = Address.parse(walletInfo.address).toAll({
+      testOnly: walletInfo.network === WalletNetwork.testnet,
     });
-    
+
+    const tronAddresses = walletInfo.tronAddress
+      ? {
+          owner: walletInfo.tronAddress,
+        }
+      : undefined;
+
+    this.address = {
+      tron: tronAddresses,
+      ton: tonAddresses,
+    };
+
     const context: WalletContext = {
-      accountId: this.address.raw,
       queryClient: this.queryClient,
+      address: this.address,
+      tronapi: this.tronapi,
       tonapi: this.tonapi,
       sse: this.sse,
     };
 
     this.subscriptions = new SubscriptionsManager(context);
     this.transactions = new TransactionsManager(context);
-    this.balance = new BalanceManager(context);
+    this.balances = new BalancesManager(context);
     this.jettons = new JettonsManager(context);
     this.nfts = new NftsManager(context);
+
+    this.tronService = new TronService(context);
 
     this.listenTransactions();
   }
 
-  public async create({ name, passcode }: { passcode: string; name?: string }) {}
-
-  public async import(options: { passcode: string; words: string; name: string }) {}
-
-  public async getPrivateKey(): Promise<string> {
+  public async getTonPrivateKey(): Promise<string> {
     if (false) {
       return this.vault.exportWithBiometry('');
     } else {
@@ -108,12 +134,34 @@ export class Wallet {
     }
   }
 
+  public async getTronPrivateKey(): Promise<string> {
+    if (false) {
+      return this.vault.exportWithBiometry('');
+    } else {
+      return this.vault.exportWithPasscode('');
+    }
+  }
+
+  // For migrate
+  public async setTronAddress(ownerAddress: string) {
+    const tronWallet = await this.tronapi.wallet.getWallet(ownerAddress);
+    this.address.tron = {
+      proxy: tronWallet.address,
+      owner: ownerAddress,
+    };
+    try {
+      // await this.storage.setItem('tron-address', ownerAddress);
+    } catch (err) {
+      console.error('[Wallet]', err);
+    }
+  }
+
   private listenTransactions() {
     this.listener = this.sse.listen(
-      `/v2/sse/accounts/transactions?accounts=${this.address.raw}`,
+      `/v2/sse/accounts/transactions?accounts=${this.address.ton.raw}`,
     );
     this.listener.addEventListener('open', () => {
-      console.log('[Wallet]: start listen transactions for', this.address.short);
+      console.log('[Wallet]: start listen transactions for', this.address.ton.short);
     });
     this.listener.addEventListener('error', (err) => {
       console.log('[Wallet]: error listen transactions', err);

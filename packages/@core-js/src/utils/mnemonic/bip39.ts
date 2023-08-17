@@ -1,4 +1,4 @@
-const bip39Arr = [
+const array = [
   'abandon',
   'ability',
   'able',
@@ -2050,10 +2050,11 @@ const bip39Arr = [
 ];
 
 const map = {};
-for (let item of bip39Arr) {
+for (let item of array) {
   map[item] = true;
 }
 
 export const bip39 = {
-  map: new Map(Object.entries(map))
-}
+  map: new Map(Object.entries(map)),
+  array,
+};

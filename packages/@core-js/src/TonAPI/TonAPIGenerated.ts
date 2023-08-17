@@ -1803,6 +1803,16 @@ export interface GetChartRatesParams {
   token: string;
   /** @example "usd" */
   currency?: string;
+  /**
+   * @format int64
+   * @example 1668436763
+   */
+  start_date?: number;
+  /**
+   * @format int64
+   * @example 1668436763
+   */
+  end_date?: number;
 }
 
 export interface GetRawMasterchainInfoExtParams {

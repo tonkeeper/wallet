@@ -20,6 +20,8 @@ export { RefreshControl } from './components/RefreshControl';
 export { Toast } from './components/Toast';
 export { FastImage } from './components/FastImage';
 export { Picture } from './components/Picture';
+export { SegmentedControl } from './components/SegmentedControl';
+export { TransitionOpacity } from './components/TransitionOpacity';
 
 // Containers
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';

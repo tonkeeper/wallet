@@ -8,7 +8,7 @@ export class NftsManager {
   constructor(private ctx: WalletContext) {}
 
   public get cacheKey() {
-    return ['nfts', this.ctx.accountId];
+    return ['nfts', this.ctx.address.ton.raw];
   }
 
   public async preload() {}

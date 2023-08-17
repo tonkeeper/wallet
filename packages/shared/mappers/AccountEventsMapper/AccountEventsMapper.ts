@@ -27,17 +27,22 @@ import {
   getDateForGroupTansactions,
   formatTransactionsGroupDate,
 } from '@tonkeeper/shared/utils/date';
+import { ReceiveTRC20Action, SendTRC20Action } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
 
 // TODO: rewrite like AccountDetailsModal
-export function AccountEventsMapper(events: AccountEvent[], walletAddress: string = '') {
+export function AccountEventsMapper(
+  events: AccountEvent[],
+  walletAddress: string = '',
+  skipNormalizeTimestemp?: boolean,
+) {
   const groupedActions = events.reduce<GroupedActionsByDate>((groups, event) => {
-    const date = getDateForGroupTansactions(event.timestamp);
+    const date = getDateForGroupTansactions(event.timestamp, skipNormalizeTimestemp);
 
     if (!groups[date]) {
       groups[date] = [];
     }
 
-    const actions = EventMapper(event, walletAddress);
+    const actions = EventMapper(event, walletAddress, skipNormalizeTimestemp);
     groups[date].push(...actions);
 
     return groups;
@@ -45,7 +50,7 @@ export function AccountEventsMapper(events: AccountEvent[], walletAddress: strin
 
   return Object.keys(groupedActions).reduce<MappedEvent[]>((acc, date) => {
     const actions = groupedActions[date];
-    const txTime = actions[0].timestamp * 1000;
+    const txTime = actions[0].timestamp * (skipNormalizeTimestemp ? 1 : 1000);
     const formatDatetedDate = formatTransactionsGroupDate(new Date(txTime));
 
     acc.push({
@@ -69,16 +74,23 @@ export function mergeActionWithData(inputAction: Action) {
   }) as ActionsWithData;
 }
 
-export function EventMapper(event: AccountEvent, walletAddress: string) {
+export function EventMapper(
+  event: AccountEvent,
+  walletAddress: string,
+  skipNormalizeTimestemp?: boolean,
+) {
   const countAction = event.actions.length;
   const actions = event.actions.reduce<MappedEventAction[]>(
     (actions, serverAction, index) => {
-      const action = EventsActionMapper({
-        action: mergeActionWithData(serverAction),
-        actionIndex: index,
-        walletAddress,
-        event,
-      });
+      const action = EventsActionMapper(
+        {
+          action: mergeActionWithData(serverAction),
+          actionIndex: index,
+          walletAddress,
+          event,
+        },
+        skipNormalizeTimestemp,
+      );
 
       if (index === 0) {
         action.topCorner = true;
@@ -105,8 +117,13 @@ type EventsActionMapperInput = {
   event: AccountEvent;
 };
 
-export function EventsActionMapper(input: EventsActionMapperInput): MappedEventAction {
-  const time = formatTransactionTime(new Date(input.event.timestamp * 1000));
+export function EventsActionMapper(
+  input: EventsActionMapperInput,
+  skipNormalizeTimestemp?: boolean,
+): MappedEventAction {
+  const time = formatTransactionTime(
+    new Date(input.event.timestamp * (skipNormalizeTimestemp ? 1 : 1000)),
+  );
 
   // SimplePreview by default
   const action: MappedEventAction = {
@@ -147,6 +164,7 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
       case ActionTypeEnum.TonTransfer: {
         const data = input.action.data;
 
+        
         action.iconName = arrowIcon;
         action.subtitle = senderAddress;
         action.operation = sendOrReceiveTitle;
@@ -154,6 +172,34 @@ export function EventsActionMapper(input: EventsActionMapperInput): MappedEventA
         action.amount = formatter.formatNano(data.amount, {
           prefix: amountPrefix,
           postfix: 'TON',
+        });
+        break;
+      }
+      case 'SendTRC20': {
+        const data = (input.action as any).sendTRC20 as SendTRC20Action;
+
+        action.operation = t('transaction_type_sent');
+
+        action.iconName = 'ic-tray-arrow-up-28';
+        action.subtitle = Address.toShort(data.recipient);
+        action.amount = formatter.formatNano(data.amount, {
+          decimals: 6,
+          prefix: '-',
+          postfix: 'USDT',
+        });
+        break;
+      }
+      case 'ReceiveTRC20': {
+        const data = (input.action as any).receiveTRC20 as ReceiveTRC20Action;
+
+        action.isReceive = true;
+        action.operation = t('transaction_type_receive')
+        action.iconName = 'ic-tray-arrow-down-28';
+        action.subtitle = Address.toShort(data.sender);
+        action.amount = formatter.formatNano(data.amount, {
+          decimals: 6,
+          prefix: '+',
+          postfix: 'USDT',
         });
         break;
       }

@@ -14,12 +14,16 @@ type AppConfigVars = {
   tonApiKey: string;
   transactionExplorer: string;
   tonapiTestnetHost: string;
+  tronapiHost: string;
+  tronapiTestnetHost: string;
 };
 
 const defaultConfig: Partial<AppConfigVars> = {
   tonapiTestnetHost: 'https://testnet.tonapi.io',
   tonapiIOEndpoint: 'https://keeper.tonapi.io',
   tonapiV2Endpoint: 'https://tonapi.io',
+  tronapiHost: 'https://tron.tonkeeper.com',
+  tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
 };
 
 export const config = new AppConfig<AppConfigVars>({

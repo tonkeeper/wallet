@@ -51,6 +51,7 @@ import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/Requi
 import { openWallet } from '$core/Wallet/Wallet';
 import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
+import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -69,6 +70,8 @@ export const WalletScreen = memo(() => {
 
   const { isRefreshing, isLoaded } = useSelector(walletSelector);
   const isFocused = useIsFocused();
+
+  const { data: tronBalances } = useTronBalances();
 
   const notifications = useInternalNotifications();
 
@@ -107,10 +110,7 @@ export const WalletScreen = memo(() => {
 
   const handlePressRecevie = React.useCallback(() => {
     if (wallet) {
-      nav.go('Receive', {
-        currency: 'ton',
-        isFromMainScreen: true,
-      });
+      nav.go('ReceiveModal');
     } else {
       openRequireWalletModal();
     }
@@ -266,6 +266,7 @@ export const WalletScreen = memo(() => {
                   ) : undefined
                 }
                 balance={balance}
+                tronBalances={tronBalances}
                 tokens={tokens}
                 tonPrice={tonPrice}
                 handleRefresh={handleRefresh}
@@ -317,6 +318,7 @@ export const WalletScreen = memo(() => {
           rightContent={<ScanQRButton />}
         />
         <BalancesList
+          tronBalances={tronBalances}
           ListHeaderComponent={ListHeader(true)}
           handleRefresh={handleRefresh}
           isRefreshing={isRefreshing}

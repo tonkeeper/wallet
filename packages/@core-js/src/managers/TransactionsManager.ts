@@ -1,6 +1,6 @@
 import { WalletContext } from '../Wallet';
 import { AccountEvent, ActionStatusEnum, CustomActionType } from '../TonAPI';
-import { Address } from '../Address';
+import { Address } from '../formatters/Address';
 import {
   CustomAccountEventActions,
   TransactionDestination,
@@ -16,7 +16,11 @@ export class TransactionsManager {
   constructor(private ctx: WalletContext) {}
 
   public get cacheKey() {
-    return ['account_events', this.ctx.accountId];
+    return ['account_events', this.ctx.address.ton.raw];
+  }
+
+  public get tronCacheKey() {
+    return ['tron_events', this.ctx.address.tron?.owner];
   }
 
   public async preload() {}
@@ -38,7 +42,7 @@ export class TransactionsManager {
   public async fetch(before_lt?: number) {
     const data = await this.ctx.tonapi.accounts.getAccountEvents({
       ...(!!before_lt && { before_lt }),
-      accountId: this.ctx.accountId,
+      accountId: this.ctx.address.ton.raw,
       subject_only: true,
       limit: 50,
     });
@@ -54,10 +58,24 @@ export class TransactionsManager {
     return data;
   }
 
+  public async fetchTron(fingerprint?: string) {
+    const data = await this.ctx.tronapi.wallet.getTransactions({
+      ...(!!fingerprint && { fingerprint }),
+      ownerAddress: this.ctx.address.tron?.owner!,
+      limit: 50,
+    });
+
+    data.events.map((event) => {
+      this.ctx.queryClient.setQueryData(['tron_event', event.txHash], event);
+    });
+
+    return data;
+  }
+
   public async fetchAction(txId: string) {
     const { eventId, actionIndex } = this.txIdToActionId(txId);
     const event = await this.ctx.tonapi.accounts.getAccountEvent({
-      accountId: this.ctx.accountId,
+      accountId: this.ctx.address.ton.raw,
       eventId,
     });
 
@@ -93,10 +111,13 @@ export class TransactionsManager {
       ...rawAction[rawAction.type],
     };
 
-    const destination = this.defineDestination(this.ctx.accountId, action);
+    const destination = this.defineDestination(this.ctx.address.ton.raw, action);
 
     if (action.type === CustomActionType.ContractDeploy) {
-      action.walletInitialized = Address.compare(action.address, this.ctx.accountId);
+      action.walletInitialized = Address.compare(
+        this.ctx.address.ton.raw,
+        action.address,
+      );
     }
 
     const customEvent: CustomAccountEvent = {

@@ -13,7 +13,8 @@ export type TextColors =
   | 'textAccent'
   | 'textPrimaryAlternate'
   | 'accentOrange'
-  | 'constantWhite';
+  | 'constantWhite'
+  | 'constantBlack';
 
 export interface TextProps extends AnimateProps<NativeTextProps> {
   type?: TTextTypes;
