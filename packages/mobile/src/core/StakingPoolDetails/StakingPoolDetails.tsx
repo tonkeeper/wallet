@@ -2,9 +2,19 @@ import { usePoolInfo } from '$hooks/usePoolInfo';
 import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
 import { MainStackRouteNames, openDAppBrowser, openSend } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
-import { BottomButtonWrap, BottomButtonWrapHelper, NextCycle } from '$shared/components';
+import {
+  BottomButtonWrap,
+  BottomButtonWrapHelper,
+  NextCycle,
+  StakingWarning,
+} from '$shared/components';
 import { getServerConfig, KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
-import { getStakingPoolByAddress, useStakingStore } from '$store';
+import {
+  getStakingPoolByAddress,
+  getStakingPoolsByProvider,
+  getStakingProviderById,
+  useStakingStore,
+} from '$store';
 import { Button, Highlight, Icon, ScrollHandler, Separator, Spacer, Text } from '$uikit';
 import { stakingFormatter } from '$utils/formatter';
 import { RouteProp } from '@react-navigation/native';
@@ -31,8 +41,13 @@ export const StakingPoolDetails: FC<Props> = (props) => {
 
   const pool = useStakingStore((s) => getStakingPoolByAddress(s, poolAddress), shallow);
   const poolStakingInfo = useStakingStore((s) => s.stakingInfo[pool.address], shallow);
-
-  
+  const provider = useStakingStore(
+    (s) => ({
+      ...getStakingProviderById(s, pool.implementation),
+      poolsCount: getStakingPoolsByProvider(s, pool.implementation).length,
+    }),
+    shallow,
+  );
 
   const refreshControl = useStakingRefreshControl();
 
@@ -210,6 +225,12 @@ export const StakingPoolDetails: FC<Props> = (props) => {
               </S.DetailsButtonContainer>
             )}
             <Spacer y={16} />
+            {provider.poolsCount === 1 && provider.url ? (
+              <>
+                <StakingWarning provider={provider} />
+                <Spacer y={16} />
+              </>
+            ) : null}
           </S.Content>
           <BottomButtonWrapHelper />
         </Animated.ScrollView>
