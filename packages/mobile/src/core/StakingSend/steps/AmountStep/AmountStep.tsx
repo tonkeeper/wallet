@@ -130,6 +130,7 @@ const AmountStepComponent: FC<Props> = (props) => {
           <S.InputContainer>
             <AmountInput
               innerRef={textInputRef}
+              disabled={isPreparing}
               hideSwap={true}
               {...{
                 decimals,
