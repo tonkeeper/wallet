@@ -899,7 +899,7 @@
     "earlier": "Earlier",
     "apps": "Apps",
     "apps_description": "Notifications from connected apps in your activity",
-    "allow_notifications": "Allow notifications",
+    "allow_notifications": "Enable notifications",
     "placeholder": {
       "title": "Notifications will be shown here",
       "description": "Explore apps and services in Tonkeeper browser."
