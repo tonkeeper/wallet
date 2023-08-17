@@ -328,7 +328,9 @@ export const Send: FC<SendProps> = ({ route }) => {
   const isAddressStep = currentStep.id === SendSteps.ADDRESS;
   const isConfirmStep = currentStep.id === SendSteps.CONFIRM;
 
-  const hideBackButton = currentStep.index === 0;
+  const hideBackButton = currentStep.index === 0 || initialStepId === SendSteps.CONFIRM;
+
+  const isBackDisabled = isSending || isPreparing || initialStepId === SendSteps.CONFIRM;
 
   const navBarTitle = isAddressStep
     ? t('send_screen_steps.address.title')
@@ -371,11 +373,11 @@ export const Send: FC<SendProps> = ({ route }) => {
       </NavBar>
       <StepView
         ref={stepViewRef}
-        backDisabled={isSending || isPreparing}
+        backDisabled={isBackDisabled}
         onChangeStep={handleChangeStep}
         initialStepId={initialStepId}
         useBackHandler
-        swipeBackEnabled
+        swipeBackEnabled={!isBackDisabled}
       >
         <StepViewItem id={SendSteps.ADDRESS}>
           {(stepProps) => (

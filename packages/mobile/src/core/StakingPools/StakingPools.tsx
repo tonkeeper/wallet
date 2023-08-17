@@ -1,20 +1,18 @@
 import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
 import { useNavigation } from '@tonkeeper/router';
 import { Ton } from '$libs/Ton';
-import { MainStackRouteNames, openDAppBrowser } from '$navigation';
+import { MainStackRouteNames } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
-import { StakingListCell } from '$shared/components';
+import { StakingListCell, StakingWarning } from '$shared/components';
 import {
   getStakingPoolsByProvider,
   getStakingProviderById,
-  StakingInfo,
   useStakingStore,
 } from '$store';
-import { Icon, ScrollHandler, Spacer, Text } from '$uikit';
+import { ScrollHandler, Spacer } from '$uikit';
 import { List } from '$uikit/List/old/List';
 import { calculatePoolBalance, getPoolIcon } from '$utils/staking';
 import { RouteProp } from '@react-navigation/native';
-import { PoolInfo } from '@tonkeeper/core/src/legacy';
 import BigNumber from 'bignumber.js';
 import React, { FC, useCallback, useMemo } from 'react';
 import { RefreshControl } from 'react-native-gesture-handler';
@@ -27,19 +25,6 @@ import { useSelector } from 'react-redux';
 import { jettonsBalancesSelector } from '$store/jettons';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/shared/Address';
-
-const calculateBalance = (pool: PoolInfo, stakingInfo: StakingInfo) => {
-  const amount = new BigNumber(Ton.fromNano(stakingInfo[pool.address]?.amount || '0'));
-  const pendingDeposit = new BigNumber(
-    Ton.fromNano(stakingInfo[pool.address]?.pendingDeposit || '0'),
-  );
-  const readyWithdraw = new BigNumber(
-    Ton.fromNano(stakingInfo[pool.address]?.readyWithdraw || '0'),
-  );
-  const balance = amount.plus(pendingDeposit).plus(readyWithdraw);
-
-  return balance.isGreaterThan(0) ? balance.toString() : undefined;
-};
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPools>;
@@ -88,14 +73,6 @@ export const StakingPools: FC<Props> = (props) => {
     });
   }, [jettonBalances, pools, stakingInfo]);
 
-  const handleWarningPress = useCallback(() => {
-    if (!provider.url) {
-      return;
-    }
-
-    openDAppBrowser(provider.url);
-  }, [provider.url]);
-
   const handlePoolPress = useCallback(
     (poolAddress: string, poolName: string) => {
       logEvent('pool_open', { poolName, poolAddress });
@@ -114,29 +91,7 @@ export const StakingPools: FC<Props> = (props) => {
           <S.Content bottomInset={bottomInset}>
             {provider.url ? (
               <>
-                <S.WarningContainer>
-                  <S.WarningTouchable
-                    background="backgroundQuaternary"
-                    onPress={handleWarningPress}
-                  >
-                    <S.WarningContent>
-                      <Text variant="label1">{t('staking.warning.title')}</Text>
-                      <Text variant="body2" color="foregroundSecondary">
-                        {t('staking.warning.desc')}
-                      </Text>
-                      <Spacer y={4} />
-                      <S.WarningRow>
-                        <Text variant="label2">
-                          {t('staking.warning.about', { name: provider.name })}
-                        </Text>
-                        <Spacer x={2} />
-                        <S.WarningIcon>
-                          <Icon name="ic-chevron-right-12" color="foregroundPrimary" />
-                        </S.WarningIcon>
-                      </S.WarningRow>
-                    </S.WarningContent>
-                  </S.WarningTouchable>
-                </S.WarningContainer>
+                <StakingWarning provider={provider} />
                 <Spacer y={16} />
               </>
             ) : null}

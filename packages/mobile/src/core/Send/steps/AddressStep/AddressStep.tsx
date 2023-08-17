@@ -70,7 +70,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
   */
   const isAbleToEncryptComment = false;
 
-  const isReadyToContinue = !!recipient;
+  const isReadyToContinue = !!recipient && (!isCommentRequired || comment.length);
 
   const { keyboardHeightStyle } = useReanimatedKeyboardHeight();
 

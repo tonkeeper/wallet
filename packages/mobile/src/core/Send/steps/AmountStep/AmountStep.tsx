@@ -23,6 +23,7 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
     active,
     amount,
     fiatRate,
+    isPreparing,
     setAmount,
     onContinue,
     onChangeCurrency,
@@ -83,6 +84,7 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
         <AmountInput
           innerRef={textInputRef}
           withCoinSelector={true}
+          disabled={isPreparing}
           {...{ decimals, balance, currencyTitle, amount, fiatRate, setAmount }}
         />
         <S.CoinContainer>
@@ -102,7 +104,7 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
         </S.CoinContainer>
       </S.AmountContainer>
       <Spacer y={40} />
-      <Button disabled={!isReadyToContinue} onPress={onContinue}>
+      <Button disabled={!isReadyToContinue} isLoading={isPreparing} onPress={onContinue}>
         {t('continue')}
       </Button>
     </S.Container>

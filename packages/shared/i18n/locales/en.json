@@ -291,11 +291,8 @@
   "confirm_sending_fee": "Fee",
   "confirm_sending_message": "Comment",
   "confirm_sending_submit": "Confirm and send",
-  "confirm_sending_sent_title": "Coins sent",
-  "confirm_sending_sent_jetton_title": "Tokens sent",
   "confirm_sending_sent_caption_ton": "Your transaction is sent to the network and will be processed in a few seconds.",
   "confirm_sending_sent_caption_btc": "Your transaction is sent to the network and will be processed within an hour.",
-  "confirm_sending_sent_caption_other": "Your transaction is sent to the network and will be processed within a minute.",
   "confirm_sending_inactive_warn_title": "Inactive contract",
   "confirm_sending_inactive_warn_description": "Do not proceed if you expect blockchain magic to happen. It won't.",
   "confirm_sending_inactive_warn_about": "What you should do",
@@ -903,7 +900,7 @@
     "earlier": "Earlier",
     "apps": "Apps",
     "apps_description": "Notifications from connected apps in your activity",
-    "allow_notifications": "Allow notifications",
+    "allow_notifications": "Enable notifications",
     "placeholder": {
       "title": "Notifications will be shown here",
       "description": "Explore apps and services in Tonkeeper browser."
@@ -917,5 +914,8 @@
   },
   "choose_country": {
     "title": "Choose your country"
+  },
+  "exchange": {
+    "not_exists": "Invalid exchange ID"
   }
 }

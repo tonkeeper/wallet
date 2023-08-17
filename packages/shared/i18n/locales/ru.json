@@ -290,11 +290,8 @@
   "confirm_sending_fee": "Комиссия",
   "confirm_sending_message": "Комментарий",
   "confirm_sending_submit": "Подтвердить и отправить",
-  "confirm_sending_sent_title": "Деньги отправлены",
-  "confirm_sending_sent_jetton_title": "Токены отправлены",
   "confirm_sending_sent_caption_ton": "Транзакция отправлена в сеть и будет подтверждена через пару секунд.",
   "confirm_sending_sent_caption_btc": "Транзакция отправлена в сеть и будет подтверждена в течение часа.",
-  "confirm_sending_sent_caption_other": "Транзакция отправлена в сеть и будет подтверждена в течение минуты.",
   "confirm_sending_inactive_warn_title": "Неактивный контракт",
   "confirm_sending_inactive_warn_description": "Не продолжайте, если вы ожидаете волшебства от блокчейна. Этого не произойдет.",
   "confirm_sending_inactive_warn_about": "Что важно знать",
@@ -917,7 +914,7 @@
     "earlier": "Ранее",
     "apps": "Приложения",
     "apps_description": "Уведомления от подключенных приложений в вашей активности",
-    "allow_notifications": "Разрешить уведомления",
+    "allow_notifications": "Включить уведомления",
     "placeholder": {
       "title": "Уведомления будут отображаться здесь",
       "description": "Исследуйте приложения и сервисы в браузере Tonkeeper."
@@ -931,5 +928,8 @@
   },
   "choose_country": {
     "title": "Выберите вашу страну"
+  },
+  "exchange": {
+    "not_exists": "Неверный ID обменника"
   }
 }
