@@ -169,7 +169,7 @@ export function useDeeplinkingResolvers() {
       return;
     }
 
-    nav.push(MainStackRouteNames.StakingPoolDetails, { poolAddress });
+    nav.push(MainStackRouteNames.StakingPoolDetails, { poolAddress: foundPool.address });
   });
 
   deeplinking.add('/swap', ({ query }) => {
