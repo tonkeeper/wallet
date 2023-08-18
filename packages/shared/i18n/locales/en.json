@@ -846,7 +846,8 @@
       "min_deposit": {
         "label": "Minimal deposit",
         "value": "%{value} TON"
-      }
+      },
+      "not_exists": "Invalid pool address"
     },
     "rewards": {
       "title": "Your yearly rewards",
