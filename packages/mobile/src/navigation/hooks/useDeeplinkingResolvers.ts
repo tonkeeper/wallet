@@ -6,7 +6,7 @@ import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { Base64, delay, fromNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
-import { store, Toast } from '$store';
+import { store, Toast, useStakingStore } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import { openBuyFiat, openSend } from '../helper';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
@@ -18,7 +18,7 @@ import { useNavigation } from '@tonkeeper/router';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 import { isSignRawParams } from '$utils/isSignRawParams';
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
-import { AppStackRouteNames } from '$navigation/navigationNames';
+import { AppStackRouteNames, MainStackRouteNames } from '$navigation/navigationNames';
 import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { openTimeNotSyncedModal } from '$core/ModalContainer/TimeNotSynced/TimeNotSynced';
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
@@ -35,6 +35,7 @@ import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/
 import { Address } from '@tonkeeper/core';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { isMethodIdExists } from '$store/zustand/methodsToBuy/helpers';
+import { shallow } from 'zustand/esm/shallow';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -152,6 +153,23 @@ export function useDeeplinkingResolvers() {
       Toast.hide();
       openBuyFiat(CryptoCurrencies.Ton, methodId);
     }
+  });
+
+  deeplinking.add('/pool/:address', async ({ params }) => {
+    const poolAddress = params.address;
+
+    await useStakingStore.getState().actions.fetchPools();
+
+    const foundPool = useStakingStore
+      .getState()
+      .pools?.find((pool) => Address.compare(pool.address, poolAddress));
+
+    if (!foundPool) {
+      Toast.fail(t('staking.not_exists'));
+      return;
+    }
+
+    nav.push(MainStackRouteNames.StakingPoolDetails, { poolAddress });
   });
 
   deeplinking.add('/swap', ({ query }) => {
