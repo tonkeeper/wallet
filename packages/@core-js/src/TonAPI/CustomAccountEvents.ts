@@ -1,6 +1,7 @@
 import {
   AccountEvent,
   ActionSimplePreview,
+  ActionStatusEnum,
   AuctionBidAction,
   ContractDeployAction,
   DepositStakeAction,
@@ -36,6 +37,7 @@ export enum CustomActionType {
 type MakeCustomAction<TType, TAction> = TAction & {
   type: TType;
   isFailed: boolean;
+  status: ActionStatusEnum;
   simple_preview: ActionSimplePreview;
 };
 

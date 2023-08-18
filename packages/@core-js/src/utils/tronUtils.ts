@@ -57,7 +57,7 @@ export const tonPKToTronPK = async (tonPrivateKey: Uint8Array): Promise<string> 
   return account.privateKey.slice(2); // note: this is hex-encoded, remove 0x
 };
 
-export const createTronAddress = async (tonPrivateKey: Uint8Array): Promise<string> => {
+export const createTronOwnerAddress = async (tonPrivateKey: Uint8Array): Promise<string> => {
   const wallet = new ethers.Wallet(await tonPKToTronPK(tonPrivateKey));
   return TronAddress.hexToBase58(wallet.address);
 };

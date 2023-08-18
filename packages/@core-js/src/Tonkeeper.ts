@@ -5,7 +5,7 @@ import { TonAPI } from './TonAPI';
 import { Vault } from './Vault';
 import { TronAPI } from './TronAPI';
 import { Address } from './formatters/Address';
-import { createTronAddress } from './utils/tronUtils';
+import { createTronOwnerAddress } from './utils/tronUtils';
 
 export type ServerSentEventsOptions = {
   baseUrl: () => string;
@@ -73,13 +73,9 @@ export class Tonkeeper {
     this.permissions = new PermissionsManager();
   }
 
-  public async load() {
-    const tronAddress = await this.storage.getItem('tron-owner-address');
 
-    return { tronAddress: tronAddress ?? null };
-  }
 
-  // TODO: for temp, rewrite it when ton wallet will it be moved here; 
+  // TODO: for temp, rewrite it when ton wallet will it be moved here;
   // init() must be called when app starts
   public async init(address: string, isTestnet: boolean, tronAddress: string) {
     try {
@@ -123,11 +119,37 @@ export class Tonkeeper {
     // }
   }
 
+  public tronStrorageKey = 'temp-tron-address';
+
+  public async load() {
+    try {
+      const tronAddress = await this.storage.getItem(this.tronStrorageKey);
+      if (tronAddress) {
+        return { tronAddress: JSON.parse(tronAddress) };
+      }
+      return { tronAddress: null };
+    } catch (err) {
+      console.error('[tk:load]', err);
+      return { tronAddress: null };
+    }
+  }
 
   public async generateTronAddress(tonPrivateKey: Uint8Array) {
     try {
-      const tronAddress = await createTronAddress(tonPrivateKey);
-      await this.storage.setItem('tron-owner-address', tronAddress);
+      const ownerAddress = await createTronOwnerAddress(tonPrivateKey);
+      const tronWallet = await this.tronapi.wallet.getWallet(ownerAddress);
+
+      const tronAddress = {
+        proxy: tronWallet.address,
+        owner: ownerAddress,
+      };
+
+      await this.storage.setItem(
+        this.tronStrorageKey,
+        JSON.stringify(tronAddress),
+      );
+
+      return tronAddress;
     } catch (err) {
       console.error('[Tonkeeper]', err);
     }

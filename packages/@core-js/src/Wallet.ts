@@ -96,14 +96,8 @@ export class Wallet {
       testOnly: walletInfo.network === WalletNetwork.testnet,
     });
 
-    const tronAddresses = walletInfo.tronAddress
-      ? {
-          owner: walletInfo.tronAddress,
-        }
-      : undefined;
-
     this.address = {
-      tron: tronAddresses,
+      tron: walletInfo.tronAddress,
       ton: tonAddresses,
     };
 
@@ -143,17 +137,8 @@ export class Wallet {
   }
 
   // For migrate
-  public async setTronAddress(ownerAddress: string) {
-    const tronWallet = await this.tronapi.wallet.getWallet(ownerAddress);
-    this.address.tron = {
-      proxy: tronWallet.address,
-      owner: ownerAddress,
-    };
-    try {
-      // await this.storage.setItem('tron-address', ownerAddress);
-    } catch (err) {
-      console.error('[Wallet]', err);
-    }
+  public async setTronAddress(addresses: TronAddresses) {
+    this.address.tron = addresses;
   }
 
   private listenTransactions() {
