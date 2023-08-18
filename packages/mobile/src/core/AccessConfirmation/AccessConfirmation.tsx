@@ -56,6 +56,22 @@ export const AccessConfirmation: FC = () => {
     setValue('');
   }, []);
 
+  const createTronAddress = useCallback(async (privateKey: Uint8Array) => {
+    try {
+      // Note: create tron address
+      if (!tk.wallet.address.tron) {
+        const addresses = await tk.generateTronAddress(privateKey);
+        if (addresses) {
+          tk.wallet.setTronAddress(addresses);
+        }
+      } else {
+        console.log('skip create tron address');
+      }
+    } catch (err) {
+      console.error('[generate tron address]', err);
+    }
+  }, []);
+
   const handleKeyboard = useCallback(
     (newValue) => {
       const pin = newValue.substr(0, 4);
@@ -99,8 +115,13 @@ export const AccessConfirmation: FC = () => {
                     setTimeout(() => {
                       pinRef.current?.triggerSuccess();
 
-                      setTimeout(() => {
+                      setTimeout(async () => {
                         if (isUnlock) {
+                          const privateKey = await (
+                            unlockedVault as any
+                          ).getTonPrivateKey();
+                          createTronAddress(privateKey);
+                          
                           dispatch(mainActions.setUnlocked(true));
                         } else {
                           goBack();
@@ -140,20 +161,8 @@ export const AccessConfirmation: FC = () => {
         setTimeout(async () => {
           // Lock screen
           if (isUnlock) {
-            try {
-              // Note: create tron address
-              if (!tk.wallet.address.tron) {
-                const privateKey = await (unlockedVault as any).getTonPrivateKey();
-                const addresses = await tk.generateTronAddress(privateKey);
-                if (addresses) {
-                  tk.wallet.setTronAddress(addresses);
-                }
-              } else {
-                console.log('skip create tron address')
-              }
-            } catch (err) {
-              console.error('[generate tron address]', err);
-            }
+            const privateKey = await (unlockedVault as any).getTonPrivateKey();
+            createTronAddress(privateKey);
 
             dispatch(mainActions.setUnlocked(true));
           } else {
