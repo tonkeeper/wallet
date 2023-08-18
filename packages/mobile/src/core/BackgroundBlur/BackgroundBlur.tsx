@@ -15,34 +15,34 @@ import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 const ANIMATION_DURATION = 100;
 
 export const BackgroundBlur: React.FC = () => {
-  // const state = useAppState();
+  const state = useAppState();
   const [shouldHideOverlay, setShouldHideOverlay] = React.useState(true);
   const opacity = useSharedValue(0);
   const { hideAmounts, showAmounts } = usePrivacyStore((state) => state.actions);
 
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (state) => {
-      if (state === 'inactive') {
-        setTimeout(() => {
-          hideAmounts();
-        }, 200);
-      } else {
-        showAmounts();
-      }
-    });
-    
-    return () => subscription.remove();
-  }, []);
-
   // useEffect(() => {
-  //   if (state === 'active') {
-  //     opacity.value = withTiming(0, { duration: ANIMATION_DURATION });
-  //     setTimeout(() => setShouldHideOverlay(true), ANIMATION_DURATION);
-  //   } else {
-  //     opacity.value = withTiming(1, { duration: ANIMATION_DURATION });
-  //     setShouldHideOverlay(false);
-  //   }
-  // }, [opacity, state]);
+  //   const subscription = AppState.addEventListener('change', (state) => {
+  //     if (state === 'inactive') {
+  //       setTimeout(() => {
+  //         hideAmounts();
+  //       }, 200);
+  //     } else {
+  //       showAmounts();
+  //     }
+  //   });
+    
+  //   return () => subscription.remove();
+  // }, []);
+
+  useEffect(() => {
+    if (state === 'active') {
+      opacity.value = withTiming(0, { duration: ANIMATION_DURATION });
+      setTimeout(() => setShouldHideOverlay(true), ANIMATION_DURATION);
+    } else {
+      opacity.value = withTiming(1, { duration: ANIMATION_DURATION });
+      setShouldHideOverlay(false);
+    }
+  }, [opacity, state]);
 
   const containerStyle = useAnimatedStyle(() => {
     return {
