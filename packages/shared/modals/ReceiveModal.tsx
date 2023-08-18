@@ -96,7 +96,7 @@ export const ReceiveModal = memo(() => {
                 <QRCode
                   data={address2url(tonAddress)}
                   style={styles.qrCode}
-                  logo={qrLogo}
+                  logo={blankAreaForLogo}
                   pieceSize={6.245}
                   width={231}
                 />
@@ -147,11 +147,10 @@ export const ReceiveModal = memo(() => {
             {qrRender2 ? (
               <>
                 <QRCode
-                  data={tonAddress}
+                  data={tronAddress}
                   style={styles.qrCode}
-                  logo={qrLogo}
-                  pieceSize={7}
-                  width={231}
+                  logo={blankAreaForLogo}
+                  pieceSize={8}
                 />
                 <View style={styles.qrLogo}>
                   <Icon name="ic-usdt-56" colorless size={44} />
@@ -199,6 +198,7 @@ const styles = StyleSheet.create({
   },
   qrCode: {
     backgroundColor: '#FFF',
+    // width: 351
   },
   qrLogo: {
     position: 'absolute',
@@ -238,4 +238,4 @@ const styles = StyleSheet.create({
 
 const whitepng =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAE4AAABOAQMAAAC0ZLJeAAAAA1BMVEX///+nxBvIAAAAEElEQVQYGWMYBaNgFNAAAAADWgABYd4igAAAAABJRU5ErkJggg==';
-const qrLogo = { width: 78, height: 78, href: whitepng, scale: 2.3 };
+const blankAreaForLogo = { width: 78, height: 78, href: whitepng, scale: 2.3 };

@@ -17,7 +17,6 @@ import { MappedEventAction } from '../../mappers/AccountEventsMapper';
 import { TransactionNFTItem } from './TransactionNFTItem';
 import React, { memo, useCallback, useMemo } from 'react';
 import { SText } from '@tonkeeper/uikit/src/components/Text';
-import FastImage from 'react-native-fast-image';
 import { t } from '../../i18n';
 import { EncryptedComment, EncryptedCommentLayout } from '../EncryptedComment';
 import { SenderAddress } from '../../mappers/AccountEventsMapper/AccountEventsMapper.utils';
@@ -126,50 +125,33 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
               />
             ) : (
               <> */}
-                {item.iconName && <Icon name={item.iconName} color="iconSecondary" />}
-                {item.inProgress && (
-                  <View style={styles.sendingOuter}>
-                    <View style={styles.sendingInner}>
-                      <Loader size="xsmall" color="constantWhite" />
-                    </View>
-                  </View>
-                )}
-              {/* </>
+            {item.iconName && <Icon name={item.iconName} color="iconSecondary" />}
+            {item.inProgress && (
+              <View style={styles.sendingOuter}>
+                <View style={styles.sendingInner}>
+                  <Loader size="xsmall" color="constantWhite" />
+                </View>
+              </View>
+            )}
+            {/* </>
             )} */}
           </Animated.View>
         }
-        content={
-          <View>
-            {(!!item.nftAddress || !!item.nftItem) && (
-              <TransactionNFTItem
-                highlightStyle={backgroundStyle}
-                nftAddress={item.nftAddress}
-                nftItem={item.nftItem}
-              />
-            )}
-            {!!item.comment && (
-              <Animated.View style={[styles.comment.static, backgroundStyle]}>
-                <Text type="body2">{item.comment}</Text>
-              </Animated.View>
-            )}
-            {!!item.encryptedComment && (
-              <EncryptedComment
-                sender={item.sender as SenderAddress}
-                transactionId={item.eventId}
-                transactionType={item.type}
-                layout={EncryptedCommentLayout.BUBBLE}
-                encryptedComment={item.encryptedComment}
-                backgroundStyle={backgroundStyle}
-              />
-            )}
-            {item.isFailed && (
-              <Text type="body2" color="accentOrange" style={styles.failedText.static}>
-                {t('transactions.failed')}
-              </Text>
-            )}
-          </View>
-        }
-      />
+      >
+        {(!!item.nftAddress || !!item.nftItem) && (
+          <TransactionNFTItem
+            highlightStyle={backgroundStyle}
+            nftAddress={item.nftAddress}
+            nftItem={item.nftItem}
+          />
+        )}
+
+        {item.isFailed && (
+          <Text type="body2" color="accentOrange" style={styles.failedText.static}>
+            {t('transactions.failed')}
+          </Text>
+        )}
+      </List.Item>
       {!item.bottomCorner && <ListSeparator />}
     </View>
   );

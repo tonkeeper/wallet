@@ -1,11 +1,16 @@
 import { StyleSheet, View } from 'react-native';
 import { Screen, Loader, List, Spacer, RefreshControl } from '@tonkeeper/uikit';
 import { TransactionItem } from './TransactionItem';
-import { memo } from 'react';
+import React, { memo } from 'react';
 import {
   MappedEvent,
   MappedEventItemType,
 } from '@tonkeeper/shared/mappers/AccountEventsMapper';
+import {
+  CustomAccountEvent,
+  CustomAccountEventActions,
+} from '@tonkeeper/core/src/TonAPI';
+import { renderActionItem } from './renderActionItem';
 
 interface TransactionsListProps {
   events: MappedEvent[];
@@ -19,6 +24,46 @@ interface TransactionsListProps {
   ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null | undefined;
   ListFooterComponent?: React.ComponentType<any> | React.ReactElement | null | undefined;
 }
+
+
+type AccountEvent = {
+  type: 'Action',
+  
+}
+
+
+type Action = {
+  
+
+}
+
+
+type RenderItemOptions = {
+  index: number;
+  item: {
+    type: 'Date' | 'Action';
+    action: CustomAccountEventActions;
+    event: CustomAccountEvent;
+  };
+};
+
+function NewRenderItem(options: RenderItemOptions) {
+  const { item, index } = options;
+  const isFirstElement = index === 0;
+
+  if (item.type === 'Date') {
+    return (
+      <View>
+        {!isFirstElement && <Spacer y={8} />}
+        <List.Header title={item.date} style={styles.date} />
+      </View>
+    );
+  }
+
+  return renderActionItem(item.action, item.event);
+}
+
+//
 
 type TransactionRenderItemOptions = {
   item: MappedEvent;
@@ -57,10 +102,7 @@ export const TransactionsList = memo<TransactionsListProps>(
     return (
       <Screen.FlashList
         refreshControl={
-          <RefreshControl
-            onRefresh={onRefresh}
-            refreshing={!!refreshing}
-          />
+          <RefreshControl onRefresh={onRefresh} refreshing={!!refreshing} />
         }
         estimatedItemSize={estimatedItemSize}
         keyExtractor={(item) => item.id}
@@ -70,7 +112,7 @@ export const TransactionsList = memo<TransactionsListProps>(
         windowSize={16}
         maxToRenderPerBatch={10}
         updateCellsBatchingPeriod={60}
-        initialNumToRender={20} 
+        initialNumToRender={20}
         data={events}
         safeArea={safeArea}
         decelerationRate="normal"
@@ -83,7 +125,9 @@ export const TransactionsList = memo<TransactionsListProps>(
         }
         ListHeaderComponent={ListHeaderComponent}
         ListFooterComponent={
-          props.ListFooterComponent ?? <Footer loading={!fetchMoreEnd && loading === false} />
+          props.ListFooterComponent ?? (
+            <Footer loading={!fetchMoreEnd && loading === false} />
+          )
         }
       />
     );

@@ -26,7 +26,7 @@ interface ListItemProps {
   navigate?: string;
   subtitleNumberOfLines?: number;
   gestureHandler?: boolean;
-  content?: React.ReactNode;
+  children?: React.ReactNode;
   rightContent?: React.ReactNode;
   valueMultiline?: boolean;
   onPress?: () => void;
@@ -51,6 +51,7 @@ export const ListItem = memo<ListItemProps>((props) => {
     leftContentStyle,
     gestureHandler,
     rightContent,
+    children,
   } = props;
   const router = useRouter();
   const theme = useTheme();
@@ -150,7 +151,7 @@ export const ListItem = memo<ListItemProps>((props) => {
               props.subvalue
             )}
           </View>
-          {props.content}
+          {children}
         </View>
         {props.chevron && <Icon name="ic-chevron-right-16" color="iconTertiary" />}
         {rightContent}
