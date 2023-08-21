@@ -793,7 +793,7 @@
     "title": "Staking",
     "widget_desc": "Earn up to %{apy}% on your TONs",
     "staking_pool_desc": "APY ≈ %{apy}%",
-    "staking_desc": "Minimum deposit from %{minStake} TON.\nEarn up to %{maxApy}%.",
+    "staking_desc": "Minimum deposit %{minStake} TON.\nEarn up to %{maxApy}%.",
     "top_up": "Top up",
     "withdrawal_request": "Withdrawal request",
     "get_withdrawal": "Get withdrawal",
@@ -801,7 +801,6 @@
     "deposit": "Deposit",
     "transaction": "Transaction",
     "active": "Active",
-    "recommended": "Most profitable",
     "other": "Other",
     "warning": {
       "title": "Warning",
