@@ -166,11 +166,13 @@ export const Staking: FC<Props> = () => {
                 <Spacer y={16} />
               </>
             ) : null}
+            {activePools.length > 0 ? (
+              <S.TitleContainer>
+                <Text variant="h3">{t('staking.other')}</Text>
+              </S.TitleContainer>
+            ) : null}
             {data.recommendedList.length > 0 ? (
               <>
-                <S.TitleContainer>
-                  <Text variant="h3">{t('staking.recommended')}</Text>
-                </S.TitleContainer>
                 <List separator={false}>
                   {data.recommendedList.map((provider, index) => (
                     <StakingListCell
@@ -190,11 +192,6 @@ export const Staking: FC<Props> = () => {
             ) : null}
             {data.otherList.length > 0 ? (
               <>
-                {activePools.length > 0 || data.recommendedList.length > 0 ? (
-                  <S.TitleContainer>
-                    <Text variant="h3">{t('staking.other')}</Text>
-                  </S.TitleContainer>
-                ) : null}
                 <List separator={false}>
                   {data.otherList.map((provider, index) => (
                     <StakingListCell
