@@ -291,11 +291,8 @@
   "confirm_sending_fee": "Fee",
   "confirm_sending_message": "Comment",
   "confirm_sending_submit": "Confirm and send",
-  "confirm_sending_sent_title": "Coins sent",
-  "confirm_sending_sent_jetton_title": "Tokens sent",
   "confirm_sending_sent_caption_ton": "Your transaction is sent to the network and will be processed in a few seconds.",
   "confirm_sending_sent_caption_btc": "Your transaction is sent to the network and will be processed within an hour.",
-  "confirm_sending_sent_caption_other": "Your transaction is sent to the network and will be processed within a minute.",
   "confirm_sending_inactive_warn_title": "Inactive contract",
   "confirm_sending_inactive_warn_description": "Do not proceed if you expect blockchain magic to happen. It won't.",
   "confirm_sending_inactive_warn_about": "What you should do",
@@ -388,7 +385,28 @@
     "wallet_initialized": "Wallet initialized",
     "contract_deploy": "Contract Deploy",
     "spam": "Spam",
+    "bid": "Bid",
     "failed": "Failed"
+  },
+
+  "transactionDetails": {
+    "received_date": "Received on %{time}",
+    "sent_date": "Sent on %{time}",
+    "bid_date": "Bid %{time}",
+    "purchase_date": "purchase %{time}",
+    "swapped_date": "Swapped on %{time}",
+    "sender": "Sender",
+    "sender_address": "Sender address",
+    "recipient": "Recipient",
+    "recipient_address": "Recipient address",
+    "comment": "Comment",
+    "transaction": "Transaction",
+    "spam": "SPAM",
+    "address": "Address",
+    "operation": "Operation",
+    "payload": "Payload",
+    "bid_collection_name": "Issuer",
+    "bid_name": "Name"
   },
 
   "browser": {
@@ -775,7 +793,7 @@
     "title": "Staking",
     "widget_desc": "Earn up to %{apy}% on your TONs",
     "staking_pool_desc": "APY ≈ %{apy}%",
-    "staking_desc": "Minimum deposit from %{minStake} TON.\nEarn up to %{maxApy}%.",
+    "staking_desc": "Minimum deposit %{minStake} TON.\nEarn up to %{maxApy}%.",
     "top_up": "Top up",
     "withdrawal_request": "Withdrawal request",
     "get_withdrawal": "Get withdrawal",
@@ -783,11 +801,11 @@
     "deposit": "Deposit",
     "transaction": "Transaction",
     "active": "Active",
-    "recommended": "Most profitable",
     "other": "Other",
     "warning": {
       "title": "Warning",
       "desc": "Staking based on third-party smart contracts. We are not responsible for their work.",
+      "beta_desc": "We are not responsible for the stability and staking experience. Use at your own risk.",
       "about": "About %{name}"
     },
     "details": {
@@ -823,7 +841,8 @@
       "min_deposit": {
         "label": "Minimal deposit",
         "value": "%{value} TON"
-      }
+      },
+      "not_exists": "Invalid pool address"
     },
     "rewards": {
       "title": "Your yearly rewards",
@@ -878,7 +897,7 @@
     "earlier": "Earlier",
     "apps": "Apps",
     "apps_description": "Notifications from connected apps in your activity",
-    "allow_notifications": "Allow notifications",
+    "allow_notifications": "Enable notifications",
     "placeholder": {
       "title": "Notifications will be shown here",
       "description": "Explore apps and services in Tonkeeper browser."
@@ -896,9 +915,12 @@
   "programmable_nfts": {
     "alert": {
       "title": "Are you sure you want to open an external link?",
-        "description": "Visit this external link only if you trust the author of the collection.\n\n{{uri}}",
-        "open": "Open anyway",
-        "cancel": "Cancel"
+      "description": "Visit this external link only if you trust the author of the collection.\n\n{{uri}}",
+      "open": "Open anyway",
+      "cancel": "Cancel"
     }
+  },
+  "exchange": {
+    "not_exists": "Invalid exchange ID"
   }
 }

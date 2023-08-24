@@ -15,7 +15,6 @@ import {
 import { mainActions } from '$store/main';
 import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
 import {
-
   openAccessConfirmation,
   openBackupWords,
   openCreatePin,
@@ -55,11 +54,17 @@ import {
   setLastRefreshedAt,
   setMigrationState,
 } from '$database';
-import { batchActions, Toast, useNotificationsStore, useStakingStore } from '$store';
+import {
+  batchActions,
+  Toast,
+  useConnectedAppsStore,
+  useNotificationsStore,
+  useStakingStore,
+} from '$store';
 import { subscriptionsActions } from '$store/subscriptions';
 import { t } from '@tonkeeper/shared/i18n';
 import { initHandler } from '$store/main/sagas';
-import { getTokenConfig, getWalletName } from '$shared/dynamicConfig';
+import { getChainName, getTokenConfig, getWalletName } from '$shared/dynamicConfig';
 import { withRetryCtx } from '$store/retry';
 import { Cache } from '$store/events/manager/cache';
 import { destroyEventsManager } from '$store/events/sagas';
@@ -80,6 +85,7 @@ import { encryptMessageComment } from '@tonkeeper/core';
 import TonWeb from 'tonweb';
 import { goBack } from '$navigation/imperative';
 import { trackEvent } from '$utils/stats';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 function* generateVaultWorker() {
   try {
@@ -146,6 +152,8 @@ function* createWalletWorker(action: CreateWalletAction) {
     yield put(eventsActions.loadEvents({ isReplace: true }));
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.loadJettons());
+    const addr = yield call([wallet.ton, 'getAddress']);
+    yield call([tk, 'init'], addr);
     onDone();
 
     yield call(trackEvent, 'create_wallet');
@@ -264,6 +272,10 @@ function* switchVersionWorker() {
   const newWallet = new Wallet(walletName, wallet.vault);
   yield call([newWallet, 'save']);
   yield put(walletActions.setWallet(newWallet));
+
+  const addr = yield call([newWallet.ton, 'getAddress']);
+  yield call([tk, 'destroy']);
+  yield call([tk, 'init'], addr);
 
   yield put(eventsActions.resetEvents());
   yield call(destroyEventsManager);
@@ -480,6 +492,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       return;
     }
 
+    yield call([tk.wallet.transactions, 'refetch']);
     yield put(eventsActions.pollEvents());
 
     yield put(
@@ -591,7 +604,11 @@ function* cleanWalletWorker() {
     yield call(clearSubscribeStatus);
     yield call(JettonsCache.clearAll, walletName);
     yield call(useJettonEventsStore.getState().actions.clearStore);
-
+    yield call(
+      useConnectedAppsStore.getState().actions.unsubscribeFromAllNotifications,
+      getChainName(),
+      wallet.address.friendlyAddress,
+    );
     if (isNewFlow) {
       try {
         yield call([wallet.vault, 'clean']);
@@ -844,6 +861,9 @@ function* doMigration(wallet: Wallet, newAddress: string) {
     yield call([newWallet, 'getReadableAddress']);
     yield call([newWallet, 'save']);
     yield put(walletActions.setWallet(newWallet));
+    const addr = yield call([newWallet.ton, 'getAddress']);
+    yield call([tk, 'destroy']);
+    yield call([tk, 'init'], addr);
 
     yield put(
       batchActions(

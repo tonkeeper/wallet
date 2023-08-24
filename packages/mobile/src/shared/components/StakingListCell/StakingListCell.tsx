@@ -1,7 +1,7 @@
 import { useFiatValue } from '$hooks/useFiatValue';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { Steezy } from '$styles';
-import { Icon, Separator, View } from '$uikit';
+import { Icon, Separator, Tag, View } from '$uikit';
 import { stakingFormatter } from '$utils/formatter';
 import React, { FC, memo, useCallback } from 'react';
 import { ImageRequireSource } from 'react-native';
@@ -20,6 +20,8 @@ interface Props {
   separator?: boolean;
   isWidget?: boolean;
   numberOfLines?: number;
+  isWithdrawal?: boolean;
+  beta?: boolean;
   onPress?: (id: string, name: string) => void;
 }
 
@@ -34,6 +36,8 @@ const StakingListCellComponent: FC<Props> = (props) => {
     id,
     isWidget,
     numberOfLines,
+    isWithdrawal,
+    beta,
     onPress,
   } = props;
 
@@ -44,7 +48,7 @@ const StakingListCellComponent: FC<Props> = (props) => {
     stakingJetton ? stakingJetton.balance : balanceValue || '0',
     stakingJetton ? stakingJetton.metadata.decimals : Decimals[CryptoCurrencies.Ton],
     !!stakingJetton,
-    stakingJetton ? stakingJetton.metadata.symbol! : 'TON',
+    stakingJetton && !isWithdrawal ? stakingJetton.metadata.symbol! : 'TON',
   );
 
   const handlePress = useCallback(() => {
@@ -67,7 +71,10 @@ const StakingListCellComponent: FC<Props> = (props) => {
               )}
             </View>
             <S.Content>
-              <S.Title>{name}</S.Title>
+              <S.Row>
+                <S.Title>{name}</S.Title>
+                {beta ? <Tag type="warning">Beta</Tag> : null}
+              </S.Row>
               <S.SubTitle numberOfLines={numberOfLines ?? 2}>{description}</S.SubTitle>
             </S.Content>
             <S.RightContainer>

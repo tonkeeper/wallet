@@ -46,7 +46,6 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   const wallet = useSelector(walletWalletSelector);
   const { amount: balance } = useWalletInfo(CryptoCurrencies.Ton);
 
-  const eventsInfo = useSelector(eventsEventsInfoSelector);
   const [isLoading, setLoading] = useState(!isEdit);
   const [failed, setFailed] = useState(0);
   const [fee, setFee] = useState(
@@ -99,24 +98,24 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
     return () => closeTimer.current && clearTimeout(closeTimer.current);
   }, [isSuccess]);
 
-  const isProcessing = useMemo(() => {
-    if (!info) {
-      return false;
-    }
+  // const isProcessing = useMemo(() => {
+  //   if (!info) {
+  //     return false;
+  //   }
 
-    const type = isEdit ? ActionType.Subscribe : ActionType.UnSubscribe;
-    for (let hash in eventsInfo) {
-      const event = eventsInfo[hash];
-      const action = event.actions.find((action) => action[type]);
-      if (
-        action &&
-        Address.compare(action.recipient.address, info?.subscriptionAddress)
-      ) {
-        return event.inProgress;
-      }
-    }
-    return false;
-  }, [isEdit, info, eventsInfo]);
+  //   const type = isEdit ? ActionType.Subscribe : ActionType.UnSubscribe;
+  //   for (let hash in eventsInfo) {
+  //     const event = eventsInfo[hash];
+  //     const action = event.actions.find((action) => action[type]);
+  //     if (
+  //       action &&
+  //       Address.compare(action.recipient.address, info?.subscriptionAddress)
+  //     ) {
+  //       return event.inProgress;
+  //     }
+  //   }
+  //   return false;
+  // }, [isEdit, info, eventsInfo]);
 
   const loadInfo = useCallback(() => {
     const host = getServerConfig('subscriptionsHost');
@@ -246,7 +245,7 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
       return false;
     }
 
-    if (!isSuccess && !isSending && isProcessing) {
+    if (!isSuccess && !isSending) {
       return false;
     }
 
@@ -255,7 +254,7 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
     }
 
     return info.status === 'new' || info.isActive;
-  }, [info, isEdit, isSuccess, isSending, isProcessing]);
+  }, [info, isEdit, isSuccess, isSending]);
 
   const handleOpenMerchant = useCallback(() => {
     Linking.openURL(info!.returnUrl).catch((err) => {
@@ -386,7 +385,7 @@ export function openSubscription(
   push('SheetsProvider', {
     $$action: SheetActions.ADD,
     component: CreateSubscription,
-    params: { subscription, fee },
+    params: { subscription, fee, isEdit: true },
     path: 'CREATE_SUBSCRIPTION',
   });
 }

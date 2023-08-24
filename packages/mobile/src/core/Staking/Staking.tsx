@@ -16,16 +16,15 @@ import { shallow } from 'zustand/shallow';
 import * as S from './Staking.style';
 import { jettonsBalancesSelector } from '$store/jettons';
 import { useSelector } from 'react-redux';
-import { Ton } from '$libs/Ton';
 import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
+import { Ton } from '$libs/Ton';
+import { useFlag } from '$utils/flags';
 
 interface Props {}
 
 export const Staking: FC<Props> = () => {
-  
-
   const nav = useNavigation();
 
   const { bottom: bottomInset } = useSafeAreaInsets();
@@ -36,28 +35,35 @@ export const Staking: FC<Props> = () => {
 
   const jettonBalances = useSelector(jettonsBalancesSelector);
 
+  const tonstakersBeta = useFlag('tonstakers_beta');
+
   const poolsList = useMemo(() => {
     return pools.map((pool) => {
       const stakingJetton = jettonBalances.find(
-        (item) =>
-          Address(item.jettonAddress).toRaw() ===
-          pool.liquidJettonMaster,
+        (item) => Address(item.jettonAddress).toRaw() === pool.liquidJettonMaster,
       );
 
       const balance = stakingJetton
         ? new BigNumber(stakingJetton.balance)
         : calculatePoolBalance(pool, stakingInfo);
 
+      const pendingWithdrawal = stakingInfo[pool.address]?.pendingWithdraw;
+
       return {
         ...pool,
         stakingJetton,
-        balance: balance.isGreaterThan(0) ? balance.toString() : undefined,
+        isWithdrawal: balance.isEqualTo(0) && !!pendingWithdrawal,
+        balance: balance.isGreaterThan(0)
+          ? balance.toString()
+          : pendingWithdrawal
+          ? Ton.fromNano(pendingWithdrawal)
+          : undefined,
       };
     });
   }, [jettonBalances, pools, stakingInfo]);
 
   const activePools = useMemo(
-    () => poolsList.filter((pool) => !!pool.balance),
+    () => poolsList.filter((pool) => !!pool.balance || pool.isWithdrawal),
     [poolsList],
   );
 
@@ -96,7 +102,7 @@ export const Staking: FC<Props> = () => {
     }
 
     return { activeList, recommendedList, otherList };
-  }, [poolsList, providers, t]);
+  }, [poolsList, providers]);
 
   const refreshControl = useStakingRefreshControl();
 
@@ -145,10 +151,12 @@ export const Staking: FC<Props> = () => {
                       id={pool.address}
                       name={pool.name}
                       balance={pool.balance}
+                      isWithdrawal={pool.isWithdrawal}
                       stakingJetton={pool.stakingJetton}
                       description={t('staking.staking_pool_desc', {
                         apy: pool.apy.toFixed(2),
                       })}
+                      beta={pool.implementation === 'liquidTF' && tonstakersBeta}
                       separator={index < pools.length - 1}
                       iconSource={getPoolIcon(pool)}
                       onPress={handlePoolPress}
@@ -158,11 +166,13 @@ export const Staking: FC<Props> = () => {
                 <Spacer y={16} />
               </>
             ) : null}
+            {activePools.length > 0 ? (
+              <S.TitleContainer>
+                <Text variant="h3">{t('staking.other')}</Text>
+              </S.TitleContainer>
+            ) : null}
             {data.recommendedList.length > 0 ? (
               <>
-                <S.TitleContainer>
-                  <Text variant="h3">{t('staking.recommended')}</Text>
-                </S.TitleContainer>
                 <List separator={false}>
                   {data.recommendedList.map((provider, index) => (
                     <StakingListCell
@@ -171,6 +181,7 @@ export const Staking: FC<Props> = () => {
                       name={provider.name}
                       iconSource={getImplementationIcon(provider.id)}
                       description={provider.description}
+                      beta={provider.id === 'liquidTF' && tonstakersBeta}
                       separator={index < providers.length - 1}
                       onPress={handleProviderPress}
                     />
@@ -181,11 +192,6 @@ export const Staking: FC<Props> = () => {
             ) : null}
             {data.otherList.length > 0 ? (
               <>
-                {data.activeList.length > 0 || data.recommendedList.length > 0 ? (
-                  <S.TitleContainer>
-                    <Text variant="h3">{t('staking.other')}</Text>
-                  </S.TitleContainer>
-                ) : null}
                 <List separator={false}>
                   {data.otherList.map((provider, index) => (
                     <StakingListCell
@@ -194,6 +200,7 @@ export const Staking: FC<Props> = () => {
                       name={provider.name}
                       iconSource={getImplementationIcon(provider.id)}
                       description={provider.description}
+                      beta={provider.id === 'liquidTF' && tonstakersBeta}
                       separator={index < providers.length - 1}
                       onPress={handleProviderPress}
                     />

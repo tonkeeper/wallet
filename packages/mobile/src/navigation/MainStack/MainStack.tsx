@@ -95,7 +95,7 @@ export const MainStack: FC = () => {
 
 
       {renderRoot()}
-      <Stack.Screen name={MainStackRouteNames.Wallet} component={Wallet} />
+      <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />
       <Stack.Screen name={MainStackRouteNames.StakingPools} component={StakingPools} />
       <Stack.Screen

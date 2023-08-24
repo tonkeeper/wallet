@@ -36,6 +36,11 @@ export const Title = styled(Text).attrs(() => ({
   numberOfLines: 1,
 }))``;
 
+export const Row = styled.View`
+  align-items: center;
+  flex-direction: row;
+`;
+
 export const SubTitle = styled(Text).attrs(() => ({
   variant: 'body2',
   color: 'foregroundSecondary',

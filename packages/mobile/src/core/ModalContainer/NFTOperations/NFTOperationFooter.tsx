@@ -23,6 +23,7 @@ import {
   CanceledActionError,
   DismissedActionError,
 } from '$core/Send/steps/ConfirmStep/ActionErrors';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 enum States {
   INITIAL,
@@ -165,6 +166,7 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
 
           await delay(1750);
 
+          tk.wallet.transactions.refetch();
           dispatch(eventsActions.pollEvents());
           closeModal();
 

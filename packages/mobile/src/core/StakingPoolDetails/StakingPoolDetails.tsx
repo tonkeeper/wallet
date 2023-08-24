@@ -2,9 +2,19 @@ import { usePoolInfo } from '$hooks/usePoolInfo';
 import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
 import { MainStackRouteNames, openDAppBrowser, openSend } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
-import { BottomButtonWrap, BottomButtonWrapHelper, NextCycle } from '$shared/components';
+import {
+  BottomButtonWrap,
+  BottomButtonWrapHelper,
+  NextCycle,
+  StakingWarning,
+} from '$shared/components';
 import { getServerConfig, KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
-import { getStakingPoolByAddress, useStakingStore } from '$store';
+import {
+  getStakingPoolByAddress,
+  getStakingPoolsByProvider,
+  getStakingProviderById,
+  useStakingStore,
+} from '$store';
 import { Button, Highlight, Icon, ScrollHandler, Separator, Spacer, Text } from '$uikit';
 import { stakingFormatter } from '$utils/formatter';
 import { RouteProp } from '@react-navigation/native';
@@ -17,10 +27,13 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
+import { useFlag } from '$utils/flags';
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPoolDetails>;
 }
+
+const TONSTAKERS_URL = 'https://tonstakers.com';
 
 export const StakingPoolDetails: FC<Props> = (props) => {
   const {
@@ -29,10 +42,17 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     },
   } = props;
 
+  const tonstakersBeta = useFlag('tonstakers_beta');
+
   const pool = useStakingStore((s) => getStakingPoolByAddress(s, poolAddress), shallow);
   const poolStakingInfo = useStakingStore((s) => s.stakingInfo[pool.address], shallow);
-
-  
+  const provider = useStakingStore(
+    (s) => ({
+      ...getStakingProviderById(s, pool.implementation),
+      poolsCount: getStakingPoolsByProvider(s, pool.implementation).length,
+    }),
+    shallow,
+  );
 
   const refreshControl = useStakingRefreshControl();
 
@@ -53,7 +73,9 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     handleConfirmWithdrawalPress,
   } = usePoolInfo(pool, poolStakingInfo);
 
-  const [detailsVisible, setDetailsVisible] = useState(!hasDeposit && !hasPendingDeposit);
+  const hasAnyBalance = hasDeposit || hasPendingDeposit;
+
+  const [detailsVisible, setDetailsVisible] = useState(!hasAnyBalance);
 
   const handleDetailsButtonPress = useCallback(() => setDetailsVisible(true), []);
 
@@ -95,6 +117,18 @@ export const StakingPoolDetails: FC<Props> = (props) => {
           showsVerticalScrollIndicator={false}
         >
           <S.Content>
+            {!hasAnyBalance && provider.id === 'liquidTF' ? (
+              <>
+                <StakingWarning
+                  title={`${pool.name} Beta`}
+                  name={pool.name}
+                  url={TONSTAKERS_URL}
+                  beta={tonstakersBeta}
+                  accent={true}
+                />
+                <Spacer y={16} />
+              </>
+            ) : null}
             <S.BalanceContainer>
               <Text variant="label1">{t('staking.details.balance')}</Text>
               <S.BalanceRight>
@@ -188,6 +222,17 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                 <S.TitleContainer>
                   <Text variant="label1">{t('staking.details.about_pool')}</Text>
                 </S.TitleContainer>
+                {hasAnyBalance && provider.id === 'liquidTF' ? (
+                  <>
+                    <StakingWarning
+                      title={`${pool.name} Beta`}
+                      name={pool.name}
+                      url={TONSTAKERS_URL}
+                      beta={tonstakersBeta}
+                    />
+                    <Spacer y={16} />
+                  </>
+                ) : null}
                 <S.Table>
                   {infoRows.map((item, i) => [
                     <React.Fragment key={item.label}>

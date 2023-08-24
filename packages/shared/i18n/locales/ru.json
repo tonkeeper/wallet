@@ -290,11 +290,8 @@
   "confirm_sending_fee": "Комиссия",
   "confirm_sending_message": "Комментарий",
   "confirm_sending_submit": "Подтвердить и отправить",
-  "confirm_sending_sent_title": "Деньги отправлены",
-  "confirm_sending_sent_jetton_title": "Токены отправлены",
   "confirm_sending_sent_caption_ton": "Транзакция отправлена в сеть и будет подтверждена через пару секунд.",
   "confirm_sending_sent_caption_btc": "Транзакция отправлена в сеть и будет подтверждена в течение часа.",
-  "confirm_sending_sent_caption_other": "Транзакция отправлена в сеть и будет подтверждена в течение минуты.",
   "confirm_sending_inactive_warn_title": "Неактивный контракт",
   "confirm_sending_inactive_warn_description": "Не продолжайте, если вы ожидаете волшебства от блокчейна. Этого не произойдет.",
   "confirm_sending_inactive_warn_about": "Что важно знать",
@@ -372,8 +369,6 @@
     "token_copied": "ID токена скопирован"
   },
 
-
-
   "activity": {
     "screen_title": "Активность",
     "sent": "Отправить",
@@ -391,17 +386,33 @@
     "unsubscription": "Отмена подписки",
     "smartcontract_exec": "Вызов контракта",
     "unknown": "Неизвестно",
-    "unknown_description": "Что-то произошло, но мы не смогли распознать",
+    "unknown_description": "Что-то произошло, \nно мы не распознали",
     "swap": "Обмен",
     "wallet_initialized": "Кошелёк инициализирован",
     "contract_deploy": "Создание контракта",
     "spam": "Спам",
+    "bid": "Ставка",
     "failed": "Неуспешно"
   },
 
   "transactionDetails": {
-    "received_time": "Received on %{time}",
-    "sent_time": "Sent on %{time}"
+    "received_date": "Получено  %{time}",
+    "sent_date": "Отправлено %{time}",
+    "swapped_date": "Обмен %{time}",
+    "purchase_date": "Покупка %{time}",
+    "bid_date": "Ставка %{time}",
+    "sender": "Отправитель",
+    "sender_address": "Адрес отправителя",
+    "recipient": "Получатель",
+    "recipient_address": "Адрес получателя",
+    "comment": "Комментарий",
+    "transaction": "Транзакция",
+    "spam": "СПАМ",
+    "address": "Адрес",
+    "operation": "Операция",
+    "payload": "Данные",
+    "bid_collection_name": "Эмитент",
+    "bid_name": "Название"
   },
 
   "browser": {
@@ -788,7 +799,7 @@
     "title": "Стейкинг",
     "widget_desc": "Зарабатывайте на TON до %{apy}%",
     "staking_pool_desc": "APY ≈ %{apy}%",
-    "staking_desc": "Депозит от %{minStake} TON.\nЗарабатывайте до %{maxApy}%.",
+    "staking_desc": "Мин. депозит %{minStake} TON.\nЗарабатывайте до %{maxApy}%.",
     "top_up": "Пополнить",
     "withdrawal_request": "Запрос на вывод",
     "get_withdrawal": "Получить вывод",
@@ -796,11 +807,11 @@
     "deposit": "Депозит",
     "transaction": "Транзакция",
     "active": "Активные",
-    "recommended": "Наиболее прибыльный",
     "other": "Другие",
     "warning": {
       "title": "Предупреждение",
       "desc": "Стейкинг основан на сторонних смарт-контрактах. Мы не несем ответственность за их работу.",
+      "beta_desc": "Мы не несём ответственность за стабильность и результат стейкинга. Используйте на свой страх и риск.",
       "about": "Подробнее о %{name}"
     },
     "details": {
@@ -873,7 +884,8 @@
       "title": "У вас не останется для вывода",
       "message": "Пожалуйста, оставьте минимум {{amount}} TON на вашем балансе.",
       "continue": "Продолжить всё равно"
-    }
+    },
+    "not_exists": "Неверный адрес пула"
   },
 
   "update": {
@@ -899,7 +911,7 @@
     "earlier": "Ранее",
     "apps": "Приложения",
     "apps_description": "Уведомления от подключенных приложений в вашей активности",
-    "allow_notifications": "Разрешить уведомления",
+    "allow_notifications": "Включить уведомления",
     "placeholder": {
       "title": "Уведомления будут отображаться здесь",
       "description": "Исследуйте приложения и сервисы в браузере Tonkeeper."
@@ -921,5 +933,8 @@
       "open": "Открыть всё равно",
       "cancel": "Отмена"
     }
+  },
+  "exchange": {
+    "not_exists": "Неверный ID обменника"
   }
 }

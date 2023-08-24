@@ -43,7 +43,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   const unlockVault = useUnlockVault();
   const theme = useTheme();
   const nav = useNavigation();
-  const [withNotifications, setWithNotifications] = React.useState(false);
+  const [withNotifications, setWithNotifications] = React.useState(true);
 
   const { version } = useSelector(walletSelector);
   const { isTestnet } = useSelector(mainSelector);
@@ -169,29 +169,28 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
         );
 
         if (withNotifications) {
-          const proof_token = await SecureStore.getItemAsync('proof_token');
-
-          if (!proof_token) {
-            const proof = await createTonProofForTonkeeper(
-              address,
-              privateKey,
-              walletStateInit,
-            );
-            const walletApi = new WalletApi(
-              new Configuration({
-                basePath: getServerConfig('tonapiV2Endpoint'),
-                headers: {
-                  Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
-                },
-              }),
-            );
-            const token = await walletApi.tonConnectProof({
-              tonConnectProofRequest: proof,
-            });
-            SecureStore.setItemAsync('proof_token', token.token, {
-              requireAuthentication: false,
-            });
+          const proof = await createTonProofForTonkeeper(
+            address,
+            privateKey,
+            walletStateInit,
+          );
+          const walletApi = new WalletApi(
+            new Configuration({
+              basePath: getServerConfig('tonapiV2Endpoint'),
+              headers: {
+                Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+              },
+            }),
+          );
+          if (proof.error) {
+            return;
           }
+          const token = await walletApi.tonConnectProof({
+            tonConnectProofRequest: proof,
+          });
+          SecureStore.setItemAsync('proof_token', token.token, {
+            requireAuthentication: false,
+          });
         }
 
         requestPromise.resolve({

@@ -39,10 +39,7 @@ interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
 }
 
-const getTitle = (
-  transactionType: StakingTransactionType,
-  t: any
-) => {
+const getTitle = (transactionType: StakingTransactionType, t: any) => {
   switch (transactionType) {
     case StakingTransactionType.WITHDRAWAL:
       return t('staking.withdrawal_request');
@@ -90,8 +87,6 @@ export const StakingSend: FC<Props> = (props) => {
 
   const pendingDeposit = Ton.fromNano(poolStakingInfo?.pendingDeposit ?? '0');
   const readyWithdraw = Ton.fromNano(poolStakingInfo?.readyWithdraw ?? '0');
-
-  
 
   const stepViewRef = useRef<StepViewRef>(null);
 
@@ -216,7 +211,6 @@ export const StakingSend: FC<Props> = (props) => {
     operations,
     pool,
     poolInfo.stakingJetton,
-    t,
     transactionType,
     walletAddress,
   ]);
@@ -266,7 +260,7 @@ export const StakingSend: FC<Props> = (props) => {
 
         const isEnoughToWithdraw = new BigNumber(checkResult.balance)
           .minus(new BigNumber(totalAmount))
-          .isGreaterThanOrEqualTo(Ton.toNano(1));
+          .isGreaterThanOrEqualTo(withdrawalAlertFee);
 
         if (!isEnoughToWithdraw && isDeposit) {
           const shouldContinue = await new Promise((res) =>
@@ -305,7 +299,7 @@ export const StakingSend: FC<Props> = (props) => {
     } finally {
       setSending(false);
     }
-  }, [accountEvent, address.ton, isDeposit, pool, t, unlockVault]);
+  }, [accountEvent, address.ton, isDeposit, pool, unlockVault]);
 
   useEffect(() => {
     if (isWithdrawalConfrim) {

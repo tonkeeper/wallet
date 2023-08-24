@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { Screen, Spacer, SpacerSizes, View } from '$uikit';
-import { List } from '@tonkeeper/uikit';
+import { List, isAndroid } from '@tonkeeper/uikit';
 // import { List } from '$uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
@@ -238,9 +238,8 @@ export const BalancesList = memo<BalancesListProps>(
           type: ContentType.Token,
           onPress: () => openJetton(item.address.rawAddress),
           picture: item.iconUrl,
-          title: item.name,
+          title: item.symbol,
           value: item.quantity.formatted,
-          label: item.symbol,
           subvalue: item.rate.total,
           rate: item.rate.price
             ? {
@@ -289,7 +288,7 @@ export const BalancesList = memo<BalancesListProps>(
 
     return (
       <ListComponent
-        drawDistance={750}
+        drawDistance={isAndroid ? 750 : undefined}
         ListHeaderComponent={ListHeaderComponent}
         getItemType={(item) => item.type}
         renderItem={RenderItem}

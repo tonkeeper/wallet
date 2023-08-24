@@ -11,11 +11,11 @@ import { Icon } from '../Icon';
 import { View } from '../View';
 
 interface ListItemProps {
+  titleType?: 'primary' | 'secondary';
   title?: string | React.ReactNode;
   subtitle?: string | React.ReactNode;
   value?: string | React.ReactNode;
   subvalue?: string | React.ReactNode;
-  label?: string | React.ReactNode;
   valueStyle?: StyleProp<TextStyle>;
   picture?: string;
   pictureStyle?: StyleProp<ViewStyle>;
@@ -28,6 +28,7 @@ interface ListItemProps {
   gestureHandler?: boolean;
   content?: React.ReactNode;
   rightContent?: React.ReactNode;
+  valueMultiline?: boolean;
   onPress?: () => void;
   onPressIn?: () => void;
   onPressOut?: () => void;
@@ -45,9 +46,11 @@ export const ListItem = memo<ListItemProps>((props) => {
     navigate,
     pictureCorner = 'full',
     subtitleNumberOfLines = 1,
+    valueMultiline,
+    titleType = 'primary',
     leftContentStyle,
     gestureHandler,
-    rightContent
+    rightContent,
   } = props;
   const router = useRouter();
   const theme = useTheme();
@@ -97,40 +100,33 @@ export const ListItem = memo<ListItemProps>((props) => {
         <View style={styles.lines}>
           <View style={styles.topLine}>
             <View style={styles.titleContainer}>
-              <View style={styles.titleWithLable}>
-                {isString(props.title) ? (
-                  <Text
-                    style={styles.titleText}
-                    ellipsizeMode="tail"
-                    numberOfLines={1}
-                    type="label1"
-                  >
-                    {props.title}
-                  </Text>
-                ) : (
-                  props.title
-                )}
-                {isString(props.label) ? (
-                  <Text
-                    style={styles.labelText.static}
-                    color="textTertiary"
-                    numberOfLines={1}
-                    type="label1"
-                  >
-                    {props.label}
-                  </Text>
-                ) : (
-                  props.label
-                )}
-              </View>
+              {isString(props.title) ? (
+                <Text
+                  color={titleType === 'primary' ? 'textPrimary' : 'textSecondary'}
+                  type={titleType === 'primary' ? 'label1' : 'body1'}
+                  ellipsizeMode="tail"
+                  numberOfLines={1}
+                >
+                  {props.title}
+                </Text>
+              ) : (
+                props.title
+              )}
             </View>
-            {isString(props.value) ? (
-              <Text type="label1" style={props.valueStyle}>
-                {`  ${props.value}`}
-              </Text>
-            ) : (
-              props.value
-            )}
+            <View style={styles.valueContainer}>
+              {isString(props.value) ? (
+                <Text
+                  numberOfLines={!valueMultiline ? 1 : undefined}
+                  style={props.valueStyle}
+                  textAlign="right"
+                  type="label1"
+                >
+                  {`  ${props.value}`}
+                </Text>
+              ) : (
+                props.value
+              )}
+            </View>
           </View>
           <View style={styles.bottomLine}>
             <View style={styles.subtitleContainer}>
@@ -154,7 +150,6 @@ export const ListItem = memo<ListItemProps>((props) => {
               props.subvalue
             )}
           </View>
-          
           {props.content}
         </View>
         {props.chevron && <Icon name="ic-chevron-right-16" color="iconTertiary" />}
@@ -204,8 +199,7 @@ const styles = Steezy.create(({ colors }) => ({
     flexDirection: 'row',
   },
   titleContainer: {
-    flexGrow: 1,
-    flexShrink: 1,
+    marginRight: 6,
   },
   subtitleContainer: {
     flex: 1,
@@ -213,11 +207,9 @@ const styles = Steezy.create(({ colors }) => ({
   titleWithLable: {
     flexDirection: 'row',
   },
-  titleText: {
-    flexShrink: 1,
-  },
-  labelText: {
-    marginLeft: 4,
+  valueContainer: {
+    flex: 1,
+    alignItems: 'flex-end',
   },
   subvalueText: {
     color: colors.textSecondary,

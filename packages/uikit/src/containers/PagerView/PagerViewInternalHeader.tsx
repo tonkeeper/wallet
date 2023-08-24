@@ -1,4 +1,4 @@
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { ScreenLargeHeaderHeight } from '../Screen/utils/constants';
 import { StyleSheet, useWindowDimensions } from 'react-native';
 import { usePagerView } from './hooks/usePagerView';
@@ -9,14 +9,14 @@ import { useTheme } from '../../styles';
 
 export const PagerViewInternalHeader = memo<PropsWithChildren>((props) => {
   const { measureHeader, scrollY } = usePagerView();
-  const { isLargeHeader } = useScreenScroll();
+  const { headerType } = useScreenScroll();
   const dimensions = useWindowDimensions();
   const theme = useTheme();
 
   const largeHeaderHeight = useAnimatedStyle(() => ({
     width: dimensions.width,
-    height: withTiming(isLargeHeader.value ? ScreenLargeHeaderHeight : 0),
-  }), [isLargeHeader.value, dimensions.width]);
+    height: headerType === 'large' ? ScreenLargeHeaderHeight : 0
+  }));
 
   const containerAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: -scrollY.value }],

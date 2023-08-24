@@ -12,6 +12,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { IStakingStore, StakingApiStatus, StakingInfo, StakingProvider } from './types';
 import { i18n } from '$translation';
 import _ from 'lodash';
+import { getFlag } from '$utils/flags';
 
 const getStakingApi = () => {
   return new StakingApi(
@@ -80,7 +81,8 @@ export const useStakingStore = create(
             let nextState: Partial<IStakingStore> = {};
 
             const tonstakersEnabled =
-              useDevFeaturesToggle.getState().devFeatures[DevFeature.Tonstakers];
+              useDevFeaturesToggle.getState().devFeatures[DevFeature.Tonstakers] &&
+              !getFlag('disable_tonstakers');
 
             if (poolsResponse.status === 'fulfilled') {
               const { implementations } = poolsResponse.value;

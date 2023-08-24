@@ -9,6 +9,8 @@ import { useRouter } from '@tonkeeper/router';
 import { Address } from '@tonkeeper/core';
 import { t } from '../../i18n';
 
+import { openNftModal } from '@tonkeeper/mobile/src/core/NFT/NFT';
+
 interface TransactionNFTItemProps {
   nftAddress?: string;
   nftItem?: NftItem;
@@ -26,9 +28,10 @@ export const TransactionNFTItem = memo<TransactionNFTItemProps>((props) => {
     const address = nftAddress ?? nftItem?.address;
     if (address) {
       // TODO: Replace with new router
-      router.navigate('NFTItemDetails', {
-        keyPair: { currency: 'ton', address },
-      });
+      openNftModal(address);
+      // router.navigate('NFTItemDetails', {
+      //   keyPair: { currency: 'ton', address: Address(address).toFriendly() },
+      // });
     }
   }, [nftAddress, nftItem?.address]);
 
@@ -52,7 +55,7 @@ export const TransactionNFTItem = memo<TransactionNFTItemProps>((props) => {
       : t('nft_single_nft');
 
     return (
-      <Pressable style={styles.container.static} onPress={handlePress}>
+      <Pressable onPress={handlePress} style={styles.container.static}>
         <Animated.View style={[styles.item.static, props.highlightStyle]}>
           <View style={styles.pictureContainer}>
             <FastImage
@@ -95,7 +98,7 @@ export const TransactionNFTItem = memo<TransactionNFTItemProps>((props) => {
 
 const styles = Steezy.create(({ colors, corners }) => ({
   container: {
-    alignSelf: 'flex-start',
+    alignItems: 'flex-start',
     minWidth: 180,
   },
   item: {

@@ -1,0 +1,45 @@
+From a28b5714aabe8261b2f605caa55de30a6836656f Mon Sep 17 00:00:00 2001
+From: Max Voloshinskii <me@voloshinskii.ru>
+Date: Thu, 10 Aug 2023 05:02:20 +0400
+Subject: [PATCH] patch
+
+---
+ packages/mobile/android/app/src/main/AndroidManifest.xml | 4 +++-
+ packages/mobile/react-native.config.js                   | 8 ++++++++
+ 2 files changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/packages/mobile/android/app/src/main/AndroidManifest.xml b/packages/mobile/android/app/src/main/AndroidManifest.xml
+index 24d427b9..995a16d0 100644
+--- a/packages/mobile/android/app/src/main/AndroidManifest.xml
++++ b/packages/mobile/android/app/src/main/AndroidManifest.xml
+@@ -8,7 +8,9 @@
+         <package android:name="com.github.android" />
+     </queries>
+ 
+-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
++    <!--
++        <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
++    -->
+     <uses-permission android:name="android.permission.INTERNET"/>
+     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+diff --git a/packages/mobile/react-native.config.js b/packages/mobile/react-native.config.js
+index d493c3ec..f45c7606 100644
+--- a/packages/mobile/react-native.config.js
++++ b/packages/mobile/react-native.config.js
+@@ -1,4 +1,12 @@
+ module.exports = {
++  dependencies: {
++    'react-native-apk-install': {
++      platforms: {
++        android: null,
++        ios: null,
++      },
++    },
++  },
+   project: {
+     ios: {},
+     android: {},
+-- 
+2.39.2 (Apple Git-143)
+

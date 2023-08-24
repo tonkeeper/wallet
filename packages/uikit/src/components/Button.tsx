@@ -13,6 +13,7 @@ import { Loader } from './Loader';
 import { Text } from './Text';
 import { ns } from '../utils';
 import { IconNames, Icon } from '@tonkeeper/uikit';
+import { isString } from '../utils/strings';
 
 export type ButtonColors = 'primary' | 'secondary' | 'tertiary';
 export type ButtonSizes = 'large' | 'medium' | 'small';
@@ -20,7 +21,8 @@ export type ButtonSizes = 'large' | 'medium' | 'small';
 export interface ButtonProps {
   size?: ButtonSizes;
   color?: ButtonColors;
-  title?: string | ReactNode;
+  title?: string;
+  children?: React.ReactNode;
   onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
@@ -45,6 +47,7 @@ export const Button = memo<ButtonProps>((props) => {
     stretch,
     icon,
     indentBottom,
+    children,
     indentTop,
     indent,
     style,
@@ -93,6 +96,8 @@ export const Button = memo<ButtonProps>((props) => {
       <Pressable disabled={disabled || loading} onPress={handlePress} style={buttonStyle}>
         {loading ? (
           <Loader size="medium" color="iconPrimary" />
+        ) : !!children ? (
+          <View style={styles.content}>{children}</View>
         ) : (
           <>
             <Text
@@ -159,6 +164,11 @@ const styles = StyleSheet.create({
   },
   indentBottom: {
     marginBottom: ns(16),
+  },
+  content: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

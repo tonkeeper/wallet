@@ -6,9 +6,9 @@ import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { Base64, delay, fromNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
-import { store, Toast } from '$store';
+import { store, Toast, useStakingStore } from '$store';
 import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
-import { openSend } from '../helper';
+import { openBuyFiat, openSend } from '../helper';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 
 import { t } from '@tonkeeper/shared/i18n';
@@ -18,7 +18,7 @@ import { useNavigation } from '@tonkeeper/router';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 import { isSignRawParams } from '$utils/isSignRawParams';
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
-import { AppStackRouteNames } from '$navigation/navigationNames';
+import { AppStackRouteNames, MainStackRouteNames } from '$navigation/navigationNames';
 import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { openTimeNotSyncedModal } from '$core/ModalContainer/TimeNotSynced/TimeNotSynced';
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
@@ -31,9 +31,11 @@ import { checkFundsAndOpenNFTTransfer } from '$core/ModalContainer/NFTOperations
 import { openNFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
 import { getCurrentRoute } from '$navigation/imperative';
 import { IConnectQrQuery } from '$tonconnect/models';
-import { openDeprecatedConfirmSending } from '$core/ModalContainer/ConfirmSending/ConfirmSending';
 import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
 import { Address } from '@tonkeeper/core';
+import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
+import { isMethodIdExists } from '$store/zustand/methodsToBuy/helpers';
+import { shallow } from 'zustand/esm/shallow';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -134,6 +136,42 @@ export function useDeeplinkingResolvers() {
     }
   });
 
+  deeplinking.add('/exchange/:id', async ({ params }) => {
+    const methodId = params.id;
+    if (!getWallet()) {
+      return openRequireWalletModal();
+    } else {
+      Toast.loading();
+      // refetch methods to buy TON
+      await useMethodsToBuyStore.getState().actions.fetchMethodsToBuy();
+
+      if (!isMethodIdExists(methodId)) {
+        Toast.fail(t('exchange.not_exists'));
+        return;
+      }
+
+      Toast.hide();
+      openBuyFiat(CryptoCurrencies.Ton, methodId);
+    }
+  });
+
+  deeplinking.add('/pool/:address', async ({ params }) => {
+    const poolAddress = params.address;
+
+    await useStakingStore.getState().actions.fetchPools();
+
+    const foundPool = useStakingStore
+      .getState()
+      .pools?.find((pool) => Address.compare(pool.address, poolAddress));
+
+    if (!foundPool) {
+      Toast.fail(t('staking.not_exists'));
+      return;
+    }
+
+    nav.push(MainStackRouteNames.StakingPoolDetails, { poolAddress: foundPool.address });
+  });
+
   deeplinking.add('/swap', ({ query }) => {
     if (!getWallet()) {
       return openRequireWalletModal();
@@ -232,7 +270,7 @@ export function useDeeplinkingResolvers() {
                 isJetton: true,
               };
 
-              openDeprecatedConfirmSending(options);
+              openSend(options);
             },
           }),
         );
@@ -253,16 +291,12 @@ export function useDeeplinkingResolvers() {
                 amount,
                 fee: details.fee,
                 isInactive: details.isInactive,
-                withGoBack: resolveParams.withGoBack,
                 methodId: resolveParams.methodId,
               };
               if (options.methodId) {
                 nav.openModal('NewConfirmSending', options);
               } else {
-                openDeprecatedConfirmSending({
-                  ...options,
-                  withGoBack: resolveParams.withGoBack ?? false,
-                });
+                openSend(options);
               }
             },
           }),
