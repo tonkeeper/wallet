@@ -74,8 +74,7 @@ export const СonfirmRenewAllDomains = memo((props) => {
 
         const queryMsg = await tx.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
-        const t = await Tonapi.sendBoc(boc);
-        console.log(t);
+        await Tonapi.sendBoc(boc);
 
         remove(domain.dns_item.address);
       }
