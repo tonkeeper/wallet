@@ -8,6 +8,7 @@ import { Address } from '$libs/Ton';
 
 const initialState: Omit<ExpiringDomains, 'actions'> = {
   domains: {},
+  items: [],
 };
 
 export const useExpiringDomains = create(
@@ -17,27 +18,30 @@ export const useExpiringDomains = create(
       load: async (account_id) => {
         try {
           const { data } = await Tonapi.getExpiringDNS({
-            account_id, 
-            period: 30,
+            account_id,
+            period: 365,
           });
-          
+
           const domains = {};
           for (let item of data.items) {
             domains[item.dns_item.address] = item.expiring_at;
           }
 
-          set({ domains });
+          set({ domains, items: data.items });
         } catch (err) {
           console.log('err[getExpiringDNS]', err);
         }
       },
       remove: (address) => {
-        set(({ domains }) => { 
+        set(({ domains, items }) => {
           const rawAddress = new Address(address).format({ raw: true });
           const { [rawAddress]: remove, ...rest } = domains;
-          return { domains: rest };
+
+          const newItems = items.filter((item) => item.dns_item.address !== address);
+
+          return { domains: rest, items: newItems };
         });
-      }
+      },
     },
   })),
 );

@@ -199,7 +199,7 @@ const styles = Steezy.create(({ colors }) => ({
     height: 44,
     borderRadius: 44 / 2,
     overflow: 'hidden',
-    backgroundColor: colors.backgroundContentTint,
+    backgroundColor: colors.backgroundContentAttention,
   },
   picture: {
     width: 44,

@@ -32,6 +32,7 @@ import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewCon
 import { ActionModal } from '$core/ModalContainer/Action/Action';
 import { ExchangeModal } from '$modals/ExchangeModal';
 import { Swap } from '$core/Swap/Swap';
+import { RenewAllDomainModal } from '../tabs/Wallet/RenewAllDomainModal';
 
 const Stack = createModalStackNavigator();
 
@@ -57,6 +58,7 @@ export const ModalStack = React.memo(() => (
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal component={NFT} path="NFTItemDetails" />
+      <Stack.Modal component={RenewAllDomainModal} path="RenewAllDomains" />
       <Stack.Modal component={Receive} path={AppStackRouteNames.Receive} />
       <Stack.Modal component={Send} path={AppStackRouteNames.Send} />
       <Stack.Modal component={StakingSend} path={AppStackRouteNames.StakingSend} />

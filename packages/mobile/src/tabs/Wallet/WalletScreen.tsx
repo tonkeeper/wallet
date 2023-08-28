@@ -44,6 +44,8 @@ import { UpdateState } from '$store/zustand/updates/types';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { ShowBalance } from '$core/HideableAmount/ShowBalance';
+import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
+import { ExpiringDomainCell } from './components/ExpiringDomainCell';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -64,6 +66,7 @@ export const WalletScreen = memo(() => {
   const isFocused = useIsFocused();
 
   const notifications = useInternalNotifications();
+  const expiringDomains = useExpiringDomains((state) => Object.keys(state.domains).length);
 
   // TODO: rewrite
   useEffect(() => {
@@ -245,12 +248,20 @@ export const WalletScreen = memo(() => {
             <Tabs.Section index={0}>
               <BalancesList
                 ListHeaderComponent={
-                  wallet ? (
-                    <ApprovalCell
-                      withoutSpacer
-                      style={{ paddingHorizontal: ns(16), paddingBottom: ns(16) }}
-                    />
-                  ) : undefined
+                  <>
+                    {wallet && expiringDomains > 0 && (
+                      <ExpiringDomainCell
+                        withoutSpacer
+                        style={{ paddingHorizontal: ns(16), paddingBottom: ns(8) }}
+                      />
+                    )}
+                    {wallet ? (
+                      <ApprovalCell
+                        withoutSpacer
+                        style={{ paddingHorizontal: ns(16), paddingBottom: ns(16) }}
+                      />
+                    ) : undefined}
+                  </>
                 }
                 balance={balance}
                 tokens={tokens}
@@ -263,12 +274,14 @@ export const WalletScreen = memo(() => {
             <Tabs.Section index={1}>
               <Tabs.FlashList
                 ListHeaderComponent={
-                  wallet ? (
-                    <ApprovalCell
-                      withoutSpacer
-                      style={{ paddingHorizontal: ns(6), paddingBottom: ns(16) }}
-                    />
-                  ) : undefined
+                  <>
+                    {wallet ? (
+                      <ApprovalCell
+                        withoutSpacer
+                        style={{ paddingHorizontal: ns(6), paddingBottom: ns(16) }}
+                      />
+                    ) : undefined}
+                  </>
                 }
                 contentContainerStyle={styles.scrollContainer.static}
                 estimatedItemSize={1000}
