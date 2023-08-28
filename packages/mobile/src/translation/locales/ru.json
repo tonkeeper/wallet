@@ -132,6 +132,15 @@
   "dns_renew_all_until_btn": "Продлить все до %{untilDate}",
   "expiring_domains": "Истекающие домены",
   "domains_renewed": "Домены продлены",
+  "confirm_renew_all_domains_title": "Confirm action",
+  "dns_addresses": {
+    "one": "%{count} адрес",
+    "few": "%{count} адреса",
+    "other": "%{count} адресов",
+    "many": "%{count} адресов"
+  },
+  "renew_in_progress": "Выполняется продление…",
+  "renew_progress_of": "%{current} из %{count}",
 
   "nft_title": "NFT",
   "nft_about_dns": "TON DNS — сервис, который позволяет задать криптокошелькам, смарт-контрактам или сайтам короткие читаемые имена. \n\nС TON DNS доступ к децентрализованным сервисам аналогичен доступу к веб-сайтам в интернете.",
