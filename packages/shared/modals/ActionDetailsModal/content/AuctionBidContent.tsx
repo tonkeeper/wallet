@@ -1,4 +1,4 @@
-import { CustomAccountEvent, CustomAuctionBidAction } from '@tonkeeper/core/src/TonAPI';
+
 import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
 import { ListItem } from '@tonkeeper/uikit/src/components/List/ListItem';
 import { DetailedActionTime } from '../components/DetailedActionTime';
@@ -12,10 +12,11 @@ import {
   domainToUsername,
   isTelegramUsername,
 } from '@tonkeeper/core/src/managers/NftsManager';
+import { AuctionBidActionData, TransactionEvent } from '@tonkeeper/core';
 
 interface AuctionBidContentProps {
-  action: CustomAuctionBidAction;
-  event: CustomAccountEvent;
+  action: AuctionBidActionData;
+  event: TransactionEvent;
 }
 
 export const AuctionBidContent = memo<AuctionBidContentProps>((props) => {
@@ -41,14 +42,14 @@ export const AuctionBidContent = memo<AuctionBidContentProps>((props) => {
     <View>
       <DetailedInfoContainer>
         <DetailedAmount
-          destination={event.destination}
+          destination={action.destination}
           symbol={action.amount.token_name}
           amount={action.amount.value}
           hideFiat={action.isFailed}
         />
         <DetailedActionTime
           langKey="bid_date"
-          destination={event.destination}
+          destination={action.destination}
           timestamp={event.timestamp}
         />
         <FailedActionLabel isFailed={action.isFailed} />

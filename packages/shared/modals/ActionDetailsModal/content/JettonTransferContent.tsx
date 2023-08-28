@@ -8,14 +8,11 @@ import { DetailedHeader } from '../components/DetailedHeader';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { t } from '../../../i18n';
 import { memo } from 'react';
-import {
-  CustomAccountEvent,
-  CustomJettonTransferAction,
-} from '@tonkeeper/core/src/TonAPI';
+import { JettonTransferActionData, TransactionEvent } from '@tonkeeper/core';
 
 interface JettonTransferContentProps {
-  action: CustomJettonTransferAction;
-  event: CustomAccountEvent;
+  action: JettonTransferActionData;
+  event: TransactionEvent;
 }
 
 export const JettonTransferContent = memo<JettonTransferContentProps>((props) => {
@@ -31,17 +28,17 @@ export const JettonTransferContent = memo<JettonTransferContentProps>((props) =>
         </DetailedHeader>
         <DetailedAmount
           decimals={action.jetton.decimals}
-          destination={event.destination}
+          destination={action.destination}
           symbol={action.jetton.symbol}
           hideFiat={action.isFailed}
           amount={action.amount}
         />
-        <DetailedActionTime destination={event.destination} timestamp={event.timestamp} />
+        <DetailedActionTime destination={action.destination} timestamp={event.timestamp} />
         <FailedActionLabel isFailed={action.isFailed} />
       </DetailedInfoContainer>
       <List>
         <AddressListItem
-          destination={event.destination}
+          destination={action.destination}
           recipient={action.recipient}
           sender={action.sender}
           hideName={event.is_scam}

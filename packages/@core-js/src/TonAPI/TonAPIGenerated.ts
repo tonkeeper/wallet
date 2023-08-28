@@ -1351,6 +1351,18 @@ export interface EncryptedComment {
   cipher_text: string;
 }
 
+export interface BlockchainAccountInspect {
+  code: string;
+  code_hash: string;
+  methods: {
+    /** @format int64 */
+    id: number;
+    /** @example "get_something" */
+    method: string;
+  }[];
+  compiler?: BlockchainAccountInspectCompilerEnum;
+}
+
 /** @example "cell" */
 export enum TvmStackRecordTypeEnum {
   Cell = 'cell',
@@ -1406,6 +1418,7 @@ export enum AuctionBidActionAuctionTypeEnum {
 export enum JettonSwapActionDexEnum {
   Stonfi = 'stonfi',
   Dedust = 'dedust',
+  Megatonfi = 'megatonfi',
 }
 
 export enum NftPurchaseActionAuctionTypeEnum {
@@ -1418,6 +1431,10 @@ export enum PoolInfoImplementationEnum {
   Whales = 'whales',
   Tf = 'tf',
   LiquidTF = 'liquidTF',
+}
+
+export enum BlockchainAccountInspectCompilerEnum {
+  Func = 'func',
 }
 
 export interface GetBlockchainAccountTransactionsParams {
@@ -2376,6 +2393,21 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
     getBlockchainConfig: (params: RequestParams = {}) =>
       this.http.request<BlockchainConfig, Error>({
         path: `/v2/blockchain/config`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Blockchain account inspect
+     *
+     * @tags Blockchain
+     * @name BlockchainAccountInspect
+     * @request GET:/v2/blockchain/accounts/{account_id}/inspect
+     */
+    blockchainAccountInspect: (accountId: string, params: RequestParams = {}) =>
+      this.http.request<BlockchainAccountInspect, Error>({
+        path: `/v2/blockchain/accounts/${accountId}/inspect`,
         method: 'GET',
         format: 'json',
         ...params,

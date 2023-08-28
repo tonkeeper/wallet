@@ -7,14 +7,12 @@ import { DetailedNftItem } from '../components/DetailedNftItem';
 import { DetailedHeader } from '../components/DetailedHeader';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { memo } from 'react';
-import {
-  CustomAccountEvent,
-  CustomNftItemTransferAction,
-} from '@tonkeeper/core/src/TonAPI';
+import { NftItemTransferActionData, TransactionEvent } from '@tonkeeper/core';
+
 
 interface NftTransferContentProps {
-  action: CustomNftItemTransferAction;
-  event: CustomAccountEvent;
+  action: NftItemTransferActionData;
+  event: TransactionEvent;
 }
 
 export const NftTransferContent = memo<NftTransferContentProps>((props) => {
@@ -31,12 +29,12 @@ export const NftTransferContent = memo<NftTransferContentProps>((props) => {
         >
           <DetailedNftItem nftAddress={action.nft} />
         </DetailedHeader>
-        <DetailedActionTime destination={event.destination} timestamp={event.timestamp} />
+        <DetailedActionTime destination={action.destination} timestamp={event.timestamp} />
         <FailedActionLabel isFailed={action.isFailed} />
       </DetailedInfoContainer>
       <List>
         <AddressListItem
-          destination={event.destination}
+          destination={action.destination}
           recipient={action.recipient}
           sender={action.sender}
         />

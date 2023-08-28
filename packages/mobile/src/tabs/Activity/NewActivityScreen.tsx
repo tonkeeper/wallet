@@ -1,7 +1,7 @@
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { Screen, Text, Button, Icon, List, Spacer, Steezy, View } from '@tonkeeper/uikit';
 import { getNewNotificationsCount } from '$core/Notifications/NotificationsActivity';
-import { useWalletTransactions } from '@tonkeeper/shared/query/hooks';
+import { useAllTransactions } from '@tonkeeper/shared/query/hooks';
 import { useNotificationsStore } from '$store/zustand/notifications';
 import { TransactionsList } from '@tonkeeper/shared/components';
 import { Notification } from '$core/Notifications/Notification';
@@ -14,7 +14,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { useWallet } from '../useWallet';
 
 export const ActivityScreen = memo(() => {
-  const transactions = useWalletTransactions();
+  const transactions = useAllTransactions();
   const nav = useNavigation();
   const wallet = useWallet();
 
@@ -61,7 +61,7 @@ export const ActivityScreen = memo(() => {
 
   if (
     !wallet.address.ton.raw ||
-    (!transactions.loading && transactions?.data?.length < 1)
+    (!transactions.loading && transactions.data && transactions.data.length < 1)
   ) {
     return (
       <Screen>
@@ -138,7 +138,7 @@ export const ActivityScreen = memo(() => {
         refreshing={transactions.refreshing}
         onRefresh={transactions.refresh}
         loading={transactions.loading}
-        events={transactions.data}
+        items={transactions.data}
       />
     </Screen>
   );

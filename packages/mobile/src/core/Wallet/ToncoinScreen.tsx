@@ -37,9 +37,9 @@ export const ToncoinScreen = memo(() => {
   const handleOpenExplorer = useCallback(async () => {
     await delay(200);
     openDAppBrowser(
-      getServerConfig('accountExplorer').replace('%s', wallet.address.raw),
+      getServerConfig('accountExplorer').replace('%s', wallet.address.ton.raw),
     );
-  }, [wallet.address.raw]);
+  }, [wallet.address.ton.raw]);
 
   // Temp hack for slow navigation
   const [render, setRender] = useState(false);
@@ -81,7 +81,7 @@ export const ToncoinScreen = memo(() => {
         refreshing={transactions.refreshing}
         onRefresh={transactions.refresh}
         loading={transactions.loading}
-        events={transactions.data}
+        items={transactions.data}
         safeArea
       />
     </Screen>
@@ -101,7 +101,7 @@ const HeaderList = memo(() => {
   useEffect(() => {
     if (wallet && wallet.ton.isLockup()) {
       wallet.ton
-        .getWalletInfo(walletAddr.address.friendly)
+        .getWalletInfo(walletAddr.address.ton.friendly)
         .then((info: any) => {
           setLockupDeploy(
             ['empty', 'uninit', 'nonexist'].includes(info.status) ? 'deploy' : 'deployed',

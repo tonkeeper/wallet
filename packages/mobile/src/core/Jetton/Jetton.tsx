@@ -6,7 +6,6 @@ import {
   IconButton,
   PopupMenu,
   PopupMenuItem,
-  ScrollHandler,
   Skeleton,
   SwapIcon,
   Text,
@@ -20,8 +19,7 @@ import { openDAppBrowser, openReceive, openSend } from '$navigation';
 import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { useSelector } from 'react-redux';
 import { useJettonEvents } from '$hooks/useJettonEvents';
-// import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
-import { RefreshControl } from 'react-native';
+
 import { walletAddressSelector } from '$store/wallet';
 import { formatter } from '$utils/formatter';
 import { useNavigation } from '@tonkeeper/router';
@@ -35,9 +33,8 @@ import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
 import { Screen, View } from '@tonkeeper/uikit';
 import { TransactionsList } from '@tonkeeper/shared/components';
-import { AccountEventsMapper } from '@tonkeeper/shared/mappers/AccountEventsMapper';
-import { LegacyAccountEventsMapper } from '@tonkeeper/shared/mappers/AccountEventsMapper/LegacyAccountEventsMapper';
 import { useWallet } from '../../tabs/useWallet';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const theme = useTheme();
@@ -150,44 +147,17 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
 
   const renderFooter = useCallback(() => {
     if (Object.values(events).length === 0 && isLoading) {
-      return <View style={{ margin: 16, }}><Skeleton.List /></View>;
+      return (
+        <View style={{ margin: 16 }}>
+          <Skeleton.List />
+        </View>
+      );
     }
     return <View style={{ height: bottomInset }} />;
   }, [events, isLoading, bottomInset]);
 
-  // const renderContent = useCallback(() => {
-  //   return (
-  //     <TransactionsList
-  //       refreshControl={
-  //         <RefreshControl
-  //           onRefresh={refreshJettonEvents}
-  //           refreshing={isRefreshing}
-  //           tintColor={theme.colors.foregroundPrimary}
-  //         />
-  //       }
-  //       withoutMarginForFirstHeader
-  //       eventsInfo={events}
-  //       initialData={[]}
-  //       renderHeader={renderHeader}
-  //       contentContainerStyle={{
-  //         paddingHorizontal: ns(16),
-  //         paddingBottom: bottomInset,
-  //       }}
-  //       renderFooter={renderFooter}
-  //     />
-  //   );
-  // }, [
-  //   renderFooter,
-  //   refreshJettonEvents,
-  //   isRefreshing,
-  //   events,
-  //   renderHeader,
-  //   bottomInset,
-  //   theme.colors.foregroundPrimary,
-  // ]);
-
-  const mappedEvents = useMemo(() => {
-    return AccountEventsMapper(LegacyAccountEventsMapper(events), walletAddr.address.raw);
+  const transactions = useMemo(() => {
+    return tk.wallet.jettons.remap(events);
   }, [events, walletAddr]);
 
   if (!jetton) {
@@ -218,13 +188,10 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
       <TransactionsList
         ListHeaderComponent={renderHeader}
         ListFooterComponent={renderFooter}
-        
-        // fetchMoreEnd={events.fetchMoreEnd}
-        // onFetchMore={events.fetchMore}
         refreshing={isRefreshing}
         onRefresh={refreshJettonEvents}
+        items={transactions}
         loading={false}
-        events={mappedEvents}
       />
     </Screen>
   );

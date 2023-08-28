@@ -47,7 +47,7 @@ type WalletInfo = {
 };
 
 type TronAddresses = {
-  proxy?: string;
+  proxy: string;
   owner: string;
 };
 
@@ -101,6 +101,7 @@ export class Wallet {
       ton: tonAddresses,
     };
 
+    // TODO: rewrite
     const context: WalletContext = {
       queryClient: this.queryClient,
       address: this.address,
@@ -110,7 +111,15 @@ export class Wallet {
     };
 
     this.subscriptions = new SubscriptionsManager(context);
-    this.transactions = new TransactionsManager(context);
+
+    this.transactions = new TransactionsManager(
+      this.address.ton.raw,
+      this.address.tron?.owner,
+      this.tonapi,
+      this.tronapi,
+      this.queryClient,
+    );
+
     this.balances = new BalancesManager(context);
     this.jettons = new JettonsManager(context);
     this.nfts = new NftsManager(context);

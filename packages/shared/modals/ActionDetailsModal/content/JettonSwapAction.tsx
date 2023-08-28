@@ -1,4 +1,3 @@
-import { CustomAccountEvent, CustomJettonSwapAction } from '@tonkeeper/core/src/TonAPI';
 import { List, Steezy, View, SText as Text, FastImage } from '@tonkeeper/uikit';
 import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
 import { DetailedActionTime } from '../components/DetailedActionTime';
@@ -12,10 +11,11 @@ import { memo, useMemo } from 'react';
 import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
 import { useSelector } from 'react-redux';
+import { JettonSwapActionData, TransactionEvent } from '@tonkeeper/core';
 
 interface JettonSwapContentProps {
-  action: CustomJettonSwapAction;
-  event: CustomAccountEvent;
+  action: JettonSwapActionData;
+  event: TransactionEvent;
 }
 
 export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {
@@ -97,7 +97,7 @@ export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {
           )}
         </View>
         <DetailedActionTime
-          destination={event.destination}
+          destination={action.destination}
           timestamp={event.timestamp}
           langKey="swapped_date"
         />

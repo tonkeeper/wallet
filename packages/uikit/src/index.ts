@@ -8,7 +8,7 @@ export { Lottie } from './components/Lottie';
 export { Button } from './components/Button';
 export { Spacer } from './components/Spacer';
 export { Text, SText } from './components/Text';
-export { List, ListSeparator } from './components/List';
+export * from './components/List';
 export { View } from './components/View';
 export { Loader } from './components/Loader';
 export { Pressable } from './components/Pressable';

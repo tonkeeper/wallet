@@ -37,6 +37,11 @@ export class AmountFormatter {
     wide: ' ',
   };
 
+  static sign = {
+    minus:  '−',
+    plus: '+',
+  }
+
   constructor(options: AmountFormatterOptions) {
     if (options.getDefaultDecimals) {
       this.getDefaultDecimals = options.getDefaultDecimals;

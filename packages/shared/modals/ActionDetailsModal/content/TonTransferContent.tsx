@@ -12,15 +12,11 @@ import {
   EncryptedComment,
   EncryptedCommentLayout,
 } from '../../../components/EncryptedComment';
-import {
-  ActionTypeEnum,
-  CustomAccountEvent,
-  CustomTonTransferAction,
-} from '@tonkeeper/core/src/TonAPI';
+import { TonTransferActionData, TransactionEvent } from '@tonkeeper/core';
 
 interface TonTransferContentProps {
-  action: CustomTonTransferAction;
-  event: CustomAccountEvent;
+  action: TonTransferActionData;
+  event: TransactionEvent;
 }
 
 export const TonTransferContent = memo<TonTransferContentProps>((props) => {
@@ -33,30 +29,33 @@ export const TonTransferContent = memo<TonTransferContentProps>((props) => {
           <TonIcon size="large" />
         </DetailedHeader>
         <DetailedAmount
-          destination={event.destination}
+          destination={action.destination}
           hideFiat={action.isFailed}
           amount={action.amount}
         />
-        <DetailedActionTime destination={event.destination} timestamp={event.timestamp} />
+        <DetailedActionTime
+          destination={action.destination}
+          timestamp={event.timestamp}
+        />
         <FailedActionLabel isFailed={action.isFailed} />
       </DetailedInfoContainer>
       <List>
         <AddressListItem
-          destination={event.destination}
+          destination={action.destination}
           recipient={action.recipient}
           sender={action.sender}
           hideName={event.is_scam}
         />
         <ExtraListItem extra={event.extra} />
-        {action.encrypted_comment && (
+        {/* {action.encrypted_comment && (
           <EncryptedComment
             layout={EncryptedCommentLayout.LIST_ITEM}
             encryptedComment={action.encrypted_comment}
-            transactionType={ActionTypeEnum.TonTransfer}
+            transactionType={TransactionActionType.TonTransfer}
             transactionId={event.event_id}
             sender={action.sender}
           />
-        )}
+        )} */}
         {!!action.comment && (
           <List.Item
             titleType="secondary"

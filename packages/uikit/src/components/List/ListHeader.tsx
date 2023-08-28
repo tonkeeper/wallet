@@ -3,16 +3,18 @@ import { Steezy, StyleProp } from '../../styles';
 import { Text } from '../Text';
 import { View } from '../View';
 import { useMemo } from 'react';
+import { Spacer, SpacerSizes } from '../Spacer';
 
 interface ListHeaderProps {
   rightContent?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   indentTop?: boolean;
+  spacerY?: number;
   title: string;
 }
 
 export const ListHeader = (props: ListHeaderProps) => {
-  const { title, indentTop, rightContent, style } = props;
+  const { title, indentTop, rightContent, spacerY, style } = props;
 
   const containerStyle = useMemo(
     () => [styles.container, indentTop && styles.indentTop, style],
@@ -20,10 +22,13 @@ export const ListHeader = (props: ListHeaderProps) => {
   );
 
   return (
-    <View style={containerStyle}>
-      <Text type="h3">{title}</Text>
-      {rightContent}
-    </View>
+    <>
+      {spacerY !== 0 && <Spacer y={spacerY} />}
+      <View style={containerStyle}>
+        <Text type="h3">{title}</Text>
+        {rightContent}
+      </View>
+    </>
   );
 };
 

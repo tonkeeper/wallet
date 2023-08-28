@@ -5,11 +5,6 @@ import { StyleSheet } from 'react-native';
 import { config } from '../../config';
 import { tk } from '../../tonkeeper';
 import { t } from '../../i18n';
-import {
-  CustomAccountEvent,
-  CustomAccountEventActions,
-  CustomActionType,
-} from '@tonkeeper/core/src/TonAPI';
 
 import { JettonTransferContent } from './content/JettonTransferContent';
 import { NftTransferContent } from './content/NftTransferContent';
@@ -20,10 +15,15 @@ import { AuctionBidContent } from './content/AuctionBidContent';
 import { NftPurchaseContent } from './content/NftPurchaseContent';
 import { ContractDeployContent } from './content/ContractDeployContent';
 import { UnSubscribeContent } from './content/UnSubscribeContent';
+import {
+  AnyTransactionAction,
+  TransactionActionType,
+  TransactionEvent,
+} from '@tonkeeper/core';
 
 type ActionDetailsModalProps = {
-  action: CustomAccountEventActions;
-  event: CustomAccountEvent;
+  action: AnyTransactionAction;
+  event: TransactionEvent;
 };
 
 export const ActionDetailsModal = memo<ActionDetailsModalProps>((props) => {
@@ -43,23 +43,23 @@ export const ActionDetailsModal = memo<ActionDetailsModalProps>((props) => {
 
   const content = useMemo(() => {
     switch (action.type) {
-      case CustomActionType.TonTransfer:
+      case TransactionActionType.TonTransfer:
         return <TonTransferContent action={action} event={event} />;
-      case CustomActionType.JettonTransfer:
+      case TransactionActionType.JettonTransfer:
         return <JettonTransferContent action={action} event={event} />;
-      case CustomActionType.JettonSwap:
+      case TransactionActionType.JettonSwap:
         return <JettonSwapContent action={action} event={event} />;
-      case CustomActionType.NftItemTransfer:
+      case TransactionActionType.NftItemTransfer:
         return <NftTransferContent action={action} event={event} />;
-      case CustomActionType.SmartContractExec:
+      case TransactionActionType.SmartContractExec:
         return <SmartContractExecContent action={action} event={event} />;
-      case CustomActionType.AuctionBid:
+      case TransactionActionType.AuctionBid:
         return <AuctionBidContent action={action} event={event} />;
-      case CustomActionType.NftPurchase:
+      case TransactionActionType.NftPurchase:
         return <NftPurchaseContent action={action} event={event} />;
-      case CustomActionType.ContractDeploy:
+      case TransactionActionType.ContractDeploy:
         return <ContractDeployContent action={action} event={event} />;
-      case CustomActionType.UnSubscribe:
+      case TransactionActionType.UnSubscribe:
         return <UnSubscribeContent action={action} event={event} />;
       default:
         return null;
@@ -119,7 +119,7 @@ export async function openActionDetails(txId: string) {
       openModal(cachedData);
     } else {
       Toast.loading();
-      const data = await tk.wallet.transactions.fetchAction(txId);
+      const data = await tk.wallet.transactions.fetchTransactionAction(txId);
       if (data) {
         openModal(data);
       }

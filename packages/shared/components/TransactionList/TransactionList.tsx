@@ -1,161 +1,96 @@
-import { StyleSheet, View } from 'react-native';
-import { Screen, Loader, List, Spacer, RefreshControl } from '@tonkeeper/uikit';
-import { TransactionItem } from './TransactionItem';
-import React, { memo } from 'react';
-import {
-  MappedEvent,
-  MappedEventItemType,
-} from '@tonkeeper/shared/mappers/AccountEventsMapper';
-import {
-  CustomAccountEvent,
-  CustomAccountEventActions,
-} from '@tonkeeper/core/src/TonAPI';
+import { TransactionItem, TransactionItemType, TransactionItems } from '@tonkeeper/core';
+import { formatTransactionsGroupDate } from '../../utils/date';
 import { renderActionItem } from './renderActionItem';
+import { StyleSheet, View } from 'react-native';
+import { memo } from 'react';
+import {
+  ListItemContainer,
+  RefreshControl,
+  Screen,
+  Loader,
+  List,
+} from '@tonkeeper/uikit';
 
 interface TransactionsListProps {
-  events: MappedEvent[];
+  items?: TransactionItems;
   onFetchMore?: () => void;
   onRefresh?: () => void;
   fetchMoreEnd?: boolean;
   refreshing?: boolean;
   loading?: boolean;
   safeArea?: boolean;
-  estimatedItemSize?: number;
   ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null | undefined;
   ListFooterComponent?: React.ComponentType<any> | React.ReactElement | null | undefined;
 }
 
-
-type AccountEvent = {
-  type: 'Action',
-  
-}
-
-
-type Action = {
-  
-
-}
-
-
 type RenderItemOptions = {
+  item: TransactionItem;
   index: number;
-  item: {
-    type: 'Date' | 'Action';
-    action: CustomAccountEventActions;
-    event: CustomAccountEvent;
-  };
 };
 
-function NewRenderItem(options: RenderItemOptions) {
+function renderTransactionItem(options: RenderItemOptions) {
   const { item, index } = options;
-  const isFirstElement = index === 0;
 
-  if (item.type === 'Date') {
+  if (item.type === TransactionItemType.Section) {
+    const isFirstItem = index === 0;
     return (
-      <View>
-        {!isFirstElement && <Spacer y={8} />}
-        <List.Header title={item.date} style={styles.date} />
-      </View>
-    );
-  }
-
-  return renderActionItem(item.action, item.event);
-}
-
-//
-
-type TransactionRenderItemOptions = {
-  item: MappedEvent;
-  index: number;
-};
-
-function RenderItem({ item, index }: TransactionRenderItemOptions) {
-  const isFirstElement = index === 0;
-  switch (item.contentType) {
-    case MappedEventItemType.Date:
-      return (
-        <View>
-          {!isFirstElement && <Spacer y={8} />}
-          <List.Header title={item.date} style={styles.date} />
-        </View>
-      );
-    case MappedEventItemType.Action:
-      return <TransactionItem item={item} />;
-  }
-}
-
-export const TransactionsList = memo<TransactionsListProps>(
-  (props) => {
-    const {
-      ListHeaderComponent,
-      estimatedItemSize = 76,
-      fetchMoreEnd,
-      onFetchMore,
-      refreshing,
-      onRefresh,
-      safeArea,
-      loading,
-      events,
-    } = props;
-
-    return (
-      <Screen.FlashList
-        refreshControl={
-          <RefreshControl onRefresh={onRefresh} refreshing={!!refreshing} />
-        }
-        estimatedItemSize={estimatedItemSize}
-        keyExtractor={(item) => item.id}
-        onEndReachedThreshold={0.02}
-        onEndReached={onFetchMore}
-        renderItem={RenderItem}
-        windowSize={16}
-        maxToRenderPerBatch={10}
-        updateCellsBatchingPeriod={60}
-        initialNumToRender={20}
-        data={events}
-        safeArea={safeArea}
-        decelerationRate="normal"
-        ListEmptyComponent={
-          loading ? (
-            <View style={styles.emptyContainer}>
-              <Loader size="medium" />
-            </View>
-          ) : undefined
-        }
-        ListHeaderComponent={ListHeaderComponent}
-        ListFooterComponent={
-          props.ListFooterComponent ?? (
-            <Footer loading={!fetchMoreEnd && loading === false} />
-          )
-        }
+      <List.Header
+        title={formatTransactionsGroupDate(item.timestamp)}
+        spacerY={isFirstItem ? 8 : 0}
+        style={styles.date}
       />
     );
-  },
-  (prevProps, nextProps) => {
-    if (prevProps.events.length !== nextProps.events.length) {
-      return false;
-    }
+  }
 
-    const prevEvent = prevProps.events[0];
-    const nextEvent = nextProps.events[0];
+  return (
+    <ListItemContainer isFirst={item.isFirst} isLast={item.isLast}>
+      {renderActionItem(item.event, item.action)}
+    </ListItemContainer>
+  );
+}
 
-    if (prevEvent?.id !== nextEvent?.id) {
-      return false;
-    }
+export const TransactionsList = memo<TransactionsListProps>((props) => {
+  const {
+    ListHeaderComponent,
+    fetchMoreEnd,
+    onFetchMore,
+    refreshing,
+    onRefresh,
+    safeArea,
+    loading,
+    items,
+  } = props;
 
-    if (
-      prevEvent?.contentType === MappedEventItemType.Action &&
-      nextEvent?.contentType === MappedEventItemType.Action
-    ) {
-      if (prevEvent.inProgress !== nextEvent.inProgress) {
-        return false;
+  return (
+    <Screen.FlashList
+      refreshControl={<RefreshControl onRefresh={onRefresh} refreshing={!!refreshing} />}
+      keyExtractor={(item) => item.id}
+      renderItem={renderTransactionItem}
+      onEndReached={onFetchMore}
+      onEndReachedThreshold={0.02}
+      updateCellsBatchingPeriod={60}
+      maxToRenderPerBatch={10}
+      initialNumToRender={20}
+      windowSize={16}
+      data={items}
+      safeArea={safeArea}
+      decelerationRate="normal"
+      ListEmptyComponent={
+        loading ? (
+          <View style={styles.emptyContainer}>
+            <Loader size="medium" />
+          </View>
+        ) : undefined
       }
-    }
-
-    return true;
-  },
-);
+      ListHeaderComponent={ListHeaderComponent}
+      ListFooterComponent={
+        props.ListFooterComponent ?? (
+          <Footer loading={!fetchMoreEnd && loading === false} />
+        )
+      }
+    />
+  );
+});
 
 const Footer = memo(({ loading }: { loading: boolean }) => {
   if (loading) {

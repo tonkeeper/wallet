@@ -20,7 +20,7 @@ export const TronTokenScreen = memo(() => {
         refreshing={events.refreshing}
         onRefresh={events.refresh}
         loading={events.loading}
-        events={events.data}
+        items={events.data}
       />
     </Screen>
   );

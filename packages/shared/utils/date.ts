@@ -38,7 +38,10 @@ export const isThisMonth = (date: Date) => {
   return differenceInCalendarMonths(new Date(), date) < 1;
 };
 
-export function getDateForGroupTansactions(timestamp: number, skipNormalizeTimestemp?: boolean) {
+export function getDateForGroupTansactions(
+  timestamp: number,
+  skipNormalizeTimestemp?: boolean,
+) {
   const ts = new Date(timestamp * (skipNormalizeTimestemp ? 1 : 1000));
   const now = new Date();
 
@@ -49,7 +52,8 @@ export function getDateForGroupTansactions(timestamp: number, skipNormalizeTimes
   return formatDate(ts, 'LLLL yyyy');
 }
 
-export function formatTransactionsGroupDate(date: Date) {
+export function formatTransactionsGroupDate(timestamp: number) {
+  const date = new Date(timestamp);
   if (isToday(date)) {
     return t('today');
   } else if (isYesterday(date)) {
@@ -85,10 +89,9 @@ export function formatTransactionDetailsTime(date: Date) {
   const day = formatDate(date, 'd');
   const year = formatDate(date, 'yyyy');
 
-
   if (isThisYear(date)) {
     return `${day} ${month} ${time}`;
-  } 
-  
+  }
+
   return `${day} ${month} ${year}, ${time}`;
 }

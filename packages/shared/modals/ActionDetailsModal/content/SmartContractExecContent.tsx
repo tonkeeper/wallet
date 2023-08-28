@@ -7,14 +7,12 @@ import { ExtraListItem } from '../components/ExtraListItem';
 import { List, View, copyText } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import { memo } from 'react';
-import {
-  CustomAccountEvent,
-  CustomSmartContractExecAction,
-} from '@tonkeeper/core/src/TonAPI';
+import { SmartContractExecActionData, TransactionEvent } from '@tonkeeper/core';
+
 
 interface SmartContractExecContentProps {
-  action: CustomSmartContractExecAction;
-  event: CustomAccountEvent;
+  action: SmartContractExecActionData;
+  event: TransactionEvent;
 }
 
 export const SmartContractExecContent = memo<SmartContractExecContentProps>((props) => {
@@ -24,13 +22,13 @@ export const SmartContractExecContent = memo<SmartContractExecContentProps>((pro
     <View>
       <DetailedInfoContainer>
         <DetailedAmount
-          destination={event.destination}
+          destination={action.destination}
           hideFiat={action.isFailed}
           amount={action.ton_attached}
         />
         <DetailedActionTime
           langKey="call_contract_date"
-          destination={event.destination}
+          destination={action.destination}
           timestamp={event.timestamp}
         />
         <FailedActionLabel isFailed={action.isFailed} />

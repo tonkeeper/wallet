@@ -1,60 +1,121 @@
+import { UnSubscribeActionListItem } from './items/UnSubscribeActionListItem';
+import { JettonSwapActionListItem } from './items/JettonSwapActionListItem';
+import { SubscribeActionListItem } from './items/SubscribeActionListItem';
+import { modifyNftName } from '@tonkeeper/core/src/managers/NftsManager';
+import { NftPreviewContent } from './NftPreviewContent';
+import { ListItemContentText } from '@tonkeeper/uikit';
+import { ActionListItem } from './ActionListItem';
+import { t } from '../../i18n';
 import {
-  CustomAccountEventActions,
-  CustomAccountEvent,
-  CustomActionType,
-} from '@tonkeeper/core/src/TonAPI';
-import { SmartContractExecItem } from './items/SmartContractExecItem';
-import { JettonTransferItem } from './items/JettonTransferItem';
-import { ContractDeployItem } from './items/ContractDeployItem';
-import { SimplePreviewItem } from './items/SimplePreviewItem';
-import { NftTransferItem } from './items/NftTransferItem';
-import { NftPurchaseItem } from './items/NftPurchaseItem';
-import { UnSubscribeItem } from './items/UnSubscribeItem';
-import { TonTransferItem } from './items/TonTransferItem';
-import { JettonSwapItem } from './items/JettonSwapItem';
-import { AuctionBidItem } from './items/AuctionBidItem';
-import { SubscribeItem } from './items/SubscribeItem';
-import { UnknownItem } from './items/UnknownItem';
+  TransactionActionType,
+  AnyTransactionAction,
+  TransactionEvent,
+  Address,
+} from '@tonkeeper/core';
 
-export function renderActionItem(
-  action: CustomAccountEventActions,
-  event: CustomAccountEvent,
-) {
+export function renderActionItem(event: TransactionEvent, action: AnyTransactionAction) {
   switch (action.type) {
-    case CustomActionType.TonTransfer:
-      return <TonTransferItem event={event} action={action} />;
-    case CustomActionType.JettonTransfer:
-      return <JettonTransferItem event={event} action={action} />;
-    case CustomActionType.NftItemTransfer:
-      return <NftTransferItem event={event} action={action} />;
-    case CustomActionType.NftPurchase:
-      return <NftPurchaseItem event={event} action={action} />;
-    case CustomActionType.JettonSwap:
-      return <JettonSwapItem event={event} action={action} />;
-    case CustomActionType.AuctionBid:
-      return <AuctionBidItem event={event} action={action} />;
-    case CustomActionType.ContractDeploy:
-      return <ContractDeployItem event={event} action={action} />;
-    case CustomActionType.Subscribe:
-      return <SubscribeItem event={event} action={action} />;
-    case CustomActionType.UnSubscribe:
-      return <UnSubscribeItem event={event} action={action} />;
-    case CustomActionType.SmartContractExec:
-      return <SmartContractExecItem event={event} action={action} />;
-    case CustomActionType.Unknown:
-      return <UnknownItem event={event} />;
+    case TransactionActionType.TonTransfer:
+      return (
+        <ActionListItem event={event} action={action}>
+          {!!action.comment && <ListItemContentText text={action.comment.trim()} />}
+        </ActionListItem>
+      );
+    case TransactionActionType.JettonTransfer:
+      return (
+        <ActionListItem event={event} action={action}>
+          {!!action.comment && <ListItemContentText text={action.comment.trim()} />}
+        </ActionListItem>
+      );
+    case TransactionActionType.NftItemTransfer:
+      return (
+        <ActionListItem event={event} action={action} value="NFT">
+          <NftPreviewContent nftAddress={action.nft} />
+          {!!action.comment && <ListItemContentText text={action.comment.trim()} />}
+        </ActionListItem>
+      );
+    case TransactionActionType.NftPurchase:
+      return (
+        <ActionListItem event={event} action={action}>
+          <NftPreviewContent nftItem={action.nft} />
+        </ActionListItem>
+      );
+    case TransactionActionType.JettonSwap:
+      return <JettonSwapActionListItem event={event} action={action} />;
+    case TransactionActionType.SmartContractExec:
+      return (
+        <ActionListItem
+          subtitle={Address.parse(action.contract.address).toShort()}
+          title={t('transactions.smartcontract_exec')}
+          icon="ic-gear-28"
+          action={action}
+          event={event}
+        />
+      );
+    case TransactionActionType.Unknown:
+      return (
+        <ActionListItem
+          title={t('transactions.unknown')}
+          subtitle={t('transactions.unknown_description')}
+          subtitleNumberOfLines={2}
+          action={action}
+          event={event}
+        />
+      );
+    case TransactionActionType.AuctionBid:
+      return (
+        <ActionListItem
+          subtitle={modifyNftName(action.nft?.metadata?.name)}
+          title={t('transactions.bid')}
+          icon="ic-tray-arrow-up-28"
+          action={action}
+          event={event}
+        />
+      );
+    case TransactionActionType.ContractDeploy:
+      return (
+        <ActionListItem
+          subtitle={Address.parse(action.address).toShort()}
+          title={t('transactions.wallet_initialized')}
+          icon="ic-donemark-28"
+          action={action}
+          event={event}
+        />
+      );
+    case TransactionActionType.Subscribe: // TODO:
+      return <SubscribeActionListItem event={event} action={action} />;
+    case TransactionActionType.UnSubscribe: // TODO:
+      return <UnSubscribeActionListItem event={event} action={action} />;
+    case TransactionActionType.ReceiveTRC20:
+      return (
+        <ActionListItem
+          subtitle={Address.toShort(action.sender)}
+          title={t('transaction_type_receive')}
+          icon="ic-tray-arrow-down-28"
+          action={action}
+          event={event}
+          greenValue
+        />
+      );
+    case TransactionActionType.SendTRC20:
+      return (
+        <ActionListItem
+          subtitle={Address.toShort(action.recipient)}
+          title={t('transaction_type_sent')}
+          icon="ic-tray-arrow-up-28"
+          action={action}
+          event={event}
+        />
+      );
     default:
-      return <SimplePreviewItem action={action} event={event} />;
+      return (
+        <ActionListItem
+          title={action.simple_preview.name}
+          subtitle={action.simple_preview.description}
+          subtitleNumberOfLines={2}
+          action={action}
+          event={event}
+        />
+      );
   }
 }
-
-// function getItemLayout(data, index) {
-//   const size = { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index };
-
-//   if (data.type === 'Date') {
-//     return;
-//   }
-
-//   switch (data.type) {
-//   }
-// }

@@ -1,20 +1,18 @@
 import { useNftItemByAddress } from '../../query/hooks/useNftItemByAddress';
-import { Steezy, View, Text, Icon, Picture } from '@tonkeeper/uikit';
+import { Steezy, View, Text, Icon, Picture, ListItemContent } from '@tonkeeper/uikit';
 import { NftItem } from '@tonkeeper/core/src/TonAPI';
-import { ViewStyle, Pressable } from 'react-native';
+import { Pressable } from 'react-native';
 import { memo, useCallback } from 'react';
-import Animated from 'react-native-reanimated';
 import { t } from '../../i18n';
 
 import { openNftModal } from '@tonkeeper/mobile/src/core/NFT/NFT';
 
-interface TransactionNFTItemProps {
+interface NftPreviewContentProps {
   nftAddress?: string;
   nftItem?: NftItem;
-  highlightStyle?: ViewStyle;
 }
 
-export const TransactionNFTItem = memo<TransactionNFTItemProps>((props) => {
+export const NftPreviewContent = memo<NftPreviewContentProps>((props) => {
   const { nftAddress, nftItem } = props;
   const { data: nft } = useNftItemByAddress(props.nftAddress, {
     existingNft: nftItem,
@@ -30,7 +28,7 @@ export const TransactionNFTItem = memo<TransactionNFTItemProps>((props) => {
   if (nft) {
     return (
       <Pressable onPress={handlePress} style={styles.container.static}>
-        <Animated.View style={[styles.item.static, props.highlightStyle]}>
+        <ListItemContent style={styles.item.static}>
           <View style={styles.pictureContainer}>
             <Picture
               preview={nft.image.preview}
@@ -55,18 +53,16 @@ export const TransactionNFTItem = memo<TransactionNFTItemProps>((props) => {
               )}
             </View>
           </View>
-        </Animated.View>
+        </ListItemContent>
       </Pressable>
     );
   }
 
   return (
-    <Animated.View
-      style={[styles.item.static, styles.skeleton.static, props.highlightStyle]}
-    >
+    <ListItemContent style={styles.item.static}>
       <View style={styles.pictureContainer} />
       <View style={styles.infoContainer} />
-    </Animated.View>
+    </ListItemContent>
   );
 });
 

@@ -7,11 +7,12 @@ import { DetailedNftItem } from '../components/DetailedNftItem';
 import { DetailedHeader } from '../components/DetailedHeader';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { memo } from 'react';
-import { CustomAccountEvent, CustomNftPurchaseAction } from '@tonkeeper/core/src/TonAPI';
+import { NftPurchaseActionData, TransactionEvent } from '@tonkeeper/core';
+
 
 interface NftPurchaseContentProps {
-  action: CustomNftPurchaseAction;
-  event: CustomAccountEvent;
+  action: NftPurchaseActionData;
+  event: TransactionEvent;
 }
 
 export const NftPurchaseContent = memo<NftPurchaseContentProps>((props) => {
@@ -30,7 +31,7 @@ export const NftPurchaseContent = memo<NftPurchaseContentProps>((props) => {
         </DetailedHeader>
         <DetailedActionTime
           langKey="purchase_date"
-          destination={event.destination}
+          destination={action.destination}
           timestamp={event.timestamp}
         />
         <FailedActionLabel isFailed={action.isFailed} />

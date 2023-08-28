@@ -12,3 +12,5 @@ export * from './Tonkeeper';
 export * from './Vault';
 export * from './service';
 export * from './TronAPI';
+
+export * from './mappers/TransactionMapper/TransactionTypes';

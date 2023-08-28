@@ -5,12 +5,13 @@ import { ExtraListItem } from '../components/ExtraListItem';
 import { List, View, Text, copyText } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import { memo } from 'react';
-import { CustomAccountEvent, CustomUnSubscribeAction } from '@tonkeeper/core/src/TonAPI';
+
 import { useSubscription } from '../../../query/hooks/useSubscription';
+import { TransactionEvent, UnSubscribeActionData } from '@tonkeeper/core';
 
 interface UnSubscribeContentProps {
-  action: CustomUnSubscribeAction;
-  event: CustomAccountEvent;
+  action: UnSubscribeActionData;
+  event: TransactionEvent;
 }
 
 export const UnSubscribeContent = memo<UnSubscribeContentProps>((props) => {
@@ -23,7 +24,7 @@ export const UnSubscribeContent = memo<UnSubscribeContentProps>((props) => {
         <Text type="h2" textAlign="center">
           {t('transactionDetails.unsubscription_title')}
         </Text>
-        <DetailedActionTime destination={event.destination} timestamp={event.timestamp} />
+        <DetailedActionTime destination={action.destination} timestamp={event.timestamp} />
         <FailedActionLabel isFailed={action.isFailed} />
       </DetailedInfoContainer>
       <List>
