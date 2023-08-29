@@ -1,12 +1,16 @@
 import { Steezy } from '$styles';
 import { t } from '$translation';
 import { Spacer, Text, View } from '$uikit';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { delay } from '$utils';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 
 import Animated, {
+  interpolate,
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
+  withDelay,
   withTiming,
 } from 'react-native-reanimated';
 
@@ -16,20 +20,28 @@ interface RenewAllProgressButtonProps {
 }
 
 export const RenewAllProgressButton = memo<RenewAllProgressButtonProps>((props) => {
-  const { current, total } = props;
+  const { total } = props;
+  const [count, setCount] = useState(1);
   const [width, setWidth] = useState(0);
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    progress.value = withTiming((current * width) / total, { duration: 100 });
-  }, [current, total]);
+    (async () => {
+      for (let i = 0; i < total; i++) {
+        progress.value = withTiming(i + 1, { duration: 3750 }, () =>
+          runOnJS(setCount)(i + 2),
+        );
+        await delay(3750);
+      }
+    })();
+  }, []);
 
   const handleLayout = useCallback((ev: LayoutChangeEvent) => {
     setWidth(ev.nativeEvent.layout.width);
   }, []);
 
   const progressStyle = useAnimatedStyle(() => ({
-    width: progress.value,
+    width: interpolate(progress.value, [0, total], [0, width]),
   }));
 
   return (
@@ -38,7 +50,7 @@ export const RenewAllProgressButton = memo<RenewAllProgressButtonProps>((props) 
         <Text variant="label1">{t('renew_in_progress')}</Text>
         <Spacer x={8} />
         <Text variant="label1" color="textSecondary">
-          {t('renew_progress_of', { current, count: total })}
+          {t('renew_progress_of', { current: Math.min(count, total), count: total })}
         </Text>
       </View>
       <Animated.View style={[styles.progress.static, progressStyle]} />

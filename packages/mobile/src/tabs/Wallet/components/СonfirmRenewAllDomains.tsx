@@ -19,6 +19,8 @@ import { getTimeSec } from '$utils/getTimeSec';
 import { Ton } from '$libs/Ton';
 import TonWeb from 'tonweb';
 import { Tonapi } from '$libs/Tonapi';
+import { eventsActions } from '$store/events';
+import { useDispatch } from 'react-redux';
 
 enum States {
   INITIAL,
@@ -35,6 +37,7 @@ export const СonfirmRenewAllDomains = memo((props) => {
   const unlock = useUnlockVault();
   const [current, setCurrent] = useState(0);
   const wallet = useWallet();
+  const dispatch = useDispatch();
 
   const [count] = useState(domains.length);
   const [amount] = useState(0.02 * count);
@@ -51,33 +54,58 @@ export const СonfirmRenewAllDomains = memo((props) => {
 
     try {
       setState(States.PROGRESS);
-
-      for (let i = 0; i < domains.length; i++) {
-        const domain = domains[i];
-
-        setCurrent(i + 1);
-
-        const payload = new TonWeb.boc.Cell();
-        payload.bits.writeUint(0x4eb1f0f9, 32);
-        payload.bits.writeUint(0, 64);
-        payload.bits.writeUint(0, 256);
-
+      const divider = 4;
+      for (let i = 0; i < Math.ceil(domains.length / divider); i++) {
+        const tonWallet = wallet.vault.tonWallet;
         const seqno = await wallet.ton.getSeqno(await wallet.ton.getAddress());
-        const tx = wallet.vault.tonWallet.methods.transfer({
-          toAddress: domain.dns_item.address,
-          amount: Ton.toNano('0.02'),
-          seqno: seqno,
-          payload,
-          sendMode: 3,
-          secretKey,
-        });
+        const signingMessage = (tonWallet as any).createSigningMessage(seqno);
+
+        const part = domains.slice(i * divider, i * divider + divider);
+        for (let iPart = 0; iPart < part.length; iPart++) {
+          const index = i * divider + iPart;
+          const domain = domains[index];
+          setCurrent(index + 1);
+
+          const payload = new TonWeb.boc.Cell();
+          payload.bits.writeUint(0x4eb1f0f9, 32);
+          payload.bits.writeUint(0, 64);
+          payload.bits.writeUint(0, 256);
+
+          const order = TonWeb.Contract.createCommonMsgInfo(
+            TonWeb.Contract.createInternalMessageHeader(
+              new TonWeb.Address(domain.dns_item.address),
+              Ton.toNano('0.02'),
+            ),
+            undefined,
+            payload,
+          );
+
+          signingMessage.bits.writeUint8(3);
+          signingMessage.refs.push(order);
+        }
+
+        const tx = TonWeb.Contract.createMethod(
+          tonWallet.provider,
+          (tonWallet as any).createExternalMessage(
+            signingMessage,
+            secretKey,
+            seqno,
+            !secretKey,
+          ),
+        );
 
         const queryMsg = await tx.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
         await Tonapi.sendBoc(boc);
+        dispatch(eventsActions.pollEvents());
 
         await delay(15000);
-        remove(domain.dns_item.address);
+
+        for (let iPart = 0; iPart < part.length; iPart++) {
+          const index = i * divider + iPart;
+          const domain = domains[index];
+          remove(domain.dns_item.address);
+        }
       }
 
       setState(States.SUCCESS);
