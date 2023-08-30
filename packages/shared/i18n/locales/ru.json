@@ -803,7 +803,7 @@
     "title": "Стейкинг",
     "widget_desc": "Зарабатывайте на TON до %{apy}%",
     "staking_pool_desc": "APY ≈ %{apy}%",
-    "staking_desc": "Депозит от %{minStake} TON.\nЗарабатывайте до %{maxApy}%.",
+    "staking_desc": "Мин. депозит %{minStake} TON.\nЗарабатывайте до %{maxApy}%.",
     "top_up": "Пополнить",
     "withdrawal_request": "Запрос на вывод",
     "get_withdrawal": "Получить вывод",
@@ -811,7 +811,6 @@
     "deposit": "Депозит",
     "transaction": "Транзакция",
     "active": "Активные",
-    "recommended": "Наиболее прибыльный",
     "other": "Другие",
     "warning": {
       "title": "Предупреждение",

@@ -21,7 +21,10 @@ const StakingWarningComponent: FC<Props> = (props) => {
 
   return (
     <S.WarningContainer beta={accent}>
-      <S.WarningTouchable background="backgroundQuaternary" onPress={handleWarningPress}>
+      <S.WarningTouchable
+        background={accent ? 'accentOrangeActive' : 'backgroundQuaternary'}
+        onPress={handleWarningPress}
+      >
         <S.WarningContent>
           <Text
             variant="label1"
