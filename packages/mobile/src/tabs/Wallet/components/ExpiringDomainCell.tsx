@@ -1,11 +1,12 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Steezy } from '$styles';
 import { Icon, Spacer, SText, View, List } from '$uikit';
 import { ViewStyle } from 'react-native';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
-import { ONE_YEAR_MILISEC, format, getLocale } from '$utils/date';
+import { ONE_YEAR_MILISEC, format, getCountOfDays, getLocale } from '$utils/date';
 import { t } from '$translation';
 import { openRenewAllDomainModal } from '../RenewAllDomainModal';
+import { maskifyAddress, maskifyDomain } from '$utils';
 
 interface ApprovalCellProps {
   withoutSpacer?: boolean;
@@ -13,7 +14,30 @@ interface ApprovalCellProps {
 }
 
 export const ExpiringDomainCell = memo<ApprovalCellProps>(({ withoutSpacer, style }) => {
-  const expiringDomains = useExpiringDomains((state) => state.domains);
+  const expiringDomains = useExpiringDomains((state) => state.items);
+
+  const title = useMemo(() => {
+    const untilDate = format(+new Date() + ONE_YEAR_MILISEC, 'dd MMM yyyy', {
+      locale: getLocale(),
+    });
+
+    if (expiringDomains.length === 1) {
+      const domain = expiringDomains[0];
+      const countOfDays = getCountOfDays(+new Date(), domain.expiring_at * 1000);
+      const expire = countOfDays === 366 ? countOfDays - 1 : countOfDays;
+
+      return t('dns_alert_expiring_one', {
+        domain: maskifyDomain(domain.name),
+        untilDate,
+        expire,
+      });
+    }
+
+    return t('dns_alert_expiring_many', {
+      count: expiringDomains.length,
+      untilDate,
+    });
+  }, [expiringDomains]);
 
   return (
     <View style={style}>
@@ -28,14 +52,8 @@ export const ExpiringDomainCell = memo<ApprovalCellProps>(({ withoutSpacer, styl
             </View>
           }
           title={
-            <SText numberOfLines={2} style={styles.title} variant="body2">
-              {t('dns_alert_expiring', { count: Object.keys(expiringDomains).length })}
-              {'\n'}
-              {t('dns_renew_all_until_btn', {
-                untilDate: format(+new Date() + ONE_YEAR_MILISEC, 'dd MMM yyyy', {
-                  locale: getLocale(),
-                }),
-              })}
+            <SText numberOfLines={3} style={styles.title} variant="body2">
+              {title}
             </SText>
           }
           chevron

@@ -36,8 +36,7 @@ export const useExpiringDomains = create(
         set(({ domains, items }) => {
           const rawAddress = new Address(address).format({ raw: true });
           const { [rawAddress]: remove, ...rest } = domains;
-
-          const newItems = items.filter((item) => item.dns_item.address !== address);
+          const newItems = items.filter((item) => item.dns_item.address !== rawAddress);
 
           return { domains: rest, items: newItems };
         });

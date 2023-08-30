@@ -15,12 +15,16 @@ import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVaul
 import { RenewAllProgressButton } from './RenewAllProgressButton';
 import { Base64, debugLog, delay, triggerNotificationSuccess } from '$utils';
 import { Toast } from '$store/zustand/toast';
-import { getTimeSec } from '$utils/getTimeSec';
 import { Ton } from '$libs/Ton';
 import TonWeb from 'tonweb';
 import { Tonapi } from '$libs/Tonapi';
 import { eventsActions } from '$store/events';
 import { useDispatch } from 'react-redux';
+import {
+  checkIsInsufficient,
+  openInsufficientFundsModal,
+} from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import BigNumber from 'bignumber.js';
 
 enum States {
   INITIAL,
@@ -49,9 +53,17 @@ export const СonfirmRenewAllDomains = memo((props) => {
   );
 
   const handleConfirm = useCallback(async () => {
+    const amount = Ton.toNano('0.02');
+    const totalAmount = new BigNumber(amount)
+      .multipliedBy(new BigNumber(domains.length))
+      .toString();
+    const checkResult = await checkIsInsufficient(totalAmount);
+    if (checkResult.insufficient) {
+      return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
+    }
+
     const unlocked = await unlock();
     const secretKey = await unlocked.getTonPrivateKey();
-
     try {
       setState(States.PROGRESS);
       const divider = 4;
@@ -74,7 +86,7 @@ export const СonfirmRenewAllDomains = memo((props) => {
           const order = TonWeb.Contract.createCommonMsgInfo(
             TonWeb.Contract.createInternalMessageHeader(
               new TonWeb.Address(domain.dns_item.address),
-              Ton.toNano('0.02'),
+              amount,
             ),
             undefined,
             payload,
@@ -143,14 +155,14 @@ export const СonfirmRenewAllDomains = memo((props) => {
             subvalue={fiatAmount}
           />
           <List.Item
-            onPress={() => copyText(t('dns_addresses', { count: count }))}
+            onPress={() => copyText(t('dns_addresses', { count }))}
             titleStyle={styles.listItemTitle}
             title={
               <Text variant="body1" color="textSecondary">
                 {t('txActions.signRaw.recipient')}
               </Text>
             }
-            value={t('dns_addresses', { count: count })}
+            value={t('dns_addresses', { count })}
           />
         </List>
       </Modal.Content>
@@ -227,7 +239,6 @@ export function openСonfirmRenewAllDomains() {
 }
 
 const styles = StyleSheet.create({
-  container: {},
   listItemTitle: {
     alignSelf: 'flex-start',
   },

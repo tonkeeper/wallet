@@ -121,13 +121,15 @@
     "one": "Expires in %{count} day",
     "other": "Expires in %{count} days"
   },
-  "dns_alert_expiring": {
-    "one": "You have %{count} expiring domain.",
-    "few": "You have %{count} expiring domains.",
-    "other": "You have %{count} expiring domains.",
-    "many": "You have %{count} expiring domains."
+  "dns_alert_expiring_many": {
+    "few": "You have %{count} expiring domains. Renew all until %{untilDate}.",
+    "other": "You have %{count} expiring domains. Renew all until %{untilDate}.",
+    "many": "You have %{count} expiring domains. Renew all until %{untilDate}."
   },
+  "dns_alert_expiring_one": "%{domain} expires in %{expire} days. Renew it until %{untilDate}.",
   "dns_renew_all_until_btn": "Renew all until %{untilDate}",
+  
+
   "expiring_domains": "Expiring domains",
   "domains_renewed": "Domains renewed",
   "confirm_renew_all_domains_title": "Confirm action",

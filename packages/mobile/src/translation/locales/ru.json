@@ -123,16 +123,17 @@
     "other": "Истекает через %{count} дней",
     "many": "Истекает через %{count} дней"
   },
-  "dns_alert_expiring": {
-    "one": "У вас есть %{count} истекающий домен.",
-    "few": "У вас есть %{count} истекающих домена.",
-    "other": "У вас есть %{count} истекающих доменов.",
-    "many": "У вас есть %{count} истекающих доменов."
+  "dns_alert_expiring_many": {
+    "few": "У вас есть %{count} истекающих домена. Продлить все до %{untilDate}.",
+    "other": "У вас есть %{count} истекающих доменов. Продлить все до %{untilDate}.",
+    "many": "У вас есть %{count} истекающих доменов. Продлить все до %{untilDate}."
   },
+  "dns_alert_expiring_one": "%{domain} истекает через %{expire} дней. Продлить до %{untilDate}.",
   "dns_renew_all_until_btn": "Продлить все до %{untilDate}",
+
   "expiring_domains": "Истекающие домены",
   "domains_renewed": "Домены продлены",
-  "confirm_renew_all_domains_title": "Confirm action",
+  "confirm_renew_all_domains_title": "Подтвердить действие",
   "dns_addresses": {
     "one": "%{count} адрес",
     "few": "%{count} адреса",
@@ -891,4 +892,3 @@
     }
   }
 }
-

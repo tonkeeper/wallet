@@ -66,7 +66,9 @@ export const WalletScreen = memo(() => {
   const isFocused = useIsFocused();
 
   const notifications = useInternalNotifications();
-  const expiringDomains = useExpiringDomains((state) => Object.keys(state.domains).length);
+  const expiringDomains = useExpiringDomains(
+    (state) => Object.keys(state.domains).length,
+  );
 
   // TODO: rewrite
   useEffect(() => {
@@ -171,7 +173,10 @@ export const WalletScreen = memo(() => {
           />
         )}
       </IconButtonList>
-      {wallet && visibleApproval && <ApprovalCell />}
+      {wallet && visibleApproval && expiringDomains > 0 && (
+        <ExpiringDomainCell style={{ paddingBottom: 8 }} />
+      )}
+      {wallet && visibleApproval && <ApprovalCell withoutSpacer={expiringDomains > 0} />}
     </View>
   );
 
