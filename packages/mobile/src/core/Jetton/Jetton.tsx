@@ -157,7 +157,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   }, [events, isLoading, bottomInset]);
 
   const transactions = useMemo(() => {
-    return tk.wallet.jettons.remap(events);
+    return tk.wallet.jettons.remapTransactions(jetton.jettonAddress, events);
   }, [events, walletAddr]);
 
   if (!jetton) {

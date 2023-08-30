@@ -1,7 +1,17 @@
 import { AccountEvent } from '../TonAPI';
 import { WalletContext } from '../Wallet';
-import { TransactionMapper } from '../mappers/TransactionMapper';
+import { TransactionItems, TransactionMapper } from '../mappers/TransactionMapper';
 import { toLowerCaseFirstLetter } from '../utils/strings';
+
+type JettonAddress = string;
+
+type GroupKey = {
+  [key: string]: boolean;
+};
+
+type TransactionsGroups = {
+  [key: JettonAddress]: GroupKey;
+};
 
 export class JettonsManager {
   public preloaded = undefined;
@@ -14,34 +24,51 @@ export class JettonsManager {
     return ['jettons', this.ctx.address.ton.raw];
   }
 
-  public remap(legacyEvents: any) {
-    const events = Object.values(legacyEvents).reduce<AccountEvent[]>(
-      (acc, item: any) => {
+  transactionsGroups: TransactionsGroups = {};
+
+  public remapTransactions(jettonAddress: JettonAddress, legacyEvents: any) {
+    const items = Object.values(legacyEvents).reduce<TransactionItems>(
+      (items, oldEvent: any) => {
         const event: AccountEvent = {
-          ...item,
-          event_id: item.eventId,
-          account: item.account
+          ...oldEvent,
+          event_id: oldEvent.eventId,
+          account: oldEvent.account
             ? {
-                ...item.account,
-                is_scam: item.account.isScam,
+                ...oldEvent.account,
+                is_scam: oldEvent.account.isScam,
               }
             : undefined,
-          is_scam: item.isScam,
-          in_progress: item.inProgress,
-          actions: item.actions.map((action) => ({
+          is_scam: oldEvent.isScam,
+          in_progress: oldEvent.inProgress,
+          actions: oldEvent.actions.map((action) => ({
             ...action,
             simple_preview: action.simplePreview,
             [action.type]: action[toLowerCaseFirstLetter(action.type)],
           })),
         };
 
-        acc.push(event);
+        this.ctx.queryClient.setQueryData(['account_event', event.event_id], event);
+        const groupKey = TransactionMapper.getGroupKey(event.timestamp);
+        if (!this.transactionsGroups[jettonAddress]) {
+          this.transactionsGroups[jettonAddress] = {};
+        }
 
-        return acc;
+        console.log(this.transactionsGroups[jettonAddress][groupKey]);
+
+        if (!this.transactionsGroups[jettonAddress][groupKey]) {
+          this.transactionsGroups[jettonAddress][groupKey] = true;
+          const section = TransactionMapper.createSection(event.timestamp);
+          items.push(section);
+        }
+
+        const actions = TransactionMapper.createActions(event, this.ctx.address.ton.raw);
+        items.push(...actions);
+
+        return items;
       },
       [],
     );
 
-    // return TransactionMapper(events, this.ctx.address.ton.raw);
+    return items;
   }
 }
