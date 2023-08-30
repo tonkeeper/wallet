@@ -280,6 +280,12 @@ export const WalletScreen = memo(() => {
               <Tabs.FlashList
                 ListHeaderComponent={
                   <>
+                   {wallet && expiringDomains > 0 && (
+                      <ExpiringDomainCell
+                        withoutSpacer
+                        style={{ paddingHorizontal: ns(16), paddingBottom: ns(8) }}
+                      />
+                    )}
                     {wallet ? (
                       <ApprovalCell
                         withoutSpacer
