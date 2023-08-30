@@ -283,7 +283,7 @@ export const WalletScreen = memo(() => {
                    {wallet && expiringDomains > 0 && (
                       <ExpiringDomainCell
                         withoutSpacer
-                        style={{ paddingHorizontal: ns(16), paddingBottom: ns(8) }}
+                        style={{ paddingHorizontal: ns(6), paddingBottom: ns(8) }}
                       />
                     )}
                     {wallet ? (

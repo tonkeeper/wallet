@@ -52,7 +52,7 @@ export const ExpiringDomainCell = memo<ApprovalCellProps>(({ withoutSpacer, styl
             </View>
           }
           title={
-            <SText numberOfLines={3} style={styles.title} variant="body2">
+            <SText numberOfLines={3} variant="body2">
               {title}
             </SText>
           }
@@ -67,9 +67,6 @@ const styles = Steezy.create(({ colors }) => ({
   container: {
     backgroundColor: colors.backgroundContentTint,
     marginBottom: 4,
-  },
-  title: {
-    marginRight: 40,
   },
   iconContainer: {
     padding: 8,

@@ -29,7 +29,7 @@ export const useExpiringDomains = create(
 
           set({ domains, items: data.items });
         } catch (err) {
-          console.log('err[getExpiringDNS]', err);
+          console.log('[getExpiringDNS]', err);
         }
       },
       remove: (address) => {
@@ -56,7 +56,7 @@ export function useLoadExpiringDomains() {
     if (wallet) {
       load(wallet.address.rawAddress);
     }
-  }, []);
+  }, [wallet?.address.rawAddress]);
 
   return null;
 }
