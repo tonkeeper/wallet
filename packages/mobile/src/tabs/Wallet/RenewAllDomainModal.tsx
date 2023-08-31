@@ -13,7 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ton } from '$libs/Ton';
-import { BottomButtonWrap } from '$shared/components';
+import { BottomButtonWrap, BottomButtonWrapHelper } from '$shared/components';
 import { openСonfirmRenewAllDomains } from './components/СonfirmRenewAllDomains';
 import { CryptoCurrencies } from '$shared/constants';
 
@@ -72,6 +72,7 @@ export const RenewAllDomainModal = memo(() => {
             <ExpiringListItem key={domain.name} domain={domain} onRenew={handleRenew} />
           ))}
         </List>
+        <BottomButtonWrapHelper safeArea={false} />
       </Animated.ScrollView>
       <BottomButtonWrap>
         <Button onPress={handleRenewAll}>

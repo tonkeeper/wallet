@@ -5,12 +5,13 @@ import { ns } from '$utils';
 import * as S from './BottomButtonWrap.style';
 import { useTheme } from '$hooks';
 
-export const BottomButtonWrapHelper: FC = () => {
+export const BottomButtonWrapHelper: FC<{ safeArea?: boolean }> = (props) => {
+  const { safeArea = true } = props;
   const { bottom } = useSafeAreaInsets();
   return (
     <S.Helper
       style={{
-        height: ns(56 + 16) + bottom + ns(16),
+        height: ns(56 + 16) + (safeArea ? bottom : 0) + ns(16),
       }}
     />
   );

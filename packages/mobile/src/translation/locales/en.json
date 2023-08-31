@@ -122,6 +122,7 @@
     "other": "Expires in %{count} days"
   },
   "dns_alert_expiring_many": {
+    "one": "You have %{count} expiring domain. Renew all until %{untilDate}.",
     "few": "You have %{count} expiring domains. Renew all until %{untilDate}.",
     "other": "You have %{count} expiring domains. Renew all until %{untilDate}.",
     "many": "You have %{count} expiring domains. Renew all until %{untilDate}."
