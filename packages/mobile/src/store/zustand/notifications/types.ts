@@ -10,6 +10,7 @@ export interface INotification {
 export interface INotificationsStore {
   notifications: INotification[];
   last_seen: number;
+  has_gms: boolean;
   last_seen_activity_screen: number;
   should_show_red_dot: boolean;
   actions: {

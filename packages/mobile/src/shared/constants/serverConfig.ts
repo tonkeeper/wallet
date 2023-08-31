@@ -28,6 +28,7 @@ export interface ServerConfig {
   directSupportUrl: string;
   amplitudeKey: string;
   stonfiUrl: string;
+  explorerUrl: string;
 }
 
 let config: ServerConfig | null = null;
@@ -43,6 +44,7 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     isExchangeEnabled: data.isExchangeEnabled,
     exchangePostUrl: data.exchangePostUrl,
     mercuryoSecret: data.mercuryoSecret,
+    explorerUrl: data.accountExplorer || 'https://tonviewer.com',
     accountExplorer: data.accountExplorer || 'https://tonviewer.com/%s',
     appsflyerDevKey: data.appsflyerDevKey,
     appsflyerAppId: data.appsflyerAppId,

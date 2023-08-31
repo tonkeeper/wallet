@@ -2,14 +2,7 @@ import { memo, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as S from './Wallet.style';
 import { useWalletInfo } from '$hooks/useWalletInfo';
-import {
-  Button,
-  PopupMenu,
-  PopupMenuItem,
-  Text,
-  IconButton,
-  SwapIcon,
-} from '$uikit';
+import { Button, PopupMenu, PopupMenuItem, Text, IconButton, SwapIcon } from '$uikit';
 import { openDAppBrowser, openReceive, openSend } from '$navigation';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { walletActions, walletWalletSelector } from '$store/wallet';
@@ -37,7 +30,9 @@ export const ToncoinScreen = memo(() => {
   const handleOpenExplorer = useCallback(async () => {
     await delay(200);
     openDAppBrowser(
-      getServerConfig('accountExplorer').replace('%s', wallet.address.raw),
+      wallet.address.raw
+        ? getServerConfig('accountExplorer').replace('%s', wallet.address.raw)
+        : getServerConfig('explorerUrl'),
     );
   }, [wallet.address.raw]);
 

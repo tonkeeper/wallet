@@ -199,7 +199,11 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
 
   const handleOpenExplorer = useCallback(async () => {
     await delay(200);
-    openDAppBrowser(getServerConfig('accountExplorer').replace('%s', address.ton));
+    openDAppBrowser(
+      address.ton
+        ? getServerConfig('accountExplorer').replace('%s', address.ton)
+        : getServerConfig('explorerUrl'),
+    );
   }, [address.ton]);
 
   const handleLoadMore = useCallback(() => {
@@ -377,7 +381,7 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   if (!render) {
     return null;
   }
-  
+
   return (
     <S.Wrap>
       <ScrollHandler
