@@ -24,12 +24,12 @@ export const ExpiringDomainCell = memo<ApprovalCellProps>(({ withoutSpacer, styl
     if (expiringDomains.length === 1) {
       const domain = expiringDomains[0];
       const countOfDays = getCountOfDays(+new Date(), domain.expiring_at * 1000);
-      const expire = countOfDays === 366 ? countOfDays - 1 : countOfDays;
+      const count = countOfDays === 366 ? countOfDays - 1 : countOfDays;
 
       return t('dns_alert_expiring_one', {
         domain: maskifyDomain(domain.name),
         untilDate,
-        expire,
+        count,
       });
     }
 
