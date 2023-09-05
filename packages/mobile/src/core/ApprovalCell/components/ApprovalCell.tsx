@@ -103,7 +103,7 @@ export const ApprovalCell = React.memo(ApprovalCellComponent);
 
 const styles = Steezy.create(({ colors }) => ({
   container: {
-    backgroundColor: colors.backgroundContentAttention,
+    backgroundColor: colors.backgroundContentTint,
     marginBottom: 4,
   },
   title: {
@@ -111,7 +111,7 @@ const styles = Steezy.create(({ colors }) => ({
   },
   iconContainer: {
     padding: 8,
-    backgroundColor: colors.iconTertiary,
+    backgroundColor: colors.backgroundContentAttention,
     borderRadius: 32,
   },
 }));

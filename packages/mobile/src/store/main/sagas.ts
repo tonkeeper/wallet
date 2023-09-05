@@ -66,6 +66,7 @@ import { clearSubscribeStatus } from '$utils/messaging';
 import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 import { useSwapStore } from '$store/zustand/swap';
 import * as SecureStore from 'expo-secure-store';
+import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 
 SplashScreen.preventAutoHideAsync()
   .then((result) =>
@@ -210,8 +211,9 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     yield put(jettonsActions.loadJettons());
     yield put(subscriptionsActions.loadSubscriptions());
     const { wallet: walletNew } = yield select(walletSelector);
-    yield call([walletNew.ton, 'getAddress']);
+    const address = yield call([walletNew.ton, 'getAddress']);
     useSwapStore.getState().actions.fetchAssets();
+    useExpiringDomains.getState().actions.load(address);
   } else {
     yield put(walletActions.endLoading());
   }

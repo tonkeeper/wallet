@@ -123,6 +123,31 @@
     "other": "Истекает через %{count} дней",
     "many": "Истекает через %{count} дней"
   },
+  "dns_alert_expiring_many": {
+    "one": "У вас есть %{count} домен с истекающим сроком аренды. Продлите все до %{untilDate}.",
+    "few": "У вас есть %{count} домена с истекающим сроком аренды. Продлите все до %{untilDate}.",
+    "other": "У вас есть %{count} доменов с истекающим сроком аренды. Продлите все до %{untilDate}.",
+    "many": "У вас есть %{count} доменов с истекающим сроком аренды. Продлите все до %{untilDate}."
+  },
+  "dns_alert_expiring_one": {
+    "one": "%{domain} истекает через %{count} день. Продлите до %{untilDate}.",
+    "few": "%{domain} истекает через %{count} дня. Продлите до %{untilDate}.",
+    "other": "%{domain} истекает через %{count} дней. Продлите до %{untilDate}.",
+    "many": "%{domain} истекает через %{count} дней. Продлите до %{untilDate}."
+  },
+  "dns_renew_all_until_btn": "Продлить все до %{untilDate}",
+
+  "expiring_domains": "Истекающие домены",
+  "domains_renewed": "Домены продлены",
+  "confirm_renew_all_domains_title": "Подтвердить действие",
+  "dns_addresses": {
+    "one": "%{count} адрес",
+    "few": "%{count} адреса",
+    "other": "%{count} адресов",
+    "many": "%{count} адресов"
+  },
+  "renew_in_progress": "Выполняется продление…",
+  "renew_progress_of": "%{current} из %{count}",
 
   "nft_title": "NFT",
   "nft_about_dns": "TON DNS — сервис, который позволяет задать криптокошелькам, смарт-контрактам или сайтам короткие читаемые имена. \n\nС TON DNS доступ к децентрализованным сервисам аналогичен доступу к веб-сайтам в интернете.",
@@ -873,4 +898,3 @@
     }
   }
 }
-
