@@ -45,7 +45,7 @@ export class TransactionsManager {
     const tronEvents = await this.fetchTronEvents({ cursor: cursor?.tron });
 
     const mergedEvents = [...tonEvents.events, ...tronEvents.events].sort(
-      (a, b) => a.timestamp + b.timestamp,
+      (a, b) => b.timestamp - a.timestamp,
     );
 
     const items = mergedEvents.reduce<TransactionItems>((items, event, index) => {
@@ -84,9 +84,12 @@ export class TransactionsManager {
       ActionTypeEnum.SmartContractExec,
       ActionTypeEnum.ContractDeploy,
       ActionTypeEnum.JettonSwap,
-      ActionTypeEnum.DepositStake,
-      ActionTypeEnum.RecoverStake,
       ActionTypeEnum.NftPurchase,
+      ActionTypeEnum.DepositStake,
+      ActionTypeEnum.WithdrawStake,
+      ActionTypeEnum.WithdrawStakeRequest,
+      ActionTypeEnum.ElectionsRecoverStake,
+      ActionTypeEnum.ElectionsDepositStake,
     ]);
 
     const items = events.reduce<TransactionItems>((items, event, index) => {

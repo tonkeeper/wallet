@@ -83,13 +83,22 @@ export class TransactionMapper {
 
   static mapAmount(action: AnyTransactionAction): TransactionActionAmount | null {
     switch (action.type) {
+      case TransactionActionType.WithdrawStakeRequest:
+      case TransactionActionType.ElectionsRecoverStake:
+      case TransactionActionType.ElectionsDepositStake:
       case TransactionActionType.TonTransfer:
-      case TransactionActionType.RecoverStake:
       case TransactionActionType.DepositStake:
-        return {
-          value: action.amount,
-          symbol: 'TON',
-        };
+      case TransactionActionType.WithdrawStake:
+        if (action.amount !== undefined) {
+          return {
+            value: String(action.amount),
+            symbol: 'TON',
+          };
+        }
+
+        return null;
+      case TransactionActionType.JettonMint:
+      case TransactionActionType.JettonBurn:
       case TransactionActionType.JettonTransfer:
         return {
           value: action.amount,
@@ -113,6 +122,7 @@ export class TransactionMapper {
         return {
           value: action.amount,
           symbol: action.token.symbol,
+          decimals: action.token.decimals,
         };
       case TransactionActionType.JettonSwap:
       case TransactionActionType.NftItemTransfer:

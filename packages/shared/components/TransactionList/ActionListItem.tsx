@@ -107,7 +107,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
 
       if (action.amount) {
         return formatter.formatNano(action.amount.value, {
-          decimals: action.amount.decimals ?? 9,
+          decimals: action.amount.decimals,
           postfix: action.amount.symbol,
           prefix: amountPrefix,
         });

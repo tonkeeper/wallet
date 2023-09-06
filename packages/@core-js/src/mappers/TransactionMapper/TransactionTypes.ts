@@ -6,15 +6,20 @@ import {
   AuctionBidAction,
   ContractDeployAction,
   DepositStakeAction,
+  ElectionsDepositStakeAction,
+  ElectionsRecoverStakeAction,
+  JettonBurnAction,
+  JettonMintAction,
   JettonSwapAction,
   JettonTransferAction,
   NftItemTransferAction,
   NftPurchaseAction,
-  RecoverStakeAction,
   SmartContractAction,
   SubscriptionAction,
   TonTransferAction,
   UnSubscriptionAction,
+  WithdrawStakeAction,
+  WithdrawStakeRequestAction,
 } from '../../TonAPI/TonAPIGenerated';
 
 export enum TransactionActionType {
@@ -33,6 +38,12 @@ export enum TransactionActionType {
   Unknown = 'Unknown',
   SendTRC20 = 'SendTRC20',
   ReceiveTRC20 = 'ReceiveTRC20',
+  JettonBurn = 'JettonBurn',
+  JettonMint = 'JettonMint',
+  WithdrawStake = 'WithdrawStake',
+  WithdrawStakeRequest = 'WithdrawStakeRequest',
+  ElectionsRecoverStake = 'ElectionsRecoverStake',
+  ElectionsDepositStake = 'ElectionsDepositStake',
 }
 
 export type ActionDestination = 'in' | 'out' | 'unknown';
@@ -96,11 +107,6 @@ export type DepositStakeActionData = MakeTransactionAction<
   DepositStakeAction
 >;
 
-export type RecoverStakeActionData = MakeTransactionAction<
-  TransactionActionType.RecoverStake,
-  RecoverStakeAction
->;
-
 export type JettonSwapActionData = MakeTransactionAction<
   TransactionActionType.JettonSwap,
   JettonSwapAction
@@ -114,6 +120,36 @@ export type SendTRC20ActionData = MakeTransactionAction<
 export type ReceiveTRC20ActionData = MakeTransactionAction<
   TransactionActionType.ReceiveTRC20,
   ReceiveTRC20Action
+>;
+
+export type JettonBurnActionData = MakeTransactionAction<
+  TransactionActionType.JettonBurn,
+  JettonBurnAction
+>;
+
+export type JettonMintActionData = MakeTransactionAction<
+  TransactionActionType.JettonMint,
+  JettonMintAction
+>;
+
+export type WithdrawStakeActionData = MakeTransactionAction<
+  TransactionActionType.WithdrawStake,
+  WithdrawStakeAction
+>;
+
+export type WithdrawStakeRequestActionData = MakeTransactionAction<
+  TransactionActionType.WithdrawStakeRequest,
+  WithdrawStakeRequestAction
+>;
+
+export type ElectionsRecoverStakeData = MakeTransactionAction<
+  TransactionActionType.ElectionsRecoverStake,
+  ElectionsRecoverStakeAction
+>;
+
+export type ElectionsDepositStakeActionData = MakeTransactionAction<
+  TransactionActionType.ElectionsDepositStake,
+  ElectionsDepositStakeAction
 >;
 
 export type UnknownActionData = MakeTransactionAction<TransactionActionType.Unknown, {}>;
@@ -130,10 +166,15 @@ export type AnyTransactionAction =
   | UnknownActionData
   | SmartContractExecActionData
   | DepositStakeActionData
-  | RecoverStakeActionData
   | JettonSwapActionData
   | SendTRC20ActionData
-  | ReceiveTRC20ActionData;
+  | ReceiveTRC20ActionData
+  | JettonBurnActionData
+  | JettonMintActionData
+  | WithdrawStakeActionData
+  | WithdrawStakeRequestActionData
+  | ElectionsRecoverStakeData
+  | ElectionsDepositStakeActionData;
 
 export enum TransactionEventSource {
   Tron = 'Tron',

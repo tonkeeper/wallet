@@ -1,4 +1,4 @@
-import { AccountEventDestination } from '@tonkeeper/core/src/TonAPI';
+import { ActionDestination, TransactionActionAmount } from '@tonkeeper/core';
 import { View, StyleSheet } from 'react-native';
 import { formatter } from '../../../formatter';
 import { Text } from '@tonkeeper/uikit';
@@ -7,10 +7,11 @@ import { memo, useMemo } from 'react';
 import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
 import { useSelector } from 'react-redux';
+import { AmountFormatter } from '@tonkeeper/core';
 
 interface DetailedAmountProps {
-  destination: AccountEventDestination;
-  amount?: number | string;
+  destination: ActionDestination;
+  amount?: TransactionActionAmount;
   jettonAddress?: string;
   hideFiat?: boolean;
   decimals?: number;
@@ -19,7 +20,7 @@ interface DetailedAmountProps {
 
 export const DetailedAmount = memo<DetailedAmountProps>((props) => {
   const {
-    amount: nanoAmount,
+    amount,
     symbol = 'TON',
     hideFiat,
     decimals,
@@ -30,33 +31,34 @@ export const DetailedAmount = memo<DetailedAmountProps>((props) => {
   const fiatCurrency = useSelector(fiatCurrencySelector);
   const tokenPrice = useTokenPrice(jettonAddress ?? 'ton');
 
-  const amount = useMemo(() => {
-    if (nanoAmount) {
-      return formatter.formatNano(nanoAmount, {
+  const formattedAmount = useMemo(() => {
+    if (amount) {
+      return formatter.formatNano(amount.value, {
+        decimals: amount.decimals,
+        postfix: amount.symbol,
         formatDecimals: 9,
-        decimals: decimals,
-        prefix: destination === 'in' ? '+' : '-',
+        prefix:
+          destination === 'in' ? AmountFormatter.sign.plus : AmountFormatter.sign.minus,
         withoutTruncate: true,
-        postfix: symbol,
       });
     }
-  }, [destination, nanoAmount, decimals, symbol]);
+  }, [destination, amount, decimals, symbol]);
 
   const fiatAmount = useMemo(() => {
-    if (nanoAmount && tokenPrice.fiat) {
-      const amount = parseFloat(formatter.fromNano(nanoAmount, decimals));
-      return formatter.format(tokenPrice.fiat * amount, {
+    if (amount && tokenPrice.fiat) {
+      const parsedAmount = parseFloat(formatter.fromNano(amount.value, amount.decimals));
+      return formatter.format(tokenPrice.fiat * parsedAmount, {
         currency: fiatCurrency,
         decimals: 9,
       });
     }
-  }, [nanoAmount, tokenPrice.fiat, fiatCurrency]);
+  }, [amount, tokenPrice.fiat, fiatCurrency]);
 
   return (
     <View style={styles.container}>
       {amount && (
         <Text type="h2" style={styles.amountText}>
-          {amount}
+          {formattedAmount}
         </Text>
       )}
       {fiatAmount && !hideFiat && (
