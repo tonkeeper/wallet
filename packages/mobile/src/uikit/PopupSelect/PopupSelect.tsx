@@ -254,6 +254,15 @@ export function PopupSelectComponent<T>(props: PopupSelectProps<T>) {
             >
               <S.Content>
                 <FlatList
+                  onScrollToIndexFailed={({ index, averageItemLength }) => {
+                    // Layout doesn't know the exact location of the requested element.
+                    // Falling back to calculating the destination manually
+                    flatListRef.current?.scrollToOffset({
+                      offset: index * averageItemLength,
+                      animated: true,
+                    });
+                  }}
+                  initialNumToRender={40} // fix for scrollToIndex error
                   ref={flatListRef}
                   data={items}
                   keyExtractor={keyExtractor}
