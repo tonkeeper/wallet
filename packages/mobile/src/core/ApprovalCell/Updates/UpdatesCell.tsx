@@ -6,6 +6,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { installApk } from 'react-native-apk-install';
 import { getUpdatePath } from '$store/zustand/updates/helpers';
 import { Steezy } from '$styles';
+import DeviceInfo from 'react-native-device-info';
 
 const UpdatesCellComponent: React.FC = () => {
   const version = useUpdatesStore((state) => state.meta?.version);
@@ -46,6 +47,10 @@ const UpdatesCellComponent: React.FC = () => {
         return 'ic-update-28';
     }
   }, [state]);
+
+  if (DeviceInfo.getVersion() === version) {
+    return null;
+  }
 
   return (
     <List indent={false} style={styles.list}>
