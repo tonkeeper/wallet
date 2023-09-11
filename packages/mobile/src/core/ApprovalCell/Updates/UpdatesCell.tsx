@@ -8,6 +8,8 @@ import { getUpdatePath } from '$store/zustand/updates/helpers';
 import { Steezy } from '$styles';
 import DeviceInfo from 'react-native-device-info';
 
+const appVersion = DeviceInfo.getVersion();
+
 const UpdatesCellComponent: React.FC = () => {
   const version = useUpdatesStore((state) => state.meta?.version);
   const state = useUpdatesStore((state) => state.update.state);
@@ -48,7 +50,7 @@ const UpdatesCellComponent: React.FC = () => {
     }
   }, [state]);
 
-  if (DeviceInfo.getVersion() === version) {
+  if (appVersion === version) {
     return null;
   }
 
