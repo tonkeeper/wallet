@@ -12,11 +12,11 @@ import {
   domainToUsername,
   isTelegramUsername,
 } from '@tonkeeper/core/src/managers/NftsManager';
-import { AuctionBidActionData, TransactionEvent } from '@tonkeeper/core';
+import { AuctionBidActionData, ActivityEvent } from '@tonkeeper/core';
 
 interface AuctionBidContentProps {
   action: AuctionBidActionData;
-  event: TransactionEvent;
+  event: ActivityEvent;
 }
 
 export const AuctionBidContent = memo<AuctionBidContentProps>((props) => {

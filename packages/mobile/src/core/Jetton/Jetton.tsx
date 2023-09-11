@@ -32,26 +32,25 @@ import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
 import { Screen, View } from '@tonkeeper/uikit';
-import { TransactionsList } from '@tonkeeper/shared/components';
+
 import { useWallet } from '../../tabs/useWallet';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+
+import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonActivityList';
+import { ActivityList } from '@tonkeeper/shared/components';
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const theme = useTheme();
   const flags = useFlags(['disable_swap']);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const jetton = useJetton(route.params.jettonAddress);
-  const { events, isRefreshing, isLoading, refreshJettonEvents } = useJettonEvents(
-    jetton.jettonAddress,
-  );
+  const jettonActivityList = useJettonActivityList(jetton.jettonAddress);
   const address = useSelector(walletAddressSelector);
   const jettonPrice = useTokenPrice(jetton.jettonAddress, jetton.balance);
 
   const nav = useNavigation();
 
   const showSwap = useSwapStore((s) => !!s.assets[jetton.jettonAddress], shallow);
-
-  const walletAddr = useWallet();
 
   const handleSend = useCallback(() => {
     trackEvent(Events.SendOpen, { from: SendAnalyticsFrom.TokenScreen });
@@ -146,7 +145,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   ]);
 
   const renderFooter = useCallback(() => {
-    if (Object.values(events).length === 0 && isLoading) {
+    if (jettonActivityList.sections.length === 0 && jettonActivityList.isLoading) {
       return (
         <View style={{ margin: 16 }}>
           <Skeleton.List />
@@ -154,11 +153,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
       );
     }
     return <View style={{ height: bottomInset }} />;
-  }, [events, isLoading, bottomInset]);
-
-  const transactions = useMemo(() => {
-    return tk.wallet.jettons.remapTransactions(jetton.jettonAddress, events);
-  }, [events, walletAddr]);
+  }, [jettonActivityList.sections, jettonActivityList.isLoading, bottomInset]);
 
   if (!jetton) {
     return null;
@@ -185,13 +180,15 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
           </PopupMenu>
         }
       />
-      <TransactionsList
+      <ActivityList
         ListHeaderComponent={renderHeader}
         ListFooterComponent={renderFooter}
-        refreshing={isRefreshing}
-        onRefresh={refreshJettonEvents}
-        items={transactions}
-        loading={false}
+        onLoadMore={jettonActivityList.loadMore}
+        onReload={jettonActivityList.reload}
+        isReloading={jettonActivityList.isReloading}
+        isLoading={jettonActivityList.isLoading}
+        sections={jettonActivityList.sections}
+        hasMore={jettonActivityList.hasMore}
       />
     </Screen>
   );

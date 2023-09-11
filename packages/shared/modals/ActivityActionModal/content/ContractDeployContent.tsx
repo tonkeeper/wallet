@@ -1,4 +1,4 @@
-import { ContractDeployActionData, TransactionEvent } from '@tonkeeper/core';
+import { ContractDeployActionData, ActivityEvent } from '@tonkeeper/core';
 import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
 import { DetailedActionTime } from '../components/DetailedActionTime';
 import { FailedActionLabel } from '../components/FailedActionLabel';
@@ -9,7 +9,7 @@ import { memo } from 'react';
 
 interface ContractDeployContentProps {
   action: ContractDeployActionData;
-  event: TransactionEvent;
+  event: ActivityEvent;
 }
 
 export const ContractDeployContent = memo<ContractDeployContentProps>((props) => {

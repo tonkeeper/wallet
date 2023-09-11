@@ -120,7 +120,7 @@ export const AccessConfirmation: FC = () => {
                           const privateKey = await (
                             unlockedVault as any
                           ).getTonPrivateKey();
-                          createTronAddress(privateKey);
+                          // createTronAddress(privateKey);
                           
                           dispatch(mainActions.setUnlocked(true));
                         } else {
@@ -162,7 +162,7 @@ export const AccessConfirmation: FC = () => {
           // Lock screen
           if (isUnlock) {
             const privateKey = await (unlockedVault as any).getTonPrivateKey();
-            createTronAddress(privateKey);
+            // createTronAddress(privateKey);
 
             dispatch(mainActions.setUnlocked(true));
           } else {

@@ -12,11 +12,11 @@ import {
   EncryptedComment,
   EncryptedCommentLayout,
 } from '../../../components/EncryptedComment';
-import { TonTransferActionData, TransactionEvent } from '@tonkeeper/core';
+import { TonTransferActionData, ActivityEvent } from '@tonkeeper/core';
 
 interface TonTransferContentProps {
   action: TonTransferActionData;
-  event: TransactionEvent;
+  event: ActivityEvent;
 }
 
 export const TonTransferContent = memo<TonTransferContentProps>((props) => {

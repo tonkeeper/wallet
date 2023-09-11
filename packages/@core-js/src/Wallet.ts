@@ -3,7 +3,7 @@ import { Address, AddressFormats } from './formatters/Address';
 import { TonAPI } from './TonAPI';
 import { Vault } from './Vault';
 
-import { TransactionsManager } from './managers/TransactionsManager';
+import { ActivityList } from './Activity/ActivityList';
 import { NftsManager } from './managers/NftsManager';
 import { EventSourceListener, ServerSentEvents, IStorage } from './Tonkeeper';
 import { SubscriptionsManager } from './managers/SubscriptionsManager';
@@ -11,6 +11,9 @@ import { JettonsManager } from './managers/JettonsManager';
 import { BalancesManager } from './managers/BalancesManager';
 import { TronAPI } from './TronAPI';
 import { TronService } from './TronService';
+import { ActivityLoader } from './Activity/ActivityLoader';
+import { TonActivityList } from './Activity/TonActivityList';
+import { JettonActivityList } from './Activity/JettonActivityList';
 
 export enum WalletNetwork {
   mainnet = -239,
@@ -51,6 +54,13 @@ type TronAddresses = {
   owner: string;
 };
 
+type RawAddress = string;
+
+export type WalletAddresses = {
+  tron?: TronAddresses;
+  ton: RawAddress;
+};
+
 export type WalletAddress = {
   tron?: TronAddresses;
   ton: AddressFormats;
@@ -71,10 +81,14 @@ export class Wallet {
   public listener: EventSourceListener | null = null;
 
   public subscriptions: SubscriptionsManager;
-  public transactions: TransactionsManager;
   public balances: BalancesManager;
   public jettons: JettonsManager;
   public nfts: NftsManager;
+
+  public activityLoader: ActivityLoader;
+  public jettonActivityList: JettonActivityList;
+  public tonActivityList: TonActivityList;
+  public activityList: ActivityList;
 
   public tronService: TronService;
 
@@ -112,13 +126,15 @@ export class Wallet {
 
     this.subscriptions = new SubscriptionsManager(context);
 
-    this.transactions = new TransactionsManager(
-      this.address.ton.raw,
-      this.address.tron?.owner,
-      this.tonapi,
-      this.tronapi,
-      this.queryClient,
-    );
+    const addresses = {
+      ton: this.address.ton.raw,
+      tron: this.address.tron,
+    };
+
+    this.activityLoader = new ActivityLoader(addresses, this.tonapi, this.tronapi);
+    this.jettonActivityList = new JettonActivityList(this.activityLoader);
+    this.tonActivityList = new TonActivityList(this.activityLoader);
+    this.activityList = new ActivityList(this.activityLoader);
 
     this.balances = new BalancesManager(context);
     this.jettons = new JettonsManager(context);
@@ -162,7 +178,7 @@ export class Wallet {
     });
     this.listener.addEventListener('message', () => {
       console.log('[Wallet]: message receive');
-      this.transactions.refetch();
+      this.activityList.reload();
     });
   }
 

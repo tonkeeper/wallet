@@ -2,47 +2,48 @@ import { UnSubscribeActionListItem } from './items/UnSubscribeActionListItem';
 import { JettonSwapActionListItem } from './items/JettonSwapActionListItem';
 import { SubscribeActionListItem } from './items/SubscribeActionListItem';
 import { modifyNftName } from '@tonkeeper/core/src/managers/NftsManager';
+import { ListItemContainer, ListItemContentText } from '@tonkeeper/uikit';
 import { NftPreviewContent } from './NftPreviewContent';
-import { ListItemContentText } from '@tonkeeper/uikit';
 import { ActionListItem } from './ActionListItem';
 import { t } from '../../i18n';
 import {
-  TransactionActionType,
-  AnyTransactionAction,
-  TransactionEvent,
+  ActivityActionType,
+  AnyActivityAction,
+  ActivityEvent,
   Address,
+  ActivityItem,
 } from '@tonkeeper/core';
 
-export function renderActionItem(event: TransactionEvent, action: AnyTransactionAction) {
+export function renderActionItem(event: ActivityEvent, action: AnyActivityAction) {
   switch (action.type) {
-    case TransactionActionType.TonTransfer:
+    case ActivityActionType.TonTransfer:
       return (
         <ActionListItem event={event} action={action}>
           {!!action.comment && <ListItemContentText text={action.comment.trim()} />}
         </ActionListItem>
       );
-    case TransactionActionType.JettonTransfer:
+    case ActivityActionType.JettonTransfer:
       return (
         <ActionListItem event={event} action={action}>
           {!!action.comment && <ListItemContentText text={action.comment.trim()} />}
         </ActionListItem>
       );
-    case TransactionActionType.NftItemTransfer:
+    case ActivityActionType.NftItemTransfer:
       return (
         <ActionListItem event={event} action={action} value="NFT">
           <NftPreviewContent nftAddress={action.nft} />
           {!!action.comment && <ListItemContentText text={action.comment.trim()} />}
         </ActionListItem>
       );
-    case TransactionActionType.NftPurchase:
+    case ActivityActionType.NftPurchase:
       return (
         <ActionListItem event={event} action={action}>
           <NftPreviewContent nftItem={action.nft} />
         </ActionListItem>
       );
-    case TransactionActionType.JettonSwap:
+    case ActivityActionType.JettonSwap:
       return <JettonSwapActionListItem event={event} action={action} />;
-    case TransactionActionType.SmartContractExec:
+    case ActivityActionType.SmartContractExec:
       return (
         <ActionListItem
           subtitle={Address.parse(action.contract.address).toShort()}
@@ -52,7 +53,7 @@ export function renderActionItem(event: TransactionEvent, action: AnyTransaction
           event={event}
         />
       );
-    case TransactionActionType.Unknown:
+    case ActivityActionType.Unknown:
       return (
         <ActionListItem
           title={t('transactions.unknown')}
@@ -62,7 +63,7 @@ export function renderActionItem(event: TransactionEvent, action: AnyTransaction
           event={event}
         />
       );
-    case TransactionActionType.AuctionBid:
+    case ActivityActionType.AuctionBid:
       return (
         <ActionListItem
           subtitle={modifyNftName(action.nft?.metadata?.name)}
@@ -72,7 +73,7 @@ export function renderActionItem(event: TransactionEvent, action: AnyTransaction
           event={event}
         />
       );
-    case TransactionActionType.ContractDeploy:
+    case ActivityActionType.ContractDeploy:
       return (
         <ActionListItem
           subtitle={Address.parse(action.address).toShort()}
@@ -82,11 +83,11 @@ export function renderActionItem(event: TransactionEvent, action: AnyTransaction
           event={event}
         />
       );
-    case TransactionActionType.Subscribe: // TODO:
+    case ActivityActionType.Subscribe: // TODO:
       return <SubscribeActionListItem event={event} action={action} />;
-    case TransactionActionType.UnSubscribe: // TODO:
+    case ActivityActionType.UnSubscribe: // TODO:
       return <UnSubscribeActionListItem event={event} action={action} />;
-    case TransactionActionType.ReceiveTRC20:
+    case ActivityActionType.ReceiveTRC20:
       return (
         <ActionListItem
           subtitle={Address.toShort(action.sender)}
@@ -97,7 +98,7 @@ export function renderActionItem(event: TransactionEvent, action: AnyTransaction
           greenValue
         />
       );
-    case TransactionActionType.SendTRC20:
+    case ActivityActionType.SendTRC20:
       return (
         <ActionListItem
           subtitle={Address.toShort(action.recipient)}
@@ -119,3 +120,14 @@ export function renderActionItem(event: TransactionEvent, action: AnyTransaction
       );
   }
 }
+
+type RenderItemOptions = {
+  item: ActivityItem;
+  index: number;
+};
+
+export const renderActivityItem = ({ item }: RenderItemOptions) => (
+  <ListItemContainer isFirst={item.isFirst} isLast={item.isLast}>
+    {renderActionItem(item.event, item.action)}
+  </ListItemContainer>
+);

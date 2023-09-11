@@ -16,17 +16,18 @@ import { NftPurchaseContent } from './content/NftPurchaseContent';
 import { ContractDeployContent } from './content/ContractDeployContent';
 import { UnSubscribeContent } from './content/UnSubscribeContent';
 import {
-  AnyTransactionAction,
-  TransactionActionType,
-  TransactionEvent,
+  ActivitySource,
+  AnyActivityAction,
+  ActivityActionType,
+  ActivityEvent,
 } from '@tonkeeper/core';
 
-type ActionDetailsModalProps = {
-  action: AnyTransactionAction;
-  event: TransactionEvent;
+type ActivityActionModalProps = {
+  action: AnyActivityAction;
+  event: ActivityEvent;
 };
 
-export const ActionDetailsModal = memo<ActionDetailsModalProps>((props) => {
+export const ActivityActionModal = memo<ActivityActionModalProps>((props) => {
   const { event, action } = props;
   const nav = useNavigation();
 
@@ -43,23 +44,23 @@ export const ActionDetailsModal = memo<ActionDetailsModalProps>((props) => {
 
   const content = useMemo(() => {
     switch (action.type) {
-      case TransactionActionType.TonTransfer:
+      case ActivityActionType.TonTransfer:
         return <TonTransferContent action={action} event={event} />;
-      case TransactionActionType.JettonTransfer:
+      case ActivityActionType.JettonTransfer:
         return <JettonTransferContent action={action} event={event} />;
-      case TransactionActionType.JettonSwap:
+      case ActivityActionType.JettonSwap:
         return <JettonSwapContent action={action} event={event} />;
-      case TransactionActionType.NftItemTransfer:
+      case ActivityActionType.NftItemTransfer:
         return <NftTransferContent action={action} event={event} />;
-      case TransactionActionType.SmartContractExec:
+      case ActivityActionType.SmartContractExec:
         return <SmartContractExecContent action={action} event={event} />;
-      case TransactionActionType.AuctionBid:
+      case ActivityActionType.AuctionBid:
         return <AuctionBidContent action={action} event={event} />;
-      case TransactionActionType.NftPurchase:
+      case ActivityActionType.NftPurchase:
         return <NftPurchaseContent action={action} event={event} />;
-      case TransactionActionType.ContractDeploy:
+      case ActivityActionType.ContractDeploy:
         return <ContractDeployContent action={action} event={event} />;
-      case TransactionActionType.UnSubscribe:
+      case ActivityActionType.UnSubscribe:
         return <UnSubscribeContent action={action} event={event} />;
       default:
         return null;
@@ -103,27 +104,44 @@ const styles = StyleSheet.create({
   },
 });
 
-export async function openActionDetails(txId: string) {
+export async function openActionDetails(
+  actionId: string,
+  source: ActivitySource = ActivitySource.Ton,
+) {
   const openModal = (data: any) => {
     navigation.push('SheetsProvider', {
       $$action: SheetActions.ADD,
-      component: ActionDetailsModal,
+      component: ActivityActionModal,
       params: data,
       path: 'TRANSACTION_DETAILS',
     });
   };
 
   try {
-    const cachedData = tk.wallet.transactions.getCachedAction(txId);
-    if (cachedData) {
-      openModal(cachedData);
-    } else {
-      Toast.loading();
-      const data = await tk.wallet.transactions.fetchTransactionAction(txId);
-      if (data) {
-        openModal(data);
+    if (source === ActivitySource.Tron) {
+      const cachedData = tk.wallet.activityLoader.getTronAction(actionId);
+      if (cachedData) {
+        openModal(cachedData);
+      } else {
+        Toast.loading();
+        const data = await tk.wallet.activityLoader.loadTronAction(actionId);
+        if (data) {
+          openModal(data);
+        }
+        Toast.hide();
       }
-      Toast.hide();
+    } else {
+      const cachedData = tk.wallet.activityLoader.getTonAction(actionId);
+      if (cachedData) {
+        openModal(cachedData);
+      } else {
+        Toast.loading();
+        const data = await tk.wallet.activityLoader.loadTonAction(actionId);
+        if (data) {
+          openModal(data);
+        }
+        Toast.hide();
+      }
     }
   } catch (err) {
     console.log(err);

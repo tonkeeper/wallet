@@ -11,11 +11,11 @@ import { memo, useMemo } from 'react';
 import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
 import { useSelector } from 'react-redux';
-import { JettonSwapActionData, TransactionEvent } from '@tonkeeper/core';
+import { JettonSwapActionData, ActivityEvent } from '@tonkeeper/core';
 
 interface JettonSwapContentProps {
   action: JettonSwapActionData;
-  event: TransactionEvent;
+  event: ActivityEvent;
 }
 
 export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {

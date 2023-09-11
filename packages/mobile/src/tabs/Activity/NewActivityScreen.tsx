@@ -1,9 +1,9 @@
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { Screen, Text, Button, Icon, List, Spacer, Steezy, View } from '@tonkeeper/uikit';
 import { getNewNotificationsCount } from '$core/Notifications/NotificationsActivity';
-import { useAllTransactions } from '@tonkeeper/shared/query/hooks';
+import { useActivityList } from '@tonkeeper/shared/query/hooks';
 import { useNotificationsStore } from '$store/zustand/notifications';
-import { TransactionsList } from '@tonkeeper/shared/components';
+import { ActivityList } from '@tonkeeper/shared/components';
 import { Notification } from '$core/Notifications/Notification';
 import { openNotificationsScreen } from '$navigation/helper';
 import { useIsFocused } from '@react-navigation/native';
@@ -14,7 +14,8 @@ import { t } from '@tonkeeper/shared/i18n';
 import { useWallet } from '../useWallet';
 
 export const ActivityScreen = memo(() => {
-  const transactions = useAllTransactions();
+  const activityList = useActivityList();
+
   const nav = useNavigation();
   const wallet = useWallet();
 
@@ -61,7 +62,7 @@ export const ActivityScreen = memo(() => {
 
   if (
     !wallet.address.ton.raw ||
-    (!transactions.loading && transactions.data && transactions.data.length < 1)
+    (!activityList.isLoading && activityList.sections.length < 0)
   ) {
     return (
       <Screen>
@@ -131,14 +132,14 @@ export const ActivityScreen = memo(() => {
   return (
     <Screen>
       <Screen.LargeHeader title={t('activity.screen_title')} />
-      <TransactionsList
+      <ActivityList
         ListHeaderComponent={renderNotificationsHeader}
-        fetchMoreEnd={transactions.fetchMoreEnd}
-        onFetchMore={transactions.fetchMore}
-        refreshing={transactions.refreshing}
-        onRefresh={transactions.refresh}
-        loading={transactions.loading}
-        items={transactions.data}
+        onLoadMore={activityList.loadMore}
+        onReload={activityList.reload}
+        isReloading={activityList.isReloading}
+        isLoading={activityList.isLoading}
+        sections={activityList.sections}
+        hasMore={activityList.hasMore}
       />
     </Screen>
   );

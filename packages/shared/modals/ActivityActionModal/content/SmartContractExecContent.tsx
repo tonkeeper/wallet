@@ -7,12 +7,12 @@ import { ExtraListItem } from '../components/ExtraListItem';
 import { List, View, copyText } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import { memo } from 'react';
-import { SmartContractExecActionData, TransactionEvent } from '@tonkeeper/core';
+import { SmartContractExecActionData, ActivityEvent } from '@tonkeeper/core';
 
 
 interface SmartContractExecContentProps {
   action: SmartContractExecActionData;
-  event: TransactionEvent;
+  event: ActivityEvent;
 }
 
 export const SmartContractExecContent = memo<SmartContractExecContentProps>((props) => {

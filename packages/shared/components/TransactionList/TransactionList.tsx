@@ -1,82 +1,62 @@
-import { TransactionItem, TransactionItemType, TransactionItems } from '@tonkeeper/core';
+import { DefaultSectionT, SectionListData, StyleSheet, View } from 'react-native';
+import { RefreshControl, Screen, Loader, List } from '@tonkeeper/uikit';
 import { formatTransactionsGroupDate } from '../../utils/date';
-import { renderActionItem } from './renderActionItem';
-import { StyleSheet, View } from 'react-native';
+import { renderActivityItem } from './renderActivityItem';
 import { memo } from 'react';
-import {
-  ListItemContainer,
-  RefreshControl,
-  Screen,
-  Loader,
-  List,
-} from '@tonkeeper/uikit';
 
-interface TransactionsListProps {
-  items?: TransactionItems;
-  onFetchMore?: () => void;
-  onRefresh?: () => void;
-  fetchMoreEnd?: boolean;
-  refreshing?: boolean;
-  loading?: boolean;
+interface ActivityListProps {
+  sections?: any;
+  onLoadMore?: () => void;
+  onReload?: () => void;
+  hasMore?: boolean;
+  isReloading?: boolean;
+  isLoading?: boolean;
   safeArea?: boolean;
   ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null | undefined;
   ListFooterComponent?: React.ComponentType<any> | React.ReactElement | null | undefined;
 }
 
-type RenderItemOptions = {
-  item: TransactionItem;
-  index: number;
-};
-
-function renderTransactionItem(options: RenderItemOptions) {
-  const { item, index } = options;
-
-  if (item.type === TransactionItemType.Section) {
-    const isFirstItem = index === 0;
-    return (
-      <List.Header
-        title={formatTransactionsGroupDate(item.timestamp)}
-        spacerY={isFirstItem ? 8 : 0}
-        style={styles.date}
-      />
-    );
-  }
-
+function renderSection({ section }: { section: SectionListData<any, DefaultSectionT> }) {
+  const isFirstItem = false; //index === 0;
   return (
-    <ListItemContainer isFirst={item.isFirst} isLast={item.isLast}>
-      {renderActionItem(item.event, item.action)}
-    </ListItemContainer>
+    <List.Header
+      title={formatTransactionsGroupDate(section.timestamp)}
+      spacerY={isFirstItem ? 8 : 0}
+      style={styles.date}
+    />
   );
 }
 
-export const TransactionsList = memo<TransactionsListProps>((props) => {
+export const ActivityList = memo<ActivityListProps>((props) => {
   const {
     ListHeaderComponent,
-    fetchMoreEnd,
-    onFetchMore,
-    refreshing,
-    onRefresh,
+    hasMore,
+    onLoadMore,
+    isReloading,
+    onReload,
     safeArea,
-    loading,
-    items,
+    isLoading,
+    sections,
   } = props;
 
   return (
-    <Screen.FlashList
-      refreshControl={<RefreshControl onRefresh={onRefresh} refreshing={!!refreshing} />}
+    <Screen.SectionList
+      refreshControl={<RefreshControl onRefresh={onReload} refreshing={!!isReloading} />}
       keyExtractor={(item) => item.id}
-      renderItem={renderTransactionItem}
-      onEndReached={onFetchMore}
+      renderSectionHeader={renderSection}
+      renderItem={renderActivityItem}
+      onEndReached={onLoadMore}
       onEndReachedThreshold={0.02}
       updateCellsBatchingPeriod={60}
       maxToRenderPerBatch={10}
       initialNumToRender={20}
+      stickySectionHeadersEnabled={false}
       windowSize={16}
-      data={items}
+      sections={sections}
       safeArea={safeArea}
       decelerationRate="normal"
       ListEmptyComponent={
-        loading ? (
+        isLoading ? (
           <View style={styles.emptyContainer}>
             <Loader size="medium" />
           </View>
@@ -85,14 +65,14 @@ export const TransactionsList = memo<TransactionsListProps>((props) => {
       ListHeaderComponent={ListHeaderComponent}
       ListFooterComponent={
         props.ListFooterComponent ?? (
-          <Footer loading={!fetchMoreEnd && loading === false} />
+          <Footer loading={hasMore && sections && sections.length > 0} />
         )
       }
     />
   );
 });
 
-const Footer = memo(({ loading }: { loading: boolean }) => {
+const Footer = memo(({ loading }: { loading?: boolean }) => {
   if (loading) {
     return (
       <View style={styles.moreLoader}>

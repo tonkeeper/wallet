@@ -1,4 +1,4 @@
-import { ActionDestination, TransactionActionAmount } from '@tonkeeper/core';
+import { ActionDestination, ActivityActionAmount } from '@tonkeeper/core';
 import { View, StyleSheet } from 'react-native';
 import { formatter } from '../../../formatter';
 import { Text } from '@tonkeeper/uikit';
@@ -11,7 +11,7 @@ import { AmountFormatter } from '@tonkeeper/core';
 
 interface DetailedAmountProps {
   destination: ActionDestination;
-  amount?: TransactionActionAmount;
+  amount?: ActivityActionAmount;
   jettonAddress?: string;
   hideFiat?: boolean;
   decimals?: number;

@@ -7,11 +7,11 @@ import { t } from '../../../i18n';
 import { memo } from 'react';
 
 import { useSubscription } from '../../../query/hooks/useSubscription';
-import { TransactionEvent, UnSubscribeActionData } from '@tonkeeper/core';
+import { ActivityEvent, UnSubscribeActionData } from '@tonkeeper/core';
 
 interface UnSubscribeContentProps {
   action: UnSubscribeActionData;
-  event: TransactionEvent;
+  event: ActivityEvent;
 }
 
 export const UnSubscribeContent = memo<UnSubscribeContentProps>((props) => {

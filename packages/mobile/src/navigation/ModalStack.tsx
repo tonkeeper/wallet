@@ -33,7 +33,7 @@ import { ActionModal } from '$core/ModalContainer/Action/Action';
 import { ExchangeModal } from '$modals/ExchangeModal';
 import { Swap } from '$core/Swap/Swap';
 import { ChooseCountry } from '$core/ChooseCountry/ChooseCountry';
-import { ActionDetailsModal } from '@tonkeeper/shared/modals/ActionDetailsModal';
+import { ActionDetailsModal } from '@tonkeeper/shared/modals/ActivityActionModal';
 import { SwitchWalletModal } from '@tonkeeper/shared/modals/SwitchWalletModal';
 import { AddWalletModal } from '@tonkeeper/shared/modals/AddWalletModal';
 import { ProvidersWithNavigation } from './Providers';

@@ -7,12 +7,12 @@ import { DetailedNftItem } from '../components/DetailedNftItem';
 import { DetailedHeader } from '../components/DetailedHeader';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { memo } from 'react';
-import { NftItemTransferActionData, TransactionEvent } from '@tonkeeper/core';
+import { NftItemTransferActionData, ActivityEvent } from '@tonkeeper/core';
 
 
 interface NftTransferContentProps {
   action: NftItemTransferActionData;
-  event: TransactionEvent;
+  event: ActivityEvent;
 }
 
 export const NftTransferContent = memo<NftTransferContentProps>((props) => {

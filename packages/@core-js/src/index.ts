@@ -13,4 +13,6 @@ export * from './Vault';
 export * from './service';
 export * from './TronAPI';
 
-export * from './mappers/TransactionMapper/TransactionTypes';
+export * from './models/ActivityModel/ActivityTypes';
+
+export * from './utils/State';

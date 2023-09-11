@@ -1,6 +1,6 @@
 import { AccountEvent } from '../TonAPI';
 import { WalletContext } from '../Wallet';
-import { TransactionItems, TransactionMapper } from '../mappers/TransactionMapper';
+import { TransactionItems, TransactionMapper } from '../models/ActivityModel';
 import { toLowerCaseFirstLetter } from '../utils/strings';
 
 type JettonAddress = string;

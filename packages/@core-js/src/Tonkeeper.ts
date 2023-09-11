@@ -159,7 +159,7 @@ export class Tonkeeper {
   // Invoke on start app and block ui on spalsh screen
   private async preload() {
     await this.wallet.subscriptions.preload();
-    await this.wallet.transactions.preload();
+    await this.wallet.activityList.preload();
     await this.wallet.balances.preload();
     await this.wallet.jettons.preload();
     await this.wallet.nfts.preload();
@@ -170,7 +170,7 @@ export class Tonkeeper {
   // Invoke in background after hide splash screen
   private prefetch() {
     this.wallet.subscriptions.prefetch();
-    this.wallet.transactions.prefetch();
+    this.wallet.activityList.prefetch();
     this.wallet.balances.prefetch();
     this.wallet.jettons.prefetch();
     this.wallet.nfts.prefetch();

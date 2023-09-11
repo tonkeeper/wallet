@@ -1,12 +1,12 @@
-import { AccountEventDestination } from '@tonkeeper/core/src/TonAPI';
 import { StyleSheet } from 'react-native';
 import { Text } from '@tonkeeper/uikit';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
 import { formatTransactionDetailsTime } from '../../../utils/date';
+import { ActionDestination } from '@tonkeeper/core';
 
 interface DetailedActionTimeProps {
-  destination: AccountEventDestination;
+  destination: ActionDestination;
   timestamp: number;
   langKey?: string;
 }

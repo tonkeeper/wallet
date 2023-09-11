@@ -1,22 +1,20 @@
+import { ScreenLargeHeaderDistance, ScreenLargeHeaderHeight } from '../utils/constants';
+import { ScrollableWrapper, getScrollTo, getScrollableNode } from '../utils/scrollable';
+import { createContext, useCallback, useRef, useContext } from 'react';
+import { LayoutChangeEvent, NativeScrollEvent } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import Animated, {
   runOnJS,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import { ScreenLargeHeaderDistance, ScreenLargeHeaderHeight } from '../utils/constants';
-import { ScrollableWrapper, getScrollTo, getScrollableNode } from '../utils/scrollable';
-import { createContext, useCallback, useRef, useContext } from 'react';
-import { LayoutChangeEvent, NativeScrollEvent } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
-import { useValueRef } from '../../../../hooks/useValueRef';
 
 export type ScrollRefComponents = FlashList<any> | Animated.ScrollView;
 export type ScrollRef<T = ScrollRefComponents> = React.RefObject<T>;
-export type HeaderTypes = 'normal' | 'large';
+export type ScreenHeaderTypes = 'normal' | 'large' | 'none';
 
-export const useScreenScrollHandler = () => {
-  const headerType = useValueRef<HeaderTypes>('normal');
+export const useScreenScrollHandler = (headerType: ScreenHeaderTypes) => {
   const scrollRef = useRef<ScrollableWrapper>(null);
   const headerEjectionPoint = useSharedValue(0);
   const isContentSizeDetected = useRef(false);
@@ -24,13 +22,11 @@ export const useScreenScrollHandler = () => {
   const scrollY = useSharedValue(0);
   const layoutHeight = useRef(0);
 
-  const defineHeaderType = headerType.setValue;
-
   const headerOffsetStyle = useAnimatedStyle(
     () => ({
-      height: headerType.value === 'large' ? ScreenLargeHeaderHeight : 0,
+      height: headerType === 'large' ? ScreenLargeHeaderHeight : 0,
     }),
-    [headerType.value],
+    [headerType],
   );
 
   const detectLayoutSize = useCallback((ev: LayoutChangeEvent) => {
@@ -108,14 +104,13 @@ export const useScreenScrollHandler = () => {
   );
 
   return {
-    headerType: headerType.value,
     headerEjectionPoint,
     headerOffsetStyle,
     isEndReached,
+    headerType,
     scrollRef,
     scrollY,
     detectContentSize,
-    defineHeaderType,
     detectLayoutSize,
     scrollHandler,
     onMomentumEnd,

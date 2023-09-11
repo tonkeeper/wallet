@@ -26,12 +26,12 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { TonIcon } from '@tonkeeper/uikit';
 import { Icon, IconNames, Screen } from '@tonkeeper/uikit';
 
-import { TransactionsList } from '@tonkeeper/shared/components';
-import { useTonTransactions } from '@tonkeeper/shared/query/hooks/useTonTransactions';
+import { ActivityList } from '@tonkeeper/shared/components';
+import { useTonActivityList } from '@tonkeeper/shared/query/hooks/useTonActivityList';
 import { useWallet } from '../../tabs/useWallet';
 
 export const ToncoinScreen = memo(() => {
-  const transactions = useTonTransactions();
+  const activityList = useTonActivityList();
   const wallet = useWallet();
 
   const handleOpenExplorer = useCallback(async () => {
@@ -74,14 +74,14 @@ export const ToncoinScreen = memo(() => {
           </PopupMenu>
         }
       />
-      <TransactionsList
+      <ActivityList
         ListHeaderComponent={<HeaderList />}
-        fetchMoreEnd={transactions.fetchMoreEnd}
-        onFetchMore={transactions.fetchMore}
-        refreshing={transactions.refreshing}
-        onRefresh={transactions.refresh}
-        loading={transactions.loading}
-        items={transactions.data}
+        onLoadMore={activityList.loadMore}
+        onReload={activityList.reload}
+        isReloading={activityList.isReloading}
+        isLoading={activityList.isLoading}
+        sections={activityList.sections}
+        hasMore={activityList.hasMore}
         safeArea
       />
     </Screen>

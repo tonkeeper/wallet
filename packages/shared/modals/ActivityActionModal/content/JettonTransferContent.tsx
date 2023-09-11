@@ -8,11 +8,11 @@ import { DetailedHeader } from '../components/DetailedHeader';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { t } from '../../../i18n';
 import { memo } from 'react';
-import { JettonTransferActionData, TransactionEvent } from '@tonkeeper/core';
+import { JettonTransferActionData, ActivityEvent } from '@tonkeeper/core';
 
 interface JettonTransferContentProps {
   action: JettonTransferActionData;
-  event: TransactionEvent;
+  event: ActivityEvent;
 }
 
 export const JettonTransferContent = memo<JettonTransferContentProps>((props) => {

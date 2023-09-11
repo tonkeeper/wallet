@@ -1,4 +1,4 @@
-import { AmountFormatter, AnyTransactionAction, TransactionEvent } from '@tonkeeper/core';
+import { AmountFormatter, AnyActivityAction, ActivityEvent } from '@tonkeeper/core';
 import { Icon, IconNames, List, Loader, Picture, Text, View } from '@tonkeeper/uikit';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { ListItemContent, Steezy } from '@tonkeeper/uikit';
@@ -7,16 +7,16 @@ import { findSenderAccount } from './findSenderAccount';
 import { memo, useCallback, useMemo } from 'react';
 import { Address } from '../../Address';
 import { t } from '../../i18n';
-import { openActionDetails } from '../../modals/ActionDetailsModal';
+import { openActionDetails } from '../../modals/ActivityActionModal';
 import { formatter } from '../../formatter';
 
 interface ActionListItem {
   onPress?: () => void;
   subvalue?: string | React.ReactNode;
-  action: AnyTransactionAction;
+  action: AnyActivityAction;
   subtitleNumberOfLines?: number;
   children?: React.ReactNode;
-  event: TransactionEvent;
+  event: ActivityEvent;
   picture?: string;
   icon?: IconNames;
   title?: string;
@@ -32,7 +32,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     if (onPress) {
       onPress();
     } else {
-      openActionDetails(`${event.event_id}`);
+      openActionDetails(`${event.event_id}_0`);
     }
   }, []);
 
