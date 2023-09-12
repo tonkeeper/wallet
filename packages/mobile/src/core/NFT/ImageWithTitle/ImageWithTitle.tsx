@@ -115,11 +115,11 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
             <ShowMore maxLines={2} text={description} />
           </S.DescriptionWrap>
         ) : null}
-        <View style={styles.separatorContainer}>
-          <Separator leftOffset={0} />
-        </View>
         {collectionDescription ? (
           <>
+            <View style={styles.separatorContainer}>
+              <Separator leftOffset={0} />
+            </View>
             <Text variant="label1">{t('nft_about_collection')}</Text>
             <Spacer y={8} />
             <ShowMore maxLines={2} text={collectionDescription} />
