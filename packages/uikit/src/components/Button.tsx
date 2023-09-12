@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: ns(56),
   },
   iconContainer: {
+    zIndex: 10000,
     position: 'absolute',
     right: ns(14),
   },

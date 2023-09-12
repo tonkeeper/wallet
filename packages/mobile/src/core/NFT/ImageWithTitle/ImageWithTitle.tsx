@@ -118,11 +118,11 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
         <View style={styles.separatorContainer}>
           <Separator leftOffset={0} />
         </View>
-        <Text variant="label1">{t('nft_about_collection')}</Text>
         {collectionDescription ? (
           <>
+            <Text variant="label1">{t('nft_about_collection')}</Text>
             <Spacer y={8} />
-            <ShowMore maxLines={3} text={collectionDescription} />
+            <ShowMore maxLines={2} text={collectionDescription} />
           </>
         ) : null}
         {bottom}
