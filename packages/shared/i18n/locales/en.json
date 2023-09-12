@@ -131,7 +131,7 @@
   "nft_transfer_dns": "Transfer",
   "nft_browse_markets": "Browse Markets",
   "nft_open_in_marketplace": "View on NFT Market",
-  "nft_about_collection": "About {{collection}}",
+  "nft_about_collection": "About collection",
   "nft_more": "More",
   "nft_features": "Features",
   "nft_diamonds_description": "TON Diamonds possess the power to change the theme in your Tonkeeper wallet and match it to the color of your NFT.",
@@ -911,6 +911,14 @@
   },
   "choose_country": {
     "title": "Choose your country"
+  },
+  "programmable_nfts": {
+    "alert": {
+      "title": "Are you sure you want to open an external link?",
+      "description": "Visit this external link only if you trust the author of the collection.\n\n{{uri}}",
+      "open": "Open anyway",
+      "cancel": "Cancel"
+    }
   },
   "exchange": {
     "not_exists": "Invalid exchange ID"

@@ -253,6 +253,14 @@ export interface TonDiamondMetadata {
   };
 }
 
+export interface ProgrammableButtonsMetadata {
+  buttons: {
+    label?: string;
+    url?: string;
+    style?: string;
+  }[];
+}
+
 export interface JettonMetadata {
   address: string;
   decimals: number;

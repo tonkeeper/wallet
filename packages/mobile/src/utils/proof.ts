@@ -8,13 +8,23 @@ import { ConnectApi, Configuration } from '@tonkeeper/core/src/legacy';
 import { getServerConfigSafe } from '$shared/constants';
 import { Address } from '@tonkeeper/core';
 
-export async function createTonProofForTonkeeper(
-  addressRaw: string,
-  secretKey: Uint8Array,
-  walletStateInit: string,
-) {
+export interface TonProofArgs {
+  address: string;
+  secretKey: Uint8Array;
+  walletStateInit: string;
+  domain: string;
+  payload?: string;
+}
+
+export async function createTonProof({
+  address: _addr,
+  payload: _payload,
+  secretKey,
+  walletStateInit,
+  domain,
+}: TonProofArgs) {
   try {
-    const address = Address(addressRaw).toRaw();
+    const address = Address(_addr).toRaw();
     const connectApi = new ConnectApi(
       new Configuration({
         basePath: getServerConfigSafe('tonapiV2Endpoint'),
@@ -23,11 +33,13 @@ export async function createTonProofForTonkeeper(
         },
       }),
     );
-    const { payload } = await connectApi.getTonConnectPayload();
+    let payload = _payload;
+    if (!payload) {
+      payload = (await connectApi.getTonConnectPayload()).payload;
+    }
     const timestamp = getTimeSec();
     const timestampBuffer = new Int64LE(timestamp).toBuffer();
 
-    const domain = 'tonkeeper.com';
     const domainBuffer = Buffer.from(domain);
     const domainLengthBuffer = Buffer.allocUnsafe(4);
     domainLengthBuffer.writeInt32LE(domainBuffer.byteLength);
@@ -77,11 +89,19 @@ export async function createTonProofForTonkeeper(
       },
     };
   } catch (e) {
-    return {
-      error: {
-        code: 0,
-        message: `Wallet internal error: ${e.message}`,
-      },
-    };
+    throw new Error('Failed to create proof');
   }
+}
+
+export async function createTonProofForTonkeeper(
+  addressRaw: string,
+  secretKey: Uint8Array,
+  walletStateInit: string,
+) {
+  return createTonProof({
+    address: addressRaw,
+    secretKey,
+    walletStateInit,
+    domain: 'tonkeeper.com',
+  });
 }

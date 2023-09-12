@@ -134,7 +134,7 @@
 
   "nft_transfer_dns": "Отправить",
   "nft_transfer_nft": "Отправить NFT",
-  "nft_about_collection": "Подробнее о {{collection}}",
+  "nft_about_collection": "Подробнее о коллекции",
   "nft_more": "Раскрыть",
   "nft_features": "Возможности",
   "nft_diamonds_description": "TON Diamonds обладают способностью менять тему в вашем кошельке Tonkeeper и сопоставлять ее с цветом вашего NFT.",
@@ -925,6 +925,14 @@
   },
   "choose_country": {
     "title": "Выберите вашу страну"
+  },
+  "programmable_nfts": {
+    "alert": {
+      "title": "Вы уверены, что хотите открыть внешнюю ссылку?",
+      "description": "Переходите по этой внешней ссылке только в том случае, если вы доверяете автору коллекции.\n\n{{uri}}",
+      "open": "Открыть всё равно",
+      "cancel": "Отмена"
+    }
   },
   "exchange": {
     "not_exists": "Неверный ID обменника"

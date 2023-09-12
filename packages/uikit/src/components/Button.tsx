@@ -12,6 +12,7 @@ import { Theme, useTheme } from '../styles';
 import { Loader } from './Loader';
 import { Text } from './Text';
 import { ns } from '../utils';
+import { IconNames, Icon } from '@tonkeeper/uikit';
 import { isString } from '../utils/strings';
 
 export type ButtonColors = 'primary' | 'secondary' | 'tertiary';
@@ -26,6 +27,7 @@ export interface ButtonProps {
   disabled?: boolean;
   loading?: boolean;
   navigate?: string;
+  icon?: IconNames;
   indentTop?: boolean | number;
   indentBottom?: boolean;
   indent?: boolean;
@@ -43,6 +45,7 @@ export const Button = memo<ButtonProps>((props) => {
     loading,
     navigate,
     stretch,
+    icon,
     indentBottom,
     children,
     indentTop,
@@ -96,9 +99,21 @@ export const Button = memo<ButtonProps>((props) => {
         ) : !!children ? (
           <View style={styles.content}>{children}</View>
         ) : (
-          <Text numberOfLines={1} ellipsizeMode="tail" style={titleStyle} type={textType}>
-            {title}
-          </Text>
+          <>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={[titleStyle, icon && styles.titleWithIcon]}
+              type={textType}
+            >
+              {title}
+            </Text>
+            {icon && (
+              <View style={styles.iconContainer}>
+                <Icon name={icon} color="iconTertiary" />
+              </View>
+            )}
+          </>
         )}
       </Pressable>
     </View>
@@ -112,6 +127,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: ns(16),
+  },
+  titleWithIcon: {
+    paddingHorizontal: ns(56),
+  },
+  iconContainer: {
+    zIndex: 10000,
+    position: 'absolute',
+    right: ns(14),
   },
   buttonMedium: {
     height: ns(48),
