@@ -389,7 +389,8 @@
     "failed": "Failed",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
-    "withdrawal_request": "Withdrawal request"
+    "withdrawal_request": "Withdrawal request",
+    "burned": "Burned"
   },
 
   "transactionDetails": {

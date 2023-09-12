@@ -58,6 +58,7 @@ export const IconList = {
   'ic-envelope-28': require('../../../assets/icons/png/ic-envelope-28.png'),
   'ic-exclamationmark-circle-28': require('../../../assets/icons/png/ic-exclamationmark-circle-28.png'),
   'ic-explore-28': require('../../../assets/icons/png/ic-explore-28.png'),
+  'ic-fire-28': require('../../../assets/icons/png/ic-fire-28.png'),
   'ic-flash-28': require('../../../assets/icons/png/ic-flash-28.png'),
   'ic-gear-28': require('../../../assets/icons/png/ic-gear-28.png'),
   'ic-globe-28': require('../../../assets/icons/png/ic-globe-28.png'),

@@ -113,8 +113,8 @@ export function renderActionItem(event: ActivityEvent, action: AnyActivityAction
       return (
         <ActionListItem
           subtitle={action.jetton.name}
-          title={action.simple_preview.name}
-          iconName="ic-gear-28"
+          title={t('transactions.burned')}
+          iconName="ic-fire-28"
           action={action}
           event={event}
         />

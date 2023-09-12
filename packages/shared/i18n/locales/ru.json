@@ -395,7 +395,8 @@
     "failed": "Неуспешно",
     "deposit": "Депозит",
     "withdraw": "Вывод",
-    "withdrawal_request": "Запрос на вывод"
+    "withdrawal_request": "Запрос на вывод",
+    "burned": "burned"
   },
 
   "transactionDetails": {
