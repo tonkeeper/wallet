@@ -392,7 +392,10 @@
     "contract_deploy": "Создание контракта",
     "spam": "Спам",
     "bid": "Ставка",
-    "failed": "Неуспешно"
+    "failed": "Неуспешно",
+    "deposit": "Депозит",
+    "withdraw": "Вывод",
+    "withdrawal_request": "Запрос на вывод"
   },
 
   "transactionDetails": {

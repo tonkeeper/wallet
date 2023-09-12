@@ -2,7 +2,6 @@ import { UnSubscribeActionListItem } from './items/UnSubscribeActionListItem';
 import { JettonSwapActionListItem } from './items/JettonSwapActionListItem';
 import { SubscribeActionListItem } from './items/SubscribeActionListItem';
 import { modifyNftName } from '@tonkeeper/core/src/managers/NftsManager';
-import { ListItemContainer, ListItemContentText } from '@tonkeeper/uikit';
 import { NftPreviewContent } from './NftPreviewContent';
 import { ActionListItem } from './ActionListItem';
 import { t } from '../../i18n';
@@ -13,6 +12,14 @@ import {
   Address,
   ActivityItem,
 } from '@tonkeeper/core';
+import {
+  Icon,
+  ListItemContainer,
+  ListItemContentText,
+  Picture,
+  Steezy,
+  View,
+} from '@tonkeeper/uikit';
 
 export function renderActionItem(event: ActivityEvent, action: AnyActivityAction) {
   switch (action.type) {
@@ -41,14 +48,12 @@ export function renderActionItem(event: ActivityEvent, action: AnyActivityAction
           <NftPreviewContent nftItem={action.nft} />
         </ActionListItem>
       );
-    case ActivityActionType.JettonSwap:
-      return <JettonSwapActionListItem event={event} action={action} />;
     case ActivityActionType.SmartContractExec:
       return (
         <ActionListItem
           subtitle={Address.parse(action.contract.address).toShort()}
           title={t('transactions.smartcontract_exec')}
-          icon="ic-gear-28"
+          iconName="ic-gear-28"
           action={action}
           event={event}
         />
@@ -68,7 +73,7 @@ export function renderActionItem(event: ActivityEvent, action: AnyActivityAction
         <ActionListItem
           subtitle={modifyNftName(action.nft?.metadata?.name)}
           title={t('transactions.bid')}
-          icon="ic-tray-arrow-up-28"
+          iconName="ic-tray-arrow-up-28"
           action={action}
           event={event}
         />
@@ -78,21 +83,17 @@ export function renderActionItem(event: ActivityEvent, action: AnyActivityAction
         <ActionListItem
           subtitle={Address.parse(action.address).toShort()}
           title={t('transactions.wallet_initialized')}
-          icon="ic-donemark-28"
+          iconName="ic-donemark-28"
           action={action}
           event={event}
         />
       );
-    case ActivityActionType.Subscribe: // TODO:
-      return <SubscribeActionListItem event={event} action={action} />;
-    case ActivityActionType.UnSubscribe: // TODO:
-      return <UnSubscribeActionListItem event={event} action={action} />;
     case ActivityActionType.ReceiveTRC20:
       return (
         <ActionListItem
           subtitle={Address.toShort(action.sender)}
           title={t('transaction_type_receive')}
-          icon="ic-tray-arrow-down-28"
+          iconName="ic-tray-arrow-down-28"
           action={action}
           event={event}
           greenValue
@@ -103,11 +104,88 @@ export function renderActionItem(event: ActivityEvent, action: AnyActivityAction
         <ActionListItem
           subtitle={Address.toShort(action.recipient)}
           title={t('transaction_type_sent')}
-          icon="ic-tray-arrow-up-28"
+          iconName="ic-tray-arrow-up-28"
           action={action}
           event={event}
         />
       );
+    case ActivityActionType.JettonBurn:
+      return (
+        <ActionListItem
+          subtitle={action.jetton.name}
+          title={action.simple_preview.name}
+          iconName="ic-gear-28"
+          action={action}
+          event={event}
+        />
+      );
+    case ActivityActionType.JettonMint:
+      return (
+        <ActionListItem
+          subtitle={action.jetton.name}
+          title={t('transaction_type_receive')}
+          action={action}
+          event={event}
+        />
+      );
+    case ActivityActionType.DepositStake:
+      return (
+        <ActionListItem
+          subtitle={action.pool.name}
+          title={t('transactions.deposit')}
+          action={action}
+          event={event}
+          leftContent={
+            <View style={styles.poolIconContainer}>
+              {!!action.pool.icon ? (
+                <Picture
+                  style={styles.poolIcon}
+                  uri={action.pool.icon}
+                  resizeMode="contain"
+                />
+              ) : (
+                <Icon name="ic-tonkeeper-28" />
+              )}
+            </View>
+          }
+        />
+      );
+    case ActivityActionType.WithdrawStake:
+      return (
+        <ActionListItem
+          subtitle={action.pool.name}
+          title={t('transactions.withdraw')}
+          iconName="ic-donemark-28"
+          action={action}
+          event={event}
+          leftContent={
+            <View style={styles.poolIconContainer}>
+              <Picture uri={action.pool.icon} />
+            </View>
+          }
+        />
+      );
+    case ActivityActionType.WithdrawStakeRequest:
+      return (
+        <ActionListItem
+          subtitle={action.pool.name}
+          title={t('transactions.withdrawal_request')}
+          iconName="ic-donemark-28"
+          action={action}
+          event={event}
+          leftContent={
+            <View style={styles.poolIconContainer}>
+              <Picture uri={action.pool.icon} />
+            </View>
+          }
+        />
+      );
+    case ActivityActionType.JettonSwap:
+      return <JettonSwapActionListItem event={event} action={action} />;
+    case ActivityActionType.Subscribe: // TODO:
+      return <SubscribeActionListItem event={event} action={action} />;
+    case ActivityActionType.UnSubscribe: // TODO:
+      return <UnSubscribeActionListItem event={event} action={action} />;
     default:
       return (
         <ActionListItem
@@ -131,3 +209,18 @@ export const renderActivityItem = ({ item }: RenderItemOptions) => (
     {renderActionItem(item.event, item.action)}
   </ListItemContainer>
 );
+
+const styles = Steezy.create(({ colors }) => ({
+  poolIconContainer: {
+    backgroundColor: colors.accentGreen,
+    width: 44,
+    height: 44,
+    borderRadius: 44 / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  poolIcon: {
+    width: 28,
+    height: 28,
+  },
+}));

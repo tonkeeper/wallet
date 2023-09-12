@@ -32,7 +32,6 @@ export enum ActivityActionType {
   AuctionBid = 'AuctionBid',
   NftPurchase = 'NftPurchase',
   DepositStake = 'DepositStake',
-  RecoverStake = 'RecoverStake',
   JettonSwap = 'JettonSwap',
   SmartContractExec = 'SmartContractExec',
   Unknown = 'Unknown',

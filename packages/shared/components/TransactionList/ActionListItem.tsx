@@ -1,14 +1,14 @@
 import { AmountFormatter, AnyActivityAction, ActivityEvent } from '@tonkeeper/core';
 import { Icon, IconNames, List, Loader, Picture, Text, View } from '@tonkeeper/uikit';
+import { openActionDetails } from '../../modals/ActivityActionModal';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { ListItemContent, Steezy } from '@tonkeeper/uikit';
 import { formatTransactionTime } from '../../utils/date';
 import { findSenderAccount } from './findSenderAccount';
 import { memo, useCallback, useMemo } from 'react';
+import { formatter } from '../../formatter';
 import { Address } from '../../Address';
 import { t } from '../../i18n';
-import { openActionDetails } from '../../modals/ActivityActionModal';
-import { formatter } from '../../formatter';
 
 interface ActionListItem {
   onPress?: () => void;
@@ -18,7 +18,8 @@ interface ActionListItem {
   children?: React.ReactNode;
   event: ActivityEvent;
   picture?: string;
-  icon?: IconNames;
+  iconName?: IconNames;
+  leftContent?: React.ReactNode;
   title?: string;
   value?: string;
   subtitle?: string;
@@ -55,8 +56,8 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
   const iconName = useMemo(() => {
     if (isFailed) {
       return 'ic-exclamationmark-circle-28';
-    } else if (props.icon !== undefined) {
-      return props.icon;
+    } else if (props.iconName !== undefined) {
+      return props.iconName;
     } else if (action.destination === 'in') {
       return 'ic-tray-arrow-down-28';
     } else if (action.destination === 'out') {
@@ -64,7 +65,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     } else {
       return 'ic-gear-28';
     }
-  }, [action.destination, props.icon, action.status, isFailed]);
+  }, [action.destination, props.iconName, action.status, isFailed]);
 
   const title = useMemo(() => {
     if (props.title !== undefined) {
@@ -130,7 +131,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     event.is_scam && styles.scamAmountText,
   ];
 
-  const icon = (
+  const leftContent = (
     <ListItemContent style={styles.icon.static}>
       {picture && !isFailed ? (
         <Picture style={styles.picture} uri={picture} />
@@ -149,10 +150,10 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
 
   return (
     <List.Item
+      leftContent={props.leftContent ?? leftContent}
       subtitleNumberOfLines={subtitleNumberOfLines}
       valueStyle={valueStyle}
       onPress={handlePress}
-      leftContent={icon}
       subvalue={subvalue}
       subtitle={subtitle}
       title={title}
@@ -197,7 +198,6 @@ const styles = Steezy.create(({ colors }) => ({
     top: -6,
     left: -6,
     borderRadius: 18 + 2 / 2,
-
     borderWidth: 2,
     borderColor: colors.backgroundContent,
   },

@@ -86,6 +86,7 @@ export const IconList = {
   'ic-telegram-28': require('../../../assets/icons/png/ic-telegram-28.png'),
   'ic-ticket-28': require('../../../assets/icons/png/ic-ticket-28.png'),
   'ic-ton-28': require('../../../assets/icons/png/ic-ton-28.png'),
+  'ic-tonkeeper-28': require('../../../assets/icons/png/ic-tonkeeper-28.png'),
   'ic-trash-bin-28': require('../../../assets/icons/png/ic-trash-bin-28.png'),
   'ic-tray-arrow-down-28': require('../../../assets/icons/png/ic-tray-arrow-down-28.png'),
   'ic-tray-arrow-up-28': require('../../../assets/icons/png/ic-tray-arrow-up-28.png'),

@@ -86,6 +86,7 @@ export type IconNames =
   | 'ic-telegram-28'
   | 'ic-ticket-28'
   | 'ic-ton-28'
+  | 'ic-tonkeeper-28'
   | 'ic-trash-bin-28'
   | 'ic-tray-arrow-down-28'
   | 'ic-tray-arrow-up-28'
@@ -204,6 +205,7 @@ export const AllIcons = [
   'ic-telegram-28',
   'ic-ticket-28',
   'ic-ton-28',
+  'ic-tonkeeper-28',
   'ic-trash-bin-28',
   'ic-tray-arrow-down-28',
   'ic-tray-arrow-up-28',
@@ -323,6 +325,7 @@ export const IconSizes = {
   'ic-telegram-28': 28,
   'ic-ticket-28': 28,
   'ic-ton-28': 28,
+  'ic-tonkeeper-28': 28,
   'ic-trash-bin-28': 28,
   'ic-tray-arrow-down-28': 28,
   'ic-tray-arrow-up-28': 28,

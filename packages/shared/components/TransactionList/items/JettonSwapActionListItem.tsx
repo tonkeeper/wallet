@@ -1,4 +1,4 @@
-import { TransactionEvent, JettonSwapActionData, Address } from '@tonkeeper/core';
+import { ActivityEvent, JettonSwapActionData, Address } from '@tonkeeper/core';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { formatTransactionTime } from '../../../utils/date';
 import { ActionListItem } from '../ActionListItem';
@@ -10,7 +10,7 @@ import { memo, useMemo } from 'react';
 
 interface JettonSwapActionListItemProps {
   action: JettonSwapActionData;
-  event: TransactionEvent;
+  event: ActivityEvent;
 }
 
 export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((props) => {

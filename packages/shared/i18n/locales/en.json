@@ -386,7 +386,10 @@
     "contract_deploy": "Contract Deploy",
     "spam": "Spam",
     "bid": "Bid",
-    "failed": "Failed"
+    "failed": "Failed",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "withdrawal_request": "Withdrawal request"
   },
 
   "transactionDetails": {
