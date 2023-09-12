@@ -1,10 +1,10 @@
 import { memo } from 'react';
 import { ActionListItem } from '../ActionListItem';
-import { TransactionEvent, UnSubscribeActionData } from '@tonkeeper/core';
+import { ActivityEvent, UnSubscribeActionData } from '@tonkeeper/core';
 
 interface UnSubscribeActionListItemProps {
   action: UnSubscribeActionData;
-  event: TransactionEvent;
+  event: ActivityEvent;
 }
 
 export const UnSubscribeActionListItem = memo<UnSubscribeActionListItemProps>((props) => {

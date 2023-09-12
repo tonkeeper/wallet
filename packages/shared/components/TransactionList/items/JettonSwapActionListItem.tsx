@@ -56,7 +56,7 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
 
   return (
     <ActionListItem
-      icon="ic-swap-horizontal-alternative-28"
+      iconName="ic-swap-horizontal-alternative-28"
       title={t('transactions.swap')}
       subtitle={subtitle}
       value={amountIn}

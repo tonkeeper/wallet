@@ -1,11 +1,11 @@
-import { SubscribeActionData, TransactionEvent } from '@tonkeeper/core';
+import { SubscribeActionData, ActivityEvent } from '@tonkeeper/core';
 import { ActionListItem } from '../ActionListItem';
 import { StyleSheet } from 'react-native';
 import { memo } from 'react';
 
 interface SubscribeActionListItemProps {
   action: SubscribeActionData;
-  event: TransactionEvent;
+  event: ActivityEvent;
 }
 
 export const SubscribeActionListItem = memo<SubscribeActionListItemProps>((props) => {
