@@ -7,7 +7,10 @@ import { walletActions } from '$store/wallet';
 import { Base64, delay, fromNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { store, Toast, useStakingStore } from '$store';
-import { TxRequest } from '$core/ModalContainer/NFTOperations/TXRequest.types';
+import {
+  SignRawMessage,
+  TxRequest,
+} from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import { openBuyFiat, openSend } from '../helper';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 
@@ -17,7 +20,6 @@ import { TonLoginClient } from '@tonapps/tonlogin-client';
 import { useNavigation } from '@tonkeeper/router';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 import { isSignRawParams } from '$utils/isSignRawParams';
-import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import { AppStackRouteNames, MainStackRouteNames } from '$navigation/navigationNames';
 import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { openTimeNotSyncedModal } from '$core/ModalContainer/TimeNotSynced/TimeNotSynced';
@@ -35,7 +37,6 @@ import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/
 import { Address } from '@tonkeeper/core';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { isMethodIdExists } from '$store/zustand/methodsToBuy/helpers';
-import { shallow } from 'zustand/esm/shallow';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -169,7 +170,12 @@ export function useDeeplinkingResolvers() {
       return;
     }
 
-    nav.push(MainStackRouteNames.StakingPoolDetails, { poolAddress: foundPool.address });
+    if (nav.closeModal) {
+      nav.closeModal();
+    }
+    nav.navigate(MainStackRouteNames.StakingPoolDetails, {
+      poolAddress: foundPool.address,
+    });
   });
 
   deeplinking.add('/swap', ({ query }) => {

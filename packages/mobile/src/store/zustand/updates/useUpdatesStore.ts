@@ -22,9 +22,6 @@ export const useUpdatesStore = create(
       ...initialState,
       actions: {
         fetchMeta: async () => {
-          if (getState().update.state !== UpdateState.NOT_STARTED) {
-            return;
-          }
           set({ isLoading: true });
           const oldMeta = getState().meta;
           const res = await fetch(
@@ -43,6 +40,7 @@ export const useUpdatesStore = create(
           ) {
             set({ shouldUpdate: true, declinedAt: undefined });
           } else {
+            set({ update: { state: UpdateState.NOT_STARTED, progress: 0 } });
             try {
               RNFS.unlink(getUpdatePath());
             } catch (e) {}

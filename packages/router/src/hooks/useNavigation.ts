@@ -1,4 +1,5 @@
 import {
+  CommonActions,
   StackActions,
   useNavigation as useNativeNavigation,
 } from '@react-navigation/native';
@@ -15,7 +16,7 @@ const useWrapNavigation = () => {
   } catch (err) {
     return {};
   }
-}
+};
 
 export const useNavigation = () => {
   const nav = useWrapNavigation();
@@ -24,7 +25,9 @@ export const useNavigation = () => {
 
   const setParams = () => {};
   const setOptions = nav.setOptions;
-  const reset = () => {};
+  const reset = (newRoute: any) => {
+    nav.dispatch(CommonActions.reset(newRoute));
+  };
 
   const replace = (path: string, params?: any) => {
     nav.dispatch(StackActions.replace(path, params));
@@ -111,6 +114,7 @@ export const useNavigation = () => {
     navigate,
     goBack,
     reset,
+    closeModal,
     push,
     go,
   };
