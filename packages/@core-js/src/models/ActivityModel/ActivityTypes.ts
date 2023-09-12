@@ -181,13 +181,7 @@ export enum ActivitySource {
   Ton = 'Ton',
 }
 
-export type AccountEventWithMaybeSource = AccountEvent & {
-  source?: ActivitySource;
-};
-
-export type ActivityEvent = Omit<AccountEvent, 'actions'> & {
-  source: ActivitySource;
-};
+export type ActivityEvent = Omit<AccountEvent, 'actions'>;
 
 export type ActivityActionAmount = {
   value: number | string;
@@ -198,6 +192,7 @@ export type ActivityActionAmount = {
 export type ActivityItem = {
   action: AnyActivityAction;
   event: ActivityEvent;
+  source: ActivitySource;
   isFirst?: boolean; // is first in event
   isLast?: boolean; // is last in event
   id: string; // {eventId}_{index}

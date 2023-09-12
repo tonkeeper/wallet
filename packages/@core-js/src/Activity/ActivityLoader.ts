@@ -39,9 +39,7 @@ export class ActivityLoader {
         source: ActivitySource.Ton,
         events,
       },
-      (action) => {
-        this.tonActions.set(action.id, action);
-      },
+      (action) => this.tonActions.set(action.id, action),
     );
 
     return {
@@ -117,7 +115,7 @@ export class ActivityLoader {
         event,
       });
 
-      console.log(action.id)
+      console.log(action.id);
 
       this.tonActions.set(action.id, action);
 

@@ -50,6 +50,10 @@ export class ActivityModel {
           event,
         });
 
+        if (fn) {
+          fn(action);
+        }
+
         actions.push(action);
         return actions;
       }, []);
