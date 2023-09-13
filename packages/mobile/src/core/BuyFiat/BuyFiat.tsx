@@ -13,7 +13,7 @@ import { useExchangeMethodInfo, useTheme } from '$hooks';
 import { goBack } from '$navigation';
 import { getServerConfig } from '$shared/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { deviceWidth, isAndroid, trackEvent } from '$utils';
+import { debugLog, deviceWidth, isAndroid, trackEvent } from '$utils';
 import { useDeeplinking } from '$libs/deeplinking';
 
 export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
@@ -34,14 +34,14 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
 
   const deeplinking = useDeeplinking();
 
-  const handleHttpError = useCallback(() => {
-    setWebViewKey(webViewKey + 1);
+  const handleHttpError = useCallback((event) => {
+    debugLog('[BuyFiat:handleHttpError]', event.nativeEvent.url);
   }, [setWebViewKey, webViewKey]);
 
-  const handleError = useCallback((e) => {
-    console.log(e.nativeEvent);
+  const handleError = useCallback((event) => {
+    debugLog('[BuyFiat:handleError]', event.nativeEvent.url);
   }, []);
-
+  
   const webviewUrl = useMemo(() => {
     const addr = address[currency];
 
