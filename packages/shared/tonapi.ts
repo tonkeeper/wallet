@@ -9,7 +9,7 @@ export const tonapi = new TonAPI({
     //   return config.get('tonapiTestnetHost');
     // }
 
-    return 'https://dev.tonapi.io'; // DEBUG
+    // return 'https://dev.tonapi.io'; // DEBUG
 
     return config.get('tonapiIOEndpoint');
   },
