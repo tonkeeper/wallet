@@ -41,8 +41,6 @@
   "wallet_receive": "Получить",
   "wallet_send": "Отправить",
   "wallet_buy": "Купить",
-  "wallet_toncommunity_link": "https://t.me/toncoin_rus",
-  "wallet_toncommunity_chat_link": "https://t.me/toncoin_rus_chat",
   "wallet_source_code": "Исходный код",
   "wallet_community": "Сообщество",
   "wallet_chat": "Чат",
@@ -134,7 +132,7 @@
 
   "nft_transfer_dns": "Отправить",
   "nft_transfer_nft": "Отправить NFT",
-  "nft_about_collection": "Подробнее о {{collection}}",
+  "nft_about_collection": "Подробнее о коллекции",
   "nft_more": "Раскрыть",
   "nft_features": "Возможности",
   "nft_diamonds_description": "TON Diamonds обладают способностью менять тему в вашем кошельке Tonkeeper и сопоставлять ее с цветом вашего NFT.",
@@ -220,7 +218,6 @@
   "send_invalid_recipient_title": "Неверный получатель",
   "send_invalid_recipient_caption": "Домен не существует или адрес кошелька к нему не привязан. Введите действительный адрес домена или кошелька.",
   "send_all_warning_title": "Вы уверены, что хотите отправить весь свой баланс?",
-  "send_liquid_jetton_warning_title": "Вы уверены, что хотите отправить часть своего стейкинг баланса?",
 
   "send_screen_steps": {
     "address": {
@@ -296,6 +293,8 @@
   "confirm_sending_inactive_warn_description": "Не продолжайте, если вы ожидаете волшебства от блокчейна. Этого не произойдет.",
   "confirm_sending_inactive_warn_about": "Что важно знать",
   "confirm_sending_method_title": "Send your funds\nto %{name}?",
+  "confirm_sending_liquid_warn_title": "Примечание",
+  "confirm_sending_liquid_warn_description": "Вы больше не будете получать награды за отправленный застейканный TON. Награды начнёт получать новый владелец.",
 
   "info_about_inactive_title": "Неактивный контракт",
   "info_about_inactive_desc1": "Tonkeeper не знает, является ли этот адрес кошельком или смарт-контрактом.",
@@ -483,7 +482,6 @@
   "settings_version": "Версия",
   "settings_security": "Безопасность",
   "settings_appearance": "Тема",
-  "settings_news_url": "https://t.me/tonkeeper_ru",
   "settings_jettons_list": "Токены",
   "settings_delete_account": "Удалить аккаунт",
   "settings_search_engine": "Поиск",
@@ -718,7 +716,14 @@
         "withFees": "+ комиссия сети.\n",
         "yourBalance": "Ваш баланс: %{balance} %{currency}.",
         "rechargeWallet": "Пополнить кошелёк",
-        "title": "Недостаточно средств"
+        "title": "Недостаточно средств",
+        "stakingFee": {
+          "zero": "Для совершения транзакции необходимо %{amount} TON. Предполагаемая комиссия в размере %{fee} TON будет удержана, остаток будет возвращён.",
+          "one": "Для совершения транзакции необходим %{amount} TON. Предполагаемая комиссия в размере %{fee} TON будет удержана, остаток будет возвращён.",
+          "few": "Для совершения транзакции необходимо %{amount} TON. Предполагаемая комиссия в размере %{fee} TON будет удержана, остаток будет возвращён.",
+          "many": "Для совершения транзакции необходимо %{amount} TON. Предполагаемая комиссия в размере %{fee} TON будет удержана, остаток будет возвращён.",
+          "other": "Для совершения транзакции необходим %{amount} TON. Предполагаемая комиссия в размере %{fee} TON будет удержана, остаток будет возвращён."
+        }
       }
     }
   },
@@ -804,18 +809,47 @@
   "confirm": "Подтвердить",
 
   "staking": {
+    "confirm_deposit": "Подтвердить и внести",
+    "send_staked_ton": "Застейканного TON",
     "title": "Стейкинг",
-    "widget_desc": "Зарабатывайте на TON до %{apy}%",
+    "title_large": "Стейкинг TON",
+    "desc_large": "Участвуйте в стейкинге и получайте вознаграждения. Стейкинг поддерживает сеть TON.",
+    "learn_more": "Подробнее",
+    "highest_apy": "Наивысший APY",
+    "widget_title": "Зарабатывайте TON",
+    "widget_desc": "Годовая доходность до %{apy}%",
     "staking_pool_desc": "APY ≈ %{apy}%",
     "staking_desc": "Мин. депозит %{minStake} TON.\nЗарабатывайте до %{maxApy}%.",
-    "top_up": "Пополнить",
+    "top_up": "Депозит",
     "withdrawal_request": "Запрос на вывод",
     "get_withdrawal": "Получить вывод",
     "withdraw": "Вывести",
-    "deposit": "Депозит",
+    "deposit": "Внести",
     "transaction": "Транзакция",
     "active": "Активные",
     "other": "Другие",
+    "message": {
+      "readyWithdraw": {
+        "zero": "%{amount} TON готовы к выводу.\nНажмите, чтобы вывести",
+        "one": "%{amount} TON готов к выводу.\nНажмите, чтобы вывести",
+        "few": "%{amount} TON готовы к выводу.\nНажмите, чтобы вывести",
+        "many": "%{amount} TON готовы к выводу.\nНажмите, чтобы вывести"
+      },
+      "pendingWithdraw": {
+        "zero": "%{amount} TON будет выведено\n",
+        "one": "%{amount} TON будет выведен\n",
+        "few": "%{amount} TON будет выведено\n",
+        "many": "%{amount} TON будет выведено\n",
+        "other": "%{amount} TON будет выведено\n"
+      },
+      "pendingDeposit": {
+        "zero": "%{amount} TON будет\nзачислено",
+        "one": "%{amount} TON будет\nзачислен",
+        "few": "%{amount} TON будет\nзачислено\n",
+        "many": "%{amount} TON будет\nзачислено\n",
+        "other": "%{amount} TON будет\nзачислено\n"
+      }
+    },
     "warning": {
       "title": "Предупреждение",
       "desc": "Стейкинг основан на сторонних смарт-контрактах. Мы не несем ответственность за их работу.",
@@ -823,24 +857,31 @@
       "about": "Подробнее о %{name}"
     },
     "details": {
-      "show_details": "Подробнее",
+      "links_title": "Ссылки",
+      "socials": {
+        "twitter": "Twitter",
+        "telegram": "Сообщество"
+      },
+      "note": "Стейкинг основан на сторонних смарт-контрактов. Tonkeeper не несет ответственности за их работу.",
       "balance": "Баланс стейкинга",
       "pendingDeposit": "Будет зачислено",
-      "pendingWithdraw": "В ожидании вывода",
+      "pendingWithdraw": "Ожидают вывод",
+      "pendingWithdrawDesc": "по окончанию цикла",
       "readyWithdraw": "Вывод готов",
       "tap_to_collect": "Нажмите, чтобы вывести",
       "next_cycle": {
         "title": "Следующий цикл",
-        "desc": "Все транзакции исполняются только после завершения цикла",
-        "desc_liquid": "Все запросы на вывод исполняются только после завершения цикла",
-        "time": "через %{time}"
+        "reward_title": "Следующая выплата",
+        "desc": "Все транзакции исполняются только после завершения цикла.",
+        "desc_liquid": "Все запросы на вывод исполняются только после завершения цикла.",
+        "in": "через"
       },
       "cooldown": {
         "title": "Период ожидания",
         "desc": "Двухчасовой период, применяемый в начале каждого стейкинг цикла для улучшения процесса снятия и внесения средств между циклами",
         "active": "Активен"
       },
-      "about_pool": "О пуле",
+      "about_pool": "Детали",
       "frequency": {
         "label": "Частота выплат",
         "value": {
@@ -855,16 +896,21 @@
       },
       "apy": {
         "label": "Годовая доходность",
+        "highest_tag": "Наивысшая",
         "value": "≈ %{value}%"
       },
       "min_deposit": {
         "label": "Минимальный депозит",
         "value": "%{value} TON"
+      },
+      "liquidity_token": {
+        "label": "Токен ликвидности %{token}",
+        "value": "Подробнее"
       }
     },
     "rewards": {
       "title": "Ваша годовая доходность",
-      "after_top_up": "После пополнения",
+      "after_top_up": "После депозита",
       "current": "Текущая",
       "value": "≈ %{value} TON"
     },
@@ -933,6 +979,14 @@
   },
   "choose_country": {
     "title": "Выберите вашу страну"
+  },
+  "programmable_nfts": {
+    "alert": {
+      "title": "Вы уверены, что хотите открыть внешнюю ссылку?",
+      "description": "Переходите по этой внешней ссылке только в том случае, если вы доверяете автору коллекции.\n\n{{uri}}",
+      "open": "Открыть всё равно",
+      "cancel": "Отмена"
+    }
   },
   "exchange": {
     "not_exists": "Неверный ID обменника"

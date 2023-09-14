@@ -11,6 +11,7 @@ import { shallow } from 'zustand/shallow';
 import { Address } from '@tonkeeper/shared/Address';
 import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 import { formatter } from '@tonkeeper/shared/formatter';
+import { useGetTokenPrice } from './useTokenPrice';
 
 export function useCurrencyToSend(
   currency: CryptoCurrency | string,
@@ -31,6 +32,16 @@ export function useCurrencyToSend(
       )) as JettonBalanceModel;
   }, [currency, isJetton, jettonBalances]);
 
+  const liquidJettonPool = useMemo(
+    () =>
+      jetton
+        ? stakingPools.find(
+            (pool) => pool.liquid_jetton_master === Address.parse(jetton.jettonAddress).toRaw(),
+          )
+        : undefined,
+    [jetton, stakingPools],
+  );
+
   const decimals = useMemo(() => {
     if (isUSDT) {
       return;
@@ -42,29 +53,42 @@ export function useCurrencyToSend(
   const Logo = useMemo(
     () => (
       <CurrencyIcon
-        isJetton={isJetton}
+        isJetton={!liquidJettonPool && isJetton}
         uri={jetton?.metadata?.image}
-        currency={currency}
+        currency={liquidJettonPool ? CryptoCurrencies.Ton : (currency as CryptoCurrency)}
         size={logoSize}
       />
     ),
-    [currency, isJetton, jetton?.metadata?.image, logoSize],
+    [currency, isJetton, jetton?.metadata?.image, liquidJettonPool, logoSize],
   );
+
+  const getTokenPrice = useGetTokenPrice();
 
   const currencyToSend = useMemo(() => {
     if (isJetton) {
+      const price = getTokenPrice(currency, jetton.balance);
+
+      if (liquidJettonPool) {
+        return {
+          decimals: Decimals[CryptoCurrencies.Ton],
+          balance: price.totalTon,
+          price,
+          currencyTitle: 'TON',
+          Logo,
+          jettonWalletAddress: jetton?.walletAddress,
+          isLiquidJetton: !!liquidJettonPool,
+          liquidJettonPool,
+        };
+      }
+
       return {
         decimals: jetton?.metadata?.decimals || 0,
         balance: formatAmount(jetton?.balance, decimals),
-        currencyTitle:
-          jetton?.metadata?.symbol?.toUpperCase() ||
-          Address.toShort(jetton?.jettonAddress),
+        price,
+        currencyTitle: jetton?.metadata?.symbol || Address.toShort(jetton?.jettonAddress),
         Logo,
         jettonWalletAddress: jetton?.walletAddress,
-        isLiquidJetton: stakingPools.some(
-          (pool) =>
-            pool.liquidJettonMaster === Address.parse(jetton!.jettonAddress).toRaw(),
-        ),
+        isLiquidJetton: false,
       };
     } else if (isUSDT) {
       const usdt = tronBalances.data?.[0];
@@ -94,9 +118,23 @@ export function useCurrencyToSend(
         Logo,
         jettonWalletAddress: undefined,
         isLiquidJetton: false,
+        liquidJettonPool: null,
       };
     }
-  }, [isJetton, jetton, decimals, Logo, stakingPools, currency, balances]);
+  }, [
+    isJetton,
+    getTokenPrice,
+    currency,
+    jetton.balance,
+    jetton?.metadata?.decimals,
+    jetton?.metadata?.symbol,
+    jetton?.jettonAddress,
+    jetton?.walletAddress,
+    liquidJettonPool,
+    decimals,
+    Logo,
+    balances,
+  ]);
 
   return currencyToSend;
 }

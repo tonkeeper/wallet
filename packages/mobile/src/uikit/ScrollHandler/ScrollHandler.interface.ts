@@ -5,6 +5,7 @@ import { Insets } from 'react-native';
 export interface ScrollHandlerProps {
   children: ReactElement;
   navBarTitle?: string;
+  navBarSubtitle?: string;
   isLargeNavBar?: boolean;
   navBarRight?: ReactNode;
   hideBackButton?: boolean;

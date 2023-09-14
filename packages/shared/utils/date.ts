@@ -95,3 +95,17 @@ export function formatTransactionDetailsTime(date: Date) {
 
   return `${day} ${month} ${year}, ${time}`;
 }
+
+export function timestampToDateString(timestamp: number): string {
+  const date = new Date(timestamp * 1000);
+  const year = date.getUTCFullYear();
+  const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Months are 0-based, so we add 1
+  const day = date.getUTCDate().toString().padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+export function dateToTimestamp(dateString: string): number {
+  const date = new Date(dateString);
+  return Math.floor(date.getTime() / 1000);
+}

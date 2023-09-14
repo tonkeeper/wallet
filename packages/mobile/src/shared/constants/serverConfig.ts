@@ -26,6 +26,10 @@ export interface ServerConfig {
   transactionExplorer: string;
   flags: Record<string, boolean>;
   directSupportUrl: string;
+  tonkeeperNewsUrl: string;
+  stakingInfoUrl: string;
+  tonCommunityUrl: string;
+  tonCommunityChatUrl: string;
   amplitudeKey: string;
   stonfiUrl: string;
 }
@@ -59,6 +63,10 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     cachedMediaSalt: data.cachedMediaSalt,
     NFTOnExplorerUrl: data.NFTOnExplorerUrl || 'https://tonscan.org/nft/%s',
     directSupportUrl: data.directSupportUrl,
+    tonkeeperNewsUrl: data.tonkeeperNewsUrl,
+    stakingInfoUrl: data.stakingInfoUrl,
+    tonCommunityUrl: data.tonCommunityUrl,
+    tonCommunityChatUrl: data.tonCommunityChatUrl,
     transactionExplorer:
       data.transactionExplorer || 'https://tonviewer.com/transaction/%s',
     flags: data.flags || {},

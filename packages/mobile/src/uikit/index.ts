@@ -47,3 +47,4 @@ export { Checkbox } from './Checkbox';
 export { DominantColorBackground } from './DominantColorBackground/DominantColorBackground';
 export { SpoilerView } from './SpoilerView';
 export { Tag } from './Tag';
+export { StakedTonIcon } from './StakedTonIcon';

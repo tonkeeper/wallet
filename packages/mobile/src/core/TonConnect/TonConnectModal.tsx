@@ -33,7 +33,7 @@ import { push } from '$navigation/imperative';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { mainSelector } from '$store/main';
-import { createTonProofForTonkeeper } from '$utils/notificationsproof';
+import { createTonProofForTonkeeper } from '$utils/proof';
 import { WalletApi, Configuration } from '@tonkeeper/core/src/legacy';
 import * as SecureStore from 'expo-secure-store';
 import { Address } from '@tonkeeper/core';

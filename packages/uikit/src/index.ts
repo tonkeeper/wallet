@@ -22,6 +22,7 @@ export { FastImage } from './components/FastImage';
 export { Picture } from './components/Picture';
 export { SegmentedControl } from './components/SegmentedControl';
 export { TransitionOpacity } from './components/TransitionOpacity';
+export * from './components/Flash';
 
 // Containers
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';

@@ -3,21 +3,20 @@ import { MainStackRouteNames } from '$navigation';
 import { StakingListCell } from '$shared/components';
 import { View } from '$uikit';
 import { List } from '$uikit/List/old/List';
-import React, { FC, memo, useCallback } from 'react';
+import React, { FC, memo, useCallback, useEffect } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { Steezy } from '$styles';
 import { useStakingStore } from '$store';
-import { shallow } from 'zustand/shallow';
 import { StakingWidgetStatus } from './StakingWidgetStatus';
 import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
+import { Flash } from '@tonkeeper/uikit';
 
 const StakingWidgetComponent: FC = () => {
-  
-
   const nav = useNavigation();
 
-  const maxApy = useStakingStore((s) => s.maxApy);
+  const highestApyPool = useStakingStore((s) => s.highestApyPool);
+  const flashShownCount = useStakingStore((s) => s.mainFlashShownCount);
 
   const stakingInfo = useStakingStatuses();
 
@@ -25,6 +24,17 @@ const StakingWidgetComponent: FC = () => {
     logEvent('staking_open');
     nav.push(MainStackRouteNames.Staking);
   }, [nav]);
+
+  useEffect(() => {
+    const timerId = setTimeout(
+      () => useStakingStore.getState().actions.increaseMainFlashShownCount(),
+      1000,
+    );
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -36,19 +46,21 @@ const StakingWidgetComponent: FC = () => {
             pool={item.pool}
           />
         ))}
-        <StakingListCell
-          isWidget={true}
-          id="staking"
-          name={t('staking.title')}
-          description={
-            maxApy
-              ? t('staking.widget_desc', {
-                  apy: maxApy.toFixed(2),
-                })
-              : ''
-          }
-          onPress={handleStakingPress}
-        />
+        <Flash disabled={flashShownCount >= 2}>
+          <StakingListCell
+            isWidget={true}
+            id="staking"
+            name={t('staking.widget_title')}
+            description={
+              highestApyPool
+                ? t('staking.widget_desc', {
+                    apy: highestApyPool.apy.toFixed(2),
+                  })
+                : ''
+            }
+            onPress={handleStakingPress}
+          />
+        </Flash>
       </List>
     </View>
   );

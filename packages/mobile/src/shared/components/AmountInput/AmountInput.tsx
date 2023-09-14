@@ -83,6 +83,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
         }),
         balanceInputValue: formatter.format(balance, {
           decimals,
+          withoutTruncate: true,
           currencySeparator: 'wide',
         }),
         isInsufficientBalance: !isLockup && bigNum.isGreaterThan(balanceBigNum),

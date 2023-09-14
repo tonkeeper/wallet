@@ -16,10 +16,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CryptoCurrencies } from '$shared/constants';
 import { parseLocaleNumber, truncateDecimal } from '$utils';
 import { getImplementationIcon, getPoolIcon } from '$utils/staking';
-import { PoolInfo } from '@tonkeeper/core/src/legacy';
 import { stakingFormatter } from '$utils/formatter';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/shared/Address';
+import { PoolInfo } from '@tonkeeper/core/src/TonAPI';
 
 interface Props extends StepComponentProps {
   transactionType: StakingTransactionType;
@@ -64,14 +64,16 @@ const ConfirmStepComponent: FC<Props> = (props) => {
   const isWithdrawalConfrim =
     transactionType === StakingTransactionType.WITHDRAWAL_CONFIRM;
 
+  const isDeposit = transactionType === StakingTransactionType.DEPOSIT;
+
   const address = useMemo(() => Address.parse(pool.address), [pool.address]);
 
   const fiatValue = useFiatValue(
-    currency,
+    CryptoCurrencies.Ton,
     parseLocaleNumber(amount.value),
     decimals,
     isJetton,
-    symbol,
+    'TON',
   );
   const fiatFee = useFiatValue(CryptoCurrencies.Ton, totalFee || '0');
 
@@ -96,7 +98,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
 
   const handleCopyAddress = useCallback(() => {
     copyText(address.toFriendly(), t('address_copied'));
-  }, [address, copyText, t]);
+  }, [address, copyText]);
 
   const handleCopyPoolName = useCallback(
     () => copyText(pool.name),
@@ -131,7 +133,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
               </S.Item>
             </Highlight>
             <Separator />
-            <Highlight onPress={handleCopyAddress}>
+            {/* <Highlight onPress={handleCopyAddress}>
               <S.Item>
                 <S.ItemLabel>{t('staking.confirm.address.label')}</S.ItemLabel>
                 <S.ItemContent>
@@ -139,7 +141,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                 </S.ItemContent>
               </S.Item>
             </Highlight>
-            <Separator />
+            <Separator /> */}
             {[
               StakingTransactionType.WITHDRAWAL,
               StakingTransactionType.WITHDRAWAL_CONFIRM,
@@ -190,7 +192,13 @@ const ConfirmStepComponent: FC<Props> = (props) => {
       <S.FooterContainer bottomInset={bottomInset}>
         <ActionFooter
           withCloseButton={isWithdrawalConfrim}
-          confirmTitle={t(isWithdrawalConfrim ? 'confirm' : 'confirm_sending_submit')}
+          confirmTitle={t(
+            isWithdrawalConfrim
+              ? 'confirm'
+              : isDeposit
+              ? 'staking.confirm_deposit'
+              : 'confirm_sending_submit',
+          )}
           onPressConfirm={handleConfirm}
           ref={footerRef}
         />

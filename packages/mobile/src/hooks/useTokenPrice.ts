@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import { shallow } from 'zustand/shallow';
 
 export interface TokenPrice {
+  amount: string;
   ton: number;
   totalTon: number;
   fiat: number;
@@ -79,6 +80,7 @@ export const useGetTokenPrice = () => {
       };
 
       return {
+        amount,
         ton,
         totalTon,
         fiat,

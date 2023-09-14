@@ -16,7 +16,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { t } from '@tonkeeper/shared/i18n';
 import { Properties } from '$core/NFT/Properties/Properties';
 import { Details } from '$core/NFT/Details/Details';
-import { About } from '$core/NFT/About/About';
 import { NFTProps } from '$core/NFT/NFT.interface';
 import { useNFT } from '$hooks/useNFT';
 import { Platform, Share, View, TouchableOpacity } from 'react-native';
@@ -34,6 +33,7 @@ import { Tonapi } from '$libs/Tonapi';
 import { Toast } from '$store';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
+import { ProgrammableButtons } from '$core/NFT/ProgrammableButtons/ProgrammableButtons';
 import { Address } from '@tonkeeper/core';
 import { NftItem } from '@tonkeeper/core/src/TonAPI';
 import { tk } from '@tonkeeper/shared/tonkeeper';
@@ -199,6 +199,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
               collection={isDNS ? 'TON DNS' : nft.collection?.name}
               isVerified={isDNS || nft.isApproved}
               description={!hiddenAmounts ? nft.description : '* * *'}
+              collectionDescription={!hiddenAmounts && nft.collection?.description}
               isOnSale={isOnSale}
               bottom={
                 isTG ? (
@@ -214,12 +215,6 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
                   </View>
                 ) : null
               }
-            />
-          ) : null}
-          {!hiddenAmounts && nft.collection ? (
-            <About
-              collection={isDNS ? 'TON DNS' : nft.collection.name}
-              description={isDNS ? t('nft_about_dns') : nft.collection.description}
             />
           ) : null}
           {isTonDiamondsNft && !flags.disable_apperance ? (
@@ -274,6 +269,11 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
                 {t('nft_open_in_marketplace')}
               </Button>
             ) : null}
+            <ProgrammableButtons
+              nftAddress={nft.address}
+              isApproved={nft.isApproved}
+              buttons={nft.metadata.buttons}
+            />
           </S.ButtonWrap>
           {!hiddenAmounts && <Properties properties={nft.attributes} />}
           <Details

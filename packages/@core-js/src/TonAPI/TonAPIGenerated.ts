@@ -2486,21 +2486,6 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         format: 'json',
         ...params,
       }),
-
-    /**
-     * @description Blockchain account inspect
-     *
-     * @tags Blockchain
-     * @name BlockchainAccountInspect
-     * @request GET:/v2/blockchain/accounts/{account_id}/inspect
-     */
-    blockchainAccountInspect: (accountId: string, params: RequestParams = {}) =>
-      this.http.request<BlockchainAccountInspect, Error>({
-        path: `/v2/blockchain/accounts/${accountId}/inspect`,
-        method: 'GET',
-        format: 'json',
-        ...params,
-      }),
   };
   events = {
     /**
@@ -2843,25 +2828,6 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Get the transfer nft history
-     *
-     * @tags NFT
-     * @name GetAccountNftHistory
-     * @request GET:/v2/accounts/{account_id}/nfts/history
-     */
-    getAccountNftHistory: (
-      { accountId, ...query }: GetAccountNftHistoryParams,
-      params: RequestParams = {},
-    ) =>
-      this.http.request<AccountEvents, Error>({
-        path: `/v2/accounts/${accountId}/nfts/history`,
-        method: 'GET',
-        query: query,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
      * @description Get events for an account. Each event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      *
      * @tags Accounts
@@ -2999,34 +2965,6 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       >({
         path: `/v2/accounts/${accountId}/publickey`,
         method: 'GET',
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Get account's balance change
-     *
-     * @tags Accounts
-     * @name GetAccountDiff
-     * @request GET:/v2/accounts/{account_id}/diff
-     */
-    getAccountDiff: (
-      { accountId, ...query }: GetAccountDiffParams,
-      params: RequestParams = {},
-    ) =>
-      this.http.request<
-        {
-          /**
-           * @format int64
-           * @example 1000000000
-           */
-          balance_change: number;
-        },
-        Error
-      >({
-        path: `/v2/accounts/${accountId}/diff`,
-        method: 'GET',
-        query: query,
         format: 'json',
         ...params,
       }),
@@ -3179,25 +3117,6 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         format: 'json',
         ...params,
       }),
-
-    /**
-     * @description Get the transfer nfts history for account
-     *
-     * @tags NFT
-     * @name GetNftHistoryById
-     * @request GET:/v2/nfts/{account_id}/history
-     */
-    getNftHistoryById: (
-      { accountId, ...query }: GetNftHistoryByIdParams,
-      params: RequestParams = {},
-    ) =>
-      this.http.request<AccountEvents, Error>({
-        path: `/v2/nfts/${accountId}/history`,
-        method: 'GET',
-        query: query,
-        format: 'json',
-        ...params,
-      }),
   };
   jettons = {
     /**
@@ -3226,21 +3145,6 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
     getJettonInfo: (accountId: string, params: RequestParams = {}) =>
       this.http.request<JettonInfo, Error>({
         path: `/v2/jettons/${accountId}`,
-        method: 'GET',
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Get jetton's holders
-     *
-     * @tags Jettons
-     * @name GetJettonHolders
-     * @request GET:/v2/jettons/{account_id}/holders
-     */
-    getJettonHolders: (accountId: string, params: RequestParams = {}) =>
-      this.http.request<JettonHolders, Error>({
-        path: `/v2/jettons/${accountId}/holders`,
         method: 'GET',
         format: 'json',
         ...params,
