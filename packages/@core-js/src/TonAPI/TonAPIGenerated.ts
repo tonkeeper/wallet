@@ -463,6 +463,7 @@ export interface Account {
   memo_required?: boolean;
   /** @example ["get_item_data"] */
   get_methods: string[];
+  is_suspended?: boolean;
 }
 
 export interface Accounts {
@@ -509,6 +510,11 @@ export interface BlockchainConfig {
   '35'?: ValidatorsSet;
   '36'?: ValidatorsSet;
   '37'?: ValidatorsSet;
+  /** suspended accounts */
+  '44': {
+    accounts: string[];
+    suspended_until: number;
+  };
   /**
    * config boc in base64 format
    * @example "te6ccgEBBgEARAABFP8A9KQT9LzyyAsBAgEgAgMCAUgEBQAE8jAAONBsIdMfMO1E0NM/MAHAAZekyMs/ye1UkzDyBuIAEaE0MdqJoaZ+YQ=="
@@ -667,13 +673,21 @@ export interface Action {
   TonTransfer?: TonTransferAction;
   ContractDeploy?: ContractDeployAction;
   JettonTransfer?: JettonTransferAction;
+  JettonBurn?: JettonBurnAction;
+  JettonMint?: JettonMintAction;
   NftItemTransfer?: NftItemTransferAction;
   Subscribe?: SubscriptionAction;
   UnSubscribe?: UnSubscriptionAction;
   AuctionBid?: AuctionBidAction;
   NftPurchase?: NftPurchaseAction;
+  /** validator's participation in elections */
   DepositStake?: DepositStakeAction;
-  RecoverStake?: RecoverStakeAction;
+  /** validator's participation in elections */
+  WithdrawStake?: WithdrawStakeAction;
+  /** validator's participation in elections */
+  WithdrawStakeRequest?: WithdrawStakeRequestAction;
+  ElectionsDepositStake?: ElectionsDepositStakeAction;
+  ElectionsRecoverStake?: ElectionsRecoverStakeAction;
   JettonSwap?: JettonSwapAction;
   SmartContractExec?: SmartContractAction;
   /** shortly describes what this action is about. */
@@ -754,6 +768,30 @@ export interface JettonTransferAction {
   jetton: JettonPreview;
 }
 
+export interface JettonBurnAction {
+  sender: AccountAddress;
+  /** @example "0:E93E7D444180608B8520C00DC664383A387356FB6E16FDDF99DBE5E1415A574B" */
+  senders_wallet: string;
+  /**
+   * amount in quanta of tokens
+   * @example 1000000000
+   */
+  amount: string;
+  jetton: JettonPreview;
+}
+
+export interface JettonMintAction {
+  recipient: AccountAddress;
+  /** @example "0:E93E7D444180608B8520C00DC664383A387356FB6E16FDDF99DBE5E1415A574B" */
+  recipients_wallet: string;
+  /**
+   * amount in quanta of tokens
+   * @example 1000000000
+   */
+  amount: string;
+  jetton: JettonPreview;
+}
+
 export interface ContractDeployAction {
   /** @example "0:da6b1b6663a0e4d18cc8574ccd9db5296e367dd9324706f3bbd9eb1cd2caf0bf" */
   address: string;
@@ -790,7 +828,40 @@ export interface AuctionBidAction {
   auction: AccountAddress;
 }
 
+/** validator's participation in elections */
 export interface DepositStakeAction {
+  /**
+   * @format int64
+   * @example 1660050553
+   */
+  amount: number;
+  staker: AccountAddress;
+  pool: AccountAddress;
+}
+
+/** validator's participation in elections */
+export interface WithdrawStakeAction {
+  /**
+   * @format int64
+   * @example 1660050553
+   */
+  amount: number;
+  staker: AccountAddress;
+  pool: AccountAddress;
+}
+
+/** validator's participation in elections */
+export interface WithdrawStakeRequestAction {
+  /**
+   * @format int64
+   * @example 1660050553
+   */
+  amount?: number;
+  staker: AccountAddress;
+  pool: AccountAddress;
+}
+
+export interface ElectionsRecoverStakeAction {
   /**
    * @format int64
    * @example 1660050553
@@ -799,7 +870,7 @@ export interface DepositStakeAction {
   staker: AccountAddress;
 }
 
-export interface RecoverStakeAction {
+export interface ElectionsDepositStakeAction {
   /**
    * @format int64
    * @example 1660050553
@@ -1140,6 +1211,20 @@ export interface JettonInfo {
   total_supply: string;
   metadata: JettonMetadata;
   verification: JettonVerificationType;
+  /**
+   * @format int32
+   * @example 2000
+   */
+  holders_count: number;
+}
+
+export interface JettonHolders {
+  addresses: {
+    /** @example "0:10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365" */
+    address: string;
+    /** @example 1000000000 */
+    balance: string;
+  }[];
 }
 
 export interface AccountStaking {
@@ -1242,6 +1327,7 @@ export interface PoolImplementation {
   description: string;
   /** @example "https://tonvalidators.org/" */
   url: string;
+  socials: string[];
 }
 
 export interface StorageProvider {
@@ -1346,6 +1432,18 @@ export interface EncryptedComment {
   cipher_text: string;
 }
 
+export interface BlockchainAccountInspect {
+  code: string;
+  code_hash: string;
+  methods: {
+    /** @format int64 */
+    id: number;
+    /** @example "get_something" */
+    method: string;
+  }[];
+  compiler?: BlockchainAccountInspectCompilerEnum;
+}
+
 /** @example "cell" */
 export enum TvmStackRecordTypeEnum {
   Cell = 'cell',
@@ -1372,6 +1470,8 @@ export enum RefundTypeEnum {
 export enum ActionTypeEnum {
   TonTransfer = 'TonTransfer',
   JettonTransfer = 'JettonTransfer',
+  JettonBurn = 'JettonBurn',
+  JettonMint = 'JettonMint',
   NftItemTransfer = 'NftItemTransfer',
   ContractDeploy = 'ContractDeploy',
   Subscribe = 'Subscribe',
@@ -1379,9 +1479,12 @@ export enum ActionTypeEnum {
   AuctionBid = 'AuctionBid',
   NftPurchase = 'NftPurchase',
   DepositStake = 'DepositStake',
-  RecoverStake = 'RecoverStake',
+  WithdrawStake = 'WithdrawStake',
+  WithdrawStakeRequest = 'WithdrawStakeRequest',
   JettonSwap = 'JettonSwap',
   SmartContractExec = 'SmartContractExec',
+  ElectionsRecoverStake = 'ElectionsRecoverStake',
+  ElectionsDepositStake = 'ElectionsDepositStake',
   Unknown = 'Unknown',
 }
 
@@ -1401,6 +1504,7 @@ export enum AuctionBidActionAuctionTypeEnum {
 export enum JettonSwapActionDexEnum {
   Stonfi = 'stonfi',
   Dedust = 'dedust',
+  Megatonfi = 'megatonfi',
 }
 
 export enum NftPurchaseActionAuctionTypeEnum {
@@ -1413,6 +1517,10 @@ export enum PoolInfoImplementationEnum {
   Whales = 'whales',
   Tf = 'tf',
   LiquidTF = 'liquidTF',
+}
+
+export enum BlockchainAccountInspectCompilerEnum {
+  Func = 'func',
 }
 
 export interface GetBlockchainAccountTransactionsParams {
@@ -1548,6 +1656,35 @@ export interface GetAccountNftItemsParams {
   accountId: string;
 }
 
+export interface GetAccountNftHistoryParams {
+  /**
+   * omit this parameter to get last events
+   * @format int64
+   * @example 25758317000002
+   */
+  before_lt?: number;
+  /**
+   * @max 1000
+   * @example 100
+   */
+  limit: number;
+  /**
+   * @format int64
+   * @example 1668436763
+   */
+  start_date?: number;
+  /**
+   * @format int64
+   * @example 1668436763
+   */
+  end_date?: number;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  accountId: string;
+}
+
 export interface GetAccountEventsParams {
   /**
    * filter actions where requested account is not real subject (for example sender or receiver jettons)
@@ -1636,6 +1773,24 @@ export interface GetAccountDnsExpiringParams {
   accountId: string;
 }
 
+export interface GetAccountDiffParams {
+  /**
+   * @format int64
+   * @example 1668436763
+   */
+  start_date: number;
+  /**
+   * @format int64
+   * @example 1668436763
+   */
+  end_date: number;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  accountId: string;
+}
+
 export interface GetAllAuctionsParams {
   /**
    * domain filter for current auctions "ton" or "t.me"
@@ -1668,6 +1823,35 @@ export interface GetItemsFromCollectionParams {
   limit?: number;
   /** @default 0 */
   offset?: number;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  accountId: string;
+}
+
+export interface GetNftHistoryByIdParams {
+  /**
+   * omit this parameter to get last events
+   * @format int64
+   * @example 25758317000002
+   */
+  before_lt?: number;
+  /**
+   * @max 1000
+   * @example 100
+   */
+  limit: number;
+  /**
+   * @format int64
+   * @example 1668436763
+   */
+  start_date?: number;
+  /**
+   * @format int64
+   * @example 1668436763
+   */
+  end_date?: number;
   /**
    * account ID
    * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
@@ -1722,6 +1906,16 @@ export interface GetChartRatesParams {
   token: string;
   /** @example "usd" */
   currency?: string;
+  /**
+   * @format int64
+   * @example 1668436763
+   */
+  start_date?: number;
+  /**
+   * @format int64
+   * @example 1668436763
+   */
+  end_date?: number;
 }
 
 export interface GetRawMasterchainInfoExtParams {
@@ -2285,6 +2479,21 @@ export class TonAPIGenerated<
         format: 'json',
         ...params,
       }),
+
+    /**
+     * @description Blockchain account inspect
+     *
+     * @tags Blockchain
+     * @name BlockchainAccountInspect
+     * @request GET:/v2/blockchain/accounts/{account_id}/inspect
+     */
+    blockchainAccountInspect: (accountId: string, params: RequestParams = {}) =>
+      this.request<BlockchainAccountInspect, Error>({
+        path: `/v2/blockchain/accounts/${accountId}/inspect`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
   };
   events = {
     /**
@@ -2627,6 +2836,25 @@ export class TonAPIGenerated<
       }),
 
     /**
+     * @description Get the transfer nft history
+     *
+     * @tags NFT
+     * @name GetAccountNftHistory
+     * @request GET:/v2/accounts/{account_id}/nfts/history
+     */
+    getAccountNftHistory: (
+      { accountId, ...query }: GetAccountNftHistoryParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<AccountEvents, Error>({
+        path: `/v2/accounts/${accountId}/nfts/history`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
      * @description Get events for an account. Each event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
      *
      * @tags Accounts
@@ -2764,6 +2992,34 @@ export class TonAPIGenerated<
       >({
         path: `/v2/accounts/${accountId}/publickey`,
         method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get account's balance change
+     *
+     * @tags Accounts
+     * @name GetAccountDiff
+     * @request GET:/v2/accounts/{account_id}/diff
+     */
+    getAccountDiff: (
+      { accountId, ...query }: GetAccountDiffParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /**
+           * @format int64
+           * @example 1000000000
+           */
+          balance_change: number;
+        },
+        Error
+      >({
+        path: `/v2/accounts/${accountId}/diff`,
+        method: 'GET',
+        query: query,
         format: 'json',
         ...params,
       }),
@@ -2916,6 +3172,25 @@ export class TonAPIGenerated<
         format: 'json',
         ...params,
       }),
+
+    /**
+     * @description Get the transfer nfts history for account
+     *
+     * @tags NFT
+     * @name GetNftHistoryById
+     * @request GET:/v2/nfts/{account_id}/history
+     */
+    getNftHistoryById: (
+      { accountId, ...query }: GetNftHistoryByIdParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<AccountEvents, Error>({
+        path: `/v2/nfts/${accountId}/history`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
   };
   jettons = {
     /**
@@ -2944,6 +3219,21 @@ export class TonAPIGenerated<
     getJettonInfo: (accountId: string, params: RequestParams = {}) =>
       this.request<JettonInfo, Error>({
         path: `/v2/jettons/${accountId}`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get jetton's holders
+     *
+     * @tags Jettons
+     * @name GetJettonHolders
+     * @request GET:/v2/jettons/{account_id}/holders
+     */
+    getJettonHolders: (accountId: string, params: RequestParams = {}) =>
+      this.request<JettonHolders, Error>({
+        path: `/v2/jettons/${accountId}/holders`,
         method: 'GET',
         format: 'json',
         ...params,

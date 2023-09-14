@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Duration, intervalToDuration } from 'date-fns';
 import { Extrapolation, interpolate, useDerivedValue } from 'react-native-reanimated';
-import { t } from '@tonkeeper/shared/i18n';
 
 export const useStakingCycle = (cycleStart: number, cycleEnd: number, enabled = true) => {
-  
-
   const [now, setNow] = useState(Date.now());
 
   const startTimestamp = cycleStart * 1000;
@@ -22,11 +19,9 @@ export const useStakingCycle = (cycleStart: number, cycleEnd: number, enabled = 
     [now],
   );
 
-  const formattedDuration = t('staking.details.next_cycle.time', {
-    time: `${duration.hours! + duration.days! * 24}:${
-      duration.minutes! < 10 ? `0${duration.minutes}` : duration.minutes
-    }:${duration.seconds! < 10 ? `0${duration.seconds}` : duration.seconds}`,
-  });
+  const formattedDuration = `${duration.hours! + duration.days! * 24}:${
+    duration.minutes! < 10 ? `0${duration.minutes}` : duration.minutes
+  }:${duration.seconds! < 10 ? `0${duration.seconds}` : duration.seconds}`;
 
   useEffect(() => {
     if (enabled) {

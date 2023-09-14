@@ -8,7 +8,9 @@ export const tonapi = new TonAPI({
     // if (wallet.testnet) {
     //   return config.get('tonapiTestnetHost');
     // }
-    
+
+    // return 'https://dev.tonapi.io'; // DEBUG
+
     return config.get('tonapiIOEndpoint');
   },
 });

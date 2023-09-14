@@ -3,7 +3,7 @@ import { useFiatValue } from '$hooks/useFiatValue';
 import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { getTokenConfig } from '$shared/dynamicConfig';
-import { Highlight, Icon, Separator, Spacer, Text } from '$uikit';
+import { Highlight, Icon, Separator, Spacer, StakedTonIcon, Text } from '$uikit';
 import { isIOS, parseLocaleNumber } from '$utils';
 import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
 import { ConfirmStepProps } from './ConfirmStep.interface';
@@ -24,6 +24,7 @@ import { useStakingStore } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
 import { openInactiveInfo } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
 import { Address } from '@tonkeeper/core';
+import { getImplementationIcon } from '$utils/staking';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -52,9 +53,11 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const balances = useSelector(walletBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
 
-  const { Logo, isLiquidJetton } = useCurrencyToSend(currency, isJetton, 96);
-
-  const isLiquidJettonWarningShown = useStakingStore((s) => s.isLiquidJettonWarningShown);
+  const { Logo, isLiquidJetton, liquidJettonPool } = useCurrencyToSend(
+    currency,
+    isJetton,
+    96,
+  );
 
   const showLockupAlert = useCallback(
     () =>
@@ -72,7 +75,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
           },
         ]),
       ),
-    [t],
+    [],
   );
 
   const showAllBalanceAlert = useCallback(
@@ -91,33 +94,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
           },
         ]),
       ),
-    [t],
-  );
-
-  const showLiquidJettonAlert = useCallback(
-    () =>
-      new Promise<void>((resolve, reject) =>
-        Alert.alert(
-          isIOS ? t('send_liquid_jetton_warning_title') : '',
-          isIOS ? undefined : t('send_liquid_jetton_warning_title'),
-          [
-            {
-              text: t('cancel'),
-              style: 'cancel',
-              onPress: reject,
-            },
-            {
-              text: t('continue'),
-              onPress: () => {
-                useStakingStore.getState().actions.setLiquidJettonWarningShown(true);
-                resolve();
-              },
-              style: 'destructive',
-            },
-          ],
-        ),
-      ),
-    [t],
+    [],
   );
 
   const handleConfirm = useCallback(async () => {
@@ -137,10 +114,6 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
         await showAllBalanceAlert();
       }
 
-      if (isLiquidJetton && !isLiquidJettonWarningShown) {
-        await showLiquidJettonAlert();
-      }
-
       onConfirm(async ({ startLoading }) => {
         startLoading();
 
@@ -154,12 +127,9 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     currency,
     wallet,
     balances,
-    isLiquidJetton,
-    isLiquidJettonWarningShown,
     onConfirm,
     showLockupAlert,
     showAllBalanceAlert,
-    showLiquidJettonAlert,
     sendTx,
   ]);
 
@@ -225,7 +195,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     }
 
     copyText(recipient.address, t('address_copied'));
-  }, [copyText, recipient, t]);
+  }, [copyText, recipient]);
 
   useEffect(() => {
     if (!active) {
@@ -244,14 +214,20 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
       <StepScrollView active={active}>
         <S.Content>
           <S.Center>
-            <S.IconContainer>{Logo}</S.IconContainer>
+            {liquidJettonPool ? (
+              <StakedTonIcon pool={liquidJettonPool} size={96} />
+            ) : (
+              Logo
+            )}
             <Spacer y={20} />
             <Text color="foregroundSecondary">
               {t('send_screen_steps.comfirm.title')}
             </Text>
             <Spacer y={4} />
             <Text variant="h3">
-              {t('send_screen_steps.comfirm.action', { coin: currencyTitle })}
+              {t('send_screen_steps.comfirm.action', {
+                coin: isLiquidJetton ? t('staking.send_staked_ton') : currencyTitle,
+              })}
             </Text>
           </S.Center>
           <Spacer y={32} />
@@ -352,6 +328,24 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
                         <Icon name="ic-chevron-right-12" color="foregroundPrimary" />
                       </S.WarningIcon>
                     </S.WarningRow>
+                  </S.WarningContent>
+                </S.WarningTouchable>
+              </S.WarningContainer>
+            </>
+          ) : null}
+          {isLiquidJetton ? (
+            <>
+              <Spacer y={16} />
+              <S.WarningContainer>
+                <S.WarningTouchable
+                  background="backgroundQuaternary"
+                  onPress={openInactiveInfo}
+                >
+                  <S.WarningContent>
+                    <Text variant="label1">{t('confirm_sending_liquid_warn_title')}</Text>
+                    <Text variant="body2" color="foregroundSecondary">
+                      {t('confirm_sending_liquid_warn_description')}
+                    </Text>
                   </S.WarningContent>
                 </S.WarningTouchable>
               </S.WarningContainer>

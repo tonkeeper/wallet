@@ -17,8 +17,7 @@ export const useStakingStatuses = () => {
             !!item.info ||
             !!jettonBalances.find(
               (balance) =>
-                Address(balance.jettonAddress).toRaw() ===
-                item.pool.liquidJettonMaster,
+                Address(balance.jettonAddress).toRaw() === item.pool.liquid_jetton_master,
             ),
         ),
     shallow,
