@@ -262,16 +262,15 @@ export const StakingSend: FC<Props> = (props) => {
       const checkResult = await checkIsInsufficient(totalAmount);
       if (checkResult.insufficient) {
         const stakingFee = Ton.fromNano(getWithdrawalFee(pool));
-        cancel();
 
         openInsufficientFundsModal({
           totalAmount,
           balance: checkResult.balance,
           stakingFee,
-          fee: totalFee ?? '0',
+          fee: totalFee ?? '0.1',
         });
 
-        return;
+        return cancel();
       }
 
       if (checkResult.balance !== null) {
@@ -318,7 +317,7 @@ export const StakingSend: FC<Props> = (props) => {
     } finally {
       setSending(false);
     }
-  }, [accountEvent, address.ton, isDeposit, pool, unlockVault]);
+  }, [accountEvent, address.ton, isDeposit, pool, totalFee, unlockVault]);
 
   useEffect(() => {
     if (isWithdrawalConfrim) {
