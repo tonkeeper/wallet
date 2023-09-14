@@ -182,7 +182,7 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
           thirdPartyCookiesEnabled={true}
           onNavigationStateChange={handleNavigationChange}
           allowFileAccess
-          forceDarkOn
+          forceDarkOn={methodId !== 'onramp'}
           allowsInlineMediaPlayback
           allowsFullscreenVideo
           keyboardDisplayRequiresUserAction={false}
