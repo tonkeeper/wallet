@@ -14,7 +14,6 @@ import { useNavigation } from '@tonkeeper/router';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
 import {
-
   openDeleteAccountDone,
   openDevMenu,
   openJettonsListSettingsStack,
@@ -40,13 +39,7 @@ import {
   IsTablet,
   SelectableVersions,
 } from '$shared/constants';
-import {
-  hNs,
-  ns,
-  throttle,
-
-  useHasDiamondsOnBalance,
-} from '$utils';
+import { hNs, ns, throttle, useHasDiamondsOnBalance } from '$utils';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { CellSectionItem } from '$shared/components';
 import { MainDB } from '$database';
@@ -72,7 +65,6 @@ export const Settings: FC = () => {
     'disable_feedback_button',
   ]);
 
-  
   const nav = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
   const notificationsBadge = useNotificationsBadge();
@@ -120,8 +112,8 @@ export const Settings: FC = () => {
   }, []);
 
   const handleNews = useCallback(() => {
-    Linking.openURL(t('settings_news_url')).catch((err) => console.log(err));
-  }, [t]);
+    Linking.openURL(getServerConfig('tonkeeperNewsUrl')).catch((err) => console.log(err));
+  }, []);
 
   const handleSupport = useCallback(() => {
     Linking.openURL(getServerConfig('directSupportUrl')).catch((err) => console.log(err));

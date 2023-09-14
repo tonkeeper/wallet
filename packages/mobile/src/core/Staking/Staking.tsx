@@ -21,7 +21,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
 import { PoolInfoImplementationEnum } from '@tonkeeper/core/src/TonAPI';
 import { walletSelector } from '$store/wallet';
-import { CryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { Flash } from '@tonkeeper/uikit';
 import { Ton } from '$libs/Ton';
 
@@ -139,7 +139,7 @@ export const Staking: FC<Props> = () => {
   );
 
   const handleLearnMorePress = useCallback(() => {
-    openDAppBrowser(t('staking.info_url'));
+    openDAppBrowser(getServerConfig('stakingInfoUrl'));
   }, []);
 
   const getEstimateProfitMessage = useCallback(
