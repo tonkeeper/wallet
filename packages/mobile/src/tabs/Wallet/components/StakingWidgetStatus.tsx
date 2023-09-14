@@ -1,12 +1,13 @@
 import { usePoolInfo } from '$hooks/usePoolInfo';
 import { useStakingCycle } from '$hooks/useStakingCycle';
 import { StakingListCell } from '$shared/components';
-import { getPoolIcon } from '$utils/staking';
-import { AccountStakingInfo, PoolInfo } from '@tonkeeper/core/src/legacy';
-import React, { FC, memo, useCallback } from 'react';
+import React, { FC, memo, useCallback, useMemo } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { MainStackRouteNames } from '$navigation';
 import { t } from '@tonkeeper/shared/i18n';
+import { StakedTonIcon, Text } from '$uikit';
+import { stakingFormatter } from '@tonkeeper/shared/formatter';
+import { AccountStakingInfo, PoolInfo } from '@tonkeeper/core/src/TonAPI';
 
 interface Props {
   pool: PoolInfo;
@@ -22,7 +23,6 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
     pendingDeposit,
     pendingWithdraw,
     readyWithdraw,
-    hasDeposit,
     hasPendingDeposit,
     hasPendingWithdraw,
     hasReadyWithdraw,
@@ -30,71 +30,87 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
   } = usePoolInfo(pool, poolStakingInfo);
 
   const { formattedDuration, isCooldown } = useStakingCycle(
-    pool.cycleStart,
-    pool.cycleEnd,
+    pool.cycle_start,
+    pool.cycle_end,
     hasPendingWithdraw,
   );
 
   const nav = useNavigation();
 
-  const iconSource = getPoolIcon(pool);
-
   const handlePoolPress = useCallback(() => {
     nav.push(MainStackRouteNames.StakingPoolDetails, { poolAddress: pool.address });
   }, [nav, pool.address]);
 
+  const message = useMemo(() => {
+    if (hasReadyWithdraw) {
+      return t('staking.message.readyWithdraw', {
+        amount: stakingFormatter.format(readyWithdraw.amount),
+        count: Math.floor(readyWithdraw.totalTon),
+      });
+    }
+
+    if (hasPendingWithdraw) {
+      return (
+        <>
+          {t('staking.message.pendingWithdraw', {
+            amount: stakingFormatter.format(pendingWithdraw.amount),
+            count: pendingWithdraw.totalTon,
+          })}
+          {!isCooldown ? (
+            <Text variant="body2">
+              {t('staking.details.next_cycle.in')}{' '}
+              <Text variant="body2" style={{ fontVariant: ['tabular-nums'] }}>
+                {formattedDuration}
+              </Text>
+            </Text>
+          ) : null}
+        </>
+      );
+    }
+
+    if (hasPendingDeposit) {
+      return (
+        <>
+          {t('staking.message.pendingDeposit', {
+            amount: stakingFormatter.format(pendingDeposit.amount),
+            count: Math.floor(pendingDeposit.totalTon),
+          })}
+          {!isCooldown ? (
+            <Text variant="body2">
+              {t('staking.details.next_cycle.in')}{' '}
+              <Text variant="body2" style={{ fontVariant: ['tabular-nums'] }}>
+                {formattedDuration}
+              </Text>
+            </Text>
+          ) : null}
+        </>
+      );
+    }
+  }, [
+    formattedDuration,
+    hasPendingDeposit,
+    hasPendingWithdraw,
+    hasReadyWithdraw,
+    isCooldown,
+    pendingDeposit,
+    pendingWithdraw,
+    readyWithdraw,
+  ]);
+
   return (
-    <>
-      {hasReadyWithdraw ? (
-        <StakingListCell
-          id={`readyWithdraw_${pool.address}`}
-          name={t('staking.details.readyWithdraw')}
-          description={t('staking.details.tap_to_collect')}
-          balance={readyWithdraw.amount}
-          iconSource={iconSource}
-          numberOfLines={1}
-          separator={true}
-          onPress={handleConfirmWithdrawalPress}
-        />
-      ) : null}
-      {!hasReadyWithdraw && hasPendingWithdraw ? (
-        <StakingListCell
-          id={`pendingWithdraw_${pool.address}`}
-          name={t('staking.details.pendingWithdraw')}
-          description={isCooldown ? pool.name : formattedDuration}
-          balance={pendingWithdraw.amount}
-          iconSource={iconSource}
-          numberOfLines={1}
-          separator={true}
-          onPress={handlePoolPress}
-        />
-      ) : null}
-      {hasPendingDeposit ? (
-        <StakingListCell
-          id={`pendingDeposit_${pool.address}`}
-          name={t('staking.details.pendingDeposit')}
-          description={pool.name}
-          balance={pendingDeposit.amount}
-          iconSource={iconSource}
-          numberOfLines={1}
-          separator={true}
-          onPress={handlePoolPress}
-        />
-      ) : null}
-      {hasDeposit ? (
-        <StakingListCell
-          id={`amount_${pool.address}`}
-          name={t('staking.details.balance')}
-          description={pool.name}
-          balance={balance.amount}
-          stakingJetton={stakingJetton}
-          iconSource={iconSource}
-          numberOfLines={1}
-          separator={true}
-          onPress={handlePoolPress}
-        />
-      ) : null}
-    </>
+    <StakingListCell
+      id={`amount_${pool.address}`}
+      name={t('staking.title')}
+      description={pool.name}
+      balance={balance.amount}
+      stakingJetton={stakingJetton}
+      icon={<StakedTonIcon pool={pool} size={44} />}
+      numberOfLines={1}
+      separator={true}
+      message={message}
+      onMessagePress={hasReadyWithdraw ? handleConfirmWithdrawalPress : undefined}
+      onPress={handlePoolPress}
+    />
   );
 };
 

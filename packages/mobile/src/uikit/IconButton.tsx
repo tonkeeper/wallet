@@ -13,17 +13,19 @@ interface IconButtonProps {
   icon?: ReactNode;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
+  disabled?: boolean;
 }
 
 export const IconButton = memo<IconButtonProps>((props) => {
   const locale = useMemo(() => getLocale(), []);
 
   return (
-    <View style={{ width: locale === 'ru' ? 80 : 72 }}>
+    <View style={{ width: locale === 'ru' ? 80 : 72, opacity: props.disabled ? 0.5 : 1 }}>
       <TouchableOpacity
         onPress={props.onPress}
         activeOpacity={0.6}
         style={styles.container}
+        disabled={props.disabled}
       >
         <View style={styles.iconContainer}>
           {props.iconName ? <Icon name={props.iconName} colorHex="#FFF" /> : null}

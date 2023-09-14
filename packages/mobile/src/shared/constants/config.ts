@@ -1,3 +1,5 @@
+import { PoolInfoImplementationEnum } from '@tonkeeper/core/src/TonAPI';
+
 export const TEST = 1;
 
 export const ServerConfigVersion = 5;
@@ -316,4 +318,8 @@ export const telegramNumbersAddress = {
   testnet: 'EQAOQdwdw8kGftJCSFgOErM1mBjYPe4DBPq8-AhF6vr9si5N',
 };
 
-export const KNOWN_STAKING_IMPLEMENTATIONS = ['whales', 'tf', 'liquidTF'];
+export const KNOWN_STAKING_IMPLEMENTATIONS = [
+  PoolInfoImplementationEnum.Whales,
+  PoolInfoImplementationEnum.Tf,
+  PoolInfoImplementationEnum.LiquidTF,
+];

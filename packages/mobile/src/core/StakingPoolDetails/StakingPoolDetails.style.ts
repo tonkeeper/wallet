@@ -1,6 +1,6 @@
 import styled from '$styled';
 import { Highlight, Text } from '$uikit';
-import { ns } from '$utils';
+import { deviceWidth, ns } from '$utils';
 
 export const Wrap = styled.View`
   flex: 1;
@@ -42,22 +42,23 @@ export const BalanceRight = styled.View`
 export const Table = styled.View`
   background: ${({ theme }) => theme.colors.backgroundSecondary};
   border-radius: ${({ theme }) => ns(theme.radius.normal)}px;
+  padding: ${ns(8)}px 0;
   overflow: hidden;
 `;
 
 export const Item = styled.View`
-  padding: ${ns(16)}px;
+  padding: ${ns(8)}px ${ns(16)}px;
   flex-direction: row;
   overflow: hidden;
 `;
 
 export const ItemLabel = styled(Text).attrs({
   color: 'foregroundSecondary',
-  variant: 'body1',
+  variant: 'body2',
 })``;
 
 export const ItemValue = styled(Text).attrs({
-  variant: 'label1',
+  variant: 'label2',
 })`
   margin-left: ${ns(10)}px;
   text-align: right;
@@ -65,11 +66,16 @@ export const ItemValue = styled(Text).attrs({
 `;
 
 export const TitleContainer = styled.View`
-  padding: ${ns(12)}px 0;
+  padding: ${ns(14)}px 0;
+`;
+
+export const Column = styled.View`
+  flex-direction: column;
 `;
 
 export const Row = styled.View`
   flex-direction: row;
+  align-items: center;
 `;
 
 export const Flex = styled.View`
@@ -78,4 +84,41 @@ export const Flex = styled.View`
 
 export const DetailsButtonContainer = styled.View`
   align-items: center;
+`;
+
+export const HeaderWrap = styled.View`
+  align-items: center;
+  padding-horizontal: ${ns(16)}px;
+`;
+
+export const FlexRow = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: ${ns(16)}px;
+  margin-bottom: ${ns(28)}px;
+`;
+
+export const JettonAmountWrapper = styled.View`
+  flex: 1;
+`;
+
+export const Divider = styled.View`
+  height: ${ns(0.5)}px;
+  width: ${deviceWidth}px;
+  background: rgba(79, 90, 112, 0.24);
+`;
+
+export const ActionsContainer = styled.View`
+  justify-content: center;
+  flex-direction: row;
+  margin-bottom: ${ns(12)}px;
+`;
+
+export const ExploreButtons = styled.View`
+  flex-direction: row;
+  flex-wrap: wrap;
+`;
+
+export const ChartContainer = styled.View`
+  margin: 0 -${ns(16)}px;
 `;

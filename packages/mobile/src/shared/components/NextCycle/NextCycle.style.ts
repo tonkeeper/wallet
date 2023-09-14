@@ -1,5 +1,5 @@
 import styled from '$styled';
-import { ns } from '$utils';
+import { changeAlphaValue, convertHexToRGBA, ns } from '$utils';
 import Animated from 'react-native-reanimated';
 
 export const Container = styled.View`

@@ -41,6 +41,7 @@ import { Events } from '$store/models';
 import { trackEvent } from '$utils/stats';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
+import BigNumber from 'bignumber.js';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {
@@ -105,12 +106,10 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   const [isInactive, setInactive] = useState(initialIsInactive);
 
-  const { balance, currencyTitle, decimals, jettonWalletAddress } = useCurrencyToSend(
-    currency,
-    isJetton,
-  );
+  const { balance, currencyTitle, decimals, jettonWalletAddress, price, isLiquidJetton } =
+    useCurrencyToSend(currency, isJetton);
 
-  const tokenPrice = useTokenPrice(currency);
+  const tokenPrice = useTokenPrice(isLiquidJetton ? CryptoCurrencies.Ton : currency);
 
   const stepViewRef = useRef<StepViewRef>(null);
 
@@ -155,6 +154,25 @@ export const Send: FC<SendProps> = ({ route }) => {
     [],
   );
 
+  const parsedAmount = useMemo(() => {
+    const parsed = parseLocaleNumber(amount.value);
+
+    if (!parsed) {
+      return '0';
+    }
+
+    if (isLiquidJetton && price) {
+      return amount.all
+        ? price.amount
+        : new BigNumber(parsed)
+            .dividedBy(price.ton)
+            .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
+            .toString();
+    }
+
+    return parsed;
+  }, [amount.all, amount.value, decimals, isLiquidJetton, price]);
+
   const prepareConfirmSending = useCallback(async () => {
     if (!recipient) {
       return;
@@ -165,7 +183,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     dispatch(
       walletActions.confirmSendCoins({
         currency: currency as CryptoCurrency,
-        amount: parseLocaleNumber(amount.value),
+        amount: parsedAmount,
         address: recipient.address,
         isJetton,
         jettonWalletAddress,
@@ -182,7 +200,6 @@ export const Send: FC<SendProps> = ({ route }) => {
       }),
     );
   }, [
-    amount.value,
     comment,
     currency,
     decimals,
@@ -190,6 +207,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     isCommentEncrypted,
     isJetton,
     jettonWalletAddress,
+    parsedAmount,
     recipient,
   ]);
 
@@ -204,7 +222,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       dispatch(
         walletActions.sendCoins({
           currency: currency as CryptoCurrency,
-          amount: parseLocaleNumber(amount.value),
+          amount: parsedAmount,
           isSendAll: amount.all,
           address: recipient.address,
           comment,
@@ -227,7 +245,6 @@ export const Send: FC<SendProps> = ({ route }) => {
     },
     [
       amount.all,
-      amount.value,
       comment,
       currency,
       decimals,
@@ -236,6 +253,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       isCommentEncrypted,
       isJetton,
       jettonWalletAddress,
+      parsedAmount,
       recipient,
     ],
   );

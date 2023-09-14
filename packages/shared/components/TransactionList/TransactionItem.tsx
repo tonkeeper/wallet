@@ -1,18 +1,5 @@
-import Animated, {
-  interpolateColor,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
-import {
-  Icon,
-  List,
-  ListSeparator,
-  Loader,
-  Steezy,
-  Text,
-  useTheme,
-  View,
-} from '@tonkeeper/uikit';
+import Animated from 'react-native-reanimated';
+import { Icon, List, ListSeparator, Loader, Steezy, Text, View } from '@tonkeeper/uikit';
 import { MappedEventAction } from '../../mappers/AccountEventsMapper';
 import { TransactionNFTItem } from './TransactionNFTItem';
 import React, { memo, useCallback, useMemo } from 'react';
@@ -25,31 +12,11 @@ import { openActionDetails } from '../../modals/ActionDetailsModal';
 import { useSubscription } from '../../query/hooks/useSubscription';
 import { CustomActionType } from '@tonkeeper/core/src/TonAPI';
 import { openSubscription } from '@tonkeeper/mobile/src/core/ModalContainer/CreateSubscription/CreateSubscription';
+import { useBackgroundHighlighted } from '../../hooks/useBackgroundHighlighted';
 
 interface TransactionItemProps {
   item: MappedEventAction;
 }
-
-const useBackgroundHighlighted = () => {
-  const theme = useTheme();
-  const isPressed = useSharedValue(0);
-  const onPressIn = () => (isPressed.value = 1);
-  const onPressOut = () => (isPressed.value = 0);
-
-  const backgroundStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(
-      isPressed.value,
-      [0, 1],
-      [theme.backgroundContentTint, theme.backgroundHighlighted],
-    ),
-  }));
-
-  return {
-    backgroundStyle,
-    onPressOut,
-    onPressIn,
-  };
-};
 
 export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
   const { onPressOut, onPressIn, backgroundStyle } = useBackgroundHighlighted();
@@ -70,9 +37,10 @@ export const TransactionItem = memo<TransactionItemProps>(({ item }) => {
       return;
     }
 
-    if (subscription && 
-      item.type === CustomActionType.Subscribe ||
-      item.type === CustomActionType.UnSubscribe 
+    if (
+      subscription &&
+      (item.type === CustomActionType.Subscribe ||
+        item.type === CustomActionType.UnSubscribe)
     ) {
       openSubscription(subscription);
       return;

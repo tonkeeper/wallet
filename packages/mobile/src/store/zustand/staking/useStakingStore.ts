@@ -1,39 +1,43 @@
-import { KNOWN_STAKING_IMPLEMENTATIONS, getServerConfig } from '$shared/constants';
+import { KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
 import { store } from '$store';
 import { useDevFeaturesToggle } from '../devFeaturesToggle/useDevFeaturesToggle';
 import { DevFeature } from '../devFeaturesToggle/types';
 import { calculatePoolBalance } from '$utils/staking';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Configuration, StakingApi } from '@tonkeeper/core/src/legacy';
 import BigNumber from 'bignumber.js';
 import TonWeb from 'tonweb';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { IStakingStore, StakingApiStatus, StakingInfo, StakingProvider } from './types';
-import { i18n } from '$translation';
+import {
+  IStakingChartPoint,
+  IStakingStore,
+  StakingApiStatus,
+  StakingInfo,
+  StakingProvider,
+} from './types';
 import _ from 'lodash';
 import { getFlag } from '$utils/flags';
-
-const getStakingApi = () => {
-  return new StakingApi(
-    new Configuration({
-      basePath: getServerConfig('tonapiIOEndpoint'),
-      headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
-        'Accept-Language': i18n.locale,
-      },
-    }),
-  );
-};
+import { tonapi } from '@tonkeeper/shared/tonapi';
+import {
+  AccountEvent,
+  ActionTypeEnum,
+  PoolInfo,
+  PoolInfoImplementationEnum,
+} from '@tonkeeper/core/src/TonAPI';
+import { Address } from '@tonkeeper/core';
+import { Ton } from '$libs/Ton';
+import { dateToTimestamp, timestampToDateString } from '@tonkeeper/shared/utils/date';
 
 const initialState: Omit<IStakingStore, 'actions'> = {
   status: StakingApiStatus.Idle,
   stakingInfo: {},
   pools: [],
   providers: [],
-  maxApy: null,
+  highestApyPool: null,
   stakingBalance: '0',
-  isLiquidJettonWarningShown: false,
+  chart: [],
+  mainFlashShownCount: 0,
+  stakingFlashShownCount: 0,
 };
 
 export const useStakingStore = create(
@@ -66,14 +70,11 @@ export const useStakingStore = create(
               : undefined;
 
             const [poolsResponse, nominatorsResponse] = await Promise.allSettled([
-              getStakingApi().stakingPools({
-                availableFor: rawAddress,
-                acceptLanguage: i18n.locale,
-                includeUnverified: true,
+              tonapi.staking.getStakingPools({
+                available_for: rawAddress,
+                include_unverified: true,
               }),
-              getStakingApi().poolsByNominators({
-                accountId: rawAddress!,
-              }),
+              tonapi.staking.getAccountNominatorsPools(rawAddress!),
             ]);
 
             let pools = getState().pools;
@@ -85,18 +86,22 @@ export const useStakingStore = create(
               !getFlag('disable_tonstakers');
 
             if (poolsResponse.status === 'fulfilled') {
-              const { implementations } = poolsResponse.value;
+              const { implementations } = poolsResponse.value.data;
 
-              pools = poolsResponse.value.pools
-                .filter((pool) => tonstakersEnabled || pool.implementation !== 'liquidTF')
+              pools = poolsResponse.value.data.pools
+                .filter(
+                  (pool) =>
+                    tonstakersEnabled ||
+                    pool.implementation !== PoolInfoImplementationEnum.LiquidTF,
+                )
                 .map((pool) => {
-                  if (pool.implementation !== 'whales') {
+                  if (pool.implementation !== PoolInfoImplementationEnum.Whales) {
                     return pool;
                   }
 
-                  const cycleStart = pool.cycleEnd > 0 ? pool.cycleEnd - 36 * 3600 : 0;
+                  const cycle_start = pool.cycle_end > 0 ? pool.cycle_end - 36 * 3600 : 0;
 
-                  return { ...pool, cycleStart };
+                  return { ...pool, cycle_start };
                 })
                 .sort((a, b) => {
                   if (a.name.includes('Tonkeeper') && !b.name.includes('Tonkeeper')) {
@@ -112,13 +117,15 @@ export const useStakingStore = create(
                   }
 
                   if (a.apy === b.apy) {
-                    return a.cycleStart > b.cycleStart ? 1 : -1;
+                    return a.cycle_start > b.cycle_start ? 1 : -1;
                   }
 
                   return a.apy > b.apy ? 1 : -1;
                 });
 
-              const providers = Object.keys(implementations)
+              const providers = (
+                Object.keys(implementations) as PoolInfoImplementationEnum[]
+              )
                 .filter((id) => pools.some((pool) => pool.implementation === id))
                 .sort((a, b) => {
                   const indexA = KNOWN_STAKING_IMPLEMENTATIONS.indexOf(a);
@@ -144,24 +151,30 @@ export const useStakingStore = create(
                   );
                   const maxApy = Math.max(...implementationPools.map((pool) => pool.apy));
                   const minStake = Math.min(
-                    ...implementationPools.map((pool) => pool.minStake),
+                    ...implementationPools.map((pool) => pool.min_stake),
                   );
 
                   return { id, maxApy, minStake, ...implementations[id] };
                 });
 
-              const maxApy = Math.max(...pools.map((pool) => pool.apy));
+              const highestApyPool = pools.reduce<PoolInfo | null>((acc, cur) => {
+                if (!acc) {
+                  return cur;
+                }
+
+                return cur.apy > acc.apy ? cur : acc;
+              }, null);
 
               nextState = {
                 ...nextState,
                 pools: pools.sort((a, b) => b.apy - a.apy),
                 providers,
-                maxApy,
+                highestApyPool,
               };
             }
 
             if (nominatorsResponse.status === 'fulfilled') {
-              const stakingInfo = nominatorsResponse.value.pools.reduce<StakingInfo>(
+              const stakingInfo = nominatorsResponse.value.data.pools.reduce<StakingInfo>(
                 (acc, cur) => ({ ...acc, [cur.pool]: cur }),
                 {},
               );
@@ -190,30 +203,130 @@ export const useStakingStore = create(
             set({ status: StakingApiStatus.Idle });
           }
         },
+        fetchChart: async (jetton) => {
+          const address = Address(store.getState().wallet?.address?.ton).toRaw();
+
+          const startDate = Math.round(Date.now() / 1000 - 30 * 24 * 3600);
+
+          const [jettonHistory, rateChart] = await Promise.all([
+            tonapi.accounts.getAccountJettonHistoryById({
+              accountId: address,
+              jettonId: jetton.jettonAddress,
+              start_date: startDate,
+              limit: 1000,
+            }),
+            tonapi.rates.getChartRates({
+              token: jetton.jettonAddress,
+              start_date: startDate,
+            }),
+          ]);
+
+          const history = jettonHistory.data.events.reduce<{
+            [key: number]: AccountEvent[];
+          }>((acc, cur) => {
+            const date = timestampToDateString(cur.timestamp);
+            if (!acc[date]) {
+              acc[date] = [];
+            }
+            acc[date].push(cur);
+
+            return acc;
+          }, {});
+
+          let balance = new BigNumber(jetton.balance);
+
+          const chart: IStakingChartPoint[] = [];
+
+          for (const point of rateChart.data.points) {
+            const [date, rate] = point;
+
+            if (balance.isLessThanOrEqualTo(0)) {
+              break;
+            }
+
+            chart.unshift({
+              x: dateToTimestamp(date),
+              y: balance.multipliedBy(rate).toNumber(),
+            });
+
+            if (history[date]) {
+              for (const historyItem of history[date]) {
+                const action = historyItem.actions[0];
+
+                if (action.type === ActionTypeEnum.JettonTransfer) {
+                  const amount = new BigNumber(
+                    Ton.fromNano(action.JettonTransfer!.amount),
+                  );
+
+                  if (action.JettonTransfer!.recipient?.address === address) {
+                    balance = balance.minus(amount);
+                  } else {
+                    balance = balance.plus(amount);
+                  }
+                } else if (action.type === ActionTypeEnum.JettonMint) {
+                  const amount = new BigNumber(Ton.fromNano(action.JettonMint!.amount));
+
+                  balance = balance.minus(amount);
+                } else if (action.type === ActionTypeEnum.JettonBurn) {
+                  const amount = new BigNumber(Ton.fromNano(action.JettonBurn!.amount));
+
+                  balance = balance.plus(amount);
+                }
+
+                if (balance.isLessThanOrEqualTo(0)) {
+                  break;
+                }
+              }
+            }
+          }
+
+          if (chart.length <= 7) {
+            while (chart.length > 0 && chart.length < 7) {
+              if (chart[0]) {
+                chart.unshift({
+                  x: chart[0].x - 3600 * 24,
+                  y: 0,
+                });
+              }
+            }
+          } else if (chart.length < 14) {
+            chart.splice(0, chart.length - 7);
+          } else if (chart.length < 30) {
+            chart.splice(0, chart.length - 14);
+          }
+
+          set({ chart });
+        },
         reset: () =>
           set({ stakingInfo: {}, stakingBalance: '0', status: StakingApiStatus.Idle }),
-        setLiquidJettonWarningShown: (isLiquidJettonWarningShown) =>
-          set({ isLiquidJettonWarningShown }),
+        increaseMainFlashShownCount: () => {
+          set({ mainFlashShownCount: getState().mainFlashShownCount + 1 });
+        },
+        increaseStakingFlashShownCount: () => {
+          set({ stakingFlashShownCount: getState().stakingFlashShownCount + 1 });
+        },
       },
     }),
     {
-      name: 'staking',
+      name: 'staking_v2',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: ({
         pools,
         providers,
         stakingInfo,
-        maxApy,
+        highestApyPool,
         stakingBalance,
-        isLiquidJettonWarningShown,
+        mainFlashShownCount,
+        stakingFlashShownCount,
       }) =>
         ({
           pools,
           providers,
           stakingInfo,
-          maxApy,
+          highestApyPool,
           stakingBalance,
-          isLiquidJettonWarningShown,
+          mainFlashShownCount,
+          stakingFlashShownCount,
         } as IStakingStore),
     },
   ),

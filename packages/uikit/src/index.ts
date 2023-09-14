@@ -18,6 +18,7 @@ export { TextInputRef } from './components/TextInput';
 export { StepIndicator } from './components/StepIndicator';
 export { RefreshControl } from './components/RefreshControl';
 export { Toast } from './components/Toast';
+export * from './components/Flash';
 
 // Containers
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';

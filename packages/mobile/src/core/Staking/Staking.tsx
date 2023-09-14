@@ -1,14 +1,14 @@
 import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
 import { useNavigation } from '@tonkeeper/router';
-import { MainStackRouteNames } from '$navigation';
+import { MainStackRouteNames, openDAppBrowser } from '$navigation';
 import { StakingListCell } from '$shared/components';
 import { StakingProvider, useStakingStore } from '$store';
-import { ScrollHandler, Spacer, Text } from '$uikit';
+import { Button, Icon, ScrollHandler, Spacer, Text } from '$uikit';
 import { List } from '$uikit/List/old/List';
 import { calculatePoolBalance, getImplementationIcon, getPoolIcon } from '$utils/staking';
 import { formatter } from '$utils/formatter';
 import BigNumber from 'bignumber.js';
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import { RefreshControl } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,8 +19,11 @@ import { useSelector } from 'react-redux';
 import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
+import { PoolInfoImplementationEnum } from '@tonkeeper/core/src/TonAPI';
+import { walletSelector } from '$store/wallet';
+import { CryptoCurrencies } from '$shared/constants';
+import { Flash } from '@tonkeeper/uikit';
 import { Ton } from '$libs/Ton';
-import { useFlag } from '$utils/flags';
 
 interface Props {}
 
@@ -32,22 +35,24 @@ export const Staking: FC<Props> = () => {
   const providers = useStakingStore((s) => s.providers, shallow);
   const pools = useStakingStore((s) => s.pools, shallow);
   const stakingInfo = useStakingStore((s) => s.stakingInfo, shallow);
+  const highestApyPool = useStakingStore((s) => s.highestApyPool, shallow);
+  const flashShownCount = useStakingStore((s) => s.stakingFlashShownCount);
 
   const jettonBalances = useSelector(jettonsBalancesSelector);
-
-  const tonstakersBeta = useFlag('tonstakers_beta');
+  const { balances } = useSelector(walletSelector);
+  const tonBalance = balances[CryptoCurrencies.Ton];
 
   const poolsList = useMemo(() => {
     return pools.map((pool) => {
       const stakingJetton = jettonBalances.find(
-        (item) => Address(item.jettonAddress).toRaw() === pool.liquidJettonMaster,
+        (item) => Address(item.jettonAddress).toRaw() === pool.liquid_jetton_master,
       );
 
       const balance = stakingJetton
         ? new BigNumber(stakingJetton.balance)
         : calculatePoolBalance(pool, stakingInfo);
 
-      const pendingWithdrawal = stakingInfo[pool.address]?.pendingWithdraw;
+      const pendingWithdrawal = stakingInfo[pool.address]?.pending_withdraw;
 
       return {
         ...pool,
@@ -66,6 +71,8 @@ export const Staking: FC<Props> = () => {
     () => poolsList.filter((pool) => !!pool.balance || pool.isWithdrawal),
     [poolsList],
   );
+
+  const hasActivePools = activePools.length > 0;
 
   const data = useMemo(() => {
     const activeList: StakingProvider[] = [];
@@ -94,7 +101,7 @@ export const Staking: FC<Props> = () => {
 
       if (providerPools.length === providerActivePools.length) {
         activeList.push(provider);
-      } else if (provider.id === 'liquidTF') {
+      } else if (provider.id === PoolInfoImplementationEnum.LiquidTF) {
         recommendedList.push(provider);
       } else {
         otherList.push(provider);
@@ -131,15 +138,77 @@ export const Staking: FC<Props> = () => {
     [nav],
   );
 
+  const handleLearnMorePress = useCallback(() => {
+    openDAppBrowser(t('staking.info_url'));
+  }, []);
+
+  const getEstimateProfitMessage = useCallback(
+    (provider: StakingProvider) => {
+      const balance = new BigNumber(tonBalance);
+
+      if (balance.isGreaterThanOrEqualTo(10)) {
+        const profit = balance.multipliedBy(
+          new BigNumber(provider.maxApy).dividedBy(100),
+        );
+
+        return t('staking.estimated_profit', {
+          amount: formatter.format(profit),
+        });
+      }
+    },
+    [tonBalance],
+  );
+
+  useEffect(() => {
+    const timerId = setTimeout(
+      () => useStakingStore.getState().actions.increaseStakingFlashShownCount(),
+      1000,
+    );
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, []);
+
   return (
     <S.Wrap>
-      <ScrollHandler isLargeNavBar={false} navBarTitle={t('staking.title')}>
+      <ScrollHandler
+        isLargeNavBar={false}
+        navBarTitle={hasActivePools ? t('staking.title') : ' '}
+        navBarRight={
+          hasActivePools ? (
+            <Button
+              onPress={handleLearnMorePress}
+              size="navbar_icon"
+              mode="secondary"
+              before={<Icon name="ic-information-circle-16" color="foregroundPrimary" />}
+            />
+          ) : null
+        }
+      >
         <Animated.ScrollView
           refreshControl={<RefreshControl {...refreshControl} />}
           showsVerticalScrollIndicator={false}
         >
           <S.Content bottomInset={bottomInset}>
-            {activePools.length > 0 ? (
+            {!hasActivePools ? (
+              <S.LargeTitleContainer>
+                <Text variant="h2">{t('staking.title_large')}</Text>
+                <Spacer y={4} />
+                <Text textAlign="center" color="textSecondary" variant="body2">
+                  {t('staking.desc_large')}{' '}
+                  <Text
+                    color="accentPrimary"
+                    variant="body2"
+                    onPress={handleLearnMorePress}
+                  >
+                    {t('staking.learn_more')}
+                  </Text>
+                </Text>
+                <Spacer y={32} />
+              </S.LargeTitleContainer>
+            ) : null}
+            {hasActivePools ? (
               <>
                 <S.TitleContainer>
                   <Text variant="h3">{t('staking.active')}</Text>
@@ -156,7 +225,6 @@ export const Staking: FC<Props> = () => {
                       description={t('staking.staking_pool_desc', {
                         apy: pool.apy.toFixed(2),
                       })}
-                      beta={pool.implementation === 'liquidTF' && tonstakersBeta}
                       separator={index < pools.length - 1}
                       iconSource={getPoolIcon(pool)}
                       onPress={handlePoolPress}
@@ -166,7 +234,7 @@ export const Staking: FC<Props> = () => {
                 <Spacer y={16} />
               </>
             ) : null}
-            {activePools.length > 0 ? (
+            {hasActivePools ? (
               <S.TitleContainer>
                 <Text variant="h3">{t('staking.other')}</Text>
               </S.TitleContainer>
@@ -175,16 +243,20 @@ export const Staking: FC<Props> = () => {
               <>
                 <List separator={false}>
                   {data.recommendedList.map((provider, index) => (
-                    <StakingListCell
-                      key={provider.id}
-                      id={provider.id}
-                      name={provider.name}
-                      iconSource={getImplementationIcon(provider.id)}
-                      description={provider.description}
-                      beta={provider.id === 'liquidTF' && tonstakersBeta}
-                      separator={index < providers.length - 1}
-                      onPress={handleProviderPress}
-                    />
+                    <Flash key={provider.id} disabled={flashShownCount >= 2}>
+                      <StakingListCell
+                        id={provider.id}
+                        name={provider.name}
+                        iconSource={getImplementationIcon(provider.id)}
+                        description={provider.description}
+                        highestApy={
+                          highestApyPool && highestApyPool.implementation === provider.id
+                        }
+                        message={getEstimateProfitMessage(provider)}
+                        separator={index < providers.length - 1}
+                        onPress={handleProviderPress}
+                      />
+                    </Flash>
                   ))}
                 </List>
                 <Spacer y={16} />
@@ -200,7 +272,9 @@ export const Staking: FC<Props> = () => {
                       name={provider.name}
                       iconSource={getImplementationIcon(provider.id)}
                       description={provider.description}
-                      beta={provider.id === 'liquidTF' && tonstakersBeta}
+                      highestApy={
+                        highestApyPool && highestApyPool.implementation === provider.id
+                      }
                       separator={index < providers.length - 1}
                       onPress={handleProviderPress}
                     />

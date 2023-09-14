@@ -2,23 +2,22 @@ import { usePoolInfo } from '$hooks/usePoolInfo';
 import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
 import { MainStackRouteNames, openDAppBrowser, openSend } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
-import {
-  BottomButtonWrap,
-  BottomButtonWrapHelper,
-  NextCycle,
-  StakingWarning,
-} from '$shared/components';
+import { NextCycle } from '$shared/components';
 import { getServerConfig, KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
+import { getStakingPoolByAddress, getStakingProviderById, useStakingStore } from '$store';
 import {
-  getStakingPoolByAddress,
-  getStakingPoolsByProvider,
-  getStakingProviderById,
-  useStakingStore,
-} from '$store';
-import { Button, Highlight, Icon, ScrollHandler, Separator, Spacer, Text } from '$uikit';
+  Button,
+  Highlight,
+  IconButton,
+  ScrollHandler,
+  Spacer,
+  StakedTonIcon,
+  Tag,
+  Text,
+} from '$uikit';
 import { stakingFormatter } from '$utils/formatter';
 import { RouteProp } from '@react-navigation/native';
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { RefreshControl } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { shallow } from 'zustand/shallow';
@@ -28,12 +27,21 @@ import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { useFlag } from '$utils/flags';
+import { formatter } from '@tonkeeper/shared/formatter';
+import { fiatCurrencySelector } from '$store/main';
+import { useSelector } from 'react-redux';
+import { IStakingLink, StakingLinkType } from './types';
+import { Icon } from '@tonkeeper/uikit';
+import { getLinkIcon, getLinkTitle, getSocialLinkType } from './utils';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Linking } from 'react-native';
+import { PoolInfoImplementationEnum } from '@tonkeeper/core/src/TonAPI';
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPoolDetails>;
 }
 
-const TONSTAKERS_URL = 'https://tonstakers.com';
+const LIQUIDITY_TOKEN_URL = 'https://tonstakers.com';
 
 export const StakingPoolDetails: FC<Props> = (props) => {
   const {
@@ -42,15 +50,14 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     },
   } = props;
 
+  const fiatCurrency = useSelector(fiatCurrencySelector);
+
   const tonstakersBeta = useFlag('tonstakers_beta');
 
   const pool = useStakingStore((s) => getStakingPoolByAddress(s, poolAddress), shallow);
   const poolStakingInfo = useStakingStore((s) => s.stakingInfo[pool.address], shallow);
   const provider = useStakingStore(
-    (s) => ({
-      ...getStakingProviderById(s, pool.implementation),
-      poolsCount: getStakingPoolsByProvider(s, pool.implementation).length,
-    }),
+    (s) => getStakingProviderById(s, pool.implementation),
     shallow,
   );
 
@@ -75,14 +82,6 @@ export const StakingPoolDetails: FC<Props> = (props) => {
 
   const hasAnyBalance = hasDeposit || hasPendingDeposit;
 
-  const [detailsVisible, setDetailsVisible] = useState(!hasAnyBalance);
-
-  const handleDetailsButtonPress = useCallback(() => setDetailsVisible(true), []);
-
-  const handleOpenExplorer = useCallback(() => {
-    openDAppBrowser(getServerConfig('accountExplorer').replace('%s', pool.address));
-  }, [pool.address]);
-
   const handleSendPress = useCallback(() => {
     if (!stakingJetton) {
       return;
@@ -96,67 +95,128 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     });
   }, [stakingJetton]);
 
+  const handleLiquidityTokenPress = useCallback(() => {
+    openDAppBrowser(LIQUIDITY_TOKEN_URL);
+  }, []);
+
+  const links = useMemo(() => {
+    const list: IStakingLink[] = [];
+
+    if (provider.url) {
+      list.push({
+        url: provider.url,
+        type: StakingLinkType.Website,
+        icon: getLinkIcon(StakingLinkType.Website),
+      });
+    }
+
+    if (provider.socials) {
+      list.push(
+        ...provider.socials
+          .map((url): IStakingLink => {
+            const linkType = getSocialLinkType(url);
+
+            return { url, type: linkType, icon: getLinkIcon(linkType), social: true };
+          })
+          .sort((a, b) => {
+            const linkTypes = Object.values(StakingLinkType);
+
+            return linkTypes.indexOf(a.type) > linkTypes.indexOf(b.type) ? 1 : -1;
+          }),
+      );
+    }
+
+    list.push({
+      url: getServerConfig('accountExplorer').replace('%s', pool.address),
+      type: StakingLinkType.Explorer,
+      icon: getLinkIcon(StakingLinkType.Explorer),
+    });
+
+    return list;
+  }, [pool.address, provider.socials, provider.url]);
+
+  const handleLinkPress = useCallback(
+    (link: IStakingLink) => async () => {
+      if (link.social) {
+        try {
+          await Linking.openURL(link.url);
+
+          return;
+        } catch {}
+      }
+
+      openDAppBrowser(link.url);
+    },
+    [],
+  );
+
   const isImplemeted = KNOWN_STAKING_IMPLEMENTATIONS.includes(pool.implementation);
+
+  const isLiquidTF = pool.implementation === PoolInfoImplementationEnum.LiquidTF;
 
   return (
     <S.Wrap>
       <ScrollHandler
         isLargeNavBar={false}
         navBarTitle={pool.name}
-        navBarRight={
-          <Button
-            onPress={handleOpenExplorer}
-            size="navbar_icon"
-            mode="secondary"
-            before={<Icon name="ic-information-circle-16" color="foregroundPrimary" />}
-          />
-        }
+        navBarSubtitle={isLiquidTF && tonstakersBeta ? 'Beta' : undefined}
       >
         <Animated.ScrollView
           refreshControl={<RefreshControl {...refreshControl} />}
           showsVerticalScrollIndicator={false}
         >
           <S.Content>
-            {!hasAnyBalance && provider.id === 'liquidTF' ? (
-              <>
-                <StakingWarning
-                  title={`${pool.name} Beta`}
-                  name={pool.name}
-                  url={TONSTAKERS_URL}
-                  beta={tonstakersBeta}
-                  accent={true}
+            <S.HeaderWrap>
+              <S.FlexRow>
+                <S.JettonAmountWrapper>
+                  <HideableAmount variant="h2">
+                    {stakingFormatter.format(
+                      stakingJetton ? balance.totalTon : balance.amount,
+                    )}{' '}
+                    TON
+                  </HideableAmount>
+                  <Spacer y={2} />
+                  <HideableAmount variant="body2" color="foregroundSecondary">
+                    {formatter.format(balance.totalFiat, { currency: fiatCurrency })}
+                    {stakingJetton ? (
+                      <>
+                        <Text color="textTertiary"> · </Text>
+                        {stakingFormatter.format(balance.amount)} {balance.symbol}
+                      </>
+                    ) : null}
+                  </HideableAmount>
+                </S.JettonAmountWrapper>
+                <Spacer x={16} />
+                <StakedTonIcon size={64} pool={pool} />
+              </S.FlexRow>
+              <S.Divider />
+              <Spacer y={16} />
+              <S.ActionsContainer>
+                <IconButton
+                  onPress={handleTopUpPress}
+                  iconName="ic-plus-28"
+                  title={t('staking.top_up')}
+                  disabled={!isImplemeted}
                 />
-                <Spacer y={16} />
-              </>
-            ) : null}
-            <S.BalanceContainer>
-              <Text variant="label1">{t('staking.details.balance')}</Text>
-              <S.BalanceRight>
-                <HideableAmount variant="label1">
-                  {stakingFormatter.format(balance.amount)} {balance.symbol}
-                </HideableAmount>
-                <HideableAmount variant="body2" color="foregroundSecondary">
-                  {!!stakingJetton && balance.formatted.totalTon ? (
-                    <>
-                      {balance.formatted.totalTon}
-                      <Text color="textTertiary"> · </Text>
-                    </>
-                  ) : null}
-                  {balance.formatted.totalFiat ?? '-'}
-                </HideableAmount>
-              </S.BalanceRight>
-            </S.BalanceContainer>
-            {!!stakingJetton && hasDeposit ? (
-              <>
-                <Spacer y={16} />
-                <Button mode="secondary" onPress={handleSendPress}>
-                  {t('send_title', { currency: balance.symbol })}
-                </Button>
-              </>
-            ) : null}
-            <Spacer y={16} />
+                <IconButton
+                  onPress={handleWithdrawalPress}
+                  iconName="ic-arrow-down-28"
+                  title={t('staking.withdraw')}
+                  disabled={!isImplemeted || isWithdrawDisabled}
+                />
+                {!!stakingJetton && hasDeposit ? (
+                  <IconButton
+                    onPress={handleSendPress}
+                    iconName="ic-arrow-up-28"
+                    title={t('wallet_send')}
+                  />
+                ) : null}
+              </S.ActionsContainer>
+              <S.Divider />
+            </S.HeaderWrap>
             {hasPendingDeposit ? (
               <>
+                <Spacer y={16} />
                 <S.BalanceContainer>
                   <Text variant="label1">{t('staking.details.pendingDeposit')}</Text>
                   <S.BalanceRight>
@@ -168,13 +228,18 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                     </HideableAmount>
                   </S.BalanceRight>
                 </S.BalanceContainer>
-                <Spacer y={16} />
               </>
             ) : null}
             {hasPendingWithdraw ? (
               <>
+                <Spacer y={16} />
                 <S.BalanceContainer>
-                  <Text variant="label1">{t('staking.details.pendingWithdraw')}</Text>
+                  <S.Column>
+                    <Text variant="label1">{t('staking.details.pendingWithdraw')}</Text>
+                    <Text variant="body2" color="foregroundSecondary">
+                      {t('staking.details.pendingWithdrawDesc')}
+                    </Text>
+                  </S.Column>
                   <S.BalanceRight>
                     <HideableAmount variant="label1">
                       {stakingFormatter.format(pendingWithdraw.amount)} TON
@@ -184,11 +249,11 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                     </HideableAmount>
                   </S.BalanceRight>
                 </S.BalanceContainer>
-                <Spacer y={16} />
               </>
             ) : null}
             {hasReadyWithdraw ? (
               <>
+                <Spacer y={16} />
                 <S.BalanceTouchableContainer>
                   <S.BalanceTouchable
                     onPress={handleConfirmWithdrawalPress}
@@ -212,76 +277,96 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                     </S.BalanceTouchableContent>
                   </S.BalanceTouchable>
                 </S.BalanceTouchableContainer>
-                <Spacer y={16} />
               </>
             ) : null}
-            <NextCycle pool={pool} />
-            <Spacer y={16} />
-            {detailsVisible ? (
+            {hasAnyBalance ? (
               <>
-                <S.TitleContainer>
-                  <Text variant="label1">{t('staking.details.about_pool')}</Text>
-                </S.TitleContainer>
-                {hasAnyBalance && provider.id === 'liquidTF' ? (
+                <Spacer y={16} />
+                <NextCycle pool={pool} reward={true} />
+                {/* {stakingJetton && isLiquidTF ? (
                   <>
-                    <StakingWarning
-                      title={`${pool.name} Beta`}
-                      name={pool.name}
-                      url={TONSTAKERS_URL}
-                      beta={tonstakersBeta}
-                    />
-                    <Spacer y={16} />
+                    <Spacer y={24} />
+                    <S.ChartContainer>
+                      <StakingChart stakingJetton={stakingJetton} />
+                    </S.ChartContainer>
                   </>
-                ) : null}
-                <S.Table>
-                  {infoRows.map((item, i) => [
-                    <React.Fragment key={item.label}>
-                      {i > 0 ? <Separator /> : null}
-                      <Highlight onPress={item.onPress} isDisabled={!item.onPress}>
-                        <S.Item>
-                          <S.ItemLabel numberOfLines={1}>{item.label}</S.ItemLabel>
-                          <S.ItemValue>{item.value}</S.ItemValue>
-                        </S.Item>
-                      </Highlight>
-                    </React.Fragment>,
-                  ])}
-                </S.Table>
+                ) : null} */}
               </>
-            ) : (
-              <S.DetailsButtonContainer>
-                <Button mode="secondary" size="small" onPress={handleDetailsButtonPress}>
-                  {t('staking.details.show_details')}
+            ) : null}
+            <Spacer y={8} />
+            <S.TitleContainer>
+              <Text variant="h3">{t('staking.details.about_pool')}</Text>
+            </S.TitleContainer>
+            <S.Table>
+              {infoRows.map((item) => [
+                <React.Fragment key={item.label}>
+                  <Highlight onPress={item.onPress} isDisabled={!item.onPress}>
+                    <S.Item>
+                      <S.Row>
+                        <S.ItemLabel numberOfLines={1}>{item.label}</S.ItemLabel>
+                        {item.tags?.map((tag) => (
+                          <Tag key={tag.title} type={tag.type}>
+                            {tag.title}
+                          </Tag>
+                        ))}
+                      </S.Row>
+                      <S.ItemValue>{item.value}</S.ItemValue>
+                    </S.Item>
+                  </Highlight>
+                </React.Fragment>,
+              ])}
+              {stakingJetton && isLiquidTF ? (
+                <S.Item>
+                  <S.Row>
+                    <S.ItemLabel numberOfLines={1}>
+                      {t('staking.details.liquidity_token.label', {
+                        token: stakingJetton.metadata.symbol,
+                      })}
+                    </S.ItemLabel>
+                  </S.Row>
+                  <S.ItemValue color="accentPrimary" onPress={handleLiquidityTokenPress}>
+                    {t('staking.details.liquidity_token.value')}
+                  </S.ItemValue>
+                </S.Item>
+              ) : null}
+            </S.Table>
+            <Spacer y={12} />
+            <Text variant="body3" color="foregroundTertiary">
+              {t('staking.details.note')}
+            </Text>
+            <Spacer y={8} />
+            <S.TitleContainer>
+              <Text variant="h3">{t('staking.details.links_title')}</Text>
+            </S.TitleContainer>
+            <S.ExploreButtons>
+              {links.map((link) => (
+                <Button
+                  onPress={handleLinkPress(link)}
+                  key={link.url}
+                  before={
+                    link.icon ? (
+                      <>
+                        <Icon
+                          name={link.icon}
+                          color="iconPrimary"
+                          style={{ marginRight: 8 }}
+                        />
+                      </>
+                    ) : undefined
+                  }
+                  style={{ marginRight: 8, marginBottom: 8 }}
+                  mode="secondary"
+                  size="medium_rounded"
+                >
+                  {getLinkTitle(link)}
                 </Button>
-              </S.DetailsButtonContainer>
-            )}
+              ))}
+            </S.ExploreButtons>
             <Spacer y={16} />
+            <SafeAreaView edges={['bottom']} />
           </S.Content>
-          <BottomButtonWrapHelper />
         </Animated.ScrollView>
       </ScrollHandler>
-      <BottomButtonWrap>
-        <S.Row>
-          {hasDeposit ? (
-            <>
-              <S.Flex>
-                <Button
-                  onPress={handleWithdrawalPress}
-                  disabled={!isImplemeted || isWithdrawDisabled}
-                  mode="secondary"
-                >
-                  {t('staking.withdraw')}
-                </Button>
-              </S.Flex>
-              <Spacer x={16} />
-            </>
-          ) : null}
-          <S.Flex>
-            <Button onPress={handleTopUpPress} disabled={!isImplemeted}>
-              {t('staking.top_up')}
-            </Button>
-          </S.Flex>
-        </S.Row>
-      </BottomButtonWrap>
     </S.Wrap>
   );
 };

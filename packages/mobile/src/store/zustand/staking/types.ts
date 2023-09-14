@@ -1,12 +1,23 @@
-import { AccountStakingInfo, PoolInfo } from '@tonkeeper/core/src/legacy';
+import { JettonBalanceModel } from '$store/models';
+import {
+  AccountStakingInfo,
+  PoolInfo,
+  PoolInfoImplementationEnum,
+} from '@tonkeeper/core/src/TonAPI';
 
 export interface StakingProvider {
-  id: string;
+  id: PoolInfoImplementationEnum;
   name: string;
   description: string;
   url: string;
   maxApy: number;
   minStake: number;
+  socials: string[];
+}
+
+export interface IStakingChartPoint {
+  x: number;
+  y: number;
 }
 
 export type StakingInfo = Record<AccountStakingInfo['pool'], AccountStakingInfo>;
@@ -18,16 +29,20 @@ export enum StakingApiStatus {
 }
 
 export interface IStakingStore {
-  maxApy: number | null;
   status: StakingApiStatus;
   pools: PoolInfo[];
+  highestApyPool: PoolInfo | null;
   providers: StakingProvider[];
   stakingInfo: StakingInfo;
   stakingBalance: string;
-  isLiquidJettonWarningShown: boolean;
+  chart: IStakingChartPoint[];
+  mainFlashShownCount: number;
+  stakingFlashShownCount: number;
   actions: {
     fetchPools: (silent?: boolean) => Promise<void>;
     reset: () => void;
-    setLiquidJettonWarningShown: (value: boolean) => void;
+    fetchChart: (jetton: JettonBalanceModel) => Promise<void>;
+    increaseMainFlashShownCount: () => void;
+    increaseStakingFlashShownCount: () => void;
   };
 }

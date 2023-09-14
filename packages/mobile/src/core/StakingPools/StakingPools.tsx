@@ -51,14 +51,14 @@ export const StakingPools: FC<Props> = (props) => {
   const list = useMemo(() => {
     return pools.map((pool) => {
       const stakingJetton = jettonBalances.find(
-        (item) => Address(item.jettonAddress).toRaw() === pool.liquidJettonMaster,
+        (item) => Address(item.jettonAddress).toRaw() === pool.liquid_jetton_master,
       );
 
       const balance = stakingJetton
         ? new BigNumber(stakingJetton.balance)
         : calculatePoolBalance(pool, stakingInfo);
 
-      const pendingWithdrawal = stakingInfo[pool.address]?.pendingWithdraw;
+      const pendingWithdrawal = stakingInfo[pool.address]?.pending_withdraw;
 
       return {
         ...pool,

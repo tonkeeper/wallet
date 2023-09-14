@@ -3,8 +3,6 @@ import { Highlight, Text } from '$uikit';
 import { ns } from '$utils';
 import Animated from 'react-native-reanimated';
 
-const ICON_SIZE = ns(96);
-
 export const Container = styled(Animated.View)`
   flex: 1;
 `;
@@ -66,14 +64,6 @@ export const FooterContainer = styled.View<{ bottomInset: number }>`
 
 export const Center = styled.View`
   align-items: center;
-`;
-
-export const IconContainer = styled.View`
-  width: ${ICON_SIZE}px;
-  height: ${ICON_SIZE}px;
-  border-radius: ${ns(ICON_SIZE)}px;
-  overflow: hidden;
-  background: ${({ theme }) => theme.colors.backgroundQuaternary};
 `;
 
 export const WarningContainer = styled.View`

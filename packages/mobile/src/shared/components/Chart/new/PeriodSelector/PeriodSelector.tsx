@@ -9,6 +9,7 @@ import { ChartPeriod } from '$store/zustand/chart';
 export interface PeriodSelectorProps {
   selectedPeriod: ChartPeriod;
   disabled?: boolean;
+  excludedPeriods?: ChartPeriod[];
   onSelect: (newPeriod: ChartPeriod) => void;
 }
 
@@ -59,15 +60,17 @@ export const PeriodSelectorComponent: React.FC<PeriodSelectorProps> = (props) =>
         paddingHorizontal: ns(27),
       }}
     >
-      {mappedPeriods.map((period) => (
-        <Period
-          disabled={props.disabled}
-          key={period.value}
-          onSelect={handleSelect(period.value)}
-          label={period.label}
-          selected={props.selectedPeriod === period.value}
-        />
-      ))}
+      {mappedPeriods.map((period) =>
+        props.excludedPeriods?.includes(period.value) ? null : (
+          <Period
+            disabled={props.disabled}
+            key={period.value}
+            onSelect={handleSelect(period.value)}
+            label={period.label}
+            selected={props.selectedPeriod === period.value}
+          />
+        ),
+      )}
     </View>
   );
 };
