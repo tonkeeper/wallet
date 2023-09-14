@@ -1,11 +1,13 @@
 import { DefaultSectionT, SectionListData, StyleSheet, View } from 'react-native';
 import { RefreshControl, Screen, Loader, List } from '@tonkeeper/uikit';
 import { formatTransactionsGroupDate } from '../../utils/date';
-import { renderActivityItem } from './renderActivityItem';
+import { ActionItem, ActivitySection } from '@tonkeeper/core';
+import { renderActionItem } from './renderActivityItem';
 import { memo } from 'react';
 
+
 interface ActivityListProps {
-  sections?: any;
+  sections: SectionListData<ActionItem>;
   onLoadMore?: () => void;
   onReload?: () => void;
   hasMore?: boolean;
@@ -42,9 +44,9 @@ export const ActivityList = memo<ActivityListProps>((props) => {
   return (
     <Screen.SectionList
       refreshControl={<RefreshControl onRefresh={onReload} refreshing={!!isReloading} />}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.action_id}
       renderSectionHeader={renderSection}
-      renderItem={renderActivityItem}
+      renderItem={renderActionItem}
       onEndReached={onLoadMore}
       onEndReachedThreshold={0.02}
       updateCellsBatchingPeriod={60}

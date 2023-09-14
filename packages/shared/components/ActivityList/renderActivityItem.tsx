@@ -2,145 +2,132 @@ import { UnSubscribeActionListItem } from './items/UnSubscribeActionListItem';
 import { JettonSwapActionListItem } from './items/JettonSwapActionListItem';
 import { SubscribeActionListItem } from './items/SubscribeActionListItem';
 import { modifyNftName } from '@tonkeeper/core/src/managers/NftsManager';
+import { ActionType, Address, AnyActionItem } from '@tonkeeper/core';
 import { NftPreviewContent } from './NftPreviewContent';
 import { ActionListItem } from './ActionListItem';
 import { t } from '../../i18n';
 import {
-  ActivityActionType,
-  AnyActivityAction,
-  ActivityEvent,
-  Address,
-  ActivityItem,
-} from '@tonkeeper/core';
-import {
-  Icon,
-  ListItemContainer,
   ListItemContentText,
+  ListItemContainer,
   Picture,
   Steezy,
   View,
+  Icon,
 } from '@tonkeeper/uikit';
 
-export function renderActionItem(event: ActivityEvent, action: AnyActivityAction) {
-  switch (action.type) {
-    case ActivityActionType.TonTransfer:
+export function renderActionItemByType(action: AnyActionItem) {
+  const { type, payload } = action;
+
+  switch (type) {
+    case ActionType.TonTransfer:
       return (
-        <ActionListItem event={event} action={action}>
-          {!!action.comment && <ListItemContentText text={action.comment.trim()} />}
+        <ActionListItem action={action}>
+          {!!payload.comment && <ListItemContentText text={payload.comment.trim()} />}
         </ActionListItem>
       );
-    case ActivityActionType.JettonTransfer:
+    case ActionType.JettonTransfer:
       return (
-        <ActionListItem event={event} action={action}>
-          {!!action.comment && <ListItemContentText text={action.comment.trim()} />}
+        <ActionListItem action={action}>
+          {!!payload.comment && <ListItemContentText text={payload.comment.trim()} />}
         </ActionListItem>
       );
-    case ActivityActionType.NftItemTransfer:
+    case ActionType.NftItemTransfer:
       return (
-        <ActionListItem event={event} action={action} value="NFT">
-          <NftPreviewContent nftAddress={action.nft} />
-          {!!action.comment && <ListItemContentText text={action.comment.trim()} />}
+        <ActionListItem action={action} value="NFT">
+          <NftPreviewContent nftAddress={payload.nft} />
+          {!!payload.comment && <ListItemContentText text={payload.comment.trim()} />}
         </ActionListItem>
       );
-    case ActivityActionType.NftPurchase:
+    case ActionType.NftPurchase:
       return (
-        <ActionListItem event={event} action={action}>
-          <NftPreviewContent nftItem={action.nft} />
+        <ActionListItem action={action}>
+          <NftPreviewContent nftItem={payload.nft} />
         </ActionListItem>
       );
-    case ActivityActionType.SmartContractExec:
+    case ActionType.SmartContractExec:
       return (
         <ActionListItem
-          subtitle={Address.parse(action.contract.address).toShort()}
+          subtitle={Address.parse(payload.contract.address).toShort()}
           title={t('transactions.smartcontract_exec')}
           iconName="ic-gear-28"
           action={action}
-          event={event}
         />
       );
-    case ActivityActionType.Unknown:
+    case ActionType.Unknown:
       return (
         <ActionListItem
           title={t('transactions.unknown')}
           subtitle={t('transactions.unknown_description')}
           subtitleNumberOfLines={2}
           action={action}
-          event={event}
         />
       );
-    case ActivityActionType.AuctionBid:
+    case ActionType.AuctionBid:
       return (
         <ActionListItem
-          subtitle={modifyNftName(action.nft?.metadata?.name)}
+          subtitle={modifyNftName(payload.nft?.metadata?.name)}
           title={t('transactions.bid')}
           iconName="ic-tray-arrow-up-28"
           action={action}
-          event={event}
         />
       );
-    case ActivityActionType.ContractDeploy:
+    case ActionType.ContractDeploy:
       return (
         <ActionListItem
-          subtitle={Address.parse(action.address).toShort()}
+          subtitle={Address.parse(payload.address).toShort()}
           title={t('transactions.wallet_initialized')}
           iconName="ic-donemark-28"
           action={action}
-          event={event}
         />
       );
-    case ActivityActionType.ReceiveTRC20:
+    case ActionType.ReceiveTRC20:
       return (
         <ActionListItem
-          subtitle={Address.toShort(action.sender)}
+          subtitle={Address.toShort(payload.sender)}
           title={t('transaction_type_receive')}
           iconName="ic-tray-arrow-down-28"
           action={action}
-          event={event}
           greenValue
         />
       );
-    case ActivityActionType.SendTRC20:
+    case ActionType.SendTRC20:
       return (
         <ActionListItem
-          subtitle={Address.toShort(action.recipient)}
+          subtitle={Address.toShort(payload.recipient)}
           title={t('transaction_type_sent')}
           iconName="ic-tray-arrow-up-28"
           action={action}
-          event={event}
         />
       );
-    case ActivityActionType.JettonBurn:
+    case ActionType.JettonBurn:
       return (
         <ActionListItem
-          subtitle={action.jetton.name}
+          subtitle={payload.jetton.name}
           title={t('transactions.burned')}
           iconName="ic-fire-28"
           action={action}
-          event={event}
         />
       );
-    case ActivityActionType.JettonMint:
+    case ActionType.JettonMint:
       return (
         <ActionListItem
-          subtitle={action.jetton.name}
+          subtitle={payload.jetton.name}
           title={t('transaction_type_receive')}
           action={action}
-          event={event}
         />
       );
-    case ActivityActionType.DepositStake:
+    case ActionType.DepositStake:
       return (
         <ActionListItem
-          subtitle={action.pool.name}
+          subtitle={payload.pool.name}
           title={t('transactions.deposit')}
           action={action}
-          event={event}
           leftContent={
             <View style={styles.poolIconContainer}>
-              {!!action.pool.icon ? (
+              {!!payload.pool.icon ? (
                 <Picture
                   style={styles.poolIcon}
-                  uri={action.pool.icon}
+                  uri={payload.pool.icon}
                   resizeMode="contain"
                 />
               ) : (
@@ -150,42 +137,40 @@ export function renderActionItem(event: ActivityEvent, action: AnyActivityAction
           }
         />
       );
-    case ActivityActionType.WithdrawStake:
+    case ActionType.WithdrawStake:
       return (
         <ActionListItem
-          subtitle={action.pool.name}
+          subtitle={payload.pool.name}
           title={t('transactions.withdraw')}
           iconName="ic-donemark-28"
           action={action}
-          event={event}
           leftContent={
             <View style={styles.poolIconContainer}>
-              <Picture uri={action.pool.icon} />
+              <Picture uri={payload.pool.icon} />
             </View>
           }
         />
       );
-    case ActivityActionType.WithdrawStakeRequest:
+    case ActionType.WithdrawStakeRequest:
       return (
         <ActionListItem
-          subtitle={action.pool.name}
+          subtitle={payload.pool.name}
           title={t('transactions.withdrawal_request')}
           iconName="ic-donemark-28"
           action={action}
-          event={event}
           leftContent={
             <View style={styles.poolIconContainer}>
-              <Picture uri={action.pool.icon} />
+              <Picture uri={payload.pool.icon} />
             </View>
           }
         />
       );
-    case ActivityActionType.JettonSwap:
-      return <JettonSwapActionListItem event={event} action={action} />;
-    case ActivityActionType.Subscribe: // TODO:
-      return <SubscribeActionListItem event={event} action={action} />;
-    case ActivityActionType.UnSubscribe: // TODO:
-      return <UnSubscribeActionListItem event={event} action={action} />;
+    case ActionType.JettonSwap:
+      return <JettonSwapActionListItem action={action} />;
+    case ActionType.Subscribe: // TODO:
+      return <SubscribeActionListItem action={action} />;
+    case ActionType.UnSubscribe: // TODO:
+      return <UnSubscribeActionListItem action={action} />;
     default:
       return (
         <ActionListItem
@@ -193,20 +178,19 @@ export function renderActionItem(event: ActivityEvent, action: AnyActivityAction
           subtitle={action.simple_preview.description}
           subtitleNumberOfLines={2}
           action={action}
-          event={event}
         />
       );
   }
 }
 
 type RenderItemOptions = {
-  item: ActivityItem;
+  item: AnyActionItem;
   index: number;
 };
 
-export const renderActivityItem = ({ item }: RenderItemOptions) => (
+export const renderActionItem = ({ item }: RenderItemOptions) => (
   <ListItemContainer isFirst={item.isFirst} isLast={item.isLast}>
-    {renderActionItem(item.event, item.action)}
+    {renderActionItemByType(item)}
   </ListItemContainer>
 );
 

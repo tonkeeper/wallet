@@ -1,17 +1,16 @@
-import { SubscribeActionData, ActivityEvent } from '@tonkeeper/core';
+import { ActionItem, ActionType } from '@tonkeeper/core';
 import { ActionListItem } from '../ActionListItem';
 import { StyleSheet } from 'react-native';
 import { memo } from 'react';
 
 interface SubscribeActionListItemProps {
-  action: SubscribeActionData;
-  event: ActivityEvent;
+  action: ActionItem<ActionType.Subscribe>;
 }
 
 export const SubscribeActionListItem = memo<SubscribeActionListItemProps>((props) => {
-  const { action, event } = props;
+  const { action } = props;
 
-  return <ActionListItem event={event} action={action} />;
+  return <ActionListItem action={action} />;
 });
 
 const styles = StyleSheet.create({

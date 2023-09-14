@@ -1,14 +1,13 @@
 import { memo } from 'react';
 import { ActionListItem } from '../ActionListItem';
-import { ActivityEvent, UnSubscribeActionData } from '@tonkeeper/core';
+import { ActionItem, ActionType } from '@tonkeeper/core';
 
 interface UnSubscribeActionListItemProps {
-  action: UnSubscribeActionData;
-  event: ActivityEvent;
+  action: ActionItem<ActionType.UnSubscribe>;
 }
 
 export const UnSubscribeActionListItem = memo<UnSubscribeActionListItemProps>((props) => {
-  const { action, event } = props;
+  const { action } = props;
 
-  return <ActionListItem event={event} action={action} />;
+  return <ActionListItem action={action} />;
 });

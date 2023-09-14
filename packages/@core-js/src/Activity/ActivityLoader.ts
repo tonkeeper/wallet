@@ -2,10 +2,12 @@ import { AccountEvent, TonAPI } from '../TonAPI';
 import { WalletAddresses } from '../Wallet';
 import { TronAPI } from '../TronAPI';
 import {
-  ActivitySource,
+
   ActivityModel,
-  ActivityItem,
+
   ActionId,
+  ActionItem,
+  ActionSource,
 } from '../models/ActivityModel';
 
 type LoadParams<TCursor, TData> = {
@@ -15,8 +17,8 @@ type LoadParams<TCursor, TData> = {
 };
 
 export class ActivityLoader {
-  private tronActions = new Map<ActionId, ActivityItem>();
-  private tonActions = new Map<ActionId, ActivityItem>();
+  private tronActions = new Map<ActionId, ActionItem>();
+  private tonActions = new Map<ActionId, ActionItem>();
 
   constructor(
     private addresses: WalletAddresses,
@@ -36,10 +38,10 @@ export class ActivityLoader {
     const actions = ActivityModel.createActions(
       {
         ownerAddress: this.addresses.ton,
-        source: ActivitySource.Ton,
+        source: ActionSource.Ton,
         events,
       },
-      (action) => this.tonActions.set(action.id, action),
+      (action) => this.tonActions.set(action.action_id, action),
     );
 
     return {
@@ -86,11 +88,11 @@ export class ActivityLoader {
     const actions = ActivityModel.createActions(
       {
         ownerAddress: this.addresses.ton,
-        source: ActivitySource.Ton,
+        source: ActionSource.Ton,
         events: data.events,
       },
       (action) => {
-        this.tonActions.set(action.id, action);
+        this.tonActions.set(action.action_id, action);
       },
     );
 
@@ -110,14 +112,14 @@ export class ActivityLoader {
     if (event) {
       const action = ActivityModel.createAction({
         ownerAddress: this.addresses.ton,
-        source: ActivitySource.Ton,
+        source: ActionSource.Ton,
         actionIndex,
         event,
       });
 
-      console.log(action.id);
+      console.log(action.action_id);
 
-      this.tonActions.set(action.id, action);
+      this.tonActions.set(action.action_id, action);
 
       return action;
     }

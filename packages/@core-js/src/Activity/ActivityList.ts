@@ -1,11 +1,6 @@
+import { ActivitySection, ActionItem, ActivityModel } from '../models/ActivityModel';
 import { ActivityLoader } from './ActivityLoader';
-import { WalletAddresses } from '../Wallet';
 import { State } from '../utils/State';
-import {
-  ActivityItem,
-  ActivityModel,
-  ActivitySections,
-} from '../models/ActivityModel';
 
 type Cursors = {
   tron: number | null;
@@ -13,7 +8,7 @@ type Cursors = {
 };
 
 type ActivityListState = {
-  sections: ActivitySections;
+  sections: ActivitySection[];
   isReloading: boolean;
   isLoading: boolean;
   hasMore: boolean;
@@ -58,13 +53,12 @@ export class ActivityList {
             timestamp: action.event.timestamp * 1000,
             data: [],
           };
-        } 
+        }
 
         groups[groupKey].data.push(action);
 
         return groups;
       }, this.groups);
-
 
       this.groups = updatedGroups;
 
@@ -78,9 +72,8 @@ export class ActivityList {
         hasMore: Boolean(ton.cursor),
         isLoading: false,
       });
-
-      console.log('__END LOAD');
     } catch (err) {
+      console.log(err);
       this.state.set({
         isLoading: false,
       });
@@ -119,7 +112,7 @@ export class ActivityList {
     }
   }
 
-  private sortByTimestamp(items: ActivityItem[]) {
+  private sortByTimestamp(items: ActionItem[]) {
     return items.sort((a, b) => b.event.timestamp - a.event.timestamp);
   }
 

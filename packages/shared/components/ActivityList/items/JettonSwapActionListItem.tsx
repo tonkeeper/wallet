@@ -1,58 +1,58 @@
-import { ActivityEvent, JettonSwapActionData, Address } from '@tonkeeper/core';
+import { Address, ActionItem, ActionType } from '@tonkeeper/core';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { formatTransactionTime } from '../../../utils/date';
 import { ActionListItem } from '../ActionListItem';
 import { View, StyleSheet } from 'react-native';
 import { formatter } from '../../../formatter';
 import { Text } from '@tonkeeper/uikit';
-import { t } from '../../../i18n';
 import { memo, useMemo } from 'react';
+import { t } from '../../../i18n';
 
 interface JettonSwapActionListItemProps {
-  action: JettonSwapActionData;
-  event: ActivityEvent;
+  action: ActionItem<ActionType.JettonSwap>;
 }
 
 export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((props) => {
-  const { action, event } = props;
+  const { action } = props;
+  const { payload } = action;
 
-  const subtitle = action.user_wallet.name
-    ? action.user_wallet.name
-    : Address.parse(action.user_wallet.address).toShort();
+  const subtitle = payload.user_wallet.name
+    ? payload.user_wallet.name
+    : Address.parse(payload.user_wallet.address).toShort();
 
   const amountIn = useMemo(() => {
-    if (action.ton_in) {
-      return formatter.formatNano(action.ton_in, {
+    if (payload.ton_in) {
+      return formatter.formatNano(payload.ton_in, {
         postfix: 'TON',
         prefix: '+',
       });
-    } else if (action.jetton_master_in) {
-      return formatter.formatNano(action.amount_in, {
-        decimals: action.jetton_master_in.decimals,
-        postfix: action.jetton_master_in.symbol,
+    } else if (payload.jetton_master_in) {
+      return formatter.formatNano(payload.amount_in, {
+        decimals: payload.jetton_master_in.decimals,
+        postfix: payload.jetton_master_in.symbol,
         prefix: '+',
       });
     } else {
       return '-';
     }
-  }, [action]);
+  }, [payload]);
 
   const amountOut = useMemo(() => {
-    if (action.ton_out) {
-      return formatter.formatNano(action.ton_out, {
+    if (payload.ton_out) {
+      return formatter.formatNano(payload.ton_out, {
         postfix: 'TON',
         prefix: '+',
       });
-    } else if (action.jetton_master_out) {
-      return formatter.formatNano(action.amount_out, {
-        decimals: action.jetton_master_out.decimals,
-        postfix: action.jetton_master_out.symbol,
+    } else if (payload.jetton_master_out) {
+      return formatter.formatNano(payload.amount_out, {
+        decimals: payload.jetton_master_out.decimals,
+        postfix: payload.jetton_master_out.symbol,
         prefix: '−',
       });
     } else {
       return '-';
     }
-  }, [action]);
+  }, [payload]);
 
   return (
     <ActionListItem
@@ -61,7 +61,6 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
       subtitle={subtitle}
       value={amountIn}
       action={action}
-      event={event}
       greenValue
       subvalue={
         <Text type="label1" style={styles.amountOut}>
@@ -79,7 +78,7 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
         </View>
         <View>
           <Text style={styles.timeText} type="body2" color="textSecondary">
-            {formatTransactionTime(new Date(event.timestamp * 1000))}
+            {formatTransactionTime(new Date(action.event.timestamp * 1000))}
           </Text>
         </View>
       </View>

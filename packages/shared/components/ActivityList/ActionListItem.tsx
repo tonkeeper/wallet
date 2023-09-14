@@ -1,6 +1,6 @@
-import { AmountFormatter, AnyActivityAction, ActivityEvent } from '@tonkeeper/core';
 import { Icon, IconNames, List, Loader, Picture, Text, View } from '@tonkeeper/uikit';
-import { openActionDetails } from '../../modals/ActivityActionModal';
+import { ActionSource, AmountFormatter, AnyActionItem } from '@tonkeeper/core';
+import { openActivityActionModal } from '../../modals/ActivityActionModal';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { ListItemContent, Steezy } from '@tonkeeper/uikit';
 import { formatTransactionTime } from '../../utils/date';
@@ -13,10 +13,9 @@ import { t } from '../../i18n';
 interface ActionListItem {
   onPress?: () => void;
   subvalue?: string | React.ReactNode;
-  action: AnyActivityAction;
+  action: AnyActionItem;
   subtitleNumberOfLines?: number;
   children?: React.ReactNode;
-  event: ActivityEvent;
   picture?: string;
   iconName?: IconNames;
   leftContent?: React.ReactNode;
@@ -27,13 +26,13 @@ interface ActionListItem {
 }
 
 export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
-  const { event, action, children, onPress, subtitleNumberOfLines, greenValue } = props;
+  const { action, children, onPress, subtitleNumberOfLines, greenValue } = props;
 
   const handlePress = useCallback(() => {
     if (onPress) {
       onPress();
     } else {
-      openActionDetails(`${event.event_id}_0`);
+      openActivityActionModal(action.action_id, ActionSource.Ton);
     }
   }, []);
 
@@ -80,7 +79,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
   }, [action.destination, props.title]);
 
   const subtitle = useMemo(() => {
-    if (event.is_scam) {
+    if (action.event.is_scam) {
       return t('transactions.spam');
     } else if (props.subtitle !== undefined) {
       return props.subtitle;
@@ -93,7 +92,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     } else {
       return action.simple_preview.description;
     }
-  }, [action.simple_preview, event.is_scam, senderAccount, props.subtitle]);
+  }, [action.simple_preview, action.event.is_scam, senderAccount, props.subtitle]);
 
   const value = useMemo(() => {
     if (props.value !== undefined) {
@@ -122,13 +121,13 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     if (props.subvalue !== undefined) {
       return props.subvalue;
     } else {
-      return formatTransactionTime(new Date(event.timestamp * 1000));
+      return formatTransactionTime(new Date(action.event.timestamp * 1000));
     }
-  }, [event.timestamp, props.subvalue]);
+  }, [action.event.timestamp, props.subvalue]);
 
   const valueStyle = [
     (action.destination === 'in' || greenValue) && styles.receiveValue,
-    event.is_scam && styles.scamAmountText,
+    action.event.is_scam && styles.scamAmountText,
   ];
 
   const leftContent = (
@@ -138,7 +137,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
       ) : (
         <Icon name={iconName} color="iconSecondary" />
       )}
-      {event.in_progress && (
+      {action.event.in_progress && (
         <View style={styles.sendingOuter}>
           <View style={styles.sendingInner}>
             <Loader size="xsmall" color="constantWhite" />
@@ -159,7 +158,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
       title={title}
       value={value}
     >
-      {!event.is_scam && children}
+      {!action.event.is_scam && children}
       {isFailed && (
         <Text type="body2" color="accentOrange" style={styles.failedText.static}>
           {t('transactions.failed')}

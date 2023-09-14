@@ -1,32 +1,30 @@
 import { differenceInCalendarMonths, format } from 'date-fns';
-import { ActionStatusEnum, AccountEvent } from '../../TonAPI';
 import { toLowerCaseFirstLetter } from '../../utils/strings';
 import { TronEvent } from '../../TronAPI/TronAPIGenerated';
 import { Address } from '../../formatters/Address';
+import { AccountEvent } from '../../TonAPI';
 import {
-  AnyActivityAction,
+  AnyActionTypePayload,
   ActionDestination,
-  ActivityActionType,
-  ActivityActionAmount,
-  ActivityItem,
-  ActivitySource,
-  ActivityItems,
-} from './ActivityTypes';
+  AnyActionPayload,
+  ActionSource,
+  ActionAmount,
+  ActionType,
+  ActionItem,
+} from './ActivityModelTypes';
 
 type CreateActionOptions = {
-  source: ActivitySource;
+  source: ActionSource;
   event: AccountEvent;
   ownerAddress: string;
   actionIndex: number;
 };
 
 type CreateActionsOptions = {
-  source: ActivitySource;
+  source: ActionSource;
   events: AccountEvent[];
   ownerAddress: string;
 };
-
-type IterationFN = (action: ActivityItem) => void;
 
 export class ActivityModel {
   static getGroupKey(timestamp: number) {
@@ -40,9 +38,12 @@ export class ActivityModel {
     return format(ts, 'LLLL yyyy');
   }
 
-  static createActions(options: CreateActionsOptions, fn?: IterationFN) {
-    return options.events.reduce<ActivityItems>((activityActions, event) => {
-      const eventActions = event.actions.reduce<ActivityItem[]>((actions, _, index) => {
+  static createActions(
+    options: CreateActionsOptions,
+    iteration?: (action: ActionItem) => void,
+  ) {
+    return options.events.reduce<ActionItem[]>((activityActions, event) => {
+      const eventActions = event.actions.reduce<ActionItem[]>((actions, _, index) => {
         const action = ActivityModel.createAction({
           ownerAddress: options.ownerAddress,
           source: options.source,
@@ -50,8 +51,8 @@ export class ActivityModel {
           event,
         });
 
-        if (fn) {
-          fn(action);
+        if (iteration) {
+          iteration(action);
         }
 
         actions.push(action);
@@ -69,83 +70,74 @@ export class ActivityModel {
     actionIndex,
     source,
     event,
-  }: CreateActionOptions): ActivityItem {
-    const rawAction = event.actions[actionIndex];
-    const actionBody = rawAction[rawAction.type];
+  }: CreateActionOptions): ActionItem {
+    const action = event.actions[actionIndex];
+    const payload = action[action.type];
 
-    const destination = this.defineActionDestination(ownerAddress, actionBody);
-
-    const type = (rawAction as any).type as ActivityActionType;
-    const amount = this.createAmount({ ...actionBody, type });
-
-    const action: AnyActivityAction = {
-      type,
-      ...actionBody,
-      isFailed: rawAction.status === ActionStatusEnum.Failed,
-      simple_preview: rawAction.simple_preview,
-      status: rawAction.status,
-      destination,
-      amount,
-    };
+    const type = (action as any).type as ActionType;
+    const destination = this.defineActionDestination(ownerAddress, payload);
+    const amount = this.createAmount({ type, payload });
 
     return {
-      id: `${event.event_id}_${actionIndex}`,
+      action_id: `${event.event_id}_${actionIndex}`,
+      simple_preview: action.simple_preview,
       isLast: actionIndex === event.actions.length - 1,
       isFirst: actionIndex === 0,
+      status: action.status,
+      destination,
+      payload,
+      amount,
       source,
-      action,
       event,
+      type,
     };
   }
 
-  static createAmount(action: AnyActivityAction): ActivityActionAmount | null {
-    switch (action.type) {
-      case ActivityActionType.WithdrawStakeRequest:
-      case ActivityActionType.ElectionsRecoverStake:
-      case ActivityActionType.ElectionsDepositStake:
-      case ActivityActionType.TonTransfer:
-      case ActivityActionType.DepositStake:
-      case ActivityActionType.WithdrawStake:
-        if (action.amount !== undefined) {
+  static createAmount(action: AnyActionTypePayload): ActionAmount | null {
+    const { payload, type } = action;
+
+    switch (type) {
+      case ActionType.WithdrawStakeRequest:
+      case ActionType.ElectionsRecoverStake:
+      case ActionType.ElectionsDepositStake:
+      case ActionType.TonTransfer:
+      case ActionType.DepositStake:
+      case ActionType.WithdrawStake:
+        if (payload.amount !== undefined) {
           return {
-            value: String(action.amount),
+            value: String(payload.amount),
             symbol: 'TON',
           };
+        } else {
+          return null;
         }
-
-        return null;
-      case ActivityActionType.JettonMint:
-      case ActivityActionType.JettonBurn:
-      case ActivityActionType.JettonTransfer:
+      case ActionType.JettonMint:
+      case ActionType.JettonBurn:
+      case ActionType.JettonTransfer:
         return {
-          value: action.amount,
-          symbol: action.jetton.symbol,
-          decimals: action.jetton.decimals,
+          value: payload.amount,
+          symbol: payload.jetton.symbol,
+          decimals: payload.jetton.decimals,
         };
-      case ActivityActionType.NftPurchase:
-      case ActivityActionType.AuctionBid:
-      case ActivityActionType.NftPurchase:
+      case ActionType.NftPurchase:
+      case ActionType.AuctionBid:
+      case ActionType.NftPurchase:
         return {
-          value: action.amount.value,
-          symbol: action.amount.token_name,
+          value: payload.amount.value,
+          symbol: payload.amount.token_name,
         };
-      case ActivityActionType.SmartContractExec:
+      case ActionType.SmartContractExec:
         return {
-          value: action.ton_attached,
+          value: payload.ton_attached,
           symbol: 'TON',
         };
-      case ActivityActionType.ReceiveTRC20:
-      case ActivityActionType.SendTRC20:
+      case ActionType.ReceiveTRC20:
+      case ActionType.SendTRC20:
         return {
-          value: action.amount,
-          symbol: action.token.symbol,
-          decimals: action.token.decimals,
+          value: payload.amount,
+          symbol: payload.token.symbol,
+          decimals: payload.token.decimals,
         };
-      case ActivityActionType.JettonSwap:
-      case ActivityActionType.NftItemTransfer:
-      case ActivityActionType.ContractDeploy:
-      case ActivityActionType.Subscribe:
-      case ActivityActionType.UnSubscribe:
       default:
         return null;
     }
@@ -153,7 +145,7 @@ export class ActivityModel {
 
   static defineActionDestination(
     ownerAddress: string,
-    action: AnyActivityAction,
+    action: AnyActionPayload,
   ): ActionDestination {
     if (action && 'recipient' in action) {
       if (typeof action.recipient === 'object') {
@@ -168,7 +160,6 @@ export class ActivityModel {
 
   static normalizeTronEvent(event: TronEvent, eventIndex: number) {
     return {
-      source: ActivitySource.Tron,
       event_id: event.txHash + eventIndex,
       timestamp: event.timestamp / 1000,
       in_progress: event.inProgress,

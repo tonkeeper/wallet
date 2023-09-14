@@ -1,2 +1,2 @@
 export * from './ActivityModel';
-export * from './ActivityTypes';
+export * from './ActivityModelTypes';
