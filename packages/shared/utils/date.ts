@@ -38,8 +38,11 @@ export const isThisMonth = (date: Date) => {
   return differenceInCalendarMonths(new Date(), date) < 1;
 };
 
-export function getDateForGroupTansactions(timestamp: number) {
-  const ts = new Date(timestamp * 1000);
+export function getDateForGroupTansactions(
+  timestamp: number,
+  skipNormalizeTimestemp?: boolean,
+) {
+  const ts = new Date(timestamp * (skipNormalizeTimestemp ? 1 : 1000));
   const now = new Date();
 
   if (differenceInCalendarMonths(now, ts) < 1) {
@@ -49,7 +52,8 @@ export function getDateForGroupTansactions(timestamp: number) {
   return formatDate(ts, 'LLLL yyyy');
 }
 
-export function formatTransactionsGroupDate(date: Date) {
+export function formatTransactionsGroupDate(timestamp: number) {
+  const date = new Date(timestamp);
   if (isToday(date)) {
     return t('today');
   } else if (isYesterday(date)) {
@@ -69,7 +73,7 @@ export function formatTransactionTime(date: Date) {
   const shortMonth = formatDate(date, 'MMM').replace('.', '') + ',';
   const month = i18n.locale === 'en' ? capitalizeFirstLetter(shortMonth) : shortMonth;
   const time = formatDate(date, 'HH:mm');
-  const day = formatDate(date, 'dd');
+  const day = formatDate(date, 'd');
 
   if (isThisMonth(date)) {
     return time;
@@ -82,7 +86,7 @@ export function formatTransactionDetailsTime(date: Date) {
   const shortMonth = formatDate(date, 'MMM').replace('.', '') + ',';
   const month = i18n.locale === 'en' ? capitalizeFirstLetter(shortMonth) : shortMonth;
   const time = formatDate(date, 'HH:mm');
-  const day = formatDate(date, 'dd');
+  const day = formatDate(date, 'd');
   const year = formatDate(date, 'yyyy');
 
   if (isThisYear(date)) {

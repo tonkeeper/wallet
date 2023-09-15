@@ -32,6 +32,7 @@ export interface SendRecipient {
   name?: string;
   domain?: string;
   address: string;
+  blockchain: 'ton' | 'tron'
 }
 
 export interface SendAmount {

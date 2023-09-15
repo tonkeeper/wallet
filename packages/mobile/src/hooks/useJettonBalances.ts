@@ -3,7 +3,7 @@ import { JettonBalanceModel, JettonVerification } from '$store/models';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { walletWalletSelector } from '$store/wallet';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
 
@@ -27,7 +27,7 @@ export const useJettonBalances = (withZeroBalances?: boolean) => {
     };
 
     jettonBalances.forEach((jetton) => {
-      const jettonAddress = Address(jetton.jettonAddress).toRaw();
+      const jettonAddress = Address.parse(jetton.jettonAddress).toRaw();
       const approvalStatus = approvalStatuses.tokens[jettonAddress];
       const isWhitelisted = jetton.verification === JettonVerification.WHITELIST;
       const isBlacklisted = jetton.verification === JettonVerification.BLACKLIST;
@@ -54,8 +54,8 @@ export const useJettonBalances = (withZeroBalances?: boolean) => {
     if (sortedJettons) {
       balances.enabled = balances.enabled.sort(
         (a, b) =>
-          sortedJettons.indexOf(Address(a.jettonAddress).toRaw()) -
-          sortedJettons.indexOf(Address(b.jettonAddress).toRaw()),
+          sortedJettons.indexOf(Address.parse(a.jettonAddress).toRaw()) -
+          sortedJettons.indexOf(Address.parse(b.jettonAddress).toRaw()),
       );
     }
 

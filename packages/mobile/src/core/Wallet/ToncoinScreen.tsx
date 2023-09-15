@@ -16,21 +16,21 @@ import { formatter } from '$utils/formatter';
 import { Toast } from '$store';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { TonIcon } from '../../components/TonIcon';
+import { TonIcon } from '@tonkeeper/uikit';
 import { Icon, IconNames, Screen } from '@tonkeeper/uikit';
 
-import { TransactionsList } from '@tonkeeper/shared/components';
-import { useTonTransactions } from '@tonkeeper/shared/query/hooks/useTonTransactions';
+import { ActivityList } from '@tonkeeper/shared/components';
+import { useTonActivityList } from '@tonkeeper/shared/query/hooks/useTonActivityList';
 import { useWallet } from '../../tabs/useWallet';
 
 export const ToncoinScreen = memo(() => {
-  const transactions = useTonTransactions();
+  const activityList = useTonActivityList();
   const wallet = useWallet();
 
   const handleOpenExplorer = useCallback(async () => {
     await delay(200);
     openDAppBrowser(getServerConfig('accountExplorer').replace('%s', wallet.address.raw));
-  }, [wallet.address.raw]);
+  }, [wallet.address.ton.raw]);
 
   // Temp hack for slow navigation
   const [render, setRender] = useState(false);
@@ -65,14 +65,14 @@ export const ToncoinScreen = memo(() => {
           </PopupMenu>
         }
       />
-      <TransactionsList
+      <ActivityList
         ListHeaderComponent={<HeaderList />}
-        fetchMoreEnd={transactions.fetchMoreEnd}
-        onFetchMore={transactions.fetchMore}
-        refreshing={transactions.refreshing}
-        onRefresh={transactions.refresh}
-        loading={transactions.loading}
-        events={transactions.data}
+        onLoadMore={activityList.loadMore}
+        onReload={activityList.reload}
+        isReloading={activityList.isReloading}
+        isLoading={activityList.isLoading}
+        sections={activityList.sections}
+        hasMore={activityList.hasMore}
         safeArea
       />
     </Screen>
@@ -135,7 +135,7 @@ const HeaderList = memo(() => {
   useEffect(() => {
     if (wallet && wallet.ton.isLockup()) {
       wallet.ton
-        .getWalletInfo(walletAddr.address.friendly)
+        .getWalletInfo(walletAddr.address.ton.friendly)
         .then((info: any) => {
           setLockupDeploy(
             ['empty', 'uninit', 'nonexist'].includes(info.status) ? 'deploy' : 'deployed',

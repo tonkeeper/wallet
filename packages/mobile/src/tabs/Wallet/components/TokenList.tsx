@@ -6,7 +6,7 @@ import { Steezy } from '$styles';
 import { t } from '@tonkeeper/shared/i18n';
 import { Button, View } from '$uikit';
 import { List } from '$uikit';
-import { TonIcon } from '../../../components/TonIcon';
+import { TonIcon } from '@tonkeeper/uikit';
 import { memo, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { ListItemRate } from './ListItemRate';

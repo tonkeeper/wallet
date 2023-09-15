@@ -16,7 +16,7 @@ export const useTokenApprovalStore = create(
       actions: {
         removeTokenStatus: (address: string) => {
           const { tokens } = getState();
-          const rawAddress = Address(address).toRaw();
+          const rawAddress = Address.parse(address).toRaw();
           if (tokens[rawAddress]) {
             delete tokens[rawAddress];
             set({ tokens });
@@ -31,7 +31,7 @@ export const useTokenApprovalStore = create(
           type: TokenApprovalType,
         ) => {
           const { tokens } = getState();
-          const rawAddress = Address(address).toRaw();
+          const rawAddress = Address.parse(address).toRaw();
           const token = { ...tokens[rawAddress] };
 
           if (token) {
@@ -67,7 +67,7 @@ export const useTokenApprovalStore = create(
           return newState;
         }
         newState.tokens = Object.entries(newState.tokens).reduce((acc, [key, value]) => {
-          const newKey = Address(key).toRaw();
+          const newKey = Address.parse(key).toRaw();
           acc[newKey] = value;
           return acc;
         }, {});

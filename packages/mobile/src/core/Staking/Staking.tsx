@@ -18,8 +18,8 @@ import { jettonsBalancesSelector } from '$store/jettons';
 import { useSelector } from 'react-redux';
 import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
-import { Address } from '@tonkeeper/core';
-import { PoolInfoImplementationEnum } from '@tonkeeper/core/src/TonAPI';
+import { Address } from '@tonkeeper/shared/Address';
+import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 import { walletSelector } from '$store/wallet';
 import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { Flash } from '@tonkeeper/uikit';
@@ -45,7 +45,7 @@ export const Staking: FC<Props> = () => {
   const poolsList = useMemo(() => {
     return pools.map((pool) => {
       const stakingJetton = jettonBalances.find(
-        (item) => Address(item.jettonAddress).toRaw() === pool.liquid_jetton_master,
+        (item) => Address.parse(item.jettonAddress).toRaw() === pool.liquid_jetton_master,
       );
 
       const balance = stakingJetton
@@ -101,7 +101,7 @@ export const Staking: FC<Props> = () => {
 
       if (providerPools.length === providerActivePools.length) {
         activeList.push(provider);
-      } else if (provider.id === PoolInfoImplementationEnum.LiquidTF) {
+      } else if (provider.id === PoolImplementationType.LiquidTF) {
         recommendedList.push(provider);
       } else {
         otherList.push(provider);

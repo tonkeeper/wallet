@@ -1,22 +1,24 @@
 import EventSource, { EventType } from 'react-native-sse';
 import { QueryClient } from 'react-query';
-import { Address } from './Address';
-import { Wallet } from './Wallet';
+import { Wallet, WalletNetwork } from './Wallet';
 import { TonAPI } from './TonAPI';
 import { Vault } from './Vault';
+import { TronAPI } from './TronAPI';
+import { Address } from './formatters/Address';
+import { createTronOwnerAddress } from './utils/tronUtils';
 
 export type ServerSentEventsOptions = {
   baseUrl: () => string;
   token: () => string;
 };
 
-export type SSEListener = EventSource<EventType>;
-export declare class SSEManager {
+export type EventSourceListener = EventSource<EventType>;
+export declare class ServerSentEvents {
   constructor(options: ServerSentEventsOptions);
-  listen(url: string): SSEListener;
+  listen(url: string): EventSourceListener;
 }
 
-interface IStorage {
+export interface IStorage {
   setItem(key: string, value: string): Promise<any>;
   getItem(key: string): Promise<any>;
   set(key: string, value: any): Promise<void>;
@@ -28,8 +30,9 @@ class PermissionsManager {
 }
 
 type TonkeeperOptions = {
-  sse: SSEManager;
+  sse: ServerSentEvents;
   queryClient: QueryClient;
+  tronapi: TronAPI;
   storage: IStorage;
   tonapi: TonAPI;
   vault: Vault;
@@ -52,15 +55,17 @@ export class Tonkeeper {
     locked: false,
   };
 
-  private sse: SSEManager;
+  private sse: ServerSentEvents;
   private queryClient: QueryClient;
   private storage: IStorage;
   private vault: Vault;
+  private tronapi: TronAPI;
   private tonapi: TonAPI;
 
   constructor(options: TonkeeperOptions) {
     this.queryClient = options.queryClient;
     this.storage = options.storage;
+    this.tronapi = options.tronapi;
     this.tonapi = options.tonapi;
     this.vault = options.vault;
     this.sse = options.sse;
@@ -68,14 +73,28 @@ export class Tonkeeper {
     this.permissions = new PermissionsManager();
   }
 
-  public async init(address: string) {
+
+
+  // TODO: for temp, rewrite it when ton wallet will it be moved here;
+  // init() must be called when app starts
+  public async init(address: string, isTestnet: boolean, tronAddress: string) {
     try {
       this.destroy();
       if (address) {
         if (Address.isValid(address)) {
-          this.wallet = new Wallet(this.queryClient, this.tonapi, this.vault, this.sse, {
-            address: address,
-          });
+          this.wallet = new Wallet(
+            this.queryClient,
+            this.tonapi,
+            this.tronapi,
+            this.vault,
+            this.sse,
+            this.storage,
+            {
+              network: isTestnet ? WalletNetwork.testnet : WalletNetwork.mainnet,
+              tronAddress: tronAddress,
+              address: address,
+            },
+          );
 
           this.prefetch();
         }
@@ -100,24 +119,58 @@ export class Tonkeeper {
     // }
   }
 
-  // Load cache data for start app, 
+  public tronStrorageKey = 'temp-tron-address';
+
+  public async load() {
+    try {
+      const tronAddress = await this.storage.getItem(this.tronStrorageKey);
+      if (tronAddress) {
+        return { tronAddress: JSON.parse(tronAddress) };
+      }
+      return { tronAddress: null };
+    } catch (err) {
+      console.error('[tk:load]', err);
+      return { tronAddress: null };
+    }
+  }
+
+  public async generateTronAddress(tonPrivateKey: Uint8Array) {
+    try {
+      const ownerAddress = await createTronOwnerAddress(tonPrivateKey);
+      const tronWallet = await this.tronapi.wallet.getWallet(ownerAddress);
+
+      const tronAddress = {
+        proxy: tronWallet.address,
+        owner: ownerAddress,
+      };
+
+      await this.storage.setItem(
+        this.tronStrorageKey,
+        JSON.stringify(tronAddress),
+      );
+
+      return tronAddress;
+    } catch (err) {
+      console.error('[Tonkeeper]', err);
+    }
+  }
+
+  // Load cache data for start app,
   // Invoke on start app and block ui on spalsh screen
   private async preload() {
     await this.wallet.subscriptions.preload();
-    await this.wallet.transactions.preload();
-    await this.wallet.balance.preload();
-    await this.wallet.jettons.preload();
+    await this.wallet.activityList.preload();
+    await this.wallet.balances.preload();
     await this.wallet.nfts.preload();
     return true;
   }
 
-  // Update all data, 
+  // Update all data,
   // Invoke in background after hide splash screen
   private prefetch() {
     this.wallet.subscriptions.prefetch();
-    this.wallet.transactions.prefetch();
-    this.wallet.balance.prefetch();
-    this.wallet.jettons.prefetch();
+    this.wallet.activityList.prefetch();
+    this.wallet.balances.prefetch();
     this.wallet.nfts.prefetch();
   }
 
@@ -162,6 +215,7 @@ export class Tonkeeper {
 
   public destroy() {
     this.wallet?.destroy();
+    this.queryClient.clear();
     this.wallet = null!;
   }
 }

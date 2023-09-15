@@ -20,7 +20,7 @@ import { HideableAmountProvider } from '$core/HideableAmount/HideableAmountProvi
 import { BackgroundBlur } from '$core/BackgroundBlur/BackgroundBlur';
 
 import { TonAPIProvider, WalletProvider } from '@tonkeeper/core';
-import { tonapi } from '@tonkeeper/shared/tonapi';
+import { tonapi } from '@tonkeeper/shared/tonkeeper';
 
 import { MobilePasscodeScreen } from '@tonkeeper/shared/screens/MobilePasscodeScreen';
 import { queryClient } from '@tonkeeper/shared/queryClient';

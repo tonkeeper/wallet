@@ -24,7 +24,7 @@ export async function createTonProof({
   domain,
 }: TonProofArgs) {
   try {
-    const address = Address(_addr).toRaw();
+    const address = Address.parse(_addr).toRaw();
     const connectApi = new ConnectApi(
       new Configuration({
         basePath: getServerConfigSafe('tonapiV2Endpoint'),

@@ -1,1 +1,1 @@
-export * from './useWalletTransactions';
+export * from './useActivityList';

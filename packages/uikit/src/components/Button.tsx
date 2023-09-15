@@ -23,6 +23,7 @@ export interface ButtonProps {
   color?: ButtonColors;
   title?: string;
   children?: React.ReactNode;
+  leftContent?: React.ReactNode;
   onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
@@ -47,6 +48,7 @@ export const Button = memo<ButtonProps>((props) => {
     stretch,
     icon,
     indentBottom,
+    leftContent,
     children,
     indentTop,
     indent,
@@ -99,11 +101,12 @@ export const Button = memo<ButtonProps>((props) => {
         ) : !!children ? (
           <View style={styles.content}>{children}</View>
         ) : (
-          <>
+          <View style={styles.content}>
+            {!!leftContent && <View style={styles.leftContent}>{leftContent}</View>}
             <Text
               numberOfLines={1}
               ellipsizeMode="tail"
-              style={[titleStyle, icon && styles.titleWithIcon]}
+              style={titleStyle}
               type={textType}
             >
               {title}
@@ -113,7 +116,7 @@ export const Button = memo<ButtonProps>((props) => {
                 <Icon name={icon} color="iconTertiary" />
               </View>
             )}
-          </>
+          </View>
         )}
       </Pressable>
     </View>
@@ -170,6 +173,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  leftContent: {
+    marginRight: 8,
   },
 });
 

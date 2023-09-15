@@ -1,5 +1,5 @@
 export { TonAPI, useTonAPI, TonAPIProvider } from './TonAPI';
-export * from './Address';
+export * from './formatters/Address';
 
 export * from './utils/AmountFormatter/FiatCurrencyConfig';
 export * from './utils/AmountFormatter';
@@ -10,5 +10,9 @@ export * from './useWallet';
 export * from './Tonkeeper';
 
 export * from './Vault';
-// export * from './legacy';
 export * from './service';
+export * from './TronAPI';
+
+export * from './models/ActivityModel/ActivityModelTypes';
+
+export * from './utils/State';

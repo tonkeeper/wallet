@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { CryptoCurrency, Decimals } from '$shared/constants';
+import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { formatAmount } from '$utils';
 import { useTokenPrice } from './useTokenPrice';
 
@@ -17,7 +17,10 @@ export function useFiatValue(
     return formatAmount(value, amountDecimals);
   }, [value, amountDecimals]);
 
-  const tokenPrice = useTokenPrice(currency, amount);
+  const tokenPrice = useTokenPrice(
+    currency === CryptoCurrencies.Usdt ? 'USDT' : currency,
+    amount,
+  );
 
   return {
     symbol,

@@ -16,6 +16,7 @@ import { useTabCtx } from './TabsContainer';
 import funny from '$assets/funny.json';
 import { Haptics, ns } from '$utils';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
+import { useTabPress } from '@tonkeeper/router';
 
 interface TabsPagerViewProps {
   initialPage?: number;
@@ -42,10 +43,16 @@ function usePageScrollHandler(handlers: any, dependencies?: any) {
 }
 
 export const TabsPagerView: React.FC<TabsPagerViewProps> = (props) => {
-  const { setPageFN, pageOffset, setNativeActiveIndex } = useTabCtx();
+  const { setPageFN, pageOffset, setNativeActiveIndex, scrollY } = useTabCtx();
   const refPagerView = useRef<PagerView>(null);
   const tabBarHeight = useBottomTabBarHeight();
   const numOfTabs = useMemo(() => React.Children.count(props.children), [props.children]);
+
+  useTabPress(() => {
+    if (scrollY.value === 0 && pageOffset.value !== 0) {
+      refPagerView.current?.setPage(0);
+    }
+  });
 
   React.useEffect(() => {
     const setPage = (index: number) => {

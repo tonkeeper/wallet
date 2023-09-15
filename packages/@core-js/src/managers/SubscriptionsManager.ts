@@ -5,14 +5,14 @@ export class SubscriptionsManager {
   constructor(private ctx: WalletContext) {}
 
   public get cacheKey() {
-    return ['subscriptions', this.ctx.accountId];
+    return ['subscriptions', this.ctx.address.ton.raw];
   }
 
   public async fetch() {
     const { data: subscriptions } = await network.get<Subscriptions>(
       `https://api.tonkeeper.com/v1/subscriptions`,
       {
-        params: { address: this.ctx.accountId },
+        params: { address: this.ctx.address.ton.raw },
       },
     );
 
@@ -46,7 +46,6 @@ export class SubscriptionsManager {
       queryFn: () => this.fetch(),
       queryKey: this.cacheKey,
       staleTime: Infinity,
-      cacheTime: Infinity,
     });
   }
 

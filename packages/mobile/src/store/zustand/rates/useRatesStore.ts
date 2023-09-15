@@ -31,13 +31,14 @@ export const useRatesStore = create(
       actions: {
         fetchRates: async () => {
           const tokens = [
+            'USDT',
             'ton',
             ...(store.getState().jettons as JettonsState).jettonBalances.map(
               (jetton) => jetton.jettonAddress,
             ),
           ].join(',');
 
-          const currencies = ['ton', ...Object.keys(FiatCurrencies)]
+          const currencies = ['ton', 'USDT', ...Object.keys(FiatCurrencies)]
             .map((currency) => currency.toLowerCase())
             .join(',');
 
@@ -45,7 +46,6 @@ export const useRatesStore = create(
             const response = await getRatesApi().getRates({ tokens, currencies });
 
             const rates = response.rates as TRates;
-
             // rates['EQAiQ2XK7BXePLwemeo-u4wNyjg-wxGeySmaFGEP7R2MhUWs'] = {
             //   prices: {
             //     ...Object.keys(rates.TON.prices).reduce((result, key) => {

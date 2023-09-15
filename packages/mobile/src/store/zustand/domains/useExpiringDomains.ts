@@ -4,7 +4,7 @@ import { ExpiringDomains } from './types';
 import { Tonapi } from '$libs/Tonapi';
 import { useEffect } from 'react';
 import { useWallet } from '../../../tabs/Wallet/hooks/useWallet';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
 
 const initialState: Omit<ExpiringDomains, 'actions'> = {
   domains: {},
@@ -33,7 +33,7 @@ export const useExpiringDomains = create(
       },
       remove: (address) => {
         set(({ domains }) => {
-          const rawAddress = Address(address).toRaw();
+          const rawAddress = Address.parse(address).toRaw();
           const { [rawAddress]: remove, ...rest } = domains;
           return { domains: rest };
         });

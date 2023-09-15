@@ -11,14 +11,14 @@ import { useSelector } from 'react-redux';
 import { jettonsBalancesSelector } from '$store/jettons';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { t } from '@tonkeeper/shared/i18n';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
 import { TagType } from '$uikit/Tag';
 import { useStakingStore } from '$store';
 import { shallow } from 'zustand/shallow';
 import {
   AccountStakingInfo,
   PoolInfo,
-  PoolInfoImplementationEnum,
+  PoolImplementationType,
 } from '@tonkeeper/core/src/TonAPI';
 
 export interface PoolDetailsItem {
@@ -39,11 +39,11 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
 
   const stakingJetton = useMemo(() => {
     if (
-      pool.implementation === PoolInfoImplementationEnum.LiquidTF &&
+      pool.implementation === PoolImplementationType.LiquidTF &&
       pool.liquid_jetton_master
     ) {
       const jetton = jettonBalances.find(
-        (item) => Address(item.jettonAddress).toRaw() === pool.liquid_jetton_master,
+        (item) => Address.parse(item.jettonAddress).toRaw() === pool.liquid_jetton_master,
       );
 
       return jetton;
@@ -109,7 +109,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
     nav.push(AppStackRouteNames.StakingSend, {
       poolAddress: pool.address,
       transactionType:
-        pool.implementation === PoolInfoImplementationEnum.Tf
+        pool.implementation === PoolImplementationType.Tf
           ? StakingTransactionType.WITHDRAWAL_CONFIRM
           : StakingTransactionType.WITHDRAWAL,
     });

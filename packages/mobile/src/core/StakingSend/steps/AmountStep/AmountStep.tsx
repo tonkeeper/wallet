@@ -25,7 +25,7 @@ import { StakingSendSteps } from '$core/StakingSend/types';
 import { Ton } from '$libs/Ton';
 import { stakingFormatter } from '$utils/formatter';
 import { t } from '@tonkeeper/shared/i18n';
-import { PoolInfo, PoolInfoImplementationEnum } from '@tonkeeper/core/src/TonAPI';
+import { PoolInfo, PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 
 interface Props extends StepComponentProps {
   pool: PoolInfo;
@@ -70,7 +70,7 @@ const AmountStepComponent: FC<Props> = (props) => {
   const minAmount = isWithdrawal ? '0' : Ton.fromNano(pool.min_stake);
 
   const balance =
-    isWithdrawal && pool.implementation !== PoolInfoImplementationEnum.LiquidTF
+    isWithdrawal && pool.implementation !== PoolImplementationType.LiquidTF
       ? stakingBalance
       : walletBalance;
 

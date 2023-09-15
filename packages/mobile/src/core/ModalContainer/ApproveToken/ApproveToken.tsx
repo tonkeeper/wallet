@@ -190,7 +190,7 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
             <List.Item
               onPress={handleCopyAddress}
               title={translateWithPrefix('id')}
-              subtitle={Address(props.tokenAddress).toShort(6)}
+              subtitle={Address.parse(props.tokenAddress).toShort(6)}
               value={
                 <View style={styles.copyIconContainer}>
                   <Icon name={'ic-copy-16'} />

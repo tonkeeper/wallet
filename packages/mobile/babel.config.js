@@ -1,6 +1,9 @@
 const isProd = process.env.NODE_ENV === 'production';
 
 const plugins = [
+  ['@babel/plugin-transform-flow-strip-types'],
+  ['@babel/plugin-transform-private-methods', { loose: true }],
+
   ['@babel/plugin-proposal-decorators', { legacy: true }],
   [
     'module-resolver',

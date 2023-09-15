@@ -4,7 +4,11 @@ import { Icon } from './Icon';
 import { View } from './View';
 import { ViewStyle } from 'react-native';
 
-type TonIconSizes = 'small' | 'medium' | 'large';
+// TODO: move me to packages/uikit
+import { TonDiamondIcon } from '@tonkeeper/mobile/src/uikit/TonDiamondIcon/TonDiamondIcon';
+import { useDiamondIcon } from '@tonkeeper/mobile/src/hooks/useDiamondIcon';
+
+type TonIconSizes = 'small' | 'medium' | 'large' | 'xmedium';
 
 export interface TonIconProps {
   size?: TonIconSizes;
@@ -14,25 +18,19 @@ export interface TonIconProps {
   style?: StyleProp<ViewStyle>;
 }
 
-const iconSizes: { [key in TonIconSizes]: number } = {
-  medium: 40,
-  small: 28,
-  large: 56,
-};
-
 const containerSizes: { [key in TonIconSizes]: number } = {
+  xmedium: 56,
   medium: 64,
   small: 44,
   large: 96,
 };
 
 export const TonIcon = memo<TonIconProps>((props) => {
-  const { size = 'small', transparent, locked, style } = props;
+  const { size = 'small', transparent, showDiamond, locked, style } = props;
 
-  const isTransparent = transparent; // ?? shouldShowCustomTonIcon;
+  const { hasDiamond, accentTonIcon, accent } = useDiamondIcon();
+  const isTransparent = transparent ?? (showDiamond && hasDiamond) as boolean;
   const containerSize = containerSizes[size];
-  const iconSize = iconSizes[size];
-  const sizeNum = iconSizes[size];
 
   const sizeStyle = useMemo(
     () => ({
@@ -47,10 +45,14 @@ export const TonIcon = memo<TonIconProps>((props) => {
     () => [styles.container, isTransparent && styles.backgroundTransparent, sizeStyle, style],
     [isTransparent, sizeStyle, style],
   );
-
+  
   return (
     <View style={containerStyle}>
-      <Icon name="ic-ton-28" size={iconSize} color="constantWhite" />
+      {showDiamond && hasDiamond ? (
+        <TonDiamondIcon id={accent} size={containerSize} nftIcon={accentTonIcon} />
+      ) : (
+        <Icon name="ic-ton-96" color="constantWhite" size={containerSize} />
+      )}
       {locked && (
         <View style={styles.locked}>
           <Icon name="ic-lock-12" color="iconSecondary" />
@@ -62,7 +64,7 @@ export const TonIcon = memo<TonIconProps>((props) => {
 
 const styles = Steezy.create(({ colors }) => ({
   container: {
-    backgroundColor: '#0088CC',
+    backgroundColor: '#0098EA',
     justifyContent: 'center',
     alignItems: 'center',
   },

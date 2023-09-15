@@ -1,6 +1,6 @@
-import { NFTModel, TonDiamondMetadata } from '$store/models';
+import { CustomNftItem } from '@tonkeeper/core/src/TonAPI/CustomNftItems';
 
 export interface TonDiamondFeatureProps {
-  nft: NFTModel<TonDiamondMetadata>;
+  nft: CustomNftItem;
   description?: string;
 }

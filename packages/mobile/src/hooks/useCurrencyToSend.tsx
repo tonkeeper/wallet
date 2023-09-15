@@ -8,16 +8,20 @@ import { jettonsSelector } from '$store/jettons';
 import { JettonBalanceModel } from '$store/models';
 import { useStakingStore } from '$store';
 import { shallow } from 'zustand/shallow';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
+import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
+import { formatter } from '@tonkeeper/shared/formatter';
 import { useGetTokenPrice } from './useTokenPrice';
 
 export function useCurrencyToSend(
   currency: CryptoCurrency | string,
   isJetton?: boolean,
   logoSize: number = 32,
+  isUSDT?: boolean,
 ) {
   const { balances } = useSelector(walletSelector);
   const { jettonBalances } = useSelector(jettonsSelector);
+  const tronBalances = useTronBalances();
 
   const stakingPools = useStakingStore((s) => s.pools, shallow);
 
@@ -32,15 +36,19 @@ export function useCurrencyToSend(
     () =>
       jetton
         ? stakingPools.find(
-            (pool) => pool.liquid_jetton_master === Address(jetton.jettonAddress).toRaw(),
+            (pool) => pool.liquid_jetton_master === Address.parse(jetton.jettonAddress).toRaw(),
           )
         : undefined,
     [jetton, stakingPools],
   );
 
   const decimals = useMemo(() => {
+    if (isUSDT) {
+      return;
+    }
+
     return isJetton ? jetton?.metadata?.decimals || 0 : Decimals[currency];
-  }, [currency, isJetton, jetton]);
+  }, [currency, isJetton, jetton, isUSDT]);
 
   const Logo = useMemo(
     () => (
@@ -81,6 +89,26 @@ export function useCurrencyToSend(
         Logo,
         jettonWalletAddress: jetton?.walletAddress,
         isLiquidJetton: false,
+      };
+    } else if (isUSDT) {
+      const usdt = tronBalances.data?.[0];
+
+      console.log(usdt);
+      return {
+        trcToken: usdt!.token.address,
+        decimals: usdt!.token.decimals ?? 6,
+        balance: formatter.fromNano(usdt!.weiAmount, usdt!.token.decimals),
+        currencyTitle: usdt!.token.symbol,
+        jettonWalletAddress: undefined,
+        isLiquidJetton: false,
+        Logo: (
+          <CurrencyIcon
+            isJetton={false}
+            uri={usdt!.token.image}
+            currency={CryptoCurrencies.Usdt}
+            size={logoSize}
+          />
+        ),
       };
     } else {
       return {

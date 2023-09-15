@@ -38,7 +38,7 @@ export const Details: React.FC<DetailsProps> = ({
 
     result.push({
       label: t('nft_owner_address'),
-      value: Address.toShort(ownerAddress),
+      value: ownerAddress ? Address.parse(ownerAddress).toShort() : '...',
       copyableValue: ownerAddress,
     });
 
@@ -51,7 +51,7 @@ export const Details: React.FC<DetailsProps> = ({
 
     result.push({
       label: t('nft_contract_address'),
-      value: Address.toShort(contractAddress),
+      value: Address.parse(contractAddress).toShort(),
       copyableValue: contractAddress,
     });
 

@@ -41,6 +41,10 @@ import { Events } from '$store/models';
 import { trackEvent } from '$utils/stats';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
+import { tk } from '@tonkeeper/shared/tonkeeper';
+import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
+import { useValueRef } from '@tonkeeper/uikit';
+import { RequestData } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
 import BigNumber from 'bignumber.js';
 
 export const Send: FC<SendProps> = ({ route }) => {
@@ -55,8 +59,9 @@ export const Send: FC<SendProps> = ({ route }) => {
     from,
   } = route.params;
 
-  const initialAddress =
-    propsAddress && Address.isValid(propsAddress) ? propsAddress : null;
+  const initialAddress = propsAddress && Address.isValid(propsAddress) ? propsAddress : null;
+
+  const trcPayload = useValueRef<RequestData | null>(null);
 
   const initialStepId = useMemo(() => {
     if (initialAmount !== '0' && initialFee !== '0') {
@@ -77,13 +82,14 @@ export const Send: FC<SendProps> = ({ route }) => {
     return new AccountsApi(tonApiConfiguration);
   });
 
-  const [{ currency, isJetton }, setCurrency] = useState({
+  const [{ currency, isJetton, isUSDT }, setCurrency] = useState({
     currency: initialCurrency || CryptoCurrencies.Ton,
     isJetton: !!initialIsJetton,
+    isUSDT: false,
   });
 
   const [recipient, setRecipient] = useState<SendRecipient | null>(
-    initialAddress ? { address: initialAddress } : null,
+    initialAddress ? { address: initialAddress, blockchain: 'ton' } : null,
   );
   const [recipientAccountInfo, setRecipientAccountInfo] =
     useState<AccountWithPubKey | null>(null);
@@ -106,8 +112,8 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   const [isInactive, setInactive] = useState(initialIsInactive);
 
-  const { balance, currencyTitle, decimals, jettonWalletAddress, price, isLiquidJetton } =
-    useCurrencyToSend(currency, isJetton);
+  const { balance, currencyTitle, decimals, jettonWalletAddress, price, isLiquidJetton, trcToken } =
+    useCurrencyToSend(currency, isJetton, undefined, isUSDT);
 
   const tokenPrice = useTokenPrice(isLiquidJetton ? CryptoCurrencies.Ton : currency);
 
@@ -149,11 +155,19 @@ export const Send: FC<SendProps> = ({ route }) => {
         value: '0',
         all: false,
       });
-      setCurrency({ currency: nextCurrency, isJetton: !!nextIsJetton });
+      setCurrency({ currency: nextCurrency, isJetton: !!nextIsJetton, isUSDT: false });
     },
     [],
   );
 
+  const changeBlockchain = useCallback((nextCurrency: CryptoCurrency | string) => {
+    setAmount({
+      value: '0',
+      all: false,
+    });
+    setCurrency({ currency: nextCurrency, isJetton: false, isUSDT: true });
+  }, []);
+  
   const parsedAmount = useMemo(() => {
     const parsed = parseLocaleNumber(amount.value);
 
@@ -180,8 +194,9 @@ export const Send: FC<SendProps> = ({ route }) => {
 
     setPreparing(true);
 
-    dispatch(
-      walletActions.confirmSendCoins({
+    if (recipient.blockchain === 'ton') {
+      dispatch(
+        walletActions.confirmSendCoins({
         currency: currency as CryptoCurrency,
         amount: parsedAmount,
         address: recipient.address,
@@ -195,10 +210,24 @@ export const Send: FC<SendProps> = ({ route }) => {
           setFee(details.fee);
           setInactive(details.isInactive);
 
-          stepViewRef.current?.go(SendSteps.CONFIRM);
-        },
-      }),
-    );
+            stepViewRef.current?.go(SendSteps.CONFIRM);
+          },
+        }),
+      );
+    } else if (recipient.blockchain === 'tron') {
+      stepViewRef.current?.go(SendSteps.CONFIRM);
+
+      const payload = await tk.wallet.tronService.estimate({
+        to: recipient.address,
+        amount: amount.value,
+        tokenAddress: trcToken!,
+      });
+
+      trcPayload.setValue(payload.request);
+
+      setFee(formatter.fromNano(payload.request.fee, 6));
+      setPreparing(false);
+    }
   }, [
     comment,
     currency,
@@ -209,39 +238,53 @@ export const Send: FC<SendProps> = ({ route }) => {
     jettonWalletAddress,
     parsedAmount,
     recipient,
+    trcToken,
   ]);
 
+  const unlock = useUnlockVault();
   const doSend = useCallback(
-    (onDone: () => void, onFail: (e?: Error) => void) => {
+    async (onDone: () => void, onFail: (e?: Error) => void) => {
       if (!recipient) {
         return onFail(new DismissedActionError());
       }
 
       setSending(true);
 
-      dispatch(
-        walletActions.sendCoins({
-          currency: currency as CryptoCurrency,
-          amount: parsedAmount,
-          isSendAll: amount.all,
-          address: recipient.address,
-          comment,
-          isCommentEncrypted,
-          isJetton,
-          jettonWalletAddress,
-          decimals,
-          onDone: () => {
-            trackEvent(Events.SendSuccess, { from });
-            dispatch(favoritesActions.restoreHiddenAddress(recipient.address));
-            setSending(false);
-            onDone();
-          },
-          onFail: () => {
-            setSending(false);
-            onFail(new DismissedActionError());
-          },
-        }),
-      );
+      if (recipient.blockchain === 'ton') {
+        dispatch(
+          walletActions.sendCoins({
+            currency: currency as CryptoCurrency,
+            amount: parsedAmount,
+            isSendAll: amount.all,
+            address: recipient.address,
+            comment,
+            isCommentEncrypted,
+            isJetton,
+            jettonWalletAddress,
+            decimals,
+            onDone: () => {
+              trackEvent(Events.SendSuccess, { from });
+              dispatch(favoritesActions.restoreHiddenAddress(recipient.address));
+              setSending(false);
+              onDone();
+            },
+            onFail: () => {
+              setSending(false);
+              onFail(new DismissedActionError());
+            },
+          }),
+        );
+      } else if (recipient.blockchain === 'tron' && trcPayload.value) {
+        const unloked = await unlock();
+        const privateKey = await unloked.getTonPrivateKey();
+        const send = await tk.wallet.tronService.send(privateKey, trcPayload.value);
+        console.log(send)
+
+        setSending(false);
+        onDone();
+      } else if (recipient.blockchain === 'tron' && !trcPayload.value) {
+        onFail(new Error('Error Tron Estimate'));
+      }
     },
     [
       amount.all,
@@ -362,6 +405,7 @@ export const Send: FC<SendProps> = ({ route }) => {
               recipient={recipient}
               decimals={decimals}
               stepsScrollTop={stepsScrollTop}
+              changeBlockchain={changeBlockchain}
               setRecipient={setRecipient}
               setRecipientAccountInfo={setRecipientAccountInfo}
               recipientAccountInfo={recipientAccountInfo}

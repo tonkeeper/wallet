@@ -10,8 +10,6 @@ import { Text } from '$uikit';
 import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 
 export const TonDiamondFeature: React.FC<TonDiamondFeatureProps> = ({ nft }) => {
-  
-
   const accent = AppearanceAccents[getAccentIdByDiamondsNFT(nft)];
 
   const handleAppearancePress = useCallback(

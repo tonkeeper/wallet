@@ -44,7 +44,7 @@ import { formatter } from '$utils/formatter';
 import { Toast } from '$store';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { TonIcon } from '../../components/TonIcon';
+import { TonIcon } from '@tonkeeper/uikit';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import _ from 'lodash';
 import { navigate } from '$navigation/imperative';

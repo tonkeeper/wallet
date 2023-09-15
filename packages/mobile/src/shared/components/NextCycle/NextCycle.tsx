@@ -5,7 +5,7 @@ import * as S from './NextCycle.style';
 import { LayoutChangeEvent } from 'react-native';
 import { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { t } from '@tonkeeper/shared/i18n';
-import { PoolInfo, PoolInfoImplementationEnum } from '@tonkeeper/core/src/TonAPI';
+import { PoolInfo, PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 
 interface Props {
   pool: PoolInfo;
@@ -36,7 +36,7 @@ const NextCycleComponent: FC<Props> = (props) => {
     width: interpolate(progress.value, [0, 1], [0, containerWidth.value]),
   }));
 
-  if (isCooldown && implementation !== PoolInfoImplementationEnum.LiquidTF) {
+  if (isCooldown && implementation !== PoolImplementationType.LiquidTF) {
     return (
       <S.Container>
         <S.Row>
@@ -77,7 +77,7 @@ const NextCycleComponent: FC<Props> = (props) => {
       </S.Row>
       {!reward ? (
         <Text variant="body2" color="foregroundSecondary">
-          {implementation === PoolInfoImplementationEnum.LiquidTF
+          {implementation === PoolImplementationType.LiquidTF
             ? t('staking.details.next_cycle.desc_liquid')
             : t('staking.details.next_cycle.desc')}
         </Text>
