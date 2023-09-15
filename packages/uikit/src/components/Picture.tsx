@@ -1,7 +1,7 @@
 import FastImage, { FastImageProps } from 'react-native-fast-image';
 import { StyleProp } from '@bogoslavskiy/react-native-steezy';
 import { memo, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, ImageStyle } from 'react-native';
+import { StyleSheet, ImageStyle, ImageRequireSource } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { View } from './View';
 import {
@@ -20,6 +20,7 @@ export type PictureBehavior = 'preview' | 'image' | 'auto';
 
 interface PictureProps extends Omit<FastImageProps, 'source' | 'style'> {
   style?: StyleProp<ImageStyle>;
+  source?: ImageRequireSource;
   behavior?: PictureBehavior;
   preview?: string | null;
   uri?: string | null;
@@ -29,6 +30,7 @@ export const Picture = memo<PictureProps>((props) => {
   const {
     resizeMode = 'cover',
     behavior = 'auto',
+    source,
     preview,
     style,
     uri,
@@ -38,8 +40,10 @@ export const Picture = memo<PictureProps>((props) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const handleLoad = () => setIsLoaded(true);
   const previewSource = useMemo(() => ({ uri: preview ?? undefined }), [preview]);
-  const source = useMemo(() => ({ uri: uri ?? undefined }), [uri]);
   const hasPreview = !!preview;
+  const imageSource = useMemo(() => {
+    return source ?? { uri: uri ?? undefined };
+  }, [uri, source]);
 
   useEffect(() => {
     let state = hasPreview && !isLoaded ? PictureState.Preview : PictureState.Image;
@@ -74,7 +78,7 @@ export const Picture = memo<PictureProps>((props) => {
         <FastImage
           {...other}
           onLoad={handleLoad}
-          source={source}
+          source={imageSource}
           resizeMode={resizeMode}
           style={styles.image}
         />

@@ -15,6 +15,8 @@ import {
   Icon,
 } from '@tonkeeper/uikit';
 
+import { getImplementationIcon } from '@tonkeeper/mobile/src/utils/staking';
+
 export function renderActionItemByType(action: AnyActionItem) {
   const { type, payload } = action;
 
@@ -123,17 +125,11 @@ export function renderActionItemByType(action: AnyActionItem) {
           title={t('transactions.deposit')}
           action={action}
           leftContent={
-            <View style={styles.poolIconContainer}>
-              {!!payload.pool.icon ? (
-                <Picture
-                  style={styles.poolIcon}
-                  uri={payload.pool.icon}
-                  resizeMode="contain"
-                />
-              ) : (
-                <Icon name="ic-tonkeeper-28" />
-              )}
-            </View>
+            <Picture
+              source={getImplementationIcon(action.payload.implementation)}
+              style={styles.poolIcon}
+              resizeMode="contain"
+            />
           }
         />
       );
@@ -145,9 +141,11 @@ export function renderActionItemByType(action: AnyActionItem) {
           iconName="ic-donemark-28"
           action={action}
           leftContent={
-            <View style={styles.poolIconContainer}>
-              <Picture uri={payload.pool.icon} />
-            </View>
+            <Picture
+              source={getImplementationIcon(action.payload.implementation)}
+              style={styles.poolIcon}
+              resizeMode="contain"
+            />
           }
         />
       );
@@ -159,9 +157,11 @@ export function renderActionItemByType(action: AnyActionItem) {
           iconName="ic-donemark-28"
           action={action}
           leftContent={
-            <View style={styles.poolIconContainer}>
-              <Picture uri={payload.pool.icon} />
-            </View>
+            <Picture
+              source={getImplementationIcon(action.payload.implementation)}
+              style={styles.poolIcon}
+              resizeMode="contain"
+            />
           }
         />
       );
@@ -204,7 +204,8 @@ const styles = Steezy.create(({ colors }) => ({
     justifyContent: 'center',
   },
   poolIcon: {
-    width: 28,
-    height: 28,
+    width: 44,
+    height: 44,
+    borderRadius: 44 / 2,
   },
 }));
