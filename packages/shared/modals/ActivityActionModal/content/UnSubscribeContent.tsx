@@ -1,51 +1,45 @@
-import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
-import { DetailedActionTime } from '../components/DetailedActionTime';
-import { FailedActionLabel } from '../components/FailedActionLabel';
+import { useSubscription } from '../../../query/hooks/useSubscription';
 import { ExtraListItem } from '../components/ExtraListItem';
-import { List, View, Text, copyText } from '@tonkeeper/uikit';
+import { ActionModalContent } from '../ActionModalContent';
+import { ActionItem, ActionType } from '@tonkeeper/core';
+import { List, Text, copyText } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import { memo } from 'react';
 
-import { useSubscription } from '../../../query/hooks/useSubscription';
-import { ActivityEvent, UnSubscribeActionData } from '@tonkeeper/core';
-
 interface UnSubscribeContentProps {
-  action: UnSubscribeActionData;
-  event: ActivityEvent;
+  action: ActionItem<ActionType.UnSubscribe>;
 }
 
 export const UnSubscribeContent = memo<UnSubscribeContentProps>((props) => {
-  const { action, event } = props;
-  const subscription = useSubscription(action.subscription);
+  const { action } = props;
+  const subscription = useSubscription(action.payload.subscription);
 
   return (
-    <View>
-      <DetailedInfoContainer>
+    <ActionModalContent
+      action={action}
+      header={
         <Text type="h2" textAlign="center">
           {t('transactionDetails.unsubscription_title')}
         </Text>
-        <DetailedActionTime destination={action.destination} timestamp={event.timestamp} />
-        <FailedActionLabel isFailed={action.isFailed} />
-      </DetailedInfoContainer>
-      <List>
-        {subscription && (
-          <>
-            <List.Item
-              titleType="secondary"
-              title={t('transactionDetails.subscription_product_label')}
-              onPress={copyText(subscription.productName)}
-              value={subscription.productName}
-            />
-            <List.Item
-              titleType="secondary"
-              title={t('transactionDetails.subscription_merchant_label')}
-              onPress={copyText(subscription.merchantName)}
-              value={subscription.merchantName}
-            />
-          </>
-        )}
-        <ExtraListItem extra={event.extra} />
-      </List>
-    </View>
+      }
+    >
+      {subscription && (
+        <>
+          <List.Item
+            titleType="secondary"
+            title={t('transactionDetails.subscription_product_label')}
+            onPress={copyText(subscription.productName)}
+            value={subscription.productName}
+          />
+          <List.Item
+            titleType="secondary"
+            title={t('transactionDetails.subscription_merchant_label')}
+            onPress={copyText(subscription.merchantName)}
+            value={subscription.merchantName}
+          />
+        </>
+      )}
+      <ExtraListItem extra={action.event.extra} />
+    </ActionModalContent>
   );
 });

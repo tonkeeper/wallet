@@ -392,13 +392,21 @@
     "burned": "Burned"
   },
 
+  "activityActionModal": {
+    "time_on": "on %{time}",
+    "received": "Received",
+    "sent": "Sent",
+    "bid": "Bid",
+    "purchase": "Purchase",
+    "swapped": "Swapped",
+    "call_contract": "Call contract",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "withdrawal_request": "Withdrawal request",
+    "burned": "Burned"
+  },
+
   "transactionDetails": {
-    "received_date": "Received on %{time}",
-    "sent_date": "Sent on %{time}",
-    "bid_date": "Bid %{time}",
-    "purchase_date": "purchase %{time}",
-    "swapped_date": "Swapped on %{time}",
-    "call_contract_date": "Call contract %{time}",
     "sender": "Sender",
     "sender_address": "Sender address",
     "recipient": "Recipient",

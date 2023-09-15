@@ -1,43 +1,41 @@
-import { List, Steezy, View, SText as Text, FastImage } from '@tonkeeper/uikit';
-import { DetailedInfoContainer } from '../components/DetailedInfoContainer';
-import { DetailedActionTime } from '../components/DetailedActionTime';
-import { FailedActionLabel } from '../components/FailedActionLabel';
-import { AddressListItem } from '../components/AddressListItem';
-import { DetailedHeader } from '../components/DetailedHeader';
-import { ExtraListItem } from '../components/ExtraListItem';
-import { formatter } from '../../../formatter';
-import { memo, useMemo } from 'react';
-
+import { Steezy, View, SText as Text, FastImage } from '@tonkeeper/uikit';
 import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
+import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
+import { ExtraListItem } from '../components/ExtraListItem';
+import { ActionModalContent } from '../ActionModalContent';
+import { ActionItem, ActionType } from '@tonkeeper/core';
+import { formatter } from '../../../formatter';
 import { useSelector } from 'react-redux';
-import { JettonSwapActionData, ActivityEvent } from '@tonkeeper/core';
+import { memo, useMemo } from 'react';
+import { t } from '../../../i18n';
 
-interface JettonSwapContentProps {
-  action: JettonSwapActionData;
-  event: ActivityEvent;
+interface JettonSwapActionContentProps {
+  action: ActionItem<ActionType.JettonSwap>;
 }
 
-export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {
-  const { action, event } = props;
+export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props) => {
+  const { action } = props;
 
   const fiatCurrency = useSelector(fiatCurrencySelector);
-  const tokenPrice = useTokenPrice(action.jetton_master_in.address);
+  const tokenPrice = useTokenPrice(action.payload.jetton_master_in.address);
+
+  const isFailed = action.status === ActionStatusEnum.Failed;
 
   const amount = useMemo(() => {
-    const amountIn = action.amount_in;
-    const amountOut = action.amount_in;
+    const amountIn = action.payload.amount_in;
+    const amountOut = action.payload.amount_in;
 
     return {
       in: formatter.formatNano(amountIn, {
-        formatDecimals: action.jetton_master_in.decimals ?? 9,
-        postfix: action.jetton_master_in.symbol,
+        formatDecimals: action.payload.jetton_master_in.decimals ?? 9,
+        postfix: action.payload.jetton_master_in.symbol,
         withoutTruncate: true,
         prefix: '+',
       }),
       out: formatter.formatNano(amountOut, {
-        formatDecimals: action.jetton_master_out.decimals ?? 9,
-        postfix: action.jetton_master_out.symbol,
+        formatDecimals: action.payload.jetton_master_out.decimals ?? 9,
+        postfix: action.payload.jetton_master_out.symbol,
         withoutTruncate: true,
         prefix: '-',
       }),
@@ -46,26 +44,28 @@ export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {
 
   const fiatAmount = useMemo(() => {
     if (tokenPrice.fiat) {
-      const decimals = action.jetton_master_in.decimals ?? 9;
-      const amount = parseFloat(formatter.fromNano(action.amount_in, decimals));
+      const decimals = action.payload.jetton_master_in?.decimals ?? 9;
+      const amount = parseFloat(formatter.fromNano(action.payload.amount_in, decimals));
       return formatter.format(tokenPrice.fiat * amount, {
         currency: fiatCurrency,
       });
     }
-  }, [action.amount_in, tokenPrice.fiat, fiatCurrency, action.isFailed]);
+  }, [action.payload.amount_in, tokenPrice.fiat, fiatCurrency, isFailed]);
 
   const sourceIn = {
-    uri: action.jetton_master_in.image,
+    uri: action.payload.jetton_master_in.image,
   };
 
   const sourceOut = {
-    uri: action.jetton_master_out.image,
+    uri: action.payload.jetton_master_out.image,
   };
 
   return (
-    <View>
-      <DetailedInfoContainer>
-        <DetailedHeader>
+    <ActionModalContent
+      label={t('activityActionModal.swapped')}
+      action={action}
+      header={
+        <>
           <View style={styles.content}>
             <View style={styles.swapImages}>
               <FastImage
@@ -88,26 +88,11 @@ export const JettonSwapContent = memo<JettonSwapContentProps>((props) => {
           <Text type="h2" style={styles.amountText}>
             {amount.in}
           </Text>
-        </DetailedHeader>
-        <View style={styles.fiatText}>
-          {fiatAmount && (
-            <Text type="body1" color="textSecondary">
-              {fiatAmount}
-            </Text>
-          )}
-        </View>
-        <DetailedActionTime
-          destination={action.destination}
-          timestamp={event.timestamp}
-          langKey="swapped_date"
-        />
-        <FailedActionLabel isFailed={action.isFailed} />
-      </DetailedInfoContainer>
-      <List>
-        <AddressListItem address={action.user_wallet.address} />
-        <ExtraListItem extra={event.extra} />
-      </List>
-    </View>
+        </>
+      }
+    >
+      <ExtraListItem extra={action.event.extra} />
+    </ActionModalContent>
   );
 });
 
