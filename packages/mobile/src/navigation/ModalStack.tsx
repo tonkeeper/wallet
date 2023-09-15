@@ -29,11 +29,11 @@ import {
 } from '$core';
 import { WebView } from '$core/WebView/WebView';
 import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewConfirmSending';
-import { ActionModal } from '$core/ModalContainer/Action/Action';
+
 import { ExchangeModal } from '$modals/ExchangeModal';
 import { Swap } from '$core/Swap/Swap';
 import { ChooseCountry } from '$core/ChooseCountry/ChooseCountry';
-import { ActionDetailsModal } from '@tonkeeper/shared/modals/ActivityActionModal';
+
 import { SwitchWalletModal } from '@tonkeeper/shared/modals/SwitchWalletModal';
 import { AddWalletModal } from '@tonkeeper/shared/modals/AddWalletModal';
 import { ProvidersWithNavigation } from './Providers';
@@ -46,7 +46,6 @@ export const ModalStack = React.memo(() => (
     <Stack.Group behavior="sheet">
       <Stack.Modal component={NFTSingleDeployModal} path="NFTSingleDeploy" />
       <Stack.Modal component={NFTTransferModal} path="NFTTransfer" />
-      <Stack.Modal component={ActionModal} path="Action" />
       <Stack.Modal component={NFTCollectionDeployModal} path="NFTCollectionDeploy" />
       <Stack.Modal component={NFTItemDeployModal} path="NFTItemDeploy" />
       <Stack.Modal component={NFTSalePlaceModal} path="NFTSalePlace" />
@@ -60,7 +59,6 @@ export const ModalStack = React.memo(() => (
       />
       <Stack.Modal component={SignRawModal} path="SignRaw" />
       <Stack.Modal component={NewConfirmSending} path="NewConfirmSending" />
-      <Stack.Modal component={ActionDetailsModal} path="transaction" />
       <Stack.Modal component={SwitchWalletModal} path="/switch-wallet" />
       <Stack.Modal component={AddWalletModal} path="/add-wallet" />
     </Stack.Group>
