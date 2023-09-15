@@ -47,13 +47,14 @@ import { useNotifications } from '$hooks/useNotifications';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
 import { useAllAddresses } from '$hooks/useAllAddresses';
 import { useFlags } from '$utils/flags';
-import { SearchEngine, useBrowserStore } from '$store';
+import { SearchEngine, useBrowserStore, useNotificationsStore } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
 import { Steezy } from '$styles';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 import { Address } from '@tonkeeper/core';
+import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -78,6 +79,7 @@ export const Settings: FC = () => {
   const allTonAddesses = useAllAddresses();
   const showV4R1 = useSelector(showV4R1Selector);
   const shouldShowTokensButton = useShouldShowTokensButton();
+  const showNotifications = useNotificationsStore(shouldShowNotifications);
 
   const searchEngine = useBrowserStore((state) => state.searchEngine);
   const setSearchEngine = useBrowserStore((state) => state.actions.setSearchEngine);
@@ -291,7 +293,7 @@ export const Settings: FC = () => {
           </List>
           <Spacer y={16} />
           <List>
-            {!!wallet && (
+            {!!wallet && showNotifications && (
               <List.Item
                 value={<Icon color="accentPrimary" name={'ic-notification-28'} />}
                 title={

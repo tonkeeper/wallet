@@ -920,11 +920,11 @@
 
   "notifications": {
     "notifications": "Notifications",
-    "from_connected": "From connected services",
+    "from_connected": "From connected apps",
     "mute_notifications": "Mute notifications",
     "disconnect_app": "Disconnect %{app_name}",
     "report": "Report",
-    "muted": "Muted",
+    "muted": "Notifications have been muted",
     "disconnected_app": "Disconnected app",
     "earlier": "Earlier",
     "apps": "Apps",
