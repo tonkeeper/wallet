@@ -8,12 +8,27 @@ import {
 import { JettonBalanceModel } from '$store/models';
 import { walletSelector } from '$store/wallet';
 import { Steezy } from '$styles';
-import { CurrencyIcon, Highlight, Icon, PopupSelect, Spacer, Text, View } from '$uikit';
+import {
+  CurrencyIcon,
+  Highlight,
+  Icon,
+  PopupSelect,
+  Spacer,
+  StakedTonIcon,
+  Text,
+  View,
+} from '$uikit';
 import { ns } from '$utils';
-import React, { FC, memo, useMemo } from 'react';
+import React, { FC, memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
 import { Platform } from 'react-native';
+import { useStakingStore } from '$store';
+import { shallow } from 'zustand/shallow';
+import { Address } from '@tonkeeper/core';
+import { PoolInfo } from '@tonkeeper/core/src/TonAPI';
+import { t } from '@tonkeeper/shared/i18n';
+import { useGetTokenPrice } from '$hooks/useTokenPrice';
 
 type CoinItem =
   | { isJetton: false; currency: string; balance: string; decimals: number }
@@ -23,6 +38,7 @@ type CoinItem =
       currency: string;
       balance: string;
       decimals: number;
+      liquidStakingPool?: PoolInfo;
     };
 
 interface Props {
@@ -38,6 +54,10 @@ const CoinDropdownComponent: FC<Props> = (props) => {
 
   const { enabled: jettons } = useJettonBalances();
   const format = useHideableFormatter();
+
+  const stakingPools = useStakingStore((s) => s.pools, shallow);
+
+  const getTokenPrice = useGetTokenPrice();
 
   const coins = useMemo((): CoinItem[] => {
     const list = [
@@ -64,22 +84,54 @@ const CoinDropdownComponent: FC<Props> = (props) => {
 
     return [
       ...list,
-      ...jettons.map(
-        (jetton): CoinItem => ({
-          isJetton: true,
-          jetton: jetton,
-          currency: jetton.jettonAddress,
-          balance: jetton.balance,
-          decimals: jetton.metadata.decimals,
+      ...jettons
+        .map((jetton): CoinItem => {
+          const liquidStakingPool = stakingPools.find(
+            (pool) => pool.liquid_jetton_master === Address.parse(jetton.jettonAddress).toRaw(),
+          );
+
+          const balance = liquidStakingPool
+            ? getTokenPrice(jetton.jettonAddress, jetton.balance).totalTon.toString()
+            : jetton.balance;
+
+          return {
+            isJetton: true,
+            jetton: jetton,
+            currency: jetton.jettonAddress,
+            balance,
+            decimals: jetton.metadata.decimals,
+            liquidStakingPool,
+          };
+        })
+        .sort((a, b) => {
+          if (a.isJetton && a.liquidStakingPool && b.isJetton && !b.liquidStakingPool) {
+            return -1;
+          } else if (
+            a.isJetton &&
+            !a.liquidStakingPool &&
+            b.isJetton &&
+            b.liquidStakingPool
+          ) {
+            return 1;
+          }
+
+          return 0;
         }),
-      ),
     ];
-  }, [jettons, balances, currencies]);
+  }, [jettons, balances, currencies, stakingPools]);
 
   const selectedCoin = useMemo(
     () => coins.find((item) => item.currency === currency)!,
     [coins, currency],
   );
+
+  const getTitle = useCallback((coin: CoinItem) => {
+    if (coin.isJetton) {
+      return coin.liquidStakingPool ? 'TON' : coin.jetton.metadata.symbol ?? '';
+    }
+
+    return coin.currency.toUpperCase();
+  }, []);
 
   if (coins.length === 1) {
     return null;
@@ -97,18 +149,18 @@ const CoinDropdownComponent: FC<Props> = (props) => {
         asFullWindowOverlay={Platform.OS === 'android'}
         renderItem={(item) => (
           <>
-            {item.isJetton ? (
+            {item.isJetton && item.liquidStakingPool ? (
+              <StakedTonIcon pool={item.liquidStakingPool} size={24} />
+            ) : null}
+            {item.isJetton && !item.liquidStakingPool ? (
               <CurrencyIcon size={24} isJetton uri={item.jetton.metadata.image} />
-            ) : (
+            ) : null}
+            {!item.isJetton ? (
               <CurrencyIcon size={24} currency={item.currency as CryptoCurrency} />
-            )}
+            ) : null}
             <Spacer x={8} />
             <Text numberOfLines={1} style={{ width: ns(156) }}>
-              <Text variant="label1">
-                {item.isJetton
-                  ? item.jetton.metadata.symbol ?? ''
-                  : item.currency.toUpperCase()}
-              </Text>
+              <Text variant="label1">{getTitle(item)}</Text>
               {'  '}
               <Text color="foregroundSecondary">{format(item.balance)}</Text>
             </Text>
@@ -119,7 +171,11 @@ const CoinDropdownComponent: FC<Props> = (props) => {
       >
         <Highlight background="backgroundQuaternary" useRNGHComponent>
           <View style={styles.content}>
-            <Text variant="label1">{currencyTitle}</Text>
+            <Text variant="label1">
+              {selectedCoin.isJetton && selectedCoin.liquidStakingPool
+                ? t('staking.send_staked_ton')
+                : currencyTitle}
+            </Text>
             <View style={styles.chevron}>
               <Icon name="ic-chevron-down-16" color="iconSecondary" />
             </View>

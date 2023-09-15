@@ -1,30 +1,35 @@
 import { QueryClient } from 'react-query';
-import { Address, AddressFormats } from './Address';
+import { Address, AddressFormats } from './formatters/Address';
 import { TonAPI } from './TonAPI';
 import { Vault } from './Vault';
 
-import { TransactionsManager } from './managers/TransactionsManager';
+import { ActivityList } from './Activity/ActivityList';
 import { NftsManager } from './managers/NftsManager';
-import { SSEListener, SSEManager } from './Tonkeeper';
+import { EventSourceListener, ServerSentEvents, IStorage } from './Tonkeeper';
 import { SubscriptionsManager } from './managers/SubscriptionsManager';
-import { JettonsManager } from './managers/JettonsManager';
-import { BalanceManager } from './managers/BalanceManager';
 
-enum Network {
+import { BalancesManager } from './managers/BalancesManager';
+import { TronAPI } from './TronAPI';
+import { TronService } from './TronService';
+import { ActivityLoader } from './Activity/ActivityLoader';
+import { TonActivityList } from './Activity/TonActivityList';
+import { JettonActivityList } from './Activity/JettonActivityList';
+
+export enum WalletNetwork {
   mainnet = -239,
   testnet = -3,
 }
 
-enum WalletKind {
-  Regular,
-  Lockup,
-  WatchOnly,
+export enum WalletKind {
+  Regular = 'Regular',
+  Lockup = 'Lockup',
+  WatchOnly = 'WatchOnly',
 }
 
 type WalletIdentity = {
-  network: Network;
+  network: WalletNetwork;
   kind: WalletKind;
-  id: () => string;
+  // id: string;
 };
 
 enum Currency {
@@ -44,54 +49,101 @@ type WalletInfo = {
   label: string;
 };
 
+type TronAddresses = {
+  proxy: string;
+  owner: string;
+};
+
+type RawAddress = string;
+
+export type WalletAddresses = {
+  tron?: TronAddresses;
+  ton: RawAddress;
+};
+
+export type WalletAddress = {
+  tron?: TronAddresses;
+  ton: AddressFormats;
+};
+
 export type WalletContext = {
-  accountId: string;
+  address: WalletAddress;
   queryClient: QueryClient;
-  sse: SSEManager;
+  sse: ServerSentEvents;
   tonapi: TonAPI;
+  tronapi: TronAPI;
 };
 
 export class Wallet {
-  public identity: WalletIdentity | null = null;
-  public address: AddressFormats;
+  public identity: WalletIdentity;
+  public address: WalletAddress;
 
-  public listener: SSEListener | null = null;
+  public listener: EventSourceListener | null = null;
 
   public subscriptions: SubscriptionsManager;
-  public transactions: TransactionsManager;
-  public balance: BalanceManager;
-  public jettons: JettonsManager;
+  public balances: BalancesManager;
+
   public nfts: NftsManager;
+
+  public activityLoader: ActivityLoader;
+  public jettonActivityList: JettonActivityList;
+  public tonActivityList: TonActivityList;
+  public activityList: ActivityList;
+
+  public tronService: TronService;
 
   constructor(
     private queryClient: QueryClient,
     private tonapi: TonAPI,
+    private tronapi: TronAPI,
     private vault: Vault,
-    private sse: SSEManager,
+    private sse: ServerSentEvents,
+    private storage: IStorage,
     walletInfo: any,
   ) {
-    this.address = Address(walletInfo.address).toAll();
+    this.identity = {
+      kind: WalletKind.Regular,
+      network: walletInfo.network,
+    };
+
+    const tonAddresses = Address.parse(walletInfo.address).toAll({
+      testOnly: walletInfo.network === WalletNetwork.testnet,
+    });
+
+    this.address = {
+      tron: walletInfo.tronAddress,
+      ton: tonAddresses,
+    };
+
+    // TODO: rewrite
     const context: WalletContext = {
-      accountId: this.address.raw,
       queryClient: this.queryClient,
+      address: this.address,
+      tronapi: this.tronapi,
       tonapi: this.tonapi,
       sse: this.sse,
     };
 
     this.subscriptions = new SubscriptionsManager(context);
-    this.transactions = new TransactionsManager(context);
-    this.balance = new BalanceManager(context);
-    this.jettons = new JettonsManager(context);
+
+    const addresses = {
+      ton: this.address.ton.raw,
+      tron: this.address.tron,
+    };
+
+    this.activityLoader = new ActivityLoader(addresses, this.tonapi, this.tronapi);
+    this.jettonActivityList = new JettonActivityList(this.activityLoader);
+    this.tonActivityList = new TonActivityList(this.activityLoader);
+    this.activityList = new ActivityList(this.activityLoader);
+
+    this.balances = new BalancesManager(context);
     this.nfts = new NftsManager(context);
+    this.tronService = new TronService(context);
 
     this.listenTransactions();
   }
 
-  public async create({ name, passcode }: { passcode: string; name?: string }) {}
-
-  public async import(options: { passcode: string; words: string; name: string }) {}
-
-  public async getPrivateKey(): Promise<string> {
+  public async getTonPrivateKey(): Promise<string> {
     if (false) {
       return this.vault.exportWithBiometry('');
     } else {
@@ -99,19 +151,32 @@ export class Wallet {
     }
   }
 
+  public async getTronPrivateKey(): Promise<string> {
+    if (false) {
+      return this.vault.exportWithBiometry('');
+    } else {
+      return this.vault.exportWithPasscode('');
+    }
+  }
+
+  // For migrate
+  public async setTronAddress(addresses: TronAddresses) {
+    this.address.tron = addresses;
+  }
+
   private listenTransactions() {
     this.listener = this.sse.listen(
-      `/v2/sse/accounts/transactions?accounts=${this.address.raw}`,
+      `/v2/sse/accounts/transactions?accounts=${this.address.ton.raw}`,
     );
     this.listener.addEventListener('open', () => {
-      console.log('[Wallet]: start listen transactions for', this.address.short);
+      console.log('[Wallet]: start listen transactions for', this.address.ton.short);
     });
     this.listener.addEventListener('error', (err) => {
       console.log('[Wallet]: error listen transactions', err);
     });
     this.listener.addEventListener('message', () => {
       console.log('[Wallet]: message receive');
-      this.transactions.refetch();
+      this.activityList.reload();
     });
   }
 

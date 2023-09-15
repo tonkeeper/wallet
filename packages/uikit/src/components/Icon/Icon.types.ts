@@ -58,12 +58,14 @@ export type IconNames =
   | 'ic-envelope-28'
   | 'ic-exclamationmark-circle-28'
   | 'ic-explore-28'
+  | 'ic-fire-28'
   | 'ic-flash-28'
   | 'ic-gear-28'
   | 'ic-globe-28'
   | 'ic-home-28'
   | 'ic-jetton-28'
   | 'ic-key-28'
+  | 'ic-link-28'
   | 'ic-lock-28'
   | 'ic-message-bubble-28'
   | 'ic-minus-28'
@@ -86,6 +88,7 @@ export type IconNames =
   | 'ic-telegram-28'
   | 'ic-ticket-28'
   | 'ic-ton-28'
+  | 'ic-tonkeeper-28'
   | 'ic-trash-bin-28'
   | 'ic-tray-arrow-down-28'
   | 'ic-tray-arrow-up-28'
@@ -104,11 +107,13 @@ export type IconNames =
   | 'ic-flashlight-off-56'
   | 'ic-flashlight-on-56'
   | 'ic-globe-56'
+  | 'ic-usdt-56'
   | 'ic-camera-84'
   | 'ic-done-84'
   | 'ic-exclamationmark-circle-84'
   | 'ic-settings-84'
   | 'globe-96'
+  | 'ic-ton-96'
   | 'ic-loader-large-32'
   | 'ic-loader-medium-24'
   | 'ic-loader-xlarge-64'
@@ -174,12 +179,14 @@ export const AllIcons = [
   'ic-envelope-28',
   'ic-exclamationmark-circle-28',
   'ic-explore-28',
+  'ic-fire-28',
   'ic-flash-28',
   'ic-gear-28',
   'ic-globe-28',
   'ic-home-28',
   'ic-jetton-28',
   'ic-key-28',
+  'ic-link-28',
   'ic-lock-28',
   'ic-message-bubble-28',
   'ic-minus-28',
@@ -202,6 +209,7 @@ export const AllIcons = [
   'ic-telegram-28',
   'ic-ticket-28',
   'ic-ton-28',
+  'ic-tonkeeper-28',
   'ic-trash-bin-28',
   'ic-tray-arrow-down-28',
   'ic-tray-arrow-up-28',
@@ -220,11 +228,13 @@ export const AllIcons = [
   'ic-flashlight-off-56',
   'ic-flashlight-on-56',
   'ic-globe-56',
+  'ic-usdt-56',
   'ic-camera-84',
   'ic-done-84',
   'ic-exclamationmark-circle-84',
   'ic-settings-84',
   'globe-96',
+  'ic-ton-96',
   'ic-loader-large-32',
   'ic-loader-medium-24',
   'ic-loader-xlarge-64',
@@ -291,12 +301,14 @@ export const IconSizes = {
   'ic-envelope-28': 28,
   'ic-exclamationmark-circle-28': 28,
   'ic-explore-28': 28,
+  'ic-fire-28': 28,
   'ic-flash-28': 28,
   'ic-gear-28': 28,
   'ic-globe-28': 28,
   'ic-home-28': 28,
   'ic-jetton-28': 28,
   'ic-key-28': 28,
+  'ic-link-28': 28,
   'ic-lock-28': 28,
   'ic-message-bubble-28': 28,
   'ic-minus-28': 28,
@@ -319,6 +331,7 @@ export const IconSizes = {
   'ic-telegram-28': 28,
   'ic-ticket-28': 28,
   'ic-ton-28': 28,
+  'ic-tonkeeper-28': 28,
   'ic-trash-bin-28': 28,
   'ic-tray-arrow-down-28': 28,
   'ic-tray-arrow-up-28': 28,
@@ -337,11 +350,13 @@ export const IconSizes = {
   'ic-flashlight-off-56': 56,
   'ic-flashlight-on-56': 56,
   'ic-globe-56': 56,
+  'ic-usdt-56': 56,
   'ic-camera-84': 84,
   'ic-done-84': 84,
   'ic-exclamationmark-circle-84': 84,
   'ic-settings-84': 84,
   'globe-96': 96,
+  'ic-ton-96': 96,
   'ic-loader-large-32': 32,
   'ic-loader-medium-24': 24,
   'ic-loader-xlarge-64': 64,

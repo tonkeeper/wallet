@@ -1,8 +1,10 @@
 import { TouchableHighlight as TouchableGestureHighlight } from 'react-native-gesture-handler';
 import { TextStyle, ViewStyle, TouchableHighlight } from 'react-native';
+import { ListItemPressedContext } from './ListItemPressedContext';
+import { Steezy, StyleProp, useTheme } from '../../styles';
+import { useSharedValue } from 'react-native-reanimated';
 import React, { memo, useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
-import { Steezy, StyleProp, useTheme } from '../../styles';
 import { useRouter } from '@tonkeeper/router';
 import { Pressable } from '../Pressable';
 import { isAndroid } from '../../utils';
@@ -26,12 +28,10 @@ interface ListItemProps {
   navigate?: string;
   subtitleNumberOfLines?: number;
   gestureHandler?: boolean;
-  content?: React.ReactNode;
+  children?: React.ReactNode;
   rightContent?: React.ReactNode;
   valueMultiline?: boolean;
   onPress?: () => void;
-  onPressIn?: () => void;
-  onPressOut?: () => void;
 }
 
 function isString<T>(str: T) {
@@ -41,8 +41,6 @@ function isString<T>(str: T) {
 export const ListItem = memo<ListItemProps>((props) => {
   const {
     onPress,
-    onPressIn,
-    onPressOut,
     navigate,
     pictureCorner = 'full',
     subtitleNumberOfLines = 1,
@@ -51,9 +49,13 @@ export const ListItem = memo<ListItemProps>((props) => {
     leftContentStyle,
     gestureHandler,
     rightContent,
+    children,
   } = props;
+
   const router = useRouter();
   const theme = useTheme();
+
+  const isPressed = useSharedValue(0);
 
   const handlePress = useCallback(() => {
     if (navigate) {
@@ -62,6 +64,9 @@ export const ListItem = memo<ListItemProps>((props) => {
       onPress?.();
     }
   }, [onPress, navigate]);
+
+  const onPressIn = () => (isPressed.value = 1);
+  const onPressOut = () => (isPressed.value = 0);
 
   const hasLeftContent = !!props.leftContent || !!props.picture;
   const pictureSource = { uri: props.picture };
@@ -80,81 +85,84 @@ export const ListItem = memo<ListItemProps>((props) => {
       onPressIn={onPressIn}
       onPress={handlePress}
     >
-      <View style={styles.container.static}>
-        {hasLeftContent && (
-          <View style={[styles.leftContent, leftContentStyle]}>
-            {props.leftContent}
-            {!!props.picture && (
-              <View
-                style={[
-                  styles.pictureContainer,
-                  pictureCorners[pictureCorner].static,
-                  props.pictureStyle,
-                ]}
-              >
-                <FastImage style={styles.picture.static} source={pictureSource} />
+      <ListItemPressedContext.Provider value={isPressed}>
+        <View style={styles.container.static}>
+          {hasLeftContent && (
+            <View style={[styles.leftContent, leftContentStyle]}>
+              {props.leftContent}
+              {!!props.picture && (
+                <View
+                  style={[
+                    styles.pictureContainer,
+                    pictureCorners[pictureCorner].static,
+                    props.pictureStyle,
+                  ]}
+                >
+                  <FastImage style={styles.picture.static} source={pictureSource} />
+                </View>
+              )}
+            </View>
+          )}
+          <View style={styles.lines}>
+            <View style={styles.topLine}>
+              <View style={styles.titleContainer}>
+                {isString(props.title) ? (
+                  <Text
+                    color={titleType === 'primary' ? 'textPrimary' : 'textSecondary'}
+                    type={titleType === 'primary' ? 'label1' : 'body1'}
+                    ellipsizeMode="tail"
+                    numberOfLines={1}
+                  >
+                    {props.title}
+                  </Text>
+                ) : (
+                  props.title
+                )}
               </View>
-            )}
-          </View>
-        )}
-        <View style={styles.lines}>
-          <View style={styles.topLine}>
-            <View style={styles.titleContainer}>
-              {isString(props.title) ? (
-                <Text
-                  color={titleType === 'primary' ? 'textPrimary' : 'textSecondary'}
-                  type={titleType === 'primary' ? 'label1' : 'body1'}
-                  ellipsizeMode="tail"
-                  numberOfLines={1}
-                >
-                  {props.title}
+              <View style={styles.valueContainer}>
+                {isString(props.value) ? (
+                  <Text
+                    numberOfLines={!valueMultiline ? 1 : undefined}
+                    style={props.valueStyle}
+                    textAlign="right"
+                    type="label1"
+                  >
+                    {`  ${props.value}`}
+                  </Text>
+                ) : (
+                  props.value
+                )}
+              </View>
+            </View>
+            <View style={styles.bottomLine}>
+              <View style={styles.subtitleContainer}>
+                {isString(props.subtitle) ? (
+                  <Text
+                    numberOfLines={subtitleNumberOfLines}
+                    color="textSecondary"
+                    type="body2"
+                  >
+                    {props.subtitle}
+                  </Text>
+                ) : (
+                  props.subtitle
+                )}
+              </View>
+              {isString(props.subvalue) ? (
+                <Text type="body2" color="textSecondary">
+                  {` ${props.subvalue}`}
                 </Text>
               ) : (
-                props.title
+                props.subvalue
               )}
             </View>
-            <View style={styles.valueContainer}>
-              {isString(props.value) ? (
-                <Text
-                  numberOfLines={!valueMultiline ? 1 : undefined}
-                  style={props.valueStyle}
-                  textAlign="right"
-                  type="label1"
-                >
-                  {`  ${props.value}`}
-                </Text>
-              ) : (
-                props.value
-              )}
-            </View>
+
+            {children}
           </View>
-          <View style={styles.bottomLine}>
-            <View style={styles.subtitleContainer}>
-              {isString(props.subtitle) ? (
-                <Text
-                  numberOfLines={subtitleNumberOfLines}
-                  color="textSecondary"
-                  type="body2"
-                >
-                  {props.subtitle}
-                </Text>
-              ) : (
-                props.subtitle
-              )}
-            </View>
-            {isString(props.subvalue) ? (
-              <Text type="body2" color="textSecondary">
-                {` ${props.subvalue}`}
-              </Text>
-            ) : (
-              props.subvalue
-            )}
-          </View>
-          {props.content}
+          {props.chevron && <Icon name="ic-chevron-right-16" color="iconTertiary" />}
+          {rightContent}
         </View>
-        {props.chevron && <Icon name="ic-chevron-right-16" color="iconTertiary" />}
-        {rightContent}
-      </View>
+      </ListItemPressedContext.Provider>
     </TouchableComponent>
   );
 });

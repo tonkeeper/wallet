@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as S from './Wallet.style';
 import { useWalletInfo } from '$hooks/useWalletInfo';
@@ -16,15 +16,15 @@ import { formatter } from '$utils/formatter';
 import { Toast } from '$store';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { TonIcon } from '../../components/TonIcon';
+import { TonIcon } from '@tonkeeper/uikit';
 import { Icon, IconNames, Screen } from '@tonkeeper/uikit';
 
-import { TransactionsList } from '@tonkeeper/shared/components';
-import { useTonTransactions } from '@tonkeeper/shared/query/hooks/useTonTransactions';
+import { ActivityList } from '@tonkeeper/shared/components';
+import { useTonActivityList } from '@tonkeeper/shared/query/hooks/useTonActivityList';
 import { useWallet } from '../../tabs/useWallet';
 
 export const ToncoinScreen = memo(() => {
-  const transactions = useTonTransactions();
+  const activityList = useTonActivityList();
   const wallet = useWallet();
 
   const handleOpenExplorer = useCallback(async () => {
@@ -69,14 +69,14 @@ export const ToncoinScreen = memo(() => {
           </PopupMenu>
         }
       />
-      <TransactionsList
+      <ActivityList
         ListHeaderComponent={<HeaderList />}
-        fetchMoreEnd={transactions.fetchMoreEnd}
-        onFetchMore={transactions.fetchMore}
-        refreshing={transactions.refreshing}
-        onRefresh={transactions.refresh}
-        loading={transactions.loading}
-        events={transactions.data}
+        onLoadMore={activityList.loadMore}
+        onReload={activityList.reload}
+        isReloading={activityList.isReloading}
+        isLoading={activityList.isLoading}
+        sections={activityList.sections}
+        hasMore={activityList.hasMore}
         safeArea
       />
     </Screen>
@@ -93,10 +93,53 @@ const HeaderList = memo(() => {
   const [lockupDeploy, setLockupDeploy] = useState('loading');
   const nav = useNavigation();
 
+  const exploreActions = useRef([
+    {
+      icon: 'ic-globe-16',
+      text: 'ton.org',
+      url: 'https://ton.org',
+    },
+    {
+      icon: 'ic-twitter-16',
+      text: 'Twitter',
+      url: 'https://twitter.com/ton_blockchain',
+      scheme: 'twitter://search',
+    },
+    {
+      icon: 'ic-telegram-16',
+      text: t('wallet_chat'),
+      url: getServerConfig('tonCommunityChatUrl'),
+      scheme: 'tg://',
+    },
+    {
+      icon: 'ic-telegram-16',
+      text: t('wallet_community'),
+      url: getServerConfig('tonCommunityUrl'),
+      scheme: 'tg://',
+    },
+    {
+      icon: 'ic-doc-16',
+      text: 'Whitepaper',
+      openInBrowser: Platform.OS === 'android',
+      url: 'https://ton.org/whitepaper.pdf',
+    },
+    {
+      icon: 'ic-magnifying-glass-16',
+      text: 'tonviewer.com',
+      url: 'https://tonviewer.com',
+    },
+    {
+      icon: 'ic-code-16',
+      text: t('wallet_source_code'),
+      url: 'https://github.com/ton-blockchain/ton',
+      scheme: 'github://',
+    },
+  ]).current;
+
   useEffect(() => {
     if (wallet && wallet.ton.isLockup()) {
       wallet.ton
-        .getWalletInfo(walletAddr.address.friendly)
+        .getWalletInfo(walletAddr.address.ton.friendly)
         .then((info: any) => {
           setLockupDeploy(
             ['empty', 'uninit', 'nonexist'].includes(info.status) ? 'deploy' : 'deployed',
@@ -259,46 +302,3 @@ const HeaderList = memo(() => {
     </>
   );
 });
-
-const exploreActions = [
-  {
-    icon: 'ic-globe-16',
-    text: 'ton.org',
-    url: 'https://ton.org',
-  },
-  {
-    icon: 'ic-twitter-16',
-    text: 'Twitter',
-    url: 'https://twitter.com/ton_blockchain',
-    scheme: 'twitter://search',
-  },
-  {
-    icon: 'ic-telegram-16',
-    text: t('wallet_chat'),
-    url: t('wallet_toncommunity_chat_link'),
-    scheme: 'tg://',
-  },
-  {
-    icon: 'ic-telegram-16',
-    text: t('wallet_community'),
-    url: t('wallet_toncommunity_link'),
-    scheme: 'tg://',
-  },
-  {
-    icon: 'ic-doc-16',
-    text: 'Whitepaper',
-    openInBrowser: Platform.OS === 'android',
-    url: 'https://ton.org/whitepaper.pdf',
-  },
-  {
-    icon: 'ic-magnifying-glass-16',
-    text: 'tonviewer.com',
-    url: 'https://tonviewer.com',
-  },
-  {
-    icon: 'ic-code-16',
-    text: t('wallet_source_code'),
-    url: 'https://github.com/ton-blockchain/ton',
-    scheme: 'github://',
-  },
-];

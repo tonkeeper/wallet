@@ -3,12 +3,12 @@ export { TouchableOpacity } from './components/TouchableOpacity';
 export { IconButtonList } from './components/IconButtonList';
 export { IconButton } from './components/IconButton';
 export { Icon, IconNames } from './components/Icon';
-export { TonIcon } from './components/TonIcon';
+export { TonIcon, TonIconProps } from './components/TonIcon';
 export { Lottie } from './components/Lottie';
 export { Button } from './components/Button';
 export { Spacer } from './components/Spacer';
 export { Text, SText } from './components/Text';
-export { List, ListSeparator } from './components/List';
+export * from './components/List';
 export { View } from './components/View';
 export { Loader } from './components/Loader';
 export { Pressable } from './components/Pressable';
@@ -18,6 +18,11 @@ export { TextInputRef } from './components/TextInput';
 export { StepIndicator } from './components/StepIndicator';
 export { RefreshControl } from './components/RefreshControl';
 export { Toast } from './components/Toast';
+export { FastImage } from './components/FastImage';
+export { Picture } from './components/Picture';
+export { SegmentedControl } from './components/SegmentedControl';
+export { TransitionOpacity } from './components/TransitionOpacity';
+export * from './components/Flash';
 
 // Containers
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';

@@ -5,7 +5,7 @@ import { Text } from '../Text/Text';
 import { StyleSheet } from 'react-native';
 import { TonThemeColor } from '$styled';
 
-export type TagType = 'default' | 'accent' | 'warning';
+export type TagType = 'default' | 'accent' | 'warning' | 'positive';
 
 interface Props {
   type?: TagType;
@@ -18,6 +18,8 @@ const getTextColor = (type: TagType): TonThemeColor => {
       return 'accentPrimary';
     case 'warning':
       return 'accentOrange';
+    case 'positive':
+      return 'accentPositive';
     case 'default':
     default:
       return 'textSecondary';
@@ -64,5 +66,8 @@ const styles = Steezy.create(({ colors }) => ({
   },
   warning: {
     backgroundColor: colors.accentOrange,
+  },
+  positive: {
+    backgroundColor: colors.accentGreen,
   },
 }));

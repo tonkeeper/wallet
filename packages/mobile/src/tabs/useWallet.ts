@@ -1,7 +1,7 @@
-import { AddressFormats } from '@tonkeeper/core';
+import { WalletAddress } from '@tonkeeper/core/src/Wallet';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 
-export const useWallet = (): { address: AddressFormats } => {
+export const useWallet = (): { address: WalletAddress } => {
   if (tk.wallet?.address) {
     return {
       address: tk.wallet.address,
@@ -10,9 +10,12 @@ export const useWallet = (): { address: AddressFormats } => {
 
   return {
     address: {
-      friendly: '',
-      short: '',
-      raw: '',
+      tron: '',
+      ton: {
+        friendly: '',
+        short: '',
+        raw: '',
+      },
     },
   };
 };

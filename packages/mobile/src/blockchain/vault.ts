@@ -11,6 +11,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 import { wordlist } from '$libs/Ton/mnemonic/wordlist';
 import { Tonapi } from '$libs/Tonapi';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 const { nacl } = require('react-native-tweetnacl');
 
@@ -97,7 +98,11 @@ export class Vault {
       throw new Error('Mnemonic phrase is incorrect');
     }
 
-    const tonPubkey = (await Ton.mnemonic.mnemonicToKeyPair(phrase.split(' '))).publicKey;
+    const tonKeyPair = await Ton.mnemonic.mnemonicToKeyPair(phrase.split(' '));
+    const tonPubkey = tonKeyPair.publicKey;
+
+    await tk.generateTronAddress(tonKeyPair.secretKey);
+
     const info: VaultInfo = {
       name: name,
       tonPubkey,

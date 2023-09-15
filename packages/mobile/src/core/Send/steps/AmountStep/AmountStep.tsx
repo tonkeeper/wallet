@@ -11,6 +11,7 @@ import { walletWalletSelector } from '$store/wallet';
 import { AmountInput, AmountInputRef } from '$shared/components';
 import { CoinDropdown } from './CoinDropdown';
 import { t } from '@tonkeeper/shared/i18n';
+import { Steezy, View, Text } from '@tonkeeper/uikit';
 
 const AmountStepComponent: FC<AmountStepProps> = (props) => {
   const {
@@ -87,11 +88,19 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
           {...{ decimals, balance, currencyTitle, amount, fiatRate, setAmount }}
         />
         <S.CoinContainer>
-          <CoinDropdown
-            currency={currency}
-            currencyTitle={currencyTitle}
-            onChangeCurrency={onChangeCurrency}
-          />
+          {recipient.blockchain === 'ton' ? (
+            <CoinDropdown
+              currency={currency}
+              currencyTitle={currencyTitle}
+              onChangeCurrency={onChangeCurrency}
+            />
+          ) : (
+            <View style={styles.blockchainCoin}>
+              <Text type="label1">
+                TRC20
+              </Text>
+            </View>
+          )}
         </S.CoinContainer>
       </S.AmountContainer>
       <Spacer y={40} />
@@ -103,3 +112,12 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
 };
 
 export const AmountStep = memo(AmountStepComponent);
+
+const styles = Steezy.create(({ colors, corners }) => ({
+  blockchainCoin: {
+    backgroundColor: colors.buttonTertiaryBackground,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: corners.small
+  }
+}))

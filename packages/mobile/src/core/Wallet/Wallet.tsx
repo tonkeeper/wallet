@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { WalletProps } from './Wallet.interface';
@@ -44,54 +44,11 @@ import { formatter } from '$utils/formatter';
 import { Toast } from '$store';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { TonIcon } from '../../components/TonIcon';
+import { TonIcon } from '@tonkeeper/uikit';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import _ from 'lodash';
 import { navigate } from '$navigation/imperative';
 import { trackEvent } from '$utils/stats';
-
-const exploreActions = [
-  {
-    icon: 'ic-globe-16',
-    text: 'ton.org',
-    url: 'https://ton.org',
-  },
-  {
-    icon: 'ic-twitter-16',
-    text: 'Twitter',
-    url: 'https://twitter.com/ton_blockchain',
-    scheme: 'twitter://search',
-  },
-  {
-    icon: 'ic-telegram-16',
-    text: t('wallet_chat'),
-    url: t('wallet_toncommunity_chat_link'),
-    scheme: 'tg://',
-  },
-  {
-    icon: 'ic-telegram-16',
-    text: t('wallet_community'),
-    url: t('wallet_toncommunity_link'),
-    scheme: 'tg://',
-  },
-  {
-    icon: 'ic-doc-16',
-    text: 'Whitepaper',
-    openInBrowser: Platform.OS === 'android',
-    url: 'https://ton.org/whitepaper.pdf',
-  },
-  {
-    icon: 'ic-magnifying-glass-16',
-    text: 'tonviewer.com',
-    url: 'https://tonviewer.com',
-  },
-  {
-    icon: 'ic-code-16',
-    text: t('wallet_source_code'),
-    url: 'https://github.com/ton-blockchain/ton',
-    scheme: 'github://',
-  },
-];
 
 export const Wallet: FC<WalletProps> = ({ route }) => {
   const currency = route.params.currency;
@@ -113,6 +70,49 @@ export const Wallet: FC<WalletProps> = ({ route }) => {
   const filteredEventsInfo = useMemo(() => {
     return groupAndFilterTonActivityItems(eventsInfo);
   }, [eventsInfo]);
+
+  const exploreActions = useRef([
+    {
+      icon: 'ic-globe-16',
+      text: 'ton.org',
+      url: 'https://ton.org',
+    },
+    {
+      icon: 'ic-twitter-16',
+      text: 'Twitter',
+      url: 'https://twitter.com/ton_blockchain',
+      scheme: 'twitter://search',
+    },
+    {
+      icon: 'ic-telegram-16',
+      text: t('wallet_chat'),
+      url: getServerConfig('tonCommunityChatUrl'),
+      scheme: 'tg://',
+    },
+    {
+      icon: 'ic-telegram-16',
+      text: t('wallet_community'),
+      url: getServerConfig('tonCommunityUrl'),
+      scheme: 'tg://',
+    },
+    {
+      icon: 'ic-doc-16',
+      text: 'Whitepaper',
+      openInBrowser: Platform.OS === 'android',
+      url: 'https://ton.org/whitepaper.pdf',
+    },
+    {
+      icon: 'ic-magnifying-glass-16',
+      text: 'tonviewer.com',
+      url: 'https://tonviewer.com',
+    },
+    {
+      icon: 'ic-code-16',
+      text: t('wallet_source_code'),
+      url: 'https://github.com/ton-blockchain/ton',
+      scheme: 'github://',
+    },
+  ]).current;
 
   useEffect(() => {
     if (currency === CryptoCurrencies.Ton && wallet && wallet.ton.isLockup()) {

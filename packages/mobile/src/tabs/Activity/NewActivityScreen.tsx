@@ -1,9 +1,9 @@
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { Screen, Text, Button, Icon, List, Spacer, Steezy, View } from '@tonkeeper/uikit';
 import { getNewNotificationsCount } from '$core/Notifications/NotificationsActivity';
-import { useWalletTransactions } from '@tonkeeper/shared/query/hooks';
+import { useActivityList } from '@tonkeeper/shared/query/hooks';
 import { useNotificationsStore } from '$store/zustand/notifications';
-import { TransactionsList } from '@tonkeeper/shared/components';
+import { ActivityList } from '@tonkeeper/shared/components';
 import { Notification } from '$core/Notifications/Notification';
 import { openNotificationsScreen } from '$navigation/helper';
 import { useIsFocused } from '@react-navigation/native';
@@ -14,7 +14,8 @@ import { t } from '@tonkeeper/shared/i18n';
 import { useWallet } from '../useWallet';
 
 export const ActivityScreen = memo(() => {
-  const transactions = useWalletTransactions();
+  const activityList = useActivityList();
+
   const nav = useNavigation();
   const wallet = useWallet();
 
@@ -25,7 +26,7 @@ export const ActivityScreen = memo(() => {
   );
 
   const handlePressRecevie = useCallback(() => {
-    if (!!wallet.address.raw) {
+    if (!!wallet.address.ton.raw) {
       nav.go('Receive', {
         currency: 'ton',
         isFromMainScreen: true,
@@ -33,15 +34,15 @@ export const ActivityScreen = memo(() => {
     } else {
       openRequireWalletModal();
     }
-  }, [wallet.address.raw]);
+  }, [wallet.address.ton.raw]);
 
   const handlePressBuy = useCallback(() => {
-    if (!!wallet.address.raw) {
+    if (!!wallet.address.ton.raw) {
       nav.openModal('Exchange', { category: 'buy' });
     } else {
       openRequireWalletModal();
     }
-  }, [wallet.address.raw]);
+  }, [wallet.address.ton.raw]);
 
   const onRemoveNotification = useCallback(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -59,7 +60,10 @@ export const ActivityScreen = memo(() => {
     openNotificationsScreen();
   }, []);
 
-  if (!wallet.address.raw || (!transactions.loading && transactions?.data?.length < 1)) {
+  if (
+    !wallet.address.ton.raw ||
+    (!activityList.isLoading && activityList.sections.length < 0)
+  ) {
     return (
       <Screen>
         <View style={styles.emptyContainer}>
@@ -128,14 +132,14 @@ export const ActivityScreen = memo(() => {
   return (
     <Screen>
       <Screen.LargeHeader title={t('activity.screen_title')} />
-      <TransactionsList
+      <ActivityList
         ListHeaderComponent={renderNotificationsHeader}
-        fetchMoreEnd={transactions.fetchMoreEnd}
-        onFetchMore={transactions.fetchMore}
-        refreshing={transactions.refreshing}
-        onRefresh={transactions.refresh}
-        loading={transactions.loading}
-        events={transactions.data}
+        onLoadMore={activityList.loadMore}
+        onReload={activityList.reload}
+        isReloading={activityList.isReloading}
+        isLoading={activityList.isLoading}
+        sections={activityList.sections}
+        hasMore={activityList.hasMore}
       />
     </Screen>
   );
@@ -164,9 +168,7 @@ const styles = Steezy.create(({ colors }) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  notificationsHeader: {
-
-  },
+  notificationsHeader: {},
   notificationsCount: {
     backgroundColor: colors.backgroundContentTint,
     minWidth: 24,

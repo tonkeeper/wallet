@@ -31,13 +31,9 @@ export const ScreenLargeHeader = memo<ScreenLargeHeaderProps>((props) => {
     opacity,
   } = props;
 
-  const { scrollY, defineHeaderType, headerEjectionPoint } = useScreenScroll();
+  const { scrollY, headerEjectionPoint } = useScreenScroll();
   const { top: topInset } = useSafeAreaInsets();
   const theme = useTheme();
-  
-  useLayoutEffect(() => {
-    defineHeaderType('large');
-  }, []);
   
   const backgroundStyle = useAnimatedStyle(() => {
     return {

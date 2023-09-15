@@ -10,7 +10,7 @@ import * as S from '../../core/NFTs/NFTItem/NFTItem.style';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { AnimationDirection, HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { HideableImage } from '$core/HideableAmount/HideableImage';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
 
 interface NFTCardItemProps {
   item: any;
@@ -44,7 +44,7 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
   }, [isDNS, item.dns, item.name, item.address]);
 
   const nftRawAddress = useMemo(
-    () => Address(item.address).toRaw(),
+    () => Address.parse(item.address).toRaw(),
     [],
   );
 

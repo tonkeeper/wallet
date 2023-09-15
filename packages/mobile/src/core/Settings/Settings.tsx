@@ -114,8 +114,8 @@ export const Settings: FC = () => {
   }, []);
 
   const handleNews = useCallback(() => {
-    Linking.openURL(t('settings_news_url')).catch((err) => console.log(err));
-  }, [t]);
+    Linking.openURL(getServerConfig('tonkeeperNewsUrl')).catch((err) => console.log(err));
+  }, []);
 
   const handleSupport = useCallback(() => {
     Linking.openURL(getServerConfig('directSupportUrl')).catch((err) => console.log(err));

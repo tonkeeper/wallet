@@ -24,6 +24,9 @@ import { Toast, ToastSize } from '$store';
 import { goBack, useParams } from '$navigation/imperative';
 import { t } from '@tonkeeper/shared/i18n';
 
+import { createTronOwnerAddress } from '@tonkeeper/core/src/utils/tronUtils';
+import { tk } from '@tonkeeper/shared/tonkeeper';
+
 export const AccessConfirmation: FC = () => {
   const route = useRoute();
   const dispatch = useDispatch();
@@ -51,6 +54,22 @@ export const AccessConfirmation: FC = () => {
   const triggerError = useCallback(() => {
     pinRef.current?.triggerError();
     setValue('');
+  }, []);
+
+  const createTronAddress = useCallback(async (privateKey: Uint8Array) => {
+    try {
+      // Note: create tron address
+      if (!tk.wallet.address.tron) {
+        const addresses = await tk.generateTronAddress(privateKey);
+        if (addresses) {
+          tk.wallet.setTronAddress(addresses);
+        }
+      } else {
+        console.log('skip create tron address');
+      }
+    } catch (err) {
+      console.error('[generate tron address]', err);
+    }
   }, []);
 
   const handleKeyboard = useCallback(
@@ -96,8 +115,13 @@ export const AccessConfirmation: FC = () => {
                     setTimeout(() => {
                       pinRef.current?.triggerSuccess();
 
-                      setTimeout(() => {
+                      setTimeout(async () => {
                         if (isUnlock) {
+                          const privateKey = await (
+                            unlockedVault as any
+                          ).getTonPrivateKey();
+                          // createTronAddress(privateKey);
+                          
                           dispatch(mainActions.setUnlocked(true));
                         } else {
                           goBack();
@@ -131,11 +155,15 @@ export const AccessConfirmation: FC = () => {
 
     vault
       .unlock()
-      .then((unlockedVault) => {
+      .then(async (unlockedVault) => {
         pinRef.current?.triggerSuccess();
 
-        setTimeout(() => {
+        setTimeout(async () => {
+          // Lock screen
           if (isUnlock) {
+            const privateKey = await (unlockedVault as any).getTonPrivateKey();
+            // createTronAddress(privateKey);
+
             dispatch(mainActions.setUnlocked(true));
           } else {
             goBack();

@@ -31,7 +31,7 @@
     "@craftzdog/react-native-buffer": "^6.0.5",
     "@expo/react-native-action-sheet": "^4.0.1",
     "@gorhom/bottom-sheet": "^4.4.7",
-    "@rainbow-me/animated-charts": "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#f9c2d554029e6b544f66346278405c8d55739932",
+    "@rainbow-me/animated-charts": "git+ssh://git@github.com:tonkeeper/react-native-animated-charts#b399d8ad77d6883b4e7ddfe52538c34d163c3ac5",
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/clipboard": "^1.5.1",
     "@react-native-community/netinfo": "^9.3.2",
@@ -140,6 +140,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@babel/plugin-transform-flow-strip-types": "^7.22.5",
     "@react-native-community/eslint-config": "^3.2.0",
     "@types/bluebird": "^3.5.36",
     "@types/i18n-js": "^3.8.2",

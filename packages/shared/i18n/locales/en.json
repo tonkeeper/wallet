@@ -41,8 +41,6 @@
   "wallet_receive": "Receive",
   "wallet_send": "Send",
   "wallet_buy": "Buy",
-  "wallet_toncommunity_link": "https://t.me/toncoin",
-  "wallet_toncommunity_chat_link": "https://t.me/toncoin_chat",
   "wallet_source_code": "Source code",
   "wallet_community": "Community",
   "wallet_chat": "Chat",
@@ -131,7 +129,7 @@
   "nft_transfer_dns": "Transfer",
   "nft_browse_markets": "Browse Markets",
   "nft_open_in_marketplace": "View on NFT Market",
-  "nft_about_collection": "About {{collection}}",
+  "nft_about_collection": "About collection",
   "nft_more": "More",
   "nft_features": "Features",
   "nft_diamonds_description": "TON Diamonds possess the power to change the theme in your Tonkeeper wallet and match it to the color of your NFT.",
@@ -221,7 +219,6 @@
   "send_invalid_recipient_title": "Invalid recipient",
   "send_invalid_recipient_caption": "The domain does not exist or the wallet address is not linked to it",
   "send_all_warning_title": "Are you sure you want to send all your balance?",
-  "send_liquid_jetton_warning_title": "Are you sure you want to send a part of your staking balance?",
 
   "send_screen_steps": {
     "address": {
@@ -243,7 +240,7 @@
       "insufficient_balance": "Insufficient balance",
       "less_than_min": "Minimum %{minAmount} TON",
       "max": "Max",
-      "remaining": "Remaining: %{amount}"
+      "remaining": "Available: %{amount}"
     },
     "comfirm": {
       "title": "Confirm transaction",
@@ -297,6 +294,8 @@
   "confirm_sending_inactive_warn_description": "Do not proceed if you expect blockchain magic to happen. It won't.",
   "confirm_sending_inactive_warn_about": "What you should do",
   "confirm_sending_method_title": "Send your funds to %{name}?",
+  "confirm_sending_liquid_warn_title": "Note",
+  "confirm_sending_liquid_warn_description": "You will no longer receive rewards from the sended Staked TON. The new owner will begin to receive rewards.",
 
   "info_about_inactive_title": "Inactive contract",
   "info_about_inactive_desc1": "Tonkeeper does not know if this address is a wallet or a smart contract.",
@@ -386,7 +385,11 @@
     "contract_deploy": "Contract Deploy",
     "spam": "Spam",
     "bid": "Bid",
-    "failed": "Failed"
+    "failed": "Failed",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "withdrawal_request": "Withdrawal request",
+    "burned": "Burned"
   },
 
   "transactionDetails": {
@@ -395,6 +398,7 @@
     "bid_date": "Bid %{time}",
     "purchase_date": "purchase %{time}",
     "swapped_date": "Swapped on %{time}",
+    "call_contract_date": "Call contract %{time}",
     "sender": "Sender",
     "sender_address": "Sender address",
     "recipient": "Recipient",
@@ -406,7 +410,10 @@
     "operation": "Operation",
     "payload": "Payload",
     "bid_collection_name": "Issuer",
-    "bid_name": "Name"
+    "bid_name": "Name",
+    "subscription_product_label": "Subscription",
+    "subscription_merchant_label": "Merchant",
+    "unsubscription_title": "Unsubscribed"
   },
 
   "browser": {
@@ -469,7 +476,6 @@
   "settings_version": "Version",
   "settings_security": "Security",
   "settings_appearance": "Theme",
-  "settings_news_url": "https://t.me/tonkeeper",
   "settings_jettons_list": "Tokens",
   "settings_delete_account": "Delete account",
   "settings_search_engine": "Search",
@@ -704,7 +710,8 @@
         "withFees": "+ blockchain fees.\n",
         "yourBalance": "Your balance: %{balance} %{currency}.",
         "rechargeWallet": "Recharge wallet",
-        "title": "Insufficient funds"
+        "title": "Insufficient funds",
+        "stakingFee": "%{amount} TON needed for transaction. Estimated fee %{fee} TON will be deducted, the rest will be refunded."
       }
     }
   },
@@ -790,11 +797,19 @@
   "confirm": "Confirm",
 
   "staking": {
+    "confirm_deposit": "Confirm and Deposit",
+    "send_staked_ton": "Staked TON",
     "title": "Staking",
-    "widget_desc": "Earn up to %{apy}% on your TONs",
+    "title_large": "TON Staking",
+    "desc_large": "Join staking and get rewards. Staking helps to maintain the TON network.",
+    "learn_more": "Learn more",
+    "highest_apy": "Highest APY",
+    "widget_title": "Earn TON",
+    "widget_desc": "APY up to %{apy}%",
     "staking_pool_desc": "APY ≈ %{apy}%",
     "staking_desc": "Minimum deposit %{minStake} TON.\nEarn up to %{maxApy}%.",
-    "top_up": "Top up",
+    "estimated_profit": "%{amount} TON – annual profit\nif you stake TON today",
+    "top_up": "Deposit",
     "withdrawal_request": "Withdrawal request",
     "get_withdrawal": "Get withdrawal",
     "withdraw": "Withdraw",
@@ -802,6 +817,11 @@
     "transaction": "Transaction",
     "active": "Active",
     "other": "Other",
+    "message": {
+      "readyWithdraw": "%{amount} TON are ready for\nwithdrawal. Tap to collect",
+      "pendingWithdraw": "%{amount} TON will be\nwithdrawn ",
+      "pendingDeposit": "%{amount} TON will be\nadded "
+    },
     "warning": {
       "title": "Warning",
       "desc": "Staking based on third-party smart contracts. We are not responsible for their work.",
@@ -809,24 +829,31 @@
       "about": "About %{name}"
     },
     "details": {
-      "show_details": "Details",
+      "links_title": "Links",
+      "socials": {
+        "twitter": "Twitter",
+        "telegram": "Community"
+      },
+      "note": "Staking based on third-party smart contracts.\nTonkeeper is not responsible for their work.",
       "balance": "Staking balance",
       "pendingDeposit": "Pending deposit",
       "pendingWithdraw": "Pending withdrawal",
+      "pendingWithdrawDesc": "at the end of the cycle",
       "readyWithdraw": "Withdrawal ready",
       "tap_to_collect": "Tap to collect",
       "next_cycle": {
         "title": "Next cycle",
-        "desc": "All transactions take effect once the cycle ends",
-        "desc_liquid": "All withdrawal requests take effects once the cycle ends",
-        "time": "in %{time}"
+        "reward_title": "Next reward",
+        "desc": "All transactions take effect once the cycle ends.",
+        "desc_liquid": "All withdrawal requests take effects once the cycle ends.",
+        "in": "in"
       },
       "cooldown": {
         "title": "Cooldown period",
         "desc": "Two-hour period applied at the start of each staking cycle to improve the process of withdrawals and deposits between cycles",
         "active": "Active"
       },
-      "about_pool": "About pool",
+      "about_pool": "Details",
       "frequency": {
         "label": "Reward frequency",
         "value": "Every %{count} hours"
@@ -835,17 +862,22 @@
         "label": "Pool address"
       },
       "apy": {
-        "label": "Est. APY rate",
+        "label": "APY",
+        "highest_tag": "MAX",
         "value": "≈ %{value}%"
       },
       "min_deposit": {
         "label": "Minimal deposit",
         "value": "%{value} TON"
+      },
+      "liquidity_token": {
+        "label": "%{token} liquidity token",
+        "value": "Learn more"
       }
     },
     "rewards": {
-      "title": "Your yearly rewards",
-      "after_top_up": "After top up",
+      "title": "Your APY",
+      "after_top_up": "After deposit",
       "current": "Current",
       "value": "≈ %{value} TON"
     },
@@ -911,6 +943,14 @@
   },
   "choose_country": {
     "title": "Choose your country"
+  },
+  "programmable_nfts": {
+    "alert": {
+      "title": "Are you sure you want to open an external link?",
+      "description": "Visit this external link only if you trust the author of the collection.\n\n{{uri}}",
+      "open": "Open anyway",
+      "cancel": "Cancel"
+    }
   },
   "exchange": {
     "not_exists": "Invalid exchange ID"

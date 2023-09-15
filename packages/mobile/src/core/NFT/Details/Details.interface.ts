@@ -3,6 +3,6 @@ export interface DetailsProps {
   tokenId?: number;
   standard?: string;
   chain?: string;
-  ownerAddress: string;
+  ownerAddress?: string;
   expiringAt?: number;
 }

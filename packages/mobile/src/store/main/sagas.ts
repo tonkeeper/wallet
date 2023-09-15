@@ -210,7 +210,8 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     yield put(subscriptionsActions.loadSubscriptions());
     const { wallet: walletNew } = yield select(walletSelector);
     const addr = yield call([walletNew.ton, 'getAddress']);
-    yield call([tk, 'init'], addr);
+    const data = yield call([tk, 'load']);
+    yield call([tk, 'init'], addr, isTestnet, data.tronAddress);
     useSwapStore.getState().actions.fetchAssets();
   } else {
     yield put(walletActions.endLoading());

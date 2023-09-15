@@ -34,6 +34,8 @@ import {
 import { Alert } from 'react-native';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { t } from '@tonkeeper/shared/i18n';
+import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
+import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
@@ -75,18 +77,18 @@ export const StakingSend: FC<Props> = (props) => {
       ? (poolInfo.stakingJetton.jettonAddress as CryptoCurrencies)
       : CryptoCurrencies.Ton;
 
-  const decimals = isDeposit ? Decimals[CryptoCurrencies.Ton] : poolInfo.balance.decimals;
+  const decimals = Decimals[CryptoCurrencies.Ton];
 
   const isJetton = !isDeposit && !!poolInfo.stakingJetton;
 
   const symbol = isDeposit ? 'TON' : poolInfo.balance.symbol;
 
-  const isWhalesPool = pool.implementation === 'whales';
+  const isWhalesPool = pool.implementation === PoolImplementationType.Whales;
 
   const { apy } = pool;
 
-  const pendingDeposit = Ton.fromNano(poolStakingInfo?.pendingDeposit ?? '0');
-  const readyWithdraw = Ton.fromNano(poolStakingInfo?.readyWithdraw ?? '0');
+  const pendingDeposit = Ton.fromNano(poolStakingInfo?.pending_deposit ?? '0');
+  const readyWithdraw = Ton.fromNano(poolStakingInfo?.ready_withdraw ?? '0');
 
   const stepViewRef = useRef<StepViewRef>(null);
 
@@ -165,13 +167,34 @@ export const StakingSend: FC<Props> = (props) => {
 
   const actionRef = useRef<Awaited<ReturnType<typeof operations.signRaw>> | null>(null);
 
+  const { isLiquidJetton, price } = useCurrencyToSend(currency, isJetton);
+
+  const parsedAmount = useMemo(() => {
+    const parsed = parseLocaleNumber(amount.value);
+
+    if (!parsed) {
+      return '0';
+    }
+
+    if (isLiquidJetton && price) {
+      return amount.all
+        ? price.amount
+        : new BigNumber(parsed)
+            .dividedBy(price.ton)
+            .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
+            .toString();
+    }
+
+    return parsed;
+  }, [amount.all, amount.value, decimals, isLiquidJetton, price]);
+
   const prepareConfirmSending = useCallback(async () => {
     try {
       setPreparing(true);
 
       const message = await getStakeSignRawMessage(
         pool,
-        Ton.toNano(parseLocaleNumber(amount.value)),
+        Ton.toNano(parsedAmount),
         transactionType,
         walletAddress,
         amount.all,
@@ -207,8 +230,8 @@ export const StakingSend: FC<Props> = (props) => {
     }
   }, [
     amount.all,
-    amount.value,
     operations,
+    parsedAmount,
     pool,
     poolInfo.stakingJetton,
     transactionType,
@@ -218,25 +241,12 @@ export const StakingSend: FC<Props> = (props) => {
   const totalFee = useMemo(() => {
     const fee = new BigNumber(Ton.fromNano(accountEvent?.fee.total.toString() ?? '0'));
 
-    if (
-      [
-        [
-          StakingTransactionType.WITHDRAWAL,
-          StakingTransactionType.WITHDRAWAL_CONFIRM,
-        ].includes(transactionType),
-      ]
-    ) {
-      const withdrawalFee = new BigNumber(Ton.fromNano(getWithdrawalFee(pool)));
-
-      return fee.plus(withdrawalFee).toString();
-    }
-
     if (fee.isEqualTo(0)) {
       return undefined;
     }
 
     return fee.toString();
-  }, [accountEvent, pool, transactionType]);
+  }, [accountEvent]);
 
   const sendTx = useCallback(async () => {
     if (!actionRef.current || !accountEvent) {
@@ -251,7 +261,15 @@ export const StakingSend: FC<Props> = (props) => {
       const totalAmount = calculateActionsTotalAmount(address.ton, accountEvent.actions);
       const checkResult = await checkIsInsufficient(totalAmount);
       if (checkResult.insufficient) {
-        openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
+        const stakingFee = Ton.fromNano(getWithdrawalFee(pool));
+
+        openInsufficientFundsModal({
+          totalAmount,
+          balance: checkResult.balance,
+          stakingFee,
+          fee: totalFee ?? '0.1',
+        });
+
         return cancel();
       }
 
@@ -299,7 +317,7 @@ export const StakingSend: FC<Props> = (props) => {
     } finally {
       setSending(false);
     }
-  }, [accountEvent, address.ton, isDeposit, pool, unlockVault]);
+  }, [accountEvent, address.ton, isDeposit, pool, totalFee, unlockVault]);
 
   useEffect(() => {
     if (isWithdrawalConfrim) {

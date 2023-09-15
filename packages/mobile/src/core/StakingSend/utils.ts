@@ -1,13 +1,13 @@
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import { Ton } from '$libs/Ton';
 import { encodeBytes } from '$utils/base64';
-import { PoolInfo } from '@tonkeeper/core/src/legacy';
 import BN from 'bn.js';
 import TonWeb from 'tonweb';
 import { StakingTransactionType } from './types';
 import { JettonBalanceModel } from '$store/models';
 import BigNumber from 'bignumber.js';
-import { Address } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/shared/Address';
+import { PoolInfo, PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 
 const { Cell } = TonWeb.boc;
 
@@ -52,7 +52,7 @@ export const createLiquidTfWithdrawStakeCell = async (amount: BN, address: strin
   payload.bits.writeUint(0x595f07bc, 32);
   payload.bits.writeUint(getRandomQueryId(), 64); // Query ID
   payload.bits.writeCoins(amount); // Amount
-  payload.bits.writeAddress(Address(address).toTonWeb());
+  payload.bits.writeAddress(Address.parse(address).toTonWeb());
   payload.bits.writeBit(1);
   payload.refs.push(customPayload);
 
@@ -85,13 +85,13 @@ export const getStakeSignRawMessage = async (
 ): Promise<SignRawMessage> => {
   const withdrawalFee = getWithdrawalFee(pool);
 
-  const address = Address(
+  const address = Address.parse(
     stakingJetton && transactionType !== StakingTransactionType.DEPOSIT
       ? stakingJetton.walletAddress
       : pool.address,
   ).toFriendly({ bounceable: true });
 
-  if (pool.implementation === 'whales') {
+  if (pool.implementation === PoolImplementationType.Whales) {
     const payload =
       transactionType === StakingTransactionType.DEPOSIT
         ? await createWhalesAddStakeCommand()
@@ -104,7 +104,7 @@ export const getStakeSignRawMessage = async (
     };
   }
 
-  if (pool.implementation === 'liquidTF') {
+  if (pool.implementation === PoolImplementationType.LiquidTF) {
     const payload =
       transactionType === StakingTransactionType.DEPOSIT
         ? await createLiquidTfAddStakeCommand()
@@ -115,7 +115,9 @@ export const getStakeSignRawMessage = async (
     );
 
     const depositAmount =
-      pool.implementation === 'liquidTF' && !isSendAll ? amountWithFee : amount;
+      pool.implementation === PoolImplementationType.LiquidTF && !isSendAll
+        ? amountWithFee
+        : amount;
 
     return {
       address,
@@ -127,7 +129,7 @@ export const getStakeSignRawMessage = async (
     };
   }
 
-  if (pool.implementation === 'tf') {
+  if (pool.implementation === PoolImplementationType.Tf) {
     const payload =
       transactionType === StakingTransactionType.DEPOSIT
         ? await createTfAddStakeCommand()
@@ -144,11 +146,15 @@ export const getStakeSignRawMessage = async (
 };
 
 export const getWithdrawalFee = (pool: PoolInfo): BN => {
-  if (pool.implementation === 'whales') {
+  if (pool.implementation === PoolImplementationType.Whales) {
     return Ton.toNano('0.2');
   }
 
-  if (['tf', 'liquidTF'].includes(pool.implementation)) {
+  if (
+    [PoolImplementationType.Tf, PoolImplementationType.LiquidTF].includes(
+      pool.implementation,
+    )
+  ) {
     return Ton.toNano('1');
   }
 
@@ -156,11 +162,15 @@ export const getWithdrawalFee = (pool: PoolInfo): BN => {
 };
 
 export const getWithdrawalAlertFee = (pool: PoolInfo): BN => {
-  if (pool.implementation === 'whales') {
+  if (pool.implementation === PoolImplementationType.Whales) {
     return Ton.toNano('0.4');
   }
 
-  if (['tf', 'liquidTF'].includes(pool.implementation)) {
+  if (
+    [PoolImplementationType.Tf, PoolImplementationType.LiquidTF].includes(
+      pool.implementation,
+    )
+  ) {
     return Ton.toNano('1');
   }
 

@@ -5,6 +5,7 @@ import { IPrivacyStore } from './types';
 
 const initialState: Omit<IPrivacyStore, 'actions'> = {
   hiddenAmounts: false,
+  animation: true,
 };
 
 export const usePrivacyStore = create(
@@ -13,8 +14,14 @@ export const usePrivacyStore = create(
       ...initialState,
       actions: {
         toggleHiddenAmounts: () => {
-          set(({ hiddenAmounts }) => ({ hiddenAmounts: !hiddenAmounts }));
+          set(({ hiddenAmounts }) => ({ hiddenAmounts: !hiddenAmounts, animation: true }));
         },
+        showAmounts: () => {
+          set(() => ({ hiddenAmounts: false, animation: false }));
+        },
+        hideAmounts: () => {
+          set(() => ({ hiddenAmounts: true, animation: false }));
+        }
       },
     }),
     {

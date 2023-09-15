@@ -1,6 +1,6 @@
-export const TEST = 1;
+import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 
-export const ServerConfigVersion = 5;
+export const ServerConfigVersion = 6;
 
 export const GOOGLE_PACKAGE_NAME = 'com.ton_keeper';
 export const APPLE_STORE_ID = '1587742107';
@@ -316,4 +316,8 @@ export const telegramNumbersAddress = {
   testnet: 'EQAOQdwdw8kGftJCSFgOErM1mBjYPe4DBPq8-AhF6vr9si5N',
 };
 
-export const KNOWN_STAKING_IMPLEMENTATIONS = ['whales', 'tf', 'liquidTF'];
+export const KNOWN_STAKING_IMPLEMENTATIONS = [
+  PoolImplementationType.Whales,
+  PoolImplementationType.Tf,
+  PoolImplementationType.LiquidTF,
+];

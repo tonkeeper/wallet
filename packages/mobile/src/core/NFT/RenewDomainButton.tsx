@@ -27,7 +27,7 @@ export type RenewDomainButtonRef = {
 
 interface RenewDomainButtonProps {
   domainAddress: string;
-  ownerAddress: string;
+  ownerAddress?: string;
   disabled?: boolean;
   loading?: boolean;
   expiringAt: number;
@@ -87,7 +87,7 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
       }
 
       if (!Address.compare(wallet.address.rawAddress, ownerAddress)) {
-        return openAddressMismatchModal(openRenew, ownerAddress);
+        return openAddressMismatchModal(openRenew, ownerAddress!);
       } else {
         openRenew();
       }

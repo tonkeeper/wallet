@@ -1,26 +1,32 @@
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { Screen, Spacer, SpacerSizes, View } from '$uikit';
-import { List, isAndroid } from '@tonkeeper/uikit';
+import { List, isAndroid, Text } from '@tonkeeper/uikit';
 // import { List } from '$uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { openJetton } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { Rate } from '../hooks/useBalance';
 import { ListItemRate } from '../components/ListItemRate';
-import { TonIcon, TonIconProps } from '../../../components/TonIcon';
+import { TonIcon, TonIconProps } from '@tonkeeper/uikit';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { Tabs } from '../components/Tabs';
 import { NFTsList } from '../components/NFTsList';
-import { TokenPrice } from '$hooks/useTokenPrice';
+import { TokenPrice, useTokenPrice } from '$hooks/useTokenPrice';
 import { useTheme } from '$hooks/useTheme';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StakingWidget } from './StakingWidget';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { openWallet } from '$core/Wallet/Wallet';
-
+import {
+  TronAPIGenerated,
+  TronBalance,
+} from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
+import { formatter } from '@tonkeeper/shared/formatter';
+import { fiatCurrencySelector } from '$store/main';
+import { openTronToken } from '../TronTokenScreen';
 
 enum ContentType {
   Token,
@@ -138,6 +144,7 @@ interface BalancesListProps {
   balance: any; // TODO:
   tonPrice: TokenPrice;
   nfts?: any; // TODO:
+  tronBalances?: TronBalance[];
   handleRefresh: () => void;
   isRefreshing: boolean;
   isFocused: boolean;
@@ -155,9 +162,12 @@ export const BalancesList = memo<BalancesListProps>(
     isRefreshing,
     isFocused,
     ListHeaderComponent,
+    tronBalances,
   }) => {
     const theme = useTheme();
     const dispatch = useDispatch();
+    const usdtRate = useTokenPrice('USDT');
+    const fiatCurrency = useSelector(fiatCurrencySelector);
 
     const handleMigrate = useCallback(
       (fromVersion: string) => () => {
@@ -217,6 +227,39 @@ export const BalancesList = memo<BalancesListProps>(
             subvalue: item.amount.fiat,
             subtitle: tonPrice.formatted.fiat ?? '-',
           })),
+        );
+      }
+
+      if (tronBalances && tronBalances.length > 0) {
+        content.push(
+          ...(tronBalances as any).map((item) => {  
+            const amount = formatter.fromNano(item.weiAmount, item.token.decimals);
+            const fiatAmount = formatter.format(usdtRate.fiat * parseFloat(amount), {
+              currency: fiatCurrency
+            });
+            const fiatPrice = formatter.format(usdtRate.fiat, {
+              currency: fiatCurrency
+            });
+            
+            return {
+              onPress: () => openTronToken(item),
+              type: ContentType.Token,
+              picture: item.token.image,
+              title: (
+                <View style={styles.trcTitle}>
+                  <Text type="label1">{item.token.symbol}</Text>
+                  <View style={styles.trcLabel}>
+                    <Text type="body4" color="textSecondary">
+                      TRC20
+                    </Text>
+                  </View>
+                </View>
+              ),
+              value: amount,
+              subvalue: fiatAmount,
+              subtitle: fiatPrice,
+            };
+          }),
         );
       }
 
@@ -282,7 +325,7 @@ export const BalancesList = memo<BalancesListProps>(
       });
 
       return content;
-    }, [balance, handleMigrate, nfts, tokens.list, tonPrice]);
+    }, [balance, handleMigrate, nfts, tokens.list, tonPrice, tronBalances]);
 
     const ListComponent = nfts ? Screen.FlashList : Tabs.FlashList;
 
@@ -308,6 +351,19 @@ export const BalancesList = memo<BalancesListProps>(
 );
 
 const styles = Steezy.create(({ colors, corners }) => ({
+  trcTitle: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  trcLabel: {
+    backgroundColor: colors.backgroundContentTint,
+    paddingHorizontal: 5,
+    paddingTop: 2.5,
+    paddingBottom: 3.5,
+    borderRadius: 4,
+    marginLeft: 6,
+  },
   firstListItem: {
     borderTopLeftRadius: corners.medium,
     borderTopRightRadius: corners.medium,

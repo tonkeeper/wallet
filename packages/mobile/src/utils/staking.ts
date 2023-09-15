@@ -12,12 +12,12 @@ import {
 } from '$assets/staking';
 import { Ton } from '$libs/Ton';
 import { StakingInfo } from '$store';
-import { PoolInfo } from '@tonkeeper/core/src/legacy';
+import { PoolInfo, PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 import BigNumber from 'bignumber.js';
 import { ImageRequireSource } from 'react-native';
 
 export const getPoolIcon = (pool: PoolInfo): ImageRequireSource | null => {
-  if (pool.implementation === 'liquidTF') {
+  if (pool.implementation === PoolImplementationType.LiquidTF) {
     return liquidTfIconSource;
   }
 
@@ -42,13 +42,13 @@ export const getPoolIcon = (pool: PoolInfo): ImageRequireSource | null => {
 };
 
 export const getImplementationIcon = (implementation: string) => {
-  if (implementation === 'whales') {
+  if (implementation === PoolImplementationType.Whales) {
     return whalesIconSource;
   }
-  if (implementation === 'tf') {
+  if (implementation === PoolImplementationType.Tf) {
     return tfIconSource;
   }
-  if (implementation === 'liquidTF') {
+  if (implementation === PoolImplementationType.LiquidTF) {
     return liquidTfIconSource;
   }
 };
@@ -56,10 +56,10 @@ export const getImplementationIcon = (implementation: string) => {
 export const calculatePoolBalance = (pool: PoolInfo, stakingInfo: StakingInfo) => {
   const amount = new BigNumber(Ton.fromNano(stakingInfo[pool.address]?.amount || '0'));
   const pendingDeposit = new BigNumber(
-    Ton.fromNano(stakingInfo[pool.address]?.pendingDeposit || '0'),
+    Ton.fromNano(stakingInfo[pool.address]?.pending_deposit || '0'),
   );
   const readyWithdraw = new BigNumber(
-    Ton.fromNano(stakingInfo[pool.address]?.readyWithdraw || '0'),
+    Ton.fromNano(stakingInfo[pool.address]?.ready_withdraw || '0'),
   );
   const balance = amount.plus(pendingDeposit).plus(readyWithdraw);
 
