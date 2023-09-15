@@ -422,6 +422,13 @@
     "unsubscription_title": "Отмена подписки"
   },
 
+  "receiveModal": {
+    "receive": "Получить",
+    "receive_ton":"Отправляйте на этот адрес только Toncoin TON и токены в сети TON, иначе вы можете потерять свои средства.",
+    "share": "Поделиться",
+    "copy": "Скопировать"
+  },
+
   "browser": {
     "title": "Браузер",
     "search_label": "Поиск",

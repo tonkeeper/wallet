@@ -76,12 +76,11 @@ export const ReceiveModal = memo(() => {
         >
           <View style={styles.description}>
             <Text type="h3" textAlign="center">
-              Receive Toncoin
+              {t('receiveModal.receive')} Toncoin
             </Text>
             <Spacer y={4} />
             <Text type="body1" color="textSecondary" textAlign="center">
-              Send only Toncoin TON and tokens in TON network to this address, or you
-              might lose your funds.
+              {t('receiveModal.receive_ton')}
             </Text>
           </View>
           <QrCode
@@ -96,7 +95,7 @@ export const ReceiveModal = memo(() => {
               leftContent={<Icon name="ic-copy-16" />}
               onPress={copyText(tonAddress, t('address_copied'))}
               color="secondary"
-              title="Copy"
+              title={t('receiveModal.copy')}
               size="medium"
             />
             <Spacer x={12} />
@@ -104,7 +103,7 @@ export const ReceiveModal = memo(() => {
               leftContent={<Icon name="ic-share-16" />}
               onPress={share(tonAddress)}
               color="secondary"
-              title="Share"
+              title={t('receiveModal.share')}
               size="medium"
             />
           </View>

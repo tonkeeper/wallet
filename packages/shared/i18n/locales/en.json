@@ -416,6 +416,13 @@
     "unsubscription_title": "Unsubscribed"
   },
 
+  "receiveModal": {
+    "receive": "Receive",
+    "receive_ton":"Send only Toncoin TON and tokens in TON network to this address, or you might lose your funds.",
+    "share": "Share",
+    "copy": "Copy"
+  },
+
   "browser": {
     "title": "Browser",
     "search_label": "Search or enter address",
