@@ -101,7 +101,7 @@ export class Vault {
     const tonKeyPair = await Ton.mnemonic.mnemonicToKeyPair(phrase.split(' '));
     const tonPubkey = tonKeyPair.publicKey;
 
-    await tk.generateTronAddress(tonKeyPair.secretKey);
+    // await tk.generateTronAddress(tonKeyPair.secretKey);
 
     const info: VaultInfo = {
       name: name,

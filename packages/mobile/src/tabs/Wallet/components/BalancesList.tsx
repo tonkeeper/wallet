@@ -230,38 +230,38 @@ export const BalancesList = memo<BalancesListProps>(
         );
       }
 
-      if (tronBalances && tronBalances.length > 0) {
-        content.push(
-          ...(tronBalances as any).map((item) => {  
-            const amount = formatter.fromNano(item.weiAmount, item.token.decimals);
-            const fiatAmount = formatter.format(usdtRate.fiat * parseFloat(amount), {
-              currency: fiatCurrency
-            });
-            const fiatPrice = formatter.format(usdtRate.fiat, {
-              currency: fiatCurrency
-            });
+      // if (tronBalances && tronBalances.length > 0) {
+      //   content.push(
+      //     ...(tronBalances as any).map((item) => {  
+      //       const amount = formatter.fromNano(item.weiAmount, item.token.decimals);
+      //       const fiatAmount = formatter.format(usdtRate.fiat * parseFloat(amount), {
+      //         currency: fiatCurrency
+      //       });
+      //       const fiatPrice = formatter.format(usdtRate.fiat, {
+      //         currency: fiatCurrency
+      //       });
             
-            return {
-              onPress: () => openTronToken(item),
-              type: ContentType.Token,
-              picture: item.token.image,
-              title: (
-                <View style={styles.trcTitle}>
-                  <Text type="label1">{item.token.symbol}</Text>
-                  <View style={styles.trcLabel}>
-                    <Text type="body4" color="textSecondary">
-                      TRC20
-                    </Text>
-                  </View>
-                </View>
-              ),
-              value: amount,
-              subvalue: fiatAmount,
-              subtitle: fiatPrice,
-            };
-          }),
-        );
-      }
+      //       return {
+      //         onPress: () => openTronToken(item),
+      //         type: ContentType.Token,
+      //         picture: item.token.image,
+      //         title: (
+      //           <View style={styles.trcTitle}>
+      //             <Text type="label1">{item.token.symbol}</Text>
+      //             <View style={styles.trcLabel}>
+      //               <Text type="body4" color="textSecondary">
+      //                 TRC20
+      //               </Text>
+      //             </View>
+      //           </View>
+      //         ),
+      //         value: amount,
+      //         subvalue: fiatAmount,
+      //         subtitle: fiatPrice,
+      //       };
+      //     }),
+      //   );
+      // }
 
       content.push({
         key: 'staking',
