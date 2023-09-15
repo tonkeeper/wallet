@@ -637,6 +637,7 @@ function* cleanWalletWorker() {
     yield call(useStakingStore.getState().actions.reset);
     yield call(useNotificationsStore.getState().actions.reset);
     yield call(SecureStore.deleteItemAsync, 'proof_token');
+    yield call([tk, 'destroy'])
 
     yield put(
       batchActions(

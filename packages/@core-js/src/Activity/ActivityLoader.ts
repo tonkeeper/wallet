@@ -117,8 +117,6 @@ export class ActivityLoader {
         event,
       });
 
-      console.log(action.action_id);
-
       this.tonActions.set(action.action_id, action);
 
       return action;

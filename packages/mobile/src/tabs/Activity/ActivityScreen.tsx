@@ -62,7 +62,7 @@ export const ActivityScreen = memo(() => {
 
   if (
     !wallet.address.ton.raw ||
-    (!activityList.isLoading && activityList.sections.length < 0)
+    (!activityList.isLoading && activityList.sections.length < 1)
   ) {
     return (
       <Screen>
