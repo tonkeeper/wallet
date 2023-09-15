@@ -74,6 +74,10 @@ export class ActivityModel {
     const action = event.actions[actionIndex];
     const payload = action[action.type];
 
+    if (!action) {
+      throw new Error('[ActivityModel]: action is undefined');
+    }
+
     const type = (action as any).type as ActionType;
     const destination = this.defineActionDestination(ownerAddress, payload);
     const amount = this.createAmount({ type, payload });

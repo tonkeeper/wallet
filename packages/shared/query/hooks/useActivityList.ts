@@ -3,7 +3,6 @@ import { tk } from '../../tonkeeper';
 import { useEffect } from 'react';
 
 export const useActivityList = () => {
-  console.log(tk.wallet);
   if (!tk.wallet) {
     return {
       loadMore: () => {},

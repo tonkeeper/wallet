@@ -27,10 +27,7 @@ export const ActivityScreen = memo(() => {
 
   const handlePressRecevie = useCallback(() => {
     if (!!wallet.address.ton.raw) {
-      nav.go('Receive', {
-        currency: 'ton',
-        isFromMainScreen: true,
-      });
+      nav.go('ReceiveModal');
     } else {
       openRequireWalletModal();
     }

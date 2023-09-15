@@ -177,7 +177,7 @@ const HeaderList = memo(() => {
       return openRequireWalletModal();
     }
 
-    openReceive(CryptoCurrencies.Ton);
+    nav.go('ReceiveModal');
   }, [wallet]);
 
   const handleSend = useCallback(() => {
