@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux';
 import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/shared/Address';
-import { PoolInfoImplementationEnum } from '@tonkeeper/core/src/TonAPI';
+import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 import { walletSelector } from '$store/wallet';
 import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { Flash } from '@tonkeeper/uikit';
@@ -101,7 +101,7 @@ export const Staking: FC<Props> = () => {
 
       if (providerPools.length === providerActivePools.length) {
         activeList.push(provider);
-      } else if (provider.id === PoolInfoImplementationEnum.LiquidTF) {
+      } else if (provider.id === PoolImplementationType.LiquidTF) {
         recommendedList.push(provider);
       } else {
         otherList.push(provider);

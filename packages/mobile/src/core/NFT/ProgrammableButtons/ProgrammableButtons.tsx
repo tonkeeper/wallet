@@ -44,7 +44,7 @@ const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
   const openExternalLink = useCallback(
     async (uri: string) => {
       try {
-        const nftAddress = Address(props.nftAddress).toFriendly();
+        const nftAddress = Address.parse(props.nftAddress).toFriendly();
         const vault = await unlockVault();
         const address = await vault.getTonAddress(isTestnet);
         let walletStateInit = '';
@@ -65,7 +65,7 @@ const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
 
         let url = new URL(uri);
 
-        url.searchParams.append('wallet', Address(proof.address).toFriendly());
+        url.searchParams.append('wallet', Address.parse(proof.address).toFriendly());
         url.searchParams.append('nftAddress', nftAddress);
         url.searchParams.append('timestamp', proof.proof.timestamp.toString());
         url.searchParams.append('publicKey', TonWeb.utils.bytesToHex(publicKey));

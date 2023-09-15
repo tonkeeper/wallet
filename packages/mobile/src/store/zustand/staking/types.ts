@@ -2,11 +2,11 @@ import { JettonBalanceModel } from '$store/models';
 import {
   AccountStakingInfo,
   PoolInfo,
-  PoolInfoImplementationEnum,
+  PoolImplementationType,
 } from '@tonkeeper/core/src/TonAPI';
 
 export interface StakingProvider {
-  id: PoolInfoImplementationEnum;
+  id: PoolImplementationType;
   name: string;
   description: string;
   url: string;

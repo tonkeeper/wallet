@@ -35,7 +35,7 @@ import { Icon } from '@tonkeeper/uikit';
 import { getLinkIcon, getLinkTitle, getSocialLinkType } from './utils';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Linking } from 'react-native';
-import { PoolInfoImplementationEnum } from '@tonkeeper/core/src/TonAPI';
+import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPoolDetails>;
@@ -152,7 +152,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
 
   const isImplemeted = KNOWN_STAKING_IMPLEMENTATIONS.includes(pool.implementation);
 
-  const isLiquidTF = pool.implementation === PoolInfoImplementationEnum.LiquidTF;
+  const isLiquidTF = pool.implementation === PoolImplementationType.LiquidTF;
 
   return (
     <S.Wrap>

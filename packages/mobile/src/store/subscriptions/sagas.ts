@@ -99,7 +99,7 @@ function* subscribeWorker(action: SubscribeAction) {
       },
     });
 
-    yield call([tk.wallet.transactions, 'refetch']);
+    yield call([tk.wallet.activityList, 'reload']);
     yield put(eventsActions.pollEvents());
     onDone();
 
@@ -130,7 +130,7 @@ function* unsubscribeWorker(action: UnsubscribeAction) {
       params: { signed_tx: signedTx },
     });
 
-    yield call([tk.wallet.transactions, 'refetch']);
+    yield call([tk.wallet.activityList, 'reload']);
     yield put(eventsActions.pollEvents());
     onDone();
   } catch (e) {

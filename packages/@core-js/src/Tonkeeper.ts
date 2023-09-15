@@ -161,7 +161,6 @@ export class Tonkeeper {
     await this.wallet.subscriptions.preload();
     await this.wallet.activityList.preload();
     await this.wallet.balances.preload();
-    await this.wallet.jettons.preload();
     await this.wallet.nfts.preload();
     return true;
   }
@@ -172,7 +171,6 @@ export class Tonkeeper {
     this.wallet.subscriptions.prefetch();
     this.wallet.activityList.prefetch();
     this.wallet.balances.prefetch();
-    this.wallet.jettons.prefetch();
     this.wallet.nfts.prefetch();
   }
 

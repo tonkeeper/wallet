@@ -33,9 +33,6 @@ import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
 import { Screen, View } from '@tonkeeper/uikit';
 
-import { useWallet } from '../../tabs/useWallet';
-import { tk } from '@tonkeeper/shared/tonkeeper';
-
 import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonActivityList';
 import { ActivityList } from '@tonkeeper/shared/components';
 

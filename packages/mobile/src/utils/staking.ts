@@ -12,12 +12,12 @@ import {
 } from '$assets/staking';
 import { Ton } from '$libs/Ton';
 import { StakingInfo } from '$store';
-import { PoolInfo, PoolInfoImplementationEnum } from '@tonkeeper/core/src/TonAPI';
+import { PoolInfo, PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 import BigNumber from 'bignumber.js';
 import { ImageRequireSource } from 'react-native';
 
 export const getPoolIcon = (pool: PoolInfo): ImageRequireSource | null => {
-  if (pool.implementation === PoolInfoImplementationEnum.LiquidTF) {
+  if (pool.implementation === PoolImplementationType.LiquidTF) {
     return liquidTfIconSource;
   }
 
@@ -42,13 +42,13 @@ export const getPoolIcon = (pool: PoolInfo): ImageRequireSource | null => {
 };
 
 export const getImplementationIcon = (implementation: string) => {
-  if (implementation === PoolInfoImplementationEnum.Whales) {
+  if (implementation === PoolImplementationType.Whales) {
     return whalesIconSource;
   }
-  if (implementation === PoolInfoImplementationEnum.Tf) {
+  if (implementation === PoolImplementationType.Tf) {
     return tfIconSource;
   }
-  if (implementation === PoolInfoImplementationEnum.LiquidTF) {
+  if (implementation === PoolImplementationType.LiquidTF) {
     return liquidTfIconSource;
   }
 };

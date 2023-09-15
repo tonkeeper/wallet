@@ -166,7 +166,7 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
 
           await delay(1750);
 
-          tk.wallet.transactions.refetch();
+          tk.wallet.activityList.reload();
           dispatch(eventsActions.pollEvents());
           closeModal();
 

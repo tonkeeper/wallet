@@ -87,7 +87,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
       ...jettons
         .map((jetton): CoinItem => {
           const liquidStakingPool = stakingPools.find(
-            (pool) => pool.liquid_jetton_master === Address(jetton.jettonAddress).toRaw(),
+            (pool) => pool.liquid_jetton_master === Address.parse(jetton.jettonAddress).toRaw(),
           );
 
           const balance = liquidStakingPool

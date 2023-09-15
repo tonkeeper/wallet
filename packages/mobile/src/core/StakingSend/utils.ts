@@ -7,7 +7,7 @@ import { StakingTransactionType } from './types';
 import { JettonBalanceModel } from '$store/models';
 import BigNumber from 'bignumber.js';
 import { Address } from '@tonkeeper/shared/Address';
-import { PoolInfo, PoolInfoImplementationEnum } from '@tonkeeper/core/src/TonAPI';
+import { PoolInfo, PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 
 const { Cell } = TonWeb.boc;
 
@@ -91,7 +91,7 @@ export const getStakeSignRawMessage = async (
       : pool.address,
   ).toFriendly({ bounceable: true });
 
-  if (pool.implementation === PoolInfoImplementationEnum.Whales) {
+  if (pool.implementation === PoolImplementationType.Whales) {
     const payload =
       transactionType === StakingTransactionType.DEPOSIT
         ? await createWhalesAddStakeCommand()
@@ -104,7 +104,7 @@ export const getStakeSignRawMessage = async (
     };
   }
 
-  if (pool.implementation === PoolInfoImplementationEnum.LiquidTF) {
+  if (pool.implementation === PoolImplementationType.LiquidTF) {
     const payload =
       transactionType === StakingTransactionType.DEPOSIT
         ? await createLiquidTfAddStakeCommand()
@@ -115,7 +115,7 @@ export const getStakeSignRawMessage = async (
     );
 
     const depositAmount =
-      pool.implementation === PoolInfoImplementationEnum.LiquidTF && !isSendAll
+      pool.implementation === PoolImplementationType.LiquidTF && !isSendAll
         ? amountWithFee
         : amount;
 
@@ -129,7 +129,7 @@ export const getStakeSignRawMessage = async (
     };
   }
 
-  if (pool.implementation === PoolInfoImplementationEnum.Tf) {
+  if (pool.implementation === PoolImplementationType.Tf) {
     const payload =
       transactionType === StakingTransactionType.DEPOSIT
         ? await createTfAddStakeCommand()
@@ -146,12 +146,12 @@ export const getStakeSignRawMessage = async (
 };
 
 export const getWithdrawalFee = (pool: PoolInfo): BN => {
-  if (pool.implementation === PoolInfoImplementationEnum.Whales) {
+  if (pool.implementation === PoolImplementationType.Whales) {
     return Ton.toNano('0.2');
   }
 
   if (
-    [PoolInfoImplementationEnum.Tf, PoolInfoImplementationEnum.LiquidTF].includes(
+    [PoolImplementationType.Tf, PoolImplementationType.LiquidTF].includes(
       pool.implementation,
     )
   ) {
@@ -162,12 +162,12 @@ export const getWithdrawalFee = (pool: PoolInfo): BN => {
 };
 
 export const getWithdrawalAlertFee = (pool: PoolInfo): BN => {
-  if (pool.implementation === PoolInfoImplementationEnum.Whales) {
+  if (pool.implementation === PoolImplementationType.Whales) {
     return Ton.toNano('0.4');
   }
 
   if (
-    [PoolInfoImplementationEnum.Tf, PoolInfoImplementationEnum.LiquidTF].includes(
+    [PoolImplementationType.Tf, PoolImplementationType.LiquidTF].includes(
       pool.implementation,
     )
   ) {

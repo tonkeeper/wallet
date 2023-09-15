@@ -494,7 +494,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       return;
     }
 
-    yield call([tk.wallet.transactions, 'refetch']);
+    yield call([tk.wallet.activityList, 'reload']);
     yield put(eventsActions.pollEvents());
 
     yield put(

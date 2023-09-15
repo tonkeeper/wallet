@@ -22,7 +22,7 @@ import {
   AccountEvent,
   ActionTypeEnum,
   PoolInfo,
-  PoolInfoImplementationEnum,
+  PoolImplementationType,
 } from '@tonkeeper/core/src/TonAPI';
 import { Address } from '@tonkeeper/core';
 import { Ton } from '$libs/Ton';
@@ -77,6 +77,8 @@ export const useStakingStore = create(
               tonapi.staking.getAccountNominatorsPools(rawAddress!),
             ]);
 
+            
+
             let pools = getState().pools;
 
             let nextState: Partial<IStakingStore> = {};
@@ -86,16 +88,16 @@ export const useStakingStore = create(
               !getFlag('disable_tonstakers');
 
             if (poolsResponse.status === 'fulfilled') {
-              const { implementations } = poolsResponse.value.data;
+              const { implementations } = poolsResponse.value;
 
-              pools = poolsResponse.value.data.pools
+              pools = poolsResponse.value.pools
                 .filter(
                   (pool) =>
                     tonstakersEnabled ||
-                    pool.implementation !== PoolInfoImplementationEnum.LiquidTF,
+                    pool.implementation !== PoolImplementationType.LiquidTF,
                 )
                 .map((pool) => {
-                  if (pool.implementation !== PoolInfoImplementationEnum.Whales) {
+                  if (pool.implementation !== PoolImplementationType.Whales) {
                     return pool;
                   }
 
@@ -124,7 +126,7 @@ export const useStakingStore = create(
                 });
 
               const providers = (
-                Object.keys(implementations) as PoolInfoImplementationEnum[]
+                Object.keys(implementations) as PoolImplementationType[]
               )
                 .filter((id) => pools.some((pool) => pool.implementation === id))
                 .sort((a, b) => {
@@ -174,7 +176,7 @@ export const useStakingStore = create(
             }
 
             if (nominatorsResponse.status === 'fulfilled') {
-              const stakingInfo = nominatorsResponse.value.data.pools.reduce<StakingInfo>(
+              const stakingInfo = nominatorsResponse.value.pools.reduce<StakingInfo>(
                 (acc, cur) => ({ ...acc, [cur.pool]: cur }),
                 {},
               );
@@ -198,13 +200,13 @@ export const useStakingStore = create(
               set({ ...nextState });
             }
           } catch (e) {
-            console.log('fetchPools error', e.response);
+            console.log('fetchPools error', e);
           } finally {
             set({ status: StakingApiStatus.Idle });
           }
         },
         fetchChart: async (jetton) => {
-          const address = Address(store.getState().wallet?.address?.ton).toRaw();
+          const address = Address.parse(store.getState().wallet?.address?.ton).toRaw();
 
           const startDate = Math.round(Date.now() / 1000 - 30 * 24 * 3600);
 
@@ -221,7 +223,7 @@ export const useStakingStore = create(
             }),
           ]);
 
-          const history = jettonHistory.data.events.reduce<{
+          const history = jettonHistory.events.reduce<{
             [key: number]: AccountEvent[];
           }>((acc, cur) => {
             const date = timestampToDateString(cur.timestamp);
@@ -237,7 +239,7 @@ export const useStakingStore = create(
 
           const chart: IStakingChartPoint[] = [];
 
-          for (const point of rateChart.data.points) {
+          for (const point of rateChart.points) {
             const [date, rate] = point;
 
             if (balance.isLessThanOrEqualTo(0)) {

@@ -34,7 +34,7 @@ import {
 import { Alert } from 'react-native';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { t } from '@tonkeeper/shared/i18n';
-import { PoolInfoImplementationEnum } from '@tonkeeper/core/src/TonAPI';
+import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 
 interface Props {
@@ -83,7 +83,7 @@ export const StakingSend: FC<Props> = (props) => {
 
   const symbol = isDeposit ? 'TON' : poolInfo.balance.symbol;
 
-  const isWhalesPool = pool.implementation === PoolInfoImplementationEnum.Whales;
+  const isWhalesPool = pool.implementation === PoolImplementationType.Whales;
 
   const { apy } = pool;
 

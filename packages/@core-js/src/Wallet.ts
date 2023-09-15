@@ -7,7 +7,7 @@ import { ActivityList } from './Activity/ActivityList';
 import { NftsManager } from './managers/NftsManager';
 import { EventSourceListener, ServerSentEvents, IStorage } from './Tonkeeper';
 import { SubscriptionsManager } from './managers/SubscriptionsManager';
-import { JettonsManager } from './managers/JettonsManager';
+
 import { BalancesManager } from './managers/BalancesManager';
 import { TronAPI } from './TronAPI';
 import { TronService } from './TronService';
@@ -82,7 +82,7 @@ export class Wallet {
 
   public subscriptions: SubscriptionsManager;
   public balances: BalancesManager;
-  public jettons: JettonsManager;
+
   public nfts: NftsManager;
 
   public activityLoader: ActivityLoader;
@@ -137,9 +137,7 @@ export class Wallet {
     this.activityList = new ActivityList(this.activityLoader);
 
     this.balances = new BalancesManager(context);
-    this.jettons = new JettonsManager(context);
     this.nfts = new NftsManager(context);
-
     this.tronService = new TronService(context);
 
     this.listenTransactions();

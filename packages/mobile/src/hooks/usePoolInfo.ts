@@ -18,7 +18,7 @@ import { shallow } from 'zustand/shallow';
 import {
   AccountStakingInfo,
   PoolInfo,
-  PoolInfoImplementationEnum,
+  PoolImplementationType,
 } from '@tonkeeper/core/src/TonAPI';
 
 export interface PoolDetailsItem {
@@ -39,7 +39,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
 
   const stakingJetton = useMemo(() => {
     if (
-      pool.implementation === PoolInfoImplementationEnum.LiquidTF &&
+      pool.implementation === PoolImplementationType.LiquidTF &&
       pool.liquid_jetton_master
     ) {
       const jetton = jettonBalances.find(
@@ -109,7 +109,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
     nav.push(AppStackRouteNames.StakingSend, {
       poolAddress: pool.address,
       transactionType:
-        pool.implementation === PoolInfoImplementationEnum.Tf
+        pool.implementation === PoolImplementationType.Tf
           ? StakingTransactionType.WITHDRAWAL_CONFIRM
           : StakingTransactionType.WITHDRAWAL,
     });
