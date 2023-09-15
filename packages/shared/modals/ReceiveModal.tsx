@@ -14,6 +14,8 @@ import {
   Text,
   Icon,
   TonIcon,
+  Pressable,
+  Steezy,
 } from '@tonkeeper/uikit';
 
 enum Segments {
@@ -99,13 +101,9 @@ export const ReceiveModal = memo(() => {
               size="medium"
             />
             <Spacer x={12} />
-            <Button
-              leftContent={<Icon name="ic-share-16" />}
-              onPress={share(tonAddress)}
-              color="secondary"
-              title={t('receiveModal.share')}
-              size="medium"
-            />
+            <Pressable style={steezyStyles.shareButton} onPress={share(tonAddress)}>
+              <Icon name="ic-share-16" />
+            </Pressable>
           </View>
         </TransitionOpacity>
         <TransitionOpacity
@@ -142,13 +140,9 @@ export const ReceiveModal = memo(() => {
               size="medium"
             />
             <Spacer x={12} />
-            <Button
-              leftContent={<Icon name="ic-share-16" />}
-              onPress={share(tronAddress!)}
-              color="secondary"
-              title="Share"
-              size="medium"
-            />
+            <Pressable style={steezyStyles.shareButton} onPress={share(tronAddress!)}>
+              <Icon name="ic-share-16" />
+            </Pressable>
           </View>
         </TransitionOpacity>
       </Modal.Content>
@@ -246,6 +240,17 @@ const styles = StyleSheet.create({
     right: 0,
   },
 });
+
+const steezyStyles = Steezy.create(({ colors }) => ({
+  shareButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 48 / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.buttonSecondaryBackground,
+  },
+}));
 
 const whitepng =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAE4AAABOAQMAAAC0ZLJeAAAAA1BMVEX///+nxBvIAAAAEElEQVQYGWMYBaNgFNAAAAADWgABYd4igAAAAABJRU5ErkJggg==';

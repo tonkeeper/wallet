@@ -426,8 +426,7 @@
 
   "receiveModal": {
     "receive": "Receive",
-    "receive_ton":"Send only Toncoin TON and tokens in TON network to this address, or you might lose your funds.",
-    "share": "Share",
+    "receive_ton": "Send only Toncoin TON and tokens in TON network to this address, or you might lose your funds.",
     "copy": "Copy"
   },
 
