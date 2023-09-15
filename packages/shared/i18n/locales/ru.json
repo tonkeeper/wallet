@@ -960,7 +960,7 @@
     "mute_notifications": "Отключить уведомления",
     "disconnect_app": "Отключить %{app_name}",
     "report": "Пожаловаться",
-    "muted": "Отмена",
+    "muted": "Уведомления заглушены",
     "disconnected_app": "Disconnected app",
     "earlier": "Ранее",
     "apps": "Приложения",

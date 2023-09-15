@@ -28,7 +28,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { TonConnectModalProps } from './models';
 import { useEffect } from 'react';
 import { Modal } from '@tonkeeper/uikit';
-import { store, Toast } from '$store';
+import { store, Toast, useNotificationsStore } from '$store';
 import { push } from '$navigation/imperative';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
@@ -37,6 +37,7 @@ import { createTonProofForTonkeeper } from '$utils/proof';
 import { WalletApi, Configuration } from '@tonkeeper/core/src/legacy';
 import * as SecureStore from 'expo-secure-store';
 import { Address } from '@tonkeeper/core';
+import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
 
 export const TonConnectModal = (props: TonConnectModalProps) => {
   const animation = useTonConnectAnimation();
@@ -48,6 +49,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   const { version } = useSelector(walletSelector);
   const { isTestnet } = useSelector(mainSelector);
   const maskedAddress = Address.toShort(animation.address);
+  const showNotifications = useNotificationsStore(shouldShowNotifications);
 
   const handleSwitchNotifications = useCallback(() => {
     triggerSelection();
@@ -333,7 +335,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
                 : null}
             </Text>
           </S.Content>
-          {isTonConnectV2 ? (
+          {isTonConnectV2 && showNotifications ? (
             <>
               <List indent={false}>
                 <List.ItemWithCheckbox

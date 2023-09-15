@@ -17,41 +17,46 @@ export const useNotificationsResolver = () => {
   const deeplinking = useDeeplinking();
 
   function handleNotification(remoteMessage) {
-    console.log('Notification caused app to open from background state:', remoteMessage);
+    try {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage,
+      );
 
-    useNotificationsStore.getState().actions.removeRedDot();
+      useNotificationsStore.getState().actions.removeRedDot();
 
-    const deeplink = remoteMessage.data?.deeplink;
-    const link = remoteMessage.data?.link;
-    const dapp_url = remoteMessage.data?.dapp_url;
+      const deeplink = remoteMessage.data?.deeplink;
+      const link = remoteMessage.data?.link;
+      const dapp_url = remoteMessage.data?.dapp_url;
 
-    if (deeplink) {
-      deeplinking.resolve(deeplink);
-    } else if (link) {
-      if (!dapp_url || getDomainFromURL(link) === getDomainFromURL(dapp_url)) {
-        openDAppBrowser(link);
+      if (deeplink) {
+        deeplinking.resolve(deeplink);
+      } else if (link) {
+        if (!dapp_url || getDomainFromURL(link) === getDomainFromURL(dapp_url)) {
+          openDAppBrowser(link);
+        } else {
+          Alert.alert(
+            t('notifications.alert.title'),
+            t('notifications.alert.description'),
+            [
+              {
+                text: t('notifications.alert.open'),
+                onPress: () => openDAppBrowser(link),
+                style: 'destructive',
+              },
+              {
+                text: t('notifications.alert.cancel'),
+                style: 'cancel',
+              },
+            ],
+          );
+        }
+      } else if (dapp_url) {
+        openDAppBrowser(dapp_url);
       } else {
-        Alert.alert(
-          t('notifications.alert.title'),
-          t('notifications.alert.description'),
-          [
-            {
-              text: t('notifications.alert.open'),
-              onPress: () => openDAppBrowser(link),
-              style: 'destructive',
-            },
-            {
-              text: t('notifications.alert.cancel'),
-              style: 'cancel',
-            },
-          ],
-        );
+        nav.navigate('Balances');
       }
-    } else if (dapp_url) {
-      openDAppBrowser(dapp_url);
-    } else {
-      nav.navigate('Balances');
-    }
+    } catch (e) {}
   }
 
   useEffect(() => {

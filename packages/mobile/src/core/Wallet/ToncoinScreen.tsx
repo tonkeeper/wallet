@@ -29,8 +29,12 @@ export const ToncoinScreen = memo(() => {
 
   const handleOpenExplorer = useCallback(async () => {
     await delay(200);
-    openDAppBrowser(getServerConfig('accountExplorer').replace('%s', wallet.address.raw));
-  }, [wallet.address.ton.raw]);
+    openDAppBrowser(
+      wallet.address.raw
+        ? getServerConfig('accountExplorer').replace('%s', wallet.address.raw)
+        : getServerConfig('explorerUrl'),
+    );
+  }, [wallet.address.raw]);
 
   // Temp hack for slow navigation
   const [render, setRender] = useState(false);
