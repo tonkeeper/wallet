@@ -1,12 +1,12 @@
 import { AddressListItem } from '../components/AddressListItem';
-import { DetailedNftItem } from '../components/DetailedNftItem';
+import { NftItemPayload } from '../components/NftItemPayload';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
 import { ActionItem, ActionType } from '@tonkeeper/core';
 import { Text } from '@tonkeeper/uikit';
-import { memo } from 'react';
 import { t } from '../../../i18n';
+import { memo } from 'react';
 
 interface NftPurchaseActionContentProps {
   action: ActionItem<ActionType.NftPurchase>;
@@ -21,7 +21,7 @@ export const NftPurchaseActionContent = memo<NftPurchaseActionContentProps>((pro
       action={action}
       header={
         action.status === ActionStatusEnum.Ok ? (
-          <DetailedNftItem nft={action.payload.nft} />
+          <NftItemPayload nft={action.payload.nft} />
         ) : (
           <Text type="h2">NFT</Text>
         )

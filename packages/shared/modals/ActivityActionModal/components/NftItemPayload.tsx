@@ -10,12 +10,12 @@ import { corners } from '@tonkeeper/uikit/src/styles/constants';
 import { openNftModal } from '@tonkeeper/mobile/src/core/NFT/NFT';
 import { HideableAmount } from '@tonkeeper/mobile/src/core/HideableAmount/HideableAmount';
 
-interface DetailedNftItemProps {
+interface NftItemPayloadProps {
   nftAddress?: string;
   nft?: NftItem;
 }
 
-export const DetailedNftItem = memo<DetailedNftItemProps>((props) => {
+export const NftItemPayload = memo<NftItemPayloadProps>((props) => {
   const { data: nft } = useNftItemByAddress(props.nftAddress, { existingNft: props.nft });
   const theme = useTheme();
 

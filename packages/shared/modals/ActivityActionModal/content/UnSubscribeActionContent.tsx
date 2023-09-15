@@ -6,11 +6,11 @@ import { List, Text, copyText } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import { memo } from 'react';
 
-interface UnSubscribeContentProps {
+interface UnSubscribeActionContentProps {
   action: ActionItem<ActionType.UnSubscribe>;
 }
 
-export const UnSubscribeContent = memo<UnSubscribeContentProps>((props) => {
+export const UnSubscribeActionContent = memo<UnSubscribeActionContentProps>((props) => {
   const { action } = props;
   const subscription = useSubscription(action.payload.subscription);
 
