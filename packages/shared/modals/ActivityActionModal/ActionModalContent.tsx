@@ -2,7 +2,6 @@ import { SText as Text, Button, Icon, View, List, Steezy } from '@tonkeeper/uiki
 import { AmountFormatter, AnyActionItem } from '@tonkeeper/core';
 import { formatTransactionDetailsTime } from '../../utils/date';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
-import { useNavigation } from '@tonkeeper/router';
 import { memo, useCallback, useMemo } from 'react';
 import { formatter } from '../../formatter';
 import { config } from '../../config';
@@ -15,6 +14,7 @@ import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
 import { useSelector } from 'react-redux';
 import { ExtraListItem } from './components/ExtraListItem';
+import { Linking } from 'react-native';
 
 interface ActionModalContentProps {
   children?: React.ReactNode;
@@ -25,14 +25,13 @@ interface ActionModalContentProps {
 
 export const ActionModalContent = memo<ActionModalContentProps>((props) => {
   const { children, header, action, label } = props;
-  const nav = useNavigation();
 
   const hash = ` ${action.event.event_id.substring(0, 8)}`;
 
   const handlePressHash = useCallback(() => {
-    nav.navigate('DAppBrowser', {
-      url: config.get('transactionExplorer').replace('%s', action.event.event_id),
-    });
+    Linking.openURL(
+      config.get('transactionExplorer').replace('%s', action.event.event_id),
+    );
   }, [action.event.event_id]);
 
   const time = useMemo(() => {
