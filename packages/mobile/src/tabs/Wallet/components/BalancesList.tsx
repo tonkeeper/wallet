@@ -19,7 +19,7 @@ import { useTheme } from '$hooks/useTheme';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StakingWidget } from './StakingWidget';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { openWallet } from '$core/Wallet/Wallet';
+import { openWallet } from '$core/Wallet/ToncoinScreen';
 import {
   TronAPIGenerated,
   TronBalance,

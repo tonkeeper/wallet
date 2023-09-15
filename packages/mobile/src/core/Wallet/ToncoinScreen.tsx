@@ -3,12 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as S from './Wallet.style';
 import { useWalletInfo } from '$hooks/useWalletInfo';
 import { Button, PopupMenu, PopupMenuItem, Text, IconButton, SwapIcon } from '$uikit';
-import { openDAppBrowser, openReceive, openSend } from '$navigation';
+import { MainStackRouteNames, openDAppBrowser, openReceive, openSend } from '$navigation';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { walletActions, walletWalletSelector } from '$store/wallet';
 import { Linking, Platform, View } from 'react-native';
 import { delay, ns } from '$utils';
-import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
+import { CryptoCurrencies, CryptoCurrency, Decimals, getServerConfig } from '$shared/constants';
 import { t } from '@tonkeeper/shared/i18n';
 import { useNavigation } from '@tonkeeper/router';
 import { Chart } from '$shared/components/Chart/new/Chart';
@@ -22,6 +22,8 @@ import { Icon, IconNames, Screen } from '@tonkeeper/uikit';
 import { ActivityList } from '@tonkeeper/shared/components';
 import { useTonActivityList } from '@tonkeeper/shared/query/hooks/useTonActivityList';
 import { useWallet } from '../../tabs/useWallet';
+import _ from 'lodash';
+import { navigate } from '$navigation/imperative';
 
 export const ToncoinScreen = memo(() => {
   const activityList = useTonActivityList();
@@ -29,7 +31,7 @@ export const ToncoinScreen = memo(() => {
 
   const handleOpenExplorer = useCallback(async () => {
     await delay(200);
-    openDAppBrowser(getServerConfig('accountExplorer').replace('%s', wallet.address.raw));
+    openDAppBrowser(getServerConfig('accountExplorer').replace('%s', wallet.address.ton.raw));
   }, [wallet.address.ton.raw]);
 
   // Temp hack for slow navigation
@@ -298,3 +300,11 @@ const HeaderList = memo(() => {
     </>
   );
 });
+
+export function openWallet(currency: CryptoCurrency) {
+  _.throttle(() => {
+    navigate(MainStackRouteNames.Wallet, {
+      currency,
+    });
+  }, 1000)();
+}

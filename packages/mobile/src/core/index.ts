@@ -1,8 +1,6 @@
 export { Intro } from './Intro/Intro';
 export { CreateWallet } from './CreateWallet/CreateWallet';
-export { Balances } from './Balances/Balances';
 export { Settings } from './Settings/Settings';
-export { Wallet } from './Wallet/Wallet';
 export { Receive } from './Receive/Receive';
 export { Send } from './Send/Send';
 export { ScanQR } from './ScanQR/ScanQR';
