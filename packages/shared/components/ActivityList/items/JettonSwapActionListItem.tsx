@@ -1,14 +1,14 @@
+import { ActionListItem, ActionListItemProps } from '../ActionListItem';
 import { Address, ActionItem, ActionType } from '@tonkeeper/core';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { formatTransactionTime } from '../../../utils/date';
-import { ActionListItem } from '../ActionListItem';
 import { View, StyleSheet } from 'react-native';
 import { formatter } from '../../../formatter';
 import { Text } from '@tonkeeper/uikit';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
 
-interface JettonSwapActionListItemProps {
+interface JettonSwapActionListItemProps extends Omit<ActionListItemProps, 'action'> {
   action: ActionItem<ActionType.JettonSwap>;
 }
 
@@ -56,11 +56,11 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
 
   return (
     <ActionListItem
+      action={action}
       iconName="ic-swap-horizontal-alternative-28"
       title={t('transactions.swap')}
       subtitle={subtitle}
       value={amountIn}
-      action={action}
       greenValue
       subvalue={
         <Text type="label1" style={styles.amountOut}>
@@ -78,7 +78,9 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
         </View>
         <View>
           <Text style={styles.timeText} type="body2" color="textSecondary">
-            {formatTransactionTime(new Date(action.event.timestamp * 1000))}
+            {props.subvalue !== undefined
+              ? props.subvalue
+              : formatTransactionTime(new Date(action.event.timestamp * 1000))}
           </Text>
         </View>
       </View>

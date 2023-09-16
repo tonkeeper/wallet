@@ -400,27 +400,13 @@ export class NFTOperations {
     };
 
     return {
-      estimateTx: async (): Promise<AccountEvent | null> => {
+      getBoc: async (): Promise<string> => {
         const methods = await signRawMethods();
 
         const queryMsg = await methods.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
 
-        const endpoint = getServerConfig('tonapiIOEndpoint');
-
-        const resp = await axios.post(
-          `${endpoint}/v1/send/estimateTx`,
-          {
-            boc: boc,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-            },
-          },
-        );
-
-        return resp.data;
+        return boc;
       },
       estimateFee: async () => {
         const methods = await signRawMethods();

@@ -10,7 +10,7 @@ interface SubscribeActionListItemProps {
 export const SubscribeActionListItem = memo<SubscribeActionListItemProps>((props) => {
   const { action } = props;
 
-  return <ActionListItem action={action} />;
+  return <ActionListItem {...props} />;
 });
 
 const styles = StyleSheet.create({

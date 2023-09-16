@@ -13,6 +13,6 @@ export * from './Vault';
 export * from './service';
 export * from './TronAPI';
 
-export * from './models/ActivityModel/ActivityModelTypes';
+export * from './models/ActivityModel';
 
 export * from './utils/State';

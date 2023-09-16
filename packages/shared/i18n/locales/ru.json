@@ -413,6 +413,12 @@
     "burned": "Сожжено"
   },
 
+  "confirmSendModal": {
+    "title": "Подтвердить транзакцию",
+    "network_fee": "Комиссия сети",
+    "to_your_address":"На ваш адрес"
+  },
+
   "transactionDetails": {
     "received_date": "Получено %{time}",
     "sent_date": "Отправлено %{time}",

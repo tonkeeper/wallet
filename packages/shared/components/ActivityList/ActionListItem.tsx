@@ -10,7 +10,7 @@ import { formatter } from '../../formatter';
 import { Address } from '../../Address';
 import { t } from '../../i18n';
 
-interface ActionListItem {
+export interface ActionListItemProps {
   onPress?: () => void;
   subvalue?: string | React.ReactNode;
   action: AnyActionItem;
@@ -23,10 +23,18 @@ interface ActionListItem {
   value?: string;
   subtitle?: string;
   greenValue?: boolean;
+  disablePressable?: boolean;
 }
 
-export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
-  const { action, children, onPress, subtitleNumberOfLines, greenValue } = props;
+export const ActionListItem = memo<ActionListItemProps>((props: ActionListItemProps) => {
+  const {
+    subtitleNumberOfLines,
+    disablePressable,
+    greenValue,
+    children,
+    action,
+    onPress,
+  } = props;
 
   const handlePress = useCallback(() => {
     if (onPress) {
@@ -34,7 +42,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     } else {
       openActivityActionModal(action.action_id, ActionSource.Ton);
     }
-  }, []);
+  }, [onPress]);
 
   const isFailed = action.status === ActionStatusEnum.Failed;
 
@@ -149,10 +157,10 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
 
   return (
     <List.Item
+      onPress={!disablePressable ? handlePress : undefined}
       leftContent={props.leftContent ?? leftContent}
       subtitleNumberOfLines={subtitleNumberOfLines}
       valueStyle={valueStyle}
-      onPress={handlePress}
       subvalue={subvalue}
       subtitle={subtitle}
       title={title}

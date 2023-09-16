@@ -406,6 +406,12 @@
     "burned": "Burned"
   },
 
+  "confirmSendModal": {
+    "title": "Confirm action",
+    "network_fee": "Network fee",
+    "to_your_address":"To your address"
+  },
+
   "transactionDetails": {
     "sender": "Sender",
     "sender_address": "Sender address",

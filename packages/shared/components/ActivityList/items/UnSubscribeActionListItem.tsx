@@ -9,5 +9,5 @@ interface UnSubscribeActionListItemProps {
 export const UnSubscribeActionListItem = memo<UnSubscribeActionListItemProps>((props) => {
   const { action } = props;
 
-  return <ActionListItem action={action} />;
+  return <ActionListItem {...props} />;
 });

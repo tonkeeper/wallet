@@ -2,7 +2,8 @@ import { differenceInCalendarMonths, format } from 'date-fns';
 import { toLowerCaseFirstLetter } from '../../utils/strings';
 import { TronEvent } from '../../TronAPI/TronAPIGenerated';
 import { Address } from '../../formatters/Address';
-import { AccountEvent } from '../../TonAPI';
+import { AccountEvent, ActionStatusEnum } from '../../TonAPI';
+import { nanoid } from 'nanoid/non-secure';
 import {
   AnyActionTypePayload,
   ActionDestination,
@@ -11,6 +12,9 @@ import {
   ActionAmount,
   ActionType,
   ActionItem,
+  AnyActionItem,
+  ActionTypePayload,
+  StringValues,
 } from './ActivityModelTypes';
 
 type CreateActionOptions = {
@@ -42,8 +46,8 @@ export class ActivityModel {
     options: CreateActionsOptions,
     iteration?: (action: ActionItem) => void,
   ) {
-    return options.events.reduce<ActionItem[]>((activityActions, event) => {
-      const eventActions = event.actions.reduce<ActionItem[]>((actions, _, index) => {
+    return options.events.reduce<AnyActionItem[]>((activityActions, event) => {
+      const eventActions = event.actions.reduce<AnyActionItem[]>((actions, _, index) => {
         const action = ActivityModel.createAction({
           ownerAddress: options.ownerAddress,
           source: options.source,
@@ -65,12 +69,49 @@ export class ActivityModel {
     }, []);
   }
 
+  static createMockAction<T extends ActionType>(
+    ownerAddress: string,
+    action: AnyActionTypePayload<T>,
+  ): AnyActionItem {
+    const destination = this.defineActionDestination(ownerAddress, action.payload);
+    const amount = this.createAmount(action);
+
+    return {
+      status: ActionStatusEnum.Ok,
+      source: ActionSource.Ton,
+      payload: action.payload,
+      action_id: nanoid(),
+      type: (action as any).type,
+      isFirst: false,
+      isLast: false,
+      destination,
+      amount,
+      event: {
+        event_id: nanoid(),
+        timestamp: +new Date() / 1000,
+        in_progress: false,
+        is_scam: false,
+        lt: +new Date(),
+        extra: 0,
+        account: {
+          address: ownerAddress,
+          is_scam: false,
+        },
+      },
+      simple_preview: {
+        description: 'Mock Action',
+        name: action.type,
+        accounts: [],
+      },
+    };
+  }
+
   static createAction({
     ownerAddress,
     actionIndex,
     source,
     event,
-  }: CreateActionOptions): ActionItem {
+  }: CreateActionOptions): AnyActionItem {
     const action = event.actions[actionIndex];
     const payload = action[action.type];
 
@@ -111,6 +152,7 @@ export class ActivityModel {
           return {
             value: String(payload.amount),
             symbol: 'TON',
+            token: 'ton',
           };
         } else {
           return null;
@@ -122,18 +164,20 @@ export class ActivityModel {
           value: payload.amount,
           symbol: payload.jetton.symbol,
           decimals: payload.jetton.decimals,
+          token: payload.jetton.address,
         };
       case ActionType.NftPurchase:
       case ActionType.AuctionBid:
-      case ActionType.NftPurchase:
         return {
           value: payload.amount.value,
           symbol: payload.amount.token_name,
+          token: 'ton',
         };
       case ActionType.SmartContractExec:
         return {
           value: payload.ton_attached,
           symbol: 'TON',
+          token: 'ton',
         };
       case ActionType.ReceiveTRC20:
       case ActionType.SendTRC20:

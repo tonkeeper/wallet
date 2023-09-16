@@ -8,6 +8,7 @@
     "@tonkeeper/router": "*",
     "@tonkeeper/uikit": "*",
     "date-fns": "^2.30.0",
+    "nanoid": "^5.0.1",
     "react": "18.2.0",
     "react-native": "0.71.7",
     "react-native-qrcode-styled": "^0.2.1",

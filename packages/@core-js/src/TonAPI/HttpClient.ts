@@ -131,6 +131,7 @@ export class HttpClient {
     path,
     query,
     format,
+    method,
     type,
     cancelToken,
   }: FullRequestParams): Promise<T> => {
@@ -149,7 +150,9 @@ export class HttpClient {
     const response = await this.customFetch(
       `${baseUrl}${path}${queryString ? `?${queryString}` : ''}`,
       {
+        method,
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         signal: cancelToken ? this.createAbortSignal(cancelToken) : null,
