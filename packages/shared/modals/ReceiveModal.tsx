@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text as NativeText, Share } from 'react-native';
 import QRCode from 'react-native-qrcode-styled';
+import { throttle } from '@tonkeeper/router';
 import { tk } from '../tonkeeper';
 import { t } from '../i18n';
 import {
@@ -44,13 +45,14 @@ export const ReceiveModal = memo(() => {
   }, []);
 
   const share = useCallback(
-    (address: string) => () => {
-      Share.share({
-        message: address,
-      }).catch((err) => {
-        console.log('cant share', err);
-      });
-    },
+    (address: string) =>
+      throttle(() => {
+        Share.share({
+          message: address,
+        }).catch((err) => {
+          console.log('cant share', err);
+        });
+      }, 1000),
     [],
   );
 
