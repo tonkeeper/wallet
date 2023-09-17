@@ -135,6 +135,7 @@ export class Tonkeeper {
   }
 
   public async generateTronAddress(tonPrivateKey: Uint8Array) {
+    return;
     try {
       const ownerAddress = await createTronOwnerAddress(tonPrivateKey);
       const tronWallet = await this.tronapi.wallet.getWallet(ownerAddress);

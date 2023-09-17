@@ -1,9 +1,9 @@
-import { ActivityModel, ActivitySections } from '../models/ActivityModel';
+import { ActivityModel, ActivitySection } from '../models/ActivityModel';
 import { ActivityLoader } from './ActivityLoader';
 import { State } from '../utils/State';
 
 type JettonActivityListState = {
-  sections: ActivitySections;
+  sections: ActivitySection[];
   isReloading: boolean;
   isLoading: boolean;
   hasMore: boolean;
@@ -61,7 +61,7 @@ export class JettonActivityList {
   }
 
   public async loadMore(jettonId: string) {
-    if (!this.state.data.isLoading) {
+    if (!this.state.data.isLoading && this.state.data.hasMore) {
       return this.load(jettonId, this.cursor);
     }
   }

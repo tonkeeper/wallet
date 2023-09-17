@@ -16,7 +16,6 @@ import { ScanQRButton } from '../../components/ScanQRButton';
 import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
-
 import { ns } from '$utils';
 import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
@@ -24,10 +23,9 @@ import { useIsFocused } from '@react-navigation/native';
 import { useBalance } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
 import { TonIcon } from '@tonkeeper/uikit';
-import { CryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies, IsTablet, TabletMaxWidth } from '$shared/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Tabs } from './components/Tabs';
-import * as S from '../../core/Balances/Balances.style';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
@@ -43,12 +41,10 @@ import { useFlags } from '$utils/flags';
 import { useUpdatesStore } from '$store/zustand/updates/useUpdatesStore';
 import { UpdatesCell } from '$core/ApprovalCell/Updates/UpdatesCell';
 import { UpdateState } from '$store/zustand/updates/types';
-import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { ShowBalance } from '$core/HideableAmount/ShowBalance';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
-import { openWallet } from '$core/Wallet/Wallet';
+import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
 import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
@@ -206,11 +202,11 @@ export const WalletScreen = memo(() => {
           </List>
         </Screen.ScrollView>
         {isLoaded && !wallet && (
-          <S.CreateWalletButtonWrap style={{ bottom: tabBarHeight }}>
-            <S.CreateWalletButtonContainer skipHeader={false}>
+          <View style={[styles.createWalletContainerOuter, { bottom: tabBarHeight }]}>
+            <View style={styles.createWalletContainerInner}>
               <Button onPress={handleCreateWallet}>{t('balances_setup_wallet')}</Button>
-            </S.CreateWalletButtonContainer>
-          </S.CreateWalletButtonWrap>
+            </View>
+          </View>
         )}
       </>
     );
@@ -343,7 +339,7 @@ export const WalletScreen = memo(() => {
   }
 });
 
-const styles = Steezy.create(({ colors, corners }) => ({
+const styles = Steezy.create(({ colors, corners, isTablet }) => ({
   container: {
     position: 'relative',
   },
@@ -362,4 +358,20 @@ const styles = Steezy.create(({ colors, corners }) => ({
   scrollContainer: {
     paddingHorizontal: 12,
   },
+  createWalletContainerOuter: {
+    padding: 16,
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    width: '100%',
+    [isTablet]: {
+      alignItems: 'center',
+    }
+  },
+  createWalletContainerInner: {
+    bottom: 0,
+    [isTablet]: {
+      width: TabletMaxWidth
+    }
+  }
 }));

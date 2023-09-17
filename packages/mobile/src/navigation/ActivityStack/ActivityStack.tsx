@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from '$hooks/useTheme';
 import { ActivityStackRouteNames } from '$navigation';
 import { ActivityStackParamList } from '$navigation/ActivityStack/ActivityStack.interface';
-import { ActivityScreen } from '../../tabs/Activity/NewActivityScreen';
+import { ActivityScreen } from '../../tabs/Activity/ActivityScreen';
 import { NotificationsActivity } from '$core/Notifications/NotificationsActivity';
 import { Notifications } from '$core/Notifications/Notifications';
 

@@ -1,10 +1,10 @@
-import { ActivityModel, ActivitySections } from '../models/ActivityModel';
+import { ActivityModel, ActivitySection } from '../models/ActivityModel';
 import { AccountEvent, ActionTypeEnum } from '../TonAPI';
 import { ActivityLoader } from './ActivityLoader';
 import { State } from '../utils/State';
 
 type TonActivityListState = {
-  sections: ActivitySections;
+  sections: ActivitySection[];
   isReloading: boolean;
   isLoading: boolean;
   hasMore: boolean;
@@ -78,7 +78,7 @@ export class TonActivityList {
   }
 
   public async loadMore() {
-    if (!this.state.data.isLoading) {
+    if (!this.state.data.isLoading && this.state.data.hasMore) {
       return this.load(this.cursor);
     }
   }

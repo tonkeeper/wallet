@@ -395,7 +395,22 @@
     "deposit": "Депозит",
     "withdraw": "Вывод",
     "withdrawal_request": "Запрос на вывод",
-    "burned": "burned"
+    "burned": "Сожжено"
+  },
+
+  "activityActionModal": {
+    "time_on": "%{time}",
+    "received": "Получено",
+    "sent": "Отправлено",
+    "swapped": "Обмен",
+    "purchase": "Покупка",
+    "bid": "Ставка",
+    "call_contract": "Вызов контракта",
+    
+    "deposit": "Депозит",
+    "withdraw": "Вывод",
+    "withdrawal_request": "Запрос на вывод",
+    "burned": "Сожжено"
   },
 
   "transactionDetails": {
@@ -420,6 +435,12 @@
     "subscription_product_label": "Подписка",
     "subscription_merchant_label": "Продавец",
     "unsubscription_title": "Отмена подписки"
+  },
+
+  "receiveModal": {
+    "receive": "Получить",
+    "receive_ton": "Отправляйте на этот адрес только Toncoin TON и токены в сети TON, иначе вы можете потерять свои средства.",
+    "copy": "Скопировать"
   },
 
   "browser": {

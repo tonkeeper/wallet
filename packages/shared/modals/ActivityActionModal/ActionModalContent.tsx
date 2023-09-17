@@ -2,7 +2,6 @@ import { SText as Text, Button, Icon, View, List, Steezy } from '@tonkeeper/uiki
 import { AmountFormatter, AnyActionItem } from '@tonkeeper/core';
 import { formatTransactionDetailsTime } from '../../utils/date';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
-import { useNavigation } from '@tonkeeper/router';
 import { memo, useCallback, useMemo } from 'react';
 import { formatter } from '../../formatter';
 import { config } from '../../config';
@@ -14,45 +13,46 @@ import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 // TODO: move to shared
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
 import { useSelector } from 'react-redux';
+import { ExtraListItem } from './components/ExtraListItem';
+import { Linking } from 'react-native';
 
 interface ActionModalContentProps {
   children?: React.ReactNode;
   header?: React.ReactNode;
   action: AnyActionItem;
+  label?: string;
 }
 
 export const ActionModalContent = memo<ActionModalContentProps>((props) => {
-  const { children, header, action } = props;
-  const nav = useNavigation();
+  const { children, header, action, label } = props;
 
   const hash = ` ${action.event.event_id.substring(0, 8)}`;
 
   const handlePressHash = useCallback(() => {
-    nav.navigate('DAppBrowser', {
-      url: config.get('transactionExplorer').replace('%s', action.event.event_id),
-    });
+    Linking.openURL(
+      config.get('transactionExplorer').replace('%s', action.event.event_id),
+    );
   }, [action.event.event_id]);
 
   const time = useMemo(() => {
     const time = formatTransactionDetailsTime(new Date(action.event.timestamp * 1000));
-    let langKey: string | null = null;
-    if (false) {
-      // Some key
-      // langKey = customLangKey;
+    let labelTime: string | undefined;
+    if (label) {
+      labelTime = label;
     } else {
       if (action.destination === 'in') {
-        langKey = 'received_date';
+        labelTime = t('activityActionModal.received');
       } else if (action.destination === 'out') {
-        langKey = 'sent_date';
+        labelTime = t('activityActionModal.sent');
       }
     }
 
-    if (langKey) {
-      return t(`transactionDetails.${langKey}`, { time });
+    if (labelTime) {
+      return labelTime + ' ' + t(`activityActionModal.time_on`, { time });
     }
 
     return time;
-  }, [action.event.timestamp, action.destination]);
+  }, [action.event.timestamp, action.destination, label]);
 
   const fiatCurrency = useSelector(fiatCurrencySelector);
   const tokenPrice = useTokenPrice('ton'); //jettonAddress
@@ -94,7 +94,7 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
             </Text>
           </View>
         ) : (
-          <View>{header}</View>
+          <View style={!!amount && !!header && styles.headerIndentButtom}>{header}</View>
         )}
         <View style={styles.amountContainer}>
           {amount && (
@@ -117,7 +117,7 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
           </Text>
         )}
       </View>
-      <List>{children}</List>
+      <List>{children ? children : <ExtraListItem extra={action.event.extra} />}</List>
       <View style={styles.footer}>
         <Button onPress={handlePressHash} size="small" color="secondary">
           <Icon name="ic-globe-16" color="constantWhite" />
@@ -170,5 +170,8 @@ const styles = Steezy.create(({ colors, corners }) => ({
     marginBottom: 12,
     backgroundColor: colors.accentOrange,
     borderRadius: corners.extraSmall,
+  },
+  headerIndentButtom: {
+    marginBottom: 20,
   },
 }));

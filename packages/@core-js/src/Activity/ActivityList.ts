@@ -76,12 +76,13 @@ export class ActivityList {
       console.log(err);
       this.state.set({
         isLoading: false,
+        hasMore: false,
       });
     }
   }
 
   public async loadMore() {
-    if (!this.state.data.isLoading) {
+    if (!this.state.data.isLoading && this.state.data.hasMore) {
       return this.load(this.cursors);
     }
   }

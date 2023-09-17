@@ -1,19 +1,22 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text as NativeText, Share } from 'react-native';
 import QRCode from 'react-native-qrcode-styled';
+import { throttle } from '@tonkeeper/router';
 import { tk } from '../tonkeeper';
 import { t } from '../i18n';
 import {
   TransitionOpacity,
   SegmentedControl,
   copyText,
-  TonIcon,
   Button,
   Spacer,
   Modal,
   View,
   Text,
   Icon,
+  TonIcon,
+  Pressable,
+  Steezy,
 } from '@tonkeeper/uikit';
 
 enum Segments {
@@ -22,15 +25,7 @@ enum Segments {
 }
 
 export const ReceiveModal = memo(() => {
-  const [qrRender1, setQrRender1] = useState(false);
-  const [qrRender2, setQrRender2] = useState(false);
   const [segmentIndex, setSegmentIndex] = useState(Segments.Ton);
-
-  // For quick open screen
-  useEffect(() => {
-    setTimeout(() => setQrRender1(true), 0);
-    setTimeout(() => setQrRender2(true), 100);
-  }, []);
 
   const tonAddress = tk.wallet.address.ton.friendly;
   const tronAddress = tk.wallet.address.tron?.proxy;
@@ -50,13 +45,14 @@ export const ReceiveModal = memo(() => {
   }, []);
 
   const share = useCallback(
-    (address: string) => () => {
-      Share.share({
-        message: address,
-      }).catch((err) => {
-        console.log('cant share', err);
-      });
-    },
+    (address: string) =>
+      throttle(() => {
+        Share.share({
+          message: address,
+        }).catch((err) => {
+          console.log('cant share', err);
+        });
+      }, 1000),
     [],
   );
 
@@ -64,11 +60,13 @@ export const ReceiveModal = memo(() => {
     <Modal>
       <Modal.Header
         title={
-          <SegmentedControl
-            onChange={(segment) => setSegmentIndex(segment)}
-            index={segmentIndex}
-            items={segments}
-          />
+          segments.length > 1 ? (
+            <SegmentedControl
+              onChange={(segment) => setSegmentIndex(segment)}
+              index={segmentIndex}
+              items={segments}
+            />
+          ) : undefined
         }
       />
       <Modal.Content>
@@ -82,49 +80,32 @@ export const ReceiveModal = memo(() => {
         >
           <View style={styles.description}>
             <Text type="h3" textAlign="center">
-              Receive Toncoin
+              {t('receiveModal.receive')} Toncoin
             </Text>
             <Spacer y={4} />
             <Text type="body1" color="textSecondary" textAlign="center">
-              Send only Toncoin TON and tokens in TON network to this address, or you
-              might lose your funds.
+              {t('receiveModal.receive_ton')}
             </Text>
           </View>
-          <View style={styles.qrCodeContainer}>
-            {qrRender1 ? (
-              <>
-                <QRCode
-                  data={address2url(tonAddress)}
-                  style={styles.qrCode}
-                  logo={blankAreaForLogo}
-                  pieceSize={6.245}
-                  width={231}
-                />
-                <View style={styles.qrLogo}>
-                  <TonIcon size="small" />
-                </View>
-              </>
-            ) : (
-              <View style={styles.emptyQrArea} />
-            )}
-            <NativeText style={styles.addressText}>{tonAddress}</NativeText>
-          </View>
+          <QrCode
+            logo={<TonIcon size="small" />}
+            qrAddress={address2url(tonAddress)}
+            address={tonAddress}
+            pieceSize={6.245}
+            width={231}
+          />
           <View style={styles.buttons}>
             <Button
               leftContent={<Icon name="ic-copy-16" />}
               onPress={copyText(tonAddress, t('address_copied'))}
               color="secondary"
-              title="Copy"
+              title={t('receiveModal.copy')}
               size="medium"
             />
             <Spacer x={12} />
-            <Button
-              leftContent={<Icon name="ic-share-16" />}
-              onPress={share(tonAddress)}
-              color="secondary"
-              title="Share"
-              size="medium"
-            />
+            <Pressable style={steezyStyles.shareButton} onPress={share(tonAddress)}>
+              <Icon name="ic-share-16" />
+            </Pressable>
           </View>
         </TransitionOpacity>
         <TransitionOpacity
@@ -143,24 +124,15 @@ export const ReceiveModal = memo(() => {
               Send only USDT TRC20 to this address, or you might lose your funds.
             </Text>
           </View>
-          <View style={styles.qrCodeContainer}>
-            {qrRender2 ? (
-              <>
-                <QRCode
-                  data={tronAddress}
-                  style={styles.qrCode}
-                  logo={blankAreaForLogo}
-                  pieceSize={8}
-                />
-                <View style={styles.qrLogo}>
-                  <Icon name="ic-usdt-56" colorless size={44} />
-                </View>
-              </>
-            ) : (
-              <View style={styles.emptyQrArea} />
-            )}
-            <NativeText style={styles.addressText}>{tronAddress}</NativeText>
-          </View>
+          {tronAddress && (
+            <QrCode
+              logo={<Icon name="ic-usdt-56" colorless size={44} />}
+              qrAddress={tronAddress}
+              address={tronAddress}
+              renderDelay={100}
+              pieceSize={8}
+            />
+          )}
           <View style={styles.buttons}>
             <Button
               leftContent={<Icon name="ic-copy-16" />}
@@ -170,13 +142,9 @@ export const ReceiveModal = memo(() => {
               size="medium"
             />
             <Spacer x={12} />
-            <Button
-              leftContent={<Icon name="ic-share-16" />}
-              onPress={share(tronAddress!)}
-              color="secondary"
-              title="Share"
-              size="medium"
-            />
+            <Pressable style={steezyStyles.shareButton} onPress={share(tronAddress!)}>
+              <Icon name="ic-share-16" />
+            </Pressable>
           </View>
         </TransitionOpacity>
       </Modal.Content>
@@ -184,8 +152,56 @@ export const ReceiveModal = memo(() => {
   );
 });
 
+interface QrCodeProps {
+  address: string;
+  renderDelay?: number;
+  logo: React.ReactNode;
+  qrAddress?: string;
+  pieceSize?: number;
+  width?: number;
+}
+
+const QrCode = memo<QrCodeProps>((props) => {
+  const { address, renderDelay = 0, logo, qrAddress, pieceSize, width } = props;
+  const [render, setRender] = useState(renderDelay > 0 ? false : true);
+
+  useEffect(() => {
+    if (renderDelay > 0) {
+      setTimeout(() => setRender(true), renderDelay);
+    }
+  }, [renderDelay]);
+
+  return (
+    <View style={styles.qrCodeArea}>
+      {render ? (
+        <View style={styles.qrCodeContainer}>
+          <View style={{ transform: [{ scale: 0.8 }] }}>
+            <QRCode
+              data={qrAddress ?? address}
+              logo={blankAreaForLogo}
+              style={styles.qrCode}
+              pieceSize={8}
+            />
+          </View>
+          <View style={styles.qrLogo}>{logo}</View>
+        </View>
+      ) : (
+        <View style={styles.emptyQrArea} />
+      )}
+      <NativeText style={styles.addressText} allowFontScaling={false}>{address}</NativeText>
+    </View>
+  );
+});
+
 const styles = StyleSheet.create({
   qrCodeContainer: {
+    width: 231,
+    height: 231,
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  qrCodeArea: {
     position: 'relative',
     marginTop: 16,
     justifyContent: 'center',
@@ -198,12 +214,10 @@ const styles = StyleSheet.create({
   },
   qrCode: {
     backgroundColor: '#FFF',
-    // width: 351
   },
   qrLogo: {
     position: 'absolute',
     zIndex: 1,
-    top: 126,
   },
   emptyQrArea: {
     height: 231,
@@ -236,6 +250,17 @@ const styles = StyleSheet.create({
   },
 });
 
+const steezyStyles = Steezy.create(({ colors }) => ({
+  shareButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 48 / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.buttonSecondaryBackground,
+  },
+}));
+
 const whitepng =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAE4AAABOAQMAAAC0ZLJeAAAAA1BMVEX///+nxBvIAAAAEElEQVQYGWMYBaNgFNAAAAADWgABYd4igAAAAABJRU5ErkJggg==';
-const blankAreaForLogo = { width: 78, height: 78, href: whitepng, scale: 2.3 };
+const blankAreaForLogo = { width: 78, height: 78, href: whitepng, scale: 3.2 };

@@ -17,7 +17,7 @@ import {
 
 import { getImplementationIcon } from '@tonkeeper/mobile/src/utils/staking';
 
-export function renderActionItemByType(action: AnyActionItem) {
+export function renderActionListItem(action: AnyActionItem) {
   const { type, payload } = action;
 
   switch (type) {
@@ -190,7 +190,7 @@ type RenderItemOptions = {
 
 export const renderActionItem = ({ item }: RenderItemOptions) => (
   <ListItemContainer isFirst={item.isFirst} isLast={item.isLast}>
-    {renderActionItemByType(item)}
+    {renderActionListItem(item)}
   </ListItemContainer>
 );
 
