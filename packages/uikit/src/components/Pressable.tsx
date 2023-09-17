@@ -104,18 +104,18 @@ export const Pressable = (props: PressableProps) => {
   }, []);
 
   const underlayStyle = useAnimatedStyle(() => {
-    if (props.underlayColor) {
+    if (underlayColor) {
       return {
         backgroundColor: interpolateColor(
           isPressed.value,
           [0, 1],
-          [backgroundColor, props.underlayColor],
+          [backgroundColor, underlayColor],
         ),
       };
     }
 
     return {};
-  }, [props.underlayColor, backgroundColor]);
+  }, [underlayColor, backgroundColor]);
 
   const pressableStyle = useMemo(() => [style, underlayStyle], [style, underlayStyle]);
 
