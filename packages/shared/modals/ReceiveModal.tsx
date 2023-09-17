@@ -175,14 +175,14 @@ const QrCode = memo<QrCodeProps>((props) => {
     <View style={styles.qrCodeArea}>
       {render ? (
         <View style={styles.qrCodeContainer}>
-          <QRCode
-            data={qrAddress ?? address}
-            logo={blankAreaForLogo}
-            style={styles.qrCode}
-            pieceSize={8}
-            scaleX={0.8}
-            scaleY={0.8}
-          />
+          <View style={{ transform: [{ scale: 0.8 }] }}>
+            <QRCode
+              data={qrAddress ?? address}
+              logo={blankAreaForLogo}
+              style={styles.qrCode}
+              pieceSize={8}
+            />
+          </View>
           <View style={styles.qrLogo}>{logo}</View>
         </View>
       ) : (
