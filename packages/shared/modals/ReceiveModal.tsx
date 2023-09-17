@@ -172,28 +172,36 @@ const QrCode = memo<QrCodeProps>((props) => {
   }, [renderDelay]);
 
   return (
-    <View style={styles.qrCodeContainer}>
+    <View style={styles.qrCodeArea}>
       {render ? (
-        <>
+        <View style={styles.qrCodeContainer}>
           <QRCode
             data={qrAddress ?? address}
-            style={styles.qrCode}
             logo={blankAreaForLogo}
-            pieceSize={pieceSize}
-            width={231}
+            style={styles.qrCode}
+            pieceSize={8}
+            scaleX={0.8}
+            scaleY={0.8}
           />
           <View style={styles.qrLogo}>{logo}</View>
-        </>
+        </View>
       ) : (
         <View style={styles.emptyQrArea} />
       )}
-      <NativeText style={styles.addressText}>{address}</NativeText>
+      <NativeText style={styles.addressText} allowFontScaling={false}>{address}</NativeText>
     </View>
   );
 });
 
 const styles = StyleSheet.create({
   qrCodeContainer: {
+    width: 231,
+    height: 231,
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  qrCodeArea: {
     position: 'relative',
     marginTop: 16,
     justifyContent: 'center',
@@ -210,7 +218,6 @@ const styles = StyleSheet.create({
   qrLogo: {
     position: 'absolute',
     zIndex: 1,
-    top: 126,
   },
   emptyQrArea: {
     height: 231,
@@ -256,4 +263,4 @@ const steezyStyles = Steezy.create(({ colors }) => ({
 
 const whitepng =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAE4AAABOAQMAAAC0ZLJeAAAAA1BMVEX///+nxBvIAAAAEElEQVQYGWMYBaNgFNAAAAADWgABYd4igAAAAABJRU5ErkJggg==';
-const blankAreaForLogo = { width: 78, height: 78, href: whitepng, scale: 2.3 };
+const blankAreaForLogo = { width: 78, height: 78, href: whitepng, scale: 3.2 };
