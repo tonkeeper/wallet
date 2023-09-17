@@ -20,8 +20,10 @@ config.resolver.nodeModulesPaths = [
 // 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
 // config.resolver.disableHierarchicalLookup = true;
 
-config.transformer.babelTransformerPath = require.resolve('react-native-svg-transformer'),
-config.resolver.assetExts = config.resolver.assetExts.filter((ext) => ext !== 'svg');
+(config.transformer.babelTransformerPath = require.resolve(
+  'react-native-svg-transformer',
+)),
+  (config.resolver.assetExts = config.resolver.assetExts.filter((ext) => ext !== 'svg'));
 config.resolver.sourceExts.push('svg', 'cjs');
 
 config.resolver.extraNodeModules = {
@@ -30,6 +32,15 @@ config.resolver.extraNodeModules = {
   http: require.resolve('http-browserify'),
   https: require.resolve('https-browserify'),
   os: require.resolve('os-browserify'),
+};
+
+config.server.rewriteRequestUrl = (url) => {
+  const assets = '/uikit/assets/';
+  if (url.startsWith(assets)) {
+    url = url.replace(assets, '/assets/../uikit/assets/');
+  }
+
+  return url;
 };
 
 module.exports = config;

@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text as NativeText, Share } from 'react-native';
 import QRCode from 'react-native-qrcode-styled';
+import { throttle } from '@tonkeeper/router';
 import { tk } from '../tonkeeper';
 import { t } from '../i18n';
 import {
@@ -44,13 +45,14 @@ export const ReceiveModal = memo(() => {
   }, []);
 
   const share = useCallback(
-    (address: string) => () => {
-      Share.share({
-        message: address,
-      }).catch((err) => {
-        console.log('cant share', err);
-      });
-    },
+    (address: string) =>
+      throttle(() => {
+        Share.share({
+          message: address,
+        }).catch((err) => {
+          console.log('cant share', err);
+        });
+      }, 1000),
     [],
   );
 
@@ -170,28 +172,36 @@ const QrCode = memo<QrCodeProps>((props) => {
   }, [renderDelay]);
 
   return (
-    <View style={styles.qrCodeContainer}>
+    <View style={styles.qrCodeArea}>
       {render ? (
-        <>
-          <QRCode
-            data={qrAddress ?? address}
-            style={styles.qrCode}
-            logo={blankAreaForLogo}
-            pieceSize={pieceSize}
-            width={231}
-          />
+        <View style={styles.qrCodeContainer}>
+          <View style={{ transform: [{ scale: 0.8 }] }}>
+            <QRCode
+              data={qrAddress ?? address}
+              logo={blankAreaForLogo}
+              style={styles.qrCode}
+              pieceSize={8}
+            />
+          </View>
           <View style={styles.qrLogo}>{logo}</View>
-        </>
+        </View>
       ) : (
         <View style={styles.emptyQrArea} />
       )}
-      <NativeText style={styles.addressText}>{address}</NativeText>
+      <NativeText style={styles.addressText} allowFontScaling={false}>{address}</NativeText>
     </View>
   );
 });
 
 const styles = StyleSheet.create({
   qrCodeContainer: {
+    width: 231,
+    height: 231,
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  qrCodeArea: {
     position: 'relative',
     marginTop: 16,
     justifyContent: 'center',
@@ -208,7 +218,6 @@ const styles = StyleSheet.create({
   qrLogo: {
     position: 'absolute',
     zIndex: 1,
-    top: 126,
   },
   emptyQrArea: {
     height: 231,
@@ -254,4 +263,4 @@ const steezyStyles = Steezy.create(({ colors }) => ({
 
 const whitepng =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAE4AAABOAQMAAAC0ZLJeAAAAA1BMVEX///+nxBvIAAAAEElEQVQYGWMYBaNgFNAAAAADWgABYd4igAAAAABJRU5ErkJggg==';
-const blankAreaForLogo = { width: 78, height: 78, href: whitepng, scale: 2.3 };
+const blankAreaForLogo = { width: 78, height: 78, href: whitepng, scale: 3.2 };
