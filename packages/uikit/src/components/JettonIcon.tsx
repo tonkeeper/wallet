@@ -5,6 +5,7 @@ import { View } from './View';
 import { ViewStyle } from 'react-native';
 import { TonIconSizes, iconContainerSizes } from './TonIcon';
 import { FastImage } from './FastImage';
+import { Picture } from './Picture';
 
 export interface JettonIconProps {
   uri: string;
@@ -39,7 +40,7 @@ export const JettonIcon = memo<JettonIconProps>((props) => {
 
   return (
     <View style={containerStyle}>
-      <FastImage source={{ uri }} style={sizeStyle} />
+      <Picture uri={uri} style={sizeStyle} />
     </View>
   );
 });

@@ -39,10 +39,13 @@ export const Picture = memo<PictureProps>((props) => {
   const animation = useSharedValue(PictureState.Preview);
   const [isLoaded, setIsLoaded] = useState(false);
   const handleLoad = () => setIsLoaded(true);
-  const previewSource = useMemo(() => ({ uri: preview ?? undefined }), [preview]);
+  const previewSource = useMemo(
+    () => ({ uri: preview ?? undefined, cache: FastImage.cacheControl.web }),
+    [preview],
+  );
   const hasPreview = !!preview;
   const imageSource = useMemo(() => {
-    return source ?? { uri: uri ?? undefined };
+    return source ?? { uri: uri ?? undefined, cache: FastImage.cacheControl.web };
   }, [uri, source]);
 
   useEffect(() => {
