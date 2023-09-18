@@ -726,7 +726,7 @@
         "yourBalance": "Your balance: %{balance} %{currency}.",
         "rechargeWallet": "Recharge wallet",
         "title": "Insufficient funds",
-        "stakingFee": "%{amount} TON needed for transaction. Estimated fee %{fee} TON will be deducted, the rest will be refunded."
+        "stakingFee": "%{count} TON needed for transaction. Estimated fee %{fee} TON will be deducted, the rest will be refunded."
       }
     }
   },
