@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 import { useTheme } from '$hooks/useTheme';
 import { Loader } from '../../Loader/Loader';
-import { Text } from '../../Text/Text'
+import { Text } from '../../Text/Text';
 import { deviceWidth, ns } from '$utils';
 import { Toast, useToastStore } from '$store';
 

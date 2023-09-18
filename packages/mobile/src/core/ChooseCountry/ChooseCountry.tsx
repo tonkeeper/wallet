@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { List, NavBar, Screen, View } from '$uikit';
 import { getCountries } from '$utils/countries/getCountries';
 import { Steezy } from '$styles';
@@ -53,24 +53,10 @@ export const ChooseCountry: React.FC = () => {
   const { bottom: bottomInset } = useSafeAreaInsets();
   const selectedCountry = useMethodsToBuyStore((state) => state.selectedCountry);
   const listRef = useRef();
-
-  const goToIndex = useCallback(() => {
-    const selectedCountryIndex = countriesList.findIndex(
-      (country) => country.code === selectedCountry,
-    );
-
-    // don't scroll to first countries in FlashList
-    if (selectedCountryIndex <= 8) {
-      return;
-    }
-
-    listRef.current?.scrollToOffset({
-      offset: (selectedCountryIndex - 1) * CELL_SIZE,
-      animated: false,
-    });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const selectedCountryIndex = useMemo(
+    () => countriesList.findIndex((country) => country.code === selectedCountry),
+    [selectedCountry],
+  );
 
   return (
     <Screen>
@@ -78,7 +64,7 @@ export const ChooseCountry: React.FC = () => {
         {t('choose_country.title')}
       </NavBar>
       <Screen.FlashList
-        onLayout={goToIndex}
+        initialScrollIndex={selectedCountryIndex}
         drawDistance={750}
         ItemSeparatorComponent={ListSeparatorItem}
         keyExtractor={(item) => item.code}

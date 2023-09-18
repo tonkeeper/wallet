@@ -23,8 +23,9 @@ const SpoilerViewComponent: FC<Props> = ({ children, ...props }) => {
   const theme = useTheme();
   const color = props.color ? theme.colors[props.color] : theme.colors.foregroundPrimary;
 
+  const isOn = props.isOn;
   const style = useAnimatedStyle(
-    () => ({ opacity: withTiming(props.isOn ? 0 : 1) }),
+    () => ({ opacity: withTiming(isOn ? 0 : 1) }),
     [props.isOn],
   );
 
