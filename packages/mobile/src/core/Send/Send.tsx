@@ -59,7 +59,8 @@ export const Send: FC<SendProps> = ({ route }) => {
     from,
   } = route.params;
 
-  const initialAddress = propsAddress && Address.isValid(propsAddress) ? propsAddress : null;
+  const initialAddress =
+    propsAddress && Address.isValid(propsAddress) ? propsAddress : null;
 
   const trcPayload = useValueRef<RequestData | null>(null);
 
@@ -112,8 +113,15 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   const [isInactive, setInactive] = useState(initialIsInactive);
 
-  const { balance, currencyTitle, decimals, jettonWalletAddress, price, isLiquidJetton, trcToken } =
-    useCurrencyToSend(currency, isJetton, undefined, isUSDT);
+  const {
+    balance,
+    currencyTitle,
+    decimals,
+    jettonWalletAddress,
+    price,
+    isLiquidJetton,
+    trcToken,
+  } = useCurrencyToSend(currency, isJetton, isUSDT);
 
   const tokenPrice = useTokenPrice(isLiquidJetton ? CryptoCurrencies.Ton : currency);
 
@@ -167,7 +175,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     });
     setCurrency({ currency: nextCurrency, isJetton: false, isUSDT: true });
   }, []);
-  
+
   const parsedAmount = useMemo(() => {
     const parsed = parseLocaleNumber(amount.value);
 
@@ -197,18 +205,18 @@ export const Send: FC<SendProps> = ({ route }) => {
     if (recipient.blockchain === 'ton') {
       dispatch(
         walletActions.confirmSendCoins({
-        currency: currency as CryptoCurrency,
-        amount: parsedAmount,
-        address: recipient.address,
-        isJetton,
-        jettonWalletAddress,
-        decimals,
-        comment,
-        isCommentEncrypted,
-        onEnd: () => setPreparing(false),
-        onNext: (details) => {
-          setFee(details.fee);
-          setInactive(details.isInactive);
+          currency: currency as CryptoCurrency,
+          amount: parsedAmount,
+          address: recipient.address,
+          isJetton,
+          jettonWalletAddress,
+          decimals,
+          comment,
+          isCommentEncrypted,
+          onEnd: () => setPreparing(false),
+          onNext: (details) => {
+            setFee(details.fee);
+            setInactive(details.isInactive);
 
             stepViewRef.current?.go(SendSteps.CONFIRM);
           },
@@ -229,6 +237,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       setPreparing(false);
     }
   }, [
+    amount.value,
     comment,
     currency,
     decimals,
@@ -238,6 +247,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     jettonWalletAddress,
     parsedAmount,
     recipient,
+    trcPayload,
     trcToken,
   ]);
 
@@ -278,7 +288,7 @@ export const Send: FC<SendProps> = ({ route }) => {
         const unloked = await unlock();
         const privateKey = await unloked.getTonPrivateKey();
         const send = await tk.wallet.tronService.send(privateKey, trcPayload.value);
-        console.log(send)
+        console.log(send);
 
         setSending(false);
         onDone();
@@ -298,6 +308,8 @@ export const Send: FC<SendProps> = ({ route }) => {
       jettonWalletAddress,
       parsedAmount,
       recipient,
+      trcPayload.value,
+      unlock,
     ],
   );
 
@@ -426,8 +438,9 @@ export const Send: FC<SendProps> = ({ route }) => {
               isPreparing={isPreparing}
               recipient={recipient}
               decimals={decimals}
-              balance={balance}
+              balance={String(balance)}
               currency={currency}
+              isLiquidJetton={isLiquidJetton}
               onChangeCurrency={onChangeCurrency}
               currencyTitle={currencyTitle}
               amount={amount}

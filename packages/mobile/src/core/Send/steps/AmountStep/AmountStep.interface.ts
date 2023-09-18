@@ -6,6 +6,7 @@ export interface AmountStepProps {
   decimals: number;
   balance: string;
   currency: string;
+  isLiquidJetton: boolean;
   active: boolean;
   currencyTitle: string;
   amount: SendAmount;

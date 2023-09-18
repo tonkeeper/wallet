@@ -201,6 +201,7 @@ export const Staking: FC<Props> = () => {
                     color="accentPrimary"
                     variant="body2"
                     onPress={handleLearnMorePress}
+                    suppressHighlighting
                   >
                     {t('staking.learn_more')}
                   </Text>
@@ -225,7 +226,7 @@ export const Staking: FC<Props> = () => {
                       description={t('staking.staking_pool_desc', {
                         apy: pool.apy.toFixed(2),
                       })}
-                      separator={index < pools.length - 1}
+                      separator={index < activePools.length - 1}
                       iconSource={getPoolIcon(pool)}
                       onPress={handlePoolPress}
                     />
@@ -253,7 +254,7 @@ export const Staking: FC<Props> = () => {
                           highestApyPool && highestApyPool.implementation === provider.id
                         }
                         message={getEstimateProfitMessage(provider)}
-                        separator={index < providers.length - 1}
+                        separator={index < data.recommendedList.length - 1}
                         onPress={handleProviderPress}
                       />
                     </Flash>
@@ -275,7 +276,7 @@ export const Staking: FC<Props> = () => {
                       highestApy={
                         highestApyPool && highestApyPool.implementation === provider.id
                       }
-                      separator={index < providers.length - 1}
+                      separator={index < data.otherList.length - 1}
                       onPress={handleProviderPress}
                     />
                   ))}

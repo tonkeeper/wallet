@@ -239,7 +239,8 @@
       "insufficient_balance": "Недостаточно средств",
       "less_than_min": "Минимум %{minAmount} TON",
       "max": "Максимум",
-      "remaining": "Доступно: %{amount}"
+      "remaining": "Доступно: %{amount}",
+      "liquid_jetton_note": "Отправка токена ликвидности tsTON"
     },
     "comfirm": {
       "title": "Подтвердить транзакцию",
@@ -406,7 +407,7 @@
     "purchase": "Покупка",
     "bid": "Ставка",
     "call_contract": "Вызов контракта",
-    
+
     "deposit": "Депозит",
     "withdraw": "Вывод",
     "withdrawal_request": "Запрос на вывод",
@@ -832,20 +833,21 @@
   "staking": {
     "confirm_deposit": "Подтвердить и внести",
     "send_staked_ton": "Застейканного TON",
+    "staked_ton": "Застейканный TON",
     "title": "Стейкинг",
     "title_large": "Стейкинг TON",
     "desc_large": "Участвуйте в стейкинге и получайте вознаграждения. Стейкинг поддерживает сеть TON.",
     "learn_more": "Подробнее",
-    "highest_apy": "Наивысший APY",
+    "highest_apy": "MAX APY",
     "widget_title": "Зарабатывайте TON",
     "widget_desc": "Годовая доходность до %{apy}%",
     "staking_pool_desc": "APY ≈ %{apy}%",
     "staking_desc": "Мин. депозит %{minStake} TON.\nЗарабатывайте до %{maxApy}%.",
-    "top_up": "Депозит",
+    "top_up": "Внести",
     "withdrawal_request": "Запрос на вывод",
     "get_withdrawal": "Получить вывод",
     "withdraw": "Вывести",
-    "deposit": "Внести",
+    "deposit": "Депозит",
     "transaction": "Транзакция",
     "active": "Активные",
     "other": "Другие",
@@ -883,7 +885,7 @@
         "twitter": "Twitter",
         "telegram": "Сообщество"
       },
-      "note": "Стейкинг основан на сторонних смарт-контрактов. Tonkeeper не несет ответственности за их работу.",
+      "note": "Стейкинг основан на сторонних смарт-контрактах. Tonkeeper не несёт ответственность за стабильность и результат.",
       "balance": "Баланс стейкинга",
       "pendingDeposit": "Будет зачислено",
       "pendingWithdraw": "Ожидают вывод",
@@ -892,7 +894,7 @@
       "tap_to_collect": "Нажмите, чтобы вывести",
       "next_cycle": {
         "title": "Следующий цикл",
-        "reward_title": "Следующая выплата",
+        "reward_title": "Следующая награда",
         "desc": "Все транзакции исполняются только после завершения цикла.",
         "desc_liquid": "Все запросы на вывод исполняются только после завершения цикла.",
         "in": "через"
@@ -917,7 +919,7 @@
       },
       "apy": {
         "label": "Годовая доходность",
-        "highest_tag": "Наивысшая",
+        "highest_tag": "MAX",
         "value": "≈ %{value}%"
       },
       "min_deposit": {

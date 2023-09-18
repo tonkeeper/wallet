@@ -240,7 +240,8 @@
       "insufficient_balance": "Insufficient balance",
       "less_than_min": "Minimum %{minAmount} TON",
       "max": "Max",
-      "remaining": "Available: %{amount}"
+      "remaining": "Available: %{amount}",
+      "liquid_jetton_note": "Sending tsTON liquidity token"
     },
     "comfirm": {
       "title": "Confirm transaction",
@@ -287,7 +288,7 @@
   "confirm_sending_amount": "Amount",
   "confirm_sending_fee": "Fee",
   "confirm_sending_message": "Comment",
-  "confirm_sending_submit": "Confirm and send",
+  "confirm_sending_submit": "Confirm and Send",
   "confirm_sending_sent_caption_ton": "Your transaction is sent to the network and will be processed in a few seconds.",
   "confirm_sending_sent_caption_btc": "Your transaction is sent to the network and will be processed within an hour.",
   "confirm_sending_inactive_warn_title": "Inactive contract",
@@ -813,11 +814,12 @@
   "staking": {
     "confirm_deposit": "Confirm and Deposit",
     "send_staked_ton": "Staked TON",
+    "staked_ton": "Staked TON",
     "title": "Staking",
     "title_large": "TON Staking",
     "desc_large": "Join staking and get rewards. Staking helps to maintain the TON network.",
     "learn_more": "Learn more",
-    "highest_apy": "Highest APY",
+    "highest_apy": "MAX APY",
     "widget_title": "Earn TON",
     "widget_desc": "APY up to %{apy}%",
     "staking_pool_desc": "APY ≈ %{apy}%",
@@ -848,7 +850,7 @@
         "twitter": "Twitter",
         "telegram": "Community"
       },
-      "note": "Staking based on third-party smart contracts.\nTonkeeper is not responsible for their work.",
+      "note": "Staking is based on smart contracts by third parties. Tonkeeper is not responsible for staking experience.",
       "balance": "Staking balance",
       "pendingDeposit": "Pending deposit",
       "pendingWithdraw": "Pending withdrawal",

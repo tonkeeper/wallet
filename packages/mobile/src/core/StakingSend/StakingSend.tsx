@@ -13,7 +13,7 @@ import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { getStakingPoolByAddress, Toast, useStakingStore } from '$store';
 import { walletSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
-import { calculateActionsTotalAmount, parseLocaleNumber } from '$utils';
+import { calculateActionsTotalAmount, delay, parseLocaleNumber } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
 import { RouteProp } from '@react-navigation/native';
 import axios from 'axios';
@@ -215,6 +215,8 @@ export const StakingSend: FC<Props> = (props) => {
       const data = await action.estimateTx();
 
       setAccountEvent(data);
+
+      await delay(100);
 
       stepViewRef.current?.go(StakingSendSteps.CONFIRM);
     } catch (e) {

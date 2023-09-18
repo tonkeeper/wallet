@@ -3,13 +3,13 @@ import { useNavigation } from '@tonkeeper/router';
 import { Ton } from '$libs/Ton';
 import { MainStackRouteNames } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
-import { StakingListCell, StakingWarning } from '$shared/components';
+import { StakingListCell } from '$shared/components';
 import {
   getStakingPoolsByProvider,
   getStakingProviderById,
   useStakingStore,
 } from '$store';
-import { ScrollHandler, Spacer } from '$uikit';
+import { ScrollHandler } from '$uikit';
 import { List } from '$uikit/List/old/List';
 import { calculatePoolBalance, getPoolIcon } from '$utils/staking';
 import { RouteProp } from '@react-navigation/native';
@@ -89,12 +89,6 @@ export const StakingPools: FC<Props> = (props) => {
           showsVerticalScrollIndicator={false}
         >
           <S.Content bottomInset={bottomInset}>
-            {provider.url ? (
-              <>
-                <StakingWarning name={provider.name} url={provider.url} />
-                <Spacer y={16} />
-              </>
-            ) : null}
             <List separator={false}>
               {list.map((pool, index) => (
                 <StakingListCell

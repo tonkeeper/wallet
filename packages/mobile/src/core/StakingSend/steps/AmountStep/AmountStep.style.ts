@@ -24,11 +24,12 @@ export const TitleContainer = styled.View`
 export const Table = styled.View`
   background: ${({ theme }) => theme.colors.backgroundSecondary};
   border-radius: ${({ theme }) => ns(theme.radius.normal)}px;
+  padding: ${ns(8)}px 0;
   overflow: hidden;
 `;
 
 export const Item = styled.View`
-  padding: ${ns(16)}px;
+  padding: ${ns(8)}px ${ns(16)}px;
   flex-direction: row;
   justify-content: space-between;
   overflow: hidden;
@@ -36,7 +37,7 @@ export const Item = styled.View`
 
 export const ItemLabel = styled(Text).attrs({
   color: 'foregroundSecondary',
-  variant: 'body1',
+  variant: 'body2',
 })`
   flex: 1;
 `;
@@ -46,7 +47,7 @@ export const ItemContent = styled.View`
 `;
 
 export const ItemValue = styled(Text).attrs({
-  variant: 'label1',
+  variant: 'label2',
 })``;
 
 export const ItemSubValue = styled(Text).attrs({
