@@ -8,7 +8,7 @@ import { ViewStyle } from 'react-native';
 import { TonDiamondIcon } from '@tonkeeper/mobile/src/uikit/TonDiamondIcon/TonDiamondIcon';
 import { useDiamondIcon } from '@tonkeeper/mobile/src/hooks/useDiamondIcon';
 
-type TonIconSizes = 'small' | 'medium' | 'large' | 'xmedium';
+export type TonIconSizes = 'xsmall' | 'small' | 'medium' | 'large' | 'xmedium';
 
 export interface TonIconProps {
   size?: TonIconSizes;
@@ -18,9 +18,10 @@ export interface TonIconProps {
   style?: StyleProp<ViewStyle>;
 }
 
-const containerSizes: { [key in TonIconSizes]: number } = {
+export const iconContainerSizes: { [key in TonIconSizes]: number } = {
   xmedium: 56,
   medium: 64,
+  xsmall: 24,
   small: 44,
   large: 96,
 };
@@ -29,8 +30,8 @@ export const TonIcon = memo<TonIconProps>((props) => {
   const { size = 'small', transparent, showDiamond, locked, style } = props;
 
   const { hasDiamond, accentTonIcon, accent } = useDiamondIcon();
-  const isTransparent = transparent ?? (showDiamond && hasDiamond) as boolean;
-  const containerSize = containerSizes[size];
+  const isTransparent = transparent ?? ((showDiamond && hasDiamond) as boolean);
+  const containerSize = iconContainerSizes[size];
 
   const sizeStyle = useMemo(
     () => ({
@@ -42,10 +43,15 @@ export const TonIcon = memo<TonIconProps>((props) => {
   );
 
   const containerStyle = useMemo(
-    () => [styles.container, isTransparent && styles.backgroundTransparent, sizeStyle, style],
+    () => [
+      styles.container,
+      isTransparent && styles.backgroundTransparent,
+      sizeStyle,
+      style,
+    ],
     [isTransparent, sizeStyle, style],
   );
-  
+
   return (
     <View style={containerStyle}>
       {showDiamond && hasDiamond ? (

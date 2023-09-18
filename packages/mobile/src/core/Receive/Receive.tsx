@@ -7,22 +7,21 @@ import Webview from 'react-native-webview';
 
 import { ReceiveProps } from './Receive.interface';
 import * as S from './Receive.style';
-import { CurrencyIcon, Icon, NavBar, Text } from '$uikit';
+import { Icon, NavBar, Text } from '$uikit';
 import { walletSelector } from '$store/wallet';
 import { deviceWidth, ns, triggerImpactLight } from '$utils';
 import { t } from '@tonkeeper/shared/i18n';
 import { CryptoCurrencies, TabletModalsWidth } from '$shared/constants';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { Toast } from '$store';
+import { TonIcon } from '@tonkeeper/uikit';
 
 export const Receive: FC<ReceiveProps> = ({ route }) => {
-  
   const qrSize = Math.min(deviceWidth, TabletModalsWidth) - ns(64) * 2 - ns(16) - ns(12);
   const { currency, jettonAddress, isJetton, isFromMainScreen } = route.params;
   const { currencyTitle, Logo } = useCurrencyToSend(
     isJetton && jettonAddress ? jettonAddress : currency,
     isJetton,
-    76,
   );
   const { address } = useSelector(walletSelector);
   const [scrollTop, setScrollTop] = useState(0);
@@ -75,7 +74,7 @@ export const Receive: FC<ReceiveProps> = ({ route }) => {
         <S.Content onScroll={handleScroll} scrollEventThrottle={0}>
           <S.Info>
             {currency === CryptoCurrencies.Ton && !jettonAddress ? (
-              <CurrencyIcon currency={CryptoCurrencies.Ton} size={72} />
+              <TonIcon size="large" />
             ) : (
               Logo
             )}

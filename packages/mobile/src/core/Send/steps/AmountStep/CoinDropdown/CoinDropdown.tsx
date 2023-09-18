@@ -1,23 +1,9 @@
 import { useJettonBalances } from '$hooks/useJettonBalances';
-import {
-  CryptoCurrencies,
-  CryptoCurrency,
-  Decimals,
-  SecondaryCryptoCurrencies,
-} from '$shared/constants';
+import { CryptoCurrencies, Decimals, SecondaryCryptoCurrencies } from '$shared/constants';
 import { JettonBalanceModel } from '$store/models';
 import { walletSelector } from '$store/wallet';
 import { Steezy } from '$styles';
-import {
-  CurrencyIcon,
-  Highlight,
-  Icon,
-  PopupSelect,
-  Spacer,
-  StakedTonIcon,
-  Text,
-  View,
-} from '$uikit';
+import { Highlight, Icon, PopupSelect, Spacer, StakedTonIcon, Text, View } from '$uikit';
 import { ns } from '$utils';
 import React, { FC, memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -29,6 +15,7 @@ import { Address } from '@tonkeeper/core';
 import { PoolInfo } from '@tonkeeper/core/src/TonAPI';
 import { t } from '@tonkeeper/shared/i18n';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
+import { JettonIcon, TonIcon } from '@tonkeeper/uikit';
 
 type CoinItem =
   | { isJetton: false; currency: string; balance: string; decimals: number }
@@ -87,7 +74,8 @@ const CoinDropdownComponent: FC<Props> = (props) => {
       ...jettons
         .map((jetton): CoinItem => {
           const liquidStakingPool = stakingPools.find(
-            (pool) => pool.liquid_jetton_master === Address.parse(jetton.jettonAddress).toRaw(),
+            (pool) =>
+              pool.liquid_jetton_master === Address.parse(jetton.jettonAddress).toRaw(),
           );
 
           const balance = liquidStakingPool
@@ -118,7 +106,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
           return 0;
         }),
     ];
-  }, [jettons, balances, currencies, stakingPools]);
+  }, [jettons, balances, currencies, stakingPools, getTokenPrice]);
 
   const selectedCoin = useMemo(
     () => coins.find((item) => item.currency === currency)!,
@@ -150,13 +138,19 @@ const CoinDropdownComponent: FC<Props> = (props) => {
         renderItem={(item) => (
           <>
             {item.isJetton && item.liquidStakingPool ? (
-              <StakedTonIcon pool={item.liquidStakingPool} size={24} />
+              <StakedTonIcon pool={item.liquidStakingPool} size="xsmall" />
             ) : null}
             {item.isJetton && !item.liquidStakingPool ? (
-              <CurrencyIcon size={24} isJetton uri={item.jetton.metadata.image} />
+              <JettonIcon size="xsmall" uri={item.jetton.metadata.image!} />
             ) : null}
             {!item.isJetton ? (
-              <CurrencyIcon size={24} currency={item.currency as CryptoCurrency} />
+              <TonIcon
+                size="xsmall"
+                locked={[
+                  CryptoCurrencies.TonLocked,
+                  CryptoCurrencies.TonRestricted,
+                ].includes(item.currency as CryptoCurrencies)}
+              />
             ) : null}
             <Spacer x={8} />
             <Text numberOfLines={1} style={{ width: ns(156) }}>
@@ -173,7 +167,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
           <View style={styles.content}>
             <Text variant="label1">
               {selectedCoin.isJetton && selectedCoin.liquidStakingPool
-                ? t('staking.send_staked_ton')
+                ? t('staking.staked_ton')
                 : currencyTitle}
             </Text>
             <View style={styles.chevron}>

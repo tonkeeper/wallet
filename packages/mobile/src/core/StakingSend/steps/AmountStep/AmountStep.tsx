@@ -167,7 +167,6 @@ const AmountStepComponent: FC<Props> = (props) => {
                     </S.ItemValue>
                   </S.ItemContent>
                 </S.Item>
-                <Separator />
                 <S.Item>
                   <S.ItemLabel numberOfLines={1}>
                     {t('staking.rewards.current')}

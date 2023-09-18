@@ -1,4 +1,3 @@
-import { Ton } from '$libs/Ton';
 import { useStakingStore } from '$store';
 import { jettonsBalancesSelector } from '$store/jettons';
 import { Address } from '@tonkeeper/shared/Address';
@@ -12,14 +11,15 @@ export const useStakingStatuses = () => {
     (s) =>
       s.pools
         .map((pool) => ({ info: s.stakingInfo[pool.address], pool }))
-        .filter(
-          (item) =>
-            !!item.info ||
-            !!jettonBalances.find(
-              (balance) =>
-                Address.parse(balance.jettonAddress).toRaw() === item.pool.liquid_jetton_master,
-            ),
-        ),
+        .filter((item) => {
+          const jettonBalance = jettonBalances.find(
+            (balance) =>
+              Address.parse(balance.jettonAddress).toRaw() ===
+              item.pool.liquid_jetton_master,
+          );
+
+          return !!item.info || (!!jettonBalance && jettonBalance.balance !== '0');
+        }),
     shallow,
   );
 

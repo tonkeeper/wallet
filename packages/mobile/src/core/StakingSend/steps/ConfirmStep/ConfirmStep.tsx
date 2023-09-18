@@ -146,44 +146,41 @@ const ConfirmStepComponent: FC<Props> = (props) => {
               StakingTransactionType.WITHDRAWAL,
               StakingTransactionType.WITHDRAWAL_CONFIRM,
             ].includes(transactionType) ? (
-              <>
-                <S.Item>
-                  <S.ItemLabel>{t('staking.confirm.withdraw_amount.label')}</S.ItemLabel>
-                  <S.ItemContent>
-                    <S.ItemValue>
-                      {stakingFormatter.format(fiatValue.amount)} {fiatValue.symbol}
-                    </S.ItemValue>
-                    <S.ItemSubValue>≈ {fiatValue.formatted.totalFiat}</S.ItemSubValue>
-                  </S.ItemContent>
-                </S.Item>
-                <Separator />
-              </>
-            ) : (
-              <>
-                <S.Item>
-                  <S.ItemLabel>{t('staking.confirm.amount.label')}</S.ItemLabel>
-                  <S.ItemContent>
-                    <S.ItemValue>
-                      {stakingFormatter.format(fiatValue.amount)} {fiatValue.symbol}
-                    </S.ItemValue>
-                    <S.ItemSubValue>≈ {fiatValue.formatted.totalFiat}</S.ItemSubValue>
-                  </S.ItemContent>
-                </S.Item>
-                <Separator />
-              </>
-            )}
-            {totalFee ? (
               <S.Item>
-                <S.ItemLabel>{t('staking.confirm.fee.label')}</S.ItemLabel>
+                <S.ItemLabel>{t('staking.confirm.withdraw_amount.label')}</S.ItemLabel>
                 <S.ItemContent>
                   <S.ItemValue>
-                    {t('staking.confirm.fee.value', {
-                      value: truncateDecimal(totalFee, 1),
-                    })}
+                    {stakingFormatter.format(fiatValue.amount)} {fiatValue.symbol}
                   </S.ItemValue>
-                  <S.ItemSubValue>≈ {fiatFee.formatted.totalFiat}</S.ItemSubValue>
+                  <S.ItemSubValue>≈ {fiatValue.formatted.totalFiat}</S.ItemSubValue>
                 </S.ItemContent>
               </S.Item>
+            ) : (
+              <S.Item>
+                <S.ItemLabel>{t('staking.confirm.amount.label')}</S.ItemLabel>
+                <S.ItemContent>
+                  <S.ItemValue>
+                    {stakingFormatter.format(fiatValue.amount)} {fiatValue.symbol}
+                  </S.ItemValue>
+                  <S.ItemSubValue>≈ {fiatValue.formatted.totalFiat}</S.ItemSubValue>
+                </S.ItemContent>
+              </S.Item>
+            )}
+            {totalFee ? (
+              <>
+                <Separator />
+                <S.Item>
+                  <S.ItemLabel>{t('staking.confirm.fee.label')}</S.ItemLabel>
+                  <S.ItemContent>
+                    <S.ItemValue>
+                      {t('staking.confirm.fee.value', {
+                        value: truncateDecimal(totalFee, 1),
+                      })}
+                    </S.ItemValue>
+                    <S.ItemSubValue>≈ {fiatFee.formatted.totalFiat}</S.ItemSubValue>
+                  </S.ItemContent>
+                </S.Item>
+              </>
             ) : null}
           </S.Table>
         </S.Content>

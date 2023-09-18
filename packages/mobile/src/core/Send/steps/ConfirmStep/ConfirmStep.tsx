@@ -56,7 +56,6 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const { Logo, isLiquidJetton, liquidJettonPool } = useCurrencyToSend(
     currency,
     isJetton,
-    96,
   );
 
   const showLockupAlert = useCallback(
@@ -219,7 +218,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
         <S.Content>
           <S.Center>
             {liquidJettonPool ? (
-              <StakedTonIcon pool={liquidJettonPool} size={96} />
+              <StakedTonIcon pool={liquidJettonPool} size="large" />
             ) : (
               Logo
             )}

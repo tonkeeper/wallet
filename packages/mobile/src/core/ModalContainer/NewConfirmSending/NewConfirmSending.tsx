@@ -22,8 +22,6 @@ import { t } from '@tonkeeper/shared/i18n';
 export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
   const { currency, address, amount, comment, fee, isJetton, methodId } = props;
 
-  
-
   const dispatch = useDispatch();
 
   const method = useExchangeMethodInfo(methodId);
@@ -35,7 +33,6 @@ export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
   const { decimals, jettonWalletAddress, currencyTitle } = useCurrencyToSend(
     currency,
     isJetton,
-    72,
   );
 
   const doSend = onConfirm(async ({ startLoading }) => {
@@ -80,7 +77,7 @@ export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
     } else {
       doSend();
     }
-  }, [amount, fee, currency, wallet, balances, t, doSend]);
+  }, [amount, fee, currency, wallet, balances, doSend]);
 
   const feeCurrency = useMemo(() => {
     const tokenConfig = getTokenConfig(currency);
@@ -115,7 +112,7 @@ export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
     }
 
     return '';
-  }, [method, t]);
+  }, [method]);
 
   return (
     <Modal>

@@ -187,7 +187,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                   </HideableAmount>
                 </S.JettonAmountWrapper>
                 <Spacer x={16} />
-                <StakedTonIcon size={64} pool={pool} />
+                <StakedTonIcon size="medium" pool={pool} />
               </S.FlexRow>
               <S.Divider />
               <Spacer y={16} />

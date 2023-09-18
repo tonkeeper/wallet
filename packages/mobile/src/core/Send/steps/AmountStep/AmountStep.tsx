@@ -20,6 +20,7 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
     balance,
     currency,
     currencyTitle,
+    isLiquidJetton,
     active,
     amount,
     fiatRate,
@@ -96,12 +97,17 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
             />
           ) : (
             <View style={styles.blockchainCoin}>
-              <Text type="label1">
-                TRC20
-              </Text>
+              <Text type="label1">TRC20</Text>
             </View>
           )}
         </S.CoinContainer>
+        {isLiquidJetton ? (
+          <S.NoteContainer>
+            <Text type="body2" color="textTertiary">
+              {t('send_screen_steps.amount.liquid_jetton_note')}
+            </Text>
+          </S.NoteContainer>
+        ) : null}
       </S.AmountContainer>
       <Spacer y={40} />
       <Button disabled={!isReadyToContinue} isLoading={isPreparing} onPress={onContinue}>
@@ -118,6 +124,6 @@ const styles = Steezy.create(({ colors, corners }) => ({
     backgroundColor: colors.buttonTertiaryBackground,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: corners.small
-  }
-}))
+    borderRadius: corners.small,
+  },
+}));

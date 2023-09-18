@@ -104,7 +104,7 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
       description={pool.name}
       balance={balance.amount}
       stakingJetton={stakingJetton}
-      icon={<StakedTonIcon pool={pool} size={44} />}
+      icon={<StakedTonIcon pool={pool} size="small" />}
       numberOfLines={1}
       separator={true}
       message={message}

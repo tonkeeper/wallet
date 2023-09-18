@@ -3,7 +3,6 @@ import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { walletSelector } from '$store/wallet';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
-import { CurrencyIcon } from '$uikit';
 import { jettonsSelector } from '$store/jettons';
 import { JettonBalanceModel } from '$store/models';
 import { useStakingStore } from '$store';
@@ -12,11 +11,11 @@ import { Address } from '@tonkeeper/shared/Address';
 import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { useGetTokenPrice } from './useTokenPrice';
+import { JettonIcon, TonIcon } from '@tonkeeper/uikit';
 
 export function useCurrencyToSend(
   currency: CryptoCurrency | string,
   isJetton?: boolean,
-  logoSize: number = 32,
   isUSDT?: boolean,
 ) {
   const { balances } = useSelector(walletSelector);
@@ -36,7 +35,8 @@ export function useCurrencyToSend(
     () =>
       jetton
         ? stakingPools.find(
-            (pool) => pool.liquid_jetton_master === Address.parse(jetton.jettonAddress).toRaw(),
+            (pool) =>
+              pool.liquid_jetton_master === Address.parse(jetton.jettonAddress).toRaw(),
           )
         : undefined,
     [jetton, stakingPools],
@@ -51,15 +51,19 @@ export function useCurrencyToSend(
   }, [currency, isJetton, jetton, isUSDT]);
 
   const Logo = useMemo(
-    () => (
-      <CurrencyIcon
-        isJetton={!liquidJettonPool && isJetton}
-        uri={jetton?.metadata?.image}
-        currency={liquidJettonPool ? CryptoCurrencies.Ton : (currency as CryptoCurrency)}
-        size={logoSize}
-      />
-    ),
-    [currency, isJetton, jetton?.metadata?.image, liquidJettonPool, logoSize],
+    () =>
+      !liquidJettonPool && isJetton ? (
+        <JettonIcon size="large" uri={jetton?.metadata?.image || ''} />
+      ) : (
+        <TonIcon
+          size="large"
+          showDiamond
+          locked={[CryptoCurrencies.TonLocked, CryptoCurrencies.TonRestricted].includes(
+            currency as CryptoCurrencies,
+          )}
+        />
+      ),
+    [currency, isJetton, jetton, liquidJettonPool],
   );
 
   const getTokenPrice = useGetTokenPrice();
@@ -101,14 +105,7 @@ export function useCurrencyToSend(
         currencyTitle: usdt!.token.symbol,
         jettonWalletAddress: undefined,
         isLiquidJetton: false,
-        Logo: (
-          <CurrencyIcon
-            isJetton={false}
-            uri={usdt!.token.image}
-            currency={CryptoCurrencies.Usdt}
-            size={logoSize}
-          />
-        ),
+        Logo: null,
       };
     } else {
       return {
@@ -123,16 +120,14 @@ export function useCurrencyToSend(
     }
   }, [
     isJetton,
+    isUSDT,
     getTokenPrice,
     currency,
-    jetton.balance,
-    jetton?.metadata?.decimals,
-    jetton?.metadata?.symbol,
-    jetton?.jettonAddress,
-    jetton?.walletAddress,
+    jetton,
     liquidJettonPool,
     decimals,
     Logo,
+    tronBalances.data,
     balances,
   ]);
 

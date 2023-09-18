@@ -1,35 +1,33 @@
-import { CryptoCurrencies } from '$shared/constants';
-import { CurrencyIcon } from '$uikit/CurrencyIcon/CurrencyIcon';
 import { getImplementationIcon } from '$utils/staking';
 import { PoolInfo } from '@tonkeeper/core/src/TonAPI';
-import { Steezy, View, ns } from '@tonkeeper/uikit';
+import { Steezy, TonIcon, TonIconProps, View, ns } from '@tonkeeper/uikit';
+import { TonIconSizes } from '@tonkeeper/uikit/src/components/TonIcon';
 import React, { FC, memo } from 'react';
 import { Image } from 'react-native';
 
-type Size = 24 | 44 | 64 | 96;
-
-const stakingIconSizeMap: Record<Size, number> = {
-  24: 12,
-  44: 18,
-  64: 24,
-  96: 40,
+const stakingIconSizeMap: Record<TonIconSizes, number> = {
+  xsmall: 12,
+  small: 18,
+  medium: 24,
+  xmedium: 24,
+  large: 40,
 };
 
 interface Props {
-  size: Size;
+  size: Required<TonIconProps['size']>;
   pool: PoolInfo;
 }
 
 const StakedTonIconComponent: FC<Props> = (props) => {
-  const { size, pool } = props;
+  const { size = 'small', pool } = props;
 
   const stakingLogo = getImplementationIcon(pool.implementation);
 
   return (
     <View style={styles.container}>
-      <CurrencyIcon size={size} currency={CryptoCurrencies.Ton} />
+      <TonIcon size={size} showDiamond />
       {stakingLogo ? (
-        <View style={[styles.logo, styles[`size${size}`]]}>
+        <View style={[styles.logo, styles[size]]}>
           <Image
             source={stakingLogo}
             style={{
@@ -54,7 +52,7 @@ const styles = Steezy.create(({ colors }) => ({
     borderColor: colors.backgroundPage,
     overflow: 'hidden',
   },
-  size24: {
+  xsmall: {
     width: 15,
     height: 15,
     borderWidth: 1.5,
@@ -62,7 +60,7 @@ const styles = Steezy.create(({ colors }) => ({
     bottom: -5.5,
     right: -5.5,
   },
-  size44: {
+  small: {
     width: 22,
     height: 22,
     borderWidth: 2,
@@ -70,14 +68,21 @@ const styles = Steezy.create(({ colors }) => ({
     bottom: -6,
     right: -6,
   },
-  size64: {
+  medium: {
     width: 30,
     height: 30,
     borderWidth: 3,
     bottom: -7,
     right: -7,
   },
-  size96: {
+  xmedium: {
+    width: 30,
+    height: 30,
+    borderWidth: 3,
+    bottom: -7,
+    right: -7,
+  },
+  large: {
     width: 48,
     height: 48,
     borderWidth: 4,

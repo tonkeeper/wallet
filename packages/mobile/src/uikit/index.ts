@@ -1,7 +1,6 @@
 export { Icon } from './Icon/Icon';
 export { LargeNavBar } from './LargeNavBar/LargeNavBar';
 export { NavBar, NavBarHelper } from './NavBar/NavBar';
-export { CurrencyIcon } from './CurrencyIcon/CurrencyIcon';
 export { InlineHeader } from './InlineHeader/InlineHeader';
 export { Highlight } from './Highlight/Highlight';
 export { Input } from './Input/Input';
