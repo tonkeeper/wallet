@@ -7,11 +7,20 @@ import { getChainName } from '$shared/dynamicConfig';
 import { useObtainProofToken } from '$hooks/useObtainProofToken';
 import { useSelector } from 'react-redux';
 import { walletAddressSelector } from '$store/wallet';
+import { useIsFocused } from '@react-navigation/native';
 
 const SwitchDAppNotificationsComponent: React.FC<{ app: IConnectedApp }> = ({ app }) => {
   const address = useSelector(walletAddressSelector);
   const [switchValue, setSwitchValue] = React.useState(!!app.notificationsEnabled);
   const [isFrozen, setIsFrozen] = React.useState(false);
+  const isFocused = useIsFocused();
+
+  // update switch value from outside
+  useEffect(() => {
+    if (!isFocused) {
+      setSwitchValue(!!app.notificationsEnabled);
+    }
+  }, [isFocused, app.notificationsEnabled]);
 
   const { enableNotifications, disableNotifications } = useConnectedAppsStore(
     (state) => state.actions,
@@ -65,7 +74,12 @@ const SwitchDAppNotificationsComponent: React.FC<{ app: IConnectedApp }> = ({ ap
   );
 };
 
-export const SwitchDAppNotifications = memo(SwitchDAppNotificationsComponent);
+export const SwitchDAppNotifications = memo(
+  SwitchDAppNotificationsComponent,
+  (prev, next) =>
+    prev.app.url === next.app.url &&
+    prev.app.notificationsEnabled === next.app.notificationsEnabled,
+);
 
 const styles = Steezy.create({
   title: {
