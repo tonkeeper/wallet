@@ -1,6 +1,6 @@
 import { SwitchItem } from '$uikit';
 import FastImage from 'react-native-fast-image';
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { IConnectedApp, useConnectedAppsStore } from '$store';
 import { Steezy } from '$styles';
 import { getChainName } from '$shared/dynamicConfig';
@@ -11,6 +11,7 @@ import { walletAddressSelector } from '$store/wallet';
 const SwitchDAppNotificationsComponent: React.FC<{ app: IConnectedApp }> = ({ app }) => {
   const address = useSelector(walletAddressSelector);
   const [switchValue, setSwitchValue] = React.useState(!!app.notificationsEnabled);
+  const [isFrozen, setIsFrozen] = React.useState(false);
 
   const { enableNotifications, disableNotifications } = useConnectedAppsStore(
     (state) => state.actions,
@@ -21,23 +22,34 @@ const SwitchDAppNotificationsComponent: React.FC<{ app: IConnectedApp }> = ({ ap
     async (value: boolean, url: string, session_id: string | undefined) => {
       try {
         setSwitchValue(value);
+        setIsFrozen(true);
         if (!(await obtainProofToken())) {
+          setIsFrozen(false);
           return setSwitchValue(!value);
         }
         if (value) {
-          return enableNotifications(getChainName(), address.ton, url, session_id);
+          await enableNotifications(getChainName(), address.ton, url, session_id);
+        } else {
+          await disableNotifications(getChainName(), address.ton, url);
         }
-        disableNotifications(getChainName(), address.ton, url);
+        setIsFrozen(false);
       } catch (error) {
-        console.log(error);
+        setIsFrozen(false);
         setSwitchValue(!value);
       }
     },
-    [obtainProofToken, disableNotifications, address.ton, enableNotifications],
+    [
+      setIsFrozen,
+      obtainProofToken,
+      disableNotifications,
+      address.ton,
+      enableNotifications,
+    ],
   );
 
   return (
     <SwitchItem
+      disabled={isFrozen}
       icon={<FastImage source={{ uri: app.icon }} style={styles.imageStyle.static} />}
       title={app.name}
       value={switchValue}

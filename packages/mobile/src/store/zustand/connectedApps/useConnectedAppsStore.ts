@@ -8,6 +8,7 @@ import messaging from '@react-native-firebase/messaging';
 import * as SecureStore from 'expo-secure-store';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { getSubscribeStatus, SUBSCRIBE_STATUS } from '$utils/messaging';
+import { Toast } from '@tonkeeper/uikit';
 
 const initialState: Omit<IConnectedAppsStore, 'actions'> = {
   connectedApps: {
@@ -170,7 +171,9 @@ export const useConnectedAppsStore = create(
 
                 return { connectedApps };
               });
-            } catch (e) {}
+            } catch (e) {
+              Toast.fail(e.message);
+            }
           },
           updateNotificationsSubscription: async (chainName, walletAddress) => {
             const apps = get().connectedApps[chainName][walletAddress] || {};
@@ -225,7 +228,9 @@ export const useConnectedAppsStore = create(
 
                 return { connectedApps };
               });
-            } catch (e) {}
+            } catch (e) {
+              Toast.fail(e.message);
+            }
           },
           unsubscribeFromNotifications: async (chainName, walletAddress, url) => {
             try {
@@ -261,7 +266,9 @@ export const useConnectedAppsStore = create(
 
                 return { connectedApps };
               });
-            } catch (e) {}
+            } catch (e) {
+              Toast.fail(e.message);
+            }
           },
           unsubscribeFromAllNotifications: async (chainName, walletAddress) => {
             const apps = get().connectedApps[chainName][walletAddress] || {};
