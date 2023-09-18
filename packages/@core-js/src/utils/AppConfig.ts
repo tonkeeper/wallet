@@ -20,11 +20,13 @@ type AppConfigOptions<TConfig> = {
 };
 
 export class AppConfig<TConfig = {}> {
-  private configStorageKey = '__config__';
+  private clientConfigStorageKey = '__client-config__';
+  private serverConfigStorageKey = '__server-config__';
+  private clientConfig: Partial<TConfig> = {};
+  private serverConfig: Partial<TConfig> = {};
   private defaultConfig: Partial<TConfig>;
   private request: AppConfigRequest;
   private storage: AppConfigStorage;
-  private config: any = {}; // TODO: fix any
 
   constructor(options: AppConfigOptions<TConfig>) {
     this.defaultConfig = options.defaultConfig;
@@ -34,9 +36,13 @@ export class AppConfig<TConfig = {}> {
 
   public async loadFromStorage() {
     try {
-      const configJson = await this.storage.getItem(this.configStorageKey);
-      if (configJson) {
-        this.config = JSON.parse(configJson);
+      const serverConfigString = await this.storage.getItem(this.serverConfigStorageKey);
+      if (serverConfigString) {
+        this.serverConfig = JSON.parse(serverConfigString);
+      }
+      const clientConfigString = await this.storage.getItem(this.clientConfigStorageKey);
+      if (clientConfigString) {
+        this.clientConfig = JSON.parse(clientConfigString);
       }
     } catch (err) {
       console.log('[AppConfig]: error', err);
@@ -58,7 +64,7 @@ export class AppConfig<TConfig = {}> {
         },
       });
 
-      this.setConfig(config.data);
+      this.saveServerConfig(config.data);
     } catch (err) {
       console.log('[AppConfig]:', err);
     }
@@ -69,16 +75,42 @@ export class AppConfig<TConfig = {}> {
     this.loadFromServer(); // load in backgound
   }
 
-  public get<TKey extends keyof TConfig>(key: TKey) {
-    if (this.config[key]) {
-      return this.config[key];
+  public server = {
+    get: <TKey extends keyof TConfig>(key: TKey) => {
+      if (this.serverConfig[key] !== undefined) {
+        return this.serverConfig[key];
+      }
+  
+      return this.defaultConfig[key] ?? '';
     }
-
-    return this.defaultConfig[key] ?? '';
   }
 
-  private async setConfig(config: any) {
-    this.config = Object.assign(this.config, config);
-    return this.storage.setItem(this.configStorageKey, JSON.stringify(this.config));
+  public get<TKey extends keyof TConfig>(key: TKey): TConfig[TKey] {
+    if (this.clientConfig[key]) {
+      return this.clientConfig[key]!;
+    }
+
+    if (this.serverConfig[key]) {
+      return this.serverConfig[key]!;
+    }
+
+    return this.defaultConfig[key]! ?? '';
+  }
+
+  private async saveServerConfig(config: Partial<TConfig>) {
+    const mergedConfig = Object.assign(this.serverConfig, config);
+    this.serverConfig = mergedConfig;
+    return this.storage.setItem(
+      this.serverConfigStorageKey,
+      JSON.stringify(this.serverConfig),
+    );
+  }
+
+  public set(config: Partial<TConfig>) {
+    this.clientConfig = Object.assign(this.clientConfig, config);
+    return this.storage.setItem(
+      this.clientConfigStorageKey,
+      JSON.stringify(this.clientConfig),
+    );
   }
 }

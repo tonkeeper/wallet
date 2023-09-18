@@ -38,6 +38,7 @@ import { SwitchWalletModal } from '@tonkeeper/shared/modals/SwitchWalletModal';
 import { AddWalletModal } from '@tonkeeper/shared/modals/AddWalletModal';
 import { ProvidersWithNavigation } from './Providers';
 import { ReceiveModal } from '@tonkeeper/shared/modals/ReceiveModal';
+import { EditAppConfigModal } from '$core/DevMenu/DevConfig';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -61,6 +62,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NewConfirmSending} path="NewConfirmSending" />
       <Stack.Modal component={SwitchWalletModal} path="/switch-wallet" />
       <Stack.Modal component={AddWalletModal} path="/add-wallet" />
+      <Stack.Modal component={EditAppConfigModal} path="/dev/config/edit" />
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />

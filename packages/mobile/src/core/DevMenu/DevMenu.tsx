@@ -8,8 +8,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Switch } from 'react-native-gesture-handler';
 import DeviceInfo from 'react-native-device-info';
 import { useNavigation } from '@tonkeeper/router';
+import { config } from '@tonkeeper/shared/config';
 import { jettonsActions } from '$store/jettons';
 import { eventsActions } from '$store/events';
+import RNRestart from 'react-native-restart';
 import { t } from '@tonkeeper/shared/i18n';
 import { nftsActions } from '$store/nfts';
 import { FC, useCallback } from 'react';
@@ -119,6 +121,25 @@ export const DevMenu: FC = () => {
             onPress={handleToggleTestnet}
           />
           <List.Item onPress={handleLogs} title="Logs" />
+          <List.Item title="App config" onPress={() => nav.navigate('/dev/config')} />
+          <List.Item
+            title="Dev Tonapi"
+            rightContent={
+              <Switch
+                value={config.get('tonapiIOEndpoint') === 'https://dev.tonapi.io'}
+                onChange={() => {
+                  const devHost = 'https://dev.tonapi.io';
+                  if (config.get('tonapiIOEndpoint') !== devHost) {
+                    config.set({ tonapiIOEndpoint: devHost });
+                  } else {
+                    config.set({ tonapiIOEndpoint: undefined });
+                  }
+
+                  RNRestart.restart();
+                }}
+              />
+            }
+          />
           <List.Item
             title="Use HTTP protocol in browser"
             rightContent={
