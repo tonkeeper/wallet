@@ -134,7 +134,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
         keyExtractor={(item) => item.currency}
         width={ns(220)}
         maxHeight={ns(216)}
-        asFullWindowOverlay={Platform.OS === 'android'}
+        asFullWindowOverlay
         renderItem={(item) => (
           <>
             {item.isJetton && item.liquidStakingPool ? (
