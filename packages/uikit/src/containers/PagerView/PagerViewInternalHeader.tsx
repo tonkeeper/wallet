@@ -15,12 +15,15 @@ export const PagerViewInternalHeader = memo<PropsWithChildren>((props) => {
 
   const largeHeaderHeight = useAnimatedStyle(() => ({
     width: dimensions.width,
-    height: headerType === 'large' ? ScreenLargeHeaderHeight : 0
+    height: headerType === 'large' ? ScreenLargeHeaderHeight : 0,
   }));
 
   const containerAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: -scrollY.value }],
   }));
+
+  const width = dimensions.width;
+  const backgroundPageColor = theme.backgroundPage;
 
   return (
     <Animated.View
@@ -30,8 +33,8 @@ export const PagerViewInternalHeader = memo<PropsWithChildren>((props) => {
         styles.container,
         containerAnimatedStyle,
         {
-          width: dimensions.width,
-          backgroundColor: theme.backgroundPage,
+          width,
+          backgroundColor: backgroundPageColor,
         },
       ]}
     >

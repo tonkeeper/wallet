@@ -159,8 +159,8 @@ export const ListItem = memo<ListItemProps>((props) => {
 
             {children}
           </View>
-          {props.chevron && <Icon name="ic-chevron-right-16" color="iconTertiary" />}
           {rightContent}
+          {props.chevron && <Icon name="ic-chevron-right-16" color="iconTertiary" />}
         </View>
       </ListItemPressedContext.Provider>
     </TouchableComponent>

@@ -32,12 +32,15 @@ export const SheetModalScrollView = React.forwardRef<
     return { height: Math.min(contentHeight.value, maxHeight) };
   });
 
+  const bottomInset = _safeArea.bottom;
+  const topInset = _safeArea.top;
+
   const contentContainerStyle = useAnimatedStyle(() => {
-    const topOffset = isAndroid ? StatusBarHeight : _safeArea.top;
+    const topOffset = isAndroid ? StatusBarHeight : topInset;
     const heightToAddSpacing =
       screenHeight - topOffset - footerHeight.value - headerHeight.value;
 
-    const safeIndent = safeArea ? _safeArea.bottom : 0;
+    const safeIndent = safeArea ? bottomInset : 0;
     // adds padding to compensate header height
     return {
       paddingBottom:
@@ -47,7 +50,11 @@ export const SheetModalScrollView = React.forwardRef<
 
   return (
     <Animated.View style={containerStyle}>
-      <DefaultSheetModalScrollView ref={ref} {...rest} showsVerticalScrollIndicator={false}>
+      <DefaultSheetModalScrollView
+        ref={ref}
+        {...rest}
+        showsVerticalScrollIndicator={false}
+      >
         <Animated.View style={contentContainerStyle} onLayout={measureContent}>
           {children}
         </Animated.View>

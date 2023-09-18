@@ -203,7 +203,7 @@ async function subscribeToNotifications(
     );
     return response.data;
   } catch (e) {
-    console.log(e);
+    throw new Error(`Unable to subscribe to notifications: ${e.message}`);
   }
 }
 
@@ -229,7 +229,7 @@ async function unsubscribeFromNotifications(
     );
     return response.data;
   } catch (e) {
-    console.log(e);
+    throw new Error(`Unable to unsubscribe from notifications: ${e.message}`);
   }
 }
 async function getBalances(pubkey: string) {
