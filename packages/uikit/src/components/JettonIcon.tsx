@@ -47,7 +47,7 @@ export const JettonIcon = memo<JettonIconProps>((props) => {
 
 const styles = Steezy.create(({ colors }) => ({
   container: {
-    backgroundColor: '#0098EA',
+    backgroundColor: colors.backgroundContent,
     justifyContent: 'center',
     alignItems: 'center',
   },

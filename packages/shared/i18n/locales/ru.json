@@ -295,7 +295,7 @@
   "confirm_sending_inactive_warn_about": "Что важно знать",
   "confirm_sending_method_title": "Send your funds\nto %{name}?",
   "confirm_sending_liquid_warn_title": "Примечание",
-  "confirm_sending_liquid_warn_description": "Вы больше не будете получать награды за отправленный застейканный TON. Награды начнёт получать новый владелец.",
+  "confirm_sending_liquid_warn_description": "Вы больше не будете получать награды за отправленный застейканный TON. Награды начнёт получать новый владелец.",
 
   "info_about_inactive_title": "Неактивный контракт",
   "info_about_inactive_desc1": "Tonkeeper не знает, является ли этот адрес кошельком или смарт-контрактом.",
