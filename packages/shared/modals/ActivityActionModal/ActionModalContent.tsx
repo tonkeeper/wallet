@@ -1,5 +1,5 @@
 import { SText as Text, Button, Icon, View, List, Steezy } from '@tonkeeper/uikit';
-import { AmountFormatter, AnyActionItem } from '@tonkeeper/core';
+import { ActionAmountType, AmountFormatter, AnyActionItem } from '@tonkeeper/core';
 import { formatTransactionDetailsTime } from '../../utils/date';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { memo, useCallback, useMemo } from 'react';
@@ -77,12 +77,10 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
   const fiatAmount = useMemo(() => {
     if (amountFiat !== undefined) {
       return amountFiat;
-    } else if (action.amount && action.amount.tokenAddress) {
-      const prepareAddress =
-        action.amount.tokenAddress === 'ton'
-          ? action.amount.tokenAddress
-          : Address.parse(action.amount.tokenAddress).toFriendly();
-      const tokenPrice = getTokenPrice(prepareAddress);
+    } else if (action.amount) {
+      const tokenPrice = action.amount.type === ActionAmountType.Jetton 
+        ? getTokenPrice(Address.parse(action.amount.jettonAddress).toFriendly())
+        : getTokenPrice('ton');
       if (tokenPrice.fiat) {
         const parsedAmount = parseFloat(
           formatter.fromNano(action.amount.value, action.amount.decimals),

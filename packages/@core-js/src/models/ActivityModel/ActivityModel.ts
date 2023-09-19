@@ -7,6 +7,7 @@ import {
   AnyActionTypePayload,
   ActionDestination,
   AnyActionPayload,
+  ActionAmountType,
   ActionSource,
   ActionAmount,
   ActionType,
@@ -109,9 +110,10 @@ export class ActivityModel {
       case ActionType.WithdrawStake:
         if (payload.amount !== undefined) {
           return {
+            type: ActionAmountType.Ton,
             value: String(payload.amount),
-            tokenAddress: 'ton',
             symbol: 'TON',
+            decimals: 9,
           };
         } else {
           return null;
@@ -120,27 +122,31 @@ export class ActivityModel {
       case ActionType.JettonBurn:
       case ActionType.JettonTransfer:
         return {
-          value: payload.amount,
-          symbol: payload.jetton.symbol,
+          type: ActionAmountType.Jetton,
+          jettonAddress: payload.jetton.address,
           decimals: payload.jetton.decimals,
-          tokenAddress: payload.jetton.address,
+          symbol: payload.jetton.symbol,
+          value: payload.amount,
         };
       case ActionType.NftPurchase:
       case ActionType.AuctionBid:
         return {
+          type: ActionAmountType.Ton,
           symbol: payload.amount.token_name,
           value: payload.amount.value,
-          tokenAddress: 'ton',
+          decimals: 9,
         };
       case ActionType.SmartContractExec:
         return {
-          value: payload.ton_attached,
-          tokenAddress: 'ton',
+          type: ActionAmountType.Ton,
+          value: String(payload.ton_attached),
           symbol: 'TON',
+          decimals: 9,
         };
       case ActionType.ReceiveTRC20:
       case ActionType.SendTRC20:
         return {
+          type: ActionAmountType.Tron,
           value: payload.amount,
           symbol: payload.token.symbol,
           decimals: payload.token.decimals,
