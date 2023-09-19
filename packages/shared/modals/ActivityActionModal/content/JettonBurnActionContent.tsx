@@ -1,7 +1,7 @@
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
 import { ActionItem, ActionType } from '@tonkeeper/core';
-import { FastImage, Steezy } from '@tonkeeper/uikit';
+import { FastImage, List, Steezy } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import { memo } from 'react';
 
@@ -20,7 +20,9 @@ export const JettonBurnActionContent = memo<JettonBurnActionContentProps>((props
       label={t('activityActionModal.burned')}
       action={action}
     >
-      <ExtraListItem extra={action.event.extra} />
+      <List>
+        <ExtraListItem extra={action.event.extra} />
+      </List>
     </ActionModalContent>
   );
 });

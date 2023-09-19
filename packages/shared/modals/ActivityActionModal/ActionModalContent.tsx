@@ -78,9 +78,10 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
     if (amountFiat !== undefined) {
       return amountFiat;
     } else if (action.amount) {
-      const tokenPrice = action.amount.type === ActionAmountType.Jetton 
-        ? getTokenPrice(Address.parse(action.amount.jettonAddress).toFriendly())
-        : getTokenPrice('ton');
+      const tokenPrice =
+        action.amount.type === ActionAmountType.Jetton
+          ? getTokenPrice(Address.parse(action.amount.jettonAddress).toFriendly())
+          : getTokenPrice('ton');
       if (tokenPrice.fiat) {
         const parsedAmount = parseFloat(
           formatter.fromNano(action.amount.value, action.amount.decimals),
@@ -126,7 +127,13 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
           </Text>
         )}
       </View>
-      <List>{children ? children : <ExtraListItem extra={action.event.extra} />}</List>
+      {children ? (
+        children
+      ) : (
+        <List>
+          <ExtraListItem extra={action.event.extra} />
+        </List>
+      )}
       <View style={styles.footer}>
         <Button onPress={handlePressHash} size="small" color="secondary">
           <Icon name="ic-globe-16" color="constantWhite" />

@@ -5,20 +5,16 @@ import { StyleSheet } from 'react-native';
 import { t } from '../../../i18n';
 import { memo } from 'react';
 
-import { openSubscription } from '@tonkeeper/mobile/src/core/ModalContainer/CreateSubscription/CreateSubscription';
-
 interface SubscribeActionListItemProps {
   action: ActionItem<ActionType.Subscribe>;
 }
 
 export const SubscribeActionListItem = memo<SubscribeActionListItemProps>((props) => {
   const { action } = props;
-
   const subscription = useSubscription(action.payload.subscription);
 
   return (
     <ActionListItem
-      onPress={() => openSubscription(subscription, null, true)}
       title={t('transactions.subscription')}
       subtitle={subscription?.merchantName}
       iconName="ic-bell-28"
