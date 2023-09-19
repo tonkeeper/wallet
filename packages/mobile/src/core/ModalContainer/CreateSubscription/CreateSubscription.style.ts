@@ -42,7 +42,7 @@ export const Content = styled.View`
 `;
 
 export const ButtonWrap = styled.View`
-  margin-top: ${ns(32)}px;
+  margin-top: ${ns(16)}px;
   flex: 0 0 auto;
 `;
 
