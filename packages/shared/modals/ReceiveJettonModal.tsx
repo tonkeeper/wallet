@@ -1,8 +1,7 @@
 import { ReceiveTokenContent } from '../components/ReceiveTokenContent';
 import { Modal, Picture, Steezy } from '@tonkeeper/uikit';
-import { memo, useCallback, useMemo } from 'react';
 import { navigation } from '@tonkeeper/router';
-
+import { memo, useMemo } from 'react';
 import { t } from '../i18n';
 
 import { jettonsSelector } from '@tonkeeper/mobile/src/store/jettons';
@@ -35,7 +34,7 @@ export const ReceiveJettonModal = memo<ReceiveJettonModalProps>((props) => {
         <ReceiveTokenContent
           logo={<Picture uri={jetton?.metadata?.image} style={styles.jettonPicture} />}
           qrAddress={link}
-          address={jettonAddress}
+          address={tk.wallet.address.ton.friendly}
           qrCodeScale={0.67}
           title={t('receiveModal.receive_title', { tokenName: jetton?.metadata?.symbol })}
           description={t('receiveModal.receive_description', {
