@@ -22,7 +22,6 @@ import {
   DAppsSearch,
   OldExchange,
   Migration,
-  Receive,
   ScanQR,
   Send,
   StakingSend,
@@ -38,6 +37,7 @@ import { SwitchWalletModal } from '@tonkeeper/shared/modals/SwitchWalletModal';
 import { AddWalletModal } from '@tonkeeper/shared/modals/AddWalletModal';
 import { ProvidersWithNavigation } from './Providers';
 import { ReceiveModal } from '@tonkeeper/shared/modals/ReceiveModal';
+import { ReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -64,8 +64,8 @@ export const ModalStack = React.memo(() => (
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />
+      <Stack.Modal component={ReceiveJettonModal} path="/receive/jetton/" />
       <Stack.Modal component={NFT} path="NFTItemDetails" />
-      <Stack.Modal component={Receive} path={AppStackRouteNames.Receive} />
       <Stack.Modal component={Send} path={AppStackRouteNames.Send} />
       <Stack.Modal component={ChooseCountry} path={AppStackRouteNames.ChooseCountry} />
       <Stack.Modal component={StakingSend} path={AppStackRouteNames.StakingSend} />
