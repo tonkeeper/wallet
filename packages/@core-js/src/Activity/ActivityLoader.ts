@@ -2,9 +2,7 @@ import { AccountEvent, TonAPI } from '../TonAPI';
 import { WalletAddresses } from '../Wallet';
 import { TronAPI } from '../TronAPI';
 import {
-
   ActivityModel,
-
   ActionId,
   ActionItem,
   ActionSource,
@@ -45,7 +43,7 @@ export class ActivityLoader {
     );
 
     return {
-      cursor: data.next_from,
+      cursor: data.next_from && data.events.length > 1 ? data.next_from : 0,
       actions,
     };
   }
