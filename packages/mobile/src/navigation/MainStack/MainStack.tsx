@@ -14,7 +14,6 @@ import { Jetton } from '$core/Jetton/Jetton';
 import { JettonsList } from '$core/JettonsList/JettonsList';
 import { DeleteAccountDone } from '$core/DeleteAccountDone/DeleteAccountDone';
 import { EditConfig } from '$core/EditConfig/EditConfig';
-import { useRemoteBridge } from '$tonconnect';
 import { ManageTokens } from '$core/ManageTokens/ManageTokens';
 import { Wallet } from '$core/Wallet/Wallet';
 import { Staking } from '$core/Staking/Staking';
@@ -51,7 +50,6 @@ export const MainStack: FC = () => {
   const wallet = useSelector(walletWalletSelector);
   useNotificationsResolver();
 
-  useRemoteBridge();
   useStaking();
 
   const initialRouteName = !attachedScreen.pathname
@@ -93,8 +91,6 @@ export const MainStack: FC = () => {
         fullScreenGestureEnabled: true,
       }}
     >
-
-
       {renderRoot()}
       <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
       <Stack.Screen name={'TronTokenScreen'} component={TronTokenScreen} />
