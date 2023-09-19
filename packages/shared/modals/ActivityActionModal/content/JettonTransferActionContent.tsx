@@ -20,22 +20,24 @@ export const JettonTransferActionContent = memo<JettonTransferContentProps>((pro
       header={<FastImage style={styles.jettonImage} resizeMode="cover" source={source} />}
       action={action}
     >
-      <AddressListItem
-        destination={action.destination}
-        recipient={action.payload.recipient}
-        sender={action.payload.sender}
-        hideName={action.event.is_scam}
-      />
-      <ExtraListItem extra={action.event.extra} />
-      {!!action.payload.comment && (
-        <List.Item
-          titleType="secondary"
-          title={t('transactionDetails.comment')}
-          onPress={copyText(action.payload.comment)}
-          value={action.payload.comment}
-          valueMultiline
+      <List>
+        <AddressListItem
+          destination={action.destination}
+          recipient={action.payload.recipient}
+          sender={action.payload.sender}
+          hideName={action.event.is_scam}
         />
-      )}
+        <ExtraListItem extra={action.event.extra} />
+        {!!action.payload.comment && (
+          <List.Item
+            titleType="secondary"
+            title={t('transactionDetails.comment')}
+            onPress={copyText(action.payload.comment)}
+            value={action.payload.comment}
+            valueMultiline
+          />
+        )}
+      </List>
     </ActionModalContent>
   );
 });

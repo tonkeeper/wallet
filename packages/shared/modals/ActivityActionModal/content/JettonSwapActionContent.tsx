@@ -1,5 +1,5 @@
 import { TonIconBackgroundColor } from '@tonkeeper/uikit/src/components/TonIcon';
-import { Steezy, View, SText as Text, Picture, TonIcon } from '@tonkeeper/uikit';
+import { Steezy, View, SText as Text, Picture, TonIcon, List } from '@tonkeeper/uikit';
 import { useGetTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 import { ActionItem, ActionType, AmountFormatter } from '@tonkeeper/core';
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
@@ -7,10 +7,11 @@ import { AddressListItem } from '../components/AddressListItem';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
 import { formatter } from '../../../formatter';
+import { Address } from '../../../Address';
 import { useSelector } from 'react-redux';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
-import { Address } from '../../../Address';
+
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 
 interface JettonSwapActionContentProps {
@@ -131,8 +132,10 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
         </>
       }
     >
-      <AddressListItem destination="out" recipient={payload.user_wallet} />
-      <ExtraListItem extra={action.event.extra} />
+      <List>
+        <AddressListItem destination="out" recipient={payload.user_wallet} />
+        <ExtraListItem extra={action.event.extra} />
+      </List>
     </ActionModalContent>
   );
 });

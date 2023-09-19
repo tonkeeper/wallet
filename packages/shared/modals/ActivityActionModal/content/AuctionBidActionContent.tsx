@@ -1,7 +1,7 @@
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
 import { ActionItem, ActionType } from '@tonkeeper/core';
-import { copyText, ListItem } from '@tonkeeper/uikit';
+import { copyText, List, ListItem } from '@tonkeeper/uikit';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
 import {
@@ -34,23 +34,25 @@ export const AuctionBidActionContent = memo<AuctionBidActionContentProps>((props
 
   return (
     <ActionModalContent action={action} label={t('activityActionModal.bid')}>
-      {name && (
-        <ListItem
-          onPress={copyText(name.value)}
-          titleType="secondary"
-          title={name.title}
-          value={name.value}
-        />
-      )}
-      {!!collectionName && (
-        <ListItem
-          onPress={copyText(collectionName)}
-          titleType="secondary"
-          title={t('transactionDetails.bid_collection_name')}
-          value={collectionName}
-        />
-      )}
-      <ExtraListItem extra={action.event.extra} />
+      <List>
+        {name && (
+          <ListItem
+            onPress={copyText(name.value)}
+            titleType="secondary"
+            title={name.title}
+            value={name.value}
+          />
+        )}
+        {!!collectionName && (
+          <ListItem
+            onPress={copyText(collectionName)}
+            titleType="secondary"
+            title={t('transactionDetails.bid_collection_name')}
+            value={collectionName}
+          />
+        )}
+        <ExtraListItem extra={action.event.extra} />
+      </List>
     </ActionModalContent>
   );
 });

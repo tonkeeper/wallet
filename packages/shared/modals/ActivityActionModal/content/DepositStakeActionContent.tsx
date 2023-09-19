@@ -2,6 +2,7 @@ import { AddressListItem } from '../components/AddressListItem';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
 import { ActionItem, ActionType } from '@tonkeeper/core';
+import { List } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import { memo } from 'react';
 
@@ -14,12 +15,14 @@ export const DepositStakeActionContent = memo<DepositStakeActionContentProps>((p
 
   return (
     <ActionModalContent label={t('activityActionModal.deposit')} action={action}>
-      <AddressListItem
-        recipient={action.payload.pool}
-        hideName={action.event.is_scam}
-        destination="out"
-      />
-      <ExtraListItem extra={action.event.extra} />
+      <List>
+        <AddressListItem
+          recipient={action.payload.pool}
+          hideName={action.event.is_scam}
+          destination="out"
+        />
+        <ExtraListItem extra={action.event.extra} />
+      </List>
     </ActionModalContent>
   );
 });

@@ -129,7 +129,13 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
           </Text>
         )}
       </View>
-      <List>{children ? children : <ExtraListItem extra={action.event.extra} />}</List>
+      {children ? (
+        children
+      ) : (
+        <List>
+          <ExtraListItem extra={action.event.extra} />
+        </List>
+      )}
       <View style={styles.footer}>
         <Button onPress={handlePressHash} size="small" color="secondary">
           <Icon name="ic-globe-16" color="constantWhite" />
