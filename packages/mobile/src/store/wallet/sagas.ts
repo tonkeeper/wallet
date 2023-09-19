@@ -1,4 +1,13 @@
-import { all, call, delay, fork, put, select, takeLatest } from 'redux-saga/effects';
+import {
+  all,
+  call,
+  delay,
+  fork,
+  put,
+  select,
+  take,
+  takeLatest,
+} from 'redux-saga/effects';
 import { Alert, Keyboard } from 'react-native';
 import BigNumber from 'bignumber.js';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -87,6 +96,13 @@ import { goBack } from '$navigation/imperative';
 import { trackEvent } from '$utils/stats';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 
+function* loadRatesAfterJettons() {
+  try {
+    yield take(jettonsActions.setIsLoading);
+    useRatesStore.getState().actions.fetchRates();
+  } catch (e) {}
+}
+
 function* generateVaultWorker() {
   try {
     const vault = yield call(Vault.generate, getWalletName());
@@ -152,6 +168,7 @@ function* createWalletWorker(action: CreateWalletAction) {
     yield put(eventsActions.loadEvents({ isReplace: true }));
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.loadJettons());
+    yield fork(loadRatesAfterJettons);
     const addr = yield call([wallet.ton, 'getAddress']);
     const data = yield call([tk, 'load']);
     yield call([tk, 'init'], addr, getChainName() === 'testnet', data.tronAddress);
@@ -637,7 +654,7 @@ function* cleanWalletWorker() {
     yield call(useStakingStore.getState().actions.reset);
     yield call(useNotificationsStore.getState().actions.reset);
     yield call(SecureStore.deleteItemAsync, 'proof_token');
-    yield call([tk, 'destroy'])
+    yield call([tk, 'destroy']);
 
     yield put(
       batchActions(
