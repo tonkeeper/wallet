@@ -55,7 +55,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     setAmount,
   } = props;
 
-  const format = useHideableFormatter();
+  const { format } = useHideableFormatter();
 
   const textInputRef = useRef<TextInput | null>(null);
 
