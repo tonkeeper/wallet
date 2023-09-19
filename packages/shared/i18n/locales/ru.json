@@ -444,6 +444,12 @@
     "copy": "Скопировать"
   },
 
+  "confirmSendModal": {
+    "title": "Подтвердить транзакцию",
+    "network_fee": "Комиссия сети",
+    "to_your_address": "На ваш адрес"
+  },
+
   "browser": {
     "title": "Браузер",
     "search_label": "Поиск",

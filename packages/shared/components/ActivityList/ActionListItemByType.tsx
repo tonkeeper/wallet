@@ -5,12 +5,18 @@ import { ListItemContentText, ListItemContainer } from '@tonkeeper/uikit';
 import { modifyNftName } from '@tonkeeper/core/src/managers/NftsManager';
 import { ActionType, Address, AnyActionItem } from '@tonkeeper/core';
 import { NftPreviewContent } from './NftPreviewContent';
-import { ActionListItem } from './ActionListItem';
+import { ActionListItem, ActionListItemProps } from './ActionListItem';
 import { t } from '../../i18n';
 
 import { getImplementationIcon } from '@tonkeeper/mobile/src/utils/staking';
+import { memo } from 'react';
 
-export function renderActionListItem(action: AnyActionItem) {
+interface ActionListItemByTypeProps extends ActionListItemProps {
+  action: AnyActionItem;
+}
+
+export const ActionListItemByType = memo<ActionListItemByTypeProps>((props) => {
+  const { action } = props;
   const { type, payload } = action;
 
   switch (type) {
@@ -156,7 +162,7 @@ export function renderActionListItem(action: AnyActionItem) {
         />
       );
   }
-}
+});
 
 type RenderItemOptions = {
   item: AnyActionItem;
@@ -165,6 +171,6 @@ type RenderItemOptions = {
 
 export const renderActionItem = ({ item }: RenderItemOptions) => (
   <ListItemContainer isFirst={item.isFirst} isLast={item.isLast}>
-    {renderActionListItem(item)}
+    <ActionListItemByType action={item} />
   </ListItemContainer>
 );

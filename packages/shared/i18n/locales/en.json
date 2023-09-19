@@ -431,6 +431,12 @@
     "copy": "Copy"
   },
 
+  "confirmSendModal": {
+    "title": "Confirm action",
+    "network_fee": "Network fee",
+    "to_your_address":"To your address"
+  },
+
   "browser": {
     "title": "Browser",
     "search_label": "Search or enter address",
