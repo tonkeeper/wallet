@@ -7,9 +7,9 @@ import { formatTransactionTime } from '../../utils/date';
 import { findSenderAccount } from './findSenderAccount';
 import { memo, useCallback, useMemo } from 'react';
 import { ImageRequireSource } from 'react-native';
-import { formatter } from '../../formatter';
 import { Address } from '../../Address';
 import { t } from '../../i18n';
+import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 
 interface ActionListItem {
   onPress?: () => void;
@@ -31,6 +31,7 @@ interface ActionListItem {
 export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
   const { action, children, onPress, subtitleNumberOfLines, greenValue, ignoreFailed } =
     props;
+  const { formatNano } = useHideableFormatter();
 
   const handlePress = useCallback(() => {
     if (onPress) {
@@ -112,7 +113,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
       }
 
       if (action.amount) {
-        return formatter.formatNano(action.amount.value, {
+        return formatNano(action.amount.value, {
           decimals: action.amount.decimals,
           postfix: action.amount.symbol,
           prefix: amountPrefix,
