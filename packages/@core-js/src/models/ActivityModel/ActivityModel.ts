@@ -147,6 +147,7 @@ export class ActivityModel {
       case ActionType.TonTransfer:
       case ActionType.DepositStake:
       case ActionType.WithdrawStake:
+      case ActionType.Subscribe:
         if (payload.amount !== undefined) {
           return {
             type: ActionAmountType.Ton,

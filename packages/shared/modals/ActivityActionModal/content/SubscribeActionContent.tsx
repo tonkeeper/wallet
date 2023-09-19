@@ -8,23 +8,16 @@ import { memo } from 'react';
 
 import { openSubscription } from '@tonkeeper/mobile/src/core/ModalContainer/CreateSubscription/CreateSubscription';
 
-interface UnSubscribeActionContentProps {
-  action: ActionItem<ActionType.UnSubscribe>;
+interface SubscribeActionContentProps {
+  action: ActionItem<ActionType.Subscribe>;
 }
 
-export const UnSubscribeActionContent = memo<UnSubscribeActionContentProps>((props) => {
+export const SubscribeActionContent = memo<SubscribeActionContentProps>((props) => {
   const { action } = props;
   const subscription = useSubscription(action.payload.subscription);
 
   return (
-    <ActionModalContent
-      action={action}
-      header={
-        <Text type="h2" textAlign="center">
-          {t('transactionDetails.unsubscription_title')}
-        </Text>
-      }
-    >
+    <ActionModalContent action={action}>
       <List>
         {subscription && (
           <List.Item
@@ -49,7 +42,7 @@ export const UnSubscribeActionContent = memo<UnSubscribeActionContentProps>((pro
 
 const styles = Steezy.create({
   buttonContainer: {
-    marginHorizontal: 16, 
+    marginHorizontal: 16,
     marginBottom: 16,
-  }
+  },
 });

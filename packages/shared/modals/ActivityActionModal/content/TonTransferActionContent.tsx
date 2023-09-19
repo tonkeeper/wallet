@@ -14,14 +14,15 @@ export const TonTransferActionContent = (props: TonTransferActionContentProps) =
 
   return (
     <ActionModalContent header={<TonIcon size="large" />} action={action}>
-      <AddressListItem
-        recipient={action.payload.recipient}
-        destination={action.destination}
-        hideName={action.event.is_scam}
-        sender={action.payload.sender}
-      />
-      <ExtraListItem extra={action.event.extra} />
-      {/* {action.encrypted_comment && (
+      <List>
+        <AddressListItem
+          recipient={action.payload.recipient}
+          destination={action.destination}
+          hideName={action.event.is_scam}
+          sender={action.payload.sender}
+        />
+        <ExtraListItem extra={action.event.extra} />
+        {/* {action.encrypted_comment && (
       <EncryptedComment
         layout={EncryptedCommentLayout.LIST_ITEM}
         encryptedComment={action.encrypted_comment}
@@ -30,15 +31,16 @@ export const TonTransferActionContent = (props: TonTransferActionContentProps) =
         sender={action.sender}
       />
     )} */}
-      {!!action.payload.comment && (
-        <List.Item
-          titleType="secondary"
-          title={t('transactionDetails.comment')}
-          onPress={copyText(action.payload.comment)}
-          value={action.payload.comment}
-          valueMultiline
-        />
-      )}
+        {!!action.payload.comment && (
+          <List.Item
+            titleType="secondary"
+            title={t('transactionDetails.comment')}
+            onPress={copyText(action.payload.comment)}
+            value={action.payload.comment}
+            valueMultiline
+          />
+        )}
+      </List>
     </ActionModalContent>
   );
 };

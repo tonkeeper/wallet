@@ -148,9 +148,9 @@ export const ActionListItemByType = memo<ActionListItemByTypeProps>((props) => {
       );
     case ActionType.JettonSwap:
       return <JettonSwapActionListItem action={action} />;
-    case ActionType.Subscribe: // TODO:
+    case ActionType.Subscribe:
       return <SubscribeActionListItem action={action} />;
-    case ActionType.UnSubscribe: // TODO:
+    case ActionType.UnSubscribe:
       return <UnSubscribeActionListItem action={action} />;
     default:
       return (

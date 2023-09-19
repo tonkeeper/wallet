@@ -4,7 +4,7 @@ import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
 import { ActionItem, ActionType } from '@tonkeeper/core';
-import { Text } from '@tonkeeper/uikit';
+import { List, Text } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import { memo } from 'react';
 
@@ -27,8 +27,10 @@ export const NftPurchaseActionContent = memo<NftPurchaseActionContentProps>((pro
         )
       }
     >
-      <AddressListItem destination="in" sender={action.payload.seller} />
-      <ExtraListItem extra={action.event.extra} />
+      <List>
+        <AddressListItem destination="in" sender={action.payload.seller} />
+        <ExtraListItem extra={action.event.extra} />
+      </List>
     </ActionModalContent>
   );
 });

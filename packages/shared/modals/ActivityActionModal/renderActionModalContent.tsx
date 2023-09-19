@@ -15,6 +15,7 @@ import { JettonBurnActionContent } from './content/JettonBurnActionContent';
 import { DepositStakeActionContent } from './content/DepositStakeActionContent';
 import { WithdrawStakeActionContent } from './content/WithdrawStakeActionContent';
 import { WithdrawStakeRequestActionContent } from './content/WithdrawStakeRequestActionContent';
+import { SubscribeActionContent } from './content/SubscribeActionContent';
 
 export function renderActionModalContent(action: AnyActionItem) {
   switch (action.type) {
@@ -34,6 +35,8 @@ export function renderActionModalContent(action: AnyActionItem) {
       return <ContractDeployActionContent action={action} />;
     case ActionType.JettonSwap:
       return <JettonSwapActionContent action={action} />;
+    case ActionType.Subscribe:
+      return <SubscribeActionContent action={action} />;
     case ActionType.UnSubscribe:
       return <UnSubscribeActionContent action={action} />;
     case ActionType.JettonMint:

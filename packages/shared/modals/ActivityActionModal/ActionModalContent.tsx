@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 import { ExtraListItem } from './components/ExtraListItem';
 import { Linking } from 'react-native';
 import { Address } from '../../Address';
+import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 
 interface ActionModalContentProps {
   children?: React.ReactNode;
@@ -27,6 +28,7 @@ interface ActionModalContentProps {
 
 export const ActionModalContent = memo<ActionModalContentProps>((props) => {
   const { children, header, action, label, amountFiat } = props;
+  const { formatNano, format } = useHideableFormatter();
 
   const hash = ` ${action.event.event_id.substring(0, 8)}`;
 
@@ -61,7 +63,7 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
 
   const amount = useMemo(() => {
     if (action.amount) {
-      return formatter.formatNano(action.amount.value, {
+      return formatNano(action.amount.value, {
         decimals: action.amount.decimals,
         postfix: action.amount.symbol,
         withoutTruncate: true,
@@ -78,14 +80,15 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
     if (amountFiat !== undefined) {
       return amountFiat;
     } else if (action.amount) {
-      const tokenPrice = action.amount.type === ActionAmountType.Jetton 
-        ? getTokenPrice(Address.parse(action.amount.jettonAddress).toFriendly())
-        : getTokenPrice('ton');
+      const tokenPrice =
+        action.amount.type === ActionAmountType.Jetton
+          ? getTokenPrice(Address.parse(action.amount.jettonAddress).toFriendly())
+          : getTokenPrice('ton');
       if (tokenPrice.fiat) {
         const parsedAmount = parseFloat(
           formatter.fromNano(action.amount.value, action.amount.decimals),
         );
-        return formatter.format(tokenPrice.fiat * parsedAmount, {
+        return format(tokenPrice.fiat * parsedAmount, {
           currency: fiatCurrency,
           decimals: 9,
         });
@@ -126,7 +129,13 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
           </Text>
         )}
       </View>
-      <List>{children ? children : <ExtraListItem extra={action.event.extra} />}</List>
+      {children ? (
+        children
+      ) : (
+        <List>
+          <ExtraListItem extra={action.event.extra} />
+        </List>
+      )}
       <View style={styles.footer}>
         <Button onPress={handlePressHash} size="small" color="secondary">
           <Icon name="ic-globe-16" color="constantWhite" />

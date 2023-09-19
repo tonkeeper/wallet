@@ -16,23 +16,25 @@ export const SmartContractActionContent = memo<SmartContractActionContentProps>(
 
     return (
       <ActionModalContent action={action} label={t('activityActionModal.call_contract')}>
-        <AddressListItem address={action.payload.contract.address} />
-        <List.Item
-          onPress={copyText(action.payload.operation)}
-          title={t('transactionDetails.operation')}
-          value={action.payload.operation}
-          titleType="secondary"
-        />
-        <ExtraListItem extra={action.event.extra} />
-        {action.payload && (
+        <List>
+          <AddressListItem address={action.payload.contract.address} />
           <List.Item
-            onPress={copyText(action.payload.payload)}
-            title={t('transactionDetails.payload')}
-            value={action.payload.payload}
+            onPress={copyText(action.payload.operation)}
+            title={t('transactionDetails.operation')}
+            value={action.payload.operation}
             titleType="secondary"
-            valueMultiline
           />
-        )}
+          <ExtraListItem extra={action.event.extra} />
+          {action.payload && (
+            <List.Item
+              onPress={copyText(action.payload.payload)}
+              title={t('transactionDetails.payload')}
+              value={action.payload.payload}
+              titleType="secondary"
+              valueMultiline
+            />
+          )}
+        </List>
       </ActionModalContent>
     );
   },
