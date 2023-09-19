@@ -5,7 +5,9 @@ import { Opacity } from '$shared/constants';
 import { hNs, ns } from '$utils';
 
 export const Wrap = styled.View`
-  overflow: hidden;
+  flex: 1;
+  position: relative;
+  background: ${({ theme }) => theme.colors.backgroundPrimary};
 `;
 
 export const Browser = styled(Webview)`
@@ -15,7 +17,6 @@ export const Browser = styled(Webview)`
 `;
 
 export const LoaderWrap = styled.View`
-  flex: 1;
   background: ${({ theme }) => theme.colors.backgroundPrimary};
   align-items: center;
   justify-content: center;
