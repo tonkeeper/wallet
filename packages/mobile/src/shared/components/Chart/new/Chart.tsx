@@ -8,7 +8,6 @@ import {
 } from '@rainbow-me/animated-charts';
 import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks/useTheme';
-import { usePrepareAction } from '$hooks/usePrepareAction';
 import { useTokenPrice } from '$hooks/useTokenPrice';
 import { useSelector } from 'react-redux';
 import { fiatCurrencySelector } from '$store/main';
@@ -26,6 +25,7 @@ import { ChartXLabels } from './ChartXLabels/ChartXLabels';
 import { ChartPeriod, useChartStore } from '$store/zustand/chart';
 import { Fallback } from './Fallback/Fallback';
 import BigNumber from 'bignumber.js';
+import { isIOS } from '@tonkeeper/uikit';
 
 export const { width: SIZE } = Dimensions.get('window');
 
@@ -118,7 +118,7 @@ const ChartComponent: React.FC = () => {
                 __disableRendering={!shouldRenderChart}
                 gradientEnabled
                 longPressGestureHandlerProps={{ minDurationMs: 90 }}
-                hapticsEnabled
+                hapticsEnabled={isIOS}
                 strokeWidth={2}
                 selectedStrokeWidth={2}
                 height={ns(160)}
