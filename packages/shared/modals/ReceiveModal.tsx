@@ -7,16 +7,17 @@ import { t } from '../i18n';
 import {
   TransitionOpacity,
   SegmentedControl,
+  TouchableOpacity,
+  Pressable,
   copyText,
+  TonIcon,
+  Steezy,
   Button,
   Spacer,
   Modal,
   View,
   Text,
   Icon,
-  TonIcon,
-  Pressable,
-  Steezy,
 } from '@tonkeeper/uikit';
 
 enum Segments {
@@ -44,18 +45,6 @@ export const ReceiveModal = memo(() => {
     return 'ton://transfer/' + addr;
   }, []);
 
-  const share = useCallback(
-    (address: string) =>
-      throttle(() => {
-        Share.share({
-          message: address,
-        }).catch((err) => {
-          console.log('cant share', err);
-        });
-      }, 1000),
-    [],
-  );
-
   return (
     <Modal>
       <Modal.Header
@@ -78,74 +67,15 @@ export const ReceiveModal = memo(() => {
           delay={0}
           alwaysShown
         >
-          <View style={styles.description}>
-            <Text type="h3" textAlign="center">
-              {t('receiveModal.receive')} Toncoin
-            </Text>
-            <Spacer y={4} />
-            <Text type="body1" color="textSecondary" textAlign="center">
-              {t('receiveModal.receive_ton')}
-            </Text>
-          </View>
-          <QrCode
+          <ReceiveContent
             logo={<TonIcon size="small" />}
             qrAddress={address2url(tonAddress)}
             address={tonAddress}
-            pieceSize={6.245}
-            width={231}
+            title={t('receiveModal.receive_title', { tokenName: 'Toncoin' })}
+            description={t('receiveModal.receive_description', {
+              tokenName: 'Toncoin TON',
+            })}
           />
-          <View style={styles.buttons}>
-            <Button
-              leftContent={<Icon name="ic-copy-16" />}
-              onPress={copyText(tonAddress, t('address_copied'))}
-              color="secondary"
-              title={t('receiveModal.copy')}
-              size="medium"
-            />
-            <Spacer x={12} />
-            <Pressable style={steezyStyles.shareButton} onPress={share(tonAddress)}>
-              <Icon name="ic-share-16" />
-            </Pressable>
-          </View>
-        </TransitionOpacity>
-        <TransitionOpacity
-          isVisible={segmentIndex === Segments.Tron && !!tronAddress}
-          style={styles.transition}
-          duration={0}
-          delay={0}
-          alwaysShown
-        >
-          <View style={styles.description}>
-            <Text type="h3" textAlign="center">
-              Receive USDT TRC20
-            </Text>
-            <Spacer y={4} />
-            <Text type="body1" color="textSecondary" textAlign="center">
-              Send only USDT TRC20 to this address, or you might lose your funds.
-            </Text>
-          </View>
-          {tronAddress && (
-            <QrCode
-              logo={<Icon name="ic-usdt-56" colorless size={44} />}
-              qrAddress={tronAddress}
-              address={tronAddress}
-              renderDelay={100}
-              pieceSize={8}
-            />
-          )}
-          <View style={styles.buttons}>
-            <Button
-              leftContent={<Icon name="ic-copy-16" />}
-              onPress={copyText(tronAddress, t('address_copied'))}
-              color="secondary"
-              title="Copy"
-              size="medium"
-            />
-            <Spacer x={12} />
-            <Pressable style={steezyStyles.shareButton} onPress={share(tronAddress!)}>
-              <Icon name="ic-share-16" />
-            </Pressable>
-          </View>
         </TransitionOpacity>
       </Modal.Content>
     </Modal>
@@ -157,12 +87,12 @@ interface QrCodeProps {
   renderDelay?: number;
   logo: React.ReactNode;
   qrAddress?: string;
-  pieceSize?: number;
-  width?: number;
+  title: string;
+  description: string;
 }
 
-const QrCode = memo<QrCodeProps>((props) => {
-  const { address, renderDelay = 0, logo, qrAddress, pieceSize, width } = props;
+const ReceiveContent = memo<QrCodeProps>((props) => {
+  const { address, renderDelay = 0, logo, qrAddress, description, title } = props;
   const [render, setRender] = useState(renderDelay > 0 ? false : true);
 
   useEffect(() => {
@@ -171,24 +101,64 @@ const QrCode = memo<QrCodeProps>((props) => {
     }
   }, [renderDelay]);
 
+  const share = useCallback(
+    (address: string) =>
+      throttle(() => {
+        Share.share({
+          message: address,
+        }).catch((err) => {
+          console.log('cant share', err);
+        });
+      }, 1000),
+    [],
+  );
+
   return (
-    <View style={styles.qrCodeArea}>
-      {render ? (
-        <View style={styles.qrCodeContainer}>
-          <View style={{ transform: [{ scale: 0.8 }] }}>
-            <QRCode
-              data={qrAddress ?? address}
-              logo={blankAreaForLogo}
-              style={styles.qrCode}
-              pieceSize={8}
-            />
+    <View>
+      <View style={styles.description}>
+        <Text type="h3" textAlign="center">
+          {title}
+        </Text>
+        <Spacer y={4} />
+        <Text type="body1" color="textSecondary" textAlign="center">
+          {description}
+        </Text>
+      </View>
+      <View style={styles.qrCodeArea}>
+        {render ? (
+          <View style={styles.qrCodeContainer}>
+            <View style={{ transform: [{ scale: 0.8 }] }}>
+              <QRCode
+                data={qrAddress ?? address}
+                logo={blankAreaForLogo}
+                style={styles.qrCode}
+                pieceSize={8}
+              />
+            </View>
+            <View style={styles.qrLogo}>{logo}</View>
           </View>
-          <View style={styles.qrLogo}>{logo}</View>
-        </View>
-      ) : (
-        <View style={styles.emptyQrArea} />
-      )}
-      <NativeText style={styles.addressText} allowFontScaling={false}>{address}</NativeText>
+        ) : (
+          <View style={styles.emptyQrArea} />
+        )}
+        <TouchableOpacity onPress={copyText(address, t('address_copied'))}>
+          <NativeText style={styles.addressText} allowFontScaling={false}>
+            {address}
+          </NativeText>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.buttons}>
+        <Button
+          leftContent={<Icon name="ic-copy-16" />}
+          onPress={copyText(address, t('address_copied'))}
+          color="secondary"
+          title={t('receiveModal.copy')}
+          size="medium"
+        />
+        <Spacer x={12} />
+        <Pressable style={steezyStyles.shareButton} onPress={share(address)}>
+          <Icon name="ic-share-16" />
+        </Pressable>
+      </View>
     </View>
   );
 });
