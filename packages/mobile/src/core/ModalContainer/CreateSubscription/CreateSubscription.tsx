@@ -216,10 +216,9 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   }, [dispatch, info, nextBill, t]);
 
   const isButtonShown = useMemo(() => {
-    console.log({ isEdit, isSuccess, isSending })
     if (!info) {
       return false;
-    }    
+    }
 
     if (isEdit) {
       return info?.isActive;
