@@ -1,30 +1,25 @@
-import React, { FC, useCallback } from 'react';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import Animated from 'react-native-reanimated';
-import { Alert } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import Clipboard from '@react-native-community/clipboard';
-import DeviceInfo from 'react-native-device-info';
-
-import * as S from './DevMenu.style';
-import { ns } from '$utils';
-import { NavBar, ScrollHandler } from '$uikit';
-import { CellSection, CellSectionItem } from '$shared/components';
-import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
-import { openLogs } from '$navigation';
-import crashlytics from '@react-native-firebase/crashlytics';
-import { EventsDB, JettonsDB, MainDB, NFTsDB } from '$database';
-import { eventsActions } from '$store/events';
-import { nftsActions } from '$store/nfts';
-import { jettonsActions } from '$store/jettons';
-import { Switch } from 'react-native-gesture-handler';
-import { DevFeature, Toast, useDevFeaturesToggle } from '$store';
-import { t } from '@tonkeeper/shared/i18n';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
+import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
+import { EventsDB, JettonsDB, MainDB, NFTsDB } from '$database';
+import crashlytics from '@react-native-firebase/crashlytics';
+import { DevFeature, useDevFeaturesToggle } from '$store';
+import { List, Screen, copyText } from '@tonkeeper/uikit';
+import { useDispatch, useSelector } from 'react-redux';
+import { Switch } from 'react-native-gesture-handler';
+import DeviceInfo from 'react-native-device-info';
 import { useNavigation } from '@tonkeeper/router';
+import { config } from '@tonkeeper/shared/config';
+import { jettonsActions } from '$store/jettons';
+import { eventsActions } from '$store/events';
+import RNRestart from 'react-native-restart';
+import { t } from '@tonkeeper/shared/i18n';
+import { nftsActions } from '$store/nfts';
+import { FC, useCallback } from 'react';
+import { openLogs } from '$navigation';
+import { Alert } from 'react-native';
+import { Icon } from '$uikit';
 
 export const DevMenu: FC = () => {
-  const tabBarHeight = useBottomTabBarHeight();
   const nav = useNavigation();
   const dispatch = useDispatch();
   const isTestnet = useSelector(isTestnetSelector);
@@ -84,10 +79,6 @@ export const DevMenu: FC = () => {
     nav.navigate('DevStack');
   }, [nav]);
 
-  const handleEditConfig = useCallback(() => {
-    nav.navigate('EditConfig');
-  }, [nav]);
-
   const handlePushNotification = useCallback(() => {
     addNotification({
       message: 'Test notification added',
@@ -96,11 +87,6 @@ export const DevMenu: FC = () => {
       link: 'https://getgems.io',
     });
   }, [addNotification]);
-
-  const handleCopyVersion = useCallback(() => {
-    Clipboard.setString(DeviceInfo.getVersion() + ` (${DeviceInfo.getBuildNumber()})`);
-    Toast.success(t('copied'));
-  }, [dispatch, t]);
 
   const {
     devFeatures,
@@ -113,54 +99,65 @@ export const DevMenu: FC = () => {
   }, [toggleFeature]);
 
   return (
-    <S.Wrap>
-      <NavBar>Dev Menu</NavBar>
-      <ScrollHandler>
-        <Animated.ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingHorizontal: ns(16),
-            paddingBottom: tabBarHeight,
-          }}
-          scrollEventThrottle={16}
-        >
-          <CellSection>
-            <CellSectionItem onPress={handleCopyVersion}>
-              Version {DeviceInfo.getVersion()} ({DeviceInfo.getBuildNumber()})
-            </CellSectionItem>
-            <CellSectionItem icon="ic-reset-24" onPress={handleToggleTestnet}>
-              {t(isTestnet ? 'settings_to_mainnet' : 'settings_to_testnet')}
-            </CellSectionItem>
-            <CellSectionItem onPress={handleLogs}>Logs</CellSectionItem>
-            <CellSectionItem
-              indicator={
-                <Switch
-                  value={devFeatures[DevFeature.UseHttpProtocol]}
-                  onChange={toggleHttpProtocol}
-                />
-              }
-            >
-              Use HTTP protocol in browser
-            </CellSectionItem>
-            {__DEV__ && (
-              <>
-                <CellSectionItem onPress={handleTestCrash}>
-                  Test native crash
-                </CellSectionItem>
-                <CellSectionItem onPress={handleTestJsCrash}>
-                  Test js-crash
-                </CellSectionItem>
-                <CellSectionItem onPress={handleComponents}>Components</CellSectionItem>
-                <CellSectionItem onPress={handleEditConfig}>Edit config</CellSectionItem>
-              </>
+    <Screen>
+      <Screen.Header title="Dev Menu" />
+      <Screen.ScrollView>
+        <List>
+          <List.Item
+            title={`Version ${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`}
+            onPress={copyText(
+              `${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`,
             )}
-            <CellSectionItem
-              indicator={<Switch value={alwaysShowV4R1} onValueChange={handleShowV4R1} />}
-            >
-              Force show v4r1
-            </CellSectionItem>
-          </CellSection>
-          {/* <CellSection>
+          />
+          <List.Item
+            title={t(isTestnet ? 'settings_to_mainnet' : 'settings_to_testnet')}
+            rightContent={<Icon name="ic-reset-24" color="accentPrimary" />}
+            onPress={handleToggleTestnet}
+          />
+          <List.Item onPress={handleLogs} title="Logs" />
+          <List.Item title="App config" onPress={() => nav.navigate('/dev/config')} />
+          <List.Item
+            title="Dev Tonapi"
+            rightContent={
+              <Switch
+                value={config.get('tonapiIOEndpoint') === 'https://dev.tonapi.io'}
+                onChange={() => {
+                  const devHost = 'https://dev.tonapi.io';
+                  if (config.get('tonapiIOEndpoint') !== devHost) {
+                    config.set({ tonapiIOEndpoint: devHost });
+                  } else {
+                    config.set({ tonapiIOEndpoint: undefined });
+                  }
+
+                  RNRestart.restart();
+                }}
+              />
+            }
+          />
+          <List.Item
+            title="Use HTTP protocol in browser"
+            rightContent={
+              <Switch
+                value={devFeatures[DevFeature.UseHttpProtocol]}
+                onChange={toggleHttpProtocol}
+              />
+            }
+          />
+          {__DEV__ && (
+            <>
+              <List.Item onPress={handleTestCrash} title="Test native crash" />
+              <List.Item onPress={handleTestJsCrash} title="Test js-crash" />
+              <List.Item onPress={handleComponents} title="Components" />
+            </>
+          )}
+          <List.Item
+            title=" Force show v4r1"
+            rightContent={
+              <Switch value={alwaysShowV4R1} onValueChange={handleShowV4R1} />
+            }
+          />
+        </List>
+        {/* <CellSection>
             <PopupSelect
               items={['auto', ...tags.map((lang) => lang.tag)]}
               selected={devLanguage || 'auto'}
@@ -180,24 +177,15 @@ export const DevMenu: FC = () => {
               </CellSectionItem>
             </PopupSelect>
           </CellSection> */}
-          <CellSection>
-            <CellSectionItem onPress={handleClearJettonsCache}>
-              Clear jettons cache
-            </CellSectionItem>
-            <CellSectionItem onPress={handleClearNFTsCache}>
-              Clear NFTs cache
-            </CellSectionItem>
-            <CellSectionItem onPress={handleClearEventsCache}>
-              Clear events cache
-            </CellSectionItem>
-          </CellSection>
-          <CellSection>
-            <CellSectionItem onPress={handlePushNotification}>
-              Push notification
-            </CellSectionItem>
-          </CellSection>
-        </Animated.ScrollView>
-      </ScrollHandler>
-    </S.Wrap>
+        <List>
+          <List.Item onPress={handleClearJettonsCache} title="Clear jettons cache" />
+          <List.Item onPress={handleClearNFTsCache} title="Clear NFTs cache" />
+          <List.Item onPress={handleClearEventsCache} title=" Clear events cache" />
+        </List>
+        <List>
+          <List.Item onPress={handlePushNotification} title="Push notification" />
+        </List>
+      </Screen.ScrollView>
+    </Screen>
   );
 };

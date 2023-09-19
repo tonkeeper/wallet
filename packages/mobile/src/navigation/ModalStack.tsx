@@ -38,6 +38,7 @@ import { AddWalletModal } from '@tonkeeper/shared/modals/AddWalletModal';
 import { ProvidersWithNavigation } from './Providers';
 import { ReceiveModal } from '@tonkeeper/shared/modals/ReceiveModal';
 import { ReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
+import { EditAppConfigModal } from '$core/DevMenu/DevConfigScreen';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -57,6 +58,7 @@ export const ModalStack = React.memo(() => (
         component={NFTTransferInputAddressModal}
         path="NFTTransferInputAddress"
       />
+      <Stack.Modal component={EditAppConfigModal} path="/dev/config/edit" />
       <Stack.Modal component={SignRawModal} path="SignRaw" />
       <Stack.Modal component={NewConfirmSending} path="NewConfirmSending" />
       <Stack.Modal component={SwitchWalletModal} path="/switch-wallet" />
