@@ -111,11 +111,11 @@ export const Button = memo<ButtonProps>((props) => {
             >
               {title}
             </Text>
-            {icon && (
-              <View style={styles.iconContainer}>
-                <Icon name={icon} color="iconTertiary" />
-              </View>
-            )}
+          </View>
+        )}
+        {icon && (
+          <View style={styles.iconContainer}>
+            <Icon name={icon} color="iconTertiary" />
           </View>
         )}
       </Pressable>
