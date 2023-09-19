@@ -23,14 +23,14 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
   const amountIn = useMemo(() => {
     if (payload.ton_in) {
       return formatter.formatNano(payload.ton_in, {
-        prefix: AmountFormatter.sign.plus,
+        prefix: AmountFormatter.sign.minus,
         postfix: 'TON',
       });
     } else if (payload.jetton_master_in) {
       return formatter.formatNano(payload.amount_in, {
         decimals: payload.jetton_master_in.decimals,
         postfix: payload.jetton_master_in.symbol,
-        prefix: AmountFormatter.sign.plus,
+        prefix: AmountFormatter.sign.minus,
       });
     } else {
       return '-';
@@ -40,14 +40,14 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
   const amountOut = useMemo(() => {
     if (payload.ton_out) {
       return formatter.formatNano(payload.ton_out, {
-        prefix: AmountFormatter.sign.minus,
+        prefix: AmountFormatter.sign.plus,
         postfix: 'TON',
       });
     } else if (payload.jetton_master_out) {
       return formatter.formatNano(payload.amount_out, {
         decimals: payload.jetton_master_out.decimals,
         postfix: payload.jetton_master_out.symbol,
-        prefix: AmountFormatter.sign.minus,
+        prefix: AmountFormatter.sign.plus,
       });
     } else {
       return '-';
@@ -59,13 +59,13 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
       iconName="ic-swap-horizontal-alternative-28"
       title={t('transactions.swap')}
       subtitle={subtitle}
-      value={amountIn}
+      value={amountOut}
       action={action}
       ignoreFailed
       greenValue
       subvalue={
         <Text type="label1" style={styles.amountOut}>
-          {amountOut}
+          {amountIn}
         </Text>
       }
     >

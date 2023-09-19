@@ -50,7 +50,7 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
   const amountIn = useMemo(() => {
     if (payload.ton_in) {
       return formatter.formatNano(payload.ton_in, {
-        prefix: AmountFormatter.sign.plus,
+        prefix: AmountFormatter.sign.minus,
         withoutTruncate: true,
         postfix: 'TON',
       });
@@ -58,7 +58,7 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
       return formatter.formatNano(payload.amount_in, {
         decimals: payload.jetton_master_in.decimals,
         postfix: payload.jetton_master_in.symbol,
-        prefix: AmountFormatter.sign.plus,
+        prefix: AmountFormatter.sign.minus,
         withoutTruncate: true,
       });
     } else {
@@ -69,7 +69,7 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
   const amountOut = useMemo(() => {
     if (payload.ton_out) {
       return formatter.formatNano(payload.ton_out, {
-        prefix: AmountFormatter.sign.minus,
+        prefix: AmountFormatter.sign.plus,
         withoutTruncate: true,
         postfix: 'TON',
       });
@@ -77,7 +77,7 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
       return formatter.formatNano(payload.amount_out, {
         decimals: payload.jetton_master_out.decimals,
         postfix: payload.jetton_master_out.symbol,
-        prefix: AmountFormatter.sign.minus,
+        prefix: AmountFormatter.sign.plus,
         withoutTruncate: true,
       });
     } else {
@@ -87,8 +87,8 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
 
   const pictureIn = useMemo(() => {
     if (payload.jetton_master_in) {
-      return <Picture style={styles.pictureIn} uri={payload.jetton_master_in.image} />;
-    } else if (payload.ton_out) {
+      return <Picture style={styles.leftPicture} uri={payload.jetton_master_in.image} />;
+    } else if (payload.ton_in) {
       return <TonIcon size="xlarge" style={styles.tonIcon} />;
     }
 
@@ -97,7 +97,7 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
 
   const pictureOut = useMemo(() => {
     if (payload.jetton_master_out) {
-      return <Picture style={styles.pictureOut} uri={payload.jetton_master_out.image} />;
+      return <Picture style={styles.rightPicture} uri={payload.jetton_master_out.image} />;
     } else if (payload.ton_out) {
       return <TonIcon size="xlarge" style={styles.tonIcon} />;
     }
@@ -114,15 +114,15 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
         <>
           <View style={styles.content}>
             <View style={styles.swapImages}>
-              {pictureOut}
-              <View style={styles.pictureInContainer}>{pictureIn}</View>
+              {pictureIn}
+              <View style={styles.pictureOutContainer}>{pictureOut}</View>
             </View>
           </View>
           <Text type="h2" style={styles.amountText} color="textTertiary">
-            {amountOut}
+            {amountIn}
           </Text>
           <Text type="h2" style={styles.amountText}>
-            {amountIn}
+            {amountOut}
           </Text>
         </>
       }
@@ -158,20 +158,20 @@ const styles = Steezy.create(({ colors }) => ({
     marginRight: -8,
     backgroundColor: TonIconBackgroundColor,
   },
-  pictureOut: {
+  leftPicture: {
     width: 72,
     height: 72,
     borderRadius: 72 / 2,
     marginRight: -8,
     backgroundColor: colors.backgroundContent,
   },
-  pictureIn: {
+  rightPicture: {
     width: 72,
     height: 72,
     borderRadius: 72 / 2,
     backgroundColor: colors.backgroundContent,
   },
-  pictureInContainer: {
+  pictureOutContainer: {
     borderColor: colors.backgroundPage,
     borderWidth: 4,
     marginLeft: -4,
