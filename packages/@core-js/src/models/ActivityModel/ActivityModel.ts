@@ -110,6 +110,7 @@ export class ActivityModel {
         if (payload.amount !== undefined) {
           return {
             value: String(payload.amount),
+            tokenAddress: 'ton',
             symbol: 'TON',
           };
         } else {
@@ -122,17 +123,19 @@ export class ActivityModel {
           value: payload.amount,
           symbol: payload.jetton.symbol,
           decimals: payload.jetton.decimals,
+          tokenAddress: payload.jetton.address,
         };
       case ActionType.NftPurchase:
       case ActionType.AuctionBid:
-      case ActionType.NftPurchase:
         return {
-          value: payload.amount.value,
           symbol: payload.amount.token_name,
+          value: payload.amount.value,
+          tokenAddress: 'ton',
         };
       case ActionType.SmartContractExec:
         return {
           value: payload.ton_attached,
+          tokenAddress: 'ton',
           symbol: 'TON',
         };
       case ActionType.ReceiveTRC20:

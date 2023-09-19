@@ -31,6 +31,7 @@ export type ActionEvent = Omit<AccountEvent, 'actions'>;
 
 export type ActionAmount = {
   value: number | string;
+  tokenAddress?: string;
   decimals?: number;
   symbol: string;
 } | null;
@@ -91,10 +92,11 @@ export type AnyActionPayload = ActionPayload[keyof ActionPayload];
 export type ActionTypePayload<T extends ActionType = ActionType> = {
   type: T;
   payload: ActionPayload[T];
-}
+};
 
-export type AnyActionTypePayload<T extends ActionType = ActionType> =
-  T extends T ? ActionTypePayload<T> : never;
+export type AnyActionTypePayload<T extends ActionType = ActionType> = T extends T
+  ? ActionTypePayload<T>
+  : never;
 
 export interface ActionItem<T extends ActionType = ActionType> {
   type: T;
@@ -110,8 +112,9 @@ export interface ActionItem<T extends ActionType = ActionType> {
   simple_preview: ActionSimplePreview;
 }
 
-export type AnyActionItem<T extends ActionType = ActionType> =
-  T extends T ? ActionItem<T> : never;
+export type AnyActionItem<T extends ActionType = ActionType> = T extends T
+  ? ActionItem<T>
+  : never;
 
 export type ActivitySection = {
   timestamp: number;

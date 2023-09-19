@@ -8,23 +8,25 @@ import { config } from '../../config';
 import { t } from '../../i18n';
 
 // TODO: move to manager
-import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
+import { useGetTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 
 // TODO: move to shared
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
 import { useSelector } from 'react-redux';
 import { ExtraListItem } from './components/ExtraListItem';
 import { Linking } from 'react-native';
+import { Address } from '../../Address';
 
 interface ActionModalContentProps {
   children?: React.ReactNode;
   header?: React.ReactNode;
   action: AnyActionItem;
+  amountFiat?: string;
   label?: string;
 }
 
 export const ActionModalContent = memo<ActionModalContentProps>((props) => {
-  const { children, header, action, label } = props;
+  const { children, header, action, label, amountFiat } = props;
 
   const hash = ` ${action.event.event_id.substring(0, 8)}`;
 
@@ -55,7 +57,7 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
   }, [action.event.timestamp, action.destination, label]);
 
   const fiatCurrency = useSelector(fiatCurrencySelector);
-  const tokenPrice = useTokenPrice('ton'); //jettonAddress
+  const getTokenPrice = useGetTokenPrice();
 
   const amount = useMemo(() => {
     if (action.amount) {
@@ -73,16 +75,25 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
   }, [action.destination, action.amount]);
 
   const fiatAmount = useMemo(() => {
-    if (action.amount && tokenPrice.fiat) {
-      const parsedAmount = parseFloat(
-        formatter.fromNano(action.amount.value, action.amount.decimals),
-      );
-      return formatter.format(tokenPrice.fiat * parsedAmount, {
-        currency: fiatCurrency,
-        decimals: 9,
-      });
+    if (amountFiat !== undefined) {
+      return amountFiat;
+    } else if (action.amount && action.amount.tokenAddress) {
+      const prepareAddress =
+        action.amount.tokenAddress === 'ton'
+          ? action.amount.tokenAddress
+          : Address.parse(action.amount.tokenAddress).toFriendly();
+      const tokenPrice = getTokenPrice(prepareAddress);
+      if (tokenPrice.fiat) {
+        const parsedAmount = parseFloat(
+          formatter.fromNano(action.amount.value, action.amount.decimals),
+        );
+        return formatter.format(tokenPrice.fiat * parsedAmount, {
+          currency: fiatCurrency,
+          decimals: 9,
+        });
+      }
     }
-  }, [action.amount, tokenPrice.fiat, fiatCurrency]);
+  }, [action.amount, getTokenPrice, fiatCurrency]);
 
   return (
     <View style={styles.container}>

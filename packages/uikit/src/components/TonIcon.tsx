@@ -8,7 +8,7 @@ import { ViewStyle } from 'react-native';
 import { TonDiamondIcon } from '@tonkeeper/mobile/src/uikit/TonDiamondIcon/TonDiamondIcon';
 import { useDiamondIcon } from '@tonkeeper/mobile/src/hooks/useDiamondIcon';
 
-export type TonIconSizes = 'xsmall' | 'small' | 'medium' | 'large' | 'xmedium';
+export type TonIconSizes = 'xsmall' | 'small' | 'medium' | 'large' | 'xmedium' | 'xlarge';
 
 export interface TonIconProps {
   size?: TonIconSizes;
@@ -24,6 +24,7 @@ export const iconContainerSizes: { [key in TonIconSizes]: number } = {
   xsmall: 24,
   small: 44,
   large: 96,
+  xlarge: 72,
 };
 
 export const TonIcon = memo<TonIconProps>((props) => {
@@ -68,9 +69,11 @@ export const TonIcon = memo<TonIconProps>((props) => {
   );
 });
 
+export const TonIconBackgroundColor = '#0098EA';
+
 const styles = Steezy.create(({ colors }) => ({
   container: {
-    backgroundColor: '#0098EA',
+    backgroundColor: TonIconBackgroundColor,
     justifyContent: 'center',
     alignItems: 'center',
   },
