@@ -6,6 +6,7 @@ import { ListItemContent, Steezy } from '@tonkeeper/uikit';
 import { formatTransactionTime } from '../../utils/date';
 import { findSenderAccount } from './findSenderAccount';
 import { memo, useCallback, useMemo } from 'react';
+import { ImageRequireSource } from 'react-native';
 import { formatter } from '../../formatter';
 import { Address } from '../../Address';
 import { t } from '../../i18n';
@@ -16,7 +17,8 @@ interface ActionListItem {
   action: AnyActionItem;
   subtitleNumberOfLines?: number;
   children?: React.ReactNode;
-  picture?: string;
+  pictureSource?: ImageRequireSource;
+  pictureUri?: string;
   iconName?: IconNames;
   leftContent?: React.ReactNode;
   title?: string;
@@ -45,14 +47,16 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
   }, [action]);
 
   const picture = useMemo(() => {
-    if (props.picture !== undefined) {
-      return props.picture;
-    } else if (senderAccount) {
-      return senderAccount.icon;
+    if (props.pictureUri !== undefined) {
+      return { uri: props.pictureUri };
+    } else if (props.pictureSource !== undefined) {
+      return { source: props.pictureSource };
+    } else if (senderAccount?.icon) {
+      return { uri: senderAccount.icon };
     } else {
       return null;
     }
-  }, [props.picture, senderAccount]);
+  }, [props.pictureSource, props.pictureUri, senderAccount]);
 
   const iconName = useMemo(() => {
     if (isFailed) {
@@ -135,7 +139,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
   const leftContent = (
     <ListItemContent style={styles.icon.static}>
       {picture && !isFailed ? (
-        <Picture style={styles.picture} uri={picture} />
+        <Picture style={styles.picture} uri={picture.uri} source={picture.source} />
       ) : (
         <Icon name={iconName} color="iconSecondary" />
       )}

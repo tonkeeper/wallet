@@ -1,19 +1,12 @@
 import { UnSubscribeActionListItem } from './items/UnSubscribeActionListItem';
 import { JettonSwapActionListItem } from './items/JettonSwapActionListItem';
 import { SubscribeActionListItem } from './items/SubscribeActionListItem';
+import { ListItemContentText, ListItemContainer } from '@tonkeeper/uikit';
 import { modifyNftName } from '@tonkeeper/core/src/managers/NftsManager';
 import { ActionType, Address, AnyActionItem } from '@tonkeeper/core';
 import { NftPreviewContent } from './NftPreviewContent';
 import { ActionListItem } from './ActionListItem';
 import { t } from '../../i18n';
-import {
-  ListItemContentText,
-  ListItemContainer,
-  Picture,
-  Steezy,
-  View,
-  Icon,
-} from '@tonkeeper/uikit';
 
 import { getImplementationIcon } from '@tonkeeper/mobile/src/utils/staking';
 
@@ -121,48 +114,30 @@ export function renderActionListItem(action: AnyActionItem) {
     case ActionType.DepositStake:
       return (
         <ActionListItem
-          subtitle={payload.pool.name}
+          pictureSource={getImplementationIcon(action.payload.implementation)}
           title={t('transactions.deposit')}
+          subtitle={payload.pool.name}
           action={action}
-          leftContent={
-            <Picture
-              source={getImplementationIcon(action.payload.implementation)}
-              style={styles.poolIcon}
-              resizeMode="contain"
-            />
-          }
         />
       );
     case ActionType.WithdrawStake:
       return (
         <ActionListItem
-          subtitle={payload.pool.name}
+          pictureSource={getImplementationIcon(action.payload.implementation)}
           title={t('transactions.withdraw')}
+          subtitle={payload.pool.name}
           iconName="ic-donemark-28"
           action={action}
-          leftContent={
-            <Picture
-              source={getImplementationIcon(action.payload.implementation)}
-              style={styles.poolIcon}
-              resizeMode="contain"
-            />
-          }
         />
       );
     case ActionType.WithdrawStakeRequest:
       return (
         <ActionListItem
-          subtitle={payload.pool.name}
+          pictureSource={getImplementationIcon(action.payload.implementation)}
           title={t('transactions.withdrawal_request')}
+          subtitle={payload.pool.name}
           iconName="ic-donemark-28"
           action={action}
-          leftContent={
-            <Picture
-              source={getImplementationIcon(action.payload.implementation)}
-              style={styles.poolIcon}
-              resizeMode="contain"
-            />
-          }
         />
       );
     case ActionType.JettonSwap:
@@ -193,19 +168,3 @@ export const renderActionItem = ({ item }: RenderItemOptions) => (
     {renderActionListItem(item)}
   </ListItemContainer>
 );
-
-const styles = Steezy.create(({ colors }) => ({
-  poolIconContainer: {
-    backgroundColor: colors.accentGreen,
-    width: 44,
-    height: 44,
-    borderRadius: 44 / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  poolIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 44 / 2,
-  },
-}));
