@@ -140,55 +140,40 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
     }, 500);
   }, []);
 
-  const webviewStyle: any = {};
-  if (isLoading && !isAndroid) {
-    webviewStyle.heihgt = 0;
-  } else {
-    webviewStyle.flex = 1;
-  }
-
   return (
-    <>
+    <S.Wrap>
       {renderHeader()}
+      <S.Browser
+        ref={webviewRef}
+        key={webViewKey}
+        javaScriptEnabled
+        domStorageEnabled
+        source={{
+          uri: webviewUrl,
+        }}
+        onLoad={handleLoad}
+        onHttpError={handleHttpError}
+        onError={handleError}
+        startInLoadingState={true}
+        originWhitelist={['*']}
+        decelerationRate="normal"
+        javaScriptCanOpenWindowsAutomatically
+        mixedContentMode="always"
+        hideKeyboardAccessoryView
+        thirdPartyCookiesEnabled={true}
+        onNavigationStateChange={handleNavigationChange}
+        allowFileAccess
+        forceDarkOn={methodId !== 'onramp'}
+        allowsInlineMediaPlayback
+        allowsFullscreenVideo
+        keyboardDisplayRequiresUserAction={false}
+        mediaPlaybackRequiresUserAction={false}
+      />
       {isLoading && (
         <S.LoaderWrap>
           <Loader size="medium" />
         </S.LoaderWrap>
       )}
-      <S.Wrap
-        style={{
-          width: deviceWidth,
-          backgroundColor: theme.colors.backgroundPrimary,
-          ...webviewStyle,
-        }}
-      >
-        <S.Browser
-          ref={webviewRef}
-          key={webViewKey}
-          javaScriptEnabled
-          domStorageEnabled
-          source={{
-            uri: webviewUrl,
-          }}
-          onLoad={handleLoad}
-          onHttpError={handleHttpError}
-          onError={handleError}
-          startInLoadingState={true}
-          originWhitelist={['*']}
-          decelerationRate="normal"
-          javaScriptCanOpenWindowsAutomatically
-          mixedContentMode="always"
-          hideKeyboardAccessoryView
-          thirdPartyCookiesEnabled={true}
-          onNavigationStateChange={handleNavigationChange}
-          allowFileAccess
-          forceDarkOn={methodId !== 'onramp'}
-          allowsInlineMediaPlayback
-          allowsFullscreenVideo
-          keyboardDisplayRequiresUserAction={false}
-          mediaPlaybackRequiresUserAction={false}
-        />
-      </S.Wrap>
-    </>
+    </S.Wrap>
   );
 };
