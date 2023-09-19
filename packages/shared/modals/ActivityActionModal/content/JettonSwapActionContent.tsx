@@ -1,14 +1,16 @@
-import { Steezy, View, SText as Text, FastImage } from '@tonkeeper/uikit';
-import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
+import { TonIconBackgroundColor } from '@tonkeeper/uikit/src/components/TonIcon';
+import { Steezy, View, SText as Text, Picture, TonIcon } from '@tonkeeper/uikit';
+import { useGetTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
+import { ActionItem, ActionType, AmountFormatter } from '@tonkeeper/core';
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
-import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
+import { AddressListItem } from '../components/AddressListItem';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
-import { ActionItem, ActionType } from '@tonkeeper/core';
 import { formatter } from '../../../formatter';
 import { useSelector } from 'react-redux';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
+import { Address } from '../../../Address';
 
 interface JettonSwapActionContentProps {
   action: ActionItem<ActionType.JettonSwap>;
@@ -16,81 +18,116 @@ interface JettonSwapActionContentProps {
 
 export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props) => {
   const { action } = props;
+  const { payload } = action;
 
   const fiatCurrency = useSelector(fiatCurrencySelector);
-  const tokenPrice = useTokenPrice(action.payload.jetton_master_in.address);
+  const getTokenPrice = useGetTokenPrice();
 
-  const isFailed = action.status === ActionStatusEnum.Failed;
-
-  const amount = useMemo(() => {
-    const amountIn = action.payload.amount_in;
-    const amountOut = action.payload.amount_in;
-
-    return {
-      in: formatter.formatNano(amountIn, {
-        formatDecimals: action.payload.jetton_master_in.decimals ?? 9,
-        postfix: action.payload.jetton_master_in.symbol,
-        withoutTruncate: true,
-        prefix: '+',
-      }),
-      out: formatter.formatNano(amountOut, {
-        formatDecimals: action.payload.jetton_master_out.decimals ?? 9,
-        postfix: action.payload.jetton_master_out.symbol,
-        withoutTruncate: true,
-        prefix: '-',
-      }),
-    };
-  }, [action]);
-
-  const fiatAmount = useMemo(() => {
-    if (tokenPrice.fiat) {
-      const decimals = action.payload.jetton_master_in?.decimals ?? 9;
-      const amount = parseFloat(formatter.fromNano(action.payload.amount_in, decimals));
-      return formatter.format(tokenPrice.fiat * amount, {
-        currency: fiatCurrency,
-      });
+  const amountInFiat = useMemo(() => {
+    if (payload.ton_in) {
+      const tokenPrice = getTokenPrice('ton');
+      if (tokenPrice.fiat) {
+        const parsedAmount = parseFloat(formatter.fromNano(payload.ton_in, 9));
+        return formatter.format(tokenPrice.fiat * parsedAmount, {
+          currency: fiatCurrency,
+          decimals: 9,
+        });
+      }
+    } else if (payload.jetton_master_in) {
+      const tokenPrice = getTokenPrice(
+        Address.parse(payload.jetton_master_in.address).toFriendly(),
+      );
+      if (tokenPrice.fiat) {
+        const parsedAmount = parseFloat(formatter.fromNano(payload.amount_in, 9));
+        return formatter.format(tokenPrice.fiat * parsedAmount, {
+          currency: fiatCurrency,
+          decimals: 9,
+        });
+      }
     }
-  }, [action.payload.amount_in, tokenPrice.fiat, fiatCurrency, isFailed]);
+  }, [payload, getTokenPrice]);
 
-  const sourceIn = {
-    uri: action.payload.jetton_master_in.image,
-  };
+  const amountIn = useMemo(() => {
+    if (payload.ton_in) {
+      return formatter.formatNano(payload.ton_in, {
+        prefix: AmountFormatter.sign.plus,
+        withoutTruncate: true,
+        postfix: 'TON',
+      });
+    } else if (payload.jetton_master_in) {
+      return formatter.formatNano(payload.amount_in, {
+        decimals: payload.jetton_master_in.decimals,
+        postfix: payload.jetton_master_in.symbol,
+        prefix: AmountFormatter.sign.plus,
+        withoutTruncate: true,
+      });
+    } else {
+      return '';
+    }
+  }, [payload]);
 
-  const sourceOut = {
-    uri: action.payload.jetton_master_out.image,
-  };
+  const amountOut = useMemo(() => {
+    if (payload.ton_out) {
+      return formatter.formatNano(payload.ton_out, {
+        prefix: AmountFormatter.sign.minus,
+        withoutTruncate: true,
+        postfix: 'TON',
+      });
+    } else if (payload.jetton_master_out) {
+      return formatter.formatNano(payload.amount_out, {
+        decimals: payload.jetton_master_out.decimals,
+        postfix: payload.jetton_master_out.symbol,
+        prefix: AmountFormatter.sign.minus,
+        withoutTruncate: true,
+      });
+    } else {
+      return '';
+    }
+  }, [payload]);
+
+  const pictureIn = useMemo(() => {
+    if (payload.jetton_master_in) {
+      return <Picture style={styles.pictureIn} uri={payload.jetton_master_in.image} />;
+    } else if (payload.ton_out) {
+      return <TonIcon size="xlarge" style={styles.tonIcon} />;
+    }
+
+    return null;
+  }, []);
+
+  const pictureOut = useMemo(() => {
+    if (payload.jetton_master_out) {
+      return <Picture style={styles.pictureOut} uri={payload.jetton_master_out.image} />;
+    } else if (payload.ton_out) {
+      return <TonIcon size="xlarge" style={styles.tonIcon} />;
+    }
+
+    return null;
+  }, []);
 
   return (
     <ActionModalContent
       label={t('activityActionModal.swapped')}
+      amountFiat={amountInFiat}
       action={action}
       header={
         <>
           <View style={styles.content}>
             <View style={styles.swapImages}>
-              <FastImage
-                style={styles.jettonInImage}
-                resizeMode="cover"
-                source={sourceIn}
-              />
-              <View style={styles.jettonOutImageContainer}>
-                <FastImage
-                  style={styles.jettonOutImage}
-                  resizeMode="cover"
-                  source={sourceOut}
-                />
-              </View>
+              {pictureOut}
+              <View style={styles.pictureInContainer}>{pictureIn}</View>
             </View>
           </View>
           <Text type="h2" style={styles.amountText} color="textTertiary">
-            {amount.out}
+            {amountOut}
           </Text>
           <Text type="h2" style={styles.amountText}>
-            {amount.in}
+            {amountIn}
           </Text>
         </>
       }
     >
+      <AddressListItem destination="out" recipient={payload.user_wallet} />
       <ExtraListItem extra={action.event.extra} />
     </ActionModalContent>
   );
@@ -114,23 +151,30 @@ const styles = Steezy.create(({ colors }) => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  jettonInImage: {
+  tonIcon: {
     width: 72,
     height: 72,
     borderRadius: 72 / 2,
-    marginRight: -6,
+    marginRight: -8,
+    backgroundColor: TonIconBackgroundColor,
+  },
+  pictureOut: {
+    width: 72,
+    height: 72,
+    borderRadius: 72 / 2,
+    marginRight: -8,
     backgroundColor: colors.backgroundContent,
   },
-  jettonOutImage: {
+  pictureIn: {
     width: 72,
     height: 72,
     borderRadius: 72 / 2,
     backgroundColor: colors.backgroundContent,
   },
-  jettonOutImageContainer: {
-    borderWidth: 4,
+  pictureInContainer: {
     borderColor: colors.backgroundPage,
-    marginLeft: -6,
+    borderWidth: 4,
+    marginLeft: -4,
     borderRadius: 72 + 4 / 2,
   },
   fiatText: {

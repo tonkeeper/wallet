@@ -101,6 +101,8 @@ export const useGetTokenPrice = () => {
   );
 };
 
+// NOTE: currency in friendly address format 
+// TODO: Change prices map to raw address as key
 export const useTokenPrice = (currency: string, amount = '0') => {
   const getTokenPrice = useGetTokenPrice();
 

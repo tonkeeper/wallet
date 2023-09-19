@@ -23,10 +23,12 @@ interface ActionListItem {
   value?: string;
   subtitle?: string;
   greenValue?: boolean;
+  ignoreFailed?: boolean;
 }
 
 export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
-  const { action, children, onPress, subtitleNumberOfLines, greenValue } = props;
+  const { action, children, onPress, subtitleNumberOfLines, greenValue, ignoreFailed } =
+    props;
 
   const handlePress = useCallback(() => {
     if (onPress) {
@@ -159,7 +161,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
       value={value}
     >
       {!action.event.is_scam && children}
-      {isFailed && (
+      {isFailed && !ignoreFailed && (
         <Text type="body2" color="accentOrange" style={styles.failedText.static}>
           {t('transactions.failed')}
         </Text>
