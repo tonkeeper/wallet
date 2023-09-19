@@ -17,7 +17,7 @@ import {
 } from './types';
 import _ from 'lodash';
 import { getFlag } from '$utils/flags';
-import { tonapi } from '@tonkeeper/shared/tonapi';
+import { tonapi } from '@tonkeeper/shared/tonkeeper';
 import {
   AccountEvent,
   ActionTypeEnum,

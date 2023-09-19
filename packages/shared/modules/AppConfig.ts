@@ -1,10 +1,4 @@
-import { network } from './network';
-
-type AppConfigStorage = {
-  setItem: (key: string, value: string) => Promise<void>;
-  getItem: (key: string) => Promise<string | null>;
-  removeItem: (key: string) => Promise<void>;
-};
+import { network, Storage } from '@tonkeeper/core';
 
 type RequestParams = Record<string, any> | (() => Record<string, any>);
 
@@ -16,14 +10,14 @@ type AppConfigRequest = {
 type AppConfigOptions<TConfig> = {
   request: AppConfigRequest;
   defaultConfig: Partial<TConfig>;
-  storage: AppConfigStorage;
+  storage: Storage;
 };
 
 export class AppConfig<TConfig = {}> {
   private configStorageKey = '__config__';
   private defaultConfig: Partial<TConfig>;
   private request: AppConfigRequest;
-  private storage: AppConfigStorage;
+  private storage: Storage;
   private config: any = {}; // TODO: fix any
 
   constructor(options: AppConfigOptions<TConfig>) {

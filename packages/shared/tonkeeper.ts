@@ -1,16 +1,16 @@
 import { MobilePasscodeController } from './screens/MobilePasscodeScreen';
+import { AppServerSentEvents } from './modules/AppServerSentEvents';
 import { WalletNetwork } from '@tonkeeper/core/src/Wallet';
 import { Tonkeeper, TronAPI } from '@tonkeeper/core';
-import { MobileVault } from './utils/MobileVault';
-import { EventStream } from './EventStream';
+import { AppStorage } from './modules/AppStorage';
+import { AppVault } from './modules/AppVault';
 import { queryClient } from './queryClient';
 import { TonAPI } from '@tonkeeper/core';
-import { storage } from './storage';
 import { config } from './config';
 
-export const sse = new EventStream({
+export const sse = new AppServerSentEvents({
   baseUrl: () => config.get('tonapiIOEndpoint'),
-  token: () => config.get('tonApiKey'),
+  token: () => config.get('tonApiV2Key'),
 });
 
 export const tonapi = new TonAPI({
@@ -34,18 +34,15 @@ export const tronapi = new TronAPI({
   },
 });
 
-// const logger = new Logger({
-//   onError: (err) => saveLog(err)
-// });
+export const storage = new AppStorage();
 
-const vault = new MobileVault(MobilePasscodeController);
+const vault = new AppVault(storage, MobilePasscodeController);
 
 export const tk = new Tonkeeper({
   queryClient,
   storage,
   tronapi,
   tonapi,
-  // logger,
   vault,
   sse,
 });

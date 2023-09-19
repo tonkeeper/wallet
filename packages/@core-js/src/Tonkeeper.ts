@@ -1,28 +1,12 @@
-import EventSource, { EventType } from 'react-native-sse';
-import { QueryClient } from 'react-query';
-import { Wallet, WalletNetwork } from './Wallet';
-import { TonAPI } from './TonAPI';
-import { Vault } from './Vault';
-import { TronAPI } from './TronAPI';
-import { Address } from './formatters/Address';
+import { ServerSentEvents } from './declarations/ServerSentEvents';
 import { createTronOwnerAddress } from './utils/tronUtils';
-
-export type ServerSentEventsOptions = {
-  baseUrl: () => string;
-  token: () => string;
-};
-
-export type EventSourceListener = EventSource<EventType>;
-export declare class ServerSentEvents {
-  constructor(options: ServerSentEventsOptions);
-  listen(url: string): EventSourceListener;
-}
-
-export interface IStorage {
-  setItem(key: string, value: string): Promise<any>;
-  getItem(key: string): Promise<any>;
-  set(key: string, value: any): Promise<void>;
-}
+import { Storage } from './declarations/Storage';
+import { Wallet, WalletNetwork } from './Wallet';
+import { Address } from './formatters/Address';
+import { Vault } from './declarations/Vault';
+import { QueryClient } from 'react-query';
+import { TronAPI } from './TronAPI';
+import { TonAPI } from './TonAPI';
 
 class PermissionsManager {
   public notifications = true;
@@ -30,10 +14,10 @@ class PermissionsManager {
 }
 
 type TonkeeperOptions = {
-  sse: ServerSentEvents;
   queryClient: QueryClient;
+  sse: ServerSentEvents;
   tronapi: TronAPI;
-  storage: IStorage;
+  storage: Storage;
   tonapi: TonAPI;
   vault: Vault;
 };
@@ -56,11 +40,11 @@ export class Tonkeeper {
   };
 
   private sse: ServerSentEvents;
+  private storage: Storage;
   private queryClient: QueryClient;
-  private storage: IStorage;
-  private vault: Vault;
   private tronapi: TronAPI;
   private tonapi: TonAPI;
+  private vault: Vault;
 
   constructor(options: TonkeeperOptions) {
     this.queryClient = options.queryClient;
@@ -72,8 +56,6 @@ export class Tonkeeper {
 
     this.permissions = new PermissionsManager();
   }
-
-
 
   // TODO: for temp, rewrite it when ton wallet will it be moved here;
   // init() must be called when app starts
@@ -145,10 +127,7 @@ export class Tonkeeper {
         owner: ownerAddress,
       };
 
-      await this.storage.setItem(
-        this.tronStrorageKey,
-        JSON.stringify(tronAddress),
-      );
+      await this.storage.setItem(this.tronStrorageKey, JSON.stringify(tronAddress));
 
       return tronAddress;
     } catch (err) {

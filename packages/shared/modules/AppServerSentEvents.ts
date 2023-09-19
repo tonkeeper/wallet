@@ -1,7 +1,8 @@
 import { ServerSentEvents, ServerSentEventsOptions } from '@tonkeeper/core';
+import { jsonToUrl } from '@tonkeeper/core';
 import EventSource from 'react-native-sse';
 
-export class EventStream implements ServerSentEvents {
+export class AppServerSentEvents implements ServerSentEvents {
   private baseUrl: () => string;
   private token: () => string;
 
@@ -10,14 +11,12 @@ export class EventStream implements ServerSentEvents {
     this.token = options.token;
   }
 
-  public listen(url: string) {
+  public listen(url: string, params: Record<string, any> = {}) {
     const baseUrl = this.baseUrl();
     const token = this.token();
-  
-    return new EventSource(baseUrl + '/' + url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+
+    const queryParams = jsonToUrl(Object.assign(params, { token }));
+
+    return new EventSource(`${baseUrl}${url}?${queryParams}`);
   }
 }

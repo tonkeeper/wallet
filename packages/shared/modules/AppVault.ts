@@ -1,13 +1,11 @@
+import { PasscodeController, Storage, Vault } from '@tonkeeper/core';
 import { generateSecureRandom } from 'react-native-securerandom';
-import { PasscodeController, Vault } from '@tonkeeper/core';
 import * as SecureStore from 'expo-secure-store';
 import scrypt from 'react-native-scrypt';
 import nacl from 'tweetnacl';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-export class MobileVault implements Vault {
-  constructor(private passcodeController: PasscodeController) {}
+export class AppVault implements Vault {
+  constructor(private storage: Storage, private passcodeController: PasscodeController) {}
   protected keychainService = 'TKProtected';
 
   public async saveWithPasscode(pubkey: string, words: string[], passcode: string) {
@@ -38,7 +36,7 @@ export class MobileVault implements Vault {
     });
 
     const keychainService = `TKProtected${Math.random()}`;
-    await AsyncStorage.setItem('keychainService', keychainService);
+    await this.storage.setItem('keychainService', keychainService);
     await SecureStore.setItemAsync(`biometry_${pubkey}`, jsonstr, {
       keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
       keychainService: this.keychainService,
@@ -50,8 +48,8 @@ export class MobileVault implements Vault {
 
   public async exportWithBiometry() {
     try {
-      const storedKeychainService = await AsyncStorage.getItem('keychainService');
-      console.log({ storedKeychainService })
+      const storedKeychainService = await this.storage.getItem('keychainService');
+      console.log({ storedKeychainService });
       if (storedKeychainService) {
         this.keychainService = storedKeychainService;
       }
@@ -65,8 +63,7 @@ export class MobileVault implements Vault {
       } else {
         // throw new Error('Failed to unlock the vault');
       }
-      
-    } catch(err) {
+    } catch (err) {
       // throw new Error(t('access_confirmation_update_biometry'));
       throw new Error('Error');
     }
