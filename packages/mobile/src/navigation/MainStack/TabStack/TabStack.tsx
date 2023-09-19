@@ -24,6 +24,7 @@ import { useNotificationsStore } from '$store';
 import { NotificationsIndicator } from '$navigation/MainStack/TabStack/NotificationsIndicator';
 import { useFetchMethodsToBuy } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { trackEvent } from '$utils/stats';
+import { useRemoteBridge } from '$tonconnect';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -34,6 +35,7 @@ export const TabStack: FC = () => {
   const shouldShowRedDot = useNotificationsStore((state) => state.should_show_red_dot);
   const removeRedDot = useNotificationsStore((state) => state.actions.removeRedDot);
 
+  useRemoteBridge();
   useLoadExpiringDomains();
   useFetchMethodsToBuy();
   useNotificationsSubscribe();
