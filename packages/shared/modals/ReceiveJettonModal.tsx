@@ -8,7 +8,6 @@ import { t } from '../i18n';
 import { jettonsSelector } from '@tonkeeper/mobile/src/store/jettons';
 import { useSelector } from 'react-redux';
 import { tk } from '../tonkeeper';
-import { useWallet } from '@tonkeeper/core';
 
 interface ReceiveJettonModalProps {
   jettonAddress: string;
