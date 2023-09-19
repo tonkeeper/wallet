@@ -297,7 +297,7 @@ export const BalancesList = memo<BalancesListProps>(
       const firstTonkenElement = content[0] as TokenItem;
       const lastTokenElement = content[content.length - 1] as TokenItem;
 
-      if (tokens.list.length > 1) {
+      if (tokens.list.length > 0) {
         content.push({
           key: 'spacer_nft',
           type: ContentType.Spacer,
