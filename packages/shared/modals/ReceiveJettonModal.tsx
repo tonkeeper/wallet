@@ -7,6 +7,8 @@ import { t } from '../i18n';
 
 import { jettonsSelector } from '@tonkeeper/mobile/src/store/jettons';
 import { useSelector } from 'react-redux';
+import { tk } from '../tonkeeper';
+import { useWallet } from '@tonkeeper/core';
 
 interface ReceiveJettonModalProps {
   jettonAddress: string;
@@ -21,12 +23,11 @@ export const ReceiveJettonModal = memo<ReceiveJettonModalProps>((props) => {
     return jettonBalances.find((item) => item.jettonAddress === jettonAddress)!;
   }, []);
 
-  const address2url = useCallback(
-    (addr: string) => {
-      return 'ton://transfer/' + addr + '?jetton=' + jettonAddress;
-    },
-    [jettonAddress],
-  );
+  const link = useMemo(() => {
+    return (
+      'ton://transfer/' + tk.wallet.address.ton.friendly + '?jetton=' + jettonAddress
+    );
+  }, [jettonAddress]);
 
   return (
     <Modal>
@@ -34,7 +35,7 @@ export const ReceiveJettonModal = memo<ReceiveJettonModalProps>((props) => {
       <Modal.Content>
         <ReceiveTokenContent
           logo={<Picture uri={jetton?.metadata?.image} style={styles.jettonPicture} />}
-          qrAddress={address2url(jettonAddress)}
+          qrAddress={link}
           address={jettonAddress}
           qrCodeScale={0.67}
           title={t('receiveModal.receive_title', { tokenName: jetton?.metadata?.symbol })}
@@ -56,5 +57,5 @@ const styles = Steezy.create(() => ({
     width: 44,
     height: 44,
     borderRadius: 44 / 2,
-  }
-}))
+  },
+}));
