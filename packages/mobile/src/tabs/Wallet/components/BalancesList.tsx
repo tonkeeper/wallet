@@ -232,7 +232,7 @@ export const BalancesList = memo<BalancesListProps>(
 
       // if (tronBalances && tronBalances.length > 0) {
       //   content.push(
-      //     ...(tronBalances as any).map((item) => {  
+      //     ...(tronBalances as any).map((item) => {
       //       const amount = formatter.fromNano(item.weiAmount, item.token.decimals);
       //       const fiatAmount = formatter.format(usdtRate.fiat * parseFloat(amount), {
       //         currency: fiatCurrency
@@ -240,7 +240,7 @@ export const BalancesList = memo<BalancesListProps>(
       //       const fiatPrice = formatter.format(usdtRate.fiat, {
       //         currency: fiatCurrency
       //       });
-            
+
       //       return {
       //         onPress: () => openTronToken(item),
       //         type: ContentType.Token,
@@ -297,17 +297,19 @@ export const BalancesList = memo<BalancesListProps>(
       const firstTonkenElement = content[0] as TokenItem;
       const lastTokenElement = content[content.length - 1] as TokenItem;
 
-      // Make list; set corners
-      firstTonkenElement.isFirst = true;
-      lastTokenElement.isLast = true;
-
-      if (nfts) {
+      if (tokens.list.length > 1) {
         content.push({
           key: 'spacer_nft',
           type: ContentType.Spacer,
           bottom: 32,
         });
+      }
 
+      // Make list; set corners
+      firstTonkenElement.isFirst = true;
+      lastTokenElement.isLast = true;
+
+      if (nfts) {
         const numColumns = 3;
         for (let i = 0; i < Math.ceil(nfts.length / numColumns); i++) {
           content.push({
