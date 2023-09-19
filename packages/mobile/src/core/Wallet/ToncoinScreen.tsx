@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as S from './Wallet.style';
 import { useWalletInfo } from '$hooks/useWalletInfo';
 import { Button, PopupMenu, PopupMenuItem, Text, IconButton, SwapIcon } from '$uikit';
-import { MainStackRouteNames, openDAppBrowser, openReceive, openSend } from '$navigation';
+import { MainStackRouteNames, openDAppBrowser, openSend } from '$navigation';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { walletActions, walletWalletSelector } from '$store/wallet';
 import { Linking, Platform, View } from 'react-native';

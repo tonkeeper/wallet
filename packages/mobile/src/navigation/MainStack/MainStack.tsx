@@ -15,7 +15,6 @@ import { JettonsList } from '$core/JettonsList/JettonsList';
 import { DeleteAccountDone } from '$core/DeleteAccountDone/DeleteAccountDone';
 import { EditConfig } from '$core/EditConfig/EditConfig';
 import { ManageTokens } from '$core/ManageTokens/ManageTokens';
-import { Wallet } from '$core/Wallet/Wallet';
 import { Staking } from '$core/Staking/Staking';
 import { StakingPools } from '$core/StakingPools/StakingPools';
 import { StakingPoolDetails } from '$core/StakingPoolDetails/StakingPoolDetails';

@@ -14,22 +14,6 @@ import { SendAnalyticsFrom } from '$store/models';
 import { NFTKeyPair } from '$store/nfts/interface';
 import _ from 'lodash';
 import { getCurrentRoute, navigate, push, replace } from './imperative';
-import { call } from 'redux-saga/effects';
-import * as SecureStore from 'expo-secure-store';
-
-export function openReceive(
-  currency: CryptoCurrency,
-  isJetton?: boolean,
-  jettonAddress?: string,
-  isFromMainScreen?: boolean,
-) {
-  navigate(AppStackRouteNames.Receive, {
-    currency,
-    isJetton,
-    jettonAddress,
-    isFromMainScreen,
-  });
-}
 
 export function openExploreTab(initialCategory?: string) {
   navigate(TabsStackRouteNames.Explore, { initialCategory });

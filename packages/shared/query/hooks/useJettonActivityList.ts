@@ -1,23 +1,21 @@
 import { useExternalState } from '../../hooks/useExternalState';
+import { State } from '@tonkeeper/core';
 import { tk } from '../../tonkeeper';
 import { useEffect } from 'react';
 
 export const useJettonActivityList = (jettonId: string) => {
-  if (!tk.wallet) {
-    return {
-      loadMore: () => {},
-      reload: () => {},
-      isReloading: false,
-      isLoading: false,
-      sections: [],
-      hasMore: false,
-    }
-  }
-  
-  const state = useExternalState(tk.wallet?.jettonActivityList.state);
+  const state = useExternalState(
+    tk.wallet?.jettonActivityList.state ??
+      new State({
+        isReloading: false,
+        isLoading: false,
+        hasMore: true,
+        sections: [],
+      }),
+  );
 
   useEffect(() => {
-    tk.wallet.jettonActivityList.load(jettonId);
+    tk.wallet?.jettonActivityList.load(jettonId);
   }, []);
 
   return {

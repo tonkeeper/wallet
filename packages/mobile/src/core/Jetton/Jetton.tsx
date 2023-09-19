@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
 import { useTheme } from '$hooks/useTheme';
 import { useTokenPrice } from '$hooks/useTokenPrice';
-import { openDAppBrowser, openReceive, openSend } from '$navigation';
+import { openDAppBrowser, openSend } from '$navigation';
 import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { useSelector } from 'react-redux';
 import { useJettonEvents } from '$hooks/useJettonEvents';
@@ -35,6 +35,7 @@ import { Screen, View } from '@tonkeeper/uikit';
 
 import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonActivityList';
 import { ActivityList } from '@tonkeeper/shared/components';
+import { openReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const theme = useTheme();
@@ -59,7 +60,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   }, [jetton.jettonAddress]);
 
   const handleReceive = useCallback(() => {
-    openReceive(CryptoCurrencies.Ton, true, jetton.jettonAddress);
+    openReceiveJettonModal(jetton.jettonAddress);
   }, [jetton.jettonAddress]);
 
   const handlePressSwap = React.useCallback(() => {

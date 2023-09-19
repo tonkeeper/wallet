@@ -1,7 +1,6 @@
 export { Intro } from './Intro/Intro';
 export { CreateWallet } from './CreateWallet/CreateWallet';
 export { Settings } from './Settings/Settings';
-export { Receive } from './Receive/Receive';
 export { Send } from './Send/Send';
 export { ScanQR } from './ScanQR/ScanQR';
 export { SecretWords } from './SecretWords/SecretWords';
