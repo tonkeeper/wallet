@@ -1,13 +1,11 @@
+import { ActionListItem, ActionListItemProps } from '../ActionListItem';
 import { useSubscription } from '../../../query/hooks/useSubscription';
-import { ActionItem, ActionType } from '@tonkeeper/core';
-import { ActionListItem } from '../ActionListItem';
+import { ActionType } from '@tonkeeper/core';
 import { StyleSheet } from 'react-native';
 import { t } from '../../../i18n';
 import { memo } from 'react';
 
-interface SubscribeActionListItemProps {
-  action: ActionItem<ActionType.Subscribe>;
-}
+type SubscribeActionListItemProps = ActionListItemProps<ActionType.Subscribe>;
 
 export const SubscribeActionListItem = memo<SubscribeActionListItemProps>((props) => {
   const { action } = props;
@@ -18,7 +16,7 @@ export const SubscribeActionListItem = memo<SubscribeActionListItemProps>((props
       title={t('transactions.subscription')}
       subtitle={subscription?.merchantName}
       iconName="ic-bell-28"
-      action={action}
+      {...props}
     />
   );
 });

@@ -29,13 +29,12 @@ import {
   ActionType,
   ActivityModel,
   Address,
-  AmountFormatter,
   AnyActionItem,
 } from '@tonkeeper/core';
-import { ActionListItemByType } from '@tonkeeper/shared/components/ActivityList';
+import { ActionListItemByType } from '@tonkeeper/shared/components/ActivityList/ActionListItemByType';
 import { useSelector } from 'react-redux';
 import { fiatCurrencySelector } from '$store/main';
-import { useGetTokenPrice, useTokenPrice } from '$hooks/useTokenPrice';
+import { useGetTokenPrice } from '$hooks/useTokenPrice';
 
 interface SignRawModalProps {
   action: Awaited<ReturnType<NFTOperations['signRaw']>>;
@@ -79,7 +78,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     await action.send(privateKey, async (boc) => {
       if (onSuccess) {
         await delay(1750);
-        approveAll(tokensToApprove);
+        approveAll(tokensToApprove ?? []);
         onSuccess(boc);
       }
     });

@@ -1,17 +1,15 @@
-import { Address, ActionItem, ActionType, AmountFormatter } from '@tonkeeper/core';
+import { ActionListItem, ActionListItemProps } from '../ActionListItem';
+import { Address, ActionType, AmountFormatter } from '@tonkeeper/core';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { formatTransactionTime } from '../../../utils/date';
-import { ActionListItem } from '../ActionListItem';
 import { View, StyleSheet } from 'react-native';
-import { formatter } from '../../../formatter';
 import { Text } from '@tonkeeper/uikit';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
+
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 
-interface JettonSwapActionListItemProps {
-  action: ActionItem<ActionType.JettonSwap>;
-}
+type JettonSwapActionListItemProps = ActionListItemProps<ActionType.JettonSwap>;
 
 export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((props) => {
   const { action } = props;
@@ -62,7 +60,6 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
       title={t('transactions.swap')}
       subtitle={subtitle}
       value={amountOut}
-      action={action}
       ignoreFailed
       greenValue
       subvalue={
@@ -70,6 +67,7 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
           {amountIn}
         </Text>
       }
+      {...props}
     >
       <View style={styles.content}>
         <View style={styles.flex}>

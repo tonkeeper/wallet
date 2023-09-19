@@ -1,5 +1,4 @@
 import { Icon, IconNames, List, Loader, Picture, Text, View } from '@tonkeeper/uikit';
-import { ActionSource, AmountFormatter, AnyActionItem } from '@tonkeeper/core';
 import { openActivityActionModal } from '../../modals/ActivityActionModal';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { ListItemContent, Steezy } from '@tonkeeper/uikit';
@@ -9,12 +8,19 @@ import { memo, useCallback, useMemo } from 'react';
 import { ImageRequireSource } from 'react-native';
 import { Address } from '../../Address';
 import { t } from '../../i18n';
+import {
+  ActionSource,
+  ActionType,
+  AmountFormatter,
+  AnyActionItem,
+} from '@tonkeeper/core';
+
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 
-export interface ActionListItemProps {
+export interface ActionListItemProps<TActionType extends ActionType = ActionType> {
   onPress?: () => void;
   subvalue?: string | React.ReactNode;
-  action: AnyActionItem;
+  action: AnyActionItem<TActionType>;
   subtitleNumberOfLines?: number;
   children?: React.ReactNode;
   pictureSource?: ImageRequireSource;
