@@ -1,7 +1,7 @@
 import { QueryClient } from 'react-query';
 import { Address, AddressFormats } from './formatters/Address';
 import { TonAPI } from './TonAPI';
-import { Vault } from './Vault';
+import { Vault } from './declarations/Vault';
 
 import { ActivityList } from './Activity/ActivityList';
 import { NftsManager } from './managers/NftsManager';
@@ -165,9 +165,9 @@ export class Wallet {
   }
 
   private listenTransactions() {
-    this.listener = this.sse.listen(
-      `/v2/sse/accounts/transactions?accounts=${this.address.ton.raw}`,
-    );
+    this.listener = this.sse.listen('/v2/sse/accounts/transactions', {
+      accounts: this.address.ton.raw,
+    });
     this.listener.addEventListener('open', () => {
       console.log('[Wallet]: start listen transactions for', this.address.ton.short);
     });

@@ -1,6 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AppStorage } from './modules/AppStorage';
 import DeviceInfo from 'react-native-device-info';
-import { AppConfig } from '@tonkeeper/core';
+import { AppConfig } from './modules/AppConfig';
 import { Platform } from 'react-native';
 
 type AppConfigVars = {
@@ -27,7 +27,7 @@ const defaultConfig: Partial<AppConfigVars> = {
 };
 
 export const config = new AppConfig<AppConfigVars>({
-  storage: AsyncStorage,
+  storage: new AppStorage(),
   defaultConfig,
   request: {
     host: 'https://boot.tonkeeper.com/keys',
