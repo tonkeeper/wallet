@@ -3,7 +3,11 @@ import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
 import { MainStackRouteNames, openDAppBrowser, openSend } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
 import { NextCycle } from '$shared/components';
-import { getServerConfig, KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
+import {
+  getServerConfig,
+  KNOWN_STAKING_IMPLEMENTATIONS,
+  Opacity,
+} from '$shared/constants';
 import { getStakingPoolByAddress, getStakingProviderById, useStakingStore } from '$store';
 import {
   Button,
@@ -31,7 +35,7 @@ import { formatter } from '@tonkeeper/shared/formatter';
 import { fiatCurrencySelector } from '$store/main';
 import { useSelector } from 'react-redux';
 import { IStakingLink, StakingLinkType } from './types';
-import { Icon } from '@tonkeeper/uikit';
+import { Icon, TouchableOpacity } from '@tonkeeper/uikit';
 import { getLinkIcon, getLinkTitle, getSocialLinkType } from './utils';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Linking } from 'react-native';
@@ -324,9 +328,14 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                       })}
                     </S.ItemLabel>
                   </S.Row>
-                  <S.ItemValue color="accentPrimary" onPress={handleLiquidityTokenPress}>
-                    {t('staking.details.liquidity_token.value')}
-                  </S.ItemValue>
+                  <TouchableOpacity
+                    activeOpacity={Opacity.ForSmall}
+                    onPress={handleLiquidityTokenPress}
+                  >
+                    <S.ItemValue color="accentPrimary">
+                      {t('staking.details.liquidity_token.value')}
+                    </S.ItemValue>
+                  </TouchableOpacity>
                 </S.Item>
               ) : null}
             </S.Table>

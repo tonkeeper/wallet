@@ -296,7 +296,7 @@
   "confirm_sending_inactive_warn_about": "What you should do",
   "confirm_sending_method_title": "Send your funds to %{name}?",
   "confirm_sending_liquid_warn_title": "Note",
-  "confirm_sending_liquid_warn_description": "You will no longer receive rewards from the sended Staked TON. The new owner will begin to receive rewards.",
+  "confirm_sending_liquid_warn_description": "You will no longer receive rewards from the sended Staked TON. The new owner will begin to receive rewards.",
 
   "info_about_inactive_title": "Inactive contract",
   "info_about_inactive_desc1": "Tonkeeper does not know if this address is a wallet or a smart contract.",
@@ -726,7 +726,7 @@
         "yourBalance": "Your balance: %{balance} %{currency}.",
         "rechargeWallet": "Recharge wallet",
         "title": "Insufficient funds",
-        "stakingFee": "%{amount} TON needed for transaction. Estimated fee %{fee} TON will be deducted, the rest will be refunded."
+        "stakingFee": "%{count} TON needed for transaction. Estimated fee %{fee} TON will be deducted, the rest will be refunded."
       }
     }
   },
@@ -821,7 +821,7 @@
     "learn_more": "Learn more",
     "highest_apy": "MAX APY",
     "widget_title": "Earn TON",
-    "widget_desc": "APY up to %{apy}%",
+    "widget_desc": "APY up to %{apy}%",
     "staking_pool_desc": "APY ≈ %{apy}%",
     "staking_desc": "Minimum deposit %{minStake} TON.\nEarn up to %{maxApy}%.",
     "estimated_profit": "%{amount} TON – annual profit\nif you stake TON today",

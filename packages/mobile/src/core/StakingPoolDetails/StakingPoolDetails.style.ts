@@ -49,6 +49,8 @@ export const Table = styled.View`
 export const Item = styled.View`
   padding: ${ns(8)}px ${ns(16)}px;
   flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   overflow: hidden;
 `;
 
@@ -58,7 +60,7 @@ export const ItemLabel = styled(Text).attrs({
 })``;
 
 export const ItemValue = styled(Text).attrs({
-  variant: 'label2',
+  variant: 'body2',
 })`
   margin-left: ${ns(10)}px;
   text-align: right;

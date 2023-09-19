@@ -353,13 +353,11 @@ export class TonWallet {
     const body = jettonTransferBody({
       queryId: Date.now(),
       jettonAmount,
-      toAddress: Address.parse(recipient.address),
-      responseAddress: Address.parse(sender.address),
+      toAddress: Address.parseRaw(recipient.address),
+      responseAddress: Address.parseRaw(sender.address),
       forwardAmount: jettonTransferForwardAmount,
       forwardPayload: payload,
     });
-
-    console.log('payload', payload);
 
     const transfer = contract.createTransfer({
       seqno,
@@ -463,7 +461,9 @@ export class TonWallet {
 
     if (this.isLockup()) {
       const lockupBalances = await this.getLockupBalances(sender);
-      if (new BigNumber(lockupBalances[0]).minus(amountNano).isLessThan(-lockupBalances[1])) {
+      if (
+        new BigNumber(lockupBalances[0]).minus(amountNano).isLessThan(-lockupBalances[1])
+      ) {
         throw new Error(t('send_insufficient_funds'));
       }
     } else {
@@ -509,7 +509,7 @@ export class TonWallet {
       sendMode,
       messages: [
         internal({
-          to: recipient.address,
+          to: Address.parseRaw(recipient.address),
           bounce: recipient.status === 'active',
           value: amount,
           body: payload !== '' ? payload : undefined,

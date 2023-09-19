@@ -177,7 +177,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
       currency: feeCurrency.toUpperCase(),
       currencySeparator: 'wide',
     })}`;
-  }, [fee, feeCurrency]);
+  }, [currency, fee, feeCurrency]);
 
   const amountValue = useMemo(() => {
     const value = formatter.format(calculatedValue, {

@@ -31,6 +31,7 @@ export const Table = styled.View`
 export const Item = styled.View`
   padding: ${ns(8)}px ${ns(16)}px;
   flex-direction: row;
+  align-items: center;
   justify-content: space-between;
   overflow: hidden;
 `;
@@ -47,10 +48,5 @@ export const ItemContent = styled.View`
 `;
 
 export const ItemValue = styled(Text).attrs({
-  variant: 'label2',
-})``;
-
-export const ItemSubValue = styled(Text).attrs({
   variant: 'body2',
-  color: 'foregroundSecondary',
 })``;

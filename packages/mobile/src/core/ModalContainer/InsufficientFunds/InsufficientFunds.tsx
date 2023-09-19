@@ -70,7 +70,7 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
           {stakingFee && fee ? (
             <Text variant="body1" color="foregroundSecondary" textAlign="center">
               {t('txActions.signRaw.insufficientFunds.stakingFee', {
-                amount: stakingFee,
+                count: Number(stakingFee),
                 fee,
               })}
             </Text>
