@@ -40,7 +40,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
   const { currencies, balances } = useSelector(walletSelector);
 
   const { enabled: jettons } = useJettonBalances();
-  const format = useHideableFormatter();
+  const { format } = useHideableFormatter();
 
   const stakingPools = useStakingStore((s) => s.pools, shallow);
 

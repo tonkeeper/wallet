@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 import { ExtraListItem } from './components/ExtraListItem';
 import { Linking } from 'react-native';
 import { Address } from '../../Address';
+import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 
 interface ActionModalContentProps {
   children?: React.ReactNode;
@@ -27,6 +28,7 @@ interface ActionModalContentProps {
 
 export const ActionModalContent = memo<ActionModalContentProps>((props) => {
   const { children, header, action, label, amountFiat } = props;
+  const { formatNano, format } = useHideableFormatter();
 
   const hash = ` ${action.event.event_id.substring(0, 8)}`;
 
@@ -61,7 +63,7 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
 
   const amount = useMemo(() => {
     if (action.amount) {
-      return formatter.formatNano(action.amount.value, {
+      return formatNano(action.amount.value, {
         decimals: action.amount.decimals,
         postfix: action.amount.symbol,
         withoutTruncate: true,
@@ -86,7 +88,7 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
         const parsedAmount = parseFloat(
           formatter.fromNano(action.amount.value, action.amount.decimals),
         );
-        return formatter.format(tokenPrice.fiat * parsedAmount, {
+        return format(tokenPrice.fiat * parsedAmount, {
           currency: fiatCurrency,
           decimals: 9,
         });
