@@ -109,7 +109,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
   }, [jettons, balances, currencies, stakingPools, getTokenPrice]);
 
   const selectedCoin = useMemo(
-    () => coins.find((item) => item.currency === currency)!,
+    () => coins.find((item) => item.currency === currency),
     [coins, currency],
   );
 
@@ -166,7 +166,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
         <Highlight background="backgroundQuaternary" useRNGHComponent>
           <View style={styles.content}>
             <Text variant="label1">
-              {selectedCoin.isJetton && selectedCoin.liquidStakingPool
+              {selectedCoin?.isJetton && selectedCoin.liquidStakingPool
                 ? t('staking.staked_ton')
                 : currencyTitle}
             </Text>

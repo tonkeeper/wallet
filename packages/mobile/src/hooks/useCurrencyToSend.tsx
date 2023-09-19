@@ -28,7 +28,7 @@ export function useCurrencyToSend(
     return (isJetton &&
       jettonBalances.find(
         (item) => item.jettonAddress === currency,
-      )) as JettonBalanceModel;
+      )) as JettonBalanceModel | undefined;
   }, [currency, isJetton, jettonBalances]);
 
   const liquidJettonPool = useMemo(
@@ -70,7 +70,7 @@ export function useCurrencyToSend(
 
   const currencyToSend = useMemo(() => {
     if (isJetton) {
-      const price = getTokenPrice(currency, jetton.balance);
+      const price = getTokenPrice(currency, jetton?.balance);
 
       if (liquidJettonPool) {
         return {
@@ -87,7 +87,7 @@ export function useCurrencyToSend(
 
       return {
         decimals: jetton?.metadata?.decimals || 0,
-        balance: formatAmount(jetton?.balance, decimals),
+        balance: formatAmount(jetton?.balance ?? '0', decimals),
         price,
         currencyTitle: jetton?.metadata?.symbol || Address.toShort(jetton?.jettonAddress),
         Logo,
