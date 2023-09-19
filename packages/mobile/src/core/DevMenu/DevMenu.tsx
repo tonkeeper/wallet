@@ -8,7 +8,7 @@ import DeviceInfo from 'react-native-device-info';
 
 import * as S from './DevMenu.style';
 import { ns } from '$utils';
-import { NavBar, PopupSelect, ScrollHandler, Text } from '$uikit';
+import { NavBar, ScrollHandler } from '$uikit';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
 import { openLogs } from '$navigation';
@@ -18,7 +18,7 @@ import { eventsActions } from '$store/events';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { Switch } from 'react-native-gesture-handler';
-import { DevFeature, Toast, useDevFeaturesToggle, useStakingStore } from '$store';
+import { DevFeature, Toast, useDevFeaturesToggle } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { useNavigation } from '@tonkeeper/router';
@@ -112,12 +112,6 @@ export const DevMenu: FC = () => {
     toggleFeature(DevFeature.UseHttpProtocol);
   }, [toggleFeature]);
 
-  const toggleTonstakers = useCallback(() => {
-    toggleFeature(DevFeature.Tonstakers);
-
-    useStakingStore.getState().actions.fetchPools();
-  }, [toggleFeature]);
-
   return (
     <S.Wrap>
       <NavBar>Dev Menu</NavBar>
@@ -147,16 +141,6 @@ export const DevMenu: FC = () => {
               }
             >
               Use HTTP protocol in browser
-            </CellSectionItem>
-            <CellSectionItem
-              indicator={
-                <Switch
-                  value={devFeatures[DevFeature.Tonstakers]}
-                  onChange={toggleTonstakers}
-                />
-              }
-            >
-              Enable Tonstakers
             </CellSectionItem>
             {__DEV__ && (
               <>

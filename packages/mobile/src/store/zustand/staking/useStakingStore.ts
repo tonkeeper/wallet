@@ -1,7 +1,5 @@
 import { KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
 import { store } from '$store';
-import { useDevFeaturesToggle } from '../devFeaturesToggle/useDevFeaturesToggle';
-import { DevFeature } from '../devFeaturesToggle/types';
 import { calculatePoolBalance } from '$utils/staking';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BigNumber from 'bignumber.js';
@@ -77,15 +75,11 @@ export const useStakingStore = create(
               tonapi.staking.getAccountNominatorsPools(rawAddress!),
             ]);
 
-            
-
             let pools = getState().pools;
 
             let nextState: Partial<IStakingStore> = {};
 
-            const tonstakersEnabled =
-              useDevFeaturesToggle.getState().devFeatures[DevFeature.Tonstakers] &&
-              !getFlag('disable_tonstakers');
+            const tonstakersEnabled = !getFlag('disable_tonstakers');
 
             if (poolsResponse.status === 'fulfilled') {
               const { implementations } = poolsResponse.value;
@@ -125,9 +119,7 @@ export const useStakingStore = create(
                   return a.apy > b.apy ? 1 : -1;
                 });
 
-              const providers = (
-                Object.keys(implementations) as PoolImplementationType[]
-              )
+              const providers = (Object.keys(implementations) as PoolImplementationType[])
                 .filter((id) => pools.some((pool) => pool.implementation === id))
                 .sort((a, b) => {
                   const indexA = KNOWN_STAKING_IMPLEMENTATIONS.indexOf(a);
