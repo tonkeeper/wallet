@@ -1,4 +1,3 @@
-import { ActionType, TAction } from '$store/models';
 import { SearchIndexer } from '$utils';
 import { favoritesActions, favoritesSelector } from '$store/favorites';
 import uniqBy from 'lodash/uniqBy';
@@ -9,7 +8,8 @@ import { walletAddressSelector } from '$store/wallet';
 import { CryptoCurrencies } from '$shared/constants';
 import { Tonapi } from '$libs/Tonapi';
 import { useStakingStore } from '$store';
-import { Address } from '@tonkeeper/core';
+import { ActionItem, ActionType, Address } from '@tonkeeper/core';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 const TonWeb = require('tonweb');
 
@@ -19,7 +19,6 @@ let favoriteDnsLastUpdated = 0;
 const shouldUpdateDomains = () => favoriteDnsLastUpdated + 600 * 1000 < Date.now();
 
 export const useSuggestedAddresses = () => {
-  const eventsInfo = {};
   const dispatch = useDispatch();
   const { favorites, hiddenRecentAddresses, updatedDnsAddresses } =
     useSelector(favoritesSelector);
@@ -44,50 +43,37 @@ export const useSuggestedAddresses = () => {
   );
 
   const recentAddresses = useMemo(() => {
-    const events: any[] = Object.values(eventsInfo);
-    let actions: any[] = [];
+    const actions = tk.wallet.activityLoader.getLoadedActions();
+    const pickTypes = [ActionType.JettonTransfer, ActionType.NftItemTransfer];
+    let filtered = actions.filter((action) =>
+      pickTypes.includes(action.type),
+    ) as ActionItem<ActionType.JettonTransfer>[];
 
-    events.forEach((event) => {
-      let mainAction = event.actions.find((action) =>
-        [ActionType.JettonTransfer, ActionType.NftItemTransfer].includes(
-          ActionType[action.type],
-        ),
-      );
-      if (mainAction) {
-        actions.push({
-          ...mainAction[ActionType[mainAction.type]],
-          timestamp: event.timestamp,
-        });
-        return;
-      }
-      event.actions.forEach((action) =>
-        actions.push({ ...action[ActionType[action.type]], timestamp: event.timestamp }),
-      );
-    });
-
-    const addresses = actions
+    const walletAddress = address[CryptoCurrencies.Ton];
+    const addresses = filtered
       .filter((action) => {
-        if (
-          !action?.recipient ||
-          Address.compare(address[CryptoCurrencies.Ton], action.recipient.address)
-        ) {
+        const { payload } = action;
+        if (!payload.recipient) {
           return false;
         }
+
+        const recipientAddress = payload.recipient.address;
+
+        if (Address.compare(walletAddress, recipientAddress)) {
+          return false;
+        }
+
         const isFavorite =
           favoriteAddresses.findIndex((favorite) =>
-            Address.compare(favorite.address, action.recipient.address),
+            Address.compare(favorite.address, recipientAddress),
           ) !== -1;
 
         const isStakingPool =
           stakingPools.findIndex((poolAddress) =>
-            Address.compare(poolAddress, action.recipient.address),
+            Address.compare(poolAddress, recipientAddress),
           ) !== -1;
 
-        const friendlyAddress = new TonWeb.Address(action.recipient.address).toString(
-          true,
-          true,
-          true,
-        );
+        const friendlyAddress = Address.parse(recipientAddress).toFriendly();
         if (
           hiddenRecentAddresses.includes(friendlyAddress) ||
           isFavorite ||
@@ -100,19 +86,15 @@ export const useSuggestedAddresses = () => {
       })
       .map(
         (action): SuggestedAddress => ({
-          name: action.recipient.name,
-          address: new TonWeb.Address(action.recipient.address).toString(
-            true,
-            true,
-            true,
-          ),
+          address: Address.parse(action.payload.recipient!.address).toFriendly(),
+          name: action.payload.recipient!.name,
           type: SuggestedAddressType.RECENT,
-          timestamp: action.timestamp,
+          timestamp: action.event.timestamp,
         }),
       );
 
     return uniqBy(addresses, (item) => item.address).slice(0, 8);
-  }, [eventsInfo, address, favoriteAddresses, hiddenRecentAddresses]);
+  }, [address, favoriteAddresses, hiddenRecentAddresses]);
 
   const suggestedAddresses = useMemo(
     () => [...favoriteAddresses, ...recentAddresses],
