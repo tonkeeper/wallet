@@ -143,6 +143,17 @@ export class ActivityLoader {
     return null;
   }
 
+  public getLoadedActions() {
+    const actions: ActionItem[] = [];
+    for (const map of [this.tonActions, this.tronActions]) {
+      for (const [_, action] of map) {
+        actions.push(action);
+      }
+    }
+
+    return actions;
+  }
+
   private splitActionId(actionId: ActionId) {
     const ids = actionId.split('_');
     const actionIndex = Number(ids[1] ?? 0);
