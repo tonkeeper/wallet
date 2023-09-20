@@ -18,7 +18,6 @@ import { useTokenPrice } from '$hooks/useTokenPrice';
 import { openDAppBrowser, openSend } from '$navigation';
 import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { useSelector } from 'react-redux';
-import { useJettonEvents } from '$hooks/useJettonEvents';
 
 import { walletAddressSelector } from '$store/wallet';
 import { formatter } from '$utils/formatter';

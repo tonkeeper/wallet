@@ -1,13 +1,13 @@
 import { DefaultSectionT, SectionListData, StyleSheet, View } from 'react-native';
 import { RefreshControl, Screen, Loader, List } from '@tonkeeper/uikit';
 import { formatTransactionsGroupDate } from '../../utils/date';
-import { ActionItem, ActivitySection } from '@tonkeeper/core';
+import { ActivitySection } from '@tonkeeper/core';
 import { renderActionItem } from './renderActionItem';
 import { memo } from 'react';
 
 
 interface ActivityListProps {
-  sections: SectionListData<ActionItem>;
+  sections: ActivitySection[];
   onLoadMore?: () => void;
   onReload?: () => void;
   hasMore?: boolean;
