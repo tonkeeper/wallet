@@ -4,7 +4,7 @@ type Subscriber<TData> = (state: TData) => void;
 
 export type DefaultStateData = Record<string, any>;
 
-export interface StatePersistOption<TData extends DefaultStateData> {
+export interface StatePersistOptions<TData extends DefaultStateData> {
   key: string;
   storage: Storage;
   partialize?: (data: TData) => Partial<TData>;
@@ -13,7 +13,7 @@ export interface StatePersistOption<TData extends DefaultStateData> {
 export class State<TData extends DefaultStateData> {
   public subscribers = new Set<Subscriber<TData>>();
 
-  private persistOptions?: StatePersistOption<TData>;
+  private persistOptions?: StatePersistOptions<TData>;
 
   constructor(public data: TData) {}
 
@@ -30,7 +30,7 @@ export class State<TData extends DefaultStateData> {
     } catch {}
   }
 
-  public persist(options: StatePersistOption<TData>) {
+  public persist(options: StatePersistOptions<TData>) {
     this.persistOptions = options;
 
     return this;
