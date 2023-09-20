@@ -1,6 +1,6 @@
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
-import { EventsDB, JettonsDB, MainDB, NFTsDB } from '$database';
+import { JettonsDB, MainDB, NFTsDB } from '$database';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { DevFeature, useDevFeaturesToggle } from '$store';
 import { List, Screen, copyText } from '@tonkeeper/uikit';
@@ -54,11 +54,6 @@ export const DevMenu: FC = () => {
     dispatch(mainActions.setShowV4R1(!alwaysShowV4R1));
     MainDB.setShowV4R1(!alwaysShowV4R1);
   }, [alwaysShowV4R1, dispatch]);
-
-  const handleClearEventsCache = useCallback(() => {
-    EventsDB.clearAll();
-    // dispatch(eventsActions.resetEvents());
-  }, [dispatch]);
 
   const handleClearNFTsCache = useCallback(() => {
     NFTsDB.clearAll();
@@ -179,7 +174,6 @@ export const DevMenu: FC = () => {
         <List>
           <List.Item onPress={handleClearJettonsCache} title="Clear jettons cache" />
           <List.Item onPress={handleClearNFTsCache} title="Clear NFTs cache" />
-          <List.Item onPress={handleClearEventsCache} title=" Clear events cache" />
         </List>
         <List>
           <List.Item onPress={handlePushNotification} title="Push notification" />
