@@ -44,22 +44,21 @@ export const useSuggestedAddresses = () => {
 
   const recentAddresses = useMemo(() => {
     const actions = tk.wallet.activityLoader.getLoadedActions();
-    const pickTypes = [ActionType.JettonTransfer, ActionType.NftItemTransfer];
+    const pickTypes = [
+      ActionType.JettonTransfer,
+      ActionType.NftItemTransfer,
+      ActionType.TonTransfer,
+    ];
     let filtered = actions.filter((action) =>
       pickTypes.includes(action.type),
-    ) as ActionItem<ActionType.JettonTransfer>[];
+    ) as ActionItem<ActionType.TonTransfer>[];
 
     const walletAddress = address[CryptoCurrencies.Ton];
     const addresses = filtered
       .filter((action) => {
         const { payload } = action;
-        if (!payload.recipient) {
-          return false;
-        }
-
-        const recipientAddress = payload.recipient.address;
-
-        if (Address.compare(walletAddress, recipientAddress)) {
+        const recipientAddress = payload.recipient?.address;
+        if (!recipientAddress || Address.compare(walletAddress, recipientAddress)) {
           return false;
         }
 
