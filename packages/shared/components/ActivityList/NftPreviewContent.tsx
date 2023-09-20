@@ -1,5 +1,5 @@
-import { useNftItemByAddress } from '../../query/hooks/useNftItemByAddress';
 import { Steezy, View, Text, Icon, Picture, ListItemContent } from '@tonkeeper/uikit';
+import { useNftItem } from '../../query/hooks/useNftItem';
 import { NftItem } from '@tonkeeper/core/src/TonAPI';
 import { Pressable } from 'react-native';
 import { memo, useCallback } from 'react';
@@ -14,9 +14,7 @@ interface NftPreviewContentProps {
 
 export const NftPreviewContent = memo<NftPreviewContentProps>((props) => {
   const { nftAddress, nftItem } = props;
-  const { data: nft } = useNftItemByAddress(props.nftAddress, {
-    existingNft: nftItem,
-  });
+  const nft = useNftItem(props.nftAddress, nftItem);
 
   const handlePress = useCallback(() => {
     const address = nftAddress ?? nftItem?.address;

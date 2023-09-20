@@ -1,12 +1,12 @@
 import { ServerSentEvents } from './declarations/ServerSentEvents';
 import { createTronOwnerAddress } from './utils/tronUtils';
 import { Storage } from './declarations/Storage';
-import { Wallet, WalletNetwork } from './Wallet';
 import { Address } from './formatters/Address';
+import { WalletNetwork } from './WalletTypes';
 import { Vault } from './declarations/Vault';
-import { QueryClient } from 'react-query';
 import { TronAPI } from './TronAPI';
 import { TonAPI } from './TonAPI';
+import { Wallet } from './Wallet';
 
 class PermissionsManager {
   public notifications = true;
@@ -14,7 +14,6 @@ class PermissionsManager {
 }
 
 type TonkeeperOptions = {
-  queryClient: QueryClient;
   sse: ServerSentEvents;
   tronapi: TronAPI;
   storage: Storage;
@@ -41,13 +40,11 @@ export class Tonkeeper {
 
   private sse: ServerSentEvents;
   private storage: Storage;
-  private queryClient: QueryClient;
   private tronapi: TronAPI;
   private tonapi: TonAPI;
   private vault: Vault;
 
   constructor(options: TonkeeperOptions) {
-    this.queryClient = options.queryClient;
     this.storage = options.storage;
     this.tronapi = options.tronapi;
     this.tonapi = options.tonapi;
@@ -65,7 +62,7 @@ export class Tonkeeper {
       if (address) {
         if (Address.isValid(address)) {
           this.wallet = new Wallet(
-            this.queryClient,
+            undefined,
             this.tonapi,
             this.tronapi,
             this.vault,
@@ -116,32 +113,10 @@ export class Tonkeeper {
     }
   }
 
-  public async generateTronAddress(tonPrivateKey: Uint8Array) {
-    return;
-    try {
-      const ownerAddress = await createTronOwnerAddress(tonPrivateKey);
-      const tronWallet = await this.tronapi.wallet.getWallet(ownerAddress);
-
-      const tronAddress = {
-        proxy: tronWallet.address,
-        owner: ownerAddress,
-      };
-
-      await this.storage.setItem(this.tronStrorageKey, JSON.stringify(tronAddress));
-
-      return tronAddress;
-    } catch (err) {
-      console.error('[Tonkeeper]', err);
-    }
-  }
-
   // Load cache data for start app,
   // Invoke on start app and block ui on spalsh screen
   private async preload() {
     await this.wallet.subscriptions.preload();
-    await this.wallet.activityList.preload();
-    await this.wallet.balances.preload();
-    await this.wallet.nfts.preload();
     return true;
   }
 
@@ -150,8 +125,6 @@ export class Tonkeeper {
   private prefetch() {
     this.wallet.subscriptions.prefetch();
     this.wallet.activityList.prefetch();
-    this.wallet.balances.prefetch();
-    this.wallet.nfts.prefetch();
   }
 
   public async lock() {
@@ -184,18 +157,14 @@ export class Tonkeeper {
     for (let wallet of this.wallets) {
       // this.vault.removeBiometry(wallet.pubkey);
     }
-
-    // this.notifyUI();
   }
 
   private async updateSecuritySettings() {
-    // this.notifyUI();
     return this.storage.set('securitySettings', this.securitySettings);
   }
 
   public destroy() {
     this.wallet?.destroy();
-    this.queryClient.clear();
     this.wallet = null!;
   }
 }

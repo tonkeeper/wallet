@@ -11,9 +11,12 @@ export * from './service';
 export * from './TronAPI';
 
 export * from './models/ActivityModel/ActivityModelTypes';
+export * from './models/NftModel';
 
 export * from './utils/State';
 export * from './utils/network';
+
+export * from './WalletTypes';
 
 export * from './declarations/ServerSentEvents.d';
 export * from './declarations/Storage.d';

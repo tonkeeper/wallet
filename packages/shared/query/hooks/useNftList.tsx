@@ -1,30 +1,28 @@
-import { State } from '@tonkeeper/core';
 import { useExternalState } from '../../hooks/useExternalState';
+import { State } from '@tonkeeper/core';
 import { tk } from '../../tonkeeper';
 import { useEffect } from 'react';
 
-export const useActivityList = () => {
+export function useNftList() {
   const state = useExternalState(
-    tk.wallet?.activityList.state ??
+    tk.wallet?.nfts.state ??
       new State({
         isReloading: false,
         isLoading: false,
         hasMore: true,
-        sections: [],
+        items: [],
       }),
   );
 
   useEffect(() => {
-    tk.wallet?.activityList.load();
+    tk.wallet?.nfts.load();
   }, []);
 
   return {
-    loadMore: () => tk.wallet?.activityList.loadMore(),
-    reload: () => tk.wallet?.activityList.reload(),
-    isReloading: state.isReloading,
+    loadMore: () => tk.wallet?.nfts.loadMore(),
+    reload: () => tk.wallet?.nfts.reload(),
     isLoading: state.isLoading,
-    sections: state.sections,
     hasMore: state.hasMore,
-    error: state.error,
+    items: state.items,
   };
-};
+}

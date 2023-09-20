@@ -65,12 +65,12 @@ export class TonActivityList {
 
       this.groups = updatedGroups;
 
-      (this.cursor = ton.cursor ?? null),
-        this.state.set({
-          sections: Object.values(this.groups),
-          hasMore: Boolean(ton.cursor),
-          isLoading: false,
-        });
+      this.cursor = ton.cursor ?? null;
+      this.state.set({
+        sections: Object.values(this.groups),
+        hasMore: Boolean(ton.cursor),
+        isLoading: false,
+      });
     } catch (err) {
       this.state.set({
         isLoading: false,

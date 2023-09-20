@@ -1,8 +1,8 @@
 import { TransitionOpacity, SegmentedControl, TonIcon, Modal } from '@tonkeeper/uikit';
 import { ReceiveTokenContent } from '../components/ReceiveTokenContent';
 import { memo, useCallback, useMemo, useState } from 'react';
+import { useWallet } from '../hooks/useWallet';
 import { StyleSheet } from 'react-native';
-import { tk } from '../tonkeeper';
 import { t } from '../i18n';
 
 enum Segments {
@@ -12,19 +12,17 @@ enum Segments {
 
 export const ReceiveModal = memo(() => {
   const [segmentIndex, setSegmentIndex] = useState(Segments.Ton);
-
-  const tonAddress = tk.wallet.address.ton.friendly;
-  const tronAddress = tk.wallet.address.tron?.proxy;
+  const addresses = useWallet((state) => state?.addresses);
 
   const segments = useMemo(() => {
     const items = ['TON'];
 
-    if (tronAddress) {
+    if (addresses?.tron) {
       items.push('TRC20');
     }
 
     return items;
-  }, [tronAddress]);
+  }, [addresses]);
 
   const address2url = useCallback((addr: string) => {
     return 'ton://transfer/' + addr;
@@ -55,8 +53,8 @@ export const ReceiveModal = memo(() => {
           <ReceiveTokenContent
             qrCodeScale={0.8}
             logo={<TonIcon size="small" />}
-            qrAddress={address2url(tonAddress)}
-            address={tonAddress}
+            qrAddress={address2url(addresses!.ton)}
+            address={addresses!.ton}
             title={t('receiveModal.receive_title', { tokenName: 'Toncoin' })}
             description={t('receiveModal.receive_description', {
               tokenName: 'Toncoin TON',

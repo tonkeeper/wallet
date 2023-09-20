@@ -21,9 +21,10 @@ import { Icon, IconNames, Screen } from '@tonkeeper/uikit';
 
 import { ActivityList } from '@tonkeeper/shared/components';
 import { useTonActivityList } from '@tonkeeper/shared/query/hooks/useTonActivityList';
-import { useWallet } from '../../tabs/useWallet';
+
 import _ from 'lodash';
 import { navigate } from '$navigation/imperative';
+import { useWallet } from '@tonkeeper/shared/hooks/useWallet';
 
 export const ToncoinScreen = memo(() => {
   const activityList = useTonActivityList();
@@ -32,11 +33,11 @@ export const ToncoinScreen = memo(() => {
   const handleOpenExplorer = useCallback(async () => {
     await delay(200);
     openDAppBrowser(
-      wallet.address.ton.raw
-        ? getServerConfig('accountExplorer').replace('%s', wallet.address.ton.raw)
+      wallet
+        ? getServerConfig('accountExplorer').replace('%s', wallet.addresses.ton)
         : getServerConfig('explorerUrl'),
     );
-  }, [wallet.address.ton.raw]);
+  }, [wallet]);
 
   // Temp hack for slow navigation
   const [render, setRender] = useState(false);
@@ -86,7 +87,7 @@ export const ToncoinScreen = memo(() => {
 });
 
 const HeaderList = memo(() => {
-  const walletAddr = useWallet();
+  const newWallet = useWallet();
   const flags = useFlags(['disable_swap']);
 
   const wallet = useSelector(walletWalletSelector);
@@ -139,9 +140,9 @@ const HeaderList = memo(() => {
   ]).current;
 
   useEffect(() => {
-    if (wallet && wallet.ton.isLockup()) {
+    if (wallet && newWallet && wallet.ton.isLockup()) {
       wallet.ton
-        .getWalletInfo(walletAddr.address.ton.friendly)
+        .getWalletInfo(newWallet.addresses.ton)
         .then((info: any) => {
           setLockupDeploy(
             ['empty', 'uninit', 'nonexist'].includes(info.status) ? 'deploy' : 'deployed',

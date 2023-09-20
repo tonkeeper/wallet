@@ -13,6 +13,7 @@ type ActivityListState = {
   isReloading: boolean;
   isLoading: boolean;
   hasMore: boolean;
+  error: string | null;
 };
 
 export class ActivityList {
@@ -27,6 +28,7 @@ export class ActivityList {
     isLoading: false,
     hasMore: true,
     sections: [],
+    error: null,
   });
 
   constructor(private activityLoader: ActivityLoader, private storage: Storage) {}
@@ -72,10 +74,12 @@ export class ActivityList {
         sections: Object.values(this.groups),
         hasMore: Boolean(ton.cursor),
         isLoading: false,
+        error: null,
       });
     } catch (err) {
       console.log(err);
       this.state.set({
+        error: err.message ?? 'Unknown error',
         isLoading: false,
         hasMore: false,
       });
@@ -87,8 +91,6 @@ export class ActivityList {
       return this.load(this.cursors);
     }
   }
-
-  public preload() {}
 
   public clear() {
     this.groups = {};

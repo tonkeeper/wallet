@@ -5,8 +5,9 @@ import { memo, useMemo } from 'react';
 import { t } from '../i18n';
 
 import { jettonsSelector } from '@tonkeeper/mobile/src/store/jettons';
+import { useWallet } from '../hooks/useWallet';
 import { useSelector } from 'react-redux';
-import { tk } from '../tonkeeper';
+import { Address } from '../Address';
 
 interface ReceiveJettonModalProps {
   jettonAddress: string;
@@ -14,6 +15,8 @@ interface ReceiveJettonModalProps {
 
 export const ReceiveJettonModal = memo<ReceiveJettonModalProps>((props) => {
   const { jettonAddress } = props;
+  const tonAddress = useWallet((state) => state.addresses.ton)!;
+  const friendlyAddress = Address.parse(tonAddress).toFriendly();
 
   // TODO: Replace with new jetton manager
   const { jettonBalances } = useSelector(jettonsSelector);
@@ -22,9 +25,7 @@ export const ReceiveJettonModal = memo<ReceiveJettonModalProps>((props) => {
   }, []);
 
   const link = useMemo(() => {
-    return (
-      'ton://transfer/' + tk.wallet.address.ton.friendly + '?jetton=' + jettonAddress
-    );
+    return `ton://transfer/${friendlyAddress}?jetton=${jettonAddress}`;
   }, [jettonAddress]);
 
   return (
@@ -34,7 +35,7 @@ export const ReceiveJettonModal = memo<ReceiveJettonModalProps>((props) => {
         <ReceiveTokenContent
           logo={<Picture uri={jetton?.metadata?.image} style={styles.jettonPicture} />}
           qrAddress={link}
-          address={tk.wallet.address.ton.friendly}
+          address={friendlyAddress}
           qrCodeScale={0.67}
           title={t('receiveModal.receive_title', { tokenName: jetton?.metadata?.symbol })}
           description={t('receiveModal.receive_description', {

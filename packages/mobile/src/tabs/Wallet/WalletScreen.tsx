@@ -30,7 +30,6 @@ import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
 import { useTonkens } from './hooks/useTokens';
-import { useWallet } from './hooks/useWallet';
 import { useApprovedNfts } from '$hooks/useApprovedNfts';
 import { useTheme } from '$hooks/useTheme';
 import { useTokenPrice } from '$hooks/useTokenPrice';
@@ -48,6 +47,8 @@ import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
 import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
+import { useWallet } from '@tonkeeper/shared/hooks/useWallet';
+import { useNftList } from '@tonkeeper/shared/query/hooks/useNftList';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -70,6 +71,8 @@ export const WalletScreen = memo(() => {
   const { data: tronBalances } = useTronBalances();
 
   const notifications = useInternalNotifications();
+
+  const nftList = useNftList();
 
   // TODO: rewrite
   useEffect(() => {
@@ -139,11 +142,11 @@ export const WalletScreen = memo(() => {
           <TouchableOpacity
             hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
             style={{ zIndex: 3 }}
-            onPress={() => copyText(wallet.address.friendlyAddress)}
+            onPress={() => copyText(Address.parse(wallet.addresses.ton).toFriendly())}
             activeOpacity={0.6}
           >
             <Text color="textSecondary" variant="body2">
-              {Address.toShort(wallet.address.friendlyAddress)}
+              {Address.parse(wallet.addresses.ton).toShort()}
             </Text>
           </TouchableOpacity>
         )}
@@ -366,12 +369,12 @@ const styles = Steezy.create(({ colors, corners, isTablet }) => ({
     width: '100%',
     [isTablet]: {
       alignItems: 'center',
-    }
+    },
   },
   createWalletContainerInner: {
     bottom: 0,
     [isTablet]: {
-      width: TabletMaxWidth
-    }
-  }
+      width: TabletMaxWidth,
+    },
+  },
 }));

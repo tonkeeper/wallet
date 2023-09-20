@@ -9,23 +9,19 @@ export class SubscriptionsManager {
     private storage: Storage,
   ) {}
 
-  public get cacheKey() {
-    return ['subscriptions', this.ctx.address.ton.raw];
-  }
-
   public async fetch() {
     const { data: subscriptions } = await network.get<Subscriptions>(
       `https://api.tonkeeper.com/v1/subscriptions`,
       {
-        params: { address: this.ctx.address.ton.raw },
+        params: { address: this.address },
       },
     );
 
     Object.values(subscriptions.data).map((subscription) => {
-      this.ctx.queryClient.setQueryData(
-        ['subscription', subscription.subscriptionAddress],
-        subscription,
-      );
+      // this.ctx.queryClient.setQueryData(
+      //   ['subscription', subscription.subscriptionAddress],
+      //   subscription,
+      // );
     });
 
     return subscriptions.data;
@@ -34,30 +30,30 @@ export class SubscriptionsManager {
   public async preload() {}
 
   public getCachedByAddress(subscriptionAddress: string) {
-    const subscription = this.ctx.queryClient.getQueryData<Subscription>([
-      'subscription',
-      subscriptionAddress,
-    ]);
+    // const subscription = this.ctx.queryClient.getQueryData<Subscription>([
+    //   'subscription',
+    //   subscriptionAddress,
+    // ]);
 
-    if (subscription) {
-      return subscription;
-    }
+    // if (subscription) {
+    //   return subscription;
+    // }
 
     return null;
   }
 
   public async prefetch() {
-    return this.ctx.queryClient.fetchQuery({
-      queryFn: () => this.fetch(),
-      queryKey: this.cacheKey,
-      staleTime: Infinity,
-    });
+    // return this.ctx.queryClient.fetchQuery({
+    //   queryFn: () => this.fetch(),
+    //   queryKey: this.cacheKey,
+    //   staleTime: Infinity,
+    // });
   }
 
   public async refetch() {
-    return this.ctx.queryClient.refetchQueries({
-      queryKey: this.cacheKey,
-    });
+    // return this.ctx.queryClient.refetchQueries({
+    //   queryKey: this.cacheKey,
+    // });
   }
 }
 

@@ -39,7 +39,6 @@ import { NftItem } from '@tonkeeper/core/src/TonAPI';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { CryptoCurrencies } from '$shared/constants';
 import TonWeb from 'tonweb';
-import { CustomNftItem } from '@tonkeeper/core/src/TonAPI/CustomNftItems';
 
 export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
   const { address: nftAddress } = route?.params?.keyPair || {};
@@ -288,19 +287,26 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
 };
 
 export async function openNftModal(nftAddress: string, nftItem?: NftItem) {
-  const openModal = (nftItem: CustomNftItem) => {
+  const openModal = (nftItem: any) => {
     // TODO: change me
-    const oldNftItem = mapNewNftToOldNftData(nftItem, tk.wallet.address.friendly);
+    const oldNftItem = mapNewNftToOldNftData(
+      nftItem,
+      tk.wallet?.state.data.addresses.ton,
+    );
     navigation.push('NFTItemDetails', { oldNftItem });
   };
 
   try {
-    const cachedNftItem = tk.wallet.nfts.getCachedByAddress(nftAddress, nftItem);
+    if (nftItem) {
+      return nftItem;
+    }
+
+    const cachedNftItem = tk.wallet.nfts.getLoadedItem(nftAddress);
     if (cachedNftItem) {
       openModal(cachedNftItem);
     } else {
       Toast.loading();
-      const item = await tk.wallet.nfts.fetchByAddress(nftAddress);
+      const item = await tk.wallet.nfts.loadItem(nftAddress);
       openModal(item);
       Toast.hide();
     }

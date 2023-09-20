@@ -1,21 +1,8 @@
-import { useSwitchWallet, useWallet } from '@tonkeeper/core';
+
 import { useNavigation } from '@tonkeeper/router';
 import { Button, Icon, List, Modal, Steezy, View } from '@tonkeeper/uikit';
 import { memo, useCallback } from 'react';
-
-
-const useWallets = () => {
-  return [
-    {
-      identity: '123',
-      name: 'Wallet',
-    },
-    {
-      identity: '333',
-      name: 'Main',
-    },
-  ];
-};
+import { useWallet } from '../hooks/useWallet';
 
 export const SwitchWalletModal = memo(() => {
   const nav = useNavigation();

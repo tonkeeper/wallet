@@ -1,4 +1,4 @@
-import { AccountAddress, NftItemApprovedByEnum, Sale } from "./TonAPIGenerated";
+import { AccountAddress, NftItemApprovedByEnum, Sale } from '../../TonAPI';
 
 export type NftImage = {
   preview: string | null;
@@ -7,21 +7,24 @@ export type NftImage = {
   large: string | null;
 };
 
-export interface CustomNftItem {
+export type NftAddress = string;
+
+export type NftCollection = {
+  address: string;
+  name: string;
+  description: string;
+};
+
+export interface NftItem {
   address: string;
   index: number;
   owner?: AccountAddress;
-  collection?: {
-    address: string;
-    name: string;
-    description: string;
-  };
+  collection?: NftCollection;
   verified: boolean;
   metadata: Record<string, any>;
   sale?: Sale;
   dns?: string;
   approved_by: NftItemApprovedByEnum[];
-  // Custom property
   name: string;
   image: NftImage;
   marketplaceURL?: string;

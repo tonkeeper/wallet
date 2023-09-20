@@ -1,7 +1,7 @@
 import { useCallback, useRef, useSyncExternalStore } from 'react';
 import { DefaultStateData, State } from '@tonkeeper/core';
 
-type ExternalStateSelector<TStateData, TSelectedData> = (
+export type ExternalStateSelector<TStateData, TSelectedData> = (
   state: TStateData,
 ) => TSelectedData;
 
@@ -20,7 +20,7 @@ export function useExternalState<
 
   return useSyncExternalStore(
     useCallback((cb) => {
-      return state.subscribe((data) => {
+      return state.subscribe?.((data) => {
         const nextState = selector(data);
         if (currentData.current !== nextState) {
           currentData.current = nextState;

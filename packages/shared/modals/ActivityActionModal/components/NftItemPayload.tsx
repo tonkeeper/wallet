@@ -1,4 +1,4 @@
-import { useNftItemByAddress } from '../../../query/hooks/useNftItemByAddress';
+import { useNftItem } from '../../../query/hooks/useNftItem';
 import { Icon, TouchableOpacity, View, useTheme } from '@tonkeeper/uikit';
 import { NftItem } from '@tonkeeper/core/src/TonAPI';
 import { memo, useCallback } from 'react';
@@ -16,7 +16,7 @@ interface NftItemPayloadProps {
 }
 
 export const NftItemPayload = memo<NftItemPayloadProps>((props) => {
-  const { data: nft } = useNftItemByAddress(props.nftAddress, { existingNft: props.nft });
+  const nft = useNftItem(props.nftAddress, props.nft);
   const theme = useTheme();
 
   const handleOpenNftItem = useCallback(() => {

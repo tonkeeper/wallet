@@ -4,6 +4,7 @@ import { getNewNotificationsCount } from '$core/Notifications/NotificationsActiv
 import { useNotificationsStore } from '$store/zustand/notifications';
 import { useActivityList } from '@tonkeeper/shared/query/hooks';
 import { Notification } from '$core/Notifications/Notification';
+import { useWallet } from '@tonkeeper/shared/hooks/useWallet';
 import { openNotificationsScreen } from '$navigation/helper';
 import { ActivityList } from '@tonkeeper/shared/components';
 import { useIsFocused } from '@react-navigation/native';
@@ -11,7 +12,6 @@ import { memo, useCallback, useEffect } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { LayoutAnimation } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
-import { useWallet } from '../useWallet';
 
 export const ActivityScreen = memo(() => {
   const activityList = useActivityList();
@@ -26,20 +26,20 @@ export const ActivityScreen = memo(() => {
   );
 
   const handlePressRecevie = useCallback(() => {
-    if (!!wallet.address.ton.raw) {
+    if (wallet) {
       nav.go('ReceiveModal');
     } else {
       openRequireWalletModal();
     }
-  }, [wallet.address.ton.raw]);
+  }, [wallet]);
 
   const handlePressBuy = useCallback(() => {
-    if (!!wallet.address.ton.raw) {
+    if (wallet) {
       nav.openModal('Exchange', { category: 'buy' });
     } else {
       openRequireWalletModal();
     }
-  }, [wallet.address.ton.raw]);
+  }, [wallet]);
 
   const onRemoveNotification = useCallback(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -57,10 +57,31 @@ export const ActivityScreen = memo(() => {
     openNotificationsScreen();
   }, []);
 
-  if (
-    !wallet.address.ton.raw ||
-    (!activityList.isLoading && activityList.sections.length < 1)
-  ) {
+  if (activityList.error) {
+    return (
+      <Screen>
+        <View style={styles.emptyContainer}>
+          <Text type="h2" textAlign="center">
+            Ooops!
+          </Text>
+          <Spacer y={4} />
+          <Text type="body1" color="textSecondary">
+            {activityList.error}
+          </Text>
+          <View style={styles.emptyButtons}>
+            <Button
+              title={'Reload'}
+              onPress={() => activityList.reload()}
+              color="secondary"
+              size="small"
+            />
+          </View>
+        </View>
+      </Screen>
+    );
+  }
+
+  if (!wallet || (!activityList.isLoading && activityList.sections.length < 1)) {
     return (
       <Screen>
         <View style={styles.emptyContainer}>

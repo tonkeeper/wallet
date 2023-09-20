@@ -1,15 +1,15 @@
 import { EventSourceListener, ServerSentEvents } from './declarations/ServerSentEvents';
-import { WalletCurrency, WalletKind, WalletState } from './WalletTypes';
+import { TronAddresses, WalletCurrency, WalletKind, WalletState } from './WalletTypes';
 import { SubscriptionsManager } from './managers/SubscriptionsManager';
 import { JettonActivityList } from './Activity/JettonActivityList';
 import { BalancesManager } from './managers/BalancesManager';
 import { TonActivityList } from './Activity/TonActivityList';
 import { ActivityLoader } from './Activity/ActivityLoader';
 import { ActivityList } from './Activity/ActivityList';
-import { NftsManager } from './managers/NftsManager';
 import { Storage } from './declarations/Storage';
+import { Address } from './formatters/Address';
+import { Nfts } from './managers/NftsManager';
 import { Vault } from './declarations/Vault';
-import { TronService } from './TronService';
 import { State } from './utils/State';
 import { TronAPI } from './TronAPI';
 import { TonAPI } from './TonAPI';
@@ -28,7 +28,7 @@ export class Wallet {
   public activityList: ActivityList;
   // public tronService: TronService;
   // public balances: BalancesManager;
-  public nfts: NftsManager;
+  public nfts: Nfts;
 
   constructor(
     private tonkeeperApi: TonkeeperAPI,
@@ -57,12 +57,9 @@ export class Wallet {
     this.tonActivityList = new TonActivityList(this.activityLoader, this.storage);
     this.activityList = new ActivityList(this.activityLoader, this.storage);
 
-
+    this.nfts = new Nfts(addresses.ton, this.tonapi, this.storage);
     // this.balances = new BalancesManager(context);
     // this.tronService = new TronService(context);
-    
-    // this.nfts.getLoaded
-    this.nfts = new NftsManager();
 
     this.subscriptions = new SubscriptionsManager(
       addresses.ton,
@@ -89,17 +86,42 @@ export class Wallet {
     }
   }
 
-  // For migrate
-  public async setTronAddress(addresses: TronAddresses) {
-    this.address.tron = addresses;
+  public async createTron(tronAddresses: TronAddresses) {
+    // this.state.set((state) => ({
+    //   addresses: {
+    //     ...state.addresses,
+    //     tronAddresses,
+    //   },
+    // }));
+
+
+    // try {
+    //   const ownerAddress = await createTronOwnerAddress(tonPrivateKey);
+    //   const tronWallet = await this.tronapi.wallet.getWallet(ownerAddress);
+
+    //   const tronAddress = {
+    //     proxy: tronWallet.address,
+    //     owner: ownerAddress,
+    //   };
+
+    //   await this.storage.setItem(this.tronStrorageKey, JSON.stringify(tronAddress));
+
+    //   return tronAddress;
+    // } catch (err) {
+    //   console.error('[Tonkeeper]', err);
+    // }
   }
 
   private listenTransactions() {
+    const address = this.state.data.addresses.ton;
     this.listener = this.sse.listen('/v2/sse/accounts/transactions', {
-      accounts: this.address.ton.raw,
+      accounts: address,
     });
     this.listener.addEventListener('open', () => {
-      console.log('[Wallet]: start listen transactions for', this.address.ton.short);
+      console.log(
+        '[Wallet]: start listen transactions for',
+        Address.parse(address).toShort(),
+      );
     });
     this.listener.addEventListener('error', (err) => {
       console.log('[Wallet]: error listen transactions', err);

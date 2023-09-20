@@ -26,7 +26,7 @@ enum WalletContractVersion {
   NA = 'NA',
 }
 
-type TronAddresses = {
+export type TronAddresses = {
   proxy: string;
   owner: string;
 };

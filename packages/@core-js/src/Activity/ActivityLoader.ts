@@ -1,5 +1,5 @@
 import { AccountEvent, TonAPI } from '../TonAPI';
-import { WalletAddresses } from '../Wallet';
+import { WalletAddresses } from '../WalletTypes';
 import { TronAPI } from '../TronAPI';
 import {
   ActivityModel,

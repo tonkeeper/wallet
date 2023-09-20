@@ -1,137 +1,89 @@
-import { CustomNftItem, NftImage } from '../TonAPI/CustomNftItems';
-import { Address } from '../formatters/Address';
+import { NftAddress, NftModel } from '../models/NftModel';
+import { Storage } from '../declarations/Storage';
 import { TonRawAddress } from '../WalletTypes';
+import { NftItem, TonAPI } from '../TonAPI';
 import { State } from '../utils/State';
-import { NftItem } from '../TonAPI';
 
 type NftsState = {
-
-}
+  error: string | null;
+  isLoading: boolean;
+  hasMore: boolean;
+  items: any[];
+};
 
 export class Nfts {
-  public persisted = undefined;
-  constructor(private address: TonRawAddress, ) {}
+  private nfts = new Map<NftAddress, NftItem>();
 
-  public state = new State<ActivityListState>({
-    isReloading: false,
+  private cursor: number | null = null;
+  public state = new State<NftsState>({
     isLoading: false,
     hasMore: true,
-    sections: [],
+    error: null,
+    items: [],
   });
 
-  public getCachedByAddress(nftAddress: string, existingNftItem?: NftItem) {
-    if (existingNftItem) {
-      return this.makeCustomNftItem(existingNftItem);
-    }
+  constructor(
+    private address: TonRawAddress,
+    private tonapi: TonAPI,
+    private storage: Storage,
+  ) {
+    // this.state.persist({
+    //   partialize: (state) => ({ items: state.items }),
+    //   storage: this.storage,
+    //   key: 'nfts',
+    // });
+  }
 
-    const nftItem = this.ctx.queryClient.getQueryData<CustomNftItem>(['nft', nftAddress]);
-    if (nftItem) {
-      return nftItem;
+  public async load(cursor?: number) {
+    try {
+      this.state.set({ isLoading: true });
+
+      const nftItems = await this.tonapi.accounts.getAccountNftItems({
+        accountId: this.address,
+        offset: cursor,
+        limit: 50,
+      });
+
+      const items: any = nftItems.nft_items.map((item) => {
+        return NftModel.createItem(item);
+      });
+
+      this.state.set((state) => ({
+        items: [...state.items, ...items],
+        hasMore: false,
+        isLoading: false,
+        error: null,
+      }));
+    } catch (err) {
+      this.state.set({
+        error: err.message,
+        isLoading: false,
+      });
+    }
+  }
+
+  public async reload() {}
+
+  public async loadMore() {}
+
+  public getLoadedItem(nftAddress: NftAddress) {
+    if (this.nfts.has(nftAddress)) {
+      return this.nfts.get(nftAddress)!;
     }
 
     return null;
   }
 
-  public async fetchByAddress(nftAddress: string) {
-    const nftItem = await this.ctx.tonapi.nfts.getNftItemByAddress(nftAddress);
-
+  public async loadItem(nftAddress: NftAddress) {
+    const nftItem = await this.tonapi.nfts.getNftItemByAddress(nftAddress);
     if (nftItem) {
-      const customNftItem = this.makeCustomNftItem(nftItem);
-      this.ctx.queryClient.setQueryData(['nft', nftItem.address], customNftItem);
+      const customNftItem = NftModel.createItem(nftItem);
+      this.nfts.set(nftAddress, customNftItem);
       return customNftItem;
     }
 
-    throw new Error('No nftItem');
+    return null;
   }
 
-  public makeCustomNftItem(nftItem: NftItem) {
-    const image = (nftItem.previews ?? []).reduce<NftImage>(
-      (acc, image) => {
-        if (image.resolution === '5x5') {
-          acc.preview = image.url;
-        }
-
-        if (image.resolution === '100x100') {
-          acc.small = image.url;
-        }
-
-        if (image.resolution === '500x500') {
-          acc.medium = image.url;
-        }
-
-        if (image.resolution === '1500x1500') {
-          acc.large = image.url;
-        }
-
-        return acc;
-      },
-      {
-        preview: null,
-        small: null,
-        medium: null,
-        large: null,
-      },
-    );
-
-    const isDomain = !!nftItem.dns;
-    const isUsername = isTelegramUsername(nftItem.dns);
-
-    const customNftItem: CustomNftItem = {
-      ...nftItem,
-      name: nftItem.metadata.name,
-      isUsername,
-      isDomain,
-      image,
-    };
-
-    if (customNftItem.metadata) {
-      customNftItem.marketplaceURL = nftItem.metadata.external_url;
-    }
-
-    // Custom collection name
-    if (isDomain && customNftItem.collection) {
-      customNftItem.collection.name = 'TON DNS';
-    }
-
-    // Custom nft name
-    if (isDomain) {
-      customNftItem.name = modifyNftName(nftItem.dns)!;
-    } else if (!customNftItem.name) {
-      customNftItem.name = Address.toShort(nftItem.address);
-    }
-
-    return customNftItem;
-  }
-
-  public fetch() {}
-
-  public prefetch() {
-    return this.ctx.queryClient.prefetchInfiniteQuery({
-      queryFn: () => this.fetch(),
-      queryKey: this.cacheKey,
-    });
-  }
-
-  public async refetch() {
-    await this.ctx.queryClient.refetchQueries({
-      refetchPage: (_, index) => index === 0,
-      queryKey: this.cacheKey,
-    });
-  }
+  // public loadBulk
 }
-
-export const domainToUsername = (name?: string) => {
-  return name ? '@' + name.replace('.t.me', '') : '';
-};
-
-export const isTelegramUsername = (name?: string) => {
-  return name?.endsWith('.t.me') || false;
-};
-
-export const modifyNftName = (name?: string) => {
-  if (isTelegramUsername(name)) {
-    return domainToUsername(name);
-  }
-
-  return name;
-};

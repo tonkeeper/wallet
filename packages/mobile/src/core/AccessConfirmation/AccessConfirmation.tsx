@@ -58,15 +58,15 @@ export const AccessConfirmation: FC = () => {
 
   const createTronAddress = useCallback(async (privateKey: Uint8Array) => {
     try {
-      // Note: create tron address
-      if (!tk.wallet.address.tron) {
-        const addresses = await tk.generateTronAddress(privateKey);
-        if (addresses) {
-          tk.wallet.setTronAddress(addresses);
-        }
-      } else {
-        console.log('skip create tron address');
-      }
+      // // Note: create tron address
+      // if (!tk.wallet.state.data.addresses.tron) {
+      //   const addresses = await tk.generateTronAddress(privateKey);
+      //   if (addresses) {
+      //     tk.wallet.setTronAddress(addresses);
+      //   }
+      // } else {
+      //   console.log('skip create tron address');
+      // }
     } catch (err) {
       console.error('[generate tron address]', err);
     }
