@@ -48,10 +48,11 @@ export const useSuggestedAddresses = () => {
       ActionType.JettonTransfer,
       ActionType.NftItemTransfer,
       ActionType.TonTransfer,
-    ];
+    ] as const;
+
     let filtered = actions.filter((action) =>
-      pickTypes.includes(action.type),
-    ) as ActionItem<ActionType.TonTransfer>[];
+      pickTypes.includes(action.type as (typeof pickTypes)[number]),
+    ) as ActionItem<(typeof pickTypes)[number]>[];
 
     const walletAddress = address[CryptoCurrencies.Ton];
     const addresses = filtered
