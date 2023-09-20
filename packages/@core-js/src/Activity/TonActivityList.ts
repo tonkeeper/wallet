@@ -2,6 +2,7 @@ import { ActivityModel, ActivitySection } from '../models/ActivityModel';
 import { AccountEvent, ActionTypeEnum } from '../TonAPI';
 import { ActivityLoader } from './ActivityLoader';
 import { State } from '../utils/State';
+import { Storage } from '../declarations/Storage';
 
 type TonActivityListState = {
   sections: ActivitySection[];
@@ -21,7 +22,7 @@ export class TonActivityList {
     sections: [],
   });
 
-  constructor(private activityLoader: ActivityLoader) {}
+  constructor(private activityLoader: ActivityLoader, private storage: Storage) {}
 
   public async load(cursor?: number | null) {
     try {

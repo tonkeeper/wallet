@@ -1,6 +1,7 @@
 import { ActivityModel, ActivitySection } from '../models/ActivityModel';
 import { ActivityLoader } from './ActivityLoader';
 import { State } from '../utils/State';
+import { Storage } from '../declarations/Storage';
 
 type JettonActivityListState = {
   sections: ActivitySection[];
@@ -20,7 +21,7 @@ export class JettonActivityList {
     sections: [],
   });
 
-  constructor(private activityLoader: ActivityLoader) {}
+  constructor(private activityLoader: ActivityLoader, private storage: Storage) {}
 
   public async load(jettonId: string, cursor?: number | null) {
     try {

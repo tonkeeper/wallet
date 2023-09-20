@@ -1,8 +1,13 @@
+import { TonRawAddress } from '../WalletTypes';
+import { Storage } from '../declarations/Storage';
 import { network } from '../utils/network';
-import { WalletContext } from '../Wallet';
 
 export class SubscriptionsManager {
-  constructor(private ctx: WalletContext) {}
+  constructor(
+    private address: TonRawAddress,
+    private tonkeeperApi: any,
+    private storage: Storage,
+  ) {}
 
   public get cacheKey() {
     return ['subscriptions', this.ctx.address.ton.raw];

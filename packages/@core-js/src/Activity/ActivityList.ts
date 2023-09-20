@@ -1,6 +1,7 @@
 import { ActivitySection, ActionItem, ActivityModel } from '../models/ActivityModel';
 import { ActivityLoader } from './ActivityLoader';
 import { State } from '../utils/State';
+import { Storage } from '../declarations/Storage';
 
 type Cursors = {
   tron: number | null;
@@ -28,7 +29,7 @@ export class ActivityList {
     sections: [],
   });
 
-  constructor(private activityLoader: ActivityLoader) {}
+  constructor(private activityLoader: ActivityLoader, private storage: Storage) {}
 
   public async load(cursors?: Cursors) {
     try {

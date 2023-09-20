@@ -1,17 +1,23 @@
 import { CustomNftItem, NftImage } from '../TonAPI/CustomNftItems';
 import { Address } from '../formatters/Address';
-import { WalletContext } from '../Wallet';
+import { TonRawAddress } from '../WalletTypes';
+import { State } from '../utils/State';
 import { NftItem } from '../TonAPI';
 
-export class NftsManager {
+type NftsState = {
+
+}
+
+export class Nfts {
   public persisted = undefined;
-  constructor(private ctx: WalletContext) {}
+  constructor(private address: TonRawAddress, ) {}
 
-  public get cacheKey() {
-    return ['nfts', this.ctx.address.ton.raw];
-  }
-
-  public async preload() {}
+  public state = new State<ActivityListState>({
+    isReloading: false,
+    isLoading: false,
+    hasMore: true,
+    sections: [],
+  });
 
   public getCachedByAddress(nftAddress: string, existingNftItem?: NftItem) {
     if (existingNftItem) {
