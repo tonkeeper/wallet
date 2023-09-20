@@ -1,7 +1,7 @@
 import { SearchIndexer } from '$utils';
 import { favoritesActions, favoritesSelector } from '$store/favorites';
 import uniqBy from 'lodash/uniqBy';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SuggestedAddress, SuggestedAddressType } from '../Send.interface';
 import { walletAddressSelector } from '$store/wallet';
@@ -10,8 +10,6 @@ import { Tonapi } from '$libs/Tonapi';
 import { useStakingStore } from '$store';
 import { ActionItem, ActionType, Address } from '@tonkeeper/core';
 import { tk } from '@tonkeeper/shared/tonkeeper';
-
-const TonWeb = require('tonweb');
 
 export const DOMAIN_ADDRESS_NOT_FOUND = 'DOMAIN_ADDRESS_NOT_FOUND';
 
@@ -121,7 +119,7 @@ export const useSuggestedAddresses = () => {
         dispatch(
           favoritesActions.updateFavorite({
             ...favorite,
-            address: new TonWeb.Address(fetchedAddress).toString(true, true, true),
+            address: Address.parse(fetchedAddress).toFriendly(),
           }),
         );
       }
