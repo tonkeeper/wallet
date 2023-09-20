@@ -15,7 +15,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { t } from '@tonkeeper/shared/i18n';
 import * as S from './NFTOperations.styles';
 import { useNavigation } from '@tonkeeper/router';
-import { eventsActions } from '$store/events';
 import axios from 'axios';
 import { isTimeSyncedSelector } from '$store/main';
 import { Toast } from '$store';
@@ -167,7 +166,6 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
           await delay(1750);
 
           tk.wallet.activityList.reload();
-          dispatch(eventsActions.pollEvents());
           closeModal();
 
           props.responseOptions?.onDone?.();

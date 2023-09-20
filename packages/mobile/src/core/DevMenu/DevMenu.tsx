@@ -10,7 +10,6 @@ import DeviceInfo from 'react-native-device-info';
 import { useNavigation } from '@tonkeeper/router';
 import { config } from '@tonkeeper/shared/config';
 import { jettonsActions } from '$store/jettons';
-import { eventsActions } from '$store/events';
 import RNRestart from 'react-native-restart';
 import { t } from '@tonkeeper/shared/i18n';
 import { nftsActions } from '$store/nfts';
@@ -58,7 +57,7 @@ export const DevMenu: FC = () => {
 
   const handleClearEventsCache = useCallback(() => {
     EventsDB.clearAll();
-    dispatch(eventsActions.resetEvents());
+    // dispatch(eventsActions.resetEvents());
   }, [dispatch]);
 
   const handleClearNFTsCache = useCallback(() => {

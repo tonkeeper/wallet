@@ -11,7 +11,6 @@ import { Wallet } from '$blockchain';
 import { batchActions, Toast, useNotificationsStore } from '$store';
 import { walletActions, walletSelector } from '$store/wallet';
 import * as SplashScreen from 'expo-splash-screen';
-import { eventsActions } from '$store/events';
 import {
   API_SECRET,
   FiatCurrencies,
@@ -51,16 +50,14 @@ import {
 } from '$store/main/interface';
 import { withRetry } from '$store/retry';
 import { InternalNotificationModel } from '$store/models';
-import { Cache } from '$store/events/manager/cache';
+
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
 import { getWalletName } from '$shared/dynamicConfig';
-import { destroyEventsManager } from '$store/events/sagas';
 import { initStats, trackEvent, trackFirstLaunch } from '$utils/stats';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { favoritesActions } from '$store/favorites';
 import { clearSubscribeStatus } from '$utils/messaging';
-import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 import { useSwapStore } from '$store/zustand/swap';
 import * as SecureStore from 'expo-secure-store';
 import { useRatesStore } from '$store/zustand/rates';
@@ -204,7 +201,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   if (wallet) {
     yield put(walletActions.loadCurrentVersion(wallet.vault.getVersion()));
     yield put(walletActions.loadBalances());
-    yield put(eventsActions.loadEvents({ isReplace: true }));
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.loadJettons());
     yield put(subscriptionsActions.loadSubscriptions());
@@ -253,18 +249,14 @@ function* completeIntroWorker() {
 
 export function* resetAll(isTestnet: boolean) {
   yield call([tk, 'destroy']);
-  yield call(destroyEventsManager);
-  yield call(Cache.clearAll, getWalletName());
   yield call(clearSubscribeStatus);
   yield call(JettonsCache.clearAll, getWalletName());
-  yield call(useJettonEventsStore.getState().actions.clearStore);
   yield call(useNotificationsStore.getState().actions.reset);
   yield call(SecureStore.deleteItemAsync, 'proof_token');
   yield put(
     batchActions(
       mainActions.resetMain(),
       walletActions.reset(),
-      eventsActions.resetEvents(),
       walletActions.resetVersion(),
       nftsActions.resetNFTs(),
       jettonsActions.resetJettons(),
