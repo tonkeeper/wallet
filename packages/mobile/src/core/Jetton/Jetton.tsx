@@ -67,8 +67,6 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   }, [jetton.jettonAddress, nav]);
 
   const handleOpenExplorer = useCallback(async () => {
-    console.log('Press');
-    await delay(200);
     openDAppBrowser(
       getServerConfig('accountExplorer').replace('%s', address.ton) +
         `/jetton/${jetton.jettonAddress}`,
@@ -164,6 +162,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
           <PopupMenu
             items={[
               <PopupMenuItem
+                waitForAnimationEnd
                 shouldCloseMenu
                 onPress={handleOpenExplorer}
                 text={t('jetton_open_explorer')}
