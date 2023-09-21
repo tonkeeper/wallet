@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { MainStackParamList } from './MainStack.interface';
@@ -38,6 +38,7 @@ import { CreateWalletScreen } from '@tonkeeper/shared/screens/setup/CreateWallet
 import { StartScreen } from '@tonkeeper/shared/screens/StartScreen';
 import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
 import { TronTokenScreen } from '../../tabs/Wallet/TronTokenScreen';
+import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -48,6 +49,12 @@ export const MainStack: FC = () => {
   const { isIntroShown, isUnlocked } = useSelector(mainSelector);
   const wallet = useSelector(walletWalletSelector);
   useNotificationsResolver();
+
+  useEffect(() => {
+    if (wallet?.address) {
+      reloadSubscriptionsFromServer(wallet.address.friendlyAddress);
+    }
+  }, [wallet]);
 
   useStaking();
 
