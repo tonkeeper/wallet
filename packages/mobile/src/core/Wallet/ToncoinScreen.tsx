@@ -85,7 +85,7 @@ export const ToncoinScreen = memo(() => {
         isLoading={activityList.isLoading}
         sections={activityList.sections}
         hasMore={activityList.hasMore}
-        safeArea
+        error={activityList.error}
       />
     </Screen>
   );

@@ -57,31 +57,10 @@ export const ActivityScreen = memo(() => {
     openNotificationsScreen();
   }, []);
 
-  if (activityList.error) {
-    return (
-      <Screen>
-        <View style={styles.emptyContainer}>
-          <Text type="h2" textAlign="center">
-            Ooops!
-          </Text>
-          <Spacer y={4} />
-          <Text type="body1" color="textSecondary">
-            {activityList.error}
-          </Text>
-          <View style={styles.emptyButtons}>
-            <Button
-              title={'Reload'}
-              onPress={() => activityList.reload()}
-              color="secondary"
-              size="small"
-            />
-          </View>
-        </View>
-      </Screen>
-    );
-  }
-
-  if (!wallet || (!activityList.isLoading && activityList.sections.length < 1)) {
+  if (
+    !wallet.address.ton.raw ||
+    (!activityList.isLoading && activityList.sections.length < 1) && activityList.error === null
+  ) {
     return (
       <Screen>
         <View style={styles.emptyContainer}>
@@ -158,6 +137,7 @@ export const ActivityScreen = memo(() => {
         hasMore={activityList.hasMore}
         onLoadMore={activityList.loadMore}
         onReload={activityList.reload}
+        error={activityList.error}
       />
     </Screen>
   );

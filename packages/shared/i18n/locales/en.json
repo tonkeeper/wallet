@@ -244,7 +244,7 @@
       "liquid_jetton_note": "Sending tsTON liquidity token"
     },
     "comfirm": {
-      "title": "Confirm transaction",
+      "title": "Confirm action",
       "action": "%{coin} transfer",
       "comment_label": "Comment",
       "comment_label_required": "Required comment",

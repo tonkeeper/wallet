@@ -71,7 +71,6 @@ import { useSwapStore } from '$store/zustand/swap';
 import * as SecureStore from 'expo-secure-store';
 import { useRatesStore } from '$store/zustand/rates';
 import { tk } from '@tonkeeper/shared/tonkeeper';
-import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 
 SplashScreen.preventAutoHideAsync()
   .then((result) =>
@@ -215,7 +214,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     const { wallet: walletNew } = yield select(walletSelector);
     const addr = yield call([walletNew.ton, 'getAddress']);
     const data = yield call([tk, 'load']);
-    yield call(reloadSubscriptionsFromServer, addr);
     yield call([tk, 'init'], addr, isTestnet, data.tronAddress);
     useSwapStore.getState().actions.fetchAssets();
   } else {

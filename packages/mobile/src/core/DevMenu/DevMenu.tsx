@@ -17,6 +17,7 @@ import { FC, useCallback } from 'react';
 import { openLogs } from '$navigation';
 import { Alert } from 'react-native';
 import { Icon } from '$uikit';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export const DevMenu: FC = () => {
   const nav = useNavigation();
@@ -92,6 +93,17 @@ export const DevMenu: FC = () => {
     toggleFeature(DevFeature.UseHttpProtocol);
   }, [toggleFeature]);
 
+  const handleClearActivityCache = useCallback(() => {
+    if (tk.wallet) {
+      tk.wallet.activityList.state.clear();
+      tk.wallet.activityList.state.clearPersist();
+      tk.wallet.jettonActivityList.state.clear();
+      tk.wallet.jettonActivityList.state.clearPersist();
+      tk.wallet.tonActivityList.state.clear();
+      tk.wallet.tonActivityList.state.clearPersist();
+    }
+  }, []);
+
   return (
     <Screen>
       <Screen.Header title="Dev Menu" />
@@ -110,24 +122,26 @@ export const DevMenu: FC = () => {
           />
           <List.Item onPress={handleLogs} title="Logs" />
           <List.Item title="App config" onPress={() => nav.navigate('/dev/config')} />
-          <List.Item
-            title="Dev Tonapi"
-            rightContent={
-              <Switch
-                value={config.get('tonapiIOEndpoint') === 'https://dev.tonapi.io'}
-                onChange={() => {
-                  const devHost = 'https://dev.tonapi.io';
-                  if (config.get('tonapiIOEndpoint') !== devHost) {
-                    config.set({ tonapiIOEndpoint: devHost });
-                  } else {
-                    config.set({ tonapiIOEndpoint: undefined });
-                  }
+          {__DEV__ && (
+            <List.Item
+              title="Dev Tonapi"
+              rightContent={
+                <Switch
+                  value={config.get('tonapiIOEndpoint') === 'https://dev.tonapi.io'}
+                  onChange={() => {
+                    const devHost = 'https://dev.tonapi.io';
+                    if (config.get('tonapiIOEndpoint') !== devHost) {
+                      config.set({ tonapiIOEndpoint: devHost });
+                    } else {
+                      config.set({ tonapiIOEndpoint: undefined });
+                    }
 
-                  RNRestart.restart();
-                }}
-              />
-            }
-          />
+                    RNRestart.restart();
+                  }}
+                />
+              }
+            />
+          )}
           <List.Item
             title="Use HTTP protocol in browser"
             rightContent={
@@ -172,6 +186,10 @@ export const DevMenu: FC = () => {
             </PopupSelect>
           </CellSection> */}
         <List>
+          <List.Item
+            onPress={handleClearActivityCache}
+            title="Clear transactions cache"
+          />
           <List.Item onPress={handleClearJettonsCache} title="Clear jettons cache" />
           <List.Item onPress={handleClearNFTsCache} title="Clear NFTs cache" />
         </List>

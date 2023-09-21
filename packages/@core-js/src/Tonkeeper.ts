@@ -75,7 +75,8 @@ export class Tonkeeper {
             },
           );
 
-          this.prefetch();
+          this.rehydrate();
+          this.preload();
         }
       }
     } catch (err) {
@@ -113,18 +114,37 @@ export class Tonkeeper {
     }
   }
 
-  // Load cache data for start app,
-  // Invoke on start app and block ui on spalsh screen
-  private async preload() {
-    await this.wallet.subscriptions.preload();
-    return true;
+  public async generateTronAddress(tonPrivateKey: Uint8Array) {
+    return;
+    try {
+      const ownerAddress = await createTronOwnerAddress(tonPrivateKey);
+      const tronWallet = await this.tronapi.wallet.getWallet(ownerAddress);
+
+      const tronAddress = {
+        proxy: tronWallet.address,
+        owner: ownerAddress,
+      };
+
+      await this.storage.setItem(this.tronStrorageKey, JSON.stringify(tronAddress));
+
+      return tronAddress;
+    } catch (err) {
+      console.error('[Tonkeeper]', err);
+    }
   }
 
   // Update all data,
   // Invoke in background after hide splash screen
-  private prefetch() {
+  private preload() {
+    this.wallet.activityList.preload();
+    // TODO:
     this.wallet.subscriptions.prefetch();
-    this.wallet.activityList.prefetch();
+  }
+
+  public rehydrate() {
+    this.wallet.jettonActivityList.rehydrate();
+    this.wallet.tonActivityList.rehydrate();
+    this.wallet.activityList.rehydrate();
   }
 
   public async lock() {

@@ -30,7 +30,7 @@ import { Events, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
-import { Screen, View } from '@tonkeeper/uikit';
+import { Screen, Steezy, View } from '@tonkeeper/uikit';
 
 import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonActivityList';
 import { ActivityList } from '@tonkeeper/shared/components';
@@ -139,17 +139,6 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     handlePressSwap,
   ]);
 
-  const renderFooter = useCallback(() => {
-    if (jettonActivityList.sections.length === 0 && jettonActivityList.isLoading) {
-      return (
-        <View style={{ margin: 16 }}>
-          <Skeleton.List />
-        </View>
-      );
-    }
-    return <View style={{ height: bottomInset }} />;
-  }, [jettonActivityList.sections, jettonActivityList.isLoading, bottomInset]);
-
   if (!jetton) {
     return null;
   }
@@ -177,14 +166,15 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         }
       />
       <ActivityList
+        ListLoaderComponent={<Skeleton.List />}
         ListHeaderComponent={renderHeader}
-        ListFooterComponent={renderFooter}
         onLoadMore={jettonActivityList.loadMore}
         onReload={jettonActivityList.reload}
         isReloading={jettonActivityList.isReloading}
         isLoading={jettonActivityList.isLoading}
         sections={jettonActivityList.sections}
         hasMore={jettonActivityList.hasMore}
+        error={jettonActivityList.error}
       />
     </Screen>
   );

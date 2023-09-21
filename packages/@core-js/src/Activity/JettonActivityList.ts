@@ -1,10 +1,12 @@
 import { ActivityModel, ActivitySection } from '../models/ActivityModel';
-import { ActivityLoader } from './ActivityLoader';
-import { State } from '../utils/State';
 import { Storage } from '../declarations/Storage';
+import { ActivityLoader } from './ActivityLoader';
+import { Logger } from '../utils/Logger';
+import { State } from '../utils/State';
 
 type JettonActivityListState = {
-  sections: ActivitySection[];
+  sections: { [key in string]: ActivitySection[] };
+  error?: string | null;
   isReloading: boolean;
   isLoading: boolean;
   hasMore: boolean;
@@ -15,18 +17,28 @@ export class JettonActivityList {
   private groups = {};
 
   public state = new State<JettonActivityListState>({
+    sections: {},
     isReloading: false,
     isLoading: false,
     hasMore: true,
-    sections: [],
+    error: null,
   });
 
-  constructor(private activityLoader: ActivityLoader, private storage: Storage) {}
-
+  constructor(private activityLoader: ActivityLoader, private storage: Storage) {
+    this.state.persist({
+      partialize: ({ sections }) => ({ sections }),
+      storage: this.storage,
+      key: 'JettonActivityList',
+    });
+  }
+  
   public async load(jettonId: string, cursor?: number | null) {
     try {
-      this.state.set({ isLoading: true });
-      const jettonEvents = await this.activityLoader.loadJettonActions({ jettonId, cursor });
+      this.state.set({ isLoading: true, error: null });
+      const jettonEvents = await this.activityLoader.loadJettonActions({
+        jettonId,
+        cursor,
+      });
       if (!cursor) {
         this.groups = {};
       }
@@ -48,29 +60,46 @@ export class JettonActivityList {
 
       this.groups = updatedGroups;
 
-      (this.cursor = jettonEvents.cursor ?? null),
-        this.state.set({
-          sections: Object.values(this.groups),
-          hasMore: Boolean(jettonEvents.cursor),
-          isLoading: false,
-        });
+      this.cursor = jettonEvents.cursor ?? null;
+
+      this.state.set(({ sections }) => ({
+        sections: Object.assign(sections, {
+          [jettonId]: Object.values(this.groups),
+        }),
+        hasMore: Boolean(jettonEvents.cursor),
+        isLoading: false,
+        error: null,
+      }));
     } catch (err) {
+      const message = `[JettonActivityList]: ${Logger.getErrorMessage(err)}`;
+      console.log(message);
       this.state.set({
         isLoading: false,
+        error: message,
       });
     }
   }
 
   public async loadMore(jettonId: string) {
-    if (!this.state.data.isLoading && this.state.data.hasMore) {
+    const { isLoading, hasMore, error } = this.state.data;
+    if (!isLoading && hasMore && error === null) {
       return this.load(jettonId, this.cursor);
     }
   }
 
-  public preload() {}
+  public async rehydrate() {
+    return this.state.rehydrate();
+  }
 
   public clear() {
     this.groups = {};
+    this.cursor = null;
+    this.state.set({
+      isReloading: false,
+      isLoading: false,
+      hasMore: true,
+      error: null,
+    });
   }
 
   public async reload(jettonId: string) {

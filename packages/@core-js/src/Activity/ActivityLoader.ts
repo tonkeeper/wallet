@@ -3,9 +3,9 @@ import { WalletAddresses } from '../WalletTypes';
 import { TronAPI } from '../TronAPI';
 import {
   ActivityModel,
-  ActionId,
-  ActionItem,
   ActionSource,
+  ActionItem,
+  ActionId,
 } from '../models/ActivityModel';
 
 type LoadParams<TCursor, TData> = {
@@ -25,11 +25,12 @@ export class ActivityLoader {
   ) {}
 
   public async loadTonActions(params: LoadParams<number, AccountEvent> = {}) {
+    const limit = params.limit ?? 50;
     const data = await this.tonapi.accounts.getAccountEvents({
       before_lt: params.cursor ?? undefined,
       accountId: this.addresses.ton,
-      limit: params.limit ?? 50,
       subject_only: true,
+      limit,
     });
 
     const events = params.filter ? params.filter(data.events) : data.events;
@@ -43,7 +44,7 @@ export class ActivityLoader {
     );
 
     return {
-      cursor: data.next_from && data.events.length > 1 ? data.next_from : 0,
+      cursor: limit === data.events.length ? data.next_from : null,
       actions,
     };
   }
@@ -76,11 +77,12 @@ export class ActivityLoader {
     cursor?: number | null;
     limit?: number;
   }) {
+    const limit = params.limit ?? 50;
     const data = await this.tonapi.accounts.getAccountJettonHistoryById({
       before_lt: params.cursor ?? undefined,
       accountId: this.addresses.ton,
-      limit: params.limit ?? 50,
       jettonId: params.jettonId,
+      limit,
     });
 
     const actions = ActivityModel.createActions(
@@ -95,7 +97,7 @@ export class ActivityLoader {
     );
 
     return {
-      cursor: data.next_from,
+      cursor: limit === data.events.length ? data.next_from : null,
       actions,
     };
   }
@@ -152,6 +154,16 @@ export class ActivityLoader {
     }
 
     return actions;
+  }
+
+  public setLoadedActions(actions: ActionItem[]) {
+    for (const action of actions) {
+      if (action.source === ActionSource.Ton) {
+        this.tonActions.set(action.action_id, action);
+      } else if (action.source === ActionSource.Tron) {
+        this.tronActions.set(action.action_id, action);
+      }
+    }
   }
 
   private splitActionId(actionId: ActionId) {

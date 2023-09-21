@@ -11,6 +11,7 @@ export const useActivityList = () => {
         isLoading: false,
         hasMore: true,
         sections: [],
+        error: null,
       }),
   );
 

@@ -1,5 +1,7 @@
 import { ActivitySection, ActionItem, ActivityModel } from '../models/ActivityModel';
+import { Storage } from '../declarations/Storage';
 import { ActivityLoader } from './ActivityLoader';
+import { Logger } from '../utils/Logger';
 import { State } from '../utils/State';
 import { Storage } from '../declarations/Storage';
 
@@ -10,6 +12,7 @@ type Cursors = {
 
 type ActivityListState = {
   sections: ActivitySection[];
+  error?: string | null;
   isReloading: boolean;
   isLoading: boolean;
   hasMore: boolean;
@@ -31,11 +34,22 @@ export class ActivityList {
     error: null,
   });
 
-  constructor(private activityLoader: ActivityLoader, private storage: Storage) {}
+  constructor(private activityLoader: ActivityLoader, private storage: Storage) {
+    this.state.persist({
+      storage: this.storage,
+      key: 'ActivityList',
+      partialize: ({ sections }) => ({ sections }),
+      rehydrated: ({ sections }) => {
+        sections.forEach((section) => {
+          this.activityLoader.setLoadedActions(section.data);
+        });
+      },
+    });
+  }
 
   public async load(cursors?: Cursors) {
     try {
-      this.state.set({ isLoading: true });
+      this.state.set({ isLoading: true, error: null });
 
       const ton = await this.activityLoader.loadTonActions({ cursor: cursors?.ton });
       // const tronEvents = await this.fetchTronEvents({ cursor: cursors?.tron });
@@ -77,19 +91,25 @@ export class ActivityList {
         error: null,
       });
     } catch (err) {
-      console.log(err);
+      const message = `[ActivityList]: ${Logger.getErrorMessage(err)}`;
+      console.log(message);
       this.state.set({
         error: err.message ?? 'Unknown error',
         isLoading: false,
-        hasMore: false,
+        error: message,
       });
     }
   }
 
   public async loadMore() {
-    if (!this.state.data.isLoading && this.state.data.hasMore) {
+    const { isLoading, hasMore, error } = this.state.data;
+    if (!isLoading && hasMore && error === null) {
       return this.load(this.cursors);
     }
+  }
+
+  public async rehydrate() {
+    return this.state.rehydrate();
   }
 
   public clear() {
@@ -120,7 +140,7 @@ export class ActivityList {
     return items.sort((a, b) => b.event.timestamp - a.event.timestamp);
   }
 
-  public prefetch() {
+  public preload() {
     this.load();
   }
 }

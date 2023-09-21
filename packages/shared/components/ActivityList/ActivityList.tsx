@@ -1,10 +1,20 @@
 import { DefaultSectionT, SectionListData, StyleSheet, View } from 'react-native';
-import { RefreshControl, Screen, Loader, List } from '@tonkeeper/uikit';
 import { formatTransactionsGroupDate } from '../../utils/date';
 import { renderActionItem } from './renderActionItem';
 import { ActivitySection } from '@tonkeeper/core';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
+import {
+  RefreshControl,
+  Screen,
+  Loader,
+  List,
+  Spacer,
+  Text,
+  Button,
+  copyText,
+} from '@tonkeeper/uikit';
 
+type ListComponentType = React.ComponentType<any> | React.ReactElement | null | undefined;
 
 interface ActivityListProps {
   sections: ActivitySection[];
@@ -13,9 +23,10 @@ interface ActivityListProps {
   hasMore?: boolean;
   isReloading?: boolean;
   isLoading?: boolean;
-  safeArea?: boolean;
-  ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null | undefined;
-  ListFooterComponent?: React.ComponentType<any> | React.ReactElement | null | undefined;
+  error?: null | string;
+  ListHeaderComponent?: ListComponentType;
+  ListFooterComponent?: ListComponentType;
+  ListLoaderComponent?: ListComponentType;
 }
 
 function renderSection({ section }: { section: SectionListData<any, DefaultSectionT> }) {
@@ -32,14 +43,60 @@ function renderSection({ section }: { section: SectionListData<any, DefaultSecti
 export const ActivityList = memo<ActivityListProps>((props) => {
   const {
     ListHeaderComponent,
+    ListLoaderComponent,
     hasMore,
     onLoadMore,
     isReloading,
     onReload,
-    safeArea,
     isLoading,
     sections,
+    error,
   } = props;
+
+  const ListEmptyComponent = useMemo(() => {
+    if (error !== undefined && error !== null) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Text type="h2" textAlign="center">
+            Something went wrong!
+          </Text>
+          <Spacer y={4} />
+          <View style={styles.emptyButtons}>
+            <Button title="Reload" onPress={onReload} color="secondary" size="small" />
+            <Spacer x={12} />
+            <Button
+              title="Copy log"
+              onPress={copyText(error)}
+              color="secondary"
+              size="small"
+            />
+          </View>
+        </View>
+      );
+    } else if (isLoading && ListLoaderComponent) {
+      return ListLoaderComponent;
+    } else if (isLoading) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Loader size="medium" />
+        </View>
+      );
+    }
+
+    return null;
+  }, [isLoading, ListLoaderComponent]);
+
+  const ListFooterComponent = useMemo(() => {
+    if (hasMore && sections && sections.length > 0) {
+      return (
+        <View style={styles.moreLoader}>
+          <Loader size="medium" />
+        </View>
+      );
+    }
+
+    return null;
+  }, [hasMore, sections]);
 
   return (
     <Screen.SectionList
@@ -55,35 +112,12 @@ export const ActivityList = memo<ActivityListProps>((props) => {
       stickySectionHeadersEnabled={false}
       windowSize={16}
       sections={sections}
-      safeArea={safeArea}
       decelerationRate="normal"
-      ListEmptyComponent={
-        isLoading ? (
-          <View style={styles.emptyContainer}>
-            <Loader size="medium" />
-          </View>
-        ) : undefined
-      }
+      ListEmptyComponent={ListEmptyComponent}
       ListHeaderComponent={ListHeaderComponent}
-      ListFooterComponent={
-        props.ListFooterComponent ?? (
-          <Footer loading={hasMore && sections && sections.length > 0} />
-        )
-      }
+      ListFooterComponent={ListFooterComponent}
     />
   );
-});
-
-const Footer = memo(({ loading }: { loading?: boolean }) => {
-  if (loading) {
-    return (
-      <View style={styles.moreLoader}>
-        <Loader size="medium" />
-      </View>
-    );
-  }
-
-  return null;
 });
 
 const styles = StyleSheet.create({
@@ -99,5 +133,9 @@ const styles = StyleSheet.create({
     paddingTop: 200,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  emptyButtons: {
+    flexDirection: 'row',
+    marginTop: 24,
   },
 });
