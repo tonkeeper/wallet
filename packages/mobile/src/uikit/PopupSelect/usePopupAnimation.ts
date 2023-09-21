@@ -10,7 +10,7 @@ import {
 } from 'react-native-reanimated';
 
 const OPACITY_DURATION = 150;
-const SCALE_DURATION = 200;
+export const SCALE_DURATION = 200;
 const SPRING_CONFIG = {
   damping: 39,
   mass: 1.09,
