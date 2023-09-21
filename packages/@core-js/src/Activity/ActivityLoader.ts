@@ -161,7 +161,7 @@ export class ActivityLoader {
       if (action.source === ActionSource.Ton) {
         this.tonActions.set(action.action_id, action);
       } else if (action.source === ActionSource.Tron) {
-        this.tonActions.set(action.action_id, action);
+        this.tronActions.set(action.action_id, action);
       }
     }
   }
