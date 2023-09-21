@@ -325,6 +325,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
       onNext,
       onInsufficientFunds,
       isJetton,
+      isSendAll,
       jettonWalletAddress,
       decimals = 0,
     } = action.payload;
@@ -381,6 +382,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
             amount,
             wallet.vault,
             commentValue,
+            isSendAll ? 128 : 3,
           );
           isUninit = yield call([wallet.ton, 'isInactiveAddress'], address);
         }
@@ -409,6 +411,8 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
         const { balance } = yield call(Tonapi.getWalletInfo, address);
         if (new BigNumber(amountNano).gt(new BigNumber(balance))) {
           return onInsufficientFunds({ totalAmount: amountNano, balance });
+        } else {
+          yield call(onNext, { fee, isInactive: isUninit });
         }
       } else {
         yield call(onNext, { fee, isInactive: isUninit });
