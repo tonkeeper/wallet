@@ -11,11 +11,13 @@ export const useJettonActivityList = (jettonId: string) => {
         isLoading: false,
         hasMore: true,
         sections: [],
+        error: null,
       }),
   );
 
   useEffect(() => {
     tk.wallet?.jettonActivityList.load(jettonId);
+    return () => tk.wallet.jettonActivityList.clear();
   }, []);
 
   return {
@@ -23,7 +25,8 @@ export const useJettonActivityList = (jettonId: string) => {
     reload: () => tk.wallet?.jettonActivityList.reload(jettonId),
     isReloading: state.isReloading,
     isLoading: state.isLoading,
-    sections: state.sections,
+    sections: state.sections[jettonId] ?? [],
     hasMore: state.hasMore,
+    error: state.error,
   };
 };

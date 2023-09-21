@@ -11,6 +11,7 @@ export const useTonActivityList = () => {
         isLoading: false,
         hasMore: true,
         sections: [],
+        error: null,
       }),
   );
 
@@ -25,5 +26,6 @@ export const useTonActivityList = () => {
     isLoading: state.isLoading,
     sections: state.sections,
     hasMore: state.hasMore,
+    error: state.error,
   };
 };
