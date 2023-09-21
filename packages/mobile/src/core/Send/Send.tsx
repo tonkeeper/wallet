@@ -217,6 +217,7 @@ export const Send: FC<SendProps> = ({ route }) => {
         walletActions.confirmSendCoins({
           currency: currency as CryptoCurrency,
           amount: parsedAmount,
+          isSendAll: amount.all,
           address: recipient.address,
           isJetton,
           jettonWalletAddress,
@@ -254,7 +255,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       setPreparing(false);
     }
   }, [
-    amount.value,
+    amount,
     comment,
     currency,
     decimals,

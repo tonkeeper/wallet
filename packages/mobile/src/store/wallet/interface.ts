@@ -48,6 +48,7 @@ export type ConfirmSendCoinsAction = PayloadAction<{
   onInsufficientFunds?: (params: InsufficientFundsParams) => void;
   onNext: (info: { fee: string; isInactive: boolean }) => void;
   isJetton?: boolean;
+  isSendAll?: boolean;
   decimals?: number;
   jettonWalletAddress?: string;
 }>;
