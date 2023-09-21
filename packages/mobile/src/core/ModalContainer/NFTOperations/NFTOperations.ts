@@ -389,7 +389,7 @@ export class NFTOperations {
         const isBounceable = this.seeIfBounceable(message.address);
         const order = TonWeb.Contract.createCommonMsgInfo(
           TonWeb.Contract.createInternalMessageHeader(
-            new TonWeb.Address(message.address).toString(false, false, isBounceable),
+            new TonWeb.Address(message.address).toString(true, true, isBounceable),
             new TonWeb.utils.BN(this.toNano(message.amount)),
           ),
           Ton.base64ToCell(message.stateInit),
