@@ -1,4 +1,13 @@
-import { all, takeLatest, put, call, fork, delay, select } from 'redux-saga/effects';
+import {
+  all,
+  takeLatest,
+  put,
+  call,
+  fork,
+  delay,
+  select,
+  take,
+} from 'redux-saga/effects';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import DeviceInfo from 'react-native-device-info';
@@ -167,8 +176,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   trackFirstLaunch();
   trackEvent('launch_app');
 
-  yield fork(loadRates);
-
   const wallet = yield call(Wallet.load);
 
   yield put(
@@ -235,6 +242,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
 
 function* loadRates() {
   try {
+    yield take(jettonsActions.setIsLoading);
     useRatesStore.getState().actions.fetchRates();
   } catch (e) {}
 }
