@@ -242,7 +242,10 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
 
 function* loadRates() {
   try {
-    yield take(jettonsActions.setIsLoading);
+    const { wallet } = yield select(walletSelector);
+    if (wallet) {
+      yield take(jettonsActions.setIsLoading);
+    }
     useRatesStore.getState().actions.fetchRates();
   } catch (e) {}
 }
