@@ -3,7 +3,7 @@ import { State } from '@tonkeeper/core';
 import { tk } from '../../tonkeeper';
 import { useEffect } from 'react';
 
-export function useNftList() {
+export function useNftItemsList() {
   const state = useExternalState(
     tk.wallet?.nfts.state ??
       new State({
@@ -25,4 +25,17 @@ export function useNftList() {
     hasMore: state.hasMore,
     items: state.items,
   };
+}
+
+export function useNftItems() {
+  return useExternalState(
+    tk.wallet?.nfts.state ??
+      new State({
+        isReloading: false,
+        isLoading: false,
+        hasMore: true,
+        items: [],
+      }),
+    (state) => state.items,
+  );
 }

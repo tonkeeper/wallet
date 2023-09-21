@@ -92,8 +92,8 @@ export class ActivityList {
       const message = `[ActivityList]: ${Logger.getErrorMessage(err)}`;
       console.log(message);
       this.state.set({
-        error: err.message ?? 'Unknown error',
         isLoading: false,
+        error: message,
       });
     }
   }

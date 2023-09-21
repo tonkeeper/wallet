@@ -7,6 +7,15 @@ generateApi({
   name: 'TonAPIGenerated',
   extractRequestParams: true,
   apiClassName: 'TonAPIGenerated',
+  hooks: {
+    onFormatTypeName: (typeName) => {
+      if (typeName === 'NftItem') {
+        return `Raw${typeName}`;
+      }
+
+      return typeName;
+    },
+  },
   moduleNameIndex: 1,
   extractEnums: true,
   singleHttpClient: true,

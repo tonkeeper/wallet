@@ -2,7 +2,6 @@ import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { Screen, Spacer, SpacerSizes, View } from '$uikit';
 import { List, isAndroid, Text } from '@tonkeeper/uikit';
-// import { List } from '$uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,9 +23,9 @@ import {
   TronAPIGenerated,
   TronBalance,
 } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
-import { formatter } from '@tonkeeper/shared/formatter';
 import { fiatCurrencySelector } from '$store/main';
-import { openTronToken } from '../TronTokenScreen';
+import { NftItemCardsRow } from '@tonkeeper/shared/components/NftItemCard';
+import { NftItem } from '@tonkeeper/core';
 
 enum ContentType {
   Token,
@@ -62,7 +61,7 @@ type SpacerItem = {
 type NFTCardsRowItem = {
   key: string;
   type: ContentType.NFTCardsRow;
-  items: any; // TODO:
+  items: NftItem[];
 };
 
 type StakingItem = {
@@ -133,7 +132,7 @@ const RenderItem = ({ item }: { item: Content }) => {
     case ContentType.Spacer:
       return <Spacer y={item.bottom} />;
     case ContentType.NFTCardsRow:
-      return <NFTsList nfts={item.items} />;
+      return <NftItemCardsRow nftItems={item.items} />;
     case ContentType.Staking:
       return <StakingWidget />;
   }

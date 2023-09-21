@@ -604,7 +604,7 @@ export interface Sale {
   price: Price;
 }
 
-export interface NftItem {
+export interface RawNftItem {
   /** @example "0:E93E7D444180608B8520C00DC664383A387356FB6E16FDDF99DBE5E1415A574B" */
   address: string;
   /**
@@ -633,7 +633,7 @@ export interface NftItem {
 }
 
 export interface NftItems {
-  nft_items: NftItem[];
+  nft_items: RawNftItem[];
 }
 
 export interface Refund {
@@ -824,7 +824,7 @@ export interface UnSubscriptionAction {
 export interface AuctionBidAction {
   auction_type: AuctionBidActionAuctionTypeEnum;
   amount: Price;
-  nft?: NftItem;
+  nft?: RawNftItem;
   bidder: AccountAddress;
   auction: AccountAddress;
 }
@@ -902,7 +902,7 @@ export interface JettonSwapAction {
 export interface NftPurchaseAction {
   auction_type: NftPurchaseActionAuctionTypeEnum;
   amount: Price;
-  nft: NftItem;
+  nft: RawNftItem;
   seller: AccountAddress;
   buyer: AccountAddress;
 }
@@ -1087,7 +1087,7 @@ export interface DomainInfo {
    * @format int64
    */
   expiring_at?: number;
-  item?: NftItem;
+  item?: RawNftItem;
 }
 
 export interface DnsRecord {
@@ -1150,7 +1150,7 @@ export interface Risk {
    */
   ton: number;
   jettons: JettonQuantity[];
-  nfts: NftItem[];
+  nfts: RawNftItem[];
 }
 
 export interface JettonQuantity {
@@ -1382,7 +1382,7 @@ export interface DnsExpiring {
     expiring_at: number;
     /** @example "blah_blah.ton" */
     name: string;
-    dns_item?: NftItem;
+    dns_item?: RawNftItem;
   }[];
 }
 
@@ -1881,6 +1881,21 @@ export interface GetJettonsParams {
    * @example 10
    */
   offset?: number;
+}
+
+export interface GetJettonHoldersParams {
+  /**
+   * @max 1000
+   * @default 1000
+   */
+  limit?: number;
+  /** @default 0 */
+  offset?: number;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  accountId: string;
 }
 
 export interface GetStakingPoolsParams {
@@ -3178,7 +3193,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
      * @request GET:/v2/nfts/{account_id}
      */
     getNftItemByAddress: (accountId: string, params: RequestParams = {}) =>
-      this.http.request<NftItem, Error>({
+      this.http.request<RawNftItem, Error>({
         path: `/v2/nfts/${accountId}`,
         method: 'GET',
         format: 'json',
@@ -3243,10 +3258,14 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
      * @name GetJettonHolders
      * @request GET:/v2/jettons/{account_id}/holders
      */
-    getJettonHolders: (accountId: string, params: RequestParams = {}) =>
+    getJettonHolders: (
+      { accountId, ...query }: GetJettonHoldersParams,
+      params: RequestParams = {},
+    ) =>
       this.http.request<JettonHolders, Error>({
         path: `/v2/jettons/${accountId}/holders`,
         method: 'GET',
+        query: query,
         format: 'json',
         ...params,
       }),

@@ -1,14 +1,15 @@
-import { NftAddress, NftModel } from '../models/NftModel';
+import { NftAddress, NftItem, NftModel } from '../models/NftModel';
 import { Storage } from '../declarations/Storage';
 import { TonRawAddress } from '../WalletTypes';
-import { NftItem, TonAPI } from '../TonAPI';
 import { State } from '../utils/State';
+import { TonAPI } from '../TonAPI';
+import { Logger } from '../utils/Logger';
 
 type NftsState = {
   error: string | null;
   isLoading: boolean;
   hasMore: boolean;
-  items: any[];
+  items: NftItem[];
 };
 
 export class Nfts {
@@ -34,27 +35,33 @@ export class Nfts {
     // });
   }
 
-  public async load(cursor?: number) {
+  public async load(cursor?: number | null) {
     try {
-      this.state.set({ isLoading: true });
+      this.state.set({ isLoading: true, error: null });
 
-      const nftItems = await this.tonapi.accounts.getAccountNftItems({
+      const limit = 50;
+      const { nft_items } = await this.tonapi.accounts.getAccountNftItems({
+        offset: cursor ?? undefined,
         accountId: this.address,
-        offset: cursor,
-        limit: 50,
+        limit,
       });
 
-      const items: any = nftItems.nft_items.map((item) => {
-        return NftModel.createItem(item);
+      const items = nft_items.map((item) => {
+        const nftItem = NftModel.createItem(item);
+        this.nfts.set(nftItem.address, nftItem);
+        return nftItem;
       });
 
+      const hasMore = limit === nft_items.length && !!cursor;
       this.state.set((state) => ({
         items: [...state.items, ...items],
-        hasMore: false,
         isLoading: false,
         error: null,
+        hasMore,
       }));
     } catch (err) {
+      const message = `[Nfts]: ${Logger.getErrorMessage(err)}`;
+      console.log(message);
       this.state.set({
         error: err.message,
         isLoading: false,
@@ -62,9 +69,16 @@ export class Nfts {
     }
   }
 
-  public async reload() {}
+  public async loadMore() {
+    const { isLoading, hasMore, error } = this.state.data;
+    if (!isLoading && hasMore && error === null) {
+      return this.load(this.cursor);
+    }
+  }
 
-  public async loadMore() {}
+  public async reload() {
+    return this.load();
+  }
 
   public getLoadedItem(nftAddress: NftAddress) {
     if (this.nfts.has(nftAddress)) {

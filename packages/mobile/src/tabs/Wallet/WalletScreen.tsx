@@ -48,7 +48,8 @@ import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
 import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 import { useWallet } from '@tonkeeper/shared/hooks/useWallet';
-import { useNftList } from '@tonkeeper/shared/query/hooks/useNftList';
+import { useNftItemsList } from '@tonkeeper/shared/query/hooks/useNftList';
+import { NftItemCardsRow } from '@tonkeeper/shared/components/NftItemCard';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -58,7 +59,7 @@ export const WalletScreen = memo(() => {
   const theme = useTheme();
   const nav = useNavigation();
   const tokens = useTonkens();
-  const { enabled: nfts } = useApprovedNfts();
+  // const { enabled: nfts } = useApprovedNfts();
   const wallet = useWallet();
   const shouldUpdate =
     useUpdatesStore((state) => state.update.state) !== UpdateState.NOT_STARTED;
@@ -71,8 +72,7 @@ export const WalletScreen = memo(() => {
   const { data: tronBalances } = useTronBalances();
 
   const notifications = useInternalNotifications();
-
-  const nftList = useNftList();
+  const { items: nfts } = useNftItemsList();
 
   // TODO: rewrite
   useEffect(() => {
@@ -289,7 +289,7 @@ export const WalletScreen = memo(() => {
                 data={nfts}
                 renderItem={({ item }) => (
                   <View style={nftCardSize}>
-                    <NFTCardItem item={item} />
+                    <NftItemCardsRow nftItems={item} />
                   </View>
                 )}
                 refreshControl={
@@ -330,6 +330,8 @@ export const WalletScreen = memo(() => {
       </>
     );
   }
+
+  return <Screen>{renderCompact()}</Screen>;
 
   if (!wallet) {
     return <Screen>{renderEmpty()}</Screen>;

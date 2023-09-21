@@ -1,14 +1,14 @@
-import { NftItem } from '@tonkeeper/core/src/TonAPI';
+import { NftModel } from '@tonkeeper/core/src/models/NftModel';
+import { RawNftItem } from '@tonkeeper/core/src/TonAPI';
 import { useEffect, useState } from 'react';
 import { tk } from '../../tonkeeper';
-import { NftModel } from '@tonkeeper/core/src/models/NftModel';
 
-export const useNftItem = (nftAddress?: string, nftItem?: NftItem) => {
+export const useNftItem = (nftAddress?: string, rawNftItem?: RawNftItem) => {
   const [nft, setNft] = useState<any>(null);
 
   useEffect(() => {
-    if (nftItem) {
-      setNft(NftModel.createItem(nftItem));
+    if (rawNftItem) {
+      setNft(NftModel.createItem(rawNftItem));
     } else if (nftAddress) {
       const item = tk.wallet.nfts.getLoadedItem(nftAddress);
       if (item) {

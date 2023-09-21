@@ -1,10 +1,10 @@
+import { NftImage, NftItem } from './NftModelTypes';
 import { Address } from '../../formatters/Address';
-import { NftImage } from './NftModelTypes';
-import { NftItem } from '../../TonAPI';
+import { RawNftItem } from '../../TonAPI';
 
 export class NftModel {
-  static createItem(nftItem: NftItem) {
-    const image = (nftItem.previews ?? []).reduce<NftImage>(
+  static createItem(rawNftItem: RawNftItem) {
+    const image = (rawNftItem.previews ?? []).reduce<NftImage>(
       (acc, image) => {
         if (image.resolution === '5x5') {
           acc.preview = image.url;
@@ -32,32 +32,32 @@ export class NftModel {
       },
     );
 
-    const isDomain = !!nftItem.dns;
-    const isUsername = this.isTelegramUsername(nftItem.dns);
+    const isDomain = !!rawNftItem.dns;
+    const isUsername = this.isTelegramUsername(rawNftItem.dns);
 
-    const customNftItem: CustomNftItem = {
-      ...nftItem,
-      name: nftItem.metadata.name,
+    const nftItem: NftItem = {
+      ...rawNftItem,
+      name: rawNftItem.metadata.name,
       isUsername,
       isDomain,
       image,
     };
 
-    if (customNftItem.metadata) {
-      customNftItem.marketplaceURL = nftItem.metadata.external_url;
+    if (nftItem.metadata) {
+      nftItem.marketplaceURL = nftItem.metadata.external_url;
     }
 
-    if (isDomain && customNftItem.collection) {
-      customNftItem.collection.name = 'TON DNS';
+    if (isDomain && nftItem.collection) {
+      nftItem.collection.name = 'TON DNS';
     }
 
     if (isDomain) {
-      customNftItem.name = this.modifyName(nftItem.dns);
-    } else if (!customNftItem.name) {
-      customNftItem.name = Address.parse(nftItem.address).toShort();
+      nftItem.name = this.modifyName(nftItem.dns);
+    } else if (!nftItem.name) {
+      nftItem.name = Address.parse(nftItem.address).toShort();
     }
 
-    return customNftItem;
+    return nftItem;
   }
 
   static domainToUsername(name?: string) {
@@ -73,6 +73,6 @@ export class NftModel {
       return this.domainToUsername(name);
     }
 
-    return name;
+    return name ?? '';
   }
 }

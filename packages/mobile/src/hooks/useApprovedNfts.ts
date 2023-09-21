@@ -1,19 +1,16 @@
 import { useMemo } from 'react';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
-import { NFTModel } from '$store/models';
-import { useSelector } from 'react-redux';
-import { nftsSelector } from '$store/nfts';
 import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
-import { Address } from '@tonkeeper/shared/Address';
-
+import { NftItem } from '@tonkeeper/core';
+import { useNftItems } from '@tonkeeper/shared/query/hooks/useNftList';
 
 export interface IBalances {
-  pending: NFTModel[];
-  enabled: NFTModel[];
-  disabled: NFTModel[];
+  pending: NftItem[];
+  enabled: NftItem[];
+  disabled: NftItem[];
 }
 export function useApprovedNfts() {
-  const { myNfts } = useSelector(nftsSelector);
+  const nftItems = useNftItems();
   const approvalStatuses = useTokenApprovalStore((state) => state.tokens);
   const nfts = useMemo(() => {
     const nftBalances: IBalances = {
@@ -21,27 +18,26 @@ export function useApprovedNfts() {
       enabled: [],
       disabled: [],
     };
-    Object.values(myNfts).forEach((item) => {
-      const collectionAddress = item?.collection?.address;
-      const nftAddress = Address.parse(item.address).toRaw();
+    nftItems.forEach((nftItem) => {
+      const collectionAddress = nftItem.collection?.address;
 
       // get approval status using collection address if it exists, otherwise use nft address
       const approvalStatus =
         (collectionAddress && approvalStatuses[collectionAddress]) ||
-        approvalStatuses[nftAddress];
+        approvalStatuses[nftItem.address];
       if (
-        (item.isApproved && !approvalStatus) ||
+        (nftItem.approved_by.length > 0 && !approvalStatus) ||
         approvalStatus?.current === TokenApprovalStatus.Approved
       ) {
-        nftBalances.enabled.push(item);
+        nftBalances.enabled.push(nftItem);
       } else if (approvalStatus?.current === TokenApprovalStatus.Declined) {
-        nftBalances.disabled.push(item);
+        nftBalances.disabled.push(nftItem);
       } else {
-        nftBalances.pending.push(item);
+        nftBalances.pending.push(nftItem);
       }
     });
 
     return nftBalances;
-  }, [approvalStatuses, myNfts]);
+  }, [approvalStatuses, nftItems]);
   return nfts;
 }
