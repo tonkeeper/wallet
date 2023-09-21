@@ -54,7 +54,7 @@ export const MainStack: FC = () => {
     if (wallet?.address) {
       reloadSubscriptionsFromServer(wallet.address.friendlyAddress);
     }
-  }, [wallet]);
+  }, [wallet?.address]);
 
   useStaking();
 
