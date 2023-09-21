@@ -8,14 +8,18 @@ export interface StatePersistOptions<TData extends DefaultStateData> {
   key: string;
   storage: Storage;
   partialize?: (data: TData) => Partial<TData>;
+  rehydrated?: (data: TData) => void;
 }
 
 export class State<TData extends DefaultStateData> {
+  private initialState: TData;
   public subscribers = new Set<Subscriber<TData>>();
 
   private persistOptions?: StatePersistOptions<TData>;
 
-  constructor(public data: TData) {}
+  constructor(public data: TData) {
+    this.initialState = data;
+  }
 
   private async storeIfNeeded() {
     if (!this.persistOptions) {
@@ -27,12 +31,13 @@ export class State<TData extends DefaultStateData> {
     try {
       const data = partialize ? partialize(this.data) : this.data;
       await storage.setItem(key, JSON.stringify(data));
-    } catch {}
+    } catch (err) {
+      console.log('[State]: error persist for key', key, err);
+    }
   }
 
   public persist(options: StatePersistOptions<TData>) {
     this.persistOptions = options;
-
     return this;
   }
 
@@ -41,17 +46,26 @@ export class State<TData extends DefaultStateData> {
       return;
     }
 
-    const { key, storage } = this.persistOptions;
+    const { key, storage, rehydrated } = this.persistOptions;
 
     try {
       const data = await storage.getItem(key);
+
       if (data === null) {
         return;
       }
       const parsedData = JSON.parse(data);
+
       this.data = { ...this.data, ...parsedData };
+
+      if (rehydrated) {
+        rehydrated(this.data);
+      }
+
       this.emit();
-    } catch {}
+    } catch (err) {
+      console.log('[State]: error rehydrate for key', key, err);
+    }
   }
 
   public subscribe = (subscriber: Subscriber<TData>) => {
@@ -59,13 +73,23 @@ export class State<TData extends DefaultStateData> {
     return () => this.subscribers.delete(subscriber);
   };
 
-  public cleaSubscribers = () => {
-    this.subscribers.clear();
-  };
-
   public getSnapshot = () => {
     return this.data;
   };
+
+  public clear() {
+    this.data = this.initialState;
+    this.emit();
+  }
+
+  public async clearPersist() {
+    if (!this.persistOptions) {
+      return;
+    }
+
+    const { key, storage } = this.persistOptions;
+    return await storage.removeItem(key);
+  }
 
   public set = (updater: Partial<TData> | ((data: TData) => Partial<TData>)) => {
     const newData = typeof updater === 'function' ? updater(this.data) : updater;

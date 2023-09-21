@@ -59,7 +59,7 @@ export const ActivityScreen = memo(() => {
 
   if (
     !wallet.address.ton.raw ||
-    (!activityList.isLoading && activityList.sections.length < 1)
+    (!activityList.isLoading && activityList.sections.length < 1) && activityList.error === null
   ) {
     return (
       <Screen>
@@ -137,6 +137,7 @@ export const ActivityScreen = memo(() => {
         hasMore={activityList.hasMore}
         onLoadMore={activityList.loadMore}
         onReload={activityList.reload}
+        error={activityList.error}
       />
     </Screen>
   );

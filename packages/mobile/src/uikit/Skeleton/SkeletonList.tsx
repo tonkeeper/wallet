@@ -42,7 +42,7 @@ const Cell: React.FC<{ withSeparator?: boolean; titleWidth: number }> = (props) 
 
 export const SkeletonList: React.FC = () => {
   return (
-    <>
+    <View style={{ margin: 16 }}>
       <View style={{ marginBottom: ns(10) }} />
       <View
         style={{
@@ -69,6 +69,6 @@ export const SkeletonList: React.FC = () => {
         <Cell titleWidth={76} />
         <Cell titleWidth={40} withSeparator={false} />
       </View>
-    </>
+    </View>
   );
 };

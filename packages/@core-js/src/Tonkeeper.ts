@@ -78,7 +78,8 @@ export class Tonkeeper {
             },
           );
 
-          this.prefetch();
+          this.rehydrate();
+          this.preload();
         }
       }
     } catch (err) {
@@ -135,23 +136,20 @@ export class Tonkeeper {
     }
   }
 
-  // Load cache data for start app,
-  // Invoke on start app and block ui on spalsh screen
-  private async preload() {
-    await this.wallet.subscriptions.preload();
-    await this.wallet.activityList.preload();
-    await this.wallet.balances.preload();
-    await this.wallet.nfts.preload();
-    return true;
-  }
-
   // Update all data,
   // Invoke in background after hide splash screen
-  private prefetch() {
+  private preload() {
+    this.wallet.activityList.preload();
+    // TODO:
     this.wallet.subscriptions.prefetch();
-    this.wallet.activityList.prefetch();
     this.wallet.balances.prefetch();
     this.wallet.nfts.prefetch();
+  }
+
+  public rehydrate() {
+    this.wallet.jettonActivityList.rehydrate();
+    this.wallet.tonActivityList.rehydrate();
+    this.wallet.activityList.rehydrate();
   }
 
   public async lock() {

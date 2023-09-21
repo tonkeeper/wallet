@@ -17,13 +17,8 @@ export type ScreenSectionListProps = SectionListProps<any> & {
 
 export const ScreenSectionList = memo<ScreenSectionListProps>(
   forwardRef((props, ref) => {
-    const {
-      contentContainerStyle,
-      safeArea,
-      hideBottomSeparator,
-      ListHeaderComponent,
-      ...other
-    } = props;
+    const { contentContainerStyle, hideBottomSeparator, ListHeaderComponent, ...other } =
+      props;
     const {
       detectContentSize,
       detectLayoutSize,
@@ -44,16 +39,18 @@ export const ScreenSectionList = memo<ScreenSectionListProps>(
 
     const contentStyle = useMemo(
       () => ({
-        paddingBottom: safeArea ? safeAreaInsets.bottom : tabBarHeight,
+        paddingBottom: tabBarHeight === 0 ? safeAreaInsets.bottom : tabBarHeight,
         ...contentContainerStyle,
       }),
-      [contentContainerStyle, tabBarHeight, safeArea, safeAreaInsets.bottom],
+      [contentContainerStyle, tabBarHeight, safeAreaInsets.bottom],
     );
 
     const HeaderComponent = (
       <Fragment>
         <Animated.View style={headerOffsetStyle} />
-        {typeof ListHeaderComponent === 'function' ? ListHeaderComponent() : ListHeaderComponent as any}
+        {typeof ListHeaderComponent === 'function'
+          ? ListHeaderComponent()
+          : (ListHeaderComponent as any)}
       </Fragment>
     );
 
@@ -82,4 +79,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
