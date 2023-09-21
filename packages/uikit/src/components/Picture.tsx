@@ -43,21 +43,26 @@ export const Picture = memo<PictureProps>((props) => {
     () => ({ uri: preview ?? undefined, cache: FastImage.cacheControl.web }),
     [preview],
   );
+
   const hasPreview = !!preview;
+  const hasPicture = !!uri;
+
   const imageSource = useMemo(() => {
     return source ?? { uri: uri ?? undefined, cache: FastImage.cacheControl.web };
   }, [uri, source]);
 
   useEffect(() => {
     let state = hasPreview && !isLoaded ? PictureState.Preview : PictureState.Image;
-    if (behavior === 'image') {
+    if (!hasPicture) {
+      state = PictureState.Preview;
+    } else if (behavior === 'image') {
       state = PictureState.Image;
     } else if (behavior === 'preview') {
       state = PictureState.Preview;
     }
 
     animation.value = withTiming(state, { duration: 100 });
-  }, [isLoaded, behavior, hasPreview]);
+  }, [isLoaded, behavior, hasPreview, hasPicture]);
 
   const imageAnimationStyle = useAnimatedStyle(() => ({
     opacity: interpolate(

@@ -49,7 +49,7 @@ import { Address } from '@tonkeeper/core';
 import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 import { useWallet } from '@tonkeeper/shared/hooks/useWallet';
 import { useNftItemsList } from '@tonkeeper/shared/query/hooks/useNftList';
-import { NftItemCardsRow } from '@tonkeeper/shared/components/NftItemCard';
+import { NftItemCard, NftItemCardsRow } from '@tonkeeper/shared/components/NftItemCard';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -289,7 +289,7 @@ export const WalletScreen = memo(() => {
                 data={nfts}
                 renderItem={({ item }) => (
                   <View style={nftCardSize}>
-                    <NftItemCardsRow nftItems={item} />
+                    <NftItemCard nftItem={item} />
                   </View>
                 )}
                 refreshControl={
@@ -330,8 +330,6 @@ export const WalletScreen = memo(() => {
       </>
     );
   }
-
-  return <Screen>{renderCompact()}</Screen>;
 
   if (!wallet) {
     return <Screen>{renderEmpty()}</Screen>;

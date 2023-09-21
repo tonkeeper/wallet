@@ -1,5 +1,5 @@
 import { Text as NativeText, TextProps as NativeTextProps, TextStyle } from 'react-native';
-import Animated, { AnimateProps } from 'react-native-reanimated';
+import Animated, { AnimatedProps } from 'react-native-reanimated';
 import { FontWeights, TTextTypes, TextTypes } from './TextStyles';
 import { pickBy, identity } from 'lodash';
 import { Steezy, useTheme } from '../../styles';
@@ -16,7 +16,7 @@ export type TextColors =
   | 'constantWhite'
   | 'constantBlack';
 
-export interface TextProps extends AnimateProps<NativeTextProps> {
+export interface TextProps extends AnimatedProps<NativeTextProps> {
   type?: TTextTypes;
   color?: TextColors;
   fontSize?: number;

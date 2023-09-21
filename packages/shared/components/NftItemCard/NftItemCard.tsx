@@ -1,13 +1,14 @@
-import { Steezy, Icon, Pressable, View, Picture, Text } from '@tonkeeper/uikit';
-import { memo, useCallback, useMemo } from 'react';
-import { Address } from '@tonkeeper/shared/Address';
+import { Steezy, Icon, Pressable, View, Picture, useTheme } from '@tonkeeper/uikit';
+import { AnimationDirection, HideableText } from '../HideableText';
+import { memo, useCallback } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { NftItem } from '@tonkeeper/core';
 
+// TODO: move
+import { usePrivacyStore } from '@tonkeeper/mobile/src/store/zustand/privacy/usePrivacyStore';
+import { openNftModal } from '@tonkeeper/mobile/src/core/NFT/NFT';
 // import { checkIsTonDiamondsNFT } from '$utils';
 // import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
-// import { AnimationDirection, HideableAmount } from '$core/HideableAmount/HideableAmount';
-// import { HideableImage } from '$core/HideableAmount/HideableImage';
 
 interface NftItemCardProps {
   nftItem: NftItem;
@@ -16,37 +17,41 @@ interface NftItemCardProps {
 export const NftItemCard = memo<NftItemCardProps>((props) => {
   const { nftItem } = props;
 
+  const theme = useTheme();
+  const isHiddenAmounts = usePrivacyStore((state) => state.hiddenAmounts);
+
   // const expiringDomains = useExpiringDomains((state) => state.domains);
   // const isTonDiamondsNft = checkIsTonDiamondsNFT(item);
 
-  const handleOpenNftItem = useCallback(
-    () => {},
-    // _.throttle(() => openNFT({ currency: item.currency, address: item.address }), 1000),
-    [nftItem],
-  );
+  const handleOpenNftItem = useCallback(() => {
+    openNftModal(nftItem.address);
+  }, [nftItem]);
 
   const isExpiringDomain = false; //expiringDomains[nftRawAddress];
   const isDiamond = false;
-  const isHiddenAmounts = false;
 
   return (
     <Pressable
-      // underlayColor={DarkTheme.backgroundContentTint}
-      // backgroundColor={DarkTheme.backgroundContent}
-      style={styles.container}
+      underlayColor={theme.backgroundContentTint}
+      backgroundColor={theme.backgroundContent}
       onPress={handleOpenNftItem}
+      style={styles.container}
     >
       {isHiddenAmounts ? (
-        <Picture preview={nftItem.image.preview} style={styles.picture} />
+        <View style={styles.pictureContainer}>
+          <Picture preview={nftItem.image.preview} style={styles.picture} />
+        </View>
       ) : (
-        <View>
+        <View style={styles.pictureContainer}>
           <Picture
             preview={nftItem.image.preview}
-            uri={nftItem.image.medium}
+            uri={nftItem.image.small}
             style={styles.picture}
           />
-          <View style={styles.badges}>
+          <View style={styles.topBadges}>
             {nftItem.sale && <Icon name="ic-sale-badge-32" colorless />}
+          </View>
+          <View style={styles.bottomBadges}>
             {isDiamond && (
               <View style={styles.appearanceBadge}>
                 <Icon name="ic-appearance-16" color="constantWhite" />
@@ -57,30 +62,22 @@ export const NftItemCard = memo<NftItemCardProps>((props) => {
         </View>
       )}
       <View style={styles.info}>
-        <Text type="label2" numberOfLines={1}>
+        <HideableText
+          animationDirection={AnimationDirection.Left}
+          numberOfLines={1}
+          type="label2"
+          numStars={4}
+        >
           {nftItem.name}
-        </Text>
-        <Text type="body3" color="textSecondary" numberOfLines={1}>
+        </HideableText>
+        <HideableText
+          animationDirection={AnimationDirection.Left}
+          color="textSecondary"
+          numberOfLines={1}
+          type="body3"
+        >
           {nftItem.collection?.name || t('nft_single_nft')}
-        </Text>
-
-        {/* <HideableAmount
-          animationDirection={AnimationDirection.Left}
-          stars="* * * *"
-          
-        >
-         
-        </HideableAmount>
-        <HideableAmount
-          animationDirection={AnimationDirection.Left}
-         
-        >
-          {isDNS
-            ? 'TON DNS'
-            : item?.collection
-            ? item.collection.name || t('nft_unnamed_collection')
-            : t('nft_single_nft')}
-        </HideableAmount> */}
+        </HideableText>
       </View>
     </Pressable>
   );
@@ -100,13 +97,8 @@ const styles = Steezy.create(({ colors, corners }) => ({
     paddingVertical: 8,
     paddingHorizontal: 12,
   },
-  blur: {
-    zIndex: 3,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 50,
+  pictureContainer: {
+    flex: 1,
   },
   picture: {
     flex: 1,
@@ -116,43 +108,28 @@ const styles = Steezy.create(({ colors, corners }) => ({
     borderTopRightRadius: 16,
     backgroundColor: colors.backgroundContentTint,
   },
-
-  badges: {
+  topBadges: {
     position: 'absolute',
     flexDirection: 'row',
     alignItems: 'center',
+    top: 0,
+    right: 0,
   },
-
+  bottomBadges: {
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    bottom: 0,
+    right: 0,
+  },
   appearanceBadge: {
     width: 32,
     height: 32,
     borderRadius: 32 / 2,
+    marginRight: 8,
+    marginBottom: 8,
     backgroundColor: colors.backgroundContent,
     alignItems: 'center',
     justifyContent: 'center',
   },
 }));
-
-// export const OnSaleBadge = styled.View`
-//   position: absolute;
-//   top: ${0}px;
-//   right: ${0}px;
-//   flex-direction: row;
-//   align-items: center;
-// `;
-
-// export const Badges = styled.View`
-//   position: absolute;
-//   bottom: ${8}px;
-//   right: ${8}px;
-//   flex-direction: row;
-//   align-items: center;
-// `;
-
-// export const FireBadge = styled.View`
-//   position: absolute;
-//   bottom: ${0}px;
-//   right: ${0}px;
-//   flex-direction: row;
-//   align-items: center;
-// `;
