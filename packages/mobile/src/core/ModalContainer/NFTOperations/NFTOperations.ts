@@ -368,9 +368,13 @@ export class NFTOperations {
   }
 
   private seeIfBounceable(address: string) {
-    return Address.isFriendly(address)
-      ? Address.parseFriendly(address).isBounceable
-      : true;
+    try {
+      return Address.isFriendly(address)
+        ? Address.parseFriendly(address).isBounceable
+        : true;
+    } catch {
+      return true;
+    }
   }
 
   public async signRaw(params: SignRawParams, sendMode = 3) {
