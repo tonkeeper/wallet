@@ -278,7 +278,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
             <S.Item>
               <S.ItemLabel>{t('confirm_sending_fee')}</S.ItemLabel>
               <S.ItemContent>
-                {fee === '0' || isPreparing ? (
+                {isPreparing ? (
                   <S.ItemSkeleton>
                     <SkeletonLine />
                   </S.ItemSkeleton>
