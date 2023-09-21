@@ -41,7 +41,7 @@ interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
 }
 
-const getTitle = (transactionType: StakingTransactionType, t: any) => {
+const getTitle = (transactionType: StakingTransactionType) => {
   switch (transactionType) {
     case StakingTransactionType.WITHDRAWAL:
       return t('staking.withdrawal_request');
@@ -49,7 +49,7 @@ const getTitle = (transactionType: StakingTransactionType, t: any) => {
       return t('staking.get_withdrawal');
     case StakingTransactionType.DEPOSIT:
     default:
-      return t('staking.top_up');
+      return t('staking.deposit');
   }
 };
 
@@ -80,8 +80,6 @@ export const StakingSend: FC<Props> = (props) => {
   const decimals = Decimals[CryptoCurrencies.Ton];
 
   const isJetton = !isDeposit && !!poolInfo.stakingJetton;
-
-  const symbol = isDeposit ? 'TON' : poolInfo.balance.symbol;
 
   const isWhalesPool = pool.implementation === PoolImplementationType.Whales;
 
@@ -328,7 +326,7 @@ export const StakingSend: FC<Props> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isWithdrawalConfrim]);
 
-  const title = getTitle(transactionType, t);
+  const title = getTitle(transactionType);
 
   return (
     <>
@@ -378,8 +376,6 @@ export const StakingSend: FC<Props> = (props) => {
               pool={pool}
               totalFee={totalFee}
               amount={amount}
-              symbol={symbol}
-              currency={currency}
               decimals={decimals}
               isJetton={isJetton}
               stepsScrollTop={stepsScrollTop}

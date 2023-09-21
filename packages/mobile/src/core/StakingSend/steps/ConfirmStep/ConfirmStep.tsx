@@ -26,8 +26,6 @@ interface Props extends StepComponentProps {
   pool: PoolInfo;
   totalFee?: string;
   amount: SendAmount;
-  symbol: string;
-  currency: CryptoCurrencies;
   decimals: number;
   isJetton: boolean;
   stepsScrollTop: SharedValue<Record<StakingSendSteps, number>>;
@@ -53,8 +51,6 @@ const ConfirmStepComponent: FC<Props> = (props) => {
     pool,
     totalFee,
     amount,
-    symbol,
-    currency,
     decimals,
     isJetton,
     stepsScrollTop,

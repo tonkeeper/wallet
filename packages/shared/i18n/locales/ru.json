@@ -243,7 +243,7 @@
       "liquid_jetton_note": "Отправка токена ликвидности tsTON"
     },
     "comfirm": {
-      "title": "Подтвердить транзакцию",
+      "title": "Подтвердить действие",
       "action": "Отправка %{coin}",
       "comment_label": "Комментарий",
       "comment_label_required": "Обязательный комментарий",
@@ -832,7 +832,7 @@
 
   "staking": {
     "confirm_deposit": "Подтвердить и внести",
-    "send_staked_ton": "Застейканного TON",
+    "send_staked_ton": "застейканного TON",
     "staked_ton": "Застейканный TON",
     "title": "Стейкинг",
     "title_large": "Стейкинг TON",
