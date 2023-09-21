@@ -17,8 +17,8 @@ export const SubscribeActionListItem = memo<SubscribeActionListItemProps>((props
     <ActionListItem
       title={t('transactions.subscription')}
       subtitle={subscription?.merchantName}
+      action={{ ...action, destination: 'out' }}
       iconName="ic-bell-28"
-      action={action}
     />
   );
 });
