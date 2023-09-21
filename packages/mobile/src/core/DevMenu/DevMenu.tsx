@@ -110,24 +110,26 @@ export const DevMenu: FC = () => {
           />
           <List.Item onPress={handleLogs} title="Logs" />
           <List.Item title="App config" onPress={() => nav.navigate('/dev/config')} />
-          <List.Item
-            title="Dev Tonapi"
-            rightContent={
-              <Switch
-                value={config.get('tonapiIOEndpoint') === 'https://dev.tonapi.io'}
-                onChange={() => {
-                  const devHost = 'https://dev.tonapi.io';
-                  if (config.get('tonapiIOEndpoint') !== devHost) {
-                    config.set({ tonapiIOEndpoint: devHost });
-                  } else {
-                    config.set({ tonapiIOEndpoint: undefined });
-                  }
+          {__DEV__ && (
+            <List.Item
+              title="Dev Tonapi"
+              rightContent={
+                <Switch
+                  value={config.get('tonapiIOEndpoint') === 'https://dev.tonapi.io'}
+                  onChange={() => {
+                    const devHost = 'https://dev.tonapi.io';
+                    if (config.get('tonapiIOEndpoint') !== devHost) {
+                      config.set({ tonapiIOEndpoint: devHost });
+                    } else {
+                      config.set({ tonapiIOEndpoint: undefined });
+                    }
 
-                  RNRestart.restart();
-                }}
-              />
-            }
-          />
+                    RNRestart.restart();
+                  }}
+                />
+              }
+            />
+          )}
           <List.Item
             title="Use HTTP protocol in browser"
             rightContent={
