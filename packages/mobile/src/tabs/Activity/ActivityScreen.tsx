@@ -57,10 +57,12 @@ export const ActivityScreen = memo(() => {
     openNotificationsScreen();
   }, []);
 
-  if (
-    !wallet.address.ton.raw ||
-    (!activityList.isLoading && activityList.sections.length < 1) && activityList.error === null
-  ) {
+  const isEmptyList =
+    !activityList.isLoading &&
+    activityList.sections.length < 1 &&
+    activityList.error === null;
+
+  if (!wallet || isEmptyList) {
     return (
       <Screen>
         <View style={styles.emptyContainer}>

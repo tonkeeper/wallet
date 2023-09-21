@@ -3,7 +3,6 @@ import { Storage } from '../declarations/Storage';
 import { ActivityLoader } from './ActivityLoader';
 import { Logger } from '../utils/Logger';
 import { State } from '../utils/State';
-import { Storage } from '../declarations/Storage';
 
 type Cursors = {
   tron: number | null;
@@ -16,7 +15,6 @@ type ActivityListState = {
   isReloading: boolean;
   isLoading: boolean;
   hasMore: boolean;
-  error: string | null;
 };
 
 export class ActivityList {
@@ -96,7 +94,6 @@ export class ActivityList {
       this.state.set({
         error: err.message ?? 'Unknown error',
         isLoading: false,
-        error: message,
       });
     }
   }
