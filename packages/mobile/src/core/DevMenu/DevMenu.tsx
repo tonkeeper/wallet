@@ -17,6 +17,7 @@ import { FC, useCallback } from 'react';
 import { openLogs } from '$navigation';
 import { Alert } from 'react-native';
 import { Icon } from '$uikit';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export const DevMenu: FC = () => {
   const nav = useNavigation();
@@ -91,6 +92,17 @@ export const DevMenu: FC = () => {
   const toggleHttpProtocol = useCallback(() => {
     toggleFeature(DevFeature.UseHttpProtocol);
   }, [toggleFeature]);
+
+  const handleClearActivityCache = useCallback(() => {
+    if (tk.wallet) {
+      tk.wallet.activityList.state.clear();
+      tk.wallet.activityList.state.clearPersist();
+      tk.wallet.jettonActivityList.state.clear();
+      tk.wallet.jettonActivityList.state.clearPersist();
+      tk.wallet.tonActivityList.state.clear();
+      tk.wallet.tonActivityList.state.clearPersist();
+    }
+  }, []);
 
   return (
     <Screen>
@@ -172,6 +184,10 @@ export const DevMenu: FC = () => {
             </PopupSelect>
           </CellSection> */}
         <List>
+          <List.Item
+            onPress={handleClearActivityCache}
+            title="Clear transactions cache"
+          />
           <List.Item onPress={handleClearJettonsCache} title="Clear jettons cache" />
           <List.Item onPress={handleClearNFTsCache} title="Clear NFTs cache" />
         </List>
