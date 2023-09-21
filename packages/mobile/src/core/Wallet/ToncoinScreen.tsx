@@ -8,7 +8,12 @@ import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/Requi
 import { walletActions, walletWalletSelector } from '$store/wallet';
 import { Linking, Platform, View } from 'react-native';
 import { delay, ns } from '$utils';
-import { CryptoCurrencies, CryptoCurrency, Decimals, getServerConfig } from '$shared/constants';
+import {
+  CryptoCurrencies,
+  CryptoCurrency,
+  Decimals,
+  getServerConfig,
+} from '$shared/constants';
 import { t } from '@tonkeeper/shared/i18n';
 import { useNavigation } from '@tonkeeper/router';
 import { Chart } from '$shared/components/Chart/new/Chart';
@@ -31,7 +36,6 @@ export const ToncoinScreen = memo(() => {
   const wallet = useWallet();
 
   const handleOpenExplorer = useCallback(async () => {
-    await delay(200);
     openDAppBrowser(
       wallet
         ? getServerConfig('accountExplorer').replace('%s', wallet.addresses.ton)
@@ -59,6 +63,7 @@ export const ToncoinScreen = memo(() => {
           <PopupMenu
             items={[
               <PopupMenuItem
+                waitForAnimationEnd
                 shouldCloseMenu
                 onPress={handleOpenExplorer}
                 text={t('jetton_open_explorer')}

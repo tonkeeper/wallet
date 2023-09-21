@@ -2,19 +2,28 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Modal, View } from 'react-native';
 import { Separator } from '../Separator/Separator';
 import { Highlight } from '../Highlight/Highlight';
-import { deviceHeight, Memo, ns } from '$utils';
+import { delay, deviceHeight, Memo, ns } from '$utils';
 import * as S from './PopupMenu.style';
-import { usePopupAnimation } from '../PopupSelect/usePopupAnimation';
+import { usePopupAnimation, SCALE_DURATION } from '../PopupSelect/usePopupAnimation';
 import { PopupMenuProps, PopupMenuItemProps } from '../PopupMenu/PopupMenu.interface';
 import { Text } from '../Text/Text';
 
 export const PopupMenuItem = Memo(
-  ({ icon, onPress, text, onCloseMenu, shouldCloseMenu }: PopupMenuItemProps) => {
+  ({
+    icon,
+    onPress,
+    text,
+    onCloseMenu,
+    shouldCloseMenu,
+    waitForAnimationEnd,
+  }: PopupMenuItemProps) => {
     return (
       <View style={{ flex: 0 }}>
         <Highlight
-          onPress={() => {
+          onPress={async () => {
             shouldCloseMenu && onCloseMenu?.();
+            // wait for animation end
+            waitForAnimationEnd && (await delay(SCALE_DURATION + 50));
             onPress && onPress();
           }}
           background="backgroundQuaternary"

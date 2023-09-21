@@ -1,4 +1,13 @@
-import { all, takeLatest, put, call, fork, delay, select } from 'redux-saga/effects';
+import {
+  all,
+  takeLatest,
+  put,
+  call,
+  fork,
+  delay,
+  select,
+  take,
+} from 'redux-saga/effects';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import DeviceInfo from 'react-native-device-info';
@@ -62,6 +71,7 @@ import { useSwapStore } from '$store/zustand/swap';
 import * as SecureStore from 'expo-secure-store';
 import { useRatesStore } from '$store/zustand/rates';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 
 SplashScreen.preventAutoHideAsync()
   .then((result) =>
@@ -167,8 +177,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   trackFirstLaunch();
   trackEvent('launch_app');
 
-  yield fork(loadRates);
-
   const wallet = yield call(Wallet.load);
 
   yield put(
@@ -207,6 +215,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     const { wallet: walletNew } = yield select(walletSelector);
     const addr = yield call([walletNew.ton, 'getAddress']);
     const data = yield call([tk, 'load']);
+    yield call(reloadSubscriptionsFromServer, addr);
     yield call([tk, 'init'], addr, isTestnet, data.tronAddress);
     useSwapStore.getState().actions.fetchAssets();
   } else {
@@ -235,6 +244,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
 
 function* loadRates() {
   try {
+    yield take(jettonsActions.setIsLoading);
     useRatesStore.getState().actions.fetchRates();
   } catch (e) {}
 }

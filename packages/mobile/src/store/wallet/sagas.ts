@@ -293,7 +293,6 @@ function* switchVersionWorker() {
   const data = yield call([tk, 'load']);
   yield call([tk, 'init'], addr, getChainName() === 'testnet', data.tronAddress);
 
-  
   yield call(JettonsCache.clearAll, walletName);
   yield put(walletActions.refreshBalancesPage());
 }
@@ -304,7 +303,7 @@ function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     // yield put(jettonsActions.getIsFeatureEnabled());
     yield put(jettonsActions.loadJettons());
-    useRatesStore.getState().actions.fetchRates();
+    yield fork(loadRatesAfterJettons);
     yield put(mainActions.loadNotifications());
     yield call(useStakingStore.getState().actions.fetchPools);
     yield call(setLastRefreshedAt, Date.now());
