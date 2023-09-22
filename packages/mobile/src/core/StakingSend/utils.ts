@@ -166,12 +166,12 @@ export const getWithdrawalAlertFee = (pool: PoolInfo): BN => {
     return Ton.toNano('0.4');
   }
 
-  if (
-    [PoolImplementationType.Tf, PoolImplementationType.LiquidTF].includes(
-      pool.implementation,
-    )
-  ) {
+  if (pool.implementation === PoolImplementationType.Tf) {
     return Ton.toNano('1');
+  }
+
+  if (pool.implementation === PoolImplementationType.LiquidTF) {
+    return Ton.toNano('2');
   }
 
   return Ton.toNano(0);
