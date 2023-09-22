@@ -23,6 +23,7 @@ export { FastImage } from './components/FastImage';
 export { Picture } from './components/Picture';
 export { SegmentedControl } from './components/SegmentedControl';
 export { TransitionOpacity } from './components/TransitionOpacity';
+export { InlineButton } from './components/InlineButton';
 export * from './components/Flash';
 
 // Containers

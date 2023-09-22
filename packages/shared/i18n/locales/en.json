@@ -407,6 +407,13 @@
     "burned": "Burned"
   },
 
+  "nftItemModal": {
+    "view_in_explorer": "View in explorer",
+    "details": "Details",
+    "owner": "Owner",
+    "contract_address" :"Contract address"
+  },
+
   "transactionDetails": {
     "sender": "Sender",
     "sender_address": "Sender address",

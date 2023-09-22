@@ -35,7 +35,6 @@ function renderSection({ section }: { section: SectionListData<any, DefaultSecti
     <List.Header
       title={formatTransactionsGroupDate(section.timestamp)}
       spacerY={isFirstItem ? 8 : 0}
-      style={styles.date}
     />
   );
 }
@@ -121,10 +120,6 @@ export const ActivityList = memo<ActivityListProps>((props) => {
 });
 
 const styles = StyleSheet.create({
-  date: {
-    marginHorizontal: 16,
-    marginVertical: 4,
-  },
   moreLoader: {
     paddingTop: 8,
     paddingBottom: 16,

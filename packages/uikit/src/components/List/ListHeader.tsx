@@ -17,7 +17,11 @@ export const ListHeader = (props: ListHeaderProps) => {
   const { title, indentTop, rightContent, spacerY, style } = props;
 
   const containerStyle = useMemo(
-    () => [styles.container, indentTop && styles.indentTop, style],
+    () => [
+      styles.container,
+      indentTop && styles.indentTop,
+      style,
+    ],
     [indentTop, style],
   );
 
@@ -34,10 +38,11 @@ export const ListHeader = (props: ListHeaderProps) => {
 
 const styles = Steezy.create({
   container: {
-    height: 48,
+    height: 56,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginHorizontal: 16,
   },
   indentTop: {
     marginTop: 16,

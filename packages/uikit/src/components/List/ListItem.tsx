@@ -15,6 +15,7 @@ import { View } from '../View';
 interface ListItemProps {
   titleType?: 'primary' | 'secondary';
   title?: string | React.ReactNode;
+  label?: string | React.ReactNode; // Same titleType="secondary"
   subtitle?: string | React.ReactNode;
   value?: string | React.ReactNode;
   subvalue?: string | React.ReactNode;
@@ -106,6 +107,18 @@ export const ListItem = memo<ListItemProps>((props) => {
           <View style={styles.lines}>
             <View style={styles.topLine}>
               <View style={styles.titleContainer}>
+                {isString(props.label) ? (
+                  <Text
+                    color="textSecondary"
+                    ellipsizeMode="tail"
+                    numberOfLines={1}
+                    type="body1"
+                  >
+                    {props.label}
+                  </Text>
+                ) : (
+                  props.label
+                )}
                 {isString(props.title) ? (
                   <Text
                     color={titleType === 'primary' ? 'textPrimary' : 'textSecondary'}

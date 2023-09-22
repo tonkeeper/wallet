@@ -2,8 +2,7 @@ import { UnSubscribeActionListItem } from './items/UnSubscribeActionListItem';
 import { JettonSwapActionListItem } from './items/JettonSwapActionListItem';
 import { SubscribeActionListItem } from './items/SubscribeActionListItem';
 import { ListItemContentText, ListItemContainer } from '@tonkeeper/uikit';
-import { modifyNftName } from '@tonkeeper/core/src/managers/NftsManager';
-import { ActionType, Address, AnyActionItem } from '@tonkeeper/core';
+import { ActionType, Address, AnyActionItem, NftModel } from '@tonkeeper/core';
 import { NftPreviewContent } from './NftPreviewContent';
 import { ActionListItem } from './ActionListItem';
 import { t } from '../../i18n';
@@ -60,7 +59,7 @@ export function renderActionListItem(action: AnyActionItem) {
     case ActionType.AuctionBid:
       return (
         <ActionListItem
-          subtitle={modifyNftName(payload.nft?.metadata?.name)}
+          subtitle={NftModel.modifyName(payload.nft?.metadata?.name)}
           title={t('transactions.bid')}
           iconName="ic-tray-arrow-up-28"
           action={action}
