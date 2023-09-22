@@ -41,9 +41,7 @@ const NextCycleComponent: FC<Props> = (props) => {
       <S.Container>
         <S.Row>
           <Text variant="label1">{t('staking.details.cooldown.title')}</Text>
-          <Text variant="label1" color="accentPositive">
-            {t('staking.details.cooldown.active')}
-          </Text>
+          <Text variant="label1">{t('staking.details.cooldown.active')}</Text>
         </S.Row>
         <Text variant="body2" color="foregroundSecondary">
           {t('staking.details.cooldown.desc')}
