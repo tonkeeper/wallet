@@ -150,6 +150,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
                   CryptoCurrencies.TonLocked,
                   CryptoCurrencies.TonRestricted,
                 ].includes(item.currency as CryptoCurrencies)}
+                showDiamond
               />
             ) : null}
             <Spacer x={8} />
