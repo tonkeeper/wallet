@@ -26,6 +26,7 @@ import { t } from '@tonkeeper/shared/i18n';
 
 import { createTronOwnerAddress } from '@tonkeeper/core/src/utils/tronUtils';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 
 export const AccessConfirmation: FC = () => {
   const route = useRoute();
@@ -45,7 +46,7 @@ export const AccessConfirmation: FC = () => {
     return () => {
       const promise = getCurrentConfirmationVaultPromise();
       if (promise) {
-        promise.reject();
+        promise.reject(new CanceledActionError());
         confirmationVaultReset();
       }
     };
@@ -121,7 +122,7 @@ export const AccessConfirmation: FC = () => {
                             unlockedVault as any
                           ).getTonPrivateKey();
                           // createTronAddress(privateKey);
-                          
+
                           dispatch(mainActions.setUnlocked(true));
                         } else {
                           goBack();

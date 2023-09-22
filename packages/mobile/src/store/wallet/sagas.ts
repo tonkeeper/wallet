@@ -744,10 +744,9 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
     e && debugLog(e.message);
 
     const err =
-      e &&
-      e.message &&
-      e.message.indexOf('-127') > -1 &&
-      new UnlockVaultError(t('auth_failed'));
+      e && e.message && e.message.indexOf('-127') > -1
+        ? new UnlockVaultError(t('auth_failed'))
+        : e;
 
     if (action?.payload?.onFail) {
       action.payload.onFail(err);

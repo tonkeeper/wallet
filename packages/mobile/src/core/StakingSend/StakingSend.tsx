@@ -252,9 +252,6 @@ export const StakingSend: FC<Props> = (props) => {
     if (!actionRef.current || !accountEvent) {
       return Promise.reject();
     }
-
-    const cancel = () => Promise.reject(new CanceledActionError());
-
     try {
       setSending(true);
 
@@ -270,7 +267,8 @@ export const StakingSend: FC<Props> = (props) => {
           fee: totalFee ?? '0.1',
         });
 
-        return cancel();
+        await delay(200);
+        throw new CanceledActionError();
       }
 
       if (checkResult.balance !== null) {
@@ -303,7 +301,8 @@ export const StakingSend: FC<Props> = (props) => {
           );
 
           if (!shouldContinue) {
-            return cancel();
+            await delay(200);
+            throw new CanceledActionError();
           }
         }
       }
