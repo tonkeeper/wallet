@@ -39,7 +39,7 @@ export class Nfts {
     try {
       this.state.set({ isLoading: true, error: null });
 
-      const limit = 50;
+      const limit = 1000;
       const { nft_items } = await this.tonapi.accounts.getAccountNftItems({
         offset: cursor ?? undefined,
         accountId: this.address,

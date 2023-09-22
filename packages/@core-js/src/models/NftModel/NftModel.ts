@@ -75,4 +75,19 @@ export class NftModel {
 
     return name ?? '';
   }
+
+  static isDiamond(nftItem: NftItem) {
+    if (nftItem.collection) {
+      const diamondsCollectionAdresses = {
+        mainnet: '0:06d811f426598591b32b2c49f29f66c821368e4acb1de16762b04e0174532465',
+        testnet: '0:d1d65a93c213c92a39046c80b05c16daae1c42297a8d3a54530cc31bc5ba9a99',
+      };
+
+      return Object.values(diamondsCollectionAdresses).includes(
+        nftItem.collection?.address,
+      );
+    }
+
+    return false;
+  }
 }

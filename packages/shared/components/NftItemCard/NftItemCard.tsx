@@ -1,16 +1,14 @@
 import { Steezy, Icon, Pressable, View, Picture, useTheme } from '@tonkeeper/uikit';
 import { useExpiringDomains } from '../../query/hooks/useExpiringDomains';
 import { AnimationDirection, HideableText } from '../HideableText';
+import { NftItem, NftModel } from '@tonkeeper/core';
+import { useWindowDimensions } from 'react-native';
 import { memo, useCallback, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
-import { NftItem } from '@tonkeeper/core';
 
 // TODO: move
 import { usePrivacyStore } from '@tonkeeper/mobile/src/store/zustand/privacy/usePrivacyStore';
 import { openNftModal } from '@tonkeeper/mobile/src/core/NFT/NFT';
-import { useWindowDimensions } from 'react-native';
-
-// import { checkIsTonDiamondsNFT } from '$utils';
 
 interface NftItemCardProps {
   numColumn?: number;
@@ -19,18 +17,13 @@ interface NftItemCardProps {
 
 export const NftItemCard = memo<NftItemCardProps>((props) => {
   const { nftItem, numColumn = 3 } = props;
+  const isHiddenAmounts = usePrivacyStore((state) => state.hiddenAmounts);
   const dimensions = useWindowDimensions();
   const expiring = useExpiringDomains();
   const theme = useTheme();
 
-  const isHiddenAmounts = usePrivacyStore((state) => state.hiddenAmounts);
-
-  const handleOpenNftItem = useCallback(() => {
-    openNftModal(nftItem.address);
-  }, [nftItem]);
-
   const isExpiringDomain = expiring.domains[nftItem.address];
-  const isDiamond = false;// checkIsTonDiamondsNFT(item);
+  const isDiamond = NftModel.isDiamond(nftItem);
 
   const size = useMemo(() => {
     const width = dimensions.width / numColumn - CardIndent;
@@ -39,12 +32,14 @@ export const NftItemCard = memo<NftItemCardProps>((props) => {
     return { width, height };
   }, [dimensions.width, numColumn]);
 
+  const openNftItem = useCallback(() => openNftModal(nftItem.address), [nftItem]);
+
   return (
     <View style={size}>
       <Pressable
         underlayColor={theme.backgroundContentTint}
         backgroundColor={theme.backgroundContent}
-        onPress={handleOpenNftItem}
+        onPress={openNftItem}
         style={styles.container}
       >
         {isHiddenAmounts ? (
