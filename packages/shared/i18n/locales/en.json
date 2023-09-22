@@ -812,6 +812,7 @@
   "confirm": "Confirm",
 
   "staking": {
+    "no_funds": "No funds available for withdrawal",
     "confirm_deposit": "Confirm and Deposit",
     "send_staked_ton": "Staked TON",
     "staked_ton": "Staked TON",

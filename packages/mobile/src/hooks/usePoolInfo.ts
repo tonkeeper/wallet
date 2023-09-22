@@ -13,7 +13,7 @@ import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/Requi
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/shared/Address';
 import { TagType } from '$uikit/Tag';
-import { useStakingStore } from '$store';
+import { Toast, useStakingStore } from '$store';
 import { shallow } from 'zustand/shallow';
 import {
   AccountStakingInfo,
@@ -90,7 +90,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
       .minus(new BigNumber(pendingWithdraw.amount))
       .isEqualTo(0);
 
-  const frequency = Math.round((pool.cycle_end - pool.cycle_start) / 3600);
+  // const frequency = Math.round((pool.cycle_end - pool.cycle_start) / 3600);
   const apy = pool.apy.toFixed(2);
   const minDeposit = stakingFormatter.fromNano(pool.min_stake);
 
@@ -106,6 +106,11 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
   }, [nav, pool.address, wallet]);
 
   const handleWithdrawalPress = useCallback(() => {
+    if (!hasDeposit) {
+      Toast.show(t('staking.no_funds'));
+      return;
+    }
+
     nav.push(AppStackRouteNames.StakingSend, {
       poolAddress: pool.address,
       transactionType:
@@ -113,7 +118,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
           ? StakingTransactionType.WITHDRAWAL_CONFIRM
           : StakingTransactionType.WITHDRAWAL,
     });
-  }, [nav, pool.address, pool.implementation]);
+  }, [hasDeposit, nav, pool.address, pool.implementation]);
 
   const handleConfirmWithdrawalPress = useCallback(() => {
     nav.push(AppStackRouteNames.StakingSend, {

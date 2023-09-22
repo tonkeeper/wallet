@@ -831,6 +831,7 @@
   "confirm": "Подтвердить",
 
   "staking": {
+    "no_funds": "Нет средств доступных для вывода",
     "confirm_deposit": "Подтвердить и внести",
     "send_staked_ton": "застейканного TON",
     "staked_ton": "Застейканный TON",
