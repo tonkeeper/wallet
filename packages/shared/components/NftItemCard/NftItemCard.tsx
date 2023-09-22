@@ -1,4 +1,5 @@
 import { Steezy, Icon, Pressable, View, Picture, useTheme } from '@tonkeeper/uikit';
+import { useExpiringDomains } from '../../query/hooks/useExpiringDomains';
 import { AnimationDirection, HideableText } from '../HideableText';
 import { memo, useCallback, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
@@ -8,8 +9,8 @@ import { NftItem } from '@tonkeeper/core';
 import { usePrivacyStore } from '@tonkeeper/mobile/src/store/zustand/privacy/usePrivacyStore';
 import { openNftModal } from '@tonkeeper/mobile/src/core/NFT/NFT';
 import { useWindowDimensions } from 'react-native';
+
 // import { checkIsTonDiamondsNFT } from '$utils';
-// import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 
 interface NftItemCardProps {
   numColumn?: number;
@@ -19,18 +20,17 @@ interface NftItemCardProps {
 export const NftItemCard = memo<NftItemCardProps>((props) => {
   const { nftItem, numColumn = 3 } = props;
   const dimensions = useWindowDimensions();
+  const expiring = useExpiringDomains();
   const theme = useTheme();
-  const isHiddenAmounts = usePrivacyStore((state) => state.hiddenAmounts);
 
-  // const expiringDomains = useExpiringDomains((state) => state.domains);
-  // const isTonDiamondsNft = checkIsTonDiamondsNFT(item);
+  const isHiddenAmounts = usePrivacyStore((state) => state.hiddenAmounts);
 
   const handleOpenNftItem = useCallback(() => {
     openNftModal(nftItem.address);
   }, [nftItem]);
 
-  const isExpiringDomain = false; //expiringDomains[nftRawAddress];
-  const isDiamond = false;
+  const isExpiringDomain = expiring.domains[nftItem.address];
+  const isDiamond = false;// checkIsTonDiamondsNFT(item);
 
   const size = useMemo(() => {
     const width = dimensions.width / numColumn - CardIndent;

@@ -13,6 +13,7 @@ import { Vault } from './declarations/Vault';
 import { State } from './utils/State';
 import { TronAPI } from './TronAPI';
 import { TonAPI } from './TonAPI';
+import { ExpiringDomains } from './managers/ExpiringDomains';
 
 type TonkeeperAPI = any; // TODO:
 
@@ -21,6 +22,7 @@ export class Wallet {
 
   public state: State<WalletState>;
 
+  public expiringDomains: ExpiringDomains;
   public subscriptions: SubscriptionsManager;
   public jettonActivityList: JettonActivityList;
   public tonActivityList: TonActivityList;
@@ -52,12 +54,15 @@ export class Wallet {
       addresses,
     });
 
+    this.expiringDomains = new ExpiringDomains(addresses.ton, this.tonapi, this.storage);
+    
     this.activityLoader = new ActivityLoader(addresses, this.tonapi, this.tronapi);
     this.jettonActivityList = new JettonActivityList(this.activityLoader, this.storage);
     this.tonActivityList = new TonActivityList(this.activityLoader, this.storage);
     this.activityList = new ActivityList(this.activityLoader, this.storage);
 
     this.nfts = new Nfts(addresses.ton, this.tonapi, this.storage);
+    
     // this.balances = new BalancesManager(context);
     // this.tronService = new TronService(context);
 

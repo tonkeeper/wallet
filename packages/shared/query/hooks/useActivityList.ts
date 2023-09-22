@@ -1,5 +1,5 @@
-import { State } from '@tonkeeper/core';
 import { useExternalState } from '../../hooks/useExternalState';
+import { State } from '@tonkeeper/core';
 import { tk } from '../../tonkeeper';
 import { useEffect } from 'react';
 

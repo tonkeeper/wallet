@@ -137,11 +137,13 @@ export class Tonkeeper {
   // Invoke in background after hide splash screen
   private preload() {
     this.wallet.activityList.preload();
+    this.wallet.expiringDomains.preload();
     // TODO:
     this.wallet.subscriptions.prefetch();
   }
 
   public rehydrate() {
+    this.wallet.expiringDomains.rehydrate();
     this.wallet.jettonActivityList.rehydrate();
     this.wallet.tonActivityList.rehydrate();
     this.wallet.activityList.rehydrate();
