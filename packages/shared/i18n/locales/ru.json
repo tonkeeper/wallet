@@ -859,18 +859,18 @@
         "many": "%{amount} TON готовы к выводу.\nНажмите, чтобы вывести"
       },
       "pendingWithdraw": {
-        "zero": "%{amount} TON будет выведено\n",
-        "one": "%{amount} TON будет выведен\n",
-        "few": "%{amount} TON будет выведено\n",
-        "many": "%{amount} TON будет выведено\n",
-        "other": "%{amount} TON будет выведено\n"
+        "zero": "%{amount} TON будет\nвыведено ",
+        "one": "%{amount} TON будет\nвыведен ",
+        "few": "%{amount} TON будет\nвыведено ",
+        "many": "%{amount} TON будет\nвыведено ",
+        "other": "%{amount} TON будет\nвыведено "
       },
       "pendingDeposit": {
-        "zero": "%{amount} TON будет\nзачислено",
-        "one": "%{amount} TON будет\nзачислен",
-        "few": "%{amount} TON будет\nзачислено\n",
-        "many": "%{amount} TON будет\nзачислено\n",
-        "other": "%{amount} TON будет\nзачислено\n"
+        "zero": "%{amount} TON будет\nзачислено ",
+        "one": "%{amount} TON будет\nзачислен ",
+        "few": "%{amount} TON будет\nзачислено ",
+        "many": "%{amount} TON будет\nзачислено ",
+        "other": "%{amount} TON будет\nзачислено "
       }
     },
     "warning": {
