@@ -1,40 +1,37 @@
-import React, { useCallback, useContext } from 'react';
-import { AnimationDirection, HideableAmount } from '$core/HideableAmount/HideableAmount';
+import React, { useCallback } from 'react';
+
 import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
-import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
-import {
-  HideableAmountContext,
-  useHideableAmount,
-} from '$core/HideableAmount/HideableAmountProvider';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Steezy } from '$styles';
 import { Pressable, View } from '$uikit';
 import { useTheme } from '$hooks/useTheme';
 import { Haptics, isAndroid } from '$utils';
 import { DarkTheme } from '$styled';
+import { useHideableBalancesAnimation } from '@tonkeeper/shared/components/HideableBalancesAnimation';
+import { tk } from '@tonkeeper/shared/tonkeeper';
+import { AnimationDirection, HideableText } from '@tonkeeper/shared/components/HideableText';
 
 const TouchableComponent = isAndroid ? Pressable : TouchableHighlight;
 
 export const ShowBalance: React.FC<{ amount: string }> = ({ amount }) => {
-  const hideAmounts = usePrivacyStore((state) => state.actions.toggleHiddenAmounts);
-  const animationProgress = useHideableAmount();
+  const animation = useHideableBalancesAnimation();
   const { colors } = useTheme();
 
   const handleToggleHideAmounts = useCallback(() => {
-    hideAmounts();
+    tk.toggleBalances();
     Haptics.impactHeavy();
-  }, [hideAmounts]);
+  }, []);
 
   const touchableOpacityStyle = useAnimatedStyle(() => {
     return {
-      display: animationProgress.value < 0.5 ? 'flex' : 'none',
+      display: animation.value < 0.5 ? 'flex' : 'none',
     };
   }, []);
 
   const pressableStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: colors.backgroundSecondary,
-      display: animationProgress.value >= 0.5 ? 'flex' : 'none',
+      display: animation.value >= 0.5 ? 'flex' : 'none',
     };
   }, []);
 
@@ -42,9 +39,9 @@ export const ShowBalance: React.FC<{ amount: string }> = ({ amount }) => {
     <View style={styles.container}>
       <Animated.View style={touchableOpacityStyle}>
         <TouchableOpacity activeOpacity={0.6} onPress={handleToggleHideAmounts}>
-          <HideableAmount animationDirection={AnimationDirection.None} variant="num2">
+          <HideableText animationDirection={AnimationDirection.None} type="num2">
             {amount}
-          </HideableAmount>
+          </HideableText>
         </TouchableOpacity>
       </Animated.View>
       <Animated.View style={[pressableStyle, styles.starsContainer.static]}>
@@ -53,13 +50,13 @@ export const ShowBalance: React.FC<{ amount: string }> = ({ amount }) => {
           underlayColor={DarkTheme.colors.backgroundHighlighted}
           onPress={handleToggleHideAmounts}
         >
-          <HideableAmount
+          <HideableText
             animationDirection={AnimationDirection.None}
             style={styles.stars.static}
-            variant="num2"
+            type="num2"
           >
             {amount}
-          </HideableAmount>
+          </HideableText>
         </TouchableComponent>
       </Animated.View>
     </View>

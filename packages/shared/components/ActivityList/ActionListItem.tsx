@@ -1,4 +1,3 @@
-import { Icon, IconNames, List, Loader, Picture, Text, View } from '@tonkeeper/uikit';
 import { ActionSource, AmountFormatter, AnyActionItem } from '@tonkeeper/core';
 import { openActivityActionModal } from '../../modals/ActivityActionModal';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
@@ -7,9 +6,20 @@ import { formatTransactionTime } from '../../utils/date';
 import { findSenderAccount } from './findSenderAccount';
 import { memo, useCallback, useMemo } from 'react';
 import { ImageRequireSource } from 'react-native';
+import { HideableText } from '../HideableText';
+import { formatter } from '../../formatter';
 import { Address } from '../../Address';
 import { t } from '../../i18n';
-import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
+import {
+  Icon,
+  IconNames,
+  List,
+  Loader,
+  Picture,
+  Text,
+  View,
+  useTheme,
+} from '@tonkeeper/uikit';
 
 interface ActionListItem {
   onPress?: () => void;
@@ -31,7 +41,6 @@ interface ActionListItem {
 export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
   const { action, children, onPress, subtitleNumberOfLines, greenValue, ignoreFailed } =
     props;
-  const { formatNano } = useHideableFormatter();
 
   const handlePress = useCallback(() => {
     if (onPress) {
@@ -113,7 +122,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
       }
 
       if (action.amount) {
-        return formatNano(action.amount.value, {
+        return formatter.formatNano(action.amount.value, {
           decimals: action.amount.decimals,
           postfix: action.amount.symbol,
           prefix: amountPrefix,
@@ -132,9 +141,12 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     }
   }, [action.event.timestamp, props.subvalue]);
 
+  const theme = useTheme();
+
   const valueStyle = [
-    (action.destination === 'in' || greenValue) && styles.receiveValue,
-    action.event.is_scam && styles.scamAmountText,
+    styles.receiveValue.static, // Fix steezy
+    (action.destination === 'in' || greenValue) && { color: theme.accentGreen },
+    action.event.is_scam && styles.scamAmountText.static,
   ];
 
   const leftContent = (
@@ -158,12 +170,20 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     <List.Item
       leftContent={props.leftContent ?? leftContent}
       subtitleNumberOfLines={subtitleNumberOfLines}
-      valueStyle={valueStyle}
       onPress={handlePress}
       subvalue={subvalue}
       subtitle={subtitle}
       title={title}
-      value={value}
+      value={
+        <HideableText
+          style={valueStyle}
+          numberOfLines={1}
+          textAlign="right"
+          type="label1"
+        >
+          {value}
+        </HideableText>
+      }
     >
       {!action.event.is_scam && children}
       {isFailed && !ignoreFailed && (

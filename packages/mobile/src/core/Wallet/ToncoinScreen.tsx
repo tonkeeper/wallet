@@ -20,11 +20,11 @@ import { Chart } from '$shared/components/Chart/new/Chart';
 import { formatter } from '$utils/formatter';
 import { Toast } from '$store';
 import { useFlags } from '$utils/flags';
-import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { TonIcon } from '@tonkeeper/uikit';
 import { Icon, IconNames, Screen } from '@tonkeeper/uikit';
 
-import { ActivityList } from '@tonkeeper/shared/components';
+import { HideableText } from '@tonkeeper/shared/components/HideableText';
+import { ActivityList } from '@tonkeeper/shared/components/ActivityList';
 import { useTonActivityList } from '@tonkeeper/shared/query/hooks/useTonActivityList';
 
 import _ from 'lodash';
@@ -223,20 +223,20 @@ const HeaderList = memo(() => {
       <S.TokenInfoWrap>
         <S.FlexRow>
           <S.AmountWrapper>
-            <HideableAmount variant="h2">
+            <HideableText type="h2">
               {formatter.format(amount, {
                 currency: 'TON',
                 currencySeparator: 'wide',
                 decimals: Decimals[CryptoCurrencies.Ton]!,
               })}
-            </HideableAmount>
-            <HideableAmount
+            </HideableText>
+            <HideableText
               style={{ marginTop: 2 }}
-              variant="body2"
-              color="foregroundSecondary"
+              type="body2"
+              color="textSecondary"
             >
               {tokenPrice.formatted.totalFiat ?? '-'}
-            </HideableAmount>
+            </HideableText>
           </S.AmountWrapper>
           <TonIcon size="medium" showDiamond />
         </S.FlexRow>

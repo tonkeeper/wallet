@@ -40,6 +40,8 @@ import { ReceiveModal } from '@tonkeeper/shared/modals/ReceiveModal';
 import { ReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
 import { EditAppConfigModal } from '$core/DevMenu/DevConfigScreen';
 
+// import { NftItemModal } from '@tonkeeper/shared/modals/NftItemModal';
+
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
 export const ModalStack = React.memo(() => (
@@ -68,6 +70,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />
       <Stack.Modal component={ReceiveJettonModal} path="/receive/jetton/" />
       <Stack.Modal component={NFT} path="NFTItemDetails" />
+      {/* <Stack.Modal component={NftItemModal} path="/nft/" /> */}
       <Stack.Modal component={Send} path={AppStackRouteNames.Send} />
       <Stack.Modal component={ChooseCountry} path={AppStackRouteNames.ChooseCountry} />
       <Stack.Modal component={StakingSend} path={AppStackRouteNames.StakingSend} />

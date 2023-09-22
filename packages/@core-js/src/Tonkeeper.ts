@@ -4,6 +4,7 @@ import { Storage } from './declarations/Storage';
 import { Address } from './formatters/Address';
 import { WalletNetwork } from './WalletTypes';
 import { Vault } from './declarations/Vault';
+import { State } from './utils/State';
 import { TronAPI } from './TronAPI';
 import { TonAPI } from './TonAPI';
 import { Wallet } from './Wallet';
@@ -21,10 +22,8 @@ type TonkeeperOptions = {
   vault: Vault;
 };
 
-type SecuritySettings = {
-  biometryEnabled: boolean;
+export type TonkeeperState = {
   hiddenBalances: boolean;
-  locked: boolean;
 };
 
 export class Tonkeeper {
@@ -32,11 +31,15 @@ export class Tonkeeper {
   public wallet!: Wallet;
   public wallets = [];
 
-  public securitySettings: SecuritySettings = {
-    biometryEnabled: false,
+  // public securitySettings: SecuritySettings = {
+  //   biometryEnabled: false,
+  //   hiddenBalances: false,
+  //   locked: false,
+  // };
+
+  public state = new State<TonkeeperState>({
     hiddenBalances: false,
-    locked: false,
-  };
+  });
 
   private sse: ServerSentEvents;
   private storage: Storage;
@@ -52,6 +55,12 @@ export class Tonkeeper {
     this.sse = options.sse;
 
     this.permissions = new PermissionsManager();
+
+    this.state.persist({
+      partialize: ({ hiddenBalances }) => ({ hiddenBalances }),
+      storage: this.storage,
+      key: 'tonkeeper',
+    });
   }
 
   // TODO: for temp, rewrite it when ton wallet will it be moved here;
@@ -82,21 +91,6 @@ export class Tonkeeper {
     } catch (err) {
       console.log(err);
     }
-
-    //Load data from storage
-    // const info = await this.storage.load('tonkeeper');
-    // if (info) {
-    //   this.locked = info.locked;
-    //   //
-    //   //
-    // }
-    // const locked = await this.storage.getItem('locked');
-    // this.securitySettings.biometryEnabled =
-    //   (await this.storage.getItem('biometry_enabled')) === 'yes';
-    // if (locked === null || Boolean(locked) === true) {
-    //   this.securitySettings.locked = true;
-    //   // await this.wallet.getPrivateKey();
-    // }
   }
 
   public tronStrorageKey = 'temp-tron-address';
@@ -143,47 +137,23 @@ export class Tonkeeper {
   }
 
   public rehydrate() {
+    this.state.rehydrate();
     this.wallet.expiringDomains.rehydrate();
     this.wallet.jettonActivityList.rehydrate();
     this.wallet.tonActivityList.rehydrate();
     this.wallet.activityList.rehydrate();
   }
 
-  public async lock() {
-    this.securitySettings.locked = true;
-    return this.updateSecuritySettings();
+  public toggleBalances() {
+    this.state.set(({ hiddenBalances }) => ({
+      hiddenBalances: !hiddenBalances,
+    }));
   }
 
-  public async unlock() {
-    this.securitySettings.locked = false;
-    return this.updateSecuritySettings();
-  }
-
-  public showBalances() {
-    this.securitySettings.hiddenBalances = false;
-    return this.updateSecuritySettings();
-  }
-
-  public hideBalances() {
-    this.securitySettings.hiddenBalances = true;
-    return this.updateSecuritySettings();
-  }
-
-  public enableBiometry() {
-    this.securitySettings.biometryEnabled = false;
-    // this.enableBiometry()
-  }
-
-  public disableBiometry() {
-    this.securitySettings.biometryEnabled = false;
-    for (let wallet of this.wallets) {
-      // this.vault.removeBiometry(wallet.pubkey);
-    }
-  }
-
-  private async updateSecuritySettings() {
-    return this.storage.set('securitySettings', this.securitySettings);
-  }
+  public lock() {}
+  public unlock() {}
+  public enableBiometry() {}
+  public disableBiometry() {}
 
   public destroy() {
     this.wallet?.destroy();

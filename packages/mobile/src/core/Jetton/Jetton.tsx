@@ -25,7 +25,7 @@ import { useNavigation } from '@tonkeeper/router';
 import { useSwapStore } from '$store/zustand/swap';
 import { shallow } from 'zustand/shallow';
 import { useFlags } from '$utils/flags';
-import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
@@ -33,13 +33,12 @@ import { Address } from '@tonkeeper/core';
 import { Screen, Steezy, View } from '@tonkeeper/uikit';
 
 import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonActivityList';
+import { HideableText } from '@tonkeeper/shared/components/HideableText';
 import { ActivityList } from '@tonkeeper/shared/components';
 import { openReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
-  const theme = useTheme();
   const flags = useFlags(['disable_swap']);
-  const { bottom: bottomInset } = useSafeAreaInsets();
   const jetton = useJetton(route.params.jettonAddress);
   const jettonActivityList = useJettonActivityList(jetton.jettonAddress);
   const address = useSelector(walletAddressSelector);
@@ -81,20 +80,16 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
       <S.HeaderWrap>
         <S.FlexRow>
           <S.JettonAmountWrapper>
-            <HideableAmount variant="h2">
+            <HideableText type="h2">
               {formatter.format(jetton.balance, {
                 decimals: jetton.metadata.decimals,
                 currency: jetton.metadata.symbol,
                 currencySeparator: 'wide',
               })}
-            </HideableAmount>
-            <HideableAmount
-              style={{ marginTop: 2 }}
-              variant="body2"
-              color="foregroundSecondary"
-            >
+            </HideableText>
+            <HideableText style={{ marginTop: 2 }} color="textSecondary" type="body2">
               {jettonPrice.formatted.totalFiat || t('jetton_token')}
-            </HideableAmount>
+            </HideableText>
             {jettonPrice.formatted.fiat ? (
               <Text style={{ marginTop: 12 }} variant="body2" color="foregroundSecondary">
                 {t('jetton_price')} {jettonPrice.formatted.fiat}

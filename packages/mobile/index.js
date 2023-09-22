@@ -4,6 +4,7 @@ import 'react-native-reanimated';
 import './global';
 import 'react-native-console-time-polyfill';
 import 'text-encoding-polyfill';
+import '@tonkeeper/shared/tonkeeper';
 
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { AppRegistry, LogBox } from 'react-native';

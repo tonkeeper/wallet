@@ -1,5 +1,4 @@
-import { ServerSentEvents, ServerSentEventsOptions } from '@tonkeeper/core';
-import { jsonToUrl } from '@tonkeeper/core';
+import { ServerSentEvents, ServerSentEventsOptions, jsonToUrl } from '@tonkeeper/core';
 import EventSource from 'react-native-sse';
 
 export class AppServerSentEvents implements ServerSentEvents {

@@ -1,6 +1,6 @@
 import { useNftItem } from '../../../query/hooks/useNftItem';
 import { Icon, TouchableOpacity, View, useTheme } from '@tonkeeper/uikit';
-import { NftItem } from '@tonkeeper/core/src/TonAPI';
+
 import { memo, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { t } from '../../../i18n';
@@ -8,7 +8,8 @@ import { t } from '../../../i18n';
 import { HideableImage } from '@tonkeeper/mobile/src/core/HideableAmount/HideableImage';
 import { corners } from '@tonkeeper/uikit/src/styles/constants';
 import { openNftModal } from '@tonkeeper/mobile/src/core/NFT/NFT';
-import { HideableAmount } from '@tonkeeper/mobile/src/core/HideableAmount/HideableAmount';
+import { NftItem } from '@tonkeeper/core';
+import { HideableText } from '../../../components/HideableText';
 
 interface NftItemPayloadProps {
   nftAddress?: string;
@@ -39,15 +40,15 @@ export const NftItemPayload = memo<NftItemPayloadProps>((props) => {
         />
       )}
       <View style={styles.nftNameContainer}>
-        <HideableAmount stars="* * * *" numberOfLines={1} variant="h2">
+        <HideableText numStars={4} numberOfLines={1} type="h2">
           {nft.name || t('nft_transaction_head_placeholder')}
-        </HideableAmount>
+        </HideableText>
       </View>
       {!!nft.collection?.name && (
         <View style={styles.nftCollectionContainer}>
-          <HideableAmount numberOfLines={1} color="foregroundSecondary" variant="body1">
+          <HideableText numberOfLines={1} color="textSecondary" type="body1">
             {nft.collection.name}
-          </HideableAmount>
+          </HideableText>
           {nft.approved_by.length > 0 && (
             <Icon
               style={{ marginLeft: 4 }}

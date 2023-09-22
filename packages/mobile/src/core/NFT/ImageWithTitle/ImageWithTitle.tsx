@@ -8,7 +8,7 @@ import Clipboard from '@react-native-community/clipboard';
 import { Toast } from '$store';
 import { HideableImage } from '$core/HideableAmount/HideableImage';
 import { Steezy } from '$styles';
-import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { HideableText } from '@tonkeeper/shared/components/HideableText';
 
 export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
   uri,
@@ -36,34 +36,24 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
     // TODO: remove that workaround then lottie on ios is fixed
     if (lottieUri && !isIOS) {
       return (
-        <HideableImage
-          style={styles.image.static}
-          image={
-            <S.Lottie
+        <S.Lottie
               style={styles.image.static}
               source={{ uri: lottieUri }}
               loop={true}
               autoPlay={true}
             />
-          }
-        />
       );
     }
 
     if (videoUri) {
       return (
-        <HideableImage
-          style={styles.image.static}
-          image={
-            <S.Video
+        <S.Video
               source={{ uri: videoUri }}
               poster={uri}
               muted={true}
               repeat={true}
               playWhenInactive={true}
             />
-          }
-        />
       );
     }
 
@@ -90,23 +80,23 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
       <S.TextWrap>
         {title ? (
           <S.TitleWrap disabled={!copyableTitle} onPress={handleCopyTitle}>
-            <HideableAmount
-              stars="* * * *"
+            <HideableText
+              numStars={4}
               style={{ alignItems: 'center', marginRight: ns(8) }}
-              variant="h2"
+              type="h2"
             >
               {title}
-            </HideableAmount>
+            </HideableText>
             {isOnSale ? <Badge>{t('nft_on_sale').toUpperCase()}</Badge> : null}
           </S.TitleWrap>
         ) : null}
         <S.Row>
           <S.CollectionWrapper>
-            <HideableAmount color="foregroundSecondary" variant="body2">
+            <HideableText color="textSecondary" type="body2">
               {collection == null
                 ? t('nft_single_nft')
                 : collection || t('nft_unnamed_collection')}
-            </HideableAmount>
+            </HideableText>
           </S.CollectionWrapper>
           {isVerified && <Icon name="ic-verification-16" colorless />}
         </S.Row>

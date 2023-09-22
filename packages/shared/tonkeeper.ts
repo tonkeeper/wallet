@@ -1,9 +1,8 @@
-import { MobilePasscodeController } from './screens/MobilePasscodeScreen';
+import { TonAPI, Tonkeeper, TronAPI, WalletNetwork } from '@tonkeeper/core';
+import { MobilePasscodeController } from './screens/PasscodeController';
 import { AppServerSentEvents } from './modules/AppServerSentEvents';
-import { Tonkeeper, TronAPI, WalletNetwork } from '@tonkeeper/core';
 import { AppStorage } from './modules/AppStorage';
 import { AppVault } from './modules/AppVault';
-import { TonAPI } from '@tonkeeper/core';
 import { config } from './config';
 
 export const sse = new AppServerSentEvents({
@@ -34,7 +33,7 @@ export const tronapi = new TronAPI({
 
 export const storage = new AppStorage();
 
-const vault = new AppVault(storage, MobilePasscodeController);
+const vault = new AppVault(storage, {});
 
 export const tk = new Tonkeeper({
   storage,

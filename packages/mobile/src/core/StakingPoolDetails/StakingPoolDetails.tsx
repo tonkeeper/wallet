@@ -26,7 +26,6 @@ import { RefreshControl } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { shallow } from 'zustand/shallow';
 import * as S from './StakingPoolDetails.style';
-import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
@@ -40,6 +39,7 @@ import { getLinkIcon, getLinkTitle, getSocialLinkType } from './utils';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Linking } from 'react-native';
 import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
+import { HideableText } from '@tonkeeper/shared/components/HideableText';
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPoolDetails>;
@@ -173,14 +173,14 @@ export const StakingPoolDetails: FC<Props> = (props) => {
             <S.HeaderWrap>
               <S.FlexRow>
                 <S.JettonAmountWrapper>
-                  <HideableAmount variant="h2">
+                  <HideableText type="h2">
                     {stakingFormatter.format(
                       stakingJetton ? balance.totalTon : balance.amount,
                     )}{' '}
                     TON
-                  </HideableAmount>
+                  </HideableText>
                   <Spacer y={2} />
-                  <HideableAmount variant="body2" color="foregroundSecondary">
+                  <HideableText type="body2" color="textSecondary">
                     {formatter.format(balance.totalFiat, { currency: fiatCurrency })}
                     {stakingJetton ? (
                       <>
@@ -188,7 +188,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                         {stakingFormatter.format(balance.amount)} {balance.symbol}
                       </>
                     ) : null}
-                  </HideableAmount>
+                  </HideableText>
                 </S.JettonAmountWrapper>
                 <Spacer x={16} />
                 <StakedTonIcon size="medium" pool={pool} />
@@ -224,12 +224,12 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                 <S.BalanceContainer>
                   <Text variant="label1">{t('staking.details.pendingDeposit')}</Text>
                   <S.BalanceRight>
-                    <HideableAmount variant="label1">
+                    <HideableText type="label1">
                       {stakingFormatter.format(pendingDeposit.amount)} TON
-                    </HideableAmount>
-                    <HideableAmount variant="body2" color="foregroundSecondary">
+                    </HideableText>
+                    <HideableText type="body2" color="textSecondary">
                       {pendingDeposit.formatted.totalFiat}
-                    </HideableAmount>
+                    </HideableText>
                   </S.BalanceRight>
                 </S.BalanceContainer>
               </>
@@ -245,12 +245,12 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                     </Text>
                   </S.Column>
                   <S.BalanceRight>
-                    <HideableAmount variant="label1">
+                    <HideableText type="label1">
                       {stakingFormatter.format(pendingWithdraw.amount)} TON
-                    </HideableAmount>
-                    <HideableAmount variant="body2" color="foregroundSecondary">
+                    </HideableText>
+                    <HideableText type="body2" color="textSecondary">
                       {pendingWithdraw.formatted.totalFiat}
-                    </HideableAmount>
+                    </HideableText>
                   </S.BalanceRight>
                 </S.BalanceContainer>
               </>
@@ -271,12 +271,12 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                         </Text>
                       </S.Flex>
                       <S.BalanceRight>
-                        <HideableAmount variant="label1">
+                        <HideableText type="label1">
                           {stakingFormatter.format(readyWithdraw.amount)} TON
-                        </HideableAmount>
-                        <HideableAmount variant="body2" color="foregroundSecondary">
+                        </HideableText>
+                        <HideableText type="body2" color="textSecondary">
                           {readyWithdraw.formatted.totalFiat}
-                        </HideableAmount>
+                        </HideableText>
                       </S.BalanceRight>
                     </S.BalanceTouchableContent>
                   </S.BalanceTouchable>

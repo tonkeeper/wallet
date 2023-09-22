@@ -11,8 +11,7 @@ import { Address } from '../../../Address';
 import { useSelector } from 'react-redux';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
-
-import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
+import { HideableText } from '../../../components/HideableText';
 
 interface JettonSwapActionContentProps {
   action: ActionItem<ActionType.JettonSwap>;
@@ -21,7 +20,6 @@ interface JettonSwapActionContentProps {
 export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props) => {
   const { action } = props;
   const { payload } = action;
-  const { format, formatNano } = useHideableFormatter();
 
   const fiatCurrency = useSelector(fiatCurrencySelector);
   const getTokenPrice = useGetTokenPrice();
@@ -31,7 +29,7 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
       const tokenPrice = getTokenPrice('ton');
       if (tokenPrice.fiat) {
         const parsedAmount = parseFloat(formatter.fromNano(payload.ton_in, 9));
-        return format(tokenPrice.fiat * parsedAmount, {
+        return formatter.format(tokenPrice.fiat * parsedAmount, {
           currency: fiatCurrency,
           decimals: 9,
         });
@@ -42,7 +40,7 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
       );
       if (tokenPrice.fiat) {
         const parsedAmount = parseFloat(formatter.fromNano(payload.amount_in, 9));
-        return format(tokenPrice.fiat * parsedAmount, {
+        return formatter.format(tokenPrice.fiat * parsedAmount, {
           currency: fiatCurrency,
           decimals: 9,
         });
@@ -52,13 +50,13 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
 
   const amountIn = useMemo(() => {
     if (payload.ton_in) {
-      return formatNano(payload.ton_in, {
+      return formatter.formatNano(payload.ton_in, {
         prefix: AmountFormatter.sign.minus,
         withoutTruncate: true,
         postfix: 'TON',
       });
     } else if (payload.jetton_master_in) {
-      return formatNano(payload.amount_in, {
+      return formatter.formatNano(payload.amount_in, {
         decimals: payload.jetton_master_in.decimals,
         postfix: payload.jetton_master_in.symbol,
         prefix: AmountFormatter.sign.minus,
@@ -71,13 +69,13 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
 
   const amountOut = useMemo(() => {
     if (payload.ton_out) {
-      return formatNano(payload.ton_out, {
+      return formatter.formatNano(payload.ton_out, {
         prefix: AmountFormatter.sign.plus,
         withoutTruncate: true,
         postfix: 'TON',
       });
     } else if (payload.jetton_master_out) {
-      return formatNano(payload.amount_out, {
+      return formatter.formatNano(payload.amount_out, {
         decimals: payload.jetton_master_out.decimals,
         postfix: payload.jetton_master_out.symbol,
         prefix: AmountFormatter.sign.plus,
@@ -123,12 +121,12 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
               <View style={styles.pictureOutContainer}>{pictureOut}</View>
             </View>
           </View>
-          <Text type="h2" style={styles.amountText} color="textTertiary">
+          <HideableText type="h2" textAlign="center" color="textTertiary">
             {amountIn}
-          </Text>
-          <Text type="h2" style={styles.amountText}>
+          </HideableText>
+          <HideableText type="h2" textAlign="center">
             {amountOut}
-          </Text>
+          </HideableText>
         </>
       }
     >
@@ -147,9 +145,6 @@ const styles = Steezy.create(({ colors }) => ({
     alignItems: 'center',
     marginTop: -4,
     marginBottom: 16,
-  },
-  amountText: {
-    textAlign: 'center',
   },
   swapImages: {
     position: 'relative',

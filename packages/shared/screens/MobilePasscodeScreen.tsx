@@ -1,5 +1,5 @@
-import { Button, Steezy, View, createExternalRef, useValueRef } from '@tonkeeper/uikit';
-import { PasscodeController, PasscodeShowOptions } from '@tonkeeper/core/src/Vault';
+import { Button, Steezy, View, useValueRef } from '@tonkeeper/uikit';
+import { PasscodeShowOptions } from '@tonkeeper/core';
 import { memo, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { PasscodeInput, PasscodeInputRef } from '../components/PasscodeInput';
 import { PasscodeKeyboard } from '../components/PasscodeKeyboad';
@@ -14,12 +14,11 @@ import Animated, {
   withTiming,
   runOnJS,
 } from 'react-native-reanimated';
+// import { MobilePasscodeController } from './PasscodeController';
 
 interface PasscodeScreenProps {
   locked?: boolean;
 }
-
-export const MobilePasscodeController = createExternalRef<PasscodeController>();
 
 export const MobilePasscodeScreen = memo<PasscodeScreenProps>((props) => {
   const { locked } = props;
@@ -52,7 +51,7 @@ export const MobilePasscodeScreen = memo<PasscodeScreenProps>((props) => {
     return _options.value?.onEnter?.(passcode);
   }, []);
 
-  useImperativeHandle(MobilePasscodeController.ref, () => ({
+  useImperativeHandle({}, () => ({
     hide: hidePasscode,
     show(options) {
       setPasscodeShown(true);

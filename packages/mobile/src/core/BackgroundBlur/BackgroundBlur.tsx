@@ -7,10 +7,10 @@ import Animated, {
 import { useAppState } from '$hooks/useAppState';
 import { FullWindowOverlay } from 'react-native-screens';
 import { Steezy } from '$styles';
-import { AppState, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import React, { useEffect } from 'react';
 import { View } from '$uikit';
-import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
+
 
 const ANIMATION_DURATION = 100;
 
@@ -18,21 +18,6 @@ export const BackgroundBlur: React.FC = () => {
   const state = useAppState();
   const [shouldHideOverlay, setShouldHideOverlay] = React.useState(true);
   const opacity = useSharedValue(0);
-  const { hideAmounts, showAmounts } = usePrivacyStore((state) => state.actions);
-
-  // useEffect(() => {
-  //   const subscription = AppState.addEventListener('change', (state) => {
-  //     if (state === 'inactive') {
-  //       setTimeout(() => {
-  //         hideAmounts();
-  //       }, 200);
-  //     } else {
-  //       showAmounts();
-  //     }
-  //   });
-    
-  //   return () => subscription.remove();
-  // }, []);
 
   useEffect(() => {
     if (state === 'active') {

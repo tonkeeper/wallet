@@ -17,7 +17,6 @@ import { TokenPrice, useTokenPrice } from '$hooks/useTokenPrice';
 import { useTheme } from '$hooks/useTheme';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StakingWidget } from './StakingWidget';
-import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { openWallet } from '$core/Wallet/ToncoinScreen';
 import {
   TronAPIGenerated,
@@ -26,6 +25,7 @@ import {
 import { fiatCurrencySelector } from '$store/main';
 import { NftItemCardsRow } from '@tonkeeper/shared/components/NftItemCard';
 import { NftItem } from '@tonkeeper/core';
+import { HideableText } from '@tonkeeper/shared/components/HideableText';
 
 enum ContentType {
   Token,
@@ -96,22 +96,22 @@ const RenderItem = ({ item }: { item: Content }) => {
             title={item.title}
             picture={item.picture}
             value={
-              <HideableAmount
+              <HideableText
+                renderStart={(stars) => ` ${stars}`}
                 style={styles.valueText.static}
-                variant="label1"
-                stars=" * * *"
-              >{` ${item.value}`}</HideableAmount>
+                type="label1"
+              >{` ${item.value}`}</HideableText>
             }
             label={item.label}
             subvalue={
               item.subvalue && (
-                <HideableAmount
+                <HideableText
                   style={styles.subvalueText.static}
-                  variant="body2"
+                  type="body2"
                   color="textSecondary"
                 >
                   {item.subvalue}
-                </HideableAmount>
+                </HideableText>
               )
             }
             subtitle={

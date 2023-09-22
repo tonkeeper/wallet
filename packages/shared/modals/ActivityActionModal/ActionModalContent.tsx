@@ -2,8 +2,11 @@ import { SText as Text, Button, Icon, View, List, Steezy } from '@tonkeeper/uiki
 import { ActionAmountType, AmountFormatter, AnyActionItem } from '@tonkeeper/core';
 import { formatTransactionDetailsTime } from '../../utils/date';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
+import { ExtraListItem } from './components/ExtraListItem';
 import { memo, useCallback, useMemo } from 'react';
 import { formatter } from '../../formatter';
+import { Address } from '../../Address';
+import { Linking } from 'react-native';
 import { config } from '../../config';
 import { t } from '../../i18n';
 
@@ -13,10 +16,7 @@ import { useGetTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 // TODO: move to shared
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
 import { useSelector } from 'react-redux';
-import { ExtraListItem } from './components/ExtraListItem';
-import { Linking } from 'react-native';
-import { Address } from '../../Address';
-import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
+import { HideableText } from '../../components/HideableText';
 
 interface ActionModalContentProps {
   children?: React.ReactNode;
@@ -28,7 +28,6 @@ interface ActionModalContentProps {
 
 export const ActionModalContent = memo<ActionModalContentProps>((props) => {
   const { children, header, action, label, amountFiat } = props;
-  const { formatNano, format } = useHideableFormatter();
 
   const hash = ` ${action.event.event_id.substring(0, 8)}`;
 
@@ -63,7 +62,7 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
 
   const amount = useMemo(() => {
     if (action.amount) {
-      return formatNano(action.amount.value, {
+      return formatter.formatNano(action.amount.value, {
         decimals: action.amount.decimals,
         postfix: action.amount.symbol,
         withoutTruncate: true,
@@ -88,7 +87,7 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
         const parsedAmount = parseFloat(
           formatter.fromNano(action.amount.value, action.amount.decimals),
         );
-        return format(tokenPrice.fiat * parsedAmount, {
+        return formatter.format(tokenPrice.fiat * parsedAmount, {
           currency: fiatCurrency,
           decimals: 9,
         });
@@ -110,14 +109,18 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
         )}
         <View style={styles.amountContainer}>
           {amount && (
-            <Text type="h2" style={styles.amountText}>
+            <HideableText type="h2" style={styles.amountText.static}>
               {amount}
-            </Text>
+            </HideableText>
           )}
           {fiatAmount && action.status === ActionStatusEnum.Ok && (
-            <Text type="body1" color="textSecondary" style={styles.fiatText}>
+            <HideableText
+              style={styles.fiatText.static}
+              color="textSecondary"
+              type="body1"
+            >
               {fiatAmount}
-            </Text>
+            </HideableText>
           )}
         </View>
         <Text type="body1" color="textSecondary" style={styles.timeText}>

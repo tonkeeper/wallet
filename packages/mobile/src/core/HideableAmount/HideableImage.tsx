@@ -1,6 +1,5 @@
 import { StyleProp, ViewStyle, StyleSheet, ImageStyle, Platform } from 'react-native';
 import React, { memo, ReactNode } from 'react';
-import { useHideableAmount } from '$core/HideableAmount/HideableAmountProvider';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { DominantColorBackground } from '$uikit/DominantColorBackground/DominantColorBackground';
 import { View } from '@tonkeeper/uikit';
@@ -8,6 +7,7 @@ import Animated from 'react-native-reanimated';
 import { Steezy } from '$styles';
 import { BlurView } from 'expo-blur';
 import FastImage from 'react-native-fast-image';
+import { useHideableBalancesAnimation } from '@tonkeeper/shared/components/HideableBalancesAnimation';
 
 export interface HideableImageProps {
   uri?: string;
@@ -24,7 +24,7 @@ const HideableImageComponent: React.FC<HideableImageProps> = ({
   imageStyle,
   image,
 }) => {
-  const animationProgress = useHideableAmount();
+  const animationProgress = useHideableBalancesAnimation();
   const blurContainerStyle = useAnimatedStyle(() => {
     return {
       opacity: animationProgress.value,

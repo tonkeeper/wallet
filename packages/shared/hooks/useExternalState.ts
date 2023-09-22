@@ -1,5 +1,5 @@
 import { useCallback, useRef, useSyncExternalStore } from 'react';
-import { DefaultStateData, State } from '@tonkeeper/core';
+import { DefaultStateData, State } from '@tonkeeper/core/src/utils/State';
 
 export type ExternalStateSelector<TStateData, TSelectedData> = (
   state: TStateData,

@@ -26,25 +26,26 @@ import { TonDiamondMetadata } from '$store/models';
 import { useFlags } from '$utils/flags';
 import { LinkingDomainButton } from './LinkingDomainButton';
 
-import { SheetActions, navigation, useNavigation } from '@tonkeeper/router';
+import { navigation, useNavigation } from '@tonkeeper/router';
 import { openDAppBrowser } from '$navigation';
 import { RenewDomainButton, RenewDomainButtonRef } from './RenewDomainButton';
 import { Tonapi } from '$libs/Tonapi';
 import { Toast } from '$store';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
-import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
+
 import { ProgrammableButtons } from '$core/NFT/ProgrammableButtons/ProgrammableButtons';
 import { Address, NftItem } from '@tonkeeper/core';
 
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { CryptoCurrencies } from '$shared/constants';
 import TonWeb from 'tonweb';
+import { useTonkeeper } from '@tonkeeper/shared/hooks/useTonkeeper';
 
 export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
   const { address: nftAddress } = route?.params?.keyPair || {};
 
   const flags = useFlags(['disable_nft_markets', 'disable_apperance']);
-  const hiddenAmounts = usePrivacyStore((state) => state.hiddenAmounts);
+  const ishiddenBalances = useTonkeeper((state) => state.hiddenBalances);
   const dispatch = useDispatch();
   const nav = useNavigation();
   const address = useSelector(walletAddressSelector);
@@ -171,7 +172,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
         scrollTop={scrollTop}
         titleProps={{ numberOfLines: 1 }}
       >
-        {hiddenAmounts ? '* * * *' : title}
+        {ishiddenBalances ? '* * * *' : title}
       </NavBar>
       <S.ContentWrap>
         <Animated.ScrollView
@@ -196,8 +197,8 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
               title={(!isTG && nft.dns) || nft.name}
               collection={isDNS ? 'TON DNS' : nft.collection?.name}
               isVerified={isDNS || nft.isApproved}
-              description={!hiddenAmounts ? nft.description : '* * *'}
-              collectionDescription={!hiddenAmounts && nft.collection?.description}
+              description={!ishiddenBalances ? nft.description : '* * *'}
+              collectionDescription={!ishiddenBalances && nft.collection?.description}
               isOnSale={isOnSale}
               bottom={
                 isTG ? (
@@ -273,7 +274,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
               buttons={nft.metadata.buttons}
             />
           </S.ButtonWrap>
-          {!hiddenAmounts && <Properties properties={nft.attributes} />}
+          {!ishiddenBalances && <Properties properties={nft.attributes} />}
           <Details
             ownerAddress={nft.ownerAddressToDisplay || nft.ownerAddress}
             contractAddress={nft.address}

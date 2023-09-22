@@ -1,14 +1,12 @@
 import { Steezy, Icon, Pressable, View, Picture, useTheme } from '@tonkeeper/uikit';
 import { useExpiringDomains } from '../../query/hooks/useExpiringDomains';
 import { AnimationDirection, HideableText } from '../HideableText';
+import { openNftItemModal } from '../../modals/NftItemModal';
+import { useTonkeeper } from '../../hooks/useTonkeeper';
 import { NftItem, NftModel } from '@tonkeeper/core';
 import { useWindowDimensions } from 'react-native';
 import { memo, useCallback, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
-
-// TODO: move
-import { usePrivacyStore } from '@tonkeeper/mobile/src/store/zustand/privacy/usePrivacyStore';
-import { openNftModal } from '@tonkeeper/mobile/src/core/NFT/NFT';
 
 interface NftItemCardProps {
   numColumn?: number;
@@ -17,7 +15,7 @@ interface NftItemCardProps {
 
 export const NftItemCard = memo<NftItemCardProps>((props) => {
   const { nftItem, numColumn = 3 } = props;
-  const isHiddenAmounts = usePrivacyStore((state) => state.hiddenAmounts);
+  const isHiddenBalances = useTonkeeper((state) => state.hiddenBalances);
   const dimensions = useWindowDimensions();
   const expiring = useExpiringDomains();
   const theme = useTheme();
@@ -32,17 +30,17 @@ export const NftItemCard = memo<NftItemCardProps>((props) => {
     return { width, height };
   }, [dimensions.width, numColumn]);
 
-  const openNftItem = useCallback(() => openNftModal(nftItem.address), [nftItem]);
+  const openNftItem = useCallback(() => openNftItemModal(nftItem.address), [nftItem]);
 
   return (
     <View style={size}>
       <Pressable
         underlayColor={theme.backgroundContentTint}
         backgroundColor={theme.backgroundContent}
-        onPress={openNftItem}
         style={styles.container}
+        onPress={openNftItem}
       >
-        {isHiddenAmounts ? (
+        {isHiddenBalances ? (
           <View style={styles.pictureContainer}>
             <Picture preview={nftItem.image.preview} style={styles.picture} />
           </View>

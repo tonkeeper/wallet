@@ -5,14 +5,15 @@ import { Icon, Spacer, Tag, Text, View } from '$uikit';
 import { stakingFormatter } from '$utils/formatter';
 import React, { FC, ReactNode, memo, useCallback } from 'react';
 import { ImageRequireSource, TouchableHighlight } from 'react-native';
+import { HideableText } from '@tonkeeper/shared/components/HideableText';
 import { Source } from 'react-native-fast-image';
 import * as S from './StakingListCell.style';
-import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { JettonBalanceModel } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { ListSeparator, Pressable, isAndroid, useTheme } from '@tonkeeper/uikit';
 import { useBackgroundHighlighted } from '@tonkeeper/shared/hooks/useBackgroundHighlighted';
 import Animated from 'react-native-reanimated';
+
 
 interface Props {
   id: string;
@@ -108,18 +109,18 @@ const StakingListCellComponent: FC<Props> = (props) => {
             <S.RightContainer>
               {balanceValue ? (
                 <>
-                  <HideableAmount variant="label1" numberOfLines={1} textAlign="right">
+                  <HideableText type="label1" numberOfLines={1} textAlign="right">
                     {stakingFormatter.format(balance.totalTon, { decimals: 2 })}{' '}
                     {balance.symbol}
-                  </HideableAmount>
-                  <HideableAmount
-                    variant="body2"
-                    color={'foregroundSecondary'}
+                  </HideableText>
+                  <HideableText
+                    type="body2"
+                    color="textSecondary"
                     numberOfLines={1}
                     textAlign="right"
                   >
                     {balance.formatted.totalFiat}
-                  </HideableAmount>
+                  </HideableText>
                 </>
               ) : (
                 <Icon name="ic-chevron-right-16" />

@@ -1,5 +1,4 @@
 import { t } from '@tonkeeper/shared/i18n';
-import { openNFT } from '$navigation';
 import { DarkTheme, Steezy } from '$styles';
 import { Icon, Pressable, View } from '$uikit';
 import { checkIsTonDiamondsNFT } from '$utils';
@@ -8,9 +7,10 @@ import _ from 'lodash';
 import React, { memo, useCallback, useMemo } from 'react';
 import * as S from '../../core/NFTs/NFTItem/NFTItem.style';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
-import { AnimationDirection, HideableAmount } from '$core/HideableAmount/HideableAmount';
+
 import { HideableImage } from '$core/HideableAmount/HideableImage';
 import { Address } from '@tonkeeper/shared/Address';
+import { AnimationDirection, HideableText } from '@tonkeeper/shared/components/HideableText';
 
 interface NFTCardItemProps {
   item: any;
@@ -73,17 +73,17 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
         )}
       </HideableImage>
       <View style={styles.info}>
-        <HideableAmount
+        <HideableText
           animationDirection={AnimationDirection.Left}
-          stars="* * * *"
-          variant="label2"
+          numStars={4}
+          type="label2"
           numberOfLines={1}
         >
           {title}
-        </HideableAmount>
-        <HideableAmount
+        </HideableText>
+        <HideableText
           animationDirection={AnimationDirection.Left}
-          variant="body3"
+          type="body3"
           color="textSecondary"
           numberOfLines={1}
         >
@@ -92,7 +92,7 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
             : item?.collection
             ? item.collection.name || t('nft_unnamed_collection')
             : t('nft_single_nft')}
-        </HideableAmount>
+        </HideableText>
       </View>
     </Pressable>
   );

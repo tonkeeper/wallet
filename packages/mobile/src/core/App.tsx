@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { tonapi } from '@tonkeeper/shared/tonkeeper';
+import { HideableBalancesAnimationProvider } from '@tonkeeper/shared/components/HideableBalancesAnimation';
+import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider as StoreProvider, useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components/native';
@@ -16,13 +17,10 @@ import { QueryClientProvider } from 'react-query';
 import { PortalDestination } from '@alexzunik/rn-native-portals-reborn';
 import { isAndroid } from '$utils';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-import { HideableAmountProvider } from '$core/HideableAmount/HideableAmountProvider';
 import { BackgroundBlur } from '$core/BackgroundBlur/BackgroundBlur';
 
 import { TonAPIProvider } from '@tonkeeper/core';
-import { tonapi } from '@tonkeeper/shared/tonkeeper';
 
-import { MobilePasscodeScreen } from '@tonkeeper/shared/screens/MobilePasscodeScreen';
 import { queryClient } from '@tonkeeper/shared/queryClient';
 
 const TonThemeProvider = ({ children }) => {
@@ -48,7 +46,6 @@ const TonThemeProvider = ({ children }) => {
 export function App() {
   return (
     // <KeyboardProvider>
-
     <StoreProvider {...{ store }}>
       <ActionSheetProvider>
         <QueryClientProvider client={queryClient}>
@@ -56,9 +53,9 @@ export function App() {
             <TonThemeProvider>
               <SafeAreaProvider>
                 <ScrollPositionProvider>
-                  <HideableAmountProvider>
+                  <HideableBalancesAnimationProvider>
                     <AppNavigator />
-                  </HideableAmountProvider>
+                  </HideableBalancesAnimationProvider>
                 </ScrollPositionProvider>
                 {/* <MobilePasscodeScreen locked={tonkeeper.securitySettings.locked} /> */}
                 <ToastComponent />
@@ -81,7 +78,6 @@ export function App() {
         </QueryClientProvider>
       </ActionSheetProvider>
     </StoreProvider>
-
     // </KeyboardProvider>
   );
 }
