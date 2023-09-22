@@ -11,7 +11,6 @@ import {
 } from '$navigation/navigationNames';
 import { CryptoCurrency } from '$shared/constants';
 import { SendAnalyticsFrom } from '$store/models';
-import { NFTKeyPair } from '$store/nfts/interface';
 import _ from 'lodash';
 import { getCurrentRoute, navigate, push, replace } from './imperative';
 
@@ -280,10 +279,6 @@ export function openResetPin() {
 
 export function openSecurityMigration() {
   navigate(SecurityMigrationStackRouteNames.SecurityMigration);
-}
-
-export function openNFT(keyPair: NFTKeyPair) {
-  navigate('NFTItemDetails', { keyPair });
 }
 
 export function openWebView(webViewUrl: string) {

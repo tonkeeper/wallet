@@ -1,6 +1,6 @@
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
-import { JettonsDB, MainDB, NFTsDB } from '$database';
+import { JettonsDB, MainDB } from '$database';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { DevFeature, useDevFeaturesToggle } from '$store';
 import { List, Screen, copyText } from '@tonkeeper/uikit';
@@ -12,7 +12,6 @@ import { config } from '@tonkeeper/shared/config';
 import { jettonsActions } from '$store/jettons';
 import RNRestart from 'react-native-restart';
 import { t } from '@tonkeeper/shared/i18n';
-import { nftsActions } from '$store/nfts';
 import { FC, useCallback } from 'react';
 import { openLogs } from '$navigation';
 import { Alert } from 'react-native';
@@ -57,9 +56,8 @@ export const DevMenu: FC = () => {
   }, [alwaysShowV4R1, dispatch]);
 
   const handleClearNFTsCache = useCallback(() => {
-    NFTsDB.clearAll();
-    dispatch(nftsActions.resetNFTs());
-  }, [dispatch]);
+
+  }, []);
 
   const handleClearJettonsCache = useCallback(() => {
     JettonsDB.clearAll();

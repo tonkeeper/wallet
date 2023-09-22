@@ -1,20 +1,20 @@
 import { tonDiamondCollectionAddress, telegramNumbersAddress } from '$shared/constants';
 import { getChainName } from '$shared/dynamicConfig';
 import { MarketplaceModel, TonDiamondMetadata } from '$store/models';
-import { myNftsSelector } from '$store/nfts';
 import { AccentKey } from '$styled';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import TonWeb from 'tonweb';
 import { capitalizeFirstLetter } from './string';
-import { CustomNftItem } from '@tonkeeper/core/src/TonAPI/CustomNftItems';
+import { NftItem } from '@tonkeeper/core';
+
 
 const getTonDiamondsCollectionAddress = () => tonDiamondCollectionAddress[getChainName()];
 const getTelegramNumbersCollectionAddress = () => telegramNumbersAddress[getChainName()];
 
 export const checkIsTonDiamondsNFT = (
-  nft: CustomNftItem,
-): nft is CustomNftItem => {
+  nft: NftItem,
+): nft is NftItem => {
   if (!nft) {
     return false;
   }
@@ -29,7 +29,7 @@ export const checkIsTonDiamondsNFT = (
   );
 };
 
-export const checkIsTelegramNumbersNFT = (nft: CustomNftItem): boolean => {
+export const checkIsTelegramNumbersNFT = (nft: NftItem): boolean => {
   if (!nft) {
     return false;
   }
@@ -42,12 +42,12 @@ export const checkIsTelegramNumbersNFT = (nft: CustomNftItem): boolean => {
 };
 
 export const useHasDiamondsOnBalance = () => {
-  const myNfts = useSelector(myNftsSelector);
-  const diamond = useMemo(() => {
-    return Object.values(myNfts).find(checkIsTonDiamondsNFT);
-  }, [myNfts]);
+  // const myNfts = useSelector(myNftsSelector);
+  // const diamond = useMemo(() => {
+  //   return Object.values(myNfts).find(checkIsTonDiamondsNFT);
+  // }, [myNfts]);
 
-  return !!diamond;
+  return false//!!diamond;
 };
 
 export const getDiamondsCollectionMarketUrl = (

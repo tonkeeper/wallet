@@ -132,7 +132,7 @@ const RenderItem = ({ item }: { item: Content }) => {
     case ContentType.Spacer:
       return <Spacer y={item.bottom} />;
     case ContentType.NFTCardsRow:
-      return null;//<NftItemCardsRow nftItems={item.items} />;
+      return <NftItemCardsRow nftItems={item.items} />;
     case ContentType.Staking:
       return <StakingWidget />;
   }

@@ -63,7 +63,7 @@ import { InternalNotificationModel } from '$store/models';
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
 import { getWalletName } from '$shared/dynamicConfig';
 import { initStats, trackEvent, trackFirstLaunch } from '$utils/stats';
-import { nftsActions } from '$store/nfts';
+
 import { jettonsActions } from '$store/jettons';
 import { favoritesActions } from '$store/favorites';
 import { clearSubscribeStatus } from '$utils/messaging';
@@ -208,7 +208,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   if (wallet) {
     yield put(walletActions.loadCurrentVersion(wallet.vault.getVersion()));
     yield put(walletActions.loadBalances());
-    yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.loadJettons());
     yield put(subscriptionsActions.loadSubscriptions());
     const { wallet: walletNew } = yield select(walletSelector);
@@ -223,7 +222,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   yield put(mainActions.loadNotifications());
 
   yield fork(loadRates);
-  yield put(nftsActions.loadMarketplaces());
   yield put(favoritesActions.loadSuggests());
   yield put(mainActions.getTimeSynced());
 
@@ -269,7 +267,6 @@ export function* resetAll(isTestnet: boolean) {
       mainActions.resetMain(),
       walletActions.reset(),
       walletActions.resetVersion(),
-      nftsActions.resetNFTs(),
       jettonsActions.resetJettons(),
       mainActions.setTestnet(isTestnet),
       subscriptionsActions.reset(),

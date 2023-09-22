@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux';
 import { hasJettonsSelector } from '$store/jettons';
-import { hasNftsSelector } from '$store/nfts';
+import { useNftItems } from '@tonkeeper/shared/query/hooks/useNftList';
 
 export const useShouldShowTokensButton = () => {
   const hasJettons = useSelector(hasJettonsSelector);
-  const hasNfts = useSelector(hasNftsSelector);
+  const nftItems = useNftItems();
 
-  return hasJettons || hasNfts;
+  return hasJettons || nftItems.length > 0;
 };

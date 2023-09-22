@@ -2,7 +2,6 @@ import { StakingTransactionType } from '$core/StakingSend/types';
 import { AppStackRouteNames } from '$navigation';
 import { CryptoCurrency } from '$shared/constants';
 import { SendAnalyticsFrom, SubscriptionModel } from '$store/models';
-import { NFTKeyPair } from '$store/nfts/interface';
 
 export type AppStackParamList = {
   [AppStackRouteNames.Intro]: {};
@@ -55,9 +54,7 @@ export type AppStackParamList = {
   [AppStackRouteNames.ChangePin]: {};
   [AppStackRouteNames.ResetPin]: {};
   [AppStackRouteNames.SecurityMigration]: {};
-  [AppStackRouteNames.NFT]: {
-    keyPair: NFTKeyPair;
-  };
+  [AppStackRouteNames.NFT]: {};
   [AppStackRouteNames.WebView]: {
     webViewUrl: string;
   };

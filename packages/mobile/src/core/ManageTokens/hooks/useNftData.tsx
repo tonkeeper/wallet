@@ -12,10 +12,11 @@ import { Button, ListButton, Spacer } from '$uikit';
 import { CellItem, Content, ContentType } from '$core/ManageTokens/ManageTokens.types';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { useApprovedNfts } from '$hooks/useApprovedNfts';
-import { JettonVerification, NFTModel } from '$store/models';
+import { JettonVerification } from '$store/models';
 import { approveAll } from '$store/zustand/tokenApproval/helpers';
+import { NftItem } from '@tonkeeper/core';
 
-const baseNftCellData = (nft: NFTModel) => ({
+const baseNftCellData = (nft) => ({
   type: ContentType.Cell,
   picture: nft.content.image.baseUrl,
   title: nft.collection ? nft.collection?.name || t('nft_unnamed_collection') : nft.name,
@@ -41,8 +42,8 @@ const baseNftCellData = (nft: NFTModel) => ({
 });
 
 export function groupByCollection(
-  nftItems: NFTModel[],
-): (NFTModel & { count: number })[] {
+  nftItems: NftItem[]
+): (NftItem & { count: number })[] {
   const grouped = nftItems.reduce((acc, nft) => {
     const uniqAddress = nft.collection?.address || nft.address;
     if (!acc[uniqAddress]) {

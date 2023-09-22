@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import {
   Button,
@@ -13,8 +13,7 @@ import {
 } from '$uikit';
 import { useNavigation } from '@tonkeeper/router';
 import { ScanQRButton } from '../../components/ScanQRButton';
-import { RefreshControl, useWindowDimensions } from 'react-native';
-import { NFTCardItem } from './NFTCardItem';
+import { RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { ns } from '$utils';
 import { walletActions, walletSelector } from '$store/wallet';
@@ -23,7 +22,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useBalance } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
 import { TonIcon } from '@tonkeeper/uikit';
-import { CryptoCurrencies, IsTablet, TabletMaxWidth } from '$shared/constants';
+import { CryptoCurrencies, TabletMaxWidth } from '$shared/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Tabs } from './components/Tabs';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
@@ -49,7 +48,7 @@ import { Address } from '@tonkeeper/core';
 import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 import { useWallet } from '@tonkeeper/shared/hooks/useWallet';
 import { useNftItemsList } from '@tonkeeper/shared/query/hooks/useNftList';
-import { NftItemCard, NftItemCardsRow } from '@tonkeeper/shared/components/NftItemCard';
+import { NftItemCard } from '@tonkeeper/shared/components/NftItemCard';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -215,24 +214,6 @@ export const WalletScreen = memo(() => {
     );
   }
 
-  // TODO: rewrite
-  const dimensions = useWindowDimensions();
-  const mockupCardSize = {
-    width: ns(114),
-    height: ns(166),
-  };
-
-  const numColumn = 3;
-  const indent = ns(8);
-  const heightRatio = mockupCardSize.height / mockupCardSize.width;
-
-  const nftCardSize = useMemo(() => {
-    const width = dimensions.width / numColumn - indent;
-    const height = width * heightRatio;
-
-    return { width, height };
-  }, [dimensions.width]);
-
   function renderTabs() {
     return (
       <Tabs>
@@ -275,6 +256,7 @@ export const WalletScreen = memo(() => {
             </Tabs.Section>
             <Tabs.Section index={1}>
               <Tabs.FlashList
+                renderItem={(info) => <NftItemCard nftItem={info.item} />}
                 ListHeaderComponent={
                   wallet ? (
                     <ApprovalCell
@@ -287,11 +269,6 @@ export const WalletScreen = memo(() => {
                 estimatedItemSize={1000}
                 numColumns={3}
                 data={nfts}
-                renderItem={({ item }) => (
-                  <View style={nftCardSize}>
-                    <NftItemCard nftItem={item} />
-                  </View>
-                )}
                 refreshControl={
                   <RefreshControl
                     onRefresh={handleRefresh}

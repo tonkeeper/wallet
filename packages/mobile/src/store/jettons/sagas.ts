@@ -1,6 +1,5 @@
 import { all, call, put, select, takeLatest, takeEvery } from 'redux-saga/effects';
 
-import { nftsActions } from '$store/nfts/index';
 import { walletSelector } from '$store/wallet';
 import { batchActions } from '$store';
 import { getWalletName } from '$shared/dynamicConfig';
@@ -26,10 +25,6 @@ export function destroyTransactionManager() {
 function* loadJettonMetaWorker(action: LoadJettonMetaAction) {
   try {
     const { wallet } = yield select(walletSelector);
-    if (!wallet) {
-      yield put(nftsActions.setIsLoading(false));
-      return;
-    }
 
     manager = new JettonsManager({
       walletName: getWalletName(),

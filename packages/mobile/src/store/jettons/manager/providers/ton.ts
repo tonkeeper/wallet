@@ -1,12 +1,12 @@
 import TonWeb from 'tonweb';
 
-import { BaseProvider } from '$store/nfts/manager/providers/base';
 import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { JettonBalanceModel, JettonMetadata } from '$store/models';
 import _ from 'lodash';
 import { fromNano } from '$utils';
 import { proxyMedia } from '$utils/proxyMedia';
 import { JettonsApi, Configuration, AccountsApi, JettonBalance } from '@tonkeeper/core/src/legacy';
+import { BaseProvider } from './base';
 
 export class TonProvider extends BaseProvider {
   public readonly name = 'TonProvider';

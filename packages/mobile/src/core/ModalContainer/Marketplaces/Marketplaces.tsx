@@ -5,7 +5,7 @@ import { Loader } from '$uikit';
 import * as S from './Marketplaces.style';
 import { MarketplaceItem } from './MarketplaceItem/MarketplaceItem';
 import { t } from '@tonkeeper/shared/i18n';
-import { nftsSelector } from '$store/nfts';
+
 import { delay, getDiamondsCollectionMarketUrl } from '$utils';
 import { MarketplacesModalProps } from './Marketplaces.interface';
 import { Modal, View } from '@tonkeeper/uikit';
@@ -16,7 +16,7 @@ export const Marketplaces: FC<MarketplacesModalProps> = (props) => {
   const { accentKey } = props;
   const nav = useNavigation();
 
-  const { isMarketplacesLoading, marketplaces: data } = useSelector(nftsSelector);
+  // const { isMarketplacesLoading, marketplaces: data } = useSelector(nftsSelector);
 
   const handleMarketplacePress = useCallback(async () => {
     nav.goBack();

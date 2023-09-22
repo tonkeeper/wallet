@@ -78,7 +78,6 @@ import { withRetryCtx } from '$store/retry';
 import { detectBiometryType, toNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { Api } from '$api';
-import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { Ton } from '$libs/Ton';
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
@@ -162,8 +161,6 @@ function* createWalletWorker(action: CreateWalletAction) {
     );
 
     yield put(walletActions.loadBalances());
-    // yield put(eventsActions.loadEvents({ isReplace: true }));
-    yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.loadJettons());
     yield fork(loadRatesAfterJettons);
     const addr = yield call([wallet.ton, 'getAddress']);
@@ -300,7 +297,6 @@ function* switchVersionWorker() {
 function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
   try {
     yield put(walletActions.loadBalances());
-    yield put(nftsActions.loadNFTs({ isReplace: true }));
     // yield put(jettonsActions.getIsFeatureEnabled());
     yield put(jettonsActions.loadJettons());
     yield fork(loadRatesAfterJettons);
@@ -646,7 +642,6 @@ function* cleanWalletWorker() {
         mainActions.resetMain(),
         walletActions.reset(),
         walletActions.resetVersion(),
-        nftsActions.resetNFTs(),
         jettonsActions.resetJettons(),
         subscriptionsActions.reset(),
       ),
@@ -875,7 +870,6 @@ function* doMigration(wallet: Wallet, newAddress: string) {
         walletActions.setAddress({
           [CryptoCurrencies.Ton]: newAddress,
         }),
-        nftsActions.resetNFTs(),
         jettonsActions.setJettonBalances({ jettonBalances: [] }),
       ),
     );

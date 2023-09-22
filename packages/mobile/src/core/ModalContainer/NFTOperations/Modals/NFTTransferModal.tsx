@@ -15,7 +15,7 @@ import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
 import { CryptoCurrencies } from '$shared/constants';
 import { useDispatch } from 'react-redux';
-import { nftsActions } from '$store/nfts';
+
 import { Modal } from '@tonkeeper/uikit';
 import { formatter } from '$utils/formatter';
 import { goBack, push } from '$navigation/imperative';
@@ -82,11 +82,12 @@ export const NFTTransferModal = ({
     const deploy = await operation.send(privateKey);
 
     const txCurrency = CryptoCurrencies.Ton;
-    dispatch(
-      nftsActions.removeFromBalances({
-        nftKey: `${txCurrency}_${params.nftItemAddress}`,
-      }),
-    );
+    // TODO: nfts
+    // dispatch(
+    //   nftsActions.removeFromBalances({
+    //     nftKey: `${txCurrency}_${params.nftItemAddress}`,
+    //   }),
+    // );
     console.log('DEPLOY', deploy);
   });
 

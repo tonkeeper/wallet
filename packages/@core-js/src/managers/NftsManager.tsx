@@ -89,11 +89,11 @@ export class Nfts {
   }
 
   public async loadItem(nftAddress: NftAddress) {
-    const nftItem = await this.tonapi.nfts.getNftItemByAddress(nftAddress);
-    if (nftItem) {
-      const customNftItem = NftModel.createItem(nftItem);
-      this.nfts.set(nftAddress, customNftItem);
-      return customNftItem;
+    const rawNftItem = await this.tonapi.nfts.getNftItemByAddress(nftAddress);
+    if (rawNftItem) {
+      const nftItem = NftModel.createItem(rawNftItem);
+      this.nfts.set(nftAddress, nftItem);
+      return nftItem;
     }
 
     return null;

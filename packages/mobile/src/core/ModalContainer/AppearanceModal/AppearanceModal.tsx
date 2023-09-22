@@ -1,8 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDimensions } from '$hooks/useDimensions';
 import { mainActions, accentSelector, accentTonIconSelector } from '$store/main';
-import { NFTModel, TonDiamondMetadata } from '$store/models';
-import { nftsSelector } from '$store/nfts';
+import { TonDiamondMetadata } from '$store/models';
 import {
   AccentKey,
   AccentModel,
@@ -22,7 +21,8 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Modal, View } from '@tonkeeper/uikit';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { push } from '$navigation/imperative';
-import { openMarketplaces } from '../Marketplaces/Marketplaces';
+// import { openMarketplaces } from '../Marketplaces/Marketplaces';
+import { useNftItems } from '@tonkeeper/shared/query/hooks/useNftList';
 
 const AppearanceModal = memo<AppearanceModalProps>((props) => {
   const { selectedAccentNFTAddress } = props;
@@ -36,13 +36,13 @@ const AppearanceModal = memo<AppearanceModalProps>((props) => {
 
   const dispatch = useDispatch();
 
-  const { myNfts } = useSelector(nftsSelector);
+  const items = useNftItems();
   const currentAccent = useSelector(accentSelector);
   const accentTonIcon = useSelector(accentTonIconSelector);
 
   const diamondNFTs = useMemo(
-    () => Object.values(myNfts).filter(checkIsTonDiamondsNFT),
-    [myNfts],
+    () => items.filter(checkIsTonDiamondsNFT),
+    [items],
   );
 
   const getNFTIcon = useCallback((nft: NFTModel<TonDiamondMetadata>) => {
@@ -138,7 +138,7 @@ const AppearanceModal = memo<AppearanceModalProps>((props) => {
 
   const openDiamondsNFTCollection = useCallback(() => {
     if (selectedAccent) {
-      openMarketplaces({ accentKey: selectedAccent.id });
+      // openMarketplaces({ accentKey: selectedAccent.id });
     }
   }, [selectedAccent]);
 

@@ -17,15 +17,15 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Properties } from '$core/NFT/Properties/Properties';
 import { Details } from '$core/NFT/Details/Details';
 import { NFTProps } from '$core/NFT/NFT.interface';
-import { useNFT } from '$hooks/useNFT';
+
 import { Platform, Share, View, TouchableOpacity } from 'react-native';
 import { TonDiamondFeature } from './TonDiamondFeature/TonDiamondFeature';
 import { useDispatch, useSelector } from 'react-redux';
 import { walletAddressSelector } from '$store/wallet';
-import { NFTModel, TonDiamondMetadata } from '$store/models';
+import { TonDiamondMetadata } from '$store/models';
 import { useFlags } from '$utils/flags';
 import { LinkingDomainButton } from './LinkingDomainButton';
-import { nftsActions } from '$store/nfts';
+
 import { SheetActions, navigation, useNavigation } from '@tonkeeper/router';
 import { openDAppBrowser } from '$navigation';
 import { RenewDomainButton, RenewDomainButtonRef } from './RenewDomainButton';
@@ -34,8 +34,8 @@ import { Toast } from '$store';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { ProgrammableButtons } from '$core/NFT/ProgrammableButtons/ProgrammableButtons';
-import { Address } from '@tonkeeper/core';
-import { NftItem } from '@tonkeeper/core/src/TonAPI';
+import { Address, NftItem } from '@tonkeeper/core';
+
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { CryptoCurrencies } from '$shared/constants';
 import TonWeb from 'tonweb';
@@ -48,8 +48,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
   const dispatch = useDispatch();
   const nav = useNavigation();
   const address = useSelector(walletAddressSelector);
-  const nftFromHistory = useNFT({ currency: 'ton', address: nftAddress });
-  const [nft, setNft] = useState(nftFromHistory ?? oldNftItem);
+  const [nft, setNft] = useState(oldNftItem);
 
   const [expiringAt, setExpiringAt] = useState(0);
   const [lastFill, setLastFill] = useState(0);
@@ -58,7 +57,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
     (options: { ownerAddress: string }) => {
       if (!nft.ownerAddress) {
         const updatedNft = { ...nft, ownerAddress: options.ownerAddress };
-        dispatch(nftsActions.setNFT({ nft: updatedNft }));
+        // dispatch(nftsActions.setNFT({ nft: updatedNft }));
         setNft(updatedNft);
       }
     },
@@ -316,7 +315,7 @@ export async function openNftModal(nftAddress: string, nftItem?: NftItem) {
   }
 }
 
-const mapNewNftToOldNftData = (nftItem: NftItem, walletFriendlyAddress): NFTModel => {
+const mapNewNftToOldNftData = (nftItem: NftItem, walletFriendlyAddress: string) => {
   const address = new TonWeb.utils.Address(nftItem.address).toString(true, true, true);
   const ownerAddress =
     (nftItem.owner?.address &&
@@ -327,8 +326,7 @@ const mapNewNftToOldNftData = (nftItem: NftItem, walletFriendlyAddress): NFTMode
       ? nftItem.metadata.name.trim()
       : nftItem.metadata?.name;
 
-  const baseUrl = (nftItem.previews &&
-    nftItem.previews.find((preview) => preview.resolution === '500x500')!.url)!;
+  const baseUrl = nftItem.image.medium
 
   return {
     ...nftItem,

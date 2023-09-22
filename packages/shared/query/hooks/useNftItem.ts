@@ -1,10 +1,10 @@
-import { NftModel } from '@tonkeeper/core/src/models/NftModel';
 import { RawNftItem } from '@tonkeeper/core/src/TonAPI';
+import { NftItem, NftModel } from '@tonkeeper/core';
 import { useEffect, useState } from 'react';
 import { tk } from '../../tonkeeper';
 
 export const useNftItem = (nftAddress?: string, rawNftItem?: RawNftItem) => {
-  const [nft, setNft] = useState<any>(null);
+  const [nft, setNft] = useState<NftItem | null>(null);
 
   useEffect(() => {
     if (rawNftItem) {

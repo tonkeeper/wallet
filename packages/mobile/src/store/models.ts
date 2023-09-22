@@ -216,32 +216,6 @@ export interface CollectionModel {
   address: string;
 }
 
-export interface NFTModel<MetaData = {}> {
-  dns?: string;
-  verified?: boolean;
-  currency: CryptoCurrency;
-  isApproved: boolean;
-  internalId: string;
-  provider: string;
-  address: string;
-  ownerAddress: string;
-  index: number;
-  name: string;
-  description?: string;
-  marketplaceURL?: string;
-  collection?: CollectionModel;
-  content: {
-    image: {
-      baseUrl: string;
-    };
-  };
-  attributes: {
-    trait_type: string;
-    value: string;
-  }[];
-  metadata: MetaData;
-  ownerAddressToDisplay?: string;
-}
 
 export interface TonDiamondMetadata {
   animation_url: string;
