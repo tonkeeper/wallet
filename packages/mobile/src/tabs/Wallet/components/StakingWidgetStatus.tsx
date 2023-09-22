@@ -32,7 +32,7 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
   const { formattedDuration, isCooldown } = useStakingCycle(
     pool.cycle_start,
     pool.cycle_end,
-    hasPendingWithdraw,
+    hasPendingWithdraw || hasPendingDeposit,
   );
 
   const nav = useNavigation();
