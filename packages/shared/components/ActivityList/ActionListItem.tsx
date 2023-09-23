@@ -105,7 +105,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     if (props.value !== undefined) {
       return props.value;
     } else {
-      let amountPrefix = '';
+      let amountPrefix = AmountFormatter.sign.minus;
       if (action.destination === 'out') {
         amountPrefix = AmountFormatter.sign.minus;
       } else if (action.destination === 'in') {
