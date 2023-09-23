@@ -272,18 +272,16 @@ export const StakingSend: FC<Props> = (props) => {
       }
 
       if (checkResult.balance !== null) {
-        const withdrawalAlertFee = getWithdrawalAlertFee(pool);
-
         const isEnoughToWithdraw = new BigNumber(checkResult.balance)
           .minus(new BigNumber(totalAmount))
-          .isGreaterThanOrEqualTo(withdrawalAlertFee);
+          .isGreaterThanOrEqualTo(getWithdrawalAlertFee(pool));
 
         if (!isEnoughToWithdraw && isDeposit) {
           const shouldContinue = await new Promise((res) =>
             Alert.alert(
               t('staking.withdrawal_fee_warning.title'),
               t('staking.withdrawal_fee_warning.message', {
-                amount: formatter.format(Ton.fromNano(withdrawalAlertFee)),
+                amount: formatter.format(Ton.fromNano(getWithdrawalAlertFee(pool, true))),
               }),
               [
                 {
