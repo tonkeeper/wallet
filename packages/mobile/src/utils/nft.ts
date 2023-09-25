@@ -1,20 +1,19 @@
 import { tonDiamondCollectionAddress, telegramNumbersAddress } from '$shared/constants';
 import { getChainName } from '$shared/dynamicConfig';
-import { MarketplaceModel, TonDiamondMetadata } from '$store/models';
+import { MarketplaceModel, NFTModel, TonDiamondMetadata } from '$store/models';
 import { myNftsSelector } from '$store/nfts';
 import { AccentKey } from '$styled';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import TonWeb from 'tonweb';
 import { capitalizeFirstLetter } from './string';
-import { CustomNftItem } from '@tonkeeper/core/src/TonAPI/CustomNftItems';
 
 const getTonDiamondsCollectionAddress = () => tonDiamondCollectionAddress[getChainName()];
 const getTelegramNumbersCollectionAddress = () => telegramNumbersAddress[getChainName()];
 
 export const checkIsTonDiamondsNFT = (
-  nft: CustomNftItem,
-): nft is CustomNftItem => {
+  nft: NFTModel,
+): nft is NFTModel<TonDiamondMetadata> => {
   if (!nft) {
     return false;
   }
@@ -29,7 +28,7 @@ export const checkIsTonDiamondsNFT = (
   );
 };
 
-export const checkIsTelegramNumbersNFT = (nft: CustomNftItem): boolean => {
+export const checkIsTelegramNumbersNFT = (nft: NFTModel): boolean => {
   if (!nft) {
     return false;
   }
