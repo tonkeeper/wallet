@@ -1,4 +1,12 @@
-import { SText as Text, Button, Icon, View, List, Steezy } from '@tonkeeper/uikit';
+import {
+  SText as Text,
+  Button,
+  Icon,
+  View,
+  List,
+  Steezy,
+  copyText,
+} from '@tonkeeper/uikit';
 import { ActionAmountType, AmountFormatter, AnyActionItem } from '@tonkeeper/core';
 import { formatTransactionDetailsTime } from '../../utils/date';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
@@ -24,10 +32,11 @@ interface ActionModalContentProps {
   action: AnyActionItem;
   amountFiat?: string;
   label?: string;
+  isSimplePreview?: boolean;
 }
 
 export const ActionModalContent = memo<ActionModalContentProps>((props) => {
-  const { children, header, action, label, amountFiat } = props;
+  const { children, header, action, label, amountFiat, isSimplePreview } = props;
   const { formatNano, format } = useHideableFormatter();
 
   const hash = ` ${action.event.event_id.substring(0, 8)}`;
@@ -73,8 +82,10 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
             ? AmountFormatter.sign.plus
             : AmountFormatter.sign.minus,
       });
+    } else if (!!action.simple_preview.value) {
+      return action.simple_preview.value;
     }
-  }, [action.destination, action.amount]);
+  }, [action.destination, action.amount, action.simple_preview]);
 
   const fiatAmount = useMemo(() => {
     if (amountFiat !== undefined) {
@@ -133,6 +144,24 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
         children
       ) : (
         <List>
+          {isSimplePreview && (
+            <>
+              <List.Item
+                onPress={copyText(action.simple_preview.name)}
+                value={action.simple_preview.name}
+                title={t('transactionDetails.operation')}
+                titleType="secondary"
+              />
+              <List.Separator />
+              <List.Item
+                onPress={copyText(action.simple_preview.description)}
+                value={action.simple_preview.description}
+                title={t('transactionDetails.description')}
+                titleType="secondary"
+                valueMultiline
+              />
+            </>
+          )}
           <ExtraListItem extra={action.event.extra} />
         </List>
       )}

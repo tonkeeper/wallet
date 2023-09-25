@@ -147,14 +147,7 @@ export function renderActionListItem(action: AnyActionItem) {
     case ActionType.UnSubscribe:
       return <UnSubscribeActionListItem action={action} />;
     default:
-      return (
-        <ActionListItem
-          title={action.simple_preview.name}
-          subtitle={action.simple_preview.description}
-          subtitleNumberOfLines={2}
-          action={action}
-        />
-      );
+      return <ActionListItem action={action} isSimplePreview />;
   }
 }
 

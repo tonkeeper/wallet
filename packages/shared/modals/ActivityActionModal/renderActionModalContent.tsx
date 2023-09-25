@@ -50,6 +50,6 @@ export function renderActionModalContent(action: AnyActionItem) {
     case ActionType.WithdrawStakeRequest:
       return <WithdrawStakeRequestActionContent action={action} />;
     default:
-      return <ActionModalContent action={action} />;
+      return <ActionModalContent action={action} isSimplePreview />;
   }
 }
