@@ -5,7 +5,7 @@ import { getUnixTime } from 'date-fns';
 import { store } from '$store';
 import { getServerConfig } from '$shared/constants';
 import { UnlockedVault, Vault } from './vault';
-import { Address as AddressFormatter } from '@tonkeeper/core';
+import { Address as AddressFormatter, AmountFormatter } from '@tonkeeper/core';
 import { debugLog } from '$utils/debugLog';
 import { getChainName, getWalletName } from '$shared/dynamicConfig';
 import { t } from '@tonkeeper/shared/i18n';
@@ -491,7 +491,7 @@ export class TonWallet {
     };
   }
 
-  createTonTransfer(
+  async createTonTransfer(
     seqno: number,
     recipient: Account,
     amount: string,
@@ -501,23 +501,42 @@ export class TonWallet {
     walletVersion: string | null = null,
     secretKey: Buffer = Buffer.alloc(64),
   ) {
-    const contract = getTonCoreWalletContract(vault, walletVersion ?? vault.getVersion());
+    const version = vault.getVersion();
+    const isLockup = version && version.substr(0, 6) === 'lockup';
 
-    const transfer = contract.createTransfer({
-      seqno,
-      secretKey,
-      sendMode,
-      messages: [
-        internal({
-          to: Address.parseRaw(recipient.address),
-          bounce: recipient.status === 'active',
-          value: amount,
-          body: payload !== '' ? payload : undefined,
-        }),
-      ],
-    });
+    if (isLockup) {
+      const wallet = vault.tonWallet;
 
-    return externalMessage(contract, seqno, transfer).toBoc().toString('base64');
+      const tx = wallet.methods.transfer({
+        secretKey,
+        toAddress: new TonWeb.utils.Address(recipient.address),
+        amount: AmountFormatter.toNano(amount),
+        seqno: seqno,
+        payload,
+        sendMode,
+      });
+
+      const query = await tx.getQuery();
+      return TonWeb.utils.bytesToBase64(await query.toBoc(false));
+    } else {
+      const contract = getTonCoreWalletContract(vault, walletVersion ?? version);
+
+      const transfer = contract.createTransfer({
+        seqno,
+        secretKey,
+        sendMode,
+        messages: [
+          internal({
+            to: Address.parseRaw(recipient.address),
+            bounce: recipient.status === 'active',
+            value: amount,
+            body: payload !== '' ? payload : undefined,
+          }),
+        ],
+      });
+
+      return externalMessage(contract, seqno, transfer).toBoc().toString('base64');
+    }
   }
 
   async estimateFee(
@@ -540,7 +559,7 @@ export class TonWallet {
       throw new Error(t('send_get_wallet_info_error'));
     }
 
-    const boc = this.createTonTransfer(
+    const boc = await this.createTonTransfer(
       seqno,
       recipientInfo,
       amount,
@@ -590,7 +609,7 @@ export class TonWallet {
 
     const amountNano = Ton.toNano(amount);
 
-    const boc = this.createTonTransfer(
+    const boc = await this.createTonTransfer(
       seqno,
       recipientInfo,
       amount,
