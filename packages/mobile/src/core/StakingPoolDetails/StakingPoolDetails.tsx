@@ -204,7 +204,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                 />
                 <IconButton
                   onPress={handleWithdrawalPress}
-                  iconName="ic-arrow-down-28"
+                  iconName="ic-minus-28"
                   title={t('staking.withdraw')}
                   disabled={!isImplemeted || isWithdrawDisabled}
                 />
