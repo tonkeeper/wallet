@@ -67,13 +67,4 @@ setNativeExceptionHandler((exceptionString) => {
 store.dispatch(mainActions.init());
 // tonkeeper.init();
 
-function HeadlessCheck({ isHeadless }) {
-  if (isHeadless) {
-    // App has been launched in the background by iOS, ignore
-    return null;
-  }
-
-  return <App />;
-}
-
-AppRegistry.registerComponent(appName, () => gestureHandlerRootHOC(HeadlessCheck));
+AppRegistry.registerComponent(appName, () => gestureHandlerRootHOC(App));
