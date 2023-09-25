@@ -111,14 +111,13 @@ export const useBalance = (tokensTotal: number) => {
 
     return lockupList.map((item) => {
       const amount = balances[item.type];
-      const price = getTokenPrice(item.type, amount);
 
       return {
         type: item.type,
         amount: {
           nano: item.amount,
           formatted: formatter.format(amount),
-          fiat: price.totalFiat,
+          fiat: amountToFiat(amount),
         },
       };
     });
