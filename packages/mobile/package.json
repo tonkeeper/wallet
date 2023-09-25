@@ -115,7 +115,7 @@
     "react-native-screens": "~3.23.0",
     "react-native-scrypt": "^1.2.1",
     "react-native-securerandom": "^1.0.1",
-    "react-native-share": "^8.2.0",
+    "react-native-share": "^9.4.1",
     "react-native-sse": "^1.1.0",
     "react-native-svg": "^13.10.0",
     "react-native-svg-transformer": "^0.14.3",

@@ -54,7 +54,6 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
     unsubscribeFromNotifications,
   } = props;
 
-
   const copyText = useCopyText();
 
   const { top: topInset } = useSafeAreaInsets();
@@ -104,7 +103,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
     }
 
     return items;
-  }, [isConnected, isNotificationsEnabled, t]);
+  }, [isConnected, isNotificationsEnabled]);
 
   const handlePressAction = useCallback(
     (action: PopupAction) => {
@@ -113,10 +112,10 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
           return onRefreshPress();
         case PopupActionType.SHARE:
           setTimeout(() => {
-            Share.open({ failOnCancel: false, urls: [url] }).catch((err) => {
+            Share.open({ failOnCancel: false, url }).catch((err) => {
               console.log('cant share', err);
             });
-          }, 0);
+          }, 300);
           return;
         case PopupActionType.COPY_LINK:
           return copyText(url);
