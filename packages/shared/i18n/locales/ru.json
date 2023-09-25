@@ -430,6 +430,7 @@
     "spam": "СПАМ",
     "address": "Адрес",
     "operation": "Операция",
+    "description": "Описание",
     "payload": "Данные",
     "bid_collection_name": "Эмитент",
     "bid_name": "Название",

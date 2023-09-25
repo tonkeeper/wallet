@@ -1,4 +1,3 @@
-import { Icon, IconNames, List, Loader, Picture, Text, View } from '@tonkeeper/uikit';
 import { ActionSource, AmountFormatter, AnyActionItem } from '@tonkeeper/core';
 import { openActivityActionModal } from '../../modals/ActivityActionModal';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
@@ -9,6 +8,17 @@ import { memo, useCallback, useMemo } from 'react';
 import { ImageRequireSource } from 'react-native';
 import { Address } from '../../Address';
 import { t } from '../../i18n';
+import {
+  ListItemContentText,
+  IconNames,
+  Picture,
+  Loader,
+  Icon,
+  List,
+  Text,
+  View,
+} from '@tonkeeper/uikit';
+
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 
 interface ActionListItem {
@@ -26,11 +36,19 @@ interface ActionListItem {
   subtitle?: string;
   greenValue?: boolean;
   ignoreFailed?: boolean;
+  isSimplePreview?: boolean;
 }
 
 export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
-  const { action, children, onPress, subtitleNumberOfLines, greenValue, ignoreFailed } =
-    props;
+  const {
+    action,
+    children,
+    onPress,
+    subtitleNumberOfLines,
+    greenValue,
+    ignoreFailed,
+    isSimplePreview,
+  } = props;
   const { formatNano } = useHideableFormatter();
 
   const handlePress = useCallback(() => {
@@ -54,10 +72,12 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
       return { source: props.pictureSource };
     } else if (senderAccount?.icon) {
       return { uri: senderAccount.icon };
+    } else if (action.simple_preview.action_image) {
+      return { uri: action.simple_preview.action_image };
     } else {
       return null;
     }
-  }, [props.pictureSource, props.pictureUri, senderAccount]);
+  }, [props.pictureSource, props.pictureUri, senderAccount, action.simple_preview]);
 
   const iconName = useMemo(() => {
     if (isFailed) {
@@ -71,7 +91,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     } else {
       return 'ic-gear-28';
     }
-  }, [action.destination, props.iconName, action.status, isFailed]);
+  }, [props.iconName, action, isFailed]);
 
   const title = useMemo(() => {
     if (props.title !== undefined) {
@@ -97,7 +117,8 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
         return Address.parse(senderAccount.address).toShort();
       }
     } else {
-      return action.simple_preview.description;
+      const account = action.simple_preview.accounts[0];
+      return account ? Address.parse(account.address).toShort() : '-';
     }
   }, [action.simple_preview, action.event.is_scam, senderAccount, props.subtitle]);
 
@@ -120,9 +141,9 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
         });
       }
 
-      return AmountFormatter.sign.minus;
+      return action.simple_preview.value ?? AmountFormatter.sign.minus;
     }
-  }, [action.destination, action.amount, props.value]);
+  }, [action.destination, action.amount, action.simple_preview, props.value]);
 
   const subvalue = useMemo(() => {
     if (props.subvalue !== undefined) {
@@ -166,6 +187,9 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
       value={value}
     >
       {!action.event.is_scam && children}
+      {isSimplePreview && !!action.simple_preview.description && (
+        <ListItemContentText text={action.simple_preview.description} />
+      )}
       {isFailed && !ignoreFailed && (
         <Text type="body2" color="accentOrange" style={styles.failedText.static}>
           {t('transactions.failed')}

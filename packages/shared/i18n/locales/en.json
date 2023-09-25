@@ -417,6 +417,7 @@
     "spam": "SPAM",
     "address": "Address",
     "operation": "Operation",
+    "description": "Description",
     "payload": "Payload",
     "bid_collection_name": "Issuer",
     "bid_name": "Name",
