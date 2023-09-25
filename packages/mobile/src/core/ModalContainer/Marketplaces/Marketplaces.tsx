@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Loader } from '$uikit';
@@ -6,22 +6,16 @@ import * as S from './Marketplaces.style';
 import { MarketplaceItem } from './MarketplaceItem/MarketplaceItem';
 import { t } from '@tonkeeper/shared/i18n';
 import { nftsSelector } from '$store/nfts';
-import { delay, getDiamondsCollectionMarketUrl } from '$utils';
+import { getDiamondsCollectionMarketUrl } from '$utils';
 import { MarketplacesModalProps } from './Marketplaces.interface';
 import { Modal, View } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
-import { SheetActions, useNavigation } from '@tonkeeper/router';
+import { SheetActions } from '@tonkeeper/router';
 
 export const Marketplaces: FC<MarketplacesModalProps> = (props) => {
   const { accentKey } = props;
-  const nav = useNavigation();
 
   const { isMarketplacesLoading, marketplaces: data } = useSelector(nftsSelector);
-
-  const handleMarketplacePress = useCallback(async () => {
-    nav.goBack();
-    await delay(300); // Close bottom sheet before system animation
-  }, []);
 
   const marketplaces = useMemo(() => {
     if (accentKey) {
@@ -51,7 +45,6 @@ export const Marketplaces: FC<MarketplacesModalProps> = (props) => {
         {marketplaces.map((item, idx, arr) => (
           <MarketplaceItem
             internalId={item.id}
-            onPress={handleMarketplacePress}
             topRadius={idx === 0}
             bottomRadius={idx === arr.length - 1}
             key={item.id}

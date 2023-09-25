@@ -13,14 +13,12 @@ export const MarketplaceItem: FC<MarketplaceItemProps> = ({
   description,
   topRadius,
   bottomRadius,
-  onPress,
   internalId,
 }) => {
   const handlePress = useCallback(async () => {
-    await onPress?.();
     openDAppBrowser(marketplaceUrl);
-    trackEvent(`marketplace_open`, { internal_id: internalId });
-  }, [marketplaceUrl, onPress, internalId]);
+    trackEvent('marketplace_open', { internal_id: internalId });
+  }, [marketplaceUrl, internalId]);
 
   return (
     <S.Wrap>

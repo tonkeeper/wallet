@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDimensions } from '$hooks/useDimensions';
 import { mainActions, accentSelector, accentTonIconSelector } from '$store/main';
 import { NFTModel, TonDiamondMetadata } from '$store/models';
@@ -134,7 +134,7 @@ const AppearanceModal = memo<AppearanceModalProps>((props) => {
     dispatch(mainActions.setTonCustomIcon(selectedAccent?.nftIcon || null));
 
     nav.goBack();
-  }, [dispatch, selectedAccent]);
+  }, [dispatch, nav, selectedAccent.id, selectedAccent?.nftIcon]);
 
   const openDiamondsNFTCollection = useCallback(() => {
     if (selectedAccent) {
