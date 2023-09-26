@@ -28,7 +28,7 @@ import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { walletWalletSelector } from '$store/wallet';
 import { useNotificationsResolver } from '$hooks/useNotificationsResolver';
-import { AccessConfirmation, Intro } from '$core';
+import { AccessConfirmation, AddressUpdateInfo, Intro } from '$core';
 import { ModalStack } from '$navigation/ModalStack';
 import { withModalStack } from '@tonkeeper/router';
 
@@ -137,6 +137,10 @@ export const MainStack: FC = () => {
       <Stack.Screen name={MainStackRouteNames.Jetton} component={Jetton} />
       <Stack.Screen name={MainStackRouteNames.JettonsList} component={JettonsList} />
       <Stack.Screen name={MainStackRouteNames.ManageTokens} component={ManageTokens} />
+      <Stack.Screen
+        name={MainStackRouteNames.AddressUpdateInfo}
+        component={AddressUpdateInfo}
+      />
     </Stack.Navigator>
   );
 };

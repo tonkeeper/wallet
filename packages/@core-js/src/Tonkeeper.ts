@@ -59,7 +59,13 @@ export class Tonkeeper {
 
   // TODO: for temp, rewrite it when ton wallet will it be moved here;
   // init() must be called when app starts
-  public async init(address: string, isTestnet: boolean, tronAddress: string) {
+  public async init(
+    address: string,
+    isTestnet: boolean,
+    tronAddress: string,
+    // TODO: remove after transition to UQ address format
+    bounceable = true,
+  ) {
     try {
       this.destroy();
       if (address) {
@@ -75,6 +81,7 @@ export class Tonkeeper {
               network: isTestnet ? WalletNetwork.testnet : WalletNetwork.mainnet,
               tronAddress: tronAddress,
               address: address,
+              bounceable,
             },
           );
 

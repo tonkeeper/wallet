@@ -46,8 +46,8 @@ import { Events, SendAnalyticsFrom } from '$store/models';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { trackEvent } from '$utils/stats';
-import { Address } from '@tonkeeper/core';
 import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -118,62 +118,75 @@ export const WalletScreen = memo(() => {
     dispatch(walletActions.refreshBalancesPage(true));
   }, [dispatch]);
 
-  const ListHeader = (visibleApproval?: boolean) => (
-    <View style={styles.mainSection} pointerEvents="box-none">
-      {notifications.map((notification, i) => (
-        <InternalNotification
-          key={i}
-          mode={notification.mode}
-          title={notification.title}
-          caption={notification.caption}
-          action={notification.action}
-          onPress={notification.onPress}
-          onClose={notification.onClose}
-        />
-      ))}
-      {shouldUpdate && <UpdatesCell />}
-      <View style={styles.amount} pointerEvents="box-none">
-        <ShowBalance amount={balance.total.fiat} />
-        <View style={styles.walletSpace} />
-        {wallet && (
-          <TouchableOpacity
-            hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
-            style={{ zIndex: 3 }}
-            onPress={() => copyText(wallet.address.friendlyAddress)}
-            activeOpacity={0.6}
-          >
-            <Text color="textSecondary" variant="body2">
-              {Address.toShort(wallet.address.friendlyAddress)}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
-      <IconButtonList>
-        <IconButton
-          onPress={handlePressSend}
-          iconName="ic-arrow-up-28"
-          title={t('wallet.send_btn')}
-        />
-        <IconButton
-          onPress={handlePressRecevie}
-          iconName="ic-arrow-down-28"
-          title={t('wallet.receive_btn')}
-        />
-        <IconButton
-          onPress={handlePressBuy}
-          iconName="ic-plus-28"
-          title={t('wallet.buy_btn')}
-        />
-        {!flags.disable_swap && (
-          <IconButton
-            onPress={handlePressSwap}
-            icon={<SwapIcon animated />}
-            title={t('wallet.swap_btn')}
+  const ListHeader = useCallback(
+    (visibleApproval?: boolean) => (
+      <View style={styles.mainSection} pointerEvents="box-none">
+        {notifications.map((notification, i) => (
+          <InternalNotification
+            key={i}
+            mode={notification.mode}
+            title={notification.title}
+            caption={notification.caption}
+            action={notification.action}
+            onPress={notification.onPress}
+            onClose={notification.onClose}
           />
-        )}
-      </IconButtonList>
-      {wallet && visibleApproval && <ApprovalCell />}
-    </View>
+        ))}
+        {shouldUpdate && <UpdatesCell />}
+        <View style={styles.amount} pointerEvents="box-none">
+          <ShowBalance amount={balance.total.fiat} />
+          <View style={styles.walletSpace} />
+          {wallet && tk.wallet && (
+            <TouchableOpacity
+              hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
+              style={{ zIndex: 3 }}
+              onPress={() => copyText(tk.wallet.address.ton.friendly)}
+              activeOpacity={0.6}
+            >
+              <Text color="textSecondary" variant="body2">
+                {tk.wallet.address.ton.short}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <IconButtonList>
+          <IconButton
+            onPress={handlePressSend}
+            iconName="ic-arrow-up-28"
+            title={t('wallet.send_btn')}
+          />
+          <IconButton
+            onPress={handlePressRecevie}
+            iconName="ic-arrow-down-28"
+            title={t('wallet.receive_btn')}
+          />
+          <IconButton
+            onPress={handlePressBuy}
+            iconName="ic-plus-28"
+            title={t('wallet.buy_btn')}
+          />
+          {!flags.disable_swap && (
+            <IconButton
+              onPress={handlePressSwap}
+              icon={<SwapIcon animated />}
+              title={t('wallet.swap_btn')}
+            />
+          )}
+        </IconButtonList>
+        {wallet && visibleApproval && <ApprovalCell />}
+      </View>
+    ),
+    [
+      balance.total.fiat,
+      flags.disable_swap,
+      handlePressBuy,
+      handlePressRecevie,
+      handlePressSend,
+      handlePressSwap,
+      notifications,
+      shouldUpdate,
+      wallet,
+    ],
   );
 
   function renderEmpty() {
@@ -366,12 +379,12 @@ const styles = Steezy.create(({ colors, corners, isTablet }) => ({
     width: '100%',
     [isTablet]: {
       alignItems: 'center',
-    }
+    },
   },
   createWalletContainerInner: {
     bottom: 0,
     [isTablet]: {
-      width: TabletMaxWidth
-    }
-  }
+      width: TabletMaxWidth,
+    },
+  },
 }));

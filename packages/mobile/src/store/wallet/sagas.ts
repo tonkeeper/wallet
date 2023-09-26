@@ -92,6 +92,7 @@ import TonWeb from 'tonweb';
 import { goBack } from '$navigation/imperative';
 import { trackEvent } from '$utils/stats';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { getFlag } from '$utils/flags';
 
 function* loadRatesAfterJettons() {
   try {
@@ -168,7 +169,13 @@ function* createWalletWorker(action: CreateWalletAction) {
     yield fork(loadRatesAfterJettons);
     const addr = yield call([wallet.ton, 'getAddress']);
     const data = yield call([tk, 'load']);
-    yield call([tk, 'init'], addr, getChainName() === 'testnet', data.tronAddress);
+    yield call(
+      [tk, 'init'],
+      addr,
+      getChainName() === 'testnet',
+      data.tronAddress,
+      !getFlag('address_style_nobounce'),
+    );
     onDone();
 
     yield call(trackEvent, 'create_wallet');
@@ -291,7 +298,13 @@ function* switchVersionWorker() {
   const addr = yield call([newWallet.ton, 'getAddress']);
   yield call([tk, 'destroy']);
   const data = yield call([tk, 'load']);
-  yield call([tk, 'init'], addr, getChainName() === 'testnet', data.tronAddress);
+  yield call(
+    [tk, 'init'],
+    addr,
+    getChainName() === 'testnet',
+    data.tronAddress,
+    !getFlag('address_style_nobounce'),
+  );
 
   yield call(JettonsCache.clearAll, walletName);
   yield put(walletActions.refreshBalancesPage());
@@ -867,7 +880,13 @@ function* doMigration(wallet: Wallet, newAddress: string) {
     const addr = yield call([newWallet.ton, 'getAddress']);
     yield call([tk, 'destroy']);
     const data = yield call([tk, 'load']);
-    yield call([tk, 'init'], addr, getChainName() === 'testnet', data.tronAddress);
+    yield call(
+      [tk, 'init'],
+      addr,
+      getChainName() === 'testnet',
+      data.tronAddress,
+      !getFlag('address_style_nobounce'),
+    );
 
     yield put(
       batchActions(
