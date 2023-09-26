@@ -54,9 +54,13 @@ export const AddressUpdateInfo: FC = () => {
               {t('address_update.old_style')}
             </Text>
             <Text numberOfLines={1} ellipsizeMode="middle" style={{ fontFamily }}>
-              <Text color="textAccent">{oldStyle.start}</Text>
+              <Text color="textAccent" style={{ fontFamily }}>
+                {oldStyle.start}
+              </Text>
               {oldStyle.middle}
-              <Text color="textAccent">{oldStyle.end}</Text>
+              <Text color="textAccent" style={{ fontFamily }}>
+                {oldStyle.end}
+              </Text>
             </Text>
           </Pressable>
           <Spacer y={16} />
@@ -70,9 +74,13 @@ export const AddressUpdateInfo: FC = () => {
               {t('address_update.new_style')}
             </Text>
             <Text numberOfLines={1} ellipsizeMode="middle" style={{ fontFamily }}>
-              <Text color="textAccent">{newStyle.start}</Text>
+              <Text color="textAccent" style={{ fontFamily }}>
+                {newStyle.start}
+              </Text>
               {newStyle.middle}
-              <Text color="textAccent">{newStyle.end}</Text>
+              <Text color="textAccent" style={{ fontFamily }}>
+                {newStyle.end}
+              </Text>
             </Text>
           </Pressable>
           <Spacer y={16} />

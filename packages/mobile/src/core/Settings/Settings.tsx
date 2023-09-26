@@ -66,6 +66,7 @@ export const Settings: FC = () => {
     'disable_support_button',
     'disable_feedback_button',
     'address_style_settings',
+    'address_style_nobounce',
   ]);
 
   const nav = useNavigation();
@@ -346,9 +347,10 @@ export const Settings: FC = () => {
                       {SelectableVersionsConfig[version]?.label}
                     </Text>
                     <Text variant="body1" color="foregroundSecondary">
-                      {Address.toShort(
+                      {Address.parse(
                         allTonAddesses[SelectableVersionsConfig[version]?.label],
-                      )}
+                        { bounceable: !flags.address_style_nobounce },
+                      ).toShort()}
                     </Text>
                   </S.WalletVersion>
                 )}

@@ -93,6 +93,7 @@ import { goBack } from '$navigation/imperative';
 import { trackEvent } from '$utils/stats';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { getFlag } from '$utils/flags';
+import { Address } from '@tonkeeper/shared/Address';
 
 function* loadRatesAfterJettons() {
   try {
@@ -800,8 +801,12 @@ function* openMigrationWorker(action: OpenMigrationAction) {
     yield call(Toast.hide);
     openMigration(
       fromVersion,
-      oldAddress,
-      newAddress,
+      Address.parse(oldAddress).toFriendly({
+        bounceable: !getFlag('address_style_nobounce'),
+      }),
+      Address.parse(newAddress).toFriendly({
+        bounceable: !getFlag('address_style_nobounce'),
+      }),
       !!migrationState,
       Ton.fromNano(oldInfo.balance),
       Ton.fromNano(newInfo.balance),
