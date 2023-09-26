@@ -14,6 +14,7 @@ import { useNavigation } from '@tonkeeper/router';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
 import {
+  MainStackRouteNames,
   openDeleteAccountDone,
   openDevMenu,
   openJettonsListSettingsStack,
@@ -64,6 +65,7 @@ export const Settings: FC = () => {
     'disable_apperance',
     'disable_support_button',
     'disable_feedback_button',
+    'address_style_settings',
   ]);
 
   const nav = useNavigation();
@@ -361,6 +363,17 @@ export const Settings: FC = () => {
                 />
               </PopupSelect>
             )}
+            {wallet && flags.address_style_settings ? (
+              <List.Item
+                value={
+                  <Text variant="label1" color="accentPrimary">
+                    EQ » UQ
+                  </Text>
+                }
+                title={t('address_update.title')}
+                onPress={() => nav.navigate(MainStackRouteNames.AddressUpdateInfo)}
+              />
+            ) : null}
           </List>
           <Spacer y={16} />
           <List>

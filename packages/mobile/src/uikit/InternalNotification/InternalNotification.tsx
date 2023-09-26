@@ -7,6 +7,7 @@ import { useTheme } from '$hooks/useTheme';
 import { Text } from '../Text/Text';
 import { Icon } from '../Icon/Icon';
 import { ns, triggerSelection } from '$utils';
+import { TonThemeColor } from '$styled';
 
 export const InternalNotification: FC<InternalNotificationProps> = (props) => {
   const { title, caption, action, mode, onPress, onClose } = props;
@@ -14,21 +15,27 @@ export const InternalNotification: FC<InternalNotificationProps> = (props) => {
   const theme = useTheme();
 
   let textColor: any = 'foregroundPrimary';
+  let captionColor: TonThemeColor = 'foregroundPrimary';
+  let highlightColor: TonThemeColor = 'accentOrangeActive';
   let bgColor = theme.colors.accentNegative;
   let captionOpacity = 1;
 
   if (mode === 'warning') {
     textColor = 'backgroundPrimary';
+    captionColor = 'backgroundPrimary';
     bgColor = '#F5A73B';
     captionOpacity = 0.76;
   } else if (mode === 'tertiary') {
     textColor = 'foregroundPrimary';
+    captionColor = 'textSecondary';
     bgColor = '#2E3847';
+    highlightColor = 'backgroundQuaternary';
   } else if (mode === 'neutral') {
     textColor = 'foregroundPrimary';
     bgColor = theme.colors.accentPrimary;
   } else if (mode === 'positive') {
     textColor = 'backgroundPrimary';
+    captionColor = 'backgroundPrimary';
     bgColor = theme.colors.accentPositive;
   }
 
@@ -43,7 +50,7 @@ export const InternalNotification: FC<InternalNotificationProps> = (props) => {
       <S.Clickable
         onPress={onPress}
         isDisabled={!onPress}
-        background="accentOrangeActive"
+        background={highlightColor}
         style={{
           backgroundColor: bgColor,
         }}
@@ -64,7 +71,7 @@ export const InternalNotification: FC<InternalNotificationProps> = (props) => {
           </Text>
           <Text
             style={{ marginBottom: ns(4), opacity: captionOpacity }}
-            color={textColor}
+            color={captionColor}
             variant="body2"
             lineHeight={20}
           >

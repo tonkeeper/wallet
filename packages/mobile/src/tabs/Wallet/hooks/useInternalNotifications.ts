@@ -1,14 +1,18 @@
-import { usePrevious } from "$hooks/usePrevious";
-import { isServerConfigLoaded } from "$shared/constants";
-import { mainActions, mainSelector } from "$store/main";
-import { walletActions } from "$store/wallet";
-import { InternalNotificationProps } from "$uikit/InternalNotification/InternalNotification.interface";
-import { useNetInfo } from "@react-native-community/netinfo";
-import { MainDB } from "$database";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Linking } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { t } from "@tonkeeper/shared/i18n";
+import { usePrevious } from '$hooks/usePrevious';
+import { isServerConfigLoaded } from '$shared/constants';
+import { mainActions, mainSelector } from '$store/main';
+import { walletActions, walletWalletSelector } from '$store/wallet';
+import { InternalNotificationProps } from '$uikit/InternalNotification/InternalNotification.interface';
+import { useNetInfo } from '@react-native-community/netinfo';
+import { MainDB } from '$database';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Linking } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { t } from '@tonkeeper/shared/i18n';
+import { useAddressUpdateStore } from '$store';
+import { useFlag } from '$utils/flags';
+import { useNavigation } from '@tonkeeper/router';
+import { MainStackRouteNames } from '$navigation';
 
 export const useInternalNotifications = () => {
   const dispatch = useDispatch();
@@ -16,6 +20,9 @@ export const useInternalNotifications = () => {
   const [isNoSignalDismissed, setNoSignalDismissed] = useState(false);
   const netInfo = useNetInfo();
   const prevNetInfo = usePrevious(netInfo);
+  const wallet = useSelector(walletWalletSelector);
+
+  const nav = useNavigation();
 
   const handleRefresh = useCallback(() => {
     dispatch(walletActions.refreshBalancesPage(true));
@@ -35,7 +42,11 @@ export const useInternalNotifications = () => {
     timeSyncedDismissedTimestamp,
     isTimeSynced,
   } = useSelector(mainSelector);
-  
+
+  const addressUpdateDismissed = useAddressUpdateStore((s) => s.dismissed);
+  const shouldShowAddressUpdate = useFlag('address_style_notice');
+  const isUQAddress = useFlag('address_style_nobounce');
+
   const notifications = useMemo(() => {
     const result: InternalNotificationProps[] = [];
 
@@ -86,6 +97,21 @@ export const useInternalNotifications = () => {
       });
     }
 
+    if (wallet && !addressUpdateDismissed && shouldShowAddressUpdate) {
+      result.push({
+        title: t('address_update.title'),
+        caption: isUQAddress
+          ? t('address_update.notification_desc_did_change')
+          : t('address_update.notification_desc_will_change'),
+        mode: 'tertiary',
+        action: t('address_update.learn_more'),
+        onPress: () => {
+          nav.push(MainStackRouteNames.AddressUpdateInfo);
+        },
+        onClose: () => useAddressUpdateStore.getState().actions.dismiss(),
+      });
+    }
+
     if (internalNotifications.length > 0) {
       for (const item of internalNotifications) {
         const prepared: InternalNotificationProps = {
@@ -114,17 +140,21 @@ export const useInternalNotifications = () => {
 
     return result;
   }, [
+    isConfigError,
+    netInfo.isConnected,
     badHosts,
     isBadHostsDismissed,
-    timeSyncedDismissedTimestamp,
     isTimeSynced,
-    t,
-    dispatch,
-    netInfo,
-    isNoSignalDismissed,
+    timeSyncedDismissedTimestamp,
+    wallet,
+    addressUpdateDismissed,
+    shouldShowAddressUpdate,
     internalNotifications,
-    isConfigError,
+    isNoSignalDismissed,
+    dispatch,
+    isUQAddress,
+    nav,
   ]);
 
   return notifications;
-}
+};

@@ -106,7 +106,9 @@ export class Wallet {
       network: walletInfo.network,
     };
 
-    const tonAddresses = Address.parse(walletInfo.address).toAll({
+    const tonAddresses = Address.parse(walletInfo.address, {
+      bounceable: walletInfo.bounceable,
+    }).toAll({
       testOnly: walletInfo.network === WalletNetwork.testnet,
     });
 

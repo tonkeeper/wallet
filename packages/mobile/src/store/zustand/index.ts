@@ -6,3 +6,4 @@ export * from './browser';
 export * from './staking';
 export * from './notifications';
 export * from './encryptedComments';
+export * from './addressUpdate';

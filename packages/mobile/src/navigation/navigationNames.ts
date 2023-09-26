@@ -47,6 +47,7 @@ export enum MainStackRouteNames {
   JettonsList = 'JettonsList',
   EditConfig = 'EditConfig',
   ManageTokens = 'ManageTokens',
+  AddressUpdateInfo = 'AddressUpdateInfo',
 }
 
 export enum TabsStackRouteNames {
