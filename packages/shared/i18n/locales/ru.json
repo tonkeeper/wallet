@@ -1003,7 +1003,10 @@
     }
   },
   "choose_country": {
-    "title": "Выберите вашу страну"
+    "title": "Выберите вашу страну",
+    "search": "Поиск",
+    "cancel": "Отмена",
+    "empty_placeholder": "Ваш поиск не дал результатов"
   },
   "programmable_nfts": {
     "alert": {
