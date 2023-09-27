@@ -143,7 +143,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
 
       return action.simple_preview.value ?? AmountFormatter.sign.minus;
     }
-  }, [action.destination, action.amount, action.simple_preview, props.value]);
+  }, [action.destination, action.amount, action.simple_preview, props.value, formatNano]);
 
   const subvalue = useMemo(() => {
     if (props.subvalue !== undefined) {
