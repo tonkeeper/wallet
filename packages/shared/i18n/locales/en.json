@@ -976,7 +976,7 @@
   "address_update": {
     "title": "Address style update",
     "notification_desc_will_change": "On October 1 your wallet address will update to the UQ format which is just better. The old address will also work. You don’t need to do anything.",
-    "notification_desc_did_change": "Your wallet address has been updated to the UQ format which is just better. The old address will also work. You don’t need to do anything.",
+    "notification_desc_did_change": "On October 1 your wallet address did update to the UQ format which is just better. The old address will also work. You don’t need to do anything.",
     "learn_more": "Learn more",
     "why_change": "Why change?",
     "your_wallet": "Your wallet",
