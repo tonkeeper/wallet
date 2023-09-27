@@ -960,7 +960,10 @@
     }
   },
   "choose_country": {
-    "title": "Choose your country"
+    "title": "Choose your country",
+    "search": "Search",
+    "cancel": "Cancel",
+    "empty_placeholder": "Your search returned no results"
   },
   "programmable_nfts": {
     "alert": {

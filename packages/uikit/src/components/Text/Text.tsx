@@ -1,4 +1,8 @@
-import { Text as NativeText, TextProps as NativeTextProps, TextStyle } from 'react-native';
+import {
+  Text as NativeText,
+  TextProps as NativeTextProps,
+  TextStyle,
+} from 'react-native';
 import Animated, { AnimateProps } from 'react-native-reanimated';
 import { FontWeights, TTextTypes, TextTypes } from './TextStyles';
 import { pickBy, identity } from 'lodash';
@@ -13,6 +17,7 @@ export type TextColors =
   | 'textAccent'
   | 'textPrimaryAlternate'
   | 'accentOrange'
+  | 'accentBlue'
   | 'constantWhite'
   | 'constantBlack';
 
