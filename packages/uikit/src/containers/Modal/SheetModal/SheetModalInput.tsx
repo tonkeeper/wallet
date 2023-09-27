@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextInput } from 'react-native-gesture-handler';
-import { TextInputProps } from 'react-native';
+import { TextInputProps, TextInput as TextInputNative } from 'react-native';
 import { useBottomSheetInternal } from '@gorhom/bottom-sheet';
 import { isAndroid, useMergeRefs } from '../../../utils';
 
@@ -54,6 +54,24 @@ const SheetModalInputComponent = React.forwardRef<
   );
 });
 
+const SheetModalInputComponentAndroid = React.forwardRef<
+  SheetModalInputRef,
+  SheetModalInputProps
+>(({ autoFocus, ...rest }, ref) => {
+  const inputRef = React.useRef<TextInput>(null);
+  const setRef = useMergeRefs(ref, inputRef);
+
+  React.useEffect(() => {
+    if (autoFocus) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 75);
+    }
+  }, []);
+
+  return <TextInputNative ref={setRef} {...rest} />;
+});
+
 export const SheetModalInput = isAndroid
-  ? TextInput
+  ? React.memo(SheetModalInputComponentAndroid)
   : React.memo(SheetModalInputComponent);
