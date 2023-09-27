@@ -11,6 +11,7 @@ import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { AnimationDirection, HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { HideableImage } from '$core/HideableAmount/HideableImage';
 import { Address } from '@tonkeeper/shared/Address';
+import { DNS, KnownTLDs } from '@tonkeeper/core';
 
 interface NFTCardItemProps {
   item: any;
@@ -21,12 +22,12 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
   const { item } = props;
 
   const flags = useFlags(['disable_apperance']);
-  
 
   const expiringDomains = useExpiringDomains((state) => state.domains);
   const isTonDiamondsNft = checkIsTonDiamondsNFT(item);
   const isOnSale = useMemo(() => !!item.sale, [item.sale]);
-  const isTG = (item.dns || item.name)?.endsWith('.t.me');
+
+  const isTG = DNS.getTLD(item.dns || item.name) === KnownTLDs.TELEGRAM;
   const isDNS = !!item.dns && !isTG;
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -43,10 +44,7 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
     return item.name || Address.toShort(item.address);
   }, [isDNS, item.dns, item.name, item.address]);
 
-  const nftRawAddress = useMemo(
-    () => Address.parse(item.address).toRaw(),
-    [],
-  );
+  const nftRawAddress = useMemo(() => Address.parse(item.address).toRaw(), []);
 
   return (
     <Pressable

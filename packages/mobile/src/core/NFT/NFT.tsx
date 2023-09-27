@@ -7,10 +7,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import { ImageWithTitle } from '$core/NFT/ImageWithTitle/ImageWithTitle';
 import {
-  ONE_YEAR_MILISEC,
   checkIsTelegramNumbersNFT,
   checkIsTonDiamondsNFT,
   ns,
+  ONE_YEAR_MILISEC,
 } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { t } from '@tonkeeper/shared/i18n';
@@ -18,7 +18,7 @@ import { Properties } from '$core/NFT/Properties/Properties';
 import { Details } from '$core/NFT/Details/Details';
 import { NFTProps } from '$core/NFT/NFT.interface';
 import { useNFT } from '$hooks/useNFT';
-import { Platform, Share, View, TouchableOpacity } from 'react-native';
+import { Platform, Share, TouchableOpacity, View } from 'react-native';
 import { TonDiamondFeature } from './TonDiamondFeature/TonDiamondFeature';
 import { useDispatch, useSelector } from 'react-redux';
 import { walletAddressSelector } from '$store/wallet';
@@ -26,7 +26,7 @@ import { NFTModel, TonDiamondMetadata } from '$store/models';
 import { useFlags } from '$utils/flags';
 import { LinkingDomainButton } from './LinkingDomainButton';
 import { nftsActions } from '$store/nfts';
-import { SheetActions, navigation, useNavigation } from '@tonkeeper/router';
+import { navigation, useNavigation } from '@tonkeeper/router';
 import { openDAppBrowser } from '$navigation';
 import { RenewDomainButton, RenewDomainButtonRef } from './RenewDomainButton';
 import { Tonapi } from '$libs/Tonapi';
@@ -34,7 +34,7 @@ import { Toast } from '$store';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { ProgrammableButtons } from '$core/NFT/ProgrammableButtons/ProgrammableButtons';
-import { Address } from '@tonkeeper/core';
+import { Address, DNS, KnownTLDs } from '@tonkeeper/core';
 import { NftItem } from '@tonkeeper/core/src/TonAPI';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { CryptoCurrencies } from '$shared/constants';
@@ -66,7 +66,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
     [nft],
   );
 
-  const isTG = (nft.dns || nft.name)?.endsWith('.t.me');
+  const isTG = DNS.getTLD(nft.dns || nft.name) === KnownTLDs.TELEGRAM;
   const isDNS = !!nft.dns && !isTG;
   const isTonDiamondsNft = checkIsTonDiamondsNFT(nft);
   const isNumbersNft = checkIsTelegramNumbersNFT(nft);

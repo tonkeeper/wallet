@@ -7,15 +7,15 @@ import _ from 'lodash';
 import { Icon, Text } from '$uikit';
 import { t } from '@tonkeeper/shared/i18n';
 import { useFlags } from '$utils/flags';
-import { Address } from '@tonkeeper/core';
+import { Address, DNS, KnownTLDs } from '@tonkeeper/core';
 
 export const NFTItem: React.FC<NFTItemProps> = ({ item, isLastInRow }) => {
   const flags = useFlags(['disable_apperance']);
-  
 
   const isTonDiamondsNft = checkIsTonDiamondsNFT(item);
   const isOnSale = useMemo(() => !!item.sale, [item.sale]);
-  const isTG = (item.dns || item.name)?.endsWith('.t.me');
+
+  const isTG = DNS.getTLD(item.dns || item.name) === KnownTLDs.TELEGRAM;
   const isDNS = !!item.dns && !isTG;
 
   // eslint-disable-next-line react-hooks/exhaustive-deps

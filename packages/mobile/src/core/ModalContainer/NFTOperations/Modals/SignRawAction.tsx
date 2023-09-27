@@ -15,6 +15,7 @@ import { ListHeader } from '$uikit';
 import { dnsToUsername } from '$utils/dnsToUsername';
 import { useDownloadNFT } from '../useDownloadNFT';
 import { Address } from '@tonkeeper/shared/Address';
+import { DNS, KnownTLDs } from '@tonkeeper/core';
 
 interface Props {
   action: Action;
@@ -162,7 +163,7 @@ const NftItemTransferAction = React.memo<NftItemTransferActionProps>((props) => 
         friendly: '',
       };
 
-  const isTG = (item.data?.dns || item.data?.name)?.endsWith('.t.me');
+  const isTG = DNS.getTLD(item.data?.dns || item.data?.name) === KnownTLDs.TELEGRAM;
 
   const caption = React.useMemo(() => {
     let text = '...';
