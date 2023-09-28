@@ -35,7 +35,7 @@ export class Address {
   private address: AddressType;
 
   constructor(source: string, formatOptions: Partial<DefaultFormatOptions> = {}) {
-    this.formatOptions = Object.assign(defaultFormatOptions, formatOptions);
+    this.formatOptions = { ...defaultFormatOptions, ...formatOptions };
     this.address = new TonWeb.Address(source);
   }
 
@@ -137,14 +137,12 @@ export class Address {
   }
 
   private mergeOptions(options: FormatOptions = {}): Required<FormatOptions> {
-    return Object.assign(
-      {
-        bounceable: this.getFormatOption(this.formatOptions.bounceable),
-        testOnly: this.getFormatOption(this.formatOptions.testOnly),
-        urlSafe: this.getFormatOption(this.formatOptions.urlSafe),
-      },
-      options,
-    );
+    return {
+      bounceable: this.getFormatOption(this.formatOptions.bounceable),
+      testOnly: this.getFormatOption(this.formatOptions.testOnly),
+      urlSafe: this.getFormatOption(this.formatOptions.urlSafe),
+      ...options,
+    };
   }
 
   private getFormatOption(option: (() => boolean) | boolean) {
@@ -160,8 +158,8 @@ export class Address {
 export class AddressFormatter {
   constructor(private options?: Partial<DefaultFormatOptions>) {} // Save and redirect to Address class
 
-  public parse(source: string) {
-    return Address.parse(source, this.options);
+  public parse(source: string, options?: Partial<DefaultFormatOptions>) {
+    return Address.parse(source, { ...this.options, ...options });
   }
 
   public fromPubkey = Address.fromPubkey;

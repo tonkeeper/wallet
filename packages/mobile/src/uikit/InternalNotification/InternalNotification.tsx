@@ -33,6 +33,8 @@ export const InternalNotification: FC<InternalNotificationProps> = (props) => {
   } else if (mode === 'neutral') {
     textColor = 'foregroundPrimary';
     bgColor = theme.colors.accentPrimary;
+    highlightColor = 'accentPrimaryLight';
+    captionOpacity = 0.76;
   } else if (mode === 'positive') {
     textColor = 'backgroundPrimary';
     captionColor = 'backgroundPrimary';

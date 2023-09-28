@@ -99,11 +99,11 @@ export const useInternalNotifications = () => {
 
     if (wallet && !addressUpdateDismissed && shouldShowAddressUpdate) {
       result.push({
-        title: t('address_update.title'),
+        title: `${t('address_update.title')}: EQ » UQ`,
         caption: isUQAddress
           ? t('address_update.notification_desc_did_change')
           : t('address_update.notification_desc_will_change'),
-        mode: 'tertiary',
+        mode: 'neutral',
         action: t('address_update.learn_more'),
         onPress: () => {
           nav.push(MainStackRouteNames.AddressUpdateInfo);

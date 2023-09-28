@@ -5,6 +5,7 @@ import { ActionItem, ActionType } from '@tonkeeper/core';
 import { List, copyText } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import { memo } from 'react';
+import { getFlag } from '@tonkeeper/mobile/src/utils/flags';
 
 interface SmartContractActionContentProps {
   action: ActionItem<ActionType.SmartContractExec>;
@@ -17,7 +18,7 @@ export const SmartContractActionContent = memo<SmartContractActionContentProps>(
     return (
       <ActionModalContent action={action} label={t('activityActionModal.call_contract')}>
         <List>
-          <AddressListItem address={action.payload.contract.address} />
+          <AddressListItem address={action.payload.contract.address} bounceable />
           <List.Item
             onPress={copyText(action.payload.operation)}
             title={t('transactionDetails.operation')}
