@@ -33,6 +33,8 @@ export interface ListItemProps {
   disabled?: boolean;
   titleProps?: TextProps;
   leftContentStyle?: StyleProp<ViewStyle>;
+
+  titleStyle?: ViewStyle;
   /*
     Shared value that will be updated when user press on ListItem
  */
@@ -81,7 +83,7 @@ export const ListItem = memo<ListItemProps>((props) => {
   const TouchableComponent = isAndroid ? Pressable : TouchableHighlight;
   const renderTitle = useCallback(() => {
     return (
-      <View style={styles.title}>
+      <View style={[styles.title, props.titleStyle]}>
         <View style={styles.titleTextContainer}>
           {typeof props.title === 'string' ? (
             <SText
@@ -205,7 +207,7 @@ const styles = Steezy.create(({ colors }) => ({
     height: 44,
     borderRadius: 44 / 2,
     overflow: 'hidden',
-    backgroundColor: colors.backgroundContentTint,
+    backgroundColor: colors.backgroundContentAttention,
   },
   picture: {
     width: 44,

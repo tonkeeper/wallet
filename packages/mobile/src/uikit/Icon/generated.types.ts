@@ -67,6 +67,7 @@ export type IconNames =
   | 'ic-explore-28'
   | 'ic-flash-28'
   | 'ic-gear-28'
+  | 'ic-globe-28'
   | 'ic-home-28'
   | 'ic-jetton-28'
   | 'ic-key-28'
@@ -191,6 +192,7 @@ export const AllIcons = [
   'ic-explore-28',
   'ic-flash-28',
   'ic-gear-28',
+  'ic-globe-28',
   'ic-home-28',
   'ic-jetton-28',
   'ic-key-28',
@@ -316,6 +318,7 @@ export const IconSizes = {
   'ic-explore-28': 28,
   'ic-flash-28': 28,
   'ic-gear-28': 28,
+  'ic-globe-28': 28,
   'ic-home-28': 28,
   'ic-jetton-28': 28,
   'ic-key-28': 28,

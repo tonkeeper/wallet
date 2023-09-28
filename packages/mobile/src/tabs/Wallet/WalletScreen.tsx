@@ -48,6 +48,8 @@ import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
 import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
+import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
+import { ExpiringDomainCell } from './components/ExpiringDomainCell';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -70,6 +72,9 @@ export const WalletScreen = memo(() => {
   const { data: tronBalances } = useTronBalances();
 
   const notifications = useInternalNotifications();
+  const expiringDomains = useExpiringDomains(
+    (state) => Object.keys(state.domains).length,
+  );
 
   // TODO: rewrite
   useEffect(() => {
@@ -172,7 +177,10 @@ export const WalletScreen = memo(() => {
           />
         )}
       </IconButtonList>
-      {wallet && visibleApproval && <ApprovalCell />}
+      {wallet && visibleApproval && expiringDomains > 0 && (
+        <ExpiringDomainCell style={{ paddingBottom: 8 }} />
+      )}
+      {wallet && visibleApproval && <ApprovalCell withoutSpacer={expiringDomains > 0} />}
     </View>
   );
 
@@ -254,12 +262,20 @@ export const WalletScreen = memo(() => {
             <Tabs.Section index={0}>
               <BalancesList
                 ListHeaderComponent={
-                  wallet ? (
-                    <ApprovalCell
-                      withoutSpacer
-                      style={{ paddingHorizontal: ns(16), paddingBottom: ns(16) }}
-                    />
-                  ) : undefined
+                  <>
+                    {wallet && expiringDomains > 0 && (
+                      <ExpiringDomainCell
+                        withoutSpacer
+                        style={{ paddingHorizontal: ns(16), paddingBottom: ns(8) }}
+                      />
+                    )}
+                    {wallet ? (
+                      <ApprovalCell
+                        withoutSpacer
+                        style={{ paddingHorizontal: ns(16), paddingBottom: ns(16) }}
+                      />
+                    ) : undefined}
+                  </>
                 }
                 balance={balance}
                 tronBalances={tronBalances}
@@ -273,12 +289,20 @@ export const WalletScreen = memo(() => {
             <Tabs.Section index={1}>
               <Tabs.FlashList
                 ListHeaderComponent={
-                  wallet ? (
-                    <ApprovalCell
-                      withoutSpacer
-                      style={{ paddingHorizontal: ns(6), paddingBottom: ns(16) }}
-                    />
-                  ) : undefined
+                  <>
+                   {wallet && expiringDomains > 0 && (
+                      <ExpiringDomainCell
+                        withoutSpacer
+                        style={{ paddingHorizontal: ns(6), paddingBottom: ns(8) }}
+                      />
+                    )}
+                    {wallet ? (
+                      <ApprovalCell
+                        withoutSpacer
+                        style={{ paddingHorizontal: ns(6), paddingBottom: ns(16) }}
+                      />
+                    ) : undefined}
+                  </>
                 }
                 contentContainerStyle={styles.scrollContainer.static}
                 estimatedItemSize={1000}

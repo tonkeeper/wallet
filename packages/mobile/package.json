@@ -14,6 +14,7 @@
     "build:android:apk": "cd android && ./gradlew assembleRelease && cd ..",
     "build:android:google-play": "git apply ../../patches/google-play-release.patch && yarn build:android:apk && git apply -R ../../patches/google-play-release.patch",
     "build:android:apk-site": "ENVFILE=.env.site yarn build:android:apk",
+    "build:android:google-play": "git apply ../../patches/google-play-release.patch && yarn build:android && git apply -R ../../patches/google-play-release.patch",
     "clean:android": "cd android && ./gradlew clean && cd ..",
     "open_build_folder": "open ./android/app/build/outputs/bundle",
     "postinstall": "expo-yarn-workspaces postinstall && patch-package",

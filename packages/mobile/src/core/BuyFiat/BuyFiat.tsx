@@ -37,14 +37,14 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
 
   const deeplinking = useDeeplinking();
 
-  const handleHttpError = useCallback(() => {
-    setWebViewKey(webViewKey + 1);
+  const handleHttpError = useCallback((event) => {
+    debugLog('[BuyFiat:handleHttpError]', event.nativeEvent.url);
   }, [setWebViewKey, webViewKey]);
 
-  const handleError = useCallback((e) => {
-    console.log(e.nativeEvent);
+  const handleError = useCallback((event) => {
+    debugLog('[BuyFiat:handleError]', event.nativeEvent.url);
   }, []);
-
+  
   const webviewUrl = useMemo(() => {
     const addr = address[currency];
 
