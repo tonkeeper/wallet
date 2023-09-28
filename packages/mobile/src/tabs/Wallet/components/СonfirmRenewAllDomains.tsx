@@ -1,6 +1,6 @@
-import { Modal, useNavigation } from '$libs/navigation';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
-import { push } from '$navigation/helper';
+import { useNavigation, SheetActions } from '@tonkeeper/router';
+import { Modal } from '@tonkeeper/uikit';
+import { push } from '$navigation/imperative';
 import { t } from '$translation';
 import { Icon, List, Spacer, Text, TransitionOpacity } from '$uikit';
 import { memo, useCallback, useState } from 'react';
@@ -8,23 +8,25 @@ import { View, StyleSheet } from 'react-native';
 import * as S from '../../../core/ModalContainer/NFTOperations/NFTOperations.styles';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { formatter } from '$utils/formatter';
-import { useFiatValue, useWallet } from '$hooks';
+import { useFiatValue } from '$hooks/useFiatValue';
+import { useWallet } from '$hooks/useWallet';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { copyText } from '$hooks/useCopyText';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { RenewAllProgressButton } from './RenewAllProgressButton';
-import { Base64, debugLog, delay, triggerNotificationSuccess } from '$utils';
+import { Base64, delay, triggerNotificationSuccess } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { Toast } from '$store/zustand/toast';
 import { Ton } from '$libs/Ton';
 import TonWeb from 'tonweb';
 import { Tonapi } from '$libs/Tonapi';
-import { eventsActions } from '$store/events';
 import { useDispatch } from 'react-redux';
 import {
   checkIsInsufficient,
   openInsufficientFundsModal,
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import BigNumber from 'bignumber.js';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 enum States {
   INITIAL,
@@ -109,7 +111,7 @@ export const СonfirmRenewAllDomains = memo((props) => {
         const queryMsg = await tx.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
         await Tonapi.sendBoc(boc);
-        dispatch(eventsActions.pollEvents());
+        tk.wallet.activityList.reload();
 
         await delay(15000);
 
@@ -132,7 +134,7 @@ export const СonfirmRenewAllDomains = memo((props) => {
     }
   }, [setCurrent]);
 
-  const fiatAmount = `≈ ${fiatValue.fiatInfo.amount}`;
+  const fiatAmount = `≈ ${fiatValue.fiat}`;
   const formattedAmount = formatter.format(amount, {
     currency: 'TON',
     currencySeparator: 'wide',

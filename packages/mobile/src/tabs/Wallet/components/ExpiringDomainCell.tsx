@@ -6,7 +6,7 @@ import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { ONE_YEAR_MILISEC, format, getCountOfDays, getLocale } from '$utils/date';
 import { t } from '$translation';
 import { openRenewAllDomainModal } from '../RenewAllDomainModal';
-import { maskifyAddress, maskifyDomain } from '$utils';
+import { maskifyAddress, maskifyDomain } from '$utils/address';
 
 interface ApprovalCellProps {
   withoutSpacer?: boolean;
