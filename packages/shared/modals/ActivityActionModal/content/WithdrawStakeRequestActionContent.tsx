@@ -24,6 +24,7 @@ export const WithdrawStakeRequestActionContent =
             destination={action.destination}
             hideName={action.event.is_scam}
             sender={action.payload.pool}
+            bounceable
           />
           <ExtraListItem extra={action.event.extra} />
         </List>

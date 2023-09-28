@@ -20,6 +20,7 @@ import {
 } from '@tonkeeper/uikit';
 
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
+import { useFlags } from '@tonkeeper/mobile/src/utils/flags';
 
 interface ActionListItem {
   onPress?: () => void;
@@ -50,6 +51,8 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     isSimplePreview,
   } = props;
   const { formatNano } = useHideableFormatter();
+
+  const flags = useFlags(['address_style_nobounce']);
 
   const handlePress = useCallback(() => {
     if (onPress) {
@@ -114,7 +117,9 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
       if (senderAccount.name) {
         return senderAccount.name;
       } else {
-        return Address.parse(senderAccount.address).toShort();
+        return Address.parse(senderAccount.address, {
+          bounceable: !flags.address_style_nobounce,
+        }).toShort();
       }
     } else {
       const account = action.simple_preview.accounts[0];

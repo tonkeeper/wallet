@@ -16,6 +16,7 @@ import { dnsToUsername } from '$utils/dnsToUsername';
 import { useDownloadNFT } from '../useDownloadNFT';
 import { Address } from '@tonkeeper/shared/Address';
 import { DNS, KnownTLDs } from '@tonkeeper/core';
+import { getFlag } from '$utils/flags';
 
 interface Props {
   action: Action;
@@ -96,7 +97,9 @@ interface TonTransferActionProps {
 const TonTransferAction = React.memo<TonTransferActionProps>((props) => {
   const { action, skipHeader, totalFee } = props;
   const amount = Ton.formatAmount(action.amount);
-  const address = Address.parse(action.recipient.address).toAll();
+  const address = Address.parse(action.recipient.address, {
+    bounceable: !getFlag('address_style_nobounce'),
+  }).toAll();
 
   return (
     <>
@@ -157,7 +160,9 @@ const NftItemTransferAction = React.memo<NftItemTransferActionProps>((props) => 
   const { action, totalFee } = props;
   const item = useDownloadNFT(action.nft);
   const address = action.recipient
-    ? Address.parse(action.recipient.address).toAll()
+    ? Address.parse(action.recipient.address, {
+        bounceable: !getFlag('address_style_nobounce'),
+      }).toAll()
     : {
         short: '',
         friendly: '',

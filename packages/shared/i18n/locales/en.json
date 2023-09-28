@@ -977,18 +977,18 @@
     "not_exists": "Invalid exchange ID"
   },
   "address_update": {
-    "title": "Address style update",
-    "notification_desc_will_change": "On October 1 your wallet address will update to the UQ format which is just better. The old address will also work. You don’t need to do anything.",
-    "notification_desc_did_change": "On October 1 your wallet address did update to the UQ format which is just better. The old address will also work. You don’t need to do anything.",
+    "title": "Address Update",
+    "notification_desc_will_change": "On October 5 your wallet address will update to the UQ format which is just better. The old address will also work. You don’t need to do anything.",
+    "notification_desc_did_change": "On October 5 your wallet address did update to the UQ format which is just better. The old address will also work. You don’t need to do anything.",
     "learn_more": "Learn more",
     "why_change": "Why change?",
     "your_wallet": "Your wallet",
     "old_style": "Old address",
     "new_style": "New address",
-    "post_top": "By the end of this year the entire TON network will display wallet addresses differently. The new address will start with UQ instead of EQ. And the last four letters will change too. The old address will also work and direct to the same wallet. It doesn't effect the safety of funds stored in your wallet anyhow.",
+    "post_top": "By the end of this year the entire TON network will display wallet addresses differently. The new address will start with UQ instead of EQ. And the last four letters will change too. The old address will also work and direct to the same wallet. It doesn't effect the safety of funds stored in your wallet anyhow.",
     "post_rest": "There are two address styles on the TON blockchain and until now only one was used for apps and wallets.\n\nThe EQ format is best for smart contracts that process incoming funds. If a smart contract isn’t published yet — i.e., the code isn’t on the blockchain — then the TONs sent to that address will bounce back to the sender. And this is a safety feature: if there is any error, TONs bounce back.\n\nThe UQ format is best for wallets. Coins never bounce because wallets are designed to simply store funds. Each wallet starts as a plain address without a code on the blockchain. So, it would make no sense for coins to bounce back.\n\nThis year we are switching wallets to the more suitable UQ format. And if you continue sending funds to an old EQ address someone gave you, there will be two options:\n",
     "first_option": "Most likely the destination wallet is already actively used and you won’t notice any difference.",
     "second_option": "Less likely that the wallet has never been used for payments. And Tonkeeper won’t send coins to that address next year. You will have to ask the recipient for a new UQ address.",
-    "post_dates": "\nOctober 1, 2023: all addresses switch to the UQ format in Tonkeeper.\n\nJanuary 1, 2024: Tonkeeper stops checking the contract status and uses the “bounceable” flag in the address. Coins sent to non-published contracts with an EQ address will bounce back to the sender."
+    "post_dates": "\nOctober 5, 2023: all addresses switch to the UQ format in Tonkeeper.\n\nJanuary 1, 2024: Tonkeeper stops checking the contract status and uses the “bounceable” flag in the address. Coins sent to non-published contracts with an EQ address will bounce back to the sender."
   }
 }
