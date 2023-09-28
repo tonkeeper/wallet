@@ -2,34 +2,38 @@ import React, { memo, useMemo } from 'react';
 import { Icon, TouchableOpacity } from '$uikit';
 import { Steezy } from '$styles';
 import { store } from '$store';
-import { openRequireWalletModal, openScanQR, openSend } from '$navigation';
-import { isValidAddress } from '$utils';
+import { openScanQR, openSend } from '$navigation';
 import { CryptoCurrencies } from '$shared/constants';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
- 
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
+import { Address } from '@tonkeeper/core';
+
 
 export const ScanQRButton = memo(() => {
   const deeplinking = useDeeplinking();
 
-  const hitSlop = useMemo(() => ({
-    top: 26,
-    bottom: 26,
-    left: 26,
-    right: 26,
-  }), []);
+  const hitSlop = useMemo(
+    () => ({
+      top: 26,
+      bottom: 26,
+      left: 26,
+      right: 26,
+    }),
+    [],
+  );
 
   const handlePressScanQR = React.useCallback(() => {
     if (store.getState().wallet.wallet) {
-      openScanQR((str) => {
-        if (isValidAddress(str)) {
+      openScanQR((address) => {
+        if (Address.isValid(address)) {
           setTimeout(() => {
-            openSend(CryptoCurrencies.Ton, str);
+            openSend({ currency: CryptoCurrencies.Ton, address });
           }, 200);
 
           return true;
         }
-        
-        const resolver = deeplinking.getResolver(str, {
+
+        const resolver = deeplinking.getResolver(address, {
           delay: 200,
           origin: DeeplinkOrigin.QR_CODE,
         });
@@ -44,7 +48,6 @@ export const ScanQRButton = memo(() => {
       openRequireWalletModal();
     }
   }, []);
-
 
   return (
     <TouchableOpacity
@@ -61,5 +64,5 @@ export const ScanQRButton = memo(() => {
 const styles = Steezy.create({
   container: {
     zIndex: 3,
-  }
+  },
 });

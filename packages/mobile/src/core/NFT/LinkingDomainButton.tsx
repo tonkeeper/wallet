@@ -1,9 +1,8 @@
 import { useAllAddresses } from '$hooks/useAllAddresses';
-import { openLinkingDomain } from '$navigation';
 import { walletVersionSelector } from '$store/wallet';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { Button, Text } from '$uikit';
-import { debugLog, maskifyAddress, toNano } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { getTimeSec } from '$utils/getTimeSec';
 import * as React from 'react';
 import { View } from 'react-native';
@@ -11,9 +10,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Tonapi } from '$libs/Tonapi';
 import { favoritesActions } from '$store/favorites';
 import { DOMAIN_ADDRESS_NOT_FOUND } from '$core/Send/hooks/useSuggestedAddresses';
-import { LinkingDomainActions } from '$core/ModalContainer/LinkingDomainModal';
+import {
+  LinkingDomainActions,
+  openLinkingDomain,
+} from '$core/ModalContainer/LinkingDomainModal';
 import { Toast } from '$store';
-import { checkIsInsufficient, openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import {
+  checkIsInsufficient,
+  openInsufficientFundsModal,
+} from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { Address } from '@tonkeeper/core';
 
 const TonWeb = require('tonweb'); // Fix ts types;
 
@@ -144,7 +150,10 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
   const handlePressButton = React.useCallback(async () => {
     Toast.loading();
     const currentWalletAddress = allAddesses[version];
-    const linkingActions = new LinkingDomainActions(props.domainAddress, isLinked ? undefined : currentWalletAddress);
+    const linkingActions = new LinkingDomainActions(
+      props.domainAddress,
+      isLinked ? undefined : currentWalletAddress,
+    );
     const fee = await linkingActions.calculateFee();
 
     // compare balance and transfer amount, because transfer will fail
@@ -152,7 +161,10 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
       const checkResult = await checkIsInsufficient(linkingActions.transferAmount);
       if (checkResult.insufficient) {
         Toast.hide();
-        return openInsufficientFundsModal({ totalAmount: linkingActions.transferAmount, balance: checkResult.balance });
+        return openInsufficientFundsModal({
+          totalAmount: linkingActions.transferAmount,
+          balance: checkResult.balance,
+        });
       }
     }
 
@@ -187,7 +199,7 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
 
   const buttonTitle = React.useMemo(() => {
     if (record.walletAddress) {
-      const address = maskifyAddress(record.walletAddress!);
+      const address = Address.toShort(record.walletAddress!);
       return ' ' + t('nft_unlink_domain_button', { address });
     }
 

@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { SvgProps } from 'react-native-svg';
 import { COMMON_COLORS } from './colors';
 import defaultIcon from '$assets/accent/default.svg';
@@ -25,7 +24,7 @@ export interface AccentNFTIcon {
 
 export interface AccentModel {
   id: AccentKey;
-  icon: FC<SvgProps>;
+  icon: React.ComponentType<SvgProps>;
   nftIcon?: AccentNFTIcon;
   colors: {
     accentPrimary: string;

@@ -11,8 +11,6 @@ export const Wrap = styled(Animated.View)`
   margin-bottom: ${ns(16)}px;
 `;
 
-export const BadgeWrap = styled.View``;
-
 export const MediaContainer = styled.View<{ height: number }>`
   z-index: 2;
   width: 100%;
@@ -81,7 +79,7 @@ export const Background = styled.View`
   position: absolute;
   z-index: 1;
   top: 0;
-  left: 0
+  left: 0;
   right: 0;
   bottom: 0;
 `;

@@ -2,24 +2,27 @@ import React from 'react';
 import { Alert, Linking, View } from 'react-native';
 import { Icon, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
-  debugLog,
   delay,
   triggerNotificationError,
   triggerNotificationSuccess,
 } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { NFTOperationError } from './NFTOperationError';
 import { getTimeSec } from '$utils/getTimeSec';
 import { TxBodyOptions, TxResponseOptions } from './TXRequest.types';
 import { UnlockVaultError } from '$store/wallet/sagas';
 import { useDispatch, useSelector } from 'react-redux';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import * as S from './NFTOperations.styles';
-import { useNavigation } from '$libs/navigation';
-import { eventsActions } from '$store/events';
+import { useNavigation } from '@tonkeeper/router';
 import axios from 'axios';
 import { isTimeSyncedSelector } from '$store/main';
 import { Toast } from '$store';
-import { DismissedActionError } from '$core/Send/steps/ConfirmStep/DismissedActionError';
+import {
+  CanceledActionError,
+  DismissedActionError,
+} from '$core/Send/steps/ConfirmStep/ActionErrors';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 enum States {
   INITIAL,
@@ -100,6 +103,8 @@ export const useActionFooter = () => {
         ref.current?.setState(States.ERROR);
         await delay(1750);
         ref.current?.setState(States.INITIAL);
+      } else if (error instanceof CanceledActionError) {
+        ref.current?.setState(States.INITIAL);
       } else if (error instanceof UnlockVaultError) {
         Toast.fail(error?.message);
       } else if (error instanceof NFTOperationError) {
@@ -132,6 +137,7 @@ interface ActionFooterProps {
   confirmTitle?: string;
   onPressConfirm: () => Promise<void>;
   onCloseModal?: () => void;
+  disabled?: boolean;
 }
 
 export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>(
@@ -159,7 +165,7 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
 
           await delay(1750);
 
-          dispatch(eventsActions.pollEvents());
+          tk.wallet.activityList.reload();
           closeModal();
 
           props.responseOptions?.onDone?.();
@@ -194,7 +200,10 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
                 <Spacer x={16} />
               </>
             ) : null}
-            <S.ActionButton onPress={() => props.onPressConfirm()}>
+            <S.ActionButton
+              disabled={props.disabled}
+              onPress={() => props.onPressConfirm()}
+            >
               {props.confirmTitle ?? t('nft_confirm_operation')}
             </S.ActionButton>
           </View>

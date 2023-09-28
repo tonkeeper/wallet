@@ -6,9 +6,11 @@ export interface NavBarProps {
   children: ReactNode;
   subtitle?: ReactNode;
   isModal?: boolean;
+  title?: string | React.ReactNode;
   rightContent?: ReactNode;
   hideBackButton?: boolean;
   hideTitle?: boolean;
+  forceBigTitle?: boolean;
   isClosedButton?: boolean;
   isBottomButton?: boolean;
   onBackPress?: () => void;

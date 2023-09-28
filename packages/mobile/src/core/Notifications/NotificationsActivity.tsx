@@ -4,7 +4,7 @@ import { useNotificationsStore } from '$store/zustand/notifications/useNotificat
 import { Notification } from '$core/Notifications/Notification';
 import { Steezy } from '$styles';
 import { openNotifications } from '$navigation';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { INotification } from '$store';
 import { FlashList } from '@shopify/flash-list';
 import { LayoutAnimation } from 'react-native';
@@ -133,7 +133,7 @@ export const NotificationsActivity: React.FC = () => {
             before={<Icon name="ic-sliders-16" color="foregroundPrimary" />}
           />
         }
-        title={'Notifications'}
+        title={t('notifications.notifications')}
       />
       {flashListData.length === 0 ? (
         <ListEmpty />
@@ -158,6 +158,7 @@ const styles = Steezy.create({
     marginHorizontal: 16,
   },
   emptyContainer: {
+    paddingHorizontal: 32,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',

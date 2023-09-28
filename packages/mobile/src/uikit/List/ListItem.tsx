@@ -1,18 +1,20 @@
 import React, { memo, useCallback } from 'react';
 import { TextStyle, ViewStyle } from 'react-native';
 import { Steezy, StyleProp } from '$styles';
-import { View, SText, Icon, Pressable } from '$uikit';
+import { View } from '@tonkeeper/uikit';
+import { SText } from '../StyledNativeComponents';
+import { Icon } from '../Icon/Icon';
+import { Pressable } from '../Pressable';
 import { DarkTheme, TonThemeColor } from '$styled';
 import FastImage from 'react-native-fast-image';
 import Animated, {
   SharedValue,
   useDerivedValue,
   useSharedValue,
-  useAnimatedStyle,
 } from 'react-native-reanimated';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { isAndroid } from '$utils';
-import { TextProps } from '$uikit/Text/Text';
+import { TextProps } from '../Text/Text';
 
 type LeftContentFN = (isPressed: Animated.SharedValue<boolean>) => React.ReactNode;
 
@@ -23,7 +25,7 @@ export interface ListItemProps {
   subvalue?: string | React.ReactNode;
   label?: string | React.ReactNode;
   chevronColor?: TonThemeColor;
-  imageStyle?: StyleProp<ViewStyle>;
+  pictureStyle?: StyleProp<ViewStyle>;
   compact?: boolean;
   isLast?: boolean;
   underlayColor?: string;
@@ -43,6 +45,7 @@ export interface ListItemProps {
   picture?: string;
 
   chevron?: boolean;
+  checkmark?: boolean;
 
   leftContent?: LeftContentFN | React.ReactNode;
   rightContent?: () => React.ReactElement;
@@ -144,7 +147,7 @@ export const ListItem = memo<ListItemProps>((props) => {
           <View style={[styles.leftContent, props.leftContentStyle]}>
             {leftContent}
             {!!props.picture && (
-              <View style={[styles.pictureContainer, props.imageStyle]}>
+              <View style={[styles.pictureContainer, props.pictureStyle]}>
                 <FastImage style={[styles.picture.static]} source={pictureSource} />
               </View>
             )}
@@ -172,6 +175,9 @@ export const ListItem = memo<ListItemProps>((props) => {
             {props.rightContent}
             {props.chevron && (
               <Icon color={props.chevronColor} name="ic-chevron-right-16" />
+            )}
+            {props.checkmark && (
+              <Icon color={'accentPrimary'} name="ic-donemark-thin-28" />
             )}
           </View>
         </View>

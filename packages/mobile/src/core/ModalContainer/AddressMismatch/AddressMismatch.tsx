@@ -1,17 +1,17 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { t } from '$translation';
-import { Modal } from '$libs/navigation';
-import { push } from '$navigation';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
+import { t } from '@tonkeeper/shared/i18n';
+import { Modal } from '@tonkeeper/uikit';
+
 import { Button, Icon, Text } from '$uikit';
 import * as S from './AddressMismatch.style';
-import { useWallet } from '$hooks';
-import { useNavigation } from '$libs/navigation';
-import { Ton } from '$libs/Ton';
-import { compareAddresses, delay } from '$utils';
+import { useWallet } from '$hooks/useWallet';
+import { useNavigation, SheetActions } from '@tonkeeper/router';
+import { delay } from '$utils';
 import { walletActions } from '$store/wallet';
 import { useDispatch } from 'react-redux';
 import { SelectableVersion } from '$shared/constants';
+import { push } from '$navigation/imperative';
+import { Address } from '@tonkeeper/shared/Address';
 
 export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () => void }>(
   (props) => {
@@ -31,7 +31,7 @@ export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () =
         return false;
       }
       let found = Object.entries(allVersions).find(([_, address]) =>
-        compareAddresses(address, props.source),
+        Address.compare(address, props.source),
       );
       if (!found) {
         return false;
@@ -72,7 +72,7 @@ export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () =
                     version: foundVersion,
                   })
                 : t('txActions.signRaw.addressMismatch.wrongWallet.description', {
-                    address: Ton.formatAddress(props.source, { cut: true }),
+                    address: Address.parse(props.source).toShort(),
                   })}
             </Text>
           </S.Wrap>

@@ -1,5 +1,5 @@
 import { CryptoCurrency, FiatCurrency } from '$shared/constants';
-import { AccountEvent } from 'tonapi-sdk-js';
+import { AccountEvent } from '@tonkeeper/core/src/legacy';
 
 export type TransactionType =
   | 'receive'
@@ -253,6 +253,14 @@ export interface TonDiamondMetadata {
   };
 }
 
+export interface ProgrammableButtonsMetadata {
+  buttons: {
+    label?: string;
+    url?: string;
+    style?: string;
+  }[];
+}
+
 export interface JettonMetadata {
   address: string;
   decimals: number;
@@ -282,4 +290,16 @@ export interface FavoriteModel {
   name: string;
   address: string;
   domain?: string;
+}
+
+export enum Events {
+  SendSuccess = 'send_success',
+  SendOpen = 'send_open',
+}
+
+export enum SendAnalyticsFrom {
+  WalletScreen = 'WalletScreen',
+  TonScreen = 'TonScreen',
+  TokenScreen = 'TokenScreen',
+  StakingPoolDetails = 'StakingPoolDetails',
 }

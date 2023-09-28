@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { Text as RNText, TextProps as RNTextProps, TextStyle } from 'react-native';
-import { TTextVariants, textVariants } from '$uikit/Text/Text.variants';
+import { TTextVariants, textVariants } from './Text.variants';
 import { FONT_BY_WEIGHT, TonThemeColor } from '$styled';
-import { useTheme } from '$hooks';
-import { nfs } from '$utils';
+import { useTheme } from '$hooks/useTheme';
+import { nfs } from '$utils/style';
 import { pickBy, identity } from 'lodash';
 import Animated, { AnimateProps } from 'react-native-reanimated';
 

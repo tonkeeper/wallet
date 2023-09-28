@@ -2,7 +2,7 @@ import React, { FC, useCallback, useState } from 'react';
 
 import * as S from './Button.style';
 import { ButtonProps } from './Button.interface';
-import { Loader } from '$uikit/Loader/Loader';
+import { Loader } from '../Loader/Loader';
 import { TouchableWithoutFeedback } from 'react-native';
 
 export const Button: FC<ButtonProps> = (props) => {

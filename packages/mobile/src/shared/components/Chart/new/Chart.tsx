@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ChartDot,
   ChartPath,
@@ -7,12 +7,11 @@ import {
   stepInterpolation,
 } from '@rainbow-me/animated-charts';
 import { Dimensions, View } from 'react-native';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
+import { useTokenPrice } from '$hooks/useTokenPrice';
 import { useSelector } from 'react-redux';
-import { ratesRatesSelector } from '$store/rates';
 import { fiatCurrencySelector } from '$store/main';
 import { CryptoCurrencies, FiatCurrencies } from '$shared/constants';
-import { getRate } from '$hooks/useFiatRate';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { PriceLabel } from './PriceLabel/PriceLabel';
 import { PercentDiff } from './PercentDiff/PercentDiff';
@@ -25,6 +24,8 @@ import { changeAlphaValue, convertHexToRGBA, ns } from '$utils';
 import { ChartXLabels } from './ChartXLabels/ChartXLabels';
 import { ChartPeriod, useChartStore } from '$store/zustand/chart';
 import { Fallback } from './Fallback/Fallback';
+import BigNumber from 'bignumber.js';
+import { isIOS } from '@tonkeeper/uikit';
 
 export const { width: SIZE } = Dimensions.get('window');
 
@@ -53,14 +54,18 @@ const ChartComponent: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, selectedPeriod, isFetching, isLoading]);
 
-  const rates = useSelector(ratesRatesSelector);
   const fiatCurrency = useSelector(fiatCurrencySelector);
   const shouldRenderChart = !!cachedData.length;
 
-  const fiatRate =
-    fiatCurrency === FiatCurrencies.Usd
-      ? 1
-      : getRate(rates, CryptoCurrencies.Usdt, fiatCurrency);
+  const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
+
+  const fiatRate = useMemo(() => {
+    if (fiatCurrency === FiatCurrencies.Usd) {
+      return 1;
+    }
+
+    return new BigNumber(tonPrice.fiat).dividedBy(tonPrice.usd).toNumber();
+  }, [fiatCurrency, tonPrice.fiat, tonPrice.usd]);
 
   const [maxPrice, minPrice] = React.useMemo(() => {
     if (!cachedData.length) {
@@ -113,7 +118,7 @@ const ChartComponent: React.FC = () => {
                 __disableRendering={!shouldRenderChart}
                 gradientEnabled
                 longPressGestureHandlerProps={{ minDurationMs: 90 }}
-                hapticsEnabled
+                hapticsEnabled={isIOS}
                 strokeWidth={2}
                 selectedStrokeWidth={2}
                 height={ns(160)}

@@ -7,13 +7,13 @@ import * as S from './Logs.style';
 import { NavBar, RoundedSectionList, Text } from '$uikit';
 import { mainSelector } from '$store/main';
 import { format, ns } from '$utils';
-import { useTranslator } from '$hooks';
+
 import { Toast } from '$store';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const Logs: FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
   const dispatch = useDispatch();
-  const t = useTranslator();
 
   const { logs } = useSelector(mainSelector);
 

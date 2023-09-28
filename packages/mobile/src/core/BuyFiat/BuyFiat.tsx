@@ -9,12 +9,15 @@ import { Icon, Loader, NavBar } from '$uikit';
 import * as S from './BuyFiat.style';
 import { mainSelector } from '$store/main';
 import { walletAddressSelector } from '$store/wallet';
-import { useExchangeMethodInfo, useTheme } from '$hooks';
-import { goBack } from '$navigation';
+import { useExchangeMethodInfo } from '$hooks/useExchangeMethodInfo';
+import { useTheme } from '$hooks/useTheme';
+
 import { getServerConfig } from '$shared/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { debugLog, deviceWidth, isAndroid, trackEvent } from '$utils';
+import { deviceWidth, isAndroid } from '$utils';
 import { useDeeplinking } from '$libs/deeplinking';
+import { goBack } from '$navigation/imperative';
+import { trackEvent } from '$utils/stats';
 
 export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
   const currency = route.params.currency;
@@ -137,55 +140,40 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
     }, 500);
   }, []);
 
-  const webviewStyle: any = {};
-  if (isLoading && !isAndroid) {
-    webviewStyle.heihgt = 0;
-  } else {
-    webviewStyle.flex = 1;
-  }
-
   return (
-    <>
+    <S.Wrap>
       {renderHeader()}
+      <S.Browser
+        ref={webviewRef}
+        key={webViewKey}
+        javaScriptEnabled
+        domStorageEnabled
+        source={{
+          uri: webviewUrl,
+        }}
+        onLoad={handleLoad}
+        onHttpError={handleHttpError}
+        onError={handleError}
+        startInLoadingState={true}
+        originWhitelist={['*']}
+        decelerationRate="normal"
+        javaScriptCanOpenWindowsAutomatically
+        mixedContentMode="always"
+        hideKeyboardAccessoryView
+        thirdPartyCookiesEnabled={true}
+        onNavigationStateChange={handleNavigationChange}
+        allowFileAccess
+        forceDarkOn={methodId !== 'onramp'}
+        allowsInlineMediaPlayback
+        allowsFullscreenVideo
+        keyboardDisplayRequiresUserAction={false}
+        mediaPlaybackRequiresUserAction={false}
+      />
       {isLoading && (
         <S.LoaderWrap>
           <Loader size="medium" />
         </S.LoaderWrap>
       )}
-      <S.Wrap
-        style={{
-          width: deviceWidth,
-          backgroundColor: theme.colors.backgroundPrimary,
-          ...webviewStyle,
-        }}
-      >
-        <S.Browser
-          ref={webviewRef}
-          key={webViewKey}
-          javaScriptEnabled
-          domStorageEnabled
-          source={{
-            uri: webviewUrl,
-          }}
-          onLoad={handleLoad}
-          onHttpError={handleHttpError}
-          onError={handleError}
-          startInLoadingState={true}
-          originWhitelist={['*']}
-          decelerationRate="normal"
-          javaScriptCanOpenWindowsAutomatically
-          mixedContentMode="always"
-          hideKeyboardAccessoryView
-          thirdPartyCookiesEnabled={true}
-          onNavigationStateChange={handleNavigationChange}
-          allowFileAccess
-          forceDarkOn
-          allowsInlineMediaPlayback
-          allowsFullscreenVideo
-          keyboardDisplayRequiresUserAction={false}
-          mediaPlaybackRequiresUserAction={false}
-        />
-      </S.Wrap>
-    </>
+    </S.Wrap>
   );
 };

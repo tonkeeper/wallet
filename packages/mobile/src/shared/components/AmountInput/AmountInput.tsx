@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { formatInputAmount, parseLocaleNumber } from '$utils';
 import { cryptoToFiat, fiatToCrypto, trimZeroDecimals } from '$utils/currency';
-import { useTheme, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { getNumberFormatSettings } from 'react-native-localize';
 import {
   Extrapolation,
@@ -22,6 +22,7 @@ import { Button, Text } from '$uikit';
 import { SwapButton } from '../SwapButton';
 import { formatter } from '$utils/formatter';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
+import { t } from '@tonkeeper/shared/i18n';
 
 export type AmountInputRef = TextInput & { value: string };
 
@@ -35,6 +36,7 @@ interface Props {
   fiatRate: number;
   hideSwap?: boolean;
   withCoinSelector?: boolean;
+  disabled?: boolean;
   setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;
 }
 
@@ -49,10 +51,11 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     minAmount,
     hideSwap = false,
     withCoinSelector = false,
+    disabled,
     setAmount,
   } = props;
 
-  const format = useHideableFormatter();
+  const { format } = useHideableFormatter();
 
   const textInputRef = useRef<TextInput | null>(null);
 
@@ -80,6 +83,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
         }),
         balanceInputValue: formatter.format(balance, {
           decimals,
+          withoutTruncate: true,
           currencySeparator: 'wide',
         }),
         isInsufficientBalance: !isLockup && bigNum.isGreaterThan(balanceBigNum),
@@ -88,11 +92,9 @@ const AmountInputComponent: React.FC<Props> = (props) => {
           bigNum.isGreaterThan(0) &&
           bigNum.isLessThan(new BigNumber(minAmount)),
       };
-    }, [amount.value, balance, currencyTitle, decimals, isLockup, minAmount]);
+    }, [amount.value, balance, currencyTitle, decimals, format, isLockup, minAmount]);
 
   const theme = useTheme();
-
-  const t = useTranslator();
 
   const [value, setValue] = useState(amount.value);
 
@@ -119,6 +121,10 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const handleChangeAmount = useCallback(
     (text: string) => {
+      if (disabled) {
+        return;
+      }
+
       const nextValue = formatInputAmount(text, decimals);
       setValue(nextValue);
 
@@ -127,7 +133,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
         all: nextValue === balanceInputValue,
       });
     },
-    [balanceInputValue, decimals, fiatRate, isFiat, setAmount],
+    [balanceInputValue, decimals, disabled, fiatRate, isFiat, setAmount],
   );
 
   const handlePressInput = useCallback(() => {
@@ -158,7 +164,12 @@ const AmountInputComponent: React.FC<Props> = (props) => {
       transform: [
         {
           scale: withSpring(
-            interpolate(value.length, [9, 18], [1, 0.6], Extrapolation.CLAMP),
+            interpolate(
+              value.length + Math.max(mainCurrencyCode.length - 3, 0),
+              [9, 21, 30, 40],
+              [1, 0.6, 0.5, 0.4],
+              Extrapolation.CLAMP,
+            ),
           ),
         },
       ],

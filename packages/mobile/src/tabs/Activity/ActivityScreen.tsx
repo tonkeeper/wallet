@@ -1,224 +1,147 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { LayoutAnimation, RefreshControl } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
-import { useNetInfo } from '@react-native-community/netinfo';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
+import { Screen, Text, Button, Icon, List, Spacer, Steezy, View } from '@tonkeeper/uikit';
+import { getNewNotificationsCount } from '$core/Notifications/NotificationsActivity';
+import { useNotificationsStore } from '$store/zustand/notifications';
+import { useActivityList } from '@tonkeeper/shared/query/hooks';
+import { Notification } from '$core/Notifications/Notification';
+import { openNotificationsScreen } from '$navigation/helper';
+import { ActivityList } from '@tonkeeper/shared/components';
 import { useIsFocused } from '@react-navigation/native';
+import { memo, useCallback, useEffect } from 'react';
+import { useNavigation } from '@tonkeeper/router';
+import { LayoutAnimation } from 'react-native';
+import { t } from '@tonkeeper/shared/i18n';
+import { useWallet } from '../useWallet';
 
-import * as S from '../../core/Balances/Balances.style';
-import {
-  Button,
-  Icon,
-  List,
-  Loader,
-  Screen,
-  ScrollHandler,
-  Spacer,
-  Text,
-  View,
-} from '$uikit';
-import { useAppStateActive, usePrevious, useTheme, useTranslator } from '$hooks';
-import { walletActions, walletSelector } from '$store/wallet';
-import { ns } from '$utils';
-import { NavBarHeight, TabletMaxWidth } from '$shared/constants';
-import { openRequireWalletModal } from '$navigation';
-import { eventsActions, eventsSelector } from '$store/events';
-import { mainActions } from '$store/main';
-import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
-import { getLastRefreshedAt } from '$database';
-import { TransactionsList } from '$core/Balances/TransactionsList/TransactionsList';
-import { useNavigation } from '$libs/navigation';
-import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
-import { Steezy } from '$styles';
+export const ActivityScreen = memo(() => {
+  const activityList = useActivityList();
 
-export const ActivityScreen: FC = () => {
   const nav = useNavigation();
-  const t = useTranslator();
-  const dispatch = useDispatch();
-  const theme = useTheme();
-  const tabBarHeight = useBottomTabBarHeight();
-  const { isRefreshing, isLoaded, wallet } = useSelector(walletSelector);
-  const {
-    isLoading: isEventsLoading,
-    eventsInfo,
-    canLoadMore,
-  } = useSelector(eventsSelector);
-  // const notifications = useNotificationsStore((state) => state.notifications);
-  // const lastSeenAt = useNotificationsStore((state) => state.last_seen);
-  // const removeRedDot = useNotificationsStore((state) => state.actions.removeRedDot);
+  const wallet = useWallet();
 
-  const netInfo = useNetInfo();
-  const prevNetInfo = usePrevious(netInfo);
+  const notifications = useNotificationsStore((state) => state.notifications);
+  const lastSeenAt = useNotificationsStore((state) => state.last_seen_activity_screen);
+  const updateLastSeenActivityScreen = useNotificationsStore(
+    (state) => state.actions.updateLastSeenActivityScreen,
+  );
 
-  const isFocused = useIsFocused();
-
-  const isEventsLoadingMore = !isRefreshing && isEventsLoading && !!wallet;
-
-  // useEffect(() => {
-  //   if (isFocused) {
-  //     removeRedDot();
-  //   }
-  // }, [isFocused, removeRedDot]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      dispatch(mainActions.mainStackInited());
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [dispatch]);
-
-  useAppStateActive(() => {
-    dispatch(mainActions.getTimeSynced());
-    getLastRefreshedAt().then((ts) => {
-      if (Date.now() - ts > 60 * 1000) {
-        dispatch(walletActions.refreshBalancesPage());
-      }
-    });
-  });
-
-  const handleRefresh = useCallback(() => {
-    dispatch(walletActions.refreshBalancesPage(true));
-  }, [dispatch]);
-
-  const initialData = useMemo(() => {
-    const result: {
-      isFirst?: boolean;
-      title?: string;
-      data: any;
-      footer?: React.ReactElement;
-    }[] = [];
-    return result;
-  }, []);
-
-  const handleLoadMore = useCallback(() => {
-    if (isEventsLoading || !canLoadMore) {
-      return;
+  const handlePressRecevie = useCallback(() => {
+    if (!!wallet.address.ton.raw) {
+      nav.go('ReceiveModal');
+    } else {
+      openRequireWalletModal();
     }
+  }, [wallet.address.ton.raw]);
 
-    dispatch(eventsActions.loadEvents({ isLoadMore: true }));
-  }, [dispatch, isEventsLoading, canLoadMore]);
+  const handlePressBuy = useCallback(() => {
+    if (!!wallet.address.ton.raw) {
+      nav.openModal('Exchange', { category: 'buy' });
+    } else {
+      openRequireWalletModal();
+    }
+  }, [wallet.address.ton.raw]);
 
   const onRemoveNotification = useCallback(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   }, []);
 
-
-  function renderFooter() {
-    return (
-      <>
-        {isEventsLoadingMore ? (
-          <S.LoaderMoreWrap>
-            <Loader size="medium" />
-          </S.LoaderMoreWrap>
-        ) : null}
-        {!wallet && <S.CreateWalletButtonHelper />}
-        <View style={{ height: LargeNavBarInteractiveDistance }} />
-        <S.BottomSpace />
-      </>
-    );
-  }
-
-  function renderContent() {
-    if (!isLoaded) {
-      return (
-        <S.LoaderWrap style={{ paddingBottom: tabBarHeight }}>
-          <Loader size="medium" />
-        </S.LoaderWrap>
-      );
-    }
-
-    return (
-      <TransactionsList
-        refreshControl={
-          <RefreshControl
-            onRefresh={handleRefresh}
-            refreshing={isRefreshing && isFocused}
-            tintColor={theme.colors.foregroundPrimary}
-            progressBackgroundColor={theme.colors.foregroundPrimary}
-          />
-        }
-        eventsInfo={eventsInfo}
-        initialData={initialData}
-        renderFooter={renderFooter}
-        onEndReached={isEventsLoading || !canLoadMore ? undefined : handleLoadMore}
-        contentContainerStyle={{
-          width: '100%',
-          maxWidth: ns(TabletMaxWidth),
-          alignSelf: 'center',
-          paddingTop: ns(NavBarHeight) + ns(4),
-          paddingHorizontal: ns(16),
-          paddingBottom: tabBarHeight - ns(20),
-        }}
-      />
-    );
-  }
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (netInfo.isConnected && prevNetInfo.isConnected === false) {
-      dispatch(mainActions.dismissBadHosts());
-      handleRefresh();
+    if (isFocused) {
+      return () => updateLastSeenActivityScreen();
     }
-  }, [netInfo.isConnected, prevNetInfo.isConnected, handleRefresh, dispatch]);
+  }, [isFocused, updateLastSeenActivityScreen]);
 
-  const handlePressRecevie = React.useCallback(() => {
-    if (wallet) {
-      nav.go('Receive', {
-        currency: 'ton',
-        isFromMainScreen: true,
-      });
-    } else {
-      openRequireWalletModal();
-    }
-  }, [wallet]);
-
-  const handlePressBuy = React.useCallback(() => {
-    if (wallet) {
-      nav.openModal('Exchange', { category: 'buy' });
-    } else {
-      openRequireWalletModal();
-    }
-  }, [wallet]);
+  const handleOpenNotificationsScreen = useCallback(() => {
+    openNotificationsScreen();
+  }, []);
 
   if (
-    isLoaded &&
-    (!wallet || (Object.keys(eventsInfo).length < 1))
+    !wallet.address.ton.raw ||
+    (!activityList.isLoading && activityList.sections.length < 1) && activityList.error === null
   ) {
     return (
       <Screen>
         <View style={styles.emptyContainer}>
-          <Text variant="h2" style={{ textAlign: 'center', marginBottom: ns(4) }}>
+          <Text type="h2" textAlign="center">
             {t('activity.empty_transaction_title')}
           </Text>
-          <Text variant="body1" color="textSecondary">
+          <Spacer y={4} />
+          <Text type="body1" color="textSecondary">
             {t('activity.empty_transaction_caption')}
           </Text>
-
           <View style={styles.emptyButtons}>
             <Button
-              style={{ marginRight: ns(12) }}
+              title={t('activity.buy_toncoin_btn')}
               onPress={handlePressBuy}
-              size="medium_rounded"
-              mode="secondary"
-            >
-              {t('activity.buy_toncoin_btn')}
-            </Button>
-            <Button onPress={handlePressRecevie} size="medium_rounded" mode="secondary">
-              {t('activity.receive_btn')}
-            </Button>
+              color="secondary"
+              size="small"
+            />
+            <Spacer x={12} />
+            <Button
+              title={t('activity.receive_btn')}
+              onPress={handlePressRecevie}
+              color="secondary"
+              size="small"
+            />
           </View>
         </View>
       </Screen>
     );
   }
 
+  const newNotificationsCount = getNewNotificationsCount(notifications, lastSeenAt);
+
+  const renderNotificationsHeader = notifications.length ? (
+    <View>
+      <Spacer y={12} />
+      {notifications.slice(0, Math.min(newNotificationsCount, 2)).map((notification) => (
+        <Notification
+          onRemove={onRemoveNotification}
+          notification={notification}
+          key={notification.received_at}
+        />
+      ))}
+      <List style={styles.listStyle.static}>
+        <List.Item
+          leftContent={
+            <View style={styles.iconContainer}>
+              <Icon name={'ic-bell-28'} color={'iconSecondary'} />
+            </View>
+          }
+          rightContent={
+            newNotificationsCount - 2 > 0 ? (
+              <View style={styles.notificationsCount}>
+                <Text type="label2">{newNotificationsCount - 2}</Text>
+              </View>
+            ) : null
+          }
+          onPress={handleOpenNotificationsScreen}
+          title={t('notifications.notifications')}
+          subtitle={t('notifications.from_connected')}
+          chevron
+        />
+      </List>
+    </View>
+  ) : undefined;
+
   return (
-    <S.Wrap>
-      <ScrollHandler navBarTitle={t('activity.screen_title')}>
-        {renderContent()}
-      </ScrollHandler>
-    </S.Wrap>
+    <Screen>
+      <Screen.LargeHeader title={t('activity.screen_title')} />
+      <ActivityList
+        ListHeaderComponent={renderNotificationsHeader}
+        isReloading={activityList.isReloading}
+        isLoading={activityList.isLoading}
+        sections={activityList.sections}
+        hasMore={activityList.hasMore}
+        onLoadMore={activityList.loadMore}
+        onReload={activityList.reload}
+        error={activityList.error}
+      />
+    </Screen>
   );
-};
+});
 
 const styles = Steezy.create(({ colors }) => ({
   emptyContainer: {
@@ -229,7 +152,11 @@ const styles = Steezy.create(({ colors }) => ({
   },
   emptyButtons: {
     flexDirection: 'row',
-    marginTop: ns(24),
+    marginTop: 24,
+  },
+  emptyTitleText: {
+    textAlign: 'center',
+    marginBottom: 4,
   },
   iconContainer: {
     width: 44,
@@ -239,9 +166,7 @@ const styles = Steezy.create(({ colors }) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  notificationsHeader: {
-    marginHorizontal: -16,
-  },
+  notificationsHeader: {},
   notificationsCount: {
     backgroundColor: colors.backgroundContentTint,
     minWidth: 24,

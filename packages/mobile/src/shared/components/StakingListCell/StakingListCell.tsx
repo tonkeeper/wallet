@@ -1,23 +1,34 @@
-import { useFiatValue } from '$hooks';
-import { CryptoCurrencies } from '$shared/constants';
+import { useFiatValue } from '$hooks/useFiatValue';
+import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { Steezy } from '$styles';
-import { Icon, Separator, View } from '$uikit';
+import { Icon, Spacer, Tag, Text, View } from '$uikit';
 import { stakingFormatter } from '$utils/formatter';
-import React, { FC, memo, useCallback } from 'react';
-import { ImageRequireSource } from 'react-native';
+import React, { FC, ReactNode, memo, useCallback } from 'react';
+import { ImageRequireSource, TouchableHighlight } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import * as S from './StakingListCell.style';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { JettonBalanceModel } from '$store/models';
+import { t } from '@tonkeeper/shared/i18n';
+import { ListSeparator, Pressable, isAndroid, useTheme } from '@tonkeeper/uikit';
+import { useBackgroundHighlighted } from '@tonkeeper/shared/hooks/useBackgroundHighlighted';
+import Animated from 'react-native-reanimated';
 
 interface Props {
   id: string;
   name: string;
   description?: string;
   balance?: string;
+  stakingJetton?: JettonBalanceModel;
+  icon?: ReactNode;
   iconSource?: Source | ImageRequireSource | null;
   separator?: boolean;
   isWidget?: boolean;
   numberOfLines?: number;
+  isWithdrawal?: boolean;
+  highestApy?: boolean | null;
+  message?: string | ReactNode;
+  onMessagePress?: () => void;
   onPress?: (id: string, name: string) => void;
 }
 
@@ -26,44 +37,80 @@ const StakingListCellComponent: FC<Props> = (props) => {
     name,
     description,
     balance: balanceValue,
+    stakingJetton,
+    icon,
     iconSource,
     separator,
     id,
     isWidget,
     numberOfLines,
+    highestApy,
+    message,
+    onMessagePress,
     onPress,
   } = props;
 
-  const balance = useFiatValue(CryptoCurrencies.Ton, balanceValue || '0');
+  const theme = useTheme();
+
+  const currency = stakingJetton ? stakingJetton.jettonAddress : CryptoCurrencies.Ton;
+
+  const balance = useFiatValue(
+    currency as CryptoCurrencies,
+    stakingJetton ? stakingJetton.balance : balanceValue || '0',
+    stakingJetton ? stakingJetton.metadata.decimals : Decimals[CryptoCurrencies.Ton],
+    !!stakingJetton,
+    'TON',
+  );
 
   const handlePress = useCallback(() => {
     onPress?.(id, name);
   }, [id, name, onPress]);
 
+  const { onPressOut, onPressIn, backgroundStyle } = useBackgroundHighlighted();
+
+  const TouchableComponent = isAndroid ? Pressable : TouchableHighlight;
+
   return (
     <>
-      <S.CellContainer>
-        <S.Cell background="backgroundTertiary" onPress={handlePress}>
+      <TouchableComponent
+        onPressOut={onPressOut}
+        onPressIn={onPressIn}
+        onPress={handlePress}
+        underlayColor={theme.backgroundContentTint}
+      >
+        <View>
           <S.Container>
-            <View style={[styles.iconContainer, isWidget && styles.widgetIconContainer]}>
-              {iconSource ? (
-                <S.Icon source={iconSource} />
-              ) : (
-                <Icon
-                  name="ic-staking-28"
-                  color={isWidget ? 'foregroundPrimary' : 'iconSecondary'}
-                />
-              )}
-            </View>
+            {icon}
+            {!icon ? (
+              <View
+                style={[styles.iconContainer, isWidget && styles.widgetIconContainer]}
+              >
+                {iconSource ? (
+                  <S.Icon source={iconSource} />
+                ) : (
+                  <Icon
+                    name="ic-staking-28"
+                    color={isWidget ? 'foregroundPrimary' : 'iconSecondary'}
+                  />
+                )}
+              </View>
+            ) : null}
+            <Spacer x={16} />
             <S.Content>
-              <S.Title>{name}</S.Title>
+              <S.Row>
+                <S.Title>{name}</S.Title>
+                {highestApy ? (
+                  <Tag type="positive">{t('staking.highest_apy')}</Tag>
+                ) : null}
+              </S.Row>
               <S.SubTitle numberOfLines={numberOfLines ?? 2}>{description}</S.SubTitle>
             </S.Content>
             <S.RightContainer>
               {balanceValue ? (
                 <>
                   <HideableAmount variant="label1" numberOfLines={1} textAlign="right">
-                    {stakingFormatter.format(balanceValue, { decimals: 2 })} TON
+                    {stakingFormatter.format(balance.totalTon, { decimals: 2 })}{' '}
+                    {balance.symbol}
                   </HideableAmount>
                   <HideableAmount
                     variant="body2"
@@ -71,7 +118,7 @@ const StakingListCellComponent: FC<Props> = (props) => {
                     numberOfLines={1}
                     textAlign="right"
                   >
-                    {balance.fiatInfo.amount}
+                    {balance.formatted.totalFiat}
                   </HideableAmount>
                 </>
               ) : (
@@ -79,9 +126,24 @@ const StakingListCellComponent: FC<Props> = (props) => {
               )}
             </S.RightContainer>
           </S.Container>
-        </S.Cell>
-      </S.CellContainer>
-      {separator ? <Separator /> : null}
+          {message ? (
+            <View style={styles.messageContainer}>
+              <Animated.View style={[styles.message.static, backgroundStyle]}>
+                <TouchableHighlight
+                  underlayColor={theme.backgroundHighlighted}
+                  onPress={onMessagePress}
+                  disabled={!onMessagePress}
+                >
+                  <View style={styles.massageInner}>
+                    <Text variant="body2">{message}</Text>
+                  </View>
+                </TouchableHighlight>
+              </Animated.View>
+            </View>
+          ) : null}
+        </View>
+      </TouchableComponent>
+      {separator ? <ListSeparator /> : null}
     </>
   );
 };
@@ -96,10 +158,25 @@ const styles = Steezy.create(({ colors }) => ({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.backgroundContentTint,
-    marginRight: 16,
     overflow: 'hidden',
   },
   widgetIconContainer: {
     backgroundColor: colors.accentGreen,
+  },
+  messageContainer: {
+    alignItems: 'flex-start',
+    paddingHorizontal: 16,
+  },
+  message: {
+    borderRadius: 12,
+    backgroundColor: colors.backgroundContentTint,
+    marginLeft: 60,
+    marginTop: -8,
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  massageInner: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
 }));

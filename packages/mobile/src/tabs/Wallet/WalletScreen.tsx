@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import {
   Button,
   IconButton,
@@ -11,29 +11,29 @@ import {
   View,
   SwapIcon,
 } from '$uikit';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { ScanQRButton } from '../../components/ScanQRButton';
 import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
-import { openRequireWalletModal, openWallet } from '$navigation';
-import { maskifyAddress, ns } from '$utils';
+import { ns } from '$utils';
 import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
 import { useIsFocused } from '@react-navigation/native';
-import { useBalance, useRates } from './hooks/useBalance';
+import { useBalance } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
-import { TonIcon } from '../../components/TonIcon';
-import { CryptoCurrencies } from '$shared/constants';
+import { TonIcon } from '@tonkeeper/uikit';
+import { CryptoCurrencies, IsTablet, TabletMaxWidth } from '$shared/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Tabs } from './components/Tabs';
-import * as S from '../../core/Balances/Balances.style';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
 import { useTonkens } from './hooks/useTokens';
 import { useWallet } from './hooks/useWallet';
-import { useApprovedNfts, useTheme } from '$hooks';
+import { useApprovedNfts } from '$hooks/useApprovedNfts';
+import { useTheme } from '$hooks/useTheme';
+import { useTokenPrice } from '$hooks/useTokenPrice';
 import { ApprovalCell } from '$core/ApprovalCell/components/ApprovalCell';
 import { Steezy } from '$styles';
 import { BalancesList } from './components/BalancesList';
@@ -41,9 +41,13 @@ import { useFlags } from '$utils/flags';
 import { useUpdatesStore } from '$store/zustand/updates/useUpdatesStore';
 import { UpdatesCell } from '$core/ApprovalCell/Updates/UpdatesCell';
 import { UpdateState } from '$store/zustand/updates/types';
-import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { ShowBalance } from '$core/HideableAmount/ShowBalance';
+import { Events, SendAnalyticsFrom } from '$store/models';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
+import { openWallet } from '$core/Wallet/ToncoinScreen';
+import { trackEvent } from '$utils/stats';
+import { Address } from '@tonkeeper/core';
+import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { ExpiringDomainCell } from './components/ExpiringDomainCell';
 
@@ -60,10 +64,12 @@ export const WalletScreen = memo(() => {
   const shouldUpdate =
     useUpdatesStore((state) => state.update.state) !== UpdateState.NOT_STARTED;
   const balance = useBalance(tokens.total.fiat);
-  const rates = useRates();
+  const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
 
   const { isRefreshing, isLoaded } = useSelector(walletSelector);
   const isFocused = useIsFocused();
+
+  const { data: tronBalances } = useTronBalances();
 
   const notifications = useInternalNotifications();
   const expiringDomains = useExpiringDomains(
@@ -96,7 +102,8 @@ export const WalletScreen = memo(() => {
 
   const handlePressSend = React.useCallback(() => {
     if (wallet) {
-      nav.go('Send', {});
+      trackEvent(Events.SendOpen, { from: SendAnalyticsFrom.WalletScreen });
+      nav.go('Send', { from: SendAnalyticsFrom.WalletScreen });
     } else {
       openRequireWalletModal();
     }
@@ -104,10 +111,7 @@ export const WalletScreen = memo(() => {
 
   const handlePressRecevie = React.useCallback(() => {
     if (wallet) {
-      nav.go('Receive', {
-        currency: 'ton',
-        isFromMainScreen: true,
-      });
+      nav.go('ReceiveModal');
     } else {
       openRequireWalletModal();
     }
@@ -144,7 +148,7 @@ export const WalletScreen = memo(() => {
             activeOpacity={0.6}
           >
             <Text color="textSecondary" variant="body2">
-              {maskifyAddress(wallet.address.friendlyAddress)}
+              {Address.toShort(wallet.address.friendlyAddress)}
             </Text>
           </TouchableOpacity>
         )}
@@ -196,16 +200,21 @@ export const WalletScreen = memo(() => {
               onPress={() => openWallet(CryptoCurrencies.Ton)}
               leftContent={<TonIcon />}
               chevron
-              subtitle={<ListItemRate price={rates.price} trend={rates.trend} />}
+              subtitle={
+                <ListItemRate
+                  price={tonPrice.formatted.fiat ?? '-'}
+                  trend={tonPrice.fiatDiff.trend}
+                />
+              }
             />
           </List>
         </Screen.ScrollView>
         {isLoaded && !wallet && (
-          <S.CreateWalletButtonWrap style={{ bottom: tabBarHeight }}>
-            <S.CreateWalletButtonContainer skipHeader={false}>
+          <View style={[styles.createWalletContainerOuter, { bottom: tabBarHeight }]}>
+            <View style={styles.createWalletContainerInner}>
               <Button onPress={handleCreateWallet}>{t('balances_setup_wallet')}</Button>
-            </S.CreateWalletButtonContainer>
-          </S.CreateWalletButtonWrap>
+            </View>
+          </View>
         )}
       </>
     );
@@ -269,8 +278,9 @@ export const WalletScreen = memo(() => {
                   </>
                 }
                 balance={balance}
+                tronBalances={tronBalances}
                 tokens={tokens}
-                rates={rates}
+                tonPrice={tonPrice}
                 handleRefresh={handleRefresh}
                 isRefreshing={isRefreshing}
                 isFocused={isFocused}
@@ -328,13 +338,14 @@ export const WalletScreen = memo(() => {
           rightContent={<ScanQRButton />}
         />
         <BalancesList
+          tronBalances={tronBalances}
           ListHeaderComponent={ListHeader(true)}
           handleRefresh={handleRefresh}
           isRefreshing={isRefreshing}
           isFocused={isFocused}
           balance={balance}
           tokens={tokens}
-          rates={rates}
+          tonPrice={tonPrice}
           nfts={nfts}
         />
       </>
@@ -352,7 +363,7 @@ export const WalletScreen = memo(() => {
   }
 });
 
-const styles = Steezy.create(({ colors, corners }) => ({
+const styles = Steezy.create(({ colors, corners, isTablet }) => ({
   container: {
     position: 'relative',
   },
@@ -371,4 +382,20 @@ const styles = Steezy.create(({ colors, corners }) => ({
   scrollContainer: {
     paddingHorizontal: 12,
   },
+  createWalletContainerOuter: {
+    padding: 16,
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    width: '100%',
+    [isTablet]: {
+      alignItems: 'center',
+    }
+  },
+  createWalletContainerInner: {
+    bottom: 0,
+    [isTablet]: {
+      width: TabletMaxWidth
+    }
+  }
 }));

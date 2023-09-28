@@ -1,9 +1,6 @@
-import {
-  useFiatRate,
-  useFiatValue,
-  useReanimatedKeyboardHeight,
-  useTranslator,
-} from '$hooks';
+import { useFiatValue } from '$hooks/useFiatValue';
+import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
+import { useTokenPrice } from '$hooks/useTokenPrice';
 import { Button, Separator, Spacer, Text } from '$uikit';
 import React, { FC, memo, useEffect, useMemo, useRef } from 'react';
 import * as S from './AmountStep.style';
@@ -25,9 +22,10 @@ import { CryptoCurrencies } from '$shared/constants';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
 import { StakingSendSteps } from '$core/StakingSend/types';
-import { PoolInfo } from '@tonkeeper/core';
 import { Ton } from '$libs/Ton';
 import { stakingFormatter } from '$utils/formatter';
+import { t } from '@tonkeeper/shared/i18n';
+import { PoolInfo, PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 
 interface Props extends StepComponentProps {
   pool: PoolInfo;
@@ -35,6 +33,8 @@ interface Props extends StepComponentProps {
   stakingBalance: string;
   isPreparing: boolean;
   amount: SendAmount;
+  currency: CryptoCurrencies;
+  isJetton: boolean;
   stepsScrollTop: SharedValue<Record<StakingSendSteps, number>>;
   afterTopUpReward: ReturnType<typeof useFiatValue>;
   currentReward: ReturnType<typeof useFiatValue>;
@@ -50,6 +50,8 @@ const AmountStepComponent: FC<Props> = (props) => {
     isPreparing,
     active,
     amount,
+    currency,
+    isJetton,
     stepsScrollTop,
     afterTopUpReward,
     currentReward,
@@ -57,17 +59,20 @@ const AmountStepComponent: FC<Props> = (props) => {
     onContinue,
   } = props;
 
-  const fiatRate = useFiatRate(CryptoCurrencies.Ton);
+  const tokenPrice = useTokenPrice(currency);
 
   const {
     decimals,
     balance: walletBalance,
     currencyTitle,
-  } = useCurrencyToSend(CryptoCurrencies.Ton);
+  } = useCurrencyToSend(currency, isJetton);
 
-  const minAmount = isWithdrawal ? '0' : Ton.fromNano(pool.minStake);
+  const minAmount = isWithdrawal ? '0' : Ton.fromNano(pool.min_stake);
 
-  const balance = isWithdrawal ? stakingBalance : walletBalance;
+  const balance =
+    isWithdrawal && pool.implementation !== PoolImplementationType.LiquidTF
+      ? stakingBalance
+      : walletBalance;
 
   const wallet = useSelector(walletWalletSelector);
 
@@ -91,8 +96,6 @@ const AmountStepComponent: FC<Props> = (props) => {
       [StakingSendSteps.AMOUNT]: event.contentOffset.y,
     };
   });
-
-  const t = useTranslator();
 
   const textInputRef = useRef<TextInput>(null);
 
@@ -130,6 +133,7 @@ const AmountStepComponent: FC<Props> = (props) => {
           <S.InputContainer>
             <AmountInput
               innerRef={textInputRef}
+              disabled={isPreparing}
               hideSwap={true}
               {...{
                 decimals,
@@ -137,14 +141,14 @@ const AmountStepComponent: FC<Props> = (props) => {
                 currencyTitle,
                 amount,
                 minAmount,
-                fiatRate: fiatRate.today,
+                fiatRate: tokenPrice.fiat,
                 setAmount,
               }}
             />
           </S.InputContainer>
           <Spacer y={16} />
           {isWithdrawal ? (
-            <NextCycle cycleStart={pool.cycleStart} cycleEnd={pool.cycleEnd} />
+            <NextCycle pool={pool} />
           ) : (
             <>
               <S.TitleContainer>
@@ -161,10 +165,8 @@ const AmountStepComponent: FC<Props> = (props) => {
                         value: stakingFormatter.format(afterTopUpReward.amount),
                       })}
                     </S.ItemValue>
-                    <S.ItemSubValue>{afterTopUpReward.fiatInfo.amount}</S.ItemSubValue>
                   </S.ItemContent>
                 </S.Item>
-                <Separator />
                 <S.Item>
                   <S.ItemLabel numberOfLines={1}>
                     {t('staking.rewards.current')}
@@ -175,7 +177,6 @@ const AmountStepComponent: FC<Props> = (props) => {
                         value: stakingFormatter.format(currentReward.amount),
                       })}
                     </S.ItemValue>
-                    <S.ItemSubValue>{currentReward.fiatInfo.amount}</S.ItemSubValue>
                   </S.ItemContent>
                 </S.Item>
               </S.Table>

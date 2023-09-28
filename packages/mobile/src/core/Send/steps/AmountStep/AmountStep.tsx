@@ -1,4 +1,4 @@
-import { useReanimatedKeyboardHeight, useTranslator } from '$hooks';
+import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
 import { Button, Spacer } from '$uikit';
 import React, { FC, memo, useEffect, useMemo, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,18 +10,21 @@ import { AmountStepProps } from './AmountStep.interface';
 import { walletWalletSelector } from '$store/wallet';
 import { AmountInput, AmountInputRef } from '$shared/components';
 import { CoinDropdown } from './CoinDropdown';
+import { t } from '@tonkeeper/shared/i18n';
+import { Steezy, View, Text } from '@tonkeeper/uikit';
 
 const AmountStepComponent: FC<AmountStepProps> = (props) => {
   const {
-    isPreparing,
-    active,
     recipient,
     decimals,
     balance,
     currency,
     currencyTitle,
+    isLiquidJetton,
+    active,
     amount,
     fiatRate,
+    isPreparing,
     setAmount,
     onContinue,
     onChangeCurrency,
@@ -42,8 +45,6 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
   const { keyboardHeightStyle } = useReanimatedKeyboardHeight();
 
   const { bottom: bottomInset } = useSafeAreaInsets();
-
-  const t = useTranslator();
 
   const isFirstRender = useRef(true);
 
@@ -84,15 +85,29 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
         <AmountInput
           innerRef={textInputRef}
           withCoinSelector={true}
+          disabled={isPreparing}
           {...{ decimals, balance, currencyTitle, amount, fiatRate, setAmount }}
         />
         <S.CoinContainer>
-          <CoinDropdown
-            currency={currency}
-            currencyTitle={currencyTitle}
-            onChangeCurrency={onChangeCurrency}
-          />
+          {recipient.blockchain === 'ton' ? (
+            <CoinDropdown
+              currency={currency}
+              currencyTitle={currencyTitle}
+              onChangeCurrency={onChangeCurrency}
+            />
+          ) : (
+            <View style={styles.blockchainCoin}>
+              <Text type="label1">TRC20</Text>
+            </View>
+          )}
         </S.CoinContainer>
+        {isLiquidJetton ? (
+          <S.NoteContainer>
+            <Text type="body2" color="textTertiary">
+              {t('send_screen_steps.amount.liquid_jetton_note')}
+            </Text>
+          </S.NoteContainer>
+        ) : null}
       </S.AmountContainer>
       <Spacer y={40} />
       <Button disabled={!isReadyToContinue} isLoading={isPreparing} onPress={onContinue}>
@@ -103,3 +118,12 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
 };
 
 export const AmountStep = memo(AmountStepComponent);
+
+const styles = Steezy.create(({ colors, corners }) => ({
+  blockchainCoin: {
+    backgroundColor: colors.buttonTertiaryBackground,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: corners.small,
+  },
+}));

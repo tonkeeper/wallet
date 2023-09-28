@@ -66,13 +66,24 @@ export interface IConnectedAppsStore {
       walletAddress: string,
       url: string,
       session_id: string | undefined,
-      firebase_token: string,
     ) => void;
     disableNotifications: (
       chainName: 'mainnet' | 'testnet',
       walletAddress: string,
       url: string,
-      firebase_token: string,
+    ) => void;
+    unsubscribeFromNotifications: (
+      chainName: 'mainnet' | 'testnet',
+      walletAddress: string,
+      url: string,
+    ) => void;
+    unsubscribeFromAllNotifications: (
+      chainName: 'mainnet' | 'testnet',
+      walletAddress: string,
+    ) => void;
+    updateNotificationsSubscription: (
+      chainName: 'mainnet' | 'testnet',
+      walletAddress: string,
     ) => void;
   };
 }

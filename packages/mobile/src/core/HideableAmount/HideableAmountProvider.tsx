@@ -10,10 +10,11 @@ export const HideableAmountProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const isHidden = usePrivacyStore((state) => state.hiddenAmounts);
+  const animation = usePrivacyStore((state) => state.animation);
   const animationProgress = useSharedValue(isHidden ? 1 : 0);
 
   animationProgress.value = withTiming(isHidden ? 1 : 0, {
-    duration: ANIMATION_DURATION,
+    duration: animation ? ANIMATION_DURATION : 0,
   });
 
   return (

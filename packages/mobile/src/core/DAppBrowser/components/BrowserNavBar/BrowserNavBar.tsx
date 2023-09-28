@@ -1,13 +1,15 @@
-import { useTranslator, useCopyText } from '$hooks';
-import { goBack } from '$navigation';
+import { useCopyText } from '$hooks/useCopyText';
 import { Icon, PopupSelect, Text } from '$uikit';
-import { getDomainFromURL, maskifyAddress } from '$utils';
+import { getDomainFromURL } from '$utils';
 import React, { FC, memo, useCallback, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Share from 'react-native-share';
 import * as S from './BrowserNavBar.style';
 import { PopupSelectItemProps } from '$uikit/PopupSelect/PopupSelect.interface';
 import { Toast } from '$store';
+import { goBack } from '$navigation/imperative';
+import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
 
 enum PopupActionType {
   REFRESH,
@@ -52,8 +54,6 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
     unsubscribeFromNotifications,
   } = props;
 
-  const t = useTranslator();
-
   const copyText = useCopyText();
 
   const { top: topInset } = useSafeAreaInsets();
@@ -62,7 +62,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
 
   const domain = getDomainFromURL(url);
 
-  const shortAddress = maskifyAddress(walletAddress);
+  const shortAddress = Address.toShort(walletAddress);
 
   const popupItems = useMemo(() => {
     const items: PopupAction[] = [
@@ -103,7 +103,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
     }
 
     return items;
-  }, [isConnected, isNotificationsEnabled, t]);
+  }, [isConnected, isNotificationsEnabled]);
 
   const handlePressAction = useCallback(
     (action: PopupAction) => {
@@ -112,10 +112,10 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
           return onRefreshPress();
         case PopupActionType.SHARE:
           setTimeout(() => {
-            Share.open({ failOnCancel: false, urls: [url] }).catch((err) => {
+            Share.open({ failOnCancel: false, url }).catch((err) => {
               console.log('cant share', err);
             });
-          }, 0);
+          }, 300);
           return;
         case PopupActionType.COPY_LINK:
           return copyText(url);

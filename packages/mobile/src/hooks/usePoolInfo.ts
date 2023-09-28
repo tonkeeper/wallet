@@ -1,50 +1,85 @@
-import { AppStackRouteNames, openRequireWalletModal } from '$navigation';
-import { CryptoCurrencies } from '$shared/constants';
+import { AppStackRouteNames } from '$navigation';
+import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { formatter, stakingFormatter } from '$utils/formatter';
-import { PoolInfo, AccountStakingInfo } from '@tonkeeper/core';
 import BigNumber from 'bignumber.js';
 import { useCallback, useMemo } from 'react';
 import { useFiatValue } from './useFiatValue';
-import { useTranslator } from './useTranslator';
-import { useNavigation } from '$libs/navigation';
+import { useNavigation } from '@tonkeeper/router';
 import { StakingTransactionType } from '$core/StakingSend/types';
 import { useWallet } from './useWallet';
-import { Address } from '$libs/Ton';
-import { useCopyText } from './useCopyText';
+import { useSelector } from 'react-redux';
+import { jettonsBalancesSelector } from '$store/jettons';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
+import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/shared/Address';
+import { TagType } from '$uikit/Tag';
+import { Toast, useStakingStore } from '$store';
+import { shallow } from 'zustand/shallow';
+import {
+  AccountStakingInfo,
+  PoolInfo,
+  PoolImplementationType,
+} from '@tonkeeper/core/src/TonAPI';
 
 export interface PoolDetailsItem {
   label: string;
   value: string;
+  tags?: { title: string; type?: TagType }[];
   onPress?: () => void;
 }
 
 export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo) => {
-  const t = useTranslator();
-
-  const copyText = useCopyText();
-
   const nav = useNavigation();
 
   const wallet = useWallet();
 
+  const jettonBalances = useSelector(jettonsBalancesSelector);
+
+  const highestApyPool = useStakingStore((s) => s.highestApyPool, shallow);
+
+  const stakingJetton = useMemo(() => {
+    if (
+      pool.implementation === PoolImplementationType.LiquidTF &&
+      pool.liquid_jetton_master
+    ) {
+      const jetton = jettonBalances.find(
+        (item) => Address.parse(item.jettonAddress).toRaw() === pool.liquid_jetton_master,
+      );
+
+      return jetton;
+    }
+
+    return undefined;
+  }, [jettonBalances, pool.implementation, pool.liquid_jetton_master]);
+
+  const currency = stakingJetton ? stakingJetton.jettonAddress : CryptoCurrencies.Ton;
+
   const balance = useFiatValue(
-    CryptoCurrencies.Ton,
-    stakingFormatter.fromNano(poolStakingInfo?.amount ?? '0'),
+    currency as CryptoCurrencies,
+    stakingJetton
+      ? stakingJetton.balance
+      : stakingFormatter.fromNano(poolStakingInfo?.amount ?? '0'),
+    stakingJetton ? stakingJetton.metadata.decimals : Decimals[CryptoCurrencies.Ton],
+    !!stakingJetton,
+    stakingJetton ? stakingJetton.metadata.symbol! : 'TON',
   );
+
   const pendingDeposit = useFiatValue(
     CryptoCurrencies.Ton,
-    stakingFormatter.fromNano(poolStakingInfo?.pendingDeposit ?? '0'),
+    stakingFormatter.fromNano(poolStakingInfo?.pending_deposit ?? '0'),
   );
   const pendingWithdraw = useFiatValue(
     CryptoCurrencies.Ton,
-    stakingFormatter.fromNano(poolStakingInfo?.pendingWithdraw ?? '0'),
+    stakingFormatter.fromNano(poolStakingInfo?.pending_withdraw ?? '0'),
   );
   const readyWithdraw = useFiatValue(
     CryptoCurrencies.Ton,
-    stakingFormatter.fromNano(poolStakingInfo?.readyWithdraw ?? '0'),
+    stakingFormatter.fromNano(poolStakingInfo?.ready_withdraw ?? '0'),
   );
 
-  const hasDeposit = new BigNumber(balance.amount).isGreaterThan(0);
+  const hasDeposit = new BigNumber(
+    stakingJetton ? stakingJetton.balance : balance.amount,
+  ).isGreaterThan(0);
   const hasPendingDeposit = new BigNumber(pendingDeposit.amount).isGreaterThan(0);
   const hasPendingWithdraw = new BigNumber(pendingWithdraw.amount).isGreaterThan(0);
   const hasReadyWithdraw = new BigNumber(readyWithdraw.amount).isGreaterThan(0);
@@ -55,9 +90,9 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
       .minus(new BigNumber(pendingWithdraw.amount))
       .isEqualTo(0);
 
-  const frequency = Math.round((pool.cycleEnd - pool.cycleStart) / 3600);
+  // const frequency = Math.round((pool.cycle_end - pool.cycle_start) / 3600);
   const apy = pool.apy.toFixed(2);
-  const minDeposit = stakingFormatter.fromNano(pool.minStake);
+  const minDeposit = stakingFormatter.fromNano(pool.min_stake);
 
   const handleTopUpPress = useCallback(() => {
     if (wallet) {
@@ -71,14 +106,19 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
   }, [nav, pool.address, wallet]);
 
   const handleWithdrawalPress = useCallback(() => {
+    if (!hasDeposit) {
+      Toast.show(t('staking.no_funds'));
+      return;
+    }
+
     nav.push(AppStackRouteNames.StakingSend, {
       poolAddress: pool.address,
       transactionType:
-        pool.implementation === 'tf'
+        pool.implementation === PoolImplementationType.Tf
           ? StakingTransactionType.WITHDRAWAL_CONFIRM
           : StakingTransactionType.WITHDRAWAL,
     });
-  }, [nav, pool.address, pool.implementation]);
+  }, [hasDeposit, nav, pool.address, pool.implementation]);
 
   const handleConfirmWithdrawalPress = useCallback(() => {
     nav.push(AppStackRouteNames.StakingSend, {
@@ -94,25 +134,12 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
       rows.push({
         label: t('staking.details.apy.label'),
         value: t('staking.details.apy.value', { value: apy }),
+        tags:
+          highestApyPool?.apy === pool.apy
+            ? [{ title: t('staking.details.apy.highest_tag'), type: 'positive' }]
+            : [],
       });
     }
-
-    if (frequency) {
-      rows.push({
-        label: t('staking.details.frequency.label'),
-        value: t('staking.details.frequency.value', { count: frequency }),
-      });
-    }
-
-    const address = new Address(pool.address);
-
-    rows.push({
-      label: t('staking.details.pool_address.label'),
-      value: address.format({ cut: true }),
-      onPress: () => {
-        copyText(address.format(), t('address_copied'));
-      },
-    });
 
     if (minDeposit) {
       rows.push({
@@ -123,11 +150,19 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
       });
     }
 
+    // if (frequency) {
+    //   rows.push({
+    //     label: t('staking.details.frequency.label'),
+    //     value: t('staking.details.frequency.value', { count: frequency }),
+    //   });
+    // }
+
     return rows;
-  }, [apy, copyText, frequency, minDeposit, pool.address, t]);
+  }, [apy, highestApyPool, minDeposit, pool.apy]);
 
   return {
     infoRows,
+    stakingJetton,
     balance,
     pendingDeposit,
     pendingWithdraw,

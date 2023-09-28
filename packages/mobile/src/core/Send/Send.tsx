@@ -1,4 +1,5 @@
-import { useFiatRate, useInstance, useTranslator } from '$hooks';
+import { useInstance } from '$hooks/useInstance';
+import { useTokenPrice } from '$hooks/useTokenPrice';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import {
@@ -9,7 +10,7 @@ import {
 } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { NavBar, Text } from '$uikit';
-import { isValidAddress, maskifyAddress, parseLocaleNumber } from '$utils';
+import { parseLocaleNumber } from '$utils';
 import React, {
   FC,
   useCallback,
@@ -20,16 +21,38 @@ import React, {
 } from 'react';
 import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { SendAmount, SendProps, SendRecipient, SendSteps } from './Send.interface';
+import {
+  AccountWithPubKey,
+  SendAmount,
+  SendProps,
+  SendRecipient,
+  SendSteps,
+} from './Send.interface';
 import { AddressStep } from './steps/AddressStep/AddressStep';
 import { AmountStep } from './steps/AmountStep/AmountStep';
 import { ConfirmStep } from './steps/ConfirmStep/ConfirmStep';
 import { Keyboard } from 'react-native';
 import { favoritesActions } from '$store/favorites';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { Configuration, AccountsApi, Account } from '@tonkeeper/core';
-import { DismissedActionError } from './steps/ConfirmStep/DismissedActionError';
+import {
+  CanceledActionError,
+  DismissedActionError,
+} from './steps/ConfirmStep/ActionErrors';
+import { Configuration, AccountsApi } from '@tonkeeper/core/src/legacy';
 import { formatter } from '$utils/formatter';
+import { Events } from '$store/models';
+import { trackEvent } from '$utils/stats';
+import { t } from '@tonkeeper/shared/i18n';
+import { Address } from '@tonkeeper/core';
+import { tk } from '@tonkeeper/shared/tonkeeper';
+import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
+import { useValueRef } from '@tonkeeper/uikit';
+import { RequestData } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
+import BigNumber from 'bignumber.js';
+import {
+  InsufficientFundsParams,
+  openInsufficientFundsModal,
+} from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {
@@ -40,18 +63,19 @@ export const Send: FC<SendProps> = ({ route }) => {
     amount: initialAmount = '0',
     fee: initialFee = '0',
     isInactive: initialIsInactive = false,
+    from,
   } = route.params;
 
   const initialAddress =
-    propsAddress && isValidAddress(propsAddress) ? propsAddress : null;
+    propsAddress && Address.isValid(propsAddress) ? propsAddress : null;
+
+  const trcPayload = useValueRef<RequestData | null>(null);
 
   const initialStepId = useMemo(() => {
     if (initialAmount !== '0' && initialFee !== '0') {
       return SendSteps.CONFIRM;
     }
   }, [initialAmount, initialFee]);
-
-  const t = useTranslator();
 
   const dispatch = useDispatch();
 
@@ -66,15 +90,17 @@ export const Send: FC<SendProps> = ({ route }) => {
     return new AccountsApi(tonApiConfiguration);
   });
 
-  const [{ currency, isJetton }, setCurrency] = useState({
+  const [{ currency, isJetton, isUSDT }, setCurrency] = useState({
     currency: initialCurrency || CryptoCurrencies.Ton,
     isJetton: !!initialIsJetton,
+    isUSDT: false,
   });
 
   const [recipient, setRecipient] = useState<SendRecipient | null>(
-    initialAddress ? { address: initialAddress } : null,
+    initialAddress ? { address: initialAddress, blockchain: 'ton' } : null,
   );
-  const [recipientAccountInfo, setRecipientAccountInfo] = useState<Account | null>(null);
+  const [recipientAccountInfo, setRecipientAccountInfo] =
+    useState<AccountWithPubKey | null>(null);
 
   const [amount, setAmount] = useState<SendAmount>({
     value: formatter.format(initialAmount, {
@@ -85,6 +111,8 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   const [comment, setComment] = useState(initalComment.replace(/\0/g, ''));
 
+  const [isCommentEncrypted, setCommentEncrypted] = useState(false);
+
   const [isPreparing, setPreparing] = useState(false);
   const [isSending, setSending] = useState(false);
 
@@ -92,12 +120,20 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   const [isInactive, setInactive] = useState(initialIsInactive);
 
-  const { balance, currencyTitle, decimals, jettonWalletAddress } = useCurrencyToSend(
-    currency,
-    isJetton,
-  );
+  const [insufficientFundsParams, setInsufficientFundsParams] =
+    useState<InsufficientFundsParams | null>(null);
 
-  const fiatRate = useFiatRate(currency as CryptoCurrency, isJetton);
+  const {
+    balance,
+    currencyTitle,
+    decimals,
+    jettonWalletAddress,
+    price,
+    isLiquidJetton,
+    trcToken,
+  } = useCurrencyToSend(currency, isJetton, isUSDT);
+
+  const tokenPrice = useTokenPrice(isLiquidJetton ? CryptoCurrencies.Ton : currency);
 
   const stepViewRef = useRef<StepViewRef>(null);
 
@@ -137,10 +173,37 @@ export const Send: FC<SendProps> = ({ route }) => {
         value: '0',
         all: false,
       });
-      setCurrency({ currency: nextCurrency, isJetton: !!nextIsJetton });
+      setCurrency({ currency: nextCurrency, isJetton: !!nextIsJetton, isUSDT: false });
     },
     [],
   );
+
+  const changeBlockchain = useCallback((nextCurrency: CryptoCurrency | string) => {
+    setAmount({
+      value: '0',
+      all: false,
+    });
+    setCurrency({ currency: nextCurrency, isJetton: false, isUSDT: true });
+  }, []);
+
+  const parsedAmount = useMemo(() => {
+    const parsed = parseLocaleNumber(amount.value);
+
+    if (!parsed) {
+      return '0';
+    }
+
+    if (isLiquidJetton && price) {
+      return amount.all
+        ? price.amount
+        : new BigNumber(parsed)
+            .dividedBy(price.ton)
+            .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
+            .toString();
+    }
+
+    return parsed;
+  }, [amount.all, amount.value, decimals, isLiquidJetton, price]);
 
   const prepareConfirmSending = useCallback(async () => {
     if (!recipient) {
@@ -149,71 +212,129 @@ export const Send: FC<SendProps> = ({ route }) => {
 
     setPreparing(true);
 
-    dispatch(
-      walletActions.confirmSendCoins({
-        currency: currency as CryptoCurrency,
-        amount: parseLocaleNumber(amount.value),
-        address: recipient.address,
-        isJetton,
-        jettonWalletAddress,
-        decimals,
-        onEnd: () => setPreparing(false),
-        onNext: (details) => {
-          setFee(details.fee);
-          setInactive(details.isInactive);
+    if (recipient.blockchain === 'ton') {
+      dispatch(
+        walletActions.confirmSendCoins({
+          currency: currency as CryptoCurrency,
+          amount: parsedAmount,
+          isSendAll: amount.all,
+          address: recipient.address,
+          isJetton,
+          jettonWalletAddress,
+          decimals,
+          comment,
+          isCommentEncrypted,
+          onEnd: () => setPreparing(false),
+          onInsufficientFunds: (params) => {
+            setFee('0');
+            setInsufficientFundsParams(params);
 
-          stepViewRef.current?.go(SendSteps.CONFIRM);
-        },
-      }),
-    );
+            stepViewRef.current?.go(SendSteps.CONFIRM);
+          },
+          onNext: (details) => {
+            setInsufficientFundsParams(null);
+            setFee(details.fee);
+            setInactive(details.isInactive);
+
+            stepViewRef.current?.go(SendSteps.CONFIRM);
+          },
+        }),
+      );
+    } else if (recipient.blockchain === 'tron') {
+      stepViewRef.current?.go(SendSteps.CONFIRM);
+
+      const payload = await tk.wallet.tronService.estimate({
+        to: recipient.address,
+        amount: amount.value,
+        tokenAddress: trcToken!,
+      });
+
+      trcPayload.setValue(payload.request);
+
+      setFee(formatter.fromNano(payload.request.fee, 6));
+      setPreparing(false);
+    }
   }, [
-    amount.value,
+    amount,
+    comment,
     currency,
     decimals,
     dispatch,
+    isCommentEncrypted,
     isJetton,
     jettonWalletAddress,
+    parsedAmount,
     recipient,
+    trcPayload,
+    trcToken,
   ]);
 
+  const unlock = useUnlockVault();
   const doSend = useCallback(
-    (onDone: () => void, onFail: (e?: Error) => void) => {
+    async (onDone: () => void, onFail: (e?: Error) => void) => {
       if (!recipient) {
         return onFail(new DismissedActionError());
       }
 
+      if (insufficientFundsParams) {
+        openInsufficientFundsModal(insufficientFundsParams);
+
+        return onFail(new CanceledActionError());
+      }
+
       setSending(true);
-      dispatch(
-        walletActions.sendCoins({
-          currency: currency as CryptoCurrency,
-          amount: parseLocaleNumber(amount.value),
-          isSendAll: amount.all,
-          address: recipient.address,
-          comment,
-          isJetton,
-          jettonWalletAddress,
-          decimals,
-          onDone: () => {
-            dispatch(favoritesActions.restoreHiddenAddress(recipient.address));
-            setSending(false);
-            onDone();
-          },
-          onFail: () => {
-            setSending(false);
-            onFail(new DismissedActionError());
-          },
-        }),
-      );
+
+      if (recipient.blockchain === 'ton') {
+        dispatch(
+          walletActions.sendCoins({
+            currency: currency as CryptoCurrency,
+            amount: parsedAmount,
+            isSendAll: amount.all,
+            address: recipient.address,
+            comment,
+            isCommentEncrypted,
+            isJetton,
+            jettonWalletAddress,
+            decimals,
+            onDone: () => {
+              trackEvent(Events.SendSuccess, { from });
+              dispatch(favoritesActions.restoreHiddenAddress(recipient.address));
+              setSending(false);
+              onDone();
+            },
+            onFail: () => {
+              setSending(false);
+              onFail(new DismissedActionError());
+            },
+          }),
+        );
+      } else if (recipient.blockchain === 'tron' && trcPayload.value) {
+        const unloked = await unlock();
+        const privateKey = await unloked.getTonPrivateKey();
+        const send = await tk.wallet.tronService.send(privateKey, trcPayload.value);
+        console.log(send);
+
+        setSending(false);
+        onDone();
+      } else if (recipient.blockchain === 'tron' && !trcPayload.value) {
+        onFail(new Error('Error Tron Estimate'));
+      }
     },
     [
-      amount,
+      amount.all,
       comment,
       currency,
       decimals,
       dispatch,
+      from,
+      insufficientFundsParams,
+      isCommentEncrypted,
       isJetton,
       jettonWalletAddress,
+      parsedAmount,
       recipient,
+      trcPayload.value,
+      unlock,
     ],
   );
 
@@ -229,8 +350,27 @@ export const Send: FC<SendProps> = ({ route }) => {
       return;
     }
 
+    const accountId = recipient.address;
+
     try {
-      const accountInfo = await accountsApi.getAccount({ accountId: recipient.address });
+      const [accountInfoResponse, pubKeyResponse] = await Promise.allSettled([
+        accountsApi.getAccount({ accountId }),
+        accountsApi.getPublicKeyByAccountID({ accountId }),
+      ]);
+
+      if (accountInfoResponse.status === 'rejected') {
+        throw new Error(accountInfoResponse.reason);
+      }
+
+      const accountInfo: AccountWithPubKey = { ...accountInfoResponse.value };
+
+      if (pubKeyResponse.status === 'fulfilled') {
+        accountInfo.publicKey = pubKeyResponse.value.publicKey;
+      }
+
+      if (!accountInfo.publicKey || accountInfo.memoRequired) {
+        setCommentEncrypted(false);
+      }
 
       setRecipientAccountInfo(accountInfo);
     } catch {}
@@ -245,13 +385,15 @@ export const Send: FC<SendProps> = ({ route }) => {
   const isAddressStep = currentStep.id === SendSteps.ADDRESS;
   const isConfirmStep = currentStep.id === SendSteps.CONFIRM;
 
-  const hideBackButton = currentStep.index === 0;
+  const hideBackButton = currentStep.index === 0 || initialStepId === SendSteps.CONFIRM;
+
+  const isBackDisabled = isSending || isPreparing || initialStepId === SendSteps.CONFIRM;
 
   const navBarTitle = isAddressStep
     ? t('send_screen_steps.address.title')
     : t('send_screen_steps.amount.title');
 
-  const shortenedAddress = recipient ? maskifyAddress(recipient.address) : '';
+  const shortenedAddress = recipient ? Address.toShort(recipient.address) : '';
 
   const name = recipient?.domain || recipient?.name || recipientAccountInfo?.name;
 
@@ -288,11 +430,11 @@ export const Send: FC<SendProps> = ({ route }) => {
       </NavBar>
       <StepView
         ref={stepViewRef}
-        backDisabled={isSending || isPreparing}
+        backDisabled={isBackDisabled}
         onChangeStep={handleChangeStep}
         initialStepId={initialStepId}
         useBackHandler
-        swipeBackEnabled
+        swipeBackEnabled={!isBackDisabled}
       >
         <StepViewItem id={SendSteps.ADDRESS}>
           {(stepProps) => (
@@ -300,10 +442,13 @@ export const Send: FC<SendProps> = ({ route }) => {
               recipient={recipient}
               decimals={decimals}
               stepsScrollTop={stepsScrollTop}
+              changeBlockchain={changeBlockchain}
               setRecipient={setRecipient}
               setRecipientAccountInfo={setRecipientAccountInfo}
               recipientAccountInfo={recipientAccountInfo}
               comment={comment}
+              isCommentEncrypted={isCommentEncrypted}
+              setCommentEncrypted={setCommentEncrypted}
               setComment={setComment}
               setAmount={setAmount}
               onContinue={goToAmount}
@@ -318,12 +463,13 @@ export const Send: FC<SendProps> = ({ route }) => {
               isPreparing={isPreparing}
               recipient={recipient}
               decimals={decimals}
-              balance={balance}
+              balance={String(balance)}
               currency={currency}
+              isLiquidJetton={isLiquidJetton}
               onChangeCurrency={onChangeCurrency}
               currencyTitle={currencyTitle}
               amount={amount}
-              fiatRate={fiatRate.today}
+              fiatRate={tokenPrice.fiat}
               setAmount={setAmount}
               onContinue={prepareConfirmSending}
               {...stepProps}
@@ -345,6 +491,7 @@ export const Send: FC<SendProps> = ({ route }) => {
               fee={fee}
               isInactive={isInactive}
               comment={comment}
+              isCommentEncrypted={isCommentEncrypted}
               onConfirm={handleSend}
               {...stepProps}
             />

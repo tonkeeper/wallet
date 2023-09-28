@@ -3,7 +3,7 @@ import WebviewComponent from 'react-native-webview';
 
 import { Loader, NavBar } from '$uikit';
 import * as S from './WebView.style';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { deviceWidth, isAndroid } from '$utils';
 import { WebViewProps } from './WebView.interface';
 import { useDeeplinking } from '$libs/deeplinking';

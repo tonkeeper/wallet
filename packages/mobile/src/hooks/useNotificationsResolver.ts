@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import messaging from '@react-native-firebase/messaging';
-import { useNavigation } from './useNavigation';
+import { useNavigation } from '@tonkeeper/router';
 import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { useDeeplinking } from '$libs/deeplinking';
@@ -8,27 +8,22 @@ import { getToken } from '$utils/messaging';
 import { openDAppBrowser } from '$navigation';
 import { getDomainFromURL } from '$utils';
 import { Alert } from 'react-native';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
+import { useNotificationsStore } from '$store';
 
 export const useNotificationsResolver = () => {
   const { isMainStackInited } = useSelector(mainSelector);
   const nav = useNavigation();
   const deeplinking = useDeeplinking();
 
-  useEffect(() => {
-    getToken();
-  }, []);
-
-  React.useEffect(() => {
-    if (!isMainStackInited) {
-      return;
-    }
-
-    messaging().onNotificationOpenedApp((remoteMessage) => {
+  function handleNotification(remoteMessage) {
+    try {
       console.log(
         'Notification caused app to open from background state:',
         remoteMessage,
       );
+
+      useNotificationsStore.getState().actions.removeRedDot();
 
       const deeplink = remoteMessage.data?.deeplink;
       const link = remoteMessage.data?.link;
@@ -61,19 +56,27 @@ export const useNotificationsResolver = () => {
       } else {
         nav.navigate('Balances');
       }
-    });
+    } catch (e) {}
+  }
+
+  useEffect(() => {
+    getToken();
+  }, []);
+
+  React.useEffect(() => {
+    if (!isMainStackInited) {
+      return;
+    }
+
+    messaging().onNotificationOpenedApp((remoteMessage) =>
+      handleNotification(remoteMessage),
+    );
 
     messaging()
       .getInitialNotification()
       .then((remoteMessage) => {
         if (remoteMessage) {
-          console.log('Notification caused app to open from quit state:', remoteMessage);
-
-          const deeplink = remoteMessage.data?.deeplink;
-
-          if (deeplink) {
-            deeplinking.resolve(deeplink);
-          }
+          handleNotification(remoteMessage);
         }
       });
   }, [isMainStackInited]);

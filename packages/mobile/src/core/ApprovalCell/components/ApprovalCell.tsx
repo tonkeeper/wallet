@@ -2,8 +2,9 @@ import React, { useCallback, useMemo } from 'react';
 import { Steezy } from '$styles';
 import { Icon, Spacer, SText, View, List } from '$uikit';
 import { openManageTokens } from '$navigation';
-import { t } from '$translation';
-import { useApprovedNfts, useJettonBalances } from '$hooks';
+import { t } from '@tonkeeper/shared/i18n';
+import { useApprovedNfts } from '$hooks/useApprovedNfts';
+import { useJettonBalances } from '$hooks/useJettonBalances';
 import { groupByCollection } from '$core/ManageTokens/hooks/useNftData';
 import { ViewStyle } from 'react-native';
 

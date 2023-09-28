@@ -31,7 +31,9 @@ export class NFTsManager {
 
     for (let nfts of responses) {
       for (let nft of nfts) {
-        this.nfts[nft.internalId] = nft;
+        if (nft.metadata?.render_type !== 'hidden') {
+          this.nfts[nft.internalId] = nft;
+        }
       }
     }
 

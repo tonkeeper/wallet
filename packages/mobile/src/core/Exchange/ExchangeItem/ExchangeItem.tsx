@@ -2,10 +2,12 @@ import React, { FC, useCallback } from 'react';
 
 import { ExchangeItemProps } from './ExchangeItem.interface';
 import * as S from './ExchangeItem.style';
-import { useExchangeMethodInfo, useTheme, useTranslator } from '$hooks';
-import { openExchangeMethodModal } from '$navigation';
+import { useExchangeMethodInfo } from '$hooks/useExchangeMethodInfo';
+import { useTheme } from '$hooks/useTheme';
 import { Icon, Text } from '$uikit';
 import { Linking } from 'react-native';
+import { t } from '@tonkeeper/shared/i18n';
+import { openExchangeMethodModal } from '$core/ModalContainer/ExchangeMethod/ExchangeMethod';
 
 export const ExchangeItem: FC<ExchangeItemProps> = ({
   methodId,
@@ -15,11 +17,10 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
   const method = useExchangeMethodInfo(methodId);
   const theme = useTheme();
 
-  const t = useTranslator();
-
   const isBot = methodId.endsWith('_bot');
 
   const handlePress = useCallback(() => {
+    if (!method) return null;
     if (isBot) {
       openExchangeMethodModal(methodId, () => {
         Linking.openURL(method.action_button.url);
@@ -27,9 +28,10 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
     } else {
       openExchangeMethodModal(methodId);
     }
-  }, [isBot, method.action_button.url, methodId]);
+  }, [isBot, method, methodId]);
 
   function renderBadge() {
+    if (!method) return null;
     if (method.badge) {
       let backgroundColor = theme.colors.accentPrimary;
       if (method.badgeStyle === 'red') {
@@ -46,9 +48,9 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
     }
   }
 
-  if (method.disabled) {
+  if (!method || method.disabled) {
     return null;
-  } // TODO:
+  }
 
   return (
     <S.Wrap>

@@ -1,4 +1,4 @@
-import { useAppState } from '$hooks';
+import { useAppState } from '$hooks/useAppState';
 import { getAllConnections, useConnectedAppsStore } from '$store';
 import { walletSelector } from '$store/wallet';
 import { useEffect } from 'react';

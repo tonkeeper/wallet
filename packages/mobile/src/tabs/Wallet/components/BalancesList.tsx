@@ -1,21 +1,32 @@
-import React, { memo, useCallback, useMemo } from 'react';
-import { t } from '$translation';
-import { List, Screen, Spacer, SpacerSizes, View } from '$uikit';
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import { t } from '@tonkeeper/shared/i18n';
+import { Screen, Spacer, SpacerSizes, View } from '$uikit';
+import { List, isAndroid, Text } from '@tonkeeper/uikit';
+// import { List } from '$uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { openJetton, openJettonsList, openWallet } from '$navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { openJetton } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { Rate } from '../hooks/useBalance';
 import { ListItemRate } from '../components/ListItemRate';
-import { TonIcon, TonIconProps } from '../../../components/TonIcon';
+import { TonIcon, TonIconProps } from '@tonkeeper/uikit';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { Tabs } from '../components/Tabs';
 import { NFTsList } from '../components/NFTsList';
-import { useTheme } from '$hooks';
+import { TokenPrice, useTokenPrice } from '$hooks/useTokenPrice';
+import { useTheme } from '$hooks/useTheme';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StakingWidget } from './StakingWidget';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { openWallet } from '$core/Wallet/ToncoinScreen';
+import {
+  TronAPIGenerated,
+  TronBalance,
+} from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
+import { formatter } from '@tonkeeper/shared/formatter';
+import { fiatCurrencySelector } from '$store/main';
+import { openTronToken } from '../TronTokenScreen';
 
 enum ContentType {
   Token,
@@ -27,7 +38,7 @@ enum ContentType {
 
 type TokenItem = {
   type: ContentType.Token;
-
+  key: string;
   isFirst?: boolean;
   isLast?: boolean;
 
@@ -43,16 +54,19 @@ type TokenItem = {
 };
 
 type SpacerItem = {
+  key: string;
   type: ContentType.Spacer;
   bottom: SpacerSizes;
 };
 
 type NFTCardsRowItem = {
+  key: string;
   type: ContentType.NFTCardsRow;
   items: any; // TODO:
 };
 
 type StakingItem = {
+  key: string;
   type: ContentType.Staking;
 };
 
@@ -128,8 +142,9 @@ const RenderItem = ({ item }: { item: Content }) => {
 interface BalancesListProps {
   tokens: any; // TODO:
   balance: any; // TODO:
-  rates: Rate;
+  tonPrice: TokenPrice;
   nfts?: any; // TODO:
+  tronBalances?: TronBalance[];
   handleRefresh: () => void;
   isRefreshing: boolean;
   isFocused: boolean;
@@ -141,15 +156,18 @@ export const BalancesList = memo<BalancesListProps>(
   ({
     tokens,
     balance,
-    rates,
+    tonPrice,
     nfts,
     handleRefresh,
     isRefreshing,
     isFocused,
     ListHeaderComponent,
+    tronBalances,
   }) => {
     const theme = useTheme();
     const dispatch = useDispatch();
+    const usdtRate = useTokenPrice('USDT');
+    const fiatCurrency = useSelector(fiatCurrencySelector);
 
     const handleMigrate = useCallback(
       (fromVersion: string) => () => {
@@ -160,7 +178,7 @@ export const BalancesList = memo<BalancesListProps>(
           }),
         );
       },
-      [],
+      [dispatch],
     );
 
     const data = useMemo(() => {
@@ -169,30 +187,32 @@ export const BalancesList = memo<BalancesListProps>(
       // Tokens
       content.push({
         type: ContentType.Token,
+        key: 'ton',
         title: 'Toncoin',
         onPress: () => openWallet(CryptoCurrencies.Ton),
         value: balance.ton.amount.formatted,
         subvalue: balance.ton.amount.fiat,
         tonIcon: true,
         rate: {
-          percent: rates.percent,
-          price: rates.price,
-          trend: rates.trend,
+          percent: tonPrice.fiatDiff.percent,
+          price: tonPrice.formatted.fiat ?? '-',
+          trend: tonPrice.fiatDiff.trend,
         },
       });
 
       content.push(
         ...balance.oldVersions.map((item) => ({
           type: ContentType.Token,
+          key: 'old_' + item.version,
           onPress: handleMigrate(item.version),
           title: t('wallet.old_wallet_title'),
           tonIcon: { transparent: true },
           value: item.amount.formatted,
           subvalue: item.amount.fiat,
           rate: {
-            percent: rates.percent,
-            price: rates.price,
-            trend: rates.trend,
+            percent: tonPrice.fiatDiff.percent,
+            price: tonPrice.formatted.fiat ?? '-',
+            trend: tonPrice.fiatDiff.trend,
           },
         })),
       );
@@ -205,23 +225,70 @@ export const BalancesList = memo<BalancesListProps>(
             title: LockupNames[item.type],
             value: item.amount.formatted,
             subvalue: item.amount.fiat,
-            subtitle: rates.price,
+            subtitle: tonPrice.formatted.fiat ?? '-',
           })),
         );
       }
 
+      // if (tronBalances && tronBalances.length > 0) {
+      //   content.push(
+      //     ...(tronBalances as any).map((item) => {
+      //       const amount = formatter.fromNano(item.weiAmount, item.token.decimals);
+      //       const fiatAmount = formatter.format(usdtRate.fiat * parseFloat(amount), {
+      //         currency: fiatCurrency
+      //       });
+      //       const fiatPrice = formatter.format(usdtRate.fiat, {
+      //         currency: fiatCurrency
+      //       });
+
+      //       return {
+      //         onPress: () => openTronToken(item),
+      //         type: ContentType.Token,
+      //         picture: item.token.image,
+      //         title: (
+      //           <View style={styles.trcTitle}>
+      //             <Text type="label1">{item.token.symbol}</Text>
+      //             <View style={styles.trcLabel}>
+      //               <Text type="body4" color="textSecondary">
+      //                 TRC20
+      //               </Text>
+      //             </View>
+      //           </View>
+      //         ),
+      //         value: amount,
+      //         subvalue: fiatAmount,
+      //         subtitle: fiatPrice,
+      //       };
+      //     }),
+      //   );
+      // }
+
+      content.push({
+        key: 'staking',
+        type: ContentType.Staking,
+      });
+
+      content.push({
+        key: 'spacer_staking',
+        type: ContentType.Spacer,
+        bottom: 32,
+      });
+
       content.push(
-        ...tokens.list.map((item) => ({
+        ...tokens.list.map((item, index) => ({
+          key: 'token_' + item.address.rawAddress,
+          isFirst: index === 0,
           type: ContentType.Token,
           onPress: () => openJetton(item.address.rawAddress),
           picture: item.iconUrl,
-          title: item.name,
+          title: item.symbol,
           value: item.quantity.formatted,
-          label: item.symbol,
           subvalue: item.rate.total,
           rate: item.rate.price
             ? {
                 price: item.rate.price,
+                percent: item.price.fiatDiff.percent,
+                trend: item.price.fiatDiff.trend,
               }
             : undefined,
         })),
@@ -230,23 +297,23 @@ export const BalancesList = memo<BalancesListProps>(
       const firstTonkenElement = content[0] as TokenItem;
       const lastTokenElement = content[content.length - 1] as TokenItem;
 
+      if (tokens.list.length > 0) {
+        content.push({
+          key: 'spacer_nft',
+          type: ContentType.Spacer,
+          bottom: 32,
+        });
+      }
+
       // Make list; set corners
       firstTonkenElement.isFirst = true;
       lastTokenElement.isLast = true;
 
-      content.push({
-        type: ContentType.Staking,
-      });
-
       if (nfts) {
-        content.push({
-          type: ContentType.Spacer,
-          bottom: 32,
-        });
-
         const numColumns = 3;
         for (let i = 0; i < Math.ceil(nfts.length / numColumns); i++) {
           content.push({
+            key: 'nft_' + i,
             type: ContentType.NFTCardsRow,
             items: nfts.slice(i * numColumns, i * numColumns + numColumns),
           });
@@ -254,21 +321,23 @@ export const BalancesList = memo<BalancesListProps>(
       }
 
       content.push({
+        key: 'spacer_bottom',
         type: ContentType.Spacer,
         bottom: 12,
       });
 
       return content;
-    }, [balance.oldVersions, rates, tokens.list]);
+    }, [balance, handleMigrate, nfts, tokens.list, tonPrice, tronBalances]);
 
     const ListComponent = nfts ? Screen.FlashList : Tabs.FlashList;
 
     return (
       <ListComponent
+        drawDistance={isAndroid ? 750 : undefined}
         ListHeaderComponent={ListHeaderComponent}
         getItemType={(item) => item.type}
         renderItem={RenderItem}
-        estimatedItemSize={500}
+        estimatedItemSize={76}
         data={data}
         refreshControl={
           <RefreshControl
@@ -284,6 +353,19 @@ export const BalancesList = memo<BalancesListProps>(
 );
 
 const styles = Steezy.create(({ colors, corners }) => ({
+  trcTitle: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  trcLabel: {
+    backgroundColor: colors.backgroundContentTint,
+    paddingHorizontal: 5,
+    paddingTop: 2.5,
+    paddingBottom: 3.5,
+    borderRadius: 4,
+    marginLeft: 6,
+  },
   firstListItem: {
     borderTopLeftRadius: corners.medium,
     borderTopRightRadius: corners.medium,

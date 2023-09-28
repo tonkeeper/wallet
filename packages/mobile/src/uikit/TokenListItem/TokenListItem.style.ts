@@ -1,5 +1,5 @@
 import styled, { RADIUS } from '$styled';
-import { Highlight } from '$uikit';
+import { Highlight } from '../Highlight/Highlight';
 import { ns } from '$utils';
 
 const borders = (borderStart: boolean, borderEnd: boolean) => {

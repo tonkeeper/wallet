@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 // Inject node globals into React Native global scope.
-global.Buffer = require('buffer').Buffer;
+global.Buffer = require('@craftzdog/react-native-buffer').Buffer;
 global.process = require('process');
 
 if (typeof btoa === 'undefined') {

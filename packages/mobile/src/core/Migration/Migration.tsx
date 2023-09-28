@@ -15,13 +15,16 @@ import * as S from './Migration.style';
 import { Button, Icon, Text } from '$uikit';
 import { deviceWidth, ns, toLocaleNumber, triggerNotificationSuccess } from '$utils';
 import { Card } from '$core/Migration/Card/Card';
-import { goBack } from '$navigation';
+
 import { MigrationProps } from './Migration.interface';
 import { walletActions } from '$store/wallet';
 import { CryptoCurrencies } from '$shared/constants';
-import { useFiatRate, useTheme, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
+import { useTokenPrice } from '$hooks/useTokenPrice';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { mainSelector } from '$store/main';
+import { goBack } from '$navigation/imperative';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const Migration: FC<MigrationProps> = ({ route }) => {
   const {
@@ -31,19 +34,18 @@ export const Migration: FC<MigrationProps> = ({ route }) => {
     oldBalance,
     newBalance,
     isTransfer,
-    fromVersion
+    fromVersion,
   } = route.params;
 
   const dispatch = useDispatch();
   const theme = useTheme();
-  const t = useTranslator();
   const [step, setStep] = useState(migrationInProgress ? 1 : 0);
   const [cardsScale, setCardsScale] = useState(1);
   const { fiatCurrency } = useSelector(mainSelector);
 
   const iconAnimation = useSharedValue(0);
   const slideAnimation = useSharedValue(migrationInProgress ? 1 : 0);
-  const feeInFiat = useFiatRate(CryptoCurrencies.Ton);
+  const feePrice = useTokenPrice(CryptoCurrencies.Ton, '0.01');
 
   useEffect(() => {
     if (migrationInProgress) {
@@ -200,7 +202,7 @@ export const Migration: FC<MigrationProps> = ({ route }) => {
             {t('migration_fee_info', {
               tonFee: toLocaleNumber('0.01'),
               fiatFee: `${formatFiatCurrencyAmount(
-                (feeInFiat.today * 0.01).toFixed(2),
+                feePrice.totalFiat.toFixed(2),
                 fiatCurrency,
               )}`,
             })}
@@ -224,10 +226,7 @@ export const Migration: FC<MigrationProps> = ({ route }) => {
       <S.Step style={step2Style}>
         <S.StateWrap>
           <S.StateIcon style={iconStyle}>
-            <Icon
-              name="ic-settings-84"
-              color="accentPrimary"
-            />
+            <Icon name="ic-settings-84" color="accentPrimary" />
           </S.StateIcon>
           <S.StateTitleWrapper>
             <Text variant="h2" textAlign="center">

@@ -20,14 +20,15 @@ import { Wallet } from 'blockchain';
 import { NFTOperationError } from './NFTOperationError';
 import { GetGemsSaleContract } from './GetGemsSaleContract';
 import { Cell } from 'tonweb/dist/types/boc/cell';
-import { Address } from 'tonweb/dist/types/utils/address';
-import { t } from '$translation';
+import { Address as AddressType } from 'tonweb/dist/types/utils/address';
+import { Address } from 'ton-core';
+import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 import { getServerConfig } from '$shared/constants';
 import { SendApi, Configuration as ConfigurationV1 } from 'tonapi-sdk-js';
 import axios from 'axios';
 import { Tonapi } from '$libs/Tonapi';
-import { AccountEvent, Configuration, NFTApi } from '@tonkeeper/core';
+import { AccountEvent, Configuration, NFTApi } from '@tonkeeper/core/src/legacy';
 
 const { NftCollection, NftItem, NftSale } = TonWeb.token.nft;
 
@@ -366,6 +367,16 @@ export class NFTOperations {
     return data.collectionContentUri;
   }
 
+  private seeIfBounceable(address: string) {
+    try {
+      return Address.isFriendly(address)
+        ? Address.parseFriendly(address).isBounceable
+        : true;
+    } catch {
+      return true;
+    }
+  }
+
   public async signRaw(params: SignRawParams, sendMode = 3) {
     const wallet = this.getCurrentWallet();
 
@@ -375,9 +386,10 @@ export class NFTOperations {
 
       const messages = [...params.messages].splice(0, 4);
       for (let message of messages) {
+        const isBounceable = this.seeIfBounceable(message.address);
         const order = TonWeb.Contract.createCommonMsgInfo(
           TonWeb.Contract.createInternalMessageHeader(
-            new TonWeb.Address(message.address),
+            new TonWeb.Address(message.address).toString(true, true, isBounceable),
             new TonWeb.utils.BN(this.toNano(message.amount)),
           ),
           Ton.base64ToCell(message.stateInit),
@@ -424,13 +436,12 @@ export class NFTOperations {
       },
       estimateFee: async () => {
         const methods = await signRawMethods();
-        const feeInfo = await methods.estimateFee();
-        const fee = new BigNumber(feeInfo.source_fees.in_fwd_fee)
-          .plus(feeInfo.source_fees.storage_fee)
-          .plus(feeInfo.source_fees.gas_fee)
-          .plus(feeInfo.source_fees.fwd_fee)
-          .toNumber();
-        return truncateDecimal(Ton.fromNano(fee.toString()), 1, true);
+        const queryMsg = await methods.getQuery();
+        const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
+        const feeInfo = await Tonapi.estimateTx(boc);
+        const fee = new BigNumber(feeInfo.fee.total).toNumber();
+
+        return truncateDecimal(Ton.fromNano(fee.toString()), 2, true);
       },
       send: async (secretKey: Uint8Array, onDone?: (boc: string) => void) => {
         const methods = await signRawMethods(secretKey);
@@ -521,7 +532,7 @@ export class NFTOperations {
       },
       send: async (secretKey: Uint8Array) => {
         const myInfo = await this.wallet.ton.getWalletInfo(
-          (wallet.address as Address).toString(true, true, false),
+          (wallet.address as AddressType).toString(true, true, false),
         );
 
         let amountBN: BigNumber;
@@ -538,11 +549,10 @@ export class NFTOperations {
 
         let feeNano: BigNumber;
         try {
-          const feeInfo = await transfer.estimateFee();
-          feeNano = new BigNumber(feeInfo.source_fees.in_fwd_fee)
-            .plus(feeInfo.source_fees.storage_fee)
-            .plus(feeInfo.source_fees.gas_fee)
-            .plus(feeInfo.source_fees.fwd_fee);
+          const query = await transfer.getQuery();
+          const boc = Base64.encodeBytes(await query.toBoc(false));
+          const feeInfo = await Tonapi.estimateTx(boc);
+          feeNano = new BigNumber(feeInfo.fee.total);
         } catch (e) {
           throw new NFTOperationError(t('send_fee_estimation_error'));
         }

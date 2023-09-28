@@ -3,7 +3,7 @@ import React, { FC, useCallback } from 'react';
 import { MarketplaceItemProps } from './MarketplaceItem.interface';
 import * as S from './MarketplaceItem.style';
 import { Icon, Text } from '$uikit';
-import { trackEvent } from '$utils';
+import { trackEvent } from '$utils/stats';
 import { openDAppBrowser } from '$navigation';
 
 export const MarketplaceItem: FC<MarketplaceItemProps> = ({
@@ -13,14 +13,12 @@ export const MarketplaceItem: FC<MarketplaceItemProps> = ({
   description,
   topRadius,
   bottomRadius,
-  onPress,
   internalId,
 }) => {
   const handlePress = useCallback(async () => {
-    await onPress?.();
     openDAppBrowser(marketplaceUrl);
-    trackEvent(`marketplace_open`, { internal_id: internalId });
-  }, [marketplaceUrl, onPress, internalId]);
+    trackEvent('marketplace_open', { internal_id: internalId });
+  }, [marketplaceUrl, internalId]);
 
   return (
     <S.Wrap>

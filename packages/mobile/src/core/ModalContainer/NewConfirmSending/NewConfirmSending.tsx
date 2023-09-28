@@ -5,23 +5,22 @@ import BigNumber from 'bignumber.js';
 
 import { ConfirmSendingProps } from './ConfirmSending.interface';
 import * as S from './ConfirmSending.style';
-import { useExchangeMethodInfo, useTranslator } from '$hooks';
+import { useExchangeMethodInfo } from '$hooks/useExchangeMethodInfo';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { walletActions, walletSelector } from '$store/wallet';
 import { formatCryptoCurrency } from '$utils/currency';
 import { getTokenConfig } from '$shared/dynamicConfig';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 import {
   NFTOperationFooter,
   useNFTOperationState,
 } from '../NFTOperations/NFTOperationFooter';
 import { Separator } from '$uikit';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
   const { currency, address, amount, comment, fee, isJetton, methodId } = props;
-
-  const t = useTranslator();
 
   const dispatch = useDispatch();
 
@@ -34,7 +33,6 @@ export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
   const { decimals, jettonWalletAddress, currencyTitle } = useCurrencyToSend(
     currency,
     isJetton,
-    72,
   );
 
   const doSend = onConfirm(async ({ startLoading }) => {
@@ -79,7 +77,7 @@ export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
     } else {
       doSend();
     }
-  }, [amount, fee, currency, wallet, balances, t, doSend]);
+  }, [amount, fee, currency, wallet, balances, doSend]);
 
   const feeCurrency = useMemo(() => {
     const tokenConfig = getTokenConfig(currency);
@@ -114,7 +112,7 @@ export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
     }
 
     return '';
-  }, [method, t]);
+  }, [method]);
 
   return (
     <Modal>

@@ -1,7 +1,7 @@
 import React, { forwardRef, useCallback, useMemo, useState } from 'react';
 import { View, TouchableNativeFeedback, TouchableHighlight } from 'react-native';
 
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { isAndroid, ns } from '$utils';
 
 import { HighlightProps } from './Highlight.interface';

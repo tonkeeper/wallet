@@ -3,7 +3,6 @@ export interface ServerConfig {
   tonkeeperEndpoint: string;
   tonEndpoint: string;
   tonEndpointAPIKey: string;
-  tonApiEndpoint: string;
   neocryptoWebView: string;
   supportLink: string;
   isExchangeEnabled: string;
@@ -27,8 +26,13 @@ export interface ServerConfig {
   transactionExplorer: string;
   flags: Record<string, boolean>;
   directSupportUrl: string;
+  tonkeeperNewsUrl: string;
+  stakingInfoUrl: string;
+  tonCommunityUrl: string;
+  tonCommunityChatUrl: string;
   amplitudeKey: string;
   stonfiUrl: string;
+  explorerUrl: string;
 }
 
 let config: ServerConfig | null = null;
@@ -39,12 +43,12 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     tonkeeperEndpoint: data.tonkeeperEndpoint || 'https://api.tonkeeper.com',
     tonEndpoint: data.tonEndpoint || 'https://toncenter.com/api/v2/jsonRPC',
     tonEndpointAPIKey: data.tonEndpointAPIKey,
-    tonApiEndpoint: data.tonApiEndpoint || 'https://toncenter.com/api/v2',
     neocryptoWebView: data.neocryptoWebView,
     supportLink: data.supportLink || 'mailto:support@tonkeeper.com',
     isExchangeEnabled: data.isExchangeEnabled,
     exchangePostUrl: data.exchangePostUrl,
     mercuryoSecret: data.mercuryoSecret,
+    explorerUrl: data.explorerUrl || 'https://tonviewer.com',
     accountExplorer: data.accountExplorer || 'https://tonviewer.com/%s',
     appsflyerDevKey: data.appsflyerDevKey,
     appsflyerAppId: data.appsflyerAppId,
@@ -61,6 +65,10 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     cachedMediaSalt: data.cachedMediaSalt,
     NFTOnExplorerUrl: data.NFTOnExplorerUrl || 'https://tonscan.org/nft/%s',
     directSupportUrl: data.directSupportUrl,
+    tonkeeperNewsUrl: data.tonkeeperNewsUrl,
+    stakingInfoUrl: data.stakingInfoUrl,
+    tonCommunityUrl: data.tonCommunityUrl,
+    tonCommunityChatUrl: data.tonCommunityChatUrl,
     transactionExplorer:
       data.transactionExplorer || 'https://tonviewer.com/transaction/%s',
     flags: data.flags || {},

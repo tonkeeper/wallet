@@ -1,17 +1,9 @@
 import styled from '$styled';
-import { Highlight, Text } from '$uikit';
+import { Text } from '$uikit';
 import { ns } from '$utils';
 import FastImage from 'react-native-fast-image';
 
 const ICON_SIZE = 44;
-
-export const CellContainer = styled.View`
-  background: ${({ theme }) => theme.colors.backgroundSecondary};
-`;
-
-export const Cell = styled(Highlight).attrs({ useRNGHComponent: true })`
-  position: relative;
-`;
 
 export const Container = styled.View`
   flex-direction: row;
@@ -35,6 +27,11 @@ export const Title = styled(Text).attrs(() => ({
   variant: 'label1',
   numberOfLines: 1,
 }))``;
+
+export const Row = styled.View`
+  align-items: center;
+  flex-direction: row;
+`;
 
 export const SubTitle = styled(Text).attrs(() => ({
   variant: 'body2',

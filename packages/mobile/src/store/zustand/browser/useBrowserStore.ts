@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { IBrowserStore, SearchEngine } from './types';
 
 const initialState: Omit<IBrowserStore, 'actions'> = {
@@ -19,7 +19,7 @@ export const useBrowserStore = create(
     }),
     {
       name: 'browser',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ searchEngine }) => ({ searchEngine } as IBrowserStore),
     },
   ),

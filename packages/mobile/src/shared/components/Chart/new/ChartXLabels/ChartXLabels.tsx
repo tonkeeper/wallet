@@ -1,5 +1,5 @@
 import { Text } from '$uikit/Text/Text';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { Platform } from 'react-native';
 import Animated, { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useChartData } from '@rainbow-me/animated-charts';
@@ -16,79 +16,79 @@ const fontFamily = Platform.select({
   android: 'RobotoMono-Medium',
 });
 
+const formatDate = (text: string | undefined, currentPeriod: ChartPeriod) => {
+  if (!text) return;
+
+  let mode = 'HH:mm';
+
+  switch (currentPeriod) {
+    case ChartPeriod.ONE_HOUR:
+      mode = 'HH:mm';
+      break;
+    case ChartPeriod.ONE_DAY:
+      mode = 'HH:mm';
+      break;
+    case ChartPeriod.SEVEN_DAYS:
+      mode = 'dd MMM';
+      break;
+    case ChartPeriod.ONE_MONTH:
+      mode = 'dd MMM';
+      break;
+    case ChartPeriod.SIX_MONTHS:
+      mode = 'dd MMM';
+      break;
+    case ChartPeriod.ONE_YEAR:
+      mode = 'dd MMM';
+      break;
+    default:
+      mode = 'HH:mm';
+      break;
+  }
+
+  const date = new Date(parseInt(text) * 1000);
+  return format(date, mode, { locale: getLocale() });
+};
+
 export const ChartXLabelsComponent: React.FC<ChartXLabelsProps> = (props) => {
+  const { currentPeriod } = props;
   const chartData = useChartData();
   const [X1Value, setX1Value] = useState();
   const [X3Value, setX3Value] = useState();
 
-  const updateLabel = useCallback(
-    (text, onUpdate) => {
-      let mode = 'HH:mm';
-
-      switch (props.currentPeriod) {
-        case ChartPeriod.ONE_HOUR:
-          mode = 'HH:mm';
-          break;
-        case ChartPeriod.ONE_DAY:
-          mode = 'HH:mm';
-          break;
-        case ChartPeriod.SEVEN_DAYS:
-          mode = 'dd MMM';
-          break;
-        case ChartPeriod.ONE_MONTH:
-          mode = 'dd MMM';
-          break;
-        case ChartPeriod.SIX_MONTHS:
-          mode = 'dd MMM';
-          break;
-        case ChartPeriod.ONE_YEAR:
-          mode = 'dd MMM';
-          break;
-        default:
-          mode = 'HH:mm';
-          break;
-      }
-      if (!text) return;
-      const date = new Date(parseInt(text) * 1000);
-      onUpdate(format(date, mode, { locale: getLocale() }));
-    },
-    [props.currentPeriod],
-  );
+  const { rect1XLabel } = chartData;
 
   useAnimatedReaction(
-    () => {
-      return chartData.rect1XLabel?.value;
-    },
+    () => rect1XLabel?.value,
     (result, previous) => {
       if (result !== previous) {
-        runOnJS(updateLabel)(result, setX1Value);
+        runOnJS(setX1Value)(result);
       }
     },
-    [chartData, updateLabel],
+    [rect1XLabel],
   );
 
+  const { rect3XLabel } = chartData;
+
   useAnimatedReaction(
-    () => {
-      return chartData.rect3XLabel?.value;
-    },
+    () => rect3XLabel?.value,
     (result, previous) => {
       if (result !== previous) {
-        runOnJS(updateLabel)(result, setX3Value);
+        runOnJS(setX3Value)(result);
       }
     },
-    [chartData, updateLabel],
+    [rect3XLabel],
   );
 
   return (
     <>
       <Animated.View style={[{ position: 'absolute', left: ns(44.5), bottom: ns(2.5) }]}>
         <Text style={{ fontFamily }} variant="label3" color="backgroundTertiary">
-          {X1Value}
+          {formatDate(X1Value, currentPeriod)}
         </Text>
       </Animated.View>
       <Animated.View style={[{ position: 'absolute', left: ns(203.5), bottom: ns(2.5) }]}>
         <Text style={{ fontFamily }} variant="label3" color="backgroundTertiary">
-          {X3Value}
+          {formatDate(X3Value, currentPeriod)}
         </Text>
       </Animated.View>
     </>

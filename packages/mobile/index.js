@@ -14,7 +14,7 @@ import {
 
 import { App } from '$core/App';
 import { name as appName } from './app.json';
-import { debugLog } from './src/utils';
+import { debugLog } from './src/utils/debugLog';
 import { mainActions } from './src/store/main';
 import { store, useNotificationsStore } from './src/store';
 import { getAttachScreenFromStorage } from '$navigation/AttachScreen';
@@ -32,7 +32,6 @@ if (__DEV__) {
 
 async function handleDappMessage(remoteMessage) {
   // handle data-only messages
-  return;
   if (remoteMessage.notification?.body) {
     return null;
   }
@@ -66,14 +65,6 @@ setNativeExceptionHandler((exceptionString) => {
 });
 
 store.dispatch(mainActions.init());
+// tonkeeper.init();
 
-function HeadlessCheck({ isHeadless }) {
-  if (isHeadless) {
-    // App has been launched in the background by iOS, ignore
-    return null;
-  }
-
-  return <App />;
-}
-
-AppRegistry.registerComponent(appName, () => gestureHandlerRootHOC(HeadlessCheck));
+AppRegistry.registerComponent(appName, () => gestureHandlerRootHOC(App));

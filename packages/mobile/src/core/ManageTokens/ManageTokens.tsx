@@ -3,11 +3,10 @@ import React, { FC, useCallback, useState } from 'react';
 import { Icon, Screen, Spacer, SText, View, List, Button } from '$uikit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { JettonBalanceModel } from '$store/models';
-import { Address } from '$libs/Ton';
 import { Tabs } from '../../tabs/Wallet/components/Tabs';
 import { Steezy } from '$styles';
 import { FlashList } from '@shopify/flash-list';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -23,13 +22,15 @@ import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
-import { useParams } from '$navigation';
+import { useParams } from '$navigation/imperative';
+import { Address } from '@tonkeeper/shared/Address';
+
 
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 
 export function reorderJettons(newOrder: JettonBalanceModel[]) {
   return newOrder.map((jettonBalance) => {
-    const rawAddress = new Address(jettonBalance.jettonAddress).toString(false);
+    const rawAddress = Address.parse(jettonBalance.jettonAddress).toRaw();
     return rawAddress;
   });
 }
@@ -71,7 +72,7 @@ const FLashListItem = ({
       return (
         <View style={containerStyle}>
           <List.Item
-            imageStyle={item.imageStyle}
+            pictureStyle={item.imageStyle}
             chevron={item.chevron}
             chevronColor={item.chevronColor}
             title={item.title}

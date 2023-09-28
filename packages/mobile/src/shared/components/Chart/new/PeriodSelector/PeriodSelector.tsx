@@ -1,14 +1,15 @@
 import React, { memo, useCallback } from 'react';
 import { Text } from '$uikit/Text/Text';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { TouchableOpacity, View } from 'react-native';
 import { Haptics, ns } from '$utils';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { ChartPeriod } from '$store/zustand/chart';
 
 export interface PeriodSelectorProps {
   selectedPeriod: ChartPeriod;
   disabled?: boolean;
+  excludedPeriods?: ChartPeriod[];
   onSelect: (newPeriod: ChartPeriod) => void;
 }
 
@@ -59,15 +60,17 @@ export const PeriodSelectorComponent: React.FC<PeriodSelectorProps> = (props) =>
         paddingHorizontal: ns(27),
       }}
     >
-      {mappedPeriods.map((period) => (
-        <Period
-          disabled={props.disabled}
-          key={period.value}
-          onSelect={handleSelect(period.value)}
-          label={period.label}
-          selected={props.selectedPeriod === period.value}
-        />
-      ))}
+      {mappedPeriods.map((period) =>
+        props.excludedPeriods?.includes(period.value) ? null : (
+          <Period
+            disabled={props.disabled}
+            key={period.value}
+            onSelect={handleSelect(period.value)}
+            label={period.label}
+            selected={props.selectedPeriod === period.value}
+          />
+        ),
+      )}
     </View>
   );
 };

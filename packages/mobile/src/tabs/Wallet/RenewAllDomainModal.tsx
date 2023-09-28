@@ -1,5 +1,6 @@
-import { useNavigation } from '$libs/navigation';
-import { navigate, openNFT } from '$navigation/helper';
+import { useNavigation } from '@tonkeeper/router';
+import { openNFT } from '$navigation/helper';
+import { navigate } from '$navigation/imperative';
 import { ExpiringDomainItem } from '$store/zustand/domains/types';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { t } from '$translation';
@@ -12,10 +13,10 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ton } from '$libs/Ton';
 import { BottomButtonWrap, BottomButtonWrapHelper } from '$shared/components';
 import { openСonfirmRenewAllDomains } from './components/СonfirmRenewAllDomains';
 import { CryptoCurrencies } from '$shared/constants';
+import { Address } from '@tonkeeper/shared/Address';
 
 export const RenewAllDomainModal = memo(() => {
   const safeArea = useSafeAreaInsets();
@@ -95,7 +96,7 @@ const ExpiringListItem = memo(
 
     const handlePress = useCallback(() => {
       openNFT({
-        address: Ton.formatAddress(domain.dns_item.address),
+        address: Address.parse(domain.dns_item.address).toFriendly(),
         currency: CryptoCurrencies.Ton,
       });
     }, [domain.dns_item.address]);

@@ -1,36 +1,30 @@
-import React, { FC, useCallback } from 'react';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import Animated from 'react-native-reanimated';
-import { Alert } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import Clipboard from '@react-native-community/clipboard';
-import DeviceInfo from 'react-native-device-info';
-
-import * as S from './DevMenu.style';
-import { ns } from '$utils';
-import { NavBar, PopupSelect, ScrollHandler, Text } from '$uikit';
-import { CellSection, CellSectionItem } from '$shared/components';
+import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
-import { useNavigation, useTranslator } from '$hooks';
-import { openLogs } from '$navigation';
+import { JettonsDB, MainDB, NFTsDB } from '$database';
 import crashlytics from '@react-native-firebase/crashlytics';
-import { EventsDB, JettonsDB, MainDB, NFTsDB } from '$database';
-import { eventsActions } from '$store/events';
-import { nftsActions } from '$store/nfts';
-import { jettonsActions } from '$store/jettons';
+import { DevFeature, useDevFeaturesToggle } from '$store';
+import { List, Screen, copyText } from '@tonkeeper/uikit';
+import { useDispatch, useSelector } from 'react-redux';
 import { Switch } from 'react-native-gesture-handler';
-import { DevFeature, Toast, useDevFeaturesToggle } from '$store';
-import { tags } from '$translation';
-// import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
+import DeviceInfo from 'react-native-device-info';
+import { useNavigation } from '@tonkeeper/router';
+import { config } from '@tonkeeper/shared/config';
+import { jettonsActions } from '$store/jettons';
+import RNRestart from 'react-native-restart';
+import { t } from '@tonkeeper/shared/i18n';
+import { nftsActions } from '$store/nfts';
+import { FC, useCallback } from 'react';
+import { openLogs } from '$navigation';
+import { Alert } from 'react-native';
+import { Icon } from '$uikit';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export const DevMenu: FC = () => {
-  const tabBarHeight = useBottomTabBarHeight();
   const nav = useNavigation();
   const dispatch = useDispatch();
-  const t = useTranslator();
   const isTestnet = useSelector(isTestnetSelector);
   const alwaysShowV4R1 = useSelector(alwaysShowV4R1Selector);
-  // const addNotification = useNotificationsStore((state) => state.actions.addNotification);
+  const addNotification = useNotificationsStore((state) => state.actions.addNotification);
 
   const handleToggleTestnet = useCallback(() => {
     Alert.alert(t('settings_network_alert_title'), '', [
@@ -62,11 +56,6 @@ export const DevMenu: FC = () => {
     MainDB.setShowV4R1(!alwaysShowV4R1);
   }, [alwaysShowV4R1, dispatch]);
 
-  const handleClearEventsCache = useCallback(() => {
-    EventsDB.clearAll();
-    dispatch(eventsActions.resetEvents());
-  }, [dispatch]);
-
   const handleClearNFTsCache = useCallback(() => {
     NFTsDB.clearAll();
     dispatch(nftsActions.resetNFTs());
@@ -85,23 +74,14 @@ export const DevMenu: FC = () => {
     nav.navigate('DevStack');
   }, [nav]);
 
-  const handleEditConfig = useCallback(() => {
-    nav.navigate('EditConfig');
-  }, [nav]);
-
   const handlePushNotification = useCallback(() => {
-    // addNotification({
-    //   message: 'Test notification added',
-    //   dapp_url: 'https://getgems.io',
-    //   received_at: Date.now(),
-    //   link: 'https://getgems.io',
-    // });
-  }, []);
-
-  const handleCopyVersion = useCallback(() => {
-    Clipboard.setString(DeviceInfo.getVersion() + ` (${DeviceInfo.getBuildNumber()})`);
-    Toast.success(t('copied'));
-  }, [dispatch, t]);
+    addNotification({
+      message: 'Test notification added',
+      dapp_url: 'https://getgems.io',
+      received_at: Date.now(),
+      link: 'https://getgems.io',
+    });
+  }, [addNotification]);
 
   const {
     devFeatures,
@@ -113,55 +93,79 @@ export const DevMenu: FC = () => {
     toggleFeature(DevFeature.UseHttpProtocol);
   }, [toggleFeature]);
 
+  const handleClearActivityCache = useCallback(() => {
+    if (tk.wallet) {
+      tk.wallet.activityList.state.clear();
+      tk.wallet.activityList.state.clearPersist();
+      tk.wallet.jettonActivityList.state.clear();
+      tk.wallet.jettonActivityList.state.clearPersist();
+      tk.wallet.tonActivityList.state.clear();
+      tk.wallet.tonActivityList.state.clearPersist();
+    }
+  }, []);
+
   return (
-    <S.Wrap>
-      <NavBar>Dev Menu</NavBar>
-      <ScrollHandler>
-        <Animated.ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingHorizontal: ns(16),
-            paddingBottom: tabBarHeight,
-          }}
-          scrollEventThrottle={16}
-        >
-          <CellSection>
-            <CellSectionItem onPress={handleCopyVersion}>
-              Version {DeviceInfo.getVersion()} ({DeviceInfo.getBuildNumber()})
-            </CellSectionItem>
-            <CellSectionItem icon="ic-reset-24" onPress={handleToggleTestnet}>
-              {t(isTestnet ? 'settings_to_mainnet' : 'settings_to_testnet')}
-            </CellSectionItem>
-            <CellSectionItem onPress={handleLogs}>Logs</CellSectionItem>
-            <CellSectionItem
-              indicator={
+    <Screen>
+      <Screen.Header title="Dev Menu" />
+      <Screen.ScrollView>
+        <List>
+          <List.Item
+            title={`Version ${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`}
+            onPress={copyText(
+              `${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`,
+            )}
+          />
+          <List.Item
+            title={t(isTestnet ? 'settings_to_mainnet' : 'settings_to_testnet')}
+            rightContent={<Icon name="ic-reset-24" color="accentPrimary" />}
+            onPress={handleToggleTestnet}
+          />
+          <List.Item onPress={handleLogs} title="Logs" />
+          <List.Item title="App config" onPress={() => nav.navigate('/dev/config')} />
+          {__DEV__ && (
+            <List.Item
+              title="Dev Tonapi"
+              rightContent={
                 <Switch
-                  value={devFeatures[DevFeature.UseHttpProtocol]}
-                  onChange={toggleHttpProtocol}
+                  value={config.get('tonapiIOEndpoint') === 'https://dev.tonapi.io'}
+                  onChange={() => {
+                    const devHost = 'https://dev.tonapi.io';
+                    if (config.get('tonapiIOEndpoint') !== devHost) {
+                      config.set({ tonapiIOEndpoint: devHost });
+                    } else {
+                      config.set({ tonapiIOEndpoint: undefined });
+                    }
+
+                    RNRestart.restart();
+                  }}
                 />
               }
-            >
-              Use HTTP protocol in browser
-            </CellSectionItem>
-            {__DEV__ && (
-              <>
-                <CellSectionItem onPress={handleTestCrash}>
-                  Test native crash
-                </CellSectionItem>
-                <CellSectionItem onPress={handleTestJsCrash}>
-                  Test js-crash
-                </CellSectionItem>
-                <CellSectionItem onPress={handleComponents}>Components</CellSectionItem>
-                <CellSectionItem onPress={handleEditConfig}>Edit config</CellSectionItem>
-              </>
-            )}
-            <CellSectionItem
-              indicator={<Switch value={alwaysShowV4R1} onValueChange={handleShowV4R1} />}
-            >
-              Force show v4r1
-            </CellSectionItem>
-          </CellSection>
-          <CellSection>
+            />
+          )}
+          <List.Item
+            title="Use HTTP protocol in browser"
+            rightContent={
+              <Switch
+                value={devFeatures[DevFeature.UseHttpProtocol]}
+                onChange={toggleHttpProtocol}
+              />
+            }
+          />
+          {__DEV__ && (
+            <>
+              <List.Item onPress={handleTestCrash} title="Test native crash" />
+              <List.Item onPress={handleTestJsCrash} title="Test js-crash" />
+              <List.Item onPress={handleComponents} title="Components" />
+            </>
+          )}
+          <List.Item
+            title=" Force show v4r1"
+            rightContent={
+              <Switch value={alwaysShowV4R1} onValueChange={handleShowV4R1} />
+            }
+          />
+        </List>
+        {/* <CellSection>
             <PopupSelect
               items={['auto', ...tags.map((lang) => lang.tag)]}
               selected={devLanguage || 'auto'}
@@ -180,25 +184,19 @@ export const DevMenu: FC = () => {
                 Language
               </CellSectionItem>
             </PopupSelect>
-          </CellSection>
-          <CellSection>
-            <CellSectionItem onPress={handleClearJettonsCache}>
-              Clear jettons cache
-            </CellSectionItem>
-            <CellSectionItem onPress={handleClearNFTsCache}>
-              Clear NFTs cache
-            </CellSectionItem>
-            <CellSectionItem onPress={handleClearEventsCache}>
-              Clear events cache
-            </CellSectionItem>
-          </CellSection>
-          <CellSection>
-            <CellSectionItem onPress={handlePushNotification}>
-              Push notification
-            </CellSectionItem>
-          </CellSection>
-        </Animated.ScrollView>
-      </ScrollHandler>
-    </S.Wrap>
+          </CellSection> */}
+        <List>
+          <List.Item
+            onPress={handleClearActivityCache}
+            title="Clear transactions cache"
+          />
+          <List.Item onPress={handleClearJettonsCache} title="Clear jettons cache" />
+          <List.Item onPress={handleClearNFTsCache} title="Clear NFTs cache" />
+        </List>
+        <List>
+          <List.Item onPress={handlePushNotification} title="Push notification" />
+        </List>
+      </Screen.ScrollView>
+    </Screen>
   );
 };

@@ -8,7 +8,6 @@ import {
   SetGeneratedVaultAction,
   SetWalletAction,
   WalletState,
-  TransferCoinsAction,
   SetAddressesAction,
   SendCoinsAction,
   ChangeBalanceAndReloadAction,
@@ -93,7 +92,6 @@ export const { actions, reducer } = createSlice({
     resetVersion(state) {
       state.version = SelectableVersions.V4R2;
     },
-    transferCoins(_, __: TransferCoinsAction) {},
     confirmSendCoins(_, __: ConfirmSendCoinsAction) {},
     sendCoins(_, __: SendCoinsAction) {},
     changeBalanceAndReload(state, action: ChangeBalanceAndReloadAction) {

@@ -1,8 +1,8 @@
 import { getServerConfig } from '$shared/constants';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
-import { Ton } from '$libs/Ton/Ton';
 import { network } from '$libs/network';
+import { Address } from '@tonkeeper/core';
 
 const prepareHeaders = (restHeaders?: { [key: string]: string }) => {
   return {
@@ -87,7 +87,7 @@ async function resolveDns(domain: string, signal?: AbortSignal) {
 
 async function getJettonBalances(address: string) {
   try {
-    if (!Ton.isValidAddress(address)) {
+    if (!Address.isValid(address)) {
       throw new Error('Wrong address');
     }
     const endpoint = getServerConfig('tonapiV2Endpoint');
@@ -184,6 +184,7 @@ export interface SubscribeToNotificationsRequest {
   firebase_token: string;
   session_id?: string;
   commercial: boolean;
+  silent: boolean;
 }
 async function subscribeToNotifications(
   token: string,
@@ -202,7 +203,7 @@ async function subscribeToNotifications(
     );
     return response.data;
   } catch (e) {
-    console.log(e);
+    throw new Error(`Unable to subscribe to notifications: ${e.message}`);
   }
 }
 
@@ -228,7 +229,7 @@ async function unsubscribeFromNotifications(
     );
     return response.data;
   } catch (e) {
-    console.log(e);
+    throw new Error(`Unable to unsubscribe from notifications: ${e.message}`);
   }
 }
 async function getBalances(pubkey: string) {
@@ -254,21 +255,23 @@ async function getBalances(pubkey: string) {
   return balances;
 }
 
-
 type GetExpiringDNSParams = {
   account_id: string;
   period: number;
 };
 
 const getExpiringDNS = async (params: GetExpiringDNSParams) => {
-  return await network.get(`https://tonapi.io/v2/accounts/${params.account_id}/dns/expiring`, {
-    headers: {
-      Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+  return await network.get(
+    `https://tonapi.io/v2/accounts/${params.account_id}/dns/expiring`,
+    {
+      headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+      },
+      params: {
+        period: params.period,
+      },
     },
-    params: {
-      period: params.period
-    }
-  });
+  );
 };
 
 const getDNSLastFillTime = async (domainAddress: string): Promise<number> => {

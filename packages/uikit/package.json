@@ -1,0 +1,23 @@
+{
+  "name": "@tonkeeper/uikit",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "private": true,
+  "scripts": {
+    "icons": "node ./scripts/generateIcons.js"
+  },
+  "peerDependencies": {
+    "react-native-reanimated": "*"
+  },
+  "dependencies": {
+    "@bogoslavskiy/react-native-steezy": "^1.0.4",
+    "@tonkeeper/router": "1.0.0",
+    "expo-linear-gradient": "^12.1.2",
+    "lodash": "^4.17.21",
+    "react": "18.2.0",
+    "react-native": "0.71.7",
+
+    "react-native-web": "~0.18.10"
+  },
+  "devDependencies": {}
+}

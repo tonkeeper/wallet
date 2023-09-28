@@ -3,14 +3,12 @@ import { Alert, Linking } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import TonWeb from 'tonweb';
 import { getUnixTime } from 'date-fns';
-
 import { CreateSubscriptionProps } from './CreateSubscription.interface';
 import * as S from './CreateSubscription.style';
-import { BottomSheet, Button, Icon, Loader, Text } from '$uikit';
-import { List, ListCell } from '$uikit/List/old/List';
-import { ActionType, SubscriptionModel, TransactionType } from '$store/models';
+import { Button, Icon, Loader, Text } from '$uikit';
+import { List } from '@tonkeeper/uikit';
+import { SubscriptionModel } from '$store/models';
 import {
-  compareAddresses,
   format,
   formatSubscriptionPeriod,
   toLocaleNumber,
@@ -19,13 +17,16 @@ import {
 import { subscriptionsActions } from '$store/subscriptions';
 import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
 import { formatCryptoCurrency } from '$utils/currency';
-import { useTheme, useTranslator, useWalletInfo } from '$hooks';
-import { eventsEventsInfoSelector, eventsSelector } from '$store/events';
-import { walletSelector, walletWalletSelector } from '$store/wallet';
+import { useWalletInfo } from '$hooks/useWalletInfo';
+import { walletWalletSelector } from '$store/wallet';
 import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { Toast } from '$store';
 import { network } from '$libs/network';
+import { t } from '@tonkeeper/shared/i18n';
+import { push } from '$navigation/imperative';
+import { SheetActions, useNavigation } from '@tonkeeper/router';
+import { Modal, View } from '@tonkeeper/uikit';
 
 export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   invoiceId = null,
@@ -34,13 +35,11 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   fee: passedFee = null,
 }) => {
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const t = useTranslator();
 
+  const nav = useNavigation();
   const wallet = useSelector(walletWalletSelector);
   const { amount: balance } = useWalletInfo(CryptoCurrencies.Ton);
 
-  const eventsInfo = useSelector(eventsEventsInfoSelector);
   const [isLoading, setLoading] = useState(!isEdit);
   const [failed, setFailed] = useState(0);
   const [fee, setFee] = useState(
@@ -49,7 +48,6 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   const [info, setInfo] = useState<SubscriptionModel | null>(subscription);
   const [isSending, setSending] = useState(false);
   const [isSuccess, setSuccess] = useState(false);
-  const [isClose, setClosed] = useState(false);
   const [totalMoreThanBalance, setTotalMoreThanBalance] = React.useState(false);
   const closeTimer = useRef<any>(null);
 
@@ -65,7 +63,7 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
     if (isSuccess) {
       triggerNotificationSuccess();
       closeTimer.current = setTimeout(() => {
-        setClosed(true);
+        nav.goBack();
 
         if (!isEdit && !subscription) {
           const returnUrl = info!.userReturnUrl;
@@ -94,31 +92,6 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
     return () => closeTimer.current && clearTimeout(closeTimer.current);
   }, [isSuccess]);
 
-  useEffect(() => {
-    if (isClose) {
-      closeTimer.current && clearTimeout(closeTimer.current);
-    }
-  }, [isClose]);
-
-  const isProcessing = useMemo(() => {
-    if (!info) {
-      return false;
-    }
-
-    const type = isEdit ? ActionType.SubscriptionCancel : ActionType.SubscriptionCreate;
-    for (let hash in eventsInfo) {
-      const event = eventsInfo[hash];
-      const action = event.actions.find((action) => action[type]);
-      if (
-        action &&
-        compareAddresses(action.recipient.address, info?.subscriptionAddress)
-      ) {
-        return event.inProgress;
-      }
-    }
-    return false;
-  }, [isEdit, info, eventsInfo]);
-
   const loadInfo = useCallback(() => {
     const host = getServerConfig('subscriptionsHost');
     network
@@ -133,7 +106,7 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
       })
       .catch((e) => {
         Toast.fail(e.message);
-        setClosed(true);
+        nav.goBack();
       });
   }, [invoiceId]);
 
@@ -158,7 +131,7 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
           setFee(Ton.fromNano(res.fee.toString()));
         })
         .catch((err) => {
-          console.log('ERR', err);
+          console.log('ERR10', err);
         });
     }
   }, [info, wallet]);
@@ -247,16 +220,12 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
       return false;
     }
 
-    if (!isSuccess && !isSending && isProcessing) {
-      return false;
-    }
-
     if (isEdit) {
       return info?.isActive;
     }
 
     return info.status === 'new' || info.isActive;
-  }, [info, isEdit, isSuccess, isSending, isProcessing]);
+  }, [info, isEdit, isSuccess, isSending]);
 
   const handleOpenMerchant = useCallback(() => {
     Linking.openURL(info!.returnUrl).catch((err) => {
@@ -343,18 +312,38 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
             )}
           </S.MerchantInfoWrap>
         </S.Header>
+        <List>
+          <List.Item
+            titleType="secondary"
+            title={t('subscription_price')}
+            value={priceFormatted}
+          />
+          <List.Item
+            titleType="secondary"
+            title={t('subscription_period')}
+            value={periodFormatted}
+          />
+          <List.Item
+            titleType="secondary"
+            title={t('subscription_fee')}
+            value={`${toLocaleNumber(fee)} TON`}
+          />
+          {info.isActive && (
+            <List.Item
+              titleType="secondary"
+              title={t('subscription_next_bill')}
+              value={nextBill}
+            />
+          )}
+          {!info.isActive && !!nextBill && (
+            <List.Item
+              titleType="secondary"
+              title={t('subscription_expiring')}
+              value={nextBill}
+            />
+          )}
+        </List>
         <S.Content>
-          <List>
-            <ListCell label={t('subscription_price')}>{priceFormatted}</ListCell>
-            <ListCell label={t('subscription_period')}>{periodFormatted}</ListCell>
-            <ListCell label={t('subscription_fee')}>{toLocaleNumber(fee)} TON</ListCell>
-            {info.isActive && (
-              <ListCell label={t('subscription_next_bill')}>{nextBill}</ListCell>
-            )}
-            {!info.isActive && !!nextBill && (
-              <ListCell label={t('subscription_expiring')}>{nextBill}</ListCell>
-            )}
-          </List>
           {isButtonShown && <S.ButtonWrap>{renderButton()}</S.ButtonWrap>}
         </S.Content>
       </>
@@ -362,8 +351,33 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   }
 
   return (
-    <BottomSheet title={t('subscription_title')} triggerClose={isClose}>
-      {renderContent()}
-    </BottomSheet>
+    <Modal>
+      <Modal.Header title={t('subscription_title')} />
+      <Modal.Content safeArea>
+        <View style={{ marginBottom: 16 }}>{renderContent()}</View>
+      </Modal.Content>
+    </Modal>
   );
 };
+
+export function openCreateSubscription(invoiceId: string) {
+  push('SheetsProvider', {
+    $$action: SheetActions.ADD,
+    component: CreateSubscription,
+    params: { invoiceId },
+    path: 'CREATE_SUBSCRIPTION',
+  });
+}
+
+export function openSubscription(
+  subscription: SubscriptionModel,
+  fee: string | null = null,
+  isEdit?: boolean,
+) {
+  push('SheetsProvider', {
+    $$action: SheetActions.ADD,
+    component: CreateSubscription,
+    params: { subscription, fee, isEdit },
+    path: 'CREATE_SUBSCRIPTION',
+  });
+}

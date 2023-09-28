@@ -2,9 +2,9 @@ import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { walletWalletSelector } from '$store/wallet';
 import TonWeb from 'tonweb';
-import { createTonProofForTonkeeper } from '$utils/notificationsproof';
+import { createTonProofForTonkeeper } from '$utils/proof';
 import * as SecureStore from 'expo-secure-store';
-import { Configuration, WalletApi } from '@tonkeeper/core';
+import { Configuration, WalletApi } from '@tonkeeper/core/src/legacy';
 import { getServerConfig } from '$shared/constants';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { isTestnetSelector } from '$store/main';
@@ -45,7 +45,7 @@ export function useObtainProofToken() {
       const token = await walletApi.tonConnectProof({
         tonConnectProofRequest: proof,
       });
-      SecureStore.setItemAsync('proof_token', token.token, {
+      await SecureStore.setItemAsync('proof_token', token.token, {
         requireAuthentication: false,
       });
       return true;

@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 
 import * as S from './FormItem.style';
-import { FormItemProps } from '$uikit/FormItem/FormItem.interface';
-import { Text } from '$uikit/Text/Text';
+import { FormItemProps } from '../FormItem/FormItem.interface';
+import { Text } from '../Text/Text';
 
 export const FormItem: FC<FormItemProps> = (props) => {
   const {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '$uikit';
+import { Icon } from '../Icon/Icon';
 import { Steezy } from '$styles';
 import Animated, {
   interpolateColor,
@@ -8,7 +8,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { useEffect } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Platform, TouchableOpacity as NTouchableOpacity } from 'react-native';

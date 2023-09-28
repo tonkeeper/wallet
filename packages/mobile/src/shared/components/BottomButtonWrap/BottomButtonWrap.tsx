@@ -3,7 +3,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ns } from '$utils';
 import * as S from './BottomButtonWrap.style';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 
 export const BottomButtonWrapHelper: FC<{ safeArea?: boolean }> = (props) => {
   const { safeArea = true } = props;

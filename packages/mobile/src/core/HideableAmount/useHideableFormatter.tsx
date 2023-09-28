@@ -1,7 +1,11 @@
 import { formatter } from '$utils/formatter';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
-import { AmountFormatOptions, AmountNumber } from '$libs/AmountFormatter';
+import {
+  AmountFormatNanoOptions,
+  AmountFormatOptions,
+  AmountNumber,
+} from '@tonkeeper/core';
 
 export const useHideableFormatter = () => {
   const isHidden = usePrivacyStore((state) => state.hiddenAmounts);
@@ -12,5 +16,13 @@ export const useHideableFormatter = () => {
     },
     [isHidden],
   );
-  return format;
+
+  const formatNano = useCallback(
+    (amount: AmountNumber = 0, options: AmountFormatNanoOptions = {}) => {
+      return !isHidden ? formatter.formatNano(amount, options) : '* * *';
+    },
+    [isHidden],
+  );
+
+  return useMemo(() => ({ format, formatNano }), [format, formatNano]);
 };

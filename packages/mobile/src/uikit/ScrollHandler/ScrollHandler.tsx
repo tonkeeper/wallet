@@ -1,8 +1,8 @@
 import React, { FC, useMemo } from 'react';
-import { LargeNavBar } from '$uikit/LargeNavBar/LargeNavBar';
+import { LargeNavBar } from '../LargeNavBar/LargeNavBar';
 
-import { ScrollHandlerProps } from '$uikit/ScrollHandler/ScrollHandler.interface';
-import { NavBar } from '$uikit';
+import { ScrollHandlerProps } from '../ScrollHandler/ScrollHandler.interface';
+import { NavBar } from '../NavBar/NavBar';
 import { Dimensions } from 'react-native';
 import { TabletMaxWidth } from '$shared/constants';
 import { useScrollHandler } from './useScrollHandler';
@@ -13,6 +13,7 @@ export const ScrollHandler: FC<ScrollHandlerProps> = (props) => {
   const {
     children,
     navBarTitle,
+    navBarSubtitle,
     navBarRight,
     bottomComponent,
     onPress,
@@ -48,6 +49,7 @@ export const ScrollHandler: FC<ScrollHandlerProps> = (props) => {
             hideBackButton={hideBackButton || (isLargeNavBar && isBigScreen)}
             scrollTop={scrollTop}
             rightContent={navBarRight}
+            subtitle={navBarSubtitle}
           >
             {navBarTitle}
           </NavBar>
@@ -58,5 +60,21 @@ export const ScrollHandler: FC<ScrollHandlerProps> = (props) => {
         })}
       </>
     );
-  }, [scrollTop, hideBackButton, navBarTitle, children, scrollHandler]);
+  }, [
+    navBarTitle,
+    shouldRenderLargeNavBar,
+    onPress,
+    bottomComponent,
+    scrollTop,
+    navBarRight,
+    hitSlop,
+    titleProps,
+    hideBackButton,
+    isLargeNavBar,
+    isBigScreen,
+    navBarSubtitle,
+    children,
+    scrollHandler,
+    scrollRef,
+  ]);
 };

@@ -2,7 +2,8 @@ import { StyleProp, ViewStyle, StyleSheet, ImageStyle, Platform } from 'react-na
 import React, { memo, ReactNode } from 'react';
 import { useHideableAmount } from '$core/HideableAmount/HideableAmountProvider';
 import { useAnimatedStyle } from 'react-native-reanimated';
-import { DominantColorBackground, View } from '$uikit';
+import { DominantColorBackground } from '$uikit/DominantColorBackground/DominantColorBackground';
+import { View } from '@tonkeeper/uikit';
 import Animated from 'react-native-reanimated';
 import { Steezy } from '$styles';
 import { BlurView } from 'expo-blur';

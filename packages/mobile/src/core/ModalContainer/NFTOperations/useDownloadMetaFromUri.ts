@@ -1,4 +1,4 @@
-import { debugLog } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import axios from 'axios';
 import React from 'react';
 

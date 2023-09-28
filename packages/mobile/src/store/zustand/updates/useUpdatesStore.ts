@@ -1,7 +1,7 @@
 import { getServerConfig } from '$shared/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { IUpdatesStore, UpdateState } from './types';
 import DeviceInfo from 'react-native-device-info';
 import RNFS from 'react-native-fs';
@@ -22,9 +22,6 @@ export const useUpdatesStore = create(
       ...initialState,
       actions: {
         fetchMeta: async () => {
-          if (getState().update.state !== UpdateState.NOT_STARTED) {
-            return;
-          }
           set({ isLoading: true });
           const oldMeta = getState().meta;
           const res = await fetch(
@@ -43,6 +40,7 @@ export const useUpdatesStore = create(
           ) {
             set({ shouldUpdate: true, declinedAt: undefined });
           } else {
+            set({ update: { state: UpdateState.NOT_STARTED, progress: 0 } });
             try {
               RNFS.unlink(getUpdatePath());
             } catch (e) {}
@@ -78,7 +76,7 @@ export const useUpdatesStore = create(
     }),
     {
       name: 'updates',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ isLoading, update: { state, progress }, meta, declinedAt }) =>
         ({
           meta,

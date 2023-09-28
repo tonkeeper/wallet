@@ -1,5 +1,7 @@
 import React from 'react';
-import { useCopyText, useInstance, useWallet } from '$hooks';
+import { useCopyText } from '$hooks/useCopyText';
+import { useInstance } from '$hooks/useInstance';
+import { useWallet } from '$hooks/useWallet';
 import { Highlight, Icon, Separator, Skeleton, Text } from '$uikit';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { useDownloadCollectionMeta } from '../useDownloadCollectionMeta';
@@ -8,14 +10,24 @@ import { useDownloadNFT } from '../useDownloadNFT';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import { debugLog, maskifyAddress, toLocaleNumber } from '$utils';
-import { t } from '$translation';
+import { toLocaleNumber } from '$utils';
+import { debugLog } from '$utils/debugLog';
+import { t } from '@tonkeeper/shared/i18n';
 import { CryptoCurrencies } from '$shared/constants';
 import { useDispatch } from 'react-redux';
 import { nftsActions } from '$store/nfts';
-import { Modal } from '$libs/navigation';
-import { CaptionWrap } from '../NFTOperations.styles';
+import { Modal } from '@tonkeeper/uikit';
 import { formatter } from '$utils/formatter';
+import { goBack, push } from '$navigation/imperative';
+import { SheetActions } from '@tonkeeper/router';
+import { Ton } from '$libs/Ton';
+import { walletWalletSelector } from '$store/wallet';
+import { store, Toast } from '$store';
+import {
+  checkIsInsufficient,
+  openInsufficientFundsModal,
+} from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { Address } from '@tonkeeper/core';
 
 type NFTTransferModalProps = TxRequestBody<NftTransferParams>;
 
@@ -101,8 +113,7 @@ export const NFTTransferModal = ({
         <S.Container>
           <S.Center>
             <S.NFTItemPreview>
-              {isDNS ? <S.GlobeIcon /> : null}
-              {!isDNS && <S.Image uri={item?.data?.metadata?.image} resize={512} />}
+              <S.Image uri={item?.data?.metadata?.image} resize={512} />
             </S.NFTItemPreview>
             <S.CaptionWrap>
               <S.Caption>{caption}</S.Caption>
@@ -117,7 +128,7 @@ export const NFTTransferModal = ({
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_transfer_recipient')}</S.InfoItemLabel>
                 <S.InfoItemValueText>
-                  {maskifyAddress(params.newOwnerAddress, 6)}
+                  {Address.toShort(params.newOwnerAddress, 6)}
                 </S.InfoItemValueText>
               </S.InfoItem>
             </Highlight>
@@ -157,7 +168,7 @@ export const NFTTransferModal = ({
                 <S.DetailItem>
                   <S.DetailItemLabel>NFT item ID</S.DetailItemLabel>
                   <S.DetailItemValueText>
-                    {maskifyAddress(params.nftItemAddress, 8)}
+                    {Address.toShort(params.nftItemAddress, 8)}
                   </S.DetailItemValueText>
                 </S.DetailItem>
               </Highlight>
@@ -182,3 +193,74 @@ export const NFTTransferModal = ({
     </Modal>
   );
 };
+
+export const openNFTTransfer = async (params: NFTTransferModalProps) => {
+  push('SheetsProvider', {
+    $$action: SheetActions.ADD,
+    component: NFTTransferModal,
+    path: 'NFTTransfer',
+    params,
+  });
+
+  return true;
+};
+
+export async function checkFundsAndOpenNFTTransfer(
+  nftAddress: string,
+  newOwnerAddress: string,
+) {
+  const transferParams = {
+    newOwnerAddress,
+    nftItemAddress: nftAddress,
+    amount: Ton.toNano('1'),
+    forwardAmount: '1',
+  };
+
+  const wallet = walletWalletSelector(store.getState());
+
+  if (!wallet) {
+    console.log('no wallet');
+    return;
+  }
+
+  Toast.loading();
+
+  let fee = '0';
+  try {
+    const operations = new NFTOperations(wallet);
+    fee = await operations
+      .transfer(transferParams as any)
+      .then((operation) => operation.estimateFee());
+  } catch (e) {}
+
+  // compare balance and transfer amount, because transfer will fail
+  if (fee === '0') {
+    const checkResult = await checkIsInsufficient(transferParams.amount);
+    if (checkResult.insufficient) {
+      Toast.hide();
+      return openInsufficientFundsModal({
+        totalAmount: transferParams.amount,
+        balance: checkResult.balance,
+      });
+    }
+  }
+
+  if (parseFloat(fee) < 0) {
+    transferParams.amount = Ton.toNano('0.05');
+  } else {
+    transferParams.amount = Ton.toNano(fee).add(Ton.toNano('0.01'));
+  }
+
+  Toast.hide();
+
+  openNFTTransfer({
+    type: 'nft-transfer',
+    // expires in 100 minutes
+    expires_sec: Date.now() / 1000 + 6000,
+    response_options: {
+      onDone: () => setTimeout(goBack, 850),
+    } as any,
+    params: transferParams,
+    fee,
+  });
+}

@@ -1,4 +1,13 @@
-import { all, takeLatest, put, call, fork, delay, select } from 'redux-saga/effects';
+import {
+  all,
+  takeLatest,
+  put,
+  call,
+  fork,
+  delay,
+  select,
+  take,
+} from 'redux-saga/effects';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import DeviceInfo from 'react-native-device-info';
@@ -10,9 +19,7 @@ import { mainActions, mainSelector } from './index';
 import { Wallet } from '$blockchain';
 import { batchActions, Toast, useNotificationsStore } from '$store';
 import { walletActions, walletSelector } from '$store/wallet';
-import { ratesActions } from '$store/rates';
 import * as SplashScreen from 'expo-splash-screen';
-import { eventsActions } from '$store/events';
 import {
   API_SECRET,
   FiatCurrencies,
@@ -41,7 +48,7 @@ import {
   setSavedLogs,
   setSavedServerConfig,
 } from '$database';
-import { openRequireWalletModal } from '$navigation';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { subscriptionsActions } from '$store/subscriptions';
 import {
   HideNotificationAction,
@@ -52,20 +59,18 @@ import {
 } from '$store/main/interface';
 import { withRetry } from '$store/retry';
 import { InternalNotificationModel } from '$store/models';
-import { exchangeActions } from '$store/exchange';
-import { Cache } from '$store/events/manager/cache';
+
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
 import { getWalletName } from '$shared/dynamicConfig';
-import { destroyEventsManager } from '$store/events/sagas';
-import { initStats, trackEvent, trackFirstLaunch } from '$utils';
+import { initStats, trackEvent, trackFirstLaunch } from '$utils/stats';
 import { nftsActions } from '$store/nfts';
 import { jettonsActions } from '$store/jettons';
 import { favoritesActions } from '$store/favorites';
-import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 import { clearSubscribeStatus } from '$utils/messaging';
-import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 import { useSwapStore } from '$store/zustand/swap';
 import * as SecureStore from 'expo-secure-store';
+import { useRatesStore } from '$store/zustand/rates';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 
 SplashScreen.preventAutoHideAsync()
@@ -157,7 +162,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
       ),
     );
 
-    yield fork(loadRates, true);
+    yield fork(loadRates);
 
     SplashScreen.hideAsync();
 
@@ -171,8 +176,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
 
   trackFirstLaunch();
   trackEvent('launch_app');
-
-  yield fork(loadRates, true);
 
   const wallet = yield call(Wallet.load);
 
@@ -206,14 +209,15 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   if (wallet) {
     yield put(walletActions.loadCurrentVersion(wallet.vault.getVersion()));
     yield put(walletActions.loadBalances());
-    yield put(eventsActions.loadEvents({ isReplace: true }));
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.loadJettons());
     yield put(subscriptionsActions.loadSubscriptions());
     const { wallet: walletNew } = yield select(walletSelector);
-    const address = yield call([walletNew.ton, 'getAddress']);
+    const addr = yield call([walletNew.ton, 'getAddress']);
+    const data = yield call([tk, 'load']);
+    yield call([tk, 'init'], addr, isTestnet, data.tronAddress);
     useSwapStore.getState().actions.fetchAssets();
-    useExpiringDomains.getState().actions.load(address);
+    useExpiringDomains.getState().actions.load(addr);
   } else {
     yield put(walletActions.endLoading());
   }
@@ -221,7 +225,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   yield put(mainActions.loadNotifications());
 
   yield fork(loadRates);
-  yield put(exchangeActions.loadMethods());
   yield put(nftsActions.loadMarketplaces());
   yield put(favoritesActions.loadSuggests());
   yield put(mainActions.getTimeSynced());
@@ -239,9 +242,13 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   }
 }
 
-function* loadRates(onlyCache = false) {
+function* loadRates() {
   try {
-    yield put(ratesActions.loadRates({ onlyCache }));
+    const { wallet } = yield select(walletSelector);
+    if (wallet) {
+      yield take(jettonsActions.setIsLoading);
+    }
+    useRatesStore.getState().actions.fetchRates();
   } catch (e) {}
 }
 
@@ -254,22 +261,18 @@ function* completeIntroWorker() {
 }
 
 export function* resetAll(isTestnet: boolean) {
-  yield call(destroyEventsManager);
-  yield call(Cache.clearAll, getWalletName());
+  yield call([tk, 'destroy']);
   yield call(clearSubscribeStatus);
   yield call(JettonsCache.clearAll, getWalletName());
-  yield call(useJettonEventsStore.getState().actions.clearStore);
   yield call(useNotificationsStore.getState().actions.reset);
   yield call(SecureStore.deleteItemAsync, 'proof_token');
   yield put(
     batchActions(
       mainActions.resetMain(),
       walletActions.reset(),
-      eventsActions.resetEvents(),
       walletActions.resetVersion(),
       nftsActions.resetNFTs(),
       jettonsActions.resetJettons(),
-      ratesActions.resetRates(),
       mainActions.setTestnet(isTestnet),
       subscriptionsActions.reset(),
     ),

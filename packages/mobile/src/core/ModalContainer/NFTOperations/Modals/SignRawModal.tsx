@@ -4,23 +4,29 @@ import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter'
 import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
-import { compareAddresses, debugLog, delay, lowerCaseFirstLetter, ns } from '$utils';
-import { t } from '$translation';
-import { AccountEvent, Action, ActionTypeEnum } from 'tonapi-sdk-js';
+import {
+  calculateActionsTotalAmount,
+  calculateMessageTransferAmount,
+  delay,
+  lowerCaseFirstLetter,
+  ns,
+} from '$utils';
+import { debugLog } from '$utils/debugLog';
+import { t } from '@tonkeeper/shared/i18n';
+import { AccountEvent, ActionTypeEnum } from '@tonkeeper/core/src/legacy';
 import { SignRawAction } from './SignRawAction';
 import { store, Toast } from '$store';
 import * as S from '../NFTOperations.styles';
-import { Modal } from '$libs/navigation';
+import { Modal } from '@tonkeeper/uikit';
 import { Ton } from '$libs/Ton';
 import { copyText } from '$hooks/useCopyText';
-import { push } from '$navigation';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
-import BigNumber from 'bignumber.js';
+import { push } from '$navigation/imperative';
+import { SheetActions } from '@tonkeeper/router';
 import {
   checkIsInsufficient,
   openInsufficientFundsModal,
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
-import { TonConnectRemoteBridge } from '$tonconnect';
+import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { formatter } from '$utils/formatter';
 import { CryptoCurrencies } from '$shared/constants';
 import { approveAll } from '$store/zustand/tokenApproval/helpers';
@@ -125,7 +131,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     if (fee) {
       return {
         fee:
-          `≈ ` +
+          '≈ ' +
           formatter.format(Ton.fromNano(fee.total.toString()), {
             currencySeparator: 'wide',
             currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
@@ -197,33 +203,6 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     </Modal>
   );
 });
-
-function calculateMessageTransferAmount(messages) {
-  if (!messages) {
-    return 0;
-  }
-  return messages.reduce(
-    (acc, message) => new BigNumber(acc).plus(new BigNumber(message.amount)).toString(),
-    '0',
-  );
-}
-
-function calculateActionsTotalAmount(address: string, actions: Action[]) {
-  if (!actions.length) {
-    return 0;
-  }
-  return actions.reduce((acc, action) => {
-    if (
-      action[ActionTypeEnum.TonTransfer] &&
-      compareAddresses(address, action[ActionTypeEnum.TonTransfer].sender.address)
-    ) {
-      return new BigNumber(acc)
-        .plus(new BigNumber(action[ActionTypeEnum.TonTransfer].amount))
-        .toString();
-    }
-    return acc;
-  }, '0');
-}
 
 export const openSignRawModal = async (
   params: SignRawParams,

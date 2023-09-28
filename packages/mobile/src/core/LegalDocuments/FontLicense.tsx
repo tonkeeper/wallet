@@ -2,12 +2,11 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import {NavBar, ScrollHandler, Text} from '$uikit';
-import { useTranslator } from '$hooks';
 import { ns } from '$utils';
 import * as S from './LegalDocuments.style';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const FontLicense: React.FC = () => {
-  const t = useTranslator();
   const tabBarHeight = useBottomTabBarHeight();
 
   return (

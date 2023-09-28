@@ -1,7 +1,7 @@
 import React from 'react';
 import { SecurityMigrationStack } from './SecurityMigrationStack/SecurityMigrationStack';
 import { ResetPinStack } from './ResetPinStack/ResetPinStack';
-import { createModalStackNavigator } from '$libs/navigation';
+import { createModalStackNavigator } from '@tonkeeper/router';
 import { NFTSingleDeployModal } from '$core/ModalContainer/NFTOperations/Modals/NFTSingleDeployModal';
 import { NFTTransferModal } from '$core/ModalContainer/NFTOperations/Modals/NFTTransferModal';
 import { NFTSaleCancelModal } from '$core/ModalContainer/NFTOperations/Modals/NFTSaleCancelModal';
@@ -22,27 +22,33 @@ import {
   DAppsSearch,
   OldExchange,
   Migration,
-  Receive,
   ScanQR,
   Send,
   StakingSend,
 } from '$core';
 import { WebView } from '$core/WebView/WebView';
 import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewConfirmSending';
-import { ActionModal } from '$core/ModalContainer/Action/Action';
+
 import { ExchangeModal } from '$modals/ExchangeModal';
 import { Swap } from '$core/Swap/Swap';
+import { ChooseCountry } from '$core/ChooseCountry/ChooseCountry';
 import { RenewAllDomainModal } from '../tabs/Wallet/RenewAllDomainModal';
 import { СonfirmRenewAllDomains } from '../tabs/Wallet/components/СonfirmRenewAllDomains';
 
-const Stack = createModalStackNavigator();
+import { SwitchWalletModal } from '@tonkeeper/shared/modals/SwitchWalletModal';
+import { AddWalletModal } from '@tonkeeper/shared/modals/AddWalletModal';
+import { ProvidersWithNavigation } from './Providers';
+import { ReceiveModal } from '@tonkeeper/shared/modals/ReceiveModal';
+import { ReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
+import { EditAppConfigModal } from '$core/DevMenu/DevConfigScreen';
+
+const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
 export const ModalStack = React.memo(() => (
   <Stack.Navigator>
     <Stack.Group behavior="sheet">
       <Stack.Modal component={NFTSingleDeployModal} path="NFTSingleDeploy" />
       <Stack.Modal component={NFTTransferModal} path="NFTTransfer" />
-      <Stack.Modal component={ActionModal} path="Action" />
       <Stack.Modal component={NFTCollectionDeployModal} path="NFTCollectionDeploy" />
       <Stack.Modal component={NFTItemDeployModal} path="NFTItemDeploy" />
       <Stack.Modal component={NFTSalePlaceModal} path="NFTSalePlace" />
@@ -55,14 +61,20 @@ export const ModalStack = React.memo(() => (
         component={NFTTransferInputAddressModal}
         path="NFTTransferInputAddress"
       />
+      <Stack.Modal component={EditAppConfigModal} path="/dev/config/edit" />
       <Stack.Modal component={SignRawModal} path="SignRaw" />
       <Stack.Modal component={NewConfirmSending} path="NewConfirmSending" />
+      <Stack.Modal component={SwitchWalletModal} path="/switch-wallet" />
+      <Stack.Modal component={AddWalletModal} path="/add-wallet" />
     </Stack.Group>
     <Stack.Group behavior="modal">
+      <Stack.Modal component={ReceiveModal} path="ReceiveModal" />
+      <Stack.Modal component={ReceiveJettonModal} path="/receive/jetton/" />
       <Stack.Modal component={NFT} path="NFTItemDetails" />
       <Stack.Modal component={RenewAllDomainModal} path="RenewAllDomains" />
-      <Stack.Modal component={Receive} path={AppStackRouteNames.Receive} />
+      {/* <Stack.Modal component={Receive} path={AppStackRouteNames.Receive} /> */}
       <Stack.Modal component={Send} path={AppStackRouteNames.Send} />
+      <Stack.Modal component={ChooseCountry} path={AppStackRouteNames.ChooseCountry} />
       <Stack.Modal component={StakingSend} path={AppStackRouteNames.StakingSend} />
       <Stack.Modal component={ScanQR} path={AppStackRouteNames.ScanQR} />
       <Stack.Modal component={Swap} path={AppStackRouteNames.Swap} />

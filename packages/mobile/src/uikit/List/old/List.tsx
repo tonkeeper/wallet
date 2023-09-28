@@ -2,7 +2,8 @@ import React, { FC, isValidElement, useMemo } from 'react';
 
 import * as S from './List.style';
 import { ListCellProps, ListProps } from './List.interface';
-import { Separator, View } from '$uikit';
+import { Separator } from '../../Separator/Separator';
+import { View } from '../../StyledNativeComponents';
 
 export const ListCell: FC<ListCellProps> = ({
   label,
@@ -33,7 +34,12 @@ export const ListCell: FC<ListCellProps> = ({
  * @description
  *  Use new List instead
  */
-export const List: FC<ListProps> = ({ children, align = 'right', separator = true }) => {
+export const List: FC<ListProps> = ({
+  children,
+  align = 'right',
+  separator = true,
+  ...viewProps
+}) => {
   const content = useMemo(() => {
     return React.Children.map(children, (item, i) => {
       if (!isValidElement(item)) {
@@ -51,5 +57,5 @@ export const List: FC<ListProps> = ({ children, align = 'right', separator = tru
     });
   }, [align, children, separator]);
 
-  return <S.Wrap>{content}</S.Wrap>;
+  return <S.Wrap {...viewProps}>{content}</S.Wrap>;
 };

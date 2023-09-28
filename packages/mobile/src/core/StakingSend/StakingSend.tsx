@@ -1,7 +1,10 @@
 import { NFTOperations } from '$core/ModalContainer/NFTOperations/NFTOperations';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { SendAmount } from '$core/Send/Send.interface';
-import { useFiatValue, useInstance, useTranslator, useWallet } from '$hooks';
+import { useFiatValue } from '$hooks/useFiatValue';
+import { useInstance } from '$hooks/useInstance';
+import { usePoolInfo } from '$hooks/usePoolInfo';
+import { useWallet } from '$hooks/useWallet';
 import { Ton } from '$libs/Ton';
 import { AppStackRouteNames } from '$navigation';
 import { AppStackParamList } from '$navigation/AppStack';
@@ -10,7 +13,7 @@ import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { getStakingPoolByAddress, Toast, useStakingStore } from '$store';
 import { walletSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
-import { parseLocaleNumber } from '$utils';
+import { calculateActionsTotalAmount, delay, parseLocaleNumber } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
 import { RouteProp } from '@react-navigation/native';
 import axios from 'axios';
@@ -18,21 +21,27 @@ import BigNumber from 'bignumber.js';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { AccountEvent } from 'tonapi-sdk-js';
+import { AccountEvent } from '@tonkeeper/core/src/legacy';
 import { shallow } from 'zustand/shallow';
 import { AmountStep, ConfirmStep } from './steps';
 import { StakingSendSteps, StakingTransactionType } from './types';
-import { getStakeSignRawMessage, getWithdrawalFee } from './utils';
+import { getStakeSignRawMessage, getWithdrawalAlertFee, getWithdrawalFee } from './utils';
 import { formatter } from '$utils/formatter';
+import {
+  checkIsInsufficient,
+  openInsufficientFundsModal,
+} from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { Alert } from 'react-native';
+import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
+import { t } from '@tonkeeper/shared/i18n';
+import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
+import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
 }
 
-const getTitle = (
-  transactionType: StakingTransactionType,
-  t: ReturnType<typeof useTranslator>,
-) => {
+const getTitle = (transactionType: StakingTransactionType) => {
   switch (transactionType) {
     case StakingTransactionType.WITHDRAWAL:
       return t('staking.withdrawal_request');
@@ -40,7 +49,7 @@ const getTitle = (
       return t('staking.get_withdrawal');
     case StakingTransactionType.DEPOSIT:
     default:
-      return t('staking.top_up');
+      return t('staking.deposit');
   }
 };
 
@@ -51,6 +60,7 @@ export const StakingSend: FC<Props> = (props) => {
     },
   } = props;
 
+  const isDeposit = transactionType === StakingTransactionType.DEPOSIT;
   const isWithdrawal = transactionType === StakingTransactionType.WITHDRAWAL;
   const isWithdrawalConfrim =
     transactionType === StakingTransactionType.WITHDRAWAL_CONFIRM;
@@ -60,15 +70,23 @@ export const StakingSend: FC<Props> = (props) => {
   const pool = useStakingStore((s) => getStakingPoolByAddress(s, poolAddress), shallow);
   const poolStakingInfo = useStakingStore((s) => s.stakingInfo[pool.address], shallow);
 
-  const isTfPool = pool.implementation === 'tf';
+  const poolInfo = usePoolInfo(pool, poolStakingInfo);
+
+  const currency =
+    !isDeposit && poolInfo.stakingJetton
+      ? (poolInfo.stakingJetton.jettonAddress as CryptoCurrencies)
+      : CryptoCurrencies.Ton;
+
+  const decimals = Decimals[CryptoCurrencies.Ton];
+
+  const isJetton = !isDeposit && !!poolInfo.stakingJetton;
+
+  const isWhalesPool = pool.implementation === PoolImplementationType.Whales;
 
   const { apy } = pool;
 
-  const stakingBalance = Ton.fromNano(poolStakingInfo?.amount ?? '0');
-  const pendingDeposit = Ton.fromNano(poolStakingInfo?.pendingDeposit ?? '0');
-  const readyWithdraw = Ton.fromNano(poolStakingInfo?.readyWithdraw ?? '0');
-
-  const t = useTranslator();
+  const pendingDeposit = Ton.fromNano(poolStakingInfo?.pending_deposit ?? '0');
+  const readyWithdraw = Ton.fromNano(poolStakingInfo?.ready_withdraw ?? '0');
 
   const stepViewRef = useRef<StepViewRef>(null);
 
@@ -98,8 +116,8 @@ export const StakingSend: FC<Props> = (props) => {
 
   const [amount, setAmount] = useState<SendAmount>({
     value: isWithdrawalConfrim
-      ? formatter.format(isTfPool ? stakingBalance : readyWithdraw, {
-          decimals: Decimals[CryptoCurrencies.Ton],
+      ? formatter.format(isWhalesPool ? readyWithdraw : poolInfo.balance.amount, {
+          decimals,
         })
       : '0',
     all: false,
@@ -112,10 +130,12 @@ export const StakingSend: FC<Props> = (props) => {
 
   const estimatedCurrentReward = useMemo(() => {
     const apyBN = new BigNumber(apy).dividedBy(100);
-    const bigNum = new BigNumber(stakingBalance).plus(new BigNumber(pendingDeposit));
+    const bigNum = new BigNumber(poolInfo.balance.totalTon).plus(
+      new BigNumber(pendingDeposit),
+    );
 
     return bigNum.multipliedBy(apyBN);
-  }, [apy, pendingDeposit, stakingBalance]);
+  }, [apy, pendingDeposit, poolInfo.balance.totalTon]);
 
   const estimatedTopUpReward = useMemo(() => {
     const apyBN = new BigNumber(apy).dividedBy(100);
@@ -145,15 +165,38 @@ export const StakingSend: FC<Props> = (props) => {
 
   const actionRef = useRef<Awaited<ReturnType<typeof operations.signRaw>> | null>(null);
 
+  const { isLiquidJetton, price } = useCurrencyToSend(currency, isJetton);
+
+  const parsedAmount = useMemo(() => {
+    const parsed = parseLocaleNumber(amount.value);
+
+    if (!parsed) {
+      return '0';
+    }
+
+    if (isLiquidJetton && price) {
+      return amount.all
+        ? price.amount
+        : new BigNumber(parsed)
+            .dividedBy(price.ton)
+            .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
+            .toString();
+    }
+
+    return parsed;
+  }, [amount.all, amount.value, decimals, isLiquidJetton, price]);
+
   const prepareConfirmSending = useCallback(async () => {
     try {
       setPreparing(true);
 
       const message = await getStakeSignRawMessage(
         pool,
-        Ton.toNano(parseLocaleNumber(amount.value)),
+        Ton.toNano(parsedAmount),
         transactionType,
+        walletAddress,
         amount.all,
+        poolInfo.stakingJetton,
       );
 
       const action = await operations.signRaw(
@@ -171,6 +214,8 @@ export const StakingSend: FC<Props> = (props) => {
 
       setAccountEvent(data);
 
+      await delay(100);
+
       stepViewRef.current?.go(StakingSendSteps.CONFIRM);
     } catch (e) {
       Toast.fail(
@@ -183,38 +228,82 @@ export const StakingSend: FC<Props> = (props) => {
     } finally {
       setPreparing(false);
     }
-  }, [amount, operations, pool, t, transactionType, walletAddress]);
+  }, [
+    amount.all,
+    operations,
+    parsedAmount,
+    pool,
+    poolInfo.stakingJetton,
+    transactionType,
+    walletAddress,
+  ]);
 
   const totalFee = useMemo(() => {
     const fee = new BigNumber(Ton.fromNano(accountEvent?.fee.total.toString() ?? '0'));
-
-    if (
-      [
-        [
-          StakingTransactionType.WITHDRAWAL,
-          StakingTransactionType.WITHDRAWAL_CONFIRM,
-        ].includes(transactionType),
-      ]
-    ) {
-      const withdrawalFee = new BigNumber(Ton.fromNano(getWithdrawalFee(pool)));
-
-      return fee.plus(withdrawalFee).toString();
-    }
 
     if (fee.isEqualTo(0)) {
       return undefined;
     }
 
     return fee.toString();
-  }, [accountEvent, pool, transactionType]);
+  }, [accountEvent]);
 
   const sendTx = useCallback(async () => {
-    if (!actionRef.current) {
+    if (!actionRef.current || !accountEvent) {
       return Promise.reject();
     }
-
     try {
       setSending(true);
+
+      const totalAmount = calculateActionsTotalAmount(address.ton, accountEvent.actions);
+      const checkResult = await checkIsInsufficient(totalAmount);
+      if (checkResult.insufficient) {
+        const stakingFee = Ton.fromNano(getWithdrawalFee(pool));
+
+        openInsufficientFundsModal({
+          totalAmount,
+          balance: checkResult.balance,
+          stakingFee,
+          fee: totalFee ?? '0.1',
+        });
+
+        await delay(200);
+        throw new CanceledActionError();
+      }
+
+      if (checkResult.balance !== null) {
+        const isEnoughToWithdraw = new BigNumber(checkResult.balance)
+          .minus(new BigNumber(totalAmount))
+          .isGreaterThanOrEqualTo(getWithdrawalAlertFee(pool));
+
+        if (!isEnoughToWithdraw && isDeposit) {
+          const shouldContinue = await new Promise((res) =>
+            Alert.alert(
+              t('staking.withdrawal_fee_warning.title'),
+              t('staking.withdrawal_fee_warning.message', {
+                amount: formatter.format(Ton.fromNano(getWithdrawalAlertFee(pool, true))),
+              }),
+              [
+                {
+                  text: t('staking.withdrawal_fee_warning.continue'),
+                  onPress: () => res(true),
+                  style: 'destructive',
+                },
+                {
+                  text: t('cancel'),
+                  onPress: () => res(false),
+                  style: 'cancel',
+                },
+              ],
+            ),
+          );
+
+          if (!shouldContinue) {
+            await delay(200);
+            throw new CanceledActionError();
+          }
+        }
+      }
 
       const vault = await unlockVault();
       const privateKey = await vault.getTonPrivateKey();
@@ -225,7 +314,7 @@ export const StakingSend: FC<Props> = (props) => {
     } finally {
       setSending(false);
     }
-  }, [unlockVault]);
+  }, [accountEvent, address.ton, isDeposit, pool, totalFee, unlockVault]);
 
   useEffect(() => {
     if (isWithdrawalConfrim) {
@@ -234,7 +323,7 @@ export const StakingSend: FC<Props> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isWithdrawalConfrim]);
 
-  const title = getTitle(transactionType, t);
+  const title = getTitle(transactionType);
 
   return (
     <>
@@ -265,7 +354,9 @@ export const StakingSend: FC<Props> = (props) => {
               isWithdrawal={isWithdrawal}
               isPreparing={isPreparing}
               amount={amount}
-              stakingBalance={stakingBalance}
+              currency={currency}
+              isJetton={isJetton}
+              stakingBalance={poolInfo.balance.amount}
               stepsScrollTop={stepsScrollTop}
               afterTopUpReward={afterTopUpReward}
               currentReward={currentReward}
@@ -282,6 +373,8 @@ export const StakingSend: FC<Props> = (props) => {
               pool={pool}
               totalFee={totalFee}
               amount={amount}
+              decimals={decimals}
+              isJetton={isJetton}
               stepsScrollTop={stepsScrollTop}
               sendTx={sendTx}
               {...stepProps}

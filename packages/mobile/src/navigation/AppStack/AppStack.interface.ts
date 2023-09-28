@@ -1,7 +1,7 @@
 import { StakingTransactionType } from '$core/StakingSend/types';
 import { AppStackRouteNames } from '$navigation';
 import { CryptoCurrency } from '$shared/constants';
-import { SubscriptionModel } from '$store/models';
+import { SendAnalyticsFrom, SubscriptionModel } from '$store/models';
 import { NFTKeyPair } from '$store/nfts/interface';
 
 export type AppStackParamList = {
@@ -22,6 +22,7 @@ export type AppStackParamList = {
     fee?: string;
     isInactive?: boolean;
     withGoBack?: boolean;
+    from?: SendAnalyticsFrom;
   };
   [AppStackRouteNames.ScanQR]: {
     onScan: (url: string) => boolean | Promise<boolean>;

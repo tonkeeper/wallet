@@ -1,6 +1,6 @@
-export const TEST = 1;
+import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 
-export const ServerConfigVersion = 4;
+export const ServerConfigVersion = 6;
 
 export const GOOGLE_PACKAGE_NAME = 'com.ton_keeper';
 export const APPLE_STORE_ID = '1587742107';
@@ -38,7 +38,21 @@ export enum FiatCurrencies {
   Inr = 'inr',
   Jpy = 'jpy',
   Uah = 'uah',
+  Kzt = 'kzt',
   Uzs = 'uzs',
+  Irr = 'irr',
+  Brl = 'brl',
+  Cad = 'cad',
+  Byn = 'byn',
+  Sgd = 'sgd',
+  Thb = 'thb',
+  Vnd = 'vnd',
+  Ngn = 'ngn',
+  Bdt = 'bdt',
+  Try = 'try',
+  Ils = 'ils',
+  Dkk = 'dkk',
+  Gel = 'gel',
 }
 
 export type FiatCurrency = (typeof FiatCurrencies)[keyof typeof FiatCurrencies];
@@ -129,8 +143,8 @@ export const FiatCurrencySymbolsConfig = {
     symbol: '₽',
     side: 'end',
   },
-  [FiatCurrencies.Aed]: {
-    symbol: 'DH',
+  [FiatCurrencies.Idr]: {
+    symbol: 'Rp',
     side: 'end',
   },
   [FiatCurrencies.Uah]: {
@@ -141,33 +155,81 @@ export const FiatCurrencySymbolsConfig = {
     symbol: 'Sum',
     side: 'end',
   },
+  [FiatCurrencies.Inr]: {
+    symbol: '₹',
+    side: 'start',
+  },
   [FiatCurrencies.Gbp]: {
     symbol: '£',
     side: 'start',
   },
-  [FiatCurrencies.Chf]: {
-    symbol: '₣',
-    side: 'start',
+  [FiatCurrencies.Aed]: {
+    symbol: 'DH',
+    side: 'end',
   },
   [FiatCurrencies.Cny]: {
     symbol: '¥',
     side: 'start',
   },
+  [FiatCurrencies.Irr]: {
+    symbol: 'IRR',
+    side: 'end',
+  },
+  [FiatCurrencies.Byn]: {
+    symbol: 'Br',
+    side: 'end',
+  },
+  [FiatCurrencies.Brl]: {
+    symbol: 'R$',
+    side: 'end',
+  },
+  [FiatCurrencies.Try]: {
+    symbol: '₺',
+    side: 'end',
+  },
+  [FiatCurrencies.Kzt]: {
+    symbol: '₸',
+    side: 'end',
+  },
+  [FiatCurrencies.Ngn]: {
+    symbol: '₦',
+    side: 'end',
+  },
   [FiatCurrencies.Krw]: {
     symbol: '₩',
     side: 'start',
   },
-  [FiatCurrencies.Idr]: {
-    symbol: 'Rp',
+  [FiatCurrencies.Thb]: {
+    symbol: '฿',
     side: 'end',
   },
-  [FiatCurrencies.Inr]: {
-    symbol: '₹',
+  [FiatCurrencies.Bdt]: {
+    symbol: '৳',
+    side: 'end',
+  },
+  [FiatCurrencies.Chf]: {
+    symbol: '₣',
     side: 'start',
   },
   [FiatCurrencies.Jpy]: {
     symbol: '¥',
     side: 'start',
+  },
+  [FiatCurrencies.Cad]: {
+    symbol: '$',
+    side: 'end',
+  },
+  [FiatCurrencies.Ils]: {
+    symbol: '₪',
+    side: 'end',
+  },
+  [FiatCurrencies.Gel]: {
+    symbol: '₾',
+    side: 'end',
+  },
+  [FiatCurrencies.Vnd]: {
+    symbol: '₫',
+    side: 'end',
   },
 };
 
@@ -254,4 +316,8 @@ export const telegramNumbersAddress = {
   testnet: 'EQAOQdwdw8kGftJCSFgOErM1mBjYPe4DBPq8-AhF6vr9si5N',
 };
 
-export const KNOWN_STAKING_IMPLEMENTATIONS = ['whales', 'tf'];
+export const KNOWN_STAKING_IMPLEMENTATIONS = [
+  PoolImplementationType.Whales,
+  PoolImplementationType.Tf,
+  PoolImplementationType.LiquidTF,
+];

@@ -2,7 +2,7 @@ import React from 'react';
 import { ns } from '$utils';
 import { Button } from '$uikit/Button/Button';
 import { useAttachScreen } from "./AttachScreenContext";
-import { getCurrentRouteName } from '$navigation/helper';
+import { getCurrentRouteName } from '$navigation/imperative';
 
 export const AttachScreenButton = () => {
   const { attach, pathname } = useAttachScreen();

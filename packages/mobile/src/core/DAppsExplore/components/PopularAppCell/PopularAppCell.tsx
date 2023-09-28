@@ -1,10 +1,10 @@
 import { openDAppBrowser } from '$navigation';
 import { Icon, Separator } from '$uikit';
-import { trackEvent } from '$utils';
+import { trackEvent } from '$utils/stats';
 import React, { FC, memo, useCallback } from 'react';
-import * as S from './PopularAppCell.style';
+import * as S from './popularAppCell.style';
 
-const moreIconSource = require('./more.png');
+// const moreIconSource = require('./more.png');
 
 interface Props {
   url: string;
@@ -31,7 +31,7 @@ const PopularAppCellComponent: FC<Props> = (props) => {
           <S.Container>
             <S.IconContainer isMore={isMore}>
               {icon ? <S.Icon source={{ uri: icon }} /> : null}
-              {isMore ? <S.Icon source={moreIconSource} /> : null}
+              {/* {isMore ? <S.Icon source={moreIconSource} /> : null} */}
             </S.IconContainer>
             <S.Content>
               <S.Title>{name}</S.Title>

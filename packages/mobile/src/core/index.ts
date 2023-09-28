@@ -1,9 +1,6 @@
 export { Intro } from './Intro/Intro';
 export { CreateWallet } from './CreateWallet/CreateWallet';
-export { Balances } from './Balances/Balances';
 export { Settings } from './Settings/Settings';
-export { Wallet } from './Wallet/Wallet';
-export { Receive } from './Receive/Receive';
 export { Send } from './Send/Send';
 export { ScanQR } from './ScanQR/ScanQR';
 export { SecretWords } from './SecretWords/SecretWords';
@@ -17,7 +14,6 @@ export { SetupWalletDone } from './SetupWalletDone/SetupWalletDone';
 export { Fiat } from './Fiat/Fiat';
 export { BuyFiat } from './BuyFiat/BuyFiat';
 export { OldExchange } from './Exchange/Exchange';
-export { ModalContainer } from './ModalContainer/ModalContainer';
 export { Migration } from './Migration/Migration';
 export { DevMenu } from './DevMenu/DevMenu';
 export { Logs } from './Logs/Logs';

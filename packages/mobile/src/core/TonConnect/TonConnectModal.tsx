@@ -2,20 +2,19 @@ import React, { useCallback } from 'react';
 import axios from 'axios';
 import queryString from 'query-string';
 import TonWeb from 'tonweb';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Linking, StyleSheet } from 'react-native';
-import { useTheme } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { getServerConfig, SelectableVersionsConfig } from '$shared/constants';
 import { walletSelector } from '$store/wallet';
 import { Button, Icon, List, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
-  debugLog,
   delay,
   getDomainFromURL,
-  maskifyTonAddress,
   triggerNotificationSuccess,
   triggerSelection,
 } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { UnlockVaultError } from '$store/wallet/sagas';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import {
@@ -25,29 +24,32 @@ import {
   useTonConnectAnimation,
 } from './useTonConnectAnimation';
 import * as S from './TonConnect.style';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { TonConnectModalProps } from './models';
 import { useEffect } from 'react';
-import { Modal, useNavigation } from '$libs/navigation';
-import { store, Toast } from '$store';
-import { openRequireWalletModal, push } from '$navigation';
-import { SheetActions } from '$libs/navigation/components/Modal/Sheet/SheetsProvider';
+import { Modal } from '@tonkeeper/uikit';
+import { store, Toast, useNotificationsStore } from '$store';
+import { push } from '$navigation/imperative';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
+import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { mainSelector } from '$store/main';
-import { createTonProofForTonkeeper } from '$utils/notificationsproof';
-import { WalletApi, Configuration } from '@tonkeeper/core';
+import { createTonProofForTonkeeper } from '$utils/proof';
+import { WalletApi, Configuration } from '@tonkeeper/core/src/legacy';
 import * as SecureStore from 'expo-secure-store';
+import { Address } from '@tonkeeper/core';
+import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
 
 export const TonConnectModal = (props: TonConnectModalProps) => {
   const animation = useTonConnectAnimation();
   const unlockVault = useUnlockVault();
-  const dispatch = useDispatch();
   const theme = useTheme();
   const nav = useNavigation();
-  const [withNotifications, setWithNotifications] = React.useState(false);
+  const [withNotifications, setWithNotifications] = React.useState(true);
 
   const { version } = useSelector(walletSelector);
   const { isTestnet } = useSelector(mainSelector);
-  const maskedAddress = maskifyTonAddress(animation.address);
+  const maskedAddress = Address.toShort(animation.address);
+  const showNotifications = useNotificationsStore(shouldShowNotifications);
 
   const handleSwitchNotifications = useCallback(() => {
     triggerSelection();
@@ -169,32 +171,28 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
         );
 
         if (withNotifications) {
-          const proof_token = await SecureStore.getItemAsync('proof_token');
-
-          if (!proof_token) {
-            const proof = await createTonProofForTonkeeper(
-              address,
-              privateKey,
-              walletStateInit,
-            );
-            const walletApi = new WalletApi(
-              new Configuration({
-                basePath: getServerConfig('tonapiV2Endpoint'),
-                headers: {
-                  Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
-                },
-              }),
-            );
-            if (proof.error) {
-              return;
-            }
-            const token = await walletApi.tonConnectProof({
-              tonConnectProofRequest: proof,
-            });
-            SecureStore.setItemAsync('proof_token', token.token, {
-              requireAuthentication: false,
-            });
+          const proof = await createTonProofForTonkeeper(
+            address,
+            privateKey,
+            walletStateInit,
+          );
+          const walletApi = new WalletApi(
+            new Configuration({
+              basePath: getServerConfig('tonapiV2Endpoint'),
+              headers: {
+                Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+              },
+            }),
+          );
+          if (proof.error) {
+            return;
           }
+          const token = await walletApi.tonConnectProof({
+            tonConnectProofRequest: proof,
+          });
+          SecureStore.setItemAsync('proof_token', token.token, {
+            requireAuthentication: false,
+          });
         }
 
         requestPromise.resolve({
@@ -337,7 +335,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
                 : null}
             </Text>
           </S.Content>
-          {/* {isTonConnectV2 ? (
+          {isTonConnectV2 && showNotifications ? (
             <>
               <List indent={false}>
                 <List.ItemWithCheckbox
@@ -348,7 +346,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
               </List>
               <Spacer y={16} />
             </>
-          ) : null} */}
+          ) : null}
           <S.Footer isTonConnectV2={isTonConnectV2}>
             <TransitionOpacity
               style={styles.actionContainer}

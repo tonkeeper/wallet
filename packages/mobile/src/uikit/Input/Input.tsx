@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { css } from '$styled';
-import { useTheme, useTranslator } from '$hooks';
+import { useTheme } from '$hooks/useTheme';
 import { InputProps } from './Input.interface';
 import * as S from './Input.style';
 import { isIOS, ns } from '$utils';
@@ -21,8 +21,9 @@ import {
 } from 'react-native';
 import { Text } from '../Text/Text';
 import Clipboard from '@react-native-community/clipboard';
-import { Icon } from '$uikit/Icon/Icon';
+import { Icon } from '../Icon/Icon';
 import { TextInput } from 'react-native-gesture-handler';
+import { t } from '@tonkeeper/shared/i18n';
 
 const FocusedInputBorderWidth = ns(1.5);
 
@@ -42,6 +43,7 @@ export const Input: FC<InputProps> = (props) => {
     keyboardType = 'default',
     autoFocus = false,
     isFailed = false,
+    isSuccessful = false,
     value,
     placeholder,
     label,
@@ -61,11 +63,10 @@ export const Input: FC<InputProps> = (props) => {
   const [isFocused, setFocused] = useState(false);
   const focusAnimation = useSharedValue(0);
   const failAnimation = useSharedValue(0);
+  const successAnimation = useSharedValue(0);
   const ref = useRef<TextInput>(null);
 
   const inputRef = innerRef ?? ref;
-
-  const t = useTranslator();
 
   useEffect(() => {
     cancelAnimation(focusAnimation);
@@ -80,6 +81,13 @@ export const Input: FC<InputProps> = (props) => {
       duration: 150,
     });
   }, [failAnimation, isFailed]);
+
+  useEffect(() => {
+    cancelAnimation(successAnimation);
+    successAnimation.value = withTiming(isFocused && isSuccessful ? 1 : 0, {
+      duration: 150,
+    });
+  }, [successAnimation, isSuccessful, isFocused]);
 
   const handleFocus = useCallback(
     (e) => {
@@ -147,6 +155,21 @@ export const Input: FC<InputProps> = (props) => {
     };
   });
 
+  const successBorderStyle = useAnimatedStyle(() => {
+    return {
+      borderWidth: interpolate(
+        successAnimation.value,
+        [0, 1],
+        [0, FocusedInputBorderWidth],
+      ),
+      borderColor: interpolateColor(
+        successAnimation.value,
+        [0, 1],
+        [colors.backgroundSecondary, colors.accentPositive],
+      ),
+    };
+  });
+
   const hasLabel = !!label && label.length > 0;
 
   const hasValue =
@@ -178,8 +201,14 @@ export const Input: FC<InputProps> = (props) => {
           duration: ANIM_DURATION,
         },
       ),
+      color: withTiming(
+        shouldAnimate && isSuccessful
+          ? colors.accentPositive
+          : colors.foregroundSecondary,
+        { duration: 150 },
+      ),
     }),
-    [shouldAnimate],
+    [shouldAnimate, isSuccessful],
   );
 
   const inputSpacerStyle = useAnimatedStyle(() => ({
@@ -242,6 +271,11 @@ export const Input: FC<InputProps> = (props) => {
           {...{ isFocused, isFailed }}
           pointerEvents="none"
           style={[failBorderStyle, { zIndex: 2 }]}
+        />
+        <S.Border
+          {...{ isFocused, isFailed }}
+          pointerEvents="none"
+          style={[successBorderStyle, { zIndex: 2 }]}
         />
         <S.LabelContainer style={labelContainerStyle}>
           <Text reanimated style={labelTextStyle} color="foregroundSecondary">

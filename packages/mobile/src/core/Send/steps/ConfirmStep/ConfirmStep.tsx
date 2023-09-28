@@ -1,15 +1,14 @@
-import { useCopyText, useFiatValue, useTranslator } from '$hooks';
+import { useCopyText } from '$hooks/useCopyText';
+import { useFiatValue } from '$hooks/useFiatValue';
 import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { getTokenConfig } from '$shared/dynamicConfig';
-import { Highlight, Icon, Separator, Spacer, Text } from '$uikit';
-import { maskifyAddress, parseLocaleNumber } from '$utils';
+import { Highlight, Icon, Separator, Spacer, StakedTonIcon, Text } from '$uikit';
+import { isIOS, parseLocaleNumber } from '$utils';
 import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
 import { ConfirmStepProps } from './ConfirmStep.interface';
 import * as S from './ConfirmStep.style';
 import BigNumber from 'bignumber.js';
-import { useAnimatedScrollHandler } from 'react-native-reanimated';
-import { SendSteps } from '$core/Send/Send.interface';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { formatter } from '$utils/formatter';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,25 +16,31 @@ import {
   ActionFooter,
   useActionFooter,
 } from '$core/ModalContainer/NFTOperations/NFTOperationFooter';
-import { openInactiveInfo } from '$navigation';
 import { Alert } from 'react-native';
 import { walletBalancesSelector, walletWalletSelector } from '$store/wallet';
 import { useSelector } from 'react-redux';
+import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
+import { useStakingStore } from '$store';
+import { t } from '@tonkeeper/shared/i18n';
+import { openInactiveInfo } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
+import { Address } from '@tonkeeper/core';
+import { getImplementationIcon } from '$utils/staking';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
-    stepsScrollTop,
-    active,
     currency,
     currencyTitle,
     recipient,
     recipientAccountInfo,
     decimals,
     isJetton,
+    isPreparing,
     fee,
+    active,
     isInactive,
     amount,
     comment,
+    isCommentEncrypted,
     onConfirm: sendTx,
   } = props;
 
@@ -43,14 +48,15 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
 
   const { bottom: bottomInset } = useSafeAreaInsets();
 
-  const t = useTranslator();
-
   const copyText = useCopyText();
 
   const balances = useSelector(walletBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
 
-  const { Logo } = useCurrencyToSend(currency, isJetton, 96);
+  const { Logo, isLiquidJetton, liquidJettonPool } = useCurrencyToSend(
+    currency,
+    isJetton,
+  );
 
   const showLockupAlert = useCallback(
     () =>
@@ -68,7 +74,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
           },
         ]),
       ),
-    [t],
+    [],
   );
 
   const showAllBalanceAlert = useCallback(
@@ -87,7 +93,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
           },
         ]),
       ),
-    [t],
+    [],
   );
 
   const handleConfirm = useCallback(async () => {
@@ -126,16 +132,11 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     sendTx,
   ]);
 
-  const scrollHandler = useAnimatedScrollHandler((event) => {
-    stepsScrollTop.value = {
-      ...stepsScrollTop.value,
-      [SendSteps.CONFIRM]: event.contentOffset.y,
-    };
-  });
-
   const feeCurrency = useMemo(() => {
     const tokenConfig = getTokenConfig(currency as CryptoCurrency);
-    if (tokenConfig && tokenConfig.blockchain === 'ethereum') {
+    if (currency === 'usdt') {
+      return 'USDT';
+    } else if (tokenConfig && tokenConfig.blockchain === 'ethereum') {
       return CryptoCurrencies.Eth;
     } else if (isJetton) {
       return CryptoCurrencies.Ton;
@@ -158,10 +159,12 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     decimals,
     isJetton,
   );
+
   const fiatFee = useFiatValue(
-    CryptoCurrencies.Ton,
+    currency === 'usdt' ? 'USDT' : CryptoCurrencies.Ton,
     fee || '0',
-    Decimals[CryptoCurrencies.Ton],
+    6,
+    currency === 'usdt' ? 6 : Decimals[CryptoCurrencies.Ton],
   );
 
   const feeValue = useMemo(() => {
@@ -170,11 +173,11 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     }
 
     return `≈ ${formatter.format(fee, {
-      decimals: Decimals[feeCurrency],
+      decimals: currency === 'usdt' ? 6 : Decimals[feeCurrency],
       currency: feeCurrency.toUpperCase(),
       currencySeparator: 'wide',
     })}`;
-  }, [fee, feeCurrency]);
+  }, [currency, fee, feeCurrency]);
 
   const amountValue = useMemo(() => {
     const value = formatter.format(calculatedValue, {
@@ -189,13 +192,12 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     return value;
   }, [calculatedValue, decimals, currencyTitle, amount.all, isJetton]);
 
-  const handleCopy = useCallback(() => {
-    if (!recipient) {
-      return;
-    }
-
-    copyText(recipient.address, t('address_copied'));
-  }, [copyText, recipient, t]);
+  const handleCopy = useCallback(
+    (text: string, toastText?: string) => () => {
+      copyText(text, toastText);
+    },
+    [copyText],
+  );
 
   useEffect(() => {
     if (!active) {
@@ -211,17 +213,26 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
 
   return (
     <S.Container>
-      <StepScrollView onScroll={scrollHandler} active={active}>
+      <StepScrollView active={active}>
         <S.Content>
           <S.Center>
-            <S.IconContainer>{Logo}</S.IconContainer>
+            {liquidJettonPool ? (
+              <StakedTonIcon pool={liquidJettonPool} size="large" />
+            ) : (
+              Logo
+            )}
             <Spacer y={20} />
             <Text color="foregroundSecondary">
               {t('send_screen_steps.comfirm.title')}
             </Text>
             <Spacer y={4} />
             <Text variant="h3">
-              {t('send_screen_steps.comfirm.action', { coin: currencyTitle })}
+              {/* TODO: need translation */}
+              {currencyTitle === 'USDT'
+                ? 'Transfer USDT TRC20'
+                : t('send_screen_steps.comfirm.action', {
+                    coin: isLiquidJetton ? t('staking.send_staked_ton') : currencyTitle,
+                  })}
             </Text>
           </S.Center>
           <Spacer y={32} />
@@ -235,7 +246,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
               </S.Item>
             ) : null}
             <Separator />
-            <Highlight onPress={handleCopy}>
+            <Highlight onPress={handleCopy(recipient.address, t('address_copied'))}>
               <S.Item>
                 <S.ItemLabel>
                   {recipientName
@@ -244,42 +255,62 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
                 </S.ItemLabel>
                 <S.ItemContent>
                   <S.ItemValue numberOfLines={1}>
-                    {maskifyAddress(recipient.address, 4)}
+                    {Address.toShort(recipient.address, 4)}
                   </S.ItemValue>
                 </S.ItemContent>
               </S.Item>
             </Highlight>
             <Separator />
-            <S.Item>
-              <S.ItemLabel>{t('confirm_sending_amount')}</S.ItemLabel>
-              <S.ItemContent>
-                <S.ItemValue numberOfLines={1}>{amountValue}</S.ItemValue>
-                {fiatValue.fiatInfo.avaivable ? (
-                  <S.ItemSubValue>≈ {fiatValue.fiatInfo.amount}</S.ItemSubValue>
-                ) : null}
-              </S.ItemContent>
-            </S.Item>
+            <Highlight
+              onPress={handleCopy(formatter.format(calculatedValue, { decimals }))}
+            >
+              <S.Item>
+                <S.ItemLabel>{t('confirm_sending_amount')}</S.ItemLabel>
+                <S.ItemContent>
+                  <S.ItemValue numberOfLines={1}>{amountValue}</S.ItemValue>
+                  {fiatValue.formatted.totalFiat ? (
+                    <S.ItemSubValue>≈ {fiatValue.formatted.totalFiat}</S.ItemSubValue>
+                  ) : null}
+                </S.ItemContent>
+              </S.Item>
+            </Highlight>
             <Separator />
             <S.Item>
               <S.ItemLabel>{t('confirm_sending_fee')}</S.ItemLabel>
               <S.ItemContent>
-                <S.ItemValue numberOfLines={1}>{feeValue}</S.ItemValue>
-                {fee !== '0' ? (
-                  <S.ItemSubValue>≈ {fiatFee.fiatInfo.amount}</S.ItemSubValue>
+                {isPreparing ? (
+                  <S.ItemSkeleton>
+                    <SkeletonLine />
+                  </S.ItemSkeleton>
+                ) : (
+                  <S.ItemValue numberOfLines={1}>{feeValue}</S.ItemValue>
+                )}
+                {fee !== '0' && !isPreparing ? (
+                  <S.ItemSubValue>≈ {fiatFee.formatted.totalFiat}</S.ItemSubValue>
                 ) : null}
               </S.ItemContent>
             </S.Item>
             {comment.length > 0 ? (
               <>
                 <Separator />
-                <S.Item>
-                  <S.ItemLabel>
-                    {t('send_screen_steps.comfirm.comment_label')}
-                  </S.ItemLabel>
-                  <S.ItemContent>
-                    <S.ItemValue>{comment}</S.ItemValue>
-                  </S.ItemContent>
-                </S.Item>
+                <Highlight onPress={handleCopy(comment)}>
+                  <S.Item>
+                    <S.ItemInline>
+                      <S.ItemLabel>
+                        {t('send_screen_steps.comfirm.comment_label')}
+                      </S.ItemLabel>
+                      {isCommentEncrypted ? (
+                        <>
+                          <Spacer x={4} />
+                          <Icon name="ic-lock-16" color="accentPositive" />
+                        </>
+                      ) : null}
+                    </S.ItemInline>
+                    <S.ItemContent>
+                      <S.ItemValue>{comment}</S.ItemValue>
+                    </S.ItemContent>
+                  </S.Item>
+                </Highlight>
               </>
             ) : null}
           </S.Table>
@@ -313,11 +344,30 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
               </S.WarningContainer>
             </>
           ) : null}
+          {isLiquidJetton ? (
+            <>
+              <Spacer y={16} />
+              <S.WarningContainer>
+                <S.WarningTouchable
+                  background="backgroundQuaternary"
+                  onPress={openInactiveInfo}
+                >
+                  <S.WarningContent>
+                    <Text variant="label1">{t('confirm_sending_liquid_warn_title')}</Text>
+                    <Text variant="body2" color="foregroundSecondary">
+                      {t('confirm_sending_liquid_warn_description')}
+                    </Text>
+                  </S.WarningContent>
+                </S.WarningTouchable>
+              </S.WarningContainer>
+            </>
+          ) : null}
         </S.Content>
         <BottomButtonWrapHelper />
       </StepScrollView>
       <S.FooterContainer bottomInset={bottomInset}>
         <ActionFooter
+          disabled={isPreparing || !active}
           withCloseButton={false}
           confirmTitle={t('confirm_sending_submit')}
           onPressConfirm={handleConfirm}

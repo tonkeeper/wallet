@@ -1,6 +1,15 @@
 import React, { useCallback, useRef } from 'react';
-import { InternalNotification, Screen, Spacer, SwitchItem, Text, View } from '$uikit';
-import { debugLog, ns } from '$utils';
+import {
+  InternalNotification,
+  Screen,
+  Separator,
+  Spacer,
+  SwitchItem,
+  Text,
+  View,
+} from '$uikit';
+import { ns } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Linking } from 'react-native';
 import { CellSection } from '$shared/components';
@@ -9,14 +18,13 @@ import { useSelector } from 'react-redux';
 import { NotificationsStatus, useNotificationStatus } from '$hooks/useNotificationStatus';
 import messaging from '@react-native-firebase/messaging';
 import { useNotifications } from '$hooks/useNotifications';
-import { t } from '$translation';
+import { t } from '@tonkeeper/shared/i18n';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
 import { Toast, ToastSize, useConnectedAppsList, useConnectedAppsStore } from '$store';
 import { Steezy } from '$styles';
 import { getChainName } from '$shared/dynamicConfig';
 import { walletAddressSelector } from '$store/wallet';
-import FastImage from 'react-native-fast-image';
-import { useObtainProofToken } from '$hooks';
+import { SwitchDAppNotifications } from '$core/Notifications/SwitchDAppNotifications';
 
 export const Notifications: React.FC = () => {
   const address = useSelector(walletAddressSelector);
@@ -24,11 +32,12 @@ export const Notifications: React.FC = () => {
   const notifications = useNotifications();
   const tabBarHeight = useBottomTabBarHeight();
   const isSwitchFrozen = useRef(false);
-  const obtainProofToken = useObtainProofToken();
   const notificationStatus = useNotificationStatus();
   const notificationsBadge = useNotificationsBadge();
   const shouldEnableNotifications = notificationStatus === NotificationsStatus.DENIED;
-
+  const updateNotificationsSubscription = useConnectedAppsStore(
+    (state) => state.actions.updateNotificationsSubscription,
+  );
   const [isSubscribeNotifications, setIsSubscribeNotifications] = React.useState(false);
 
   React.useEffect(() => {
@@ -53,47 +62,38 @@ export const Notifications: React.FC = () => {
     }
   }, [notificationsBadge, notificationsBadge.isVisible]);
 
-  const handleToggleNotifications = React.useCallback(async (value: boolean) => {
-    if (isSwitchFrozen.current) {
-      return;
-    }
-
-    try {
-      isSwitchFrozen.current = true;
-      setIsSubscribeNotifications(value);
-
-      const isSuccess = value
-        ? await notifications.subscribe()
-        : await notifications.unsubscribe();
-
-      if (!isSuccess) {
-        // Revert
-        setIsSubscribeNotifications(!value);
+  const handleToggleNotifications = React.useCallback(
+    async (value: boolean) => {
+      if (isSwitchFrozen.current) {
+        return;
       }
-    } catch (err) {
-      Toast.fail(t('notifications_not_supported'), { size: ToastSize.Small });
-      debugLog('[NotificationsSettings]', err);
-      setIsSubscribeNotifications(!value); // Revert
-    } finally {
-      isSwitchFrozen.current = false;
-    }
-  }, []);
+
+      try {
+        isSwitchFrozen.current = true;
+        setIsSubscribeNotifications(value);
+
+        const isSuccess = value
+          ? await notifications.subscribe()
+          : await notifications.unsubscribe();
+
+        updateNotificationsSubscription(getChainName(), address.ton);
+
+        if (!isSuccess) {
+          // Revert
+          setIsSubscribeNotifications(!value);
+        }
+      } catch (err) {
+        Toast.fail(t('notifications_not_supported'), { size: ToastSize.Small });
+        debugLog('[NotificationsSettings]', err);
+        setIsSubscribeNotifications(!value); // Revert
+      } finally {
+        isSwitchFrozen.current = false;
+      }
+    },
+    [address.ton, notifications, updateNotificationsSubscription],
+  );
 
   const connectedApps = useConnectedAppsList();
-  const { enableNotifications, disableNotifications } = useConnectedAppsStore(
-    (state) => state.actions,
-  );
-
-  const handleSwitchNotifications = React.useCallback(
-    async (value: boolean, url: string, session_id: string | undefined) => {
-      await obtainProofToken();
-      if (value) {
-        return enableNotifications(getChainName(), address.ton, url, session_id);
-      }
-      disableNotifications(getChainName(), address.ton, url);
-    },
-    [obtainProofToken, disableNotifications, address.ton, enableNotifications],
-  );
 
   return (
     <Screen>
@@ -124,38 +124,25 @@ export const Notifications: React.FC = () => {
             value={isSubscribeNotifications}
           />
         </CellSection>
-        {/* {connectedApps.length ? (
+        {connectedApps.length ? (
           <>
             <View style={styles.title}>
               <Text variant="h3">{t('notifications.apps')}</Text>
               <Spacer y={4} />
-              <Text variant="body2">{t('notifications.apps_description')}</Text>
+              <Text color="textSecondary" variant="body2">
+                {t('notifications.apps_description')}
+              </Text>
             </View>
             <CellSection>
               {connectedApps.map((app) => (
-                <SwitchItem
-                  icon={
-                    <FastImage
-                      source={{ uri: app.icon }}
-                      style={styles.imageStyle.static}
-                    />
-                  }
-                  key={app.url}
-                  title={app.name}
-                  value={!!app.notificationsEnabled}
-                  onChange={() =>
-                    handleSwitchNotifications(
-                      !app.notificationsEnabled,
-                      app.url,
-                      // @ts-ignore
-                      app.connections[0]?.clientSessionId,
-                    )
-                  }
-                />
+                <View key={app.url}>
+                  <SwitchDAppNotifications app={app} />
+                  <Separator />
+                </View>
               ))}
             </CellSection>
           </>
-        ) : null} */}
+        ) : null}
       </Screen.ScrollView>
     </Screen>
   );
@@ -164,12 +151,6 @@ export const Notifications: React.FC = () => {
 const styles = Steezy.create({
   title: {
     paddingVertical: 14,
-  },
-  imageStyle: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    marginRight: 16,
   },
   notificationsSection: {
     marginBottom: 16,

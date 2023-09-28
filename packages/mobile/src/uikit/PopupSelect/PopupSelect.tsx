@@ -20,16 +20,16 @@ import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import {
   PopupSelectItemProps,
   PopupSelectProps,
-} from '$uikit/PopupSelect/PopupSelect.interface';
-import { Separator } from '$uikit/Separator/Separator';
-import { Highlight } from '$uikit/Highlight/Highlight';
-import { Icon } from '$uikit/Icon/Icon';
+} from '../PopupSelect/PopupSelect.interface';
+import { Separator } from '../Separator/Separator';
+import { Highlight } from '../Highlight/Highlight';
+import { Icon } from '../Icon/Icon';
 import { deviceHeight, isAndroid, Memo, ns, triggerSelection } from '$utils';
 import { usePopupAnimation } from './usePopupAnimation';
 import * as S from './PopupSelect.style';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { FullWindowOverlay } from 'react-native-screens';
-import { useDimensions } from '$hooks';
+import { useDimensions } from '$hooks/useDimensions';
 import { PortalOrigin } from '@alexzunik/rn-native-portals-reborn';
 import { FlatList } from 'react-native-gesture-handler';
 
@@ -254,6 +254,15 @@ export function PopupSelectComponent<T>(props: PopupSelectProps<T>) {
             >
               <S.Content>
                 <FlatList
+                  onScrollToIndexFailed={({ index, averageItemLength }) => {
+                    // Layout doesn't know the exact location of the requested element.
+                    // Falling back to calculating the destination manually
+                    flatListRef.current?.scrollToOffset({
+                      offset: index * averageItemLength,
+                      animated: true,
+                    });
+                  }}
+                  initialNumToRender={40} // fix for scrollToIndex error
                   ref={flatListRef}
                   data={items}
                   keyExtractor={keyExtractor}

@@ -32,7 +32,7 @@ export type ShowAllButtonItem = {
 export type CellItem = {
   separatorVariant?: ListSeparatorProps['variant'];
   type: ContentType.Cell;
-  imageStyle?: ListItemProps['imageStyle'];
+  imageStyle?: ListItemProps['pictureStyle'];
   chevronColor?: ListItemProps['chevronColor'];
   isFirst?: boolean;
   leftContent?: ListItemProps['leftContent'];

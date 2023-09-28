@@ -11,11 +11,10 @@ export interface ButtonProps {
     | 'large_rounded'
     | 'medium_rounded';
   mode?: 'secondary' | 'primary' | 'primary_red' | 'tertiary' | 'light';
-  children: ReactNode;
+  children?: ReactNode;
   titleFont?: fontKeys;
   before?: ((props: { isPressed: boolean }) => ReactElement) | ReactElement;
   after?: ((props: { isPressed: boolean }) => ReactElement) | ReactElement;
-  children: ReactNode;
   style?: StyleProp<ViewStyle>;
   withoutTextPadding?: boolean;
   withoutFixedHeight?: boolean;

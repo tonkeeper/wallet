@@ -2,14 +2,13 @@ import React, { FC, useCallback, useMemo } from 'react';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Animated from 'react-native-reanimated';
 import { Icon, NavBar, ScrollHandler, Text } from '$uikit';
-import { useTranslator } from '$hooks';
 import { ns } from '$utils';
 import { CellSection, CellSectionItem } from '$shared/components';
 import * as S from './LegalDocuments.style';
 import { openDAppBrowser, openFontLicense } from '$navigation';
+import { t } from '@tonkeeper/shared/i18n';
 
 export const LegalDocuments: FC = () => {
-  const t = useTranslator();
   const tabBarHeight = useBottomTabBarHeight();
 
   const handleTerms = useCallback(() => {

@@ -31,6 +31,7 @@ export type IconNames =
   | 'ic-information-circle-16'
   | 'ic-link-bold-16'
   | 'ic-loader-small-16'
+  | 'ic-lock-16'
   | 'ic-magnifying-glass-16'
   | 'ic-pencil-16'
   | 'ic-refresh-16'
@@ -70,6 +71,7 @@ export type IconNames =
   | 'ic-home-28'
   | 'ic-jetton-28'
   | 'ic-key-28'
+  | 'ic-link-28'
   | 'ic-lock-28'
   | 'ic-message-bubble-28'
   | 'ic-minus-28'
@@ -154,6 +156,7 @@ export const AllIcons = [
   'ic-information-circle-16',
   'ic-link-bold-16',
   'ic-loader-small-16',
+  'ic-lock-16',
   'ic-magnifying-glass-16',
   'ic-pencil-16',
   'ic-refresh-16',
@@ -193,6 +196,7 @@ export const AllIcons = [
   'ic-home-28',
   'ic-jetton-28',
   'ic-key-28',
+  'ic-link-28',
   'ic-lock-28',
   'ic-message-bubble-28',
   'ic-minus-28',
@@ -278,6 +282,7 @@ export const IconSizes = {
   'ic-information-circle-16': 16,
   'ic-link-bold-16': 16,
   'ic-loader-small-16': 16,
+  'ic-lock-16': 16,
   'ic-magnifying-glass-16': 16,
   'ic-pencil-16': 16,
   'ic-refresh-16': 16,
@@ -317,6 +322,7 @@ export const IconSizes = {
   'ic-home-28': 28,
   'ic-jetton-28': 28,
   'ic-key-28': 28,
+  'ic-link-28': 28,
   'ic-lock-28': 28,
   'ic-message-bubble-28': 28,
   'ic-minus-28': 28,

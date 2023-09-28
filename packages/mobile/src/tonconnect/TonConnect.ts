@@ -18,7 +18,7 @@ import {
   removeRemoteConnection,
   enableNotifications,
 } from '$store';
-import { debugLog } from '$utils';
+import { debugLog } from '$utils/debugLog';
 import { getTimeSec } from '$utils/getTimeSec';
 import {
   AppRequest,
@@ -63,6 +63,7 @@ class TonConnectService {
 
   async getManifest(request: ConnectRequest) {
     try {
+      console.log('request.manifestUrl', request.manifestUrl);
       const { data: manifest } = await axios.get<DAppManifest>(request.manifestUrl);
 
       const isValid =
