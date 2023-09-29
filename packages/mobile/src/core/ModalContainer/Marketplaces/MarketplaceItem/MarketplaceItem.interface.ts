@@ -5,6 +5,5 @@ export interface MarketplaceItemProps {
   iconUrl: string;
   description: string;
   title: string;
-  onPress?: () => void;
   internalId: string;
 }

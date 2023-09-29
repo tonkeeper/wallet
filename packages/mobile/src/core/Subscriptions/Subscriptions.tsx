@@ -46,7 +46,7 @@ export const Subscriptions: FC = () => {
   }, [subscriptionsInfo, t]);
 
   const handleOpen = useCallback((subscription: SubscriptionModel) => {
-    openSubscription(subscription);
+    openSubscription(subscription, null, true);
   }, []);
 
   return (

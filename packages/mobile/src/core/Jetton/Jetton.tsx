@@ -18,7 +18,6 @@ import { useTokenPrice } from '$hooks/useTokenPrice';
 import { openDAppBrowser, openSend } from '$navigation';
 import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { useSelector } from 'react-redux';
-import { useJettonEvents } from '$hooks/useJettonEvents';
 
 import { walletAddressSelector } from '$store/wallet';
 import { formatter } from '$utils/formatter';
@@ -31,7 +30,7 @@ import { Events, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
-import { Screen, View } from '@tonkeeper/uikit';
+import { Screen, Steezy, View } from '@tonkeeper/uikit';
 
 import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonActivityList';
 import { ActivityList } from '@tonkeeper/shared/components';
@@ -68,8 +67,6 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   }, [jetton.jettonAddress, nav]);
 
   const handleOpenExplorer = useCallback(async () => {
-    console.log('Press');
-    await delay(200);
     openDAppBrowser(
       getServerConfig('accountExplorer').replace('%s', address.ton) +
         `/jetton/${jetton.jettonAddress}`,
@@ -142,17 +139,6 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     handlePressSwap,
   ]);
 
-  const renderFooter = useCallback(() => {
-    if (jettonActivityList.sections.length === 0 && jettonActivityList.isLoading) {
-      return (
-        <View style={{ margin: 16 }}>
-          <Skeleton.List />
-        </View>
-      );
-    }
-    return <View style={{ height: bottomInset }} />;
-  }, [jettonActivityList.sections, jettonActivityList.isLoading, bottomInset]);
-
   if (!jetton) {
     return null;
   }
@@ -165,6 +151,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
           <PopupMenu
             items={[
               <PopupMenuItem
+                waitForAnimationEnd
                 shouldCloseMenu
                 onPress={handleOpenExplorer}
                 text={t('jetton_open_explorer')}
@@ -179,14 +166,15 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         }
       />
       <ActivityList
+        ListLoaderComponent={<Skeleton.List />}
         ListHeaderComponent={renderHeader}
-        ListFooterComponent={renderFooter}
         onLoadMore={jettonActivityList.loadMore}
         onReload={jettonActivityList.reload}
         isReloading={jettonActivityList.isReloading}
         isLoading={jettonActivityList.isLoading}
         sections={jettonActivityList.sections}
         hasMore={jettonActivityList.hasMore}
+        error={jettonActivityList.error}
       />
     </Screen>
   );

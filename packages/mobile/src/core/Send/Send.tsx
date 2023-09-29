@@ -34,7 +34,10 @@ import { ConfirmStep } from './steps/ConfirmStep/ConfirmStep';
 import { Keyboard } from 'react-native';
 import { favoritesActions } from '$store/favorites';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { DismissedActionError } from './steps/ConfirmStep/ActionErrors';
+import {
+  CanceledActionError,
+  DismissedActionError,
+} from './steps/ConfirmStep/ActionErrors';
 import { Configuration, AccountsApi } from '@tonkeeper/core/src/legacy';
 import { formatter } from '$utils/formatter';
 import { Events } from '$store/models';
@@ -46,6 +49,10 @@ import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVaul
 import { useValueRef } from '@tonkeeper/uikit';
 import { RequestData } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
 import BigNumber from 'bignumber.js';
+import {
+  InsufficientFundsParams,
+  openInsufficientFundsModal,
+} from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {
@@ -112,6 +119,9 @@ export const Send: FC<SendProps> = ({ route }) => {
   const [fee, setFee] = useState(initialFee);
 
   const [isInactive, setInactive] = useState(initialIsInactive);
+
+  const [insufficientFundsParams, setInsufficientFundsParams] =
+    useState<InsufficientFundsParams | null>(null);
 
   const {
     balance,
@@ -207,6 +217,7 @@ export const Send: FC<SendProps> = ({ route }) => {
         walletActions.confirmSendCoins({
           currency: currency as CryptoCurrency,
           amount: parsedAmount,
+          isSendAll: amount.all,
           address: recipient.address,
           isJetton,
           jettonWalletAddress,
@@ -214,7 +225,14 @@ export const Send: FC<SendProps> = ({ route }) => {
           comment,
           isCommentEncrypted,
           onEnd: () => setPreparing(false),
+          onInsufficientFunds: (params) => {
+            setFee('0');
+            setInsufficientFundsParams(params);
+
+            stepViewRef.current?.go(SendSteps.CONFIRM);
+          },
           onNext: (details) => {
+            setInsufficientFundsParams(null);
             setFee(details.fee);
             setInactive(details.isInactive);
 
@@ -237,7 +255,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       setPreparing(false);
     }
   }, [
-    amount.value,
+    amount,
     comment,
     currency,
     decimals,
@@ -256,6 +274,12 @@ export const Send: FC<SendProps> = ({ route }) => {
     async (onDone: () => void, onFail: (e?: Error) => void) => {
       if (!recipient) {
         return onFail(new DismissedActionError());
+      }
+
+      if (insufficientFundsParams) {
+        openInsufficientFundsModal(insufficientFundsParams);
+
+        return onFail(new CanceledActionError());
       }
 
       setSending(true);
@@ -303,6 +327,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       decimals,
       dispatch,
       from,
+      insufficientFundsParams,
       isCommentEncrypted,
       isJetton,
       jettonWalletAddress,

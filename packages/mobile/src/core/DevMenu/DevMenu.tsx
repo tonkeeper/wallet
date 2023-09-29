@@ -1,6 +1,6 @@
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
-import { EventsDB, JettonsDB, MainDB, NFTsDB } from '$database';
+import { JettonsDB, MainDB, NFTsDB } from '$database';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { DevFeature, useDevFeaturesToggle } from '$store';
 import { List, Screen, copyText } from '@tonkeeper/uikit';
@@ -10,7 +10,6 @@ import DeviceInfo from 'react-native-device-info';
 import { useNavigation } from '@tonkeeper/router';
 import { config } from '@tonkeeper/shared/config';
 import { jettonsActions } from '$store/jettons';
-import { eventsActions } from '$store/events';
 import RNRestart from 'react-native-restart';
 import { t } from '@tonkeeper/shared/i18n';
 import { nftsActions } from '$store/nfts';
@@ -18,6 +17,7 @@ import { FC, useCallback } from 'react';
 import { openLogs } from '$navigation';
 import { Alert } from 'react-native';
 import { Icon } from '$uikit';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export const DevMenu: FC = () => {
   const nav = useNavigation();
@@ -56,11 +56,6 @@ export const DevMenu: FC = () => {
     MainDB.setShowV4R1(!alwaysShowV4R1);
   }, [alwaysShowV4R1, dispatch]);
 
-  const handleClearEventsCache = useCallback(() => {
-    EventsDB.clearAll();
-    dispatch(eventsActions.resetEvents());
-  }, [dispatch]);
-
   const handleClearNFTsCache = useCallback(() => {
     NFTsDB.clearAll();
     dispatch(nftsActions.resetNFTs());
@@ -98,6 +93,17 @@ export const DevMenu: FC = () => {
     toggleFeature(DevFeature.UseHttpProtocol);
   }, [toggleFeature]);
 
+  const handleClearActivityCache = useCallback(() => {
+    if (tk.wallet) {
+      tk.wallet.activityList.state.clear();
+      tk.wallet.activityList.state.clearPersist();
+      tk.wallet.jettonActivityList.state.clear();
+      tk.wallet.jettonActivityList.state.clearPersist();
+      tk.wallet.tonActivityList.state.clear();
+      tk.wallet.tonActivityList.state.clearPersist();
+    }
+  }, []);
+
   return (
     <Screen>
       <Screen.Header title="Dev Menu" />
@@ -116,24 +122,26 @@ export const DevMenu: FC = () => {
           />
           <List.Item onPress={handleLogs} title="Logs" />
           <List.Item title="App config" onPress={() => nav.navigate('/dev/config')} />
-          <List.Item
-            title="Dev Tonapi"
-            rightContent={
-              <Switch
-                value={config.get('tonapiIOEndpoint') === 'https://dev.tonapi.io'}
-                onChange={() => {
-                  const devHost = 'https://dev.tonapi.io';
-                  if (config.get('tonapiIOEndpoint') !== devHost) {
-                    config.set({ tonapiIOEndpoint: devHost });
-                  } else {
-                    config.set({ tonapiIOEndpoint: undefined });
-                  }
+          {__DEV__ && (
+            <List.Item
+              title="Dev Tonapi"
+              rightContent={
+                <Switch
+                  value={config.get('tonapiIOEndpoint') === 'https://dev.tonapi.io'}
+                  onChange={() => {
+                    const devHost = 'https://dev.tonapi.io';
+                    if (config.get('tonapiIOEndpoint') !== devHost) {
+                      config.set({ tonapiIOEndpoint: devHost });
+                    } else {
+                      config.set({ tonapiIOEndpoint: undefined });
+                    }
 
-                  RNRestart.restart();
-                }}
-              />
-            }
-          />
+                    RNRestart.restart();
+                  }}
+                />
+              }
+            />
+          )}
           <List.Item
             title="Use HTTP protocol in browser"
             rightContent={
@@ -178,9 +186,12 @@ export const DevMenu: FC = () => {
             </PopupSelect>
           </CellSection> */}
         <List>
+          <List.Item
+            onPress={handleClearActivityCache}
+            title="Clear transactions cache"
+          />
           <List.Item onPress={handleClearJettonsCache} title="Clear jettons cache" />
           <List.Item onPress={handleClearNFTsCache} title="Clear NFTs cache" />
-          <List.Item onPress={handleClearEventsCache} title=" Clear events cache" />
         </List>
         <List>
           <List.Item onPress={handlePushNotification} title="Push notification" />

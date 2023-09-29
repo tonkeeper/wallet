@@ -11,7 +11,6 @@ import { CryptoCurrencies, getServerConfig } from '$shared/constants';
 import { store, Toast } from '$store';
 import { fuzzifyNumber } from '$utils';
 import { Ton } from '$libs/Ton';
-import { eventsActions } from '$store/events';
 import { network } from '$libs/network';
 import { trackEvent } from '$utils/stats';
 import { tk } from '@tonkeeper/shared/tonkeeper';
@@ -100,7 +99,6 @@ function* subscribeWorker(action: SubscribeAction) {
     });
 
     yield call([tk.wallet.activityList, 'reload']);
-    yield put(eventsActions.pollEvents());
     onDone();
 
     yield call(trackEvent, 'subscription', {
@@ -131,7 +129,6 @@ function* unsubscribeWorker(action: UnsubscribeAction) {
     });
 
     yield call([tk.wallet.activityList, 'reload']);
-    yield put(eventsActions.pollEvents());
     onDone();
   } catch (e) {
     console.log(e);

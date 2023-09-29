@@ -1,6 +1,5 @@
 export * from './types';
 export * from './rates';
-export * from './events';
 export * from './wallet';
 export * from './subscriptions';
 export * from './main';

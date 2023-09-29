@@ -59,7 +59,13 @@ export class Tonkeeper {
 
   // TODO: for temp, rewrite it when ton wallet will it be moved here;
   // init() must be called when app starts
-  public async init(address: string, isTestnet: boolean, tronAddress: string) {
+  public async init(
+    address: string,
+    isTestnet: boolean,
+    tronAddress: string,
+    // TODO: remove after transition to UQ address format
+    bounceable = true,
+  ) {
     try {
       this.destroy();
       if (address) {
@@ -75,10 +81,12 @@ export class Tonkeeper {
               network: isTestnet ? WalletNetwork.testnet : WalletNetwork.mainnet,
               tronAddress: tronAddress,
               address: address,
+              bounceable,
             },
           );
 
-          this.prefetch();
+          this.rehydrate();
+          this.preload();
         }
       }
     } catch (err) {
@@ -135,23 +143,20 @@ export class Tonkeeper {
     }
   }
 
-  // Load cache data for start app,
-  // Invoke on start app and block ui on spalsh screen
-  private async preload() {
-    await this.wallet.subscriptions.preload();
-    await this.wallet.activityList.preload();
-    await this.wallet.balances.preload();
-    await this.wallet.nfts.preload();
-    return true;
-  }
-
   // Update all data,
   // Invoke in background after hide splash screen
-  private prefetch() {
+  private preload() {
+    this.wallet.activityList.preload();
+    // TODO:
     this.wallet.subscriptions.prefetch();
-    this.wallet.activityList.prefetch();
     this.wallet.balances.prefetch();
     this.wallet.nfts.prefetch();
+  }
+
+  public rehydrate() {
+    this.wallet.jettonActivityList.rehydrate();
+    this.wallet.tonActivityList.rehydrate();
+    this.wallet.activityList.rehydrate();
   }
 
   public async lock() {

@@ -13,7 +13,7 @@ import fluidIcon from '$assets/accent/fluid.svg';
 import galaxyIcon from '$assets/accent/galaxy.svg';
 import cosmosIcon from '$assets/accent/cosmos.svg';
 import andromedaIcon from '$assets/accent/andromeda.svg';
-import { CustomNftItem } from '@tonkeeper/core/src/TonAPI/CustomNftItems';
+import { NFTModel, TonDiamondMetadata } from '$store/models';
 
 export type AccentNFTIconSize = 'large' | 'medium' | 'small';
 
@@ -166,7 +166,7 @@ export const AppearanceAccents: Record<AccentKey, AccentModel> = {
   },
 };
 
-export const getAccentIdByDiamondsNFT = (nft: CustomNftItem) => {
+export const getAccentIdByDiamondsNFT = (nft: NFTModel<TonDiamondMetadata>) => {
   switch (nft.metadata.theme.main) {
     case '#509FFA':
       return AccentKey.sky;

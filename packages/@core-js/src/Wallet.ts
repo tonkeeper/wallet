@@ -106,7 +106,9 @@ export class Wallet {
       network: walletInfo.network,
     };
 
-    const tonAddresses = Address.parse(walletInfo.address).toAll({
+    const tonAddresses = Address.parse(walletInfo.address, {
+      bounceable: walletInfo.bounceable,
+    }).toAll({
       testOnly: walletInfo.network === WalletNetwork.testnet,
     });
 
@@ -132,9 +134,9 @@ export class Wallet {
     };
 
     this.activityLoader = new ActivityLoader(addresses, this.tonapi, this.tronapi);
-    this.jettonActivityList = new JettonActivityList(this.activityLoader);
-    this.tonActivityList = new TonActivityList(this.activityLoader);
-    this.activityList = new ActivityList(this.activityLoader);
+    this.jettonActivityList = new JettonActivityList(this.activityLoader, this.storage);
+    this.tonActivityList = new TonActivityList(this.activityLoader, this.storage);
+    this.activityList = new ActivityList(this.activityLoader, this.storage);
 
     this.balances = new BalancesManager(context);
     this.nfts = new NftsManager(context);

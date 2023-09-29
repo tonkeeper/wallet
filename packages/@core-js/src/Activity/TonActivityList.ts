@@ -1,10 +1,13 @@
 import { ActivityModel, ActivitySection } from '../models/ActivityModel';
 import { AccountEvent, ActionTypeEnum } from '../TonAPI';
+import { Storage } from '../declarations/Storage';
 import { ActivityLoader } from './ActivityLoader';
+import { Logger } from '../utils/Logger';
 import { State } from '../utils/State';
 
 type TonActivityListState = {
   sections: ActivitySection[];
+  error?: string | null;
   isReloading: boolean;
   isLoading: boolean;
   hasMore: boolean;
@@ -19,13 +22,20 @@ export class TonActivityList {
     isLoading: false,
     hasMore: true,
     sections: [],
+    error: null,
   });
 
-  constructor(private activityLoader: ActivityLoader) {}
+  constructor(private activityLoader: ActivityLoader, private storage: Storage) {
+    this.state.persist({
+      partialize: ({ sections }) => ({ sections }),
+      storage: this.storage,
+      key: 'TonActivityList',
+    });
+  }
 
   public async load(cursor?: number | null) {
     try {
-      this.state.set({ isLoading: true });
+      this.state.set({ isLoading: true, error: null });
 
       const ton = await this.activityLoader.loadTonActions({
         cursor: cursor,
@@ -64,26 +74,32 @@ export class TonActivityList {
 
       this.groups = updatedGroups;
 
-      (this.cursor = ton.cursor ?? null),
-        this.state.set({
-          sections: Object.values(this.groups),
-          hasMore: Boolean(ton.cursor),
-          isLoading: false,
-        });
+      this.cursor = ton.cursor ?? null;
+      this.state.set({
+        sections: Object.values(this.groups),
+        hasMore: Boolean(ton.cursor),
+        isLoading: false,
+      });
     } catch (err) {
+      const message = `[TonActivityList]: ${Logger.getErrorMessage(err)}`;
+      console.log(message);
       this.state.set({
         isLoading: false,
+        error: message,
       });
     }
   }
 
   public async loadMore() {
-    if (!this.state.data.isLoading && this.state.data.hasMore) {
+    const { isLoading, hasMore, error } = this.state.data;
+    if (!isLoading && hasMore && error === null) {
       return this.load(this.cursor);
     }
   }
 
-  public preload() {}
+  public async rehydrate() {
+    return this.state.rehydrate();
+  }
 
   public clear() {
     this.groups = {};

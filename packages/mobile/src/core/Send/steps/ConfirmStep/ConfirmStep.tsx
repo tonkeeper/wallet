@@ -192,13 +192,12 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     return value;
   }, [calculatedValue, decimals, currencyTitle, amount.all, isJetton]);
 
-  const handleCopy = useCallback(() => {
-    if (!recipient) {
-      return;
-    }
-
-    copyText(recipient.address, t('address_copied'));
-  }, [copyText, recipient]);
+  const handleCopy = useCallback(
+    (text: string, toastText?: string) => () => {
+      copyText(text, toastText);
+    },
+    [copyText],
+  );
 
   useEffect(() => {
     if (!active) {
@@ -247,7 +246,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
               </S.Item>
             ) : null}
             <Separator />
-            <Highlight onPress={handleCopy}>
+            <Highlight onPress={handleCopy(recipient.address, t('address_copied'))}>
               <S.Item>
                 <S.ItemLabel>
                   {recipientName
@@ -262,20 +261,24 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
               </S.Item>
             </Highlight>
             <Separator />
-            <S.Item>
-              <S.ItemLabel>{t('confirm_sending_amount')}</S.ItemLabel>
-              <S.ItemContent>
-                <S.ItemValue numberOfLines={1}>{amountValue}</S.ItemValue>
-                {fiatValue.formatted.totalFiat ? (
-                  <S.ItemSubValue>≈ {fiatValue.formatted.totalFiat}</S.ItemSubValue>
-                ) : null}
-              </S.ItemContent>
-            </S.Item>
+            <Highlight
+              onPress={handleCopy(formatter.format(calculatedValue, { decimals }))}
+            >
+              <S.Item>
+                <S.ItemLabel>{t('confirm_sending_amount')}</S.ItemLabel>
+                <S.ItemContent>
+                  <S.ItemValue numberOfLines={1}>{amountValue}</S.ItemValue>
+                  {fiatValue.formatted.totalFiat ? (
+                    <S.ItemSubValue>≈ {fiatValue.formatted.totalFiat}</S.ItemSubValue>
+                  ) : null}
+                </S.ItemContent>
+              </S.Item>
+            </Highlight>
             <Separator />
             <S.Item>
               <S.ItemLabel>{t('confirm_sending_fee')}</S.ItemLabel>
               <S.ItemContent>
-                {fee === '0' || isPreparing ? (
+                {isPreparing ? (
                   <S.ItemSkeleton>
                     <SkeletonLine />
                   </S.ItemSkeleton>
@@ -290,22 +293,24 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
             {comment.length > 0 ? (
               <>
                 <Separator />
-                <S.Item>
-                  <S.ItemInline>
-                    <S.ItemLabel>
-                      {t('send_screen_steps.comfirm.comment_label')}
-                    </S.ItemLabel>
-                    {isCommentEncrypted ? (
-                      <>
-                        <Spacer x={4} />
-                        <Icon name="ic-lock-16" color="accentPositive" />
-                      </>
-                    ) : null}
-                  </S.ItemInline>
-                  <S.ItemContent>
-                    <S.ItemValue>{comment}</S.ItemValue>
-                  </S.ItemContent>
-                </S.Item>
+                <Highlight onPress={handleCopy(comment)}>
+                  <S.Item>
+                    <S.ItemInline>
+                      <S.ItemLabel>
+                        {t('send_screen_steps.comfirm.comment_label')}
+                      </S.ItemLabel>
+                      {isCommentEncrypted ? (
+                        <>
+                          <Spacer x={4} />
+                          <Icon name="ic-lock-16" color="accentPositive" />
+                        </>
+                      ) : null}
+                    </S.ItemInline>
+                    <S.ItemContent>
+                      <S.ItemValue>{comment}</S.ItemValue>
+                    </S.ItemContent>
+                  </S.Item>
+                </Highlight>
               </>
             ) : null}
           </S.Table>

@@ -47,7 +47,7 @@ import {
   WaitMigrationAction,
   WalletGetUnlockedVaultAction,
 } from '$store/wallet/interface';
-import { eventsActions } from '$store/events';
+
 import {
   clearHiddenNotification,
   clearPrimaryFiatCurrency,
@@ -75,8 +75,6 @@ import { t } from '@tonkeeper/shared/i18n';
 import { initHandler } from '$store/main/sagas';
 import { getChainName, getTokenConfig, getWalletName } from '$shared/dynamicConfig';
 import { withRetryCtx } from '$store/retry';
-import { Cache } from '$store/events/manager/cache';
-import { destroyEventsManager } from '$store/events/sagas';
 import { detectBiometryType, toNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { Api } from '$api';
@@ -86,7 +84,6 @@ import { Ton } from '$libs/Ton';
 import { Cache as JettonsCache } from '$store/jettons/manager/cache';
 import { Tonapi } from '$libs/Tonapi';
 import { clearSubscribeStatus } from '$utils/messaging';
-import { useJettonEventsStore } from '$store/zustand/jettonEvents';
 import { useRatesStore } from '$store/zustand/rates';
 import { Cell } from 'ton-core';
 import nacl from 'tweetnacl';
@@ -95,6 +92,8 @@ import TonWeb from 'tonweb';
 import { goBack } from '$navigation/imperative';
 import { trackEvent } from '$utils/stats';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { getFlag } from '$utils/flags';
+import { Address } from '@tonkeeper/shared/Address';
 
 function* loadRatesAfterJettons() {
   try {
@@ -165,13 +164,19 @@ function* createWalletWorker(action: CreateWalletAction) {
     );
 
     yield put(walletActions.loadBalances());
-    yield put(eventsActions.loadEvents({ isReplace: true }));
+    // yield put(eventsActions.loadEvents({ isReplace: true }));
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.loadJettons());
     yield fork(loadRatesAfterJettons);
     const addr = yield call([wallet.ton, 'getAddress']);
     const data = yield call([tk, 'load']);
-    yield call([tk, 'init'], addr, getChainName() === 'testnet', data.tronAddress);
+    yield call(
+      [tk, 'init'],
+      addr,
+      getChainName() === 'testnet',
+      data.tronAddress,
+      !getFlag('address_style_nobounce'),
+    );
     onDone();
 
     yield call(trackEvent, 'create_wallet');
@@ -294,24 +299,25 @@ function* switchVersionWorker() {
   const addr = yield call([newWallet.ton, 'getAddress']);
   yield call([tk, 'destroy']);
   const data = yield call([tk, 'load']);
-  yield call([tk, 'init'], addr, getChainName() === 'testnet', data.tronAddress);
+  yield call(
+    [tk, 'init'],
+    addr,
+    getChainName() === 'testnet',
+    data.tronAddress,
+    !getFlag('address_style_nobounce'),
+  );
 
-  yield put(eventsActions.resetEvents());
-  yield call(destroyEventsManager);
-  yield call(Cache.clearAll, walletName);
   yield call(JettonsCache.clearAll, walletName);
   yield put(walletActions.refreshBalancesPage());
-  yield call(useJettonEventsStore.getState().actions.clearStore);
 }
 
 function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
   try {
     yield put(walletActions.loadBalances());
-    yield put(eventsActions.loadEvents({ isReplace: true, ignoreCache: action.payload }));
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     // yield put(jettonsActions.getIsFeatureEnabled());
     yield put(jettonsActions.loadJettons());
-    useRatesStore.getState().actions.fetchRates();
+    yield fork(loadRatesAfterJettons);
     yield put(mainActions.loadNotifications());
     yield call(useStakingStore.getState().actions.fetchPools);
     yield call(setLastRefreshedAt, Date.now());
@@ -333,6 +339,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
       onNext,
       onInsufficientFunds,
       isJetton,
+      isSendAll,
       jettonWalletAddress,
       decimals = 0,
     } = action.payload;
@@ -389,6 +396,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
             amount,
             wallet.vault,
             commentValue,
+            isSendAll ? 128 : 3,
           );
           isUninit = yield call([wallet.ton, 'isInactiveAddress'], address);
         }
@@ -417,6 +425,8 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
         const { balance } = yield call(Tonapi.getWalletInfo, address);
         if (new BigNumber(amountNano).gt(new BigNumber(balance))) {
           return onInsufficientFunds({ totalAmount: amountNano, balance });
+        } else {
+          yield call(onNext, { fee, isInactive: isUninit });
         }
       } else {
         yield call(onNext, { fee, isInactive: isUninit });
@@ -512,7 +522,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
     }
 
     yield call([tk.wallet.activityList, 'reload']);
-    yield put(eventsActions.pollEvents());
 
     yield put(
       walletActions.changeBalanceAndReload({
@@ -556,17 +565,9 @@ function* reloadBalance(currency: CryptoCurrencies) {
         [CryptoCurrencies.TonLocked]: balances[2],
       }),
     );
-
-    if (balances[currency] !== balances[0]) {
-      yield put(eventsActions.loadEvents({ isReplace: true }));
-    }
   } else {
     if (PrimaryCryptoCurrencies.indexOf(currency) > -1) {
       amount = yield call([wallet[currency], 'getBalance']);
-    }
-
-    if (balances[currency] !== amount) {
-      yield put(eventsActions.loadEvents({ isReplace: true }));
     }
 
     yield put(
@@ -619,10 +620,8 @@ function* cleanWalletWorker() {
     const isNewFlow = yield call(MainDB.isNewSecurityFlow);
 
     const walletName = getWalletName();
-    yield call(Cache.clearAll, walletName);
     yield call(clearSubscribeStatus);
     yield call(JettonsCache.clearAll, walletName);
-    yield call(useJettonEventsStore.getState().actions.clearStore);
     yield call(
       useConnectedAppsStore.getState().actions.unsubscribeFromAllNotifications,
       getChainName(),
@@ -661,7 +660,6 @@ function* cleanWalletWorker() {
         mainActions.resetMain(),
         walletActions.reset(),
         walletActions.resetVersion(),
-        eventsActions.resetEvents(),
         nftsActions.resetNFTs(),
         jettonsActions.resetJettons(),
         subscriptionsActions.reset(),
@@ -760,10 +758,9 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
     e && debugLog(e.message);
 
     const err =
-      e &&
-      e.message &&
-      e.message.indexOf('-127') > -1 &&
-      new UnlockVaultError(t('auth_failed'));
+      e && e.message && e.message.indexOf('-127') > -1
+        ? new UnlockVaultError(t('auth_failed'))
+        : e;
 
     if (action?.payload?.onFail) {
       action.payload.onFail(err);
@@ -804,8 +801,12 @@ function* openMigrationWorker(action: OpenMigrationAction) {
     yield call(Toast.hide);
     openMigration(
       fromVersion,
-      oldAddress,
-      newAddress,
+      Address.parse(oldAddress).toFriendly({
+        bounceable: !getFlag('address_style_nobounce'),
+      }),
+      Address.parse(newAddress).toFriendly({
+        bounceable: !getFlag('address_style_nobounce'),
+      }),
       !!migrationState,
       Ton.fromNano(oldInfo.balance),
       Ton.fromNano(newInfo.balance),
@@ -884,22 +885,24 @@ function* doMigration(wallet: Wallet, newAddress: string) {
     const addr = yield call([newWallet.ton, 'getAddress']);
     yield call([tk, 'destroy']);
     const data = yield call([tk, 'load']);
-    yield call([tk, 'init'], addr, getChainName() === 'testnet', data.tronAddress);
+    yield call(
+      [tk, 'init'],
+      addr,
+      getChainName() === 'testnet',
+      data.tronAddress,
+      !getFlag('address_style_nobounce'),
+    );
 
     yield put(
       batchActions(
         walletActions.setAddress({
           [CryptoCurrencies.Ton]: newAddress,
         }),
-        eventsActions.resetEvents(),
         nftsActions.resetNFTs(),
         jettonsActions.setJettonBalances({ jettonBalances: [] }),
       ),
     );
-    yield call(destroyEventsManager);
-    yield call(Cache.clearAll, walletName);
     yield call(JettonsCache.clearAll, walletName);
-    yield call(useJettonEventsStore.getState().actions.clearStore);
     yield put(walletActions.refreshBalancesPage());
     yield call(setMigrationState, null);
   } catch (e) {

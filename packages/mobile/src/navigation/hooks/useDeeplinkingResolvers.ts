@@ -34,7 +34,7 @@ import { openNFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransf
 import { getCurrentRoute } from '$navigation/imperative';
 import { IConnectQrQuery } from '$tonconnect/models';
 import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
-import { Address } from '@tonkeeper/core';
+import { Address, DNS } from '@tonkeeper/core';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { isMethodIdExists } from '$store/zustand/methodsToBuy/helpers';
 
@@ -188,10 +188,20 @@ export function useDeeplinkingResolvers() {
 
   deeplinking.add('/transfer/:address', async ({ params, query, resolveParams }) => {
     const currency = CryptoCurrencies.Ton;
-    const address = params.address;
     const comment = query.text ?? '';
 
-    if (!Address.isValid(address)) {
+    let address = params.address;
+
+    if (DNS.isValid(address)) {
+      const dnsRecord = await Tonapi.resolveDns(address);
+      if (dnsRecord) {
+        address = new Address(dnsRecord.wallet.address).toFriendly({ bounceable: true });
+      } else {
+        return Toast.fail(t('transfer_deeplink_address_error'));
+      }
+    }
+
+    if (!DNS.isValid(address) && !Address.isValid(address)) {
       return Toast.fail(t('transfer_deeplink_address_error'));
     }
 

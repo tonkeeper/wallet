@@ -44,6 +44,7 @@ export const ReplaceDomainAddressModal: React.FC<ReplaceDomainAddressModalProps>
               onChangeText={setAddress}
               placeholder={t('dns_wallet_address')}
               value={address}
+              component={Modal.Input}
             />
           </S.InputWrapper>
         </S.Wrap>

@@ -161,17 +161,17 @@ export const getWithdrawalFee = (pool: PoolInfo): BN => {
   return Ton.toNano(0);
 };
 
-export const getWithdrawalAlertFee = (pool: PoolInfo): BN => {
+export const getWithdrawalAlertFee = (pool: PoolInfo, forDisplay = false): BN => {
   if (pool.implementation === PoolImplementationType.Whales) {
     return Ton.toNano('0.4');
   }
 
-  if (
-    [PoolImplementationType.Tf, PoolImplementationType.LiquidTF].includes(
-      pool.implementation,
-    )
-  ) {
+  if (pool.implementation === PoolImplementationType.Tf) {
     return Ton.toNano('1');
+  }
+
+  if (pool.implementation === PoolImplementationType.LiquidTF) {
+    return Ton.toNano(forDisplay ? '2' : '1');
   }
 
   return Ton.toNano(0);

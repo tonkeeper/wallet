@@ -46,6 +46,7 @@ interface InputProps extends TextInputProps {
   withPasteButton?: boolean;
   withClearButton?: boolean;
   withScanButton?: boolean;
+  withFocusBorder?: boolean;
   autoFocusDelay?: number;
   defaultValue?: string;
   placeholder?: string;
@@ -94,6 +95,7 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
     multiline,
     label,
     style,
+    withFocusBorder = true,
     ...rest
   } = props;
   const state = useSharedValue(InputState.Unfocused);
@@ -284,7 +286,7 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
           indentBottom && styles.indentBottom.static,
           styles.container.static,
           containerStaticStyle,
-          focusBorderStyle,
+          withFocusBorder && focusBorderStyle,
         ]}
       >
         <Animated.View style={[styles.invalidBg.static, invalidBgStyle]} />

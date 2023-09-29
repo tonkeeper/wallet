@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { MainStackParamList } from './MainStack.interface';
@@ -28,7 +28,7 @@ import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { walletWalletSelector } from '$store/wallet';
 import { useNotificationsResolver } from '$hooks/useNotificationsResolver';
-import { AccessConfirmation, Intro } from '$core';
+import { AccessConfirmation, AddressUpdateInfo, Intro } from '$core';
 import { ModalStack } from '$navigation/ModalStack';
 import { withModalStack } from '@tonkeeper/router';
 
@@ -38,6 +38,7 @@ import { CreateWalletScreen } from '@tonkeeper/shared/screens/setup/CreateWallet
 import { StartScreen } from '@tonkeeper/shared/screens/StartScreen';
 import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
 import { TronTokenScreen } from '../../tabs/Wallet/TronTokenScreen';
+import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -48,6 +49,12 @@ export const MainStack: FC = () => {
   const { isIntroShown, isUnlocked } = useSelector(mainSelector);
   const wallet = useSelector(walletWalletSelector);
   useNotificationsResolver();
+
+  useEffect(() => {
+    if (wallet?.address) {
+      reloadSubscriptionsFromServer(wallet.address.friendlyAddress);
+    }
+  }, [wallet?.address]);
 
   useStaking();
 
@@ -130,6 +137,10 @@ export const MainStack: FC = () => {
       <Stack.Screen name={MainStackRouteNames.Jetton} component={Jetton} />
       <Stack.Screen name={MainStackRouteNames.JettonsList} component={JettonsList} />
       <Stack.Screen name={MainStackRouteNames.ManageTokens} component={ManageTokens} />
+      <Stack.Screen
+        name={MainStackRouteNames.AddressUpdateInfo}
+        component={AddressUpdateInfo}
+      />
     </Stack.Navigator>
   );
 };

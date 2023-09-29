@@ -1,10 +1,6 @@
-import { Steezy } from '$styles';
-import { View } from '$uikit/StyledNativeComponents';
-import { Text } from '$uikit/Text/Text';
 import React, { memo } from 'react';
-import { useWindowDimensions } from 'react-native';
-import Animated from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ViewStyle } from 'react-native';
+import Animated, { SharedValue } from 'react-native-reanimated';
 import { useMaybeTabCtx } from '../../tabs/Wallet/components/Tabs/TabsContainer';
 import { NavBar } from '../NavBar/NavBar';
 import { useScreenScroll } from './context/ScreenScrollContext';
@@ -15,6 +11,9 @@ interface ScreenHeaderProps {
   rightContent?: React.ReactNode;
   backButton?: boolean;
   large?: boolean;
+  customNavBar?: (
+    opacityMainHeaderStyle: SharedValue<number> | undefined,
+  ) => React.ReactNode;
 }
 
 export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
@@ -29,6 +28,10 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
 
     return null;
   }, [rightContent]);
+
+  if (props.customNavBar) {
+    return props.customNavBar(tabsCtx?.scrollY ?? screenScroll.scrollY);
+  }
 
   if (props.large) {
     return (
@@ -53,5 +56,3 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
     </Animated.View>
   );
 });
-
-const styles = Steezy.create(({ colors }) => ({}));

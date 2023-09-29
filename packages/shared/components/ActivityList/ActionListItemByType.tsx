@@ -149,14 +149,7 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
     case ActionType.UnSubscribe:
       return <UnSubscribeActionListItem {...props} action={action} />;
     default:
-      return (
-        <ActionListItem
-          title={action.simple_preview.name}
-          subtitle={action.simple_preview.description}
-          subtitleNumberOfLines={2}
-          {...props}
-        />
-      );
+      return <ActionListItem {...props} isSimplePreview />;
   }
 });
 

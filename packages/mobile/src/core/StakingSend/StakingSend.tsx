@@ -41,7 +41,7 @@ interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
 }
 
-const getTitle = (transactionType: StakingTransactionType, t: any) => {
+const getTitle = (transactionType: StakingTransactionType) => {
   switch (transactionType) {
     case StakingTransactionType.WITHDRAWAL:
       return t('staking.withdrawal_request');
@@ -49,7 +49,7 @@ const getTitle = (transactionType: StakingTransactionType, t: any) => {
       return t('staking.get_withdrawal');
     case StakingTransactionType.DEPOSIT:
     default:
-      return t('staking.top_up');
+      return t('staking.deposit');
   }
 };
 
@@ -80,8 +80,6 @@ export const StakingSend: FC<Props> = (props) => {
   const decimals = Decimals[CryptoCurrencies.Ton];
 
   const isJetton = !isDeposit && !!poolInfo.stakingJetton;
-
-  const symbol = isDeposit ? 'TON' : poolInfo.balance.symbol;
 
   const isWhalesPool = pool.implementation === PoolImplementationType.Whales;
 
@@ -254,9 +252,6 @@ export const StakingSend: FC<Props> = (props) => {
     if (!actionRef.current || !accountEvent) {
       return Promise.reject();
     }
-
-    const cancel = () => Promise.reject(new CanceledActionError());
-
     try {
       setSending(true);
 
@@ -272,22 +267,21 @@ export const StakingSend: FC<Props> = (props) => {
           fee: totalFee ?? '0.1',
         });
 
-        return cancel();
+        await delay(200);
+        throw new CanceledActionError();
       }
 
       if (checkResult.balance !== null) {
-        const withdrawalAlertFee = getWithdrawalAlertFee(pool);
-
         const isEnoughToWithdraw = new BigNumber(checkResult.balance)
           .minus(new BigNumber(totalAmount))
-          .isGreaterThanOrEqualTo(withdrawalAlertFee);
+          .isGreaterThanOrEqualTo(getWithdrawalAlertFee(pool));
 
         if (!isEnoughToWithdraw && isDeposit) {
           const shouldContinue = await new Promise((res) =>
             Alert.alert(
               t('staking.withdrawal_fee_warning.title'),
               t('staking.withdrawal_fee_warning.message', {
-                amount: formatter.format(Ton.fromNano(withdrawalAlertFee)),
+                amount: formatter.format(Ton.fromNano(getWithdrawalAlertFee(pool, true))),
               }),
               [
                 {
@@ -305,7 +299,8 @@ export const StakingSend: FC<Props> = (props) => {
           );
 
           if (!shouldContinue) {
-            return cancel();
+            await delay(200);
+            throw new CanceledActionError();
           }
         }
       }
@@ -328,7 +323,7 @@ export const StakingSend: FC<Props> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isWithdrawalConfrim]);
 
-  const title = getTitle(transactionType, t);
+  const title = getTitle(transactionType);
 
   return (
     <>
@@ -378,8 +373,6 @@ export const StakingSend: FC<Props> = (props) => {
               pool={pool}
               totalFee={totalFee}
               amount={amount}
-              symbol={symbol}
-              currency={currency}
               decimals={decimals}
               isJetton={isJetton}
               stepsScrollTop={stepsScrollTop}

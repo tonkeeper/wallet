@@ -1,4 +1,3 @@
-import { Icon, IconNames, List, Loader, Picture, Text, View } from '@tonkeeper/uikit';
 import { openActivityActionModal } from '../../modals/ActivityActionModal';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { ListItemContent, Steezy } from '@tonkeeper/uikit';
@@ -14,8 +13,19 @@ import {
   AmountFormatter,
   AnyActionItem,
 } from '@tonkeeper/core';
+import { 
+  ListItemContentText,
+  IconNames,
+  Picture,
+  Loader,
+  Icon,
+  List,
+  Text,
+  View,
+} from '@tonkeeper/uikit';
 
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
+import { useFlags } from '@tonkeeper/mobile/src/utils/flags';
 
 export interface ActionListItemProps<TActionType extends ActionType = ActionType> {
   onPress?: () => void;
@@ -33,6 +43,7 @@ export interface ActionListItemProps<TActionType extends ActionType = ActionType
   greenValue?: boolean;
   ignoreFailed?: boolean;
   disablePressable?: boolean;
+  isSimplePreview?: boolean;
 }
 
 export const ActionListItem = memo<ActionListItemProps>((props) => {
@@ -44,9 +55,11 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
     greenValue,
     ignoreFailed,
     disablePressable,
+    isSimplePreview,
   } = props;
-
   const { formatNano } = useHideableFormatter();
+
+  const flags = useFlags(['address_style_nobounce']);
 
   const handlePress = useCallback(() => {
     if (onPress) {
@@ -69,10 +82,12 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
       return { source: props.pictureSource };
     } else if (senderAccount?.icon) {
       return { uri: senderAccount.icon };
+    } else if (action.simple_preview.action_image) {
+      return { uri: action.simple_preview.action_image };
     } else {
       return null;
     }
-  }, [props.pictureSource, props.pictureUri, senderAccount]);
+  }, [props.pictureSource, props.pictureUri, senderAccount, action.simple_preview]);
 
   const iconName = useMemo(() => {
     if (isFailed) {
@@ -86,7 +101,7 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
     } else {
       return 'ic-gear-28';
     }
-  }, [action.destination, props.iconName, action.status, isFailed]);
+  }, [props.iconName, action, isFailed]);
 
   const title = useMemo(() => {
     if (props.title !== undefined) {
@@ -109,10 +124,13 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
       if (senderAccount.name) {
         return senderAccount.name;
       } else {
-        return Address.parse(senderAccount.address).toShort();
+        return Address.parse(senderAccount.address, {
+          bounceable: !flags.address_style_nobounce,
+        }).toShort();
       }
     } else {
-      return action.simple_preview.description;
+      const account = action.simple_preview.accounts[0];
+      return account ? Address.parse(account.address).toShort() : '-';
     }
   }, [action.simple_preview, action.event.is_scam, senderAccount, props.subtitle]);
 
@@ -120,7 +138,7 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
     if (props.value !== undefined) {
       return props.value;
     } else {
-      let amountPrefix = '';
+      let amountPrefix = AmountFormatter.sign.minus;
       if (action.destination === 'out') {
         amountPrefix = AmountFormatter.sign.minus;
       } else if (action.destination === 'in') {
@@ -135,9 +153,9 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
         });
       }
 
-      return AmountFormatter.sign.minus;
+      return action.simple_preview.value ?? AmountFormatter.sign.minus;
     }
-  }, [action.destination, action.amount, props.value]);
+  }, [action.destination, action.amount, action.simple_preview, props.value, formatNano]);
 
   const subvalue = useMemo(() => {
     if (props.subvalue !== undefined) {
@@ -181,6 +199,9 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
       value={value}
     >
       {!action.event.is_scam && children}
+      {isSimplePreview && !!action.simple_preview.description && (
+        <ListItemContentText text={action.simple_preview.description} />
+      )}
       {isFailed && !ignoreFailed && (
         <Text type="body2" color="accentOrange" style={styles.failedText.static}>
           {t('transactions.failed')}

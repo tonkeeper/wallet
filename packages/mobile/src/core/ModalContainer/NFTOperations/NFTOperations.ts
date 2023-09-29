@@ -20,7 +20,8 @@ import { Wallet } from 'blockchain';
 import { NFTOperationError } from './NFTOperationError';
 import { GetGemsSaleContract } from './GetGemsSaleContract';
 import { Cell } from 'tonweb/dist/types/boc/cell';
-import { Address } from 'tonweb/dist/types/utils/address';
+import { Address as AddressType } from 'tonweb/dist/types/utils/address';
+import { Address } from 'ton-core';
 import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 import { getServerConfig } from '$shared/constants';
@@ -366,6 +367,16 @@ export class NFTOperations {
     return data.collectionContentUri;
   }
 
+  private seeIfBounceable(address: string) {
+    try {
+      return Address.isFriendly(address)
+        ? Address.parseFriendly(address).isBounceable
+        : true;
+    } catch {
+      return true;
+    }
+  }
+
   public async signRaw(params: SignRawParams, sendMode = 3) {
     const wallet = this.getCurrentWallet();
 
@@ -375,9 +386,10 @@ export class NFTOperations {
 
       const messages = [...params.messages].splice(0, 4);
       for (let message of messages) {
+        const isBounceable = this.seeIfBounceable(message.address);
         const order = TonWeb.Contract.createCommonMsgInfo(
           TonWeb.Contract.createInternalMessageHeader(
-            new TonWeb.Address(message.address),
+            new TonWeb.Address(message.address).toString(true, true, isBounceable),
             new TonWeb.utils.BN(this.toNano(message.amount)),
           ),
           Ton.base64ToCell(message.stateInit),
@@ -506,7 +518,7 @@ export class NFTOperations {
       },
       send: async (secretKey: Uint8Array) => {
         const myInfo = await this.wallet.ton.getWalletInfo(
-          (wallet.address as Address).toString(true, true, false),
+          (wallet.address as AddressType).toString(true, true, false),
         );
 
         let amountBN: BigNumber;
