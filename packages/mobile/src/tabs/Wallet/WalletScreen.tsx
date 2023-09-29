@@ -238,7 +238,7 @@ export const WalletScreen = memo(() => {
         {isLoaded && !wallet && (
           <View style={[styles.createWalletContainerOuter, { bottom: tabBarHeight }]}>
             <View style={styles.createWalletContainerInner}>
-              <Button onPress={handleCreateWallet}>{t('balances_setup_wallet')}</Button>
+              <Button onPress={handleCreateWallet} title={t('balances_setup_wallet')} />
             </View>
           </View>
         )}
