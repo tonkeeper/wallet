@@ -4,6 +4,7 @@ import { ActionDestination } from '@tonkeeper/core';
 import { Address } from '@tonkeeper/shared/Address';
 import { t } from '../../../i18n';
 import { memo } from 'react';
+import { getFlag } from '@tonkeeper/mobile/src/utils/flags';
 
 interface AddressListItemProps {
   destination?: ActionDestination;
@@ -18,7 +19,9 @@ export const AddressListItem = memo<AddressListItemProps>((props) => {
   const { destination, sender, recipient, hideName, address, bounceable = false } = props;
 
   if (destination === 'in' && sender) {
-    const senderAddress = Address.parse(sender.address, { bounceable }).toFriendly();
+    const senderAddress = Address.parse(sender.address, {
+      bounceable: bounceable || !getFlag('address_style_nobounce'),
+    }).toFriendly();
 
     return (
       <>
