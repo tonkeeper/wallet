@@ -37,7 +37,7 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
     } else {
       return '-';
     }
-  }, [payload]);
+  }, [payload, formatNano]);
 
   const amountOut = useMemo(() => {
     if (payload.ton_out) {
@@ -54,7 +54,7 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
     } else {
       return '-';
     }
-  }, [payload]);
+  }, [payload, formatNano]);
 
   return (
     <ActionListItem
