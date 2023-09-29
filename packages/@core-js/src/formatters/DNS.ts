@@ -22,7 +22,10 @@ export class DNS {
     return null;
   }
 
-  static isValid(domain: string) {
+  static isValid(domain?: string) {
+    if (!domain) {
+      return false;
+    }
     return domain.includes('.');
   }
 }
