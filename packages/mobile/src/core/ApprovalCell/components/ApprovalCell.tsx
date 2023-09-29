@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Steezy } from '$styles';
-import { Icon, Spacer, SText, View, List } from '$uikit';
+import { Icon, Spacer, SText, View, List } from '@tonkeeper/uikit';
 import { openManageTokens } from '$navigation';
 import { t } from '@tonkeeper/shared/i18n';
 import { useApprovedNfts } from '$hooks/useApprovedNfts';
@@ -77,26 +77,23 @@ const ApprovalCellComponent: React.FC<ApprovalCellProps> = ({ withoutSpacer, sty
   }
 
   return (
-    <View style={style}>
-      {!withoutSpacer && <Spacer y={16} />}
-      <List indent={false} style={styles.container}>
-        <List.Item
-          chevronColor="iconSecondary"
-          onPress={handleApproveTokens}
-          leftContent={
-            <View style={styles.iconContainer}>
-              <Icon color="foregroundPrimary" name="ic-bell-28" />
-            </View>
-          }
-          title={
-            <SText numberOfLines={2} style={styles.title} variant="body2">
-              {text}
-            </SText>
-          }
-          chevron
-        />
-      </List>
-    </View>
+    <List indent={false} style={styles.container}>
+      <List.Item
+        chevronColor="iconSecondary"
+        onPress={handleApproveTokens}
+        leftContent={
+          <View style={styles.iconContainer}>
+            <Icon color="constantWhite" name="ic-bell-28" />
+          </View>
+        }
+        title={
+          <SText numberOfLines={2} style={styles.title} type="body2">
+            {text}
+          </SText>
+        }
+        chevron
+      />
+    </List>
   );
 };
 
@@ -105,7 +102,7 @@ export const ApprovalCell = React.memo(ApprovalCellComponent);
 const styles = Steezy.create(({ colors }) => ({
   container: {
     backgroundColor: colors.backgroundContentAttention,
-    marginBottom: 4,
+    marginBottom: 16,
   },
   title: {
     marginRight: 40,

@@ -317,7 +317,7 @@
     "receive_btn": "Получить",
     "swap_btn": "Обменять",
     "tonkens_tab_lable": "Токены",
-    "collectibles_tab_lable": "Коллекции"
+    "nft_tab_lable": "Коллекции"
   },
 
   "approval": {
