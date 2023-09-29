@@ -23,7 +23,7 @@ import { TonDiamondFeature } from './TonDiamondFeature/TonDiamondFeature';
 import { useDispatch, useSelector } from 'react-redux';
 import { walletAddressSelector } from '$store/wallet';
 import { NFTModel, TonDiamondMetadata } from '$store/models';
-import { useFlags } from '$utils/flags';
+import { getFlag, useFlags } from '$utils/flags';
 import { LinkingDomainButton } from './LinkingDomainButton';
 import { nftsActions } from '$store/nfts';
 import { navigation, useNavigation } from '@tonkeeper/router';
@@ -290,7 +290,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
 export async function openNftModal(nftAddress: string, nftItem?: NftItem) {
   const openModal = (nftItem: CustomNftItem) => {
     // TODO: change me
-    const oldNftItem = mapNewNftToOldNftData(nftItem, tk.wallet.address.friendly);
+    const oldNftItem = mapNewNftToOldNftData(nftItem, tk.wallet.address.ton.friendly);
     navigation.push('NFTItemDetails', { oldNftItem });
   };
 
@@ -312,10 +312,11 @@ export async function openNftModal(nftAddress: string, nftItem?: NftItem) {
 
 const mapNewNftToOldNftData = (nftItem: NftItem, walletFriendlyAddress): NFTModel => {
   const address = new TonWeb.utils.Address(nftItem.address).toString(true, true, true);
-  const ownerAddress =
-    (nftItem.owner?.address &&
-      new TonWeb.utils.Address(nftItem.owner.address).toString(true, true, true)) ||
-    '';
+  const ownerAddress = nftItem.owner?.address
+    ? Address.parse(nftItem.owner.address, {
+        bounceable: !getFlag('address_style_nobounce'),
+      }).toFriendly()
+    : '';
   const name =
     typeof nftItem.metadata?.name === 'string'
       ? nftItem.metadata.name.trim()

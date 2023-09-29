@@ -140,7 +140,7 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
     if (Boolean(record.walletAddress) && Boolean(record.ownerAddress)) {
       if (Object.values(allAddesses).length > 0) {
         const linked = Object.values(allAddesses).find((address) => {
-          return address === record.walletAddress;
+          return Address.compare(address, record.walletAddress);
         });
 
         return !linked;
