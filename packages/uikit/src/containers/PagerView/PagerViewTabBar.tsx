@@ -1,50 +1,56 @@
-import Animated, { Extrapolate, interpolate, interpolateColor, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { LayoutChangeEvent, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import { TabPositionHandlerContext } from './utils/TabPositionHandlerContext';
 import { tabIndicatorWidth, usePagerView } from './hooks/usePagerView';
 import { ScreenHeaderHeight } from '../Screen/utils/constants';
-import { Text } from '../../components/Text/Text';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { PagerViewTabBarHeight } from './constants';
 import { useScreenScroll } from '../Screen/hooks';
 import { useTheme } from '../../styles';
-
-type TabItem = {
-  label: string;
-};
+import Animated, {
+  Extrapolate,
+  interpolate,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 
 interface PagerViewTabBarProps {
+  children: React.ReactNode;
+  centered?: boolean;
   style?: ViewStyle;
-  indent?: boolean;
-  tabs: TabItem[];
 }
 
-export const PagerViewTabBarHeight = 64;
+type TabIndicatorRange = {
+  positions: number[];
+  indexes: number[];
+};
 
 export const PagerViewTabBar = memo<PagerViewTabBarProps>((props) => {
-  const { style, tabs } = props;
-  const [tabsPositions, setTabsPositions] = useState<{ [key: string]: number }>({});
-  const { pageOffset, scrollY, headerHeight, setPage } = usePagerView();
+  const { style, centered, children } = props;
+  const [tabPositions, setTabPositions] = useState<{ [key in string]: number }>({});
+  const { pageOffset, scrollY, headerHeight } = usePagerView();
   const { headerType } = useScreenScroll();
   const theme = useTheme();
 
-  const handlePressTab = (index: number) => () => setPage(index);
-
-  const measureTabItem = useCallback(
-    (index: number) => (event: LayoutChangeEvent) => {
-      const layout = event.nativeEvent.layout;
-      const position = layout.x + (layout.width / 2 - tabIndicatorWidth / 2);
-      setTabsPositions((state) => ({ ...state, [`${index}`]: position }));
+  const setTabsPosition = useCallback(
+    (index: number, position: number) => {
+      setTabPositions((state) => ({ ...state, [`${index}`]: position }));
     },
-    [setTabsPositions],
+    [setTabPositions],
   );
 
-  const tabsIndexes = useMemo(() => {
-    return (tabs ?? []).map((_, index) => index);
-  }, [tabs]);
+  const range = useMemo(() => {
+    const range: TabIndicatorRange = { positions: [], indexes: [] };
+    const indexes = Object.keys(tabPositions);
+    return indexes.reduce((acc, index) => {
+      acc.positions.push(tabPositions[index]);
+      acc.indexes.push(Number(index));
+
+      return acc;
+    }, range);
+  }, [tabPositions]);
 
   const indicatorAnimatedStyle = useAnimatedStyle(() => {
-    const outputRange = Object.values(tabsPositions);
-
-    if (outputRange.length !== tabsIndexes.length) {
+    if (range.indexes.length < 2 || range.positions.length < 2) {
       return { opacity: 0 };
     }
 
@@ -54,20 +60,22 @@ export const PagerViewTabBar = memo<PagerViewTabBarProps>((props) => {
         {
           translateX: interpolate(
             pageOffset.value,
-            tabsIndexes,
-            outputRange,
+            range.indexes,
+            range.positions,
             Extrapolate.CLAMP,
           ),
         },
       ],
     };
-  }, [tabsPositions, tabsIndexes, pageOffset.value]);
+  }, [range.indexes, range.positions, pageOffset.value]);
 
-  const containerAnimatedStyle = useAnimatedStyle(() => {
+  const containerShiftStyle = useAnimatedStyle(() => {
     'worklet';
-    const headerOffset = headerType === 'large'? ScreenHeaderHeight : 0;
-    const isHeaderEndReached = scrollY.value > headerHeight.value - headerOffset;
-    const translateY = isHeaderEndReached ? scrollY.value - (headerHeight.value - headerOffset): 0;
+    const headerOffset = headerType === 'large' ? ScreenHeaderHeight : 0;
+    const isHeaderEndReached = scrollY.value > headerHeight - headerOffset;
+    const translateY = isHeaderEndReached
+      ? scrollY.value - (headerHeight - headerOffset)
+      : 0;
     const borderBottomColor = isHeaderEndReached ? theme.separatorCommon : 'transparent';
 
     return {
@@ -76,71 +84,35 @@ export const PagerViewTabBar = memo<PagerViewTabBarProps>((props) => {
     };
   });
 
+  const containerStyle = useMemo(
+    () => [
+      styles.container,
+      containerShiftStyle,
+      centered && styles.centered,
+      { backgroundColor: theme.backgroundPage },
+      style,
+    ],
+    [style, containerShiftStyle, theme.backgroundPage, centered],
+  );
+
+  const indicatorStyle = useMemo(
+    () => [
+      styles.indicator,
+      indicatorAnimatedStyle,
+      { backgroundColor: theme.accentBlue },
+    ],
+    [indicatorAnimatedStyle, theme.accentBlue],
+  );
+
   return (
-    <Animated.View
-      pointerEvents="box-none"
-      style={[
-        styles.container,
-        containerAnimatedStyle,
-        style,
-        { backgroundColor: theme.backgroundPage },
-      ]}
-    >
+    <Animated.View pointerEvents="box-none" style={containerStyle}>
       <View style={styles.row} pointerEvents="box-none">
-        {tabs.map((tab, index) => (
-          <TouchableOpacity
-            onLayout={measureTabItem(index)}
-            onPress={handlePressTab(index)}
-            key={`pagerview-tab-${index}`}
-            activeOpacity={0.6}
-          >
-            <View style={styles.tabItem}>
-              <TabLabel label={tab.label} index={index} />
-            </View>
-          </TouchableOpacity>
-        ))}
-        <Animated.View
-          pointerEvents="box-none"
-          style={[
-            styles.indicator,
-            indicatorAnimatedStyle,
-            { backgroundColor: theme.accentBlue },
-          ]}
-        />
+        <TabPositionHandlerContext.Provider value={setTabsPosition}>
+          {children}
+        </TabPositionHandlerContext.Provider>
+        <Animated.View pointerEvents="box-none" style={indicatorStyle} />
       </View>
     </Animated.View>
-  );
-});
-
-interface TabLabelProps {
-  index: number;
-  label: string;
-}
-
-const TabLabel = memo<TabLabelProps>((props) => {
-  const { index, label } = props;
-  const { pageOffset } = usePagerView();
-  const theme = useTheme();
-
-  const textStyle = useAnimatedStyle(
-    () => ({
-      color: interpolateColor(
-        pageOffset.value,
-        [index - 1, index, index + 1],
-        [
-          theme.textSecondary,
-          theme.textPrimary,
-          theme.textSecondary,
-        ],
-      ),
-    }),
-    [pageOffset.value],
-  );
-
-  return (
-    <Text reanimated type="label1" style={textStyle}>
-      {label}
-    </Text>
   );
 });
 
@@ -160,10 +132,7 @@ const styles = StyleSheet.create({
     height: 3,
     borderRadius: 3,
   },
-  tabItem: {
-    paddingTop: 4,
-    paddingHorizontal: 16,
-    textAlign: 'center',
-    height: PagerViewTabBarHeight - 12,
+  centered: {
+    alignItems: 'center',
   },
 });

@@ -84,6 +84,7 @@ export type IconNames =
   | 'ic-star-28'
   | 'ic-success-28'
   | 'ic-swap-28'
+  | 'ic-swap-horizontal-28'
   | 'ic-swap-horizontal-alternative-28'
   | 'ic-telegram-28'
   | 'ic-ticket-28'
@@ -205,6 +206,7 @@ export const AllIcons = [
   'ic-star-28',
   'ic-success-28',
   'ic-swap-28',
+  'ic-swap-horizontal-28',
   'ic-swap-horizontal-alternative-28',
   'ic-telegram-28',
   'ic-ticket-28',
@@ -327,6 +329,7 @@ export const IconSizes = {
   'ic-star-28': 28,
   'ic-success-28': 28,
   'ic-swap-28': 28,
+  'ic-swap-horizontal-28': 28,
   'ic-swap-horizontal-alternative-28': 28,
   'ic-telegram-28': 28,
   'ic-ticket-28': 28,

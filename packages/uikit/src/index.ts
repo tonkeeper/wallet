@@ -7,7 +7,7 @@ export { TonIcon, TonIconProps } from './components/TonIcon';
 export { JettonIcon, JettonIconProps } from './components/JettonIcon';
 export { Lottie } from './components/Lottie';
 export { Button } from './components/Button';
-export { Spacer } from './components/Spacer';
+export { Spacer, SpacerSizes } from './components/Spacer';
 export { Text, SText } from './components/Text';
 export * from './components/List';
 export { View } from './components/View';

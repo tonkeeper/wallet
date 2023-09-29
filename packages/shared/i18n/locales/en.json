@@ -318,7 +318,7 @@
     "receive_btn": "Receive",
     "swap_btn": "Swap",
     "tonkens_tab_lable": "Tokens",
-    "collectibles_tab_lable": "Collectibles"
+    "nft_tab_lable": "Collectibles"
   },
 
   "approval": {

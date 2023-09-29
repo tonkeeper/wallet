@@ -1,44 +1,53 @@
-import Animated, {
-  runOnJS,
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
-import { ScrollView, ScrollViewProps, useWindowDimensions } from 'react-native';
+import { FlatList, FlatListProps, useWindowDimensions } from 'react-native';
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { ScreenLargeHeaderDistance } from '../Screen/utils/constants';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBottomTabBarHeight } from '@tonkeeper/router';
 import { useScrollToTop } from '@react-navigation/native';
 import { usePagerView } from './hooks/usePagerView';
 import { usePageIndex } from './hooks/usePageIndex';
 import { useScreenScroll } from '../Screen/hooks';
+import { Steezy, StyleProp } from '../../styles';
 import { useMergeRefs } from '../../utils';
 import { throttle } from 'lodash';
+import Animated, {
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  runOnJS,
+} from 'react-native-reanimated';
 
-export const PagerViewScrollView = memo<ScrollViewProps>((props) => {
-  const { contentContainerStyle, children } = props;
-  const {
-    activeIndex,
-    scrollAllTo,
-    setScrollTo,
-    contentOffset,
-    scrollY,
-    headerHeight,
-    isScrollInMomentum,
-  } = usePagerView();
+const { useStyle } = Steezy;
+
+type StyledFlatListProps<TItem> = Omit<FlatListProps<TItem>, 'contentContainerStyle'> & {
+  contentContainerStyle?: StyleProp;
+};
+
+function PagerViewFlatListComponent<TItem>(props: StyledFlatListProps<TItem>) {
+  const { contentContainerStyle } = props;
   const { onScroll, detectContentSize, detectLayoutSize } = useScreenScroll();
+  const style = useStyle(contentContainerStyle);
   const tabBarHeight = useBottomTabBarHeight();
+  const safeArea = useSafeAreaInsets();
   const dimensions = useWindowDimensions();
-  const ref = useRef<ScrollView>(null);
+  const ref = useRef<FlatList<TItem>>(null);
   const contentHeight = useSharedValue(0);
   const localScrollY = useSharedValue(0);
   const hasSpace = useSharedValue(true);
   const index = usePageIndex();
+  const {
+    isScrollInMomentum,
+    contentOffset,
+    headerHeight,
+    activeIndex,
+    scrollAllTo,
+    setScrollTo,
+    scrollY,
+  } = usePagerView();
 
   const setRef = useMergeRefs(ref);
 
   useScrollToTop(ref as any);
-  // useScrollHandler(undefined, true); // TODO: remove this, when old separator will be removed
 
   const scrollToTopHandler = () => scrollAllTo(index, 0);
 
@@ -46,7 +55,7 @@ export const PagerViewScrollView = memo<ScrollViewProps>((props) => {
     setScrollTo(index, (y: number, animated?: boolean) => {
       hasSpace.value = true;
       requestAnimationFrame(() => {
-        ref.current?.scrollTo({ y, animated });
+        ref.current?.scrollToOffset({ offset: y, animated });
       });
     });
   }, []);
@@ -63,7 +72,7 @@ export const PagerViewScrollView = memo<ScrollViewProps>((props) => {
     const y = top > ScreenLargeHeaderDistance / 2 ? ScreenLargeHeaderDistance : 0;
 
     requestAnimationFrame(() => {
-      ref.current?.scrollTo({ y, animated: true });
+      ref.current?.scrollToOffset({ offset: y, animated: true });
     });
   }, []);
 
@@ -132,34 +141,49 @@ export const PagerViewScrollView = memo<ScrollViewProps>((props) => {
       height: hasSpace.value ? dimensions.height : 0,
       width: dimensions.width,
     };
-  });
+  }, [hasSpace.value, dimensions.height, dimensions.width]);
+
+  const headerOffsetStyle = useAnimatedStyle(
+    () => ({
+      height: headerHeight,
+    }),
+    [headerHeight],
+  );
+
+  const ListHeaderComponent = useMemo(
+    () => <Animated.View style={headerOffsetStyle} />,
+    [headerOffsetStyle],
+  );
+  const ListFooterComponent = useMemo(
+    () => <Animated.View style={heightOffsetStyle} />,
+    [heightOffsetStyle],
+  );
 
   const listStyle = useMemo(() => {
-    const paddingBottom = 0; //tabBarHeight;
-    return [{ paddingBottom }, contentContainerStyle];
-  }, [contentContainerStyle, tabBarHeight]);
+    const paddingBottom = tabBarHeight === 0 ? safeArea.bottom : tabBarHeight;
 
-  const headerOffsetStyle = useAnimatedStyle(() => ({
-    height: headerHeight,
-  }));
-
-  const ListHeaderComponent = <Animated.View style={headerOffsetStyle} />;
-  const ListFooterComponent = <Animated.View style={heightOffsetStyle} />;
+    if (style !== undefined) {
+      return [style, { paddingBottom }];
+    } else {
+      return { paddingBottom };
+    }
+  }, [style, tabBarHeight]);
 
   return (
-    <Animated.ScrollView
-      // ListHeaderComponent={ListHeaderComponent}
-      // ListFooterComponent={ListFooterComponent}
-      onScrollToTop={scrollToTopHandler}
-      onLayout={detectLayoutSize}
-      contentContainerStyle={listStyle}
+    <Animated.FlatList
+      {...props}
+      ListHeaderComponent={ListHeaderComponent}
+      ListFooterComponent={ListFooterComponent}
       onContentSizeChange={detectContentSize}
       showsVerticalScrollIndicator={false}
+      onScrollToTop={scrollToTopHandler}
+      contentContainerStyle={listStyle}
+      onLayout={detectLayoutSize}
       onScroll={scrollHandler}
       scrollEventThrottle={16}
       ref={setRef}
-    >
-      {children}
-    </Animated.ScrollView>
+    />
   );
-});
+}
+
+export const PagerViewFlatList = memo(PagerViewFlatListComponent);
