@@ -133,7 +133,7 @@ function PagerViewFlatListComponent<TItem>(props: StyledFlatListProps<TItem>) {
         }
       },
     },
-    [index, activeIndex.value],
+    [index, activeIndex.value, headerHeight],
   );
 
   const heightOffsetStyle = useAnimatedStyle(() => {
