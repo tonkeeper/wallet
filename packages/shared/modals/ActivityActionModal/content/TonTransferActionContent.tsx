@@ -20,6 +20,7 @@ export const TonTransferActionContent = (props: TonTransferActionContentProps) =
           destination={action.destination}
           hideName={action.event.is_scam}
           sender={action.payload.sender}
+          bounceable={action.initialActionType === ActionType.SmartContractExec}
         />
         <ExtraListItem extra={action.event.extra} />
         {/* {action.encrypted_comment && (

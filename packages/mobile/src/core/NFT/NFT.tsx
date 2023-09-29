@@ -23,7 +23,7 @@ import { TonDiamondFeature } from './TonDiamondFeature/TonDiamondFeature';
 import { useDispatch, useSelector } from 'react-redux';
 import { walletAddressSelector } from '$store/wallet';
 import { NFTModel, TonDiamondMetadata } from '$store/models';
-import { useFlags } from '$utils/flags';
+import { getFlag, useFlags } from '$utils/flags';
 import { LinkingDomainButton } from './LinkingDomainButton';
 import { nftsActions } from '$store/nfts';
 import { navigation, useNavigation } from '@tonkeeper/router';
@@ -103,9 +103,11 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
   const scrollTop = useSharedValue(0);
   const scrollRef = useRef<Animated.ScrollView>(null);
   const { bottom: bottomInset } = useSafeAreaInsets();
-  const canTransfer = useMemo(
-    () => Address.compare(nft.ownerAddress, address.ton),
-    [nft.ownerAddress, address.ton],
+
+  const isOnSale = useMemo(() => !!nft.sale, [nft.sale]);
+  const isCurrentAddressOwner = useMemo(
+    () => !isOnSale && Address.compare(nft.ownerAddress, address.ton),
+    [isOnSale, nft.ownerAddress, address.ton],
   );
 
   const scrollHandler = useAnimatedScrollHandler({
@@ -141,8 +143,6 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
       message: Platform.OS === 'android' ? nft.marketplaceURL : undefined,
     });
   }, [nft.marketplaceURL, nft.name]);
-
-  const isOnSale = useMemo(() => !!nft.sale, [nft.sale]);
 
   const lottieUri = isTonDiamondsNft ? nft.metadata?.lottie : undefined;
 
@@ -225,7 +225,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
               <Button
                 style={{ marginBottom: ns(16) }}
                 onPress={handleTransferNft}
-                disabled={!canTransfer}
+                disabled={!isCurrentAddressOwner}
                 size="large"
               >
                 {isDNS ? t('nft_transfer_dns') : t('nft_transfer_nft')}
@@ -240,7 +240,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
             ) : null}
             {(isDNS || isTG) && (
               <LinkingDomainButton
-                disabled={isOnSale}
+                disabled={!isCurrentAddressOwner}
                 onLink={setOwnerAddress}
                 ownerAddress={nft.ownerAddress}
                 domainAddress={nft.address}
@@ -250,7 +250,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
             )}
             {isDNS && (
               <RenewDomainButton
-                disabled={isOnSale}
+                disabled={!isCurrentAddressOwner}
                 ref={renewDomainButtonRef}
                 ownerAddress={nft.ownerAddress}
                 domainAddress={nft.address}
@@ -290,7 +290,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
 export async function openNftModal(nftAddress: string, nftItem?: NftItem) {
   const openModal = (nftItem: CustomNftItem) => {
     // TODO: change me
-    const oldNftItem = mapNewNftToOldNftData(nftItem, tk.wallet.address.friendly);
+    const oldNftItem = mapNewNftToOldNftData(nftItem, tk.wallet.address.ton.friendly);
     navigation.push('NFTItemDetails', { oldNftItem });
   };
 
@@ -312,10 +312,11 @@ export async function openNftModal(nftAddress: string, nftItem?: NftItem) {
 
 const mapNewNftToOldNftData = (nftItem: NftItem, walletFriendlyAddress): NFTModel => {
   const address = new TonWeb.utils.Address(nftItem.address).toString(true, true, true);
-  const ownerAddress =
-    (nftItem.owner?.address &&
-      new TonWeb.utils.Address(nftItem.owner.address).toString(true, true, true)) ||
-    '';
+  const ownerAddress = nftItem.owner?.address
+    ? Address.parse(nftItem.owner.address, {
+        bounceable: !getFlag('address_style_nobounce'),
+      }).toFriendly()
+    : '';
   const name =
     typeof nftItem.metadata?.name === 'string'
       ? nftItem.metadata.name.trim()

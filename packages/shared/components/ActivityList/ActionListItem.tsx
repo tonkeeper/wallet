@@ -61,6 +61,10 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
 
   const flags = useFlags(['address_style_nobounce']);
 
+  const bounceable =
+    action.initialActionType === ActionType.SmartContractExec ||
+    !flags.address_style_nobounce;
+
   const handlePress = useCallback(() => {
     if (onPress) {
       onPress();
@@ -125,14 +129,20 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
         return senderAccount.name;
       } else {
         return Address.parse(senderAccount.address, {
-          bounceable: !flags.address_style_nobounce,
+          bounceable,
         }).toShort();
       }
     } else {
       const account = action.simple_preview.accounts[0];
       return account ? Address.parse(account.address).toShort() : '-';
     }
-  }, [action.simple_preview, action.event.is_scam, senderAccount, props.subtitle]);
+  }, [
+    action.simple_preview,
+    action.event.is_scam,
+    senderAccount,
+    props.subtitle,
+    bounceable,
+  ]);
 
   const value = useMemo(() => {
     if (props.value !== undefined) {

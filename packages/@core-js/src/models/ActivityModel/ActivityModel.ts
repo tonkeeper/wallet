@@ -95,6 +95,7 @@ export class ActivityModel {
       payload,
       amount,
       source,
+      initialActionType: ActionType[event.actions[event.actions.length - 1].type],
       event,
       type,
     };
