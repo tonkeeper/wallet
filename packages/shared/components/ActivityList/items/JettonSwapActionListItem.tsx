@@ -8,6 +8,7 @@ import { Text } from '@tonkeeper/uikit';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
+import { getFlag } from '@tonkeeper/mobile/src/utils/flags';
 
 interface JettonSwapActionListItemProps {
   action: ActionItem<ActionType.JettonSwap>;
@@ -20,7 +21,9 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
 
   const subtitle = payload.user_wallet.name
     ? payload.user_wallet.name
-    : Address.parse(payload.user_wallet.address).toShort();
+    : Address.parse(payload.user_wallet.address, {
+        bounceable: !getFlag('address_style_nobounce'),
+      }).toShort();
 
   const amountIn = useMemo(() => {
     if (payload.ton_in) {
