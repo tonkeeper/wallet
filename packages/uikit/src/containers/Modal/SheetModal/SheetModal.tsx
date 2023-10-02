@@ -12,7 +12,7 @@ import { SheetModalBackdrop } from './SheetModalBackdrop';
 import { useTheme } from '../../../styles';
 
 import { useSheetInternal } from '@tonkeeper/router';
-import { Easing, ReduceMotion } from 'react-native-reanimated';
+import { Easing, ReduceMotion, useReducedMotion } from 'react-native-reanimated';
 
 export type SheetModalRef = BottomSheetModal;
 
@@ -26,6 +26,7 @@ export const SheetModal = memo(
     const setRef = useMergeRefs(ref, bottomSheetRef);
     const safeArea = useSafeAreaInsets();
     const theme = useTheme();
+    const reduceMotion = useReducedMotion();
 
     const {
       delegateMethods,
@@ -85,6 +86,7 @@ export const SheetModal = memo(
         snapPoints={snapPoints}
         handleComponent={null}
         topInset={topInset}
+        animateOnMount={!isAndroid || !reduceMotion}
         index={index}
         ref={setRef}
         backgroundStyle={{
