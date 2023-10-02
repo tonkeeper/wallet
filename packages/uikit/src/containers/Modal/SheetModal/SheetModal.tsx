@@ -3,13 +3,16 @@ import DefaultBottomSheet, {
   BottomSheetModal,
   BottomSheetBackdropProps,
   BottomSheetProps as DefaultBottomSheetProps,
+  useBottomSheetSpringConfigs,
+  useBottomSheetTimingConfigs,
 } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { isAndroid, StatusBarHeight, useMergeRefs } from '../../../utils';
+import { isAndroid, isIOS, StatusBarHeight, useMergeRefs } from '../../../utils';
 import { SheetModalBackdrop } from './SheetModalBackdrop';
 import { useTheme } from '../../../styles';
 
 import { useSheetInternal } from '@tonkeeper/router';
+import { Easing, ReduceMotion } from 'react-native-reanimated';
 
 export type SheetModalRef = BottomSheetModal;
 
@@ -44,6 +47,22 @@ export const SheetModal = memo(
       });
     }, []);
 
+    const animationConfigsIOS = useBottomSheetSpringConfigs({
+      damping: 500,
+      stiffness: 1000,
+      mass: 3,
+      overshootClamping: true,
+      restDisplacementThreshold: 10,
+      restSpeedThreshold: 10,
+      reduceMotion: ReduceMotion.Never,
+    });
+
+    const animationConfigsAndroid = useBottomSheetTimingConfigs({
+      easing: Easing.out(Easing.exp),
+      duration: 250,
+      reduceMotion: ReduceMotion.Never,
+    });
+
     const topInset = !isAndroid ? StatusBarHeight + safeArea.top : 0;
 
     const handleClose = useCallback(async () => {
@@ -61,6 +80,8 @@ export const SheetModal = memo(
         handleHeight={handleHeight}
         enablePanDownToClose={true}
         onClose={handleClose}
+        // Have to override default animation Configs due to bug with reduced motion
+        animationConfigs={isIOS ? animationConfigsIOS : animationConfigsAndroid}
         snapPoints={snapPoints}
         handleComponent={null}
         topInset={topInset}
