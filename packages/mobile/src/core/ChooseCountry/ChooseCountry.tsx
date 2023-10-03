@@ -74,7 +74,7 @@ export const ChooseCountry: React.FC = () => {
     return countriesList;
   }, [searchValue]);
 
-  const searchInput = useCallback(
+  const searchNavBar = useCallback(
     (scrollY) => (
       <SearchNavBar scrollY={scrollY} value={searchValue} onChangeText={setSearchValue} />
     ),
@@ -83,7 +83,7 @@ export const ChooseCountry: React.FC = () => {
 
   return (
     <Screen>
-      <Screen.Header customNavBar={searchInput} />
+      <Screen.Header customNavBar={searchNavBar} />
       <Screen.FlashList
         ListEmptyComponent={
           <View style={styles.emptyPlaceholder}>
