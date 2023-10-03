@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { Steezy } from '$styles';
-import { Icon, Spacer, SText, View, List } from '@tonkeeper/uikit';
+import { Icon, SText, View } from '@tonkeeper/uikit';
+import { List } from '$uikit';
 import { openManageTokens } from '$navigation';
 import { t } from '@tonkeeper/shared/i18n';
 import { useApprovedNfts } from '$hooks/useApprovedNfts';
@@ -101,7 +102,7 @@ export const ApprovalCell = React.memo(ApprovalCellComponent);
 
 const styles = Steezy.create(({ colors }) => ({
   container: {
-    backgroundColor: colors.backgroundContentAttention,
+    backgroundColor: colors.backgroundContentTint,
     marginBottom: 16,
   },
   title: {
@@ -109,7 +110,7 @@ const styles = Steezy.create(({ colors }) => ({
   },
   iconContainer: {
     padding: 8,
-    backgroundColor: colors.iconTertiary,
+    backgroundColor: colors.backgroundContentAttention,
     borderRadius: 32,
   },
 }));
