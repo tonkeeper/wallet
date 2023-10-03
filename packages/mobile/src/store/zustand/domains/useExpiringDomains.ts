@@ -19,7 +19,7 @@ export const useExpiringDomains = create(
         try {
           const { data } = await Tonapi.getExpiringDNS({
             account_id,
-            period: 366,
+            period: 30,
           });
 
           const domains = {};
