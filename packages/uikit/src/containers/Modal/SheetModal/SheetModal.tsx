@@ -20,6 +20,22 @@ export type SheetModalProps = Omit<DefaultBottomSheetProps, 'snapPoints'> & {
   children?: React.ReactNode;
 };
 
+const ANIMATION_CONFIGS = isIOS
+  ? {
+      damping: 500,
+      stiffness: 1000,
+      mass: 3,
+      overshootClamping: true,
+      restDisplacementThreshold: 10,
+      restSpeedThreshold: 10,
+      reduceMotion: ReduceMotion.Never,
+    }
+  : {
+      easing: Easing.out(Easing.exp),
+      duration: 250,
+      reduceMotion: ReduceMotion.Never,
+    };
+
 export const SheetModal = memo(
   forwardRef<SheetModalRef, SheetModalProps>((props, ref) => {
     const bottomSheetRef = useRef<DefaultBottomSheet>(null);
@@ -48,15 +64,7 @@ export const SheetModal = memo(
       });
     }, []);
 
-    const animationConfigsIOS = useBottomSheetSpringConfigs({
-      damping: 500,
-      stiffness: 1000,
-      mass: 3,
-      overshootClamping: true,
-      restDisplacementThreshold: 10,
-      restSpeedThreshold: 10,
-      reduceMotion: ReduceMotion.Never,
-    });
+    const animationConfigsIOS = useBottomSheetSpringConfigs();
 
     const animationConfigsAndroid = useBottomSheetTimingConfigs({
       easing: Easing.out(Easing.exp),
@@ -82,7 +90,7 @@ export const SheetModal = memo(
         enablePanDownToClose={true}
         onClose={handleClose}
         // Have to override default animation Configs due to bug with reduced motion
-        animationConfigs={isIOS ? animationConfigsIOS : animationConfigsAndroid}
+        animationConfigs={ANIMATION_CONFIGS}
         snapPoints={snapPoints}
         handleComponent={null}
         topInset={topInset}
