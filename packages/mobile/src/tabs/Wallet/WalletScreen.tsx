@@ -47,6 +47,7 @@ import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { trackEvent } from '$utils/stats';
 import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { ExpiringDomainCell } from './components/ExpiringDomainCell';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -173,7 +174,12 @@ export const WalletScreen = memo(() => {
             />
           )}
         </IconButtonList>
-        {wallet && <ApprovalCell />}
+        {wallet && (
+          <>
+            <ApprovalCell />
+            <ExpiringDomainCell />
+          </>
+        )}
       </View>
     ),
     [

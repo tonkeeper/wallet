@@ -8,6 +8,7 @@ import { Address } from '@tonkeeper/shared/Address';
 
 const initialState: Omit<ExpiringDomains, 'actions'> = {
   domains: {},
+  items: [],
 };
 
 export const useExpiringDomains = create(
@@ -18,7 +19,7 @@ export const useExpiringDomains = create(
         try {
           const { data } = await Tonapi.getExpiringDNS({
             account_id,
-            period: 30,
+            period: 366,
           });
 
           const domains = {};
@@ -26,16 +27,18 @@ export const useExpiringDomains = create(
             domains[item.dns_item.address] = item.expiring_at;
           }
 
-          set({ domains });
+          set({ domains, items: data.items });
         } catch (err) {
-          console.log('err[getExpiringDNS]', err);
+          console.log('[getExpiringDNS]', err);
         }
       },
       remove: (address) => {
-        set(({ domains }) => {
+        set(({ domains, items }) => {
           const rawAddress = Address.parse(address).toRaw();
           const { [rawAddress]: remove, ...rest } = domains;
-          return { domains: rest };
+          const newItems = items.filter((item) => item.dns_item.address !== rawAddress);
+
+          return { domains: rest, items: newItems };
         });
       },
     },
@@ -53,7 +56,7 @@ export function useLoadExpiringDomains() {
     if (wallet) {
       load(wallet.address.rawAddress);
     }
-  }, []);
+  }, [wallet?.address.rawAddress]);
 
   return null;
 }
