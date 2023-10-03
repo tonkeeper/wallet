@@ -5,7 +5,7 @@ import { ListSeparator } from '$uikit/List/ListSeparator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { goBack } from '$navigation/imperative';
-import { SearchInput } from '$core/ChooseCountry/components/SearchInput';
+import { SearchNavBar } from '$core/ChooseCountry/components/SearchNavBar';
 import { Steezy, Text } from '@tonkeeper/uikit';
 import { t } from '@tonkeeper/shared/i18n';
 
@@ -66,16 +66,17 @@ export const ChooseCountry: React.FC = () => {
 
   const filteredListBySearch = useMemo(() => {
     if (searchValue) {
-      return countriesList.filter((country) =>
-        country.name.toLowerCase().includes(searchValue.toLowerCase()),
-      );
+      return countriesList.filter((country) => {
+        const regex = new RegExp(`\\b${searchValue}`, 'gi');
+        return country.name.match(regex);
+      });
     }
     return countriesList;
   }, [searchValue]);
 
   const searchInput = useCallback(
     (scrollY) => (
-      <SearchInput scrollY={scrollY} value={searchValue} onChangeText={setSearchValue} />
+      <SearchNavBar scrollY={scrollY} value={searchValue} onChangeText={setSearchValue} />
     ),
     [searchValue, setSearchValue],
   );
