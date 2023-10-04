@@ -53,10 +53,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const balances = useSelector(walletBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
 
-  const { Logo, isLiquidJetton, liquidJettonPool } = useCurrencyToSend(
-    currency,
-    isJetton,
-  );
+  const { Logo, liquidJettonPool } = useCurrencyToSend(currency, isJetton);
 
   const showLockupAlert = useCallback(
     () =>
@@ -339,24 +336,6 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
                         <Icon name="ic-chevron-right-12" color="foregroundPrimary" />
                       </S.WarningIcon>
                     </S.WarningRow>
-                  </S.WarningContent>
-                </S.WarningTouchable>
-              </S.WarningContainer>
-            </>
-          ) : null}
-          {isLiquidJetton ? (
-            <>
-              <Spacer y={16} />
-              <S.WarningContainer>
-                <S.WarningTouchable
-                  background="backgroundQuaternary"
-                  onPress={openInactiveInfo}
-                >
-                  <S.WarningContent>
-                    <Text variant="label1">{t('confirm_sending_liquid_warn_title')}</Text>
-                    <Text variant="body2" color="foregroundSecondary">
-                      {t('confirm_sending_liquid_warn_description')}
-                    </Text>
                   </S.WarningContent>
                 </S.WarningTouchable>
               </S.WarningContainer>

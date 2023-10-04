@@ -123,15 +123,8 @@ export const Send: FC<SendProps> = ({ route }) => {
   const [insufficientFundsParams, setInsufficientFundsParams] =
     useState<InsufficientFundsParams | null>(null);
 
-  const {
-    balance,
-    currencyTitle,
-    decimals,
-    jettonWalletAddress,
-    price,
-    isLiquidJetton,
-    trcToken,
-  } = useCurrencyToSend(currency, isJetton, isUSDT);
+  const { balance, currencyTitle, decimals, jettonWalletAddress, trcToken } =
+    useCurrencyToSend(currency, isJetton, isUSDT);
 
   const tokenPrice = useTokenPrice(currency);
 
@@ -456,7 +449,6 @@ export const Send: FC<SendProps> = ({ route }) => {
               decimals={decimals}
               balance={String(balance)}
               currency={currency}
-              isLiquidJetton={isLiquidJetton}
               onChangeCurrency={onChangeCurrency}
               currencyTitle={currencyTitle}
               amount={amount}

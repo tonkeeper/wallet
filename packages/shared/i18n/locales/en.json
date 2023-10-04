@@ -260,8 +260,7 @@
       "insufficient_balance": "Insufficient balance",
       "less_than_min": "Minimum %{minAmount} TON",
       "max": "Max",
-      "remaining": "Available: %{amount}",
-      "liquid_jetton_note": "Sending tsTON liquidity token"
+      "remaining": "Available: %{amount}"
     },
     "comfirm": {
       "title": "Confirm action",
@@ -315,8 +314,6 @@
   "confirm_sending_inactive_warn_description": "Do not proceed if you expect blockchain magic to happen. It won't.",
   "confirm_sending_inactive_warn_about": "What you should do",
   "confirm_sending_method_title": "Send your funds to %{name}?",
-  "confirm_sending_liquid_warn_title": "Note",
-  "confirm_sending_liquid_warn_description": "You will no longer receive rewards from the sended Staked TON. The new owner will begin to receive rewards.",
 
   "info_about_inactive_title": "Inactive contract",
   "info_about_inactive_desc1": "Tonkeeper does not know if this address is a wallet or a smart contract.",

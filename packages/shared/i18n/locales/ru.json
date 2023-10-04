@@ -264,8 +264,7 @@
       "insufficient_balance": "Недостаточно средств",
       "less_than_min": "Минимум %{minAmount} TON",
       "max": "Максимум",
-      "remaining": "Доступно: %{amount}",
-      "liquid_jetton_note": "Отправка токена ликвидности tsTON"
+      "remaining": "Доступно: %{amount}"
     },
     "comfirm": {
       "title": "Подтвердить действие",
@@ -319,8 +318,6 @@
   "confirm_sending_inactive_warn_description": "Не продолжайте, если вы ожидаете волшебства от блокчейна. Этого не произойдет.",
   "confirm_sending_inactive_warn_about": "Что важно знать",
   "confirm_sending_method_title": "Send your funds\nto %{name}?",
-  "confirm_sending_liquid_warn_title": "Примечание",
-  "confirm_sending_liquid_warn_description": "Вы больше не будете получать награды за отправленный застейканный TON. Награды начнёт получать новый владелец.",
 
   "info_about_inactive_title": "Неактивный контракт",
   "info_about_inactive_desc1": "Tonkeeper не знает, является ли этот адрес кошельком или смарт-контрактом.",
