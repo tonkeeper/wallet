@@ -20,7 +20,6 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
     balance,
     currency,
     currencyTitle,
-    isLiquidJetton,
     active,
     amount,
     fiatRate,
@@ -101,13 +100,6 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
             </View>
           )}
         </S.CoinContainer>
-        {isLiquidJetton ? (
-          <S.NoteContainer>
-            <Text type="body2" color="textTertiary">
-              {t('send_screen_steps.amount.liquid_jetton_note')}
-            </Text>
-          </S.NoteContainer>
-        ) : null}
       </S.AmountContainer>
       <Spacer y={40} />
       <Button disabled={!isReadyToContinue} isLoading={isPreparing} onPress={onContinue}>

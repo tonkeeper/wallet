@@ -1,7 +1,7 @@
 import { useCopyText } from '$hooks/useCopyText';
 import { useFiatValue } from '$hooks/useFiatValue';
 import { Highlight, Separator, Spacer, Text } from '$uikit';
-import React, { FC, memo, useCallback, useMemo } from 'react';
+import React, { FC, memo, useCallback } from 'react';
 import * as S from './ConfirmStep.style';
 import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
@@ -18,7 +18,6 @@ import { parseLocaleNumber, truncateDecimal } from '$utils';
 import { getImplementationIcon, getPoolIcon } from '$utils/staking';
 import { stakingFormatter } from '$utils/formatter';
 import { t } from '@tonkeeper/shared/i18n';
-import { Address } from '@tonkeeper/shared/Address';
 import { PoolInfo } from '@tonkeeper/core/src/TonAPI';
 
 interface Props extends StepComponentProps {
@@ -62,8 +61,6 @@ const ConfirmStepComponent: FC<Props> = (props) => {
 
   const isDeposit = transactionType === StakingTransactionType.DEPOSIT;
 
-  const address = useMemo(() => Address.parse(pool.address), [pool.address]);
-
   const fiatValue = useFiatValue(
     CryptoCurrencies.Ton,
     parseLocaleNumber(amount.value),
@@ -91,10 +88,6 @@ const ConfirmStepComponent: FC<Props> = (props) => {
 
     await sendTx();
   });
-
-  const handleCopyAddress = useCallback(() => {
-    copyText(address.toFriendly(), t('address_copied'));
-  }, [address, copyText]);
 
   const handleCopyPoolName = useCallback(
     () => copyText(pool.name),
@@ -129,15 +122,6 @@ const ConfirmStepComponent: FC<Props> = (props) => {
               </S.Item>
             </Highlight>
             <Separator />
-            {/* <Highlight onPress={handleCopyAddress}>
-              <S.Item>
-                <S.ItemLabel>{t('staking.confirm.address.label')}</S.ItemLabel>
-                <S.ItemContent>
-                  <S.ItemValue>{address.toShort()}</S.ItemValue>
-                </S.ItemContent>
-              </S.Item>
-            </Highlight>
-            <Separator /> */}
             {[
               StakingTransactionType.WITHDRAWAL,
               StakingTransactionType.WITHDRAWAL_CONFIRM,
@@ -190,7 +174,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
               ? 'confirm'
               : isDeposit
               ? 'staking.confirm_deposit'
-              : 'confirm_sending_submit',
+              : 'staking.confirm_unstake',
           )}
           onPressConfirm={handleConfirm}
           ref={footerRef}

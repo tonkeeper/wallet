@@ -9,13 +9,13 @@ import { PoolInfo, PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 
 interface Props {
   pool: PoolInfo;
-  reward?: boolean;
+  nextReward?: string;
 }
 
 const NextCycleComponent: FC<Props> = (props) => {
   const {
     pool: { cycle_start, cycle_end, implementation },
-    reward = false,
+    nextReward,
   } = props;
 
   const { formattedDuration, progress, isCooldown } = useStakingCycle(
@@ -55,25 +55,23 @@ const NextCycleComponent: FC<Props> = (props) => {
       <S.ProgressView style={progressAnimatedStyle} />
       <S.Row>
         <Text variant="label1">
-          {reward
-            ? t('staking.details.next_cycle.reward_title')
-            : t('staking.details.next_cycle.title')}
+          {nextReward ? `+ ${nextReward} TON` : t('staking.details.next_cycle.title')}
         </Text>
         <Text
-          color={reward ? 'foregroundPrimary' : 'foregroundSecondary'}
-          variant={reward ? 'label1' : 'body1'}
+          color={nextReward ? 'foregroundPrimary' : 'foregroundSecondary'}
+          variant={nextReward ? 'label1' : 'body1'}
         >
           {t('staking.details.next_cycle.in')}{' '}
           <Text
-            color={reward ? 'foregroundPrimary' : 'foregroundSecondary'}
-            variant={reward ? 'label1' : 'body1'}
+            color={nextReward ? 'foregroundPrimary' : 'foregroundSecondary'}
+            variant={nextReward ? 'label1' : 'body1'}
             style={{ fontVariant: ['tabular-nums'] }}
           >
             {formattedDuration}
           </Text>
         </Text>
       </S.Row>
-      {!reward ? (
+      {!nextReward ? (
         <Text variant="body2" color="foregroundSecondary">
           {implementation === PoolImplementationType.LiquidTF
             ? t('staking.details.next_cycle.desc_liquid')

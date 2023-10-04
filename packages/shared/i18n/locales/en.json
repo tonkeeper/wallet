@@ -110,7 +110,7 @@
   "transaction_copy_caution": "Be careful with external links. Never give your secret phrase to third-party resources — you can lose all your funds.\n\n- - -\n\n",
 
   "spam_action": "Spam",
-    
+
   "dns_renew_toast_success": "Domain renewed for 1 year",
   "dns_expiration_date": "Expiration date",
   "dns_renew_until_btn": "Renew until %{untilDate}",
@@ -127,7 +127,6 @@
   },
   "dns_alert_expiring_one": "%{domain} expires in %{count} days. Renew it until %{untilDate}.",
   "dns_renew_all_until_btn": "Renew all until %{untilDate}",
-
 
   "expiring_domains": "Expiring domains",
   "domains_renewed": "Domains renewed",
@@ -261,8 +260,7 @@
       "insufficient_balance": "Insufficient balance",
       "less_than_min": "Minimum %{minAmount} TON",
       "max": "Max",
-      "remaining": "Available: %{amount}",
-      "liquid_jetton_note": "Sending tsTON liquidity token"
+      "remaining": "Available: %{amount}"
     },
     "comfirm": {
       "title": "Confirm action",
@@ -316,8 +314,6 @@
   "confirm_sending_inactive_warn_description": "Do not proceed if you expect blockchain magic to happen. It won't.",
   "confirm_sending_inactive_warn_about": "What you should do",
   "confirm_sending_method_title": "Send your funds to %{name}?",
-  "confirm_sending_liquid_warn_title": "Note",
-  "confirm_sending_liquid_warn_description": "You will no longer receive rewards from the sended Staked TON. The new owner will begin to receive rewards.",
 
   "info_about_inactive_title": "Inactive contract",
   "info_about_inactive_desc1": "Tonkeeper does not know if this address is a wallet or a smart contract.",
@@ -408,9 +404,9 @@
     "spam": "Spam",
     "bid": "Bid",
     "failed": "Failed",
-    "deposit": "Deposit",
-    "withdraw": "Withdraw",
-    "withdrawal_request": "Withdrawal request",
+    "deposit": "Stake",
+    "withdraw": "Unstake",
+    "withdrawal_request": "Unstake Request",
     "burned": "Burned"
   },
 
@@ -422,9 +418,9 @@
     "purchase": "Purchase",
     "swapped": "Swapped",
     "call_contract": "Call contract",
-    "deposit": "Deposit",
-    "withdraw": "Withdraw",
-    "withdrawal_request": "Withdrawal request",
+    "deposit": "Stake",
+    "withdraw": "Unstake",
+    "withdrawal_request": "Unstake Request",
     "burned": "Burned"
   },
 
@@ -834,10 +830,10 @@
   "confirm": "Confirm",
 
   "staking": {
-    "no_funds": "No funds available for withdrawal",
-    "confirm_deposit": "Confirm and Deposit",
-    "send_staked_ton": "Staked TON",
-    "staked_ton": "Staked TON",
+    "no_funds": "No funds available for unstake",
+    "confirm_deposit": "Confirm and Stake",
+    "confirm_unstake": "Confirm and Unstake",
+    "staked": "Staked",
     "title": "Staking",
     "title_large": "TON Staking",
     "desc_large": "Join staking and get rewards. Staking helps to maintain the TON network.",
@@ -845,15 +841,16 @@
     "highest_apy": "MAX APY",
     "widget_title": "Earn TON",
     "widget_desc": "APY up to %{apy}%",
+    "widget_staking_options": "Staking options",
     "staking_pool_desc": "APY ≈ %{apy}%",
     "staking_desc": "Minimum deposit %{minStake} TON.\nEarn up to %{maxApy}%.",
     "estimated_profit": "%{amount} TON – annual profit\nif you stake TON today",
-    "top_up": "Deposit",
-    "withdrawal_request": "Withdrawal request",
+    "top_up": "Stake",
+    "withdrawal_request": "Unstake Request",
     "get_withdrawal": "Get withdrawal",
-    "withdraw": "Withdraw",
-    "deposit": "Deposit",
-    "transaction": "Transaction",
+    "withdraw": "Unstake",
+    "deposit": "Stake",
+    "transaction": "Confirm action",
     "active": "Active",
     "other": "Other",
     "message": {
@@ -875,8 +872,8 @@
       },
       "note": "Staking is based on smart contracts by third parties. Tonkeeper is not responsible for staking experience.",
       "balance": "Staking balance",
-      "pendingDeposit": "Pending deposit",
-      "pendingWithdraw": "Pending withdrawal",
+      "pendingDeposit": "Pending Stake",
+      "pendingWithdraw": "Pending Unstake",
       "pendingWithdrawDesc": "at the end of the cycle",
       "readyWithdraw": "Withdrawal ready",
       "tap_to_collect": "Tap to collect",
@@ -884,7 +881,7 @@
         "title": "Next cycle",
         "reward_title": "Next reward",
         "desc": "All transactions take effect once the cycle ends.",
-        "desc_liquid": "All withdrawal requests take effects once the cycle ends.",
+        "desc_liquid": "Unstake requests are complete after the cycle ends.",
         "in": "in"
       },
       "cooldown": {
@@ -908,15 +905,12 @@
       "min_deposit": {
         "label": "Minimal deposit",
         "value": "%{value} TON"
-      },
-      "liquidity_token": {
-        "label": "%{token} liquidity token",
-        "value": "Learn more"
       }
     },
+    "jetton_note": "When you stake TON in a %{poolName} pool, you receive a token called %{token} that represents your share in the pool. As the pool accumulates profits, your %{token} represents larger amount of TON.",
     "rewards": {
       "title": "Your APY",
-      "after_top_up": "After deposit",
+      "after_top_up": "After stake",
       "current": "Current",
       "value": "≈ %{value} TON"
     },
@@ -931,7 +925,7 @@
         "label": "Amount"
       },
       "withdraw_amount": {
-        "label": "Withdraw amount"
+        "label": "Unstake amount"
       },
       "fee": {
         "label": "Fee",

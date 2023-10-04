@@ -3,18 +3,11 @@ import { CryptoCurrencies, Decimals, SecondaryCryptoCurrencies } from '$shared/c
 import { JettonBalanceModel } from '$store/models';
 import { walletSelector } from '$store/wallet';
 import { Steezy } from '$styles';
-import { Highlight, Icon, PopupSelect, Spacer, StakedTonIcon, Text, View } from '$uikit';
+import { Highlight, Icon, PopupSelect, Spacer, Text, View } from '$uikit';
 import { ns } from '$utils';
 import React, { FC, memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
-import { Platform } from 'react-native';
-import { useStakingStore } from '$store';
-import { shallow } from 'zustand/shallow';
-import { Address } from '@tonkeeper/core';
-import { PoolInfo } from '@tonkeeper/core/src/TonAPI';
-import { t } from '@tonkeeper/shared/i18n';
-import { useGetTokenPrice } from '$hooks/useTokenPrice';
 import { JettonIcon, TonIcon } from '@tonkeeper/uikit';
 
 type CoinItem =
@@ -25,7 +18,6 @@ type CoinItem =
       currency: string;
       balance: string;
       decimals: number;
-      liquidStakingPool?: PoolInfo;
     };
 
 interface Props {
@@ -39,12 +31,8 @@ const CoinDropdownComponent: FC<Props> = (props) => {
 
   const { currencies, balances } = useSelector(walletSelector);
 
-  const { enabled: jettons } = useJettonBalances();
+  const { enabled: jettons } = useJettonBalances(false, true);
   const { format } = useHideableFormatter();
-
-  const stakingPools = useStakingStore((s) => s.pools, shallow);
-
-  const getTokenPrice = useGetTokenPrice();
 
   const coins = useMemo((): CoinItem[] => {
     const list = [
@@ -71,42 +59,17 @@ const CoinDropdownComponent: FC<Props> = (props) => {
 
     return [
       ...list,
-      ...jettons
-        .map((jetton): CoinItem => {
-          const liquidStakingPool = stakingPools.find(
-            (pool) =>
-              pool.liquid_jetton_master === Address.parse(jetton.jettonAddress).toRaw(),
-          );
-
-          const balance = liquidStakingPool
-            ? getTokenPrice(jetton.jettonAddress, jetton.balance).totalTon.toString()
-            : jetton.balance;
-
-          return {
-            isJetton: true,
-            jetton: jetton,
-            currency: jetton.jettonAddress,
-            balance,
-            decimals: jetton.metadata.decimals,
-            liquidStakingPool,
-          };
-        })
-        .sort((a, b) => {
-          if (a.isJetton && a.liquidStakingPool && b.isJetton && !b.liquidStakingPool) {
-            return -1;
-          } else if (
-            a.isJetton &&
-            !a.liquidStakingPool &&
-            b.isJetton &&
-            b.liquidStakingPool
-          ) {
-            return 1;
-          }
-
-          return 0;
-        }),
+      ...jettons.map((jetton): CoinItem => {
+        return {
+          isJetton: true,
+          jetton: jetton,
+          currency: jetton.jettonAddress,
+          balance: jetton.balance,
+          decimals: jetton.metadata.decimals,
+        };
+      }),
     ];
-  }, [jettons, balances, currencies, stakingPools, getTokenPrice]);
+  }, [jettons, balances, currencies]);
 
   const selectedCoin = useMemo(
     () => coins.find((item) => item.currency === currency),
@@ -115,7 +78,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
 
   const getTitle = useCallback((coin: CoinItem) => {
     if (coin.isJetton) {
-      return coin.liquidStakingPool ? 'TON' : coin.jetton.metadata.symbol ?? '';
+      return coin.jetton.metadata.symbol ?? '';
     }
 
     return coin.currency.toUpperCase();
@@ -137,10 +100,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
         asFullWindowOverlay
         renderItem={(item) => (
           <>
-            {item.isJetton && item.liquidStakingPool ? (
-              <StakedTonIcon pool={item.liquidStakingPool} size="xsmall" />
-            ) : null}
-            {item.isJetton && !item.liquidStakingPool ? (
+            {item.isJetton ? (
               <JettonIcon size="xsmall" uri={item.jetton.metadata.image!} />
             ) : null}
             {!item.isJetton ? (
@@ -166,11 +126,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
       >
         <Highlight background="backgroundQuaternary" useRNGHComponent>
           <View style={styles.content}>
-            <Text variant="label1">
-              {selectedCoin?.isJetton && selectedCoin.liquidStakingPool
-                ? t('staking.staked_ton')
-                : currencyTitle}
-            </Text>
+            <Text variant="label1">{currencyTitle}</Text>
             <View style={styles.chevron}>
               <Icon name="ic-chevron-down-16" color="iconSecondary" />
             </View>

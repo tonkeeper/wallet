@@ -111,7 +111,6 @@
 
   "spam_action": "Спам",
 
-
   "dns_renew_toast_success": "Домен продлён на 1 год",
   "dns_expiration_date": "Истекает",
   "dns_renew_until_btn": "Продлить до %{untilDate}",
@@ -265,8 +264,7 @@
       "insufficient_balance": "Недостаточно средств",
       "less_than_min": "Минимум %{minAmount} TON",
       "max": "Максимум",
-      "remaining": "Доступно: %{amount}",
-      "liquid_jetton_note": "Отправка токена ликвидности tsTON"
+      "remaining": "Доступно: %{amount}"
     },
     "comfirm": {
       "title": "Подтвердить действие",
@@ -320,8 +318,6 @@
   "confirm_sending_inactive_warn_description": "Не продолжайте, если вы ожидаете волшебства от блокчейна. Этого не произойдет.",
   "confirm_sending_inactive_warn_about": "Что важно знать",
   "confirm_sending_method_title": "Send your funds\nto %{name}?",
-  "confirm_sending_liquid_warn_title": "Примечание",
-  "confirm_sending_liquid_warn_description": "Вы больше не будете получать награды за отправленный застейканный TON. Награды начнёт получать новый владелец.",
 
   "info_about_inactive_title": "Неактивный контракт",
   "info_about_inactive_desc1": "Tonkeeper не знает, является ли этот адрес кошельком или смарт-контрактом.",
@@ -860,8 +856,8 @@
   "staking": {
     "no_funds": "Нет средств доступных для вывода",
     "confirm_deposit": "Подтвердить и внести",
-    "send_staked_ton": "застейканного TON",
-    "staked_ton": "Застейканный TON",
+    "confirm_unstake": "Подтвердить и отправить",
+    "staked": "Стейкинг",
     "title": "Стейкинг",
     "title_large": "Стейкинг TON",
     "desc_large": "Участвуйте в стейкинге и получайте вознаграждения. Стейкинг поддерживает сеть TON.",
@@ -869,6 +865,7 @@
     "highest_apy": "MAX APY",
     "widget_title": "Зарабатывайте TON",
     "widget_desc": "Годовая доходность до %{apy}%",
+    "widget_staking_options": "Варианты стейкинга",
     "staking_pool_desc": "APY ≈ %{apy}%",
     "staking_desc": "Мин. депозит %{minStake} TON.\nЗарабатывайте до %{maxApy}%.",
     "top_up": "Внести",
@@ -876,7 +873,7 @@
     "get_withdrawal": "Получить вывод",
     "withdraw": "Вывести",
     "deposit": "Депозит",
-    "transaction": "Транзакция",
+    "transaction": "Подтвердить действие",
     "active": "Активные",
     "other": "Другие",
     "message": {
@@ -953,12 +950,9 @@
       "min_deposit": {
         "label": "Минимальный депозит",
         "value": "%{value} TON"
-      },
-      "liquidity_token": {
-        "label": "Токен ликвидности %{token}",
-        "value": "Подробнее"
       }
     },
+    "jetton_note": "Когда вы вносите TON в пул, вы получаете токен %{token}, который отображает вашу долю в пуле. По мере накопления прибыли в пуле, %{token} представляет всё большее число TON.",
     "rewards": {
       "title": "Ваша годовая доходность",
       "after_top_up": "После депозита",
