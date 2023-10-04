@@ -111,7 +111,7 @@
 
   "spam_action": "Спам",
 
-  
+
   "dns_renew_toast_success": "Домен продлён на 1 год",
   "dns_expiration_date": "Истекает",
   "dns_renew_until_btn": "Продлить до %{untilDate}",
@@ -1032,7 +1032,7 @@
     "title": "Выберите вашу страну",
     "search": "Поиск",
     "cancel": "Отмена",
-    "empty_placeholder": "Ваш поиск не дал результатов"
+    "empty_placeholder": "По вашему запросу ничего не найдено"
   },
   "programmable_nfts": {
     "alert": {

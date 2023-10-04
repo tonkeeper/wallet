@@ -3,8 +3,6 @@ import DefaultBottomSheet, {
   BottomSheetModal,
   BottomSheetBackdropProps,
   BottomSheetProps as DefaultBottomSheetProps,
-  useBottomSheetSpringConfigs,
-  useBottomSheetTimingConfigs,
 } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { isAndroid, isIOS, StatusBarHeight, useMergeRefs } from '../../../utils';
@@ -63,14 +61,6 @@ export const SheetModal = memo(
         close: () => bottomSheetRef.current?.close(),
       });
     }, []);
-
-    const animationConfigsIOS = useBottomSheetSpringConfigs();
-
-    const animationConfigsAndroid = useBottomSheetTimingConfigs({
-      easing: Easing.out(Easing.exp),
-      duration: 250,
-      reduceMotion: ReduceMotion.Never,
-    });
 
     const topInset = !isAndroid ? StatusBarHeight + safeArea.top : 0;
 

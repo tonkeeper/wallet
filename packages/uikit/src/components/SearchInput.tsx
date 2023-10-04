@@ -41,7 +41,7 @@ export const SearchInput: React.FC<SearchInputProps> = (props) => {
         {...props}
       />
       <View style={styles.iconContainer}>
-        <Icon name={'ic-magnifying-glass-16'} />
+        <Icon name={'ic-magnifying-glass-16'} color="iconSecondary" />
       </View>
       <Animated.View
         style={[styles.rightContent.static, clearButtonStyle]}
