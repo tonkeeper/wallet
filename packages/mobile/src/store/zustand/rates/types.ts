@@ -11,6 +11,7 @@ export type TRates = Record<
 export interface IRatesStore {
   rates: TRates;
   actions: {
+    fetchRate: (token: string) => Promise<void>;
     fetchRates: () => Promise<void>;
   };
 }

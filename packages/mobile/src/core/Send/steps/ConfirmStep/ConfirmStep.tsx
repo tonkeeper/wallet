@@ -231,7 +231,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
               {currencyTitle === 'USDT'
                 ? 'Transfer USDT TRC20'
                 : t('send_screen_steps.comfirm.action', {
-                    coin: isLiquidJetton ? t('staking.send_staked_ton') : currencyTitle,
+                    coin: currencyTitle,
                   })}
             </Text>
           </S.Center>

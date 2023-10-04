@@ -889,9 +889,15 @@ export interface JettonSwapAction {
   amount_in: string;
   /** @example "1660050553" */
   amount_out: string;
-  /** @example 1000000000 */
+  /**
+   * @format int64
+   * @example 1000000000
+   */
   ton_in?: number;
-  /** @example 2000000000 */
+  /**
+   * @format int64
+   * @example 2000000000
+   */
   ton_out?: number;
   user_wallet: AccountAddress;
   router: AccountAddress;
@@ -1323,6 +1329,8 @@ export interface PoolInfo {
    * @example 5000000000
    */
   validator_stake: number;
+  /** @format int64 */
+  cycle_length?: number;
 }
 
 export interface PoolImplementation {
@@ -1695,6 +1703,11 @@ export interface GetAccountNftHistoryParams {
 
 export interface GetAccountEventsParams {
   /**
+   * Show only events that are initiated by this account
+   * @default false
+   */
+  initiator?: boolean;
+  /**
    * filter actions where requested account is not real subject (for example sender or receiver jettons)
    * @default false
    */
@@ -1881,6 +1894,21 @@ export interface GetJettonsParams {
    * @example 10
    */
   offset?: number;
+}
+
+export interface GetJettonHoldersParams {
+  /**
+   * @max 1000
+   * @default 1000
+   */
+  limit?: number;
+  /** @default 0 */
+  offset?: number;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  accountId: string;
 }
 
 export interface GetStakingPoolsParams {
@@ -2540,6 +2568,21 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
     getEvent: (eventId: string, params: RequestParams = {}) =>
       this.http.request<Event, Error>({
         path: `/v2/events/${eventId}`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get only jetton transfers in the event
+     *
+     * @tags Jettons
+     * @name GetJettonsEvents
+     * @request GET:/v2/events/{event_id}/jettons
+     */
+    getJettonsEvents: (eventId: string, params: RequestParams = {}) =>
+      this.http.request<Event, Error>({
+        path: `/v2/events/${eventId}/jettons`,
         method: 'GET',
         format: 'json',
         ...params,
@@ -3243,10 +3286,14 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
      * @name GetJettonHolders
      * @request GET:/v2/jettons/{account_id}/holders
      */
-    getJettonHolders: (accountId: string, params: RequestParams = {}) =>
+    getJettonHolders: (
+      { accountId, ...query }: GetJettonHoldersParams,
+      params: RequestParams = {},
+    ) =>
       this.http.request<JettonHolders, Error>({
         path: `/v2/jettons/${accountId}/holders`,
         method: 'GET',
+        query: query,
         format: 'json',
         ...params,
       }),

@@ -301,5 +301,4 @@ export enum SendAnalyticsFrom {
   WalletScreen = 'WalletScreen',
   TonScreen = 'TonScreen',
   TokenScreen = 'TokenScreen',
-  StakingPoolDetails = 'StakingPoolDetails',
 }
