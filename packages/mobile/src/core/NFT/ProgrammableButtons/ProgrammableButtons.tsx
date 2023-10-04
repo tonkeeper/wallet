@@ -65,11 +65,14 @@ const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
 
         let url = new URL(uri);
 
-        url.searchParams.append('wallet', Address.parse(proof.address).toFriendly());
+        const buffer = Buffer.from(proof.proof.signature, 'base64');
+        const signatureHex = buffer.toString('hex');
+
+        url.searchParams.append('wallet', Address.parse(proof.address).toRaw());
         url.searchParams.append('nftAddress', nftAddress);
         url.searchParams.append('timestamp', proof.proof.timestamp.toString());
         url.searchParams.append('publicKey', TonWeb.utils.bytesToHex(publicKey));
-        url.searchParams.append('signature', proof.proof.signature);
+        url.searchParams.append('signature', signatureHex);
 
         openDAppBrowser(url.toString());
       } catch (e) {
