@@ -6,18 +6,24 @@ import { walletWalletSelector } from '$store/wallet';
 import { Address } from '@tonkeeper/shared/Address';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
+import { getStakingJettons, useStakingStore } from '$store';
+import { shallow } from 'zustand/shallow';
 
 export interface IBalances {
   pending: JettonBalanceModel[];
   enabled: JettonBalanceModel[];
   disabled: JettonBalanceModel[];
 }
-export const useJettonBalances = (withZeroBalances?: boolean) => {
+export const useJettonBalances = (
+  withZeroBalances?: boolean,
+  showStakingJettons = false,
+) => {
   const jettonBalances = useSelector(jettonsBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
   const sortedJettons =
     useSelector(sortedJettonsSelector)[wallet?.vault?.getVersion?.() || ''];
   const approvalStatuses = useTokenApprovalStore();
+  const stakingJettons = useStakingStore(getStakingJettons, shallow);
 
   const jettons = useMemo(() => {
     const balances: IBalances = {
@@ -36,6 +42,13 @@ export const useJettonBalances = (withZeroBalances?: boolean) => {
         approvalStatus?.current === TokenApprovalStatus.Approved;
 
       if (!withZeroBalances && jetton.balance === '0') {
+        return;
+      }
+
+      if (
+        !showStakingJettons &&
+        stakingJettons.includes(Address.parse(jetton.jettonAddress).toRaw())
+      ) {
         return;
       }
 
@@ -60,7 +73,14 @@ export const useJettonBalances = (withZeroBalances?: boolean) => {
     }
 
     return balances;
-  }, [approvalStatuses.tokens, jettonBalances, sortedJettons, withZeroBalances]);
+  }, [
+    approvalStatuses.tokens,
+    jettonBalances,
+    showStakingJettons,
+    sortedJettons,
+    stakingJettons,
+    withZeroBalances,
+  ]);
 
   return jettons;
 };

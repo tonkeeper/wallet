@@ -31,7 +31,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
 
   const { currencies, balances } = useSelector(walletSelector);
 
-  const { enabled: jettons } = useJettonBalances();
+  const { enabled: jettons } = useJettonBalances(false, true);
   const { format } = useHideableFormatter();
 
   const coins = useMemo((): CoinItem[] => {
