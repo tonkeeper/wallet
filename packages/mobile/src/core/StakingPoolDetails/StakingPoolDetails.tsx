@@ -1,13 +1,9 @@
 import { usePoolInfo } from '$hooks/usePoolInfo';
 import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
-import { MainStackRouteNames, openDAppBrowser, openSend } from '$navigation';
+import { MainStackRouteNames, openDAppBrowser, openJetton } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
 import { NextCycle } from '$shared/components';
-import {
-  getServerConfig,
-  KNOWN_STAKING_IMPLEMENTATIONS,
-  Opacity,
-} from '$shared/constants';
+import { getServerConfig, KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
 import { getStakingPoolByAddress, getStakingProviderById, useStakingStore } from '$store';
 import {
   Button,
@@ -27,25 +23,23 @@ import Animated from 'react-native-reanimated';
 import { shallow } from 'zustand/shallow';
 import * as S from './StakingPoolDetails.style';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { trackEvent } from '$utils/stats';
-import { Events, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { useFlag } from '$utils/flags';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { fiatCurrencySelector } from '$store/main';
 import { useSelector } from 'react-redux';
 import { IStakingLink, StakingLinkType } from './types';
-import { Icon, TouchableOpacity } from '@tonkeeper/uikit';
+import { Icon, List, Steezy } from '@tonkeeper/uikit';
 import { getLinkIcon, getLinkTitle, getSocialLinkType } from './utils';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Linking } from 'react-native';
 import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
+import BigNumber from 'bignumber.js';
+import { ListItemRate } from '../../tabs/Wallet/components/ListItemRate';
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPoolDetails>;
 }
-
-const LIQUIDITY_TOKEN_URL = 'https://tonstakers.com';
 
 export const StakingPoolDetails: FC<Props> = (props) => {
   const {
@@ -79,29 +73,13 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     hasPendingWithdraw,
     hasReadyWithdraw,
     isWithdrawDisabled,
+    stakingJettonMetadata,
     handleTopUpPress,
     handleWithdrawalPress,
     handleConfirmWithdrawalPress,
   } = usePoolInfo(pool, poolStakingInfo);
 
   const hasAnyBalance = hasDeposit || hasPendingDeposit;
-
-  const handleSendPress = useCallback(() => {
-    if (!stakingJetton) {
-      return;
-    }
-
-    trackEvent(Events.SendOpen, { from: SendAnalyticsFrom.StakingPoolDetails });
-    openSend({
-      currency: stakingJetton.jettonAddress,
-      isJetton: true,
-      from: SendAnalyticsFrom.StakingPoolDetails,
-    });
-  }, [stakingJetton]);
-
-  const handleLiquidityTokenPress = useCallback(() => {
-    openDAppBrowser(LIQUIDITY_TOKEN_URL);
-  }, []);
 
   const links = useMemo(() => {
     const list: IStakingLink[] = [];
@@ -154,9 +132,78 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     [],
   );
 
+  const handlePressJetton = useCallback(() => {
+    if (!stakingJetton) {
+      return;
+    }
+
+    openJetton(stakingJetton.jettonAddress);
+  }, [stakingJetton]);
+
   const isImplemeted = KNOWN_STAKING_IMPLEMENTATIONS.includes(pool.implementation);
 
   const isLiquidTF = pool.implementation === PoolImplementationType.LiquidTF;
+
+  const nextReward = useMemo(() => {
+    if (!stakingJetton || !pool.cycle_length) {
+      return;
+    }
+
+    return formatter.format(
+      new BigNumber(balance.totalTon)
+        .multipliedBy(pool.apy / 100)
+        .dividedBy(31536000)
+        .multipliedBy(pool.cycle_length),
+    );
+  }, [balance.totalTon, pool.apy, pool.cycle_length, stakingJetton]);
+
+  const stakingJettonView = useMemo(
+    () =>
+      stakingJettonMetadata ? (
+        <>
+          <List indent={false} style={styles.list}>
+            <List.Item
+              onPress={stakingJetton ? handlePressJetton : undefined}
+              title={stakingJettonMetadata.symbol}
+              picture={stakingJettonMetadata.image}
+              value={
+                <HideableAmount
+                  style={styles.valueText.static}
+                  variant="label1"
+                  stars=" * * *"
+                >{` ${stakingJettonMetadata.price.amount}`}</HideableAmount>
+              }
+              subvalue={
+                <HideableAmount
+                  style={styles.subvalueText.static}
+                  variant="body2"
+                  color="textSecondary"
+                >
+                  {formatter.format(stakingJettonMetadata.price.totalFiat, {
+                    currency: fiatCurrency,
+                  })}
+                </HideableAmount>
+              }
+              subtitle={
+                <ListItemRate
+                  percent={stakingJettonMetadata.price.fiatDiff.percent}
+                  price={stakingJettonMetadata.price.formatted.fiat ?? ''}
+                  trend={stakingJettonMetadata.price.fiatDiff.trend}
+                />
+              }
+            />
+          </List>
+          <Spacer y={12} />
+          <Text variant="body3" color="foregroundTertiary">
+            {t('staking.jetton_note', {
+              poolName: pool.name,
+              token: stakingJettonMetadata.symbol,
+            })}
+          </Text>
+        </>
+      ) : null,
+    [fiatCurrency, handlePressJetton, pool.name, stakingJetton, stakingJettonMetadata],
+  );
 
   return (
     <S.Wrap>
@@ -182,12 +229,6 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                   <Spacer y={2} />
                   <HideableAmount variant="body2" color="foregroundSecondary">
                     {formatter.format(balance.totalFiat, { currency: fiatCurrency })}
-                    {stakingJetton ? (
-                      <>
-                        <Text color="textTertiary"> · </Text>
-                        {stakingFormatter.format(balance.amount)} {balance.symbol}
-                      </>
-                    ) : null}
                   </HideableAmount>
                 </S.JettonAmountWrapper>
                 <Spacer x={16} />
@@ -208,13 +249,6 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                   title={t('staking.withdraw')}
                   disabled={!isImplemeted || isWithdrawDisabled}
                 />
-                {!!stakingJetton && hasDeposit ? (
-                  <IconButton
-                    onPress={handleSendPress}
-                    iconName="ic-arrow-up-28"
-                    title={t('wallet_send')}
-                  />
-                ) : null}
               </S.ActionsContainer>
               <S.Divider />
             </S.HeaderWrap>
@@ -286,7 +320,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
             {hasAnyBalance ? (
               <>
                 <Spacer y={16} />
-                <NextCycle pool={pool} reward={true} />
+                <NextCycle pool={pool} nextReward={nextReward} />
                 {/* {stakingJetton && isLiquidTF ? (
                   <>
                     <Spacer y={24} />
@@ -301,6 +335,13 @@ export const StakingPoolDetails: FC<Props> = (props) => {
             <S.TitleContainer>
               <Text variant="h3">{t('staking.details.about_pool')}</Text>
             </S.TitleContainer>
+            {stakingJettonMetadata && hasAnyBalance ? (
+              <>
+                {stakingJettonView}
+                <Spacer y={16} />
+                <Spacer y={8} />
+              </>
+            ) : null}
             <S.Table>
               {infoRows.map((item) => [
                 <React.Fragment key={item.label}>
@@ -319,31 +360,21 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                   </Highlight>
                 </React.Fragment>,
               ])}
-              {stakingJetton && isLiquidTF ? (
-                <S.Item>
-                  <S.Row>
-                    <S.ItemLabel numberOfLines={1}>
-                      {t('staking.details.liquidity_token.label', {
-                        token: stakingJetton.metadata.symbol,
-                      })}
-                    </S.ItemLabel>
-                  </S.Row>
-                  <TouchableOpacity
-                    activeOpacity={Opacity.ForSmall}
-                    onPress={handleLiquidityTokenPress}
-                  >
-                    <S.ItemValue color="accentPrimary">
-                      {t('staking.details.liquidity_token.value')}
-                    </S.ItemValue>
-                  </TouchableOpacity>
-                </S.Item>
-              ) : null}
             </S.Table>
             <Spacer y={12} />
             <Text variant="body3" color="foregroundTertiary">
               {t('staking.details.note')}
             </Text>
-            <Spacer y={8} />
+            {stakingJettonMetadata && !hasAnyBalance ? (
+              <>
+                <Spacer y={16} />
+                <Spacer y={8} />
+                {stakingJettonView}
+                <Spacer y={16} />
+              </>
+            ) : (
+              <Spacer y={8} />
+            )}
             <S.TitleContainer>
               <Text variant="h3">{t('staking.details.links_title')}</Text>
             </S.TitleContainer>
@@ -379,3 +410,17 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     </S.Wrap>
   );
 };
+
+const styles = Steezy.create(({ colors }) => ({
+  valueText: {
+    textAlign: 'right',
+    flexShrink: 1,
+  },
+  subvalueText: {
+    color: colors.textSecondary,
+    textAlign: 'right',
+  },
+  list: {
+    marginBottom: 0,
+  },
+}));

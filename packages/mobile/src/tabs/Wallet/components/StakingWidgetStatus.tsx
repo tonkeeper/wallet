@@ -100,7 +100,7 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
   return (
     <StakingListCell
       id={`amount_${pool.address}`}
-      name={t('staking.title')}
+      name={t('staking.staked')}
       description={pool.name}
       balance={balance.amount}
       stakingJetton={stakingJetton}

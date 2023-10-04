@@ -10,7 +10,10 @@ import { useDispatch } from 'react-redux';
 import { favoritesActions } from '$store/favorites';
 import Animated from 'react-native-reanimated';
 import { Separator } from '$uikit/Separator/Separator.style';
-import { openAddFavorite, openEditFavorite } from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress';
+import {
+  openAddFavorite,
+  openEditFavorite,
+} from '$core/ModalContainer/AddEditFavoriteAddress/AddEditFavoriteAddress';
 import { Address } from '@tonkeeper/core';
 
 enum SuggestActionType {
@@ -34,8 +37,6 @@ interface Props {
 
 const AddressSuggestCellComponent: FC<Props> = (props) => {
   const { separator, scrollY, suggest, onPress } = props;
-
-  
 
   const dispatch = useDispatch();
 
@@ -62,7 +63,7 @@ const AddressSuggestCellComponent: FC<Props> = (props) => {
         ? 'd MMM'
         : 'd MMM yyyy',
     );
-  }, [suggest.timestamp, t]);
+  }, [suggest.timestamp]);
 
   const isFavorite = suggest.type === SuggestedAddressType.FAVORITE;
 
@@ -101,7 +102,7 @@ const AddressSuggestCellComponent: FC<Props> = (props) => {
         label: t('send_screen_steps.address.suggest_actions.hide'),
       },
     ];
-  }, [isFavorite, t]);
+  }, [isFavorite]);
 
   const handleDelete = useCallback(() => {
     const { name = '', address } = suggest;
@@ -120,7 +121,7 @@ const AddressSuggestCellComponent: FC<Props> = (props) => {
         },
       },
     ]);
-  }, [dispatch, suggest, t]);
+  }, [dispatch, suggest]);
 
   const handlePressAction = useCallback(
     (action: SuggestAction) => {

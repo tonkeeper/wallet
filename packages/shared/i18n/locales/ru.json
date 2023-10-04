@@ -121,6 +121,31 @@
     "other": "Истекает через %{count} дней",
     "many": "Истекает через %{count} дней"
   },
+  "dns_alert_expiring_many": {
+    "one": "У вас есть %{count} домен с истекающим сроком аренды. Продлите все до %{untilDate}.",
+    "few": "У вас есть %{count} домена с истекающим сроком аренды. Продлите все до %{untilDate}.",
+    "other": "У вас есть %{count} доменов с истекающим сроком аренды. Продлите все до %{untilDate}.",
+    "many": "У вас есть %{count} доменов с истекающим сроком аренды. Продлите все до %{untilDate}."
+  },
+  "dns_alert_expiring_one": {
+    "one": "%{domain} истекает через %{count} день. Продлите до %{untilDate}.",
+    "few": "%{domain} истекает через %{count} дня. Продлите до %{untilDate}.",
+    "other": "%{domain} истекает через %{count} дней. Продлите до %{untilDate}.",
+    "many": "%{domain} истекает через %{count} дней. Продлите до %{untilDate}."
+  },
+  "dns_renew_all_until_btn": "Продлить все до %{untilDate}",
+
+  "expiring_domains": "Истекающие домены",
+  "domains_renewed": "Домены продлены",
+  "confirm_renew_all_domains_title": "Подтвердить действие",
+  "dns_addresses": {
+    "one": "%{count} адрес",
+    "few": "%{count} адреса",
+    "other": "%{count} адресов",
+    "many": "%{count} адресов"
+  },
+  "renew_in_progress": "Выполняется продление…",
+  "renew_progress_of": "%{current} из %{count}",
 
   "nft_title": "NFT",
   "nft_about_dns": "TON DNS — сервис, который позволяет задать криптокошелькам, смарт-контрактам или сайтам короткие читаемые имена. \n\nС TON DNS доступ к децентрализованным сервисам аналогичен доступу к веб-сайтам в интернете.",
@@ -239,8 +264,7 @@
       "insufficient_balance": "Недостаточно средств",
       "less_than_min": "Минимум %{minAmount} TON",
       "max": "Максимум",
-      "remaining": "Доступно: %{amount}",
-      "liquid_jetton_note": "Отправка токена ликвидности tsTON"
+      "remaining": "Доступно: %{amount}"
     },
     "comfirm": {
       "title": "Подтвердить действие",
@@ -294,8 +318,6 @@
   "confirm_sending_inactive_warn_description": "Не продолжайте, если вы ожидаете волшебства от блокчейна. Этого не произойдет.",
   "confirm_sending_inactive_warn_about": "Что важно знать",
   "confirm_sending_method_title": "Send your funds\nto %{name}?",
-  "confirm_sending_liquid_warn_title": "Примечание",
-  "confirm_sending_liquid_warn_description": "Вы больше не будете получать награды за отправленный застейканный TON. Награды начнёт получать новый владелец.",
 
   "info_about_inactive_title": "Неактивный контракт",
   "info_about_inactive_desc1": "Tonkeeper не знает, является ли этот адрес кошельком или смарт-контрактом.",
@@ -317,7 +339,7 @@
     "receive_btn": "Получить",
     "swap_btn": "Обменять",
     "tonkens_tab_lable": "Токены",
-    "collectibles_tab_lable": "Коллекции"
+    "nft_tab_lable": "Коллекции"
   },
 
   "approval": {
@@ -335,13 +357,15 @@
     "accept": "Принять",
     "decline": "Отклонить",
     "blacklisted_token": "Токен в чёрном списке",
-    "whitelisted_token": "Токен в белом списке",
+    "accepted_token": "Токен принят",
     "blacklisted_collection": "Коллекция в чёрном списке",
-    "whitelisted_collection": "Коллекция в белом списке",
+    "accepted_collection": "Коллекция принята",
     "pending": "В ожидании",
-    "declined": "Отклонённые",
-    "move_to_declined": "Переместить в Отклонённые",
-    "move_to_accepted": "Переместить в Принятые",
+    "declined": "Скрытые",
+    "move_to_declined_collection": "Скрыть коллекцию из кошелька",
+    "move_to_accepted_collection": "Показывать коллекцию в кошельке",
+    "move_to_declined_token": "Скрыть токен из кошелька",
+    "move_to_accepted_token": "Показывать токен в кошельке",
     "accepted_at_token": "Принят %{date}",
     "accepted_at_collection": "Принята %{date}",
     "declined_at_token": "Отклонён %{date}",
@@ -349,7 +373,7 @@
     "details_collection": "Подробнее о коллекции",
     "verify_description_token": "Этот токен выпущен неизвестным эмитентом. Для обнаружения подделок проверьте ID токена в официальном источнике эмитента. Вы всегда можете изменить видимость токена в настройках.",
     "verify_description_collection": "Эти токены выпущены неизвестным эмитентом. Для обнаружения подделок проверьте ID коллекции в официальном источнике эмитента. Вы всегда можете изменить видимость коллекции в настройках.",
-    "accepted": "Принятые",
+    "accepted": "Видимые",
     "approve_all": "Принять всё",
     "approve_token": "Одобрите входящий токен \"%{name}\" ",
     "approve_two_tokens": "Одобрите входящие токены \"%{name1}\" и \"%{name2}\"",
@@ -840,8 +864,8 @@
   "staking": {
     "no_funds": "Нет средств доступных для вывода",
     "confirm_deposit": "Подтвердить и внести",
-    "send_staked_ton": "застейканного TON",
-    "staked_ton": "Застейканный TON",
+    "confirm_unstake": "Подтвердить и отправить",
+    "staked": "Стейкинг",
     "title": "Стейкинг",
     "title_large": "Стейкинг TON",
     "desc_large": "Участвуйте в стейкинге и получайте вознаграждения. Стейкинг поддерживает сеть TON.",
@@ -849,6 +873,7 @@
     "highest_apy": "MAX APY",
     "widget_title": "Зарабатывайте TON",
     "widget_desc": "Годовая доходность до %{apy}%",
+    "widget_staking_options": "Варианты стейкинга",
     "staking_pool_desc": "APY ≈ %{apy}%",
     "staking_desc": "Мин. депозит %{minStake} TON.\nЗарабатывайте до %{maxApy}%.",
     "top_up": "Внести",
@@ -856,7 +881,7 @@
     "get_withdrawal": "Получить вывод",
     "withdraw": "Вывести",
     "deposit": "Депозит",
-    "transaction": "Транзакция",
+    "transaction": "Подтвердить действие",
     "active": "Активные",
     "other": "Другие",
     "message": {
@@ -933,12 +958,9 @@
       "min_deposit": {
         "label": "Минимальный депозит",
         "value": "%{value} TON"
-      },
-      "liquidity_token": {
-        "label": "Токен ликвидности %{token}",
-        "value": "Подробнее"
       }
     },
+    "jetton_note": "Когда вы вносите TON в пул, вы получаете токен %{token}, который отображает вашу долю в пуле. По мере накопления прибыли в пуле, %{token} представляет всё большее число TON.",
     "rewards": {
       "title": "Ваша годовая доходность",
       "after_top_up": "После депозита",
@@ -1012,7 +1034,7 @@
     "title": "Выберите вашу страну",
     "search": "Поиск",
     "cancel": "Отмена",
-    "empty_placeholder": "Ваш поиск не дал результатов"
+    "empty_placeholder": "По вашему запросу ничего не найдено"
   },
   "programmable_nfts": {
     "alert": {

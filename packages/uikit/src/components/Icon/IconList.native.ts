@@ -84,6 +84,7 @@ export const IconList = {
   'ic-star-28': require('../../../assets/icons/png/ic-star-28.png'),
   'ic-success-28': require('../../../assets/icons/png/ic-success-28.png'),
   'ic-swap-28': require('../../../assets/icons/png/ic-swap-28.png'),
+  'ic-swap-horizontal-28': require('../../../assets/icons/png/ic-swap-horizontal-28.png'),
   'ic-swap-horizontal-alternative-28': require('../../../assets/icons/png/ic-swap-horizontal-alternative-28.png'),
   'ic-telegram-28': require('../../../assets/icons/png/ic-telegram-28.png'),
   'ic-ticket-28': require('../../../assets/icons/png/ic-ticket-28.png'),

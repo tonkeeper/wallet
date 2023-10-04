@@ -4,6 +4,7 @@ import 'react-native-reanimated';
 import './global';
 import 'react-native-console-time-polyfill';
 import 'text-encoding-polyfill';
+import 'react-native-url-polyfill/auto';
 
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { AppRegistry, LogBox } from 'react-native';
@@ -35,11 +36,7 @@ async function handleDappMessage(remoteMessage) {
   if (remoteMessage.notification?.body) {
     return null;
   }
-  if (
-    !['bridge_dapp_notification', 'console_dapp_notification'].includes(
-      remoteMessage.data?.type,
-    )
-  ) {
+  if (!['console_dapp_notification'].includes(remoteMessage.data?.type)) {
     return null;
   }
 

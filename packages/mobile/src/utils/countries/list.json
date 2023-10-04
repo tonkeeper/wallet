@@ -751,9 +751,9 @@
       "location-precise": "Западная Азия"
     },
     {
-      "ru": "Иран, Исламская Республика",
+      "ru": "Иран",
       "fullname": "Исламская Республика Иран",
-      "en": "Iran, Islamic Republic of",
+      "en": "Iran",
       "alpha2": "IR",
       "alpha3": "IRN",
       "iso": 364,
@@ -1291,7 +1291,7 @@
       "location-precise": "Восточная Африка"
     },
     {
-      "ru": "Молдова, Республика",
+      "ru": "Молдова",
       "fullname": "Республика Молдова",
       "en": "Moldova",
       "alpha2": "MD",

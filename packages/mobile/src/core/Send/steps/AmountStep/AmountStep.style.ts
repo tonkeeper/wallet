@@ -23,11 +23,3 @@ export const CoinContainer = styled.View`
   right: ${ns(64)}px;
   align-items: center;
 `;
-
-export const NoteContainer = styled.View`
-  position: absolute;
-  bottom: ${ns(68)}px;
-  left: ${ns(16)}px;
-  right: ${ns(16)}px;
-  align-items: center;
-`;

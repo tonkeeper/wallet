@@ -20,6 +20,7 @@ import {
   PoolInfo,
   PoolImplementationType,
 } from '@tonkeeper/core/src/TonAPI';
+import { useGetTokenPrice, useTokenPrice } from './useTokenPrice';
 
 export interface PoolDetailsItem {
   label: string;
@@ -37,6 +38,8 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
 
   const highestApyPool = useStakingStore((s) => s.highestApyPool, shallow);
 
+  const getTokenPrice = useGetTokenPrice();
+
   const stakingJetton = useMemo(() => {
     if (
       pool.implementation === PoolImplementationType.LiquidTF &&
@@ -51,6 +54,20 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
 
     return undefined;
   }, [jettonBalances, pool.implementation, pool.liquid_jetton_master]);
+
+  const stakingJettonMetadata = useStakingStore(
+    (s) =>
+      pool.liquid_jetton_master
+        ? {
+            ...s.stakingJettons[pool.liquid_jetton_master],
+            price: getTokenPrice(
+              Address.parse(pool.liquid_jetton_master).toFriendly(),
+              stakingJetton?.balance || '0',
+            ),
+          }
+        : null,
+    shallow,
+  );
 
   const currency = stakingJetton ? stakingJetton.jettonAddress : CryptoCurrencies.Ton;
 
@@ -163,6 +180,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
   return {
     infoRows,
     stakingJetton,
+    stakingJettonMetadata,
     balance,
     pendingDeposit,
     pendingWithdraw,

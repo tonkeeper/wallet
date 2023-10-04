@@ -23,6 +23,7 @@ interface ListItemProps {
   pictureStyle?: StyleProp<ViewStyle>;
   pictureCorner?: 'full' | 'small';
   chevron?: boolean;
+  chevronColor?: 'iconTertiary' | 'iconSecondary';
   leftContentStyle?: StyleProp<ViewStyle>;
   leftContent?: React.ReactNode;
   navigate?: string;
@@ -42,6 +43,7 @@ export const ListItem = memo<ListItemProps>((props) => {
   const {
     onPress,
     navigate,
+    chevronColor = 'iconTertiary',
     pictureCorner = 'full',
     subtitleNumberOfLines = 1,
     valueMultiline,
@@ -160,7 +162,7 @@ export const ListItem = memo<ListItemProps>((props) => {
             {children}
           </View>
           {rightContent}
-          {props.chevron && <Icon name="ic-chevron-right-16" color="iconTertiary" />}
+          {props.chevron && <Icon name="ic-chevron-right-16" color={chevronColor} />}
         </View>
       </ListItemPressedContext.Provider>
     </TouchableComponent>

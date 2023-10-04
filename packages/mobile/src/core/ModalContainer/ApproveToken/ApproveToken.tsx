@@ -8,10 +8,10 @@ import {
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { getTokenStatus } from '$store/zustand/tokenApproval/selectors';
 import { JettonVerification } from '$store/models';
-import { Button, Icon, Spacer, Text, View, List } from '$uikit';
+import { Button, Icon, Spacer, View, List } from '$uikit';
 import { Steezy } from '$styles';
 import { t } from '@tonkeeper/shared/i18n';
-import { format, triggerImpactLight } from '$utils';
+import { triggerImpactLight } from '$utils';
 import FastImage from 'react-native-fast-image';
 import { Toast } from '$store';
 import Clipboard from '@react-native-community/clipboard';
@@ -56,9 +56,7 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
   }, [props.tokenAddress]);
 
   const modalState = useMemo(() => {
-    if (!currentStatus && props.verification === JettonVerification.NONE) {
-      return 'pending';
-    } else if (
+    if (
       props.verification === JettonVerification.BLACKLIST ||
       currentStatus?.current === TokenApprovalStatus.Declined
     ) {
@@ -69,7 +67,7 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
     ) {
       return 'approved';
     }
-    return 'pending';
+    return 'approved';
   }, [currentStatus, props.verification]);
 
   const translationPrefix = useMemo(() => {
@@ -86,61 +84,15 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
     [translationPrefix],
   );
 
-  const title = useMemo(() => {
-    if (modalState === 'pending') {
-      return translateWithPrefix('verify');
-    } else {
-      return translateWithPrefix('details');
-    }
-  }, [modalState, translateWithPrefix]);
-
-  const subtitle = useMemo(() => {
-    if (modalState === 'declined') {
-      if (!currentStatus) {
-        return translateWithPrefix('blacklisted');
-      }
-      return translateWithPrefix('declined_at', {
-        date: format(currentStatus?.updated_at, 'd MMM yyyy, hh:mm'),
-      });
-    }
-    if (modalState === 'approved') {
-      if (!currentStatus) {
-        return translateWithPrefix('whitelisted');
-      }
-      return translateWithPrefix('accepted_at', {
-        date: format(currentStatus?.updated_at, 'd MMM yyyy, hh:mm'),
-      });
-    }
-    return translateWithPrefix('verify_description');
-  }, [currentStatus, modalState, translateWithPrefix]);
-
   const renderActions = useCallback(() => {
     switch (modalState) {
-      case 'pending':
-        return (
-          <>
-            <Button
-              onPress={handleUpdateStatus(TokenApprovalStatus.Approved)}
-              mode="secondary"
-            >
-              {t('approval.accept')}
-            </Button>
-            <Spacer y={16} />
-            <Button
-              onPress={handleUpdateStatus(TokenApprovalStatus.Declined)}
-              mode="secondary"
-            >
-              {t('approval.decline')}
-            </Button>
-          </>
-        );
       case 'approved':
         return (
           <Button
             onPress={handleUpdateStatus(TokenApprovalStatus.Declined)}
             mode="secondary"
           >
-            {t('approval.move_to_declined')}
+            {translateWithPrefix('move_to_declined')}
           </Button>
         );
       case 'declined':
@@ -149,27 +101,17 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
             onPress={handleUpdateStatus(TokenApprovalStatus.Approved)}
             mode="secondary"
           >
-            {t('approval.move_to_accepted')}
+            {translateWithPrefix('move_to_accepted')}
           </Button>
         );
     }
-  }, [handleUpdateStatus, modalState]);
+  }, [handleUpdateStatus, modalState, translateWithPrefix]);
 
   return (
     <Modal>
-      <Modal.Header />
+      <Modal.Header title={translateWithPrefix('details')} />
       <Modal.Content>
         <View style={styles.wrap}>
-          <View style={styles.textWrap}>
-            <Text textAlign="center" variant="h2">
-              {title}
-            </Text>
-            <Spacer y={4} />
-            <Text variant="body2" color="textSecondary" textAlign="center">
-              {subtitle}
-            </Text>
-          </View>
-          <Spacer y={32} />
           <List indent={false} compact={false}>
             {props.name ? (
               <List.Item

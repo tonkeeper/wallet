@@ -7,6 +7,7 @@ import { IRatesStore, TRates } from './types';
 import { i18n } from '$translation';
 import { store } from '$store';
 import { JettonsState } from '$store/jettons/interface';
+import { Address } from '@tonkeeper/core';
 
 const getRatesApi = () => {
   return new RatesApi(
@@ -29,6 +30,24 @@ export const useRatesStore = create(
     (set) => ({
       ...initialState,
       actions: {
+        fetchRate: async (token) => {
+          const currencies = ['ton', 'USDT', ...Object.keys(FiatCurrencies)]
+            .map((currency) => currency.toLowerCase())
+            .join(',');
+
+          try {
+            const response = await getRatesApi().getRates({
+              tokens: Address.parse(token).toFriendly(),
+              currencies,
+            });
+
+            const rates = response.rates as TRates;
+
+            set((state) => ({ rates: { ...state.rates, ...rates } }));
+          } catch (e) {
+            console.log('fetchRate error', e);
+          }
+        },
         fetchRates: async () => {
           const tokens = [
             'USDT',
@@ -56,7 +75,7 @@ export const useRatesStore = create(
             //   diff_24h: rates.TON.diff_24h,
             // };
 
-            set({ rates });
+            set((state) => ({ rates: { ...state.rates, ...rates } }));
           } catch (e) {
             console.log('rates error', e);
           }

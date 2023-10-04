@@ -225,7 +225,10 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
               <Button
                 style={{ marginBottom: ns(16) }}
                 onPress={handleTransferNft}
-                disabled={!isCurrentAddressOwner}
+                disabled={
+                  !isCurrentAddressOwner ||
+                  (nft.metadata as { render_type: string }).render_type === 'hidden'
+                }
                 size="large"
               >
                 {isDNS ? t('nft_transfer_dns') : t('nft_transfer_nft')}

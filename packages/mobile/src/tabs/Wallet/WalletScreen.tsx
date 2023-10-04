@@ -1,16 +1,16 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { t } from '@tonkeeper/shared/i18n';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { i18n, t } from '@tonkeeper/shared/i18n';
 import {
   Button,
   IconButton,
   IconButtonList,
-  InternalNotification,
   Screen,
   Text,
   List,
   View,
-  SwapIcon,
-} from '$uikit';
+  PagerView,
+} from '@tonkeeper/uikit';
+import { InternalNotification } from '$uikit';
 import { useNavigation } from '@tonkeeper/router';
 import { ScanQRButton } from '../../components/ScanQRButton';
 import { RefreshControl, useWindowDimensions } from 'react-native';
@@ -23,9 +23,8 @@ import { useIsFocused } from '@react-navigation/native';
 import { useBalance } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
 import { TonIcon } from '@tonkeeper/uikit';
-import { CryptoCurrencies, IsTablet, TabletMaxWidth } from '$shared/constants';
+import { CryptoCurrencies, TabletMaxWidth } from '$shared/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Tabs } from './components/Tabs';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
@@ -34,9 +33,8 @@ import { useWallet } from './hooks/useWallet';
 import { useApprovedNfts } from '$hooks/useApprovedNfts';
 import { useTheme } from '$hooks/useTheme';
 import { useTokenPrice } from '$hooks/useTokenPrice';
-import { ApprovalCell } from '$core/ApprovalCell/components/ApprovalCell';
 import { Steezy } from '$styles';
-import { BalancesList } from './components/BalancesList';
+import { WalletContentList } from './components/WalletContentList';
 import { useFlags } from '$utils/flags';
 import { useUpdatesStore } from '$store/zustand/updates/useUpdatesStore';
 import { UpdatesCell } from '$core/ApprovalCell/Updates/UpdatesCell';
@@ -48,10 +46,10 @@ import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { trackEvent } from '$utils/stats';
 import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { ExpiringDomainCell } from './components/ExpiringDomainCell';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
-  const [tab, setTab] = useState<string>('tokens');
   const tabBarHeight = useBottomTabBarHeight();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -79,7 +77,7 @@ export const WalletScreen = memo(() => {
     return () => clearTimeout(timer);
   }, [dispatch]);
 
-  const handlePressSwap = React.useCallback(() => {
+  const handlePressSwap = useCallback(() => {
     if (wallet) {
       nav.openModal('Swap');
     } else {
@@ -87,7 +85,7 @@ export const WalletScreen = memo(() => {
     }
   }, [nav, wallet]);
 
-  const handlePressBuy = React.useCallback(() => {
+  const handlePressBuy = useCallback(() => {
     if (wallet) {
       nav.openModal('Exchange');
     } else {
@@ -95,7 +93,7 @@ export const WalletScreen = memo(() => {
     }
   }, [nav, wallet]);
 
-  const handlePressSend = React.useCallback(() => {
+  const handlePressSend = useCallback(() => {
     if (wallet) {
       trackEvent(Events.SendOpen, { from: SendAnalyticsFrom.WalletScreen });
       nav.go('Send', { from: SendAnalyticsFrom.WalletScreen });
@@ -104,7 +102,7 @@ export const WalletScreen = memo(() => {
     }
   }, [nav, wallet]);
 
-  const handlePressRecevie = React.useCallback(() => {
+  const handlePressRecevie = useCallback(() => {
     if (wallet) {
       nav.go('ReceiveModal');
     } else {
@@ -118,8 +116,8 @@ export const WalletScreen = memo(() => {
     dispatch(walletActions.refreshBalancesPage(true));
   }, [dispatch]);
 
-  const ListHeader = useCallback(
-    (visibleApproval?: boolean) => (
+  const ListHeader = useMemo(
+    () => (
       <View style={styles.mainSection} pointerEvents="box-none">
         {notifications.map((notification, i) => (
           <InternalNotification
@@ -135,21 +133,23 @@ export const WalletScreen = memo(() => {
         {shouldUpdate && <UpdatesCell />}
         <View style={styles.amount} pointerEvents="box-none">
           <ShowBalance amount={balance.total.fiat} />
-          <View style={styles.walletSpace} />
           {wallet && tk.wallet && (
             <TouchableOpacity
               hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
-              style={{ zIndex: 3 }}
+              style={{ zIndex: 3, marginVertical: 8 }}
               onPress={() => copyText(tk.wallet.address.ton.friendly)}
               activeOpacity={0.6}
             >
-              <Text color="textSecondary" variant="body2">
+              <Text color="textSecondary" type="body2">
                 {tk.wallet.address.ton.short}
               </Text>
             </TouchableOpacity>
           )}
         </View>
-        <IconButtonList>
+        <IconButtonList
+          horizontalIndent={i18n.locale === 'ru' ? 'large' : 'small'}
+          style={styles.actionButtons}
+        >
           <IconButton
             onPress={handlePressSend}
             iconName="ic-arrow-up-28"
@@ -168,12 +168,16 @@ export const WalletScreen = memo(() => {
           {!flags.disable_swap && (
             <IconButton
               onPress={handlePressSwap}
-              icon={<SwapIcon animated />}
+              iconName="ic-swap-horizontal-28"
               title={t('wallet.swap_btn')}
             />
           )}
         </IconButtonList>
-        {wallet && visibleApproval && <ApprovalCell />}
+        {wallet && (
+          <>
+            <ExpiringDomainCell />
+          </>
+        )}
       </View>
     ),
     [
@@ -188,42 +192,6 @@ export const WalletScreen = memo(() => {
       wallet,
     ],
   );
-
-  function renderEmpty() {
-    return (
-      <>
-        <Screen.Header
-          backButton={false}
-          title={t('wallet.screen_title')}
-          rightContent={<ScanQRButton />}
-        />
-        <Screen.ScrollView indent={false}>
-          {ListHeader()}
-          <List>
-            <List.Item
-              title="Toncoin"
-              onPress={() => openWallet(CryptoCurrencies.Ton)}
-              leftContent={<TonIcon />}
-              chevron
-              subtitle={
-                <ListItemRate
-                  price={tonPrice.formatted.fiat ?? '-'}
-                  trend={tonPrice.fiatDiff.trend}
-                />
-              }
-            />
-          </List>
-        </Screen.ScrollView>
-        {isLoaded && !wallet && (
-          <View style={[styles.createWalletContainerOuter, { bottom: tabBarHeight }]}>
-            <View style={styles.createWalletContainerInner}>
-              <Button onPress={handleCreateWallet}>{t('balances_setup_wallet')}</Button>
-            </View>
-          </View>
-        )}
-      </>
-    );
-  }
 
   // TODO: rewrite
   const dimensions = useWindowDimensions();
@@ -243,37 +211,64 @@ export const WalletScreen = memo(() => {
     return { width, height };
   }, [dimensions.width]);
 
-  function renderTabs() {
+  const isPagerView =
+    nfts.length && tokens.list.length >= 2 && tokens.list.length + nfts.length + 1 > 10;
+
+  if (!wallet) {
     return (
-      <Tabs>
+      <Screen>
         <Screen.Header
-          backButton={false}
           title={t('wallet.screen_title')}
           rightContent={<ScanQRButton />}
+          hideBackButton
         />
-        <View style={{ flex: 1 }}>
-          <Tabs.Header>
-            {ListHeader()}
-            <Tabs.Bar
-              onChange={({ value }) => setTab(value)}
-              value={tab}
-              items={[
-                { label: t('wallet.tonkens_tab_lable'), value: 'tokens' },
-                { label: t('wallet.collectibles_tab_lable'), value: 'collectibles' },
-              ]}
+        <Screen.ScrollView indent={false}>
+          {ListHeader}
+          <List>
+            <List.Item
+              title="Toncoin"
+              onPress={() => openWallet(CryptoCurrencies.Ton)}
+              leftContent={<TonIcon />}
+              chevron
+              subtitle={
+                <ListItemRate
+                  price={tonPrice.formatted.fiat ?? '-'}
+                  trend={tonPrice.fiatDiff.trend}
+                />
+              }
             />
-          </Tabs.Header>
-          <Tabs.PagerView>
-            <Tabs.Section index={0}>
-              <BalancesList
-                ListHeaderComponent={
-                  wallet ? (
-                    <ApprovalCell
-                      withoutSpacer
-                      style={{ paddingHorizontal: ns(16), paddingBottom: ns(16) }}
-                    />
-                  ) : undefined
-                }
+          </List>
+        </Screen.ScrollView>
+        {isLoaded && !wallet && (
+          <View style={[styles.createWalletContainerOuter, { bottom: tabBarHeight }]}>
+            <View style={styles.createWalletContainerInner}>
+              <Button onPress={handleCreateWallet} title={t('balances_setup_wallet')} />
+            </View>
+          </View>
+        )}
+      </Screen>
+    );
+  }
+
+  return (
+    <Screen>
+      <Screen.Header
+        title={t('wallet.screen_title')}
+        rightContent={<ScanQRButton />}
+        hideBackButton
+      />
+      {isPagerView ? (
+        <PagerView>
+          <PagerView.Header>
+            {ListHeader}
+            <PagerView.TabBar centered>
+              <PagerView.TabBarItem label={t('wallet.tonkens_tab_lable')} index={0} />
+              <PagerView.TabBarItem label={t('wallet.nft_tab_lable')} index={1} />
+            </PagerView.TabBar>
+          </PagerView.Header>
+          <PagerView.Pages>
+            <PagerView.Page index={0}>
+              <WalletContentList
                 balance={balance}
                 tronBalances={tronBalances}
                 tokens={tokens}
@@ -282,19 +277,10 @@ export const WalletScreen = memo(() => {
                 isRefreshing={isRefreshing}
                 isFocused={isFocused}
               />
-            </Tabs.Section>
-            <Tabs.Section index={1}>
-              <Tabs.FlashList
-                ListHeaderComponent={
-                  wallet ? (
-                    <ApprovalCell
-                      withoutSpacer
-                      style={{ paddingHorizontal: ns(6), paddingBottom: ns(16) }}
-                    />
-                  ) : undefined
-                }
-                contentContainerStyle={styles.scrollContainer.static}
-                estimatedItemSize={1000}
+            </PagerView.Page>
+            <PagerView.Page index={1}>
+              <PagerView.FlatList
+                contentContainerStyle={styles.scrollContainer}
                 numColumns={3}
                 data={nfts}
                 renderItem={({ item }) => (
@@ -311,24 +297,13 @@ export const WalletScreen = memo(() => {
                   />
                 }
               />
-            </Tabs.Section>
-          </Tabs.PagerView>
-        </View>
-      </Tabs>
-    );
-  }
-
-  function renderCompact() {
-    return (
-      <>
-        <Screen.Header
-          backButton={false}
-          title={t('wallet.screen_title')}
-          rightContent={<ScanQRButton />}
-        />
-        <BalancesList
+            </PagerView.Page>
+          </PagerView.Pages>
+        </PagerView>
+      ) : (
+        <WalletContentList
           tronBalances={tronBalances}
-          ListHeaderComponent={ListHeader(true)}
+          ListHeaderComponent={ListHeader}
           handleRefresh={handleRefresh}
           isRefreshing={isRefreshing}
           isFocused={isFocused}
@@ -337,36 +312,25 @@ export const WalletScreen = memo(() => {
           tonPrice={tonPrice}
           nfts={nfts}
         />
-      </>
-    );
-  }
-
-  if (!wallet) {
-    return <Screen>{renderEmpty()}</Screen>;
-  } else if (tokens.list.length <= 2) {
-    return <Screen>{renderCompact()}</Screen>;
-  } else if (nfts.length && tokens.list.length + nfts.length + 1 > 10) {
-    return <Screen>{renderTabs()}</Screen>;
-  } else {
-    return <Screen>{renderCompact()}</Screen>;
-  }
+      )}
+    </Screen>
+  );
 });
 
-const styles = Steezy.create(({ colors, corners, isTablet }) => ({
+const styles = Steezy.create(({ isTablet }) => ({
   container: {
     position: 'relative',
   },
   mainSection: {
-    paddingBottom: 24,
     paddingHorizontal: 16,
   },
   amount: {
-    paddingTop: 29,
+    paddingTop: 28,
     alignItems: 'center',
-    marginBottom: 24.5,
+    marginBottom: 16,
   },
-  walletSpace: {
-    marginTop: 7.5,
+  actionButtons: {
+    marginBottom: 24,
   },
   scrollContainer: {
     paddingHorizontal: 12,

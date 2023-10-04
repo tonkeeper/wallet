@@ -633,12 +633,8 @@ export class TonWallet {
       if (new BigNumber(balances[0]).minus(amount).isLessThan(-balances[1])) {
         throw new Error(t('send_insufficient_funds'));
       }
-    } else {
-      if (
-        new BigNumber(amountNano)
-          .plus(sendMode === 128 ? 0 : feeNano)
-          .isGreaterThan(fromInfo.balance)
-      ) {
+    } else if (sendMode !== 128) {
+      if (new BigNumber(amountNano).plus(feeNano).isGreaterThan(fromInfo.balance)) {
         throw new Error(t('send_insufficient_funds'));
       }
     }

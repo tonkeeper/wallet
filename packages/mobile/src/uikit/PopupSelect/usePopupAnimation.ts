@@ -2,6 +2,7 @@ import React from 'react';
 import {
   cancelAnimation,
   interpolate,
+  ReduceMotion,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
@@ -17,6 +18,7 @@ const SPRING_CONFIG = {
   stiffness: 500,
   restDisplacementThreshold: 0.001,
   restSpeedThreshold: 0.001,
+  reduceMotion: ReduceMotion.Never,
 };
 
 export type AnchorPosition = 'top-right' | 'top-left' | 'top-center';
@@ -83,7 +85,10 @@ export const usePopupAnimation = (options: UsePopupAnimationOptions) => {
         }
       });
 
-      opacity.value = withTiming(1, { duration: OPACITY_DURATION });
+      opacity.value = withTiming(1, {
+        duration: OPACITY_DURATION,
+        reduceMotion: ReduceMotion.Never,
+      });
     }
   }, []);
 
@@ -93,14 +98,21 @@ export const usePopupAnimation = (options: UsePopupAnimationOptions) => {
       cancelAnimation(opacity);
 
       state.value = PopupAnimationState.CLOSING;
-      scale.value = withTiming(0, { duration: SCALE_DURATION }, (isFinished) => {
-        if (isFinished && onDone) {
-          state.value = PopupAnimationState.CLOSED;
-          runOnJS(onDone)();
-        }
-      });
+      scale.value = withTiming(
+        0,
+        { duration: SCALE_DURATION, reduceMotion: ReduceMotion.Never },
+        (isFinished) => {
+          if (isFinished && onDone) {
+            state.value = PopupAnimationState.CLOSED;
+            runOnJS(onDone)();
+          }
+        },
+      );
 
-      opacity.value = withTiming(0, { duration: OPACITY_DURATION });
+      opacity.value = withTiming(0, {
+        duration: OPACITY_DURATION,
+        reduceMotion: ReduceMotion.Never,
+      });
     }
   }, []);
 

@@ -123,17 +123,10 @@ export const Send: FC<SendProps> = ({ route }) => {
   const [insufficientFundsParams, setInsufficientFundsParams] =
     useState<InsufficientFundsParams | null>(null);
 
-  const {
-    balance,
-    currencyTitle,
-    decimals,
-    jettonWalletAddress,
-    price,
-    isLiquidJetton,
-    trcToken,
-  } = useCurrencyToSend(currency, isJetton, isUSDT);
+  const { balance, currencyTitle, decimals, jettonWalletAddress, trcToken } =
+    useCurrencyToSend(currency, isJetton, isUSDT);
 
-  const tokenPrice = useTokenPrice(isLiquidJetton ? CryptoCurrencies.Ton : currency);
+  const tokenPrice = useTokenPrice(currency);
 
   const stepViewRef = useRef<StepViewRef>(null);
 
@@ -193,17 +186,8 @@ export const Send: FC<SendProps> = ({ route }) => {
       return '0';
     }
 
-    if (isLiquidJetton && price) {
-      return amount.all
-        ? price.amount
-        : new BigNumber(parsed)
-            .dividedBy(price.ton)
-            .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
-            .toString();
-    }
-
     return parsed;
-  }, [amount.all, amount.value, decimals, isLiquidJetton, price]);
+  }, [amount.value]);
 
   const prepareConfirmSending = useCallback(async () => {
     if (!recipient) {
@@ -465,7 +449,6 @@ export const Send: FC<SendProps> = ({ route }) => {
               decimals={decimals}
               balance={String(balance)}
               currency={currency}
-              isLiquidJetton={isLiquidJetton}
               onChangeCurrency={onChangeCurrency}
               currencyTitle={currencyTitle}
               amount={amount}

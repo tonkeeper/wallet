@@ -85,7 +85,7 @@ const AddEditFavoriteAddressComponent: FC<AddEditFavoriteAddressProps> = (props)
   return (
     <Modal>
       <Modal.Header title={title} />
-      <Modal.Content>
+      <Modal.Content safeArea>
         <View style={{ marginBottom: 16 }}>
           <S.Wrap>
             <Input
