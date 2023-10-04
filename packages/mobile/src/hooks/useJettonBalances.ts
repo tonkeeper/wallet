@@ -10,7 +10,6 @@ import { getStakingJettons, useStakingStore } from '$store';
 import { shallow } from 'zustand/shallow';
 
 export interface IBalances {
-  pending: JettonBalanceModel[];
   enabled: JettonBalanceModel[];
   disabled: JettonBalanceModel[];
 }
@@ -27,7 +26,6 @@ export const useJettonBalances = (
 
   const jettons = useMemo(() => {
     const balances: IBalances = {
-      pending: [],
       enabled: [],
       disabled: [],
     };
@@ -35,11 +33,7 @@ export const useJettonBalances = (
     jettonBalances.forEach((jetton) => {
       const jettonAddress = Address.parse(jetton.jettonAddress).toRaw();
       const approvalStatus = approvalStatuses.tokens[jettonAddress];
-      const isWhitelisted = jetton.verification === JettonVerification.WHITELIST;
       const isBlacklisted = jetton.verification === JettonVerification.BLACKLIST;
-      const isEnabled =
-        (isWhitelisted && !approvalStatus) ||
-        approvalStatus?.current === TokenApprovalStatus.Approved;
 
       if (!withZeroBalances && jetton.balance === '0') {
         return;
@@ -52,15 +46,13 @@ export const useJettonBalances = (
         return;
       }
 
-      if (isEnabled) {
-        balances.enabled.push(jetton);
-      } else if (
+      if (
         (isBlacklisted && !approvalStatus) ||
         approvalStatus?.current === TokenApprovalStatus.Declined
       ) {
         balances.disabled.push(jetton);
       } else {
-        balances.pending.push(jetton);
+        balances.enabled.push(jetton);
       }
     });
 

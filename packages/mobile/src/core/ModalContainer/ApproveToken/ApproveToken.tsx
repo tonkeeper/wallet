@@ -105,7 +105,7 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
     }
     if (modalState === 'approved') {
       if (!currentStatus) {
-        return translateWithPrefix('whitelisted');
+        return translateWithPrefix('accepted');
       }
       return translateWithPrefix('accepted_at', {
         date: format(currentStatus?.updated_at, 'd MMM yyyy, hh:mm'),

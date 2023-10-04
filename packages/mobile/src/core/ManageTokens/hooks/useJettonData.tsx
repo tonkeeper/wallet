@@ -6,11 +6,10 @@ import {
   TokenApprovalStatus,
   TokenApprovalType,
 } from '$store/zustand/tokenApproval/types';
-import { Button, ListButton, Spacer } from '$uikit';
+import { ListButton, Spacer } from '$uikit';
 import { CellItem, Content, ContentType } from '$core/ManageTokens/ManageTokens.types';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { useJettonBalances } from '$hooks/useJettonBalances';
-import { approveAll } from '$store/zustand/tokenApproval/helpers';
 
 const baseJettonCellData = (jettonBalance) => ({
   type: ContentType.Cell,
@@ -37,48 +36,9 @@ export function useJettonData() {
   const updateTokenStatus = useTokenApprovalStore(
     (state) => state.actions.updateTokenStatus,
   );
-  const { enabled, pending, disabled } = useJettonBalances();
+  const { enabled, disabled } = useJettonBalances();
   const data = useMemo(() => {
     const content: Content[] = [];
-
-    if (pending.length) {
-      content.push({
-        id: 'pending_title',
-        type: ContentType.Title,
-        rightContent: pending.length >= 5 && (
-          <Button
-            onPress={() =>
-              approveAll(pending.map((token) => ({ address: token.jettonAddress })))
-            }
-            mode="secondary"
-            size="navbar_small"
-          >
-            {t('approval.approve_all')}
-          </Button>
-        ),
-        title: t('approval.pending'),
-      });
-
-      content.push(
-        ...pending.map(
-          (jettonBalance, index) =>
-            ({
-              ...baseJettonCellData(jettonBalance),
-              attentionBackground: true,
-              chevron: true,
-              chevronColor: 'iconSecondary',
-              separatorVariant: 'alternate',
-              isFirst: index === 0,
-              isLast: index === pending.length - 1,
-            } as CellItem),
-        ),
-      );
-      content.push({
-        id: 'pending_spacer',
-        type: ContentType.Spacer,
-        bottom: 16,
-      });
-    }
 
     if (enabled.length) {
       content.push({
@@ -171,14 +131,7 @@ export function useJettonData() {
     }
 
     return content;
-  }, [
-    disabled,
-    enabled,
-    isExtendedDisabled,
-    isExtendedEnabled,
-    pending,
-    updateTokenStatus,
-  ]);
+  }, [disabled, enabled, isExtendedDisabled, isExtendedEnabled, updateTokenStatus]);
   return data;
 }
 
