@@ -110,7 +110,7 @@
   "transaction_copy_caution": "Be careful with external links. Never give your secret phrase to third-party resources — you can lose all your funds.\n\n- - -\n\n",
 
   "spam_action": "Spam",
-    
+
   "dns_renew_toast_success": "Domain renewed for 1 year",
   "dns_expiration_date": "Expiration date",
   "dns_renew_until_btn": "Renew until %{untilDate}",
@@ -354,9 +354,9 @@
     "accept": "Accept",
     "decline": "Decline",
     "blacklisted_token": "Blacklisted token",
-    "whitelisted_token": "Whitelisted token",
+    "accepted_token": "Accepted token",
     "blacklisted_collection": "Blacklisted collection",
-    "whitelisted_collection": "Whitelisted collection",
+    "accepted_collection": "Accepted collection",
     "pending": "Pending",
     "declined": "Declined",
     "move_to_declined": "Move to Declined",

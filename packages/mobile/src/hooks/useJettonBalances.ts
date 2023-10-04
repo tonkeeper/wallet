@@ -8,7 +8,6 @@ import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenAppr
 import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
 
 export interface IBalances {
-  pending: JettonBalanceModel[];
   enabled: JettonBalanceModel[];
   disabled: JettonBalanceModel[];
 }
@@ -21,7 +20,6 @@ export const useJettonBalances = (withZeroBalances?: boolean) => {
 
   const jettons = useMemo(() => {
     const balances: IBalances = {
-      pending: [],
       enabled: [],
       disabled: [],
     };
@@ -29,25 +27,19 @@ export const useJettonBalances = (withZeroBalances?: boolean) => {
     jettonBalances.forEach((jetton) => {
       const jettonAddress = Address.parse(jetton.jettonAddress).toRaw();
       const approvalStatus = approvalStatuses.tokens[jettonAddress];
-      const isWhitelisted = jetton.verification === JettonVerification.WHITELIST;
       const isBlacklisted = jetton.verification === JettonVerification.BLACKLIST;
-      const isEnabled =
-        (isWhitelisted && !approvalStatus) ||
-        approvalStatus?.current === TokenApprovalStatus.Approved;
 
       if (!withZeroBalances && jetton.balance === '0') {
         return;
       }
 
-      if (isEnabled) {
-        balances.enabled.push(jetton);
-      } else if (
+      if (
         (isBlacklisted && !approvalStatus) ||
         approvalStatus?.current === TokenApprovalStatus.Declined
       ) {
         balances.disabled.push(jetton);
       } else {
-        balances.pending.push(jetton);
+        balances.enabled.push(jetton);
       }
     });
 

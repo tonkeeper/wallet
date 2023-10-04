@@ -8,12 +8,11 @@ import {
   TokenApprovalStatus,
   TokenApprovalType,
 } from '$store/zustand/tokenApproval/types';
-import { Button, ListButton, Spacer } from '$uikit';
+import { ListButton, Spacer } from '$uikit';
 import { CellItem, Content, ContentType } from '$core/ManageTokens/ManageTokens.types';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { useApprovedNfts } from '$hooks/useApprovedNfts';
 import { JettonVerification, NFTModel } from '$store/models';
-import { approveAll } from '$store/zustand/tokenApproval/helpers';
 
 const baseNftCellData = (nft: NFTModel) => ({
   type: ContentType.Cell,
@@ -64,54 +63,9 @@ export function useNftData() {
   const updateTokenStatus = useTokenApprovalStore(
     (state) => state.actions.updateTokenStatus,
   );
-  const { enabled, pending, disabled } = useApprovedNfts();
+  const { enabled, disabled } = useApprovedNfts();
   return useMemo(() => {
     const content: Content[] = [];
-
-    if (pending.length) {
-      content.push({
-        id: 'pending',
-        type: ContentType.Title,
-        title: t('approval.pending'),
-        rightContent: pending.length >= 5 && (
-          <Button
-            onPress={() =>
-              approveAll(
-                pending.map((nft) => ({
-                  address: nft.collection?.address || nft.address,
-                  isCollection: !!nft.collection?.address,
-                })),
-              )
-            }
-            mode="secondary"
-            size="navbar_small"
-          >
-            {t('approval.approve_all')}
-          </Button>
-        ),
-      });
-
-      content.push(
-        ...groupByCollection(pending).map(
-          (nft, index, array) =>
-            ({
-              ...baseNftCellData(nft),
-              id: nft.address,
-              attentionBackground: true,
-              chevron: true,
-              separatorVariant: 'alternate',
-              chevronColor: 'iconSecondary',
-              isFirst: index === 0,
-              isLast: index === array.length - 1,
-            } as CellItem),
-        ),
-      );
-      content.push({
-        id: 'spacer_pending',
-        type: ContentType.Spacer,
-        bottom: 16,
-      });
-    }
 
     if (enabled.length) {
       content.push({
@@ -213,12 +167,5 @@ export function useNftData() {
     }
 
     return content;
-  }, [
-    disabled,
-    enabled,
-    isExtendedDisabled,
-    isExtendedEnabled,
-    pending,
-    updateTokenStatus,
-  ]);
+  }, [disabled, enabled, isExtendedDisabled, isExtendedEnabled, updateTokenStatus]);
 }
