@@ -33,7 +33,6 @@ import { useWallet } from './hooks/useWallet';
 import { useApprovedNfts } from '$hooks/useApprovedNfts';
 import { useTheme } from '$hooks/useTheme';
 import { useTokenPrice } from '$hooks/useTokenPrice';
-import { ApprovalCell } from '$core/ApprovalCell/components/ApprovalCell';
 import { Steezy } from '$styles';
 import { WalletContentList } from './components/WalletContentList';
 import { useFlags } from '$utils/flags';
@@ -176,7 +175,6 @@ export const WalletScreen = memo(() => {
         </IconButtonList>
         {wallet && (
           <>
-            <ApprovalCell />
             <ExpiringDomainCell />
           </>
         )}
