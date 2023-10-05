@@ -56,10 +56,16 @@ export const calculatePoolBalance = (pool: PoolInfo, stakingInfo: StakingInfo) =
   const pendingDeposit = new BigNumber(
     Ton.fromNano(stakingInfo[pool.address]?.pending_deposit || '0'),
   );
+  const pendingWithdraw = new BigNumber(
+    Ton.fromNano(stakingInfo[pool.address]?.pending_withdraw || '0'),
+  );
   const readyWithdraw = new BigNumber(
     Ton.fromNano(stakingInfo[pool.address]?.ready_withdraw || '0'),
   );
-  const balance = amount.plus(pendingDeposit).plus(readyWithdraw);
+  const balance = amount
+    .plus(pendingDeposit)
+    .plus(readyWithdraw)
+    .plus(pool.implementation === PoolImplementationType.LiquidTF ? pendingWithdraw : 0);
 
   return balance;
 };
