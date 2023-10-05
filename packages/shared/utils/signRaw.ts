@@ -8,6 +8,7 @@ export function getActionTitle(action: ActionItem) {
     case ActionType.JettonTransfer:
     case ActionType.NftItemTransfer:
     case ActionType.NftPurchase:
+    case ActionType.JettonMint:
       if (action.destination === 'in') {
         return t('confirmSendModal.transaction_type.receive');
       } else if (action.destination === 'out') {
@@ -15,6 +16,8 @@ export function getActionTitle(action: ActionItem) {
       } else {
         return action.simple_preview.name;
       }
+    case ActionType.JettonBurn:
+      return t('confirmSendModal.transaction_type.burn');
     // for other action types we don't need custom title in sign-raw
     default:
       return undefined;
