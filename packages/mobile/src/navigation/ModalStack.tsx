@@ -56,7 +56,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NFTSaleCancelModal} path="NFTSaleCancel" />
       <Stack.Modal component={ExchangeModal} path="Exchange" />
       <Stack.Modal component={OldExchange} path="OldExchange" />
-      <Stack.Modal component={СonfirmRenewAllDomains} path="СonfirmRenewAllDomains"/>
+      <Stack.Modal component={СonfirmRenewAllDomains} path="СonfirmRenewAllDomains" />
       <Stack.Modal
         component={NFTTransferInputAddressModal}
         path="NFTTransferInputAddress"
@@ -71,6 +71,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />
       <Stack.Modal component={ReceiveJettonModal} path="/receive/jetton/" />
       <Stack.Modal component={NFT} path="NFTItemDetails" />
+      {/* <Stack.Modal component={Receive} path={AppStackRouteNames.Receive} /> */}
       <Stack.Modal component={Send} path={AppStackRouteNames.Send} />
       <Stack.Modal component={RenewAllDomainModal} path="RenewAllDomains" />
       <Stack.Modal component={ChooseCountry} path={AppStackRouteNames.ChooseCountry} />

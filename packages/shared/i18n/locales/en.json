@@ -110,7 +110,7 @@
   "transaction_copy_caution": "Be careful with external links. Never give your secret phrase to third-party resources — you can lose all your funds.\n\n- - -\n\n",
 
   "spam_action": "Spam",
-    
+
   "dns_renew_toast_success": "Domain renewed for 1 year",
   "dns_expiration_date": "Expiration date",
   "dns_renew_until_btn": "Renew until %{untilDate}",
@@ -127,7 +127,6 @@
   },
   "dns_alert_expiring_one": "%{domain} expires in %{count} days. Renew it until %{untilDate}.",
   "dns_renew_all_until_btn": "Renew all until %{untilDate}",
-
 
   "expiring_domains": "Expiring domains",
   "domains_renewed": "Domains renewed",
