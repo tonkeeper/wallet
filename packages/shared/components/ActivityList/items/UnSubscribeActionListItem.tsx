@@ -1,12 +1,10 @@
+import { ActionListItem, ActionListItemProps } from '../ActionListItem';
 import { useSubscription } from '../../../query/hooks/useSubscription';
-import { ActionItem, ActionType } from '@tonkeeper/core';
-import { ActionListItem } from '../ActionListItem';
+import { ActionType } from '@tonkeeper/core';
 import { t } from '../../../i18n';
 import { memo } from 'react';
 
-interface UnSubscribeActionListItemProps {
-  action: ActionItem<ActionType.UnSubscribe>;
-}
+type UnSubscribeActionListItemProps = ActionListItemProps<ActionType.UnSubscribe>;
 
 export const UnSubscribeActionListItem = memo<UnSubscribeActionListItemProps>((props) => {
   const { action } = props;
@@ -17,7 +15,7 @@ export const UnSubscribeActionListItem = memo<UnSubscribeActionListItemProps>((p
       title={t('transactions.unsubscription')}
       subtitle={subscription?.merchantName}
       iconName="ic-xmark-28"
-      action={action}
+      {...props}
     />
   );
 });

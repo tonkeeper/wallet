@@ -470,6 +470,16 @@
     "copy": "Скопировать"
   },
 
+  "confirmSendModal": {
+    "title": "Подтвердить действие",
+    "network_fee": "Комиссия сети",
+    "to_your_address": "На ваш адрес",
+    "transaction_type": {
+      "send": "Отправить",
+      "receive": "Получить"
+    }
+  },
+
   "browser": {
     "title": "Браузер",
     "search_label": "Поиск",

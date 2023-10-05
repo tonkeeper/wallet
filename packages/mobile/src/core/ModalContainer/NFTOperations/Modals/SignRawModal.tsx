@@ -1,5 +1,4 @@
 import React, { memo, useEffect, useMemo } from 'react';
-import { Highlight, Icon, Text } from '$uikit';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
@@ -8,18 +7,11 @@ import {
   calculateActionsTotalAmount,
   calculateMessageTransferAmount,
   delay,
-  lowerCaseFirstLetter,
-  ns,
 } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
-import { AccountEvent, ActionTypeEnum } from '@tonkeeper/core/src/legacy';
-import { SignRawAction } from './SignRawAction';
 import { store, Toast } from '$store';
-import * as S from '../NFTOperations.styles';
-import { Modal } from '@tonkeeper/uikit';
-import { Ton } from '$libs/Ton';
-import { copyText } from '$hooks/useCopyText';
+import { Modal, View, Text, Steezy, List } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
 import { SheetActions } from '@tonkeeper/router';
 import {
@@ -28,11 +20,25 @@ import {
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { formatter } from '$utils/formatter';
-import { CryptoCurrencies } from '$shared/constants';
+import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
+import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
+import {
+  ActionAmountType,
+  ActionSource,
+  ActionType,
+  ActivityModel,
+  Address,
+  AnyActionItem,
+} from '@tonkeeper/core';
+import { ActionListItemByType } from '@tonkeeper/shared/components/ActivityList/ActionListItemByType';
+import { useSelector } from 'react-redux';
+import { fiatCurrencySelector } from '$store/main';
+import { useGetTokenPrice } from '$hooks/useTokenPrice';
+import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
 
 interface SignRawModalProps {
   action: Awaited<ReturnType<NFTOperations['signRaw']>>;
-  accountEvent?: AccountEvent;
+  consequences?: MessageConsequences;
   options: TxBodyOptions;
   params: SignRawParams;
   onSuccess?: (boc: string) => void;
@@ -40,24 +46,12 @@ interface SignRawModalProps {
 }
 
 export const SignRawModal = memo<SignRawModalProps>((props) => {
-  const { accountEvent, options, params, action, onSuccess, onDismiss } = props;
-
+  const { options, params, action, onSuccess, onDismiss, consequences } = props;
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const unlockVault = useUnlockVault();
 
-  const actions = useMemo(() => {
-    if (!accountEvent || accountEvent?.actions?.[0]?.type === 'Unknown') {
-      return params.messages.map((message) => ({
-        type: 'Unknown',
-        Unknown: {
-          address: message.address,
-          amount: message.amount,
-        },
-      }));
-    }
-
-    return accountEvent.actions;
-  }, [accountEvent, params.messages]);
+  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const getTokenPrice = useGetTokenPrice();
 
   const handleConfirm = onConfirm(async ({ startLoading }) => {
     const vault = await unlockVault();
@@ -68,116 +62,128 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     await action.send(privateKey, async (boc) => {
       if (onSuccess) {
         await delay(1750);
-
         onSuccess(boc);
       }
     });
   });
 
-  const hasWarning = useMemo(() => {
-    return !accountEvent;
-  }, [accountEvent]);
+  useEffect(() => {
+    return () => {
+      onDismiss?.();
+    };
+  }, []);
 
-  const headerTitle = useMemo(() => {
-    if (actions.length > 1) {
-      return t('txActions.signRaw.title');
+  const actions = useMemo(() => {
+    if (consequences) {
+      return ActivityModel.createActions({
+        ownerAddress: tk.wallet.address.ton.raw,
+        events: [consequences.event],
+        source: ActionSource.Ton,
+      });
+    } else {
+      // convert messages to TonTransfer actions
+      return params.messages.map((message) => {
+        return ActivityModel.createMockAction(tk.wallet.address.ton.raw, {
+          type: ActionType.TonTransfer,
+          payload: {
+            amount: Number(message.amount),
+            sender: {
+              address: message.address,
+              is_scam: false,
+            },
+            recipient: {
+              address: message.address,
+              is_scam: false,
+            },
+          },
+        });
+      });
     }
+  }, [consequences]);
 
-    const action = actions[0] ?? {};
+  const extra = useMemo(() => {
+    if (consequences) {
+      const extra = formatter.fromNano(consequences.event.extra ?? 0, 9);
+      const tonPrice = getTokenPrice('ton');
+      const fiatAmount = tonPrice.fiat * parseFloat(extra);
 
-    if (action.type === ActionTypeEnum.AuctionBid) {
-      return undefined;
-    }
-
-    if (action.type === ActionTypeEnum.NftItemTransfer) {
-      return undefined;
-    }
-
-    const type = [
-      'TonTransfer',
-      'ContractDeploy',
-      'JettonTransfer',
-      'NftItemTransfer',
-      'Subscribe',
-      'UnSubscribe',
-    ].find((type) => type in action);
-
-    return type
-      ? t(`txActions.signRaw.types.${lowerCaseFirstLetter(type)}`)
-      : t('txActions.signRaw.types.unknownTransaction');
-  }, [actions]);
-
-  const totalFee = useMemo(() => {
-    const fee = accountEvent?.fee;
-
-    if (fee) {
       return {
-        fee:
-          '≈ ' +
-          formatter.format(Ton.fromNano(fee.total.toString()), {
-            currencySeparator: 'wide',
-            currency: CryptoCurrencies.Ton.toLocaleUpperCase(),
-            absolute: true,
-          }),
-        isNegative: fee.total < 0,
+        isNegative: formatter.isNegative(extra),
+        value: formatter.format(extra, {
+          ignoreZeroTruncate: true,
+          withoutTruncate: true,
+          postfix: 'TON',
+          absolute: true,
+        }),
+        fiat: formatter.format(fiatAmount, {
+          currency: fiatCurrency,
+          absolute: true,
+        }),
+      };
+    } else {
+      const defaultExtra = '0.003';
+      return {
+        isNegative: false,
+        value: defaultExtra,
+        fiat: formatter.format(defaultExtra, {
+          currencySeparator: 'wide',
+          currency: fiatCurrency,
+          absolute: true,
+          decimals: 9,
+        }),
       };
     }
-  }, [accountEvent]);
+  }, [consequences]);
 
-  useEffect(
-    () => () => {
-      onDismiss?.();
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  const amountToFiat = (action: AnyActionItem) => {
+    if (action.amount) {
+      const tokenPrice =
+        action.amount.type === ActionAmountType.Jetton
+          ? getTokenPrice(Address.parse(action.amount.jettonAddress).toFriendly())
+          : getTokenPrice('ton');
+      if (tokenPrice.fiat) {
+        const parsedAmount = parseFloat(
+          formatter.fromNano(action.amount.value, action.amount.decimals),
+        );
+        return formatter.format(tokenPrice.fiat * parsedAmount, {
+          currency: fiatCurrency,
+        });
+      }
+    }
+
+    return null;
+  };
 
   return (
     <Modal>
-      <Modal.Header title={headerTitle} />
+      <Modal.Header title={t('confirmSendModal.title')} />
       <Modal.ScrollView>
-        <S.Container>
-          {actions.length > 1 && totalFee && (
-            <S.Info>
-              <Highlight onPress={() => copyText(totalFee.fee)}>
-                <S.InfoItem>
-                  <S.InfoItemLabel>
-                    {totalFee.isNegative
-                      ? t('txActions.signRaw.totalRefund')
-                      : t('txActions.signRaw.totalFee')}
-                  </S.InfoItemLabel>
-                  <S.InfoItemValue>
-                    <Text variant="body1">{totalFee.fee}</Text>
-                  </S.InfoItemValue>
-                </S.InfoItem>
-              </Highlight>
-            </S.Info>
-          )}
-          {hasWarning && (
-            <S.WaringContainer>
-              <S.WarningInfo>
-                <Text variant="label1" style={{ marginBottom: ns(4) }}>
-                  {t('txActions.signRaw.warning_title')}
-                </Text>
-                <Text variant="body2" color="foregroundSecondary">
-                  {t('txActions.signRaw.warning_caption')}
-                </Text>
-              </S.WarningInfo>
-              <S.WarningIcon>
-                <Icon name="ic-exclamationmark-triangle-36" color="accentOrange" />
-              </S.WarningIcon>
-            </S.WaringContainer>
-          )}
-        </S.Container>
-        {actions.map((action, index) => (
-          <SignRawAction
-            key={`${action.type}-${index}`}
-            countActions={actions.length}
-            totalFee={actions.length === 1 ? totalFee : undefined}
-            action={action}
-            params={params}
-          />
-        ))}
+        <List style={styles.actionsList}>
+          {actions.map((action) => (
+            <View key={action.action_id}>
+              <ActionListItemByType
+                value={formatValue(action)}
+                subvalue={amountToFiat(action)}
+                disablePressable
+                action={action}
+                title={getActionTitle(action)}
+                subtitle={
+                  action.destination === 'in'
+                    ? t('confirmSendModal.to_your_address')
+                    : undefined
+                }
+              />
+            </View>
+          ))}
+        </List>
+        <View style={styles.feeContainer}>
+          <Text type="body2" color="textSecondary">
+            {t('confirmSendModal.network_fee')}
+          </Text>
+          <Text type="body2" color="textSecondary">
+            ≈ {extra.value} · {extra.fiat}
+          </Text>
+        </View>
       </Modal.ScrollView>
       <Modal.Footer>
         <NFTOperationFooter onPressConfirm={handleConfirm} ref={footerRef} />
@@ -208,11 +214,14 @@ export const openSignRawModal = async (
     const operations = new NFTOperations(wallet);
     const action = await operations.signRaw(params);
 
-    let accountEvent: AccountEvent | null = null;
+    let consequences: MessageConsequences | null = null;
     try {
-      accountEvent = await action.estimateTx();
+      const boc = await action.getBoc();
+      consequences = await tonapi.wallet.emulateMessageToWallet({ boc });
+
       Toast.hide();
     } catch (err) {
+      console.log(err);
       debugLog('[SignRaw]: estimateTx error', JSON.stringify(err));
 
       const tonapiError = err?.response?.data?.error;
@@ -230,10 +239,8 @@ export const openSignRawModal = async (
       Toast.fail(`Emulation error: ${errorMessage}`, { duration: 5000 });
     }
 
-    // failed event, check balance
-    if (accountEvent?.fee.total === 0) {
-      const address = await wallet.ton.getAddress();
-      const totalAmount = calculateActionsTotalAmount(address, accountEvent.actions);
+    if (params.messages) {
+      const totalAmount = calculateActionsTotalAmount(params.messages);
       const checkResult = await checkIsInsufficient(totalAmount);
       if (checkResult.insufficient) {
         Toast.hide();
@@ -246,7 +253,7 @@ export const openSignRawModal = async (
       $$action: SheetActions.ADD,
       component: SignRawModal,
       params: {
-        accountEvent,
+        consequences,
         options,
         params,
         action,
@@ -264,3 +271,16 @@ export const openSignRawModal = async (
     return false;
   }
 };
+
+const styles = Steezy.create({
+  feeContainer: {
+    paddingHorizontal: 32,
+    paddingTop: 12,
+    paddingBottom: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  actionsList: {
+    marginBottom: 0,
+  },
+});

@@ -452,6 +452,16 @@
     "copy": "Copy"
   },
 
+  "confirmSendModal": {
+    "title": "Confirm action",
+    "network_fee": "Network fee",
+    "to_your_address":"To your address",
+    "transaction_type": {
+      "send": "Send",
+      "receive": "Receive"
+    }
+  },
+
   "browser": {
     "title": "Browser",
     "search_label": "Search or enter address",

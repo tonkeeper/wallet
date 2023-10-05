@@ -1,9 +1,3 @@
-import {
-  ActionSource,
-  ActionType,
-  AmountFormatter,
-  AnyActionItem,
-} from '@tonkeeper/core';
 import { openActivityActionModal } from '../../modals/ActivityActionModal';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { ListItemContent, Steezy } from '@tonkeeper/uikit';
@@ -14,6 +8,12 @@ import { ImageRequireSource } from 'react-native';
 import { Address } from '../../Address';
 import { t } from '../../i18n';
 import {
+  ActionSource,
+  ActionType,
+  AmountFormatter,
+  AnyActionItem,
+} from '@tonkeeper/core';
+import { 
   ListItemContentText,
   IconNames,
   Picture,
@@ -27,10 +27,10 @@ import {
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 import { useFlags } from '@tonkeeper/mobile/src/utils/flags';
 
-interface ActionListItem {
+export interface ActionListItemProps<TActionType extends ActionType = ActionType> {
   onPress?: () => void;
   subvalue?: string | React.ReactNode;
-  action: AnyActionItem;
+  action: AnyActionItem<TActionType>;
   subtitleNumberOfLines?: number;
   children?: React.ReactNode;
   pictureSource?: ImageRequireSource;
@@ -42,10 +42,11 @@ interface ActionListItem {
   subtitle?: string;
   greenValue?: boolean;
   ignoreFailed?: boolean;
+  disablePressable?: boolean;
   isSimplePreview?: boolean;
 }
 
-export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
+export const ActionListItem = memo<ActionListItemProps>((props) => {
   const {
     action,
     children,
@@ -53,6 +54,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     subtitleNumberOfLines,
     greenValue,
     ignoreFailed,
+    disablePressable,
     isSimplePreview,
   } = props;
   const { formatNano } = useHideableFormatter();
@@ -69,7 +71,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     } else {
       openActivityActionModal(action.action_id, ActionSource.Ton);
     }
-  }, []);
+  }, [onPress]);
 
   const isFailed = action.status === ActionStatusEnum.Failed;
 
@@ -200,10 +202,10 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
 
   return (
     <List.Item
+      onPress={!disablePressable ? handlePress : undefined}
       leftContent={props.leftContent ?? leftContent}
       subtitleNumberOfLines={subtitleNumberOfLines}
       valueStyle={valueStyle}
-      onPress={handlePress}
       subvalue={subvalue}
       subtitle={subtitle}
       title={title}
