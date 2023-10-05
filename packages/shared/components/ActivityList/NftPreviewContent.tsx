@@ -17,10 +17,11 @@ import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated
 interface NftPreviewContentProps {
   nftAddress?: string;
   nftItem?: NftItem;
+  disabled?: boolean;
 }
 
 export const NftPreviewContent = memo<NftPreviewContentProps>((props) => {
-  const { nftAddress, nftItem } = props;
+  const { nftAddress, nftItem, disabled } = props;
   const { data: nft } = useNftItemByAddress(props.nftAddress, {
     existingNft: nftItem,
   });
@@ -40,7 +41,11 @@ export const NftPreviewContent = memo<NftPreviewContentProps>((props) => {
 
   if (nft) {
     return (
-      <Pressable onPress={handlePress} style={styles.container.static}>
+      <Pressable
+        disabled={props.disabled}
+        onPress={handlePress}
+        style={styles.container.static}
+      >
         <ListItemContent style={styles.item.static}>
           <View style={styles.pictureContainer}>
             <HideableImage

@@ -34,6 +34,7 @@ import { ActionListItemByType } from '@tonkeeper/shared/components/ActivityList/
 import { useSelector } from 'react-redux';
 import { fiatCurrencySelector } from '$store/main';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
+import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
 
 interface SignRawModalProps {
   action: Awaited<ReturnType<NFTOperations['signRaw']>>;
@@ -161,9 +162,11 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
           {actions.map((action) => (
             <View key={action.action_id}>
               <ActionListItemByType
+                value={formatValue(action)}
                 subvalue={amountToFiat(action)}
                 disablePressable
                 action={action}
+                title={getActionTitle(action)}
                 subtitle={
                   action.destination === 'in'
                     ? t('confirmSendModal.to_your_address')

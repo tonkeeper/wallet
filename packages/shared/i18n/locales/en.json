@@ -454,7 +454,11 @@
   "confirmSendModal": {
     "title": "Confirm action",
     "network_fee": "Network fee",
-    "to_your_address":"To your address"
+    "to_your_address":"To your address",
+    "transaction_type": {
+      "send": "Send",
+      "receive": "Receive"
+    }
   },
 
   "browser": {
