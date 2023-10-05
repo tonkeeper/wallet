@@ -166,7 +166,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
                 subvalue={amountToFiat(action)}
                 disablePressable
                 action={action}
-                title={getActionTitle(action)}
+                {...(getActionTitle(action) && { title: getActionTitle(action) })}
                 subtitle={
                   action.destination === 'in'
                     ? t('confirmSendModal.to_your_address')
