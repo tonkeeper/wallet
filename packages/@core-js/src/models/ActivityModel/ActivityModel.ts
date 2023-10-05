@@ -80,7 +80,7 @@ export class ActivityModel {
     }
 
     const type = (action as any).type as ActionType;
-    const destination = this.defineActionDestination(ownerAddress, payload);
+    const destination = this.defineActionDestination(ownerAddress, type, payload);
     const amount = this.createAmount({ type, payload });
 
     return {
@@ -160,13 +160,21 @@ export class ActivityModel {
 
   static defineActionDestination(
     ownerAddress: string,
-    action: AnyActionPayload,
+    actionType: ActionType,
+    payload: AnyActionPayload,
   ): ActionDestination {
-    if (action && 'recipient' in action) {
-      if (typeof action.recipient === 'object') {
-        return Address.compare(action.recipient?.address, ownerAddress) ? 'in' : 'out';
-      } else if (typeof action.recipient === 'string') {
-        return action.recipient === ownerAddress ? 'in' : 'out';
+    if (
+      actionType === ActionType.WithdrawStake ||
+      actionType === ActionType.WithdrawStakeRequest
+    ) {
+      return 'in';
+    }
+
+    if (payload && 'recipient' in payload) {
+      if (typeof payload.recipient === 'object') {
+        return Address.compare(payload.recipient?.address, ownerAddress) ? 'in' : 'out';
+      } else if (typeof payload.recipient === 'string') {
+        return payload.recipient === ownerAddress ? 'in' : 'out';
       }
     }
 

@@ -1,4 +1,4 @@
-import { CryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { useSelector } from 'react-redux';
 import { fiatCurrencySelector } from '$store/main';
 import { useGetTokenPrice, useTokenPrice } from '$hooks/useTokenPrice';
@@ -12,8 +12,10 @@ import {
 import { Ton } from '$libs/Ton';
 import BigNumber from 'bignumber.js';
 import { formatter } from '$utils/formatter';
-import { useStakingStore } from '$store';
+import { getStakingJettons, useStakingStore } from '$store';
 import { shallow } from 'zustand/shallow';
+import { jettonsBalancesSelector } from '$store/jettons';
+import { Address } from '@tonkeeper/core';
 
 export type Rate = {
   percent: string;
@@ -43,6 +45,39 @@ const useAmountToFiat = () => {
   return amountToFiat;
 };
 
+const useStakingBalance = () => {
+  const _stakingBalance = useStakingStore((s) => s.stakingBalance, shallow);
+  const stakingJettons = useStakingStore(getStakingJettons, shallow);
+  const jettonBalances = useSelector(jettonsBalancesSelector);
+  const amountToFiat = useAmountToFiat();
+  const getTokenPrice = useGetTokenPrice();
+
+  const stakingJettonsBalance = useMemo(() => {
+    return jettonBalances
+      .filter((item) =>
+        stakingJettons.includes(Address.parse(item.jettonAddress).toRaw()),
+      )
+      .reduce((total, jetton) => {
+        return total.plus(getTokenPrice(jetton.jettonAddress, jetton.balance).totalTon);
+      }, new BigNumber('0'))
+      .decimalPlaces(Decimals[CryptoCurrencies.Ton]);
+  }, [getTokenPrice, jettonBalances, stakingJettons]);
+
+  const stakingBalance = useMemo(() => {
+    const balance = new BigNumber(_stakingBalance).plus(stakingJettonsBalance).toString();
+    const formatted = formatter.format(balance);
+    return {
+      amount: {
+        nano: balance,
+        fiat: amountToFiat(balance),
+        formatted,
+      },
+    };
+  }, [_stakingBalance, amountToFiat, stakingJettonsBalance]);
+
+  return stakingBalance;
+};
+
 export const useBalance = (tokensTotal: number) => {
   const balances = useSelector(walletBalancesSelector);
   const walletVersion = useSelector(walletVersionSelector);
@@ -51,19 +86,7 @@ export const useBalance = (tokensTotal: number) => {
   const amountToFiat = useAmountToFiat();
   const getTokenPrice = useGetTokenPrice();
 
-  const _stakingBalance = useStakingStore((s) => s.stakingBalance, shallow);
-
-  const stakingBalance = useMemo(() => {
-    const balance = _stakingBalance;
-    const formatted = formatter.format();
-    return {
-      amount: {
-        nano: balance,
-        fiat: amountToFiat(balance),
-        formatted,
-      },
-    };
-  }, [_stakingBalance, amountToFiat]);
+  const stakingBalance = useStakingBalance();
 
   const oldVersions = useMemo(() => {
     if (isLockup) {

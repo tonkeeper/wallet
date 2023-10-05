@@ -377,6 +377,7 @@ export const StakingSend: FC<Props> = (props) => {
               isJetton={isJetton}
               stepsScrollTop={stepsScrollTop}
               sendTx={sendTx}
+              isPreparing={isPreparing}
               {...stepProps}
             />
           )}
