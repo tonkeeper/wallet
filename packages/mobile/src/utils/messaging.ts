@@ -4,7 +4,7 @@ import { PermissionsAndroid, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import { getTimeSec } from './getTimeSec';
-import _ from "lodash";
+import _ from 'lodash';
 
 export async function getToken() {
   return await messaging().getToken();
@@ -12,7 +12,9 @@ export async function getToken() {
 
 export async function getPermission() {
   if (isAndroid && +Platform.Version >= 33) {
-    return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+    return await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+    );
   } else {
     const authStatus = await messaging().hasPermission();
     const enabled =
@@ -23,9 +25,11 @@ export async function getPermission() {
   }
 }
 
-export async function requestUserPermissionAndGetToken() {
+export async function requestUserPermission() {
   if (isAndroid && +Platform.Version >= 33) {
-    const status = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+    const status = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+    );
     const enabled = status === PermissionsAndroid.RESULTS.GRANTED;
 
     if (!enabled) {
@@ -44,6 +48,13 @@ export async function requestUserPermissionAndGetToken() {
         return false;
       }
     }
+  }
+  return true;
+}
+
+export async function requestUserPermissionAndGetToken() {
+  if (!(await requestUserPermissionAndGetToken())) {
+    return false;
   }
 
   return await getToken();

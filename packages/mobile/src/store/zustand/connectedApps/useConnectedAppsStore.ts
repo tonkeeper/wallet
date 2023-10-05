@@ -7,7 +7,11 @@ import { Tonapi } from '$libs/Tonapi';
 import messaging from '@react-native-firebase/messaging';
 import * as SecureStore from 'expo-secure-store';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
-import { getSubscribeStatus, SUBSCRIBE_STATUS } from '$utils/messaging';
+import {
+  getSubscribeStatus,
+  requestUserPermission,
+  SUBSCRIBE_STATUS,
+} from '$utils/messaging';
 import { Toast } from '@tonkeeper/uikit';
 
 const initialState: Omit<IConnectedAppsStore, 'actions'> = {
@@ -136,6 +140,7 @@ export const useConnectedAppsStore = create(
             try {
               const fixedUrl = getFixedLastSlashUrl(url);
               const token = await SecureStore.getItemAsync('proof_token');
+              await requestUserPermission();
               const firebase_token = await messaging().getToken();
 
               if (!token) {
