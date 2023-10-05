@@ -7,7 +7,20 @@ import {
 
 export const extrernalNavigationRef = createNavigationContainerRef<any>();
 
+let lastNavigationTime = 0;
+const THROTTLE_DURATION = 700;
+
+function canNavigate() {
+  const now = Date.now();
+  if (now - lastNavigationTime < THROTTLE_DURATION) {
+    return false;
+  }
+  lastNavigationTime = now;
+  return true;
+}
+
 function navigate(name: string, params?: any) {
+  if (!canNavigate()) return;
   extrernalNavigationRef.navigate(name, params);
 }
 
@@ -16,6 +29,7 @@ function replace(name: string, params?: any) {
 }
 
 function push(routeName: string, params?: any) {
+  if (!canNavigate()) return;
   extrernalNavigationRef.dispatch(StackActions.push(routeName, params));
 }
 
@@ -40,14 +54,14 @@ function reset(screenName: string) {
   );
 }
 
-export const navigation = { 
+export const navigation = {
   navigate,
   replace,
   push,
   popToTop,
   popTo,
   goBack,
-  reset
+  reset,
 };
 
 export const useParams = <T>(): Partial<T> => {
