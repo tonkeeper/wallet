@@ -458,7 +458,8 @@
     "to_your_address":"To your address",
     "transaction_type": {
       "send": "Send",
-      "receive": "Receive"
+      "receive": "Receive",
+      "burn": "Burn"
     }
   },
 

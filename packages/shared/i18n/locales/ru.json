@@ -476,7 +476,8 @@
     "to_your_address": "На ваш адрес",
     "transaction_type": {
       "send": "Отправить",
-      "receive": "Получить"
+      "receive": "Получить",
+      "burn": "Сжечь"
     }
   },
 
