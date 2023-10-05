@@ -5,6 +5,7 @@ import { ActionItem, ActionType } from '@tonkeeper/core';
 import { List } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import { memo } from 'react';
+import { StakingIcon } from '../components/StakingIcon';
 
 interface DepositStakeActionContentProps {
   action: ActionItem<ActionType.DepositStake>;
@@ -14,7 +15,11 @@ export const DepositStakeActionContent = memo<DepositStakeActionContentProps>((p
   const { action } = props;
 
   return (
-    <ActionModalContent label={t('activityActionModal.deposit')} action={action}>
+    <ActionModalContent
+      label={t('activityActionModal.deposit')}
+      header={<StakingIcon implementation={action.payload.implementation} />}
+      action={action}
+    >
       <List>
         <AddressListItem
           recipient={action.payload.pool}

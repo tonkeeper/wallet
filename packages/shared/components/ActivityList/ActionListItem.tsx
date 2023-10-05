@@ -147,7 +147,9 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
       return props.value;
     } else {
       let amountPrefix = AmountFormatter.sign.minus;
-      if (action.destination === 'out') {
+      if (action.type === ActionType.WithdrawStakeRequest) {
+        amountPrefix = '';
+      } else if (action.destination === 'out') {
         amountPrefix = AmountFormatter.sign.minus;
       } else if (action.destination === 'in') {
         amountPrefix = AmountFormatter.sign.plus;
@@ -176,6 +178,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
   const valueStyle = [
     (action.destination === 'in' || greenValue) && styles.receiveValue,
     action.event.is_scam && styles.scamAmountText,
+    action.type === ActionType.WithdrawStakeRequest && styles.withdrawalRequest,
   ];
 
   const leftContent = (
@@ -241,6 +244,9 @@ const styles = Steezy.create(({ colors }) => ({
     marginTop: 8,
   },
   scamAmountText: {
+    color: colors.textTertiary,
+  },
+  withdrawalRequest: {
     color: colors.textTertiary,
   },
   sendingOuter: {

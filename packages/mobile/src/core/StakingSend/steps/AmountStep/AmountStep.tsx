@@ -18,7 +18,7 @@ import {
 } from '$shared/components';
 import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
 import { SendAmount } from '$core/Send/Send.interface';
-import { CryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
 import { StakingSendSteps } from '$core/StakingSend/types';
@@ -62,10 +62,12 @@ const AmountStepComponent: FC<Props> = (props) => {
   const tokenPrice = useTokenPrice(currency);
 
   const {
-    decimals,
-    balance: walletBalance,
-    currencyTitle,
+    price,
+    balance: tonBalance,
+    isLiquidJetton,
   } = useCurrencyToSend(currency, isJetton);
+
+  const walletBalance = isLiquidJetton ? price!.totalTon : tonBalance;
 
   const minAmount = isWithdrawal ? '0' : Ton.fromNano(pool.min_stake);
 
@@ -135,10 +137,10 @@ const AmountStepComponent: FC<Props> = (props) => {
               innerRef={textInputRef}
               disabled={isPreparing}
               hideSwap={true}
+              currencyTitle={CryptoCurrencies.Ton.toUpperCase()}
+              decimals={Decimals[CryptoCurrencies.Ton]}
               {...{
-                decimals,
                 balance,
-                currencyTitle,
                 amount,
                 minAmount,
                 fiatRate: tokenPrice.fiat,

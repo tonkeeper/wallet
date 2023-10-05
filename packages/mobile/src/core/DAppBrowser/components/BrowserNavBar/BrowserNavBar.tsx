@@ -10,6 +10,7 @@ import { Toast } from '$store';
 import { goBack } from '$navigation/imperative';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
+import { getFlag } from '$utils/flags';
 
 enum PopupActionType {
   REFRESH,
@@ -62,7 +63,9 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
 
   const domain = getDomainFromURL(url);
 
-  const shortAddress = Address.toShort(walletAddress);
+  const shortAddress = Address.parse(walletAddress, {
+    bounceable: !getFlag('address_style_nobounce'),
+  }).toShort();
 
   const popupItems = useMemo(() => {
     const items: PopupAction[] = [

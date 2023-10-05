@@ -442,7 +442,8 @@
     "bid_name": "Name",
     "subscription_product_label": "Subscription",
     "subscription_merchant_label": "Merchant",
-    "unsubscription_title": "Unsubscribed"
+    "unsubscription_title": "Unsubscribed",
+    "withdraw_amount": "Unstake amount"
   },
 
   "receiveModal": {
@@ -856,9 +857,9 @@
     "active": "Active",
     "other": "Other",
     "message": {
-      "readyWithdraw": "%{amount} TON are ready for\nwithdrawal. Tap to collect",
-      "pendingWithdraw": "%{amount} TON will be\nwithdrawn ",
-      "pendingDeposit": "%{amount} TON will be\nadded "
+      "readyWithdraw": "%{amount} TON ready.\nTap to collect",
+      "pendingWithdraw": "%{amount} TON unstaked\n",
+      "pendingDeposit": "%{amount} TON staked\n"
     },
     "warning": {
       "title": "Warning",

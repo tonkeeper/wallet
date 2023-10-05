@@ -5,6 +5,7 @@ import { ActionItem, ActionType } from '@tonkeeper/core';
 import { List } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import { memo } from 'react';
+import { StakingIcon } from '../components/StakingIcon';
 
 interface WithdrawStakeActionContentProps {
   action: ActionItem<ActionType.WithdrawStake>;
@@ -15,7 +16,11 @@ export const WithdrawStakeActionContent = memo<WithdrawStakeActionContentProps>(
     const { action } = props;
 
     return (
-      <ActionModalContent label={t('activityActionModal.withdraw')} action={action}>
+      <ActionModalContent
+        label={t('activityActionModal.withdraw')}
+        header={<StakingIcon implementation={action.payload.implementation} />}
+        action={action}
+      >
         <List>
           <AddressListItem
             hideName={action.event.is_scam}

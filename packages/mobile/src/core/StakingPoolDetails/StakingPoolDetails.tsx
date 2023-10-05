@@ -171,7 +171,9 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                   style={styles.valueText.static}
                   variant="label1"
                   stars=" * * *"
-                >{` ${stakingJettonMetadata.price.amount}`}</HideableAmount>
+                >{` ${formatter.format(stakingJettonMetadata.price.amount, {
+                  decimals: Number(stakingJettonMetadata.decimals),
+                })}`}</HideableAmount>
               }
               subvalue={
                 <HideableAmount

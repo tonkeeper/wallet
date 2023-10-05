@@ -460,7 +460,8 @@
     "bid_name": "Название",
     "subscription_product_label": "Подписка",
     "subscription_merchant_label": "Продавец",
-    "unsubscription_title": "Отмена подписки"
+    "unsubscription_title": "Отмена подписки",
+    "withdraw_amount": "Сумма вывода"
   },
 
   "receiveModal": {
@@ -886,11 +887,11 @@
         "many": "%{amount} TON готовы к выводу.\nНажмите, чтобы вывести"
       },
       "pendingWithdraw": {
-        "zero": "%{amount} TON будет\nвыведено ",
-        "one": "%{amount} TON будет\nвыведен ",
-        "few": "%{amount} TON будет\nвыведено ",
-        "many": "%{amount} TON будет\nвыведено ",
-        "other": "%{amount} TON будет\nвыведено "
+        "zero": "%{amount} TON будет выведено\n",
+        "one": "%{amount} TON будет выведен\n",
+        "few": "%{amount} TON будет выведено\n",
+        "many": "%{amount} TON будет выведено\n",
+        "other": "%{amount} TON будет выведено\n"
       },
       "pendingDeposit": {
         "zero": "%{amount} TON будет\nзачислено ",

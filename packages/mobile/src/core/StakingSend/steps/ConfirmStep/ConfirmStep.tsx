@@ -19,6 +19,7 @@ import { getImplementationIcon, getPoolIcon } from '$utils/staking';
 import { stakingFormatter } from '$utils/formatter';
 import { t } from '@tonkeeper/shared/i18n';
 import { PoolInfo } from '@tonkeeper/core/src/TonAPI';
+import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 
 interface Props extends StepComponentProps {
   transactionType: StakingTransactionType;
@@ -28,6 +29,7 @@ interface Props extends StepComponentProps {
   decimals: number;
   isJetton: boolean;
   stepsScrollTop: SharedValue<Record<StakingSendSteps, number>>;
+  isPreparing: boolean;
   sendTx: () => Promise<void>;
 }
 
@@ -53,6 +55,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
     decimals,
     isJetton,
     stepsScrollTop,
+    isPreparing,
     sendTx,
   } = props;
 
@@ -146,22 +149,34 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                 </S.ItemContent>
               </S.Item>
             )}
-            {totalFee ? (
-              <>
-                <Separator />
-                <S.Item>
-                  <S.ItemLabel>{t('staking.confirm.fee.label')}</S.ItemLabel>
-                  <S.ItemContent>
-                    <S.ItemValue>
+            <Separator />
+            <S.Item>
+              <S.ItemLabel>{t('staking.confirm.fee.label')}</S.ItemLabel>
+              <S.ItemContent>
+                {isPreparing ? (
+                  <>
+                    <S.ItemSkeleton>
+                      <SkeletonLine height={20} />
+                    </S.ItemSkeleton>
+                    <Spacer y={4} />
+                    <S.ItemSkeleton>
+                      <SkeletonLine width={50} />
+                    </S.ItemSkeleton>
+                  </>
+                ) : (
+                  <>
+                    <S.ItemValue numberOfLines={1}>
                       {t('staking.confirm.fee.value', {
-                        value: truncateDecimal(totalFee, 1),
+                        value: totalFee ? truncateDecimal(totalFee, 1) : '?',
                       })}
                     </S.ItemValue>
-                    <S.ItemSubValue>≈ {fiatFee.formatted.totalFiat}</S.ItemSubValue>
-                  </S.ItemContent>
-                </S.Item>
-              </>
-            ) : null}
+                    <S.ItemSubValue>
+                      {totalFee ? `≈ ${fiatFee.formatted.totalFiat}` : ' '}
+                    </S.ItemSubValue>
+                  </>
+                )}
+              </S.ItemContent>
+            </S.Item>
           </S.Table>
         </S.Content>
         <BottomButtonWrapHelper />
@@ -169,6 +184,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
       <S.FooterContainer bottomInset={bottomInset}>
         <ActionFooter
           withCloseButton={isWithdrawalConfrim}
+          disabled={isPreparing}
           confirmTitle={t(
             isWithdrawalConfrim
               ? 'confirm'
