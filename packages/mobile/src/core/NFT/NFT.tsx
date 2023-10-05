@@ -273,6 +273,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
               </Button>
             ) : null}
             <ProgrammableButtons
+              disabled={!isCurrentAddressOwner}
               nftAddress={nft.address}
               isApproved={nft.isApproved}
               buttons={nft.metadata.buttons}
