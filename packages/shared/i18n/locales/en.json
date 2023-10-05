@@ -455,7 +455,7 @@
   "confirmSendModal": {
     "title": "Confirm action",
     "network_fee": "Network fee",
-    "to_your_address":"To your address",
+    "to_your_address": "To your address",
     "transaction_type": {
       "send": "Send",
       "receive": "Receive",
@@ -889,13 +889,13 @@
       "pendingDeposit": "Pending Stake",
       "pendingWithdraw": "Pending Unstake",
       "pendingWithdrawDesc": "at the end of the cycle",
-      "readyWithdraw": "Withdrawal ready",
+      "readyWithdraw": "Unstake ready",
       "tap_to_collect": "Tap to collect",
       "next_cycle": {
         "title": "Next cycle",
         "reward_title": "Next reward",
         "desc": "All transactions take effect once the cycle ends.",
-        "desc_liquid": "Unstake requests are complete after the cycle ends.",
+        "desc_liquid": "Unstake requests are complete after the cycle ends.",
         "in": "in"
       },
       "cooldown": {
