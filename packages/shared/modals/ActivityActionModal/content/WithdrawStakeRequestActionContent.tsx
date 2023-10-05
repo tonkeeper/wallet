@@ -2,11 +2,11 @@ import { AddressListItem } from '../components/AddressListItem';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
 import { ActionItem, ActionType } from '@tonkeeper/core';
-import { FastImage, List, ListItem, Steezy, copyText } from '@tonkeeper/uikit';
+import { List, ListItem, copyText } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import { memo } from 'react';
-import { getImplementationIcon } from '@tonkeeper/mobile/src/utils/staking';
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
+import { StakingIcon } from '../components/StakingIcon';
 
 interface WithdrawStakeRequestActionContentProps {
   action: ActionItem<ActionType.WithdrawStakeRequest>;
@@ -30,13 +30,7 @@ export const WithdrawStakeRequestActionContent =
     return (
       <ActionModalContent
         title={t('activityActionModal.withdrawal_request')}
-        header={
-          <FastImage
-            style={styles.stakingImage}
-            resizeMode="cover"
-            source={getImplementationIcon(action.payload.implementation)}
-          />
-        }
+        header={<StakingIcon implementation={action.payload.implementation} />}
         action={action}
       >
         <List>
@@ -60,12 +54,3 @@ export const WithdrawStakeRequestActionContent =
       </ActionModalContent>
     );
   });
-
-const styles = Steezy.create(({ colors }) => ({
-  stakingImage: {
-    width: 96,
-    height: 96,
-    borderRadius: 96 / 2,
-    backgroundColor: colors.backgroundContent,
-  },
-}));
