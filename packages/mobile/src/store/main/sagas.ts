@@ -223,6 +223,7 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
       !getFlag('address_style_nobounce'),
     );
     useSwapStore.getState().actions.fetchAssets();
+    useExpiringDomains.getState().actions.load(addr);
   } else {
     yield put(walletActions.endLoading());
   }
