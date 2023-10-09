@@ -1,15 +1,20 @@
+import { PagerViewTabBarItem } from './PagerViewTabBarItem';
 import { PagerViewScrollView } from './PagerScrollView';
-import { PagerViewContainer } from './PagerViewContainer';
-import { PagerViewFlashList } from './PagerViewFlashList';
-import { PageViewExternalHeader } from './PageViewExternalHeader';
-import { PageViewExternalPage } from './PageViewExternalPage';
+import { PagerViewFlatList } from './PagerViewFlatList';
+import { PagerViewProvider } from './PagerViewProvider';
+import { PagerViewHeader } from './PagerViewHeader';
+import { PagerViewTabBar } from './PagerViewTabBar';
+import { PagerViewPages } from './PagerViewPages';
+import { PagerViewPage } from './PagerViewPage';
 
-export { PagerViewRef, PagerViewSelectedEvent } from './PagerViewContainer';
 export { usePagerViewSteps } from './hooks/usePagerViewSteps';
 
-export const PagerView = Object.assign(PagerViewContainer, {
-  Header: PageViewExternalHeader,
+export const PagerView = Object.assign(PagerViewProvider, {
+  TabBarItem: PagerViewTabBarItem,
   ScrollView: PagerViewScrollView,
-  FlashList: PagerViewFlashList,
-  Page: PageViewExternalPage,
+  FlatList: PagerViewFlatList,
+  TabBar: PagerViewTabBar,
+  Header: PagerViewHeader,
+  Pages: PagerViewPages,
+  Page: PagerViewPage,
 });

@@ -71,14 +71,9 @@ export const ReceiveTokenContent = memo<ReceiveTokenContentProps>((props) => {
         {render ? (
           <View style={styles.qrCodeContainer}>
             <View style={{ transform: [{ scale: qrCodeScale }] }}>
-              <QRCode
-                data={qrAddress ?? address}
-                logo={blankAreaForLogo}
-                style={styles.qrCode}
-                pieceSize={8}
-              />
+              <QRCode data={qrAddress ?? address} style={styles.qrCode} pieceSize={8} />
             </View>
-            <View style={styles.qrLogo}>{logo}</View>
+            <View style={steezyStyles.logoContainer}>{logo}</View>
           </View>
         ) : (
           <View style={styles.emptyQrArea} />
@@ -128,10 +123,6 @@ const styles = StyleSheet.create({
   qrCode: {
     backgroundColor: '#FFF',
   },
-  qrLogo: {
-    position: 'absolute',
-    zIndex: 1,
-  },
   emptyQrArea: {
     height: 231,
   },
@@ -163,11 +154,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const whitepng =
-  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAE4AAABOAQMAAAC0ZLJeAAAAA1BMVEX///+nxBvIAAAAEElEQVQYGWMYBaNgFNAAAAADWgABYd4igAAAAABJRU5ErkJggg==';
-const blankAreaForLogo = { width: 78, height: 78, href: whitepng, scale: 3.2 };
-
 const steezyStyles = Steezy.create(({ colors }) => ({
+  logoContainer: {
+    position: 'absolute',
+    zIndex: 1,
+    padding: 8,
+    backgroundColor: colors.constantWhite,
+  },
   shareButton: {
     width: 48,
     height: 48,

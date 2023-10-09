@@ -10,6 +10,7 @@ import { Tonapi } from '$libs/Tonapi';
 import { useStakingStore } from '$store';
 import { ActionItem, ActionType, Address } from '@tonkeeper/core';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { getFlag } from '$utils/flags';
 
 export const DOMAIN_ADDRESS_NOT_FOUND = 'DOMAIN_ADDRESS_NOT_FOUND';
 
@@ -48,16 +49,26 @@ export const useSuggestedAddresses = () => {
       ActionType.TonTransfer,
     ] as const;
 
-    let filtered = actions.filter((action) =>
-      pickTypes.includes(action.type as (typeof pickTypes)[number]),
-    ) as ActionItem<(typeof pickTypes)[number]>[];
-
     const walletAddress = address[CryptoCurrencies.Ton];
-    const addresses = filtered
-      .filter((action) => {
-        const { payload } = action;
+    const addresses = (
+      actions.filter((action) => {
+        if (
+          !pickTypes.includes(action.type as (typeof pickTypes)[number]) ||
+          action.initialActionType === ActionType.SmartContractExec
+        ) {
+          return false;
+        }
+
+        const { payload } = action as ActionItem<(typeof pickTypes)[number]>;
+
         const recipientAddress = payload.recipient?.address;
-        if (!recipientAddress || Address.compare(walletAddress, recipientAddress)) {
+
+        if (
+          !recipientAddress ||
+          Address.compare(walletAddress, recipientAddress) ||
+          payload.sender?.is_scam ||
+          payload.recipient?.is_scam
+        ) {
           return false;
         }
 
@@ -71,9 +82,10 @@ export const useSuggestedAddresses = () => {
             Address.compare(poolAddress, recipientAddress),
           ) !== -1;
 
-        const friendlyAddress = Address.parse(recipientAddress).toFriendly();
+        const rawAddress = Address.parse(recipientAddress).toRaw();
+
         if (
-          hiddenRecentAddresses.includes(friendlyAddress) ||
+          hiddenRecentAddresses.some((addr) => Address.compare(addr, rawAddress)) ||
           isFavorite ||
           isStakingPool
         ) {
@@ -81,18 +93,20 @@ export const useSuggestedAddresses = () => {
         }
 
         return true;
-      })
-      .map(
-        (action): SuggestedAddress => ({
-          address: Address.parse(action.payload.recipient!.address).toFriendly(),
-          name: action.payload.recipient!.name,
-          type: SuggestedAddressType.RECENT,
-          timestamp: action.event.timestamp,
-        }),
-      );
+      }) as ActionItem<(typeof pickTypes)[number]>[]
+    ).map(
+      (action): SuggestedAddress => ({
+        address: Address.parse(action.payload.recipient!.address, {
+          bounceable: !getFlag('address_style_nobounce'),
+        }).toFriendly(),
+        name: action.payload.recipient!.name,
+        type: SuggestedAddressType.RECENT,
+        timestamp: action.event.timestamp,
+      }),
+    );
 
     return uniqBy(addresses, (item) => item.address).slice(0, 8);
-  }, [address, favoriteAddresses, hiddenRecentAddresses]);
+  }, [address, favoriteAddresses, hiddenRecentAddresses, stakingPools]);
 
   const suggestedAddresses = useMemo(
     () => [...favoriteAddresses, ...recentAddresses],

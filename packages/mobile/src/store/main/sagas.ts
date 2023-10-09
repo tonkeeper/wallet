@@ -71,7 +71,7 @@ import { useSwapStore } from '$store/zustand/swap';
 import * as SecureStore from 'expo-secure-store';
 import { useRatesStore } from '$store/zustand/rates';
 import { tk } from '@tonkeeper/shared/tonkeeper';
-import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
+import { getFlag } from '$utils/flags';
 
 SplashScreen.preventAutoHideAsync()
   .then((result) =>
@@ -215,9 +215,14 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     const { wallet: walletNew } = yield select(walletSelector);
     const addr = yield call([walletNew.ton, 'getAddress']);
     const data = yield call([tk, 'load']);
-    yield call([tk, 'init'], addr, isTestnet, data.tronAddress);
+    yield call(
+      [tk, 'init'],
+      addr,
+      isTestnet,
+      data.tronAddress,
+      !getFlag('address_style_nobounce'),
+    );
     useSwapStore.getState().actions.fetchAssets();
-    useExpiringDomains.getState().actions.load(addr);
   } else {
     yield put(walletActions.endLoading());
   }

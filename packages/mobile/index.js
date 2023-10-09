@@ -35,11 +35,7 @@ async function handleDappMessage(remoteMessage) {
   if (remoteMessage.notification?.body) {
     return null;
   }
-  if (
-    !['bridge_dapp_notification', 'console_dapp_notification'].includes(
-      remoteMessage.data?.type,
-    )
-  ) {
+  if (!['console_dapp_notification'].includes(remoteMessage.data?.type)) {
     return null;
   }
 

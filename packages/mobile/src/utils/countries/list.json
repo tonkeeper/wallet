@@ -751,9 +751,9 @@
       "location-precise": "Западная Азия"
     },
     {
-      "ru": "Иран, Исламская Республика",
+      "ru": "Иран",
       "fullname": "Исламская Республика Иран",
-      "en": "Iran, Islamic Republic of",
+      "en": "Iran",
       "alpha2": "IR",
       "alpha3": "IRN",
       "iso": 364,
@@ -961,19 +961,9 @@
       "location-precise": "Центральная Африка"
     },
     {
-      "ru": "Конго, Демократическая Республика",
-      "fullname": "Демократическая Республика Конго",
-      "en": "Congo, Democratic Republic of the",
-      "alpha2": "CD",
-      "alpha3": "COD",
-      "iso": 180,
-      "location": "Африка",
-      "location-precise": "Центральная Африка"
-    },
-    {
-      "ru": "Корея, Народно-Демократическая Республика",
+      "ru": "Северная Корея",
       "fullname": "Корейская Народно-Демократическая Республика",
-      "en": "Korea, Democratic People's republic of",
+      "en": "North Korea",
       "alpha2": "KP",
       "alpha3": "PRK",
       "iso": 408,
@@ -981,9 +971,9 @@
       "location-precise": "Восточная Азия"
     },
     {
-      "ru": "Корея, Республика",
+      "ru": "Южная Корея",
       "fullname": "Республика Корея",
-      "en": "Korea, Republic of",
+      "en": "South Korea",
       "alpha2": "KR",
       "alpha3": "KOR",
       "iso": 410,
@@ -1281,9 +1271,9 @@
       "location-precise": "Центральная Америка"
     },
     {
-      "ru": "Микронезия, Федеративные Штаты",
+      "ru": "Микронезия",
       "fullname": "Федеративные штаты Микронезии",
-      "en": "Micronesia, Federated States of",
+      "en": "Micronesia",
       "alpha2": "FM",
       "alpha3": "FSM",
       "iso": 583,
@@ -1301,7 +1291,7 @@
       "location-precise": "Восточная Африка"
     },
     {
-      "ru": "Молдова, Республика",
+      "ru": "Молдова",
       "fullname": "Республика Молдова",
       "en": "Moldova",
       "alpha2": "MD",
@@ -1581,9 +1571,9 @@
       "location-precise": "Микронезия"
     },
     {
-      "ru": "Палестинская территория, оккупированная",
-      "fullname": "Оккупированная Палестинская территория",
-      "en": "Palestinian Territory, Occupied",
+      "ru": "Палестина",
+      "fullname": "Палестина",
+      "en": "Palestine",
       "alpha2": "PS",
       "alpha3": "PSE",
       "iso": 275,
@@ -1601,9 +1591,9 @@
       "location-precise": "Центральная Америка"
     },
     {
-      "ru": "Папский Престол (Государство — город Ватикан)",
+      "ru": "Ватикан",
       "fullname": "",
-      "en": "Holy See (Vatican City State)",
+      "en": "Vatican",
       "alpha2": "VA",
       "alpha3": "VAT",
       "iso": 336,

@@ -129,6 +129,7 @@ export interface ActionItem<T extends ActionType = ActionType> {
   isLast?: boolean;
   event: ActionEvent;
   source: ActionSource;
+  initialActionType: ActionType;
   amount?: ActionAmount | null;
   status: ActionStatusEnum;
   destination: ActionDestination;

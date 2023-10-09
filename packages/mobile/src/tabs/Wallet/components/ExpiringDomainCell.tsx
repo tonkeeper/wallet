@@ -1,6 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { Steezy } from '$styles';
-import { Icon, Spacer, SText, View, List } from '$uikit';
+import { Spacer, SText, View, List } from '$uikit';
+import { Icon } from '@tonkeeper/uikit';
 import { ViewStyle } from 'react-native';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { ONE_YEAR_MILISEC, format, getCountOfDays, getLocale } from '$utils/date';
@@ -39,16 +40,19 @@ export const ExpiringDomainCell = memo<ApprovalCellProps>(({ withoutSpacer, styl
     });
   }, [expiringDomains]);
 
+  if (expiringDomains.length < 1) {
+    return null;
+  }
+
   return (
     <View style={style}>
-      {!withoutSpacer && <Spacer y={16} />}
       <List indent={false} style={styles.container}>
         <List.Item
           chevronColor="iconSecondary"
           onPress={() => openRenewAllDomainModal()}
           leftContent={
             <View style={styles.iconContainer}>
-              <Icon color="foregroundPrimary" name="ic-globe-28" />
+              <Icon color="constantWhite" name="ic-globe-28" />
             </View>
           }
           title={
@@ -66,7 +70,7 @@ export const ExpiringDomainCell = memo<ApprovalCellProps>(({ withoutSpacer, styl
 const styles = Steezy.create(({ colors }) => ({
   container: {
     backgroundColor: colors.backgroundContentTint,
-    marginBottom: 4,
+    marginBottom: 16,
   },
   iconContainer: {
     padding: 8,

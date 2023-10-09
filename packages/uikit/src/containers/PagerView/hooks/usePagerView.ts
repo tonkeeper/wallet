@@ -1,32 +1,41 @@
-import { createContext, useCallback, useRef, useContext, useEffect } from 'react';
-import Animated, { useSharedValue } from 'react-native-reanimated';
+import { SharedValue, useSharedValue } from 'react-native-reanimated';
 import { ScreenHeaderHeight } from '../../Screen/utils/constants';
 import { usePagerScrollHandler } from './usePagerScrollHandler';
 import { useScreenScroll } from '../../Screen/hooks';
 import { LayoutChangeEvent } from 'react-native';
 import PagerView from 'react-native-pager-view';
-import { ns } from '../../../utils';
+import {
+  createContext,
+  useCallback,
+  useRef,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
-export const tabIndicatorWidth = ns(24);
+export const tabIndicatorWidth = 32;
 
 type ScrollTo = (y: number, animated?: boolean) => void;
 
-
-export const usePagerViewHandler = (externalPageOffset?: Animated.SharedValue<number>) => {
+export const usePagerViewHandler = (externalPageOffset?: SharedValue<number>) => {
   const { headerEjectionPoint, headerType } = useScreenScroll();
   const isScrollInMomentum = useSharedValue(false);
   const pagerViewRef = useRef<PagerView>(null);
+
   const contentOffset = useSharedValue(0);
-  const headerHeight = useSharedValue(0);
+
+  const [headerHeight, setHeaderHeight] = useState(0);
   const activeIndex = useSharedValue(0);
+
   const pageOffset = useSharedValue(0);
   const scrollY = useSharedValue(0);
 
   const measureHeader = (event: LayoutChangeEvent) => {
+    const height = event.nativeEvent.layout.height;
     const headerOffset = headerType === 'large' ? ScreenHeaderHeight : 0;
     headerEjectionPoint.value =
       event.nativeEvent.layout.height - (headerType === 'large' ? 64 : 0);
-    headerHeight.value = event.nativeEvent.layout.height;
+    setHeaderHeight(height);
   };
 
   useEffect(() => {
@@ -63,9 +72,9 @@ export const usePagerViewHandler = (externalPageOffset?: Animated.SharedValue<nu
   const setPage = useCallback(
     (index: number) => {
       if (!isScrollInMomentum.value) {
-        if (index === activeIndex.value && scrollY.value > headerHeight.value) {
+        if (index === activeIndex.value && scrollY.value > headerHeight) {
           scrollByIndex(index, {
-            y: headerHeight.value,
+            y: headerHeight,
             animated: true,
           });
         }
@@ -73,7 +82,7 @@ export const usePagerViewHandler = (externalPageOffset?: Animated.SharedValue<nu
         requestAnimationFrame(() => pagerViewRef.current?.setPage(index));
       }
     },
-    [activeIndex.value],
+    [activeIndex.value, headerHeight],
   );
 
   const horizontalScrollHandler = usePagerScrollHandler({

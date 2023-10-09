@@ -20,6 +20,7 @@ export const DepositStakeActionContent = memo<DepositStakeActionContentProps>((p
           recipient={action.payload.pool}
           hideName={action.event.is_scam}
           destination="out"
+          bounceable
         />
         <ExtraListItem extra={action.event.extra} />
       </List>

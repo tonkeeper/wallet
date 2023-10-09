@@ -40,7 +40,7 @@ export const IconButton = memo<IconButtonProps>((props) => {
         activeOpacity={0.6}
       >
         <View style={styles.iconContainer}>
-          <Icon name={props.iconName} colorHex="#FFF" />
+          {props.iconName && <Icon name={props.iconName} colorHex="#FFF" />}
         </View>
         <Text type="label3" color="textSecondary">
           {props.title}

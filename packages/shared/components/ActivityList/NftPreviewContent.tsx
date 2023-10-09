@@ -6,6 +6,13 @@ import { memo, useCallback } from 'react';
 import { t } from '../../i18n';
 
 import { openNftModal } from '@tonkeeper/mobile/src/core/NFT/NFT';
+import {
+  AnimationDirection,
+  HideableAmount,
+} from '@tonkeeper/mobile/src/core/HideableAmount/HideableAmount';
+import { HideableImage } from '@tonkeeper/mobile/src/core/HideableAmount/HideableImage';
+import { useHideableAmount } from '@tonkeeper/mobile/src/core/HideableAmount/HideableAmountProvider';
+import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
 
 interface NftPreviewContentProps {
   nftAddress?: string;
@@ -17,6 +24,12 @@ export const NftPreviewContent = memo<NftPreviewContentProps>((props) => {
   const { data: nft } = useNftItemByAddress(props.nftAddress, {
     existingNft: nftItem,
   });
+
+  const hideableAnimProgress = useHideableAmount();
+
+  const hideableAnimStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(hideableAnimProgress.value, [0, 1], [1, 0]),
+  }));
 
   const handlePress = useCallback(() => {
     const address = nftAddress ?? nftItem?.address;
@@ -30,26 +43,41 @@ export const NftPreviewContent = memo<NftPreviewContentProps>((props) => {
       <Pressable onPress={handlePress} style={styles.container.static}>
         <ListItemContent style={styles.item.static}>
           <View style={styles.pictureContainer}>
-            <Picture
-              preview={nft.image.preview}
-              uri={nft.image.small}
-              style={styles.picture}
+            <HideableImage
+              imageStyle={styles.picture}
+              image={
+                <Picture
+                  preview={nft.image.preview}
+                  uri={nft.image.small}
+                  style={styles.picture}
+                />
+              }
             />
           </View>
           <View style={styles.infoContainer}>
-            <Text type="body2" numberOfLines={1}>
+            <HideableAmount
+              animationDirection={AnimationDirection.Left}
+              stars="* * * *"
+              variant="body2"
+              numberOfLines={1}
+            >
               {nft.name}
-            </Text>
+            </HideableAmount>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text type="body2" color="textSecondary" numberOfLines={1}>
+              <HideableAmount
+                animationDirection={AnimationDirection.Left}
+                variant="body2"
+                color="textSecondary"
+                numberOfLines={1}
+              >
                 {nft.collection?.name || t('nft_single_nft')}
-              </Text>
+              </HideableAmount>
               {nft.approved_by.length > 0 && (
-                <Icon
-                  style={styles.verificationIcon.static}
-                  name="ic-verification-secondary-16"
-                  color="iconSecondary"
-                />
+                <Animated.View
+                  style={[styles.verificationIcon.static, hideableAnimStyle]}
+                >
+                  <Icon name="ic-verification-secondary-16" color="iconSecondary" />
+                </Animated.View>
               )}
             </View>
           </View>

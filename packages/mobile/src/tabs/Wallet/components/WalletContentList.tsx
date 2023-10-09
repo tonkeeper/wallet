@@ -1,32 +1,24 @@
-import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
-import { Screen, Spacer, SpacerSizes, View } from '$uikit';
-import { List, isAndroid, Text } from '@tonkeeper/uikit';
-// import { List } from '$uikit';
+import { Screen, Spacer, SpacerSizes, View, List, PagerView } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { openJetton } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { Rate } from '../hooks/useBalance';
-import { ListItemRate } from '../components/ListItemRate';
+import { ListItemRate } from './ListItemRate';
 import { TonIcon, TonIconProps } from '@tonkeeper/uikit';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
-import { Tabs } from '../components/Tabs';
-import { NFTsList } from '../components/NFTsList';
+import { NFTsList } from './NFTsList';
 import { TokenPrice, useTokenPrice } from '$hooks/useTokenPrice';
 import { useTheme } from '$hooks/useTheme';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StakingWidget } from './StakingWidget';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { openWallet } from '$core/Wallet/ToncoinScreen';
-import {
-  TronAPIGenerated,
-  TronBalance,
-} from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
-import { formatter } from '@tonkeeper/shared/formatter';
+import { TronBalance } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
 import { fiatCurrencySelector } from '$store/main';
-import { openTronToken } from '../TronTokenScreen';
 
 enum ContentType {
   Token,
@@ -151,8 +143,7 @@ interface BalancesListProps {
   ListHeaderComponent?: React.ReactElement;
 }
 
-// See https://shopify.github.io/flash-list/docs/fundamentals/performant-components#getitemtype
-export const BalancesList = memo<BalancesListProps>(
+export const WalletContentList = memo<BalancesListProps>(
   ({
     tokens,
     balance,
@@ -329,15 +320,12 @@ export const BalancesList = memo<BalancesListProps>(
       return content;
     }, [balance, handleMigrate, nfts, tokens.list, tonPrice, tronBalances]);
 
-    const ListComponent = nfts ? Screen.FlashList : Tabs.FlashList;
+    const ListComponent = nfts ? Screen.FlashList : PagerView.FlatList;
 
     return (
       <ListComponent
-        drawDistance={isAndroid ? 750 : undefined}
         ListHeaderComponent={ListHeaderComponent}
-        getItemType={(item) => item.type}
         renderItem={RenderItem}
-        estimatedItemSize={76}
         data={data}
         refreshControl={
           <RefreshControl

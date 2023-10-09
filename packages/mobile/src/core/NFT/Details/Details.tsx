@@ -10,6 +10,7 @@ import { openDAppBrowser } from '$navigation';
 import { Toast } from '$store';
 import { format } from 'date-fns';
 import { Address } from '@tonkeeper/core';
+import { getFlag } from '$utils/flags';
 
 export const Details: React.FC<DetailsProps> = ({
   tokenId,
@@ -19,8 +20,6 @@ export const Details: React.FC<DetailsProps> = ({
   ownerAddress,
   expiringAt,
 }) => {
-  
-
   const handleOpenExplorer = useCallback(() => {
     openDAppBrowser(getServerConfig('NFTOnExplorerUrl').replace('%s', contractAddress));
   }, [contractAddress]);
@@ -33,13 +32,17 @@ export const Details: React.FC<DetailsProps> = ({
     [t],
   );
 
+  const parsedOwnerAddress = Address.parse(ownerAddress, {
+    bounceable: !getFlag('address_style_nobounce'),
+  });
+
   const items = useMemo(() => {
     let result: { label: string; value: string; copyableValue?: string }[] = [];
 
     result.push({
       label: t('nft_owner_address'),
-      value: ownerAddress ? Address.parse(ownerAddress).toShort() : '...',
-      copyableValue: ownerAddress,
+      value: ownerAddress ? parsedOwnerAddress.toShort() : '...',
+      copyableValue: parsedOwnerAddress.toFriendly(),
     });
 
     if (expiringAt && expiringAt > 0) {
@@ -76,9 +79,8 @@ export const Details: React.FC<DetailsProps> = ({
       });
     }
 
-
     return result;
-  }, [t, tokenId, chain, contractAddress, standard, ownerAddress, expiringAt]);
+  }, [tokenId, chain, contractAddress, standard, ownerAddress, expiringAt]);
 
   return (
     <S.Container>

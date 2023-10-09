@@ -217,7 +217,7 @@ export const ManageTokens: FC = () => {
                 items={[
                   { label: t('wallet.tonkens_tab_lable'), value: 'tokens' },
                   {
-                    label: t('wallet.collectibles_tab_lable'),
+                    label: t('wallet.nft_tab_lable'),
                     value: 'collectibles',
                     withDot: withCollectibleDot,
                   },

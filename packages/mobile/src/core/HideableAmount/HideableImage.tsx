@@ -1,9 +1,9 @@
-import { StyleProp, ViewStyle, StyleSheet, ImageStyle, Platform } from 'react-native';
+import { ViewStyle, StyleSheet, ImageStyle, Platform } from 'react-native';
 import React, { memo, ReactNode } from 'react';
 import { useHideableAmount } from '$core/HideableAmount/HideableAmountProvider';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { DominantColorBackground } from '$uikit/DominantColorBackground/DominantColorBackground';
-import { View } from '@tonkeeper/uikit';
+import { StyleProp, View } from '@tonkeeper/uikit';
 import Animated from 'react-native-reanimated';
 import { Steezy } from '$styles';
 import { BlurView } from 'expo-blur';
@@ -33,20 +33,15 @@ const HideableImageComponent: React.FC<HideableImageProps> = ({
 
   return (
     <View style={style}>
-      <Animated.View
-        style={[
-          StyleSheet.absoluteFill,
-          styles.blur.static,
-          imageStyle,
-          blurContainerStyle,
-        ]}
-      >
-        {Platform.OS === 'ios' ? (
-          <BlurView style={[StyleSheet.absoluteFill]} intensity={70} />
-        ) : (
-          <DominantColorBackground style={StyleSheet.absoluteFill} uri={uri} />
-        )}
-      </Animated.View>
+      <View style={[StyleSheet.absoluteFill, imageStyle, styles.blur.static]}>
+        <Animated.View style={[StyleSheet.absoluteFill, blurContainerStyle]}>
+          {Platform.OS === 'ios' ? (
+            <BlurView style={[StyleSheet.absoluteFill]} intensity={70} />
+          ) : (
+            <DominantColorBackground style={StyleSheet.absoluteFill} uri={uri} />
+          )}
+        </Animated.View>
+      </View>
       {image ?? (
         <FastImage
           resizeMode="cover"
@@ -68,6 +63,7 @@ const styles = Steezy.create(({ colors, corners }) => ({
   blur: {
     zIndex: 3,
     overflow: 'hidden',
+    backgroundColor: 'transparent',
   },
   image: {
     zIndex: 2,

@@ -20,6 +20,7 @@ import {
   openInsufficientFundsModal,
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { Address } from '@tonkeeper/core';
+import { useFlags } from '$utils/flags';
 
 const TonWeb = require('tonweb'); // Fix ts types;
 
@@ -70,6 +71,8 @@ interface LinkingDomainButtonProps {
 }
 
 export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) => {
+  const flags = useFlags(['address_style_nobounce']);
+
   const version = useSelector(walletVersionSelector);
   const allAddesses = useAllAddresses();
   const dispatch = useDispatch();
@@ -137,7 +140,7 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
     if (Boolean(record.walletAddress) && Boolean(record.ownerAddress)) {
       if (Object.values(allAddesses).length > 0) {
         const linked = Object.values(allAddesses).find((address) => {
-          return address === record.walletAddress;
+          return Address.compare(address, record.walletAddress);
         });
 
         return !linked;
@@ -149,7 +152,9 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
 
   const handlePressButton = React.useCallback(async () => {
     Toast.loading();
-    const currentWalletAddress = allAddesses[version];
+    const currentWalletAddress = Address.parse(allAddesses[version], {
+      bounceable: !flags.address_style_nobounce,
+    }).toFriendly();
     const linkingActions = new LinkingDomainActions(
       props.domainAddress,
       isLinked ? undefined : currentWalletAddress,
@@ -199,12 +204,14 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
 
   const buttonTitle = React.useMemo(() => {
     if (record.walletAddress) {
-      const address = Address.toShort(record.walletAddress!);
+      const address = Address.parse(record.walletAddress!, {
+        bounceable: !flags.address_style_nobounce,
+      }).toShort();
       return ' ' + t('nft_unlink_domain_button', { address });
     }
 
     return t(props.isTGUsername ? 'nft_link_username_button' : 'nft_link_domain_button');
-  }, [record.walletAddress, props.isTGUsername]);
+  }, [record.walletAddress, props.isTGUsername, flags.address_style_nobounce]);
 
   return (
     <View style={{ marginBottom: 4 }}>

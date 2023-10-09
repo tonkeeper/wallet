@@ -28,12 +28,12 @@ import {
 } from '$core';
 import { WebView } from '$core/WebView/WebView';
 import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewConfirmSending';
+import { RenewAllDomainModal } from '../tabs/Wallet/RenewAllDomainModal';
+import { СonfirmRenewAllDomains } from '../tabs/Wallet/components/СonfirmRenewAllDomains';
 
 import { ExchangeModal } from '$modals/ExchangeModal';
 import { Swap } from '$core/Swap/Swap';
 import { ChooseCountry } from '$core/ChooseCountry/ChooseCountry';
-import { RenewAllDomainModal } from '../tabs/Wallet/RenewAllDomainModal';
-import { СonfirmRenewAllDomains } from '../tabs/Wallet/components/СonfirmRenewAllDomains';
 
 import { SwitchWalletModal } from '@tonkeeper/shared/modals/SwitchWalletModal';
 import { AddWalletModal } from '@tonkeeper/shared/modals/AddWalletModal';
@@ -56,7 +56,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NFTSaleCancelModal} path="NFTSaleCancel" />
       <Stack.Modal component={ExchangeModal} path="Exchange" />
       <Stack.Modal component={OldExchange} path="OldExchange" />
-      <Stack.Modal component={СonfirmRenewAllDomains} path="СonfirmRenewAllDomains"/>
+      <Stack.Modal component={СonfirmRenewAllDomains} path="СonfirmRenewAllDomains" />
       <Stack.Modal
         component={NFTTransferInputAddressModal}
         path="NFTTransferInputAddress"
@@ -71,9 +71,9 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />
       <Stack.Modal component={ReceiveJettonModal} path="/receive/jetton/" />
       <Stack.Modal component={NFT} path="NFTItemDetails" />
-      <Stack.Modal component={RenewAllDomainModal} path="RenewAllDomains" />
       {/* <Stack.Modal component={Receive} path={AppStackRouteNames.Receive} /> */}
       <Stack.Modal component={Send} path={AppStackRouteNames.Send} />
+      <Stack.Modal component={RenewAllDomainModal} path="RenewAllDomains" />
       <Stack.Modal component={ChooseCountry} path={AppStackRouteNames.ChooseCountry} />
       <Stack.Modal component={StakingSend} path={AppStackRouteNames.StakingSend} />
       <Stack.Modal component={ScanQR} path={AppStackRouteNames.ScanQR} />

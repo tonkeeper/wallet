@@ -21,6 +21,7 @@ export const WithdrawStakeActionContent = memo<WithdrawStakeActionContentProps>(
             hideName={action.event.is_scam}
             sender={action.payload.pool}
             destination="in"
+            bounceable
           />
           <ExtraListItem extra={action.event.extra} />
         </List>

@@ -1,4 +1,9 @@
-import { ActionSource, AmountFormatter, AnyActionItem } from '@tonkeeper/core';
+import {
+  ActionSource,
+  ActionType,
+  AmountFormatter,
+  AnyActionItem,
+} from '@tonkeeper/core';
 import { openActivityActionModal } from '../../modals/ActivityActionModal';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { ListItemContent, Steezy } from '@tonkeeper/uikit';
@@ -20,6 +25,7 @@ import {
 } from '@tonkeeper/uikit';
 
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
+import { useFlags } from '@tonkeeper/mobile/src/utils/flags';
 
 interface ActionListItem {
   onPress?: () => void;
@@ -50,6 +56,12 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     isSimplePreview,
   } = props;
   const { formatNano } = useHideableFormatter();
+
+  const flags = useFlags(['address_style_nobounce']);
+
+  const bounceable =
+    action.initialActionType === ActionType.SmartContractExec ||
+    !flags.address_style_nobounce;
 
   const handlePress = useCallback(() => {
     if (onPress) {
@@ -114,13 +126,21 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
       if (senderAccount.name) {
         return senderAccount.name;
       } else {
-        return Address.parse(senderAccount.address).toShort();
+        return Address.parse(senderAccount.address, {
+          bounceable,
+        }).toShort();
       }
     } else {
       const account = action.simple_preview.accounts[0];
       return account ? Address.parse(account.address).toShort() : '-';
     }
-  }, [action.simple_preview, action.event.is_scam, senderAccount, props.subtitle]);
+  }, [
+    action.simple_preview,
+    action.event.is_scam,
+    senderAccount,
+    props.subtitle,
+    bounceable,
+  ]);
 
   const value = useMemo(() => {
     if (props.value !== undefined) {
@@ -143,7 +163,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
 
       return action.simple_preview.value ?? AmountFormatter.sign.minus;
     }
-  }, [action.destination, action.amount, action.simple_preview, props.value]);
+  }, [action.destination, action.amount, action.simple_preview, props.value, formatNano]);
 
   const subvalue = useMemo(() => {
     if (props.subvalue !== undefined) {

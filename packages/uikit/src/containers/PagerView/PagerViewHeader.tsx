@@ -7,7 +7,7 @@ import { PropsWithChildren, memo } from 'react';
 import { isAndroid } from '../../utils';
 import { useTheme } from '../../styles';
 
-export const PagerViewInternalHeader = memo<PropsWithChildren>((props) => {
+export const PagerViewHeader = memo<PropsWithChildren>((props) => {
   const { measureHeader, scrollY } = usePagerView();
   const { headerType } = useScreenScroll();
   const dimensions = useWindowDimensions();

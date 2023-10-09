@@ -1,4 +1,4 @@
-import { PagerViewRef, PagerViewSelectedEvent } from '../PagerViewContainer';
+import { PagerViewRef, PagerViewSelectedEvent } from '../PagerViewProvider';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
 import { useRouter } from '@tonkeeper/router';

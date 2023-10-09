@@ -7,10 +7,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import { ImageWithTitle } from '$core/NFT/ImageWithTitle/ImageWithTitle';
 import {
-  ONE_YEAR_MILISEC,
   checkIsTelegramNumbersNFT,
   checkIsTonDiamondsNFT,
   ns,
+  ONE_YEAR_MILISEC,
 } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { t } from '@tonkeeper/shared/i18n';
@@ -18,15 +18,15 @@ import { Properties } from '$core/NFT/Properties/Properties';
 import { Details } from '$core/NFT/Details/Details';
 import { NFTProps } from '$core/NFT/NFT.interface';
 import { useNFT } from '$hooks/useNFT';
-import { Platform, Share, View, TouchableOpacity } from 'react-native';
+import { Platform, Share, TouchableOpacity, View } from 'react-native';
 import { TonDiamondFeature } from './TonDiamondFeature/TonDiamondFeature';
 import { useDispatch, useSelector } from 'react-redux';
 import { walletAddressSelector } from '$store/wallet';
 import { NFTModel, TonDiamondMetadata } from '$store/models';
-import { useFlags } from '$utils/flags';
+import { getFlag, useFlags } from '$utils/flags';
 import { LinkingDomainButton } from './LinkingDomainButton';
 import { nftsActions } from '$store/nfts';
-import { SheetActions, navigation, useNavigation } from '@tonkeeper/router';
+import { navigation, useNavigation } from '@tonkeeper/router';
 import { openDAppBrowser } from '$navigation';
 import { RenewDomainButton, RenewDomainButtonRef } from './RenewDomainButton';
 import { Tonapi } from '$libs/Tonapi';
@@ -34,7 +34,7 @@ import { Toast } from '$store';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { ProgrammableButtons } from '$core/NFT/ProgrammableButtons/ProgrammableButtons';
-import { Address } from '@tonkeeper/core';
+import { Address, DNS, KnownTLDs } from '@tonkeeper/core';
 import { NftItem } from '@tonkeeper/core/src/TonAPI';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { CryptoCurrencies } from '$shared/constants';
@@ -66,7 +66,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
     [nft],
   );
 
-  const isTG = (nft.dns || nft.name)?.endsWith('.t.me');
+  const isTG = DNS.getTLD(nft.dns || nft.name) === KnownTLDs.TELEGRAM;
   const isDNS = !!nft.dns && !isTG;
   const isTonDiamondsNft = checkIsTonDiamondsNFT(nft);
   const isNumbersNft = checkIsTelegramNumbersNFT(nft);
@@ -103,9 +103,11 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
   const scrollTop = useSharedValue(0);
   const scrollRef = useRef<Animated.ScrollView>(null);
   const { bottom: bottomInset } = useSafeAreaInsets();
-  const canTransfer = useMemo(
-    () => Address.compare(nft.ownerAddress, address.ton),
-    [nft.ownerAddress, address.ton],
+
+  const isOnSale = useMemo(() => !!nft.sale, [nft.sale]);
+  const isCurrentAddressOwner = useMemo(
+    () => !isOnSale && Address.compare(nft.ownerAddress, address.ton),
+    [isOnSale, nft.ownerAddress, address.ton],
   );
 
   const scrollHandler = useAnimatedScrollHandler({
@@ -141,8 +143,6 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
       message: Platform.OS === 'android' ? nft.marketplaceURL : undefined,
     });
   }, [nft.marketplaceURL, nft.name]);
-
-  const isOnSale = useMemo(() => !!nft.sale, [nft.sale]);
 
   const lottieUri = isTonDiamondsNft ? nft.metadata?.lottie : undefined;
 
@@ -225,7 +225,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
               <Button
                 style={{ marginBottom: ns(16) }}
                 onPress={handleTransferNft}
-                disabled={!canTransfer}
+                disabled={!isCurrentAddressOwner}
                 size="large"
               >
                 {isDNS ? t('nft_transfer_dns') : t('nft_transfer_nft')}
@@ -240,7 +240,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
             ) : null}
             {(isDNS || isTG) && (
               <LinkingDomainButton
-                disabled={isOnSale}
+                disabled={!isCurrentAddressOwner}
                 onLink={setOwnerAddress}
                 ownerAddress={nft.ownerAddress}
                 domainAddress={nft.address}
@@ -250,7 +250,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
             )}
             {isDNS && (
               <RenewDomainButton
-                disabled={isOnSale}
+                disabled={!isCurrentAddressOwner}
                 ref={renewDomainButtonRef}
                 ownerAddress={nft.ownerAddress}
                 domainAddress={nft.address}
@@ -290,7 +290,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
 export async function openNftModal(nftAddress: string, nftItem?: NftItem) {
   const openModal = (nftItem: CustomNftItem) => {
     // TODO: change me
-    const oldNftItem = mapNewNftToOldNftData(nftItem, tk.wallet.address.friendly);
+    const oldNftItem = mapNewNftToOldNftData(nftItem, tk.wallet.address.ton.friendly);
     navigation.push('NFTItemDetails', { oldNftItem });
   };
 
@@ -312,10 +312,11 @@ export async function openNftModal(nftAddress: string, nftItem?: NftItem) {
 
 const mapNewNftToOldNftData = (nftItem: NftItem, walletFriendlyAddress): NFTModel => {
   const address = new TonWeb.utils.Address(nftItem.address).toString(true, true, true);
-  const ownerAddress =
-    (nftItem.owner?.address &&
-      new TonWeb.utils.Address(nftItem.owner.address).toString(true, true, true)) ||
-    '';
+  const ownerAddress = nftItem.owner?.address
+    ? Address.parse(nftItem.owner.address, {
+        bounceable: !getFlag('address_style_nobounce'),
+      }).toFriendly()
+    : '';
   const name =
     typeof nftItem.metadata?.name === 'string'
       ? nftItem.metadata.name.trim()
