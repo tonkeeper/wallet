@@ -26,9 +26,9 @@ export function useCurrencyToSend(
 
   const jetton = useMemo(() => {
     return (isJetton &&
-      jettonBalances.find(
-        (item) => item.jettonAddress === currency,
-      )) as JettonBalanceModel | undefined;
+      jettonBalances.find((item) => item.jettonAddress === currency)) as
+      | JettonBalanceModel
+      | undefined;
   }, [currency, isJetton, jettonBalances]);
 
   const liquidJettonPool = useMemo(
@@ -52,7 +52,7 @@ export function useCurrencyToSend(
 
   const Logo = useMemo(
     () =>
-      !liquidJettonPool && isJetton ? (
+      isJetton ? (
         <JettonIcon size="large" uri={jetton?.metadata?.image || ''} />
       ) : (
         <TonIcon
@@ -63,7 +63,7 @@ export function useCurrencyToSend(
           )}
         />
       ),
-    [currency, isJetton, jetton, liquidJettonPool],
+    [currency, isJetton, jetton],
   );
 
   const getTokenPrice = useGetTokenPrice();
@@ -72,19 +72,6 @@ export function useCurrencyToSend(
     if (isJetton) {
       const price = getTokenPrice(currency, jetton?.balance);
 
-      if (liquidJettonPool) {
-        return {
-          decimals: Decimals[CryptoCurrencies.Ton],
-          balance: price.totalTon,
-          price,
-          currencyTitle: 'TON',
-          Logo,
-          jettonWalletAddress: jetton?.walletAddress,
-          isLiquidJetton: !!liquidJettonPool,
-          liquidJettonPool,
-        };
-      }
-
       return {
         decimals: jetton?.metadata?.decimals || 0,
         balance: formatAmount(jetton?.balance ?? '0', decimals),
@@ -92,7 +79,7 @@ export function useCurrencyToSend(
         currencyTitle: jetton?.metadata?.symbol || Address.toShort(jetton?.jettonAddress),
         Logo,
         jettonWalletAddress: jetton?.walletAddress,
-        isLiquidJetton: false,
+        isLiquidJetton: !!liquidJettonPool,
       };
     } else if (isUSDT) {
       const usdt = tronBalances.data?.[0];

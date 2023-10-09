@@ -67,7 +67,7 @@ export const ChooseCountry: React.FC = () => {
   const filteredListBySearch = useMemo(() => {
     if (searchValue) {
       return countriesList.filter((country) => {
-        const regex = new RegExp(`\\b${searchValue}`, 'gi');
+        const regex = new RegExp(`(?:^|\\\\s|\\b)${searchValue}`, 'gi');
         return country.name.match(regex);
       });
     }

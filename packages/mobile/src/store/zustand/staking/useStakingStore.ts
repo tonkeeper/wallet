@@ -25,10 +25,14 @@ import {
 import { Address } from '@tonkeeper/core';
 import { Ton } from '$libs/Ton';
 import { dateToTimestamp, timestampToDateString } from '@tonkeeper/shared/utils/date';
+import { useRatesStore } from '../rates';
+import { JettonsState } from '$store/jettons/interface';
 
 const initialState: Omit<IStakingStore, 'actions'> = {
   status: StakingApiStatus.Idle,
   stakingInfo: {},
+  stakingJettons: {},
+  stakingJettonsUpdatedAt: 0,
   pools: [],
   providers: [],
   highestApyPool: null,
@@ -158,6 +162,34 @@ export const useStakingStore = create(
 
                 return cur.apy > acc.apy ? cur : acc;
               }, null);
+
+              await Promise.all(
+                pools
+                  .filter((pool) => pool.liquid_jetton_master)
+                  .map((pool) => {
+                    return (async () => {
+                      if (getState().stakingJettonsUpdatedAt + 3600 * 1000 > Date.now()) {
+                        return;
+                      }
+
+                      const [jettonInfo] = await Promise.all([
+                        tonapi.jettons.getJettonInfo(pool.liquid_jetton_master!),
+                        useRatesStore
+                          .getState()
+                          .actions.fetchRate(pool.liquid_jetton_master!),
+                      ]);
+
+                      set((state) => ({
+                        stakingJettons: {
+                          ...state.stakingJettons,
+                          [pool.liquid_jetton_master!]: jettonInfo.metadata,
+                        },
+                      }));
+                    })();
+                  }),
+              );
+
+              set({ stakingJettonsUpdatedAt: Date.now() });
 
               nextState = {
                 ...nextState,
@@ -302,12 +334,14 @@ export const useStakingStore = create(
       },
     }),
     {
-      name: 'staking_v2',
+      name: 'staking_v3',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: ({
         pools,
         providers,
         stakingInfo,
+        stakingJettons,
+        stakingJettonsUpdatedAt,
         highestApyPool,
         stakingBalance,
         mainFlashShownCount,
@@ -317,6 +351,8 @@ export const useStakingStore = create(
           pools,
           providers,
           stakingInfo,
+          stakingJettons,
+          stakingJettonsUpdatedAt,
           highestApyPool,
           stakingBalance,
           mainFlashShownCount,

@@ -36,6 +36,14 @@ const StakingWidgetComponent: FC = () => {
     };
   }, []);
 
+  const staked = stakingInfo.length > 0;
+
+  const apyDescription = highestApyPool
+    ? t('staking.widget_desc', {
+        apy: highestApyPool.apy.toFixed(2),
+      })
+    : '';
+
   return (
     <View style={styles.container}>
       <List style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }} separator={false}>
@@ -48,16 +56,10 @@ const StakingWidgetComponent: FC = () => {
         ))}
         <Flash disabled={flashShownCount >= 2}>
           <StakingListCell
-            isWidget={true}
+            isWidget={!staked}
             id="staking"
             name={t('staking.widget_title')}
-            description={
-              highestApyPool
-                ? t('staking.widget_desc', {
-                    apy: highestApyPool.apy.toFixed(2),
-                  })
-                : ''
-            }
+            description={staked ? t('staking.widget_staking_options') : apyDescription}
             onPress={handleStakingPress}
           />
         </Flash>

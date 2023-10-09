@@ -6,22 +6,26 @@ import { walletWalletSelector } from '$store/wallet';
 import { Address } from '@tonkeeper/shared/Address';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
+import { getStakingJettons, useStakingStore } from '$store';
+import { shallow } from 'zustand/shallow';
 
 export interface IBalances {
-  pending: JettonBalanceModel[];
   enabled: JettonBalanceModel[];
   disabled: JettonBalanceModel[];
 }
-export const useJettonBalances = (withZeroBalances?: boolean) => {
+export const useJettonBalances = (
+  withZeroBalances?: boolean,
+  showStakingJettons = false,
+) => {
   const jettonBalances = useSelector(jettonsBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
   const sortedJettons =
     useSelector(sortedJettonsSelector)[wallet?.vault?.getVersion?.() || ''];
   const approvalStatuses = useTokenApprovalStore();
+  const stakingJettons = useStakingStore(getStakingJettons, shallow);
 
   const jettons = useMemo(() => {
     const balances: IBalances = {
-      pending: [],
       enabled: [],
       disabled: [],
     };
@@ -29,25 +33,26 @@ export const useJettonBalances = (withZeroBalances?: boolean) => {
     jettonBalances.forEach((jetton) => {
       const jettonAddress = Address.parse(jetton.jettonAddress).toRaw();
       const approvalStatus = approvalStatuses.tokens[jettonAddress];
-      const isWhitelisted = jetton.verification === JettonVerification.WHITELIST;
       const isBlacklisted = jetton.verification === JettonVerification.BLACKLIST;
-      const isEnabled =
-        (isWhitelisted && !approvalStatus) ||
-        approvalStatus?.current === TokenApprovalStatus.Approved;
 
       if (!withZeroBalances && jetton.balance === '0') {
         return;
       }
 
-      if (isEnabled) {
-        balances.enabled.push(jetton);
-      } else if (
+      if (
+        !showStakingJettons &&
+        stakingJettons.includes(Address.parse(jetton.jettonAddress).toRaw())
+      ) {
+        return;
+      }
+
+      if (
         (isBlacklisted && !approvalStatus) ||
         approvalStatus?.current === TokenApprovalStatus.Declined
       ) {
         balances.disabled.push(jetton);
       } else {
-        balances.pending.push(jetton);
+        balances.enabled.push(jetton);
       }
     });
 
@@ -60,7 +65,14 @@ export const useJettonBalances = (withZeroBalances?: boolean) => {
     }
 
     return balances;
-  }, [approvalStatuses.tokens, jettonBalances, sortedJettons, withZeroBalances]);
+  }, [
+    approvalStatuses.tokens,
+    jettonBalances,
+    showStakingJettons,
+    sortedJettons,
+    stakingJettons,
+    withZeroBalances,
+  ]);
 
   return jettons;
 };

@@ -77,3 +77,7 @@ export const Icon = styled(FastImage).attrs({
   width: ${ICON_SIZE}px;
   height: ${ICON_SIZE}px;
 `;
+
+export const ItemSkeleton = styled.View`
+  align-self: flex-end;
+`;

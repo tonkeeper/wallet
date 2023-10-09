@@ -21,7 +21,6 @@ import BigNumber from 'bignumber.js';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { AccountEvent } from '@tonkeeper/core/src/legacy';
 import { shallow } from 'zustand/shallow';
 import { AmountStep, ConfirmStep } from './steps';
 import { StakingSendSteps, StakingTransactionType } from './types';
@@ -34,8 +33,10 @@ import {
 import { Alert } from 'react-native';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { t } from '@tonkeeper/shared/i18n';
-import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
+import { MessageConsequences, PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
+import { tonapi } from '@tonkeeper/shared/tonkeeper';
+import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
@@ -126,7 +127,7 @@ export const StakingSend: FC<Props> = (props) => {
   const [isPreparing, setPreparing] = useState(false);
   const [isSending, setSending] = useState(false);
 
-  const [accountEvent, setAccountEvent] = useState<AccountEvent | null>(null);
+  const [consequences, setConsequences] = useState<MessageConsequences | null>(null);
 
   const estimatedCurrentReward = useMemo(() => {
     const apyBN = new BigNumber(apy).dividedBy(100);
@@ -164,6 +165,8 @@ export const StakingSend: FC<Props> = (props) => {
   const hideTitle = currentStep.id === StakingSendSteps.CONFIRM;
 
   const actionRef = useRef<Awaited<ReturnType<typeof operations.signRaw>> | null>(null);
+
+  const messages = useRef<SignRawMessage[]>([]);
 
   const { isLiquidJetton, price } = useCurrencyToSend(currency, isJetton);
 
@@ -208,11 +211,13 @@ export const StakingSend: FC<Props> = (props) => {
         transactionType === StakingTransactionType.DEPOSIT && amount.all ? 128 : 3,
       );
 
+      messages.current = [message];
       actionRef.current = action;
 
-      const data = await action.estimateTx();
+      const boc = await action.getBoc();
+      const response = await tonapi.wallet.emulateMessageToWallet({ boc });
 
-      setAccountEvent(data);
+      setConsequences(response);
 
       await delay(100);
 
@@ -239,23 +244,23 @@ export const StakingSend: FC<Props> = (props) => {
   ]);
 
   const totalFee = useMemo(() => {
-    const fee = new BigNumber(Ton.fromNano(accountEvent?.fee.total.toString() ?? '0'));
+    const fee = new BigNumber(Ton.fromNano(consequences?.event.extra ?? 0)).abs();
 
     if (fee.isEqualTo(0)) {
       return undefined;
     }
 
     return fee.toString();
-  }, [accountEvent]);
+  }, [consequences]);
 
   const sendTx = useCallback(async () => {
-    if (!actionRef.current || !accountEvent) {
+    if (!actionRef.current) {
       return Promise.reject();
     }
     try {
       setSending(true);
 
-      const totalAmount = calculateActionsTotalAmount(address.ton, accountEvent.actions);
+      const totalAmount = calculateActionsTotalAmount(messages.current);
       const checkResult = await checkIsInsufficient(totalAmount);
       if (checkResult.insufficient) {
         const stakingFee = Ton.fromNano(getWithdrawalFee(pool));
@@ -314,7 +319,7 @@ export const StakingSend: FC<Props> = (props) => {
     } finally {
       setSending(false);
     }
-  }, [accountEvent, address.ton, isDeposit, pool, totalFee, unlockVault]);
+  }, [isDeposit, pool, totalFee, unlockVault]);
 
   useEffect(() => {
     if (isWithdrawalConfrim) {
@@ -377,6 +382,7 @@ export const StakingSend: FC<Props> = (props) => {
               isJetton={isJetton}
               stepsScrollTop={stepsScrollTop}
               sendTx={sendTx}
+              isPreparing={isPreparing}
               {...stepProps}
             />
           )}

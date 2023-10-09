@@ -1,22 +1,16 @@
 import BigNumber from 'bignumber.js';
-import { Action, ActionTypeEnum } from '@tonkeeper/core/src/legacy';
-import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
-import { Address } from '@tonkeeper/core';
 
-export const calculateActionsTotalAmount = (address: string, actions: Action[]) => {
-  if (!actions.length) {
+import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
+import { ActionType, Address } from '@tonkeeper/core';
+import { Action } from '@tonkeeper/core/src/TonAPI';
+import { ActionTypeEnum } from 'tonapi-sdk-js';
+
+export const calculateActionsTotalAmount = (messages: SignRawMessage[]) => {
+  if (!messages.length) {
     return 0;
   }
-  return actions.reduce((acc, action) => {
-    if (
-      action[ActionTypeEnum.TonTransfer] &&
-      Address.compare(address, action[ActionTypeEnum.TonTransfer].sender.address)
-    ) {
-      return new BigNumber(acc)
-        .plus(new BigNumber(action[ActionTypeEnum.TonTransfer].amount))
-        .toString();
-    }
-    return acc;
+  return messages.reduce((acc, message) => {
+    return new BigNumber(acc).plus(new BigNumber(message.amount)).toString();
   }, '0');
 };
 

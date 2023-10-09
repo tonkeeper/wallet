@@ -1,7 +1,7 @@
 import { useCopyText } from '$hooks/useCopyText';
 import { useFiatValue } from '$hooks/useFiatValue';
 import { Highlight, Separator, Spacer, Text } from '$uikit';
-import React, { FC, memo, useCallback, useMemo } from 'react';
+import React, { FC, memo, useCallback } from 'react';
 import * as S from './ConfirmStep.style';
 import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
@@ -18,8 +18,8 @@ import { parseLocaleNumber, truncateDecimal } from '$utils';
 import { getImplementationIcon, getPoolIcon } from '$utils/staking';
 import { stakingFormatter } from '$utils/formatter';
 import { t } from '@tonkeeper/shared/i18n';
-import { Address } from '@tonkeeper/shared/Address';
 import { PoolInfo } from '@tonkeeper/core/src/TonAPI';
+import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 
 interface Props extends StepComponentProps {
   transactionType: StakingTransactionType;
@@ -29,6 +29,7 @@ interface Props extends StepComponentProps {
   decimals: number;
   isJetton: boolean;
   stepsScrollTop: SharedValue<Record<StakingSendSteps, number>>;
+  isPreparing: boolean;
   sendTx: () => Promise<void>;
 }
 
@@ -54,6 +55,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
     decimals,
     isJetton,
     stepsScrollTop,
+    isPreparing,
     sendTx,
   } = props;
 
@@ -61,8 +63,6 @@ const ConfirmStepComponent: FC<Props> = (props) => {
     transactionType === StakingTransactionType.WITHDRAWAL_CONFIRM;
 
   const isDeposit = transactionType === StakingTransactionType.DEPOSIT;
-
-  const address = useMemo(() => Address.parse(pool.address), [pool.address]);
 
   const fiatValue = useFiatValue(
     CryptoCurrencies.Ton,
@@ -91,10 +91,6 @@ const ConfirmStepComponent: FC<Props> = (props) => {
 
     await sendTx();
   });
-
-  const handleCopyAddress = useCallback(() => {
-    copyText(address.toFriendly(), t('address_copied'));
-  }, [address, copyText]);
 
   const handleCopyPoolName = useCallback(
     () => copyText(pool.name),
@@ -129,15 +125,6 @@ const ConfirmStepComponent: FC<Props> = (props) => {
               </S.Item>
             </Highlight>
             <Separator />
-            {/* <Highlight onPress={handleCopyAddress}>
-              <S.Item>
-                <S.ItemLabel>{t('staking.confirm.address.label')}</S.ItemLabel>
-                <S.ItemContent>
-                  <S.ItemValue>{address.toShort()}</S.ItemValue>
-                </S.ItemContent>
-              </S.Item>
-            </Highlight>
-            <Separator /> */}
             {[
               StakingTransactionType.WITHDRAWAL,
               StakingTransactionType.WITHDRAWAL_CONFIRM,
@@ -162,22 +149,34 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                 </S.ItemContent>
               </S.Item>
             )}
-            {totalFee ? (
-              <>
-                <Separator />
-                <S.Item>
-                  <S.ItemLabel>{t('staking.confirm.fee.label')}</S.ItemLabel>
-                  <S.ItemContent>
-                    <S.ItemValue>
+            <Separator />
+            <S.Item>
+              <S.ItemLabel>{t('staking.confirm.fee.label')}</S.ItemLabel>
+              <S.ItemContent>
+                {isPreparing ? (
+                  <>
+                    <S.ItemSkeleton>
+                      <SkeletonLine height={20} />
+                    </S.ItemSkeleton>
+                    <Spacer y={4} />
+                    <S.ItemSkeleton>
+                      <SkeletonLine width={50} />
+                    </S.ItemSkeleton>
+                  </>
+                ) : (
+                  <>
+                    <S.ItemValue numberOfLines={1}>
                       {t('staking.confirm.fee.value', {
-                        value: truncateDecimal(totalFee, 1),
+                        value: totalFee ? truncateDecimal(totalFee, 1) : '?',
                       })}
                     </S.ItemValue>
-                    <S.ItemSubValue>≈ {fiatFee.formatted.totalFiat}</S.ItemSubValue>
-                  </S.ItemContent>
-                </S.Item>
-              </>
-            ) : null}
+                    <S.ItemSubValue>
+                      {totalFee ? `≈ ${fiatFee.formatted.totalFiat}` : ' '}
+                    </S.ItemSubValue>
+                  </>
+                )}
+              </S.ItemContent>
+            </S.Item>
           </S.Table>
         </S.Content>
         <BottomButtonWrapHelper />
@@ -185,12 +184,13 @@ const ConfirmStepComponent: FC<Props> = (props) => {
       <S.FooterContainer bottomInset={bottomInset}>
         <ActionFooter
           withCloseButton={isWithdrawalConfrim}
+          disabled={isPreparing}
           confirmTitle={t(
             isWithdrawalConfrim
               ? 'confirm'
               : isDeposit
               ? 'staking.confirm_deposit'
-              : 'confirm_sending_submit',
+              : 'staking.confirm_unstake',
           )}
           onPressConfirm={handleConfirm}
           ref={footerRef}

@@ -12,7 +12,7 @@ export * from './Tonkeeper';
 export * from './service';
 export * from './TronAPI';
 
-export * from './models/ActivityModel/ActivityModelTypes';
+export * from './models/ActivityModel';
 
 export * from './utils/State';
 export * from './utils/network';

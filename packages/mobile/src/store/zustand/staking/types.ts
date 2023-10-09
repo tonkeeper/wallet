@@ -3,6 +3,7 @@ import {
   AccountStakingInfo,
   PoolInfo,
   PoolImplementationType,
+  JettonMetadata,
 } from '@tonkeeper/core/src/TonAPI';
 
 export interface StakingProvider {
@@ -34,6 +35,8 @@ export interface IStakingStore {
   highestApyPool: PoolInfo | null;
   providers: StakingProvider[];
   stakingInfo: StakingInfo;
+  stakingJettons: Record<string, JettonMetadata>;
+  stakingJettonsUpdatedAt: number;
   stakingBalance: string;
   chart: IStakingChartPoint[];
   mainFlashShownCount: number;

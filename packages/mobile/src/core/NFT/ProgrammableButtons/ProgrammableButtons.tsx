@@ -26,6 +26,7 @@ export interface ProgrammableButtonsProps {
   buttons: ProgrammableButton[];
   isApproved?: boolean;
   nftAddress: string;
+  disabled?: boolean;
 }
 
 const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
@@ -44,7 +45,7 @@ const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
   const openExternalLink = useCallback(
     async (uri: string) => {
       try {
-        const nftAddress = Address.parse(props.nftAddress).toFriendly();
+        const nftAddress = Address.parse(props.nftAddress).toRaw();
         const vault = await unlockVault();
         const address = await vault.getTonAddress(isTestnet);
         let walletStateInit = '';
@@ -55,21 +56,27 @@ const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
         }
         const privateKey = await vault.getTonPrivateKey();
         const publicKey = vault.tonPublicKey;
+        const domain = getDomainFromURL(uri);
         const proof = await createTonProof({
           address,
           secretKey: privateKey,
           walletStateInit,
           payload: nftAddress,
-          domain: getDomainFromURL(uri),
+          domain,
         });
 
         let url = new URL(uri);
 
-        url.searchParams.append('wallet', Address.parse(proof.address).toFriendly());
+        const buffer = Buffer.from(proof.proof.signature, 'base64');
+        const signatureHex = buffer.toString('hex');
+
+        url.searchParams.append('wallet', Address.parse(proof.address).toRaw());
         url.searchParams.append('nftAddress', nftAddress);
         url.searchParams.append('timestamp', proof.proof.timestamp.toString());
+        url.searchParams.append('domain', domain);
         url.searchParams.append('publicKey', TonWeb.utils.bytesToHex(publicKey));
-        url.searchParams.append('signature', proof.proof.signature);
+        url.searchParams.append('signature', signatureHex);
+        url.searchParams.append('stateInit', proof.proof.stateInit);
 
         openDAppBrowser(url.toString());
       } catch (e) {
@@ -109,6 +116,7 @@ const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
       {buttons.map((button) => (
         <View key={button.label} style={styles.buttonContainer}>
           <Button
+            disabled={props.disabled}
             onPress={handleOpenLink(button.uri)}
             icon="ic-link-28"
             title={button.label}

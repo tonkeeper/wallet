@@ -1,7 +1,7 @@
 import { DefaultSectionT, SectionListData, StyleSheet, View } from 'react-native';
 import { formatTransactionsGroupDate } from '../../utils/date';
-import { renderActionItem } from './renderActionItem';
 import { ActivitySection } from '@tonkeeper/core';
+import { renderActionItem } from './ActionListItemByType';
 import { memo, useMemo } from 'react';
 import {
   RefreshControl,

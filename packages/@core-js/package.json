@@ -19,6 +19,7 @@
     "bignumber.js": "^9.1.1",
     "ethers": "^6.7.1",
     "isomorphic-webcrypto": "^2.3.8",
+    "nanoid": "^5.0.1",
     "ton": "^13.5.0",
     "ton-core": "^0.50.0",
     "ton-crypto": "^3.2.0"

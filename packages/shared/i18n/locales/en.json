@@ -260,8 +260,7 @@
       "insufficient_balance": "Insufficient balance",
       "less_than_min": "Minimum %{minAmount} TON",
       "max": "Max",
-      "remaining": "Available: %{amount}",
-      "liquid_jetton_note": "Sending tsTON liquidity token"
+      "remaining": "Available: %{amount}"
     },
     "comfirm": {
       "title": "Confirm action",
@@ -315,8 +314,6 @@
   "confirm_sending_inactive_warn_description": "Do not proceed if you expect blockchain magic to happen. It won't.",
   "confirm_sending_inactive_warn_about": "What you should do",
   "confirm_sending_method_title": "Send your funds to %{name}?",
-  "confirm_sending_liquid_warn_title": "Note",
-  "confirm_sending_liquid_warn_description": "You will no longer receive rewards from the sended Staked TON. The new owner will begin to receive rewards.",
 
   "info_about_inactive_title": "Inactive contract",
   "info_about_inactive_desc1": "Tonkeeper does not know if this address is a wallet or a smart contract.",
@@ -353,13 +350,15 @@
     "accept": "Accept",
     "decline": "Decline",
     "blacklisted_token": "Blacklisted token",
-    "whitelisted_token": "Whitelisted token",
+    "accepted_token": "Accepted token",
     "blacklisted_collection": "Blacklisted collection",
-    "whitelisted_collection": "Whitelisted collection",
+    "accepted_collection": "Accepted collection",
     "pending": "Pending",
-    "declined": "Declined",
-    "move_to_declined": "Move to Declined",
-    "move_to_accepted": "Move to Accepted",
+    "declined": "Hidden",
+    "move_to_declined_collection": "Hide collection from wallet",
+    "move_to_accepted_collection": "Show collection in wallet",
+    "move_to_declined_token": "Hide token from wallet",
+    "move_to_accepted_token": "Show token in wallet",
     "accepted_at_token": "Accepted on %{date}",
     "accepted_at_collection": "Accepted on %{date}",
     "declined_at_token": "Declined on %{date}",
@@ -368,7 +367,7 @@
     "verify_collection": "Verify collection",
     "verify_description_token": "This token is from unknown issuer. To detect counterfeits, verify the token ID with the issuer's official source. You can change token visibility later in settings.",
     "verify_description_collection": "These tokens are from unknown issuer. To detect counterfeits, verify the collection ID with the issuer's official source. You can change token visibility later in settings.",
-    "accepted": "Accepted",
+    "accepted": "Visible",
     "approve_all": "Accept all",
     "approve_token": "Approve incoming token \"%{name}\"",
     "approve_two_tokens": "Approve incoming tokens \"%{name1}\" and \"%{name2}\"",
@@ -407,9 +406,9 @@
     "spam": "Spam",
     "bid": "Bid",
     "failed": "Failed",
-    "deposit": "Deposit",
-    "withdraw": "Withdraw",
-    "withdrawal_request": "Withdrawal request",
+    "deposit": "Stake",
+    "withdraw": "Unstake",
+    "withdrawal_request": "Unstake Request",
     "burned": "Burned"
   },
 
@@ -421,9 +420,9 @@
     "purchase": "Purchase",
     "swapped": "Swapped",
     "call_contract": "Call contract",
-    "deposit": "Deposit",
-    "withdraw": "Withdraw",
-    "withdrawal_request": "Withdrawal request",
+    "deposit": "Stake",
+    "withdraw": "Unstake",
+    "withdrawal_request": "Unstake Request",
     "burned": "Burned"
   },
 
@@ -443,13 +442,25 @@
     "bid_name": "Name",
     "subscription_product_label": "Subscription",
     "subscription_merchant_label": "Merchant",
-    "unsubscription_title": "Unsubscribed"
+    "unsubscription_title": "Unsubscribed",
+    "withdraw_amount": "Unstake amount"
   },
 
   "receiveModal": {
     "receive_title": "Receive %{tokenName}",
     "receive_description": "Send only %{tokenName} and tokens in TON network to this address, or you might lose your funds.",
     "copy": "Copy"
+  },
+
+  "confirmSendModal": {
+    "title": "Confirm action",
+    "network_fee": "Network fee",
+    "to_your_address": "To your address",
+    "transaction_type": {
+      "send": "Send",
+      "receive": "Receive",
+      "burn": "Burn"
+    }
   },
 
   "browser": {
@@ -833,10 +844,10 @@
   "confirm": "Confirm",
 
   "staking": {
-    "no_funds": "No funds available for withdrawal",
-    "confirm_deposit": "Confirm and Deposit",
-    "send_staked_ton": "Staked TON",
-    "staked_ton": "Staked TON",
+    "no_funds": "No funds available for unstake",
+    "confirm_deposit": "Confirm and Stake",
+    "confirm_unstake": "Confirm and Unstake",
+    "staked": "Staked",
     "title": "Staking",
     "title_large": "TON Staking",
     "desc_large": "Join staking and get rewards. Staking helps to maintain the TON network.",
@@ -844,21 +855,22 @@
     "highest_apy": "MAX APY",
     "widget_title": "Earn TON",
     "widget_desc": "APY up to %{apy}%",
+    "widget_staking_options": "Staking options",
     "staking_pool_desc": "APY ≈ %{apy}%",
     "staking_desc": "Minimum deposit %{minStake} TON.\nEarn up to %{maxApy}%.",
     "estimated_profit": "%{amount} TON – annual profit\nif you stake TON today",
-    "top_up": "Deposit",
-    "withdrawal_request": "Withdrawal request",
+    "top_up": "Stake",
+    "withdrawal_request": "Unstake Request",
     "get_withdrawal": "Get withdrawal",
-    "withdraw": "Withdraw",
-    "deposit": "Deposit",
-    "transaction": "Transaction",
+    "withdraw": "Unstake",
+    "deposit": "Stake",
+    "transaction": "Confirm action",
     "active": "Active",
     "other": "Other",
     "message": {
-      "readyWithdraw": "%{amount} TON are ready for\nwithdrawal. Tap to collect",
-      "pendingWithdraw": "%{amount} TON will be\nwithdrawn ",
-      "pendingDeposit": "%{amount} TON will be\nadded "
+      "readyWithdraw": "%{amount} TON ready.\nTap to collect",
+      "pendingWithdraw": "%{amount} TON unstaked\n",
+      "pendingDeposit": "%{amount} TON staked\n"
     },
     "warning": {
       "title": "Warning",
@@ -874,16 +886,16 @@
       },
       "note": "Staking is based on smart contracts by third parties. Tonkeeper is not responsible for staking experience.",
       "balance": "Staking balance",
-      "pendingDeposit": "Pending deposit",
-      "pendingWithdraw": "Pending withdrawal",
+      "pendingDeposit": "Pending Stake",
+      "pendingWithdraw": "Pending Unstake",
       "pendingWithdrawDesc": "at the end of the cycle",
-      "readyWithdraw": "Withdrawal ready",
+      "readyWithdraw": "Unstake ready",
       "tap_to_collect": "Tap to collect",
       "next_cycle": {
         "title": "Next cycle",
         "reward_title": "Next reward",
         "desc": "All transactions take effect once the cycle ends.",
-        "desc_liquid": "All withdrawal requests take effects once the cycle ends.",
+        "desc_liquid": "Unstake requests are complete after the cycle ends.",
         "in": "in"
       },
       "cooldown": {
@@ -907,15 +919,12 @@
       "min_deposit": {
         "label": "Minimal deposit",
         "value": "%{value} TON"
-      },
-      "liquidity_token": {
-        "label": "%{token} liquidity token",
-        "value": "Learn more"
       }
     },
+    "jetton_note": "When you stake TON in a %{poolName} pool, you receive a token called %{token} that represents your share in the pool. As the pool accumulates profits, your %{token} represents larger amount of TON.",
     "rewards": {
       "title": "Your APY",
-      "after_top_up": "After deposit",
+      "after_top_up": "After stake",
       "current": "Current",
       "value": "≈ %{value} TON"
     },
@@ -930,7 +939,7 @@
         "label": "Amount"
       },
       "withdraw_amount": {
-        "label": "Withdraw amount"
+        "label": "Unstake amount"
       },
       "fee": {
         "label": "Fee",

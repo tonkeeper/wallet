@@ -6,9 +6,7 @@ import { nftsSelector } from '$store/nfts';
 import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
 import { Address } from '@tonkeeper/shared/Address';
 
-
 export interface IBalances {
-  pending: NFTModel[];
   enabled: NFTModel[];
   disabled: NFTModel[];
 }
@@ -17,7 +15,6 @@ export function useApprovedNfts() {
   const approvalStatuses = useTokenApprovalStore((state) => state.tokens);
   const nfts = useMemo(() => {
     const nftBalances: IBalances = {
-      pending: [],
       enabled: [],
       disabled: [],
     };
@@ -29,15 +26,10 @@ export function useApprovedNfts() {
       const approvalStatus =
         (collectionAddress && approvalStatuses[collectionAddress]) ||
         approvalStatuses[nftAddress];
-      if (
-        (item.isApproved && !approvalStatus) ||
-        approvalStatus?.current === TokenApprovalStatus.Approved
-      ) {
-        nftBalances.enabled.push(item);
-      } else if (approvalStatus?.current === TokenApprovalStatus.Declined) {
+      if (approvalStatus?.current === TokenApprovalStatus.Declined) {
         nftBalances.disabled.push(item);
       } else {
-        nftBalances.pending.push(item);
+        nftBalances.enabled.push(item);
       }
     });
 

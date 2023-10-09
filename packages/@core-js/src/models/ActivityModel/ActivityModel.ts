@@ -1,8 +1,9 @@
+import { AccountEvent, ActionStatusEnum } from '../../TonAPI';
 import { differenceInCalendarMonths, format } from 'date-fns';
 import { toLowerCaseFirstLetter } from '../../utils/strings';
 import { TronEvent } from '../../TronAPI/TronAPIGenerated';
 import { Address } from '../../formatters/Address';
-import { AccountEvent } from '../../TonAPI';
+import { nanoid } from 'nanoid/non-secure';
 import {
   AnyActionTypePayload,
   ActionDestination,
@@ -12,6 +13,7 @@ import {
   ActionAmount,
   ActionType,
   ActionItem,
+  AnyActionItem,
 } from './ActivityModelTypes';
 
 type CreateActionOptions = {
@@ -43,8 +45,8 @@ export class ActivityModel {
     options: CreateActionsOptions,
     iteration?: (action: ActionItem) => void,
   ) {
-    return options.events.reduce<ActionItem[]>((activityActions, event) => {
-      const eventActions = event.actions.reduce<ActionItem[]>((actions, _, index) => {
+    return options.events.reduce<AnyActionItem[]>((activityActions, event) => {
+      const eventActions = event.actions.reduce<AnyActionItem[]>((actions, _, index) => {
         const action = ActivityModel.createAction({
           ownerAddress: options.ownerAddress,
           source: options.source,
@@ -71,7 +73,7 @@ export class ActivityModel {
     actionIndex,
     source,
     event,
-  }: CreateActionOptions): ActionItem {
+  }: CreateActionOptions): AnyActionItem {
     const action = event.actions[actionIndex];
     const payload = action[action.type];
 
@@ -80,7 +82,7 @@ export class ActivityModel {
     }
 
     const type = (action as any).type as ActionType;
-    const destination = this.defineActionDestination(ownerAddress, payload);
+    const destination = this.defineActionDestination(ownerAddress, type, payload);
     const amount = this.createAmount({ type, payload });
 
     return {
@@ -96,6 +98,43 @@ export class ActivityModel {
       initialActionType: ActionType[event.actions[event.actions.length - 1].type],
       event,
       type,
+    };
+  }
+
+  static createMockAction<T extends ActionType>(
+    ownerAddress: string,
+    action: AnyActionTypePayload<T>,
+  ): AnyActionItem {
+    const destination = this.defineActionDestination(ownerAddress, action.payload);
+    const amount = this.createAmount(action);
+
+    return {
+      status: ActionStatusEnum.Ok,
+      source: ActionSource.Ton,
+      payload: action.payload,
+      action_id: nanoid(),
+      type: (action as any).type,
+      isFirst: false,
+      isLast: false,
+      destination,
+      amount,
+      event: {
+        event_id: nanoid(),
+        timestamp: +new Date() / 1000,
+        in_progress: false,
+        is_scam: false,
+        lt: +new Date(),
+        extra: 0,
+        account: {
+          address: ownerAddress,
+          is_scam: false,
+        },
+      },
+      simple_preview: {
+        description: 'Mock Action',
+        name: action.type,
+        accounts: [],
+      },
     };
   }
 
@@ -160,13 +199,21 @@ export class ActivityModel {
 
   static defineActionDestination(
     ownerAddress: string,
-    action: AnyActionPayload,
+    actionType: ActionType,
+    payload: AnyActionPayload,
   ): ActionDestination {
-    if (action && 'recipient' in action) {
-      if (typeof action.recipient === 'object') {
-        return Address.compare(action.recipient?.address, ownerAddress) ? 'in' : 'out';
-      } else if (typeof action.recipient === 'string') {
-        return action.recipient === ownerAddress ? 'in' : 'out';
+    if (
+      actionType === ActionType.WithdrawStake ||
+      actionType === ActionType.WithdrawStakeRequest
+    ) {
+      return 'in';
+    }
+
+    if (payload && 'recipient' in payload) {
+      if (typeof payload.recipient === 'object') {
+        return Address.compare(payload.recipient?.address, ownerAddress) ? 'in' : 'out';
+      } else if (typeof payload.recipient === 'string') {
+        return payload.recipient === ownerAddress ? 'in' : 'out';
       }
     }
 

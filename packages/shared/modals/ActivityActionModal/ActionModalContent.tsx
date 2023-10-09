@@ -7,7 +7,12 @@ import {
   Steezy,
   copyText,
 } from '@tonkeeper/uikit';
-import { ActionAmountType, AmountFormatter, AnyActionItem } from '@tonkeeper/core';
+import {
+  ActionAmountType,
+  ActionType,
+  AmountFormatter,
+  AnyActionItem,
+} from '@tonkeeper/core';
 import { formatTransactionDetailsTime } from '../../utils/date';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { memo, useCallback, useMemo } from 'react';
@@ -29,6 +34,7 @@ import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/
 interface ActionModalContentProps {
   children?: React.ReactNode;
   header?: React.ReactNode;
+  title?: string;
   action: AnyActionItem;
   amountFiat?: string;
   label?: string;
@@ -36,7 +42,7 @@ interface ActionModalContentProps {
 }
 
 export const ActionModalContent = memo<ActionModalContentProps>((props) => {
-  const { children, header, action, label, amountFiat, isSimplePreview } = props;
+  const { children, header, title, action, label, amountFiat, isSimplePreview } = props;
   const { formatNano, format } = useHideableFormatter();
 
   const hash = ` ${action.event.event_id.substring(0, 8)}`;
@@ -53,7 +59,9 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
     if (label) {
       labelTime = label;
     } else {
-      if (action.destination === 'in') {
+      if (action.type === ActionType.WithdrawStakeRequest) {
+        labelTime = undefined;
+      } else if (action.destination === 'in') {
         labelTime = t('activityActionModal.received');
       } else if (action.destination === 'out') {
         labelTime = t('activityActionModal.sent');
@@ -107,6 +115,8 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
     }
   }, [action.amount, getTokenPrice, fiatCurrency]);
 
+  const titleText = title ?? amount;
+
   return (
     <View style={styles.container}>
       <View style={styles.info}>
@@ -117,15 +127,17 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
             </Text>
           </View>
         ) : (
-          <View style={!!amount && !!header && styles.headerIndentButtom}>{header}</View>
+          <View style={!!titleText && !!header && styles.headerIndentButtom}>
+            {header}
+          </View>
         )}
         <View style={styles.amountContainer}>
-          {amount && (
+          {titleText && (
             <Text type="h2" style={styles.amountText}>
-              {amount}
+              {titleText}
             </Text>
           )}
-          {fiatAmount && action.status === ActionStatusEnum.Ok && (
+          {!title && fiatAmount && action.status === ActionStatusEnum.Ok && (
             <Text type="body1" color="textSecondary" style={styles.fiatText}>
               {fiatAmount}
             </Text>

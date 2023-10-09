@@ -1,9 +1,3 @@
-import {
-  ActionSource,
-  ActionType,
-  AmountFormatter,
-  AnyActionItem,
-} from '@tonkeeper/core';
 import { openActivityActionModal } from '../../modals/ActivityActionModal';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { ListItemContent, Steezy } from '@tonkeeper/uikit';
@@ -14,6 +8,12 @@ import { ImageRequireSource } from 'react-native';
 import { Address } from '../../Address';
 import { t } from '../../i18n';
 import {
+  ActionSource,
+  ActionType,
+  AmountFormatter,
+  AnyActionItem,
+} from '@tonkeeper/core';
+import { 
   ListItemContentText,
   IconNames,
   Picture,
@@ -27,10 +27,10 @@ import {
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 import { useFlags } from '@tonkeeper/mobile/src/utils/flags';
 
-interface ActionListItem {
+export interface ActionListItemProps<TActionType extends ActionType = ActionType> {
   onPress?: () => void;
   subvalue?: string | React.ReactNode;
-  action: AnyActionItem;
+  action: AnyActionItem<TActionType>;
   subtitleNumberOfLines?: number;
   children?: React.ReactNode;
   pictureSource?: ImageRequireSource;
@@ -42,10 +42,11 @@ interface ActionListItem {
   subtitle?: string;
   greenValue?: boolean;
   ignoreFailed?: boolean;
+  disablePressable?: boolean;
   isSimplePreview?: boolean;
 }
 
-export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
+export const ActionListItem = memo<ActionListItemProps>((props) => {
   const {
     action,
     children,
@@ -53,6 +54,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     subtitleNumberOfLines,
     greenValue,
     ignoreFailed,
+    disablePressable,
     isSimplePreview,
   } = props;
   const { formatNano } = useHideableFormatter();
@@ -69,7 +71,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
     } else {
       openActivityActionModal(action.action_id, ActionSource.Ton);
     }
-  }, []);
+  }, [onPress]);
 
   const isFailed = action.status === ActionStatusEnum.Failed;
 
@@ -147,7 +149,9 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
       return props.value;
     } else {
       let amountPrefix = AmountFormatter.sign.minus;
-      if (action.destination === 'out') {
+      if (action.type === ActionType.WithdrawStakeRequest) {
+        amountPrefix = '';
+      } else if (action.destination === 'out') {
         amountPrefix = AmountFormatter.sign.minus;
       } else if (action.destination === 'in') {
         amountPrefix = AmountFormatter.sign.plus;
@@ -176,6 +180,7 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
   const valueStyle = [
     (action.destination === 'in' || greenValue) && styles.receiveValue,
     action.event.is_scam && styles.scamAmountText,
+    action.type === ActionType.WithdrawStakeRequest && styles.withdrawalRequest,
   ];
 
   const leftContent = (
@@ -197,10 +202,10 @@ export const ActionListItem = memo<ActionListItem>((props: ActionListItem) => {
 
   return (
     <List.Item
+      onPress={!disablePressable ? handlePress : undefined}
       leftContent={props.leftContent ?? leftContent}
       subtitleNumberOfLines={subtitleNumberOfLines}
       valueStyle={valueStyle}
-      onPress={handlePress}
       subvalue={subvalue}
       subtitle={subtitle}
       title={title}
@@ -241,6 +246,9 @@ const styles = Steezy.create(({ colors }) => ({
     marginTop: 8,
   },
   scamAmountText: {
+    color: colors.textTertiary,
+  },
+  withdrawalRequest: {
     color: colors.textTertiary,
   },
   sendingOuter: {

@@ -10,11 +10,17 @@ import {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { isIOS } from '../utils';
 
 enum PictureState {
   Image = 0,
   Preview = 1,
 }
+
+// TODO: research bug with web-like cacheControl on Android
+const CACHE_CONTROL = isIOS
+  ? FastImage.cacheControl.web
+  : FastImage.cacheControl.immutable;
 
 export type PictureBehavior = 'preview' | 'image' | 'auto';
 
@@ -40,12 +46,12 @@ export const Picture = memo<PictureProps>((props) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const handleLoad = () => setIsLoaded(true);
   const previewSource = useMemo(
-    () => ({ uri: preview ?? undefined, cache: FastImage.cacheControl.web }),
+    () => ({ uri: preview ?? undefined, cache: CACHE_CONTROL }),
     [preview],
   );
   const hasPreview = !!preview;
   const imageSource = useMemo(() => {
-    return source ?? { uri: uri ?? undefined, cache: FastImage.cacheControl.web };
+    return source ?? { uri: uri ?? undefined, cache: CACHE_CONTROL };
   }, [uri, source]);
 
   useEffect(() => {
