@@ -4,7 +4,7 @@ import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { getTokenConfig } from '$shared/dynamicConfig';
 import { Highlight, Icon, Separator, Spacer, StakedTonIcon, Text } from '$uikit';
-import { isIOS, parseLocaleNumber } from '$utils';
+import { parseLocaleNumber } from '$utils';
 import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
 import { ConfirmStepProps } from './ConfirmStep.interface';
 import * as S from './ConfirmStep.style';
@@ -20,11 +20,11 @@ import { Alert } from 'react-native';
 import { walletBalancesSelector, walletWalletSelector } from '$store/wallet';
 import { useSelector } from 'react-redux';
 import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
-import { useStakingStore } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
 import { openInactiveInfo } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
 import { Address } from '@tonkeeper/core';
-import { getImplementationIcon } from '$utils/staking';
+import { useNavigation } from '@tonkeeper/router';
+import { TabsStackRouteNames } from '$navigation';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -49,6 +49,8 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const { bottom: bottomInset } = useSafeAreaInsets();
 
   const copyText = useCopyText();
+
+  const nav = useNavigation();
 
   const balances = useSelector(walletBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
@@ -128,6 +130,11 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     showAllBalanceAlert,
     sendTx,
   ]);
+
+  const handleCloseModal = useCallback(() => {
+    nav.goBack();
+    nav.navigate(TabsStackRouteNames.Activity);
+  }, [nav]);
 
   const feeCurrency = useMemo(() => {
     const tokenConfig = getTokenConfig(currency as CryptoCurrency);
@@ -350,6 +357,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
           withCloseButton={false}
           confirmTitle={t('confirm_sending_submit')}
           onPressConfirm={handleConfirm}
+          onCloseModal={handleCloseModal}
           ref={footerRef}
         />
       </S.FooterContainer>
