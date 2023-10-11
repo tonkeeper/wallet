@@ -250,8 +250,16 @@ export const StakingSend: FC<Props> = (props) => {
       return undefined;
     }
 
+    if (
+      [PoolImplementationType.Whales, PoolImplementationType.Tf].includes(
+        pool.implementation,
+      )
+    ) {
+      return fee.plus(Ton.fromNano(getWithdrawalFee(pool))).toString();
+    }
+
     return fee.toString();
-  }, [consequences]);
+  }, [consequences?.event.extra, pool]);
 
   const sendTx = useCallback(async () => {
     if (!actionRef.current) {
