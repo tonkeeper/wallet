@@ -17,10 +17,13 @@ import { Ton } from '$libs/Ton';
 import { Modal } from '@tonkeeper/uikit';
 import { Address } from '@tonkeeper/core';
 
-type NFTSalePlaceModalProps = TxRequestBody<NftSalePlaceGetgemsParams>;
+type NFTSalePlaceModalProps = TxRequestBody<NftSalePlaceGetgemsParams> & {
+  redirectToActivity?: boolean;
+};
 
 export const NFTSalePlaceGetgemsModal = ({
   params,
+  redirectToActivity,
   ...options
 }: NFTSalePlaceModalProps) => {
   const item = useDownloadNFT(params.nftItemAddress);
@@ -279,7 +282,11 @@ export const NFTSalePlaceGetgemsModal = ({
         </S.Container>
       </Modal.ScrollView>
       <Modal.Footer>
-        <NFTOperationFooter onPressConfirm={handleConfirm} ref={footerRef} />
+        <NFTOperationFooter
+          onPressConfirm={handleConfirm}
+          ref={footerRef}
+          redirectToActivity={redirectToActivity}
+        />
       </Modal.Footer>
     </Modal>
   );

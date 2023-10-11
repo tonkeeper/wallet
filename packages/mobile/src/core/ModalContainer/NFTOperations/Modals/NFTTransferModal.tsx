@@ -29,11 +29,14 @@ import {
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { Address } from '@tonkeeper/core';
 
-type NFTTransferModalProps = TxRequestBody<NftTransferParams>;
+type NFTTransferModalProps = TxRequestBody<NftTransferParams> & {
+  redirectToActivity?: boolean;
+};
 
 export const NFTTransferModal = ({
   params,
   fee: precalculatedFee,
+  redirectToActivity,
   ...options
 }: NFTTransferModalProps) => {
   const { footerRef, onConfirm } = useNFTOperationState(options);
@@ -188,6 +191,7 @@ export const NFTTransferModal = ({
           onPressConfirm={handleConfirm}
           responseOptions={options?.response_options}
           ref={footerRef}
+          redirectToActivity={redirectToActivity}
         />
       </Modal.Footer>
     </Modal>

@@ -23,8 +23,6 @@ import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { t } from '@tonkeeper/shared/i18n';
 import { openInactiveInfo } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
 import { Address } from '@tonkeeper/core';
-import { useNavigation } from '@tonkeeper/router';
-import { TabsStackRouteNames } from '$navigation';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -49,8 +47,6 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const { bottom: bottomInset } = useSafeAreaInsets();
 
   const copyText = useCopyText();
-
-  const nav = useNavigation();
 
   const balances = useSelector(walletBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
@@ -130,11 +126,6 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     showAllBalanceAlert,
     sendTx,
   ]);
-
-  const handleCloseModal = useCallback(() => {
-    nav.goBack();
-    nav.navigate(TabsStackRouteNames.Activity);
-  }, [nav]);
 
   const feeCurrency = useMemo(() => {
     const tokenConfig = getTokenConfig(currency as CryptoCurrency);
@@ -357,7 +348,6 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
           withCloseButton={false}
           confirmTitle={t('confirm_sending_submit')}
           onPressConfirm={handleConfirm}
-          onCloseModal={handleCloseModal}
           ref={footerRef}
         />
       </S.FooterContainer>

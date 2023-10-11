@@ -15,9 +15,15 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Modal } from '@tonkeeper/uikit';
 import { Address } from '@tonkeeper/core';
 
-type NFTChangeOwnerModalProps = TxRequestBody<NftChangeOwnerParams>;
+type NFTChangeOwnerModalProps = TxRequestBody<NftChangeOwnerParams> & {
+  redirectToActivity?: boolean;
+};
 
-export const NFTChangeOwnerModal = ({ params, ...options }: NFTChangeOwnerModalProps) => {
+export const NFTChangeOwnerModal = ({
+  params,
+  redirectToActivity,
+  ...options
+}: NFTChangeOwnerModalProps) => {
   const meta = useDownloadCollectionMeta(params.nftCollectionAddress);
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const [isShownDetails, setIsShownDetails] = React.useState(false);
@@ -81,7 +87,7 @@ export const NFTChangeOwnerModal = ({ params, ...options }: NFTChangeOwnerModalP
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
                 <S.InfoItemValue>
-                  {!!fee ? (
+                  {fee ? (
                     <Text variant="body1">{toLocaleNumber(fee)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
@@ -112,7 +118,11 @@ export const NFTChangeOwnerModal = ({ params, ...options }: NFTChangeOwnerModalP
         </S.Container>
       </Modal.ScrollView>
       <Modal.Footer>
-        <NFTOperationFooter onPressConfirm={handleConfirm} ref={footerRef} />
+        <NFTOperationFooter
+          onPressConfirm={handleConfirm}
+          redirectToActivity={redirectToActivity}
+          ref={footerRef}
+        />
       </Modal.Footer>
     </Modal>
   );

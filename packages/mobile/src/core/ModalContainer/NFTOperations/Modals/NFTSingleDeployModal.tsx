@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCopyText } from '$hooks/useCopyText';
 import { useInstance } from '$hooks/useInstance';
-import { useWallet} from '$hooks/useWallet';
+import { useWallet } from '$hooks/useWallet';
 import { Highlight, Separator, Skeleton, Text } from '$uikit';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftSingleDeployParams, TxRequestBody } from '../TXRequest.types';
@@ -10,14 +10,20 @@ import { NFTItemMeta } from '../useDownloadNFT';
 import { useUnlockVault } from '../useUnlockVault';
 import { NFTOperations } from '../NFTOperations';
 import * as S from '../NFTOperations.styles';
-import { toLocaleNumber} from '$utils';
+import { toLocaleNumber } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
 import { Modal } from '@tonkeeper/uikit';
 
-type NFTSingleDeployModal = TxRequestBody<NftSingleDeployParams>;
+type NFTSingleDeployModal = TxRequestBody<NftSingleDeployParams> & {
+  redirectToActivity?: boolean;
+};
 
-export const NFTSingleDeployModal = ({ params, ...options }: NFTSingleDeployModal) => {
+export const NFTSingleDeployModal = ({
+  params,
+  redirectToActivity,
+  ...options
+}: NFTSingleDeployModal) => {
   const itemMeta = useDownloadMetaFromUri<NFTItemMeta>(params.itemContentUri);
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const [fee, setFee] = React.useState('');
@@ -34,7 +40,7 @@ export const NFTSingleDeployModal = ({ params, ...options }: NFTSingleDeployModa
       .deploy({
         stateInitHex: params.stateInitHex,
         address: params.contractAddress,
-        amount: params.amount
+        amount: params.amount,
       })
       .then((operation) => operation.estimateFee())
       .then((fee) => setFee(fee))
@@ -46,14 +52,14 @@ export const NFTSingleDeployModal = ({ params, ...options }: NFTSingleDeployModa
 
   const handleConfirm = onConfirm(async ({ startLoading }) => {
     const vault = await unlockVault();
-    
+
     startLoading();
 
     const privateKey = await vault.getTonPrivateKey();
-    const operation = await operations.deploy({ 
+    const operation = await operations.deploy({
       stateInitHex: params.stateInitHex,
       address: params.contractAddress,
-      amount: params.amount
+      amount: params.amount,
     });
 
     await operation.send(privateKey);
@@ -67,10 +73,7 @@ export const NFTSingleDeployModal = ({ params, ...options }: NFTSingleDeployModa
           <S.Center>
             <S.NFTItemPreview>
               {itemMeta.data?.image && (
-                <S.Image 
-                  uri={itemMeta.data?.image} 
-                  resize={512}
-                />
+                <S.Image uri={itemMeta.data?.image} resize={512} />
               )}
             </S.NFTItemPreview>
             <S.Title>{t('nft_item_deploy_title')}</S.Title>
@@ -81,9 +84,7 @@ export const NFTSingleDeployModal = ({ params, ...options }: NFTSingleDeployModa
                 <S.InfoItemLabel>{t('nft_item_name')}</S.InfoItemLabel>
                 <S.InfoItemValue>
                   {itemMeta.data?.name ? (
-                    <Text variant="body1">
-                      {itemMeta.data.name}
-                    </Text>
+                    <Text variant="body1">{itemMeta.data.name}</Text>
                   ) : (
                     <Skeleton.Line width={144} />
                   )}
@@ -95,10 +96,8 @@ export const NFTSingleDeployModal = ({ params, ...options }: NFTSingleDeployModa
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
                 <S.InfoItemValue>
-                  {!!fee ? (
-                    <Text variant="body1">
-                      {toLocaleNumber(fee)} TON
-                    </Text>
+                  {fee ? (
+                    <Text variant="body1">{toLocaleNumber(fee)} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
                   )}
@@ -111,9 +110,10 @@ export const NFTSingleDeployModal = ({ params, ...options }: NFTSingleDeployModa
       <Modal.Footer>
         <NFTOperationFooter
           onPressConfirm={handleConfirm}
-          ref={footerRef} 
+          ref={footerRef}
+          redirectToActivity={redirectToActivity}
         />
       </Modal.Footer>
     </Modal>
   );
-}
+};

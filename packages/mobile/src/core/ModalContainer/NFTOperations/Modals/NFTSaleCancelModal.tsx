@@ -1,9 +1,9 @@
 import React from 'react';
 import { useCopyText } from '$hooks/useCopyText';
 import { useInstance } from '$hooks/useInstance';
-import { useWallet} from '$hooks/useWallet';
-import {Highlight, Icon, Skeleton, Text} from '$uikit';
-import { toLocaleNumber} from '$utils';
+import { useWallet } from '$hooks/useWallet';
+import { Highlight, Icon, Skeleton, Text } from '$uikit';
+import { toLocaleNumber } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { NftSaleCancelParams, TxRequestBody } from '../TXRequest.types';
@@ -14,9 +14,15 @@ import * as S from '../NFTOperations.styles';
 import { t } from '@tonkeeper/shared/i18n';
 import { Modal } from '@tonkeeper/uikit';
 
-type NFTSaleCancelModalProps = TxRequestBody<NftSaleCancelParams>;
+type NFTSaleCancelModalProps = TxRequestBody<NftSaleCancelParams> & {
+  redirectToActivity?: boolean;
+};
 
-export const NFTSaleCancelModal = ({ params, ...options }: NFTSaleCancelModalProps) => {
+export const NFTSaleCancelModal = ({
+  params,
+  redirectToActivity,
+  ...options
+}: NFTSaleCancelModalProps) => {
   const item = useDownloadNFT(params.nftItemAddress);
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const [fee, setFee] = React.useState('');
@@ -101,7 +107,11 @@ export const NFTSaleCancelModal = ({ params, ...options }: NFTSaleCancelModalPro
         </S.Container>
       </Modal.ScrollView>
       <Modal.Footer>
-        <NFTOperationFooter onPressConfirm={handleConfirm} ref={footerRef} />
+        <NFTOperationFooter
+          onPressConfirm={handleConfirm}
+          ref={footerRef}
+          redirectToActivity={redirectToActivity}
+        />
       </Modal.Footer>
     </Modal>
   );

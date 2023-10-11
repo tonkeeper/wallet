@@ -236,6 +236,10 @@ export function useDeeplinkingResolvers() {
               broadcast: false,
             },
           },
+          undefined,
+          undefined,
+          false,
+          resolveParams.redirectToActivity,
         );
       } else if (query.jetton) {
         if (!Address.isValid(query.jetton)) {
@@ -351,7 +355,10 @@ export function useDeeplinkingResolvers() {
     }
   });
 
-  const resolveTxType = async (txRequest: TxRequest) => {
+  const resolveTxType = async (
+    txRequest: TxRequest,
+    resolveParams: Record<string, any>,
+  ) => {
     const wallet = getWallet();
     if (txRequest?.version !== '0') {
       throw new Error('Wrong txrequest protocol');
@@ -378,45 +385,54 @@ export function useDeeplinkingResolvers() {
     ) {
       Toast.hide();
       return openAddressMismatchModal(
-        () => resolveTxType(txRequest),
+        () => resolveTxType(txRequest, resolveParams),
         txBody.params.source,
       );
     }
 
+    const props = { ...txBody, ...resolveParams };
+
     switch (txRequest.body.type) {
       case 'nft-collection-deploy':
-        nav.openModal('NFTCollectionDeploy', txBody);
+        nav.openModal('NFTCollectionDeploy', props);
         break;
       case 'nft-item-deploy':
-        nav.openModal('NFTItemDeploy', txBody);
+        nav.openModal('NFTItemDeploy', props);
         break;
       case 'nft-single-deploy':
-        nav.openModal('NFTSingleDeploy', txBody);
+        nav.openModal('NFTSingleDeploy', props);
         break;
       case 'nft-change-owner':
-        nav.openModal('NFTChangeOwner', txBody);
+        nav.openModal('NFTChangeOwner', props);
         break;
       case 'nft-transfer':
-        nav.openModal('NFTTransfer', txBody);
+        nav.openModal('NFTTransfer', props);
         break;
       case 'nft-sale-place':
-        nav.openModal('NFTSalePlace', txBody);
+        nav.openModal('NFTSalePlace', props);
         break;
       case 'nft-sale-place-getgems':
-        nav.openModal('NFTSalePlaceGetgems', txBody);
+        nav.openModal('NFTSalePlaceGetgems', props);
         break;
       case 'nft-sale-cancel':
-        nav.openModal('NFTSaleCancel', txBody);
+        nav.openModal('NFTSaleCancel', props);
         break;
       case 'sign-raw-payload':
         const { params, ...options } = txBody;
-        await openSignRawModal(params, options);
+        await openSignRawModal(
+          params,
+          options,
+          undefined,
+          undefined,
+          false,
+          props.redirectToActivity,
+        );
         break;
     }
   };
 
   const prevTxRequestPath = useRef('');
-  deeplinking.add('/v1/txrequest-url/*', async ({ params }) => {
+  deeplinking.add('/v1/txrequest-url/*', async ({ params, resolveParams }) => {
     try {
       if (params.path === prevTxRequestPath.current) {
         return;
@@ -434,7 +450,7 @@ export function useDeeplinkingResolvers() {
         Toast.hide();
       }
 
-      await resolveTxType(data);
+      await resolveTxType(data, resolveParams);
     } catch (err) {
       let message = err?.message;
       if (axios.isAxiosError(err)) {
@@ -451,14 +467,14 @@ export function useDeeplinkingResolvers() {
     }
   });
 
-  deeplinking.add('/v1/txrequest-inline/*', async ({ params }) => {
+  deeplinking.add('/v1/txrequest-inline/*', async ({ params, resolveParams }) => {
     try {
       const txRequest = Base64.decodeToObj<TxRequest>(params.path);
       if (!txRequest) {
         throw new Error('Error JSON txrequest-inline parsing');
       }
 
-      await resolveTxType(txRequest);
+      await resolveTxType(txRequest, resolveParams);
     } catch (err) {
       debugLog('[txrequest-url]', err);
       Toast.fail(err?.message);
