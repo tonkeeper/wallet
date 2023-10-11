@@ -148,7 +148,11 @@ export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
         </S.Container>
       </Modal.ScrollView>
       <Modal.Footer>
-        <NFTOperationFooter onPressConfirm={handleSend} ref={footerRef} />
+        <NFTOperationFooter
+          onPressConfirm={handleSend}
+          redirectToActivity={false}
+          ref={footerRef}
+        />
       </Modal.Footer>
     </Modal>
   );

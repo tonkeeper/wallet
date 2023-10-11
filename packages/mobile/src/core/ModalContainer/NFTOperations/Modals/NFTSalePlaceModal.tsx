@@ -17,9 +17,15 @@ import { Ton } from '$libs/Ton';
 import { Modal } from '@tonkeeper/uikit';
 import { Address } from '@tonkeeper/core';
 
-type NFTSalePlaceModalProps = TxRequestBody<NftSalePlaceParams>;
+type NFTSalePlaceModalProps = TxRequestBody<NftSalePlaceParams> & {
+  redirectToActivity?: boolean;
+};
 
-export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps) => {
+export const NFTSalePlaceModal = ({
+  params,
+  redirectToActivity,
+  ...options
+}: NFTSalePlaceModalProps) => {
   const item = useDownloadNFT(params.nftItemAddress);
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const [isShownDetails, setIsShownDetails] = React.useState(false);
@@ -249,7 +255,11 @@ export const NFTSalePlaceModal = ({ params, ...options }: NFTSalePlaceModalProps
         </S.Container>
       </Modal.ScrollView>
       <Modal.Footer>
-        <NFTOperationFooter onPressConfirm={handleConfirm} ref={footerRef} />
+        <NFTOperationFooter
+          onPressConfirm={handleConfirm}
+          redirectToActivity={redirectToActivity}
+          ref={footerRef}
+        />
       </Modal.Footer>
     </Modal>
   );

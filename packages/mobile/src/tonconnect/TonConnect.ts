@@ -274,6 +274,7 @@ class TonConnectService {
 
   async sendTransaction(
     request: AppRequest<'sendTransaction'>,
+    connection: IConnectedAppConnection,
   ): Promise<WalletResponse<'sendTransaction'>> {
     try {
       const params = JSON.parse(request.params[0]) as SignRawParams;
@@ -338,6 +339,7 @@ class TonConnectService {
               ),
             ),
           true,
+          connection.type === TonConnectBridgeType.Remote,
         );
 
         if (!openModalResult) {
@@ -386,7 +388,7 @@ class TonConnectService {
     }
 
     if (request.method === 'sendTransaction') {
-      return this.sendTransaction(request);
+      return this.sendTransaction(request, connection);
     }
 
     if (request.method === 'disconnect') {

@@ -17,7 +17,7 @@ import { Wallet } from 'blockchain';
 import { Tonapi } from '$libs/Tonapi';
 import { Modal } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
-import { SheetActions, useNavigation } from '@tonkeeper/router';
+import { SheetActions } from '@tonkeeper/router';
 import { openReplaceDomainAddress } from './NFTOperations/ReplaceDomainAddressModal';
 import { Address } from '@tonkeeper/core';
 
@@ -112,7 +112,6 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
   fee: initialFee,
   onDone,
 }) => {
-  const nav = useNavigation();
   const [walletAddress, setWalletAddress] = React.useState(defaultWalletAddress);
   const [fee] = React.useState(initialFee);
   const copyText = useCopyText();
@@ -187,7 +186,7 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
               <S.InfoItem>
                 <S.InfoItemLabel>{t('nft_fee')}</S.InfoItemLabel>
                 <S.InfoItemValue>
-                  {!!fee ? (
+                  {fee ? (
                     <Text variant="body1">≈ {fee} TON</Text>
                   ) : (
                     <Skeleton.Line width={80} />
@@ -214,9 +213,6 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
               },
             } as any
           }
-          onCloseModal={() => {
-            nav.goBack()
-          }}
         />
       </Modal.Content>
     </Modal>

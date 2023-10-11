@@ -43,10 +43,19 @@ interface SignRawModalProps {
   params: SignRawParams;
   onSuccess?: (boc: string) => void;
   onDismiss?: () => void;
+  redirectToActivity?: boolean;
 }
 
 export const SignRawModal = memo<SignRawModalProps>((props) => {
-  const { options, params, action, onSuccess, onDismiss, consequences } = props;
+  const {
+    options,
+    params,
+    action,
+    onSuccess,
+    onDismiss,
+    consequences,
+    redirectToActivity,
+  } = props;
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const unlockVault = useUnlockVault();
 
@@ -186,7 +195,11 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
         </View>
       </Modal.ScrollView>
       <Modal.Footer>
-        <NFTOperationFooter onPressConfirm={handleConfirm} ref={footerRef} />
+        <NFTOperationFooter
+          onPressConfirm={handleConfirm}
+          redirectToActivity={redirectToActivity}
+          ref={footerRef}
+        />
       </Modal.Footer>
     </Modal>
   );
@@ -198,6 +211,7 @@ export const openSignRawModal = async (
   onSuccess?: (boc: string) => void,
   onDismiss?: () => void,
   isTonConnect?: boolean,
+  redirectToActivity = true,
 ) => {
   const wallet = store.getState().wallet.wallet;
   if (!wallet) {
@@ -259,6 +273,7 @@ export const openSignRawModal = async (
         action,
         onSuccess,
         onDismiss,
+        redirectToActivity,
       },
       path: 'SignRaw',
     });

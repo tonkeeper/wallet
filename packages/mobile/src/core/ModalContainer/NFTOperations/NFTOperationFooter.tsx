@@ -1,28 +1,23 @@
 import React from 'react';
-import { Alert, Linking, View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { Icon, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
-import {
-  delay,
-  triggerNotificationError,
-  triggerNotificationSuccess,
-} from '$utils';
+import { delay, triggerNotificationError, triggerNotificationSuccess } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { NFTOperationError } from './NFTOperationError';
 import { getTimeSec } from '$utils/getTimeSec';
 import { TxBodyOptions, TxResponseOptions } from './TXRequest.types';
 import { UnlockVaultError } from '$store/wallet/sagas';
-import { useDispatch, useSelector } from 'react-redux';
 import { t } from '@tonkeeper/shared/i18n';
 import * as S from './NFTOperations.styles';
 import { useNavigation } from '@tonkeeper/router';
 import axios from 'axios';
-import { isTimeSyncedSelector } from '$store/main';
 import { Toast } from '$store';
 import {
   CanceledActionError,
   DismissedActionError,
 } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { TabsStackRouteNames } from '$navigation';
 
 enum States {
   INITIAL,
@@ -38,8 +33,6 @@ type ConfirmFn = (options: { startLoading: () => void }) => Promise<void>;
 // TODO: Rename NFTOperation -> Action
 export const useNFTOperationState = (txBody?: TxBodyOptions) => {
   const { footerRef, onConfirm: invokeConfirm } = useActionFooter();
-  const dispatch = useDispatch();
-  const isTimeSynced = useSelector(isTimeSyncedSelector);
 
   const onConfirm = (confirm: ConfirmFn) => async () => {
     try {
@@ -138,6 +131,7 @@ interface ActionFooterProps {
   onPressConfirm: () => Promise<void>;
   onCloseModal?: () => void;
   disabled?: boolean;
+  redirectToActivity?: boolean;
 }
 
 export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>(
@@ -145,17 +139,19 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
     const [errorText, setErrorText] = React.useState(t('error_occurred'));
     const [state, setState] = React.useState(States.INITIAL);
     const nav = useNavigation();
-    const dispatch = useDispatch();
 
-    const { withCloseButton = true } = props;
+    const { onCloseModal, withCloseButton = true, redirectToActivity = true } = props;
 
     const closeModal = React.useCallback(() => {
-      if (props.onCloseModal) {
-        props.onCloseModal();
+      if (onCloseModal) {
+        onCloseModal();
       } else {
         nav.goBack();
+        if (redirectToActivity) {
+          nav.navigate(TabsStackRouteNames.Activity);
+        }
       }
-    }, [props.onCloseModal, nav.goBack]);
+    }, [onCloseModal, nav, redirectToActivity]);
 
     React.useImperativeHandle(ref, () => ({
       async setState(state) {
