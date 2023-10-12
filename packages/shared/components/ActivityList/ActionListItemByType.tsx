@@ -10,34 +10,36 @@ import { t } from '../../i18n';
 import { memo } from 'react';
 
 import { getImplementationIcon } from '@tonkeeper/mobile/src/utils/staking';
+import { excludeUndefinedValues } from '@tonkeeper/core/src/utils/common';
 
 export const ActionListItemByType = memo<ActionListItemProps>((props) => {
   const { action } = props;
   const { type, payload } = action;
 
+  const pureProps = excludeUndefinedValues(props);
   switch (type) {
     case ActionType.TonTransfer:
       return (
-        <ActionListItem {...props}>
+        <ActionListItem {...pureProps}>
           {!!payload.comment && <ListItemContentText text={payload.comment.trim()} />}
         </ActionListItem>
       );
     case ActionType.JettonTransfer:
       return (
-        <ActionListItem {...props}>
+        <ActionListItem {...pureProps}>
           {!!payload.comment && <ListItemContentText text={payload.comment.trim()} />}
         </ActionListItem>
       );
     case ActionType.NftItemTransfer:
       return (
-        <ActionListItem {...props} value="NFT">
+        <ActionListItem {...pureProps} value="NFT">
           <NftPreviewContent disabled={props.disablePressable} nftAddress={payload.nft} />
           {!!payload.comment && <ListItemContentText text={payload.comment.trim()} />}
         </ActionListItem>
       );
     case ActionType.NftPurchase:
       return (
-        <ActionListItem {...props}>
+        <ActionListItem {...pureProps}>
           <NftPreviewContent disabled={props.disablePressable} nftItem={payload.nft} />
         </ActionListItem>
       );
@@ -47,7 +49,7 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
           subtitle={Address.parse(payload.contract.address).toShort()}
           title={t('transactions.smartcontract_exec')}
           iconName="ic-gear-28"
-          {...props}
+          {...pureProps}
         />
       );
     case ActionType.Unknown:
@@ -56,7 +58,7 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
           title={t('transactions.unknown')}
           subtitle={t('transactions.unknown_description')}
           subtitleNumberOfLines={2}
-          {...props}
+          {...pureProps}
         />
       );
     case ActionType.AuctionBid:
@@ -65,7 +67,7 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
           subtitle={modifyNftName(payload.nft?.metadata?.name)}
           title={t('transactions.bid')}
           iconName="ic-tray-arrow-up-28"
-          {...props}
+          {...pureProps}
         />
       );
     case ActionType.ContractDeploy:
@@ -74,7 +76,7 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
           subtitle={Address.parse(payload.address).toShort()}
           title={t('transactions.wallet_initialized')}
           iconName="ic-donemark-28"
-          {...props}
+          {...pureProps}
         />
       );
     case ActionType.ReceiveTRC20:
@@ -84,7 +86,7 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
           title={t('transaction_type_receive')}
           iconName="ic-tray-arrow-down-28"
           greenValue
-          {...props}
+          {...pureProps}
         />
       );
     case ActionType.SendTRC20:
@@ -93,7 +95,7 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
           subtitle={Address.toShort(payload.recipient)}
           title={t('transaction_type_sent')}
           iconName="ic-tray-arrow-up-28"
-          {...props}
+          {...pureProps}
         />
       );
     case ActionType.JettonBurn:
@@ -102,7 +104,7 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
           subtitle={payload.jetton.name}
           title={t('transactions.burned')}
           iconName="ic-fire-28"
-          {...props}
+          {...pureProps}
         />
       );
     case ActionType.JettonMint:
@@ -110,7 +112,7 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
         <ActionListItem
           subtitle={payload.jetton.name}
           title={t('transaction_type_receive')}
-          {...props}
+          {...pureProps}
         />
       );
     case ActionType.DepositStake:
@@ -119,7 +121,7 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
           pictureSource={getImplementationIcon(action.payload.implementation)}
           title={t('transactions.deposit')}
           subtitle={payload.pool.name}
-          {...props}
+          {...pureProps}
         />
       );
     case ActionType.WithdrawStake:
@@ -129,7 +131,7 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
           title={t('transactions.withdraw')}
           subtitle={payload.pool.name}
           iconName="ic-donemark-28"
-          {...props}
+          {...pureProps}
         />
       );
     case ActionType.WithdrawStakeRequest:
@@ -139,17 +141,17 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
           title={t('transactions.withdrawal_request')}
           subtitle={payload.pool.name}
           iconName="ic-donemark-28"
-          {...props}
+          {...pureProps}
         />
       );
     case ActionType.JettonSwap:
-      return <JettonSwapActionListItem {...props} action={action} />;
+      return <JettonSwapActionListItem {...pureProps} action={action} />;
     case ActionType.Subscribe:
-      return <SubscribeActionListItem {...props} action={action} />;
+      return <SubscribeActionListItem {...pureProps} action={action} />;
     case ActionType.UnSubscribe:
-      return <UnSubscribeActionListItem {...props} action={action} />;
+      return <UnSubscribeActionListItem {...pureProps} action={action} />;
     default:
-      return <ActionListItem {...props} isSimplePreview />;
+      return <ActionListItem {...pureProps} isSimplePreview />;
   }
 });
 

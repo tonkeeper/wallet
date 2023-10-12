@@ -160,7 +160,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       }
     }
 
-    return null;
+    return undefined;
   };
 
   return (
@@ -173,9 +173,9 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
               <ActionListItemByType
                 value={formatValue(action)}
                 subvalue={amountToFiat(action)}
+                title={getActionTitle(action)}
                 disablePressable
                 action={action}
-                {...(getActionTitle(action) && { title: getActionTitle(action) })}
                 subtitle={
                   action.destination === 'in'
                     ? t('confirmSendModal.to_your_address')
