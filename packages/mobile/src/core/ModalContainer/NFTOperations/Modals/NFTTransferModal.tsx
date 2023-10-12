@@ -261,9 +261,7 @@ export async function checkFundsAndOpenNFTTransfer(
     type: 'nft-transfer',
     // expires in 100 minutes
     expires_sec: Date.now() / 1000 + 6000,
-    response_options: {
-      onDone: () => setTimeout(goBack, 850),
-    } as any,
+    response_options: {} as any,
     params: transferParams,
     fee,
   });
