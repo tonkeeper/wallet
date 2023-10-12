@@ -142,16 +142,19 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
 
     const { onCloseModal, withCloseButton = true, redirectToActivity = true } = props;
 
-    const closeModal = React.useCallback(() => {
-      if (onCloseModal) {
-        onCloseModal();
-      } else {
-        nav.goBack();
-        if (redirectToActivity) {
-          nav.navigate(TabsStackRouteNames.Activity);
+    const closeModal = React.useCallback(
+      (success: boolean) => {
+        if (onCloseModal) {
+          onCloseModal();
+        } else {
+          nav.goBack();
+          if (redirectToActivity && success) {
+            nav.navigate(TabsStackRouteNames.Activity);
+          }
         }
-      }
-    }, [onCloseModal, nav, redirectToActivity]);
+      },
+      [onCloseModal, nav, redirectToActivity],
+    );
 
     React.useImperativeHandle(ref, () => ({
       async setState(state) {
@@ -162,7 +165,7 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
           await delay(1750);
 
           tk.wallet.activityList.reload();
-          closeModal();
+          closeModal(true);
 
           props.responseOptions?.onDone?.();
         } else if (state === States.ERROR) {
@@ -190,7 +193,7 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
           <View style={S.styles.footerButtons}>
             {withCloseButton ? (
               <>
-                <S.ActionButton mode="secondary" onPress={closeModal}>
+                <S.ActionButton mode="secondary" onPress={() => closeModal(false)}>
                   {t('cancel')}
                 </S.ActionButton>
                 <Spacer x={16} />
