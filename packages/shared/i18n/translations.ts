@@ -1,5 +1,5 @@
-import en from './tonkeeper/en.json';
-import ru from './tonkeeper/ru-RU.json';
+import en from './locales/tonkeeper/en.json';
+import ru from './locales/tonkeeper/ru-RU.json';
 
 export const translations = { ru, en };
 
