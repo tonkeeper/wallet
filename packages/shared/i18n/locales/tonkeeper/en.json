@@ -773,7 +773,6 @@
   "tab_settings" : "Settings",
   "tab_swap" : "Swap",
   "tab_wallet" : "Wallet",
-  "test_key" : "test key",
   "today" : "Today",
   "ton_login_back_to_button" : "Back to %{name}",
   "ton_login_caption" : "%{name} is requesting access to your wallet address ",

@@ -805,7 +805,6 @@
   "tab_settings" : "Настройки",
   "tab_swap" : "Обмен",
   "tab_wallet" : "Кошелёк",
-  "test_key" : "тестовый ключ",
   "today" : "Сегодня",
   "ton_login_back_to_button" : "Вернуться в %{name}",
   "ton_login_caption" : "%{name} запрашивает доступ к адресу вашего кошелька\n",
