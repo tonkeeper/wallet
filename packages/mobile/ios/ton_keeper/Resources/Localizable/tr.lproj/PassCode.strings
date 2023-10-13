@@ -1,0 +1,5 @@
+"enter" = "Enter passcode";
+"logout" = "Log out";
+"attempts.remaining" = "Attempts remaining: %@";
+"createNew" = "Create new passcode";
+"reenter" = "Re-enter passcode";

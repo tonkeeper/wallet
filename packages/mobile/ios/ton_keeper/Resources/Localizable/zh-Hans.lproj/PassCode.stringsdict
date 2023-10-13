@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>tryAfter</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@number@</string>
+		<key>number</key>
+		<dict>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>other</key>
+			<string>Try after %ld minutes</string>
+			<key>one</key>
+			<string>Try after %ld minute</string>
+		</dict>
+	</dict>
+</dict>
+</plist>
