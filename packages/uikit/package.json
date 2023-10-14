@@ -15,7 +15,7 @@
     "expo-linear-gradient": "^12.1.2",
     "lodash": "^4.17.21",
     "react": "18.2.0",
-    "react-native": "0.71.7",
+    "react-native": "0.72.6",
 
     "react-native-web": "~0.18.10"
   },
