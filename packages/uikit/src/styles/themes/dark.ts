@@ -33,9 +33,9 @@ export const DarkTheme = {
   buttonSecondaryBackgroundHighlighted: '#222C3B',
   buttonTertiaryBackgroundHighlighted: '#364052',
 
-  buttonGreenBackground: '#39CC83',
-  buttonGreenBackgroundDisabled: '#2B9962',
-  buttonGreenBackgroundHighlighted: '#49CC8B',
+  buttonPrimaryBackgroundGreen: '#39CC83',
+  buttonPrimaryBackgroundGreenDisabled: '#2B9962',
+  buttonPrimaryBackgroundGreenHighlighted: '#49CC8B',
   buttonGreenForeground: '#FFFFFF',
 
   fieldBackground: '#1D2633',

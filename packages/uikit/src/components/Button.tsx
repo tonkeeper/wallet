@@ -212,9 +212,9 @@ const getButtonColors = (theme: Theme) => ({
     background: theme.buttonTertiaryBackground,
   },
   green: {
-    highlighted: theme.buttonGreenBackgroundHighlighted,
-    disable: theme.buttonGreenBackgroundDisabled,
-    background: theme.buttonGreenBackground,
+    highlighted: theme.buttonPrimaryBackgroundGreenHighlighted,
+    disable: theme.buttonPrimaryBackgroundGreenDisabled,
+    background: theme.buttonPrimaryBackgroundGreen,
   },
 });
 
