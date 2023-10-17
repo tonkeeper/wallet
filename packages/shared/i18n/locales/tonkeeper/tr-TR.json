@@ -39,6 +39,9 @@
   },
   "add_other_coins" : "Diğer kriptoları ekleyin",
   "address_copied" : "Adres kopyalandı",
+  "address_update" : {
+    "title" : "Adres güncelleme"
+  },
   "appearance_accent_name" : {
     "andromeda" : "Andromeda",
     "arctic" : "Arctic",

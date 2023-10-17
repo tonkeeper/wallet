@@ -33,6 +33,11 @@ export const DarkTheme = {
   buttonSecondaryBackgroundHighlighted: '#222C3B',
   buttonTertiaryBackgroundHighlighted: '#364052',
 
+  buttonGreenBackground: '#39CC83',
+  buttonGreenBackgroundDisabled: '#2B9962',
+  buttonGreenBackgroundHighlighted: '#49CC8B',
+  buttonGreenForeground: '#FFFFFF',
+
   fieldBackground: '#1D2633',
   fieldActiveBorder: '#45AEF5',
   fieldErrorBorder: '#FF4766',
