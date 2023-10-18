@@ -46,7 +46,7 @@
         </provider>
 
         <activity
-            android:name=".TonkeeperActivity"
+            android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
             android:exported="true"
             android:hardwareAccelerated="true"
