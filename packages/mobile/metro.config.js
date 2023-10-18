@@ -24,7 +24,7 @@ config.resolver.nodeModulesPaths = [
   'react-native-svg-transformer',
 )),
   (config.resolver.assetExts = config.resolver.assetExts.filter((ext) => ext !== 'svg'));
-config.resolver.sourceExts.push('svg', 'cjs');
+config.resolver.sourceExts.push('svg', 'cjs', 'mjs');
 
 config.resolver.extraNodeModules = {
   stream: require.resolve('stream-browserify'),
