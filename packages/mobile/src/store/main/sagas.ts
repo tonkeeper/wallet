@@ -74,10 +74,7 @@ import { tk } from '@tonkeeper/shared/tonkeeper';
 import { getFlag } from '$utils/flags';
 
 SplashScreen.preventAutoHideAsync()
-  .then((result) =>
-    console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`),
-  )
-  .catch(console.warn); // it's good to explicitly catch and inspect any error
+
 
 function* loadServerConfig(isTestnet: boolean, canRetry = false) {
   const apiToken = jwt.sign({ app: 'ton.app' }, API_SECRET);
@@ -164,8 +161,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
 
     yield fork(loadRates);
 
-    SplashScreen.hideAsync();
-
     yield call(initHandler, isTestnet, true);
     return;
   }
@@ -212,16 +207,16 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     yield put(nftsActions.loadNFTs({ isReplace: true }));
     yield put(jettonsActions.loadJettons());
     yield put(subscriptionsActions.loadSubscriptions());
-    const { wallet: walletNew } = yield select(walletSelector);
-    const addr = yield call([walletNew.ton, 'getAddress']);
-    const data = yield call([tk, 'load']);
-    yield call(
-      [tk, 'init'],
-      addr,
-      isTestnet,
-      data.tronAddress,
-      !getFlag('address_style_nobounce'),
-    );
+    // const { wallet: walletNew } = yield select(walletSelector);
+    // const addr = yield call([walletNew.ton, 'getAddress']);
+    // const data = yield call([tk, 'load']);
+    // yield call(
+    //   [tk, 'init'],
+    //   addr,
+    //   isTestnet,
+    //   data.tronAddress,
+    //   !getFlag('address_style_nobounce'),
+    // );
     useSwapStore.getState().actions.fetchAssets();
   } else {
     yield put(walletActions.endLoading());
@@ -233,8 +228,6 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   yield put(nftsActions.loadMarketplaces());
   yield put(favoritesActions.loadSuggests());
   yield put(mainActions.getTimeSynced());
-
-  SplashScreen.hideAsync();
 
   if (needRefreshConfig) {
     yield loadServerConfig(isTestnet, true);

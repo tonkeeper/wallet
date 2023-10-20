@@ -78,26 +78,23 @@ export class Address {
     }
   }
 
-  static async fromPubkey(
-    pubkey: string | null,
-    options: FormatOptions = defaultFormatOptions,
-  ): Promise<AddressesByVersion | null> {
+  static async fromPubkey(pubkey: string | null): Promise<AddressesByVersion | null> {
     if (!pubkey) return null;
 
     const tonweb = new TonWeb();
     const addresses = {} as AddressesByVersion;
+
+    const publicKey = Uint8Array.from(Buffer.from(pubkey, 'hex'));
     for (let contractVersion of ContractVersions) {
       const wallet = new tonweb.wallet.all[contractVersion](tonweb.provider, {
-        publicKey: pubkey as any,
+        publicKey,
         wc: 0,
       });
 
       const address = await wallet.getAddress();
-      const friendly = address.toString(true, true, options.bounceable, options.testOnly);
-      const raw = address.toString(false, false, options.bounceable, options.testOnly);
-      const short = Address.toShort(friendly);
+      const raw = address.toString(false, false);
 
-      addresses[contractVersion] = { friendly, raw, short };
+      addresses[contractVersion] = raw;
     }
 
     return addresses;

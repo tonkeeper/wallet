@@ -45,3 +45,5 @@ export { useValueRef } from '../hooks/useValueRef';
 export { createExternalRef } from './utils/createExternalRef';
 export * from './utils';
 export * from './styles';
+
+export { useSplashScreenWhileLoadingResources } from './hooks/useSplashScreenWhileLoadingResources';

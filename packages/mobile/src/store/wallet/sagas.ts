@@ -814,6 +814,7 @@ function* openMigrationWorker(action: OpenMigrationAction) {
       action.payload ? !!action.payload.isTransfer : false,
     );
   } catch (e) {
+    console.log(e)
     e && debugLog(e.message);
     yield call(Toast.fail, e.message);
   }

@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { i18n, t } from '@tonkeeper/shared/i18n';
 import {
   Button,
@@ -137,11 +137,11 @@ export const WalletScreen = memo(() => {
             <TouchableOpacity
               hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
               style={{ zIndex: 3, marginVertical: 8 }}
-              onPress={() => copyText(tk.wallet.address.ton.friendly)}
+              onPress={() => copyText(tk.wallet.state.getSnapshot().addresses.ton)}
               activeOpacity={0.6}
             >
               <Text color="textSecondary" type="body2">
-                {tk.wallet.address.ton.short}
+                {tk.wallet.state.getSnapshot().addresses.ton}
               </Text>
             </TouchableOpacity>
           )}

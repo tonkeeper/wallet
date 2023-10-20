@@ -62,29 +62,6 @@ export const MainStack: FC = () => {
     ? MainStackRouteNames.Tabs
     : MainStackRouteNames.DevStack;
 
-  function renderRoot() {
-    if (isIntroShown) {
-      return (
-        <Stack.Screen
-          name={AppStackRouteNames.Intro}
-          component={Intro}
-          options={{
-            contentStyle: { backgroundColor: theme.colors.backgroundPrimary },
-          }}
-        />
-      );
-    } else if (!isUnlocked && wallet && !attachedScreen.pathname) {
-      return (
-        <Stack.Screen
-          name={AppStackRouteNames.MainAccessConfirmation}
-          component={AccessConfirmation}
-        />
-      );
-    } else {
-      return <Stack.Screen name={MainStackRouteNames.Tabs} component={TabStack} />;
-    }
-  }
-
   return (
     <Stack.Navigator
       initialRouteName={initialRouteName}
@@ -97,7 +74,11 @@ export const MainStack: FC = () => {
         fullScreenGestureEnabled: true,
       }}
     >
-      {renderRoot()}
+      {!wallet ? (
+        <Stack.Screen name={MainStackRouteNames.Tabs} component={StartScreen} />
+      ) : (
+        <Stack.Screen name={MainStackRouteNames.Tabs} component={TabStack} />
+      )}
       <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
       <Stack.Screen name={'TronTokenScreen'} component={TronTokenScreen} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />

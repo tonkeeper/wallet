@@ -1,4 +1,4 @@
-export { Intro } from './Intro/Intro';
+
 export { CreateWallet } from './CreateWallet/CreateWallet';
 export { Settings } from './Settings/Settings';
 export { Send } from './Send/Send';
