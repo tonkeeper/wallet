@@ -983,5 +983,33 @@
   "yesterday" : "Yesterday",
   "all_regions": "All Regions",
   "region_nokyc": "Neutral Waters",
-  "nokyc": "no KYC"
+  "nokyc": "no KYC",
+  "battery": {
+    "title": {
+      "empty": "Battery for gas fees is almost empty",
+      "almost_empty": "Battery for gas fees is half full",
+      "full": "Battery for gas fees is full"
+    },
+    "description": {
+      "empty": "You have enough charge battery for more than 5 transactions.",
+      "almost_empty": "You have enough charge battery for more than 300 transactions.",
+      "full": "You have enough charge battery for more than 700 transactions."
+    },
+    "packages": {
+      "title": {
+        "large": "700 transactions for {{price}}",
+        "medium": "400 transactions for {{price}}",
+        "small": "100 transactions for {{price}}"
+      },
+      "subtitle": {
+        "large": "Large gas fees pack",
+        "medium": "Medium gas fees pack",
+        "small": "Small gas fees pack"
+      },
+      "disclaimer": "This is approximate transactions number. Some your transactions may cost more.",
+      "buy": "Buy",
+      "ok": "OK",
+      "refilled": "Your battery is charged"
+    }
+  }
 }
