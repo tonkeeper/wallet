@@ -9,6 +9,7 @@ import {
   List,
   View,
   PagerView,
+  Spacer,
 } from '@tonkeeper/uikit';
 import { InternalNotification } from '$uikit';
 import { useNavigation } from '@tonkeeper/router';
@@ -47,6 +48,7 @@ import { trackEvent } from '$utils/stats';
 import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { ExpiringDomainCell } from './components/ExpiringDomainCell';
+import { BatteryIcon } from '@tonkeeper/shared/components/BatteryIcon/BatteryIcon';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -132,7 +134,11 @@ export const WalletScreen = memo(() => {
         ))}
         {shouldUpdate && <UpdatesCell />}
         <View style={styles.amount} pointerEvents="box-none">
-          <ShowBalance amount={balance.total.fiat} />
+          <View style={styles.balanceWithBattery}>
+            <ShowBalance amount={balance.total.fiat} />
+            <Spacer x={4} />
+            <BatteryIcon />
+          </View>
           {wallet && tk.wallet && (
             <TouchableOpacity
               hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
@@ -350,5 +356,9 @@ const styles = Steezy.create(({ isTablet }) => ({
     [isTablet]: {
       width: TabletMaxWidth,
     },
+  },
+  balanceWithBattery: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 }));

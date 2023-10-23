@@ -29,6 +29,8 @@ export interface AccountAddress {
   is_scam: boolean;
   /** @example "https://ton.org/logo.png" */
   icon?: string;
+  /** @example true */
+  is_wallet: boolean;
 }
 
 export interface BlockchainBlock {
@@ -464,6 +466,7 @@ export interface Account {
   /** @example ["get_item_data"] */
   get_methods: string[];
   is_suspended?: boolean;
+  is_wallet: boolean;
 }
 
 export interface Accounts {
@@ -574,6 +577,8 @@ export interface JettonPreview {
 export interface JettonBalance {
   /** @example 597968399 */
   balance: string;
+  /** @example {} */
+  price?: any;
   wallet_address: AccountAddress;
   jetton: JettonPreview;
 }
@@ -595,6 +600,8 @@ export interface ImagePreview {
   /** @example "https://site.com/pic1.jpg" */
   url: string;
 }
+
+export type NftApprovedBy = NftApprovedByEnum[];
 
 export interface Sale {
   /** @example "0:10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365" */
@@ -629,7 +636,7 @@ export interface NftItem {
   previews?: ImagePreview[];
   /** @example "crypto.ton" */
   dns?: string;
-  approved_by: NftItemApprovedByEnum[];
+  approved_by: NftApprovedBy;
 }
 
 export interface NftItems {
@@ -1122,6 +1129,7 @@ export interface NftCollection {
   /** @example {} */
   metadata?: Record<string, any>;
   previews?: ImagePreview[];
+  approved_by: NftApprovedBy;
 }
 
 export interface NftCollections {
@@ -1133,6 +1141,8 @@ export interface Trace {
   /** @example ["wallet","tep62_item"] */
   interfaces: string[];
   children?: Trace[];
+  /** @example false */
+  emulated?: boolean;
 }
 
 export interface MessageConsequences {
@@ -1233,6 +1243,7 @@ export interface JettonHolders {
   addresses: {
     /** @example "0:10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365" */
     address: string;
+    owner: AccountAddress;
     /** @example 1000000000 */
     balance: string;
   }[];
@@ -1475,7 +1486,7 @@ export enum TvmStackRecordTypeEnum {
 }
 
 /** @example "getgems" */
-export enum NftItemApprovedByEnum {
+export enum NftApprovedByEnum {
   Getgems = 'getgems',
   Tonkeeper = 'tonkeeper',
   TonDiamonds = 'ton.diamonds',
@@ -1582,6 +1593,19 @@ export interface ExecGetMethodForBlockchainAccountParams {
    * @example "get_wallet_address"
    */
   methodName: string;
+}
+
+export interface GetAccountJettonsBalancesParams {
+  /**
+   * accept ton and all possible fiat currencies, separated by commas
+   * @example "ton,usd,rub"
+   */
+  currencies?: string;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  accountId: string;
 }
 
 export interface GetAccountJettonsHistoryParams {
@@ -2825,10 +2849,14 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
      * @name GetAccountJettonsBalances
      * @request GET:/v2/accounts/{account_id}/jettons
      */
-    getAccountJettonsBalances: (accountId: string, params: RequestParams = {}) =>
+    getAccountJettonsBalances: (
+      { accountId, ...query }: GetAccountJettonsBalancesParams,
+      params: RequestParams = {},
+    ) =>
       this.http.request<JettonsBalances, Error>({
         path: `/v2/accounts/${accountId}/jettons`,
         method: 'GET',
+        query: query,
         format: 'json',
         ...params,
       }),

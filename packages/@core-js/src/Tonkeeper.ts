@@ -7,6 +7,8 @@ import { Vault } from './declarations/Vault';
 import { QueryClient } from 'react-query';
 import { TronAPI } from './TronAPI';
 import { TonAPI } from './TonAPI';
+import { BatteryAPI } from './BatteryAPI';
+import { signProofForTonkeeper } from './utils/tonProof';
 
 class PermissionsManager {
   public notifications = true;
@@ -19,6 +21,7 @@ type TonkeeperOptions = {
   tronapi: TronAPI;
   storage: Storage;
   tonapi: TonAPI;
+  batteryapi: BatteryAPI;
   vault: Vault;
 };
 
@@ -44,6 +47,7 @@ export class Tonkeeper {
   private queryClient: QueryClient;
   private tronapi: TronAPI;
   private tonapi: TonAPI;
+  private batteryapi: BatteryAPI;
   private vault: Vault;
 
   constructor(options: TonkeeperOptions) {
@@ -51,6 +55,7 @@ export class Tonkeeper {
     this.storage = options.storage;
     this.tronapi = options.tronapi;
     this.tonapi = options.tonapi;
+    this.batteryapi = options.batteryapi;
     this.vault = options.vault;
     this.sse = options.sse;
 
@@ -63,6 +68,8 @@ export class Tonkeeper {
     address: string,
     isTestnet: boolean,
     tronAddress: string,
+    tonProof: string,
+    walletStateInit: string,
     // TODO: remove after transition to UQ address format
     bounceable = true,
   ) {
@@ -74,6 +81,7 @@ export class Tonkeeper {
             this.queryClient,
             this.tonapi,
             this.tronapi,
+            this.batteryapi,
             this.vault,
             this.sse,
             this.storage,
@@ -82,6 +90,7 @@ export class Tonkeeper {
               tronAddress: tronAddress,
               address: address,
               bounceable,
+              tonProof,
             },
           );
 
@@ -109,18 +118,20 @@ export class Tonkeeper {
     // }
   }
 
-  public tronStrorageKey = 'temp-tron-address';
+  public tronStorageKey = 'temp-tron-address';
+  public tonProofStorageKey = 'temp-ton-proof';
 
   public async load() {
     try {
-      const tronAddress = await this.storage.getItem(this.tronStrorageKey);
+      const tonProof = await this.storage.getItem(this.tonProofStorageKey);
+      const tronAddress = await this.storage.getItem(this.tronStorageKey);
       if (tronAddress) {
-        return { tronAddress: JSON.parse(tronAddress) };
+        return { tronAddress: JSON.parse(tronAddress), tonProof };
       }
-      return { tronAddress: null };
+      return { tronAddress: null, tonProof };
     } catch (err) {
       console.error('[tk:load]', err);
-      return { tronAddress: null };
+      return { tronAddress: null, tonProof: null };
     }
   }
 
@@ -135,9 +146,27 @@ export class Tonkeeper {
         owner: ownerAddress,
       };
 
-      await this.storage.setItem(this.tronStrorageKey, JSON.stringify(tronAddress));
+      await this.storage.setItem(this.tronStorageKey, JSON.stringify(tronAddress));
 
       return tronAddress;
+    } catch (err) {
+      console.error('[Tonkeeper]', err);
+    }
+  }
+
+  public async obtainProofToken(tonPrivateKey: Uint8Array) {
+    try {
+      const { payload } = await this.tonapi.tonconnect.getTonConnectPayload();
+      const proof = await signProofForTonkeeper(
+        this.wallet.address.ton.raw,
+        tonPrivateKey,
+        payload,
+        this.wallet.identity.stateInit,
+      );
+      const { token } = await this.tonapi.wallet.tonConnectProof(proof);
+
+      await this.storage.setItem(this.tonProofStorageKey, JSON.stringify(token));
+      return token;
     } catch (err) {
       console.error('[Tonkeeper]', err);
     }
@@ -151,6 +180,7 @@ export class Tonkeeper {
     this.wallet.subscriptions.prefetch();
     this.wallet.balances.prefetch();
     this.wallet.nfts.prefetch();
+    this.wallet.battery.getBalance();
   }
 
   public rehydrate() {

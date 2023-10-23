@@ -99,6 +99,7 @@
     "react-native-gesture-handler": "^2.12.1",
     "react-native-get-random-values": "^1.8.0",
     "react-native-haptic-feedback": "^2.0.3",
+    "react-native-iap": "^12.10.7",
     "react-native-image-colors": "^2.3.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-keyboard-controller": "^1.5.8",

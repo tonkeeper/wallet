@@ -16,6 +16,9 @@ type AppConfigVars = {
   tonapiTestnetHost: string;
   tronapiHost: string;
   tronapiTestnetHost: string;
+  batteryHost: string;
+  batteryTestnetHost: string;
+  disable_battery: boolean;
 };
 
 const defaultConfig: Partial<AppConfigVars> = {
@@ -24,6 +27,9 @@ const defaultConfig: Partial<AppConfigVars> = {
   tonapiV2Endpoint: 'https://tonapi.io',
   tronapiHost: 'https://tron.tonkeeper.com',
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
+  batteryHost: 'https://battery.tonkeeper.com',
+  batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
+  disable_battery: true,
 };
 
 export const config = new AppConfig<AppConfigVars>({

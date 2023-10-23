@@ -28,8 +28,9 @@ import {
 } from '@tonkeeper/core/src/legacy';
 import { SendApi, Configuration as V1Configuration } from 'tonapi-sdk-js';
 
-import { tk } from '@tonkeeper/shared/tonkeeper';
 import { Address, Cell, internal, toNano } from '@ton/core';
+import { config } from '@tonkeeper/shared/config';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 const TonWeb = require('tonweb');
 
@@ -181,6 +182,11 @@ export class TonWallet {
     return this.vault.getTonAddress(this.isTestnet);
   }
 
+  async createStateInitBase64() {
+    const { stateInit } = await this.vault.tonWallet.createStateInit();
+    return TonWeb.utils.bytesToBase64(await stateInit.toBoc(false));
+  }
+
   async getAddressByWalletVersion(version: string) {
     return this.vault.getTonAddressByWalletVersion(this.tonweb, version, this.isTestnet);
   }
@@ -215,6 +221,13 @@ export class TonWallet {
       }
       throw err;
     }
+  }
+
+  private async sendBoc(boc: string): Promise<void> {
+    if (config.get('disable_battery')) {
+      return this.sendApi.sendBoc({ sendBocRequest: { boc } });
+    }
+    tk.wallet.battery.sendMessage(boc);
   }
 
   async createSubscription(
@@ -493,7 +506,7 @@ export class TonWallet {
     }
 
     try {
-      await this.sendApi.sendBoc({ sendBocRequest: { boc } });
+      await this.sendBoc(boc);
     } catch (e) {
       if (!store.getState().main.isTimeSynced) {
         throw new Error('wrong_time');
@@ -651,7 +664,7 @@ export class TonWallet {
     }
 
     try {
-      await this.sendApi.sendBoc({ sendBocRequest: { boc } });
+      await this.sendBoc(boc);
     } catch (e) {
       if (!store.getState().main.isTimeSynced) {
         throw new Error('wrong_time');

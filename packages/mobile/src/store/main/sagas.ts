@@ -215,11 +215,14 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     const { wallet: walletNew } = yield select(walletSelector);
     const addr = yield call([walletNew.ton, 'getAddress']);
     const data = yield call([tk, 'load']);
+    const stateInit = yield call([walletNew.ton, 'createStateInitBase64']);
     yield call(
       [tk, 'init'],
       addr,
       isTestnet,
       data.tronAddress,
+      data.tonProof,
+      stateInit,
       !getFlag('address_style_nobounce'),
     );
     useSwapStore.getState().actions.fetchAssets();

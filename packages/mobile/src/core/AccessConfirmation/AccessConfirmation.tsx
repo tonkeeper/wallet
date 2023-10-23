@@ -73,6 +73,20 @@ export const AccessConfirmation: FC = () => {
     }
   }, []);
 
+  const obtainTonProof = useCallback(async (privateKey: Uint8Array) => {
+    try {
+      // Obtain tonProof
+      if (!tk.wallet.identity.tonProof) {
+        const tonProof = await tk.obtainProofToken(privateKey);
+        if (tonProof) {
+          tk.wallet.setTonProof(tonProof);
+        }
+      }
+    } catch (err) {
+      console.error('[obtain tonProof]', err);
+    }
+  }, []);
+
   const handleKeyboard = useCallback(
     (newValue) => {
       const pin = newValue.substr(0, 4);
@@ -122,6 +136,7 @@ export const AccessConfirmation: FC = () => {
                             unlockedVault as any
                           ).getTonPrivateKey();
                           // createTronAddress(privateKey);
+                          obtainTonProof(privateKey);
 
                           dispatch(mainActions.setUnlocked(true));
                         } else {

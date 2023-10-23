@@ -170,11 +170,14 @@ function* createWalletWorker(action: CreateWalletAction) {
     yield fork(loadRatesAfterJettons);
     const addr = yield call([wallet.ton, 'getAddress']);
     const data = yield call([tk, 'load']);
+    const stateInit = yield call([wallet.ton, 'createStateInitBase64']);
     yield call(
       [tk, 'init'],
       addr,
       getChainName() === 'testnet',
       data.tronAddress,
+      data.tonProof,
+      stateInit,
       !getFlag('address_style_nobounce'),
     );
     onDone();
@@ -299,11 +302,15 @@ function* switchVersionWorker() {
   const addr = yield call([newWallet.ton, 'getAddress']);
   yield call([tk, 'destroy']);
   const data = yield call([tk, 'load']);
+  const stateInit = yield call([newWallet.ton, 'createStateInitBase64']);
+
   yield call(
     [tk, 'init'],
     addr,
     getChainName() === 'testnet',
     data.tronAddress,
+    data.tonProof,
+    stateInit,
     !getFlag('address_style_nobounce'),
   );
 
@@ -886,11 +893,14 @@ function* doMigration(wallet: Wallet, newAddress: string) {
     const addr = yield call([newWallet.ton, 'getAddress']);
     yield call([tk, 'destroy']);
     const data = yield call([tk, 'load']);
+    const stateInit = yield call([newWallet.ton, 'createStateInitBase64']);
     yield call(
       [tk, 'init'],
       addr,
       getChainName() === 'testnet',
       data.tronAddress,
+      data.tonProof,
+      stateInit,
       !getFlag('address_style_nobounce'),
     );
 

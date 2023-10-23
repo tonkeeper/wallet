@@ -102,6 +102,7 @@ export class Vault {
     const tonPubkey = tonKeyPair.publicKey;
 
     // await tk.generateTronAddress(tonKeyPair.secretKey);
+    await tk.obtainProofToken(tonKeyPair.secretKey);
 
     const info: VaultInfo = {
       name: name,

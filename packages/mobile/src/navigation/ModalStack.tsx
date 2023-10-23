@@ -34,6 +34,7 @@ import { ProvidersWithNavigation } from './Providers';
 import { ReceiveModal } from '@tonkeeper/shared/modals/ReceiveModal';
 import { ReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
 import { EditAppConfigModal } from '$core/DevMenu/DevConfigScreen';
+import { RefillBatteryModal } from '../../../shared/modals/RefillBatteryModal/RefillBatteryModal';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -52,6 +53,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NewConfirmSending} path="NewConfirmSending" />
       <Stack.Modal component={SwitchWalletModal} path="/switch-wallet" />
       <Stack.Modal component={AddWalletModal} path="/add-wallet" />
+      <Stack.Modal component={RefillBatteryModal} path="/refill-battery" />
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />
