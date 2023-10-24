@@ -11,11 +11,9 @@ import { t } from '@tonkeeper/shared/i18n';
 import { isToday } from 'date-fns';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { TonConnect } from '$tonconnect';
-import messaging from '@react-native-firebase/messaging';
-import { useSelector } from 'react-redux';
-import { walletAddressSelector } from '$store/wallet';
 import { openDAppBrowser } from '$navigation';
 import { Alert, Animated } from 'react-native';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
 
 interface NotificationProps {
   notification: INotification;
@@ -47,7 +45,7 @@ export const Notification: React.FC<NotificationProps> = (props) => {
       props.notification.dapp_url &&
       getDomainFromURL(app.url) === getDomainFromURL(props.notification.dapp_url),
   );
-  const walletAddress = useSelector(walletAddressSelector);
+  const walletAddress = useNewWallet((state) => state.ton.address.friendly);
   const { showActionSheetWithOptions } = useActionSheet();
   const deleteNotification = useNotificationsStore(
     (state) => state.actions.deleteNotificationByReceivedAt,
@@ -79,7 +77,7 @@ export const Notification: React.FC<NotificationProps> = (props) => {
       app?.notificationsEnabled && {
         option: t('notifications.mute_notifications'),
         action: async () => {
-          disableNotifications(walletAddress.ton, app.url);
+          disableNotifications(walletAddress, app.url);
         },
       },
       app && {
@@ -111,7 +109,7 @@ export const Notification: React.FC<NotificationProps> = (props) => {
         return;
       },
     );
-  }, [app, showActionSheetWithOptions, walletAddress.ton]);
+  }, [app, showActionSheetWithOptions, walletAddress]);
 
   const renderRightActions = useCallback(
     (progress) => {

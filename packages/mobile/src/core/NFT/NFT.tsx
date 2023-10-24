@@ -20,8 +20,7 @@ import { NFTProps } from '$core/NFT/NFT.interface';
 import { useNFT } from '$hooks/useNFT';
 import { Platform, Share, TouchableOpacity, View } from 'react-native';
 import { TonDiamondFeature } from './TonDiamondFeature/TonDiamondFeature';
-import { useDispatch, useSelector } from 'react-redux';
-import { walletAddressSelector } from '$store/wallet';
+import { useDispatch } from 'react-redux';
 import { NFTModel, TonDiamondMetadata } from '$store/models';
 import { getFlag, useFlags } from '$utils/flags';
 import { LinkingDomainButton } from './LinkingDomainButton';
@@ -40,6 +39,7 @@ import { tk } from '@tonkeeper/shared/tonkeeper';
 import { CryptoCurrencies } from '$shared/constants';
 import TonWeb from 'tonweb';
 import { CustomNftItem } from '@tonkeeper/core/src/TonAPI/CustomNftItems';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
 
 export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
   const { address: nftAddress } = route?.params?.keyPair || {};
@@ -48,7 +48,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
   const hiddenAmounts = usePrivacyStore((state) => state.hiddenAmounts);
   const dispatch = useDispatch();
   const nav = useNavigation();
-  const address = useSelector(walletAddressSelector);
+  const address = useNewWallet((state) => state.ton.address.friendly);
   const nftFromHistory = useNFT({ currency: 'ton', address: nftAddress });
   const [nft, setNft] = useState(nftFromHistory ?? oldNftItem);
 
@@ -106,8 +106,8 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
 
   const isOnSale = useMemo(() => !!nft.sale, [nft.sale]);
   const isCurrentAddressOwner = useMemo(
-    () => !isOnSale && Address.compare(nft.ownerAddress, address.ton),
-    [isOnSale, nft.ownerAddress, address.ton],
+    () => !isOnSale && Address.compare(nft.ownerAddress, address),
+    [isOnSale, nft.ownerAddress, address],
   );
 
   const scrollHandler = useAnimatedScrollHandler({
@@ -294,7 +294,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
 export async function openNftModal(nftAddress: string, nftItem?: NftItem) {
   const openModal = (nftItem: CustomNftItem) => {
     // TODO: change me
-    const oldNftItem = mapNewNftToOldNftData(nftItem, tk.wallet.address.ton.friendly);
+    const oldNftItem = mapNewNftToOldNftData(nftItem, tk.wallet.address.friendly);
     navigation.push('NFTItemDetails', { oldNftItem });
   };
 

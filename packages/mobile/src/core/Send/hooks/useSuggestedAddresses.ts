@@ -4,13 +4,12 @@ import uniqBy from 'lodash/uniqBy';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SuggestedAddress, SuggestedAddressType } from '../Send.interface';
-import { walletAddressSelector } from '$store/wallet';
-import { CryptoCurrencies } from '$shared/constants';
 import { Tonapi } from '$libs/Tonapi';
 import { useStakingStore } from '$store';
 import { ActionItem, ActionType, Address } from '@tonkeeper/core';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { getFlag } from '$utils/flags';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
 
 export const DOMAIN_ADDRESS_NOT_FOUND = 'DOMAIN_ADDRESS_NOT_FOUND';
 
@@ -21,8 +20,7 @@ export const useSuggestedAddresses = () => {
   const dispatch = useDispatch();
   const { favorites, hiddenRecentAddresses, updatedDnsAddresses } =
     useSelector(favoritesSelector);
-  const address = useSelector(walletAddressSelector);
-
+  const address = useNewWallet((state) => state.ton.address.raw);
   const stakingPools = useStakingStore((s) => s.pools.map((pool) => pool.address));
 
   const favoriteAddresses = useMemo(
@@ -49,7 +47,7 @@ export const useSuggestedAddresses = () => {
       ActionType.TonTransfer,
     ] as const;
 
-    const walletAddress = address[CryptoCurrencies.Ton];
+    const walletAddress = address;
     const addresses = (
       actions.filter((action) => {
         if (

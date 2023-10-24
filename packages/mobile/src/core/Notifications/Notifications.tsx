@@ -14,7 +14,6 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Linking } from 'react-native';
 import { CellSection } from '$shared/components';
 import { getSubscribeStatus, SUBSCRIBE_STATUS } from '$utils/messaging';
-import { useSelector } from 'react-redux';
 import { NotificationsStatus, useNotificationStatus } from '$hooks/useNotificationStatus';
 import messaging from '@react-native-firebase/messaging';
 import { useNotifications } from '$hooks/useNotifications';
@@ -23,11 +22,11 @@ import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
 import { Toast, ToastSize, useConnectedAppsList, useConnectedAppsStore } from '$store';
 import { Steezy } from '$styles';
 import { getChainName } from '$shared/dynamicConfig';
-import { walletAddressSelector } from '$store/wallet';
 import { SwitchDAppNotifications } from '$core/Notifications/SwitchDAppNotifications';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
 
 export const Notifications: React.FC = () => {
-  const address = useSelector(walletAddressSelector);
+  const address = useNewWallet((state) => state.ton.address.friendly);
   const handleOpenSettings = useCallback(() => Linking.openSettings(), []);
   const notifications = useNotifications();
   const tabBarHeight = useBottomTabBarHeight();
@@ -76,7 +75,7 @@ export const Notifications: React.FC = () => {
           ? await notifications.subscribe()
           : await notifications.unsubscribe();
 
-        updateNotificationsSubscription(getChainName(), address.ton);
+        updateNotificationsSubscription(getChainName(), address);
 
         if (!isSuccess) {
           // Revert
@@ -90,7 +89,7 @@ export const Notifications: React.FC = () => {
         isSwitchFrozen.current = false;
       }
     },
-    [address.ton, notifications, updateNotificationsSubscription],
+    [address, notifications, updateNotificationsSubscription],
   );
 
   const connectedApps = useConnectedAppsList();

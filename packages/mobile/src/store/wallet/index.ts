@@ -143,11 +143,6 @@ export const walletWalletSelector = createSelector(
   (walletState) => walletState.wallet,
 );
 
-export const walletAddressSelector = createSelector(
-  walletSelector,
-  (walletState) => walletState.address,
-);
-
 export const walletBalancesSelector = createSelector(
   walletSelector,
   (walletState) => walletState.balances,
