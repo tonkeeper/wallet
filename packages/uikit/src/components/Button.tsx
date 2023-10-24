@@ -117,9 +117,7 @@ export const Button = memo<ButtonProps>((props) => {
           </View>
         )}
         {icon && (
-          <View
-            style={size === 'icon' ? styles.iconButtonContainer : styles.iconContainer}
-          >
+          <View style={size !== 'icon' && styles.iconContainer}>
             {typeof icon === 'string' ? (
               <Icon style={iconStyle} name={icon as IconNames} color={iconColor} />
             ) : (
@@ -148,7 +146,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: ns(14),
   },
-  iconButtonContainer: {},
   buttonMedium: {
     height: ns(48),
     paddingHorizontal: ns(20),

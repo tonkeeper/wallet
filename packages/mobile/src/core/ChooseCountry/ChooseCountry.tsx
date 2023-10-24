@@ -147,8 +147,11 @@ const styles = Steezy.create(({ corners, colors }) => ({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: isAndroid ? -2 : -4,
+    position: 'relative',
   },
   flag: {
+    top: 0,
     fontSize: isAndroid ? 22 : 28,
+    position: 'absolute',
   },
 }));
