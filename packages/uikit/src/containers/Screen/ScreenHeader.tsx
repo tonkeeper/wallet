@@ -16,7 +16,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-
 type BackButtonIcon = 'back' | 'close' | 'down';
 
 const backButtonIcons: { [key in BackButtonIcon]: IconNames } = {
@@ -34,6 +33,7 @@ export interface ScreenHeaderProps {
   gradient?: boolean;
   isModal?: boolean;
   title?: string | React.ReactNode;
+  children?: React.ReactNode;
   onBackPress?: () => void;
   onGoBack?: () => void;
   showCloseButton?: boolean;
@@ -50,6 +50,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
     gradient,
     isModal,
     title,
+    children,
     onBackPress,
     onGoBack,
   } = props;
@@ -165,21 +166,23 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
         )}
         <Animated.View style={[styles.innerContainer, ejectionOpacityStyle, borderStyle]}>
           <View style={styles.content}>
-            {!hideBackButton && !isBackButtonRight && backButtonSlot}
-            {isString(title) ? (
-              <Text
-                style={[styles.title, titleAnimatedStyle]}
-                type={isSmallTitle ? 'label1' : 'h3'}
-                textAlign="center"
-                numberOfLines={1}
-                reanimated
-              >
-                {title}
-              </Text>
-            ) : (
-              <View style={styles.title}>
-                {title}
-              </View>
+            {children ?? (
+              <>
+                {!hideBackButton && !isBackButtonRight && backButtonSlot}
+                {isString(title) ? (
+                  <Text
+                    style={[styles.title, titleAnimatedStyle]}
+                    type={isSmallTitle ? 'label1' : 'h3'}
+                    textAlign="center"
+                    numberOfLines={1}
+                    reanimated
+                  >
+                    {title}
+                  </Text>
+                ) : (
+                  <View style={styles.title}>{title}</View>
+                )}
+              </>
             )}
           </View>
           {rightContentSlot && (

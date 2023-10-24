@@ -2,12 +2,12 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import {
   ActivityStackRouteNames,
   AppStackRouteNames,
+  BrowserStackRouteNames,
   MainStackRouteNames,
   ResetPinStackRouteNames,
   SecurityMigrationStackRouteNames,
   SettingsStackRouteNames,
   SetupWalletStackRouteNames,
-  TabsStackRouteNames,
 } from '$navigation/navigationNames';
 import { CryptoCurrency } from '$shared/constants';
 import { SendAnalyticsFrom } from '$store/models';
@@ -16,7 +16,7 @@ import _ from 'lodash';
 import { getCurrentRoute, navigate, push, replace } from './imperative';
 
 export function openExploreTab(initialCategory?: string) {
-  navigate(TabsStackRouteNames.Explore, { initialCategory });
+  navigate(BrowserStackRouteNames.Explore, { initialCategory });
 }
 
 export interface OpenSendParams {

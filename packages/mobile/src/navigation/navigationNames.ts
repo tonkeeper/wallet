@@ -53,7 +53,7 @@ export enum MainStackRouteNames {
 export enum TabsStackRouteNames {
   Balances = 'Balances',
   NFT = 'TabNFT',
-  Explore = 'Explore',
+  BrowserStack = 'BrowserStack',
   SettingsStack = 'SettingsStack',
   Activity = 'Activity',
 }
@@ -66,6 +66,11 @@ export enum SetupWalletStackRouteNames {
   SetupBiometry = 'SetupBiometry',
   SetupWalletDone = 'SetupWalletDone',
   SetupNotifications = 'SetupNotifications',
+}
+
+export enum BrowserStackRouteNames {
+  Explore = 'Explore',
+  Category = 'Category',
 }
 
 export enum SettingsStackRouteNames {

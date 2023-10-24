@@ -1,6 +1,6 @@
 import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 
-export const ServerConfigVersion = 7;
+export const ServerConfigVersion = 8;
 
 export const GOOGLE_PACKAGE_NAME = 'com.ton_keeper';
 export const APPLE_STORE_ID = '1587742107';

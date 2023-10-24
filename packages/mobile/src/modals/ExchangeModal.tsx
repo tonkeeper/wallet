@@ -19,6 +19,8 @@ export const ExchangeModal = () => {
 
   const otherWaysAvailable = getServerConfigSafe('exchangePostUrl') !== 'none';
 
+  const allRegions = selectedCountry === '*';
+
   const filteredCategories = useMemo(() => {
     const usedLayout =
       layoutByCountry.find((layout) => layout.countryCode === selectedCountry) ||
@@ -29,9 +31,10 @@ export const ExchangeModal = () => {
         return category;
       }
 
-      const items = showAll
-        ? category.items
-        : category.items.filter((item) => usedLayout.methods.includes(item.id));
+      const items =
+        showAll || allRegions
+          ? category.items
+          : category.items.filter((item) => usedLayout.methods.includes(item.id));
 
       return {
         ...category,
@@ -48,7 +51,7 @@ export const ExchangeModal = () => {
         }),
       };
     });
-  }, [showAll, categories, defaultLayout, layoutByCountry, selectedCountry]);
+  }, [layoutByCountry, defaultLayout, categories, selectedCountry, showAll, allRegions]);
 
   const handleShowAll = useCallback(() => {
     setShowAll(!showAll);
@@ -85,7 +88,7 @@ export const ExchangeModal = () => {
                         />
                       ))}
                     </S.Contain>
-                    {otherWaysAvailable && category.type === 'buy' ? (
+                    {otherWaysAvailable && category.type === 'buy' && !allRegions ? (
                       <View style={styles.otherWaysContainer}>
                         <Button
                           key={showAll ? 'hide' : 'show'}

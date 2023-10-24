@@ -58,6 +58,11 @@ export const textVariants = StyleSheet.create({
     lineHeight: nfs(16),
     fontFamily: FONT.regular,
   },
+  body3Alt: {
+    fontSize: nfs(13),
+    lineHeight: nfs(16),
+    fontFamily: FONT.regular,
+  },
   body4Caps: {
     fontSize: nfs(10),
     lineHeight: nfs(14),
