@@ -4,14 +4,14 @@ import React, { FC, memo, useEffect, useMemo, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as S from './AmountStep.style';
 import { parseLocaleNumber } from '$utils';
-import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { AmountStepProps } from './AmountStep.interface';
-import { walletWalletSelector } from '$store/wallet';
 import { AmountInput, AmountInputRef } from '$shared/components';
 import { CoinDropdown } from './CoinDropdown';
 import { t } from '@tonkeeper/shared/i18n';
 import { Steezy, View, Text } from '@tonkeeper/uikit';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
+import { WalletKind } from '@tonkeeper/core';
 
 const AmountStepComponent: FC<AmountStepProps> = (props) => {
   const {
@@ -29,9 +29,8 @@ const AmountStepComponent: FC<AmountStepProps> = (props) => {
     onChangeCurrency,
   } = props;
 
-  const wallet = useSelector(walletWalletSelector);
-
-  const isLockup = !!wallet?.ton.isLockup();
+  const walletKind = useNewWallet((state) => state.kind);
+  const isLockup = walletKind === WalletKind.Lockup;
 
   const { isReadyToContinue } = useMemo(() => {
     const bigNum = new BigNumber(parseLocaleNumber(amount.value));

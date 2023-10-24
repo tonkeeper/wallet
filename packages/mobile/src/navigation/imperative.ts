@@ -74,7 +74,7 @@ export function reset(screenName: string) {
   );
 }
 
-export const useParams = <T>(): Partial<T> => {
+export const useParams = <T>(): T => {
   const route = useRoute();
   return route.params ?? {};
 };

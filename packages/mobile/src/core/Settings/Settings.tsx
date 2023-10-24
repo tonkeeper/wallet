@@ -11,13 +11,12 @@ import * as S from './Settings.style';
 import { Icon, PopupSelect, ScrollHandler, Spacer, Text, List } from '$uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
-import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
+import { showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
 import {
   MainStackRouteNames,
   openDeleteAccountDone,
   openDevMenu,
-  openJettonsListSettingsStack,
   openLegalDocuments,
   openManageTokens,
   openNotifications,
@@ -25,11 +24,7 @@ import {
   openSecurityMigration,
   openSubscriptions,
 } from '$navigation';
-import {
-  walletActions,
-  walletVersionSelector,
-  walletWalletSelector,
-} from '$store/wallet';
+import { walletActions, walletVersionSelector } from '$store/wallet';
 import {
   APPLE_STORE_ID,
   getServerConfig,
@@ -54,8 +49,10 @@ import { Steezy } from '$styles';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { openAppearance } from '$core/ModalContainer/AppearanceModal';
-import { Address } from '@tonkeeper/core';
+import { Address, WalletContractVersion } from '@tonkeeper/core';
 import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -73,11 +70,10 @@ export const Settings: FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
   const notificationsBadge = useNotificationsBadge();
   const notifications = useNotifications();
-
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const wallet = useNewWallet();
   const dispatch = useDispatch();
   const hasSubscriptions = useSelector(hasSubscriptionsSelector);
-  const wallet = useSelector(walletWalletSelector);
+
   const version = useSelector(walletVersionSelector);
   const allTonAddesses = useAllAddresses();
   const showV4R1 = useSelector(showV4R1Selector);
@@ -160,12 +156,9 @@ export const Settings: FC = () => {
 
   const searchEngineVariants = Object.values(SearchEngine);
 
-  const handleChangeVersion = useCallback(
-    (version: SelectableVersion) => {
-      dispatch(walletActions.switchVersion(version));
-    },
-    [dispatch],
-  );
+  const handleSwitchVersion = useCallback((selectedVersion: WalletContractVersion) => {
+    tk.wallet.switchVersion(selectedVersion);
+  }, []);
 
   const handleDevMenu = useCallback(() => {
     openDevMenu();
@@ -183,10 +176,6 @@ export const Settings: FC = () => {
 
   const handleAppearance = useCallback(() => {
     openAppearance();
-  }, []);
-
-  const handleJettonsList = useCallback(() => {
-    openJettonsListSettingsStack();
   }, []);
 
   const handleManageTokens = useCallback(() => {
@@ -241,19 +230,18 @@ export const Settings: FC = () => {
           scrollEventThrottle={16}
         >
           <List>
-            {!!wallet && (
-              <List.Item
-                value={
-                  <Icon
-                    style={styles.icon.static}
-                    color="accentPrimary"
-                    name={'ic-key-28'}
-                  />
-                }
-                title={t('settings_security')}
-                onPress={handleSecurity}
-              />
-            )}
+            <List.Item
+              value={
+                <Icon
+                  style={styles.icon.static}
+                  color="accentPrimary"
+                  name={'ic-key-28'}
+                />
+              }
+              title={t('settings_security')}
+              onPress={handleSecurity}
+            />
+
             {shouldShowTokensButton && (
               <List.Item
                 value={
@@ -296,7 +284,7 @@ export const Settings: FC = () => {
           </List>
           <Spacer y={16} />
           <List>
-            {!!wallet && showNotifications && (
+            {showNotifications && (
               <List.Item
                 value={<Icon color="accentPrimary" name={'ic-notification-28'} />}
                 title={
@@ -311,9 +299,7 @@ export const Settings: FC = () => {
               />
             )}
             <List.Item
-              value={
-                <S.SelectedCurrency>{fiatCurrency.toUpperCase()}</S.SelectedCurrency>
-              }
+              value={<S.SelectedCurrency>{wallet.currency}</S.SelectedCurrency>}
               title={t('settings_primary_currency')}
               onPress={() => nav.navigate('ChooseCurrency')}
             />
@@ -334,38 +320,38 @@ export const Settings: FC = () => {
                 title={t('settings_search_engine')}
               />
             </PopupSelect>
-            {!!wallet && (
-              <PopupSelect
-                items={versions}
-                selected={version}
-                onChange={handleChangeVersion}
-                keyExtractor={(item) => item}
-                width={220}
-                renderItem={(version) => (
-                  <S.WalletVersion>
-                    <Text variant="label1" style={{ marginRight: ns(8) }}>
-                      {SelectableVersionsConfig[version]?.label}
-                    </Text>
-                    <Text variant="body1" color="foregroundSecondary">
-                      {Address.parse(
-                        allTonAddesses[SelectableVersionsConfig[version]?.label],
-                        { bounceable: !flags.address_style_nobounce },
-                      ).toShort()}
-                    </Text>
-                  </S.WalletVersion>
-                )}
-              >
-                <List.Item
-                  value={
-                    <Text variant="label1" color="accentPrimary">
-                      {SelectableVersionsConfig[version]?.label}
-                    </Text>
-                  }
-                  title={t('settings_wallet_version')}
-                />
-              </PopupSelect>
-            )}
-            {wallet && flags.address_style_settings ? (
+
+            <PopupSelect
+              items={versions}
+              selected={version}
+              onChange={handleSwitchVersion}
+              keyExtractor={(item) => item}
+              width={220}
+              renderItem={(version) => (
+                <S.WalletVersion>
+                  <Text variant="label1" style={{ marginRight: ns(8) }}>
+                    {SelectableVersionsConfig[version]?.label}
+                  </Text>
+                  <Text variant="body1" color="foregroundSecondary">
+                    {Address.parse(
+                      allTonAddesses[SelectableVersionsConfig[version]?.label],
+                      { bounceable: !flags.address_style_nobounce },
+                    ).toShort()}
+                  </Text>
+                </S.WalletVersion>
+              )}
+            >
+              <List.Item
+                value={
+                  <Text variant="label1" color="accentPrimary">
+                    {SelectableVersionsConfig[version]?.label}
+                  </Text>
+                }
+                title={t('settings_wallet_version')}
+              />
+            </PopupSelect>
+
+            {flags.address_style_settings && (
               <List.Item
                 value={
                   <Text variant="label1" color="accentPrimary">
@@ -375,7 +361,7 @@ export const Settings: FC = () => {
                 title={t('address_update.title')}
                 onPress={() => nav.navigate(MainStackRouteNames.AddressUpdateInfo)}
               />
-            ) : null}
+            )}
           </List>
           <Spacer y={16} />
           <List>
@@ -427,19 +413,19 @@ export const Settings: FC = () => {
               }
               title={t('settings_rate')}
             />
-            {!!wallet && (
-              <List.Item
-                onPress={handleDeleteAccount}
-                value={
-                  <Icon
-                    style={styles.icon.static}
-                    color="iconSecondary"
-                    name={'ic-trash-bin-28'}
-                  />
-                }
-                title={t('settings_delete_account')}
-              />
-            )}
+
+            <List.Item
+              onPress={handleDeleteAccount}
+              value={
+                <Icon
+                  style={styles.icon.static}
+                  color="iconSecondary"
+                  name={'ic-trash-bin-28'}
+                />
+              }
+              title={t('settings_delete_account')}
+            />
+
             <List.Item
               onPress={handleLegal}
               value={
@@ -453,16 +439,14 @@ export const Settings: FC = () => {
             />
           </List>
           <Spacer y={16} />
-          {!!wallet && (
-            <>
-              <List>
-                <CellSectionItem onPress={handleResetWallet} icon="ic-door-28">
-                  {t('settings_reset')}
-                </CellSectionItem>
-              </List>
-              <Spacer y={16} />
-            </>
-          )}
+
+          <List>
+            <CellSectionItem onPress={handleResetWallet} icon="ic-door-28">
+              {t('settings_reset')}
+            </CellSectionItem>
+          </List>
+          <Spacer y={16} />
+
           <S.Content>
             <TapGestureHandler
               simultaneousHandlers={devMenuHandlerRef}

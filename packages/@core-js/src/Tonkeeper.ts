@@ -1,8 +1,8 @@
 import { ServerSentEvents } from './declarations/ServerSentEvents';
 import { createTronOwnerAddress } from './utils/tronUtils';
 import { Storage } from './declarations/Storage';
-import { Address, AddressFormatter } from './formatters/Address';
-import { TronAddresses, WalletCurrency, WalletKind, WalletNetwork } from './WalletTypes';
+import { Address } from './formatters/Address';
+import { StoreWalletInfo } from './WalletTypes';
 import { Vault } from './declarations/Vault';
 import { State } from './utils/State';
 import { TronAPI } from './TronAPI';
@@ -30,38 +30,28 @@ export type TonkeeperState = {
   security: TonkeeperSecurity;
 };
 
-type StoreWalletInfo = {
-  id: string;
-  pubkey: string;
-  currency: WalletCurrency;
-  network: WalletNetwork;
-  kind: WalletKind;
-};
-
-type StoreWalletsInfo = StoreWalletInfo[];
+// public securitySettings: SecuritySettings = {
+//   biometryEnabled: false,
+//   hiddenBalances: false,
+//   locked: false,
+// };
 
 export class Tonkeeper {
-  public permissions: PermissionsManager;
-  public wallet!: Wallet;
-  public wallets = [];
+  private sse: ServerSentEvents;
+  private storage: Storage;
+  private tronapi: TronAPI;
+  private tonapi: TonAPI;
+  private vault: Vault;
 
-  // public securitySettings: SecuritySettings = {
-  //   biometryEnabled: false,
-  //   hiddenBalances: false,
-  //   locked: false,
-  // };
+  public permissions: PermissionsManager;
+  public wallets: StoreWalletInfo[] = [];
+  public wallet!: Wallet;
 
   public state = new State<TonkeeperState>({
     security: {
       hiddenBalances: false,
     },
   });
-
-  private sse: ServerSentEvents;
-  private storage: Storage;
-  private tronapi: TronAPI;
-  private tonapi: TonAPI;
-  private vault: Vault;
 
   constructor(options: TonkeeperOptions) {
     this.storage = options.storage;
@@ -81,61 +71,34 @@ export class Tonkeeper {
 
   public async init() {
     try {
-      const migrate = async () => {
-        try {
-          const oldCurrency = await this.storage.getItem(
-            'mainnet_default_primary_currency',
-          );
-          const oldRawData = await this.storage.getItem('mainnet_default_wallet');
-          console.log('rawData', oldRawData);
+      this.state.rehydrate();
 
-          if (!oldRawData) {
-            return;
-          }
+      const storeWallet = await this.getStoreWallet();
 
-          const data = JSON.parse(oldRawData);
-          const addresses = await Address.fromPubkey(data.vault.tonPubkey);
+      if (!storeWallet) {
+        return;
+      }
 
-          console.log({ oldCurrency });
+      // Set wallet
+      const addresses = await Address.fromPubkey(storeWallet.currentPubkey, false);
 
-          return;
+      this.wallets = storeWallet.wallets;
 
-          // const wallet: StoreWalletInfo = {
-          //   // id: string;
-          //   pubkey: data.vault.tonPubkey,
-          //   currency: '',
-          //   network: WalletNetwork,
-          //   kind: WalletKind,
-          // }
+      this.wallet = new Wallet(
+        undefined,
+        this.tonapi,
+        this.tronapi,
+        this.vault,
+        this.sse,
+        this.storage,
+        storeWallet.currentWallet,
+        addresses,
+      );
 
-          // console.log(wallet);
-
-          // const wallets = [wallet];
-        } catch (err) {
-          console.log('error migrate', err);
-        }
-      };
-
-      migrate();
-
-      // this.wallet = new Wallet(
-      //   undefined,
-      //   this.tonapi,
-      //   this.tronapi,
-      //   this.vault,
-      //   this.sse,
-      //   this.storage,
-      //   {
-      //     network: isTestnet ? WalletNetwork.testnet : WalletNetwork.mainnet,
-      //     tronAddress: null,
-      //     address: address,
-      //   },
-      // );
-
-      // this.rehydrate();
-      // this.preload();
+      await this.wallet.rehydrate();
+      this.wallet.preload();
     } catch (err) {
-      console.log(err);
+      console.log('fail tonkeeper init', err);
     }
   }
 
@@ -173,23 +136,6 @@ export class Tonkeeper {
     }
   }
 
-  // Update all data,
-  // Invoke in background after hide splash screen
-  private preload() {
-    this.wallet.activityList.preload();
-    // this.wallet.expiringDomains.preload();
-    // TODO:
-    // this.wallet.subscriptions.prefetch();
-  }
-
-  public rehydrate() {
-    this.state.rehydrate();
-    // this.wallet.expiringDomains.rehydrate();
-    this.wallet.jettonActivityList.rehydrate();
-    this.wallet.tonActivityList.rehydrate();
-    this.wallet.activityList.rehydrate();
-  }
-
   public toggleBalances() {
     this.state.set(({ security }) => ({
       security: {
@@ -203,6 +149,28 @@ export class Tonkeeper {
   public unlock() {}
   public enableBiometry() {}
   public disableBiometry() {}
+
+  private async getStoreWallet() {
+    const currentPubkey = await this.storage.getItem('current_pubkey');
+    const walletsJson = await this.storage.getItem('wallets');
+
+    if (walletsJson === null || currentPubkey === null) {
+      return null;
+    }
+
+    const wallets = JSON.parse(walletsJson) as StoreWalletInfo[];
+    const currentWallet = wallets.find((wallet) => wallet.pubkey === currentPubkey);
+
+    if (!currentWallet) {
+      return null;
+    }
+
+    return {
+      currentPubkey,
+      currentWallet,
+      wallets,
+    };
+  }
 
   public destroy() {
     this.wallet?.destroy();

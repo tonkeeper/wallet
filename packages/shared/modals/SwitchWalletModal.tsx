@@ -1,7 +1,8 @@
-import { useSwitchWallet, useWallet } from '@tonkeeper/core';
+
 import { useNavigation } from '@tonkeeper/router';
 import { Button, Icon, List, Modal, Steezy, View } from '@tonkeeper/uikit';
 import { memo, useCallback } from 'react';
+import { useNewWallet } from '../hooks/useWallet';
 
 
 const useWallets = () => {
@@ -19,8 +20,8 @@ const useWallets = () => {
 
 export const SwitchWalletModal = memo(() => {
   const nav = useNavigation();
-  const currentWallet = useWallet();
-  const switchWallet = useSwitchWallet();
+  const currentWallet = useNewWallet();
+  // const switchWallet = useSwitchWallet();
   const wallets = useWallets();
 
   const handleSwitchWallet = useCallback(
@@ -28,7 +29,7 @@ export const SwitchWalletModal = memo(() => {
       // tk.switchWalle(identity);
 
       const wallet = wallets.find((i) => i.identity === identity);
-      switchWallet(wallet);
+      // switchWallet(wallet);
     },
     [],
   );

@@ -13,6 +13,7 @@ export * from './service';
 export * from './TronAPI';
 
 export * from './models/ActivityModel';
+export * from './models/TokenPriceModel';
 
 export * from './utils/State';
 export * from './utils/network';
@@ -20,3 +21,5 @@ export * from './utils/network';
 export * from './declarations/ServerSentEvents.d';
 export * from './declarations/Storage.d';
 export * from './declarations/Vault.d';
+
+export { WalletState } from './Wallet';

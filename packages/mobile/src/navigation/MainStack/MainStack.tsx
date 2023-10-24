@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { MainStackParamList } from './MainStack.interface';
-import { AppStackRouteNames, MainStackRouteNames } from '$navigation';
+import { MainStackRouteNames } from '$navigation';
 import { TabStack } from './TabStack/TabStack';
 
 import { useStaking } from '$hooks/useStaking';
@@ -10,7 +10,7 @@ import { useTheme } from '$hooks/useTheme';
 import { DevStack } from '../DevStack/DevStack';
 import { useAttachScreen } from '../AttachScreen';
 import { SetupNotifications } from '$core/SetupNotifications/SetupNotifications';
-import { Jetton } from '$core/Jetton/Jetton';
+import { JettonScreen } from '$core/Jetton/Jetton';
 import { JettonsList } from '$core/JettonsList/JettonsList';
 import { DeleteAccountDone } from '$core/DeleteAccountDone/DeleteAccountDone';
 import { EditConfig } from '$core/EditConfig/EditConfig';
@@ -24,11 +24,8 @@ import { Subscriptions } from '$core/Subscriptions/Subscriptions';
 import { CreatePin } from '$core/CreatePin/CreatePin';
 import { SetupBiometry } from '$core/SetupBiometry/SetupBiometry';
 import { SetupWalletDone } from '$core/SetupWalletDone/SetupWalletDone';
-import { useSelector } from 'react-redux';
-import { mainSelector } from '$store/main';
-import { walletWalletSelector } from '$store/wallet';
 import { useNotificationsResolver } from '$hooks/useNotificationsResolver';
-import { AccessConfirmation, AddressUpdateInfo, Intro } from '$core';
+import { AddressUpdateInfo } from '$core';
 import { ModalStack } from '$navigation/ModalStack';
 import { withModalStack } from '@tonkeeper/router';
 
@@ -39,6 +36,7 @@ import { StartScreen } from '@tonkeeper/shared/screens/StartScreen';
 import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
 import { TronTokenScreen } from '../../tabs/Wallet/TronTokenScreen';
 import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -46,15 +44,14 @@ export const MainStack: FC = () => {
   const attachedScreen = useAttachScreen();
   const theme = useTheme();
 
-  const { isIntroShown, isUnlocked } = useSelector(mainSelector);
-  const wallet = useSelector(walletWalletSelector);
+  const wallet = useNewWallet();
   useNotificationsResolver();
 
   useEffect(() => {
-    if (wallet?.address) {
-      reloadSubscriptionsFromServer(wallet.address.friendlyAddress);
+    if (wallet) {
+      reloadSubscriptionsFromServer(wallet.ton.address.friendly);
     }
-  }, [wallet?.address]);
+  }, [wallet]);
 
   useStaking();
 
@@ -75,7 +72,7 @@ export const MainStack: FC = () => {
       }}
     >
       {!wallet ? (
-        <Stack.Screen name={MainStackRouteNames.Tabs} component={StartScreen} />
+        <Stack.Screen name={'StartScreen'} component={StartScreen} />
       ) : (
         <Stack.Screen name={MainStackRouteNames.Tabs} component={TabStack} />
       )}
@@ -115,7 +112,7 @@ export const MainStack: FC = () => {
       />
       <Stack.Screen name={MainStackRouteNames.DevStack} component={DevStack} />
       <Stack.Screen name={MainStackRouteNames.EditConfig} component={EditConfig} />
-      <Stack.Screen name={MainStackRouteNames.Jetton} component={Jetton} />
+      <Stack.Screen name={MainStackRouteNames.Jetton} component={JettonScreen} />
       <Stack.Screen name={MainStackRouteNames.JettonsList} component={JettonsList} />
       <Stack.Screen name={MainStackRouteNames.ManageTokens} component={ManageTokens} />
       <Stack.Screen

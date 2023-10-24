@@ -6,10 +6,8 @@ import { useCallback, useMemo } from 'react';
 import { useFiatValue } from './useFiatValue';
 import { useNavigation } from '@tonkeeper/router';
 import { StakingTransactionType } from '$core/StakingSend/types';
-import { useWallet } from './useWallet';
 import { useSelector } from 'react-redux';
 import { jettonsBalancesSelector } from '$store/jettons';
-import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/shared/Address';
 import { TagType } from '$uikit/Tag';
@@ -20,7 +18,7 @@ import {
   PoolInfo,
   PoolImplementationType,
 } from '@tonkeeper/core/src/TonAPI';
-import { useGetTokenPrice, useTokenPrice } from './useTokenPrice';
+import { useGetTokenPrice } from './useTokenPrice';
 
 export interface PoolDetailsItem {
   label: string;
@@ -31,8 +29,6 @@ export interface PoolDetailsItem {
 
 export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo) => {
   const nav = useNavigation();
-
-  const wallet = useWallet();
 
   const jettonBalances = useSelector(jettonsBalancesSelector);
 
@@ -112,15 +108,11 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
   const minDeposit = stakingFormatter.fromNano(pool.min_stake);
 
   const handleTopUpPress = useCallback(() => {
-    if (wallet) {
-      nav.push(AppStackRouteNames.StakingSend, {
-        poolAddress: pool.address,
-        transactionType: StakingTransactionType.DEPOSIT,
-      });
-    } else {
-      openRequireWalletModal();
-    }
-  }, [nav, pool.address, wallet]);
+    nav.push(AppStackRouteNames.StakingSend, {
+      poolAddress: pool.address,
+      transactionType: StakingTransactionType.DEPOSIT,
+    });
+  }, [nav, pool.address]);
 
   const handleWithdrawalPress = useCallback(() => {
     if (!hasDeposit) {

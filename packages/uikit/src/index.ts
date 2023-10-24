@@ -8,7 +8,7 @@ export { JettonIcon, JettonIconProps } from './components/JettonIcon';
 export { Lottie } from './components/Lottie';
 export { Button } from './components/Button';
 export { Spacer, SpacerSizes } from './components/Spacer';
-export { Text, SText } from './components/Text';
+export { Text, SText, TextColors } from './components/Text';
 export * from './components/List';
 export { View } from './components/View';
 export { Loader } from './components/Loader';
@@ -32,8 +32,8 @@ export { Screen, ScreenScrollViewRef } from './containers/Screen';
 export { Modal } from './containers/Modal';
 export {
   PagerView,
-  PagerViewRef,
-  PagerViewSelectedEvent,
+  // PagerViewRef,
+  // PagerViewSelectedEvent,
   usePagerViewSteps,
 } from './containers/PagerView';
 
@@ -45,5 +45,3 @@ export { useValueRef } from '../hooks/useValueRef';
 export { createExternalRef } from './utils/createExternalRef';
 export * from './utils';
 export * from './styles';
-
-export { useSplashScreenWhileLoadingResources } from './hooks/useSplashScreenWhileLoadingResources';

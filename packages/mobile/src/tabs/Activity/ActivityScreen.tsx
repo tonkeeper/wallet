@@ -1,4 +1,3 @@
-import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { Screen, Text, Button, Icon, List, Spacer, Steezy, View } from '@tonkeeper/uikit';
 import { getNewNotificationsCount } from '$core/Notifications/NotificationsActivity';
 import { useNotificationsStore } from '$store/zustand/notifications';
@@ -11,35 +10,16 @@ import { memo, useCallback, useEffect } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { LayoutAnimation } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
-import { useWallet } from '../useWallet';
 
 export const ActivityScreen = memo(() => {
   const activityList = useActivityList();
-
   const nav = useNavigation();
-  const wallet = useWallet();
 
   const notifications = useNotificationsStore((state) => state.notifications);
   const lastSeenAt = useNotificationsStore((state) => state.last_seen_activity_screen);
   const updateLastSeenActivityScreen = useNotificationsStore(
     (state) => state.actions.updateLastSeenActivityScreen,
   );
-
-  const handlePressRecevie = useCallback(() => {
-    if (!!wallet.address.ton.raw) {
-      nav.go('ReceiveModal');
-    } else {
-      openRequireWalletModal();
-    }
-  }, [wallet.address.ton.raw]);
-
-  const handlePressBuy = useCallback(() => {
-    if (!!wallet.address.ton.raw) {
-      nav.openModal('Exchange', { category: 'buy' });
-    } else {
-      openRequireWalletModal();
-    }
-  }, [wallet.address.ton.raw]);
 
   const onRemoveNotification = useCallback(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -58,8 +38,9 @@ export const ActivityScreen = memo(() => {
   }, []);
 
   if (
-    !wallet.address.ton.raw ||
-    (!activityList.isLoading && activityList.sections.length < 1) && activityList.error === null
+    !activityList.isLoading &&
+    activityList.sections.length < 1 &&
+    activityList.error === null
   ) {
     return (
       <Screen>
@@ -74,14 +55,14 @@ export const ActivityScreen = memo(() => {
           <View style={styles.emptyButtons}>
             <Button
               title={t('activity.buy_toncoin_btn')}
-              onPress={handlePressBuy}
+              onPress={() => nav.openModal('Exchange', { category: 'buy' })}
               color="secondary"
               size="small"
             />
             <Spacer x={12} />
             <Button
               title={t('activity.receive_btn')}
-              onPress={handlePressRecevie}
+              onPress={() => nav.go('ReceiveModal')}
               color="secondary"
               size="small"
             />

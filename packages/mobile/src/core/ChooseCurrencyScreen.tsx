@@ -2,25 +2,21 @@ import React from 'react';
 import { Icon, Screen, Text } from '$uikit';
 import { StyleSheet, View } from 'react-native';
 import { ns } from '$utils';
-import { useDispatch, useSelector } from 'react-redux';
-import { mainActions, mainSelector } from '$store/main';
 import { t } from '@tonkeeper/shared/i18n';
 import { CellSection, CellSectionItem } from '$shared/components';
-import { FiatCurrencySymbolsConfig, FiatCurrencies } from '@tonkeeper/core';
+import { FiatCurrencySymbolsConfig, WalletCurrency } from '@tonkeeper/core';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export const ChooseCurrencyScreen: React.FC = () => {
-  const { fiatCurrency } = useSelector(mainSelector);
-  const dispatch = useDispatch();
+  const currentCurrency = useNewWallet((state) => state.currency);
   const currencies = React.useMemo(() => {
-    return Object.keys(FiatCurrencySymbolsConfig) as FiatCurrencies[];
+    return Object.keys(FiatCurrencySymbolsConfig) as WalletCurrency[];
   }, []);
 
-  const handleChangeCurrency = React.useCallback(
-    (currency: FiatCurrencies) => {
-      dispatch(mainActions.setFiatCurrency(currency));
-    },
-    [dispatch],
-  );
+  const handleChangeCurrency = React.useCallback((currency: WalletCurrency) => {
+    tk.wallet.setCurrency(currency);
+  }, []);
 
   return (
     <Screen>
@@ -33,7 +29,7 @@ export const ChooseCurrencyScreen: React.FC = () => {
               key={`currency-${currency}`}
               inlineContent={
                 <>
-                  {fiatCurrency === currency && (
+                  {currentCurrency === currency && (
                     <Icon name="ic-donemark-thin-28" color="accentPrimary" />
                   )}
                 </>

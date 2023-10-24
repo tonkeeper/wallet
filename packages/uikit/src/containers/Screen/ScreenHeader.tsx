@@ -16,7 +16,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-
 type BackButtonIcon = 'back' | 'close' | 'down';
 
 const backButtonIcons: { [key in BackButtonIcon]: IconNames } = {
@@ -27,24 +26,24 @@ const backButtonIcons: { [key in BackButtonIcon]: IconNames } = {
 
 export interface ScreenHeaderProps {
   backButtonPosition?: 'left' | 'right';
+  title?: string | React.ReactNode;
   backButtonIcon?: BackButtonIcon;
+  bottomContent?: React.ReactNode;
   rightContent?: React.ReactNode;
   hideBackButton?: boolean;
   hideTitle?: boolean;
   gradient?: boolean;
   isModal?: boolean;
-  title?: string | React.ReactNode;
   onBackPress?: () => void;
   onGoBack?: () => void;
-  showCloseButton?: boolean;
 }
 
 export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
   const {
-    showCloseButton,
     backButtonPosition = 'left',
     backButtonIcon = 'back',
     hideBackButton,
+    bottomContent,
     rightContent,
     hideTitle,
     gradient,
@@ -166,21 +165,22 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
         <Animated.View style={[styles.innerContainer, ejectionOpacityStyle, borderStyle]}>
           <View style={styles.content}>
             {!hideBackButton && !isBackButtonRight && backButtonSlot}
-            {isString(title) ? (
-              <Text
-                style={[styles.title, titleAnimatedStyle]}
-                type={isSmallTitle ? 'label1' : 'h3'}
-                textAlign="center"
-                numberOfLines={1}
-                reanimated
-              >
-                {title}
-              </Text>
-            ) : (
-              <View style={styles.title}>
-                {title}
-              </View>
-            )}
+            <Animated.View style={[styles.title, titleAnimatedStyle]}>
+              {isString(title) ? (
+                <View style={styles.titleIndent}>
+                  <Text
+                    type={isSmallTitle ? 'label1' : 'h3'}
+                    textAlign="center"
+                    numberOfLines={1}
+                  >
+                    {title}
+                  </Text>
+                </View>
+              ) : (
+                title
+              )}
+              {bottomContent}
+            </Animated.View>
           </View>
           {rightContentSlot && (
             <View style={styles.rightContent}>{rightContentSlot}</View>
@@ -190,6 +190,8 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
     </React.Fragment>
   );
 });
+
+export const IndentHeaderTitle = ScreenHeaderHeight - 24;
 
 const styles = StyleSheet.create({
   container: {
@@ -221,12 +223,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 16,
     alignItems: 'center',
-    position: 'relative',
   },
   title: {
-    marginHorizontal: ScreenHeaderHeight - 24,
     zIndex: 1,
     flex: 1,
+  },
+  titleIndent: {
+    marginHorizontal: IndentHeaderTitle,
   },
   leftContainer: {
     height: ScreenHeaderHeight,

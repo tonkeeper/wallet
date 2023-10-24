@@ -164,11 +164,6 @@ export const isInitiatingSelector = createSelector(
   (state) => state.isInitiating,
 );
 
-export const fiatCurrencySelector = createSelector(
-  mainSelector,
-  (state) => state.fiatCurrency,
-);
-
 export const customIconSelector = createSelector(
   mainSelector,
   (state) => state.tonCustomIcon,

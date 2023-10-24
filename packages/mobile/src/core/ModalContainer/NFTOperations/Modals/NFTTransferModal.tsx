@@ -18,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { nftsActions } from '$store/nfts';
 import { Modal } from '@tonkeeper/uikit';
 import { formatter } from '$utils/formatter';
-import { goBack, push } from '$navigation/imperative';
+import { push } from '$navigation/imperative';
 import { SheetActions } from '@tonkeeper/router';
 import { Ton } from '$libs/Ton';
 import { walletWalletSelector } from '$store/wallet';

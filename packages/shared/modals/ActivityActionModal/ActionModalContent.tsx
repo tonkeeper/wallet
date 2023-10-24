@@ -19,17 +19,17 @@ import { memo, useCallback, useMemo } from 'react';
 import { formatter } from '../../formatter';
 import { config } from '../../config';
 import { t } from '../../i18n';
+import { useCurrency } from '../../hooks/useCurrency';
+import { ExtraListItem } from './components/ExtraListItem';
+import { Linking } from 'react-native';
+import { Address } from '../../Address';
 
 // TODO: move to manager
 import { useGetTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 
 // TODO: move to shared
-import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
-import { useSelector } from 'react-redux';
-import { ExtraListItem } from './components/ExtraListItem';
-import { Linking } from 'react-native';
-import { Address } from '../../Address';
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
+
 
 interface ActionModalContentProps {
   children?: React.ReactNode;
@@ -75,7 +75,7 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
     return time;
   }, [action.event.timestamp, action.destination, label]);
 
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const currency = useCurrency();
   const getTokenPrice = useGetTokenPrice();
 
   const amount = useMemo(() => {
@@ -108,12 +108,12 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
           formatter.fromNano(action.amount.value, action.amount.decimals),
         );
         return format(tokenPrice.fiat * parsedAmount, {
-          currency: fiatCurrency,
           decimals: 9,
+          currency,
         });
       }
     }
-  }, [action.amount, getTokenPrice, fiatCurrency]);
+  }, [action.amount, getTokenPrice, currency]);
 
   const titleText = title ?? amount;
 

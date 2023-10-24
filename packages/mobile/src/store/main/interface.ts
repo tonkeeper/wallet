@@ -2,7 +2,6 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { FiatCurrency, SelectableVersion } from '$shared/constants';
 import { InternalNotificationModel } from '$store/models';
 import { AccentKey, AccentNFTIcon } from '$styled';
-import { ChartPeriod } from '$uikit/Chart/Chart.types';
 
 export interface LogItem {
   ts: number;

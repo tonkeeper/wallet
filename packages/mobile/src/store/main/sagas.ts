@@ -73,9 +73,6 @@ import { useRatesStore } from '$store/zustand/rates';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { getFlag } from '$utils/flags';
 
-SplashScreen.preventAutoHideAsync()
-
-
 function* loadServerConfig(isTestnet: boolean, canRetry = false) {
   const apiToken = jwt.sign({ app: 'ton.app' }, API_SECRET);
 

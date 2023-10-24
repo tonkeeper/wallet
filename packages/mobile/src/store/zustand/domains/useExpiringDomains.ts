@@ -3,8 +3,8 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { ExpiringDomains } from './types';
 import { Tonapi } from '$libs/Tonapi';
 import { useEffect } from 'react';
-import { useWallet } from '../../../tabs/Wallet/hooks/useWallet';
 import { Address } from '@tonkeeper/shared/Address';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
 
 const initialState: Omit<ExpiringDomains, 'actions'> = {
   domains: {},
@@ -46,17 +46,15 @@ export const useExpiringDomains = create(
 );
 
 export function useLoadExpiringDomains() {
-  const wallet = useWallet();
+  const tonRawAddress = useNewWallet((state) => state.ton.address.raw);
   const load = useExpiringDomains(
     (state) => state.actions.load,
     () => true,
   );
 
   useEffect(() => {
-    if (wallet) {
-      load(wallet.address.rawAddress);
-    }
-  }, [wallet?.address.rawAddress]);
+    load(tonRawAddress);
+  }, [tonRawAddress, load]);
 
   return null;
 }

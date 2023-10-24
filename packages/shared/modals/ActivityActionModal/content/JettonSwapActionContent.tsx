@@ -2,13 +2,12 @@ import { TonIconBackgroundColor } from '@tonkeeper/uikit/src/components/TonIcon'
 import { Steezy, View, SText as Text, Picture, TonIcon, List } from '@tonkeeper/uikit';
 import { useGetTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 import { ActionItem, ActionType, AmountFormatter } from '@tonkeeper/core';
-import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
 import { AddressListItem } from '../components/AddressListItem';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
+import { useCurrency } from '../../../hooks/useCurrency';
 import { formatter } from '../../../formatter';
 import { Address } from '../../../Address';
-import { useSelector } from 'react-redux';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
 
@@ -23,7 +22,7 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
   const { payload } = action;
   const { format, formatNano } = useHideableFormatter();
 
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const currency = useCurrency();
   const getTokenPrice = useGetTokenPrice();
 
   const amountInFiat = useMemo(() => {
@@ -32,8 +31,8 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
       if (tokenPrice.fiat) {
         const parsedAmount = parseFloat(formatter.fromNano(payload.ton_in, 9));
         return format(tokenPrice.fiat * parsedAmount, {
-          currency: fiatCurrency,
           decimals: 9,
+          currency,
         });
       }
     } else if (payload.jetton_master_in) {
@@ -43,8 +42,8 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
       if (tokenPrice.fiat) {
         const parsedAmount = parseFloat(formatter.fromNano(payload.amount_in, 9));
         return format(tokenPrice.fiat * parsedAmount, {
-          currency: fiatCurrency,
           decimals: 9,
+          currency,
         });
       }
     }

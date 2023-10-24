@@ -1,5 +1,4 @@
 import { AccountEvent, TonAPI } from '../TonAPI';
-import { WalletAddresses } from '../Wallet';
 import { TronAPI } from '../TronAPI';
 import {
   ActivityModel,
@@ -7,6 +6,7 @@ import {
   ActionItem,
   ActionId,
 } from '../models/ActivityModel';
+import { TonRawAddress } from '../WalletTypes';
 
 type LoadParams<TCursor, TData> = {
   filter?: (events: TData[]) => TData[];
@@ -19,7 +19,7 @@ export class ActivityLoader {
   private tonActions = new Map<ActionId, ActionItem>();
 
   constructor(
-    private addresses: WalletAddresses,
+    private tonRawAddress: TonRawAddress,
     private tonapi: TonAPI,
     private tronapi: TronAPI,
   ) {}
@@ -28,7 +28,7 @@ export class ActivityLoader {
     const limit = params.limit ?? 50;
     const data = await this.tonapi.accounts.getAccountEvents({
       before_lt: params.cursor ?? undefined,
-      accountId: this.addresses.ton,
+      accountId: this.tonRawAddress,
       subject_only: true,
       limit,
     });
@@ -36,7 +36,7 @@ export class ActivityLoader {
     const events = params.filter ? params.filter(data.events) : data.events;
     const actions = ActivityModel.createActions(
       {
-        ownerAddress: this.addresses.ton,
+        ownerAddress: this.tonRawAddress,
         source: ActionSource.Ton,
         events,
       },
@@ -80,14 +80,14 @@ export class ActivityLoader {
     const limit = params.limit ?? 50;
     const data = await this.tonapi.accounts.getAccountJettonHistoryById({
       before_lt: params.cursor ?? undefined,
-      accountId: this.addresses.ton,
+      accountId: this.tonRawAddress,
       jettonId: params.jettonId,
       limit,
     });
 
     const actions = ActivityModel.createActions(
       {
-        ownerAddress: this.addresses.ton,
+        ownerAddress: this.tonRawAddress,
         source: ActionSource.Ton,
         events: data.events,
       },
@@ -105,13 +105,13 @@ export class ActivityLoader {
   public async loadTonAction(actionId: ActionId) {
     const { eventId, actionIndex } = this.splitActionId(actionId);
     const event = await this.tonapi.accounts.getAccountEvent({
-      accountId: this.addresses.ton,
+      accountId: this.tonRawAddress,
       eventId,
     });
 
     if (event) {
       const action = ActivityModel.createAction({
-        ownerAddress: this.addresses.ton,
+        ownerAddress: this.tonRawAddress,
         source: ActionSource.Ton,
         actionIndex,
         event,

@@ -3,8 +3,8 @@ import { Text } from '$uikit/Text/Text';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { formatFiatCurrencyAmount } from '$utils/currency';
-import { FiatCurrencies } from '$shared/constants';
 import { Platform } from 'react-native';
+import { WalletCurrency } from '@tonkeeper/core';
 
 const fontFamily = Platform.select({
   ios: 'SFMono-Bold',
@@ -14,7 +14,7 @@ const fontFamily = Platform.select({
 const RateComponent: React.FC<{
   latestPoint: number;
   fiatRate: number;
-  fiatCurrency: FiatCurrencies;
+  fiatCurrency: WalletCurrency;
 }> = (props) => {
   const chartData = useChartData();
   const [activePoint, setActivePoint] = useState(props.latestPoint);

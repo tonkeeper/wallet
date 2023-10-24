@@ -17,12 +17,13 @@ import {
   useActionFooter,
 } from '$core/ModalContainer/NFTOperations/NFTOperationFooter';
 import { Alert } from 'react-native';
-import { walletBalancesSelector, walletWalletSelector } from '$store/wallet';
+import { walletBalancesSelector } from '$store/wallet';
 import { useSelector } from 'react-redux';
 import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { t } from '@tonkeeper/shared/i18n';
 import { openInactiveInfo } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
-import { Address } from '@tonkeeper/core';
+import { Address, WalletKind } from '@tonkeeper/core';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -49,7 +50,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const copyText = useCopyText();
 
   const balances = useSelector(walletBalancesSelector);
-  const wallet = useSelector(walletWalletSelector);
+  const walletKind = useNewWallet((state) => state.kind);
 
   const { Logo, liquidJettonPool } = useCurrencyToSend(currency, isJetton);
 
@@ -96,8 +97,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
       const amountWithFee = new BigNumber(parseLocaleNumber(amount.value)).plus(fee);
       if (
         currency === CryptoCurrencies.Ton &&
-        wallet &&
-        wallet.ton.isLockup() &&
+        walletKind === WalletKind.Lockup &&
         !amount.all &&
         new BigNumber(balances[currency]).isLessThan(amountWithFee)
       ) {
@@ -119,7 +119,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     amount.all,
     fee,
     currency,
-    wallet,
+    walletKind,
     balances,
     onConfirm,
     showLockupAlert,

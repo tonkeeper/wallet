@@ -9,8 +9,7 @@ import { getServerConfig } from '$shared/constants';
 import { i18n } from '$translation';
 import DeviceInfo from 'react-native-device-info';
 import { getIsTestnet } from '$database';
-import { fiatCurrencySelector } from '$store/main';
-import { store } from '$store';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 const initialState: Omit<IMethodsToBuyStore, 'actions'> = {
   selectedCountry: getCountry(),
@@ -29,7 +28,7 @@ export const useMethodsToBuyStore = create(
         setSelectedCountry: (selectedCountry: string) => set({ selectedCountry }),
         fetchMethodsToBuy: async () => {
           const isTestnet = await getIsTestnet();
-          const currency = await fiatCurrencySelector(store.getState());
+          const currency = tk.wallet.state.getSnapshot().currency;
           const resp = await axios.get(
             `${getServerConfig('tonkeeperEndpoint')}/fiat/methods`,
             {

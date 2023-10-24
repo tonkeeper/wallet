@@ -12,32 +12,26 @@ import { useDispatch } from 'react-redux';
 import { SelectableVersion } from '$shared/constants';
 import { push } from '$navigation/imperative';
 import { Address } from '@tonkeeper/shared/Address';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
 
 export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () => void }>(
   (props) => {
-    const [allVersions, setAllVersions] = useState<null | { [key: string]: string }>(
-      null,
-    );
-    const wallet = useWallet();
+    const allAddresses = useNewWallet((state) => state.ton.allAddresses);
     const nav = useNavigation();
     const dispatch = useDispatch();
 
-    useEffect(() => {
-      wallet.ton.getAllAddresses().then((allAddresses) => setAllVersions(allAddresses));
-    }, [wallet.ton]);
-
     const foundVersion = useMemo(() => {
-      if (!allVersions) {
+      if (!allAddresses) {
         return false;
       }
-      let found = Object.entries(allVersions).find(([_, address]) =>
-        Address.compare(address, props.source),
+      let found = Object.entries(allAddresses).find(([_, address]) =>
+        Address.compare(address.raw, props.source),
       );
       if (!found) {
         return false;
       }
       return found[0];
-    }, [allVersions, props.source]);
+    }, [allAddresses, props.source]);
 
     const handleCloseModal = useCallback(() => nav.goBack(), [nav]);
     const handleSwitchVersion = useCallback(async () => {
@@ -51,7 +45,7 @@ export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () =
     }, [dispatch, foundVersion, nav, props]);
 
     // Wait to get all versions
-    if (!allVersions) {
+    if (!allAddresses) {
       return null;
     }
 

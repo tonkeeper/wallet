@@ -1,5 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 import Webview from 'react-native-webview';
 import { v4 as uuidv4 } from 'uuid';
 import { sha512 } from 'js-sha512';
@@ -7,32 +6,29 @@ import { sha512 } from 'js-sha512';
 import { BuyFiatProps } from '$core/BuyFiat/BuyFiat.interface';
 import { Icon, Loader, NavBar } from '$uikit';
 import * as S from './BuyFiat.style';
-import { mainSelector } from '$store/main';
-import { walletAddressSelector } from '$store/wallet';
 import { useExchangeMethodInfo } from '$hooks/useExchangeMethodInfo';
-import { useTheme } from '$hooks/useTheme';
 
 import { getServerConfig } from '$shared/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { deviceWidth, isAndroid } from '$utils';
 import { useDeeplinking } from '$libs/deeplinking';
 import { goBack } from '$navigation/imperative';
 import { trackEvent } from '$utils/stats';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
 
 export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
   const currency = route.params.currency;
   const methodId = route.params.methodId;
-  const dispatch = useDispatch();
   const gotPurchaseId = useRef(false);
   const webviewRef = useRef<Webview>(null);
   const [isBackShown, setBackShown] = useState(false);
   const { top: topInset } = useSafeAreaInsets();
-  const theme = useTheme();
   const [isLoading, setLoading] = useState(true);
 
   const method = useExchangeMethodInfo(methodId);
-  const { fiatCurrency } = useSelector(mainSelector);
-  const address = useSelector(walletAddressSelector);
+
+  const walletCurrency = useNewWallet((state) => state.currency);
+  const tonFriendlyAddress = useNewWallet((state) => state.ton.address.friendly);
+
   const [webViewKey, setWebViewKey] = useState(1);
 
   const deeplinking = useDeeplinking();
@@ -46,17 +42,17 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
   }, []);
 
   const webviewUrl = useMemo(() => {
-    const addr = address[currency];
+    const addr = tonFriendlyAddress;
 
     let result = method.action_button.url.replace(/\{ADDRESS\}/g, addr);
 
     if (method.id === 'mercuryo_sell') {
       result = result
         .replace(/\{CUR\_FROM\}/g, currency.toUpperCase())
-        .replace(/\{CUR\_TO\}/g, fiatCurrency.toUpperCase());
+        .replace(/\{CUR\_TO\}/g, walletCurrency);
     } else {
       result = result
-        .replace(/\{CUR\_FROM\}/g, fiatCurrency.toUpperCase())
+        .replace(/\{CUR\_FROM\}/g, walletCurrency)
         .replace(/\{CUR\_TO\}/g, currency.toUpperCase());
     }
 

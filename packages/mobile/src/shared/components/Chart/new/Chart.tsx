@@ -9,9 +9,7 @@ import {
 import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks/useTheme';
 import { useTokenPrice } from '$hooks/useTokenPrice';
-import { useSelector } from 'react-redux';
-import { fiatCurrencySelector } from '$store/main';
-import { CryptoCurrencies, FiatCurrencies } from '$shared/constants';
+import { CryptoCurrencies } from '$shared/constants';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { PriceLabel } from './PriceLabel/PriceLabel';
 import { PercentDiff } from './PercentDiff/PercentDiff';
@@ -26,6 +24,8 @@ import { ChartPeriod, useChartStore } from '$store/zustand/chart';
 import { Fallback } from './Fallback/Fallback';
 import BigNumber from 'bignumber.js';
 import { isIOS } from '@tonkeeper/uikit';
+import { useCurrency } from '@tonkeeper/shared/hooks/useCurrency';
+import { WalletCurrency } from '@tonkeeper/core';
 
 export const { width: SIZE } = Dimensions.get('window');
 
@@ -54,13 +54,13 @@ const ChartComponent: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, selectedPeriod, isFetching, isLoading]);
 
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const fiatCurrency = useCurrency();
   const shouldRenderChart = !!cachedData.length;
 
   const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
 
   const fiatRate = useMemo(() => {
-    if (fiatCurrency === FiatCurrencies.Usd) {
+    if (fiatCurrency === WalletCurrency.USD) {
       return 1;
     }
 

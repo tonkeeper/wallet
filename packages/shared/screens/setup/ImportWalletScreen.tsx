@@ -1,7 +1,6 @@
 import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
 import { memo, useCallback, useState } from 'react';
 import { useNavigation } from '@tonkeeper/router';
-import { useWallet } from '@tonkeeper/core';
 import { t } from '../../i18n';
 import {
   usePagerViewSteps,
@@ -22,7 +21,6 @@ import { delay } from '@tonkeeper/uikit/src/utils/delay';
 export const ImportWalletScreen = memo(() => {
   const steps = usePagerViewSteps();
   const nav = useNavigation();
-  const wallet = useWallet();
 
   const hasWallet = false; //!!wallet;
   const stepsCount = hasWallet ? 2 : 4;

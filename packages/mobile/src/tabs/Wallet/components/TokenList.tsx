@@ -1,5 +1,5 @@
 import React from 'react';
-import { openJetton, openJettonsList } from '$navigation';
+import { openJettonsList } from '$navigation';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { Steezy } from '$styles';

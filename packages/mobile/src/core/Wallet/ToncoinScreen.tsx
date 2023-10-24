@@ -1,11 +1,10 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import * as S from './Wallet.style';
 import { useWalletInfo } from '$hooks/useWalletInfo';
 import { Button, PopupMenu, PopupMenuItem, Text, IconButton, SwapIcon } from '$uikit';
 import { MainStackRouteNames, openDAppBrowser, openSend } from '$navigation';
-import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
-import { walletActions, walletWalletSelector } from '$store/wallet';
+import { walletActions } from '$store/wallet';
 import { Linking, Platform, View } from 'react-native';
 import { delay, ns } from '$utils';
 import {
@@ -18,7 +17,6 @@ import { t } from '@tonkeeper/shared/i18n';
 import { useNavigation } from '@tonkeeper/router';
 import { Chart } from '$shared/components/Chart/new/Chart';
 import { formatter } from '$utils/formatter';
-import { Toast } from '$store';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { TonIcon } from '@tonkeeper/uikit';
@@ -26,21 +24,17 @@ import { Icon, IconNames, Screen } from '@tonkeeper/uikit';
 
 import { ActivityList } from '@tonkeeper/shared/components';
 import { useTonActivityList } from '@tonkeeper/shared/query/hooks/useTonActivityList';
-import { useWallet } from '../../tabs/useWallet';
 import _ from 'lodash';
 import { navigate } from '$navigation/imperative';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
 
 export const ToncoinScreen = memo(() => {
   const activityList = useTonActivityList();
-  const wallet = useWallet();
+  const tonRawAddress = useNewWallet((state) => state.ton.address.raw);
 
   const handleOpenExplorer = useCallback(async () => {
-    openDAppBrowser(
-      wallet.address.ton.raw
-        ? getServerConfig('accountExplorer').replace('%s', wallet.address.ton.raw)
-        : getServerConfig('explorerUrl'),
-    );
-  }, [wallet.address.ton.raw]);
+    openDAppBrowser(getServerConfig('accountExplorer').replace('%s', tonRawAddress));
+  }, [tonRawAddress]);
 
   // Temp hack for slow navigation
   const [render, setRender] = useState(false);
@@ -91,10 +85,8 @@ export const ToncoinScreen = memo(() => {
 });
 
 const HeaderList = memo(() => {
-  const walletAddr = useWallet();
+  const tonFriendlyAddress = useNewWallet((state) => state.ton.address.friendly);
   const flags = useFlags(['disable_swap']);
-
-  const wallet = useSelector(walletWalletSelector);
 
   const dispatch = useDispatch();
   const [lockupDeploy, setLockupDeploy] = useState('loading');
@@ -144,18 +136,19 @@ const HeaderList = memo(() => {
   ]).current;
 
   useEffect(() => {
-    if (wallet && wallet.ton.isLockup()) {
-      wallet.ton
-        .getWalletInfo(walletAddr.address.ton.friendly)
-        .then((info: any) => {
-          setLockupDeploy(
-            ['empty', 'uninit', 'nonexist'].includes(info.status) ? 'deploy' : 'deployed',
-          );
-        })
-        .catch((err: any) => {
-          Toast.fail(err.message);
-        });
-    }
+    // TODO: Lockup
+    // if (wallet && wallet.ton.isLockup()) {
+    //   wallet.ton
+    //     .getWalletInfo(tonFriendlyAddress)
+    //     .then((info: any) => {
+    //       setLockupDeploy(
+    //         ['empty', 'uninit', 'nonexist'].includes(info.status) ? 'deploy' : 'deployed',
+    //       );
+    //     })
+    //     .catch((err: any) => {
+    //       Toast.fail(err.message);
+    //     });
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -178,34 +171,20 @@ const HeaderList = memo(() => {
   const { amount, tokenPrice } = useWalletInfo(CryptoCurrencies.Ton);
 
   const handleReceive = useCallback(() => {
-    if (!wallet) {
-      return openRequireWalletModal();
-    }
-
     nav.go('ReceiveModal');
-  }, [wallet]);
+  }, []);
 
   const handleSend = useCallback(() => {
-    if (!wallet) {
-      return openRequireWalletModal();
-    }
     openSend({ currency: 'ton' });
-  }, [wallet]);
+  }, []);
 
   const handleOpenExchange = useCallback(() => {
-    if (!wallet) {
-      return openRequireWalletModal();
-    }
     nav.openModal('Exchange');
-  }, [nav, wallet]);
+  }, [nav]);
 
   const handlePressSwap = useCallback(() => {
-    if (wallet) {
-      nav.openModal('Swap');
-    } else {
-      openRequireWalletModal();
-    }
-  }, [nav, wallet]);
+    nav.openModal('Swap');
+  }, [nav]);
 
   const handleDeploy = useCallback(() => {
     setLockupDeploy('loading');
@@ -295,7 +274,7 @@ const HeaderList = memo(() => {
           ))}
         </S.ExploreButtons>
       </S.ExploreWrap>
-      {wallet && wallet.ton.isLockup() && (
+      {/* {wallet && wallet.ton.isLockup() && (
         <View style={{ padding: ns(16) }}>
           <Button
             onPress={handleDeploy}
@@ -305,7 +284,7 @@ const HeaderList = memo(() => {
             {lockupDeploy === 'deploy' ? 'Deploy Wallet' : 'Deployed'}
           </Button>
         </View>
-      )}
+      )} */}
     </>
   );
 });

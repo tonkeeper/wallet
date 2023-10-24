@@ -1,6 +1,6 @@
 import { usePoolInfo } from '$hooks/usePoolInfo';
 import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
-import { MainStackRouteNames, openDAppBrowser, openJetton } from '$navigation';
+import { MainStackRouteNames, openDAppBrowser } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
 import { NextCycle } from '$shared/components';
 import { getServerConfig, KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
@@ -26,8 +26,6 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { t } from '@tonkeeper/shared/i18n';
 import { useFlag } from '$utils/flags';
 import { formatter } from '@tonkeeper/shared/formatter';
-import { fiatCurrencySelector } from '$store/main';
-import { useSelector } from 'react-redux';
 import { IStakingLink, StakingLinkType } from './types';
 import { Icon, List, Steezy } from '@tonkeeper/uikit';
 import { getLinkIcon, getLinkTitle, getSocialLinkType } from './utils';
@@ -36,6 +34,8 @@ import { Linking } from 'react-native';
 import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 import BigNumber from 'bignumber.js';
 import { ListItemRate } from '../../tabs/Wallet/components/ListItemRate';
+import { useCurrency } from '@tonkeeper/shared/hooks/useCurrency';
+import { openJetton } from '$core/Jetton/Jetton';
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPoolDetails>;
@@ -48,7 +48,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     },
   } = props;
 
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const currency = useCurrency();
 
   const tonstakersBeta = useFlag('tonstakers_beta');
 
@@ -182,7 +182,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                   color="textSecondary"
                 >
                   {formatter.format(stakingJettonMetadata.price.totalFiat, {
-                    currency: fiatCurrency,
+                    currency,
                   })}
                 </HideableAmount>
               }
@@ -204,7 +204,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
           </Text>
         </>
       ) : null,
-    [fiatCurrency, handlePressJetton, pool.name, stakingJetton, stakingJettonMetadata],
+    [currency, handlePressJetton, pool.name, stakingJetton, stakingJettonMetadata],
   );
 
   return (
@@ -230,7 +230,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                   </HideableAmount>
                   <Spacer y={2} />
                   <HideableAmount variant="body2" color="foregroundSecondary">
-                    {formatter.format(balance.totalFiat, { currency: fiatCurrency })}
+                    {formatter.format(balance.totalFiat, { currency })}
                   </HideableAmount>
                 </S.JettonAmountWrapper>
                 <Spacer x={16} />

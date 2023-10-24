@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   cancelAnimation,
   Easing,
@@ -22,9 +22,9 @@ import { CryptoCurrencies } from '$shared/constants';
 import { useTheme } from '$hooks/useTheme';
 import { useTokenPrice } from '$hooks/useTokenPrice';
 import { formatFiatCurrencyAmount } from '$utils/currency';
-import { mainSelector } from '$store/main';
 import { goBack } from '$navigation/imperative';
 import { t } from '@tonkeeper/shared/i18n';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
 
 export const Migration: FC<MigrationProps> = ({ route }) => {
   const {
@@ -38,10 +38,10 @@ export const Migration: FC<MigrationProps> = ({ route }) => {
   } = route.params;
 
   const dispatch = useDispatch();
-  const theme = useTheme();
   const [step, setStep] = useState(migrationInProgress ? 1 : 0);
   const [cardsScale, setCardsScale] = useState(1);
-  const { fiatCurrency } = useSelector(mainSelector);
+
+  const currency = useNewWallet((state) => state.currency);
 
   const iconAnimation = useSharedValue(0);
   const slideAnimation = useSharedValue(migrationInProgress ? 1 : 0);
@@ -203,7 +203,7 @@ export const Migration: FC<MigrationProps> = ({ route }) => {
               tonFee: toLocaleNumber('0.01'),
               fiatFee: `${formatFiatCurrencyAmount(
                 feePrice.totalFiat.toFixed(2),
-                fiatCurrency,
+                currency,
               )}`,
             })}
           </Text>

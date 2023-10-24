@@ -1,4 +1,3 @@
-import { FiatCurrency, FiatCurrencySymbolsConfig } from '$shared/constants';
 import BigNumber from 'bignumber.js';
 import {
   formatAmount,
@@ -8,10 +7,11 @@ import {
   truncateDecimal,
 } from './number';
 import { getNumberFormatSettings } from 'react-native-localize';
+import { WalletCurrency, FiatCurrencySymbolsConfig } from '@tonkeeper/core';
 
 export function formatFiatCurrencyAmount(
   amount: any,
-  currency: FiatCurrency,
+  currency: WalletCurrency,
   hasThinSpace?: boolean,
   hasNegative?: boolean,
 ): string {

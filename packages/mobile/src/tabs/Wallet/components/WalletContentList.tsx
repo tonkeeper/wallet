@@ -1,397 +1,246 @@
-import React, { memo, useCallback, useMemo } from 'react';
-import { t } from '@tonkeeper/shared/i18n';
-import { Screen, Spacer, SpacerSizes, View, List, PagerView } from '@tonkeeper/uikit';
-import { Steezy } from '$styles';
-import { RefreshControl } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { openJetton } from '$navigation';
-import { walletActions } from '$store/wallet';
-import { Rate } from '../hooks/useBalance';
-import { ListItemRate } from './ListItemRate';
-import { TonIcon, TonIconProps } from '@tonkeeper/uikit';
-import { CryptoCurrencies, LockupNames } from '$shared/constants';
-import { NFTsList } from './NFTsList';
-import { TokenPrice, useTokenPrice } from '$hooks/useTokenPrice';
-import { useTheme } from '$hooks/useTheme';
-import { ListSeparator } from '$uikit/List/ListSeparator';
+import { Screen, List, PagerView, ListItem, TonIcon } from '@tonkeeper/uikit';
+import { JettonBalance } from '@tonkeeper/core/src/TonAPI';
+import { TokenPrice } from '$hooks/useTokenPrice';
 import { StakingWidget } from './StakingWidget';
-import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { RefreshControl, StyleSheet } from 'react-native';
+import { memo, useMemo } from 'react';
+
+import { JettonBalanceItem } from '@tonkeeper/shared/components/WalletContentList/items/JettonBalanceItem';
+import { ListItemRate } from '@tonkeeper/shared/components/WalletContentList/components/ListItemRate';
+import { useTonPrice } from '@tonkeeper/shared/hooks/useTonPrice';
 import { openWallet } from '$core/Wallet/ToncoinScreen';
-import { TronBalance } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
-import { fiatCurrencySelector } from '$store/main';
+import { CryptoCurrencies } from '$shared/constants';
+
+import { useTonBalance } from '@tonkeeper/shared/hooks/useTonBalance';
+import { formatter } from '$utils/formatter';
+import BigNumber from 'bignumber.js';
+import { useCurrency } from '@tonkeeper/shared/hooks/useCurrency';
 
 enum ContentType {
-  Token,
-  Collectibles,
-  Spacer,
-  NFTCardsRow,
-  Staking,
+  FirstBlock = 'FirstBlock',
+  TonBalance = 'TonBalance',
+  TonOldBalance = 'TonOldBalance',
+  TonLockupBalance = 'TonLockupBalance',
+  JettonBalances = 'JettonBalances',
+  NftItemsRow = 'NftItemsRow',
+  Staking = 'Staking',
 }
 
-type TokenItem = {
-  type: ContentType.Token;
-  key: string;
-  isFirst?: boolean;
-  isLast?: boolean;
-
-  onPress?: () => void;
-  title: string;
-  subtitle?: string;
-  value?: string;
-  subvalue?: string;
-  rate?: Rate;
-  picture?: string;
-  tonIcon?: boolean | TonIconProps;
-  label?: string;
+export type ContentPayload = {
+  [ContentType.FirstBlock]: AnyContentItem;
+  [ContentType.TonBalance]: {};
+  [ContentType.TonOldBalance]: {};
+  [ContentType.TonLockupBalance]: {};
+  [ContentType.JettonBalances]: JettonBalance;
+  [ContentType.NftItemsRow]: {};
+  [ContentType.Staking]: {};
 };
 
-type SpacerItem = {
-  key: string;
-  type: ContentType.Spacer;
-  bottom: SpacerSizes;
+export type AnyContentPayload = ContentPayload[keyof ContentPayload];
+
+type ContentItem<T extends ContentType = ContentType> = {
+  payload: ContentPayload[T];
+  isFirstItem: boolean;
+  isLastBlock: boolean;
+  isLastItem: boolean;
+  type: T;
 };
 
-type NFTCardsRowItem = {
-  key: string;
-  type: ContentType.NFTCardsRow;
-  items: any; // TODO:
+export type AnyContentItem<T extends ContentType = ContentType> = T extends T
+  ? ContentItem<T>
+  : never;
+
+const TonBalanceItem = () => {
+  const tonBalance = useTonBalance();
+  const tonPrice = useTonPrice();
+  const currency = useCurrency();
+
+  const fiatBalance = useMemo(() => {
+    return new BigNumber(formatter.fromNano(tonBalance)).multipliedBy(tonPrice.value);
+  }, [tonBalance, tonPrice.value]);
+
+  return (
+    <ListItem
+      title="Toncoin"
+      leftContent={<TonIcon showDiamond />}
+      subvalue={formatter.format(fiatBalance, { currency })}
+      onPress={() => openWallet(CryptoCurrencies.Ton)}
+      subtitle={<ListItemRate price={tonPrice} />}
+      value={formatter.formatNano(tonBalance)}
+    />
+  );
 };
 
-type StakingItem = {
-  key: string;
-  type: ContentType.Staking;
+const TonOldBalanceItem = () => {
+  const tonBalance = useTonBalance();
+  const tonPrice = useTonPrice();
+  const currency = useCurrency();
+
+  const fiatBalance = useMemo(() => {
+    return new BigNumber(formatter.fromNano(tonBalance)).multipliedBy(tonPrice.value);
+  }, [tonBalance, tonPrice.value]);
+
+  //     ...balance.oldVersions.map((item) => ({
+  //       type: ContentType.Token,
+  //       key: 'old_' + item.version,
+  //       onPress: handleMigrate(item.version),
+  //       title: t('wallet.old_wallet_title'),
+  //       tonIcon: { transparent: true },
+  //       value: item.amount.formatted,
+  //       subvalue: item.amount.fiat,
+  //       rate: {
+  //         percent: tonPrice.fiatDiff.percent,
+  //         price: tonPrice.formatted.fiat ?? '-',
+  //         trend: tonPrice.fiatDiff.trend,
+  //       },
+  //     })),
+
+  return (
+    <ListItem
+      title="Toncoin"
+      leftContent={<TonIcon showDiamond />}
+      subvalue={formatter.format(fiatBalance, { currency })}
+      onPress={() => openWallet(CryptoCurrencies.Ton)}
+      subtitle={<ListItemRate price={tonPrice} />}
+      value={formatter.formatNano(tonBalance)}
+    />
+  );
 };
 
-type Content = TokenItem | SpacerItem | NFTCardsRowItem | StakingItem;
-
-const RenderItem = ({ item }: { item: Content }) => {
+function renderFirstBlockItems(item: AnyContentItem) {
   switch (item.type) {
-    case ContentType.Token:
-      const renderLeftContent = () => {
-        if (typeof item.tonIcon === 'object') {
-          return <TonIcon {...item.tonIcon} />;
-        } else if (typeof item.tonIcon === 'boolean') {
-          return <TonIcon showDiamond />;
-        }
-      };
-
-      const containerStyle = [
-        item.isFirst && styles.firstListItem,
-        item.isLast && styles.lastListItem,
-        styles.containerListItem,
-      ];
-
-      return (
-        <View style={containerStyle}>
-          <List.Item
-            leftContent={renderLeftContent()}
-            onPress={item.onPress}
-            title={item.title}
-            picture={item.picture}
-            value={
-              <HideableAmount
-                style={styles.valueText.static}
-                variant="label1"
-                stars=" * * *"
-              >{` ${item.value}`}</HideableAmount>
-            }
-            label={item.label}
-            subvalue={
-              item.subvalue && (
-                <HideableAmount
-                  style={styles.subvalueText.static}
-                  variant="body2"
-                  color="textSecondary"
-                >
-                  {item.subvalue}
-                </HideableAmount>
-              )
-            }
-            subtitle={
-              item.rate ? (
-                <ListItemRate
-                  percent={item.rate.percent}
-                  price={item.rate.price}
-                  trend={item.rate.trend}
-                />
-              ) : (
-                item.subtitle
-              )
-            }
-          />
-          {!item.isLast && <ListSeparator />}
-        </View>
-      );
-    case ContentType.Spacer:
-      return <Spacer y={item.bottom} />;
-    case ContentType.NFTCardsRow:
-      return <NFTsList nfts={item.items} />;
+    case ContentType.TonBalance:
+      return <TonBalanceItem />;
+    case ContentType.TonOldBalance:
+      // return <TonOldBalanceItem />;
+      return null;
+    case ContentType.TonLockupBalance:
+      //     content.push(
+      //       ...balance.lockup.map((item) => ({
+      //         type: ContentType.Token,
+      //         tonIcon: { locked: true },
+      //         title: LockupNames[item.type],
+      //         value: item.amount.formatted,
+      //         subvalue: item.amount.fiat,
+      //         subtitle: tonPrice.formatted.fiat ?? '-',
+      //       })),
+      //     );
+      return null;
     case ContentType.Staking:
       return <StakingWidget />;
   }
-};
+}
+
+function renderContentItems({ item }: { item: AnyContentItem }) {
+  const { type, payload, isFirstItem, isLastItem, isLastBlock } = item;
+  const listContainerProps = {
+    ...(!isLastBlock && { endStyle: styles.blockBottomIndent }),
+    isFirst: isFirstItem,
+    isLast: isLastItem,
+  };
+
+  switch (type) {
+    case ContentType.FirstBlock:
+      return (
+        <List.ItemContainer {...listContainerProps}>
+          {renderFirstBlockItems(item.payload)}
+        </List.ItemContainer>
+      );
+    case ContentType.JettonBalances:
+      return (
+        <List.ItemContainer {...listContainerProps}>
+          <JettonBalanceItem item={payload} />
+        </List.ItemContainer>
+      );
+    default:
+      return null;
+  }
+}
 
 interface BalancesListProps {
-  tokens: any; // TODO:
-  balance: any; // TODO:
   tonPrice: TokenPrice;
   nfts?: any; // TODO:
-  tronBalances?: TronBalance[];
   handleRefresh: () => void;
   isRefreshing: boolean;
   isFocused: boolean;
   ListHeaderComponent?: React.ReactElement;
+  jettons: JettonBalance[];
 }
 
-export const WalletContentList = memo<BalancesListProps>(
-  ({
-    tokens,
-    balance,
-    tonPrice,
-    nfts,
-    handleRefresh,
-    isRefreshing,
-    isFocused,
-    ListHeaderComponent,
-    tronBalances,
-  }) => {
-    const theme = useTheme();
-    const dispatch = useDispatch();
-    const usdtRate = useTokenPrice('USDT');
-    const fiatCurrency = useSelector(fiatCurrencySelector);
+type ContentBlock = {
+  type: ContentType;
+  items: any[];
+};
 
-    const handleMigrate = useCallback(
-      (fromVersion: string) => () => {
-        dispatch(
-          walletActions.openMigration({
-            isTransfer: true,
-            fromVersion,
-          }),
-        );
-      },
-      [dispatch],
-    );
+export const WalletContentList = memo<BalancesListProps>((props) => {
+  const { nfts, handleRefresh, isRefreshing, ListHeaderComponent, jettons } = props;
 
-    const data = useMemo(() => {
-      const content: Content[] = [];
-
-      // Tokens
-      content.push({
-        type: ContentType.Token,
-        key: 'ton',
-        title: 'Toncoin',
-        onPress: () => openWallet(CryptoCurrencies.Ton),
-        value: balance.ton.amount.formatted,
-        subvalue: balance.ton.amount.fiat,
-        tonIcon: true,
-        rate: {
-          percent: tonPrice.fiatDiff.percent,
-          price: tonPrice.formatted.fiat ?? '-',
-          trend: tonPrice.fiatDiff.trend,
+  const data = useMemo(() => {
+    const blocks: ContentBlock[] = [];
+    // if (balance) {
+    blocks.push({
+      type: ContentType.FirstBlock,
+      items: [
+        {
+          type: ContentType.TonBalance,
         },
+        {
+          type: ContentType.TonOldBalance,
+        },
+        {
+          type: ContentType.Staking,
+        },
+      ],
+    });
+    // }
+
+    if (jettons) {
+      blocks.push({
+        type: ContentType.JettonBalances,
+        items: jettons,
       });
+    }
 
-      content.push(
-        ...balance.oldVersions.map((item) => ({
-          type: ContentType.Token,
-          key: 'old_' + item.version,
-          onPress: handleMigrate(item.version),
-          title: t('wallet.old_wallet_title'),
-          tonIcon: { transparent: true },
-          value: item.amount.formatted,
-          subvalue: item.amount.fiat,
-          rate: {
-            percent: tonPrice.fiatDiff.percent,
-            price: tonPrice.formatted.fiat ?? '-',
-            trend: tonPrice.fiatDiff.trend,
-          },
-        })),
-      );
+    // if (nftItems) {
+    //   blocks.push({
+    //     type: ContentType.NftItemsRow,
+    //     items: divideArray(nftItems, 3)
+    //   });
+    // }
 
-      if (balance.lockup.length > 0) {
-        content.push(
-          ...balance.lockup.map((item) => ({
-            type: ContentType.Token,
-            tonIcon: { locked: true },
-            title: LockupNames[item.type],
-            value: item.amount.formatted,
-            subvalue: item.amount.fiat,
-            subtitle: tonPrice.formatted.fiat ?? '-',
-          })),
-        );
+    return blocks.reduce<AnyContentItem[]>((content, listItem, blockIndex) => {
+      const items = listItem.items?.map((item, index) => ({
+        isLastBlock: blockIndex === blocks.length - 1,
+        isLastItem: index === listItem.items.length - 1,
+        isFirstItem: index === 0,
+        type: listItem.type,
+        payload: item,
+      }));
+
+      if (items) {
+        content.push(...items);
       }
-
-      // if (tronBalances && tronBalances.length > 0) {
-      //   content.push(
-      //     ...(tronBalances as any).map((item) => {
-      //       const amount = formatter.fromNano(item.weiAmount, item.token.decimals);
-      //       const fiatAmount = formatter.format(usdtRate.fiat * parseFloat(amount), {
-      //         currency: fiatCurrency
-      //       });
-      //       const fiatPrice = formatter.format(usdtRate.fiat, {
-      //         currency: fiatCurrency
-      //       });
-
-      //       return {
-      //         onPress: () => openTronToken(item),
-      //         type: ContentType.Token,
-      //         picture: item.token.image,
-      //         title: (
-      //           <View style={styles.trcTitle}>
-      //             <Text type="label1">{item.token.symbol}</Text>
-      //             <View style={styles.trcLabel}>
-      //               <Text type="body4" color="textSecondary">
-      //                 TRC20
-      //               </Text>
-      //             </View>
-      //           </View>
-      //         ),
-      //         value: amount,
-      //         subvalue: fiatAmount,
-      //         subtitle: fiatPrice,
-      //       };
-      //     }),
-      //   );
-      // }
-
-      content.push({
-        key: 'staking',
-        type: ContentType.Staking,
-      });
-
-      content.push({
-        key: 'spacer_staking',
-        type: ContentType.Spacer,
-        bottom: 32,
-      });
-
-      content.push(
-        ...tokens.list.map((item, index) => ({
-          key: 'token_' + item.address.rawAddress,
-          isFirst: index === 0,
-          type: ContentType.Token,
-          onPress: () => openJetton(item.address.rawAddress),
-          picture: item.iconUrl,
-          title: item.symbol,
-          value: item.quantity.formatted,
-          subvalue: item.rate.total,
-          rate: item.rate.price
-            ? {
-                price: item.rate.price,
-                percent: item.price.fiatDiff.percent,
-                trend: item.price.fiatDiff.trend,
-              }
-            : undefined,
-        })),
-      );
-
-      const firstTonkenElement = content[0] as TokenItem;
-      const lastTokenElement = content[content.length - 1] as TokenItem;
-
-      if (tokens.list.length > 0) {
-        content.push({
-          key: 'spacer_nft',
-          type: ContentType.Spacer,
-          bottom: 32,
-        });
-      }
-
-      // Make list; set corners
-      firstTonkenElement.isFirst = true;
-      lastTokenElement.isLast = true;
-
-      if (nfts) {
-        const numColumns = 3;
-        for (let i = 0; i < Math.ceil(nfts.length / numColumns); i++) {
-          content.push({
-            key: 'nft_' + i,
-            type: ContentType.NFTCardsRow,
-            items: nfts.slice(i * numColumns, i * numColumns + numColumns),
-          });
-        }
-      }
-
-      content.push({
-        key: 'spacer_bottom',
-        type: ContentType.Spacer,
-        bottom: 12,
-      });
 
       return content;
-    }, [balance, handleMigrate, nfts, tokens.list, tonPrice, tronBalances]);
+    }, []);
+  }, [jettons]);
 
-    const ListComponent = nfts ? Screen.FlashList : PagerView.FlatList;
+  // const ListComponent = nfts ? Screen.FlashList : PagerView.FlatList;
 
-    return (
-      <ListComponent
-        ListHeaderComponent={ListHeaderComponent}
-        renderItem={RenderItem}
-        data={data}
-        refreshControl={
-          <RefreshControl
-            onRefresh={handleRefresh}
-            refreshing={isRefreshing && isFocused}
-            tintColor={theme.colors.foregroundPrimary}
-            progressBackgroundColor={theme.colors.foregroundPrimary}
-          />
-        }
-      />
-    );
-  },
-);
+  return (
+    <Screen.FlashList
+      ListHeaderComponent={ListHeaderComponent}
+      renderItem={renderContentItems}
+      data={data}
+      refreshControl={
+        <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+      }
+    />
+  );
+});
 
-const styles = Steezy.create(({ colors, corners }) => ({
-  trcTitle: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+const styles = StyleSheet.create({
+  blockBottomIndent: {
+    marginBottom: 32,
   },
-  trcLabel: {
-    backgroundColor: colors.backgroundContentTint,
-    paddingHorizontal: 5,
-    paddingTop: 2.5,
-    paddingBottom: 3.5,
-    borderRadius: 4,
-    marginLeft: 6,
-  },
-  firstListItem: {
-    borderTopLeftRadius: corners.medium,
-    borderTopRightRadius: corners.medium,
-  },
-  lastListItem: {
-    borderBottomLeftRadius: corners.medium,
-    borderBottomRightRadius: corners.medium,
-  },
-  containerListItem: {
-    overflow: 'hidden',
-    backgroundColor: colors.backgroundContent,
-    marginHorizontal: 16,
-  },
-  valueText: {
-    textAlign: 'right',
-    flexShrink: 1,
-  },
-  subvalueText: {
-    color: colors.textSecondary,
-    textAlign: 'right',
-  },
-
-  container: {
-    position: 'relative',
-  },
-  mainSection: {
-    paddingBottom: 24,
-    paddingHorizontal: 16,
-  },
-  amount: {
-    paddingTop: 29,
-    alignItems: 'center',
-    marginBottom: 24.5,
-  },
-  addressText: {
-    marginTop: 7.5,
-  },
-  scrollContainer: {
-    paddingHorizontal: 12,
-  },
-}));
+});

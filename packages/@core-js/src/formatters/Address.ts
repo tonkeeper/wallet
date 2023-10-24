@@ -4,8 +4,8 @@ const ContractVersions = ['v3R1', 'v3R2', 'v4R1', 'v4R2'] as const;
 
 export type AddressFormats = {
   friendly: string;
-  short: string;
   raw: string;
+  version: string;
 };
 
 export type AddressesByVersion = {
@@ -78,7 +78,7 @@ export class Address {
     }
   }
 
-  static async fromPubkey(pubkey: string | null): Promise<AddressesByVersion | null> {
+  static async fromPubkey(pubkey: string | null, isTestnet: boolean): Promise<AddressesByVersion | null> {
     if (!pubkey) return null;
 
     const tonweb = new TonWeb();
@@ -93,8 +93,13 @@ export class Address {
 
       const address = await wallet.getAddress();
       const raw = address.toString(false, false);
+      const friendly = address.toString(true, true, false, isTestnet);
+      
 
-      addresses[contractVersion] = raw;
+      addresses[contractVersion] = {
+        friendly,
+        raw
+      };
     }
 
     return addresses;

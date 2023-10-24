@@ -19,6 +19,13 @@
     "withdraw" : "Unstake",
     "withdrawal_request" : "Unstake Request"
   },
+  "status": {
+    "updating": "Updating",
+    "last_synced": "No connection. Synced %{count} mins ago",
+    "no_internet_connection": "No internet connection",
+    "transaction_is_confirmed": "Transaction is confirmed",
+    "sending_transaction": "Sending transaction"
+  },
   "activity" : {
     "buy_toncoin_btn" : "Buy Toncoin",
     "empty_transaction_caption" : "Make your first transaction!",

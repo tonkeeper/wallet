@@ -1,3 +1,4 @@
+import { useCurrency } from '../../../hooks/useCurrency';
 import { List, copyText } from '@tonkeeper/uikit';
 import { formatter } from '../../../formatter';
 import { memo, useMemo } from 'react';
@@ -6,16 +7,12 @@ import { t } from '../../../i18n';
 // TODO: move to manager
 import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 
-// TODO: move to shared
-import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
-import { useSelector } from 'react-redux';
-
 interface ExtraListItemProps {
   extra?: number;
 }
 
 export const ExtraListItem = memo<ExtraListItemProps>((props) => {
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const currency = useCurrency();
   const tokenPrice = useTokenPrice('ton');
 
   const extra = useMemo(() => {
@@ -32,9 +29,9 @@ export const ExtraListItem = memo<ExtraListItemProps>((props) => {
         }),
         fiat: formatter.format(fiatAmount, {
           currencySeparator: 'wide',
-          currency: fiatCurrency,
           absolute: true,
           decimals: 9,
+          currency,
         }),
       };
     }

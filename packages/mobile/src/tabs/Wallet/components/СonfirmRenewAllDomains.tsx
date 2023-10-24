@@ -20,7 +20,6 @@ import { Toast } from '$store/zustand/toast';
 import { Ton } from '$libs/Ton';
 import TonWeb from 'tonweb';
 import { Tonapi } from '$libs/Tonapi';
-import { useDispatch } from 'react-redux';
 import {
   checkIsInsufficient,
   openInsufficientFundsModal,
@@ -35,7 +34,7 @@ enum States {
   ERROR,
 }
 
-export const СonfirmRenewAllDomains = memo((props) => {
+export const СonfirmRenewAllDomains = memo(() => {
   const [state, setState] = useState(States.INITIAL);
   const nav = useNavigation();
   const domains = useExpiringDomains((state) => state.items);
@@ -43,7 +42,6 @@ export const СonfirmRenewAllDomains = memo((props) => {
   const unlock = useUnlockVault();
   const [current, setCurrent] = useState(0);
   const wallet = useWallet();
-  const dispatch = useDispatch();
 
   const [count] = useState(domains.length);
   const [amount] = useState(0.02 * count);

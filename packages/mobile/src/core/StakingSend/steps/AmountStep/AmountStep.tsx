@@ -1,14 +1,12 @@
 import { useFiatValue } from '$hooks/useFiatValue';
 import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
 import { useTokenPrice } from '$hooks/useTokenPrice';
-import { Button, Separator, Spacer, Text } from '$uikit';
+import { Button, Spacer, Text } from '$uikit';
 import React, { FC, memo, useEffect, useMemo, useRef } from 'react';
 import * as S from './AmountStep.style';
 import { parseLocaleNumber } from '$utils';
-import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { TextInput } from 'react-native-gesture-handler';
-import { walletWalletSelector } from '$store/wallet';
 import {
   AmountInput,
   BottomButtonWrap,
@@ -26,6 +24,8 @@ import { Ton } from '$libs/Ton';
 import { stakingFormatter } from '$utils/formatter';
 import { t } from '@tonkeeper/shared/i18n';
 import { PoolInfo, PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
+import { WalletKind } from '@tonkeeper/core';
 
 interface Props extends StepComponentProps {
   pool: PoolInfo;
@@ -76,19 +76,17 @@ const AmountStepComponent: FC<Props> = (props) => {
       ? stakingBalance
       : walletBalance;
 
-  const wallet = useSelector(walletWalletSelector);
-
-  const isLockup = !!wallet?.ton.isLockup();
+  const walletKind = useNewWallet((state) => state.kind);
 
   const { isReadyToContinue } = useMemo(() => {
     const bigNum = new BigNumber(parseLocaleNumber(amount.value));
     return {
       isReadyToContinue:
         bigNum.isGreaterThan(0) &&
-        (isLockup || bigNum.isLessThanOrEqualTo(balance)) &&
+        (walletKind === WalletKind.Lockup || bigNum.isLessThanOrEqualTo(balance)) &&
         bigNum.isGreaterThanOrEqualTo(new BigNumber(minAmount)),
     };
-  }, [amount.value, balance, isLockup, minAmount]);
+  }, [amount.value, balance, walletKind, minAmount]);
 
   const { keyboardHeightStyle } = useReanimatedKeyboardHeight();
 

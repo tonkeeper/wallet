@@ -1,6 +1,5 @@
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { useSelector } from 'react-redux';
-import { fiatCurrencySelector } from '$store/main';
 import { useGetTokenPrice, useTokenPrice } from '$hooks/useTokenPrice';
 import { useCallback, useMemo } from 'react';
 import {
@@ -16,6 +15,7 @@ import { getStakingJettons, useStakingStore } from '$store';
 import { shallow } from 'zustand/shallow';
 import { jettonsBalancesSelector } from '$store/jettons';
 import { Address } from '@tonkeeper/core';
+import { useCurrency } from '@tonkeeper/shared/hooks/useCurrency';
 
 export type Rate = {
   percent: string;
@@ -26,7 +26,7 @@ export type Rate = {
 // TODO: rewrite
 const useAmountToFiat = () => {
   const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const fiatCurrency = useCurrency();
 
   const amountToFiat = useCallback(
     (amount: string, fiatAmountToSum?: number) => {

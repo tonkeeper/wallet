@@ -296,12 +296,6 @@ export function openNotifications() {
   push(SettingsStackRouteNames.Notifications);
 }
 
-export function openJetton(jettonAddress: string) {
-  navigate(MainStackRouteNames.Jetton, {
-    jettonAddress,
-  });
-}
-
 export async function openChooseCountry() {
   navigate(AppStackRouteNames.ChooseCountry);
 }

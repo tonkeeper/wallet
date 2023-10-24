@@ -1,15 +1,5 @@
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { i18n, t } from '@tonkeeper/shared/i18n';
-import {
-  Button,
-  IconButton,
-  IconButtonList,
-  Screen,
-  Text,
-  List,
-  View,
-  PagerView,
-} from '@tonkeeper/uikit';
 import { InternalNotification } from '$uikit';
 import { useNavigation } from '@tonkeeper/router';
 import { ScanQRButton } from '../../components/ScanQRButton';
@@ -21,15 +11,11 @@ import { walletActions, walletSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
 import { useIsFocused } from '@react-navigation/native';
 import { useBalance } from './hooks/useBalance';
-import { ListItemRate } from './components/ListItemRate';
-import { TonIcon } from '@tonkeeper/uikit';
 import { CryptoCurrencies, TabletMaxWidth } from '$shared/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
 import { useTonkens } from './hooks/useTokens';
-import { useWallet } from './hooks/useWallet';
 import { useApprovedNfts } from '$hooks/useApprovedNfts';
 import { useTheme } from '$hooks/useTheme';
 import { useTokenPrice } from '$hooks/useTokenPrice';
@@ -41,33 +27,69 @@ import { UpdatesCell } from '$core/ApprovalCell/Updates/UpdatesCell';
 import { UpdateState } from '$store/zustand/updates/types';
 import { ShowBalance } from '$core/HideableAmount/ShowBalance';
 import { Events, SendAnalyticsFrom } from '$store/models';
-import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
-import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { trackEvent } from '$utils/stats';
-import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { ExpiringDomainCell } from './components/ExpiringDomainCell';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
+import { Address } from '@tonkeeper/shared/Address';
+import { useJettons } from '@tonkeeper/shared/hooks/useJettons';
+import {
+  IconButton,
+  IconButtonList,
+  Screen,
+  Text,
+  View,
+  PagerView,
+} from '@tonkeeper/uikit';
+import { useCurrency } from '@tonkeeper/shared/hooks/useCurrency';
+import { useTonBalance } from '@tonkeeper/shared/hooks/useTonBalance';
+import { formatter } from '$utils/formatter';
+import BigNumber from 'bignumber.js';
+import { UpdatingStatus } from '@tonkeeper/shared/components/UpdatingStatus';
+
+const useTotalBalance = () => {
+  const jettonBalances = useJettons((state) => state.items);
+  const tonBalance = useTonBalance();
+  const currency = useCurrency();
+
+  const total = useMemo(() => {
+    const jettonAmounts = jettonBalances.reduce<string[]>((acc, item) => {
+      if (item.price) {
+        acc.push(new BigNumber(item.balance).multipliedBy(item.price.value).toString());
+      }
+
+      return acc;
+    }, []);
+
+    const balances = [tonBalance, ...jettonAmounts];
+
+    return balances
+      .reduce((total, balance) => {
+        return total.plus(balance);
+      }, new BigNumber(0))
+      .toString(10);
+  }, [tonBalance, jettonBalances]);
+
+  return formatter.formatNano(total, { currency });
+};
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
-  const tabBarHeight = useBottomTabBarHeight();
   const dispatch = useDispatch();
   const theme = useTheme();
   const nav = useNavigation();
-  const tokens = useTonkens();
-  const { enabled: nfts } = useApprovedNfts();
-  const wallet = useWallet();
+
+  // const { enabled: nfts } = useApprovedNfts();
+  const wallet = useNewWallet();
   const shouldUpdate =
     useUpdatesStore((state) => state.update.state) !== UpdateState.NOT_STARTED;
-  const balance = useBalance(tokens.total.fiat);
-  const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
 
-  const { isRefreshing, isLoaded } = useSelector(walletSelector);
-  const isFocused = useIsFocused();
-
-  const { data: tronBalances } = useTronBalances();
+  const { isRefreshing } = useSelector(walletSelector);
 
   const notifications = useInternalNotifications();
+  const jettons = useJettons();
+
+  const totalBalance = useTotalBalance();
 
   // TODO: rewrite
   useEffect(() => {
@@ -78,39 +100,21 @@ export const WalletScreen = memo(() => {
   }, [dispatch]);
 
   const handlePressSwap = useCallback(() => {
-    if (wallet) {
-      nav.openModal('Swap');
-    } else {
-      openRequireWalletModal();
-    }
-  }, [nav, wallet]);
+    nav.openModal('Swap');
+  }, [nav]);
 
   const handlePressBuy = useCallback(() => {
-    if (wallet) {
-      nav.openModal('Exchange');
-    } else {
-      openRequireWalletModal();
-    }
-  }, [nav, wallet]);
+    nav.openModal('Exchange');
+  }, [nav]);
 
   const handlePressSend = useCallback(() => {
-    if (wallet) {
-      trackEvent(Events.SendOpen, { from: SendAnalyticsFrom.WalletScreen });
-      nav.go('Send', { from: SendAnalyticsFrom.WalletScreen });
-    } else {
-      openRequireWalletModal();
-    }
-  }, [nav, wallet]);
+    trackEvent(Events.SendOpen, { from: SendAnalyticsFrom.WalletScreen });
+    nav.go('Send', { from: SendAnalyticsFrom.WalletScreen });
+  }, [nav]);
 
   const handlePressRecevie = useCallback(() => {
-    if (wallet) {
-      nav.go('ReceiveModal');
-    } else {
-      openRequireWalletModal();
-    }
-  }, [nav, wallet]);
-
-  const handleCreateWallet = () => openRequireWalletModal();
+    nav.go('ReceiveModal');
+  }, [nav]);
 
   const handleRefresh = useCallback(() => {
     dispatch(walletActions.refreshBalancesPage(true));
@@ -132,16 +136,16 @@ export const WalletScreen = memo(() => {
         ))}
         {shouldUpdate && <UpdatesCell />}
         <View style={styles.amount} pointerEvents="box-none">
-          <ShowBalance amount={balance.total.fiat} />
+          <ShowBalance amount={totalBalance} />
           {wallet && tk.wallet && (
             <TouchableOpacity
               hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
               style={{ zIndex: 3, marginVertical: 8 }}
-              onPress={() => copyText(tk.wallet.state.getSnapshot().addresses.ton)}
+              onPress={() => copyText(wallet.ton.address.friendly)}
               activeOpacity={0.6}
             >
               <Text color="textSecondary" type="body2">
-                {tk.wallet.state.getSnapshot().addresses.ton}
+                {Address.toShort(wallet.ton.address.friendly)}
               </Text>
             </TouchableOpacity>
           )}
@@ -181,7 +185,6 @@ export const WalletScreen = memo(() => {
       </View>
     ),
     [
-      balance.total.fiat,
       flags.disable_swap,
       handlePressBuy,
       handlePressRecevie,
@@ -189,6 +192,7 @@ export const WalletScreen = memo(() => {
       handlePressSwap,
       notifications,
       shouldUpdate,
+      totalBalance,
       wallet,
     ],
   );
@@ -211,108 +215,24 @@ export const WalletScreen = memo(() => {
     return { width, height };
   }, [dimensions.width]);
 
-  const isPagerView =
-    nfts.length && tokens.list.length >= 2 && tokens.list.length + nfts.length + 1 > 10;
-
-  if (!wallet) {
-    return (
-      <Screen>
-        <Screen.Header
-          title={t('wallet.screen_title')}
-          rightContent={<ScanQRButton />}
-          hideBackButton
-        />
-        <Screen.ScrollView indent={false}>
-          {ListHeader}
-          <List>
-            <List.Item
-              title="Toncoin"
-              onPress={() => openWallet(CryptoCurrencies.Ton)}
-              leftContent={<TonIcon />}
-              chevron
-              subtitle={
-                <ListItemRate
-                  price={tonPrice.formatted.fiat ?? '-'}
-                  trend={tonPrice.fiatDiff.trend}
-                />
-              }
-            />
-          </List>
-        </Screen.ScrollView>
-        {isLoaded && !wallet && (
-          <View style={[styles.createWalletContainerOuter, { bottom: tabBarHeight }]}>
-            <View style={styles.createWalletContainerInner}>
-              <Button onPress={handleCreateWallet} title={t('balances_setup_wallet')} />
-            </View>
-          </View>
-        )}
-      </Screen>
-    );
-  }
+  const isPagerView = false;
+  // nfts.length && jettons.items.length >= 2 && jettons.items.length + nfts.length + 1 > 10;
 
   return (
     <Screen>
       <Screen.Header
         title={t('wallet.screen_title')}
+        bottomContent={<UpdatingStatus />}
         rightContent={<ScanQRButton />}
         hideBackButton
       />
-      {isPagerView ? (
-        <PagerView>
-          <PagerView.Header>
-            {ListHeader}
-            <PagerView.TabBar centered>
-              <PagerView.TabBarItem label={t('wallet.tonkens_tab_lable')} index={0} />
-              <PagerView.TabBarItem label={t('wallet.nft_tab_lable')} index={1} />
-            </PagerView.TabBar>
-          </PagerView.Header>
-          <PagerView.Pages>
-            <PagerView.Page index={0}>
-              <WalletContentList
-                balance={balance}
-                tronBalances={tronBalances}
-                tokens={tokens}
-                tonPrice={tonPrice}
-                handleRefresh={handleRefresh}
-                isRefreshing={isRefreshing}
-                isFocused={isFocused}
-              />
-            </PagerView.Page>
-            <PagerView.Page index={1}>
-              <PagerView.FlatList
-                contentContainerStyle={styles.scrollContainer}
-                numColumns={3}
-                data={nfts}
-                renderItem={({ item }) => (
-                  <View style={nftCardSize}>
-                    <NFTCardItem item={item} />
-                  </View>
-                )}
-                refreshControl={
-                  <RefreshControl
-                    onRefresh={handleRefresh}
-                    refreshing={isRefreshing && isFocused}
-                    tintColor={theme.colors.foregroundPrimary}
-                    progressBackgroundColor={theme.colors.foregroundPrimary}
-                  />
-                }
-              />
-            </PagerView.Page>
-          </PagerView.Pages>
-        </PagerView>
-      ) : (
-        <WalletContentList
-          tronBalances={tronBalances}
-          ListHeaderComponent={ListHeader}
-          handleRefresh={handleRefresh}
-          isRefreshing={isRefreshing}
-          isFocused={isFocused}
-          balance={balance}
-          tokens={tokens}
-          tonPrice={tonPrice}
-          nfts={nfts}
-        />
-      )}
+
+      <WalletContentList
+        ListHeaderComponent={ListHeader}
+        handleRefresh={handleRefresh}
+        isRefreshing={isRefreshing}
+        jettons={jettons.items}
+      />
     </Screen>
   );
 });

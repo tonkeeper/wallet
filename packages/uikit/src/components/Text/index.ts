@@ -1,1 +1,1 @@
-export { Text, SText } from './Text';
+export { Text, SText, TextColors } from './Text';

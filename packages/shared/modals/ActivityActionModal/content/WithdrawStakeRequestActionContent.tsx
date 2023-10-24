@@ -7,10 +7,9 @@ import { t } from '../../../i18n';
 import { memo } from 'react';
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 import { StakingIcon } from '../components/StakingIcon';
-import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
 import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
-import { useSelector } from 'react-redux';
 import { formatter } from '../../../formatter';
+import { useCurrency } from '../../../hooks/useCurrency';
 
 interface WithdrawStakeRequestActionContentProps {
   action: ActionItem<ActionType.WithdrawStakeRequest>;
@@ -22,7 +21,7 @@ export const WithdrawStakeRequestActionContent =
 
     const { formatNano, format } = useHideableFormatter();
 
-    const fiatCurrency = useSelector(fiatCurrencySelector);
+    const currency = useCurrency();
     const tokenPrice = useTokenPrice(
       'ton',
       formatter.fromNano(action.amount?.value ?? '0'),
@@ -37,11 +36,7 @@ export const WithdrawStakeRequestActionContent =
         })
       : null;
 
-    const formattedFiat = action.amount
-      ? format(tokenPrice.totalFiat, {
-          currency: fiatCurrency,
-        })
-      : '';
+    const formattedFiat = action.amount ? format(tokenPrice.totalFiat, { currency }) : '';
 
     return (
       <ActionModalContent

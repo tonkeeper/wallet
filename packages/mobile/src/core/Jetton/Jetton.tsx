@@ -1,5 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
-import { JettonProps } from './Jetton.interface';
+import React, { memo, useCallback, useMemo } from 'react';
 import * as S from './Jetton.style';
 import {
   Icon,
@@ -10,18 +9,11 @@ import {
   SwapIcon,
   Text,
 } from '$uikit';
-import { delay, ns } from '$utils';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useJetton } from '$hooks/useJetton';
-import { useTheme } from '$hooks/useTheme';
-import { useTokenPrice } from '$hooks/useTokenPrice';
+import { ns } from '$utils';
 import { openDAppBrowser, openSend } from '$navigation';
-import { CryptoCurrencies, getServerConfig } from '$shared/constants';
-import { useSelector } from 'react-redux';
-
-import { walletAddressSelector } from '$store/wallet';
+import { getServerConfig } from '$shared/constants';
 import { formatter } from '$utils/formatter';
-import { useNavigation } from '@tonkeeper/router';
+import { navigation, useNavigation } from '@tonkeeper/router';
 import { useSwapStore } from '$store/zustand/swap';
 import { shallow } from 'zustand/shallow';
 import { useFlags } from '$utils/flags';
@@ -30,62 +22,102 @@ import { Events, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
-import { Screen, Steezy, View } from '@tonkeeper/uikit';
+import { Screen, Toast } from '@tonkeeper/uikit';
 
 import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonActivityList';
 import { ActivityList } from '@tonkeeper/shared/components';
 import { openReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
+import { JettonBalance } from '@tonkeeper/core/src/TonAPI';
+import { tk } from '@tonkeeper/shared/tonkeeper';
+import { useParams } from '$navigation/imperative';
+import BigNumber from 'bignumber.js';
+import { useCurrency } from '@tonkeeper/shared/hooks/useCurrency';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
 
-export const Jetton: React.FC<JettonProps> = ({ route }) => {
-  const theme = useTheme();
+export async function openJetton(jettonAddress: string) {
+  const openScreen = (jettonBalance: JettonBalance) => {
+    navigation.push('Jetton', { item: jettonBalance });
+  };
+
+  try {
+    const loadedJetton = tk.wallet.jettons.getLoadedJetton(jettonAddress);
+    if (loadedJetton) {
+      openScreen(loadedJetton);
+    }
+  } catch (err) {
+    console.log(err);
+    Toast.fail('Error load jetton');
+  }
+}
+
+interface JettonScreenProps {
+  item: JettonBalance;
+}
+
+export const JettonScreen = memo(() => {
+  const { item } = useParams<JettonScreenProps>();
+
   const flags = useFlags(['disable_swap']);
-  const { bottom: bottomInset } = useSafeAreaInsets();
-  const jetton = useJetton(route.params.jettonAddress);
-  const jettonActivityList = useJettonActivityList(jetton.jettonAddress);
-  const address = useSelector(walletAddressSelector);
-  const jettonPrice = useTokenPrice(jetton.jettonAddress, jetton.balance);
+  const jettonActivityList = useJettonActivityList(item.jetton.address);
+  const address = useNewWallet((state) => state.ton.address.raw);
+  const currency = useCurrency();
 
   const nav = useNavigation();
 
-  const showSwap = useSwapStore((s) => !!s.assets[jetton.jettonAddress], shallow);
+  const showSwap = useSwapStore((s) => !!s.assets[item.jetton.address], shallow);
 
   const handleSend = useCallback(() => {
     trackEvent(Events.SendOpen, { from: SendAnalyticsFrom.TokenScreen });
     openSend({
-      currency: jetton.jettonAddress,
+      currency: item.jetton.address,
       isJetton: true,
       from: SendAnalyticsFrom.TokenScreen,
     });
-  }, [jetton.jettonAddress]);
+  }, [item.jetton.address]);
 
   const handleReceive = useCallback(() => {
-    openReceiveJettonModal(jetton.jettonAddress);
-  }, [jetton.jettonAddress]);
+    openReceiveJettonModal(item.jetton.address);
+  }, [item.jetton.address]);
 
   const handlePressSwap = React.useCallback(() => {
-    nav.openModal('Swap', { jettonAddress: jetton.jettonAddress });
-  }, [jetton.jettonAddress, nav]);
+    nav.openModal('Swap', { jettonAddress: item.jetton.address });
+  }, [item.jetton.address, nav]);
 
   const handleOpenExplorer = useCallback(async () => {
     openDAppBrowser(
-      getServerConfig('accountExplorer').replace('%s', address.ton) +
-        `/jetton/${jetton.jettonAddress}`,
+      getServerConfig('accountExplorer').replace('%s', address) +
+        `/jetton/${item.jetton.address}`,
     );
-  }, [address.ton, jetton.jettonAddress]);
+  }, [address, item.jetton.address]);
+
+  const quantity = useMemo(() => {
+    return formatter.fromNano(item.balance, item.jetton.decimals);
+  }, [item.balance, item.jetton.decimals]);
+
+  const fiatQuantity = useMemo(() => {
+    if (item.price) {
+      const fiat = new BigNumber(quantity).multipliedBy(item.price.value);
+      return formatter.format(fiat, { currency });
+    }
+  }, [item.price, quantity, currency]);
+
+  const price = useMemo(() => {
+    if (item.price.value) {
+      return formatter.format(item.price.value, { currency });
+    }
+  }, [item.price.value, currency]);
 
   const renderHeader = useMemo(() => {
-    if (!jetton) {
-      return null;
-    }
     return (
       <S.HeaderWrap>
         <S.FlexRow>
           <S.JettonAmountWrapper>
             <HideableAmount variant="h2">
-              {formatter.format(jetton.balance, {
-                decimals: jetton.metadata.decimals,
-                currency: jetton.metadata.symbol,
-                currencySeparator: 'wide',
+              {formatter.formatNano(item.balance, {
+                decimals: item.jetton.decimals,
+                postfix: item.jetton.symbol,
+                ignoreZeroTruncate: true,
+                withoutTruncate: true,
               })}
             </HideableAmount>
             <HideableAmount
@@ -93,17 +125,15 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
               variant="body2"
               color="foregroundSecondary"
             >
-              {jettonPrice.formatted.totalFiat || t('jetton_token')}
+              {fiatQuantity ? fiatQuantity : t('jetton_token')}
             </HideableAmount>
-            {jettonPrice.formatted.fiat ? (
+            {fiatQuantity && (
               <Text style={{ marginTop: 12 }} variant="body2" color="foregroundSecondary">
-                {t('jetton_price')} {jettonPrice.formatted.fiat}
+                {t('jetton_price')} {price}
               </Text>
-            ) : null}
+            )}
           </S.JettonAmountWrapper>
-          {jetton.metadata.image ? (
-            <S.Logo source={{ uri: jetton.metadata.image }} />
-          ) : null}
+          {item.jetton.image ? <S.Logo source={{ uri: item.jetton.image }} /> : null}
         </S.FlexRow>
         <S.Divider style={{ marginBottom: ns(16) }} />
         <S.ActionsContainer>
@@ -129,9 +159,12 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
       </S.HeaderWrap>
     );
   }, [
-    jetton,
-    t,
-    jettonPrice,
+    item.balance,
+    item.jetton.decimals,
+    item.jetton.symbol,
+    item.jetton.image,
+    fiatQuantity,
+    price,
     handleSend,
     handleReceive,
     showSwap,
@@ -139,14 +172,10 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     handlePressSwap,
   ]);
 
-  if (!jetton) {
-    return null;
-  }
-
   return (
     <Screen>
       <Screen.Header
-        title={jetton.metadata?.name || Address.toShort(jetton.jettonAddress)}
+        title={item.jetton.name || Address.toShort(item.jetton.address)}
         rightContent={
           <PopupMenu
             items={[
@@ -178,4 +207,4 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
       />
     </Screen>
   );
-};
+});

@@ -20,7 +20,7 @@ import {
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { formatter } from '$utils/formatter';
-import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
+import { tonapi } from '@tonkeeper/shared/tonkeeper';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
 import {
   ActionAmountType,
@@ -31,10 +31,10 @@ import {
   AnyActionItem,
 } from '@tonkeeper/core';
 import { ActionListItemByType } from '@tonkeeper/shared/components/ActivityList/ActionListItemByType';
-import { useSelector } from 'react-redux';
-import { fiatCurrencySelector } from '$store/main';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
 import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
+import { useCurrency } from '@tonkeeper/shared/hooks/useCurrency';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
 
 interface SignRawModalProps {
   action: Awaited<ReturnType<NFTOperations['signRaw']>>;
@@ -59,7 +59,8 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const unlockVault = useUnlockVault();
 
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const currency = useCurrency();
+  const tonRawAddress = useNewWallet((state) => state.ton.address.raw);
   const getTokenPrice = useGetTokenPrice();
 
   const handleConfirm = onConfirm(async ({ startLoading }) => {
@@ -80,19 +81,20 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     return () => {
       onDismiss?.();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const actions = useMemo(() => {
     if (consequences) {
       return ActivityModel.createActions({
-        ownerAddress: tk.wallet.address.ton.raw,
+        ownerAddress: tonRawAddress,
         events: [consequences.event],
         source: ActionSource.Ton,
       });
     } else {
       // convert messages to TonTransfer actions
       return params.messages.map((message) => {
-        return ActivityModel.createMockAction(tk.wallet.address.ton.raw, {
+        return ActivityModel.createMockAction(tonRawAddress, {
           type: ActionType.TonTransfer,
           payload: {
             amount: Number(message.amount),
@@ -108,7 +110,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
         });
       });
     }
-  }, [consequences]);
+  }, [consequences, params.messages, tonRawAddress]);
 
   const extra = useMemo(() => {
     if (consequences) {
@@ -125,7 +127,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
           absolute: true,
         }),
         fiat: formatter.format(fiatAmount, {
-          currency: fiatCurrency,
+          currency: currency,
           absolute: true,
         }),
       };
@@ -136,13 +138,13 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
         value: defaultExtra,
         fiat: formatter.format(defaultExtra, {
           currencySeparator: 'wide',
-          currency: fiatCurrency,
+          currency: currency,
           absolute: true,
           decimals: 9,
         }),
       };
     }
-  }, [consequences]);
+  }, [consequences, currency, getTokenPrice]);
 
   const amountToFiat = (action: AnyActionItem) => {
     if (action.amount) {
@@ -155,7 +157,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
           formatter.fromNano(action.amount.value, action.amount.decimals),
         );
         return formatter.format(tokenPrice.fiat * parsedAmount, {
-          currency: fiatCurrency,
+          currency,
         });
       }
     }

@@ -1,9 +1,6 @@
 import { SendAmount } from '$core/Send/Send.interface';
-import { mainSelector } from '$store/main';
-import { walletWalletSelector } from '$store/wallet';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TextInput } from 'react-native-gesture-handler';
-import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { formatInputAmount, parseLocaleNumber } from '$utils';
 import { cryptoToFiat, fiatToCrypto, trimZeroDecimals } from '$utils/currency';
@@ -23,6 +20,8 @@ import { SwapButton } from '../SwapButton';
 import { formatter } from '$utils/formatter';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
 import { t } from '@tonkeeper/shared/i18n';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useWallet';
+import { WalletKind } from '@tonkeeper/core';
 
 export type AmountInputRef = TextInput & { value: string };
 
@@ -59,10 +58,8 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const textInputRef = useRef<TextInput | null>(null);
 
-  const { fiatCurrency } = useSelector(mainSelector);
-  const wallet = useSelector(walletWalletSelector);
-
-  const isLockup = !!wallet?.ton.isLockup();
+  const wallet = useNewWallet();
+  const isLockup = wallet.kind === WalletKind.Lockup;
 
   const { remainingBalance, balanceInputValue, isInsufficientBalance, isLessThanMin } =
     useMemo(() => {
@@ -116,8 +113,8 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     return secondaryValue === '0' ? `0${decimalSeparator}00` : secondaryValue;
   }, [amount.all, balance, fiatRate, isFiat, value]);
 
-  const mainCurrencyCode = isFiat ? fiatCurrency.toUpperCase() : currencyTitle;
-  const secondaryCurrencyCode = isFiat ? currencyTitle : fiatCurrency.toUpperCase();
+  const mainCurrencyCode = isFiat ? wallet.currency : currencyTitle;
+  const secondaryCurrencyCode = isFiat ? currencyTitle : wallet.currency;
 
   const handleChangeAmount = useCallback(
     (text: string) => {

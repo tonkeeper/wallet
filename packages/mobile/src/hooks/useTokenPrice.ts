@@ -1,12 +1,11 @@
 import { CryptoCurrencies } from '$shared/constants';
-import { fiatCurrencySelector } from '$store/main';
 import { useRatesStore } from '$store/zustand/rates';
 import { TonThemeColor } from '$styled';
 import { toLocaleNumber } from '$utils';
 import { formatter } from '$utils/formatter';
+import { useCurrency } from '@tonkeeper/shared/hooks/useCurrency';
 import BigNumber from 'bignumber.js';
 import { useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { shallow } from 'zustand/shallow';
 
 export interface TokenPrice {
@@ -32,7 +31,7 @@ export interface TokenPrice {
 
 export const useGetTokenPrice = () => {
   const rates = useRatesStore((s) => s.rates, shallow);
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const currency = useCurrency();
 
   return useCallback(
     (currency: string, amount = '0'): TokenPrice => {
@@ -48,10 +47,10 @@ export const useGetTokenPrice = () => {
       const diffs = rates[currency === CryptoCurrencies.Ton ? 'TON' : currency]?.diff_24h;
 
       const ton = prices?.TON ?? 0;
-      const fiat = (prices?.[fiatCurrency.toUpperCase()] as number) ?? 0;
+      const fiat = (prices?.[currency] as number) ?? 0;
       const usd = (prices?.USD as number) ?? 0;
 
-      const priceDiff = (diffs?.[fiatCurrency.toUpperCase()] as string) ?? null;
+      const priceDiff = (diffs?.[currency] as string) ?? null;
 
       const totalTon =
         new BigNumber(ton).multipliedBy(new BigNumber(amount)).toNumber() ?? 0;
@@ -90,18 +89,16 @@ export const useGetTokenPrice = () => {
         formatted: {
           ton: ton ? formatter.format(ton, { currency: 'TON' }) : null,
           totalTon: totalTon ? formatter.format(totalTon, { currency: 'TON' }) : null,
-          fiat: fiat ? formatter.format(fiat, { currency: fiatCurrency }) : null,
-          totalFiat: totalFiat
-            ? formatter.format(totalFiat, { currency: fiatCurrency })
-            : null,
+          fiat: fiat ? formatter.format(fiat, { currency }) : null,
+          totalFiat: totalFiat ? formatter.format(totalFiat, { currency }) : null,
         },
       };
     },
-    [fiatCurrency, rates],
+    [currency, rates],
   );
 };
 
-// NOTE: currency in friendly address format 
+// NOTE: currency in friendly address format
 // TODO: Change prices map to raw address as key
 export const useTokenPrice = (currency: string, amount = '0') => {
   const getTokenPrice = useGetTokenPrice();
