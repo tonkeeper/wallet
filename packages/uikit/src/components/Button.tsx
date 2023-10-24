@@ -15,7 +15,7 @@ import { ns } from '../utils';
 import { IconNames, Icon, IconColors } from '@tonkeeper/uikit';
 
 export type ButtonColors = 'green' | 'primary' | 'secondary' | 'tertiary';
-export type ButtonSizes = 'large' | 'medium' | 'small';
+export type ButtonSizes = 'large' | 'medium' | 'small' | 'icon';
 
 export interface ButtonProps {
   size?: ButtonSizes;
@@ -27,7 +27,7 @@ export interface ButtonProps {
   disabled?: boolean;
   loading?: boolean;
   navigate?: string;
-  icon?: IconNames;
+  icon?: IconNames | ReactNode;
   indentTop?: boolean | number;
   indentBottom?: boolean;
   indent?: boolean;
@@ -104,19 +104,25 @@ export const Button = memo<ButtonProps>((props) => {
         ) : (
           <View style={styles.content}>
             {!!leftContent && <View style={styles.leftContent}>{leftContent}</View>}
-            <Text
-              numberOfLines={1}
-              ellipsizeMode="tail"
-              style={titleStyle}
-              type={textType}
-            >
-              {title}
-            </Text>
+            {size !== 'icon' ? (
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={titleStyle}
+                type={textType}
+              >
+                {title}
+              </Text>
+            ) : null}
           </View>
         )}
         {icon && (
-          <View style={styles.iconContainer}>
-            <Icon style={iconStyle} name={icon} color={iconColor} />
+          <View style={size !== 'icon' && styles.iconContainer}>
+            {typeof icon === 'string' ? (
+              <Icon style={iconStyle} name={icon as IconNames} color={iconColor} />
+            ) : (
+              icon
+            )}
           </View>
         )}
       </Pressable>
@@ -154,6 +160,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: ns(18),
   },
+  buttonIcon: {
+    width: ns(32),
+    height: ns(32),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: ns(16),
+  },
   titleTextDisabled: {
     opacity: 0.48,
   },
@@ -187,12 +200,14 @@ const buttonStyleBySize: { [key in ButtonSizes]: ViewStyle } = {
   large: styles.buttonLarge,
   medium: styles.buttonMedium,
   small: styles.buttonSmall,
+  icon: styles.buttonIcon,
 };
 
 const textTypesBySize: { [key in ButtonSizes]: TTextTypes } = {
   large: 'label1',
   medium: 'label1',
   small: 'label2',
+  icon: 'label2',
 };
 
 const getButtonColors = (theme: Theme) => ({

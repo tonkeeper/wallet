@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Insets } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
 
@@ -12,4 +12,5 @@ export interface LargeNavBarProps {
   safeArea?: boolean;
   border?: boolean;
   opacity?: SharedValue<number>;
+  children: ReactNode;
 }

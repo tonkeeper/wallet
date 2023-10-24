@@ -49,7 +49,7 @@ export const Title = styled(Text).attrs(() => ({
 }))``;
 
 export const SubTitle = styled(Text).attrs(() => ({
-  variant: 'body2',
+  variant: 'body3Alt',
   numberOfLines: 2,
   color: 'foregroundSecondary',
 }))``;

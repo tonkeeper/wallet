@@ -3,6 +3,10 @@ export interface IAppMetadata {
   description?: string;
   icon: string;
   url: string;
+  poster?: string;
+  textColor?: string;
+  excludeCountries?: string[];
+  includeCountries?: string[];
 }
 
 export interface IAppCategory {

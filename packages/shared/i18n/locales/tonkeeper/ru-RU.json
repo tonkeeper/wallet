@@ -150,6 +150,11 @@
       "approve_button" : "Отключить",
       "title" : "Отключить «%{name}»?"
     },
+    "explore": "Витрина",
+    "connected": "Подключённые",
+    "connected_empty_title": "Подключённые приложения будут отображаться здесь",
+    "connected_empty_text": "Исследуйте приложения и сервисы в браузере Tonkeeper.",
+    "apps_all": "Все",
     "search_label" : "Поиск",
     "start_typing" : "Введите адрес или начните поиск",
     "title" : "Браузер",
@@ -1004,5 +1009,8 @@
   "wallet_source_code" : "Исходный код",
   "wallet_swap" : "Обменять",
   "wallet_title" : "Кошелёк",
-  "yesterday" : "Вчера"
+  "yesterday" : "Вчера",
+  "all_regions": "Все регионы",
+  "region_nokyc": "Нейтральные воды",
+  "nokyc": "без KYC"
 }

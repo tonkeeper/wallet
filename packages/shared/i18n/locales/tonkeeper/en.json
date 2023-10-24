@@ -144,6 +144,11 @@
       "approve_button" : "Remove",
       "title" : "Remove “%{name}”?"
     },
+    "explore": "Explore",
+    "connected": "Connected",
+    "connected_empty_title": "Connected apps will be shown here",
+    "connected_empty_text": "Explore apps and services in Tonkeeper browser.",
+    "apps_all": "All",
     "search_label" : "Search or enter address",
     "start_typing" : "Enter an address or search the web",
     "title" : "Browser",
@@ -960,5 +965,8 @@
   "wallet_source_code" : "Source code",
   "wallet_swap" : "Swap",
   "wallet_title" : "Wallet",
-  "yesterday" : "Yesterday"
+  "yesterday" : "Yesterday",
+  "all_regions": "All Regions",
+  "region_nokyc": "Neutral Waters",
+  "nokyc": "no KYC"
 }

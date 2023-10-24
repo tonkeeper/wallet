@@ -6,8 +6,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { goBack } from '$navigation/imperative';
 import { SearchNavBar } from '$core/ChooseCountry/components/SearchNavBar';
-import { Steezy, Text } from '@tonkeeper/uikit';
+import { Steezy, Text, isAndroid } from '@tonkeeper/uikit';
 import { t } from '@tonkeeper/shared/i18n';
+import { Text as RNText } from 'react-native';
 
 const CELL_SIZE = 56;
 
@@ -22,7 +23,7 @@ const RenderItem = ({
   isFirst,
   isLast,
 }: {
-  item: { code: string; name: string };
+  item: { code: string; name: string; flag: string };
   isFirst: boolean;
   isLast: boolean;
 }) => {
@@ -45,8 +46,14 @@ const RenderItem = ({
     <View style={containerStyle}>
       <List.Item
         checkmark={selectedCountry === item.code}
+        leftContent={
+          <View style={styles.flagContainer}>
+            <RNText style={styles.flag.static}>{item.flag}</RNText>
+          </View>
+        }
         onPress={handleSelectCountry}
         title={item.name}
+        label={item.code === 'NOKYC' ? t('nokyc') : undefined}
       />
     </View>
   );
@@ -133,5 +140,18 @@ const styles = Steezy.create(({ corners, colors }) => ({
   },
   separatorContainer: {
     marginHorizontal: 16,
+  },
+  flagContainer: {
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: isAndroid ? -2 : -4,
+    position: 'relative',
+  },
+  flag: {
+    top: 0,
+    fontSize: isAndroid ? 22 : 28,
+    position: 'absolute',
   },
 }));
