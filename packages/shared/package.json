@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "push_locales": "tolgee push ./i18n/locales",
-    "pull_locales": "tolgee pull --namespace tonkeeper --overwrite ./i18n/locales"
+    "pull_locales": "tolgee pull --namespace tonkeeper ./i18n/locales"
   },
   "dependencies": {
     "@tonkeeper/core": "*",
