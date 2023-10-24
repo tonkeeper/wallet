@@ -2,7 +2,7 @@
 export { TouchableOpacity } from './components/TouchableOpacity';
 export { IconButtonList } from './components/IconButtonList';
 export { IconButton } from './components/IconButton';
-export { Icon, IconNames } from './components/Icon';
+export { Icon, IconColors, IconNames } from './components/Icon';
 export { TonIcon, TonIconProps } from './components/TonIcon';
 export { JettonIcon, JettonIconProps } from './components/JettonIcon';
 export { Lottie } from './components/Lottie';

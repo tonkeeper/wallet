@@ -12,10 +12,9 @@ import { Theme, useTheme } from '../styles';
 import { Loader } from './Loader';
 import { Text } from './Text';
 import { ns } from '../utils';
-import { IconNames, Icon } from '@tonkeeper/uikit';
-import { isString } from '../utils/strings';
+import { IconNames, Icon, IconColors } from '@tonkeeper/uikit';
 
-export type ButtonColors = 'primary' | 'secondary' | 'tertiary';
+export type ButtonColors = 'green' | 'primary' | 'secondary' | 'tertiary';
 export type ButtonSizes = 'large' | 'medium' | 'small';
 
 export interface ButtonProps {
@@ -62,7 +61,9 @@ export const Button = memo<ButtonProps>((props) => {
   const textType = textTypesBySize[size];
   const colors = getButtonColors(theme);
   const colorStyle = colors[color];
+  const iconColor = iconColors[color];
   const titleStyle = disabled ? styles.titleTextDisabled : undefined;
+  const iconStyle = disabled ? styles.iconDisabled : undefined;
 
   const containerStyle = useMemo(() => {
     const indentTopStyle = getIndentTopStyle(indentTop);
@@ -115,7 +116,7 @@ export const Button = memo<ButtonProps>((props) => {
         )}
         {icon && (
           <View style={styles.iconContainer}>
-            <Icon name={icon} color="iconTertiary" />
+            <Icon style={iconStyle} name={icon} color={iconColor} />
           </View>
         )}
       </Pressable>
@@ -154,6 +155,9 @@ const styles = StyleSheet.create({
     borderRadius: ns(18),
   },
   titleTextDisabled: {
+    opacity: 0.48,
+  },
+  iconDisabled: {
     opacity: 0.48,
   },
   fitByContent: {
@@ -207,7 +211,19 @@ const getButtonColors = (theme: Theme) => ({
     disable: theme.buttonTertiaryBackgroundDisabled,
     background: theme.buttonTertiaryBackground,
   },
+  green: {
+    highlighted: theme.buttonPrimaryBackgroundGreenHighlighted,
+    disable: theme.buttonPrimaryBackgroundGreenDisabled,
+    background: theme.buttonPrimaryBackgroundGreen,
+  },
 });
+
+const iconColors: { [key: string]: IconColors } = {
+  primary: 'iconTertiary',
+  secondary: 'iconTertiary',
+  tertiary: 'iconTertiary',
+  green: 'constantWhite',
+};
 
 const getIndentTopStyle = (indentTop?: number | boolean) => {
   if (typeof indentTop === 'boolean' && indentTop === true) {
