@@ -1,9 +1,10 @@
 import { openDAppBrowser } from '$navigation';
 import { IsTablet, getServerConfig } from '$shared/constants';
 import { IAppMetadata } from '$store';
+import { getRandomInt } from '$utils';
 import { trackEvent } from '$utils/stats';
 import { Picture, Spacer, Steezy, Text, View, ns } from '@tonkeeper/uikit';
-import { FC, memo, useCallback } from 'react';
+import { FC, memo, useCallback, useRef } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Carousel from 'react-native-reanimated-carousel';
@@ -64,6 +65,8 @@ const FeaturedAppsComponent: FC<Props> = (props) => {
 
   const { width } = useWindowDimensions();
 
+  const initialIndex = useRef(getRandomInt(0, items.length - 1)).current;
+
   return (
     <Carousel
       loop
@@ -72,6 +75,7 @@ const FeaturedAppsComponent: FC<Props> = (props) => {
       height={ns(IsTablet ? 400 : 180)}
       autoPlay={autoPlay}
       data={items}
+      defaultIndex={initialIndex}
       autoPlayInterval={getServerConfig('featured_play_interval') ?? 3000}
       panGestureHandlerProps={{
         activeOffsetX: [-10, 10],

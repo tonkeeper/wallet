@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { goBack } from '$navigation/imperative';
 import { SearchNavBar } from '$core/ChooseCountry/components/SearchNavBar';
-import { Steezy, Text, isAndroid } from '@tonkeeper/uikit';
+import { SText, Steezy, Text, isAndroid } from '@tonkeeper/uikit';
 import { t } from '@tonkeeper/shared/i18n';
 import { Text as RNText } from 'react-native';
 
@@ -53,7 +53,13 @@ const RenderItem = ({
         }
         onPress={handleSelectCountry}
         title={item.name}
-        label={item.code === 'NOKYC' ? t('nokyc') : undefined}
+        label={
+          item.code === 'NOKYC' ? (
+            <SText style={styles.labelText} color="textTertiary" numberOfLines={1}>
+              {t('nokyc')}
+            </SText>
+          ) : undefined
+        }
       />
     </View>
   );
@@ -94,7 +100,7 @@ export const ChooseCountry: React.FC = () => {
       <Screen.FlashList
         ListEmptyComponent={
           <View style={styles.emptyPlaceholder}>
-            <Text color="textTertiary" type="body1">
+            <Text color="textTertiary" type="body1" textAlign="center">
               {t('choose_country.empty_placeholder')}
             </Text>
           </View>
@@ -153,5 +159,8 @@ const styles = Steezy.create(({ corners, colors }) => ({
     top: 0,
     fontSize: isAndroid ? 22 : 28,
     position: 'absolute',
+  },
+  labelText: {
+    marginLeft: 8,
   },
 }));

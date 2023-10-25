@@ -6,7 +6,7 @@ import { TonConnect } from '$tonconnect';
 import { t } from '@tonkeeper/shared/i18n';
 import { ScreenHeaderHeight } from '@tonkeeper/uikit/src/containers/Screen/utils/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Steezy, Text, View, ns } from '@tonkeeper/uikit';
+import { Spacer, Steezy, Text, View, ns } from '@tonkeeper/uikit';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 const ConnectedAppsComponent: FC = () => {
@@ -25,6 +25,7 @@ const ConnectedAppsComponent: FC = () => {
         <Text type="h2" textAlign="center">
           {t('browser.connected_empty_title')}
         </Text>
+        <Spacer y={4} />
         <Text color="textSecondary" textAlign="center">
           {t('browser.connected_empty_text')}
         </Text>
@@ -56,6 +57,7 @@ const styles = Steezy.create(() => ({
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 32,
   },
 }));
 
