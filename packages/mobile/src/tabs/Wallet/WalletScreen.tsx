@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { i18n, t } from '@tonkeeper/shared/i18n';
 import {
   Button,

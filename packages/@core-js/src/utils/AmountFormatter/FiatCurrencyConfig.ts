@@ -1,4 +1,5 @@
 export enum FiatCurrencies {
+  Ton = 'ton',
   Usd = 'usd',
   Eur = 'eur',
   Rub = 'rub',
@@ -29,6 +30,10 @@ export enum FiatCurrencies {
 }
 
 export const FiatCurrencySymbolsConfig = {
+  [FiatCurrencies.Ton]: {
+    symbol: 'TON',
+    side: 'end',
+  },
   [FiatCurrencies.Usd]: {
     symbol: '$',
     side: 'start',
@@ -79,7 +84,7 @@ export const FiatCurrencySymbolsConfig = {
   },
   [FiatCurrencies.Brl]: {
     symbol: 'R$',
-    side: 'end',
+    side: 'start',
   },
   [FiatCurrencies.Try]: {
     symbol: '₺',

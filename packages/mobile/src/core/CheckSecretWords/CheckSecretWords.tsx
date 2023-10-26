@@ -209,6 +209,7 @@ export const CheckSecretWords: FC = () => {
         <S.Inputs>
           {isConfigInputShown && (
             <Input
+              withClearButton={false}
               wrapperStyle={css`
                 margin-bottom: ${ns(16)};
               `}
