@@ -34,9 +34,10 @@ import { openNFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransf
 import { getCurrentRoute } from '$navigation/imperative';
 import { IConnectQrQuery } from '$tonconnect/models';
 import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
-import { Address, DNS } from '@tonkeeper/core';
+import { ActionSource, Address, DNS } from '@tonkeeper/core';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { isMethodIdExists } from '$store/zustand/methodsToBuy/helpers';
+import { openActivityActionModal } from '@tonkeeper/shared/modals/ActivityActionModal';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -135,6 +136,12 @@ export function useDeeplinkingResolvers() {
     } else {
       nav.openModal('Exchange');
     }
+  });
+
+  deeplinking.add('/action/:actionId', ({ params, query }) => {
+    const source = query.source as ActionSource | null;
+    const actionId = params.actionId;
+    return openActivityActionModal(actionId, source ?? ActionSource.Ton);
   });
 
   deeplinking.add('/exchange/:id', async ({ params }) => {
