@@ -152,7 +152,7 @@
     },
     "explore": "Витрина",
     "connected": "Подключённые",
-    "connected_empty_title": "Подключённые приложения будут отображаться здесь",
+    "connected_empty_title": "Ваши приложения будут здесь",
     "connected_empty_text": "Исследуйте приложения и сервисы в браузере Tonkeeper.",
     "apps_all": "Все",
     "search_label" : "Поиск",
@@ -181,7 +181,8 @@
     "cancel" : "Отмена",
     "empty_placeholder" : "По вашему запросу ничего не найдено",
     "search" : "Поиск",
-    "title" : "Выберите вашу страну"
+    "title" : "Выберите вашу страну",
+    "auto": "Автоматически"
   },
   "choose_currency" : {
     "currencies" : {

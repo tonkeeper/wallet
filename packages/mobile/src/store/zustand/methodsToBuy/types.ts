@@ -43,6 +43,7 @@ export interface IMethodsToBuyStore {
   }[];
   layoutByCountry: ILayout[];
   defaultLayout: IDefaultLayout;
+  lastUsedCountries: string[];
   actions: {
     setSelectedCountry: (selectedCountry: string) => void;
     fetchMethodsToBuy: () => void;

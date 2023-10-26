@@ -2,7 +2,15 @@ import { BrowserStackRouteNames, openChooseCountry, openDAppsSearch } from '$nav
 import { useAppsListStore } from '$store';
 import { useFlags } from '$utils/flags';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  FC,
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   SearchButton,
   AboutDApps,
@@ -13,20 +21,20 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   Button,
-  Icon,
   Screen,
+  SegmentedControl,
   Steezy,
-  Text,
   View,
   isAndroid,
   ns,
 } from '@tonkeeper/uikit';
 import { shallow } from 'zustand/shallow';
-import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { BrowserStackParamList } from '$navigation/BrowserStack/BrowserStack.interface';
 import { t } from '@tonkeeper/shared/i18n';
 import { Text as RNText } from 'react-native';
+import { ScrollPositionContext } from '$uikit';
+import { useFocusEffect } from '@tonkeeper/router';
+import { useSelectedCountry } from '$store/zustand/methodsToBuy/useSelectedCountry';
 
 export type DAppsExploreProps = NativeStackScreenProps<
   BrowserStackParamList,
@@ -72,9 +80,9 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
   const flags = useFlags(['disable_dapps']);
   const tabBarHeight = useBottomTabBarHeight();
 
-  const [showConnected, setShowConnected] = useState(false);
+  const { changeEnd } = useContext(ScrollPositionContext);
 
-  const selectedCountry = useMethodsToBuyStore((state) => state.selectedCountry);
+  const selectedCountry = useSelectedCountry();
 
   const featuredApps = useAppsListStore(
     (s) => s.categories.find((category) => category.id === 'featured')?.apps || [],
@@ -126,7 +134,15 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
     fetchPopularApps();
   }, [fetchPopularApps]);
 
+  useFocusEffect(() => {
+    changeEnd(false);
+  });
+
   const selectedCountryStyle = getSelectedCountryStyle(selectedCountry);
+
+  const [segmentIndex, setSegmentIndex] = useState(0);
+
+  const showConnected = segmentIndex === 1;
 
   return (
     <Screen>
@@ -142,16 +158,12 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
           />
         }
       >
-        <TouchableOpacity onPress={() => setShowConnected(false)}>
-          <View style={[styles.switchItem, !showConnected && styles.switchItemActive]}>
-            <Text type="label2">{t('browser.explore')}</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setShowConnected(true)}>
-          <View style={[styles.switchItem, !!showConnected && styles.switchItemActive]}>
-            <Text type="label2">{t('browser.connected')}</Text>
-          </View>
-        </TouchableOpacity>
+        <SegmentedControl
+          onChange={(segment) => setSegmentIndex(segment)}
+          index={segmentIndex}
+          items={[t('browser.explore'), t('browser.connected')]}
+          style={styles.segmentedControl}
+        />
       </Screen.Header>
       <Screen.ScrollView contentContainerStyle={styles.contentContainerStyle.static}>
         <View style={!!showConnected && styles.hidden}>
@@ -159,7 +171,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
             <AboutDApps />
           ) : (
             <>
-              <FeaturedApps items={filteredFeaturedApps} autoPlay={!showConnected} />
+              <FeaturedApps items={filteredFeaturedApps} />
               {filteredCategories.map((category) => (
                 <AppsCategory key={category.id} category={category} />
               ))}
@@ -179,21 +191,15 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
 
 export const DAppsExplore = memo(DAppsExploreComponent);
 
-const styles = Steezy.create(({ colors, corners }) => ({
+const styles = Steezy.create(() => ({
   container: {
     flex: 1,
   },
   regionButton: {
     marginRight: 16,
   },
-  switchItem: {
-    height: 32,
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-    borderRadius: corners.medium,
-  },
-  switchItemActive: {
-    backgroundColor: colors.backgroundContent,
+  segmentedControl: {
+    backgroundColor: 'transparent',
   },
   contentContainerStyle: {
     paddingBottom: 0,

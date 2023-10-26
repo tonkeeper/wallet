@@ -1,7 +1,7 @@
 import { LayoutChangeEvent, LayoutRectangle } from 'react-native';
 import { TouchableOpacity } from './TouchableOpacity';
 import { memo, useCallback, useState } from 'react';
-import { Steezy, useTheme } from '../styles';
+import { Steezy, StyleProp, useTheme } from '../styles';
 import { Text } from './Text';
 import { View } from './View';
 import Animated, {
@@ -9,15 +9,17 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+import { StaticStyles } from '@bogoslavskiy/react-native-steezy/dist/types';
 
 interface SegmentedControlProps {
   onChange?: (index: number) => void;
   items: string[];
   index?: number;
+  style?: StyleProp<StaticStyles>;
 }
 
 export const SegmentedControl = memo<SegmentedControlProps>((props) => {
-  const { onChange, items, index } = props;
+  const { onChange, items, index, style } = props;
   const theme = useTheme();
 
   const handleItemPress = (index: number) => () => onChange?.(index);
@@ -65,7 +67,7 @@ export const SegmentedControl = memo<SegmentedControlProps>((props) => {
   }, [tabsLayouts, index]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <Animated.View
         style={[styles.indicator.static, indicatorStyle, indicatorAnimatedStyle]}
       />
