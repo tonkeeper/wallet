@@ -4,11 +4,14 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/core';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export const useTabPress = (fn: () => void) => {
   const navigation = useNavigation();
   const route = useRoute();
+
+  const fnRef = useRef(fn);
+  fnRef.current = fn;
 
   useEffect(() => {
     let tabNavigations: NavigationProp<ReactNavigation.RootParamList>[] = [];
@@ -43,7 +46,7 @@ export const useTabPress = (fn: () => void) => {
             navigation.getState().routes[0].key === route.key;
 
           if (isFocused && isFirst && !e.defaultPrevented) {
-            fn();
+            fnRef.current();
           }
         },
       );

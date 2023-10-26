@@ -1,6 +1,7 @@
 import {
   Pressable,
   PressableStateCallbackType,
+  StyleProp,
   StyleSheet,
   View,
   ViewStyle,
@@ -15,7 +16,7 @@ import { ns } from '../utils';
 import { IconNames, Icon, IconColors } from '@tonkeeper/uikit';
 
 export type ButtonColors = 'green' | 'primary' | 'secondary' | 'tertiary';
-export type ButtonSizes = 'large' | 'medium' | 'small' | 'icon';
+export type ButtonSizes = 'large' | 'medium' | 'small' | 'header' | 'icon';
 
 export interface ButtonProps {
   size?: ButtonSizes;
@@ -32,7 +33,7 @@ export interface ButtonProps {
   indentBottom?: boolean;
   indent?: boolean;
   stretch?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const Button = memo<ButtonProps>((props) => {
@@ -160,6 +161,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: ns(18),
   },
+  buttonHeader: {
+    height: ns(32),
+    paddingHorizontal: ns(12),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: ns(16),
+  },
   buttonIcon: {
     width: ns(32),
     height: ns(32),
@@ -200,6 +208,7 @@ const buttonStyleBySize: { [key in ButtonSizes]: ViewStyle } = {
   large: styles.buttonLarge,
   medium: styles.buttonMedium,
   small: styles.buttonSmall,
+  header: styles.buttonHeader,
   icon: styles.buttonIcon,
 };
 
@@ -207,6 +216,7 @@ const textTypesBySize: { [key in ButtonSizes]: TTextTypes } = {
   large: 'label1',
   medium: 'label1',
   small: 'label2',
+  header: 'label2',
   icon: 'label2',
 };
 

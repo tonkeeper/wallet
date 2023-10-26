@@ -1,5 +1,5 @@
 import { BrowserStackRouteNames, openChooseCountry, openDAppsSearch } from '$navigation';
-import { useAppsListStore } from '$store';
+import { useAppsListStore, useConnectedAppsList } from '$store';
 import { useFlags } from '$utils/flags';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import React, {
@@ -33,7 +33,7 @@ import { BrowserStackParamList } from '$navigation/BrowserStack/BrowserStack.int
 import { t } from '@tonkeeper/shared/i18n';
 import { Text as RNText } from 'react-native';
 import { ScrollPositionContext } from '$uikit';
-import { useFocusEffect } from '@tonkeeper/router';
+import { useFocusEffect, useTabPress } from '@tonkeeper/router';
 import { useSelectedCountry } from '$store/zustand/methodsToBuy/useSelectedCountry';
 
 export type DAppsExploreProps = NativeStackScreenProps<
@@ -76,12 +76,15 @@ const getSelectedCountryStyle = (selectedCountry: string) => {
   return { title: selectedCountry, type: 'text' };
 };
 
-const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
+const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
   const flags = useFlags(['disable_dapps']);
   const tabBarHeight = useBottomTabBarHeight();
 
+  const { navigation } = props;
+
   const { changeEnd } = useContext(ScrollPositionContext);
 
+  const connectedApps = useConnectedAppsList();
   const selectedCountry = useSelectedCountry();
 
   const featuredApps = useAppsListStore(
@@ -130,26 +133,34 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
     openDAppsSearch();
   }, []);
 
-  useEffect(() => {
-    fetchPopularApps();
-  }, [fetchPopularApps]);
-
-  useFocusEffect(() => {
-    changeEnd(false);
-  });
-
   const selectedCountryStyle = getSelectedCountryStyle(selectedCountry);
 
   const [segmentIndex, setSegmentIndex] = useState(0);
 
   const showConnected = segmentIndex === 1;
 
+  useEffect(() => {
+    fetchPopularApps();
+  }, [fetchPopularApps]);
+
+  useFocusEffect(
+    useCallback(() => {
+      changeEnd(false);
+    }, [changeEnd]),
+  );
+
+  useTabPress(() => {
+    if (showConnected) {
+      setSegmentIndex(0);
+    }
+  });
+
   return (
     <Screen>
       <Screen.Header
         rightContent={
           <Button
-            size={selectedCountryStyle.type === 'emoji' ? 'icon' : 'small'}
+            size={selectedCountryStyle.type === 'emoji' ? 'icon' : 'header'}
             color="secondary"
             title={selectedCountryStyle.title}
             icon={selectedCountryStyle.icon}
@@ -163,9 +174,13 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
           index={segmentIndex}
           items={[t('browser.explore'), t('browser.connected')]}
           style={styles.segmentedControl}
+          indicatorStyle={styles.segmentedControlIndicator}
         />
       </Screen.Header>
-      <Screen.ScrollView contentContainerStyle={styles.contentContainerStyle.static}>
+      <Screen.ScrollView
+        contentContainerStyle={styles.contentContainerStyle.static}
+        scrollEnabled={!(showConnected && connectedApps.length === 0)}
+      >
         <View style={!!showConnected && styles.hidden}>
           {flags.disable_dapps ? (
             <AboutDApps />
@@ -179,7 +194,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
           )}
         </View>
         <View style={!showConnected && styles.hidden}>
-          <ConnectedApps />
+          <ConnectedApps connectedApps={connectedApps} />
         </View>
       </Screen.ScrollView>
       <View style={[styles.searchBarContainer, { marginBottom: tabBarHeight }]}>
@@ -191,7 +206,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
 
 export const DAppsExplore = memo(DAppsExploreComponent);
 
-const styles = Steezy.create(() => ({
+const styles = Steezy.create(({ colors }) => ({
   container: {
     flex: 1,
   },
@@ -200,6 +215,9 @@ const styles = Steezy.create(() => ({
   },
   segmentedControl: {
     backgroundColor: 'transparent',
+  },
+  segmentedControlIndicator: {
+    backgroundColor: colors.buttonSecondaryBackground,
   },
   contentContainerStyle: {
     paddingBottom: 0,
