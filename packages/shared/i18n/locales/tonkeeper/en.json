@@ -175,7 +175,8 @@
     "cancel" : "Cancel",
     "empty_placeholder" : "Your search returned no results",
     "search" : "Search",
-    "title" : "Choose your country"
+    "title" : "Choose your country",
+    "auto": "Auto"
   },
   "choose_currency" : {
     "currencies" : {

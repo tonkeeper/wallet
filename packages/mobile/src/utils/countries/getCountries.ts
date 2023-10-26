@@ -3,11 +3,6 @@ import { i18n, t } from '$translation';
 
 export function getCountries() {
   return [
-    {
-      code: '*',
-      name: t('all_regions'),
-      flag: '🌍',
-    },
     ...list.country
       .map((country) => {
         return {

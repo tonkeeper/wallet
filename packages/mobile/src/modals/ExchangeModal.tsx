@@ -11,11 +11,15 @@ import { Steezy } from '$styles';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { CategoryType } from '$store/zustand/methodsToBuy/types';
 import { openChooseCountry } from '$navigation';
+import { useSelectedCountry } from '$store/zustand/methodsToBuy/useSelectedCountry';
 
 export const ExchangeModal = () => {
   const [showAll, setShowAll] = React.useState(false);
-  const { categories, defaultLayout, layoutByCountry, selectedCountry } =
-    useMethodsToBuyStore((state) => state);
+  const { categories, defaultLayout, layoutByCountry } = useMethodsToBuyStore(
+    (state) => state,
+  );
+
+  const selectedCountry = useSelectedCountry();
 
   const otherWaysAvailable = getServerConfigSafe('exchangePostUrl') !== 'none';
 

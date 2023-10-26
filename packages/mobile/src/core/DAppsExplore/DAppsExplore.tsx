@@ -29,12 +29,12 @@ import {
   ns,
 } from '@tonkeeper/uikit';
 import { shallow } from 'zustand/shallow';
-import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { BrowserStackParamList } from '$navigation/BrowserStack/BrowserStack.interface';
 import { t } from '@tonkeeper/shared/i18n';
 import { Text as RNText } from 'react-native';
 import { ScrollPositionContext } from '$uikit';
 import { useFocusEffect } from '@tonkeeper/router';
+import { useSelectedCountry } from '$store/zustand/methodsToBuy/useSelectedCountry';
 
 export type DAppsExploreProps = NativeStackScreenProps<
   BrowserStackParamList,
@@ -82,7 +82,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
 
   const { changeEnd } = useContext(ScrollPositionContext);
 
-  const selectedCountry = useMethodsToBuyStore((state) => state.selectedCountry);
+  const selectedCountry = useSelectedCountry();
 
   const featuredApps = useAppsListStore(
     (s) => s.categories.find((category) => category.id === 'featured')?.apps || [],
