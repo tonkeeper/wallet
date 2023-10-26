@@ -1,5 +1,5 @@
 import React, { FC, memo } from 'react';
-import { useConnectedAppsList } from '$store';
+import { IConnectedApp, useConnectedAppsList } from '$store';
 import { AppsList } from '../AppsList/AppsList';
 import { Alert, useWindowDimensions } from 'react-native';
 import { TonConnect } from '$tonconnect';
@@ -9,8 +9,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Spacer, Steezy, Text, View, ns } from '@tonkeeper/uikit';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
-const ConnectedAppsComponent: FC = () => {
-  const connectedApps = useConnectedAppsList();
+interface Props {
+  connectedApps: IConnectedApp[];
+}
+
+const ConnectedAppsComponent: FC<Props> = (props) => {
+  const { connectedApps } = props;
 
   const { height: windowHeight } = useWindowDimensions();
   const safeArea = useSafeAreaInsets();

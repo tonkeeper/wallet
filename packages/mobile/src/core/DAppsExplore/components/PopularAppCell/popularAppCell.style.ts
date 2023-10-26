@@ -43,7 +43,7 @@ export const Content = styled.View`
 `;
 
 export const Title = styled(Text).attrs(() => ({
-  variant: 'label1',
+  variant: 'label2',
   numberOfLines: 1,
 }))``;
 
