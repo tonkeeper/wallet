@@ -71,6 +71,8 @@ export const Swap: FC<Props> = (props) => {
             },
             resolve,
             reject,
+            false,
+            false,
           );
         }),
     }),

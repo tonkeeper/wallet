@@ -312,6 +312,7 @@ function* switchVersionWorker() {
 }
 
 function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
+  const isRefreshing = action.payload ?? true;
   try {
     yield put(walletActions.loadBalances());
     yield put(nftsActions.loadNFTs({ isReplace: true }));
@@ -319,7 +320,7 @@ function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
     yield put(jettonsActions.loadJettons());
     yield fork(loadRatesAfterJettons);
     yield put(mainActions.loadNotifications());
-    yield call(useStakingStore.getState().actions.fetchPools);
+    yield call(useStakingStore.getState().actions.fetchPools, !isRefreshing);
     yield call(setLastRefreshedAt, Date.now());
     yield put(subscriptionsActions.loadSubscriptions());
   } catch (e) {

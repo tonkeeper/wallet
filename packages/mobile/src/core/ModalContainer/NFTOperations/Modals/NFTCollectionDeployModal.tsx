@@ -16,10 +16,13 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Modal } from '@tonkeeper/uikit';
 import { Address } from '@tonkeeper/core';
 
-type NFTCollectionDeployModalProps = TxRequestBody<NftCollectionDeployParams>;
+type NFTCollectionDeployModalProps = TxRequestBody<NftCollectionDeployParams> & {
+  redirectToActivity?: boolean;
+};
 
 export const NFTCollectionDeployModal = ({
   params,
+  redirectToActivity,
   ...options
 }: NFTCollectionDeployModalProps) => {
   const meta = useDownloadMetaFromUri<NFTCollectionMeta>(params.collectionContentUri);
@@ -149,7 +152,11 @@ export const NFTCollectionDeployModal = ({
         </S.Container>
       </Modal.ScrollView>
       <Modal.Footer>
-        <NFTOperationFooter onPressConfirm={handleConfirm} ref={footerRef} />
+        <NFTOperationFooter
+          onPressConfirm={handleConfirm}
+          redirectToActivity={redirectToActivity}
+          ref={footerRef}
+        />
       </Modal.Footer>
     </Modal>
   );

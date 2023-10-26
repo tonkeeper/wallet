@@ -56,7 +56,7 @@ export const { actions, reducer } = createSlice({
     },
     loadBalances() {},
     refreshBalancesPage(state, action: RefreshBalancesPageAction) {
-      state.isRefreshing = true;
+      state.isRefreshing = action.payload ?? true;
     },
     endRefreshBalancesPage(state) {
       state.isRefreshing = false;

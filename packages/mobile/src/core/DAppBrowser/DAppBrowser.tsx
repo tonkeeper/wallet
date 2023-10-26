@@ -98,6 +98,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
       const resolver = deeplinking.getResolver(req.url, {
         params: {
           openUrl,
+          redirectToActivity: false,
         },
       });
 
@@ -135,8 +136,6 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
 
     openDAppsSearch(initialQuery, openUrl);
   }, [currentUrl, initialUrl, openUrl]);
-
-  const handleUnsubscribeFromNotifications = useCallback(() => {}, []);
 
   return (
     <S.Container>

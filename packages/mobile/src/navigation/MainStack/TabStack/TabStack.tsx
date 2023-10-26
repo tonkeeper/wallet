@@ -25,6 +25,7 @@ import { NotificationsIndicator } from '$navigation/MainStack/TabStack/Notificat
 import { useFetchMethodsToBuy } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { trackEvent } from '$utils/stats';
 import { useRemoteBridge } from '$tonconnect';
+import { useBalanceUpdater } from '$hooks/useBalanceUpdater';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -41,6 +42,7 @@ export const TabStack: FC = () => {
   useNotificationsSubscribe();
   usePreloadChart();
   useCheckForUpdates();
+  useBalanceUpdater();
 
   const tabBarStyle = { height: ns(64) + (safeArea.bottom > 0 ? ns(20) : 0) };
   const containerTabStyle = useMemo(
