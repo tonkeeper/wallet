@@ -30,9 +30,11 @@ export const useMethodsToBuyStore = create(
         setSelectedCountry: (selectedCountry: string) => {
           set((prevState) => ({
             selectedCountry,
-            lastUsedCountries: ['AUTO', '*'].includes(selectedCountry)
-              ? prevState.lastUsedCountries
-              : [selectedCountry, prevState.lastUsedCountries[0]].filter(Boolean),
+            lastUsedCountries:
+              ['AUTO', '*'].includes(selectedCountry) ||
+              prevState.lastUsedCountries.includes(selectedCountry)
+                ? prevState.lastUsedCountries
+                : [selectedCountry, prevState.lastUsedCountries[0]].filter(Boolean),
           }));
         },
         fetchMethodsToBuy: async () => {

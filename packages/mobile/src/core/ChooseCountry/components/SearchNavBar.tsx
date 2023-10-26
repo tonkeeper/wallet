@@ -17,6 +17,8 @@ export interface SearchNavBarProps {
   value: string;
   onChangeText: (value: string) => void;
   scrollY: SharedValue<number> | undefined;
+  searchActive: boolean;
+  setSearchFocused: (value: boolean) => void;
 }
 
 export const SearchNavBar: React.FC<SearchNavBarProps> = (props) => {
@@ -28,32 +30,30 @@ export const SearchNavBar: React.FC<SearchNavBarProps> = (props) => {
     };
   });
 
-  const [focused, setFocused] = useState(false);
+  const { value, onChangeText, searchActive, setSearchFocused } = props;
 
   const inputRef = useRef<TextInputRef>(null);
 
   const handleFocus = useCallback(() => {
-    setFocused(true);
+    setSearchFocused(true);
     LayoutAnimation.configureNext({
       ...LayoutAnimation.Presets.easeInEaseOut,
       duration: 200,
     });
-  }, []);
+  }, [setSearchFocused]);
 
   const handleBlur = useCallback(() => {
-    setFocused(false);
+    setSearchFocused(false);
     LayoutAnimation.configureNext({
       ...LayoutAnimation.Presets.easeInEaseOut,
       duration: 200,
     });
-  }, []);
+  }, [setSearchFocused]);
 
   const handleCancelPress = useCallback(() => {
-    props.onChangeText('');
+    onChangeText('');
     inputRef.current?.blur();
-  }, [props]);
-
-  const searchActive = focused || props.value.length > 0;
+  }, [onChangeText]);
 
   return (
     <Animated.View style={[styles.borderContainer.static, borderStyle]}>
@@ -67,8 +67,8 @@ export const SearchNavBar: React.FC<SearchNavBarProps> = (props) => {
       <Animated.View style={[styles.container.static]}>
         <SearchInput
           ref={inputRef}
-          value={props.value}
-          onChangeText={props.onChangeText}
+          value={value}
+          onChangeText={onChangeText}
           onFocus={handleFocus}
           onBlur={handleBlur}
         />

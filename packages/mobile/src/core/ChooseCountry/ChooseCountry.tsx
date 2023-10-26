@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { List, Screen, View } from '$uikit';
 import { getCountries } from '$utils/countries/getCountries';
 import { ListSeparator } from '$uikit/List/ListSeparator';
@@ -116,11 +116,21 @@ export const ChooseCountry: React.FC = () => {
     return countriesList;
   }, [searchValue]);
 
+  const [searchFocused, setSearchFocused] = useState(false);
+
+  const searchActive = searchFocused || searchValue.length > 0;
+
   const searchNavBar = useCallback(
     (scrollY) => (
-      <SearchNavBar scrollY={scrollY} value={searchValue} onChangeText={setSearchValue} />
+      <SearchNavBar
+        scrollY={scrollY}
+        value={searchValue}
+        onChangeText={setSearchValue}
+        searchActive={searchActive}
+        setSearchFocused={setSearchFocused}
+      />
     ),
-    [searchValue, setSearchValue],
+    [searchActive, searchValue],
   );
 
   return (
@@ -135,18 +145,23 @@ export const ChooseCountry: React.FC = () => {
           </View>
         }
         ListHeaderComponent={
-          <>
-            <RenderItem item={AUTO_COUNTRY} isFirst />
-            <ListSeparatorItem />
-            <RenderItem item={ALL_REGIONS} isLast={lastUsedCountries.length === 0} />
-            {lastUsedCountries.map((item, index) => (
-              <React.Fragment key={item.code}>
-                <ListSeparatorItem />
-                <RenderItem item={item} isLast={index === lastUsedCountries.length - 1} />
-              </React.Fragment>
-            ))}
-            <Spacer y={16} />
-          </>
+          !searchActive ? (
+            <>
+              <RenderItem item={AUTO_COUNTRY} isFirst />
+              <ListSeparatorItem />
+              <RenderItem item={ALL_REGIONS} isLast={lastUsedCountries.length === 0} />
+              {lastUsedCountries.map((item, index) => (
+                <React.Fragment key={item.code}>
+                  <ListSeparatorItem />
+                  <RenderItem
+                    item={item}
+                    isLast={index === lastUsedCountries.length - 1}
+                  />
+                </React.Fragment>
+              ))}
+              <Spacer y={16} />
+            </>
+          ) : null
         }
         drawDistance={750}
         ItemSeparatorComponent={ListSeparatorItem}
