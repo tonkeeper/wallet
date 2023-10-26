@@ -11,7 +11,6 @@ import Carousel from 'react-native-reanimated-carousel';
 
 interface Props {
   items: IAppMetadata[];
-  autoPlay: boolean;
 }
 
 interface ItemProps {
@@ -61,7 +60,7 @@ const CarouselItem = memo<ItemProps>(({ metadata }) => {
 });
 
 const FeaturedAppsComponent: FC<Props> = (props) => {
-  const { items, autoPlay } = props;
+  const { items } = props;
 
   const { width } = useWindowDimensions();
 
@@ -73,7 +72,7 @@ const FeaturedAppsComponent: FC<Props> = (props) => {
       width={width - ns(24)}
       style={{ width: width }}
       height={(width - ns(32)) / 2}
-      autoPlay={autoPlay}
+      autoPlay={true}
       data={items}
       defaultIndex={initialIndex}
       autoPlayInterval={getServerConfig('featured_play_interval') ?? 3000}

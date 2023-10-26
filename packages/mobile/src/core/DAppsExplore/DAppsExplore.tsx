@@ -171,7 +171,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
             <AboutDApps />
           ) : (
             <>
-              <FeaturedApps items={filteredFeaturedApps} autoPlay={!showConnected} />
+              <FeaturedApps items={filteredFeaturedApps} />
               {filteredCategories.map((category) => (
                 <AppsCategory key={category.id} category={category} />
               ))}
