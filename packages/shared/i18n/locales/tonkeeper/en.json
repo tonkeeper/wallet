@@ -179,6 +179,7 @@
   },
   "choose_currency" : {
     "currencies" : {
+      "TON": "Toncoin",
       "AED" : "United Arab Emirates Dirham",
       "BDT" : "Bangladeshi Taka",
       "BRL" : "Brazilian Real",
@@ -270,7 +271,7 @@
   "dns_on_sale_text" : "Domain is on sale at the marketplace now. For transfer, you should remove it from sale first.",
   "dns_renew_all_until_btn" : "Renew all until %{untilDate}",
   "dns_renew_in_progress_btn" : "Domain renew in progress…",
-  "dns_renew_toast_success" : "Domain renewed for 1 year",
+  "dns_renew_toast_success" : "Domain renewed",
   "dns_renew_until_btn" : "Renew until %{untilDate}",
   "dns_renew_valid_caption" : {
     "one" : "Expires in %{count} day",

@@ -281,7 +281,7 @@
   "dns_on_sale_text" : "Домен сейчас выставлен на продажу на маркете. Чтобы передать, необходимо сначала снять его с продажи.",
   "dns_renew_all_until_btn" : "Продлить все до %{untilDate}",
   "dns_renew_in_progress_btn" : "Выполняется продление домена…",
-  "dns_renew_toast_success" : "Домен продлён на 1 год",
+  "dns_renew_toast_success" : "Домен продлён",
   "dns_renew_until_btn" : "Продлить до %{untilDate}",
   "dns_renew_valid_caption" : {
     "few" : "Истекает через %{count} дня",
@@ -572,7 +572,7 @@
       "comment_description_encrypted" : "Будет виден только получателю и вам.",
       "comment_encrypt" : "Зашифровать комментарий",
       "comment_label" : "Комментарий",
-      "comment_label_required" : "Обязательный комментарий",
+      "comment_label_required" : "Комментарий",
       "comment_required_text" : "Обязательно укажите memo или тег при отправке на биржу. ",
       "details_label" : "Детали",
       "details_max_balance_label" : "Отправка всего баланса %{currency}",
