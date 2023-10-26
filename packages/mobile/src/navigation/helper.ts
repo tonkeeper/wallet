@@ -29,30 +29,11 @@ export interface OpenSendParams {
   fee?: string;
   isInactive?: boolean;
   from?: SendAnalyticsFrom;
+  expiryTimestamp?: number | null;
 }
 
-export function openSend({
-  currency,
-  address,
-  comment,
-  withGoBack,
-  isJetton,
-  amount,
-  fee,
-  isInactive,
-  from,
-}: OpenSendParams = {}) {
-  navigate(AppStackRouteNames.Send, {
-    currency,
-    address,
-    comment,
-    withGoBack,
-    isJetton,
-    amount,
-    fee,
-    isInactive,
-    from,
-  });
+export function openSend(params: OpenSendParams = {}) {
+  navigate(AppStackRouteNames.Send, params);
 }
 
 export function openDAppsSearch(
