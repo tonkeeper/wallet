@@ -1,5 +1,5 @@
 import { openDAppBrowser } from '$navigation';
-import { IsTablet, getServerConfig } from '$shared/constants';
+import { getServerConfig } from '$shared/constants';
 import { IAppMetadata } from '$store';
 import { getRandomInt } from '$utils';
 import { trackEvent } from '$utils/stats';
@@ -72,7 +72,7 @@ const FeaturedAppsComponent: FC<Props> = (props) => {
       loop
       width={width - ns(24)}
       style={{ width: width }}
-      height={ns(IsTablet ? 400 : 180)}
+      height={(width - ns(32)) / 2}
       autoPlay={autoPlay}
       data={items}
       defaultIndex={initialIndex}
