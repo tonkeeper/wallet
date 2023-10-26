@@ -912,6 +912,7 @@
   "transaction_your_bid" : "Ваша ставка",
   "transfer_deeplink_address_error" : "Неверный адрес получателя",
   "transfer_deeplink_amount_error" : "Некорректный запрос суммы",
+  "transfer_deeplink_expired_error" : "Срок действия ссылки истёк",
   "transfer_deeplink_nft_address_error" : "Неверный адрес NFT",
   "transfer_from_old_wallet_btn" : "Перевести",
   "transfer_from_old_wallet_caption" : "Tonkeeper переведет всю сумму со старого адреса на текущий.",

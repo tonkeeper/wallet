@@ -875,6 +875,7 @@
   "transaction_your_bid" : "Your bid",
   "transfer_deeplink_address_error" : "Incorrect recipient address",
   "transfer_deeplink_amount_error" : "Incorrect amount request",
+  "transfer_deeplink_expired_error" : "Expired link",
   "transfer_deeplink_nft_address_error" : "Incorrect NFT address",
   "transfer_from_old_wallet_btn" : "Transfer",
   "transfer_from_old_wallet_caption" : "Tonkeeper will transfer all coins from your old address to your current address.",
