@@ -17,7 +17,8 @@ export const useSearchSuggests = (query: string) => {
   const searchSuggestsRef = useRef<ISearchSuggest[]>([]);
 
   const searchSuggests = useMemo(() => {
-    const trimmedQuery = query.trim().toLowerCase();
+    const trimmedQuery = query.trim();
+    const lowerCaseQuery = trimmedQuery.toLowerCase();
 
     if (trimmedQuery.length === 0) {
       return [];
@@ -38,23 +39,23 @@ export const useSearchSuggests = (query: string) => {
           app.name
             .toLowerCase()
             .split(' ')
-            .some((word) => word.startsWith(trimmedQuery)) ||
-          getDomainFromURL(app.url).toLowerCase().startsWith(trimmedQuery),
+            .some((word) => word.startsWith(lowerCaseQuery)) ||
+          getDomainFromURL(app.url).toLowerCase().startsWith(lowerCaseQuery),
       )
       .sort((a, b) => {
         if (
-          (a.name.toLowerCase().startsWith(trimmedQuery) &&
-            !b.name.toLowerCase().startsWith(trimmedQuery)) ||
-          (getDomainFromURL(a.url).toLowerCase().startsWith(trimmedQuery) &&
-            !getDomainFromURL(b.url).toLowerCase().startsWith(trimmedQuery))
+          (a.name.toLowerCase().startsWith(lowerCaseQuery) &&
+            !b.name.toLowerCase().startsWith(lowerCaseQuery)) ||
+          (getDomainFromURL(a.url).toLowerCase().startsWith(lowerCaseQuery) &&
+            !getDomainFromURL(b.url).toLowerCase().startsWith(lowerCaseQuery))
         ) {
           return -1;
         }
         if (
-          (b.name.toLowerCase().startsWith(trimmedQuery) &&
-            !a.name.toLowerCase().startsWith(trimmedQuery)) ||
-          (getDomainFromURL(b.url).toLowerCase().startsWith(trimmedQuery) &&
-            !getDomainFromURL(a.url).toLowerCase().startsWith(trimmedQuery))
+          (b.name.toLowerCase().startsWith(lowerCaseQuery) &&
+            !a.name.toLowerCase().startsWith(lowerCaseQuery)) ||
+          (getDomainFromURL(b.url).toLowerCase().startsWith(lowerCaseQuery) &&
+            !getDomainFromURL(a.url).toLowerCase().startsWith(lowerCaseQuery))
         ) {
           return 1;
         }
