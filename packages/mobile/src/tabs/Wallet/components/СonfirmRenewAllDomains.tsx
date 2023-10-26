@@ -27,6 +27,7 @@ import {
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import BigNumber from 'bignumber.js';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { Address } from '@tonkeeper/core';
 
 enum States {
   INITIAL,
@@ -87,7 +88,7 @@ export const СonfirmRenewAllDomains = memo((props) => {
 
           const order = TonWeb.Contract.createCommonMsgInfo(
             TonWeb.Contract.createInternalMessageHeader(
-              new TonWeb.Address(domain.dns_item.address),
+              new Address(domain.dns_item.address).toRaw({ bounceable: true }),
               amount,
             ),
             undefined,
