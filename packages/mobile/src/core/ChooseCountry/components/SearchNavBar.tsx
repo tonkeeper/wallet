@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import {
   SearchInput,
