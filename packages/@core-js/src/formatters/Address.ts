@@ -59,6 +59,10 @@ export class Address {
     return TonWeb.Address.isValid(address);
   }
 
+  static isBounceable(address: string) {
+    return new TonWeb.Address(address).isBounceable;
+  }
+
   static compare(adr1?: string, adr2?: string) {
     if (adr1 === undefined || adr2 === undefined) {
       return false;
