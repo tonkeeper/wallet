@@ -14,10 +14,16 @@ import TonWeb from 'tonweb';
 import { Toast } from '$store';
 import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { openScanQR } from '$navigation';
-import { checkFundsAndOpenNFTTransfer } from '$core/ModalContainer/NFTOperations/Modals/NFTTransferModal';
 import { SheetActions } from '@tonkeeper/router';
 import { push } from '$navigation/imperative';
-import { Address } from '@tonkeeper/core';
+import {
+  Address,
+  AmountFormatter,
+  ContractService,
+  TransactionService,
+} from '@tonkeeper/core';
+import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalProps>(
   ({ nftAddress }) => {
@@ -39,7 +45,23 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
     }, [address, isSameAddress, nftAddress]);
 
     const handleContinue = useCallback(async () => {
-      await checkFundsAndOpenNFTTransfer(nftAddress, address);
+      await openSignRawModal(
+        {
+          messages: [
+            {
+              amount: AmountFormatter.toNano(1),
+              address: nftAddress,
+              payload: ContractService.createNftTransferBody({
+                newOwnerAddress: address,
+                ownerAddress: tk.wallet.address.ton.raw,
+              })
+                .toBoc()
+                .toString('base64'),
+            },
+          ],
+        },
+        {},
+      );
     }, [address, nftAddress]);
 
     // todo: move logic to separated hook

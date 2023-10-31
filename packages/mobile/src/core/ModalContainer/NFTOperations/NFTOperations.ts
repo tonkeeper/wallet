@@ -21,14 +21,13 @@ import { NFTOperationError } from './NFTOperationError';
 import { GetGemsSaleContract } from './GetGemsSaleContract';
 import { Cell } from 'tonweb/dist/types/boc/cell';
 import { Address as AddressType } from 'tonweb/dist/types/utils/address';
-import { Address } from 'ton-core';
+import { Address } from '@ton/core';
 import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 import { getServerConfig } from '$shared/constants';
 import { SendApi, Configuration as ConfigurationV1 } from 'tonapi-sdk-js';
-import axios from 'axios';
 import { Tonapi } from '$libs/Tonapi';
-import { AccountEvent, Configuration, NFTApi } from '@tonkeeper/core/src/legacy';
+import { Configuration, NFTApi } from '@tonkeeper/core/src/legacy';
 
 const { NftCollection, NftItem, NftSale } = TonWeb.token.nft;
 

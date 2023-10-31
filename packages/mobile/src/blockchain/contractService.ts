@@ -1,7 +1,8 @@
-import { WalletContractV3R1, WalletContractV3R2, WalletContractV4 } from 'ton';
-import { Address, beginCell, Cell, comment, external, storeMessage } from 'ton-core';
+import { WalletContractV3R1, WalletContractV3R2, WalletContractV4 } from '@ton/ton';
+import { Address, beginCell, Cell, comment, external, storeMessage } from '@ton/core';
 import { WalletVersion } from './types';
 import { Vault } from './vault';
+import { WalletContractV4R1 } from '@tonkeeper/core/src/legacy/wallets/WalletContractV4R1';
 
 const workchain = 0;
 
@@ -12,7 +13,7 @@ export const walletContract = (publicKey: Buffer, version: WalletVersion) => {
     case WalletVersion.v3R2:
       return WalletContractV3R2.create({ workchain, publicKey });
     case WalletVersion.v4R1:
-      throw new Error('Unsupported wallet contract version - v4R1');
+      return WalletContractV4R1.create({ workchain, publicKey });
     case WalletVersion.v4R2:
       return WalletContractV4.create({ workchain, publicKey });
   }
@@ -30,7 +31,11 @@ export const getTonCoreWalletContract = (vault: Vault, version = 'v4R2') => {
 };
 
 export const externalMessage = (
-  contract: WalletContractV3R1 | WalletContractV3R2 | WalletContractV4,
+  contract:
+    | WalletContractV4R1
+    | WalletContractV3R1
+    | WalletContractV3R2
+    | WalletContractV4,
   seqno: number,
   body: Cell,
 ) => {

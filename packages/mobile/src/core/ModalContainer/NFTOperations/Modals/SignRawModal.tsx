@@ -2,7 +2,6 @@ import React, { memo, useEffect, useMemo } from 'react';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
-import { NFTOperations } from '../NFTOperations';
 import {
   calculateActionsTotalAmount,
   calculateMessageTransferAmount,
@@ -11,7 +10,7 @@ import {
 import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
 import { store, Toast } from '$store';
-import { Modal, View, Text, Steezy, List } from '@tonkeeper/uikit';
+import { List, Modal, Steezy, Text, View } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
 import { SheetActions } from '@tonkeeper/router';
 import {
@@ -29,15 +28,18 @@ import {
   ActivityModel,
   Address,
   AnyActionItem,
+  ContractService,
+  contractVersionsMap,
+  TransactionService,
 } from '@tonkeeper/core';
 import { ActionListItemByType } from '@tonkeeper/shared/components/ActivityList/ActionListItemByType';
 import { useSelector } from 'react-redux';
 import { fiatCurrencySelector } from '$store/main';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
 import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
+import { Buffer } from 'buffer';
 
 interface SignRawModalProps {
-  action: Awaited<ReturnType<NFTOperations['signRaw']>>;
   consequences?: MessageConsequences;
   options: TxBodyOptions;
   params: SignRawParams;
@@ -47,15 +49,8 @@ interface SignRawModalProps {
 }
 
 export const SignRawModal = memo<SignRawModalProps>((props) => {
-  const {
-    options,
-    params,
-    action,
-    onSuccess,
-    onDismiss,
-    consequences,
-    redirectToActivity,
-  } = props;
+  const { options, params, onSuccess, onDismiss, consequences, redirectToActivity } =
+    props;
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const unlockVault = useUnlockVault();
 
@@ -68,12 +63,29 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 
     startLoading();
 
-    await action.send(privateKey, async (boc) => {
-      if (onSuccess) {
-        await delay(1750);
-        onSuccess(boc);
-      }
+    const contract = ContractService.getWalletContract(
+      contractVersionsMap[vault.getVersion() ?? 'v4R2'],
+      Buffer.from(vault.tonPublicKey),
+    );
+
+    const boc = TransactionService.createTransfer(contract, {
+      messages: TransactionService.parseSignRawMessages(params.messages),
+      seqno: (await tonapi.wallet.getAccountSeqno(tk.wallet.address.ton.raw)).seqno,
+      sendMode: 3,
+      secretKey: Buffer.from(privateKey),
     });
+
+    await tonapi.blockchain.sendBlockchainMessage(
+      {
+        boc,
+      },
+      { format: 'text' },
+    );
+
+    if (onSuccess) {
+      await delay(1750);
+      onSuccess(boc);
+    }
   });
 
   useEffect(() => {
@@ -225,12 +237,19 @@ export const openSignRawModal = async (
       await TonConnectRemoteBridge.closeOtherTransactions();
     }
 
-    const operations = new NFTOperations(wallet);
-    const action = await operations.signRaw(params);
+    const contract = ContractService.getWalletContract(
+      contractVersionsMap[wallet.ton.version],
+      Buffer.from(wallet.ton.vault.tonPublicKey),
+    );
 
     let consequences: MessageConsequences | null = null;
     try {
-      const boc = await action.getBoc();
+      const boc = TransactionService.createTransfer(contract, {
+        messages: TransactionService.parseSignRawMessages(params.messages),
+        seqno: (await tonapi.wallet.getAccountSeqno(tk.wallet.address.ton.raw)).seqno,
+        sendMode: 3,
+        secretKey: Buffer.alloc(64),
+      });
       consequences = await tonapi.wallet.emulateMessageToWallet({ boc });
 
       Toast.hide();
@@ -270,7 +289,6 @@ export const openSignRawModal = async (
         consequences,
         options,
         params,
-        action,
         onSuccess,
         onDismiss,
         redirectToActivity,

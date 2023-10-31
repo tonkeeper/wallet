@@ -5,7 +5,11 @@ import { getUnixTime } from 'date-fns';
 import { store } from '$store';
 import { getServerConfig } from '$shared/constants';
 import { UnlockedVault, Vault } from './vault';
-import { Address as AddressFormatter, AmountFormatter } from '@tonkeeper/core';
+import {
+  Address as AddressFormatter,
+  AmountFormatter,
+  TransactionService,
+} from '@tonkeeper/core';
 import { debugLog } from '$utils/debugLog';
 import { getChainName, getWalletName } from '$shared/dynamicConfig';
 import { t } from '@tonkeeper/shared/i18n';
@@ -26,7 +30,8 @@ import {
   getTonCoreWalletContract,
   jettonTransferBody,
 } from './contractService';
-import { Address, Cell, SendMode, internal, toNano } from 'ton-core';
+
+import { Address, Cell, SendMode, internal, toNano } from '@ton/core';
 
 const TonWeb = require('tonweb');
 
@@ -520,8 +525,7 @@ export class TonWallet {
       return TonWeb.utils.bytesToBase64(await query.toBoc(false));
     } else {
       const contract = getTonCoreWalletContract(vault, walletVersion ?? version);
-
-      const transfer = contract.createTransfer({
+      return TransactionService.createTransfer(contract, {
         seqno,
         secretKey,
         sendMode,
@@ -534,8 +538,6 @@ export class TonWallet {
           }),
         ],
       });
-
-      return externalMessage(contract, seqno, transfer).toBoc().toString('base64');
     }
   }
 
