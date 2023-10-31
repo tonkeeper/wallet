@@ -18,7 +18,6 @@ export const calculateMessageTransferAmount = (messages: SignRawMessage[]) => {
   if (!messages) {
     return 0;
   }
-  return 0;
   return messages.reduce(
     (acc, message) => new BigNumber(acc).plus(new BigNumber(message.amount)).toString(),
     '0',
