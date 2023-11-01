@@ -1284,7 +1284,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ton_keeper/ton_keeper.entitlements;
-				CURRENT_PROJECT_VERSION = 394;
+				CURRENT_PROJECT_VERSION = 395;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				ENABLE_BITCODE = NO;
@@ -1294,7 +1294,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.4.4;
+				MARKETING_VERSION = 3.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1319,7 +1319,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ton_keeper/ton_keeper.entitlements;
-				CURRENT_PROJECT_VERSION = 394;
+				CURRENT_PROJECT_VERSION = 395;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = CT523DK2KC;
 				INFOPLIST_FILE = ton_keeper/SupportingFiles/Info.plist;
@@ -1328,7 +1328,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.4.4;
+				MARKETING_VERSION = 3.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
