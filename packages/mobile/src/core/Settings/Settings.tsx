@@ -130,7 +130,8 @@ export const Settings: FC = () => {
         text: t('settings_reset_alert_button'),
         style: 'destructive',
         onPress: () => {
-          dispatch(walletActions.cleanWallet());
+          tk.logout();
+          // dispatch(walletActions.cleanWallet());
           notifications.unsubscribe();
         },
       },

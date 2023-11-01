@@ -76,6 +76,10 @@ export const MainStack: FC = () => {
       ) : (
         <Stack.Screen name={MainStackRouteNames.Tabs} component={TabStack} />
       )}
+
+      <Stack.Screen name="/create" component={CreateWalletScreen} />
+      {/* <Stack.Screen name="/import" component={ImportWalletScreen} /> */}
+
       <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
       <Stack.Screen name={'TronTokenScreen'} component={TronTokenScreen} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />

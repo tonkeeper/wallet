@@ -121,27 +121,8 @@ export const CreateWalletScreen = memo(() => {
   
   return (
     <Screen>
-      <Screen.Header
-        onBackPress={steps.onBackPress}
-        // rightContent={<StepLaterButton />}
-        title={
-          <StepIndicator
-            pageOffset={steps.props.pageOffset}
-            steps={pages.length}
-            offsetInterval={1}
-          />
-        }
-      />
-      <PagerView {...steps.props}>
-          
-          <PagerView.Page key={index}>
-            <Page
-              shown={steps.pageIndex === index} 
-              onButtonPress={() => {}} 
-            />
-          </PagerView.Page>
-        ))}
-      </PagerView>
+      <Screen.Header />
+      
     </Screen>
   );
 });

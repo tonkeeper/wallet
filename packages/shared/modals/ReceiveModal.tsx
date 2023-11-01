@@ -1,8 +1,8 @@
 import { TransitionOpacity, SegmentedControl, TonIcon, Modal } from '@tonkeeper/uikit';
 import { ReceiveTokenContent } from '../components/ReceiveTokenContent';
 import { memo, useCallback, useMemo, useState } from 'react';
+import { useNewWallet } from '../hooks/useWallet';
 import { StyleSheet } from 'react-native';
-import { tk } from '../tonkeeper';
 import { t } from '../i18n';
 
 enum Segments {
@@ -12,9 +12,10 @@ enum Segments {
 
 export const ReceiveModal = memo(() => {
   const [segmentIndex, setSegmentIndex] = useState(Segments.Ton);
+  const wallet = useNewWallet();
 
-  const tonAddress = tk.wallet.address.ton.friendly;
-  const tronAddress = tk.wallet.address.tron?.proxy;
+  const tonAddress = wallet.ton.address.friendly;
+  const tronAddress = undefined; //wallet.tron.tron?.proxy;
 
   const segments = useMemo(() => {
     const items = ['TON'];

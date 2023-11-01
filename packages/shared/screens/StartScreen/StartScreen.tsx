@@ -40,13 +40,14 @@ export const StartScreen = memo(() => {
         <View style={styles.buttons}>
           <Button
             title="Create new wallet"
-            onPress={async () => {
-              console.log('start await ');
+            navigate="/create"
+            // onPress={async () => {
+            //   console.log('start await ');
 
-              const privateKey = await tk.wallet.getPrivateKey();
+            //   // const privateKey = await tk.wallet.getPrivateKey();
 
-              console.log('!end', privateKey);
-            }}
+            //   console.log('!end', privateKey);
+            // }}
           />
           <Spacer y={16} />
           <Button color="secondary" title="Import existing wallet" navigate="/import" />

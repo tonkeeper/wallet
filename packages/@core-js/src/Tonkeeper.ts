@@ -117,6 +117,13 @@ export class Tonkeeper {
     }
   }
 
+  public async logout() {
+    this.wallet.destroy();
+    this.wallet = undefined!;
+    await this.storage.removeItem('current_pubkey');
+    await this.storage.removeItem('wallets');
+  }
+
   public async generateTronAddress(tonPrivateKey: Uint8Array) {
     return;
     try {
