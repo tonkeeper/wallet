@@ -113,14 +113,14 @@ const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
 
   return (
     <View style={styles.container}>
-      {buttons.map((button) => (
+      {buttons.map((button, idx) => (
         <View key={button.label} style={styles.buttonContainer}>
           <Button
             disabled={props.disabled}
             onPress={handleOpenLink(button.uri)}
             icon="ic-link-28"
             title={button.label}
-            color={'secondary'}
+            color={idx === 0 ? 'green' : 'secondary'}
           />
         </View>
       ))}

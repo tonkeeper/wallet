@@ -1,18 +1,19 @@
-import React, { useCallback } from 'react';
+import React, { forwardRef, useCallback } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Steezy, useTheme } from '../styles';
 import { View } from './View';
 import { TouchableOpacity } from './TouchableOpacity';
-import { TextInput, TextInputProps } from './TextInput';
+import { TextInput, TextInputProps, TextInputRef } from './TextInput';
 import { Icon } from './Icon';
+import { Font } from './Text/TextStyles';
 
 export interface SearchInputProps extends TextInputProps {
   value: string;
   onChangeText: (value: string) => void;
 }
 
-export const SearchInput: React.FC<SearchInputProps> = (props) => {
+export const SearchInput = forwardRef<TextInputRef, SearchInputProps>((props, ref) => {
   const inputStyle = Steezy.useStyle(styles.input);
   const colors = useTheme();
 
@@ -29,10 +30,10 @@ export const SearchInput: React.FC<SearchInputProps> = (props) => {
   return (
     <View style={styles.inputContainer}>
       <TextInput
+        ref={ref}
         style={inputStyle}
         placeholder={t('choose_country.search')}
         placeholderTextColor={colors.textSecondary}
-        autoFocus={true}
         autoCapitalize="none"
         autoCorrect={false}
         returnKeyType="go"
@@ -47,22 +48,18 @@ export const SearchInput: React.FC<SearchInputProps> = (props) => {
         style={[styles.rightContent.static, clearButtonStyle]}
         pointerEvents={props.value ? 'auto' : 'none'}
       >
-        <TouchableOpacity
-          style={[styles.rightButton, styles.clearButton]}
-          onPress={handlePressClear}
-        >
+        <TouchableOpacity style={styles.clearButton} onPress={handlePressClear}>
           <Icon name="ic-xmark-circle-16" color="iconSecondary" />
         </TouchableOpacity>
       </Animated.View>
     </View>
   );
-};
+});
 
 const styles = Steezy.create(({ colors }) => ({
   inputContainer: {
     position: 'relative',
     height: 48,
-    paddingRight: 16,
     flex: 1,
   },
   input: {
@@ -72,6 +69,8 @@ const styles = Steezy.create(({ colors }) => ({
     borderRadius: 16,
     color: colors.textPrimary,
     fontSize: 16,
+
+    fontFamily: Font.Regular,
     paddingLeft: 44,
   },
   borderContainer: {
@@ -86,23 +85,15 @@ const styles = Steezy.create(({ colors }) => ({
     left: 16,
     justifyContent: 'center',
   },
-  rightButton: {
-    paddingHorizontal: 16,
-    height: '100%',
-    justifyContent: 'center',
-  },
   rightContent: {
     position: 'absolute',
     top: 0,
     right: 0,
     bottom: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
     zIndex: 4,
+    justifyContent: 'center',
   },
   clearButton: {
-    paddingHorizontal: 20,
-    marginRight: 8,
+    paddingHorizontal: 16,
   },
 }));

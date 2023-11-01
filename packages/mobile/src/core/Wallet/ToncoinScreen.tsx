@@ -29,6 +29,8 @@ import { useTonActivityList } from '@tonkeeper/shared/query/hooks/useTonActivity
 import { useWallet } from '../../tabs/useWallet';
 import _ from 'lodash';
 import { navigate } from '$navigation/imperative';
+import { fiatCurrencySelector } from '$store/main';
+import { FiatCurrencies } from '@tonkeeper/core';
 
 export const ToncoinScreen = memo(() => {
   const activityList = useTonActivityList();
@@ -93,6 +95,8 @@ export const ToncoinScreen = memo(() => {
 const HeaderList = memo(() => {
   const walletAddr = useWallet();
   const flags = useFlags(['disable_swap']);
+  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const shouldShowChart = fiatCurrency !== FiatCurrencies.Ton;
 
   const wallet = useSelector(walletWalletSelector);
 
@@ -266,10 +270,14 @@ const HeaderList = memo(() => {
         </S.ActionsContainer>
         <S.Divider />
       </S.TokenInfoWrap>
-      <S.ChartWrap>
-        <Chart />
-      </S.ChartWrap>
-      <S.Divider style={{ marginBottom: ns(22) }} />
+      {shouldShowChart && (
+        <>
+          <S.ChartWrap>
+            <Chart />
+          </S.ChartWrap>
+          <S.Divider style={{ marginBottom: ns(22) }} />
+        </>
+      )}
       <S.ExploreWrap>
         <Text style={{ marginBottom: ns(14) }} variant="h3" color="foregroundPrimary">
           {t('wallet_about')}

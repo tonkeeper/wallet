@@ -5,7 +5,7 @@ import { useTheme } from '../../styles';
 import { ns } from '../../utils';
 import { memo } from 'react';
 
-type IconColors =
+export type IconColors =
   | 'iconPrimary'
   | 'iconSecondary'
   | 'iconTertiary'

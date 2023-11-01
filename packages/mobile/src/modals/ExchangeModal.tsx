@@ -11,13 +11,19 @@ import { Steezy } from '$styles';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { CategoryType } from '$store/zustand/methodsToBuy/types';
 import { openChooseCountry } from '$navigation';
+import { useSelectedCountry } from '$store/zustand/methodsToBuy/useSelectedCountry';
 
 export const ExchangeModal = () => {
   const [showAll, setShowAll] = React.useState(false);
-  const { categories, defaultLayout, layoutByCountry, selectedCountry } =
-    useMethodsToBuyStore((state) => state);
+  const { categories, defaultLayout, layoutByCountry } = useMethodsToBuyStore(
+    (state) => state,
+  );
+
+  const selectedCountry = useSelectedCountry();
 
   const otherWaysAvailable = getServerConfigSafe('exchangePostUrl') !== 'none';
+
+  const allRegions = selectedCountry === '*';
 
   const filteredCategories = useMemo(() => {
     const usedLayout =
@@ -29,9 +35,10 @@ export const ExchangeModal = () => {
         return category;
       }
 
-      const items = showAll
-        ? category.items
-        : category.items.filter((item) => usedLayout.methods.includes(item.id));
+      const items =
+        showAll || allRegions
+          ? category.items
+          : category.items.filter((item) => usedLayout.methods.includes(item.id));
 
       return {
         ...category,
@@ -48,7 +55,7 @@ export const ExchangeModal = () => {
         }),
       };
     });
-  }, [showAll, categories, defaultLayout, layoutByCountry, selectedCountry]);
+  }, [layoutByCountry, defaultLayout, categories, selectedCountry, showAll, allRegions]);
 
   const handleShowAll = useCallback(() => {
     setShowAll(!showAll);
@@ -85,7 +92,7 @@ export const ExchangeModal = () => {
                         />
                       ))}
                     </S.Contain>
-                    {otherWaysAvailable && category.type === 'buy' ? (
+                    {otherWaysAvailable && category.type === 'buy' && !allRegions ? (
                       <View style={styles.otherWaysContainer}>
                         <Button
                           key={showAll ? 'hide' : 'show'}

@@ -42,7 +42,7 @@ export const IconButton = memo<IconButtonProps>((props) => {
         <View style={styles.iconContainer}>
           {props.iconName && <Icon name={props.iconName} colorHex="#FFF" />}
         </View>
-        <Text type="label3" color="textSecondary">
+        <Text numberOfLines={1} type="label3" color="textSecondary">
           {props.title}
         </Text>
       </TouchableOpacity>

@@ -34,8 +34,7 @@ elsif podfile_properties.key?('ios.flipper') then
     flipper_config = FlipperConfiguration.enabled(["Debug", "Release"], { 'Flipper' => podfile_properties['ios.flipper'] })
   end
 end
-
-
+  
 target 'ton_keeper' do
   use_expo_modules!
   config = use_native_modules!
@@ -56,17 +55,8 @@ target 'ton_keeper' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # Hermes is now enabled by default. Disable by setting this flag to false.
-    # Upcoming versions of React Native may rely on get_default_flags(), but
-    # we make it explicit here to aid in the React Native upgrade process.
     :hermes_enabled => true,
     :fabric_enabled => false,
-    # Enables Flipper.
-    #
-    # Note that if you have use_frameworks! enabled, Flipper will not work and
-    # you should disable the next line.
-    # :flipper_configuration => flipper_config,
-    # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
   
@@ -80,10 +70,10 @@ target 'ton_keeper' do
   post_install do |installer|
     react_native_post_install(
       installer,
-      # Set `mac_catalyst_enabled` to `true` in order to apply patches
-      # necessary for Mac Catalyst builds
+      config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
+    __apply_Xcode_12_5_M1_post_install_workaround(installer)
 
     installer.target_installation_results.pod_target_installation_results
       .each do |pod_name, target_installation_result|

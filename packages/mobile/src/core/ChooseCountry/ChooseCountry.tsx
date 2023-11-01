@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { List, Screen, View } from '$uikit';
 import { getCountries } from '$utils/countries/getCountries';
 import { ListSeparator } from '$uikit/List/ListSeparator';
@@ -6,8 +6,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { goBack } from '$navigation/imperative';
 import { SearchNavBar } from '$core/ChooseCountry/components/SearchNavBar';
-import { Steezy, Text } from '@tonkeeper/uikit';
+import { SText, Spacer, Steezy, Text, isAndroid } from '@tonkeeper/uikit';
 import { t } from '@tonkeeper/shared/i18n';
+import { Text as RNText } from 'react-native';
+import { getCountry } from 'react-native-localize';
 
 const CELL_SIZE = 56;
 
@@ -17,14 +19,27 @@ const ListSeparatorItem = () => (
   </View>
 );
 
+const countriesList = getCountries();
+
+const AUTO_COUNTRY = {
+  ...countriesList.find((item) => item.code === getCountry())!,
+  code: 'AUTO',
+};
+
+const ALL_REGIONS = {
+  code: '*',
+  name: t('all_regions'),
+  flag: '🌍',
+};
+
 const RenderItem = ({
   item,
   isFirst,
   isLast,
 }: {
-  item: { code: string; name: string };
-  isFirst: boolean;
-  isLast: boolean;
+  item: { code: string; name: string; flag: string };
+  isFirst?: boolean;
+  isLast?: boolean;
 }) => {
   const setSelectedCountry = useMethodsToBuyStore(
     (state) => state.actions.setSelectedCountry,
@@ -41,28 +56,55 @@ const RenderItem = ({
     styles.containerListItem,
   ];
 
+  const title = item.code === 'AUTO' ? t('choose_country.auto') : item.name;
+  let label: string | undefined;
+
+  if (item.code === 'NOKYC') {
+    label = t('nokyc');
+  }
+
+  if (item.code === 'AUTO') {
+    label = item.name;
+  }
+
   return (
     <View style={containerStyle}>
       <List.Item
         checkmark={selectedCountry === item.code}
+        leftContent={
+          <View style={styles.flagContainer}>
+            <RNText style={styles.flag.static}>{item.flag}</RNText>
+          </View>
+        }
         onPress={handleSelectCountry}
-        title={item.name}
+        title={title}
+        label={
+          label ? (
+            <View style={styles.labelContainer}>
+              <SText style={styles.labelText} color="textTertiary" numberOfLines={1}>
+                {label}
+              </SText>
+            </View>
+          ) : undefined
+        }
       />
     </View>
   );
 };
 
-const countriesList = getCountries();
-
 export const ChooseCountry: React.FC = () => {
   const { bottom: bottomInset } = useSafeAreaInsets();
-  const selectedCountry = useMethodsToBuyStore((state) => state.selectedCountry);
-  const listRef = useRef();
-  const selectedCountryIndex = useMemo(
-    () => countriesList.findIndex((country) => country.code === selectedCountry),
-    [selectedCountry],
-  );
   const [searchValue, setSearchValue] = React.useState('');
+
+  const lastUsedCountriesCodes = useMethodsToBuyStore((state) => state.lastUsedCountries);
+
+  const lastUsedCountries = useMemo(
+    () =>
+      lastUsedCountriesCodes.map(
+        (code) => countriesList.find((country) => country.code === code)!,
+      ),
+    [lastUsedCountriesCodes],
+  );
 
   const filteredListBySearch = useMemo(() => {
     if (searchValue) {
@@ -74,11 +116,21 @@ export const ChooseCountry: React.FC = () => {
     return countriesList;
   }, [searchValue]);
 
+  const [searchFocused, setSearchFocused] = useState(false);
+
+  const searchActive = searchFocused || searchValue.length > 0;
+
   const searchNavBar = useCallback(
     (scrollY) => (
-      <SearchNavBar scrollY={scrollY} value={searchValue} onChangeText={setSearchValue} />
+      <SearchNavBar
+        scrollY={scrollY}
+        value={searchValue}
+        onChangeText={setSearchValue}
+        searchActive={searchActive}
+        setSearchFocused={setSearchFocused}
+      />
     ),
-    [searchValue, setSearchValue],
+    [searchActive, searchValue],
   );
 
   return (
@@ -87,16 +139,33 @@ export const ChooseCountry: React.FC = () => {
       <Screen.FlashList
         ListEmptyComponent={
           <View style={styles.emptyPlaceholder}>
-            <Text color="textTertiary" type="body1">
+            <Text color="textTertiary" type="body1" textAlign="center">
               {t('choose_country.empty_placeholder')}
             </Text>
           </View>
         }
-        initialScrollIndex={selectedCountryIndex}
+        ListHeaderComponent={
+          !searchActive ? (
+            <>
+              <RenderItem item={AUTO_COUNTRY} isFirst />
+              <ListSeparatorItem />
+              <RenderItem item={ALL_REGIONS} isLast={lastUsedCountries.length === 0} />
+              {lastUsedCountries.map((item, index) => (
+                <React.Fragment key={item.code}>
+                  <ListSeparatorItem />
+                  <RenderItem
+                    item={item}
+                    isLast={index === lastUsedCountries.length - 1}
+                  />
+                </React.Fragment>
+              ))}
+              <Spacer y={16} />
+            </>
+          ) : null
+        }
         drawDistance={750}
         ItemSeparatorComponent={ListSeparatorItem}
         keyExtractor={(item) => item.code}
-        ref={listRef}
         contentContainerStyle={{ paddingBottom: bottomInset + 16 }}
         estimatedItemSize={CELL_SIZE}
         renderItem={({ item, index }) => (
@@ -133,5 +202,24 @@ const styles = Steezy.create(({ corners, colors }) => ({
   },
   separatorContainer: {
     marginHorizontal: 16,
+  },
+  flagContainer: {
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: isAndroid ? -2 : -4,
+    position: 'relative',
+  },
+  flag: {
+    top: 0,
+    fontSize: isAndroid ? 22 : 28,
+    position: 'absolute',
+  },
+  labelContainer: {
+    flex: 1,
+  },
+  labelText: {
+    marginLeft: 8,
   },
 }));

@@ -1,7 +1,7 @@
 import { LayoutChangeEvent, LayoutRectangle } from 'react-native';
 import { TouchableOpacity } from './TouchableOpacity';
 import { memo, useCallback, useState } from 'react';
-import { Steezy, useTheme } from '../styles';
+import { Steezy, StyleProp, useTheme } from '../styles';
 import { Text } from './Text';
 import { View } from './View';
 import Animated, {
@@ -9,15 +9,18 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+import { StaticStyles } from '@bogoslavskiy/react-native-steezy/dist/types';
 
 interface SegmentedControlProps {
   onChange?: (index: number) => void;
   items: string[];
   index?: number;
+  style?: StyleProp<StaticStyles>;
+  indicatorStyle?: StyleProp<StaticStyles>;
 }
 
 export const SegmentedControl = memo<SegmentedControlProps>((props) => {
-  const { onChange, items, index } = props;
+  const { onChange, items, index, style, indicatorStyle } = props;
   const theme = useTheme();
 
   const handleItemPress = (index: number) => () => onChange?.(index);
@@ -33,8 +36,6 @@ export const SegmentedControl = memo<SegmentedControlProps>((props) => {
     },
     [],
   );
-
-  const indicatorStyle = { backgroundColor: theme.buttonTertiaryBackground };
 
   const indicatorAnimatedStyle = useAnimatedStyle(() => {
     const layout = tabsLayouts[`item-${index}`];
@@ -52,6 +53,7 @@ export const SegmentedControl = memo<SegmentedControlProps>((props) => {
         damping: 15,
         mass: 0.09,
       }),
+      height: layout.height,
       transform: [
         {
           translateX: withSpring(x, {
@@ -64,11 +66,11 @@ export const SegmentedControl = memo<SegmentedControlProps>((props) => {
     };
   }, [tabsLayouts, index]);
 
+  const indicatorStyles = Steezy.useStyle([styles.indicator, indicatorStyle]);
+
   return (
-    <View style={styles.container}>
-      <Animated.View
-        style={[styles.indicator.static, indicatorStyle, indicatorAnimatedStyle]}
-      />
+    <View style={[styles.container, style]}>
+      <Animated.View style={[indicatorStyles, indicatorAnimatedStyle]} />
       {items.map((item, index) => (
         <TouchableOpacity
           onPress={handleItemPress(index)}
@@ -96,10 +98,9 @@ const styles = Steezy.create(({ colors, corners }) => ({
     paddingVertical: 6,
   },
   indicator: {
+    backgroundColor: colors.buttonTertiaryBackground,
     position: 'absolute',
     top: 4,
     borderRadius: 20,
-    height: 32,
-    width: 20,
   },
 }));

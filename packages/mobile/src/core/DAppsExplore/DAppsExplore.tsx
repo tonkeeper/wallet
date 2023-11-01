@@ -1,285 +1,233 @@
-import { useTheme } from '$hooks/useTheme';
-import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
-import {
-  openDAppsSearch,
-  openScanQR,
-  TabsStackRouteNames,
-} from '$navigation';
-import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
-import { IsTablet, LargeNavBarHeight, TabletMaxWidth } from '$shared/constants';
-import { store, useAppsListStore } from '$store';
-import { Icon, LargeNavBar, NavBar } from '$uikit';
-import { useScrollHandler } from '$uikit/ScrollHandler/useScrollHandler';
-import { deviceWidth, ns } from '$utils';
+import { BrowserStackRouteNames, openChooseCountry, openDAppsSearch } from '$navigation';
+import { useAppsListStore, useConnectedAppsList } from '$store';
 import { useFlags } from '$utils/flags';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react';
-import { LayoutChangeEvent, StyleSheet } from 'react-native';
-import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
-import Animated, {
-  Extrapolation,
-  interpolate,
-  useAnimatedStyle,
-  useDerivedValue,
-} from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React, {
+  FC,
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
-  ConnectedApps,
-  PopularApps,
   SearchButton,
   AboutDApps,
-  TopTabs,
-  TopTabsHeight,
+  FeaturedApps,
+  ConnectedApps,
+  AppsCategory,
 } from './components';
-import * as S from './DAppsExplore.style';
-import { NavBarSpacerHeight } from './DAppsExplore.style';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { TabStackParamList } from '$navigation/MainStack/TabStack/TabStack.interface';
+import {
+  Button,
+  Screen,
+  SegmentedControl,
+  Steezy,
+  View,
+  isAndroid,
+  ns,
+} from '@tonkeeper/uikit';
+import { shallow } from 'zustand/shallow';
+import { BrowserStackParamList } from '$navigation/BrowserStack/BrowserStack.interface';
 import { t } from '@tonkeeper/shared/i18n';
-
-const OFFSET = ns(16);
-
-const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
+import { Text as RNText } from 'react-native';
+import { ScrollPositionContext } from '$uikit';
+import { useFocusEffect, useTabPress } from '@tonkeeper/router';
+import { useSelectedCountry } from '$store/zustand/methodsToBuy/useSelectedCountry';
 
 export type DAppsExploreProps = NativeStackScreenProps<
-  TabStackParamList,
-  TabsStackRouteNames.Explore
+  BrowserStackParamList,
+  BrowserStackRouteNames.Explore
 >;
 
-const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
-  const { initialCategory } = props.route?.params || {};
-  const { setParams } = props.navigation;
+const getSelectedCountryStyle = (selectedCountry: string) => {
+  if (selectedCountry === '*') {
+    return {
+      icon: (
+        <View
+          style={{
+            marginTop: isAndroid ? ns(-1) : ns(1),
+            marginLeft: isAndroid ? 0 : ns(2),
+          }}
+        >
+          <RNText style={{ fontSize: ns(16) }}>🌍</RNText>
+        </View>
+      ),
+      type: 'emoji',
+    };
+  }
+  if (selectedCountry === 'NOKYC') {
+    return {
+      icon: (
+        <View
+          style={{
+            marginTop: isAndroid ? ns(-1) : ns(0.5),
+            marginLeft: isAndroid ? ns(-1) : ns(1),
+          }}
+        >
+          <RNText style={{ fontSize: ns(14) }}>☠️</RNText>
+        </View>
+      ),
+      type: 'emoji',
+    };
+  }
 
+  return { title: selectedCountry, type: 'text' };
+};
+
+const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
   const flags = useFlags(['disable_dapps']);
   const tabBarHeight = useBottomTabBarHeight();
-  const deeplinking = useDeeplinking();
 
-  const theme = useTheme();
+  const { navigation } = props;
 
-  const { categories } = useAppsListStore();
+  const { changeEnd } = useContext(ScrollPositionContext);
 
-  const [connectedAppsHeight, setConnectedAppsHeight] = useState(0);
-  const [scrollViewHeight, setScrollViewHeight] = useState(0);
-  const [popularAppsHeight, setPopularAppsHeight] = useState(0);
+  const connectedApps = useConnectedAppsList();
+  const selectedCountry = useSelectedCountry();
 
-  const tabsSnapOffset = connectedAppsHeight + LargeNavBarHeight + 4;
-
-  const { top: topInset } = useSafeAreaInsets();
-
-  const [activeCategory, setActiveCategory] = useState('featured');
-
-  useEffect(() => {
-    if (initialCategory) {
-      setActiveCategory(initialCategory);
-      setParams({ initialCategory: undefined });
-    }
-  }, [initialCategory]);
-
-  const { isSnapPointReached, scrollRef, scrollTop, scrollHandler } = useScrollHandler(
-    tabsSnapOffset,
-    true,
+  const featuredApps = useAppsListStore(
+    (s) => s.categories.find((category) => category.id === 'featured')?.apps || [],
+    shallow,
   );
 
-  const handlePressOpenScanQR = React.useCallback(() => {
-    if (store.getState().wallet.wallet) {
-      openScanQR((str) => {
-        const resolver = deeplinking.getResolver(str, {
-          delay: 200,
-          origin: DeeplinkOrigin.QR_CODE,
-        });
-        if (resolver) {
-          resolver();
-          return true;
-        }
-
+  const filteredFeaturedApps = useMemo(() => {
+    return featuredApps.filter((app) => {
+      if (app.excludeCountries && app.excludeCountries.includes(selectedCountry)) {
         return false;
-      });
-    } else {
-      openRequireWalletModal();
-    }
-  }, [deeplinking]);
+      }
+      if (app.includeCountries && !app.includeCountries.includes(selectedCountry)) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [featuredApps, selectedCountry]);
+
+  const categories = useAppsListStore((s) => s.categories || [], shallow);
+
+  const filteredCategories = useMemo(() => {
+    return categories
+      .map((category) => ({
+        ...category,
+        apps: category.apps.filter((app) => {
+          if (app.excludeCountries && app.excludeCountries.includes(selectedCountry)) {
+            return false;
+          }
+          if (app.includeCountries && !app.includeCountries.includes(selectedCountry)) {
+            return false;
+          }
+
+          return true;
+        }),
+      }))
+      .filter((category) => category.id !== 'featured' && category.apps.length > 0);
+  }, [categories, selectedCountry]);
+
+  const {
+    actions: { fetchPopularApps },
+  } = useAppsListStore();
 
   const handleSearchPress = useCallback(() => {
     openDAppsSearch();
   }, []);
 
-  const handleScrollViewLayout = useCallback((event: LayoutChangeEvent) => {
-    setScrollViewHeight(event.nativeEvent.layout.height);
-  }, []);
+  const selectedCountryStyle = getSelectedCountryStyle(selectedCountry);
 
-  const handleConnectedAppsLayout = useCallback((event: LayoutChangeEvent) => {
-    setConnectedAppsHeight(event.nativeEvent.layout.height);
-  }, []);
+  const [segmentIndex, setSegmentIndex] = useState(0);
 
-  const contentHeight = popularAppsHeight + tabsSnapOffset + TopTabsHeight - OFFSET;
+  const showConnected = segmentIndex === 1;
 
-  const bottomDividerStyle = useAnimatedStyle(() => ({
-    opacity:
-      contentHeight > scrollViewHeight &&
-      scrollTop.value + scrollViewHeight < contentHeight
-        ? 1
-        : 0,
-  }));
+  useEffect(() => {
+    fetchPopularApps();
+  }, [fetchPopularApps]);
 
-  const topTabsDividerStyle = useAnimatedStyle(() => ({
-    opacity: scrollTop.value > tabsSnapOffset ? 1 : 0,
-  }));
-
-  const navBarOpacity = useDerivedValue(() =>
-    interpolate(
-      scrollTop.value,
-      [
-        connectedAppsHeight + NavBarSpacerHeight,
-        connectedAppsHeight + NavBarSpacerHeight + LargeNavBarHeight / 3.5,
-      ],
-      [1, 0],
-      Extrapolation.CLAMP,
-    ),
+  useFocusEffect(
+    useCallback(() => {
+      changeEnd(false);
+    }, [changeEnd]),
   );
 
-  const topTabsContainerStyle = useAnimatedStyle(() => ({
-    backgroundColor:
-      navBarOpacity.value === 0 ? theme.colors.backgroundPrimary : 'transparent',
-  }));
-
-  const tabScrollView = useRef<ScrollView>(null);
-
-  const navBarRight = (
-    <TouchableOpacity
-      onPress={handlePressOpenScanQR}
-      style={styles.scanButton}
-      activeOpacity={0.6}
-      hitSlop={{
-        top: 26,
-        bottom: 26,
-        left: 26,
-        right: 26,
-      }}
-    >
-      <Icon name="ic-viewfinder-28" color="accentPrimary" />
-    </TouchableOpacity>
-  );
-
-  const isBigScreen = deviceWidth > TabletMaxWidth;
+  useTabPress(() => {
+    if (showConnected) {
+      setSegmentIndex(0);
+    }
+  });
 
   return (
-    <S.Wrap>
-      <S.ScrollViewContainer topInset={topInset}>
-        <AnimatedScrollView
-          ref={scrollRef}
-          onLayout={handleScrollViewLayout}
-          onScroll={scrollHandler}
-          showsVerticalScrollIndicator={false}
-          // eslint-disable-next-line react-native/no-inline-styles
-          contentContainerStyle={{
-            minHeight:
-              !flags.disable_dapps && scrollViewHeight > 0
-                ? scrollViewHeight + tabsSnapOffset
-                : undefined,
-          }}
-          scrollEventThrottle={16}
-          stickyHeaderIndices={[0, 3]}
-          // snapToOffsets={
-          //   isSnapPointReached || tabsSnapOffset > scrollViewHeight / 2
-          //     ? undefined
-          //     : [tabsSnapOffset]
-          // }
-        >
-          {isBigScreen ? (
-            <NavBar
-              hideBackButton
-              scrollTop={scrollTop}
-              rightContent={navBarRight}
-              withBackground={IsTablet}
-            >
-              {t('browser.title')}
-            </NavBar>
-          ) : (
-            <LargeNavBar
-              scrollTop={scrollTop}
-              rightContent={navBarRight}
-              safeArea={false}
-              opacity={navBarOpacity}
-            >
-              {t('browser.title')}
-            </LargeNavBar>
-          )}
-          <S.NavBarSpacer />
-          {!flags.disable_dapps ? (
-            <S.ContentWrapper>
-              <S.Content onLayout={handleConnectedAppsLayout}>
-                <ConnectedApps />
-              </S.Content>
-            </S.ContentWrapper>
-          ) : null}
-          {!flags.disable_dapps ? (
-            <S.ContentWrapper>
-              <S.Content>
-                <Animated.View style={topTabsContainerStyle}>
-                  <TopTabs
-                    ref={tabScrollView}
-                    tabs={categories}
-                    selectedId={activeCategory}
-                    onChange={(value) => {
-                      scrollRef.current?.scrollTo({
-                        y: Math.min(scrollTop.value, tabsSnapOffset),
-                        animated: false,
-                      });
-                      setActiveCategory(value);
-                    }}
-                  />
-                </Animated.View>
-                <S.TopTabsDivider style={topTabsDividerStyle} />
-              </S.Content>
-            </S.ContentWrapper>
-          ) : null}
-          {!flags.disable_dapps ? (
-            <S.ContentWrapper>
-              <S.Content
-                onLayout={(event) =>
-                  setPopularAppsHeight(event.nativeEvent.layout.height)
-                }
-              >
-                <PopularApps
-                  onChangeStep={(step) => {
-                    if (step >= 2) {
-                      tabScrollView.current?.scrollToEnd();
-                    } else {
-                      tabScrollView.current?.scrollTo({ x: 0 });
-                    }
-                  }}
-                  activeCategory={activeCategory}
-                  setActiveCategory={setActiveCategory}
-                />
-              </S.Content>
-            </S.ContentWrapper>
-          ) : null}
+    <Screen>
+      <Screen.Header
+        rightContent={
+          <Button
+            size={selectedCountryStyle.type === 'emoji' ? 'icon' : 'header'}
+            color="secondary"
+            title={selectedCountryStyle.title}
+            icon={selectedCountryStyle.icon}
+            style={!selectedCountryStyle.icon && styles.regionButton.static}
+            onPress={openChooseCountry}
+          />
+        }
+      >
+        <SegmentedControl
+          onChange={(segment) => setSegmentIndex(segment)}
+          index={segmentIndex}
+          items={[t('browser.explore'), t('browser.connected')]}
+          style={styles.segmentedControl}
+          indicatorStyle={styles.segmentedControlIndicator}
+        />
+      </Screen.Header>
+      <Screen.ScrollView
+        contentContainerStyle={styles.contentContainerStyle.static}
+        scrollEnabled={!(showConnected && connectedApps.length === 0)}
+      >
+        <View style={!!showConnected && styles.hidden}>
           {flags.disable_dapps ? (
-            <S.ContentWrapper>
-              <S.Content>
-                <AboutDApps />
-              </S.Content>
-            </S.ContentWrapper>
-          ) : null}
-        </AnimatedScrollView>
-      </S.ScrollViewContainer>
-      <S.ContentWrapper>
-        <S.Content>
-          <S.SearchBarContainer tabBarHeight={tabBarHeight}>
-            <S.SearchBarDivider style={bottomDividerStyle} />
-            <SearchButton onPress={handleSearchPress} />
-          </S.SearchBarContainer>
-        </S.Content>
-      </S.ContentWrapper>
-    </S.Wrap>
+            <AboutDApps />
+          ) : (
+            <>
+              <FeaturedApps items={filteredFeaturedApps} />
+              {filteredCategories.map((category) => (
+                <AppsCategory key={category.id} category={category} />
+              ))}
+            </>
+          )}
+        </View>
+        <View style={!showConnected && styles.hidden}>
+          <ConnectedApps connectedApps={connectedApps} />
+        </View>
+      </Screen.ScrollView>
+      <View style={[styles.searchBarContainer, { marginBottom: tabBarHeight }]}>
+        <SearchButton onPress={handleSearchPress} />
+      </View>
+    </Screen>
   );
 };
 
 export const DAppsExplore = memo(DAppsExploreComponent);
 
-const styles = StyleSheet.create({
-  scanButton: {
-    zIndex: 3,
-    marginRight: ns(2),
+const styles = Steezy.create(({ colors }) => ({
+  container: {
+    flex: 1,
   },
-});
+  regionButton: {
+    marginRight: 16,
+  },
+  segmentedControl: {
+    backgroundColor: 'transparent',
+  },
+  segmentedControlIndicator: {
+    backgroundColor: colors.buttonSecondaryBackground,
+  },
+  contentContainerStyle: {
+    paddingBottom: 0,
+  },
+  hidden: {
+    height: 0,
+    overflow: 'hidden',
+  },
+  searchBarContainer: {
+    padding: 16,
+    position: 'relative',
+  },
+}));

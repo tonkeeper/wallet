@@ -48,11 +48,12 @@ import { tk } from '@tonkeeper/shared/tonkeeper';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { useValueRef } from '@tonkeeper/uikit';
 import { RequestData } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
-import BigNumber from 'bignumber.js';
 import {
   InsufficientFundsParams,
   openInsufficientFundsModal,
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { getTimeSec } from '$utils/getTimeSec';
+import { Toast } from '$store';
 
 export const Send: FC<SendProps> = ({ route }) => {
   const {
@@ -64,6 +65,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     fee: initialFee = '0',
     isInactive: initialIsInactive = false,
     from,
+    expiryTimestamp,
   } = route.params;
 
   const initialAddress =
@@ -260,6 +262,12 @@ export const Send: FC<SendProps> = ({ route }) => {
         return onFail(new DismissedActionError());
       }
 
+      if (expiryTimestamp && expiryTimestamp < getTimeSec()) {
+        Toast.fail(t('transfer_deeplink_expired_error'));
+
+        return onFail(new CanceledActionError());
+      }
+
       if (insufficientFundsParams) {
         openInsufficientFundsModal(insufficientFundsParams);
 
@@ -310,6 +318,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       currency,
       decimals,
       dispatch,
+      expiryTimestamp,
       from,
       insufficientFundsParams,
       isCommentEncrypted,

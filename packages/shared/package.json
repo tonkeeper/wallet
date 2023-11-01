@@ -2,14 +2,17 @@
   "name": "@tonkeeper/shared",
   "version": "1.0.0",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "push_locales": "tolgee push ./i18n/locales",
+    "pull_locales": "tolgee pull --namespace tonkeeper ./i18n/locales"
+  },
   "dependencies": {
     "@tonkeeper/core": "*",
     "@tonkeeper/router": "*",
     "@tonkeeper/uikit": "*",
     "date-fns": "^2.30.0",
     "react": "18.2.0",
-    "react-native": "0.71.7",
+    "react-native": "0.72.6",
     "react-native-qrcode-styled": "^0.2.1",
     "react-native-web": "~0.18.10"
   },

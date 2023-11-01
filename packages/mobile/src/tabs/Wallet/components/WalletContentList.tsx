@@ -19,6 +19,7 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { TronBalance } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
 import { fiatCurrencySelector } from '$store/main';
+import { FiatCurrencies } from '@tonkeeper/core';
 
 enum ContentType {
   Token,
@@ -159,6 +160,7 @@ export const WalletContentList = memo<BalancesListProps>(
     const dispatch = useDispatch();
     const usdtRate = useTokenPrice('USDT');
     const fiatCurrency = useSelector(fiatCurrencySelector);
+    const shouldShowTonDiff = fiatCurrency !== FiatCurrencies.Ton;
 
     const handleMigrate = useCallback(
       (fromVersion: string) => () => {
@@ -185,7 +187,7 @@ export const WalletContentList = memo<BalancesListProps>(
         subvalue: balance.ton.amount.fiat,
         tonIcon: true,
         rate: {
-          percent: tonPrice.fiatDiff.percent,
+          percent: shouldShowTonDiff ? tonPrice.fiatDiff.percent : '',
           price: tonPrice.formatted.fiat ?? '-',
           trend: tonPrice.fiatDiff.trend,
         },
@@ -201,7 +203,7 @@ export const WalletContentList = memo<BalancesListProps>(
           value: item.amount.formatted,
           subvalue: item.amount.fiat,
           rate: {
-            percent: tonPrice.fiatDiff.percent,
+            percent: shouldShowTonDiff ? tonPrice.fiatDiff.percent : '',
             price: tonPrice.formatted.fiat ?? '-',
             trend: tonPrice.fiatDiff.trend,
           },

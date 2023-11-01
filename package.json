@@ -7,6 +7,8 @@
     ]
   },
   "scripts": {
+    "push_locales": "cd packages && cd shared && yarn push_locales",
+    "pull_locales": "cd packages && cd shared && yarn pull_locales",
     "postinstall": "patch-package",
     "pods": "cd packages && cd mobile && yarn pods",
     "icons": "cd packages && cd mobile && yarn icons",
@@ -17,10 +19,14 @@
     "run:android": "cd packages && cd mobile && yarn android",
     "build:android": "cd packages && cd mobile && yarn build:android",
     "build:android:apk": "cd packages && cd mobile && yarn build:android:apk",
-    "bump": "cd packages/mobile && yarn bump",
+    "bump": "yarn pull_locales && cd ../.. && cd packages/mobile && yarn bump",
     "rnm": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' +",
     "fnm": "find . -name \"node_modules\" -type d -prune | xargs du -chs",
-    "adb": "adb reverse tcp:8081 tcp:8081"
+    "adb": "adb reverse tcp:8081 tcp:8081",
+    "prepare": "husky install"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "husky": "^8.0.0"
+  }
 }
