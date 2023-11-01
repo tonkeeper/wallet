@@ -1,4 +1,5 @@
 export enum WalletCurrency {
+  TON = 'TON',
   USD = 'USD',
   EUR = 'EUR',
   RUB = 'RUB',
@@ -29,6 +30,10 @@ export enum WalletCurrency {
 }
 
 export const FiatCurrencySymbolsConfig = {
+  [WalletCurrency.TON]: {
+    symbol: 'TON',
+    side: 'end',
+  },
   [WalletCurrency.USD]: {
     symbol: '$',
     side: 'start',
@@ -79,7 +84,7 @@ export const FiatCurrencySymbolsConfig = {
   },
   [WalletCurrency.BRL]: {
     symbol: 'R$',
-    side: 'end',
+    side: 'start',
   },
   [WalletCurrency.TRY]: {
     symbol: '₺',

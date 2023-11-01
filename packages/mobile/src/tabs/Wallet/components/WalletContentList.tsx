@@ -15,6 +15,9 @@ import { useTonBalance } from '@tonkeeper/shared/hooks/useTonBalance';
 import { formatter } from '$utils/formatter';
 import BigNumber from 'bignumber.js';
 import { useCurrency } from '@tonkeeper/shared/hooks/useCurrency';
+import { TronBalance } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
+import { fiatCurrencySelector } from '$store/main';
+import { FiatCurrencies } from '@tonkeeper/core';
 
 enum ContentType {
   FirstBlock = 'FirstBlock',

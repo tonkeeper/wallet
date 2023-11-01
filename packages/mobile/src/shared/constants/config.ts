@@ -1,6 +1,6 @@
 import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 
-export const ServerConfigVersion = 7;
+export const ServerConfigVersion = 8;
 
 export const GOOGLE_PACKAGE_NAME = 'com.ton_keeper';
 export const APPLE_STORE_ID = '1587742107';
@@ -26,6 +26,7 @@ export enum CryptoCurrencies {
 export type CryptoCurrency = (typeof CryptoCurrencies)[keyof typeof CryptoCurrencies];
 
 export enum FiatCurrencies {
+  Ton = 'ton',
   Usd = 'usd',
   Eur = 'eur',
   Rub = 'rub',
@@ -131,6 +132,10 @@ export const Decimals = {
 };
 
 export const FiatCurrencySymbolsConfig = {
+  [FiatCurrencies.Ton]: {
+    symbol: 'TON',
+    side: 'end',
+  },
   [FiatCurrencies.Usd]: {
     symbol: '$',
     side: 'start',
@@ -181,7 +186,7 @@ export const FiatCurrencySymbolsConfig = {
   },
   [FiatCurrencies.Brl]: {
     symbol: 'R$',
-    side: 'end',
+    side: 'start',
   },
   [FiatCurrencies.Try]: {
     symbol: '₺',

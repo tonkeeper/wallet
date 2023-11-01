@@ -21,6 +21,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { getPermission } from '$utils/messaging';
 import { Toast } from '$store';
 import { goBack, popToTop } from '$navigation/imperative';
+import { Steezy } from '@tonkeeper/uikit';
 
 const LottieFaceId = require('$assets/lottie/faceid.json');
 const LottieTouchId = require('$assets/lottie/touchid.json');
@@ -30,7 +31,7 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
 
   const routeNode = useRoute();
   const dispatch = useDispatch();
-  
+
   const { bottom: bottomInset } = useSafeAreaInsets();
   const iconRef = useRef<LottieView>(null);
   const isTouchId =
@@ -111,15 +112,13 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
       />
       <S.Wrap>
         <S.Content>
-          <S.IconWrap>
-            <LottieView
-              ref={iconRef}
-              source={isTouchId ? LottieTouchId : LottieFaceId}
-              loop={false}
-              autoPlay={false}
-              autoSize={false}
-            />
-          </S.IconWrap>
+          <LottieView
+            style={styles.lottieIcon.static}
+            ref={iconRef}
+            source={isTouchId ? LottieTouchId : LottieFaceId}
+            loop={false}
+            autoPlay={false}
+          />
           <Text variant="h2" textAlign="center">
             {t('setup_biometry_title', { biometryType: biometryNameGenitive })}
           </Text>
@@ -144,3 +143,10 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
     </>
   );
 };
+
+const styles = Steezy.create({
+  lottieIcon: {
+    width: 160,
+    height: 160,
+  },
+});

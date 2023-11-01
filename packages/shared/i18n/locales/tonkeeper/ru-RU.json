@@ -150,6 +150,11 @@
       "approve_button" : "Отключить",
       "title" : "Отключить «%{name}»?"
     },
+    "explore": "Витрина",
+    "connected": "Подключённые",
+    "connected_empty_title": "Ваши приложения будут здесь",
+    "connected_empty_text": "Исследуйте приложения и сервисы в браузере Tonkeeper.",
+    "apps_all": "Все",
     "search_label" : "Поиск",
     "start_typing" : "Введите адрес или начните поиск",
     "title" : "Браузер",
@@ -176,7 +181,8 @@
     "cancel" : "Отмена",
     "empty_placeholder" : "По вашему запросу ничего не найдено",
     "search" : "Поиск",
-    "title" : "Выберите вашу страну"
+    "title" : "Выберите вашу страну",
+    "auto": "Автоматически"
   },
   "choose_currency" : {
     "currencies" : {
@@ -276,7 +282,7 @@
   "dns_on_sale_text" : "Домен сейчас выставлен на продажу на маркете. Чтобы передать, необходимо сначала снять его с продажи.",
   "dns_renew_all_until_btn" : "Продлить все до %{untilDate}",
   "dns_renew_in_progress_btn" : "Выполняется продление домена…",
-  "dns_renew_toast_success" : "Домен продлён на 1 год",
+  "dns_renew_toast_success" : "Домен продлён",
   "dns_renew_until_btn" : "Продлить до %{untilDate}",
   "dns_renew_valid_caption" : {
     "few" : "Истекает через %{count} дня",
@@ -567,7 +573,7 @@
       "comment_description_encrypted" : "Будет виден только получателю и вам.",
       "comment_encrypt" : "Зашифровать комментарий",
       "comment_label" : "Комментарий",
-      "comment_label_required" : "Обязательный комментарий",
+      "comment_label_required" : "Комментарий",
       "comment_required_text" : "Обязательно укажите memo или тег при отправке на биржу. ",
       "details_label" : "Детали",
       "details_max_balance_label" : "Отправка всего баланса %{currency}",
@@ -906,6 +912,7 @@
   "transaction_your_bid" : "Ваша ставка",
   "transfer_deeplink_address_error" : "Неверный адрес получателя",
   "transfer_deeplink_amount_error" : "Некорректный запрос суммы",
+  "transfer_deeplink_expired_error" : "Срок действия ссылки истёк",
   "transfer_deeplink_nft_address_error" : "Неверный адрес NFT",
   "transfer_from_old_wallet_btn" : "Перевести",
   "transfer_from_old_wallet_caption" : "Tonkeeper переведет всю сумму со старого адреса на текущий.",
@@ -1004,5 +1011,8 @@
   "wallet_source_code" : "Исходный код",
   "wallet_swap" : "Обменять",
   "wallet_title" : "Кошелёк",
-  "yesterday" : "Вчера"
+  "yesterday" : "Вчера",
+  "all_regions": "Все регионы",
+  "region_nokyc": "Нейтральные воды",
+  "nokyc": "без KYC"
 }

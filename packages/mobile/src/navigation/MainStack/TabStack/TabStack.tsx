@@ -26,6 +26,7 @@ import { useFetchMethodsToBuy } from '$store/zustand/methodsToBuy/useMethodsToBu
 import { trackEvent } from '$utils/stats';
 import { useRemoteBridge } from '$tonconnect';
 import { useBalanceUpdater } from '$hooks/useBalanceUpdater';
+import { BrowserStack } from '$navigation/BrowserStack/BrowserStack';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -117,8 +118,8 @@ export const TabStack: FC = () => {
         }}
       />
       <Tab.Screen
-        component={DAppsExplore}
-        name={TabsStackRouteNames.Explore}
+        component={BrowserStack}
+        name={TabsStackRouteNames.BrowserStack}
         options={{
           tabBarLabel: t('tab_browser'),
           tabBarIcon: ({ color }) => <Icon colorHex={color} name="ic-explore-28" />,

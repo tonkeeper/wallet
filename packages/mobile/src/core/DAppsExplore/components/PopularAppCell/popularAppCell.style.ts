@@ -5,9 +5,7 @@ import FastImage from 'react-native-fast-image';
 
 const ICON_SIZE = 44;
 
-export const CellContainer = styled.View`
-  background: ${({ theme }) => theme.colors.backgroundSecondary};
-`;
+export const CellContainer = styled.View``;
 
 export const Cell = styled(Highlight).attrs({ useRNGHComponent: true })`
   position: relative;
@@ -16,7 +14,8 @@ export const Cell = styled(Highlight).attrs({ useRNGHComponent: true })`
 export const Container = styled.View`
   flex-direction: row;
   align-items: center;
-  padding: ${ns(16)}px;
+  padding: 0 ${ns(16)}px;
+  height: ${ns(76)}px;
   overflow: hidden;
 `;
 
@@ -44,12 +43,12 @@ export const Content = styled.View`
 `;
 
 export const Title = styled(Text).attrs(() => ({
-  variant: 'label1',
+  variant: 'label2',
   numberOfLines: 1,
 }))``;
 
 export const SubTitle = styled(Text).attrs(() => ({
-  variant: 'body2',
+  variant: 'body3Alt',
   numberOfLines: 2,
   color: 'foregroundSecondary',
 }))``;

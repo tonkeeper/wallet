@@ -34,6 +34,7 @@ export interface ScreenHeaderProps {
   hideTitle?: boolean;
   gradient?: boolean;
   isModal?: boolean;
+  title?: string | React.ReactNode;
   onBackPress?: () => void;
   onGoBack?: () => void;
 }
@@ -49,6 +50,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
     gradient,
     isModal,
     title,
+    children,
     onBackPress,
     onGoBack,
   } = props;
@@ -165,22 +167,21 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
         <Animated.View style={[styles.innerContainer, ejectionOpacityStyle, borderStyle]}>
           <View style={styles.content}>
             {!hideBackButton && !isBackButtonRight && backButtonSlot}
-            <Animated.View style={[styles.title, titleAnimatedStyle]}>
-              {isString(title) ? (
-                <View style={styles.titleIndent}>
-                  <Text
-                    type={isSmallTitle ? 'label1' : 'h3'}
-                    textAlign="center"
-                    numberOfLines={1}
-                  >
-                    {title}
-                  </Text>
-                </View>
-              ) : (
-                title
-              )}
-              {bottomContent}
-            </Animated.View>
+            {isString(title) ? (
+              <Text
+                style={[styles.title, titleAnimatedStyle]}
+                type={isSmallTitle ? 'label1' : 'h3'}
+                textAlign="center"
+                numberOfLines={1}
+                reanimated
+              >
+                {title}
+              </Text>
+            ) : (
+              <View style={styles.title}>
+                {title}
+              </View>
+            )}
           </View>
           {rightContentSlot && (
             <View style={styles.rightContent}>{rightContentSlot}</View>

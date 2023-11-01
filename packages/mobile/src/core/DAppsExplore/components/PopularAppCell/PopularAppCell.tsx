@@ -1,8 +1,9 @@
 import { openDAppBrowser } from '$navigation';
-import { Icon, Separator } from '$uikit';
+import { Icon } from '$uikit';
 import { trackEvent } from '$utils/stats';
 import React, { FC, memo, useCallback } from 'react';
 import * as S from './popularAppCell.style';
+import { ListSeparator, View } from '@tonkeeper/uikit';
 
 // const moreIconSource = require('./more.png');
 
@@ -43,7 +44,7 @@ const PopularAppCellComponent: FC<Props> = (props) => {
           </S.Container>
         </S.Cell>
       </S.CellContainer>
-      {separator ? <Separator /> : null}
+      {separator ? <ListSeparator /> : null}
     </>
   );
 };

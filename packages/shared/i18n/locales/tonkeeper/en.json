@@ -151,6 +151,11 @@
       "approve_button" : "Remove",
       "title" : "Remove “%{name}”?"
     },
+    "explore": "Explore",
+    "connected": "Connected",
+    "connected_empty_title": "Connected apps will be shown here",
+    "connected_empty_text": "Explore apps and services in Tonkeeper browser.",
+    "apps_all": "All",
     "search_label" : "Search or enter address",
     "start_typing" : "Enter an address or search the web",
     "title" : "Browser",
@@ -177,10 +182,12 @@
     "cancel" : "Cancel",
     "empty_placeholder" : "Your search returned no results",
     "search" : "Search",
-    "title" : "Choose your country"
+    "title" : "Choose your country",
+    "auto": "Auto"
   },
   "choose_currency" : {
     "currencies" : {
+      "TON": "Toncoin",
       "AED" : "United Arab Emirates Dirham",
       "BDT" : "Bangladeshi Taka",
       "BRL" : "Brazilian Real",
@@ -272,7 +279,7 @@
   "dns_on_sale_text" : "Domain is on sale at the marketplace now. For transfer, you should remove it from sale first.",
   "dns_renew_all_until_btn" : "Renew all until %{untilDate}",
   "dns_renew_in_progress_btn" : "Domain renew in progress…",
-  "dns_renew_toast_success" : "Domain renewed for 1 year",
+  "dns_renew_toast_success" : "Domain renewed",
   "dns_renew_until_btn" : "Renew until %{untilDate}",
   "dns_renew_valid_caption" : {
     "one" : "Expires in %{count} day",
@@ -875,6 +882,7 @@
   "transaction_your_bid" : "Your bid",
   "transfer_deeplink_address_error" : "Incorrect recipient address",
   "transfer_deeplink_amount_error" : "Incorrect amount request",
+  "transfer_deeplink_expired_error" : "Expired link",
   "transfer_deeplink_nft_address_error" : "Incorrect NFT address",
   "transfer_from_old_wallet_btn" : "Transfer",
   "transfer_from_old_wallet_caption" : "Tonkeeper will transfer all coins from your old address to your current address.",
@@ -967,5 +975,8 @@
   "wallet_source_code" : "Source code",
   "wallet_swap" : "Swap",
   "wallet_title" : "Wallet",
-  "yesterday" : "Yesterday"
+  "yesterday" : "Yesterday",
+  "all_regions": "All Regions",
+  "region_nokyc": "Neutral Waters",
+  "nokyc": "no KYC"
 }

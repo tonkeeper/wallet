@@ -34,9 +34,10 @@ import { openNFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransf
 import { getCurrentRoute } from '$navigation/imperative';
 import { IConnectQrQuery } from '$tonconnect/models';
 import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
-import { Address, DNS } from '@tonkeeper/core';
+import { ActionSource, Address, DNS } from '@tonkeeper/core';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { isMethodIdExists } from '$store/zustand/methodsToBuy/helpers';
+import { openActivityActionModal } from '@tonkeeper/shared/modals/ActivityActionModal';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -137,6 +138,12 @@ export function useDeeplinkingResolvers() {
     }
   });
 
+  deeplinking.add('/action/:actionId', ({ params, query }) => {
+    const source = query.source as ActionSource | null;
+    const actionId = params.actionId;
+    return openActivityActionModal(actionId, source ?? ActionSource.Ton);
+  });
+
   deeplinking.add('/exchange/:id', async ({ params }) => {
     const methodId = params.id;
     if (!getWallet()) {
@@ -190,6 +197,15 @@ export function useDeeplinkingResolvers() {
     const currency = CryptoCurrencies.Ton;
     const comment = query.text ?? '';
 
+    const expiryTimestamp =
+      query.exp && !Number.isNaN(parseInt(query.exp, 10))
+        ? parseInt(query.exp, 10)
+        : null;
+
+    if (expiryTimestamp && expiryTimestamp < getTimeSec()) {
+      return Toast.fail(t('transfer_deeplink_expired_error'));
+    }
+
     let address = params.address;
 
     if (DNS.isValid(address)) {
@@ -227,11 +243,11 @@ export function useDeeplinkingResolvers() {
         openSignRawModal(
           {
             source: '',
-            valid_until: getExpiresSec(),
+            valid_until: expiryTimestamp ?? getExpiresSec(),
             messages: [message],
           },
           {
-            expires_sec: getExpiresSec(),
+            expires_sec: expiryTimestamp ?? getExpiresSec(),
             response_options: {
               broadcast: false,
             },
@@ -288,6 +304,7 @@ export function useDeeplinkingResolvers() {
                 fee: details.fee,
                 isInactive: details.isInactive,
                 isJetton: true,
+                expiryTimestamp,
               };
 
               openSend(options);
@@ -312,6 +329,7 @@ export function useDeeplinkingResolvers() {
                 fee: details.fee,
                 isInactive: details.isInactive,
                 methodId: resolveParams.methodId,
+                expiryTimestamp,
               };
               if (options.methodId) {
                 nav.openModal('NewConfirmSending', options);
@@ -332,6 +350,7 @@ export function useDeeplinkingResolvers() {
         comment,
         withGoBack: resolveParams.withGoBack,
         isJetton: true,
+        expiryTimestamp,
       });
     } else if (query.nft) {
       if (!Address.isValid(query.nft)) {
@@ -339,7 +358,7 @@ export function useDeeplinkingResolvers() {
       }
       await checkFundsAndOpenNFTTransfer(query.nft, address);
     } else {
-      openSend({ currency, address, comment, isJetton: false });
+      openSend({ currency, address, comment, isJetton: false, expiryTimestamp });
     }
   });
 

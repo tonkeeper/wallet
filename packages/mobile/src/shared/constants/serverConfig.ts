@@ -33,6 +33,7 @@ export interface ServerConfig {
   amplitudeKey: string;
   stonfiUrl: string;
   explorerUrl: string;
+  featured_play_interval: number;
 }
 
 let config: ServerConfig | null = null;
@@ -74,6 +75,7 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     flags: data.flags || {},
     amplitudeKey: data.amplitudeKey,
     stonfiUrl: data.stonfiUrl,
+    featured_play_interval: data.featured_play_interval,
   };
 }
 

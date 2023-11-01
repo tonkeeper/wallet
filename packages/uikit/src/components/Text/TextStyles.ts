@@ -76,6 +76,11 @@ export const TextTypes = StyleSheet.create({
     lineHeight: nfs(16),
     fontFamily: Font.Regular,
   },
+  body3Alt: {
+    fontSize: nfs(13),
+    lineHeight: nfs(16),
+    fontFamily: Font.Regular,
+  },
   body4: {
     fontSize: nfs(10),
     lineHeight: nfs(14),

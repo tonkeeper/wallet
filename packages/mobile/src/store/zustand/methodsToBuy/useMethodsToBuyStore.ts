@@ -12,12 +12,13 @@ import { getIsTestnet } from '$database';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 
 const initialState: Omit<IMethodsToBuyStore, 'actions'> = {
-  selectedCountry: getCountry(),
+  selectedCountry: 'AUTO',
   layoutByCountry: [],
   categories: [],
   defaultLayout: {
     methods: ['mercuryo', 'neocrypto'],
   },
+  lastUsedCountries: [],
 };
 
 export const useMethodsToBuyStore = create(
@@ -25,7 +26,16 @@ export const useMethodsToBuyStore = create(
     (set) => ({
       ...initialState,
       actions: {
-        setSelectedCountry: (selectedCountry: string) => set({ selectedCountry }),
+        setSelectedCountry: (selectedCountry: string) => {
+          set((prevState) => ({
+            selectedCountry,
+            lastUsedCountries:
+              ['AUTO', '*'].includes(selectedCountry) ||
+              prevState.lastUsedCountries.includes(selectedCountry)
+                ? prevState.lastUsedCountries
+                : [selectedCountry, prevState.lastUsedCountries[0]].filter(Boolean),
+          }));
+        },
         fetchMethodsToBuy: async () => {
           const isTestnet = await getIsTestnet();
           const currency = tk.wallet.state.getSnapshot().currency;
@@ -47,12 +57,32 @@ export const useMethodsToBuyStore = create(
     {
       name: 'fiat-methods',
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: ({ selectedCountry, categories, defaultLayout, layoutByCountry }) =>
+      version: 2,
+      migrate: (persistedState) => {
+        const state = persistedState as IMethodsToBuyStore;
+
+        if (state.lastUsedCountries === undefined) {
+          state.selectedCountry =
+            state.selectedCountry === getCountry() ? 'AUTO' : state.selectedCountry;
+          state.lastUsedCountries =
+            state.selectedCountry !== 'AUTO' ? [state.selectedCountry] : [];
+        }
+
+        return state;
+      },
+      partialize: ({
+        selectedCountry,
+        categories,
+        defaultLayout,
+        layoutByCountry,
+        lastUsedCountries,
+      }) =>
         ({
           selectedCountry,
           categories,
           defaultLayout,
           layoutByCountry,
+          lastUsedCountries,
         } as IMethodsToBuyStore),
     },
   ),
