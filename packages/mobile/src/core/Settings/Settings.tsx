@@ -167,6 +167,21 @@ export const Settings: FC = () => {
     [dispatch],
   );
 
+  const handleSwitchLanguage = useCallback(() => {
+    Alert.alert(t('language.language_alert.title'), undefined, [
+      {
+        text: t('language.language_alert.cancel'),
+        style: 'cancel',
+      },
+      {
+        text: t('language.language_alert.open'),
+        onPress: () => {
+          Linking.openSettings();
+        },
+      },
+    ]);
+  }, []);
+
   const handleDevMenu = useCallback(() => {
     openDevMenu();
   }, []);
@@ -334,6 +349,15 @@ export const Settings: FC = () => {
                 title={t('settings_search_engine')}
               />
             </PopupSelect>
+            <List.Item
+              onPress={handleSwitchLanguage}
+              value={
+                <Text variant="label1" color="accentPrimary">
+                  {t('language.list_item.value')}
+                </Text>
+              }
+              title={t('language.list_item.title')}
+            />
             {!!wallet && (
               <PopupSelect
                 items={versions}
