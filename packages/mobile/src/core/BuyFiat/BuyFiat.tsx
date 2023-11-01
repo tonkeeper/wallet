@@ -48,7 +48,9 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
   const webviewUrl = useMemo(() => {
     const addr = address[currency];
 
-    let result = method.action_button.url.replace(/\{ADDRESS\}/g, addr);
+    let result = method.action_button.url
+      .replace(/\{ADDRESS\}/g, addr)
+      .replace('https://buy.neocrypto.net', 'https://buy-demo11.ncdev.site');
 
     if (method.id === 'mercuryo_sell') {
       result = result
