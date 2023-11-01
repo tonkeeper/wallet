@@ -27,11 +27,24 @@ import {
   jettonTransferBody,
 } from './contractService';
 import { Address, Cell, SendMode, internal, toNano } from 'ton-core';
+import { isActiveAccount } from '@tonkeeper/core';
 
 const TonWeb = require('tonweb');
 
 export const jettonTransferAmount = toNano('0.64');
 const jettonTransferForwardAmount = BigInt('1');
+
+interface TonTransferParams {
+  seqno: number;
+  recipient: Account;
+  amount: string;
+  payload?: Cell | string;
+  sendMode?: number;
+  vault: Vault;
+  walletVersion?: string | null;
+  secretKey?: Buffer;
+  bounce: boolean;
+}
 
 export class Wallet {
   readonly name: string;
@@ -491,25 +504,28 @@ export class TonWallet {
     };
   }
 
-  async createTonTransfer(
-    seqno: number,
-    recipient: Account,
-    amount: string,
-    payload: Cell | string = '',
+  async createTonTransfer({
+    seqno,
+    recipient,
+    amount,
+    payload = '',
     sendMode = 3,
-    vault: Vault,
-    walletVersion: string | null = null,
-    secretKey: Buffer = Buffer.alloc(64),
-  ) {
+    vault,
+    bounce,
+    walletVersion = null,
+    secretKey = Buffer.alloc(64),
+  }: TonTransferParams) {
     const version = vault.getVersion();
     const isLockup = version && version.substr(0, 6) === 'lockup';
 
     if (isLockup) {
       const wallet = vault.tonWallet;
+      const toAddress = new TonWeb.utils.Address(recipient.address);
+      toAddress.isBounceable = bounce;
 
       const tx = wallet.methods.transfer({
         secretKey,
-        toAddress: new TonWeb.utils.Address(recipient.address),
+        toAddress,
         amount: AmountFormatter.toNano(amount),
         seqno: seqno,
         payload,
@@ -528,7 +544,7 @@ export class TonWallet {
         messages: [
           internal({
             to: Address.parseRaw(recipient.address),
-            bounce: recipient.status === 'active',
+            bounce,
             value: amount,
             body: payload !== '' ? payload : undefined,
           }),
@@ -559,15 +575,18 @@ export class TonWallet {
       throw new Error(t('send_get_wallet_info_error'));
     }
 
-    const boc = await this.createTonTransfer(
+    const boc = await this.createTonTransfer({
       seqno,
-      recipientInfo,
+      recipient: recipientInfo,
       amount,
       payload,
       sendMode,
       vault,
       walletVersion,
-    );
+      bounce: isActiveAccount(recipientInfo.status)
+        ? AddressFormatter.isBounceable(recipientInfo.address)
+        : false,
+    });
 
     let feeNano = await this.calcFee(boc);
 
@@ -609,16 +628,20 @@ export class TonWallet {
 
     const amountNano = Ton.toNano(amount);
 
-    const boc = await this.createTonTransfer(
+    const boc = await this.createTonTransfer({
       seqno,
-      recipientInfo,
+      recipient: recipientInfo,
       amount,
       payload,
       sendMode,
-      unlockedVault,
+      vault: unlockedVault,
       walletVersion,
-      Buffer.from(secretKey),
-    );
+      secretKey: Buffer.from(secretKey),
+      // We should keep bounce flag from user input. We should check contract status till Jan 1, 2024 according to internal Address reform roadmap
+      bounce: isActiveAccount(recipientInfo.status)
+        ? AddressFormatter.isBounceable(recipientInfo.address)
+        : false,
+    });
 
     let feeNano: BigNumber;
     try {
