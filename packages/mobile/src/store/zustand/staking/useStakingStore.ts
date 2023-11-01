@@ -74,7 +74,7 @@ export const useStakingStore = create(
             const [poolsResponse, nominatorsResponse] = await Promise.allSettled([
               tonapi.staking.getStakingPools({
                 available_for: rawAddress,
-                include_unverified: true,
+                include_unverified: false,
               }),
               tonapi.staking.getAccountNominatorsPools(rawAddress!),
             ]);
