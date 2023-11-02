@@ -1,10 +1,10 @@
 import { AnyAddress, tonAddress } from './transactionService';
 import { beginCell, Cell, comment } from '@ton/core';
-import { WalletContractV4R1 } from '../legacy/wallets/WalletContractV4R1';
 import {
+  WalletContractV4R1,
   LockupContractV1,
   LockupContractV1AdditionalParams,
-} from '../legacy/wallets/LockupContractV1';
+} from '../legacy';
 import { WalletContractV3R1, WalletContractV3R2, WalletContractV4 } from '@ton/ton';
 
 export enum WalletVersion {
