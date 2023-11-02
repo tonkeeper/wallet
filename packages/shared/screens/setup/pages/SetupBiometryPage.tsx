@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
 
-// TODO:
+
 import * as LocalAuthentication from 'expo-local-authentication';
 
 interface SetupBiometryPageProps {

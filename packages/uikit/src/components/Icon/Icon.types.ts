@@ -50,6 +50,7 @@ export type IconNames =
   | 'ic-arrow-down-28'
   | 'ic-arrow-up-28'
   | 'ic-bell-28'
+  | 'ic-creditcard-28'
   | 'ic-doc-28'
   | 'ic-done-28'
   | 'ic-donemark-28'
@@ -58,6 +59,10 @@ export type IconNames =
   | 'ic-envelope-28'
   | 'ic-exclamationmark-circle-28'
   | 'ic-explore-28'
+  | 'ic-faceid-28'
+  | 'ic-faceid-android-28'
+  | 'ic-fingerprint-28'
+  | 'ic-fingerprint-android-28'
   | 'ic-fire-28'
   | 'ic-flash-28'
   | 'ic-gear-28'
@@ -172,6 +177,7 @@ export const AllIcons = [
   'ic-arrow-down-28',
   'ic-arrow-up-28',
   'ic-bell-28',
+  'ic-creditcard-28',
   'ic-doc-28',
   'ic-done-28',
   'ic-donemark-28',
@@ -180,6 +186,10 @@ export const AllIcons = [
   'ic-envelope-28',
   'ic-exclamationmark-circle-28',
   'ic-explore-28',
+  'ic-faceid-28',
+  'ic-faceid-android-28',
+  'ic-fingerprint-28',
+  'ic-fingerprint-android-28',
   'ic-fire-28',
   'ic-flash-28',
   'ic-gear-28',
@@ -295,6 +305,7 @@ export const IconSizes = {
   'ic-arrow-down-28': 28,
   'ic-arrow-up-28': 28,
   'ic-bell-28': 28,
+  'ic-creditcard-28': 28,
   'ic-doc-28': 28,
   'ic-done-28': 28,
   'ic-donemark-28': 28,
@@ -303,6 +314,10 @@ export const IconSizes = {
   'ic-envelope-28': 28,
   'ic-exclamationmark-circle-28': 28,
   'ic-explore-28': 28,
+  'ic-faceid-28': 28,
+  'ic-faceid-android-28': 28,
+  'ic-fingerprint-28': 28,
+  'ic-fingerprint-android-28': 28,
   'ic-fire-28': 28,
   'ic-flash-28': 28,
   'ic-gear-28': 28,

@@ -39,6 +39,8 @@ import { StartScreen } from '@tonkeeper/shared/screens/StartScreen';
 import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
 import { TronTokenScreen } from '../../tabs/Wallet/TronTokenScreen';
 import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
+import { CreateWalletStack } from '$navigation/CreateWalletStack';
+import { ImportWalletStack } from '$navigation/ImportWalletStack';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -63,17 +65,9 @@ export const MainStack: FC = () => {
     : MainStackRouteNames.DevStack;
 
   function renderRoot() {
-    if (isIntroShown) {
-      return (
-        <Stack.Screen
-          name={AppStackRouteNames.Intro}
-          component={Intro}
-          options={{
-            contentStyle: { backgroundColor: theme.colors.backgroundPrimary },
-          }}
-        />
-      );
-    } else if (!isUnlocked && wallet && !attachedScreen.pathname) {
+    if (!wallet) {
+      return <Stack.Screen name="start" component={StartScreen} />;
+    } else if (!isUnlocked && !attachedScreen.pathname) {
       return (
         <Stack.Screen
           name={AppStackRouteNames.MainAccessConfirmation}
@@ -98,6 +92,8 @@ export const MainStack: FC = () => {
       }}
     >
       {renderRoot()}
+      <Stack.Screen name="/create" component={CreateWalletStack} />
+      <Stack.Screen name="/import" component={ImportWalletStack} />
       <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
       <Stack.Screen name={'TronTokenScreen'} component={TronTokenScreen} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />

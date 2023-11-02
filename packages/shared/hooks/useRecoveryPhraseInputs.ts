@@ -92,7 +92,7 @@ export function useRecoveryPhraseInputs() {
     (index: number) => () => {
       const input = getRef(index);
       const value = input?.getValue();
-      if (value && value.length > 0 && !bip39.map.has(value)) {
+      if (value && value.length > 0 && !bip39.map[value]) {
         input.markAsInvalid();
       }
     },
@@ -114,7 +114,7 @@ export function useRecoveryPhraseInputs() {
           // newText = newText.substr(0, 20);
           // input?.setValue(newText);
           if (input.isInvalid()) {
-            if (newText.length === 0 || bip39.map.has(newText)) {
+            if (newText.length === 0 || bip39.map[newText]) {
               input.markAsValid();
             }
           }

@@ -1,10 +1,18 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
-import { Screen, Spacer, SpacerSizes, View, List, PagerView } from '@tonkeeper/uikit';
+import {
+  Screen,
+  Spacer,
+  SpacerSizes,
+  View,
+  List,
+  PagerView,
+  Icon,
+} from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { openJetton } from '$navigation';
+import { openBuyFiat, openJetton } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { Rate } from '../hooks/useBalance';
 import { ListItemRate } from './ListItemRate';
@@ -20,6 +28,8 @@ import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { TronBalance } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
 import { fiatCurrencySelector } from '$store/main';
 import { FiatCurrencies } from '@tonkeeper/core';
+import { useNavigation } from '@tonkeeper/router';
+import { FinishSetupList } from './FinishSetupList';
 
 enum ContentType {
   Token,
@@ -27,6 +37,8 @@ enum ContentType {
   Spacer,
   NFTCardsRow,
   Staking,
+  BuyTon,
+  Setup,
 }
 
 type TokenItem = {
@@ -63,7 +75,23 @@ type StakingItem = {
   type: ContentType.Staking;
 };
 
-type Content = TokenItem | SpacerItem | NFTCardsRowItem | StakingItem;
+type BuyTonItem = {
+  key: string;
+  type: ContentType.BuyTon;
+};
+
+type SetupItem = {
+  key: string;
+  type: ContentType.Setup;
+};
+
+type Content =
+  | TokenItem
+  | SpacerItem
+  | NFTCardsRowItem
+  | StakingItem
+  | BuyTonItem
+  | SetupItem;
 
 const RenderItem = ({ item }: { item: Content }) => {
   switch (item.type) {
@@ -129,7 +157,30 @@ const RenderItem = ({ item }: { item: Content }) => {
       return <NFTsList nfts={item.items} />;
     case ContentType.Staking:
       return <StakingWidget />;
+    case ContentType.BuyTon:
+      return <BuyTonListItem />;
+    case ContentType.Setup:
+      return <FinishSetupList />;
   }
+};
+
+const BuyTonListItem = () => {
+  const nav = useNavigation();
+  return (
+    <List.ItemContainer isLast>
+      <List.Item
+        chevron
+        onPress={() => nav.openModal('Exchange')}
+        title="Buy TON"
+        subtitle={'Instantly with a bank card'}
+        leftContent={
+          <View style={styles.buyTonPicture}>
+            <Icon name="ic-creditcard-28" />
+          </View>
+        }
+      />
+    </List.ItemContainer>
+  );
 };
 
 interface BalancesListProps {
@@ -262,9 +313,19 @@ export const WalletContentList = memo<BalancesListProps>(
       });
 
       content.push({
+        key: 'BuyTon',
+        type: ContentType.BuyTon,
+      });
+
+      content.push({
         key: 'spacer_staking',
         type: ContentType.Spacer,
-        bottom: 32,
+        bottom: 8,
+      });
+
+      content.push({
+        key: 'Setup',
+        type: ContentType.Setup,
       });
 
       content.push(
@@ -395,5 +456,13 @@ const styles = Steezy.create(({ colors, corners }) => ({
   },
   scrollContainer: {
     paddingHorizontal: 12,
+  },
+  buyTonPicture: {
+    width: 44,
+    height: 44,
+    borderRadius: 44 / 2,
+    backgroundColor: colors.accentGreen,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 }));

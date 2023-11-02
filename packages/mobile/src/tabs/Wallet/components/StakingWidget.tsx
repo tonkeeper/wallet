@@ -10,7 +10,7 @@ import { useStakingStore } from '$store';
 import { StakingWidgetStatus } from './StakingWidgetStatus';
 import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
-import { Flash } from '@tonkeeper/uikit';
+import { Flash, ListSeparator } from '@tonkeeper/uikit';
 
 const StakingWidgetComponent: FC = () => {
   const nav = useNavigation();
@@ -46,7 +46,7 @@ const StakingWidgetComponent: FC = () => {
 
   return (
     <View style={styles.container}>
-      <List style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }} separator={false}>
+      <List style={{ borderRadius: 0 }} separator={false}>
         {stakingInfo.map((item) => (
           <StakingWidgetStatus
             key={item.pool.address}
@@ -63,6 +63,7 @@ const StakingWidgetComponent: FC = () => {
             onPress={handleStakingPress}
           />
         </Flash>
+        <ListSeparator />
       </List>
     </View>
   );

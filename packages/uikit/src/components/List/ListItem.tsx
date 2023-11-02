@@ -11,6 +11,7 @@ import { isAndroid } from '../../utils';
 import { SText as Text } from '../Text';
 import { Icon } from '../Icon';
 import { View } from '../View';
+import { TTextTypes } from '../Text/TextStyles';
 
 interface ListItemProps {
   titleType?: 'primary' | 'secondary';
@@ -27,6 +28,8 @@ interface ListItemProps {
   leftContentStyle?: StyleProp<ViewStyle>;
   leftContent?: React.ReactNode;
   navigate?: string;
+  titleTextType?: TTextTypes;
+  titleNumberOfLines?: number;
   subtitleNumberOfLines?: number;
   gestureHandler?: boolean;
   children?: React.ReactNode;
@@ -44,8 +47,10 @@ export const ListItem = memo<ListItemProps>((props) => {
     onPress,
     navigate,
     chevronColor = 'iconTertiary',
+    titleTextType,
     pictureCorner = 'full',
     subtitleNumberOfLines = 1,
+    titleNumberOfLines = 1,
     valueMultiline,
     titleType = 'primary',
     leftContentStyle,
@@ -111,9 +116,15 @@ export const ListItem = memo<ListItemProps>((props) => {
                 {isString(props.title) ? (
                   <Text
                     color={titleType === 'primary' ? 'textPrimary' : 'textSecondary'}
-                    type={titleType === 'primary' ? 'label1' : 'body1'}
+                    type={
+                      titleTextType
+                        ? titleTextType
+                        : titleType === 'primary'
+                        ? 'label1'
+                        : 'body1'
+                    }
+                    numberOfLines={titleNumberOfLines}
                     ellipsizeMode="tail"
-                    numberOfLines={1}
                   >
                     {props.title}
                   </Text>

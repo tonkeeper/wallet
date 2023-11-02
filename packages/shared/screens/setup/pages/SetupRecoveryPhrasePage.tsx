@@ -10,12 +10,12 @@ import { Pressable } from 'react-native';
 const inputsCount = Array(24).fill(0);
 
 interface SetupPhrasePageProps {
-  onButtonPress: (phrase: string, config?: string) => void;
-  shown: boolean;
+  onNext: (phrase: string, config?: string) => void;
+  loading: boolean;
 }
 
 export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
-  const { onButtonPress, shown } = props;
+  const { onNext, loading } = props;
   const inputs = useRecoveryPhraseInputs();
 
   const [isConfigInputShown, setConfigInputShown] = useState(false);
@@ -23,15 +23,13 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
   const [config, setConfig] = useState('');
 
   useEffect(() => {
-    if (shown) {
-      const lastField = inputs.getRef(23);
-      if (!!lastField?.getValue()) {
-        inputs.getRef(23)?.focus();
-      } else {
-        inputs.getRef(0)?.focus();
-      }
+    const lastField = inputs.getRef(23);
+    if (!!lastField?.getValue()) {
+      inputs.getRef(23)?.focus();
+    } else {
+      inputs.getRef(0)?.focus();
     }
-  }, [shown]);
+  }, []);
 
   const handleShowConfigInput = useCallback(() => {
     setConfigInputShown(true);
@@ -55,7 +53,7 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
 
     let hasFailed = false;
     for (let i = 0; i < inputsCount.length; i++) {
-      const isFailed = !values[i].length || !bip39.map.has(values[i]);
+      const isFailed = !values[i].length || !bip39.map[values[i]];
       if (isFailed) {
         hasFailed = true;
         const input = inputs.getRef(i);
@@ -73,8 +71,8 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
 
     const phrase = Object.values(values).join(' ');
 
-    onButtonPress(phrase, config);
-  }, [onButtonPress, isRestoring, isConfigInputShown, config]);
+    onNext(phrase, config);
+  }, [onNext, isRestoring, isConfigInputShown, config]);
 
   const handleInputSubmit = useCallback(
     (index: number) => () => {
@@ -93,14 +91,14 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
         {/* <TapGestureHandler numberOfTaps={5} onActivated={handleShowConfigInput}> */}
         <Pressable onPress={handleShowConfigInput}>
           <Text type="h2" textAlign="center">
-            Enter your recovery phrase
+            Enter recovery phrase
           </Text>
         </Pressable>
         {/* </TapGestureHandler> */}
         <Spacer y={4} />
         <Text type="body1" textAlign="center" color="textSecondary">
-          To restore access to your wallet, enter the 24 secret recovery words given
-          to you when you created your wallet.
+          When you created this wallet, you got a 24-word recovery phrase. Enter it to
+          restore access to your wallet.
         </Text>
       </View>
       <View style={styles.content}>
@@ -137,7 +135,7 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
         ))}
       </View>
       <View style={styles.footer}>
-        <Button onPress={handleContinue} title="Continue" />
+        <Button onPress={handleContinue} title="Continue" loading={loading} />
       </View>
       <Animated.View style={inputs.keyboardSpacerStyle} />
     </Screen.ScrollView>
