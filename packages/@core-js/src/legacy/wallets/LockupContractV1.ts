@@ -13,13 +13,22 @@ import {
 import { Maybe } from '@ton/ton/dist/utils/maybe';
 import { createWalletTransferV4 } from '@ton/ton/dist/wallets/signing/createWalletTransfer';
 
+export interface LockupContractV1AdditionalParams {
+  allowedDestinations?: Maybe<string>;
+}
+
 export class LockupContractV1 implements Contract {
   static create(args: {
     workchain: number;
     publicKey: Buffer;
     walletId?: Maybe<number>;
+    additionalParams?: LockupContractV1AdditionalParams;
   }) {
-    return new LockupContractV1(args.workchain, args.publicKey, args.walletId);
+    return new LockupContractV1(
+      args.workchain,
+      args.publicKey,
+      args.additionalParams?.allowedDestinations,
+    );
   }
 
   readonly workchain: number;
@@ -28,7 +37,12 @@ export class LockupContractV1 implements Contract {
   readonly walletId: number;
   readonly init: { data: Cell; code: Cell };
 
-  private constructor(workchain: number, publicKey: Buffer, walletId?: Maybe<number>) {
+  private constructor(
+    workchain: number,
+    publicKey: Buffer,
+    allowedDestinations?: Maybe<string>,
+    walletId?: Maybe<number>,
+  ) {
     // Resolve parameters
     this.workchain = workchain;
     this.publicKey = publicKey;
@@ -47,11 +61,19 @@ export class LockupContractV1 implements Contract {
     let data = beginCell()
       .storeUint(0, 32) // Seqno
       .storeUint(this.walletId, 32)
-      .storeBuffer(this.publicKey)
-      .storeBit(0) // Empty plugins dict
-      .endCell();
-    this.init = { code, data };
-    this.address = contractAddress(workchain, { code, data });
+      .storeBuffer(publicKey);
+
+    if (allowedDestinations) {
+      data = data.storeBit(1);
+      data = data.storeRef(Cell.fromBoc(Buffer.from(allowedDestinations, 'base64'))[0]);
+    } else {
+      data = data.storeBit(0);
+    }
+
+    let cell = data.endCell();
+
+    this.init = { code, data: cell };
+    this.address = contractAddress(workchain, { code, data: cell });
   }
 
   /**

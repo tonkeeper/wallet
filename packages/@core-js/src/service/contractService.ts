@@ -1,7 +1,10 @@
 import { AnyAddress, tonAddress } from './transactionService';
 import { beginCell, Cell, comment } from '@ton/core';
 import { WalletContractV4R1 } from '../legacy/wallets/WalletContractV4R1';
-import { LockupContractV1 } from '../legacy/wallets/LockupContractV1';
+import {
+  LockupContractV1,
+  LockupContractV1AdditionalParams,
+} from '../legacy/wallets/LockupContractV1';
 import { WalletContractV3R1, WalletContractV3R2, WalletContractV4 } from '@ton/ton';
 
 export enum WalletVersion {
@@ -49,7 +52,11 @@ export interface CreateJettonTransferBodyParams {
 
 const workchain = 0;
 export class ContractService {
-  static getWalletContract(version: WalletVersion, publicKey: Buffer) {
+  static getWalletContract(
+    version: WalletVersion,
+    publicKey: Buffer,
+    additionalParams?: LockupContractV1AdditionalParams,
+  ) {
     switch (version) {
       case WalletVersion.v3R1:
         return WalletContractV3R1.create({ workchain, publicKey });
@@ -60,7 +67,7 @@ export class ContractService {
       case WalletVersion.v4R2:
         return WalletContractV4.create({ workchain, publicKey });
       case WalletVersion.LockupV1:
-        return LockupContractV1.create({ workchain, publicKey });
+        return LockupContractV1.create({ workchain, publicKey, additionalParams });
     }
   }
 

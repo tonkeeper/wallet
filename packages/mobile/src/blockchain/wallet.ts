@@ -7,8 +7,8 @@ import { getServerConfig } from '$shared/constants';
 import { UnlockedVault, Vault } from './vault';
 import {
   Address as AddressFormatter,
-  AmountFormatter,
   ContractService,
+  contractVersionsMap,
   TransactionService,
 } from '@tonkeeper/core';
 import { debugLog } from '$utils/debugLog';
@@ -28,9 +28,9 @@ import {
 import { SendApi, Configuration as V1Configuration } from 'tonapi-sdk-js';
 
 import { tk } from '@tonkeeper/shared/tonkeeper';
-import { getTonCoreWalletContract } from './contractService';
 import { Address, Cell, internal, toNano } from '@ton/core';
 import { isActiveAccount } from '@tonkeeper/core';
+import { getWalletContract } from '@tonkeeper/core/dist/service/walletService';
 
 const TonWeb = require('tonweb');
 
@@ -361,7 +361,15 @@ export class TonWallet {
     vault: Vault,
     secretKey: Buffer = Buffer.alloc(64),
   ) {
-    const contract = getTonCoreWalletContract(vault, vault.getVersion());
+    const version = vault.getVersion();
+    const lockupConfig = vault.getLockupConfig();
+    const contract = getWalletContract(
+      Buffer.from(vault.tonPublicKey),
+      contractVersionsMap[version ?? 'v4R2'],
+      {
+        allowedDestinations: lockupConfig?.allowed_destinations,
+      },
+    );
 
     const jettonAmount = BigInt(amountNano);
 
@@ -512,7 +520,14 @@ export class TonWallet {
     secretKey = Buffer.alloc(64),
   }: TonTransferParams) {
     const version = vault.getVersion();
-    const contract = getTonCoreWalletContract(vault, walletVersion ?? version);
+    const lockupConfig = vault.getLockupConfig();
+    const contract = getWalletContract(
+      Buffer.from(vault.tonPublicKey),
+      contractVersionsMap[walletVersion ?? version ?? 'v4R2'],
+      {
+        allowedDestinations: lockupConfig?.allowed_destinations,
+      },
+    );
     return TransactionService.createTransfer(contract, {
       seqno,
       secretKey,
