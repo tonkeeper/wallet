@@ -1,6 +1,7 @@
 import { AnyAddress, tonAddress } from './transactionService';
 import { beginCell, Cell, comment } from '@ton/core';
 import { WalletContractV4R1 } from '../legacy/wallets/WalletContractV4R1';
+import { LockupContractV1 } from '../legacy/wallets/LockupContractV1';
 import { WalletContractV3R1, WalletContractV3R2, WalletContractV4 } from '@ton/ton';
 
 export enum WalletVersion {
@@ -8,6 +9,7 @@ export enum WalletVersion {
   v3R2 = 1,
   v4R1 = 2,
   v4R2 = 3,
+  LockupV1 = 4,
 }
 
 export const contractVersionsMap = {
@@ -15,9 +17,11 @@ export const contractVersionsMap = {
   v4R1: WalletVersion.v4R1,
   v3R2: WalletVersion.v3R2,
   v3R1: WalletVersion.v3R1,
+  'lockup-0.1': WalletVersion.LockupV1,
 };
 
 export type WalletContract =
+  | LockupContractV1
   | WalletContractV3R1
   | WalletContractV3R2
   | WalletContractV4R1
@@ -55,6 +59,8 @@ export class ContractService {
         return WalletContractV4R1.create({ workchain, publicKey });
       case WalletVersion.v4R2:
         return WalletContractV4.create({ workchain, publicKey });
+      case WalletVersion.LockupV1:
+        return LockupContractV1.create({ workchain, publicKey });
     }
   }
 

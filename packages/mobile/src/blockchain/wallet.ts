@@ -512,40 +512,20 @@ export class TonWallet {
     secretKey = Buffer.alloc(64),
   }: TonTransferParams) {
     const version = vault.getVersion();
-    const isLockup = version && version.substr(0, 6) === 'lockup';
-
-    if (isLockup) {
-      const wallet = vault.tonWallet;
-      const toAddress = new TonWeb.utils.Address(recipient.address);
-      toAddress.isBounceable = bounce;
-
-      const tx = wallet.methods.transfer({
-        secretKey,
-        toAddress,
-        amount: AmountFormatter.toNano(amount),
-        seqno: seqno,
-        payload,
-        sendMode,
-      });
-
-      const query = await tx.getQuery();
-      return TonWeb.utils.bytesToBase64(await query.toBoc(false));
-    } else {
-      const contract = getTonCoreWalletContract(vault, walletVersion ?? version);
-      return TransactionService.createTransfer(contract, {
-        seqno,
-        secretKey,
-        sendMode,
-        messages: [
-          internal({
-            to: recipient.address,
-            bounce,
-            value: amount,
-            body: payload !== '' ? payload : undefined,
-          }),
-        ],
-      });
-    }
+    const contract = getTonCoreWalletContract(vault, walletVersion ?? version);
+    return TransactionService.createTransfer(contract, {
+      seqno,
+      secretKey,
+      sendMode,
+      messages: [
+        internal({
+          to: recipient.address,
+          bounce,
+          value: amount,
+          body: payload !== '' ? payload : undefined,
+        }),
+      ],
+    });
   }
 
   async estimateFee(
