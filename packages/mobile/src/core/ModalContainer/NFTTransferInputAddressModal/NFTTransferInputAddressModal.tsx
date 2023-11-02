@@ -52,8 +52,9 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
               amount: AmountFormatter.toNano(1),
               address: nftAddress,
               payload: ContractService.createNftTransferBody({
+                queryId: Date.now(),
                 newOwnerAddress: address,
-                ownerAddress: tk.wallet.address.ton.raw,
+                excessesAddress: tk.wallet.address.ton.raw,
               })
                 .toBoc()
                 .toString('base64'),

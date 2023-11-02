@@ -136,8 +136,8 @@ export type TxResponseOptions = {
 
 export type TxRequestBody<TParams = TxParams> = {
   type: TxTypes;
-  expires_sec: number;
-  response_options: TxResponseOptions;
+  expires_sec?: number;
+  response_options?: TxResponseOptions;
   params: TParams;
   fee?: string;
 };

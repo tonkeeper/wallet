@@ -1,5 +1,4 @@
 import { WalletContractV3R1, WalletContractV3R2, WalletContractV4 } from '@ton/ton';
-import { Address, beginCell, Cell, comment, external, storeMessage } from '@ton/core';
 import { WalletVersion } from './types';
 import { Vault } from './vault';
 import { WalletContractV4R1 } from '@tonkeeper/core/src/legacy/wallets/WalletContractV4R1';
@@ -28,56 +27,4 @@ export const contractVersionsMap = {
 
 export const getTonCoreWalletContract = (vault: Vault, version = 'v4R2') => {
   return walletContract(Buffer.from(vault.tonPublicKey), contractVersionsMap[version]);
-};
-
-export const externalMessage = (
-  contract:
-    | WalletContractV4R1
-    | WalletContractV3R1
-    | WalletContractV3R2
-    | WalletContractV4,
-  seqno: number,
-  body: Cell,
-) => {
-  return beginCell()
-    .storeWritable(
-      storeMessage(
-        external({
-          to: contract.address,
-          init: seqno === 0 ? contract.init : undefined,
-          body: body,
-        }),
-      ),
-    )
-    .endCell();
-};
-
-export const jettonTransferBody = (params: {
-  queryId?: number;
-  jettonAmount: bigint;
-  toAddress: Address;
-  responseAddress: Address;
-  forwardAmount: bigint;
-  forwardPayload: Cell | string;
-}) => {
-  let forwardPayload =
-    typeof params.forwardPayload === 'string' && params.forwardPayload.length > 0
-      ? comment(params.forwardPayload)
-      : null;
-
-  if (params.forwardPayload instanceof Cell) {
-    forwardPayload = params.forwardPayload;
-  }
-
-  return beginCell()
-    .storeUint(0xf8a7ea5, 32) // request_transfer op
-    .storeUint(params.queryId || 0, 64)
-    .storeCoins(params.jettonAmount)
-    .storeAddress(params.toAddress)
-    .storeAddress(params.responseAddress)
-    .storeBit(false) // null custom_payload
-    .storeCoins(params.forwardAmount)
-    .storeBit(forwardPayload != null) // forward_payload in this slice - false, separate cell - true
-    .storeMaybeRef(forwardPayload)
-    .endCell();
 };

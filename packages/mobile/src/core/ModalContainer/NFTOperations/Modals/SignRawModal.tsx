@@ -2,11 +2,7 @@ import React, { memo, useEffect, useMemo } from 'react';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
-import {
-  calculateActionsTotalAmount,
-  calculateMessageTransferAmount,
-  delay,
-} from '$utils';
+import { calculateMessageTransferAmount, delay } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
 import { store, Toast } from '$store';
@@ -247,7 +243,6 @@ export const openSignRawModal = async (
       const boc = TransactionService.createTransfer(contract, {
         messages: TransactionService.parseSignRawMessages(params.messages),
         seqno: (await tonapi.wallet.getAccountSeqno(tk.wallet.address.ton.raw)).seqno,
-        sendMode: 3,
         secretKey: Buffer.alloc(64),
       });
       consequences = await tonapi.wallet.emulateMessageToWallet({ boc });
@@ -270,16 +265,6 @@ export const openSignRawModal = async (
       }
 
       Toast.fail(`Emulation error: ${errorMessage}`, { duration: 5000 });
-    }
-
-    if (params.messages) {
-      const totalAmount = calculateActionsTotalAmount(params.messages);
-      const checkResult = await checkIsInsufficient(totalAmount);
-      if (checkResult.insufficient) {
-        Toast.hide();
-        onDismiss?.();
-        return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
-      }
     }
 
     push('SheetsProvider', {

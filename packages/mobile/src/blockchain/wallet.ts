@@ -8,6 +8,7 @@ import { UnlockedVault, Vault } from './vault';
 import {
   Address as AddressFormatter,
   AmountFormatter,
+  ContractService,
   TransactionService,
 } from '@tonkeeper/core';
 import { debugLog } from '$utils/debugLog';
@@ -25,18 +26,14 @@ import {
   Account,
 } from '@tonkeeper/core/src/legacy';
 import { SendApi, Configuration as V1Configuration } from 'tonapi-sdk-js';
-import {
-  externalMessage,
-  getTonCoreWalletContract,
-  jettonTransferBody,
-} from './contractService';
+import { getTonCoreWalletContract } from './contractService';
 
-import { Address, Cell, SendMode, internal, toNano } from '@ton/core';
+import { Address, Cell, internal, toNano } from '@ton/core';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 const TonWeb = require('tonweb');
 
 export const jettonTransferAmount = toNano('0.64');
-const jettonTransferForwardAmount = BigInt('1');
 
 export class Wallet {
   readonly name: string;
@@ -355,30 +352,24 @@ export class TonWallet {
 
     const jettonAmount = BigInt(amountNano);
 
-    const body = jettonTransferBody({
-      queryId: Date.now(),
-      jettonAmount,
-      toAddress: Address.parseRaw(recipient.address),
-      responseAddress: Address.parseRaw(sender.address),
-      forwardAmount: jettonTransferForwardAmount,
-      forwardPayload: payload,
-    });
-
-    const transfer = contract.createTransfer({
+    return TransactionService.createTransfer(contract, {
       seqno,
       secretKey,
-      sendMode: SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS,
       messages: [
         internal({
           to: Address.parse(jettonWalletAddress),
           bounce: true,
           value: jettonTransferAmount,
-          body: body,
+          body: ContractService.createJettonTransferBody({
+            queryId: Date.now(),
+            jettonAmount,
+            receiverAddress: recipient.address,
+            excessesAddress: tk.wallet.address.ton.raw,
+            forwardBody: payload,
+          }),
         }),
       ],
     });
-
-    return externalMessage(contract, seqno, transfer).toBoc().toString('base64');
   }
 
   async estimateJettonFee(
@@ -531,7 +522,7 @@ export class TonWallet {
         sendMode,
         messages: [
           internal({
-            to: Address.parseRaw(recipient.address),
+            to: recipient.address,
             bounce: recipient.status === 'active',
             value: amount,
             body: payload !== '' ? payload : undefined,

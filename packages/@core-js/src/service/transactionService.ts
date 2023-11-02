@@ -17,17 +17,9 @@ export type AnyAddress = string | Address | AddressFormatter;
 
 export interface TransferParams {
   seqno: number;
-  sendMode: number;
+  sendMode?: number;
   secretKey: Buffer;
   messages: MessageRelaxed[];
-}
-
-export interface CreateNftTransferBodyParams {
-  nftForwardAmount?: number;
-  ownerAddress: AnyAddress;
-  newOwnerAddress: AnyAddress;
-  payload?: string;
-  forwardBody?: Cell;
 }
 
 export function tonAddress(address: AnyAddress) {
@@ -55,13 +47,23 @@ export class TransactionService {
       .endCell();
   }
 
+  private static getBounceFlagFromAddress(address: string) {
+    try {
+      return Address.isFriendly(address)
+        ? Address.parseFriendly(address).isBounceable
+        : true;
+    } catch {
+      return true;
+    }
+  }
+
   static parseSignRawMessages(messages: SignRawMessage[]) {
     return messages.map((message) =>
       internal({
         to: tonAddress(message.address),
         value: AmountFormatter.fromNanoStatic(message.amount),
         body: message.payload && Cell.fromBase64(message.payload),
-        bounce: true,
+        bounce: this.getBounceFlagFromAddress(message.address),
       }),
     );
   }

@@ -2,24 +2,12 @@ import {
   TransferMethodParams,
   WalletContract,
 } from 'tonweb/dist/types/contract/wallet/wallet-contract';
-import {
-  DeployParams,
-  NftChangeOwnerParams,
-  NftCollectionDeployParams,
-  NftItemDeployParams,
-  NftSaleCancelParams,
-  NftSalePlaceGetgemsParams,
-  NftSalePlaceParams,
-  NftTransferParams,
-  SignRawParams,
-} from './TXRequest.types';
+import { DeployParams, NftTransferParams, SignRawParams } from './TXRequest.types';
 import TonWeb, { Method } from 'tonweb';
 import BigNumber from 'bignumber.js';
 import { Base64, truncateDecimal } from '$utils';
 import { Wallet } from 'blockchain';
 import { NFTOperationError } from './NFTOperationError';
-import { GetGemsSaleContract } from './GetGemsSaleContract';
-import { Cell } from 'tonweb/dist/types/boc/cell';
 import { Address as AddressType } from 'tonweb/dist/types/utils/address';
 import { Address } from '@ton/core';
 import { t } from '@tonkeeper/shared/i18n';
@@ -29,7 +17,7 @@ import { SendApi, Configuration as ConfigurationV1 } from 'tonapi-sdk-js';
 import { Tonapi } from '$libs/Tonapi';
 import { Configuration, NFTApi } from '@tonkeeper/core/src/legacy';
 
-const { NftCollection, NftItem, NftSale } = TonWeb.token.nft;
+const { NftItem } = TonWeb.token.nft;
 
 type EstimateFeeTransferMethod = (
   params: Omit<TransferMethodParams, 'secretKey'>,
@@ -73,95 +61,6 @@ export class NFTOperations {
     this.getMyAddresses();
   }
 
-  public async deployCollection(params: NftCollectionDeployParams) {
-    const wallet = params.ownerAddress
-      ? await this.getWalletByAddress(params.ownerAddress)
-      : this.getCurrentWallet();
-
-    const ownerAddress = params.ownerAddress
-      ? new TonWeb.utils.Address(params.ownerAddress)
-      : await wallet.getAddress();
-
-    const amount = Ton.fromNano(params.amount);
-    const seqno = await this.getSeqno(ownerAddress.toString(false));
-
-    let stateInit: Cell;
-    let nftCollectionAddress: string;
-    if (params.nftCollectionStateInitHex && params.contractAddress) {
-      stateInit = TonWeb.boc.Cell.oneFromBoc(params.nftCollectionStateInitHex);
-      nftCollectionAddress = params.contractAddress;
-    } else {
-      const royaltyAddress = new TonWeb.utils.Address(params.royaltyAddress);
-
-      const collectionCodeCell = params.nftCollectionCodeHex
-        ? TonWeb.boc.Cell.oneFromBoc(params.nftCollectionCodeHex)
-        : undefined;
-
-      const nftCollection = new NftCollection(wallet.provider, {
-        nftItemContentBaseUri: params.nftItemContentBaseUri,
-        collectionContentUri: params.collectionContentUri,
-        nftItemCodeHex: params.nftItemCodeHex,
-        royalty: params.royalty,
-        royaltyAddress,
-        ownerAddress,
-        code: collectionCodeCell,
-      });
-
-      const nftCollectionAddressInfo = await nftCollection.getAddress();
-      nftCollectionAddress = nftCollectionAddressInfo.toString(true, true, true);
-
-      const createdStateInit = await nftCollection.createStateInit();
-      stateInit = createdStateInit.stateInit;
-    }
-
-    return this.methods(wallet, {
-      amount: Ton.toNano(amount),
-      toAddress: nftCollectionAddress,
-      sendMode: 3,
-      stateInit,
-      seqno,
-    });
-  }
-
-  public async deployItem(params: NftItemDeployParams) {
-    const wallet = params.ownerAddress
-      ? await this.getWalletByAddress(params.ownerAddress)
-      : this.getCurrentWallet();
-
-    const ownerAddress = params.ownerAddress
-      ? new TonWeb.utils.Address(params.ownerAddress)
-      : await wallet.getAddress();
-
-    const seqno = await this.getSeqno(ownerAddress.toString(false));
-
-    const amount = this.toNano(params.amount);
-    const forwardAmount = this.toNano(params.forwardAmount);
-
-    const nftCollectionAddressInfo = new TonWeb.utils.Address(
-      params.nftCollectionAddress,
-    );
-    const nftCollectionAddress = nftCollectionAddressInfo.toString(true, true, true);
-
-    const nftCollection = new NftCollection(wallet.provider, {
-      address: params.nftCollectionAddress,
-    });
-
-    const payload = nftCollection.createMintBody({
-      itemContentUri: params.itemContentUri,
-      itemOwnerAddress: ownerAddress,
-      itemIndex: params.itemIndex,
-      amount: forwardAmount,
-    });
-
-    return this.methods(wallet, {
-      toAddress: nftCollectionAddress,
-      sendMode: 3,
-      payload,
-      amount,
-      seqno,
-    });
-  }
-
   public async transfer(
     params: Omit<NftTransferParams, 'address'>,
     options?: { useCurrentWallet?: boolean },
@@ -201,134 +100,6 @@ export class NFTOperations {
     });
   }
 
-  public async changeOwner(params: NftChangeOwnerParams) {
-    const ownerAddress = await this.getOwnerAddressByCollection(
-      params.nftCollectionAddress,
-    );
-    const wallet = await this.getWalletByAddress(ownerAddress);
-    const seqno = await this.getSeqno(ownerAddress);
-
-    const amount = this.toNano(params.amount);
-
-    const nftCollection = new NftCollection(wallet.provider, {});
-    const nftCollectionAddressInfo = new TonWeb.utils.Address(
-      params.nftCollectionAddress,
-    );
-    const nftCollectionAddress = nftCollectionAddressInfo.toString(true, true, true);
-
-    const payload = nftCollection.createChangeOwnerBody({
-      newOwnerAddress: new TonWeb.utils.Address(params.newOwnerAddress),
-    });
-
-    return this.methods(wallet, {
-      toAddress: nftCollectionAddress,
-      amount: amount,
-      sendMode: 3,
-      payload,
-      seqno,
-    });
-  }
-
-  public async saleCancel(params: NftSaleCancelParams) {
-    const wallet = await this.getWalletByAddress(params.ownerAddress);
-
-    const saleAddress = new TonWeb.utils.Address(params.saleAddress);
-    const sale = new NftSale(wallet.provider, {});
-    const payload = await sale.createCancelBody({});
-    const amount = this.toNano(params.amount);
-    const seqno = await this.getSeqno(params.ownerAddress);
-
-    return this.methods(wallet, {
-      toAddress: saleAddress,
-      amount: amount,
-      sendMode: 3,
-      payload,
-      seqno,
-    });
-  }
-
-  public async salePlace(params: NftSalePlaceParams) {
-    const ownerAddress = await this.getOwnerAddressByItem(params.nftItemAddress);
-    const wallet = await this.getWalletByAddress(ownerAddress);
-
-    const marketplaceAddress = new TonWeb.utils.Address(params.marketplaceAddress);
-    const royaltyAddress = new TonWeb.utils.Address(params.royaltyAddress);
-    const nftItemAddress = new TonWeb.utils.Address(params.nftItemAddress);
-
-    const sale = new NftSale(wallet.provider, {
-      marketplaceFee: this.toNano(params.marketplaceFee),
-      royaltyAmount: this.toNano(params.royaltyAmount),
-      fullPrice: this.toNano(params.fullPrice),
-      nftAddress: nftItemAddress,
-      marketplaceAddress,
-      royaltyAddress,
-    });
-
-    const createdStateInit = await sale.createStateInit();
-    const amount = this.toNano(params.amount);
-    const seqno = await this.getSeqno(ownerAddress);
-
-    const body = new TonWeb.boc.Cell();
-    body.bits.writeUint(1, 32); // OP deploy new auction
-    body.bits.writeCoins(amount);
-    body.refs.push(createdStateInit.stateInit);
-    body.refs.push(new TonWeb.boc.Cell());
-
-    return this.methods(wallet, {
-      toAddress: marketplaceAddress,
-      amount: amount,
-      payload: body,
-      sendMode: 3,
-      seqno,
-    });
-  }
-
-  public async salePlaceGetGems(params: NftSalePlaceGetgemsParams) {
-    const wallet = this.getCurrentWallet();
-    const amount = this.toNano(params.deployAmount);
-    const seqno = await this.getSeqno((await wallet.getAddress()).toString(false));
-
-    if (Number(params.forwardAmount) < 1) {
-      throw new NFTOperationError('forwardAmount must be greater than 0');
-    }
-
-    const getgems = new GetGemsSaleContract(this.tonwebWallet.provider, {
-      marketplaceFeeAddress: new TonWeb.utils.Address(params.marketplaceFeeAddress),
-      marketplaceAddress: new TonWeb.utils.Address(params.marketplaceAddress),
-      royaltyAddress: new TonWeb.utils.Address(params.royaltyAddress),
-      nftItemAddress: new TonWeb.utils.Address(params.nftItemAddress),
-      marketplaceFee: this.toNano(params.marketplaceFee),
-      royaltyAmount: this.toNano(params.royaltyAmount),
-      fullPrice: this.toNano(params.fullPrice),
-      createdAt: params.createdAt,
-    });
-
-    const { stateInit, address } = await getgems.createStateInit();
-    const contractAddress = address.toString(true, true, true);
-
-    const saleMessageBody = new TonWeb.boc.Cell();
-
-    let signature = TonWeb.utils.hexToBytes(params.marketplaceSignatureHex);
-
-    let payload = new TonWeb.boc.Cell();
-    payload.bits.writeUint(1, 32);
-    payload.bits.writeBytes(signature);
-    payload.refs.push(stateInit);
-    payload.refs.push(saleMessageBody);
-
-    return this.methods(
-      wallet,
-      {
-        toAddress: params.marketplaceAddress,
-        sendMode: 3,
-        amount,
-        payload,
-        seqno,
-      },
-      { contractAddress },
-    );
-  }
-
   public async deploy(params: DeployParams) {
     const wallet = this.getCurrentWallet();
     const seqno = await this.getSeqno((await wallet.getAddress()).toString(false));
@@ -350,20 +121,6 @@ export class NFTOperations {
       sendMode: 3,
       seqno,
     });
-  }
-
-  //
-  // Info methods
-  //
-
-  public async getCollectionUri(nftCollectionAddress: string) {
-    const nftCollection = new NftCollection(this.tonwebWallet.provider, {
-      address: nftCollectionAddress,
-    });
-
-    const data = await nftCollection.getCollectionData();
-
-    return data.collectionContentUri;
   }
 
   private seeIfBounceable(address: string) {
@@ -441,20 +198,6 @@ export class NFTOperations {
         return response;
       },
     };
-  }
-
-  public async getCollectionAddressByItem(nftItemAddress: string) {
-    const nftItemData = await this.nftApi.getNftItemsByAddresses({
-      getAccountsRequest: { accountIds: [nftItemAddress] },
-    });
-
-    const collectionAddress = nftItemData.nftItems[0]?.collection?.address;
-
-    if (!collectionAddress) {
-      throw new NFTOperationError('collectionAddress empty');
-    }
-    const isTestnet = this.wallet.ton.isTestnet;
-    return new TonWeb.Address(collectionAddress).toString(true, true, true, isTestnet);
   }
 
   private async getOwnerAddressByItem(nftItemAddress: string) {
