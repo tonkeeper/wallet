@@ -11,7 +11,7 @@ import {
   SendMode,
 } from '@ton/core';
 import { Maybe } from '@ton/ton/dist/utils/maybe';
-import { createWalletTransferV4 } from '@ton/ton/dist/wallets/signing/createWalletTransfer';
+import { createWalletTransferV3 } from '@ton/ton/dist/wallets/signing/createWalletTransfer';
 
 export interface LockupContractV1AdditionalParams {
   allowedDestinations?: Maybe<string>;
@@ -135,7 +135,7 @@ export class LockupContractV1 implements Contract {
     if (args.sendMode !== null && args.sendMode !== undefined) {
       sendMode = args.sendMode;
     }
-    return createWalletTransferV4({
+    return createWalletTransferV3({
       seqno: args.seqno,
       sendMode,
       secretKey: args.secretKey,
