@@ -11,24 +11,26 @@ export enum BatteryState {
 const valuesForBatteryState = {
   [BatteryState.Medium]: '1',
   [BatteryState.AlmostEmpty]: '0.1',
+  [BatteryState.Empty]: '0.01',
 };
 
 export const MEAN_FEES = '0.01';
 
 export function getBatteryState(batteryBalance: string) {
   const balance = new BigNumber(formatter.fromNano(batteryBalance));
-  const medium = new BigNumber(valuesForBatteryState[BatteryState.AlmostEmpty]);
+  const medium = new BigNumber(valuesForBatteryState[BatteryState.Medium]);
+  const almostEmpty = new BigNumber(valuesForBatteryState[BatteryState.AlmostEmpty]);
   const empty = new BigNumber(valuesForBatteryState[BatteryState.Empty]);
 
   if (balance.gte(medium)) {
     return BatteryState.Full;
   }
 
-  if (balance.gte(empty)) {
+  if (balance.gte(almostEmpty)) {
     return BatteryState.Medium;
   }
 
-  if (balance.gt(0)) {
+  if (balance.gt(empty)) {
     return BatteryState.AlmostEmpty;
   }
 

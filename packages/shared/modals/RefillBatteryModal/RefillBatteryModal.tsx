@@ -19,6 +19,7 @@ import {
 import { navigation, SheetActions, useNavigation } from '@tonkeeper/router';
 import { RefillBatteryIAP } from './RefillBatteryIAP';
 import { t } from '@tonkeeper/shared/i18n';
+import { config } from '../../config';
 
 const iconNames: { [key: string]: IconNames } = {
   [BatteryState.Empty]: 'ic-empty-battery-128',
@@ -46,12 +47,12 @@ export const RefillBatteryModal = memo(() => {
           <Spacer y={4} />
           <Text textAlign="center" type="body2" color="textSecondary">
             {t(`battery.description.${batteryState.toLowerCase()}`, {
-              cnt: calculateAvailableNumOfTransactions,
+              cnt: calculateAvailableNumOfTransactions(balance ?? '0'),
             })}
           </Text>
           <Spacer y={16} />
         </View>
-        {batteryState === BatteryState.Full ? (
+        {config.get('disable_battery_iap_module') ? (
           <Button title={t('battery.ok')} onPress={nav.goBack} />
         ) : (
           <RefillBatteryIAP />

@@ -124,6 +124,8 @@
   "auth_failed" : "Authentication failed",
   "balances_setup_wallet" : "Set up wallet",
   "battery": {
+    "settings": "Battery",
+    "ok": "OK",
     "title": {
       "empty": "Battery for gas fees is empty",
       "almost_empty": "Battery for gas fees is almost empty",

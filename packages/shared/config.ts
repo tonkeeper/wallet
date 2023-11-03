@@ -19,6 +19,7 @@ type AppConfigVars = {
   batteryHost: string;
   batteryTestnetHost: string;
   disable_battery: boolean;
+  disable_battery_iap_module: boolean;
 };
 
 const defaultConfig: Partial<AppConfigVars> = {
@@ -30,6 +31,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   batteryHost: 'https://battery.tonkeeper.com',
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
   disable_battery: false,
+  disable_battery_iap_module: Platform.OS === 'android',
 };
 
 export const config = new AppConfig<AppConfigVars>({

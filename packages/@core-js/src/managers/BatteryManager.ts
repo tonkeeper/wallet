@@ -9,8 +9,6 @@ export class BatteryManager {
 
   public async getBalance() {
     try {
-      console.log('string');
-      console.log(this.identity.tonProof);
       const data = await this.ctx.batteryapi.getBalance({
         headers: {
           'X-TonConnect-Auth': this.identity.tonProof,
@@ -19,7 +17,6 @@ export class BatteryManager {
 
       return data.balance;
     } catch (err) {
-      console.log(err);
       return '0';
     }
   }

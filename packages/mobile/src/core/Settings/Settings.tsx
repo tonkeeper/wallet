@@ -322,7 +322,7 @@ export const Settings: FC = () => {
                     name={'ic-battery-28'}
                   />
                 }
-                title={t('settings_battery')}
+                title={t('battery.settings')}
                 onPress={handleBattery}
               />
             )}

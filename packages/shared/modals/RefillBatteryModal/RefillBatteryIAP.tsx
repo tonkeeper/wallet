@@ -85,7 +85,7 @@ export const RefillBatteryIAP = memo(() => {
               valueContainerStyle={styles.valueContainerStyle}
               value={
                 <Button
-                  disabled={purchaseInProgress}
+                  disabled={purchaseInProgress || !product}
                   onPress={makePurchase(item.packageId)}
                   size="small"
                   title={t('battery.packages.buy')}
