@@ -8,7 +8,6 @@ export class BatteryManager {
   }
 
   public async getBalance() {
-    console.log('[getBalance]');
     try {
       const headers = new Headers({
         'X-TonConnect-Auth': this.identity.tonProof,

@@ -7,11 +7,12 @@ import { config } from '../../config';
 
 const iconNames: { [key: string]: IconNames } = {
   [BatteryState.Empty]: 'ic-empty-battery-28',
-  [BatteryState.AlmostEmpty]: 'ic-almost-empty-battery-28',
+  [BatteryState.AlmostEmpty]: 'ic-empty-battery-28',
+  [BatteryState.Medium]: 'ic-almost-empty-battery-28',
   [BatteryState.Full]: 'ic-full-battery-28',
 };
 
-const hitSlop = { top: 4, bottom: 4, right: 4, left: 4 };
+const hitSlop = { top: 8, bottom: 8, right: 8, left: 8 };
 
 export const BatteryIcon = memo(() => {
   const { data: balance } = useBatteryBalance();

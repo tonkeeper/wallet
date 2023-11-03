@@ -9,6 +9,7 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
 import { Icon, PopupSelect, ScrollHandler, Spacer, Text, List } from '$uikit';
+import { Icon as NewIcon } from '@tonkeeper/uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
@@ -56,6 +57,8 @@ import { trackEvent } from '$utils/stats';
 import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 import { Address } from '@tonkeeper/core';
 import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
+import { config } from '@tonkeeper/shared/config';
+import { openRefillBatteryModal } from '@tonkeeper/shared/modals/RefillBatteryModal';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -83,6 +86,8 @@ export const Settings: FC = () => {
   const showV4R1 = useSelector(showV4R1Selector);
   const shouldShowTokensButton = useShouldShowTokensButton();
   const showNotifications = useNotificationsStore(shouldShowNotifications);
+
+  const isBatteryVisible = !config.get('disable_battery');
 
   const searchEngine = useBrowserStore((state) => state.searchEngine);
   const setSearchEngine = useBrowserStore((state) => state.actions.setSearchEngine);
@@ -200,12 +205,12 @@ export const Settings: FC = () => {
     openAppearance();
   }, []);
 
-  const handleJettonsList = useCallback(() => {
-    openJettonsListSettingsStack();
-  }, []);
-
   const handleManageTokens = useCallback(() => {
     openManageTokens();
+  }, []);
+
+  const handleBattery = useCallback(() => {
+    openRefillBatteryModal();
   }, []);
 
   const handleDeleteAccount = useCallback(() => {
@@ -306,6 +311,19 @@ export const Settings: FC = () => {
                 }
                 title={t('settings_appearance')}
                 onPress={handleAppearance}
+              />
+            )}
+            {isBatteryVisible && (
+              <List.Item
+                value={
+                  <NewIcon
+                    style={styles.icon.static}
+                    color="accentBlue"
+                    name={'ic-battery-28'}
+                  />
+                }
+                title={t('settings_battery')}
+                onPress={handleBattery}
               />
             )}
           </List>

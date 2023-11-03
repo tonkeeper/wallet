@@ -29,7 +29,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
   batteryHost: 'https://battery.tonkeeper.com',
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
-  disable_battery: true,
+  disable_battery: false,
 };
 
 export const config = new AppConfig<AppConfigVars>({

@@ -1,4 +1,8 @@
-import { BatteryState, getBatteryState } from '../../utils/battery';
+import {
+  BatteryState,
+  calculateAvailableNumOfTransactions,
+  getBatteryState,
+} from '../../utils/battery';
 
 import { memo } from 'react';
 import { useBatteryBalance } from '../../query/hooks/useBatteryBalance';
@@ -18,7 +22,8 @@ import { t } from '@tonkeeper/shared/i18n';
 
 const iconNames: { [key: string]: IconNames } = {
   [BatteryState.Empty]: 'ic-empty-battery-128',
-  [BatteryState.AlmostEmpty]: 'ic-almost-empty-battery-128',
+  [BatteryState.AlmostEmpty]: 'ic-empty-battery-128',
+  [BatteryState.Medium]: 'ic-almost-empty-battery-128',
   [BatteryState.Full]: 'ic-full-battery-128',
 };
 
@@ -40,7 +45,9 @@ export const RefillBatteryModal = memo(() => {
           </Text>
           <Spacer y={4} />
           <Text textAlign="center" type="body2" color="textSecondary">
-            {t(`battery.description.${batteryState.toLowerCase()}`)}
+            {t(`battery.description.${batteryState.toLowerCase()}`, {
+              cnt: calculateAvailableNumOfTransactions,
+            })}
           </Text>
           <Spacer y={16} />
         </View>

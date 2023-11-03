@@ -1,13 +1,11 @@
 import { Button, List, Spacer, Steezy, Text, Toast, View } from '@tonkeeper/uikit';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
-import { AppIAP } from '../../modules/AppIAP';
-import { iap } from '../../iap';
-import { Product } from 'react-native-iap';
-import { batteryapi, tk } from '../../tonkeeper';
-import { platform } from '@tonkeeper/mobile/src/utils';
+import { tk } from '../../tonkeeper';
 import { Platform } from 'react-native';
 import { goBack } from '@tonkeeper/mobile/src/navigation/imperative';
+import { useIAP } from 'react-native-iap';
+import { SkeletonLine } from '@tonkeeper/mobile/src/uikit/Skeleton/SkeletonLine';
 
 const packages = [
   {
@@ -25,26 +23,22 @@ const packages = [
 ];
 
 export const RefillBatteryIAP = memo(() => {
-  const [products, setProducts] = useState<Product[]>([]);
   const [purchaseInProgress, setPurchaseInProgress] = useState<boolean>(false);
+  const { products, getProducts, requestPurchase, connected } = useIAP();
 
   useEffect(() => {
-    async function getProducts() {
-      const items = await iap.getPackages(packages.map((item) => item.packageId));
-      setProducts(items);
-    }
-    getProducts();
-  }, []);
-
-  if (!products?.length) {
-    return null;
-  }
+    getProducts({
+      skus: packages.map((item) => item.packageId),
+    });
+  }, [getProducts]);
 
   const makePurchase = useCallback(
     (packageId: string) => async () => {
       setPurchaseInProgress(true);
-      const product = await iap.makePurchase(packageId);
+      let product = await requestPurchase({ sku: packageId });
       if (!product) return;
+
+      if (Array.isArray(product)) product = product[0];
 
       if (Platform.OS === 'ios') {
         if (!product.transactionId) return;
@@ -73,11 +67,15 @@ export const RefillBatteryIAP = memo(() => {
             <List.Item
               title={
                 <View>
-                  <Text type="label1">
-                    {t(`battery.packages.title.${item.key}`, {
-                      price: product?.localizedPrice,
-                    })}
-                  </Text>
+                  <View style={styles.titleContainer}>
+                    <Text type="label1">
+                      {t(`battery.packages.title.${item.key}`, {
+                        price: product?.localizedPrice ?? '',
+                      })}
+                    </Text>
+                    <Spacer x={4} />
+                    {!product?.localizedPrice && <SkeletonLine height={24} width={40} />}
+                  </View>
                   <Text type="body2" color="textSecondary">
                     {t(`battery.packages.subtitle.${item.key}`)}
                   </Text>
@@ -108,5 +106,9 @@ export const RefillBatteryIAP = memo(() => {
 const styles = Steezy.create({
   valueContainerStyle: {
     justifyContent: 'center',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
