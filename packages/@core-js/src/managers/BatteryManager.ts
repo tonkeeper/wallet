@@ -17,7 +17,7 @@ export class BatteryManager {
 
       return data.balance;
     } catch (err) {
-      return '0';
+      return null;
     }
   }
 
