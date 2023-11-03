@@ -9,28 +9,29 @@ export class BatteryManager {
 
   public async getBalance() {
     try {
-      const headers = new Headers({
-        'X-TonConnect-Auth': this.identity.tonProof,
-      });
+      console.log('string');
+      console.log(this.identity.tonProof);
       const data = await this.ctx.batteryapi.getBalance({
-        headers,
+        headers: {
+          'X-TonConnect-Auth': this.identity.tonProof,
+        },
       });
 
       return data.balance;
     } catch (err) {
+      console.log(err);
       return '0';
     }
   }
 
   public async makeIosPurchase(transactions: { id: string }[]) {
     try {
-      const headers = new Headers({
-        'X-TonConnect-Auth': this.identity.tonProof,
-      });
       const data = await this.ctx.batteryapi.ios.iosBatteryPurchase(
         { transactions: transactions },
         {
-          headers,
+          headers: {
+            'X-TonConnect-Auth': this.identity.tonProof,
+          },
         },
       );
 

@@ -125,10 +125,10 @@ export class Tonkeeper {
     try {
       const tonProof = await this.storage.getItem(this.tonProofStorageKey);
       const tronAddress = await this.storage.getItem(this.tronStorageKey);
-      if (tronAddress) {
-        return { tronAddress: JSON.parse(tronAddress), tonProof };
-      }
-      return { tronAddress: null, tonProof };
+      return {
+        tronAddress: tronAddress ? JSON.parse(tronAddress) : null,
+        tonProof: tonProof ? JSON.parse(tonProof) : null,
+      };
     } catch (err) {
       console.error('[tk:load]', err);
       return { tronAddress: null, tonProof: null };

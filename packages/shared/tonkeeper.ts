@@ -38,10 +38,10 @@ export const tronapi = new TronAPI({
 export const batteryapi = new BatteryAPI({
   baseUrl: () => {
     if (tk.wallet?.identity.network === WalletNetwork.testnet) {
-      return config.get('tronapiTestnetHost');
+      return config.get('batteryTestnetHost');
     }
 
-    return config.get('tronapiHost');
+    return config.get('batteryHost');
   },
 });
 
