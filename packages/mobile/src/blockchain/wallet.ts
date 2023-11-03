@@ -224,10 +224,10 @@ export class TonWallet {
   }
 
   private async sendBoc(boc: string): Promise<void> {
-    if (config.get('disable_battery')) {
+    if (config.get('disable_battery') || config.get('disable_battery_send')) {
       return this.sendApi.sendBoc({ sendBocRequest: { boc } });
     }
-    tk.wallet.battery.sendMessage(boc);
+    return tk.wallet.battery.sendMessage(boc);
   }
 
   async createSubscription(

@@ -42,13 +42,12 @@ export class BatteryManager {
 
   public async makeAndroidPurchase(purchases: { token: string; product_id: string }[]) {
     try {
-      const headers = new Headers({
-        'X-TonConnect-Auth': this.identity.tonProof,
-      });
       const data = await this.ctx.batteryapi.android.androidBatteryPurchase(
         { purchases },
         {
-          headers,
+          headers: {
+            'X-TonConnect-Auth': this.identity.tonProof,
+          },
         },
       );
 
@@ -62,20 +61,18 @@ export class BatteryManager {
 
   public async sendMessage(boc: string) {
     try {
-      const headers = new Headers({
-        'X-TonConnect-Auth': this.identity.tonProof,
-      });
-
       await this.ctx.batteryapi.sendMessage(
         { boc },
         {
-          headers,
+          headers: {
+            'X-TonConnect-Auth': this.identity.tonProof,
+          },
         },
       );
 
       await this.getBalance();
     } catch (err) {
-      console.log('[android battery sendMessage]', err);
+      console.log('[battery sendMessage]', err);
     }
   }
 }
