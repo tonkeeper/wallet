@@ -297,7 +297,8 @@
     "hide" : "Hide",
     "other_ways_to_buy" : "Other ways to buy",
     "show_all" : "Show all",
-    "title" : "Buy or sell"
+    "buy": "Buy",
+    "sell": "Sell"
   },
   "exchange" : {
     "not_exists" : "Invalid exchange ID"

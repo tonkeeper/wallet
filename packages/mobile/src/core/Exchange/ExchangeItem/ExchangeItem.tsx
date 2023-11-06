@@ -8,6 +8,9 @@ import { Icon, Text } from '$uikit';
 import { Linking } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
 import { openExchangeMethodModal } from '$core/ModalContainer/ExchangeMethod/ExchangeMethod';
+import { getCryptoAssetIconSource } from '@tonkeeper/uikit/assets/cryptoAssets';
+import { FastImage } from '@tonkeeper/uikit';
+import { Image } from 'react-native';
 
 export const ExchangeItem: FC<ExchangeItemProps> = ({
   methodId,
@@ -20,7 +23,9 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
   const isBot = methodId.endsWith('_bot');
 
   const handlePress = useCallback(() => {
-    if (!method) return null;
+    if (!method) {
+      return null;
+    }
     if (isBot) {
       openExchangeMethodModal(methodId, () => {
         Linking.openURL(method.action_button.url);
@@ -31,7 +36,9 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
   }, [isBot, method, methodId]);
 
   function renderBadge() {
-    if (!method) return null;
+    if (!method) {
+      return null;
+    }
     if (method.badge) {
       let backgroundColor = theme.colors.accentPrimary;
       if (method.badgeStyle === 'red') {
@@ -67,15 +74,32 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
               <Text variant="label1">{method.title}</Text>
               {isBot ? <S.LabelBadge>{t('exchange_telegram_bot')}</S.LabelBadge> : null}
             </S.LabelContainer>
-            <Text
-              style={{ overflow: 'hidden' }}
-              color="foregroundSecondary"
-              numberOfLines={5}
-              ellipsizeMode="tail"
-              variant="body2"
-            >
-              {method.subtitle}
-            </Text>
+            {method.assets ? (
+              <S.AssetsContainer>
+                {method.assets.slice(0, 3).map((asset, index) => (
+                  <S.Asset key={asset} style={{ zIndex: 3 - index }}>
+                    <Image source={getCryptoAssetIconSource(asset)} />
+                  </S.Asset>
+                ))}
+                {method.assets.length > 2 ? (
+                  <S.AssetsCount>
+                    <Text variant="label3" color="textSecondary">
+                      + 2{method.assets.length}
+                    </Text>
+                  </S.AssetsCount>
+                ) : null}
+              </S.AssetsContainer>
+            ) : (
+              <Text
+                style={{ overflow: 'hidden' }}
+                color="foregroundSecondary"
+                numberOfLines={5}
+                ellipsizeMode="tail"
+                variant="body2"
+              >
+                {method.subtitle}
+              </Text>
+            )}
           </S.Contain>
           <S.IconContain>
             <Icon name="ic-chevron-16" color="foregroundSecondary" />

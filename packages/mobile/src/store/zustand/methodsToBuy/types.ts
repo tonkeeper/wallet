@@ -18,6 +18,7 @@ export interface IMethod {
     title: string;
     url: string;
   }[];
+  assets?: string[];
 }
 
 export interface ILayout {
@@ -33,14 +34,20 @@ export interface IDefaultLayout {
 export enum CategoryType {
   BUY = 'buy',
   SELL = 'sell',
+  Swap = 'swap',
+}
+
+export interface IExchangeCategory {
+  type: CategoryType;
+  title: string;
+  items: IMethod[];
 }
 
 export interface IMethodsToBuyStore {
   selectedCountry: string;
-  categories: {
-    type: CategoryType;
-    items: IMethod[];
-  }[];
+  buy: IExchangeCategory[];
+  sell: IExchangeCategory[];
+  allMethods: IMethod[];
   layoutByCountry: ILayout[];
   defaultLayout: IDefaultLayout;
   lastUsedCountries: string[];
