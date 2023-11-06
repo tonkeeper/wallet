@@ -11,13 +11,15 @@ export interface SheetModalHeaderProps {
   onIconLeftPress?: () => void;
   onClose?: () => void;
   iconLeft?: IconNames;
+  leftContent?: React.ReactNode;
   gradient?: boolean;
   title?: string | React.ReactNode;
   center?: boolean;
 }
 
 export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
-  const { gradient, title, onClose, iconLeft, onIconLeftPress, center } = props;
+  const { gradient, title, onClose, iconLeft, onIconLeftPress, leftContent, center } =
+    props;
   const { measureHeader, close } = useSheetInternal();
   const theme = useTheme();
 
@@ -55,13 +57,19 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
               <Icon name={iconLeft} color="constantWhite" />
             </View>
           </TouchableOpacity>
-        ) : null}
+        ) : (
+          <View style={styles.leftContent}>{leftContent}</View>
+        )}
 
         {hasTitle && (
           <View style={[styles.headerTitle, center && styles.titleByCenter]}>
-            <Text type="h3" textAlign={center ? 'center' : 'left'}>
-              {title}
-            </Text>
+            {typeof title === 'string' ? (
+              <Text type="h3" textAlign={center ? 'center' : 'left'}>
+                {title}
+              </Text>
+            ) : (
+              title
+            )}
           </View>
         )}
 
@@ -125,6 +133,15 @@ const styles = StyleSheet.create({
   },
   leftButton: {
     left: 0,
+  },
+  leftContent: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    zIndex: 2,
+    height: 64,
+    justifyContent: 'center',
+    paddingLeft: 16,
   },
   close: {
     width: 32,
