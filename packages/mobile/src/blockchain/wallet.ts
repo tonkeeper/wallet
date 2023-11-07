@@ -227,7 +227,11 @@ export class TonWallet {
     if (config.get('disable_battery') || config.get('disable_battery_send')) {
       return this.sendApi.sendBoc({ sendBocRequest: { boc } });
     }
-    return tk.wallet.battery.sendMessage(boc);
+    try {
+      return await tk.wallet.battery.sendMessage(boc);
+    } catch (err) {
+      return this.sendApi.sendBoc({ sendBocRequest: { boc } });
+    }
   }
 
   async createSubscription(

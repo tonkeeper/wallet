@@ -194,9 +194,13 @@ export class NFTOperations {
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
 
         if (config.get('disable_battery') || config.get('disable_battery_send')) {
-          await this.sendApi.sendBoc({ sendBocRequest: { boc } });
+          this.sendApi.sendBoc({ sendBocRequest: { boc } });
         } else {
-          await tk.wallet.battery.sendMessage(boc);
+          try {
+            await tk.wallet.battery.sendMessage(boc);
+          } catch (err) {
+            this.sendApi.sendBoc({ sendBocRequest: { boc } });
+          }
         }
 
         onDone?.(boc);

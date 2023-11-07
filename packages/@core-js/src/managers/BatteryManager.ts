@@ -85,6 +85,7 @@ export class BatteryManager {
       await this.ctx.batteryapi.sendMessage(
         { boc },
         {
+          format: 'text',
           headers: {
             'X-TonConnect-Auth': this.identity.tonProof,
           },
@@ -94,6 +95,7 @@ export class BatteryManager {
       await this.getBalance();
     } catch (err) {
       console.log('[battery sendMessage]', err);
+      throw new Error(err);
     }
   }
 }
