@@ -1,0 +1,5 @@
+git_url("https://github.com/KuznetsovNikita/tonkeeper-secret")
+
+storage_mode("git")
+
+type("development") # The default type, can be: appstore, adhoc, enterprise or development
