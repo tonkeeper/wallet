@@ -58,7 +58,7 @@ export const RefillBatteryIAP = memo(() => {
 
   return (
     <>
-      <List>
+      <List indent={false}>
         {packages.map((item) => {
           const product = products.find(
             (product) => product.productId === item.packageId,
@@ -95,10 +95,6 @@ export const RefillBatteryIAP = memo(() => {
           );
         })}
       </List>
-      <Spacer y={16} />
-      <Text type="label2" textAlign="center" color="textTertiary">
-        {t('battery.packages.disclaimer')}
-      </Text>
     </>
   );
 });

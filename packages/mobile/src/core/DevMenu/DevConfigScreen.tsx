@@ -1,4 +1,4 @@
-import { config } from '@tonkeeper/shared/config';
+import { AppConfigVars, config } from '@tonkeeper/shared/config';
 import { useNavigation } from '@tonkeeper/router';
 import { memo, useRef, useState } from 'react';
 import RNRestart from 'react-native-restart';
@@ -11,13 +11,21 @@ import {
   Screen,
   Spacer,
   Steezy,
+  useTheme,
 } from '@tonkeeper/uikit';
+import { Switch } from 'react-native';
 
 export const DevConfigScreen = memo(() => {
   const [_, rerender] = useState(0);
   const nav = useNavigation();
+  const theme = useTheme();
 
   const handleSave = () => rerender((c) => c + 1);
+
+  const handleBooleanSwitch = (key: keyof AppConfigVars) => () => {
+    config.set({ [key]: !config.get(key) });
+    handleSave();
+  };
 
   return (
     <Screen>
@@ -46,6 +54,39 @@ export const DevConfigScreen = memo(() => {
                 title: 'Tonapi host',
                 onSave: handleSave,
               })
+            }
+          />
+          <List.Item
+            title="Disable battery"
+            onPress={handleBooleanSwitch('disable_battery')}
+            rightContent={
+              <Switch
+                trackColor={{ true: theme.accentBlue }}
+                value={config.get('disable_battery')}
+                onChange={handleBooleanSwitch('disable_battery')}
+              />
+            }
+          />
+          <List.Item
+            title="Disable battery IAPs"
+            onPress={handleBooleanSwitch('disable_battery_iap_module')}
+            rightContent={
+              <Switch
+                trackColor={{ true: theme.accentBlue }}
+                value={config.get('disable_battery_iap_module')}
+                onChange={handleBooleanSwitch('disable_battery_iap_module')}
+              />
+            }
+          />
+          <List.Item
+            title="Disable send using battery"
+            onPress={handleBooleanSwitch('disable_battery_send')}
+            rightContent={
+              <Switch
+                trackColor={{ true: theme.accentBlue }}
+                value={config.get('disable_battery_send')}
+                onChange={handleBooleanSwitch('disable_battery_send')}
+              />
             }
           />
         </List>

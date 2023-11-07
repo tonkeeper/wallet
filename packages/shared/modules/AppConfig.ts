@@ -80,15 +80,15 @@ export class AppConfig<TConfig = {}> {
   };
 
   public get<TKey extends keyof TConfig>(key: TKey): TConfig[TKey] {
-    if (this.clientConfig[key]) {
+    if (this.clientConfig[key] !== undefined) {
       return this.clientConfig[key]!;
     }
 
-    if (this.serverConfig[key]) {
+    if (this.serverConfig[key] !== undefined) {
       return this.serverConfig[key]!;
     }
 
-    return this.defaultConfig[key]! ?? '';
+    return this.defaultConfig[key]!;
   }
 
   private async saveServerConfig(config: Partial<TConfig>) {

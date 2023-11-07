@@ -21,6 +21,27 @@ export class BatteryManager {
     }
   }
 
+  public async applyPromo(promoCode: string) {
+    try {
+      const data = await this.ctx.batteryapi.promoCode.promoCodeBatteryPurchase(
+        { promo_code: promoCode },
+        {
+          headers: {
+            'X-TonConnect-Auth': this.identity.tonProof,
+          },
+        },
+      );
+
+      if (data.success) {
+        this.getBalance();
+      }
+
+      return data;
+    } catch (err) {
+      return { success: false, error: { msg: 'Unexpected error' } };
+    }
+  }
+
   public async makeIosPurchase(transactions: { id: string }[]) {
     try {
       const data = await this.ctx.batteryapi.ios.iosBatteryPurchase(

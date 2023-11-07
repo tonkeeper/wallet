@@ -9,15 +9,15 @@ export enum BatteryState {
 }
 
 const valuesForBatteryState = {
-  [BatteryState.Medium]: '1',
-  [BatteryState.AlmostEmpty]: '0.1',
+  [BatteryState.Medium]: '2',
+  [BatteryState.AlmostEmpty]: '1',
   [BatteryState.Empty]: '0.01',
 };
 
-export const MEAN_FEES = '0.01';
+export const MEAN_FEES = '0.02';
 
 export function getBatteryState(batteryBalance: string) {
-  const balance = new BigNumber(formatter.fromNano(batteryBalance));
+  const balance = new BigNumber(batteryBalance);
   const medium = new BigNumber(valuesForBatteryState[BatteryState.Medium]);
   const almostEmpty = new BigNumber(valuesForBatteryState[BatteryState.AlmostEmpty]);
   const empty = new BigNumber(valuesForBatteryState[BatteryState.Empty]);
@@ -38,7 +38,7 @@ export function getBatteryState(batteryBalance: string) {
 }
 
 export function calculateAvailableNumOfTransactions(batteryBalance: string) {
-  const balance = new BigNumber(formatter.fromNano(batteryBalance));
+  const balance = new BigNumber(batteryBalance);
 
   // return balance divided by mean fees rounded down to nearest 10
   return balance

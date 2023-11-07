@@ -14,9 +14,37 @@ export interface Error {
   error: string;
 }
 
+export interface Config {
+  /**
+   * when building a message to transfer an NFT or Jetton, use this address to send excess funds back to Battery Service.
+   * @example "0:da6b1b6663a0e4d18cc8574ccd9db5296e367dd9324706f3bbd9eb1cd2caf0bf"
+   */
+  excess_account: string;
+}
+
 export interface Balance {
   /** @example "10.250" */
   balance: string;
+}
+
+export interface Purchases {
+  /** @example 1 */
+  total_purchases: number;
+  /**
+   * if set, then there are more purchases to be loaded. Use this value as offset parameter in the next request.
+   * @example 10
+   */
+  next_offset?: number;
+  purchases: {
+    /** @example 2 */
+    id: number;
+    /** @example "android" */
+    type: PurchasesTypeEnum;
+    /** @example "10.250" */
+    value: string;
+    /** @example "2006-01-02T15:04:05Z07:00" */
+    datetime: string;
+  }[];
 }
 
 export interface AndroidBatteryPurchaseStatus {
@@ -51,6 +79,47 @@ export interface IOSBatteryPurchaseStatus {
   }[];
 }
 
+export interface PromoCodeBatteryPurchaseStatus {
+  /** @example "10.250" */
+  balance_change: string;
+  /** @example true */
+  success: boolean;
+  error?: {
+    /** @example "Temporary error. Try again later." */
+    msg: string;
+    /** @example "promo-code-is-already-used" */
+    code: PromoCodeBatteryPurchaseStatusCodeEnum;
+  };
+}
+
+export interface Transactions {
+  /** @example 1 */
+  total_transactions: number;
+  /**
+   * if set, then there are more transactions to be loaded. Use this value as offset parameter in the next request.
+   * @example 10
+   */
+  next_offset?: number;
+  transactions: {
+    id: string;
+    /**
+     * represents the amount of money paid by the user for this transaction.
+     * @example "10.250"
+     */
+    paid_amount: string;
+    /** @example "10.250" */
+    status: TransactionsStatusEnum;
+    /** @example "2006-01-02T15:04:05Z07:00" */
+    created_at: string;
+  }[];
+}
+
+/** @example "android" */
+export enum PurchasesTypeEnum {
+  RegularPurchase = 'regular-purchase',
+  PromoCode = 'promo-code',
+}
+
 /** @example "invalid-product-id" */
 export enum AndroidBatteryPurchaseStatusCodeEnum {
   InvalidProductId = 'invalid-product-id',
@@ -68,6 +137,40 @@ export enum IOsBatteryPurchaseStatusCodeEnum {
   PurchaseIsAlreadyUsed = 'purchase-is-already-used',
   TemporaryError = 'temporary-error',
   Unknown = 'unknown',
+}
+
+/** @example "promo-code-is-already-used" */
+export enum PromoCodeBatteryPurchaseStatusCodeEnum {
+  PromoCodeIsAlreadyUsed = 'promo-code-is-already-used',
+  PromoCodeNotFound = 'promo-code-not-found',
+  TemporaryError = 'temporary-error',
+}
+
+/** @example "10.250" */
+export enum TransactionsStatusEnum {
+  Pending = 'pending',
+  Completed = 'completed',
+  Failed = 'failed',
+}
+
+export interface GetPurchasesParams {
+  /**
+   * @max 1000
+   * @default 1000
+   */
+  limit?: number;
+  /** @default 0 */
+  offset?: number;
+}
+
+export interface GetTransactionsParams {
+  /**
+   * @max 1000
+   * @default 1000
+   */
+  limit?: number;
+  /** @default 0 */
+  offset?: number;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -318,6 +421,20 @@ export class BatteryGenerated<SecurityDataType extends unknown> {
   }
 
   /**
+   * @description This method returns information about the battery service.
+   *
+   * @name GetConfig
+   * @request GET:/config
+   */
+  getConfig = (params: RequestParams = {}) =>
+    this.http.request<Config, Error>({
+      path: `/config`,
+      method: 'GET',
+      format: 'json',
+      ...params,
+    });
+
+  /**
    * @description This method returns information about a battery
    *
    * @name GetBalance
@@ -348,6 +465,36 @@ export class BatteryGenerated<SecurityDataType extends unknown> {
       path: `/message`,
       method: 'POST',
       body: data,
+      ...params,
+    });
+
+  /**
+   * @description This method returns a list of purchases made by a specific user.
+   *
+   * @name GetPurchases
+   * @request GET:/purchases
+   */
+  getPurchases = (query: GetPurchasesParams, params: RequestParams = {}) =>
+    this.http.request<Purchases, Error>({
+      path: `/purchases`,
+      method: 'GET',
+      query: query,
+      format: 'json',
+      ...params,
+    });
+
+  /**
+   * @description This method returns a list of transactions made by a specific user.
+   *
+   * @name GetTransactions
+   * @request GET:/transactions
+   */
+  getTransactions = (query: GetTransactionsParams, params: RequestParams = {}) =>
+    this.http.request<Transactions, Error>({
+      path: `/transactions`,
+      method: 'GET',
+      query: query,
+      format: 'json',
       ...params,
     });
 
@@ -394,6 +541,28 @@ export class BatteryGenerated<SecurityDataType extends unknown> {
     ) =>
       this.http.request<IOSBatteryPurchaseStatus, Error>({
         path: `/purchase-battery/ios`,
+        method: 'POST',
+        body: data,
+        format: 'json',
+        ...params,
+      }),
+  };
+  promoCode = {
+    /**
+     * @description charge battery with promo code
+     *
+     * @name PromoCodeBatteryPurchase
+     * @request POST:/purchase-battery/promo-code
+     */
+    promoCodeBatteryPurchase: (
+      data: {
+        /** @example "1234567890" */
+        promo_code: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<PromoCodeBatteryPurchaseStatus, Error>({
+        path: `/purchase-battery/promo-code`,
         method: 'POST',
         body: data,
         format: 'json',

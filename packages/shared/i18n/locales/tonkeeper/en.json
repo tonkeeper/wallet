@@ -138,6 +138,13 @@
       "medium": "You have enough charge battery for more than %{cnt} transactions.",
       "full": "You have enough charge battery for more than %{cnt} transactions."
     },
+    "promocode": {
+      "button": "Recharge by Promo Code",
+      "title": "Promo Code",
+      "placeholder": "Code",
+      "apply": "Apply",
+      "success": "Your battery is charged"
+    },
     "packages": {
       "title": {
         "large": "700 transactions for {{price}}",

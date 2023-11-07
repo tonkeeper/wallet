@@ -180,7 +180,6 @@ export class Tonkeeper {
     this.wallet.subscriptions.prefetch();
     this.wallet.balances.prefetch();
     this.wallet.nfts.prefetch();
-    this.wallet.battery.getBalance();
   }
 
   public rehydrate() {

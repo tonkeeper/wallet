@@ -3,7 +3,7 @@ import DeviceInfo from 'react-native-device-info';
 import { AppConfig } from './modules/AppConfig';
 import { Platform } from 'react-native';
 
-type AppConfigVars = {
+export type AppConfigVars = {
   // tonapiTestnetHost: string;
   // tonapiProdHost: string;
   // tonapiDevHost: string;

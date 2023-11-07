@@ -20,6 +20,7 @@ import { navigation, SheetActions, useNavigation } from '@tonkeeper/router';
 import { RefillBatteryIAP } from './RefillBatteryIAP';
 import { t } from '@tonkeeper/shared/i18n';
 import { config } from '../../config';
+import { RechargeByPromoButton } from './RechargeByPromoButton';
 
 const iconNames: { [key: string]: IconNames } = {
   [BatteryState.Empty]: 'ic-empty-battery-128',
@@ -33,6 +34,8 @@ export const RefillBatteryModal = memo(() => {
   const batteryState = getBatteryState(balance ?? '0');
   const iconName = iconNames[batteryState];
   const nav = useNavigation();
+
+  const isInAppPurchasesDisabled = config.get('disable_battery_iap_module');
 
   return (
     <Modal>
@@ -52,11 +55,23 @@ export const RefillBatteryModal = memo(() => {
           </Text>
           <Spacer y={16} />
         </View>
-        {config.get('disable_battery_iap_module') ? (
-          <Button title={t('battery.ok')} onPress={nav.goBack} />
-        ) : (
-          <RefillBatteryIAP />
-        )}
+        <View style={styles.indent}>
+          {isInAppPurchasesDisabled ? (
+            <>
+              <Button title={t('battery.ok')} onPress={nav.goBack} />
+              <Spacer y={16} />
+            </>
+          ) : (
+            <RefillBatteryIAP />
+          )}
+          <RechargeByPromoButton />
+          <Spacer y={16} />
+          {!isInAppPurchasesDisabled && (
+            <Text type="label2" textAlign="center" color="textTertiary">
+              {t('battery.packages.disclaimer')}
+            </Text>
+          )}
+        </View>
       </Modal.Content>
       <Modal.Footer />
     </Modal>
@@ -79,5 +94,8 @@ export const styles = Steezy.create({
   },
   iconContainer: {
     marginBottom: 24,
+  },
+  indent: {
+    paddingHorizontal: 16,
   },
 });
