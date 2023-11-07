@@ -34,6 +34,7 @@ import { fiatCurrencySelector } from '$store/main';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
 import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
 import { Buffer } from 'buffer';
+import { sendBocWithBattery } from '@tonkeeper/shared/utils/blockchain';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -71,12 +72,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       secretKey: Buffer.from(privateKey),
     });
 
-    await tonapi.blockchain.sendBlockchainMessage(
-      {
-        boc,
-      },
-      { format: 'text' },
-    );
+    await sendBocWithBattery(boc);
 
     if (onSuccess) {
       await delay(1750);

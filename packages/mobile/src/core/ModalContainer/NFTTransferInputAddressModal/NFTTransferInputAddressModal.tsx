@@ -24,6 +24,7 @@ import {
 } from '@tonkeeper/core';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { config } from '@tonkeeper/shared/config';
 
 export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalProps>(
   ({ nftAddress }) => {
@@ -45,6 +46,10 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
     }, [address, isSameAddress, nftAddress]);
 
     const handleContinue = useCallback(async () => {
+      const excessesAccount = !config.get('disable_battery_send')
+        ? await tk.wallet.battery.getExcessesAccount()
+        : null;
+
       await openSignRawModal(
         {
           messages: [
@@ -54,7 +59,7 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
               payload: ContractService.createNftTransferBody({
                 queryId: Date.now(),
                 newOwnerAddress: address,
-                excessesAddress: tk.wallet.address.ton.raw,
+                excessesAddress: excessesAccount || tk.wallet.address.ton.raw,
               })
                 .toBoc()
                 .toString('base64'),

@@ -21,6 +21,20 @@ export class BatteryManager {
     }
   }
 
+  public async getExcessesAccount() {
+    try {
+      const data = await this.ctx.batteryapi.getConfig({
+        headers: {
+          'X-TonConnect-Auth': this.identity.tonProof,
+        },
+      });
+
+      return data.excess_account;
+    } catch (err) {
+      return null;
+    }
+  }
+
   public async applyPromo(promoCode: string) {
     try {
       const data = await this.ctx.batteryapi.promoCode.promoCodeBatteryPurchase(

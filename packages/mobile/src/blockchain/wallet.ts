@@ -31,6 +31,7 @@ import { SendApi, Configuration as V1Configuration } from 'tonapi-sdk-js';
 import { Address, Cell, internal, toNano } from '@ton/core';
 import { config } from '@tonkeeper/shared/config';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { sendBocWithBattery } from '@tonkeeper/shared/utils/blockchain';
 
 const TonWeb = require('tonweb');
 
@@ -224,14 +225,7 @@ export class TonWallet {
   }
 
   private async sendBoc(boc: string): Promise<void> {
-    if (config.get('disable_battery') || config.get('disable_battery_send')) {
-      return this.sendApi.sendBoc({ sendBocRequest: { boc } });
-    }
-    try {
-      return await tk.wallet.battery.sendMessage(boc);
-    } catch (err) {
-      return this.sendApi.sendBoc({ sendBocRequest: { boc } });
-    }
+    await sendBocWithBattery(boc);
   }
 
   async createSubscription(
@@ -376,6 +370,7 @@ export class TonWallet {
     payload: Cell | string = '',
     vault: Vault,
     secretKey: Buffer = Buffer.alloc(64),
+    excessesAccount?: string | null,
   ) {
     const version = vault.getVersion();
     const lockupConfig = vault.getLockupConfig();
@@ -401,7 +396,7 @@ export class TonWallet {
             queryId: Date.now(),
             jettonAmount,
             receiverAddress: recipient.address,
-            excessesAddress: tk.wallet.address.ton.raw,
+            excessesAddress: excessesAccount ?? tk.wallet.address.ton.raw,
             forwardBody: payload,
           }),
         }),
@@ -428,6 +423,10 @@ export class TonWallet {
       throw new Error(t('send_get_wallet_info_error'));
     }
 
+    const excessesAccount = !config.get('disable_battery_send')
+      ? await tk.wallet.battery.getExcessesAccount()
+      : null;
+
     const boc = this.createJettonTransfer(
       seqno,
       jettonWalletAddress,
@@ -436,6 +435,8 @@ export class TonWallet {
       amountNano,
       payload,
       vault,
+      undefined,
+      excessesAccount,
     );
 
     let feeNano = await this.calcFee(boc);
@@ -474,6 +475,10 @@ export class TonWallet {
       throw new Error(t('send_insufficient_funds'));
     }
 
+    const excessesAccount = !config.get('disable_battery_send')
+      ? await tk.wallet.battery.getExcessesAccount()
+      : null;
+
     const boc = this.createJettonTransfer(
       seqno,
       jettonWalletAddress,
@@ -483,6 +488,7 @@ export class TonWallet {
       payload,
       unlockedVault,
       Buffer.from(secretKey),
+      excessesAccount,
     );
 
     let feeNano: BigNumber;
