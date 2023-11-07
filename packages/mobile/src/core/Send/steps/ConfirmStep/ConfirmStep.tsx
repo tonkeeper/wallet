@@ -23,6 +23,9 @@ import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { t } from '@tonkeeper/shared/i18n';
 import { openInactiveInfo } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
 import { Address } from '@tonkeeper/core';
+import { ItemRowContainer } from './ConfirmStep.style';
+import { useBatteryState } from '@tonkeeper/shared/query/hooks/useBatteryState';
+import { BatteryState } from '@tonkeeper/shared/utils/battery';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -51,6 +54,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
 
   const balances = useSelector(walletBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
+  const batteryState = useBatteryState();
 
   const { Logo, liquidJettonPool } = useCurrencyToSend(currency, isJetton);
 
@@ -271,9 +275,9 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
               </S.Item>
             </Highlight>
             <Separator />
-            <S.Item>
-              <S.ItemLabel>{t('confirm_sending_fee')}</S.ItemLabel>
-              <S.ItemContent>
+            <S.ItemRowContainer>
+              <S.ItemRow>
+                <S.ItemLabel>{t('confirm_sending_fee')}</S.ItemLabel>
                 {isPreparing ? (
                   <S.ItemSkeleton>
                     <SkeletonLine />
@@ -281,11 +285,20 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
                 ) : (
                   <S.ItemValue numberOfLines={1}>{feeValue}</S.ItemValue>
                 )}
+              </S.ItemRow>
+              <S.ItemRow>
+                {batteryState !== BatteryState.Empty ? (
+                  <S.ItemSubLabel>
+                    {t('send_screen_steps.comfirm.will_be_paid_with_battery')}
+                  </S.ItemSubLabel>
+                ) : (
+                  <S.ItemSubLabel />
+                )}
                 {fee !== '0' && !isPreparing ? (
                   <S.ItemSubValue>≈ {fiatFee.formatted.totalFiat}</S.ItemSubValue>
                 ) : null}
-              </S.ItemContent>
-            </S.Item>
+              </S.ItemRow>
+            </S.ItemRowContainer>
             {comment.length > 0 ? (
               <>
                 <Separator />

@@ -628,7 +628,8 @@
       "comment_required_text" : "You must include the note from the exchange for transfer. Without it your funds will be lost. ",
       "details_label" : "Details",
       "details_max_balance_label" : "Sending max. balance of %{currency}",
-      "title" : "Confirm action"
+      "title" : "Confirm action",
+      "will_be_paid_with_battery": "Will be paid with Battery"
     },
     "done" : {
       "add_favorite" : "Save address to favorites",
