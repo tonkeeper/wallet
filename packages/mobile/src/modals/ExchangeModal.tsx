@@ -6,7 +6,7 @@ import { ExchangeItem } from '../core/Exchange/ExchangeItem/ExchangeItem';
 import { t } from '@tonkeeper/shared/i18n';
 import { getServerConfigSafe } from '$shared/constants';
 import { LayoutAnimation } from 'react-native';
-import { Modal, SegmentedControl } from '@tonkeeper/uikit';
+import { Modal, SegmentedControl, Text } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { CategoryType } from '$store/zustand/methodsToBuy/types';
@@ -82,7 +82,7 @@ export const ExchangeModal = () => {
           <SegmentedControl
             onChange={(segment) => setSegmentIndex(segment)}
             index={segmentIndex}
-            items={['Buy', 'Sell']}
+            items={[t('exchange_modal.buy'), t('exchange_modal.sell')]}
           />
         }
       />
@@ -97,7 +97,10 @@ export const ExchangeModal = () => {
               <>
                 {categories.map((category, cIndex) => (
                   <React.Fragment key={cIndex}>
-                    {cIndex > 0 ? <Spacer y={32} /> : null}
+                    {cIndex > 0 ? <Spacer y={16} /> : null}
+                    <S.TitleContainer>
+                      <Text type="h3">{category.title}</Text>
+                    </S.TitleContainer>
                     <S.Contain>
                       {category.items.map((item, idx, arr) => (
                         <ExchangeItem
