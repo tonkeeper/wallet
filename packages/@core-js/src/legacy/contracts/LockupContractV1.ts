@@ -15,6 +15,7 @@ import { createWalletTransferV3 } from '@ton/ton/dist/wallets/signing/createWall
 
 export interface LockupContractV1AdditionalParams {
   allowedDestinations?: Maybe<string>;
+  lockupPubKey?: Maybe<string>;
 }
 
 export class LockupContractV1 implements Contract {
@@ -28,6 +29,7 @@ export class LockupContractV1 implements Contract {
       args.workchain,
       args.publicKey,
       args.additionalParams?.allowedDestinations,
+      args.additionalParams?.lockupPubKey ?? '',
     );
   }
 
@@ -40,7 +42,8 @@ export class LockupContractV1 implements Contract {
   private constructor(
     workchain: number,
     publicKey: Buffer,
-    allowedDestinations?: Maybe<string>,
+    allowedDestinations: Maybe<string>,
+    configPubKey: string,
     walletId?: Maybe<number>,
   ) {
     // Resolve parameters
@@ -61,14 +64,16 @@ export class LockupContractV1 implements Contract {
     let data = beginCell()
       .storeUint(0, 32) // Seqno
       .storeUint(this.walletId, 32)
-      .storeBuffer(publicKey);
-
+      .storeBuffer(publicKey)
+      .storeBuffer(Buffer.from(configPubKey, 'base64'));
     if (allowedDestinations) {
       data = data.storeBit(1);
       data = data.storeRef(Cell.fromBoc(Buffer.from(allowedDestinations, 'base64'))[0]);
     } else {
       data = data.storeBit(0);
     }
+
+    data = data.storeCoins(0).storeBit(0).storeCoins(0).storeBit(0);
 
     let cell = data.endCell();
 

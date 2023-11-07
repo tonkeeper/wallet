@@ -524,6 +524,7 @@ export class TonWallet {
       contractVersionsMap[walletVersion ?? version ?? 'v4R2'],
       Buffer.from(vault.tonPublicKey),
       {
+        lockupPubKey: lockupConfig?.config_pubkey,
         allowedDestinations: lockupConfig?.allowed_destinations,
       },
     );
