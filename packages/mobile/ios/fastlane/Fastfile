@@ -36,7 +36,7 @@ platform :ios do
     app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
 
     keychain_name = "login.keychain"
-    keychain_password = "temp"
+    keychain_password = ENV["SIGNING_KEY_PASSWORD"]
 
     delete_keychain(
       name: keychain_name
