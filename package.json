@@ -7,7 +7,7 @@
     ]
   },
   "scripts": {
-    "typecheck-corejs": "cd packages/@core-js tsc --noEmit",
+    "typecheck-corejs": "cd packages/@core-js && tsc --noEmit",
     "push_locales": "cd packages && cd shared && yarn push_locales",
     "pull_locales": "cd packages && cd shared && yarn pull_locales",
     "postinstall": "patch-package",
