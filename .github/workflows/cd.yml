@@ -2,6 +2,11 @@ name: iOS CD
 on:
   # Allows you to run this workflow manually from the Actions a tab
   workflow_dispatch:
+    inputs:
+      changelog:
+        description: 'TestFlight release note'
+        required: true
+        type: string
 
 jobs:
   ios-testflight-build:
@@ -44,6 +49,11 @@ jobs:
          CERTIFICATE_BASE64: ${{ secrets.IOS_DIST_SIGNING_KEY }}
         run: |
          echo $CERTIFICATE_BASE64 | base64 --decode > signing-cert.p12
+
+      - name: Write changelog
+        working-directory: './packages/mobile/ios/fastlane/metadata/default'
+        run: |
+         ${{ inputs.changelog }} > release_notes.txt
 
       - name: Build & upload iOS binary
         working-directory: './packages/mobile/ios'
