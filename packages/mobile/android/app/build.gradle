@@ -96,6 +96,15 @@ android {
         missingDimensionStrategy 'react-native-camera', 'general'
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget=11
+    }
+    
     signingConfigs {
         release {
             if (project.hasProperty('TONKEEPER_UPLOAD_STORE_FILE')) {
@@ -103,6 +112,11 @@ android {
                 storePassword TONKEEPER_UPLOAD_STORE_PASSWORD
                 keyAlias TONKEEPER_UPLOAD_KEY_ALIAS
                 keyPassword TONKEEPER_UPLOAD_KEY_PASSWORD
+            } else {
+                storeFile = file(System.getenv("TONKEEPER_UPLOAD_STORE_FILE"))
+                storePassword System.getenv("TONKEEPER_UPLOAD_STORE_PASSWORD")
+                keyAlias System.getenv("TONKEEPER_UPLOAD_KEY_ALIAS")
+                keyPassword System.getenv("TONKEEPER_UPLOAD_KEY_PASSWORD")
             }
         }
         debug {

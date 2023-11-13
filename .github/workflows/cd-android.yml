@@ -1,0 +1,56 @@
+name: Android CD
+on:
+  push:
+    branches: [ feature/ci-cd-android ]
+
+  # Allows you to run this workflow manually from the Actions a tab
+  workflow_dispatch:
+
+jobs:
+  android-build:
+    name: android-build
+    strategy:
+      matrix:
+        os: [macos-13]
+        node-version: [18.18.0]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout to git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+          node-version: ${{ matrix.node-version }}
+    
+      - name: Install yarn dependencies
+        run: yarn
+
+      - name: Update Java home to 11 version
+        run: export JAVA_HOME=$JAVA_HOME_11_X64
+
+      - name: Decode signing certificate into a file
+        working-directory: './packages/mobile/android/app'
+        env:
+         CERTIFICATE_BASE64: ${{ secrets.ANDROID_DIST_SIGNING_KEY }}
+        run: |
+         echo $CERTIFICATE_BASE64 | base64 --decode > google-release.keystore
+
+      - name: Build android Apk
+        working-directory: './packages/mobile'
+        run: yarn build:android:google-play
+        env:
+          TONKEEPER_UPLOAD_STORE_FILE: google-release.keystore
+          TONKEEPER_UPLOAD_KEY_ALIAS: ${{ secrets.TONKEEPER_UPLOAD_KEY_ALIAS }}
+          TONKEEPER_UPLOAD_STORE_PASSWORD: ${{ secrets.TONKEEPER_UPLOAD_STORE_PASSWORD }}
+          TONKEEPER_UPLOAD_KEY_PASSWORD: ${{ secrets.TONKEEPER_UPLOAD_KEY_PASSWORD }}
+
+      - name: Upload android APK to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: tonkeeper.aab
+          path: |
+            ./packages/mobile/android/app/build/outputs/bundle/release
