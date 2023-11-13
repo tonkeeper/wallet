@@ -41,6 +41,7 @@ import { ProvidersWithNavigation } from './Providers';
 import { ReceiveModal } from '@tonkeeper/shared/modals/ReceiveModal';
 import { ReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
 import { EditAppConfigModal } from '$core/DevMenu/DevConfigScreen';
+import { BackupWarningModal } from '@tonkeeper/shared/modals/BackupWarningModal';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -56,7 +57,8 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NFTSaleCancelModal} path="NFTSaleCancel" />
       <Stack.Modal component={ExchangeModal} path="Exchange" />
       <Stack.Modal component={OldExchange} path="OldExchange" />
-      <Stack.Modal component={СonfirmRenewAllDomains} path="СonfirmRenewAllDomains"/>
+      <Stack.Modal component={СonfirmRenewAllDomains} path="СonfirmRenewAllDomains" />
+      <Stack.Modal component={BackupWarningModal} path="/backup-warning" />
       <Stack.Modal
         component={NFTTransferInputAddressModal}
         path="NFTTransferInputAddress"

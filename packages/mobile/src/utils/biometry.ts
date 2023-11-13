@@ -1,6 +1,7 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 
 export function detectBiometryType(types: LocalAuthentication.AuthenticationType[]) {
+  console.log('@types', types);
   let found = false;
   for (let type of types) {
     if (

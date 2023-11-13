@@ -28,7 +28,7 @@ import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { walletWalletSelector } from '$store/wallet';
 import { useNotificationsResolver } from '$hooks/useNotificationsResolver';
-import { AccessConfirmation, AddressUpdateInfo, Intro } from '$core';
+import { AccessConfirmation, AddressUpdateInfo } from '$core';
 import { ModalStack } from '$navigation/ModalStack';
 import { withModalStack } from '@tonkeeper/router';
 
@@ -41,6 +41,9 @@ import { TronTokenScreen } from '../../tabs/Wallet/TronTokenScreen';
 import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 import { CreateWalletStack } from '$navigation/CreateWalletStack';
 import { ImportWalletStack } from '$navigation/ImportWalletStack';
+import { BackupScreen } from '../../screens/BackupScreen';
+import { BackupPhraseScreen } from '../../screens/BackupPhraseScreen';
+import { BackupCheckPhraseScreen } from '../../screens/BackupCheckPhraseScreen';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -96,6 +99,9 @@ export const MainStack: FC = () => {
       <Stack.Screen name="/import" component={ImportWalletStack} />
       <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
       <Stack.Screen name={'TronTokenScreen'} component={TronTokenScreen} />
+      <Stack.Screen name="/backup" component={BackupScreen} />
+      <Stack.Screen name="/backup-phrase" component={BackupPhraseScreen} />
+      <Stack.Screen name="/backup-check-phrase" component={BackupCheckPhraseScreen} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />
       <Stack.Screen name={MainStackRouteNames.StakingPools} component={StakingPools} />
       <Stack.Screen

@@ -7,11 +7,7 @@ import { Vault } from './declarations/Vault';
 import { QueryClient } from 'react-query';
 import { TronAPI } from './TronAPI';
 import { TonAPI } from './TonAPI';
-
-class PermissionsManager {
-  public notifications = true;
-  public biometry = true;
-}
+import { BiometryModule } from './modules/BiometryModule';
 
 type TonkeeperOptions = {
   queryClient: QueryClient;
@@ -29,7 +25,6 @@ type SecuritySettings = {
 };
 
 export class Tonkeeper {
-  public permissions: PermissionsManager;
   public wallet!: Wallet;
   public wallets = [];
 
@@ -39,13 +34,15 @@ export class Tonkeeper {
     locked: false,
   };
 
+  public biometry: BiometryModule;
+
   private sse: ServerSentEvents;
   private storage: Storage;
   private queryClient: QueryClient;
   private tronapi: TronAPI;
   private tonapi: TonAPI;
   private vault: Vault;
-
+  
   constructor(options: TonkeeperOptions) {
     this.queryClient = options.queryClient;
     this.storage = options.storage;
@@ -54,7 +51,7 @@ export class Tonkeeper {
     this.vault = options.vault;
     this.sse = options.sse;
 
-    this.permissions = new PermissionsManager();
+    this.biometry = new BiometryModule();
   }
 
   // TODO: for temp, rewrite it when ton wallet will it be moved here;
@@ -85,6 +82,7 @@ export class Tonkeeper {
             },
           );
 
+          this.biometry.init();
           this.rehydrate();
           this.preload();
         }

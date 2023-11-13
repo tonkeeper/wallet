@@ -24,6 +24,7 @@ export { FastImage } from './components/FastImage';
 export { Picture } from './components/Picture';
 export { SegmentedControl } from './components/SegmentedControl';
 export { TransitionOpacity } from './components/TransitionOpacity';
+export { Switch } from './components/Switch';
 export * from './components/Flash';
 
 // Containers

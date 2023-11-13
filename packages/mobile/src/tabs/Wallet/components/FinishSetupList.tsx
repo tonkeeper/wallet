@@ -3,16 +3,15 @@ import { useNotifications } from '$hooks/useNotifications';
 import { debugLog } from '$utils/debugLog';
 import messaging from '@react-native-firebase/messaging';
 import { t } from '@tonkeeper/shared/i18n';
-import { Icon, IconNames, List, Steezy, Toast, View, useTheme } from '@tonkeeper/uikit';
+import { Icon, IconNames, List, Steezy, Toast, View, isIOS } from '@tonkeeper/uikit';
 import { ToastSize } from '@tonkeeper/uikit/src/components/Toast';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import * as LocalAuthentication from 'expo-local-authentication';
-import { Switch } from 'react-native';
-
-import { detectBiometryType, isAndroid, isIOS } from '$utils';
 import { useDispatch } from 'react-redux';
 import { walletActions } from '$store/wallet';
 import { MainDB } from '../../../database/main';
+import { Switch } from '@tonkeeper/uikit';
+import { tk } from '@tonkeeper/shared/tonkeeper';
+import { BiometryTypes } from '@tonkeeper/core/src/modules/BiometryModule';
 
 export const FinishSetupList = memo(() => {
   return (
@@ -23,6 +22,7 @@ export const FinishSetupList = memo(() => {
         <BiometryListItem />
         <List.Item
           chevron
+          navigate="/backup"
           title="Back up the wallet recovery phrase"
           titleNumberOfLines={2}
           titleTextType="body2"
@@ -37,41 +37,12 @@ export const FinishSetupList = memo(() => {
   );
 });
 
-enum BiometryTypes {
-  FaceID = 'FaceID',
-  TouchID = 'TouchID',
-  Fingerprint = 'Fingerprint',
-  FaceRecognition = 'FaceRecognition',
-  Unknown = 'Unknown',
-}
-
 const BiometryListItem = () => {
   const [biometryEnabled, setBiometryEnabled] = useState(false);
-  const [biometryType, setBiometryType] = useState(BiometryTypes.Unknown);
   const dispatch = useDispatch();
-  const theme = useTheme();
 
   useEffect(() => {
     const init = async () => {
-      const authTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
-      const biometryType = detectBiometryType(authTypes);
-
-      if (isAndroid) {
-        if (biometryType === LocalAuthentication.AuthenticationType.FINGERPRINT) {
-          setBiometryType(BiometryTypes.Fingerprint);
-        }
-        if (biometryType === LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION) {
-          setBiometryType(BiometryTypes.FaceRecognition);
-        }
-      } else if (isIOS) {
-        if (biometryType === LocalAuthentication.AuthenticationType.FINGERPRINT) {
-          setBiometryType(BiometryTypes.TouchID);
-        }
-        if (biometryType === LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION) {
-          setBiometryType(BiometryTypes.FaceID);
-        }
-      }
-
       const isEnabled = await MainDB.isBiometryEnabled();
       setBiometryEnabled(isEnabled);
     };
@@ -79,25 +50,25 @@ const BiometryListItem = () => {
     init();
   }, []);
 
-  const titlesByBiometry = useMemo(
-    () => ({
-      [BiometryTypes.FaceRecognition]: 'Use Face Recognition to approve transactions',
-      [BiometryTypes.Fingerprint]: 'Use Fingerprint to approve transactions',
-      [BiometryTypes.TouchID]: 'Use Touch ID to approve transactions',
-      [BiometryTypes.FaceID]: 'Use Face ID to approve transactions',
-    }),
-    [],
-  );
+  const biometryTitle = useMemo(() => {
+    if (tk.biometry.type === BiometryTypes.FaceRecognition) {
+      return isIOS
+        ? 'Use Face ID to approve transactions'
+        : 'Use Face Recognition to approve transactions';
+    } else if (tk.biometry.type === BiometryTypes.Fingerprint) {
+      return isIOS
+        ? 'Use Touch ID to approve transactions'
+        : 'Use Fingerprint to approve transactions';
+    }
+  }, []);
 
-  const iconsByBiometry = useMemo(
-    () => ({
-      [BiometryTypes.FaceRecognition]: 'ic-faceid-android-28',
-      [BiometryTypes.Fingerprint]: 'ic-fingerprint-android-28',
-      [BiometryTypes.TouchID]: 'ic-fingerprint-28',
-      [BiometryTypes.FaceID]: 'ic-faceid-28',
-    }),
-    [],
-  );
+  const biometryIcon = useMemo(() => {
+    if (tk.biometry.type === BiometryTypes.FaceRecognition) {
+      return isIOS ? 'ic-faceid-28' : 'ic-faceid-android-28';
+    } else if (tk.biometry.type === BiometryTypes.Fingerprint) {
+      return isIOS ? 'ic-fingerprint-28' : 'ic-fingerprint-android-28';
+    }
+  }, []);
 
   const handleToggle = useCallback(() => {
     setBiometryEnabled(!biometryEnabled);
@@ -109,27 +80,24 @@ const BiometryListItem = () => {
     );
   }, [biometryEnabled, dispatch]);
 
-  if (biometryType === BiometryTypes.Unknown) {
+  if (
+    tk.biometry.type === BiometryTypes.Unknown ||
+    tk.biometry.type === BiometryTypes.None
+  ) {
     return null;
   }
 
   return (
     <List.Item
-      title={titlesByBiometry[biometryType]}
+      rightContent={<Switch value={biometryEnabled} onChange={handleToggle} />}
+      title={biometryTitle}
       onPress={handleToggle}
       titleNumberOfLines={2}
       titleTextType="body2"
       leftContent={
         <View style={styles.iconContainer}>
-          <Icon name={iconsByBiometry[biometryType] as IconNames} />
+          <Icon name={biometryIcon as IconNames} />
         </View>
-      }
-      rightContent={
-        <Switch
-          trackColor={{ true: theme.accentBlue }}
-          value={biometryEnabled}
-          onChange={handleToggle}
-        />
       }
     />
   );
@@ -139,7 +107,6 @@ const NotificationsListItem = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const notifications = useNotifications();
   const isSwitchFrozen = useRef(false);
-  const theme = useTheme();
 
   useEffect(() => {
     const init = async () => {
@@ -196,7 +163,6 @@ const NotificationsListItem = () => {
       }
       rightContent={
         <Switch
-          trackColor={{ true: theme.accentBlue }}
           value={notificationsEnabled}
           onChange={() => handleToggle(!notificationsEnabled)}
         />
