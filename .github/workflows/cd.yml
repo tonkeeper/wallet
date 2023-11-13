@@ -53,7 +53,7 @@ jobs:
       - name: Write changelog
         working-directory: './packages/mobile/ios/fastlane/metadata/default'
         run: |
-         ${{ inputs.changelog }} > release_notes.txt
+         echo ${{ inputs.changelog }} > release_notes.txt
 
       - name: Build & upload iOS binary
         working-directory: './packages/mobile/ios'
