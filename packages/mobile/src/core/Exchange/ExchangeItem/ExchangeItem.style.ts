@@ -101,6 +101,11 @@ export const Asset = styled.View`
   overflow: hidden;
 `;
 
+export const AssetImage = styled.Image`
+  width: ${ns(24)}px;
+  height: ${ns(24)}px;
+`;
+
 export const AssetsCount = styled.View`
   height: ${ns(24)}px;
   border-radius: ${ns(24) / 2}px;

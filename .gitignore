@@ -4,6 +4,8 @@
 #
 .DS_Store
 .env
+signing-cert.p12
+*.dSYM.zip
 
 bridge.html
 

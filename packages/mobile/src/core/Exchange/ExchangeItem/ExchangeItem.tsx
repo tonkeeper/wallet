@@ -9,8 +9,6 @@ import { Linking } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
 import { openExchangeMethodModal } from '$core/ModalContainer/ExchangeMethod/ExchangeMethod';
 import { getCryptoAssetIconSource } from '@tonkeeper/uikit/assets/cryptoAssets';
-import { FastImage } from '@tonkeeper/uikit';
-import { Image } from 'react-native';
 
 export const ExchangeItem: FC<ExchangeItemProps> = ({
   methodId,
@@ -78,13 +76,13 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
               <S.AssetsContainer>
                 {method.assets.slice(0, 3).map((asset, index) => (
                   <S.Asset key={asset} style={{ zIndex: 3 - index }}>
-                    <Image source={getCryptoAssetIconSource(asset)} />
+                    <S.AssetImage source={getCryptoAssetIconSource(asset)} />
                   </S.Asset>
                 ))}
-                {method.assets.length > 2 ? (
+                {method.assets.length > 3 ? (
                   <S.AssetsCount>
                     <Text variant="label3" color="textSecondary">
-                      + 2{method.assets.length}
+                      + {method.assets.length}
                     </Text>
                   </S.AssetsCount>
                 ) : null}

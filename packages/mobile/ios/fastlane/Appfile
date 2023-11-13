@@ -1,0 +1,3 @@
+app_identifier(ENV["DEVELOPER_APP_IDENTIFIER"])
+team_id(ENV["DEVELOPER_TEAM_ID"])
+
