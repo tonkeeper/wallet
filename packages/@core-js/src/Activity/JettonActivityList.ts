@@ -14,7 +14,7 @@ type JettonActivityListState = {
 
 export class JettonActivityList {
   private cursor: number | null = null;
-  private groups = {};
+  private groups: { [key in string]: ActivitySection } = {};
 
   public state = new State<JettonActivityListState>({
     sections: {},
@@ -31,7 +31,7 @@ export class JettonActivityList {
       key: 'JettonActivityList',
     });
   }
-  
+
   public async load(jettonId: string, cursor?: number | null) {
     try {
       this.state.set({ isLoading: true, error: null });

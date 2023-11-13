@@ -13,7 +13,7 @@ type AmountFormatterOptions = {
 
 export type AmountFormatOptions = {
   decimals?: number;
-  currency?: string;
+  currency?: keyof typeof FiatCurrencySymbolsConfig;
   currencySeparator?: 'thin' | 'wide'; // Default thin;
   prefix?: string;
   postfix?: string;

@@ -1,19 +1,19 @@
-import { AccountEvent, ActionStatusEnum } from '../../TonAPI';
+import { AccountEvent, Action, ActionStatusEnum } from '../../TonAPI';
 import { differenceInCalendarMonths, format } from 'date-fns';
 import { toLowerCaseFirstLetter } from '../../utils/strings';
 import { TronEvent } from '../../TronAPI/TronAPIGenerated';
 import { Address } from '../../formatters/Address';
 import { nanoid } from 'nanoid/non-secure';
 import {
-  AnyActionTypePayload,
-  ActionDestination,
-  AnyActionPayload,
-  ActionAmountType,
-  ActionSource,
   ActionAmount,
-  ActionType,
+  ActionAmountType,
+  ActionDestination,
   ActionItem,
+  ActionSource,
+  ActionType,
   AnyActionItem,
+  AnyActionPayload,
+  AnyActionTypePayload,
 } from './ActivityModelTypes';
 
 type CreateActionOptions = {
@@ -28,6 +28,8 @@ type CreateActionsOptions = {
   events: AccountEvent[];
   ownerAddress: string;
 };
+
+type ExtendedAction = Action & { Unknown: undefined };
 
 export class ActivityModel {
   static getGroupKey(timestamp: number) {
@@ -75,16 +77,18 @@ export class ActivityModel {
     event,
   }: CreateActionOptions): AnyActionItem {
     const action = event.actions[actionIndex];
-    const payload = action[action.type];
 
     if (!action) {
       throw new Error('[ActivityModel]: action is undefined');
     }
 
     const type = (action as any).type as ActionType;
+    const payload = (action as any)[type] as AnyActionPayload;
     const destination = this.defineActionDestination(ownerAddress, type, payload);
+    // @ts-ignore TODO: fix types
     const amount = this.createAmount({ type, payload });
 
+    // @ts-ignore TODO: fix types
     return {
       action_id: `${event.event_id}_${actionIndex}`,
       simple_preview: action.simple_preview,
@@ -105,10 +109,15 @@ export class ActivityModel {
     ownerAddress: string,
     action: AnyActionTypePayload<T>,
   ): AnyActionItem {
-    const destination = this.defineActionDestination(ownerAddress, action.payload);
+    const destination = this.defineActionDestination(
+      ownerAddress,
+      action.type,
+      action.payload,
+    );
     const amount = this.createAmount(action);
 
     return {
+      initialActionType: action.type,
       status: ActionStatusEnum.Ok,
       source: ActionSource.Ton,
       payload: action.payload,

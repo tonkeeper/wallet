@@ -5,7 +5,8 @@ import { Vault } from './declarations/Vault';
 
 import { ActivityList } from './Activity/ActivityList';
 import { NftsManager } from './managers/NftsManager';
-import { EventSourceListener, ServerSentEvents, IStorage } from './Tonkeeper';
+import { EventSourceListener, ServerSentEvents } from './declarations/ServerSentEvents';
+import { Storage } from './declarations/Storage';
 import { SubscriptionsManager } from './managers/SubscriptionsManager';
 
 import { BalancesManager } from './managers/BalancesManager';
@@ -98,7 +99,7 @@ export class Wallet {
     private tronapi: TronAPI,
     private vault: Vault,
     private sse: ServerSentEvents,
-    private storage: IStorage,
+    private storage: Storage,
     walletInfo: any,
   ) {
     this.identity = {
@@ -173,7 +174,7 @@ export class Wallet {
     this.listener.addEventListener('open', () => {
       console.log('[Wallet]: start listen transactions for', this.address.ton.short);
     });
-    this.listener.addEventListener('error', (err) => {
+    this.listener.addEventListener('error', (err: any) => {
       console.log('[Wallet]: error listen transactions', err);
     });
     this.listener.addEventListener('message', () => {
