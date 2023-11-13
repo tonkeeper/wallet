@@ -1,61 +1,74 @@
-name: CD
+name: iOS CD
 on:
-  push:
-    branches: [ feature/ci-cd ]
-
   # Allows you to run this workflow manually from the Actions a tab
   workflow_dispatch:
 
 jobs:
-  testFlight-build:
+  ios-testflight-build:
     name: ios-testflight-build
-    runs-on: macos-latest
     strategy:
       matrix:
-        node-version: [20.x]
+        os: [macos-13]
+        node-version: [18.18.0]
+        ruby-version: [3.2]
+        xcode: [15.0.1]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/setup-node@v1
+      - name: Checkout to git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
+          cache: 'yarn'
           node-version: ${{ matrix.node-version }}
     
-      - name: Install Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: 3.2
-
-      - name: Checkout to git repository
-        uses: actions/checkout@v2
-
-      - name: Setup yarn
-        run: npm install -g yarn
-
       - name: Install yarn dependencies
         run: yarn
 
-      - name: Install Fastlane
-        working-directory: ./packages/mobile
-        run: |
-          bundle install
-          bundle update fastlane
+      - name: Install pods dependencies
+        run: yarn pods
 
-      - name: Deploy iOS Beta to TestFlight via Fastlane
-        uses: maierj/fastlane-action@v1.4.0
-        working-directory: ./packages/mobile/ios
+      - name: Set up Ruby and Gemfile dependencies
+        uses: ruby/setup-ruby@v1
         with:
-          lane: closed_beta
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+          working-directory: './packages/mobile'
+
+      - name: Decode signing certificate into a file
+        working-directory: './packages/mobile/ios'
         env:
-          APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
-          DEVELOPER_APP_ID: '${{ secrets.DEVELOPER_APP_ID }}'
-          DEVELOPER_APP_IDENTIFIER: '${{ secrets.DEVELOPER_APP_IDENTIFIER }}'
-          DEVELOPER_PORTAL_TEAM_ID: '${{ secrets.DEVELOPER_PORTAL_TEAM_ID }}'
-          FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
-          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: '${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}'
-          MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
-          GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
-          PROVISIONING_PROFILE_SPECIFIER: '${{ secrets.PROVISIONING_PROFILE_SPECIFIER }}'
-          TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
-          TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
-          APPLE_KEY_ID: '${{ secrets.APPLE_KEY_ID }}'
-          APPLE_ISSUER_ID: '${{ secrets.APPLE_ISSUER_ID }}'
-          APPLE_KEY_CONTENT: '${{ secrets.APPLE_KEY_CONTENT }}'
+         CERTIFICATE_BASE64: ${{ secrets.IOS_DIST_SIGNING_KEY }}
+        run: |
+         echo $CERTIFICATE_BASE64 | base64 --decode > signing-cert.p12
+
+      - name: Build & upload iOS binary
+        working-directory: './packages/mobile/ios'
+        run: bundle exec fastlane ios beta
+        env:
+          X_CODE: ${{ matrix.xcode }}
+          DEVELOPER_APP_IDENTIFIER: ${{ secrets.DEVELOPER_APP_IDENTIFIER }}
+          DEVELOPER_TEAM_ID: ${{ secrets.DEVELOPER_TEAM_ID }}
+          ASC_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+          ASC_KEY: ${{ secrets.APPLE_KEY_CONTENT }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.IOS_DIST_SIGNING_KEY_PASSWORD }}
+          SIGNING_KEY_FILE_PATH: signing-cert.p12
+
+      - name: Upload logs to artifacts
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: gum-logs
+          path: /Users/runner/Library/Logs/gym/ton_keeper-ton_keeper.log
+
+      - name: Upload app-store ipa and dsyms to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-store ipa & dsyms
+          path: |
+            ./packages/mobile/ios/ton_keeper.ipa
+            ./packages/mobile/ios/*.app.dSYM.zip
