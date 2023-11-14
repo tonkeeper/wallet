@@ -10,10 +10,11 @@ import { useNavigation } from '@tonkeeper/router';
 export interface ScreenModalHeaderProps {
   children?: React.ReactNode;
   title?: string | React.ReactNode;
+  rightContent?: React.ReactNode;
 }
 
 export const ScreenModalHeader = memo<ScreenModalHeaderProps>((props) => {
-  const { title } = props;
+  const { title, rightContent } = props;
   const nav = useNavigation();
 
   return (
@@ -36,6 +37,7 @@ export const ScreenModalHeader = memo<ScreenModalHeaderProps>((props) => {
           title
         )}
       </View>
+      {rightContent && <View style={[styles.rightButton]}>{rightContent}</View>}
     </View>
   );
 });
@@ -59,6 +61,15 @@ const styles = Steezy.create(({ colors }) => ({
     position: 'absolute',
     top: 0,
     zIndex: 2,
+  },
+  rightButton: {
+    position: 'absolute',
+    top: 0,
+    zIndex: 2,
+    right: 0,
+    justifyContent: 'center',
+    marginRight: 16,
+    height: 64,
   },
   leftButton: {
     left: 0,

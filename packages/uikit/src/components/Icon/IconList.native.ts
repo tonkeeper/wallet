@@ -37,6 +37,7 @@ export const IconList = {
   'ic-swap-16': require('../../../assets/icons/png/ic-swap-16.png'),
   'ic-telegram-16': require('../../../assets/icons/png/ic-telegram-16.png'),
   'ic-time-16': require('../../../assets/icons/png/ic-time-16.png'),
+  'ic-tray-arrow-down-16': require('../../../assets/icons/png/ic-tray-arrow-down-16.png'),
   'ic-twitter-16': require('../../../assets/icons/png/ic-twitter-16.png'),
   'ic-verification-16': require('../../../assets/icons/png/ic-verification-16.png'),
   'ic-verification-secondary-16': require('../../../assets/icons/png/ic-verification-secondary-16.png'),

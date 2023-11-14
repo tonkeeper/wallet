@@ -38,6 +38,7 @@ interface Props {
   withCoinSelector?: boolean;
   disabled?: boolean;
   setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;
+  hideMaxButton?: boolean;
 }
 
 const AmountInputComponent: React.FC<Props> = (props) => {
@@ -51,6 +52,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     minAmount,
     hideSwap = false,
     withCoinSelector = false,
+    hideMaxButton,
     disabled,
     setAmount,
   } = props;
@@ -266,7 +268,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
           ) : null}
         </S.InputContainer>
       </S.InputTouchable>
-      {!isLockup ? (
+      {!isLockup && !hideMaxButton ? (
         <S.SendAllContainer>
           <Button
             mode={amount.all ? 'primary' : 'secondary'}
