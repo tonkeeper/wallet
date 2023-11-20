@@ -39,9 +39,9 @@ jobs:
         run: |
          echo $CERTIFICATE_BASE64 | base64 --decode > google-release.keystore
 
-      - name: Build Android Google Play Apk
+      - name: Build Android apk
         working-directory: './packages/mobile'
-        run: yarn build:android:google-play
+        run: yarn build:android:apk
         env:
           TONKEEPER_UPLOAD_STORE_FILE: google-release.keystore
           TONKEEPER_UPLOAD_KEY_ALIAS: ${{ secrets.TONKEEPER_UPLOAD_KEY_ALIAS }}
@@ -51,6 +51,6 @@ jobs:
       - name: Upload android google play release to artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Google Play Tonkeeper aab
+          name: Google Play Tonkeeper apk
           path: |
-            ./packages/mobile/android/app/build/outputs/bundle
+            ./packages/mobile/android/app/build/outputs
