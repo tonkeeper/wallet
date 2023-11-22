@@ -29,6 +29,13 @@ jobs:
       - name: Install yarn dependencies
         run: yarn
 
+      - name: Set up Ruby and Gemfile dependencies
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+          working-directory: './packages/mobile'
+
       - name: Update Java home to 11 version
         run: export JAVA_HOME=$JAVA_HOME_11_X64
 
@@ -39,19 +46,30 @@ jobs:
         run: |
          echo $CERTIFICATE_BASE64 | base64 --decode > google-release.keystore
 
-      - name: Build Android apk
-        working-directory: './packages/mobile'
-        run: yarn build:android:publish
+      - name: Decode service account into a file
+        working-directory: './packages/mobile/android'
         env:
-          TONKEEPER_UPLOAD_STORE_FILE: google-release.keystore
-          TONKEEPER_UPLOAD_KEY_ALIAS: ${{ secrets.TONKEEPER_UPLOAD_KEY_ALIAS }}
-          TONKEEPER_UPLOAD_STORE_PASSWORD: ${{ secrets.TONKEEPER_UPLOAD_STORE_PASSWORD }}
-          TONKEEPER_UPLOAD_KEY_PASSWORD: ${{ secrets.TONKEEPER_UPLOAD_KEY_PASSWORD }}
-          ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
+         CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
+        run: |
+         echo $CREDENTIALS > service-account.json
+
+      - name: Patch for Google Play (remove REQUEST_INSTALL_PACKAGES)
+        run: |
+         git apply ./patches/google-play-release.patch
+
+      - name: Build & deploy Android release
+        working-directory: './packages/mobile/android'
+        run: bundle exec fastlane android beta
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/packages/mobile/android/app/google-release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.TONKEEPER_UPLOAD_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.TONKEEPER_UPLOAD_KEY_ALIAS}}
+          KEY_PASSWORD: ${{ secrets.TONKEEPER_UPLOAD_KEY_PASSWORD }}
+          ANDROID_JSON_KEY_FILE: service-account.json
 
       - name: Upload android google play release to artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Google Play Tonkeeper apk
+          name: Google Play Tonkeeper aab
           path: |
-            ./packages/mobile/android/app/build/outputs
+            ${{ github.workspace }}/packages/mobile/android/app/build/outputs

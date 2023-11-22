@@ -4,7 +4,6 @@ plugins {
     id "com.android.application"
     id "com.google.gms.google-services"
     id "com.google.firebase.crashlytics"
-    id "com.github.triplet.play" version "3.8.6"
 }
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
@@ -114,10 +113,10 @@ android {
                 keyAlias TONKEEPER_UPLOAD_KEY_ALIAS
                 keyPassword TONKEEPER_UPLOAD_KEY_PASSWORD
             } else {
-                storeFile = file(System.getenv("TONKEEPER_UPLOAD_STORE_FILE"))
-                storePassword System.getenv("TONKEEPER_UPLOAD_STORE_PASSWORD")
-                keyAlias System.getenv("TONKEEPER_UPLOAD_KEY_ALIAS")
-                keyPassword System.getenv("TONKEEPER_UPLOAD_KEY_PASSWORD")
+                storeFile file(project.property('android.injected.signing.store.file'))
+                storePassword project.property('android.injected.signing.store.password')
+                keyAlias project.property('android.injected.signing.key.alias')
+                keyPassword project.property('android.injected.signing.key.password')
             }
         }
         debug {
@@ -139,10 +138,6 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
-}
-
-play {
-    track.set("internal")
 }
 
 // Apply static values from `gradle.properties` to the `android.packagingOptions`
