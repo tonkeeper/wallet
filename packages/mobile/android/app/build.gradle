@@ -4,6 +4,7 @@ plugins {
     id "com.android.application"
     id "com.google.gms.google-services"
     id "com.google.firebase.crashlytics"
+    id "com.github.triplet.play" version "3.8.6"
 }
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
@@ -138,6 +139,10 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+}
+
+play {
+    track.set("internal")
 }
 
 // Apply static values from `gradle.properties` to the `android.packagingOptions`
