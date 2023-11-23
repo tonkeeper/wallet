@@ -100,7 +100,7 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
             )}
           </S.Contain>
           <S.IconContain>
-            <Icon name="ic-chevron-16" color="foregroundSecondary" />
+            <Icon name="ic-chevron-16" color="foregroundTertiary" />
           </S.IconContain>
         </S.CardIn>
       </S.Card>
