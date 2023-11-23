@@ -6,6 +6,7 @@ import { Text } from '../../../components/Text';
 import { Icon } from '../../../components/Icon';
 import { memo, useLayoutEffect } from 'react';
 import { useTheme } from '../../../styles';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 export interface SheetModalHeaderProps {
   onIconLeftPress?: () => void;
@@ -20,10 +21,18 @@ export interface SheetModalHeaderProps {
 export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
   const { gradient, title, onClose, iconLeft, onIconLeftPress, leftContent, center } =
     props;
-  const { measureHeader, close } = useSheetInternal();
+  const { measureHeader, close, scrollY } = useSheetInternal();
   const theme = useTheme();
 
   const hasTitle = !!title;
+
+  const borderAnimatedStyle = useAnimatedStyle(
+    () => ({
+      borderBottomColor:
+        hasTitle && scrollY.value > 0 ? theme.separatorAlternate : 'transparent',
+    }),
+    [hasTitle],
+  );
 
   useLayoutEffect(() => {
     if (hasTitle) {
@@ -36,7 +45,9 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
   }, [hasTitle]);
 
   return (
-    <View style={[styles.container, !hasTitle && styles.absolute]}>
+    <Animated.View
+      style={[styles.container, borderAnimatedStyle, !hasTitle && styles.absolute]}
+    >
       {gradient && (
         <LinearGradient
           colors={[theme.backgroundContent, 'rgba(16, 22, 31, 0)']}
@@ -86,13 +97,14 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
           </View>
         </TouchableOpacity>
       </View>
-    </View>
+    </Animated.View>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
     height: 64,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   absolute: {
     position: 'absolute',

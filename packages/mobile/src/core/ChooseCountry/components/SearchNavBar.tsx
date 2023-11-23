@@ -10,7 +10,7 @@ import {
 } from '@tonkeeper/uikit';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { useTheme } from '$hooks/useTheme';
-import { LayoutAnimation } from 'react-native';
+import { LayoutAnimation, StyleSheet } from 'react-native';
 import { NavBar } from '$uikit';
 
 export interface SearchNavBarProps {
@@ -101,7 +101,7 @@ const styles = Steezy.create({
   },
   borderContainer: {
     zIndex: 2,
-    borderBottomWidth: 0.5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'transparent',
   },
   cancelContainer: {
