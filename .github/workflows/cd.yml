@@ -1,4 +1,4 @@
-name: iOS CD
+name: Mobile CD
 on:
   # Allows you to run this workflow manually from the Actions a tab
   workflow_dispatch:
@@ -72,3 +72,70 @@ jobs:
           path: |
             ./packages/mobile/ios/ton_keeper.ipa
             ./packages/mobile/ios/*.app.dSYM.zip
+
+  android-playstore-build:
+    name: android-build
+    strategy:
+      matrix:
+        os: [macos-13]
+        node-version: [18.18.0]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout to git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+          node-version: ${{ matrix.node-version }}
+    
+      - name: Install yarn dependencies
+        run: yarn
+
+      - name: Set up Ruby and Gemfile dependencies
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+          working-directory: './packages/mobile'
+
+      - name: Update Java home to 11 version
+        run: export JAVA_HOME=$JAVA_HOME_11_X64
+
+      - name: Decode signing certificate into a file
+        working-directory: './packages/mobile/android/app'
+        env:
+         CERTIFICATE_BASE64: ${{ secrets.ANDROID_DIST_SIGNING_KEY }}
+        run: |
+         echo $CERTIFICATE_BASE64 | base64 --decode > google-release.keystore
+
+      - name: Decode service account into a file
+        working-directory: './packages/mobile/android'
+        env:
+         CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
+        run: |
+         echo $CREDENTIALS > service-account.json
+
+      - name: Patch for Google Play (remove REQUEST_INSTALL_PACKAGES)
+        run: |
+         git apply ./patches/google-play-release.patch
+
+      - name: Build & deploy Android release
+        working-directory: './packages/mobile/android'
+        run: bundle exec fastlane android beta
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/packages/mobile/android/app/google-release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.TONKEEPER_UPLOAD_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.TONKEEPER_UPLOAD_KEY_ALIAS}}
+          KEY_PASSWORD: ${{ secrets.TONKEEPER_UPLOAD_KEY_PASSWORD }}
+          ANDROID_JSON_KEY_FILE: service-account.json
+
+      - name: Upload android google play release to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Google Play Tonkeeper aab
+          path: |
+            ${{ github.workspace }}/packages/mobile/android/app/build/outputs
