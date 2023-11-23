@@ -305,6 +305,7 @@ export function useDeeplinkingResolvers() {
                 isInactive: details.isInactive,
                 isJetton: true,
                 expiryTimestamp,
+                redirectToActivity: resolveParams.redirectToActivity,
               };
 
               openSend(options);
@@ -330,6 +331,7 @@ export function useDeeplinkingResolvers() {
                 isInactive: details.isInactive,
                 methodId: resolveParams.methodId,
                 expiryTimestamp,
+                redirectToActivity: resolveParams.redirectToActivity,
               };
               if (options.methodId) {
                 nav.openModal('NewConfirmSending', options);
@@ -351,6 +353,7 @@ export function useDeeplinkingResolvers() {
         withGoBack: resolveParams.withGoBack,
         isJetton: true,
         expiryTimestamp,
+        redirectToActivity: resolveParams.redirectToActivity,
       });
     } else if (query.nft) {
       if (!Address.isValid(query.nft)) {
@@ -358,7 +361,14 @@ export function useDeeplinkingResolvers() {
       }
       await checkFundsAndOpenNFTTransfer(query.nft, address);
     } else {
-      openSend({ currency, address, comment, isJetton: false, expiryTimestamp });
+      openSend({
+        currency,
+        address,
+        comment,
+        isJetton: false,
+        expiryTimestamp,
+        redirectToActivity: resolveParams.redirectToActivity,
+      });
     }
   });
 

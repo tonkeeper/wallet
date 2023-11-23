@@ -23,4 +23,5 @@ export interface ConfirmStepProps {
   isCommentEncrypted: boolean;
   onConfirm: () => Promise<void>;
   isPreparing: boolean;
+  redirectToActivity: boolean;
 }
