@@ -24,6 +24,7 @@ export type AppStackParamList = {
     withGoBack?: boolean;
     from?: SendAnalyticsFrom;
     expiryTimestamp?: number | null;
+    redirectToActivity?: boolean;
   };
   [AppStackRouteNames.ScanQR]: {
     onScan: (url: string) => boolean | Promise<boolean>;
