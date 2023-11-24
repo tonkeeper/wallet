@@ -83,3 +83,35 @@ export const Badge = styled.View`
   right: ${ns(3)}px;
   z-index: 3;
 `;
+
+export const AssetsContainer = styled.View`
+  flex-direction: row;
+  margin-top: ${ns(4)}px;
+  margin-left: -${ns(2)}px;
+`;
+
+export const Asset = styled.View`
+  width: ${ns(28)}px;
+  height: ${ns(28)}px;
+  border-radius: ${ns(28) / 2}px;
+  border-width: ${ns(2)}px;
+  border-color: ${({ theme }) => theme.colors.backgroundSecondary};
+  background: ${({ theme }) => theme.colors.backgroundTertiary};
+  margin-right: -${ns(8)}px;
+  overflow: hidden;
+`;
+
+export const AssetImage = styled.Image`
+  width: ${ns(24)}px;
+  height: ${ns(24)}px;
+`;
+
+export const AssetsCount = styled.View`
+  height: ${ns(24)}px;
+  border-radius: ${ns(24) / 2}px;
+  padding: 0 ${ns(8)}px;
+  justify-content: center;
+  background: ${({ theme }) => theme.colors.backgroundTertiary};
+  margin-left: ${ns(14)}px;
+  margin-top: ${ns(2)}px;
+`;

@@ -584,7 +584,7 @@ export class TonWallet {
       vault,
       walletVersion,
       bounce: isActiveAccount(recipientInfo.status)
-        ? AddressFormatter.isBounceable(recipientInfo.address)
+        ? AddressFormatter.isBounceable(address)
         : false,
     });
 
@@ -639,7 +639,7 @@ export class TonWallet {
       secretKey: Buffer.from(secretKey),
       // We should keep bounce flag from user input. We should check contract status till Jan 1, 2024 according to internal Address reform roadmap
       bounce: isActiveAccount(recipientInfo.status)
-        ? AddressFormatter.isBounceable(recipientInfo.address)
+        ? AddressFormatter.isBounceable(address)
         : false,
     });
 

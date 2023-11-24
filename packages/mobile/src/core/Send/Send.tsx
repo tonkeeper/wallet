@@ -66,6 +66,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     isInactive: initialIsInactive = false,
     from,
     expiryTimestamp,
+    redirectToActivity = true,
   } = route.params;
 
   const initialAddress =
@@ -485,6 +486,7 @@ export const Send: FC<SendProps> = ({ route }) => {
               comment={comment}
               isCommentEncrypted={isCommentEncrypted}
               onConfirm={handleSend}
+              redirectToActivity={redirectToActivity}
               {...stepProps}
             />
           )}

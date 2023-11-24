@@ -309,7 +309,8 @@
     "hide" : "Скрыть",
     "other_ways_to_buy" : "Другие способы покупки",
     "show_all" : "Показать всё",
-    "title" : "Купить или продать"
+    "buy": "Купить",
+    "sell": "Продать"
   },
   "exchange" : {
     "not_exists" : "Неверный ID обменника"
@@ -604,6 +605,17 @@
   "settings_delete_alert_title" : "Вы уверены, что хотите удалить аккаунт?",
   "settings_jettons_list" : "Токены",
   "settings_legal_documents" : "Юридические документы",
+  "language": {
+    "list_item": {
+      "title": "Язык",
+      "value": "Русский"
+    },
+    "language_alert" : {
+      "title": "Чтобы изменить язык приложения, перейдите в настройки устройства",
+      "cancel": "Отмена",
+      "open": "Настройки"
+    }
+  },
   "settings_network_alert_title" : "Выберите сеть",
   "settings_news" : "Новости Tonkeeper",
   "settings_notifications" : "Уведомления",

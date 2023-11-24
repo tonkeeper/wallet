@@ -297,7 +297,8 @@
     "hide" : "Hide",
     "other_ways_to_buy" : "Other ways to buy",
     "show_all" : "Show all",
-    "title" : "Buy or sell"
+    "buy": "Buy",
+    "sell": "Sell"
   },
   "exchange" : {
     "not_exists" : "Invalid exchange ID"
@@ -594,6 +595,17 @@
   "settings_delete_alert_title" : "Are you sure you want to delete your account?",
   "settings_jettons_list" : "Tokens",
   "settings_legal_documents" : "Legal",
+  "language": {
+    "list_item": {
+      "title": "Language",
+      "value": "English"
+    },
+    "language_alert" : {
+      "title": "To change the language of the app, go to device Settings",
+      "cancel": "Cancel",
+      "open": "Settings"
+    }
+  },
   "settings_network_alert_title" : "Select network",
   "settings_news" : "Tonkeeper news",
   "settings_notifications" : "Notifications",

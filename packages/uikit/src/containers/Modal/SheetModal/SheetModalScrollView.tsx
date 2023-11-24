@@ -21,7 +21,7 @@ export const SheetModalScrollView = React.forwardRef<
   SheetModalScrollViewProps
 >((props, ref) => {
   const { children, safeArea, ...rest } = props;
-  const { measureContent, contentHeight, footerHeight, headerHeight } =
+  const { measureContent, scrollHandler, contentHeight, footerHeight, headerHeight } =
     useSheetInternal();
   const _safeArea = useSafeAreaInsets();
 
@@ -54,6 +54,7 @@ export const SheetModalScrollView = React.forwardRef<
         ref={ref}
         {...rest}
         showsVerticalScrollIndicator={false}
+        onScroll={scrollHandler}
       >
         <Animated.View style={contentContainerStyle} onLayout={measureContent}>
           {children}
