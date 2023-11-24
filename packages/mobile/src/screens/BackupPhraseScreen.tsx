@@ -1,12 +1,21 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Button, Screen, Spacer, Text, copyText } from '@tonkeeper/uikit';
+import { Button, Screen, Spacer, Text } from '@tonkeeper/uikit';
 import { useParams } from '@tonkeeper/router/src/imperative';
 import { View, StyleSheet } from 'react-native';
 import { memo, useCallback, useMemo } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
+function getRandIndexes(length: number, indexes: number[] = []) {
+  if (indexes.length === length) {
+    return indexes;
+  }
+
+  const randIndex = Math.floor(Math.random() * 23);
+  if (!indexes.includes(randIndex)) {
+    indexes.push(randIndex);
+  }
+
+  return getRandIndexes(length, indexes);
 }
 
 export const BackupPhraseScreen = memo(() => {
@@ -14,31 +23,13 @@ export const BackupPhraseScreen = memo(() => {
   const safeArea = useSafeAreaInsets();
   const nav = useNavigation();
 
-  const leftColumn = useMemo(() => {
-    return params.phrase!.split(' ').slice(0, 12);
-  }, [params.phrase]);
-
-  const rightColumn = useMemo(() => {
-    return params.phrase!.split(' ').slice(12, 24);
-  }, [params.phrase]);
+  const phrase = useMemo(() => params.phrase.split(' '), [params.phrase]);
+  const leftColumn = useMemo(() => phrase.slice(0, 12), [phrase]);
+  const rightColumn = useMemo(() => phrase.slice(12, 24), [phrase]);
 
   const getRandomWords = useCallback(() => {
-    const obj = params.phrase!.split(' ').reduce((acc, word) => {
-      if (Object.keys(acc).length < 3) {
-        const randIndex = getRandomInt(24);
-        if (acc[randIndex] === undefined) {
-          acc[randIndex] = word;
-        }
-      }
-
-      return acc;
-    }, {});
-
-    return Object.keys(obj).map((index) => ({
-      word: obj[index],
-      index: Number(index),
-    }));
-  }, [params.phrase]);
+    return getRandIndexes(3).map((index) => ({ word: phrase[index], index }));
+  }, [phrase]);
 
   return (
     <Screen>

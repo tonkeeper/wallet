@@ -110,33 +110,37 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
   const hasValue = !!inputValue;
   const shouldAnimate = hasLabel && hasValue;
 
-  useImperativeHandle(ref, () => ({
-    focus() {
-      inputRef.current?.focus();
-    },
-    blur() {
-      inputRef.current?.blur();
-    },
-    markAsInvalid() {
-      if (!invalid) {
-        setInvalid(true);
-      }
-    },
-    markAsValid() {
-      if (invalid) {
-        setInvalid(false);
-      }
-    },
-    isInvalid() {
-      return invalid;
-    },
-    setValue(newValue) {
-      setInputValue(newValue);
-    },
-    getValue() {
-      return inputValue;
-    },
-  }));
+  useImperativeHandle(
+    ref,
+    () => ({
+      focus() {
+        inputRef.current?.focus();
+      },
+      blur() {
+        inputRef.current?.blur();
+      },
+      markAsInvalid() {
+        if (!invalid) {
+          setInvalid(true);
+        }
+      },
+      markAsValid() {
+        if (invalid) {
+          setInvalid(false);
+        }
+      },
+      isInvalid() {
+        return invalid;
+      },
+      setValue(newValue) {
+        setInputValue(newValue);
+      },
+      getValue() {
+        return inputValue;
+      },
+    }),
+    [inputValue, invalid],
+  );
 
   useEffect(() => {
     cancelAnimation(state);

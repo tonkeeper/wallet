@@ -12,7 +12,7 @@ export const BackupWarningModal = memo(() => {
     const unlocked = await unlock();
 
     nav.goBack();
-    await delay(400);
+    await delay(600);
 
     nav.navigate('/backup-phrase', { phrase: unlocked.mnemonic });
   }, []);
