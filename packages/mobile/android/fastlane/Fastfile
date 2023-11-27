@@ -32,6 +32,8 @@ platform :android do
             gradle_file_path: "./app/build.gradle",
             version_code: updated_version_code
         )
+        
+        sh("echo VERSION_CODE=#{updated_version_code} >> $GITHUB_ENV")
     end
 
     desc "Build the android aab for release"

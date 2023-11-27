@@ -69,6 +69,6 @@ jobs:
       - name: Upload android google play release to artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Google Play Tonkeeper apk
+          name: Google Play Tonkeeper apk ${{ env.VERSION_CODE }}
           path: |
             ${{ github.workspace }}/packages/mobile/android/app/build/outputs
