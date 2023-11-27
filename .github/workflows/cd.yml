@@ -73,8 +73,8 @@ jobs:
             ./packages/mobile/ios/ton_keeper.ipa
             ./packages/mobile/ios/*.app.dSYM.zip
 
-  android-playstore-build:
-    name: android-build
+  android-store-build:
+    name: android-store-build
     strategy:
       matrix:
         os: [macos-13]
