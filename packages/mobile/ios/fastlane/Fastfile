@@ -87,7 +87,6 @@ platform :ios do
       build_number: updated_version_code,
     )
 
-    puts("Build number " + updated_version_code)
     sh("echo VERSION_CODE=#{updated_version_code} >> $GITHUB_ENV")
   end
 
