@@ -81,9 +81,13 @@ platform :ios do
       app_identifier: app_identifier
     )
 
+    updated_version_code = latest_build_number + 1
+
     increment_build_number(
-      build_number: (latest_build_number + 1),
+      build_number: updated_version_code,
     )
+
+    sh("echo VERSION_CODE=#{updated_version_code} >> $GITHUB_ENV")
   end
 
   desc "Build the iOS app for release"
