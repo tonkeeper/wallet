@@ -57,7 +57,7 @@ jobs:
         run: |
          echo $CREDENTIALS > service-account.json
 
-      - name: Build Android APK
+      - name: Build android apk
         working-directory: './packages/mobile/android'
         run: bundle exec fastlane android apk
         env:
@@ -67,9 +67,9 @@ jobs:
           KEY_PASSWORD: ${{ secrets.TONKEEPER_UPLOAD_KEY_PASSWORD }}
           ANDROID_JSON_KEY_FILE: service-account.json
 
-      - name: Upload android google play release to artifacts
+      - name: Upload android apk to artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Google Play Tonkeeper apk ${{ env.VERSION_CODE }}
+          name: Tonkeeper apk ${{ env.VERSION_CODE }}
           path: |
             ${{ github.workspace }}/packages/mobile/android/app/build/outputs
