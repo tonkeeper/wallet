@@ -68,7 +68,7 @@ jobs:
       - name: Upload app-store ipa and dsyms to artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: app-store ipa & dsyms ${{ env.VERSION_CODE }}
+          name: Tonkeeper ipa & dsyms ${{ env.VERSION_CODE }}
           path: |
             ./packages/mobile/ios/ton_keeper.ipa
             ./packages/mobile/ios/*.app.dSYM.zip
