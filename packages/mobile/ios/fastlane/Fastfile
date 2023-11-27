@@ -84,6 +84,8 @@ platform :ios do
     increment_build_number(
       build_number: (latest_build_number + 1),
     )
+
+    puts "Build number " + (latest_build_number + 1)
   end
 
   desc "Build the iOS app for release"
