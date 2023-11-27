@@ -1,10 +1,15 @@
 import { delay } from '@tonkeeper/core';
 import { useUnlockVault } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/useUnlockVault';
 import { useNavigation } from '@tonkeeper/router';
+import { useParams } from '@tonkeeper/router/src/imperative';
 import { Button, Modal, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
 import { memo, useCallback } from 'react';
 
-export const BackupWarningModal = memo(() => {
+interface BackupWarningModalProps {
+  isBackupAgain?: boolean;
+}
+
+export const BackupWarningModal = memo<BackupWarningModalProps>((props) => {
   const nav = useNavigation();
   const unlock = useUnlockVault();
 
@@ -14,7 +19,10 @@ export const BackupWarningModal = memo(() => {
     nav.goBack();
     await delay(600);
 
-    nav.navigate('/backup-phrase', { phrase: unlocked.mnemonic });
+    nav.navigate('/backup-phrase', {
+      isBackupAgain: props.isBackupAgain,
+      phrase: unlocked.mnemonic,
+    });
   }, []);
 
   return (

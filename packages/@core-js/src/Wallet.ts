@@ -14,6 +14,7 @@ import { TronService } from './TronService';
 import { ActivityLoader } from './Activity/ActivityLoader';
 import { TonActivityList } from './Activity/TonActivityList';
 import { JettonActivityList } from './Activity/JettonActivityList';
+import { State } from './utils/State';
 
 export enum WalletNetwork {
   mainnet = -239,
@@ -74,6 +75,10 @@ export type WalletContext = {
   tronapi: TronAPI;
 };
 
+export type WalletState = {
+  lastBackupTimestamp: null | number;
+};
+
 export class Wallet {
   public identity: WalletIdentity;
   public address: WalletAddress;
@@ -91,6 +96,10 @@ export class Wallet {
   public activityList: ActivityList;
 
   public tronService: TronService;
+
+  public state = new State<WalletState>({
+    lastBackupTimestamp: null,
+  });
 
   constructor(
     private queryClient: QueryClient,
@@ -142,7 +151,27 @@ export class Wallet {
     this.nfts = new NftsManager(context);
     this.tronService = new TronService(context);
 
+    this.rehydrateLastBackupTimestamp();
     this.listenTransactions();
+  }
+
+  public async saveLastBackupTimestamp() {
+    const timestamp = +new Date();
+    await this.storage.setItem('lastBackupTimestamp', `${timestamp}`);
+
+    this.state.set({
+      lastBackupTimestamp: timestamp,
+    });
+  }
+
+  public async rehydrateLastBackupTimestamp() {
+    const timestamp = await this.storage.getItem('lastBackupTimestamp');
+
+    if (timestamp !== null) {
+      this.state.set({
+        lastBackupTimestamp: timestamp,
+      });
+    }
   }
 
   public async getTonPrivateKey(): Promise<string> {

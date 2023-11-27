@@ -4,6 +4,7 @@ import { InputNumberPrefix } from '@tonkeeper/shared/components/InputNumberPrefi
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from '@tonkeeper/router/src/imperative';
 import { useNavigation } from '@tonkeeper/router';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export const BackupCheckPhraseScreen = memo(() => {
   const { words } = useParams<{ words: { index: number; word: string }[] }>();
@@ -11,9 +12,10 @@ export const BackupCheckPhraseScreen = memo(() => {
   const inputs = useRecoveryPhraseInputs();
   const nav = useNavigation();
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
+    await tk.wallet.saveLastBackupTimestamp();
     nav.navigate('/backup');
-  }, []);
+  }, [nav]);
 
   useEffect(() => {
     inputs.getRef(0)?.focus();

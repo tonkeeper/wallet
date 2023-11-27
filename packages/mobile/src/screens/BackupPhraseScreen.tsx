@@ -1,9 +1,10 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Button, Screen, Spacer, Text } from '@tonkeeper/uikit';
+import { Button, Screen, Spacer, Text, copyText } from '@tonkeeper/uikit';
 import { useParams } from '@tonkeeper/router/src/imperative';
 import { View, StyleSheet } from 'react-native';
 import { memo, useCallback, useMemo } from 'react';
 import { useNavigation } from '@tonkeeper/router';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useNewWallet';
 
 function getRandIndexes(length: number, indexes: number[] = []) {
   if (indexes.length === length) {
@@ -19,7 +20,8 @@ function getRandIndexes(length: number, indexes: number[] = []) {
 }
 
 export const BackupPhraseScreen = memo(() => {
-  const params = useParams<{ phrase: string }>();
+  const wallet = useNewWallet();
+  const params = useParams<{ phrase: string; isBackupAgain?: boolean }>();
   const safeArea = useSafeAreaInsets();
   const nav = useNavigation();
 
@@ -69,13 +71,16 @@ export const BackupPhraseScreen = memo(() => {
       </View>
 
       <View style={[styles.buttonContainer, { paddingBottom: safeArea.bottom + 16 }]}>
-        <Button
-          title="Check Backup"
-          onPress={() =>
-            nav.navigate('/backup-check-phrase', { words: getRandomWords() })
-          }
-        />
-        {/* <Button title="Copy" color="secondary" onPress={copyText(params.phrase)} /> */}
+        {wallet.lastBackupTimestamp !== null && !params.isBackupAgain ? (
+          <Button title="Copy" color="secondary" onPress={copyText(params.phrase)} />
+        ) : (
+          <Button
+            title="Check Backup"
+            onPress={() =>
+              nav.navigate('/backup-check-phrase', { words: getRandomWords() })
+            }
+          />
+        )}
       </View>
     </Screen>
   );
