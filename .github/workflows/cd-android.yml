@@ -40,7 +40,8 @@ jobs:
         run: export JAVA_HOME=$JAVA_HOME_11_X64
 
       - name: Update ENVFILE for site
-        run: export ENVFILE=.env.site
+        working-directory: './packages/mobile'
+        run: cp .env.site .env
 
       - name: Decode signing certificate into a file
         working-directory: './packages/mobile/android/app'
