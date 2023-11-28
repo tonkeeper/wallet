@@ -1,25 +1,21 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Animated from 'react-native-reanimated';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Clipboard from '@react-native-community/clipboard';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { Switch } from 'react-native';
 
-import * as S from './Security.style';
-import {NavBar, ScrollHandler, Text} from '$uikit';
-import { CellSection, CellSectionItem } from '$shared/components';
 import { walletActions, walletSelector } from '$store/wallet';
 import { openChangePin, openResetPin } from '$navigation';
-import { detectBiometryType, ns, platform, triggerImpactLight } from '$utils';
+import { detectBiometryType, platform, triggerImpactLight } from '$utils';
 import { MainDB } from '$database';
 import { Toast } from '$store';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { t } from '@tonkeeper/shared/i18n';
 
-export const Security: FC = () => {
+import { Icon, List, Screen, Steezy, Text, View } from '@tonkeeper/uikit';
+
+export const Security = memo(() => {
   const dispatch = useDispatch();
-  const tabBarHeight = useBottomTabBarHeight();
   const { wallet } = useSelector(walletSelector);
   const [isBiometryEnabled, setBiometryEnabled] = useState(false);
   const [biometryAvail, setBiometryAvail] = useState(-1);
@@ -52,7 +48,7 @@ export const Security: FC = () => {
     } catch (e) {
       Toast.fail(e.message);
     }
-  }, [t, wallet]);
+  }, [wallet]);
 
   const handleBiometry = useCallback(
     (triggerHaptic: boolean) => () => {
@@ -81,78 +77,57 @@ export const Security: FC = () => {
     openResetPin();
   }, []);
 
-  function renderBiometryToggler() {
-    if (biometryAvail === -1) {
-      return null;
-    }
-
-    return (
-      <>
-        <CellSection>
-          <CellSectionItem
-            onPress={handleBiometry(true)}
-            indicator={
-              <Switch value={isBiometryEnabled} onChange={handleBiometry(false)} />
-            }
-          >
-            {t('security_use_biometry_switch', {
-              biometryType: isTouchId 
-                ? t(`platform.${platform}.fingerprint`) 
-                : t(`platform.${platform}.face_recognition`),
-            })}
-          </CellSectionItem>
-        </CellSection>
-        <S.BiometryTip>
-          <Text variant="body2" color="foregroundSecondary">
-            {t('security_use_biometry_tip', {
-              biometryType: isTouchId
-                ? t(`platform.${platform}.fingerprint`)
-                : t(`platform.${platform}.face_recognition`),
-            })}
-          </Text>
-        </S.BiometryTip>
-      </>
-    );
-  }
-
   return (
-    <>
-      <NavBar>{t('security_title')}</NavBar>
-      <ScrollHandler>
-        <Animated.ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingHorizontal: ns(16),
-            paddingBottom: tabBarHeight,
-          }}
-          scrollEventThrottle={16}
-        >
-          {renderBiometryToggler()}
-          <CellSection>
-            <CellSectionItem onPress={handleChangePasscode} icon="ic-lock-28">
-              {t('security_change_passcode')}
-            </CellSectionItem>
-            <CellSectionItem
-              onPress={handleResetPasscode}
-              icon="ic-arrow-2-circlepath-28"
-            >
-              {t('security_reset_passcode')}
-            </CellSectionItem>
-          </CellSection>
-          <CellSection>
-            {!!wallet && (
-              <CellSectionItem onPress={handleBackupSettings} icon="ic-key-28">
-                {t('settings_backup_seed')}
-              </CellSectionItem>
-            )}
-            {!!wallet && wallet.ton.isLockup() && (
-              <CellSectionItem onPress={handleCopyLockupConfig} icon="ic-key-28">
-                Copy lockup config
-              </CellSectionItem>
-            )}
-          </CellSection>
-        </Animated.ScrollView>
-      </ScrollHandler>
-    </>
+    <Screen>
+      <Screen.Header title={t('security_title')} />
+      <Screen.ScrollView>
+        {
+          <>
+            <List>
+              <List.Item
+                onPress={handleBiometry(true)}
+                title={t('security_use_biometry_switch', {
+                  biometryType: isTouchId
+                    ? t(`platform.${platform}.fingerprint`)
+                    : t(`platform.${platform}.face_recognition`),
+                })}
+                rightContent={
+                  <Switch value={isBiometryEnabled} onChange={handleBiometry(false)} />
+                }
+              />
+            </List>
+            <View style={styles.listDescription}>
+              <Text type="body2" color="textSecondary">
+                {t('security_use_biometry_tip', {
+                  biometryType: isTouchId
+                    ? t(`platform.${platform}.fingerprint`)
+                    : t(`platform.${platform}.face_recognition`),
+                })}
+              </Text>
+            </View>
+          </>
+        }
+        <List>
+          <List.Item
+            rightContent={<Icon name="ic-lock-28" color="accentBlue" />}
+            title={t('security_change_passcode')}
+            onPress={handleChangePasscode}
+          />
+          <List.Item
+            rightContent={<Icon name="ic-arrow-2-circlepath-28" color="accentBlue" />}
+            title={t('security_reset_passcode')}
+            onPress={handleResetPasscode}
+          />
+        </List>
+      </Screen.ScrollView>
+    </Screen>
   );
-};
+});
+
+const styles = Steezy.create({
+  listDescription: {
+    marginTop: -12,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+});

@@ -8,7 +8,8 @@ import Animated from 'react-native-reanimated';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
-import { Icon, PopupSelect, ScrollHandler, Spacer, Text, List } from '$uikit';
+import { List, Text, Spacer } from '@tonkeeper/uikit';
+import { Icon, PopupSelect, ScrollHandler } from '$uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
@@ -17,7 +18,6 @@ import {
   MainStackRouteNames,
   openDeleteAccountDone,
   openDevMenu,
-  openJettonsListSettingsStack,
   openLegalDocuments,
   openManageTokens,
   openNotifications,
@@ -57,8 +57,10 @@ import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 import { Address } from '@tonkeeper/core';
 import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useNewWallet';
 
 export const Settings: FC = () => {
+  const newWallet = useNewWallet();
   const animationRef = useRef<AnimatedLottieView>(null);
   const devMenuHandlerRef = useRef(null);
 
@@ -202,10 +204,6 @@ export const Settings: FC = () => {
     openAppearance();
   }, []);
 
-  const handleJettonsList = useCallback(() => {
-    openJettonsListSettingsStack();
-  }, []);
-
   const handleManageTokens = useCallback(() => {
     openManageTokens();
   }, []);
@@ -258,19 +256,36 @@ export const Settings: FC = () => {
           scrollEventThrottle={16}
         >
           <List>
-            {!!wallet && (
-              <List.Item
-                value={
-                  <Icon
-                    style={styles.icon.static}
-                    color="accentPrimary"
-                    name={'ic-key-28'}
-                  />
-                }
-                title={t('settings_security')}
-                onPress={handleSecurity}
-              />
-            )}
+            <List.Item
+              title={
+                <View style={styles.listIndicator.static}>
+                  <Text type="label1">Backup</Text>
+                  {newWallet.lastBackupTimestamp === null && <List.Indicator />}
+                </View>
+              }
+              navigate="/backup"
+              rightContent={
+                <Icon
+                  style={styles.icon.static}
+                  color="accentPrimary"
+                  name={'ic-key-28'}
+                />
+              }
+            />
+            <List.Item
+              rightContent={
+                <Icon
+                  style={styles.icon.static}
+                  color="accentPrimary"
+                  name="ic-lock-28"
+                />
+              }
+              title={t('settings_security')}
+              onPress={handleSecurity}
+            />
+          </List>
+          <Spacer y={16} />
+          <List>
             {shouldShowTokensButton && (
               <List.Item
                 value={
@@ -318,7 +333,7 @@ export const Settings: FC = () => {
                 value={<Icon color="accentPrimary" name={'ic-notification-28'} />}
                 title={
                   <View style={styles.notificationsTextContainer.static}>
-                    <Text variant="label1" numberOfLines={1} ellipsizeMode="tail">
+                    <Text type="label1" numberOfLines={1} ellipsizeMode="tail">
                       {t('settings_notifications')}
                     </Text>
                     {notificationIndicator}
@@ -340,11 +355,11 @@ export const Settings: FC = () => {
               onChange={setSearchEngine}
               keyExtractor={(item) => item}
               width={176}
-              renderItem={(item) => <Text variant="label1">{item}</Text>}
+              renderItem={(item) => <Text type="label1">{item}</Text>}
             >
               <List.Item
                 value={
-                  <Text variant="label1" color="accentPrimary">
+                  <Text type="label1" color="accentBlue">
                     {searchEngine}
                   </Text>
                 }
@@ -354,7 +369,7 @@ export const Settings: FC = () => {
             <List.Item
               onPress={handleSwitchLanguage}
               value={
-                <Text variant="label1" color="accentPrimary">
+                <Text type="label1" color="accentBlue">
                   {t('language.list_item.value')}
                 </Text>
               }
@@ -369,10 +384,10 @@ export const Settings: FC = () => {
                 width={220}
                 renderItem={(version) => (
                   <S.WalletVersion>
-                    <Text variant="label1" style={{ marginRight: ns(8) }}>
+                    <Text type="label1" style={{ marginRight: ns(8) }}>
                       {SelectableVersionsConfig[version]?.label}
                     </Text>
-                    <Text variant="body1" color="foregroundSecondary">
+                    <Text type="body1" color="textSecondary">
                       {Address.parse(
                         allTonAddesses[SelectableVersionsConfig[version]?.label],
                         { bounceable: !flags.address_style_nobounce },
@@ -383,7 +398,7 @@ export const Settings: FC = () => {
               >
                 <List.Item
                   value={
-                    <Text variant="label1" color="accentPrimary">
+                    <Text type="label1" color="accentBlue">
                       {SelectableVersionsConfig[version]?.label}
                     </Text>
                   }
@@ -394,7 +409,7 @@ export const Settings: FC = () => {
             {wallet && flags.address_style_settings ? (
               <List.Item
                 value={
-                  <Text variant="label1" color="accentPrimary">
+                  <Text type="label1" color="accentBlue">
                     EQ » UQ
                   </Text>
                 }
@@ -513,7 +528,7 @@ export const Settings: FC = () => {
                     </Text>
                   </S.AppInfoTitleWrapper>
                   <S.AppInfoVersionWrapper>
-                    <Text variant="label3" color="foregroundSecondary">
+                    <Text type="label3" color="textSecondary">
                       {t('settings_version')} {DeviceInfo.getVersion()}
                     </Text>
                   </S.AppInfoVersionWrapper>
@@ -542,5 +557,10 @@ const styles = Steezy.create({
     paddingTop: 9.5,
     paddingBottom: 6.5,
     marginLeft: 8,
+  },
+  listIndicator: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

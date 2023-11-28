@@ -520,7 +520,7 @@
   "security_reset_passcode" : "Reset passcode",
   "security_title" : "Security",
   "security_use_biometry_switch" : "Use %{biometryType}",
-  "security_use_biometry_tip" : "You can always unlock your wallet with a passcode.",
+  "security_use_biometry_tip" : "You can always unlock your wallet with a passcode.",
   "send_address_placeholder" : "Address or name",
   "send_all_warning_title" : "Are you sure you want to send all your balance?",
   "send_build_tx_error" : "Your transaction failed",

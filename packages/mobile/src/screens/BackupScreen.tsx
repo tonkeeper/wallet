@@ -23,11 +23,13 @@ export const BackupScreen = memo(() => {
         </View>
 
         {wallet.lastBackupTimestamp === null ? (
-          <Button
-            onPress={() => nav.navigate('/backup-warning')}
-            title="Back Up Manually"
-            color="secondary"
-          />
+          <View style={styles.indentHorizontal}>
+            <Button
+              onPress={() => nav.navigate('/backup-warning')}
+              title="Back Up Manually"
+              color="secondary"
+            />
+          </View>
         ) : (
           <>
             <List>
@@ -67,6 +69,9 @@ const styles = Steezy.create(({ colors }) => ({
   info: {
     marginHorizontal: 16,
     marginBottom: 14,
+  },
+  indentHorizontal: {
+    marginHorizontal: 16,
   },
   checkmarkIcon: {
     backgroundColor: colors.accentGreen,
