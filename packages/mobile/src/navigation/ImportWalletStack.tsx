@@ -9,6 +9,7 @@ import { walletActions } from '$store/wallet';
 import { useNavigation } from '@tonkeeper/router';
 import { getPermission } from '$utils/messaging';
 import { SetupRecoveryPhrasePage } from '@tonkeeper/shared/screens/setup/pages/SetupRecoveryPhrasePage';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 const Stack = createNativeStackNavigator<any>();
 
@@ -85,6 +86,7 @@ const Step2 = () => {
                 } else {
                   nav.replace('/import/notifications');
                 }
+                tk.wallet?.saveLastBackupTimestamp();
               },
               onFail: () => {},
             }),
