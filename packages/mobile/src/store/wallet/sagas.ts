@@ -976,7 +976,6 @@ function* toggleBiometryWorker(action: ToggleBiometryAction) {
     }
     yield call(MainDB.setBiometryEnabled, isEnabled);
   } catch (e) {
-    yield call(Toast.fail, e.message);
     onFail();
   }
 }
