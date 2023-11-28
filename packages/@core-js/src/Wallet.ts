@@ -77,6 +77,7 @@ export type WalletContext = {
 
 export type WalletState = {
   lastBackupTimestamp: null | number;
+  isFinishedSetup: boolean;
 };
 
 export class Wallet {
@@ -99,6 +100,7 @@ export class Wallet {
 
   public state = new State<WalletState>({
     lastBackupTimestamp: null,
+    isFinishedSetup: false,
   });
 
   constructor(
@@ -152,25 +154,33 @@ export class Wallet {
     this.tronService = new TronService(context);
 
     this.rehydrateLastBackupTimestamp();
+    this.rehydrateIsFinishedSetup();
     this.listenTransactions();
+  }
+
+  public async finishSetup() {
+    await this.storage.setItem('isFinishedSetup', 'true');
+    this.state.set({ isFinishedSetup: true });
+  }
+
+  public async rehydrateIsFinishedSetup() {
+    const isFinishedSetup = await this.storage.getItem('isFinishedSetup');
+    if (isFinishedSetup === 'true') {
+      this.state.set({ isFinishedSetup: true });
+    }
   }
 
   public async saveLastBackupTimestamp() {
     const timestamp = +new Date();
     await this.storage.setItem('lastBackupTimestamp', `${timestamp}`);
-
-    this.state.set({
-      lastBackupTimestamp: timestamp,
-    });
+    this.state.set({ lastBackupTimestamp: timestamp });
   }
 
   public async rehydrateLastBackupTimestamp() {
     const timestamp = await this.storage.getItem('lastBackupTimestamp');
 
     if (timestamp !== null) {
-      this.state.set({
-        lastBackupTimestamp: timestamp,
-      });
+      this.state.set({ lastBackupTimestamp: timestamp });
     }
   }
 
@@ -213,5 +223,10 @@ export class Wallet {
 
   public destroy() {
     this.listener?.close();
+  }
+
+  public async logout() {
+    await this.storage.removeItem('lastBackupTimestamp');
+    await this.storage.removeItem('isFinishedSetup');
   }
 }

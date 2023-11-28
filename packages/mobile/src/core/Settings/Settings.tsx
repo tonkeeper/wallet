@@ -56,6 +56,7 @@ import { trackEvent } from '$utils/stats';
 import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 import { Address } from '@tonkeeper/core';
 import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -133,7 +134,8 @@ export const Settings: FC = () => {
       {
         text: t('settings_reset_alert_button'),
         style: 'destructive',
-        onPress: () => {
+        onPress: async () => {
+          await tk.wallet.logout();
           dispatch(walletActions.cleanWallet());
           notifications.unsubscribe();
         },

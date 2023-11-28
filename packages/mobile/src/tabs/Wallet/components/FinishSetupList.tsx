@@ -3,7 +3,16 @@ import { useNotifications } from '$hooks/useNotifications';
 import { debugLog } from '$utils/debugLog';
 import messaging from '@react-native-firebase/messaging';
 import { t } from '@tonkeeper/shared/i18n';
-import { Icon, IconNames, List, Steezy, Toast, View, isIOS } from '@tonkeeper/uikit';
+import {
+  Button,
+  Icon,
+  IconNames,
+  List,
+  Steezy,
+  Toast,
+  View,
+  isIOS,
+} from '@tonkeeper/uikit';
 import { ToastSize } from '@tonkeeper/uikit/src/components/Toast';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -12,26 +21,49 @@ import { MainDB } from '../../../database/main';
 import { Switch } from '@tonkeeper/uikit';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { BiometryTypes } from '@tonkeeper/core/src/modules/BiometryModule';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useNewWallet';
 
 export const FinishSetupList = memo(() => {
+  const wallet = useNewWallet();
+
+  if (wallet.isFinishedSetup) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
-      <List.Header title="Finish Setup" titleTextType="label1" marginHorizontal />
+      <List.Header
+        title="Finish Setup"
+        titleTextType="label1"
+        marginHorizontal
+        {...(wallet.lastBackupTimestamp !== null && {
+          rightContent: (
+            <Button
+              size="header"
+              color="secondary"
+              onPress={() => tk.wallet.finishSetup()}
+              title="Done"
+            />
+          ),
+        })}
+      />
       <List>
         <NotificationsListItem />
         <BiometryListItem />
-        <List.Item
-          chevron
-          navigate="/backup"
-          title="Back up the wallet recovery phrase"
-          titleNumberOfLines={2}
-          titleTextType="body2"
-          leftContent={
-            <View style={styles.iconContainer}>
-              <Icon name="ic-key-28" />
-            </View>
-          }
-        />
+        {wallet.lastBackupTimestamp === null && (
+          <List.Item
+            chevron
+            navigate="/backup"
+            title="Back up the wallet recovery phrase"
+            titleNumberOfLines={2}
+            titleTextType="body2"
+            leftContent={
+              <View style={styles.iconContainer}>
+                <Icon name="ic-key-28" />
+              </View>
+            }
+          />
+        )}
       </List>
     </View>
   );
