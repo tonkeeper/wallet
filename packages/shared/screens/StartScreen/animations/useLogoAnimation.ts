@@ -1,12 +1,11 @@
 import { Haptics } from '@tonkeeper/uikit';
 import { useEffect } from 'react';
-import Animated, {
+import {
   useSharedValue,
   useAnimatedStyle,
   useDerivedValue,
   interpolate,
   withTiming,
-  withDelay,
   runOnJS,
   Easing,
 } from 'react-native-reanimated';
@@ -30,16 +29,24 @@ export const useLogoAnimation = () => {
   const logoPosStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        translateY: interpolate(pos.value, [0, 1], [-15, 0]),
-      }
-    ]
-  }))
+        translateY: interpolate(pos.value, [0, 1], [4, 0]),
+      },
+      {
+        scale: interpolate(pos.value, [0, 1], [0.87, 1]),
+      },
+    ],
+  }));
 
-  // useEffect(() => {
-  //   pos.value = withTiming(1, { duration: 400 });
-  // }, [])
+  const shapesOpacityStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(pos.value, [0, 1], [0, 1]),
+  }));
+
+  useEffect(() => {
+    pos.value = withTiming(1, { duration: 400 });
+  }, []);
 
   return {
+    shapesOpacityStyle,
     logoRotateStyle,
     logoPosStyle,
     start: () => {

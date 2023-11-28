@@ -1,32 +1,32 @@
 import { Screen, View, Steezy, Text, Spacer, Button, Icon } from '@tonkeeper/uikit';
-import { Pressable, ViewStyle, useWindowDimensions } from 'react-native';
-import { useRingAnimation } from './animations/useRingAnimation';
+import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useLogoAnimation } from './animations/useLogoAnimation';
-import { LinearGradient } from 'expo-linear-gradient';
 import Animated from 'react-native-reanimated';
-import { memo, useMemo } from 'react';
-import { tk } from '../../tonkeeper';
+import { Pressable } from 'react-native';
+import { memo } from 'react';
 
 export const StartScreen = memo(() => {
-  const { start, logoRotateStyle, logoPosStyle } = useLogoAnimation();
+  const { start, logoRotateStyle, logoPosStyle, shapesOpacityStyle } = useLogoAnimation();
 
   return (
     <Screen>
       <View style={{ flex: 1, overflow: 'hidden' }}>
-        <Ring delay={0} size={640} color="rgba(69, 174, 245, 0.04)" />
-        <Ring delay={100} size={432} color="rgba(69, 174, 245, 0.08)" />
-        <Ring delay={200} size={256} color="rgba(69, 174, 245, 0.12)" />
-
-        <LinearGradient style={styles.bottomGradient.static} {...bottomGradientConfig} />
         <View style={styles.logo}>
           <Pressable onPress={start}>
             <Animated.View style={[logoRotateStyle, logoPosStyle]}>
-              <Icon name="ic-logo-48" size={144} color="accentBlue" />
+              <Icon
+                style={styles.logoIcon.static}
+                name="ic-logo-48"
+                color="accentBlue"
+                size={144}
+              />
             </Animated.View>
           </Pressable>
         </View>
+        <Animated.View style={[styles.absolute.static, shapesOpacityStyle]}>
+          <LogoShapes />
+        </Animated.View>
       </View>
-
       <View style={styles.content}>
         <View style={styles.info}>
           <Text type="h2" textAlign="center">
@@ -38,46 +38,24 @@ export const StartScreen = memo(() => {
           </Text>
         </View>
         <View style={styles.buttons}>
-          <Button title="Create new wallet" navigate="/create" />
+          <Button title="Create New Wallet" navigate="/create" />
           <Spacer y={16} />
-          <Button color="secondary" title="Import existing wallet" navigate="/import" />
+          <Button color="secondary" title="Import Existing Wallet" navigate="/import" />
         </View>
       </View>
     </Screen>
   );
 });
 
-interface RingProps {
-  size: number;
-  color: string;
-  delay: number;
-}
-
-const RingBottomIndent = 80;
-
-const Ring = ({ size, color, delay }: RingProps) => {
-  const { ringStyle } = useRingAnimation(delay);
-  const dimensions = useWindowDimensions();
-
-  const ringStaticStyle: ViewStyle = useMemo(
-    () => ({
-      position: 'absolute',
-      bottom: -(size / 2) + RingBottomIndent,
-      left: dimensions.width / 2 - size / 2,
-      width: size,
-      height: size,
-      borderWidth: 1,
-      borderRadius: size / 2,
-      borderColor: color,
-      backgroundColor: color,
-    }),
-    [color, size],
-  );
-
-  return <Animated.View style={[ringStaticStyle, ringStyle]} />;
-};
-
 const styles = Steezy.create(({ safeArea }) => ({
+  absolute: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  logoIcon: {
+    position: 'relative',
+  },
   content: {
     paddingBottom: safeArea.bottom,
   },
@@ -111,35 +89,77 @@ const styles = Steezy.create(({ safeArea }) => ({
   },
 }));
 
-const bottomGradientConfig = {
-  colors: [
-    '#10161F',
-    'rgba(16,22,31,0.99)',
-    'rgba(16,22,31,0.96)',
-    'rgba(16,22,31,0.92)',
-    'rgba(16,22,31,0.85)',
-    'rgba(16,22,31,0.77)',
-    'rgba(16,22,31,0.67)',
-    'rgba(16,22,31,0.56)',
-    'rgba(16,22,31,0.44)',
-    'rgba(16,22,31,0.33)',
-    'rgba(16,22,31,0.23)',
-    'rgba(16,22,31,0.15)',
-    'rgba(16,22,31,0.08)',
-    'rgba(16,22,31,0.04)',
-    'rgba(16,22,31,0.01)',
-    'rgba(16,22,31,0.00)',
-  ],
-  end: {
-    x: 0.4999999999999999,
-    y: 0,
-  },
-  locations: [
-    0, 0.0667, 0.1333, 0.2, 0.2667, 0.3333, 0.4, 0.4667, 0.5333, 0.6, 0.6667000000000001,
-    0.7333, 0.8, 0.8667, 0.9333, 1,
-  ],
-  start: {
-    x: 0.5000000000000001,
-    y: 1,
-  },
-};
+const LogoShapes = () => (
+  <Svg width={390} height={478} fill="none">
+    <Path fill="url(#a)" d="m195 412-600-270 600-270 600 270-600 270Z" opacity={0.12} />
+    <Path
+      fill="url(#b)"
+      d="m615-172.998-420-189-420 189 419.997 650.996L615-172.998Z"
+      opacity={0.12}
+    />
+    <Path
+      fill="url(#c)"
+      d="m-225-172.998 420-189 .003 839.996L-225-172.998Z"
+      opacity={0.12}
+    />
+    <Path
+      fill="#45AEF4"
+      fillOpacity={0.01}
+      stroke="#45AEF4"
+      strokeWidth={0.5}
+      d="M195 411.726-404.391 142 195-127.726 794.391 142 195 411.726Z"
+      opacity={0.12}
+    />
+    <Path
+      fill="#45AEF4"
+      fillOpacity={0.01}
+      stroke="#45AEF4"
+      strokeWidth={0.5}
+      d="M195-361.724 614.632-172.89 194.997 477.537-224.632-172.89 195-361.724Z"
+      opacity={0.12}
+    />
+    <Path
+      fill="#45AEF4"
+      fillOpacity={0.01}
+      stroke="#45AEF4"
+      strokeWidth={0.5}
+      d="M194.753 477.15 195-361.612-224.632-172.89l419.385 650.04Z"
+      opacity={0.12}
+    />
+    <Defs>
+      <LinearGradient
+        id="a"
+        x1={195}
+        x2={195}
+        y1={-128}
+        y2={412}
+        gradientUnits="userSpaceOnUse"
+      >
+        <Stop stopColor="#45AEF5" stopOpacity={0} />
+        <Stop offset={1} stopColor="#45AEF5" stopOpacity={0.4} />
+      </LinearGradient>
+      <LinearGradient
+        id="b"
+        x1={195}
+        x2={195}
+        y1={-361.998}
+        y2={477.998}
+        gradientUnits="userSpaceOnUse"
+      >
+        <Stop stopColor="#45AEF5" stopOpacity={0} />
+        <Stop offset={1} stopColor="#45AEF5" stopOpacity={0.4} />
+      </LinearGradient>
+      <LinearGradient
+        id="c"
+        x1={-14.999}
+        x2={-14.999}
+        y1={-361.998}
+        y2={477.998}
+        gradientUnits="userSpaceOnUse"
+      >
+        <Stop stopColor="#45AEF5" stopOpacity={0} />
+        <Stop offset={1} stopColor="#45AEF5" stopOpacity={0.4} />
+      </LinearGradient>
+    </Defs>
+  </Svg>
+);
