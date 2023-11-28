@@ -1,8 +1,17 @@
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { BiometryTypes } from '@tonkeeper/core/src/modules/BiometryModule';
+import { useNewWallet } from '@tonkeeper/shared/hooks/useNewWallet';
+import { ToastSize } from '@tonkeeper/uikit/src/components/Toast';
 import { NotificationsStatus } from '$hooks/useNotificationStatus';
 import { useNotifications } from '$hooks/useNotifications';
 import { debugLog } from '$utils/debugLog';
 import messaging from '@react-native-firebase/messaging';
 import { t } from '@tonkeeper/shared/i18n';
+import { useDispatch } from 'react-redux';
+import { walletActions } from '$store/wallet';
+import { MainDB } from '../../../database/main';
+import { Switch } from '@tonkeeper/uikit';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 import {
   Button,
   Icon,
@@ -13,15 +22,6 @@ import {
   View,
   isIOS,
 } from '@tonkeeper/uikit';
-import { ToastSize } from '@tonkeeper/uikit/src/components/Toast';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { walletActions } from '$store/wallet';
-import { MainDB } from '../../../database/main';
-import { Switch } from '@tonkeeper/uikit';
-import { tk } from '@tonkeeper/shared/tonkeeper';
-import { BiometryTypes } from '@tonkeeper/core/src/modules/BiometryModule';
-import { useNewWallet } from '@tonkeeper/shared/hooks/useNewWallet';
 
 export const FinishSetupList = memo(() => {
   const wallet = useNewWallet();
@@ -39,9 +39,9 @@ export const FinishSetupList = memo(() => {
         {...(wallet.lastBackupTimestamp !== null && {
           rightContent: (
             <Button
-              size="header"
-              color="secondary"
               onPress={() => tk.wallet.finishSetup()}
+              color="secondary"
+              size="header"
               title="Done"
             />
           ),
@@ -103,25 +103,33 @@ const BiometryListItem = () => {
   }, []);
 
   const handleToggle = useCallback(() => {
-    setBiometryEnabled(!biometryEnabled);
-    dispatch(
-      walletActions.toggleBiometry({
-        isEnabled: !biometryEnabled,
-        onFail: () => setBiometryEnabled(biometryEnabled),
-      }),
-    );
+    if (tk.biometry.isEnrolled) {
+      setBiometryEnabled(!biometryEnabled);
+      dispatch(
+        walletActions.toggleBiometry({
+          isEnabled: !biometryEnabled,
+          onFail: () => setBiometryEnabled(biometryEnabled),
+        }),
+      );
+    } else {
+      Toast.show('Enable biometrics in device settings');
+      // Разрешите использование биометрии в настройках устройства
+    }
   }, [biometryEnabled, dispatch]);
 
-  if (
-    tk.biometry.type === BiometryTypes.Unknown ||
-    tk.biometry.type === BiometryTypes.None
-  ) {
+  if (tk.biometry.type === BiometryTypes.None) {
     return null;
   }
 
   return (
     <List.Item
-      rightContent={<Switch value={biometryEnabled} onChange={handleToggle} />}
+      rightContent={
+        <Switch
+          disabled={!tk.biometry.isEnrolled}
+          value={biometryEnabled}
+          onChange={handleToggle}
+        />
+      }
       title={biometryTitle}
       onPress={handleToggle}
       titleNumberOfLines={2}
