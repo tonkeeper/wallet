@@ -8,6 +8,7 @@ import { QueryClient } from 'react-query';
 import { TronAPI } from './TronAPI';
 import { TonAPI } from './TonAPI';
 import { BiometryModule } from './modules/BiometryModule';
+import { State } from './utils/State';
 
 type TonkeeperOptions = {
   queryClient: QueryClient;
@@ -24,9 +25,17 @@ type SecuritySettings = {
   locked: boolean;
 };
 
+export type TonkeeperState = {
+  notificationsEnabled: boolean;
+};
+
 export class Tonkeeper {
   public wallet!: Wallet;
   public wallets = [];
+
+  public state = new State<TonkeeperState>({
+    notificationsEnabled: false,
+  });
 
   public securitySettings: SecuritySettings = {
     biometryEnabled: false,
@@ -42,7 +51,7 @@ export class Tonkeeper {
   private tronapi: TronAPI;
   private tonapi: TonAPI;
   private vault: Vault;
-  
+
   constructor(options: TonkeeperOptions) {
     this.queryClient = options.queryClient;
     this.storage = options.storage;
@@ -64,6 +73,11 @@ export class Tonkeeper {
     bounceable = true,
   ) {
     try {
+      const notificationsEnabled = await this.storage.getItem('notificationsEnabled');
+      this.state.set({
+        notificationsEnabled: Boolean(notificationsEnabled),
+      });
+
       this.destroy();
       if (address) {
         if (Address.isValid(address)) {
@@ -108,6 +122,11 @@ export class Tonkeeper {
   }
 
   public tronStrorageKey = 'temp-tron-address';
+
+  public async enableNotifications() {
+    this.state.set({ notificationsEnabled: true });
+    await this.storage.setItem('notificationsEnabled', 'true');
+  }
 
   public async load() {
     try {

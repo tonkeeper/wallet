@@ -12,6 +12,7 @@ import { walletActions } from '$store/wallet';
 import { MainDB } from '../../../database/main';
 import { Switch } from '@tonkeeper/uikit';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { useTonkeeper } from '@tonkeeper/shared/hooks/useTonkeeper';
 import {
   Button,
   Icon,
@@ -147,6 +148,7 @@ const NotificationsListItem = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const notifications = useNotifications();
   const isSwitchFrozen = useRef(false);
+  const tonkeeper = useTonkeeper();
 
   useEffect(() => {
     const init = async () => {
@@ -190,6 +192,10 @@ const NotificationsListItem = () => {
     },
     [notifications],
   );
+
+  if (tonkeeper.notificationsEnabled) {
+    return null;
+  }
 
   return (
     <List.Item

@@ -12,6 +12,7 @@ import {
   Icon,
   Toast,
 } from '@tonkeeper/uikit';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 interface SetupNotificationsScreenProps {
   onEnable: () => void;
@@ -27,6 +28,7 @@ export const SetupNotificationsScreen = memo<SetupNotificationsScreenProps>((pro
     try {
       setLoading(true);
       await notifications.subscribe();
+      tk.enableNotifications();
       onEnable();
     } catch (err) {
       setLoading(false);
