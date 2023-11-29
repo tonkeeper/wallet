@@ -685,11 +685,7 @@
         "value" : "%{value} TON"
       },
       "next_cycle" : {
-        "desc" : "All transactions take effect once the cycle ends.",
-        "desc_liquid" : "Unstake requests are complete after the cycle ends.",
-        "in" : "in",
-        "reward_title" : "Next reward",
-        "title" : "Next cycle"
+        "message": "Unstake request will be processed after the end of the validation cycle in %{value}"
       },
       "note" : "Staking is based on smart contracts by third parties. Tonkeeper is not responsible for staking experience.",
       "pendingDeposit" : "Pending Stake",
@@ -706,6 +702,7 @@
       "tap_to_collect" : "Tap to collect"
     },
     "estimated_profit" : "%{amount} TON – annual profit\nif you stake TON today",
+    "estimated_profit_compare" : "More profitable by %{amount} TON per year than your current staking",
     "get_withdrawal" : "Get withdrawal",
     "highest_apy" : "MAX APY",
     "jetton_note" : "When you stake TON in a %{poolName} pool, you receive a token called %{token} that represents your share in the pool. As the pool accumulates profits, your %{token} represents larger amount of TON.",
