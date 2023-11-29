@@ -8,6 +8,7 @@
 	<array>
 		<string>applinks:app.tonkeeper.org</string>
 		<string>applinks:app.tonkeeper.com</string>
+		<string>applinks:ton.app</string>
 	</array>
 </dict>
 </plist>
