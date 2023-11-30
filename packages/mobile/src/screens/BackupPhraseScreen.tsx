@@ -8,7 +8,7 @@ import { useNewWallet } from '@tonkeeper/shared/hooks/useNewWallet';
 
 function getRandIndexes(length: number, indexes: number[] = []) {
   if (indexes.length === length) {
-    return indexes;
+    return indexes.sort((a, b) => a - b);
   }
 
   const randIndex = Math.floor(Math.random() * 23);
