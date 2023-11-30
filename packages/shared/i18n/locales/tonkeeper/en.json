@@ -914,8 +914,9 @@
       "insufficientFunds" : {
         "rechargeWallet" : "Recharge wallet",
         "stakingFee" : "%{count} TON needed for transaction. Estimated fee %{fee} TON will be deducted, the rest will be refunded.",
+        "stakingDeposit" : "Minimum balance for participate:\n%{amount} %{currency}\n",
         "title" : "Insufficient funds",
-        "toBePaid" : "To be paid: %{amount} %{currency}\n",
+        "toBePaid" : "To be paid: %{amount} %{currency}\n",
         "withFees" : "+ blockchain fees.\n",
         "yourBalance" : "Your balance: %{balance} %{currency}."
       },
