@@ -685,6 +685,7 @@
         "value" : "%{value} TON"
       },
       "next_cycle" : {
+        "in" : "in",
         "message": "Unstake request will be processed after the end of the validation cycle in %{value}"
       },
       "note" : "Staking is based on smart contracts by third parties. Tonkeeper is not responsible for staking experience.",
@@ -710,6 +711,7 @@
     "message" : {
       "pendingDeposit" : "%{amount} TON staked\n",
       "pendingWithdraw" : "%{amount} TON unstaked\n",
+      "pendingWithdrawLiquid" : "%{amount} TON unstaked after the end of the cycle",
       "readyWithdraw" : "%{amount} TON ready.\nTap to collect"
     },
     "no_funds" : "No funds available for unstake",
@@ -745,7 +747,7 @@
       "message" : "Please leave at least {{amount}} TON on your balance.",
       "title" : "You will have not enough funds for withdraw"
     },
-    "withdrawal_request" : "Unstake Request"
+    "withdrawal_request" : "Unstake"
   },
   "subscription_back_to_merchant_button" : "Back",
   "subscription_back_to_merchant_caption" : "The transaction is being processed. Your subscription will be active soon.",
