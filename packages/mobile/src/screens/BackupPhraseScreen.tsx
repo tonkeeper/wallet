@@ -46,31 +46,33 @@ export const BackupPhraseScreen = memo(() => {
         </Text>
         <Spacer y={16} />
 
-        <View style={styles.phraseContaniner}>
-          <View style={styles.leftColumn}>
-            {leftColumn.map((word, index) => (
-              <View style={styles.column} key={`${word}-${index}`}>
-                <Text type="body2" color="textSecondary" style={styles.num}>
-                  {index + 1}.
-                </Text>
-                <Text type="body1">{word}</Text>
-              </View>
-            ))}
-          </View>
-          <View>
-            {rightColumn.map((word, index) => (
-              <View style={styles.column} key={`${word}-${index + 1 + 12}`}>
-                <Text type="body2" color="textSecondary" style={styles.num}>
-                  {index + 1 + 12}.
-                </Text>
-                <Text type="body1">{word}</Text>
-              </View>
-            ))}
+        <View style={styles.centered}>
+          <View style={styles.columns}>
+            <View style={styles.leftColumn}>
+              {leftColumn.map((word, index) => (
+                <View style={styles.line} key={`${word}-${index}`}>
+                  <Text type="body2" color="textSecondary" style={styles.num}>
+                    {index + 1}.
+                  </Text>
+                  <Text type="body1">{word}</Text>
+                </View>
+              ))}
+            </View>
+            <View>
+              {rightColumn.map((word, index) => (
+                <View style={styles.line} key={`${word}-${index + 1 + 12}`}>
+                  <Text type="body2" color="textSecondary" style={styles.num}>
+                    {index + 1 + 12}.
+                  </Text>
+                  <Text type="body1">{word}</Text>
+                </View>
+              ))}
+            </View>
           </View>
         </View>
       </View>
 
-      <View style={[styles.buttonContainer, { paddingBottom: safeArea.bottom + 16 }]}>
+      <View style={[styles.buttonContainer, { paddingBottom: safeArea.bottom + 32 }]}>
         {wallet.lastBackupTimestamp !== null && !params.isBackupAgain ? (
           <Button title="Copy" color="secondary" onPress={copyText(params.phrase)} />
         ) : (
@@ -91,22 +93,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     flex: 1,
   },
-  phraseContaniner: {
-    flexDirection: 'row',
+  centered: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 16,
   },
-  column: {
+  columns: {
+    flexDirection: 'row',
+    maxWidth: 310,
+    paddingTop: 16,
+  },
+  line: {
     width: 151,
     flexDirection: 'row',
+    marginBottom: 8,
+    height: 24,
   },
   leftColumn: {
-    marginLeft: 24,
+    paddingHorizontal: 16,
   },
   num: {
-    width: 23,
-    height: 24,
+    width: 24,
+    height: 23,
+    marginRight: 4,
+    position: 'relative',
+    top: 3,
   },
   buttonContainer: {
     marginTop: 16,
