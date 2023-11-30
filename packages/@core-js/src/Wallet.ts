@@ -180,7 +180,7 @@ export class Wallet {
     const timestamp = await this.storage.getItem('lastBackupTimestamp');
 
     if (timestamp !== null) {
-      this.state.set({ lastBackupTimestamp: timestamp });
+      this.state.set({ lastBackupTimestamp: Number(timestamp) });
     }
   }
 

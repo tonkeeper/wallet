@@ -26,6 +26,7 @@ export { SegmentedControl } from './components/SegmentedControl';
 export { TransitionOpacity } from './components/TransitionOpacity';
 export { Switch } from './components/Switch';
 export * from './components/Flash';
+export { KeyboardAccessoryView } from './components/KeyboardAccessoryView';
 
 // Containers
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';

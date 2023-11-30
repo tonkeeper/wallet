@@ -1,10 +1,19 @@
 import { useRecoveryPhraseInputs } from '@tonkeeper/shared/hooks/useRecoveryPhraseInputs';
-import { Screen, Steezy, View, Text, Input, Spacer, Button } from '@tonkeeper/uikit';
 import { InputNumberPrefix } from '@tonkeeper/shared/components/InputNumberPrefix';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from '@tonkeeper/router/src/imperative';
 import { useNavigation } from '@tonkeeper/router';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import {
+  Screen,
+  Steezy,
+  View,
+  Text,
+  Input,
+  Spacer,
+  Button,
+  KeyboardAccessoryView,
+} from '@tonkeeper/uikit';
 
 export const BackupCheckPhraseScreen = memo(() => {
   const { words } = useParams<{ words: { index: number; word: string }[] }>();
@@ -60,7 +69,7 @@ export const BackupCheckPhraseScreen = memo(() => {
   return (
     <Screen>
       <Screen.Header />
-      <Screen.KeyboardAwareScrollView
+      <Screen.ScrollView
         style={styles.scrollViewContnet.static}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="none"
@@ -100,13 +109,15 @@ export const BackupCheckPhraseScreen = memo(() => {
             </View>
           ))}
         </View>
+      </Screen.ScrollView>
+      <KeyboardAccessoryView style={styles.keyboardAccessory} height={104}>
         <Button onPress={handleSubmit} title="Done" disabled={!isValid} />
-      </Screen.KeyboardAwareScrollView>
+      </KeyboardAccessoryView>
     </Screen>
   );
 });
 
-const styles = Steezy.create({
+const styles = Steezy.create(({ colors }) => ({
   input: {
     paddingLeft: 50,
   },
@@ -116,4 +127,10 @@ const styles = Steezy.create({
   scrollViewContnet: {
     paddingHorizontal: 32,
   },
-});
+  keyboardAccessory: {
+    paddingHorizontal: 32,
+    paddingBottom: 32,
+    paddingTop: 16,
+    backgroundColor: colors.backgroundPage,
+  },
+}));

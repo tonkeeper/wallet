@@ -285,48 +285,52 @@ export const Settings: FC = () => {
             />
           </List>
           <Spacer y={16} />
-          <List>
-            {shouldShowTokensButton && (
-              <List.Item
-                value={
-                  <Icon
-                    style={styles.icon.static}
-                    color="accentPrimary"
-                    name={'ic-jetton-28'}
+          {(shouldShowTokensButton || hasSubscriptions || isAppearanceVisible) && (
+            <>
+              <List>
+                {shouldShowTokensButton && (
+                  <List.Item
+                    value={
+                      <Icon
+                        style={styles.icon.static}
+                        color="accentPrimary"
+                        name={'ic-jetton-28'}
+                      />
+                    }
+                    title={t('settings_jettons_list')}
+                    onPress={handleManageTokens}
                   />
-                }
-                title={t('settings_jettons_list')}
-                onPress={handleManageTokens}
-              />
-            )}
-            {hasSubscriptions && (
-              <List.Item
-                value={
-                  <Icon
-                    style={styles.icon.static}
-                    color="accentPrimary"
-                    name={'ic-ticket-28'}
+                )}
+                {hasSubscriptions && (
+                  <List.Item
+                    value={
+                      <Icon
+                        style={styles.icon.static}
+                        color="accentPrimary"
+                        name={'ic-ticket-28'}
+                      />
+                    }
+                    title={t('settings_subscriptions')}
+                    onPress={handleSubscriptions}
                   />
-                }
-                title={t('settings_subscriptions')}
-                onPress={handleSubscriptions}
-              />
-            )}
-            {isAppearanceVisible && (
-              <List.Item
-                value={
-                  <Icon
-                    style={styles.icon.static}
-                    color="accentPrimary"
-                    name={'ic-appearance-28'}
+                )}
+                {isAppearanceVisible && (
+                  <List.Item
+                    value={
+                      <Icon
+                        style={styles.icon.static}
+                        color="accentPrimary"
+                        name={'ic-appearance-28'}
+                      />
+                    }
+                    title={t('settings_appearance')}
+                    onPress={handleAppearance}
                   />
-                }
-                title={t('settings_appearance')}
-                onPress={handleAppearance}
-              />
-            )}
-          </List>
-          <Spacer y={16} />
+                )}
+              </List>
+              <Spacer y={16} />
+            </>
+          )}
           <List>
             {!!wallet && showNotifications && (
               <List.Item
