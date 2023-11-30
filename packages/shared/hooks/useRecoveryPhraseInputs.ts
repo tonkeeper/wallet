@@ -1,6 +1,8 @@
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAnimatedStyle } from 'react-native-reanimated';
+import { bip39 } from '@tonkeeper/core/src/bip39';
 import { LayoutChangeEvent } from 'react-native';
 import { useCallback, useRef } from 'react';
-import { bip39 } from '@tonkeeper/core/src/bip39';
 import {
   useReanimatedKeyboardHeight,
   ScreenScrollViewRef,
@@ -11,6 +13,8 @@ export function useRecoveryPhraseInputs() {
   const positions = useRef<{ [key in string]: number }>({});
   const refs = useRef<{ [key in string]: InputRef }>({});
   const scrollViewRef = useRef<ScreenScrollViewRef>(null);
+  const safeArea = useSafeAreaInsets();
+  const focusedIndex = useRef<number>(-1);
 
   const deferredScrollToInput = useRef<(() => void) | null>(null);
   const keyboard = useReanimatedKeyboardHeight({
@@ -84,6 +88,8 @@ export function useRecoveryPhraseInputs() {
       } else {
         scrollToInput(index);
       }
+
+      focusedIndex.current = index;
     },
     [scrollToInput],
   );
@@ -95,6 +101,8 @@ export function useRecoveryPhraseInputs() {
       if (value && value.length > 0 && !bip39.map[value]) {
         input.markAsInvalid();
       }
+
+      focusedIndex.current = -1;
     },
     [],
   );
@@ -124,8 +132,16 @@ export function useRecoveryPhraseInputs() {
     [],
   );
 
+  const keyboardSpacerStyle = useAnimatedStyle(
+    () => ({
+      height: keyboard.height.value - safeArea.bottom + 32,
+    }),
+    [keyboard.height],
+  );
+
   return {
-    keyboardSpacerStyle: keyboard.spacerStyle,
+    keyboardSpacerStyle,
+    currentIndex: focusedIndex,
     refs: refs.current,
     scrollViewRef,
     setRef,
