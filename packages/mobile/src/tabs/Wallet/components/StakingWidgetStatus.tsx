@@ -7,7 +7,11 @@ import { MainStackRouteNames } from '$navigation';
 import { t } from '@tonkeeper/shared/i18n';
 import { StakedTonIcon, Text } from '$uikit';
 import { stakingFormatter } from '@tonkeeper/shared/formatter';
-import { AccountStakingInfo, PoolInfo } from '@tonkeeper/core/src/TonAPI';
+import {
+  AccountStakingInfo,
+  PoolImplementationType,
+  PoolInfo,
+} from '@tonkeeper/core/src/TonAPI';
 
 interface Props {
   pool: PoolInfo;
@@ -50,6 +54,13 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
     }
 
     if (hasPendingWithdraw) {
+      if (pool.implementation === PoolImplementationType.LiquidTF) {
+        return t('staking.message.pendingWithdrawLiquid', {
+          amount: stakingFormatter.format(pendingWithdraw.amount),
+          count: pendingWithdraw.totalTon,
+        });
+      }
+
       return (
         <>
           {t('staking.message.pendingWithdraw', {

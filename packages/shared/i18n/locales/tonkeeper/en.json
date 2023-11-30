@@ -685,11 +685,8 @@
         "value" : "%{value} TON"
       },
       "next_cycle" : {
-        "desc" : "All transactions take effect once the cycle ends.",
-        "desc_liquid" : "Unstake requests are complete after the cycle ends.",
         "in" : "in",
-        "reward_title" : "Next reward",
-        "title" : "Next cycle"
+        "message": "Unstake request will be processed after the end of the validation cycle in %{value}"
       },
       "note" : "Staking is based on smart contracts by third parties. Tonkeeper is not responsible for staking experience.",
       "pendingDeposit" : "Pending Stake",
@@ -706,6 +703,7 @@
       "tap_to_collect" : "Tap to collect"
     },
     "estimated_profit" : "%{amount} TON – annual profit\nif you stake TON today",
+    "estimated_profit_compare" : "More profitable by %{amount} TON per year than your current staking",
     "get_withdrawal" : "Get withdrawal",
     "highest_apy" : "MAX APY",
     "jetton_note" : "When you stake TON in a %{poolName} pool, you receive a token called %{token} that represents your share in the pool. As the pool accumulates profits, your %{token} represents larger amount of TON.",
@@ -713,6 +711,7 @@
     "message" : {
       "pendingDeposit" : "%{amount} TON staked\n",
       "pendingWithdraw" : "%{amount} TON unstaked\n",
+      "pendingWithdrawLiquid" : "%{amount} TON unstaked after the end of the cycle",
       "readyWithdraw" : "%{amount} TON ready.\nTap to collect"
     },
     "no_funds" : "No funds available for unstake",
@@ -748,7 +747,7 @@
       "message" : "Please leave at least {{amount}} TON on your balance.",
       "title" : "You will have not enough funds for withdraw"
     },
-    "withdrawal_request" : "Unstake Request"
+    "withdrawal_request" : "Unstake"
   },
   "subscription_back_to_merchant_button" : "Back",
   "subscription_back_to_merchant_caption" : "The transaction is being processed. Your subscription will be active soon.",
@@ -915,8 +914,9 @@
       "insufficientFunds" : {
         "rechargeWallet" : "Recharge wallet",
         "stakingFee" : "%{count} TON needed for transaction. Estimated fee %{fee} TON will be deducted, the rest will be refunded.",
+        "stakingDeposit" : "Minimum balance for participate:\n%{amount} %{currency}\n",
         "title" : "Insufficient funds",
-        "toBePaid" : "To be paid: %{amount} %{currency}\n",
+        "toBePaid" : "To be paid: %{amount} %{currency}\n",
         "withFees" : "+ blockchain fees.\n",
         "yourBalance" : "Your balance: %{balance} %{currency}."
       },

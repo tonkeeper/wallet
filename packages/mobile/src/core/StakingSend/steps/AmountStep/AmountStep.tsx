@@ -67,7 +67,19 @@ const AmountStepComponent: FC<Props> = (props) => {
     isLiquidJetton,
   } = useCurrencyToSend(currency, isJetton);
 
-  const walletBalance = isLiquidJetton ? price!.totalTon : tonBalance;
+  const availableTonBalance = useMemo(() => {
+    if (pool.implementation === PoolImplementationType.LiquidTF && !isWithdrawal) {
+      const tonAmount = new BigNumber(tonBalance).minus(1.1);
+
+      return tonAmount.isGreaterThanOrEqualTo(0)
+        ? tonAmount.decimalPlaces(Decimals[CryptoCurrencies.Ton]).toString()
+        : '0';
+    }
+
+    return tonBalance;
+  }, [isWithdrawal, pool.implementation, tonBalance]);
+
+  const walletBalance = isLiquidJetton ? price!.totalTon : availableTonBalance;
 
   const minAmount = isWithdrawal ? '0' : Ton.fromNano(pool.min_stake);
 
