@@ -1,19 +1,26 @@
 import { Screen, View, Steezy, Text, Spacer, Button, Icon } from '@tonkeeper/uikit';
 import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useLogoAnimation } from './animations/useLogoAnimation';
+import { useWindowDimensions } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { Pressable } from 'react-native';
 import { memo } from 'react';
 
 export const StartScreen = memo(() => {
-  const { start, logoRotateStyle, logoPosStyle, shapesOpacityStyle } = useLogoAnimation();
+  const { logoPosStyle, shapesOpacityStyle } = useLogoAnimation();
+  const dimensions = useWindowDimensions();
+
+  const origShapesWidth = 390;
+  const origShapesHeight = 478;
+  const ratio = dimensions.width / origShapesWidth;
+  const shapesHeight = origShapesHeight * ratio;
+  const shapesWidth = dimensions.width;
 
   return (
     <Screen>
-      <View style={{ flex: 1, overflow: 'hidden' }}>
-        <View style={styles.logo}>
-          <Pressable onPress={start}>
-            <Animated.View style={[logoRotateStyle, logoPosStyle]}>
+      <View style={{ flex: 1 }}>
+        <View style={{ height: shapesHeight + 13 }}>
+          <View style={styles.logo}>
+            <Animated.View style={logoPosStyle}>
               <Icon
                 style={styles.logoIcon.static}
                 name="ic-logo-48"
@@ -21,22 +28,22 @@ export const StartScreen = memo(() => {
                 size={144}
               />
             </Animated.View>
-          </Pressable>
+          </View>
+          <Animated.View style={[styles.absolute.static, shapesOpacityStyle]}>
+            <LogoShapes width={shapesWidth} height={shapesHeight} />
+          </Animated.View>
         </View>
-        <Animated.View style={[styles.absolute.static, shapesOpacityStyle]}>
-          <LogoShapes />
-        </Animated.View>
-      </View>
-      <View style={styles.content}>
         <View style={styles.info}>
           <Text type="h2" textAlign="center">
             Tonkeeper
           </Text>
           <Spacer y={4} />
           <Text type="body1" color="textSecondary" textAlign="center">
-            Create a new wallet or add an existing one
+            Create a new wallet or add {'\n'}an existing one
           </Text>
         </View>
+      </View>
+      <View style={styles.content}>
         <View style={styles.buttons}>
           <Button title="Create New Wallet" navigate="/create" />
           <Spacer y={16} />
@@ -63,15 +70,16 @@ const styles = Steezy.create(({ safeArea }) => ({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 3,
-    justifyContent: 'center',
+    bottom: 0,
+    justifyContent: 'flex-end',
     alignItems: 'center',
     zIndex: 1,
   },
   info: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 24,
+    paddingTop: 24 + 3,
     paddingHorizontal: 32,
     paddingBottom: 32,
   },
@@ -89,8 +97,13 @@ const styles = Steezy.create(({ safeArea }) => ({
   },
 }));
 
-const LogoShapes = () => (
-  <Svg width={390} height={478} fill="none">
+interface LogoShapesProps {
+  width: number;
+  height: number;
+}
+
+const LogoShapes = (props: LogoShapesProps) => (
+  <Svg width={props.width} height={props.height} viewBox="0 0 390 478" fill="none">
     <Path fill="url(#a)" d="m195 412-600-270 600-270 600 270-600 270Z" opacity={0.12} />
     <Path
       fill="url(#b)"
