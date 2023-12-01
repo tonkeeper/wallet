@@ -21,6 +21,9 @@ import {
   PoolImplementationType,
 } from '@tonkeeper/core/src/TonAPI';
 import { useGetTokenPrice, useTokenPrice } from './useTokenPrice';
+import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { useCurrencyToSend } from './useCurrencyToSend';
+import { Ton } from '$libs/Ton';
 
 export interface PoolDetailsItem {
   label: string;
@@ -33,6 +36,8 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
   const nav = useNavigation();
 
   const wallet = useWallet();
+
+  const { balance: tonBalance } = useCurrencyToSend(CryptoCurrencies.Ton);
 
   const jettonBalances = useSelector(jettonsBalancesSelector);
 
@@ -113,6 +118,15 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
 
   const handleTopUpPress = useCallback(() => {
     if (wallet) {
+      const canDeposit = new BigNumber(tonBalance).isGreaterThanOrEqualTo(2.1);
+      if (!canDeposit) {
+        return openInsufficientFundsModal({
+          totalAmount: Ton.toNano(2.1),
+          balance: Ton.toNano(tonBalance),
+          isStakingDeposit: true,
+        });
+      }
+
       nav.push(AppStackRouteNames.StakingSend, {
         poolAddress: pool.address,
         transactionType: StakingTransactionType.DEPOSIT,
@@ -120,7 +134,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
     } else {
       openRequireWalletModal();
     }
-  }, [nav, pool.address, wallet]);
+  }, [nav, pool.address, tonBalance, wallet]);
 
   const handleWithdrawalPress = useCallback(() => {
     if (!hasDeposit) {
