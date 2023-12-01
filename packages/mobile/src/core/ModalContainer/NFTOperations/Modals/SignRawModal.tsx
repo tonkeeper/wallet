@@ -238,6 +238,15 @@ export const openSignRawModal = async (
       Buffer.from(wallet.ton.vault.tonPublicKey),
     );
 
+    // in case of error we should check current TON balance and show "insufficient funds" modal
+    const totalAmount = calculateMessageTransferAmount(params.messages);
+    const checkResult = await checkIsInsufficient(totalAmount);
+    if (checkResult.insufficient) {
+      Toast.hide();
+      onDismiss?.();
+      return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
+    }
+
     let consequences: MessageConsequences | null = null;
     try {
       const boc = TransactionService.createTransfer(contract, {
@@ -254,15 +263,6 @@ export const openSignRawModal = async (
 
       const tonapiError = err?.response?.data?.error;
       const errorMessage = tonapiError ?? `no response; status code: ${err.status};`;
-
-      // in case of error we should check current TON balance and show "insufficient funds" modal
-      const totalAmount = calculateMessageTransferAmount(params.messages);
-      const checkResult = await checkIsInsufficient(totalAmount);
-      if (checkResult.insufficient) {
-        Toast.hide();
-        onDismiss?.();
-        return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
-      }
 
       Toast.fail(`Emulation error: ${errorMessage}`, { duration: 5000 });
     }
