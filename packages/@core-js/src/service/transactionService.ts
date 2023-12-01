@@ -7,6 +7,7 @@ import {
   storeMessage,
   MessageRelaxed,
   SendMode,
+  loadStateInit,
 } from '@ton/core';
 import { Address as AddressFormatter } from '../formatters/Address';
 import { WalletContract } from './contractService';
@@ -57,13 +58,22 @@ export class TransactionService {
     }
   }
 
+  private static parseStateInit(stateInit?: string) {
+    if (!stateInit) {
+      return;
+    }
+    const { code, data } = loadStateInit(Cell.fromBase64(stateInit).asSlice());
+    return { code, data };
+  }
+
   static parseSignRawMessages(messages: SignRawMessage[]) {
     return messages.map((message) =>
       internal({
-        to: tonAddress(message.address),
-        value: AmountFormatter.fromNanoStatic(message.amount),
+        to: message.address,
+        value: BigInt(message.amount),
         body: message.payload && Cell.fromBase64(message.payload),
         bounce: this.getBounceFlagFromAddress(message.address),
+        init: TransactionService.parseStateInit(message.stateInit),
       }),
     );
   }
