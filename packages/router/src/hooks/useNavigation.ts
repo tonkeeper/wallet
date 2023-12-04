@@ -5,8 +5,7 @@ import {
 } from '@react-navigation/native';
 import { SheetRoutesContext } from '../context/SheetRoutesContext';
 import { SheetActions, useCloseModal } from '../SheetsProvider';
-import { nanoid } from 'nanoid/non-secure';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { throttle, delay, isAndroid } from '../utils';
 import { Keyboard } from 'react-native';
 
@@ -72,9 +71,13 @@ export const useNavigation = () => {
     }
   };
 
-  const push = throttle((path: string, params?: any) => {
-    nav.dispatch(StackActions.push(path, params));
-  }, 1000);
+  const push = useMemo(
+    () =>
+      throttle((path: string, params?: any) => {
+        nav.dispatch(StackActions.push(path, params));
+      }, 1000),
+    [],
+  );
 
   const globalGoBack = () => {
     if (nav.canGoBack()) {
