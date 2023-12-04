@@ -740,7 +740,7 @@
     },
     "widget_desc" : "APY up to %{apy}%",
     "widget_staking_options" : "Staking options",
-    "widget_title" : "Earn TON",
+    "widget_title" : "Stake TON",
     "withdraw" : "Unstake",
     "withdrawal_fee_warning" : {
       "continue" : "Continue anyway",
