@@ -1,7 +1,11 @@
-import React from 'react';
-import { Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { Dimensions, View } from 'react-native';
 import { BottomSheetScrollView as DefaultSheetModalScrollView } from '@gorhom/bottom-sheet';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   BottomSheetScrollViewProps,
@@ -35,18 +39,23 @@ export const SheetModalScrollView = React.forwardRef<
   const bottomInset = _safeArea.bottom;
   const topInset = _safeArea.top;
 
-  const contentContainerStyle = useAnimatedStyle(() => {
-    const topOffset = isAndroid ? StatusBarHeight : topInset;
-    const heightToAddSpacing =
-      screenHeight - topOffset - footerHeight.value - headerHeight.value;
+  const [spacing, setSpacing] = useState(0);
 
-    const safeIndent = safeArea ? bottomInset : 0;
-    // adds padding to compensate header height
-    return {
-      paddingBottom:
-        (contentHeight.value >= heightToAddSpacing ? headerHeight.value : 0) + safeIndent,
-    };
-  });
+  useAnimatedReaction(
+    () => {
+      const topOffset = isAndroid ? StatusBarHeight : topInset;
+      const heightToAddSpacing =
+        screenHeight - topOffset - footerHeight.value - headerHeight.value;
+
+      return contentHeight.value >= heightToAddSpacing ? headerHeight.value : 0;
+    },
+    (result, previous) => {
+      if (result !== previous) {
+        console.log('wtf', result);
+        runOnJS(setSpacing)(result);
+      }
+    },
+  );
 
   return (
     <Animated.View style={containerStyle}>
@@ -56,9 +65,14 @@ export const SheetModalScrollView = React.forwardRef<
         showsVerticalScrollIndicator={false}
         onScroll={scrollHandler}
       >
-        <Animated.View style={contentContainerStyle} onLayout={measureContent}>
-          {children}
-        </Animated.View>
+        <View style={{ paddingBottom: spacing }}>
+          <View
+            onLayout={measureContent}
+            style={{ paddingBottom: safeArea ? bottomInset : 0 }}
+          >
+            {children}
+          </View>
+        </View>
       </DefaultSheetModalScrollView>
     </Animated.View>
   );

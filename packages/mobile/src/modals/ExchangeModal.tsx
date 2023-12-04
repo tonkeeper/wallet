@@ -86,49 +86,47 @@ export const ExchangeModal = () => {
           />
         }
       />
-      <Modal.ScrollView>
-        <Modal.Content safeArea>
-          <View style={styles.container}>
-            {isLoading ? (
-              <S.LoaderWrap>
-                <Loader size="medium" />
-              </S.LoaderWrap>
-            ) : (
-              <>
-                {categories.map((category, cIndex) => (
-                  <React.Fragment key={cIndex}>
-                    {cIndex > 0 ? <Spacer y={16} /> : null}
-                    <S.TitleContainer>
-                      <Text type="h3">{category.title}</Text>
-                    </S.TitleContainer>
-                    <S.Contain>
-                      {category.items.map((item, idx, arr) => (
-                        <ExchangeItem
-                          topRadius={idx === 0}
-                          bottomRadius={idx === arr.length - 1}
-                          key={item.id}
-                          methodId={item.id}
-                        />
-                      ))}
-                    </S.Contain>
-                    {otherWaysAvailable && category.type === 'buy' && !allRegions ? (
-                      <View style={styles.otherWaysContainer}>
-                        <Button
-                          key={showAll ? 'hide' : 'show'}
-                          size="medium_rounded"
-                          mode="secondary"
-                          onPress={handleShowAll}
-                        >
-                          {t(showAll ? 'exchange_modal.hide' : 'exchange_modal.show_all')}
-                        </Button>
-                      </View>
-                    ) : null}
-                  </React.Fragment>
-                ))}
-              </>
-            )}
-          </View>
-        </Modal.Content>
+      <Modal.ScrollView safeArea>
+        <View style={styles.container}>
+          {isLoading ? (
+            <S.LoaderWrap>
+              <Loader size="medium" />
+            </S.LoaderWrap>
+          ) : (
+            <>
+              {categories.map((category, cIndex) => (
+                <React.Fragment key={cIndex}>
+                  {cIndex > 0 ? <Spacer y={16} /> : null}
+                  <S.TitleContainer>
+                    <Text type="h3">{category.title}</Text>
+                  </S.TitleContainer>
+                  <S.Contain>
+                    {category.items.map((item, idx, arr) => (
+                      <ExchangeItem
+                        topRadius={idx === 0}
+                        bottomRadius={idx === arr.length - 1}
+                        key={item.id}
+                        methodId={item.id}
+                      />
+                    ))}
+                  </S.Contain>
+                  {otherWaysAvailable && category.type === 'buy' && !allRegions ? (
+                    <View style={styles.otherWaysContainer}>
+                      <Button
+                        key={showAll ? 'hide' : 'show'}
+                        size="medium_rounded"
+                        mode="secondary"
+                        onPress={handleShowAll}
+                      >
+                        {t(showAll ? 'exchange_modal.hide' : 'exchange_modal.show_all')}
+                      </Button>
+                    </View>
+                  ) : null}
+                </React.Fragment>
+              ))}
+            </>
+          )}
+        </View>
       </Modal.ScrollView>
     </Modal>
   );
