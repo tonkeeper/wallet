@@ -1,3 +1,5 @@
+import { MessageRelaxed } from '@ton/core';
+
 export type NftCollectionDeployParams = {
   ownerAddress?: string;
   royaltyAddress: string;
@@ -92,8 +94,8 @@ export interface SignRawMessage {
 }
 
 export type SignRawParams = {
-  source: string;
-  valid_until: number;
+  source?: string;
+  valid_until?: number;
   messages: SignRawMessage[];
 };
 
@@ -134,8 +136,8 @@ export type TxResponseOptions = {
 
 export type TxRequestBody<TParams = TxParams> = {
   type: TxTypes;
-  expires_sec: number;
-  response_options: TxResponseOptions;
+  expires_sec?: number;
+  response_options?: TxResponseOptions;
   params: TParams;
   fee?: string;
 };
