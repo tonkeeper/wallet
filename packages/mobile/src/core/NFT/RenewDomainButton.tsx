@@ -1,9 +1,4 @@
-import {
-  forwardRef,
-  useCallback,
-  useImperativeHandle,
-  useState,
-} from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Button } from '$uikit/Button/Button';
 import { Text } from '$uikit/Text/Text';
@@ -34,7 +29,8 @@ interface RenewDomainButtonProps {
   onSend: () => void;
 }
 
-export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainButtonProps>((props, ref) => {
+export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainButtonProps>(
+  (props, ref) => {
     const { disabled, expiringAt, loading, onSend, domainAddress, ownerAddress } = props;
     const [isPending, setIsPending] = useState(false);
     const wallet = useWallet();
@@ -53,7 +49,7 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
       const payload = new TonWeb.boc.Cell();
 
       payload.bits.writeUint(0x4eb1f0f9, 32);
-      payload.bits.writeUint(0, 64)
+      payload.bits.writeUint(0, 64);
       payload.bits.writeUint(0, 256);
 
       openSignRawModal(
@@ -64,7 +60,7 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
             {
               address: domainAddress,
               amount: Ton.toNano('0.02'),
-              payload: Base64.encodeBytes(await payload.toBoc())
+              payload: Base64.encodeBytes(await payload.toBoc()),
             },
           ],
         },
@@ -126,8 +122,8 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
         </Text>
       </View>
     );
-  });
-
+  },
+);
 
 const styles = StyleSheet.create({
   container: {

@@ -85,7 +85,7 @@ import { Cache as JettonsCache } from '$store/jettons/manager/cache';
 import { Tonapi } from '$libs/Tonapi';
 import { clearSubscribeStatus } from '$utils/messaging';
 import { useRatesStore } from '$store/zustand/rates';
-import { Cell } from 'ton-core';
+import { Cell } from '@ton/core';
 import nacl from 'tweetnacl';
 import { encryptMessageComment } from '@tonkeeper/core';
 import TonWeb from 'tonweb';

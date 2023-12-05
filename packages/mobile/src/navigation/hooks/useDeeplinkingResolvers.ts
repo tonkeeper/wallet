@@ -29,15 +29,21 @@ import { useCallback, useRef } from 'react';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import BigNumber from 'bignumber.js';
 import { Tonapi } from '$libs/Tonapi';
-import { checkFundsAndOpenNFTTransfer } from '$core/ModalContainer/NFTOperations/Modals/NFTTransferModal';
 import { openNFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
 import { getCurrentRoute } from '$navigation/imperative';
 import { IConnectQrQuery } from '$tonconnect/models';
 import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
-import { ActionSource, Address, DNS } from '@tonkeeper/core';
+import {
+  ActionSource,
+  Address,
+  AmountFormatter,
+  ContractService,
+  DNS,
+} from '@tonkeeper/core';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { isMethodIdExists } from '$store/zustand/methodsToBuy/helpers';
 import { openActivityActionModal } from '@tonkeeper/shared/modals/ActivityActionModal';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -359,7 +365,24 @@ export function useDeeplinkingResolvers() {
       if (!Address.isValid(query.nft)) {
         return Toast.fail(t('transfer_deeplink_nft_address_error'));
       }
-      await checkFundsAndOpenNFTTransfer(query.nft, address);
+      await openSignRawModal(
+        {
+          messages: [
+            {
+              amount: AmountFormatter.toNano(1),
+              address: query.nft,
+              payload: ContractService.createNftTransferBody({
+                queryId: Date.now(),
+                newOwnerAddress: address,
+                excessesAddress: tk.wallet.address.ton.raw,
+              })
+                .toBoc()
+                .toString('base64'),
+            },
+          ],
+        },
+        {},
+      );
     } else {
       openSend({
         currency,

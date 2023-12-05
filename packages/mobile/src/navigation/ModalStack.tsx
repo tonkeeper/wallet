@@ -2,13 +2,6 @@ import React from 'react';
 import { SecurityMigrationStack } from './SecurityMigrationStack/SecurityMigrationStack';
 import { ResetPinStack } from './ResetPinStack/ResetPinStack';
 import { createModalStackNavigator } from '@tonkeeper/router';
-import { NFTSingleDeployModal } from '$core/ModalContainer/NFTOperations/Modals/NFTSingleDeployModal';
-import { NFTTransferModal } from '$core/ModalContainer/NFTOperations/Modals/NFTTransferModal';
-import { NFTSaleCancelModal } from '$core/ModalContainer/NFTOperations/Modals/NFTSaleCancelModal';
-import { NFTSalePlaceGetgemsModal } from '$core/ModalContainer/NFTOperations/Modals/NFTSalePlaceGetgemsModal';
-import { NFTSalePlaceModal } from '$core/ModalContainer/NFTOperations/Modals/NFTSalePlaceModal';
-import { NFTItemDeployModal } from '$core/ModalContainer/NFTOperations/Modals/NFTItemDeployModal';
-import { NFTCollectionDeployModal } from '$core/ModalContainer/NFTOperations/Modals/NFTCollectionDeployModal';
 import { NFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
 import { NFT } from '$core/NFT/NFT';
 import { SignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
@@ -48,13 +41,6 @@ const Stack = createModalStackNavigator(ProvidersWithNavigation);
 export const ModalStack = React.memo(() => (
   <Stack.Navigator>
     <Stack.Group behavior="sheet">
-      <Stack.Modal component={NFTSingleDeployModal} path="NFTSingleDeploy" />
-      <Stack.Modal component={NFTTransferModal} path="NFTTransfer" />
-      <Stack.Modal component={NFTCollectionDeployModal} path="NFTCollectionDeploy" />
-      <Stack.Modal component={NFTItemDeployModal} path="NFTItemDeploy" />
-      <Stack.Modal component={NFTSalePlaceModal} path="NFTSalePlace" />
-      <Stack.Modal component={NFTSalePlaceGetgemsModal} path="NFTSalePlaceGetgems" />
-      <Stack.Modal component={NFTSaleCancelModal} path="NFTSaleCancel" />
       <Stack.Modal component={ExchangeModal} path="Exchange" />
       <Stack.Modal component={OldExchange} path="OldExchange" />
       <Stack.Modal component={СonfirmRenewAllDomains} path="СonfirmRenewAllDomains" />

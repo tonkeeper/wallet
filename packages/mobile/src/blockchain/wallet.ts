@@ -5,7 +5,13 @@ import { getUnixTime } from 'date-fns';
 import { store } from '$store';
 import { getServerConfig } from '$shared/constants';
 import { UnlockedVault, Vault } from './vault';
-import { Address as AddressFormatter, AmountFormatter } from '@tonkeeper/core';
+import {
+  Address as AddressFormatter,
+  ContractService,
+  contractVersionsMap,
+  TransactionService,
+  isActiveAccount,
+} from '@tonkeeper/core';
 import { debugLog } from '$utils/debugLog';
 import { getChainName, getWalletName } from '$shared/dynamicConfig';
 import { t } from '@tonkeeper/shared/i18n';
@@ -21,18 +27,13 @@ import {
   Account,
 } from '@tonkeeper/core/src/legacy';
 import { SendApi, Configuration as V1Configuration } from 'tonapi-sdk-js';
-import {
-  externalMessage,
-  getTonCoreWalletContract,
-  jettonTransferBody,
-} from './contractService';
-import { Address, Cell, SendMode, internal, toNano } from 'ton-core';
-import { isActiveAccount } from '@tonkeeper/core';
+
+import { tk } from '@tonkeeper/shared/tonkeeper';
+import { Address, Cell, internal, toNano } from '@ton/core';
 
 const TonWeb = require('tonweb');
 
 export const jettonTransferAmount = toNano('0.64');
-const jettonTransferForwardAmount = BigInt('1');
 
 interface TonTransferParams {
   seqno: number;
@@ -359,34 +360,36 @@ export class TonWallet {
     vault: Vault,
     secretKey: Buffer = Buffer.alloc(64),
   ) {
-    const contract = getTonCoreWalletContract(vault, vault.getVersion());
+    const version = vault.getVersion();
+    const lockupConfig = vault.getLockupConfig();
+    const contract = ContractService.getWalletContract(
+      contractVersionsMap[version ?? 'v4R2'],
+      Buffer.from(vault.tonPublicKey),
+      {
+        allowedDestinations: lockupConfig?.allowed_destinations,
+      },
+    );
 
     const jettonAmount = BigInt(amountNano);
 
-    const body = jettonTransferBody({
-      queryId: Date.now(),
-      jettonAmount,
-      toAddress: Address.parseRaw(recipient.address),
-      responseAddress: Address.parseRaw(sender.address),
-      forwardAmount: jettonTransferForwardAmount,
-      forwardPayload: payload,
-    });
-
-    const transfer = contract.createTransfer({
+    return TransactionService.createTransfer(contract, {
       seqno,
       secretKey,
-      sendMode: SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS,
       messages: [
         internal({
           to: Address.parse(jettonWalletAddress),
           bounce: true,
           value: jettonTransferAmount,
-          body: body,
+          body: ContractService.createJettonTransferBody({
+            queryId: Date.now(),
+            jettonAmount,
+            receiverAddress: recipient.address,
+            excessesAddress: tk.wallet.address.ton.raw,
+            forwardBody: payload,
+          }),
         }),
       ],
     });
-
-    return externalMessage(contract, seqno, transfer).toBoc().toString('base64');
   }
 
   async estimateJettonFee(
@@ -516,43 +519,28 @@ export class TonWallet {
     secretKey = Buffer.alloc(64),
   }: TonTransferParams) {
     const version = vault.getVersion();
-    const isLockup = version && version.substr(0, 6) === 'lockup';
-
-    if (isLockup) {
-      const wallet = vault.tonWallet;
-      const toAddress = new TonWeb.utils.Address(recipient.address);
-      toAddress.isBounceable = bounce;
-
-      const tx = wallet.methods.transfer({
-        secretKey,
-        toAddress,
-        amount: AmountFormatter.toNano(amount),
-        seqno: seqno,
-        payload,
-        sendMode,
-      });
-
-      const query = await tx.getQuery();
-      return TonWeb.utils.bytesToBase64(await query.toBoc(false));
-    } else {
-      const contract = getTonCoreWalletContract(vault, walletVersion ?? version);
-
-      const transfer = contract.createTransfer({
-        seqno,
-        secretKey,
-        sendMode,
-        messages: [
-          internal({
-            to: Address.parseRaw(recipient.address),
-            bounce,
-            value: amount,
-            body: payload !== '' ? payload : undefined,
-          }),
-        ],
-      });
-
-      return externalMessage(contract, seqno, transfer).toBoc().toString('base64');
-    }
+    const lockupConfig = vault.getLockupConfig();
+    const contract = ContractService.getWalletContract(
+      contractVersionsMap[walletVersion ?? version ?? 'v4R2'],
+      Buffer.from(vault.tonPublicKey),
+      {
+        lockupPubKey: lockupConfig?.config_pubkey,
+        allowedDestinations: lockupConfig?.allowed_destinations,
+      },
+    );
+    return TransactionService.createTransfer(contract, {
+      seqno,
+      secretKey,
+      sendMode,
+      messages: [
+        internal({
+          to: recipient.address,
+          bounce,
+          value: amount,
+          body: payload !== '' ? payload : undefined,
+        }),
+      ],
+    });
   }
 
   async estimateFee(

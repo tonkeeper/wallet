@@ -308,7 +308,7 @@
   "exchange_modal" : {
     "hide" : "Скрыть",
     "other_ways_to_buy" : "Другие способы покупки",
-    "show_all" : "Показать всё",
+    "show_all" : "Показать все",
     "buy": "Купить",
     "sell": "Продать"
   },
@@ -778,7 +778,7 @@
     },
     "widget_desc" : "Годовая доходность до %{apy}%",
     "widget_staking_options" : "Варианты стейкинга",
-    "widget_title" : "Зарабатывайте TON",
+    "widget_title" : "Стейкинг TON",
     "withdraw" : "Вывести",
     "withdrawal_fee_warning" : {
       "continue" : "Продолжить всё равно",
