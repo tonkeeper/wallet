@@ -1,36 +1,74 @@
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useReanimatedKeyboardHeight } from '../utils/keyboard';
+import { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { ViewStyle, StyleSheet, Keyboard } from 'react-native';
 import { StyleProp } from '@bogoslavskiy/react-native-steezy';
-import { ViewStyle, StyleSheet } from 'react-native';
+import { isAndroid } from '../utils';
 import { View } from './View';
-import { memo } from 'react';
+import Animated, {
+  interpolate,
+  useAnimatedKeyboard,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 interface KeyboardAccessoryViewProps {
+  visibleWithKeyboard?: boolean;
   style?: StyleProp<ViewStyle>;
   children: React.ReactNode;
-  hidden?: boolean;
-  height: number;
 }
 
-export const KeyboardAccessoryView = memo<KeyboardAccessoryViewProps>((props) => {
-  const { children, style, height, hidden } = props;
-  const keyboard = useReanimatedKeyboardHeight();
-  const safeArea = useSafeAreaInsets();
+export type KeyboardAccessoryViewRef = {
+  hide: () => void;
+  show: () => void;
+};
+
+export const KeyboardAccessoryView = forwardRef<
+  KeyboardAccessoryViewRef,
+  KeyboardAccessoryViewProps
+>((props, ref) => {
+  const { children, style, visibleWithKeyboard } = props;
+  const visible = useSharedValue(visibleWithKeyboard ? 0 : 1);
+  const keyboard = useAnimatedKeyboard();
 
   const heightStyle = useAnimatedStyle(
     () => ({
-      height: keyboard.height.value + height + safeArea.bottom,
+      transform: [{ translateY: -keyboard.height.value }],
     }),
-    [keyboard.height, height, safeArea.bottom],
+    [keyboard.height],
   );
 
   const opacityStyle = useAnimatedStyle(
     () => ({
-      opacity: withTiming(!hidden ? 1 : 0, { duration: 100 }),
+      opacity: withTiming(visible.value, { duration: 0 }),
     }),
-    [hidden],
+    [visible.value],
   );
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      show() {
+        visible.value = 1;
+      },
+      hide() {
+        visible.value = 0;
+      },
+    }),
+    [],
+  );
+
+  useEffect(() => {
+    const hideEventName = isAndroid ? 'keyboardDidHide' : 'keyboardWillHide';
+    const keyboardWillHideSub = Keyboard.addListener(hideEventName, () => {
+      if (visibleWithKeyboard) {
+        visible.value = 0;
+      }
+    });
+
+    return () => {
+      keyboardWillHideSub.remove();
+    };
+  }, []);
 
   return (
     <Animated.View style={[styles.keyboardAccessory, heightStyle, opacityStyle]}>

@@ -4,11 +4,12 @@ import { forwardRef, memo, useEffect, useMemo } from 'react';
 import { useBottomTabBarHeight } from '@tonkeeper/router';
 import { useScrollToTop } from '@react-navigation/native';
 import { ns, useMergeRefs } from '../../utils';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
 import { useScreenScroll } from './hooks';
 
 interface ScreenScrollView extends ScrollViewProps {
   hideBottomSeparator?: boolean;
+  keyboardAware?: boolean;
   indent?: boolean;
 }
 
@@ -16,7 +17,13 @@ export type ScreenScrollViewRef = Animated.ScrollView;
 
 export const ScreenScrollView = memo(
   forwardRef<ScreenScrollViewRef, ScreenScrollView>((props, ref) => {
-    const { indent, hideBottomSeparator, contentContainerStyle, ...other } = props;
+    const {
+      indent,
+      hideBottomSeparator,
+      keyboardAware,
+      contentContainerStyle,
+      ...other
+    } = props;
     const {
       detectContentSize,
       detectLayoutSize,
@@ -28,6 +35,7 @@ export const ScreenScrollView = memo(
     } = useScreenScroll();
     const tabBarHeight = useBottomTabBarHeight();
     const setRef = useMergeRefs(scrollRef, ref);
+    const keyboard = useAnimatedKeyboard();
 
     useScrollToTop(scrollRef as any);
 
@@ -35,7 +43,7 @@ export const ScreenScrollView = memo(
       headerEjectionPoint.value = 0;
       return () => {
         scrollY.value = 0;
-      }
+      };
     }, []);
 
     const contentStyle = useMemo(() => {
@@ -45,6 +53,10 @@ export const ScreenScrollView = memo(
         contentContainerStyle,
       ];
     }, [contentContainerStyle, tabBarHeight]);
+
+    const keyboardOffsetStyle = useAnimatedStyle(() => ({
+      height: keyboardAware ? keyboard.height.value : 0,
+    }));
 
     return (
       <View style={styles.container}>
@@ -60,6 +72,7 @@ export const ScreenScrollView = memo(
         >
           <Animated.View style={headerOffsetStyle} />
           {props.children}
+          <Animated.View style={keyboardOffsetStyle} />
         </Animated.ScrollView>
         {!hideBottomSeparator && <ScreenBottomSeparator />}
       </View>

@@ -2,11 +2,10 @@ import { useRecoveryPhraseInputs } from '../../../hooks/useRecoveryPhraseInputs'
 import { InputNumberPrefix } from '../../../components/InputNumberPrefix';
 import { SearchIndexer } from '@tonkeeper/core/src/utils/SearchIndexer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { memo, useCallback, useEffect, useState } from 'react';
 import { bip39 } from '@tonkeeper/core/src/bip39';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Pressable } from 'react-native';
 import {
+  KeyboardAccessoryViewRef,
   KeyboardAccessoryView,
   Screen,
   Button,
@@ -15,13 +14,19 @@ import {
   Text,
   View,
   Input,
-  useReanimatedKeyboardHeight,
 } from '@tonkeeper/uikit';
+import {
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 
 const inputsCount = Array(24).fill(0);
-const indexedWords = new SearchIndexer(bip39.list);
 
-// const fullMatch = hints.some((item) => item === options.query);
 interface SetupPhrasePageProps {
   onNext: (phrase: string, config?: string) => void;
   loading: boolean;
@@ -29,13 +34,12 @@ interface SetupPhrasePageProps {
 
 export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
   const { onNext, loading } = props;
+  const [isConfigInputShown, setConfigInputShown] = useState(false);
+  const [isRestoring, setRestoring] = useState(false);
+  const hintsRef = useRef<KeyboardHintsRef>(null);
+  const [config, setConfig] = useState('');
   const inputs = useRecoveryPhraseInputs();
   const safeArea = useSafeAreaInsets();
-
-  const [isConfigInputShown, setConfigInputShown] = useState(false);
-  const [hints, setHints] = useState<string[]>([]);
-  const [isRestoring, setRestoring] = useState(false);
-  const [config, setConfig] = useState('');
 
   useEffect(() => {
     const lastField = inputs.getRef(23);
@@ -85,7 +89,6 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
     }
 
     const phrase = Object.values(values).join(' ');
-
     onNext(phrase, config);
   }, [onNext, isRestoring, isConfigInputShown, config]);
 
@@ -102,52 +105,49 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
 
   const handleChangeText = useCallback(
     (inputIndex: number) => (text: string) => {
-      inputs.onChangeText(inputIndex);
-
-      const hints = indexedWords
-        .search(text, 6)
-        .sort((a, b) => {
-          const preparedQuery = text.toLowerCase().replace(/\s/g, '');
-          const aMatch = a.toLowerCase().replace(/\s/g, '').includes(preparedQuery);
-          const bMatch = b.toLowerCase().replace(/\s/g, '').includes(preparedQuery);
-          if (aMatch && !bMatch) {
-            return -1;
-          }
-          if (bMatch && !aMatch) {
-            return 1;
-          }
-
-          return 0;
-        })
-        .slice(0, 3);
-
-      setHints(hints);
+      inputs.onChangeText(inputIndex)(text);
+      hintsRef.current?.search(text);
+      // const hints = searchWords(text);
+      // setHints(hints);
+      // if (hints.length > 0) {
+      //   accessoryViewRef.current?.show();
+      // } else {
+      //   accessoryViewRef.current?.hide();
+      // }
     },
     [inputs.onChangeText],
   );
 
-  const handleHintPress = useCallback(
-    (hint: string) => () => {
-      console.log(inputs.currentIndex);
+  const handleInputFocus = useCallback(
+    (inputIndex: number) => () => {
+      inputs.onFocus(inputIndex)();
+      const value = inputs.getRef(inputIndex).getValue();
+      hintsRef.current?.search(value);
+    },
+    [inputs.onFocus],
+  );
+
+  const handleHintPress = useCallback((hint: string) => {
+    if (hint) {
       inputs.getRef(inputs.currentIndex.current)?.setValue(hint);
       inputs.getRef(inputs.currentIndex.current + 1)?.focus();
-      setHints([]);
-    },
-    [],
-  );
+    }
+  }, []);
 
-  const keyboard = useReanimatedKeyboardHeight();
-
-  const keyboardSpacerStyle = useAnimatedStyle(
-    () => ({
-      height: keyboard.height.value - safeArea.bottom + 32 + (hints.length ? 52 : 0),
-    }),
-    [keyboard.height, hints.length],
-  );
+  // const keyboardSpacerStyle = useAnimatedStyle(
+  //   () => ({
+  //     height: keyboard.height.value - safeArea.bottom + 32 + (hints.length ? 52 : 0),
+  //   }),
+  //   [keyboard.height, hints.length],
+  // );
 
   return (
     <>
-      <Screen.ScrollView ref={inputs.scrollViewRef} keyboardShouldPersistTaps="handled">
+      <Screen.ScrollView
+        ref={inputs.scrollViewRef}
+        keyboardShouldPersistTaps="handled"
+        keyboardAware
+      >
         <View style={styles.info}>
           {/* <TapGestureHandler numberOfTaps={5} onActivated={handleShowConfigInput}> */}
           <Pressable onPress={handleShowConfigInput}>
@@ -181,7 +181,7 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
               onSubmitEditing={handleInputSubmit(index)}
               onChangeText={handleChangeText(index)}
               onLayout={inputs.setPosition(index)}
-              onFocus={inputs.onFocus(index)}
+              onFocus={handleInputFocus(index)}
               onBlur={inputs.onBlur(index)}
               ref={inputs.setRef(index)}
               disableAutoMarkValid
@@ -198,46 +198,8 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
         <View style={[styles.footer, { paddingBottom: safeArea.bottom }]}>
           <Button onPress={handleContinue} title="Continue" loading={loading} />
         </View>
-
-        <Animated.View style={keyboardSpacerStyle} />
       </Screen.ScrollView>
-      <KeyboardAccessoryView
-        style={styles.hintsContainer}
-        hidden={hints.length === 0}
-        height={52}
-      >
-        {hints.length === 3 && (
-          <>
-            <Pressable onPress={handleHintPress(hints[2])}>
-              <View style={styles.hint}>
-                <Text type="label2" textAlign="center">
-                  {hints[2]}
-                </Text>
-              </View>
-            </Pressable>
-            <View style={styles.hintSeparator} />
-          </>
-        )}
-        <Pressable onPress={handleHintPress(hints[0])}>
-          <View style={[styles.hint, styles.highlightedHint]}>
-            <Text type="label2" textAlign="center">
-              {hints[0]}
-            </Text>
-          </View>
-        </Pressable>
-        {hints.length === 3 && (
-          <>
-            <View style={styles.hintSeparator} />
-            <Pressable onPress={handleHintPress(hints[1])}>
-              <View style={styles.hint}>
-                <Text type="label2" textAlign="center">
-                  {hints[1]}
-                </Text>
-              </View>
-            </Pressable>
-          </>
-        )}
-      </KeyboardAccessoryView>
+      <KeyboardHints ref={hintsRef} onHintPress={handleHintPress} />
     </>
   );
 });
@@ -284,3 +246,101 @@ const styles = Steezy.create(({ colors }) => ({
     marginHorizontal: 8,
   },
 }));
+
+const indexedWords = new SearchIndexer(bip39.list);
+
+function searchWords(text: string) {
+  return indexedWords
+    .search(text, 6)
+    .sort((a, b) => {
+      const preparedQuery = text.toLowerCase().replace(/\s/g, '');
+      const aMatch = a.toLowerCase().replace(/\s/g, '').includes(preparedQuery);
+      const bMatch = b.toLowerCase().replace(/\s/g, '').includes(preparedQuery);
+      if (aMatch && !bMatch) {
+        return -1;
+      }
+      if (bMatch && !aMatch) {
+        return 1;
+      }
+
+      return 0;
+    })
+    .slice(0, 4);
+}
+
+interface KeyboardHintsProps {
+  onHintPress: (word: string) => void;
+}
+
+type KeyboardHintsRef = {
+  search: (text: string) => void;
+};
+
+const KeyboardHints = forwardRef<KeyboardHintsRef, KeyboardHintsProps>((props, ref) => {
+  const { onHintPress } = props;
+  const accessoryViewRef = useRef<KeyboardAccessoryViewRef>(null);
+  const [words, setWords] = useState<string[]>([]);
+
+  const handleHintPress = useCallback(
+    (word?: string) => () => {
+      if (word) {
+        onHintPress(word);
+      }
+    },
+    [onHintPress],
+  );
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      search(text: string) {
+        const words = searchWords(text);
+
+        if (text !== words[0] && words.length > 0) {
+          setWords(words);
+          accessoryViewRef.current?.show();
+        } else {
+          setWords([]);
+          accessoryViewRef.current?.hide();
+        }
+      },
+    }),
+    [],
+  );
+
+  return (
+    <KeyboardAccessoryView
+      style={styles.hintsContainer}
+      ref={accessoryViewRef}
+      visibleWithKeyboard
+    >
+      <Pressable onPress={handleHintPress(words[1])}>
+        <View style={styles.hint}>
+          {!!words[1] && (
+            <Text type="label2" textAlign="center">
+              {words[1]}
+            </Text>
+          )}
+        </View>
+      </Pressable>
+      {words.length > 1 && <View style={styles.hintSeparator} />}
+      <Pressable onPress={handleHintPress(words[0])}>
+        <View style={[styles.hint, styles.highlightedHint]}>
+          <Text type="label2" textAlign="center">
+            {words[0]}
+          </Text>
+        </View>
+      </Pressable>
+      {words.length > 1 && <View style={styles.hintSeparator} />}
+      <Pressable onPress={handleHintPress(words[2])}>
+        <View style={styles.hint}>
+          {!!words[2] && (
+            <Text type="label2" textAlign="center">
+              {words[2]}
+            </Text>
+          )}
+        </View>
+      </Pressable>
+    </KeyboardAccessoryView>
+  );
+});
