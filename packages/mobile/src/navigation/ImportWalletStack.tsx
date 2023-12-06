@@ -2,7 +2,7 @@ import { SetupNotificationsScreen } from '../screens/Setup/SetupNotificationsScr
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SetupPasscodeScreen } from '../screens/Setup/SetupPasscodeScreen';
 import { useTheme } from '$hooks/useTheme';
-import { memo, useState } from 'react';
+import { memo, useCallback } from 'react';
 import { Screen } from '@tonkeeper/uikit';
 import { useDispatch } from 'react-redux';
 import { walletActions } from '$store/wallet';
@@ -10,6 +10,8 @@ import { useNavigation } from '@tonkeeper/router';
 import { getPermission } from '$utils/messaging';
 import { SetupRecoveryPhrasePage } from '@tonkeeper/shared/screens/setup/pages/SetupRecoveryPhrasePage';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { useParams } from '@tonkeeper/router/src/imperative';
+import { debugLog } from '$utils/debugLog';
 
 const Stack = createNativeStackNavigator<any>();
 
@@ -36,60 +38,85 @@ export const ImportWalletStack = memo(() => {
 });
 
 const Step1 = () => {
-  const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
   const nav = useNavigation();
 
   return (
     <Screen>
       <Screen.Header />
       <SetupRecoveryPhrasePage
-        loading={loading}
         onNext={(phrase, config) => {
-          setLoading(true);
-          dispatch(
-            walletActions.restoreWallet({
-              mnemonics: phrase,
-              config,
-              onDone: () => {
-                setLoading(false);
-                nav.navigate('/import/passcode');
-              },
-              onFail: () => {
-                setLoading(false);
-              },
-            }),
-          );
+          nav.navigate('/import/passcode', { phrase, config });
         }}
       />
     </Screen>
   );
 };
 
-const Step2 = () => {
+type ResoreParams = {
+  onFail: () => void;
+  onDone: () => void;
+  passscode: string;
+  phrase: string;
+  config?: string;
+};
+
+const useRestoreWallet = () => {
   const dispatch = useDispatch();
+
+  return useCallback(
+    (params: ResoreParams) => {
+      dispatch(
+        walletActions.restoreWallet({
+          mnemonics: params.phrase,
+          config: params.config,
+          onDone: () => {
+            dispatch(
+              walletActions.createWallet({
+                pin: params.passscode,
+                onDone: params.onDone,
+                onFail: params.onFail,
+              }),
+            );
+          },
+          onFail: params.onFail,
+        }),
+      );
+    },
+    [dispatch],
+  );
+};
+
+const Step2 = () => {
+  const params = useParams<{ phrase: string; config?: string }>();
+  const restore = useRestoreWallet();
   const nav = useNavigation();
 
   return (
     <Screen>
       <Screen.Header />
       <SetupPasscodeScreen
-        onNext={(passscode) => {
-          dispatch(
-            walletActions.createWallet({
-              pin: passscode,
-              onDone: async () => {
-                const hasNotificationPermission = await getPermission();
-                if (hasNotificationPermission) {
-                  nav.replace('Tabs');
-                } else {
-                  nav.replace('/import/notifications');
-                }
-                tk.wallet?.saveLastBackupTimestamp();
+        onNext={async (passscode) => {
+          const goRestore = (onDone: () => void) => {
+            restore({
+              passscode,
+              phrase: params.phrase,
+              config: params.config,
+              onDone: onDone,
+              onFail: () => {
+                debugLog('Error import wallet');
               },
-              onFail: () => {},
-            }),
-          );
+            });
+          };
+
+          const hasNotificationPermission = await getPermission();
+          if (hasNotificationPermission) {
+            goRestore(() => {
+              nav.replace('Tabs');
+            });
+          } else {
+            nav.navigate('/import/notifications', { onNext: goRestore });
+          }
+          tk.wallet?.saveLastBackupTimestamp();
         }}
       />
     </Screen>
@@ -97,12 +124,5 @@ const Step2 = () => {
 };
 
 const Step3 = () => {
-  const nav = useNavigation();
-
-  return (
-    <SetupNotificationsScreen
-      onEnable={() => nav.replace('Tabs')}
-      onSkip={() => nav.replace('Tabs')}
-    />
-  );
+  return <SetupNotificationsScreen />;
 };

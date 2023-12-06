@@ -46,19 +46,23 @@ const Step1 = () => {
       <Screen.Header />
       <SetupPasscodeScreen
         onNext={async (passcode) => {
-          const hasNotificationPermission = await getPermission();
-          if (hasNotificationPermission) {
+          const createWallet = (onDone: () => void) => {
             dispatch(
               walletActions.createWallet({
                 pin: passcode,
-                onDone: async () => {
-                  nav.replace('Tabs');
-                },
+                onDone: onDone,
                 onFail: () => {},
               }),
             );
+          };
+
+          const hasNotificationPermission = await getPermission();
+          if (hasNotificationPermission) {
+            createWallet(() => {
+              nav.replace('Tabs');
+            });
           } else {
-            nav.navigate('/create/notifications', { passcode });
+            nav.navigate('/create/notifications', { onNext: createWallet });
           }
         }}
       />

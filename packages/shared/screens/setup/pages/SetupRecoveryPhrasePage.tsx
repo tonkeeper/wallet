@@ -29,11 +29,10 @@ const inputsCount = Array(24).fill(0);
 
 interface SetupPhrasePageProps {
   onNext: (phrase: string, config?: string) => void;
-  loading: boolean;
 }
 
 export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
-  const { onNext, loading } = props;
+  const { onNext } = props;
   const [isConfigInputShown, setConfigInputShown] = useState(false);
   const [isRestoring, setRestoring] = useState(false);
   const hintsRef = useRef<KeyboardHintsRef>(null);
@@ -82,13 +81,14 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
       }
     }
 
-    if (hasFailed) {
-      // Toast.fail(t('import_wallet_wrong_words_err'));
-      setRestoring(false);
-      return;
-    }
+    // if (hasFailed) {
+    //   // Toast.fail(t('import_wallet_wrong_words_err'));
+    //   setRestoring(false);
+    //   return;
+    // }
 
     const phrase = Object.values(values).join(' ');
+    setRestoring(false);
     onNext(phrase, config);
   }, [onNext, isRestoring, isConfigInputShown, config]);
 
@@ -201,7 +201,7 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
           ))}
         </View>
         <View style={[styles.footer, { paddingBottom: safeArea.bottom }]}>
-          <Button onPress={handleContinue} title="Continue" loading={loading} />
+          <Button onPress={handleContinue} title="Continue" />
         </View>
       </Screen.ScrollView>
       <KeyboardHints ref={hintsRef} onHintPress={handleHintPress} />

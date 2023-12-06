@@ -13,50 +13,47 @@ import {
   Toast,
 } from '@tonkeeper/uikit';
 import { tk } from '@tonkeeper/shared/tonkeeper';
-import { walletActions } from '$store/wallet';
-import { useDispatch } from 'react-redux';
 import { useParams } from '$navigation/imperative';
+import { useNavigation } from '@tonkeeper/router';
 
-interface SetupNotificationsScreenProps {
-  onEnable: () => void;
-  onSkip: () => void;
-}
-
-export const SetupNotificationsScreen = memo<SetupNotificationsScreenProps>((props) => {
-  const params = useParams<{ passcode: string }>();
+export const SetupNotificationsScreen = memo(() => {
+  const params = useParams<{ onNext?: (onDone: () => void) => void }>();
   const [loading, setLoading] = useState(false);
   const notifications = useNotifications();
-  const { onSkip, onEnable } = props;
-  const dispatch = useDispatch();
+  const nav = useNavigation();
 
   const handleEnableNotifications = useCallback(async () => {
     try {
       setLoading(true);
-
-      dispatch(
-        walletActions.createWallet({
-          pin: params.passcode,
-          onDone: async () => {
-            await notifications.subscribe();
-            tk.enableNotifications();
-            onEnable();
-          },
-          onFail: () => {},
-        }),
-      );
+      if (params.onNext) {
+        params.onNext(async () => {
+          await notifications.subscribe();
+          tk.enableNotifications();
+          nav.replace('Tabs');
+        });
+      }
     } catch (err) {
       setLoading(false);
       Toast.fail(err?.massage);
       debugLog('[SetupNotifications]:', err);
     }
-  }, [dispatch, notifications, onEnable, params.passcode]);
+  }, [nav, notifications, params]);
 
   return (
     <Screen>
       <Screen.Header
         rightContent={
           <View style={styles.headerRightButton}>
-            <Button title={t('later')} onPress={onSkip} size="header" color="secondary" />
+            <Button
+              title={t('later')}
+              onPress={() => {
+                params.onNext?.(() => {
+                  nav.replace('Tabs');
+                });
+              }}
+              size="header"
+              color="secondary"
+            />
           </View>
         }
       />
