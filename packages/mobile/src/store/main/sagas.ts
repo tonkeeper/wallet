@@ -31,10 +31,12 @@ import {
 import {
   getAddedCurrencies,
   getBalances,
+  getBalancesUpdatedAt,
   getHiddenNotifications,
   getIntroShown,
   getIsTestnet,
   getMigrationState,
+  getOldWalletBalances,
   getPrimaryFiatCurrency,
   getSavedLogs,
   getSavedServerConfig,
@@ -133,6 +135,8 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   const isIntroShown = yield call(getIntroShown);
   const primaryCurrency = yield call(getPrimaryFiatCurrency);
   const balances = yield call(getBalances);
+  const oldWalletBalances = yield call(getOldWalletBalances);
+  const balancesUpdatedAt = yield call(getBalancesUpdatedAt);
   const isNewSecurityFlow = yield call(MainDB.isNewSecurityFlow);
   const excludedJettons = yield call(MainDB.getExcludedJettons);
   const accent = yield call(MainDB.getAccent);
@@ -158,6 +162,8 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
         walletActions.setCurrencies(currencies),
         subscriptionsActions.reset(),
         walletActions.setBalances(balances),
+        walletActions.setOldWalletBalance(oldWalletBalances),
+        walletActions.setUpdatedAt(balancesUpdatedAt),
         jettonsActions.setJettonBalances({ jettonBalances }),
       ),
     );
@@ -192,6 +198,8 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
       walletActions.setCurrencies(currencies),
       subscriptionsActions.reset(),
       walletActions.setBalances(balances),
+      walletActions.setOldWalletBalance(oldWalletBalances),
+      walletActions.setUpdatedAt(balancesUpdatedAt),
       mainActions.setAccent(accent),
       mainActions.setTonCustomIcon(tonCustomIcon),
       jettonsActions.setJettonBalances({ jettonBalances }),

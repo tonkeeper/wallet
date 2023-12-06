@@ -23,6 +23,7 @@ export interface WalletState {
   readableAddress: Address | null;
   currencies: CryptoCurrency[];
   balances: { [index: string]: string };
+  updatedAt: number | null;
   address: { [index: string]: string };
   oldWalletBalances: OldWalletBalanceItem[];
 }
@@ -92,6 +93,7 @@ export type WaitMigrationAction = PayloadAction<{
   onFail: () => void;
 }>;
 export type SetBalancesAction = PayloadAction<any>;
+export type SetUpdatedAtAction = PayloadAction<number | null>;
 export type DeployWalletAction = PayloadAction<{
   onDone: () => void;
   onFail: () => void;
