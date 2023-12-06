@@ -99,6 +99,10 @@ export const SetupPasscodeScreen = memo<SetupPasscodePageProps>((props) => {
 
   const handleKeyboard = useCallback(
     async (newValue: string) => {
+      if (newValue.length > 4) {
+        return;
+      }
+
       const pin = newValue.substring(0, 4);
 
       switch (step) {
