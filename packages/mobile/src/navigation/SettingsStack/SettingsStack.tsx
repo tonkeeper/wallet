@@ -17,6 +17,7 @@ import { Notifications } from '$core/Notifications/Notifications';
 import { JettonsList } from '$core/JettonsList/JettonsList';
 import { ChooseCurrencyScreen } from '$core/ChooseCurrencyScreen';
 import { DevConfigScreen } from '$core/DevMenu/DevConfigScreen';
+import { BackupScreen } from '../../screens/BackupScreen';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
@@ -65,6 +66,7 @@ export const SettingsStack: FC = () => {
         name={SettingsStackRouteNames.ChooseCurrency}
         component={ChooseCurrencyScreen}
       />
+      <Stack.Screen name="/backup" component={BackupScreen} />
     </Stack.Navigator>
   );
 };
