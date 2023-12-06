@@ -13,6 +13,9 @@ import {
   Toast,
 } from '@tonkeeper/uikit';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { walletActions } from '$store/wallet';
+import { useDispatch } from 'react-redux';
+import { useParams } from '$navigation/imperative';
 
 interface SetupNotificationsScreenProps {
   onEnable: () => void;
@@ -20,22 +23,33 @@ interface SetupNotificationsScreenProps {
 }
 
 export const SetupNotificationsScreen = memo<SetupNotificationsScreenProps>((props) => {
+  const params = useParams<{ passcode: string }>();
   const [loading, setLoading] = useState(false);
   const notifications = useNotifications();
   const { onSkip, onEnable } = props;
+  const dispatch = useDispatch();
 
   const handleEnableNotifications = useCallback(async () => {
     try {
       setLoading(true);
-      await notifications.subscribe();
-      tk.enableNotifications();
-      onEnable();
+
+      dispatch(
+        walletActions.createWallet({
+          pin: params.passcode,
+          onDone: async () => {
+            await notifications.subscribe();
+            tk.enableNotifications();
+            onEnable();
+          },
+          onFail: () => {},
+        }),
+      );
     } catch (err) {
       setLoading(false);
       Toast.fail(err?.massage);
       debugLog('[SetupNotifications]:', err);
     }
-  }, [notifications, onEnable]);
+  }, [dispatch, notifications, onEnable, params.passcode]);
 
   return (
     <Screen>

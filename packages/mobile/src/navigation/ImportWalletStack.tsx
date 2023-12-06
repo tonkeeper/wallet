@@ -46,7 +46,6 @@ const Step1 = () => {
       <SetupRecoveryPhrasePage
         loading={loading}
         onNext={(phrase, config) => {
-          console.log(phrase, config);
           setLoading(true);
           dispatch(
             walletActions.restoreWallet({
