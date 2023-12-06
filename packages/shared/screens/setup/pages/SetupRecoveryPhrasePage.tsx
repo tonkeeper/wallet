@@ -95,6 +95,10 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
   const handleInputSubmit = useCallback(
     (index: number) => () => {
       if (index < 23) {
+        const hint = hintsRef.current?.getRelevantWord();
+        if (hint) {
+          inputs.getRef(index)?.setValue(hint);
+        }
         inputs.getRef(index + 1)?.focus();
       } else {
         handleContinue();
@@ -185,6 +189,7 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
               onBlur={inputs.onBlur(index)}
               ref={inputs.setRef(index)}
               disableAutoMarkValid
+              blurOnSubmit={false}
               style={styles.input}
               indentBottom
               keyboardType="ascii-capable"
@@ -274,6 +279,7 @@ interface KeyboardHintsProps {
 
 type KeyboardHintsRef = {
   search: (text: string) => void;
+  getRelevantWord: () => string | null;
 };
 
 const KeyboardHints = forwardRef<KeyboardHintsRef, KeyboardHintsProps>((props, ref) => {
@@ -304,8 +310,11 @@ const KeyboardHints = forwardRef<KeyboardHintsRef, KeyboardHintsProps>((props, r
           accessoryViewRef.current?.hide();
         }
       },
+      getRelevantWord() {
+        return words[0] ?? null;
+      },
     }),
-    [],
+    [words],
   );
 
   return (
