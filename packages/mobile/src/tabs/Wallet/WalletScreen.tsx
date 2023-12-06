@@ -17,7 +17,7 @@ import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { ns } from '$utils';
-import { walletActions, walletSelector } from '$store/wallet';
+import { walletActions, walletSelector, walletUpdatedAtSelector } from '$store/wallet';
 import { copyText } from '$hooks/useCopyText';
 import { useIsFocused } from '@react-navigation/native';
 import { useBalance } from './hooks/useBalance';
@@ -47,6 +47,9 @@ import { trackEvent } from '$utils/stats';
 import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { ExpiringDomainCell } from './components/ExpiringDomainCell';
+import { useNetInfo } from '@react-native-community/netinfo';
+import { format } from 'date-fns';
+import { getLocale } from '$utils/date';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -68,6 +71,10 @@ export const WalletScreen = memo(() => {
   const { data: tronBalances } = useTronBalances();
 
   const notifications = useInternalNotifications();
+
+  const { isConnected } = useNetInfo();
+
+  const walletUpdatedAt = useSelector(walletUpdatedAtSelector);
 
   // TODO: rewrite
   useEffect(() => {
@@ -133,7 +140,7 @@ export const WalletScreen = memo(() => {
         {shouldUpdate && <UpdatesCell />}
         <View style={styles.amount} pointerEvents="box-none">
           <ShowBalance amount={balance.total.fiat} />
-          {wallet && tk.wallet && (
+          {wallet && tk.wallet && isConnected !== false ? (
             <TouchableOpacity
               hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
               style={{ zIndex: 3, marginVertical: 8 }}
@@ -144,7 +151,18 @@ export const WalletScreen = memo(() => {
                 {tk.wallet.address.ton.short}
               </Text>
             </TouchableOpacity>
-          )}
+          ) : null}
+          {wallet && tk.wallet && isConnected === false && walletUpdatedAt ? (
+            <View style={{ zIndex: 3, marginVertical: 8 }}>
+              <Text color="textSecondary" type="body2">
+                {t('wallet.updated_at', {
+                  value: format(walletUpdatedAt, 'd LLL, hh:mm', {
+                    locale: getLocale(),
+                  }),
+                })}
+              </Text>
+            </View>
+          ) : null}
         </View>
         <IconButtonList
           horizontalIndent={i18n.locale === 'ru' ? 'large' : 'small'}

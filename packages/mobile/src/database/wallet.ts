@@ -70,9 +70,53 @@ export async function getBalances(): Promise<{ [index: string]: string }> {
   }
 }
 
+export async function getBalancesUpdatedAt(): Promise<number | null> {
+  const wallet = getWalletName();
+  const raw = await AsyncStorage.getItem(`${wallet}_balances_updated_at`);
+
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+export async function saveBalancesUpdatedAtToDB(updatedAt: number) {
+  const wallet = getWalletName();
+  await AsyncStorage.setItem(`${wallet}_balances_updated_at`, JSON.stringify(updatedAt));
+}
+
 export async function saveBalancesToDB(balances: { [index: string]: string }) {
   const wallet = getWalletName();
   await AsyncStorage.setItem(`${wallet}_balances`, JSON.stringify(balances));
+}
+
+export async function getOldWalletBalances(): Promise<
+  { balance: string; version: string }[]
+> {
+  const wallet = getWalletName();
+  const raw = await AsyncStorage.getItem(`${wallet}_old_balances`);
+
+  if (!raw) {
+    return [];
+  }
+
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    return [];
+  }
+}
+
+export async function saveOldBalancesToDB(
+  balances: { balance: string; version: string }[],
+) {
+  const wallet = getWalletName();
+  await AsyncStorage.setItem(`${wallet}_old_balances`, JSON.stringify(balances));
 }
 
 export async function setMigrationState(state: MigrationState | null) {
