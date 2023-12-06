@@ -125,11 +125,13 @@ const BiometryListItem = () => {
   return (
     <List.Item
       rightContent={
-        <Switch
-          disabled={!tk.biometry.isEnrolled}
-          value={biometryEnabled}
-          onChange={handleToggle}
-        />
+        <View pointerEvents="none">
+          <Switch
+            disabled={!tk.biometry.isEnrolled}
+            value={biometryEnabled}
+            onChange={handleToggle}
+          />
+        </View>
       }
       title={biometryTitle}
       onPress={handleToggle}
@@ -199,6 +201,7 @@ const NotificationsListItem = () => {
 
   return (
     <List.Item
+      onPress={() => handleToggle(!notificationsEnabled)}
       title={'Enable transaction notifications'}
       titleNumberOfLines={2}
       titleTextType="body2"
@@ -208,10 +211,12 @@ const NotificationsListItem = () => {
         </View>
       }
       rightContent={
-        <Switch
-          value={notificationsEnabled}
-          onChange={() => handleToggle(!notificationsEnabled)}
-        />
+        <View pointerEvents="none">
+          <Switch
+            value={notificationsEnabled}
+            onChange={() => handleToggle(!notificationsEnabled)}
+          />
+        </View>
       }
     />
   );
