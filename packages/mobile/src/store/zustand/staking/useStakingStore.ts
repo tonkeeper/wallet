@@ -323,8 +323,9 @@ export const useStakingStore = create(
 
           set({ chart });
         },
-        reset: () =>
-          set({ stakingInfo: {}, stakingBalance: '0', status: StakingApiStatus.Idle }),
+        reset: () => {
+          set({ stakingInfo: {}, stakingBalance: '0', status: StakingApiStatus.Idle });
+        },
         increaseMainFlashShownCount: () => {
           set({ mainFlashShownCount: getState().mainFlashShownCount + 1 });
         },
@@ -334,30 +335,10 @@ export const useStakingStore = create(
       },
     }),
     {
-      name: 'staking_v3',
+      name: 'staking_v4',
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: ({
-        pools,
-        providers,
-        stakingInfo,
-        stakingJettons,
-        stakingJettonsUpdatedAt,
-        highestApyPool,
-        stakingBalance,
-        mainFlashShownCount,
-        stakingFlashShownCount,
-      }) =>
-        ({
-          pools,
-          providers,
-          stakingInfo,
-          stakingJettons,
-          stakingJettonsUpdatedAt,
-          highestApyPool,
-          stakingBalance,
-          mainFlashShownCount,
-          stakingFlashShownCount,
-        } as IStakingStore),
+      partialize: ({ status: _status, actions: _actions, ...state }) =>
+        state as IStakingStore,
     },
   ),
 );

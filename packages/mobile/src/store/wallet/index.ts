@@ -25,6 +25,7 @@ import {
   WalletGetUnlockedVaultAction,
   RefreshBalancesPageAction,
   SetReadableAddress,
+  SetUpdatedAtAction,
 } from '$store/wallet/interface';
 import { SwitchVersionAction } from '$store/main/interface';
 import { SelectableVersions } from '$shared/constants';
@@ -40,6 +41,7 @@ const initialState: WalletState = {
   address: {},
   oldWalletBalances: [],
   readableAddress: null,
+  updatedAt: null,
 };
 
 export const { actions, reducer } = createSlice({
@@ -73,6 +75,9 @@ export const { actions, reducer } = createSlice({
         ...action.payload,
       };
       state.isRefreshing = false;
+    },
+    setUpdatedAt(state, action: SetUpdatedAtAction) {
+      state.updatedAt = action.payload;
     },
     endLoading(state) {
       state.isLoaded = true;
@@ -171,4 +176,9 @@ export const walletIsRefreshingSelector = createSelector(
 export const isLockupWalletSelector = createSelector(
   walletSelector,
   (walletState) => !!walletState.wallet?.ton.isLockup(),
+);
+
+export const walletUpdatedAtSelector = createSelector(
+  walletSelector,
+  (walletState) => walletState.updatedAt,
 );

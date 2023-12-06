@@ -678,14 +678,10 @@ export class TonWallet {
 
   async getLockupBalances(info: Account) {
     if (['empty', 'uninit', 'nonexist'].includes(info?.status ?? '')) {
-      try {
-        const balance = (
-          await this.blockchainApi.getRawAccount({ accountId: info.address })
-        ).balance;
-        return [Ton.fromNano(balance), 0, 0];
-      } catch (e) {
-        return [Ton.fromNano('0'), 0, 0];
-      }
+      const balance = (
+        await this.blockchainApi.getRawAccount({ accountId: info.address })
+      ).balance;
+      return [Ton.fromNano(balance), 0, 0];
     }
 
     const balances = await this.vault.tonWallet.getBalances();
@@ -697,12 +693,8 @@ export class TonWallet {
 
   async getBalance(): Promise<string> {
     const account = await this.vault.getTonAddress(this.isTestnet);
-    try {
-      const balance = (await this.blockchainApi.getRawAccount({ accountId: account }))
-        .balance;
-      return Ton.fromNano(balance);
-    } catch (e) {
-      return Ton.fromNano('0');
-    }
+    const balance = (await this.blockchainApi.getRawAccount({ accountId: account }))
+      .balance;
+    return Ton.fromNano(balance);
   }
 }

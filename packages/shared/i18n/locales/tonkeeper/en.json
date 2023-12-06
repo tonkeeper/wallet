@@ -968,7 +968,8 @@
     "screen_title" : "Wallet",
     "send_btn" : "Send",
     "swap_btn" : "Swap",
-    "tonkens_tab_lable" : "Tokens"
+    "tonkens_tab_lable" : "Tokens",
+    "updated_at" : "Updated on %{value}"
   },
   "wallet_chat" : "Chat",
   "wallet_community" : "Community",

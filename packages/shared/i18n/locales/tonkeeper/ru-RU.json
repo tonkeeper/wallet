@@ -1018,7 +1018,8 @@
     "screen_title" : "Кошелёк",
     "send_btn" : "Отправить",
     "swap_btn" : "Обменять",
-    "tonkens_tab_lable" : "Токены"
+    "tonkens_tab_lable" : "Токены",
+    "updated_at" : "Обновлён %{value}"
   },
   "wallet_chat" : "Чат",
   "wallet_community" : "Сообщество",
