@@ -34,6 +34,8 @@ import { fiatCurrencySelector } from '$store/main';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
 import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
 import { Buffer } from 'buffer';
+import { trackEvent } from '$utils/stats';
+import { Events, SendAnalyticsFrom } from '$store/models';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -79,6 +81,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     );
 
     if (onSuccess) {
+      trackEvent(Events.SendSuccess, { from: SendAnalyticsFrom.SignRaw });
       await delay(1750);
       onSuccess(boc);
     }

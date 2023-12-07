@@ -25,13 +25,13 @@ export const ExchangeMethod: FC<ExchangeMethodProps> = ({ methodId, onContinue }
   const nav = useNavigation();
 
   const handleContinue = useCallback(() => {
-    // nav.goBack();
+    nav.goBack();
 
     setTimeout(() => {
       if (!wallet) {
         return openRequireWalletModal();
       } else {
-        trackEvent(`exchange_open`, { internal_id: methodId });
+        trackEvent('exchange_open', { internal_id: methodId });
 
         if (onContinue) {
           onContinue();
@@ -46,7 +46,7 @@ export const ExchangeMethod: FC<ExchangeMethodProps> = ({ methodId, onContinue }
     if (isDontShow) {
       ExchangeDB.dontShowDetails(methodId);
     }
-  }, [isDontShow, wallet, methodId, onContinue]);
+  }, [nav, isDontShow, wallet, methodId, onContinue]);
 
   const handleLinkPress = useCallback(
     (url) => () => {
@@ -54,6 +54,10 @@ export const ExchangeMethod: FC<ExchangeMethodProps> = ({ methodId, onContinue }
     },
     [],
   );
+
+  if (method === null) {
+    return null;
+  }
 
   return (
     <Modal>
@@ -75,15 +79,17 @@ export const ExchangeMethod: FC<ExchangeMethodProps> = ({ methodId, onContinue }
           </S.Wrap>
           <S.WarningContainer>
             <Text variant="body1">{t('exchange_method_open_warning')}</Text>
-            <S.Links>
-              {method.info_buttons.map((item) => (
-                <S.Link key={item.url} onPress={handleLinkPress(item.url)}>
-                  <Text color="foregroundSecondary" variant="body1">
-                    {item.title}
-                  </Text>
-                </S.Link>
-              ))}
-            </S.Links>
+            {method.info_buttons && method.info_buttons.length > 0 ? (
+              <S.Links>
+                {method.info_buttons.map((item) => (
+                  <S.Link key={item.url} onPress={handleLinkPress(item.url)}>
+                    <Text color="foregroundSecondary" variant="body1">
+                      {item.title}
+                    </Text>
+                  </S.Link>
+                ))}
+              </S.Links>
+            ) : null}
           </S.WarningContainer>
           <S.Buttons>
             <Button onPress={handleContinue}>{method.action_button.title}</Button>

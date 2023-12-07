@@ -156,9 +156,9 @@ export const WalletScreen = memo(() => {
             <View style={{ zIndex: 3, marginVertical: 8 }}>
               <Text color="textSecondary" type="body2">
                 {t('wallet.updated_at', {
-                  value: format(walletUpdatedAt, 'd LLL, hh:mm', {
+                  value: format(walletUpdatedAt, 'd MMM, HH:mm', {
                     locale: getLocale(),
-                  }),
+                  }).replace('.', ''),
                 })}
               </Text>
             </View>
