@@ -77,7 +77,7 @@ export type WalletContext = {
 
 export type WalletState = {
   lastBackupTimestamp: null | number;
-  isFinishedSetup: boolean;
+  hiddenFinishSetup: boolean;
 };
 
 export class Wallet {
@@ -100,7 +100,7 @@ export class Wallet {
 
   public state = new State<WalletState>({
     lastBackupTimestamp: null,
-    isFinishedSetup: false,
+    hiddenFinishSetup: false,
   });
 
   constructor(
@@ -154,19 +154,19 @@ export class Wallet {
     this.tronService = new TronService(context);
 
     this.rehydrateLastBackupTimestamp();
-    this.rehydrateIsFinishedSetup();
+    this.rehydrateHiddenFinishSetup();
     this.listenTransactions();
   }
 
-  public async finishSetup() {
-    await this.storage.setItem('isFinishedSetup', 'true');
-    this.state.set({ isFinishedSetup: true });
+  public async hideFinishSetup() {
+    await this.storage.setItem('hiddenFinishSetup', 'true');
+    this.state.set({ hiddenFinishSetup: true });
   }
 
-  public async rehydrateIsFinishedSetup() {
-    const isFinishedSetup = await this.storage.getItem('isFinishedSetup');
+  public async rehydrateHiddenFinishSetup() {
+    const isFinishedSetup = await this.storage.getItem('hiddenFinishSetup');
     if (isFinishedSetup === 'true') {
-      this.state.set({ isFinishedSetup: true });
+      this.state.set({ hiddenFinishSetup: true });
     }
   }
 
@@ -228,6 +228,6 @@ export class Wallet {
   public async logout() {
     await this.storage.removeItem('lastBackupTimestamp');
     await this.storage.removeItem('isFinishedSetup');
-    await this.storage.removeItem('notificationsEnabled');
+    await this.storage.removeItem('notificationsEnabledDuringSetup');
   }
 }

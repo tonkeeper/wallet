@@ -5,6 +5,7 @@ import { getWalletName } from '$shared/dynamicConfig';
 import { LogItem } from '$store/main/interface';
 import { AccentKey, AccentNFTIcon } from '$styled';
 import { config } from '@tonkeeper/shared/config';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export class MainDB {
   static async isJettonsEnabled(): Promise<boolean> {
@@ -79,9 +80,9 @@ export class MainDB {
 
   static async setBiometryEnabled(isEnabled: boolean) {
     if (isEnabled) {
-      await AsyncStorage.setItem('biometry_enabled', 'yes');
+      tk.enableBiometry();
     } else {
-      await AsyncStorage.removeItem('biometry_enabled');
+      tk.disableBiometry();
     }
   }
 

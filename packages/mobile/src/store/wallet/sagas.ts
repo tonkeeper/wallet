@@ -999,6 +999,7 @@ function* toggleBiometryWorker(action: ToggleBiometryAction) {
     }
     yield call(MainDB.setBiometryEnabled, isEnabled);
   } catch (e) {
+    console.log('error toggleBiometryWorker', e);
     onFail();
   }
 }

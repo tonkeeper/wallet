@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import { getTimeSec } from './getTimeSec';
 import _ from "lodash";
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 export async function getToken() {
   return await messaging().getToken();
@@ -59,7 +60,7 @@ let _subscribeStatus: SUBSCRIBE_STATUS = SUBSCRIBE_STATUS.NOT_SPECIFIED;
 
 export async function saveSubscribeStatus() {
   try {
-    await AsyncStorage.setItem('isSubscribeNotifications', 'true');
+    tk.enableNotifications();
     _subscribeStatus = SUBSCRIBE_STATUS.SUBSCRIBED;
   } catch (err) {
     _subscribeStatus = SUBSCRIBE_STATUS.NOT_SPECIFIED;
@@ -69,7 +70,7 @@ export async function saveSubscribeStatus() {
 
 export async function removeSubscribeStatus() {
   try {
-    await AsyncStorage.setItem('isSubscribeNotifications', 'false');
+    tk.disableNotifications();
     _subscribeStatus = SUBSCRIBE_STATUS.UNSUBSCRIBED;
   } catch (err) {
     _subscribeStatus = SUBSCRIBE_STATUS.NOT_SPECIFIED;

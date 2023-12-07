@@ -19,14 +19,10 @@ type TonkeeperOptions = {
   vault: Vault;
 };
 
-type SecuritySettings = {
-  biometryEnabled: boolean;
-  hiddenBalances: boolean;
-  locked: boolean;
-};
-
 export type TonkeeperState = {
+  notificationsEnabledDuringSetup: Boolean;
   notificationsEnabled: boolean;
+  biometryEnabled: boolean;
 };
 
 export class Tonkeeper {
@@ -34,14 +30,10 @@ export class Tonkeeper {
   public wallets = [];
 
   public state = new State<TonkeeperState>({
+    notificationsEnabledDuringSetup: false,
     notificationsEnabled: false,
-  });
-
-  public securitySettings: SecuritySettings = {
     biometryEnabled: false,
-    hiddenBalances: false,
-    locked: false,
-  };
+  });
 
   public biometry: BiometryModule;
 
@@ -73,9 +65,15 @@ export class Tonkeeper {
     bounceable = true,
   ) {
     try {
-      const notificationsEnabled = await this.storage.getItem('notificationsEnabled');
+      const notificationsEnabledDuringSetup = await this.storage.getItem(
+        'notificationsEnabledDuringSetup',
+      );
+      const notificationsEnabled = await this.storage.getItem('isSubscribeNotifications');
+      const biometryEnabled = await this.storage.getItem('biometry_enabled');
       this.state.set({
-        notificationsEnabled: Boolean(notificationsEnabled),
+        notificationsEnabledDuringSetup: notificationsEnabledDuringSetup === 'true',
+        notificationsEnabled: notificationsEnabled === 'true',
+        biometryEnabled: biometryEnabled === 'yes',
       });
 
       this.destroy();
@@ -124,8 +122,18 @@ export class Tonkeeper {
   public tronStrorageKey = 'temp-tron-address';
 
   public async enableNotifications() {
+    await this.storage.setItem('isSubscribeNotifications', 'true');
     this.state.set({ notificationsEnabled: true });
-    await this.storage.setItem('notificationsEnabled', 'true');
+  }
+
+  public async disableNotifications() {
+    await this.storage.setItem('isSubscribeNotifications', 'false');
+    this.state.set({ notificationsEnabled: false });
+  }
+
+  public async enableNotificationsDuringSetup() {
+    await this.storage.setItem('notificationsEnabledDuringSetup', 'true');
+    this.state.set({ notificationsEnabledDuringSetup: true });
   }
 
   public async load() {
@@ -176,43 +184,22 @@ export class Tonkeeper {
     this.wallet.activityList.rehydrate();
   }
 
-  public async lock() {
-    this.securitySettings.locked = true;
-    return this.updateSecuritySettings();
+  public async lock() {}
+
+  public async unlock() {}
+
+  public showBalances() {}
+
+  public hideBalances() {}
+
+  public async enableBiometry() {
+    await this.storage.setItem('biometry_enabled', 'yes');
+    this.state.set({ biometryEnabled: true });
   }
 
-  public async unlock() {
-    this.securitySettings.locked = false;
-    return this.updateSecuritySettings();
-  }
-
-  public showBalances() {
-    this.securitySettings.hiddenBalances = false;
-    return this.updateSecuritySettings();
-  }
-
-  public hideBalances() {
-    this.securitySettings.hiddenBalances = true;
-    return this.updateSecuritySettings();
-  }
-
-  public enableBiometry() {
-    this.securitySettings.biometryEnabled = false;
-    // this.enableBiometry()
-  }
-
-  public disableBiometry() {
-    this.securitySettings.biometryEnabled = false;
-    for (let wallet of this.wallets) {
-      // this.vault.removeBiometry(wallet.pubkey);
-    }
-
-    // this.notifyUI();
-  }
-
-  private async updateSecuritySettings() {
-    // this.notifyUI();
-    return this.storage.set('securitySettings', this.securitySettings);
+  public async disableBiometry() {
+    await this.storage.removeItem('biometry_enabled');
+    this.state.set({ biometryEnabled: false });
   }
 
   public destroy() {

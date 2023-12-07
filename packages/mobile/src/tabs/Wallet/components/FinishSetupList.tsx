@@ -1,18 +1,15 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useMemo, useRef } from 'react';
 import { BiometryTypes } from '@tonkeeper/core/src/modules/BiometryModule';
+import { useTonkeeper } from '@tonkeeper/shared/hooks/useTonkeeper';
 import { useNewWallet } from '@tonkeeper/shared/hooks/useNewWallet';
 import { ToastSize } from '@tonkeeper/uikit/src/components/Toast';
-import { NotificationsStatus } from '$hooks/useNotificationStatus';
 import { useNotifications } from '$hooks/useNotifications';
 import { debugLog } from '$utils/debugLog';
-import messaging from '@react-native-firebase/messaging';
 import { t } from '@tonkeeper/shared/i18n';
 import { useDispatch } from 'react-redux';
 import { walletActions } from '$store/wallet';
-import { MainDB } from '../../../database/main';
 import { Switch } from '@tonkeeper/uikit';
 import { tk } from '@tonkeeper/shared/tonkeeper';
-import { useTonkeeper } from '@tonkeeper/shared/hooks/useTonkeeper';
 import {
   Button,
   Icon,
@@ -25,9 +22,15 @@ import {
 } from '@tonkeeper/uikit';
 
 export const FinishSetupList = memo(() => {
+  const tonkeepr = useTonkeeper();
   const wallet = useNewWallet();
 
-  if (wallet.isFinishedSetup) {
+  const isFinishedSetup =
+    wallet.lastBackupTimestamp !== null &&
+    tonkeepr.notificationsEnabled &&
+    tonkeepr.biometryEnabled;
+
+  if (wallet.hiddenFinishSetup || isFinishedSetup) {
     return null;
   }
 
@@ -40,7 +43,7 @@ export const FinishSetupList = memo(() => {
         {...(wallet.lastBackupTimestamp !== null && {
           rightContent: (
             <Button
-              onPress={() => tk.wallet.finishSetup()}
+              onPress={() => tk.wallet.hideFinishSetup()}
               color="secondary"
               size="header"
               title="Done"
@@ -71,17 +74,8 @@ export const FinishSetupList = memo(() => {
 });
 
 const BiometryListItem = () => {
-  const [biometryEnabled, setBiometryEnabled] = useState(false);
+  const tonkeeper = useTonkeeper();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    const init = async () => {
-      const isEnabled = await MainDB.isBiometryEnabled();
-      setBiometryEnabled(isEnabled);
-    };
-
-    init();
-  }, []);
 
   const biometryTitle = useMemo(() => {
     if (tk.biometry.type === BiometryTypes.FaceRecognition) {
@@ -105,18 +99,25 @@ const BiometryListItem = () => {
 
   const handleToggle = useCallback(() => {
     if (tk.biometry.isEnrolled) {
-      setBiometryEnabled(!biometryEnabled);
+      let fail = false;
+
       dispatch(
         walletActions.toggleBiometry({
-          isEnabled: !biometryEnabled,
-          onFail: () => setBiometryEnabled(biometryEnabled),
+          isEnabled: !tonkeeper.biometryEnabled,
+          onFail: () => {
+            fail = true;
+          },
         }),
       );
+
+      if (fail) {
+        return;
+      }
     } else {
       Toast.show('Enable biometrics in device settings');
       // Разрешите использование биометрии в настройках устройства
     }
-  }, [biometryEnabled, dispatch]);
+  }, [tonkeeper, dispatch]);
 
   if (tk.biometry.type === BiometryTypes.None) {
     return null;
@@ -128,7 +129,7 @@ const BiometryListItem = () => {
         <View pointerEvents="none">
           <Switch
             disabled={!tk.biometry.isEnrolled}
-            value={biometryEnabled}
+            value={tonkeeper.biometryEnabled}
             onChange={handleToggle}
           />
         </View>
@@ -147,24 +148,9 @@ const BiometryListItem = () => {
 };
 
 const NotificationsListItem = () => {
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const notifications = useNotifications();
   const isSwitchFrozen = useRef(false);
   const tonkeeper = useTonkeeper();
-
-  useEffect(() => {
-    const init = async () => {
-      const status = await messaging().hasPermission();
-
-      const isGratend =
-        status === NotificationsStatus.AUTHORIZED ||
-        status === NotificationsStatus.PROVISIONAL;
-
-      setNotificationsEnabled(isGratend);
-    };
-
-    init();
-  }, []);
 
   const handleToggle = useCallback(
     async (value: boolean) => {
@@ -174,20 +160,14 @@ const NotificationsListItem = () => {
 
       try {
         isSwitchFrozen.current = true;
-        setNotificationsEnabled(value);
-
-        const isSuccess = value
-          ? await notifications.subscribe()
-          : await notifications.unsubscribe();
-
-        if (!isSuccess) {
-          // Revert
-          setNotificationsEnabled(!value);
+        if (value) {
+          await notifications.subscribe();
+        } else {
+          await notifications.unsubscribe();
         }
       } catch (err) {
         Toast.fail(t('notifications_not_supported'), { size: ToastSize.Small });
         debugLog('[NotificationsSettings]', err);
-        setNotificationsEnabled(!value); // Revert
       } finally {
         isSwitchFrozen.current = false;
       }
@@ -195,13 +175,13 @@ const NotificationsListItem = () => {
     [notifications],
   );
 
-  if (tonkeeper.notificationsEnabled) {
+  if (tonkeeper.notificationsEnabledDuringSetup) {
     return null;
   }
 
   return (
     <List.Item
-      onPress={() => handleToggle(!notificationsEnabled)}
+      onPress={() => handleToggle(!tonkeeper.notificationsEnabled)}
       title={'Enable transaction notifications'}
       titleNumberOfLines={2}
       titleTextType="body2"
@@ -213,8 +193,8 @@ const NotificationsListItem = () => {
       rightContent={
         <View pointerEvents="none">
           <Switch
-            value={notificationsEnabled}
-            onChange={() => handleToggle(!notificationsEnabled)}
+            value={tonkeeper.notificationsEnabled}
+            onChange={() => handleToggle(!tonkeeper.notificationsEnabled)}
           />
         </View>
       }

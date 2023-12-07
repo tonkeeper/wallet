@@ -28,7 +28,7 @@ export const SetupNotificationsScreen = memo(() => {
       if (params.onNext) {
         params.onNext(async () => {
           await notifications.subscribe();
-          tk.enableNotifications();
+          tk.enableNotificationsDuringSetup();
           nav.replace('Tabs');
         });
       }

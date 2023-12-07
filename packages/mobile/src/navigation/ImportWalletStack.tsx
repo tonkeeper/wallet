@@ -101,7 +101,10 @@ const Step2 = () => {
               passscode,
               phrase: params.phrase,
               config: params.config,
-              onDone: onDone,
+              onDone: () => {
+                tk.wallet?.saveLastBackupTimestamp();
+                onDone();
+              },
               onFail: () => {
                 debugLog('Error import wallet');
               },
@@ -116,7 +119,6 @@ const Step2 = () => {
           } else {
             nav.navigate('/import/notifications', { onNext: goRestore });
           }
-          tk.wallet?.saveLastBackupTimestamp();
         }}
       />
     </Screen>
