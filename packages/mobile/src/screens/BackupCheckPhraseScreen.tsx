@@ -22,10 +22,20 @@ export const BackupCheckPhraseScreen = memo(() => {
   const inputs = useRecoveryPhraseInputs();
   const nav = useNavigation();
 
+  const isValid = useMemo(() => {
+    const word1 = values['0'];
+    const word2 = values['1'];
+    const word3 = values['2'];
+
+    return word1 === words[0].word && word2 === words[1].word && word3 === words[2].word;
+  }, [values, words]);
+
   const handleSubmit = useCallback(async () => {
-    await tk.wallet.saveLastBackupTimestamp();
-    nav.navigate('/backup');
-  }, [nav]);
+    if (isValid) {
+      await tk.wallet.saveLastBackupTimestamp();
+      nav.navigate('/backup');
+    }
+  }, [nav, isValid]);
 
   useEffect(() => {
     inputs.getRef(0)?.focus();
@@ -58,14 +68,6 @@ export const BackupCheckPhraseScreen = memo(() => {
     },
     [inputs, words],
   );
-
-  const isValid = useMemo(() => {
-    const word1 = values['0'];
-    const word2 = values['1'];
-    const word3 = values['2'];
-
-    return word1 === words[0].word && word2 === words[1].word && word3 === words[2].word;
-  }, [values, words]);
 
   return (
     <Screen>
@@ -115,7 +117,7 @@ export const BackupCheckPhraseScreen = memo(() => {
           ))}
         </View>
       </Screen.ScrollView>
-      <KeyboardAccessoryView style={styles.keyboardAccessory} gradient>
+      <KeyboardAccessoryView style={styles.keyboardAccessory} gradient safeArea>
         <Button
           title={t('backup_check.done_button')}
           onPress={handleSubmit}

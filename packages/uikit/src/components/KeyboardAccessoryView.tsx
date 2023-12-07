@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ViewStyle, StyleSheet, Keyboard } from 'react-native';
 import { StyleProp } from '@bogoslavskiy/react-native-steezy';
 import { isAndroid } from '../utils';
@@ -18,6 +19,7 @@ interface KeyboardAccessoryViewProps {
   style?: StyleProp<ViewStyle>;
   children: React.ReactNode;
   gradient?: boolean;
+  safeArea?: boolean;
 }
 
 export type KeyboardAccessoryViewRef = {
@@ -29,16 +31,23 @@ export const KeyboardAccessoryView = forwardRef<
   KeyboardAccessoryViewRef,
   KeyboardAccessoryViewProps
 >((props, ref) => {
-  const { children, style, visibleWithKeyboard, gradient } = props;
+  const { children, style, visibleWithKeyboard, gradient, safeArea } = props;
   const visible = useSharedValue(visibleWithKeyboard ? 0 : 1);
+  const { bottom: safeAreaBottom } = useSafeAreaInsets();
   const keyboard = useAnimatedKeyboard();
   const theme = useTheme();
 
   const heightStyle = useAnimatedStyle(
     () => ({
-      transform: [{ translateY: -keyboard.height.value }],
+      transform: [
+        {
+          translateY: safeArea
+            ? -Math.max(keyboard.height.value, safeAreaBottom)
+            : -keyboard.height.value,
+        },
+      ],
     }),
-    [keyboard.height],
+    [keyboard.height, safeAreaBottom],
   );
 
   const opacityStyle = useAnimatedStyle(
@@ -74,6 +83,10 @@ export const KeyboardAccessoryView = forwardRef<
     };
   }, []);
 
+  const indent = useAnimatedStyle(() => ({
+    paddingBottom: safeAreaBottom,
+  }));
+
   return (
     <Animated.View style={[styles.keyboardAccessory, heightStyle, opacityStyle]}>
       {gradient && (
@@ -106,5 +119,5 @@ const styles = StyleSheet.create({
   },
   content: {
     zIndex: 2,
-  }
+  },
 });
