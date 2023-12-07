@@ -23,6 +23,7 @@ export type TonkeeperState = {
   notificationsEnabledDuringSetup: Boolean;
   notificationsEnabled: boolean;
   biometryEnabled: boolean;
+  newOnboardWasShown: boolean;
 };
 
 export class Tonkeeper {
@@ -33,6 +34,7 @@ export class Tonkeeper {
     notificationsEnabledDuringSetup: false,
     notificationsEnabled: false,
     biometryEnabled: false,
+    newOnboardWasShown: false,
   });
 
   public biometry: BiometryModule;
@@ -65,6 +67,7 @@ export class Tonkeeper {
     bounceable = true,
   ) {
     try {
+      const newOnboardWasShown = await this.storage.getItem('newOnboardWasShown');
       const notificationsEnabledDuringSetup = await this.storage.getItem(
         'notificationsEnabledDuringSetup',
       );
@@ -74,6 +77,7 @@ export class Tonkeeper {
         notificationsEnabledDuringSetup: notificationsEnabledDuringSetup === 'true',
         notificationsEnabled: notificationsEnabled === 'true',
         biometryEnabled: biometryEnabled === 'yes',
+        newOnboardWasShown: newOnboardWasShown == 'true',
       });
 
       this.destroy();
@@ -120,6 +124,13 @@ export class Tonkeeper {
   }
 
   public tronStrorageKey = 'temp-tron-address';
+
+  public async saveNewOnboardWasShown() {
+    if (!this.state.data.newOnboardWasShown) {
+      await this.storage.setItem('newOnboardWasShown', 'true');
+      this.state.set({ newOnboardWasShown: true });
+    }
+  }
 
   public async enableNotifications() {
     await this.storage.setItem('isSubscribeNotifications', 'true');

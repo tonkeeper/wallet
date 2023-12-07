@@ -34,6 +34,10 @@ export const FinishSetupList = memo(() => {
     return null;
   }
 
+  if (!tonkeepr.newOnboardWasShown) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
       <List.Header

@@ -3,11 +3,16 @@ import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useLogoAnimation } from './animations/useLogoAnimation';
 import { useWindowDimensions } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
+import { tk } from '../../tonkeeper';
 
 export const StartScreen = memo(() => {
   const { logoPosStyle, shapesOpacityStyle } = useLogoAnimation();
   const dimensions = useWindowDimensions();
+
+  useEffect(() => {
+    tk.saveNewOnboardWasShown();
+  }, []);
 
   const origShapesWidth = 390;
   const origShapesHeight = 478;
