@@ -85,6 +85,7 @@ export const Security = memo(() => {
           <>
             <List>
               <List.Item
+                style={styles.listItem}
                 onPress={handleBiometry(true)}
                 title={t('security_use_biometry_switch', {
                   biometryType: isTouchId
@@ -109,11 +110,13 @@ export const Security = memo(() => {
         }
         <List>
           <List.Item
+            style={styles.listItem}
             rightContent={<Icon name="ic-lock-28" color="accentBlue" />}
             title={t('security_change_passcode')}
             onPress={handleChangePasscode}
           />
           <List.Item
+            style={styles.listItem}
             rightContent={<Icon name="ic-arrow-2-circlepath-28" color="accentBlue" />}
             title={t('security_reset_passcode')}
             onPress={handleResetPasscode}
@@ -126,8 +129,11 @@ export const Security = memo(() => {
 
 const styles = Steezy.create({
   listDescription: {
-    marginTop: -12,
+    marginTop: -4,
     paddingHorizontal: 16,
-    marginBottom: 16,
+    marginBottom: 32,
+  },
+  listItem: {
+    height: 56,
   },
 });

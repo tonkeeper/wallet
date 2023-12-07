@@ -4,7 +4,7 @@ import { useNewWallet } from '@tonkeeper/shared/hooks/useNewWallet';
 import { memo } from 'react';
 import { format } from 'date-fns';
 import { getLocale } from '$utils/date';
-import { t } from '@tonkeeper/shared/i18n';
+import { i18n, t } from '@tonkeeper/shared/i18n';
 
 export const BackupScreen = memo(() => {
   const wallet = useNewWallet();
@@ -13,7 +13,6 @@ export const BackupScreen = memo(() => {
   return (
     <Screen>
       <Screen.Header title={t('backup_screen.title')} />
-
       <Screen.ScrollView>
         <View style={styles.info}>
           <Text type="h3">{t('backup_screen.manual_title')}</Text>
@@ -39,9 +38,13 @@ export const BackupScreen = memo(() => {
                 title={t('backup_screen.manual_backup_on')}
                 onPress={() => nav.navigate('/backup-warning', { isBackupAgain: true })}
                 subtitle={t('backup_screen.last_backup_time', {
-                  time: format(wallet.lastBackupTimestamp, 'MMM dd yyyy, HH:mm', {
-                    locale: getLocale(),
-                  }),
+                  time: format(
+                    wallet.lastBackupTimestamp,
+                    i18n.locale === 'ru' ? 'd MMM yyyy, HH:mm' : 'MMM d yyyy, HH:mm',
+                    {
+                      locale: getLocale(),
+                    },
+                  ),
                 })}
                 leftContent={
                   <View style={styles.checkmarkIcon}>
@@ -53,7 +56,11 @@ export const BackupScreen = memo(() => {
             <List>
               <List.Item
                 title={t('backup_screen.show_recovery_phrase')}
-                rightContent={<Icon name="ic-key-28" color="accentBlue" />}
+                rightContent={
+                  <View style={styles.keyIcon}>
+                    <Icon name="ic-key-28" color="accentBlue" />
+                  </View>
+                }
                 onPress={() => nav.navigate('/backup-warning')}
               />
             </List>
@@ -66,6 +73,7 @@ export const BackupScreen = memo(() => {
 
 const styles = Steezy.create(({ colors }) => ({
   info: {
+    paddingTop: 14,
     marginHorizontal: 16,
     marginBottom: 14,
   },
@@ -79,5 +87,9 @@ const styles = Steezy.create(({ colors }) => ({
     borderRadius: 44 / 2,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  keyIcon: {
+    position: 'absolute',
+    right: 16,
   },
 }));

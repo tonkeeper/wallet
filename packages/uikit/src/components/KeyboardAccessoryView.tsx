@@ -15,6 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../styles';
 
 interface KeyboardAccessoryViewProps {
+  poinerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
   visibleWithKeyboard?: boolean;
   style?: StyleProp<ViewStyle>;
   children: React.ReactNode;
@@ -31,7 +32,8 @@ export const KeyboardAccessoryView = forwardRef<
   KeyboardAccessoryViewRef,
   KeyboardAccessoryViewProps
 >((props, ref) => {
-  const { children, style, visibleWithKeyboard, gradient, safeArea } = props;
+  const { children, style, visibleWithKeyboard, gradient, safeArea, poinerEvents } =
+    props;
   const visible = useSharedValue(visibleWithKeyboard ? 0 : 1);
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
   const keyboard = useAnimatedKeyboard();
@@ -88,7 +90,10 @@ export const KeyboardAccessoryView = forwardRef<
   }));
 
   return (
-    <Animated.View style={[styles.keyboardAccessory, heightStyle, opacityStyle]}>
+    <Animated.View
+      style={[styles.keyboardAccessory, heightStyle, opacityStyle]}
+      pointerEvents={poinerEvents}
+    >
       {gradient && (
         <LinearGradient
           style={styles.gradient}

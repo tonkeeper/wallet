@@ -219,7 +219,6 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
 
 const styles = Steezy.create(({ colors }) => ({
   info: {
-    marginTop: 24,
     paddingHorizontal: 32,
     paddingBottom: 16,
   },
@@ -327,6 +326,7 @@ const KeyboardHints = forwardRef<KeyboardHintsRef, KeyboardHintsProps>((props, r
 
   return (
     <KeyboardAccessoryView
+      poinerEvents={words.length ? 'auto' : 'none'}
       style={styles.hintsContainer}
       ref={accessoryViewRef}
       visibleWithKeyboard

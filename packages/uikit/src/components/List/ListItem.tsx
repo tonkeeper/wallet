@@ -26,6 +26,7 @@ interface ListItemProps {
   chevron?: boolean;
   chevronColor?: 'iconTertiary' | 'iconSecondary';
   leftContentStyle?: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
   leftContent?: React.ReactNode;
   navigate?: string;
   titleTextType?: TTextTypes;
@@ -46,6 +47,7 @@ export const ListItem = memo<ListItemProps>((props) => {
   const {
     onPress,
     navigate,
+    style,
     chevronColor = 'iconTertiary',
     titleTextType,
     pictureCorner = 'full',
@@ -93,7 +95,7 @@ export const ListItem = memo<ListItemProps>((props) => {
       onPress={handlePress}
     >
       <ListItemPressedContext.Provider value={isPressed}>
-        <View style={styles.container.static}>
+        <View style={[styles.container.static, style]}>
           {hasLeftContent && (
             <View style={[styles.leftContent, leftContentStyle]}>
               {props.leftContent}
@@ -172,6 +174,7 @@ export const ListItem = memo<ListItemProps>((props) => {
 
             {children}
           </View>
+          
           {rightContent}
           {props.chevron && <Icon name="ic-chevron-right-16" color={chevronColor} />}
         </View>

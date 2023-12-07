@@ -257,6 +257,7 @@ export const Settings: FC = () => {
         >
           <List>
             <List.Item
+              style={styles.listItem}
               title={
                 <View style={styles.listIndicator.static}>
                   <Text type="label1">{t('backup_screen.title')}</Text>
@@ -273,6 +274,7 @@ export const Settings: FC = () => {
               }
             />
             <List.Item
+              style={styles.listItem}
               rightContent={
                 <Icon
                   style={styles.icon.static}
@@ -290,6 +292,7 @@ export const Settings: FC = () => {
               <List>
                 {shouldShowTokensButton && (
                   <List.Item
+                    style={styles.listItem}
                     value={
                       <Icon
                         style={styles.icon.static}
@@ -303,6 +306,7 @@ export const Settings: FC = () => {
                 )}
                 {hasSubscriptions && (
                   <List.Item
+                    style={styles.listItem}
                     value={
                       <Icon
                         style={styles.icon.static}
@@ -316,6 +320,7 @@ export const Settings: FC = () => {
                 )}
                 {isAppearanceVisible && (
                   <List.Item
+                    style={styles.listItem}
                     value={
                       <Icon
                         style={styles.icon.static}
@@ -334,6 +339,7 @@ export const Settings: FC = () => {
           <List>
             {!!wallet && showNotifications && (
               <List.Item
+                style={styles.listItem}
                 value={<Icon color="accentPrimary" name={'ic-notification-28'} />}
                 title={
                   <View style={styles.notificationsTextContainer.static}>
@@ -347,6 +353,7 @@ export const Settings: FC = () => {
               />
             )}
             <List.Item
+              style={styles.listItem}
               value={
                 <S.SelectedCurrency>{fiatCurrency.toUpperCase()}</S.SelectedCurrency>
               }
@@ -362,6 +369,7 @@ export const Settings: FC = () => {
               renderItem={(item) => <Text type="label1">{item}</Text>}
             >
               <List.Item
+                style={styles.listItem}
                 value={
                   <Text type="label1" color="accentBlue">
                     {searchEngine}
@@ -371,6 +379,7 @@ export const Settings: FC = () => {
               />
             </PopupSelect>
             <List.Item
+              style={styles.listItem}
               onPress={handleSwitchLanguage}
               value={
                 <Text type="label1" color="accentBlue">
@@ -401,6 +410,7 @@ export const Settings: FC = () => {
                 )}
               >
                 <List.Item
+                  style={styles.listItem}
                   value={
                     <Text type="label1" color="accentBlue">
                       {SelectableVersionsConfig[version]?.label}
@@ -412,6 +422,7 @@ export const Settings: FC = () => {
             )}
             {wallet && flags.address_style_settings ? (
               <List.Item
+                style={styles.listItem}
                 value={
                   <Text type="label1" color="accentBlue">
                     EQ » UQ
@@ -426,6 +437,7 @@ export const Settings: FC = () => {
           <List>
             {!flags.disable_support_button ? (
               <List.Item
+                style={styles.listItem}
                 onPress={handleSupport}
                 value={
                   <Icon
@@ -438,6 +450,7 @@ export const Settings: FC = () => {
               />
             ) : null}
             <List.Item
+              style={styles.listItem}
               onPress={handleNews}
               value={
                 <Icon
@@ -450,6 +463,7 @@ export const Settings: FC = () => {
             />
             {!flags.disable_feedback_button ? (
               <List.Item
+                style={styles.listItem}
                 onPress={handleFeedback}
                 value={
                   <Icon
@@ -462,6 +476,7 @@ export const Settings: FC = () => {
               />
             ) : null}
             <List.Item
+              style={styles.listItem}
               onPress={handleRateApp}
               value={
                 <Icon
@@ -474,6 +489,7 @@ export const Settings: FC = () => {
             />
             {!!wallet && (
               <List.Item
+                style={styles.listItem}
                 onPress={handleDeleteAccount}
                 value={
                   <Icon
@@ -486,6 +502,7 @@ export const Settings: FC = () => {
               />
             )}
             <List.Item
+              style={styles.listItem}
               onPress={handleLegal}
               value={
                 <Icon
@@ -566,5 +583,8 @@ const styles = Steezy.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  listItem: {
+    height: 56,
   },
 });
