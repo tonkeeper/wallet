@@ -15,7 +15,7 @@ const getI18n = () => {
 
   const i18n = new I18n(translations);
 
-  i18n.locale = 'ru';///detectLocale(SupportedLocales, 'en');
+  i18n.locale = detectLocale(SupportedLocales, 'en');
   i18n.enableFallback = true;
 
   i18n.pluralization.register('ru', pluralizeForRussian);
