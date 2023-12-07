@@ -87,11 +87,11 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
       }
     }
 
-    // if (hasFailed) {
-    //   // Toast.fail(t('import_wallet_wrong_words_err'));
-    //   setRestoring(false);
-    //   return;
-    // }
+    if (hasFailed) {
+      // Toast.fail(t('import_wallet_wrong_words_err'));
+      setRestoring(false);
+      return;
+    }
 
     const phrase = Object.values(values).join(' ');
     setRestoring(false);
