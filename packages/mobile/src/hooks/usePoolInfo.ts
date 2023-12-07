@@ -118,10 +118,10 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
 
   const handleTopUpPress = useCallback(() => {
     if (wallet) {
-      const canDeposit = new BigNumber(tonBalance).isGreaterThanOrEqualTo(2.1);
-      if (!canDeposit) {
+      const canDeposit = new BigNumber(tonBalance).isGreaterThanOrEqualTo(2.2);
+      if (pool.implementation === PoolImplementationType.LiquidTF && !canDeposit) {
         return openInsufficientFundsModal({
-          totalAmount: Ton.toNano(2.1),
+          totalAmount: Ton.toNano(2.2),
           balance: Ton.toNano(tonBalance),
           isStakingDeposit: true,
         });
@@ -134,7 +134,7 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
     } else {
       openRequireWalletModal();
     }
-  }, [nav, pool.address, tonBalance, wallet]);
+  }, [nav, pool.address, pool.implementation, tonBalance, wallet]);
 
   const handleWithdrawalPress = useCallback(() => {
     if (!hasDeposit) {
