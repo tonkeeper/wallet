@@ -11,7 +11,6 @@ import { debugLog } from '$utils/debugLog';
 import { openSetupBiometry, openSetupWalletDone } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { CreatePinForm } from '$shared/components';
-import { useAddressUpdateStore } from '$store';
 
 export const CreatePin: FC<CreatePinProps> = () => {
   const dispatch = useDispatch();
