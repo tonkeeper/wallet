@@ -63,11 +63,11 @@ export const SetupNotificationsScreen = memo(() => {
             <Icon name="ic-notification-128" color="accentBlue" />
           </View>
           <Text type="h2" textAlign="center">
-            Get instant{'\n'}notifications
+            {t('setup_notifications.title')}
           </Text>
           <Spacer y={4} />
           <Text type="body1" textAlign="center" color="textSecondary">
-            {t('setup_notifications_caption')}
+            {t('setup_notifications.caption')}
           </Text>
         </View>
         <View style={styles.button}>

@@ -984,5 +984,64 @@
   "yesterday" : "Yesterday",
   "all_regions": "All Regions",
   "region_nokyc": "Neutral Waters",
-  "nokyc": "no KYC"
+  "nokyc": "no KYC",
+  "buy_ton_title": "Buy TON",
+  "buy_ton_caption": "Instantly with a bank card",
+  "start_screen": {
+    "caption": "Create a new wallet or add an existing one",
+    "create_wallet_button": "Create New Wallet",
+    "import_wallet_button": "Import Existing Wallet"
+  },
+  "setup_passcode": {
+    "create_passcode": "Create passcode",
+    "reenter_passcode": "Re-enter passcode"
+  },
+  "setup_notifications": {
+    "title": "Get instant \n notifications",
+    "caption": "Get notified when you receive TON, tokens and NFTs"
+  },
+  "setup_recovery_phrase": {
+    "title": "Enter recovery phrase",
+    "caption": "When you created this wallet, you got a 24-word recovery phrase. Enter it to restore access to your wallet."
+  },
+  "finish_setup": {
+    "header_title": "Finish Setup",
+    "use_faceid": "Use Face ID to approve transactions",
+    "use_touchid": "Use Touch ID to approve transactions",
+    "use_face_recognition": "Use Face Recognition to approve transactions",
+    "use_fingerprint": "Use Fingerprint to approve transactions",
+    "enable_notifications": "Enable transaction notifications",
+    "enable_notifications_error": "Enable biometrics in device settings",
+    "backup": "Back up the wallet recovery phrase",
+    "done_buttom": "Done"
+  },
+  "backup_screen": {
+    "title": "Backup",
+    "manual_title": "Manual",
+    "manual_caption": "Back up your wallet manually by writing down the recovery phrase.",
+    "manual_button": "Back Up Manually",
+    "manual_backup_on": "Manual Backup On",
+    "last_backup_time": "Last backup %{time}",
+    "show_recovery_phrase": "Show Recovery Phrase"
+  },
+  "backup_warning": {
+    "title": "Attention",
+    "caption": "Please read the following carefully before viewing your recovery phrase.",
+    "p1": "Never enter your recovery phrase any other place than Tonkeeper to access your wallet.",
+    "p2": "Tonkeeper Support never asks for a recovery phrase.",
+    "p3": "Everybody with your recovery phrase can access your wallet.",
+    "continue_button": "Continue",
+    "cancel_button": "Cancel"
+  },
+  "recovery_phrase": {
+    "title": "Recovery Phrase",
+    "caption": "Write down these words with their numbers and store them in a safe place.",
+    "check_button": "Check Backup",
+    "copy_button": "Copy"
+  },
+  "backup_check": {
+    "title": "Backup Check",
+    "caption": "Let's see if you've got everything right. Enter words %{one}, %{two}, and %{three}.",
+    "done_button": "Done"
+  }
 }

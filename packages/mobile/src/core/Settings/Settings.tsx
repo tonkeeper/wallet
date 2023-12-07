@@ -259,7 +259,7 @@ export const Settings: FC = () => {
             <List.Item
               title={
                 <View style={styles.listIndicator.static}>
-                  <Text type="label1">Backup</Text>
+                  <Text type="label1">{t('backup_screen.title')}</Text>
                   {newWallet.lastBackupTimestamp === null && <List.Indicator />}
                 </View>
               }

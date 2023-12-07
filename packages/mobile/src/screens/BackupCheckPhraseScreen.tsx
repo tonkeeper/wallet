@@ -4,6 +4,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from '@tonkeeper/router/src/imperative';
 import { useNavigation } from '@tonkeeper/router';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { t } from '@tonkeeper/shared/i18n';
 import {
   Screen,
   Steezy,
@@ -76,12 +77,15 @@ export const BackupCheckPhraseScreen = memo(() => {
       >
         <Screen.HeaderIndent />
         <Text type="h2" textAlign="center">
-          Backup Check
+          {t('backup_check.title')}
         </Text>
         <Spacer y={4} />
         <Text type="body1" color="textSecondary" textAlign="center">
-          Let's see if you've got everything right. Enter words {words[0].index + 1},{' '}
-          {words[1].index + 1}, and {words[2].index + 1}.
+          {t('backup_check.caption', {
+            one: words[0].index + 1,
+            two: words[1].index + 1,
+            three: words[2].index + 1,
+          })}
         </Text>
         <Spacer y={16} />
         <View style={styles.inputsContainer}>
@@ -112,7 +116,11 @@ export const BackupCheckPhraseScreen = memo(() => {
         </View>
       </Screen.ScrollView>
       <KeyboardAccessoryView style={styles.keyboardAccessory} gradient>
-        <Button onPress={handleSubmit} title="Done" disabled={!isValid} />
+        <Button
+          title={t('backup_check.done_button')}
+          onPress={handleSubmit}
+          disabled={!isValid}
+        />
       </KeyboardAccessoryView>
     </Screen>
   );

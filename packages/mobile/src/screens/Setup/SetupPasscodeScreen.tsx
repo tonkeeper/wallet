@@ -194,7 +194,11 @@ export const SetupPasscodeScreen = memo<SetupPasscodePageProps>((props) => {
         </View>
         <View style={stepStyle}>
           <PasscodeInput
-            label={validateOldPin ? t('create_pin_new_title') : 'Create passcode'}
+            label={
+              validateOldPin
+                ? t('create_pin_new_title')
+                : t('setup_passcode.create_passcode')
+            }
             value={value1}
           />
         </View>

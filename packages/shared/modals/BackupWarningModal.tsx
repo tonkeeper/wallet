@@ -1,9 +1,9 @@
 import { delay } from '@tonkeeper/core';
 import { useUnlockVault } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/useUnlockVault';
 import { useNavigation } from '@tonkeeper/router';
-import { useParams } from '@tonkeeper/router/src/imperative';
 import { Button, Modal, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
 import { memo, useCallback } from 'react';
+import { t } from '../i18n';
 
 interface BackupWarningModalProps {
   isBackupAgain?: boolean;
@@ -31,7 +31,7 @@ export const BackupWarningModal = memo<BackupWarningModalProps>((props) => {
       <Modal.Content safeArea>
         <View style={styles.container}>
           <Text type="h2" textAlign="center">
-            Attention
+            {t('backup_warning.title')}
           </Text>
           <Spacer y={4} />
           <Text
@@ -40,32 +40,35 @@ export const BackupWarningModal = memo<BackupWarningModalProps>((props) => {
             color="textSecondary"
             textAlign="center"
           >
-            Please read the following carefully before viewing your recovery phrase.
+            {t('backup_warning.caption')}
           </Text>
           <View style={styles.content}>
             <View style={styles.paragraph}>
               <View style={styles.dot} />
               <Text type="body2" style={styles.text.static}>
-                Never enter your recovery phrase any other place than Tonkeeper to access
-                your wallet.
+                {t('backup_warning.p1')}
               </Text>
             </View>
             <View style={styles.paragraph}>
               <View style={styles.dot} />
               <Text type="body2" style={styles.text.static}>
-                Tonkeeper Support never asks for a recovery phrase.
+                {t('backup_warning.p2')}
               </Text>
             </View>
             <View style={styles.paragraph}>
               <View style={styles.dot} />
               <Text type="body2" style={styles.text.static}>
-                Everybody with your recovery phrase can access your wallet.
+                {t('backup_warning.p3')}
               </Text>
             </View>
           </View>
-          <Button title="Continue" onPress={handleContinue} />
+          <Button title={t('backup_warning.continue_button')} onPress={handleContinue} />
           <Spacer y={16} />
-          <Button title="Cancel" color="secondary" onPress={() => nav.goBack()} />
+          <Button
+            title={t('backup_warning.cancel_button')}
+            color="secondary"
+            onPress={() => nav.goBack()}
+          />
           <Spacer y={16} />
         </View>
       </Modal.Content>
@@ -103,5 +106,5 @@ const styles = Steezy.create(({ colors }) => ({
   },
   text: {
     paddingRight: 28,
-  }
+  },
 }));

@@ -5,6 +5,7 @@ import { View, StyleSheet } from 'react-native';
 import { memo, useCallback, useMemo } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { useNewWallet } from '@tonkeeper/shared/hooks/useNewWallet';
+import { t } from '@tonkeeper/shared/i18n';
 
 function getRandIndexes(length: number, indexes: number[] = []) {
   if (indexes.length === length) {
@@ -38,11 +39,11 @@ export const BackupPhraseScreen = memo(() => {
       <Screen.Header />
       <View style={styles.container}>
         <Text type="h2" textAlign="center">
-          Recovery Phrase
+          {t('recovery_phrase.title')}
         </Text>
         <Spacer y={4} />
         <Text type="body1" color="textSecondary" textAlign="center">
-          Write down these words with their numbers and store them in a safe place.
+          {t('recovery_phrase.caption')}
         </Text>
         <Spacer y={16} />
 
@@ -74,10 +75,14 @@ export const BackupPhraseScreen = memo(() => {
 
       <View style={[styles.buttonContainer, { paddingBottom: safeArea.bottom + 32 }]}>
         {wallet.lastBackupTimestamp !== null && !params.isBackupAgain ? (
-          <Button title="Copy" color="secondary" onPress={copyText(params.phrase)} />
+          <Button
+            title={t('recovery_phrase.copy_button')}
+            onPress={copyText(params.phrase)}
+            color="secondary"
+          />
         ) : (
           <Button
-            title="Check Backup"
+            title={t('recovery_phrase.check_button')}
             onPress={() =>
               nav.navigate('/backup-check-phrase', { words: getRandomWords() })
             }

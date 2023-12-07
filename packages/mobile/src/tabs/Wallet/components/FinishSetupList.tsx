@@ -41,7 +41,7 @@ export const FinishSetupList = memo(() => {
   return (
     <View style={styles.container}>
       <List.Header
-        title="Finish Setup"
+        title={t('finish_setup.header_title')}
         titleTextType="label1"
         marginHorizontal
         {...(wallet.lastBackupTimestamp !== null && {
@@ -62,7 +62,7 @@ export const FinishSetupList = memo(() => {
           <List.Item
             chevron
             navigate="/backup"
-            title="Back up the wallet recovery phrase"
+            title={t('finish_setup.backup')}
             titleNumberOfLines={2}
             titleTextType="body2"
             leftContent={
@@ -84,12 +84,10 @@ const BiometryListItem = () => {
   const biometryTitle = useMemo(() => {
     if (tk.biometry.type === BiometryTypes.FaceRecognition) {
       return isIOS
-        ? 'Use Face ID to approve transactions'
-        : 'Use Face Recognition to approve transactions';
+        ? t('finish_setup.use_faceid')
+        : t('finish_setup.use_face_recognition');
     } else if (tk.biometry.type === BiometryTypes.Fingerprint) {
-      return isIOS
-        ? 'Use Touch ID to approve transactions'
-        : 'Use Fingerprint to approve transactions';
+      return isIOS ? t('finish_setup.use_touchid') : t('finish_setup.use_fingerprint');
     }
   }, []);
 
@@ -118,8 +116,7 @@ const BiometryListItem = () => {
         return;
       }
     } else {
-      Toast.show('Enable biometrics in device settings');
-      // Разрешите использование биометрии в настройках устройства
+      Toast.show(t('finish_setup.enable_notifications_error'));
     }
   }, [tonkeeper, dispatch]);
 
@@ -186,7 +183,7 @@ const NotificationsListItem = () => {
   return (
     <List.Item
       onPress={() => handleToggle(!tonkeeper.notificationsEnabled)}
-      title={'Enable transaction notifications'}
+      title={t('finish_setup.enable_notifications')}
       titleNumberOfLines={2}
       titleTextType="body2"
       leftContent={

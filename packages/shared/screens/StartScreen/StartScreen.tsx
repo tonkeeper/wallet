@@ -5,6 +5,7 @@ import { useWindowDimensions } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { memo, useEffect } from 'react';
 import { tk } from '../../tonkeeper';
+import { t } from '../../i18n';
 
 export const StartScreen = memo(() => {
   const { logoPosStyle, shapesOpacityStyle } = useLogoAnimation();
@@ -20,7 +21,6 @@ export const StartScreen = memo(() => {
   const logoShapesPosX = origShapesWidth / 2 - dimensions.width / 2;
   const logoShapesPosY = origShapesHeight / 2 - (origShapesHeight * ratio) / 2;
 
-
   return (
     <Screen>
       <View style={{ flex: 1 }}>
@@ -35,7 +35,12 @@ export const StartScreen = memo(() => {
               /> */}
             </Animated.View>
           </View>
-          <Animated.View style={[styles.absolute.static, { transform: [{ translateX: -logoShapesPosX }] }]}>
+          <Animated.View
+            style={[
+              styles.absolute.static,
+              { transform: [{ translateX: -logoShapesPosX }] },
+            ]}
+          >
             <LogoShapes />
           </Animated.View>
         </View>
@@ -45,15 +50,19 @@ export const StartScreen = memo(() => {
           </Text>
           <Spacer y={4} />
           <Text type="body1" color="textSecondary" textAlign="center">
-            Create a new wallet or add {'\n'}an existing one
+            {t('start_screen.caption')}
           </Text>
         </View>
       </View>
       <View style={styles.content}>
         <View style={styles.buttons}>
-          <Button title="Create New Wallet" navigate="/create" />
+          <Button title={t('start_screen.create_wallet_button')} navigate="/create" />
           <Spacer y={16} />
-          <Button color="secondary" title="Import Existing Wallet" navigate="/import" />
+          <Button
+            title={t('start_screen.import_wallet_button')}
+            color="secondary"
+            navigate="/import"
+          />
         </View>
       </View>
     </Screen>

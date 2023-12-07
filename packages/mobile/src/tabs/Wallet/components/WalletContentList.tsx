@@ -171,8 +171,8 @@ const BuyTonListItem = () => {
       <List.Item
         chevron
         onPress={() => nav.openModal('Exchange')}
-        title="Buy TON"
-        subtitle={'Instantly with a bank card'}
+        title={t('buy_ton_title')}
+        subtitle={t('buy_ton_caption')}
         leftContent={
           <View style={styles.buyTonPicture}>
             <Icon name="ic-creditcard-28" />

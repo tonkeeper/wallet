@@ -29,6 +29,7 @@ import Animated, {
   useAnimatedStyle,
   interpolate,
 } from 'react-native-reanimated';
+import { t } from '../../../i18n';
 
 const inputsCount = Array(24).fill(0);
 
@@ -163,14 +164,13 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
           {/* <TapGestureHandler numberOfTaps={5} onActivated={handleShowConfigInput}> */}
           <Pressable onPress={handleShowConfigInput}>
             <Text type="h2" textAlign="center">
-              Enter recovery phrase
+              {t('setup_recovery_phrase.title')}
             </Text>
           </Pressable>
           {/* </TapGestureHandler> */}
           <Spacer y={4} />
           <Text type="body1" textAlign="center" color="textSecondary">
-            When you created this wallet, you got a 24-word recovery phrase. Enter it to
-            restore access to your wallet.
+            {t('setup_recovery_phrase.caption')}
           </Text>
         </View>
         <View style={styles.content}>
