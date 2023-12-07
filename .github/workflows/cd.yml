@@ -26,7 +26,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
     
       - name: Install yarn dependencies
-        run: yarn
+        uses: nick-fields/retry@v2
+        with:
+          timeout_seconds: 15
+          max_attempts: 3
+          command: yarn
 
       - name: Install pods dependencies
         run: yarn pods
@@ -93,7 +97,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
     
       - name: Install yarn dependencies
-        run: yarn
+        uses: nick-fields/retry@v2
+        with:
+          timeout_seconds: 15
+          max_attempts: 3
+          command: yarn
 
       - name: Set up Ruby and Gemfile dependencies
         uses: ruby/setup-ruby@v1
@@ -160,7 +168,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
     
       - name: Install yarn dependencies
-        run: yarn
+        uses: nick-fields/retry@v2
+        with:
+          timeout_seconds: 15
+          max_attempts: 3
+          command: yarn
 
       - name: Set up Ruby and Gemfile dependencies
         uses: ruby/setup-ruby@v1
