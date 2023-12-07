@@ -227,7 +227,7 @@ export class Wallet {
 
   public async logout() {
     await this.storage.removeItem('lastBackupTimestamp');
-    await this.storage.removeItem('isFinishedSetup');
+    await this.storage.removeItem('hiddenFinishSetup');
     await this.storage.removeItem('notificationsEnabledDuringSetup');
   }
 }
