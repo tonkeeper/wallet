@@ -34,23 +34,31 @@ export const BackupWarningModal = memo<BackupWarningModalProps>((props) => {
             Attention
           </Text>
           <Spacer y={4} />
-          <Text type="body1" color="textSecondary" textAlign="center">
+          <Text
+            style={styles.desk.static}
+            type="body1"
+            color="textSecondary"
+            textAlign="center"
+          >
             Please read the following carefully before viewing your recovery phrase.
           </Text>
           <View style={styles.content}>
             <View style={styles.paragraph}>
-              <Text type="body2">
+              <View style={styles.dot} />
+              <Text type="body2" style={styles.text.static}>
                 Never enter your recovery phrase any other place than Tonkeeper to access
                 your wallet.
               </Text>
             </View>
             <View style={styles.paragraph}>
-              <Text type="body2">
+              <View style={styles.dot} />
+              <Text type="body2" style={styles.text.static}>
                 Tonkeeper Support never asks for a recovery phrase.
               </Text>
             </View>
             <View style={styles.paragraph}>
-              <Text type="body2">
+              <View style={styles.dot} />
+              <Text type="body2" style={styles.text.static}>
                 Everybody with your recovery phrase can access your wallet.
               </Text>
             </View>
@@ -71,14 +79,29 @@ const styles = Steezy.create(({ colors }) => ({
     marginTop: 48,
   },
   content: {
+    marginTop: 38,
     marginVertical: 32,
     backgroundColor: colors.backgroundContent,
     borderRadius: 16,
     paddingVertical: 12,
   },
   paragraph: {
-    marginLeft: 12,
-    marginRight: 16,
+    marginLeft: 21,
     marginVertical: 8,
+    flexDirection: 'row',
   },
+  desk: {
+    paddingHorizontal: 16,
+  },
+  dot: {
+    backgroundColor: colors.textPrimary,
+    width: 2.8,
+    height: 2.8,
+    borderRadius: 2.8 / 2,
+    marginTop: 9.8,
+    marginRight: 9.5,
+  },
+  text: {
+    paddingRight: 28,
+  }
 }));
