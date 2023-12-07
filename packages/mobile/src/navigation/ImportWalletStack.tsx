@@ -42,7 +42,7 @@ const Step1 = () => {
 
   return (
     <Screen>
-      <Screen.Header />
+      <Screen.Header gradient />
       <SetupRecoveryPhrasePage
         onNext={(phrase, config) => {
           nav.navigate('/import/passcode', { phrase, config });

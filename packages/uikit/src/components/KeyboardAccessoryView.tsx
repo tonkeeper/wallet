@@ -10,11 +10,14 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../styles';
 
 interface KeyboardAccessoryViewProps {
   visibleWithKeyboard?: boolean;
   style?: StyleProp<ViewStyle>;
   children: React.ReactNode;
+  gradient?: boolean;
 }
 
 export type KeyboardAccessoryViewRef = {
@@ -26,9 +29,10 @@ export const KeyboardAccessoryView = forwardRef<
   KeyboardAccessoryViewRef,
   KeyboardAccessoryViewProps
 >((props, ref) => {
-  const { children, style, visibleWithKeyboard } = props;
+  const { children, style, visibleWithKeyboard, gradient } = props;
   const visible = useSharedValue(visibleWithKeyboard ? 0 : 1);
   const keyboard = useAnimatedKeyboard();
+  const theme = useTheme();
 
   const heightStyle = useAnimatedStyle(
     () => ({
@@ -72,7 +76,14 @@ export const KeyboardAccessoryView = forwardRef<
 
   return (
     <Animated.View style={[styles.keyboardAccessory, heightStyle, opacityStyle]}>
-      <View style={style}>{children}</View>
+      {gradient && (
+        <LinearGradient
+          style={styles.gradient}
+          colors={['rgba(21, 28, 41, 0)', theme.backgroundPage]}
+          locations={[0, 1]}
+        />
+      )}
+      <View style={[styles.content, style]}>{children}</View>
     </Animated.View>
   );
 });
@@ -85,4 +96,15 @@ const styles = StyleSheet.create({
     bottom: 0,
     zIndex: 3,
   },
+  gradient: {
+    zIndex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
+  content: {
+    zIndex: 2,
+  }
 });

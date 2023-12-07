@@ -68,12 +68,13 @@ export const BackupCheckPhraseScreen = memo(() => {
 
   return (
     <Screen>
-      <Screen.Header />
+      <Screen.Header gradient />
       <Screen.ScrollView
         style={styles.scrollViewContnet.static}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="none"
       >
+        <Screen.HeaderIndent />
         <Text type="h2" textAlign="center">
           Backup Check
         </Text>
@@ -110,14 +111,14 @@ export const BackupCheckPhraseScreen = memo(() => {
           ))}
         </View>
       </Screen.ScrollView>
-      <KeyboardAccessoryView style={styles.keyboardAccessory} height={104}>
+      <KeyboardAccessoryView style={styles.keyboardAccessory} gradient>
         <Button onPress={handleSubmit} title="Done" disabled={!isValid} />
       </KeyboardAccessoryView>
     </Screen>
   );
 });
 
-const styles = Steezy.create(({ colors }) => ({
+const styles = Steezy.create({
   input: {
     paddingLeft: 50,
   },
@@ -131,6 +132,5 @@ const styles = Steezy.create(({ colors }) => ({
     paddingHorizontal: 32,
     paddingBottom: 32,
     paddingTop: 16,
-    backgroundColor: colors.backgroundPage,
   },
-}));
+});

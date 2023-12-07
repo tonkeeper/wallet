@@ -24,6 +24,11 @@ import {
   useRef,
   useState,
 } from 'react';
+import Animated, {
+  useAnimatedKeyboard,
+  useAnimatedStyle,
+  interpolate,
+} from 'react-native-reanimated';
 
 const inputsCount = Array(24).fill(0);
 
@@ -138,12 +143,13 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
     }
   }, []);
 
-  // const keyboardSpacerStyle = useAnimatedStyle(
-  //   () => ({
-  //     height: keyboard.height.value - safeArea.bottom + 32 + (hints.length ? 52 : 0),
-  //   }),
-  //   [keyboard.height, hints.length],
-  // );
+  const keyboard = useAnimatedKeyboard();
+  const keyboardSpacerStyle = useAnimatedStyle(
+    () => ({
+      height: interpolate(keyboard.height.value, [0, 100], [safeArea.bottom, 0]),
+    }),
+    [keyboard.height, safeArea.bottom],
+  );
 
   return (
     <>
@@ -152,6 +158,7 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
         keyboardShouldPersistTaps="handled"
         keyboardAware
       >
+        <Screen.HeaderIndent />
         <View style={styles.info}>
           {/* <TapGestureHandler numberOfTaps={5} onActivated={handleShowConfigInput}> */}
           <Pressable onPress={handleShowConfigInput}>
@@ -200,9 +207,10 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
             />
           ))}
         </View>
-        <View style={[styles.footer, { paddingBottom: safeArea.bottom }]}>
+        <View style={styles.footer}>
           <Button onPress={handleContinue} title="Continue" />
         </View>
+        <Animated.View style={keyboardSpacerStyle} />
       </Screen.ScrollView>
       <KeyboardHints ref={hintsRef} onHintPress={handleHintPress} />
     </>

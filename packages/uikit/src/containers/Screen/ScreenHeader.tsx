@@ -36,12 +36,10 @@ export interface ScreenHeaderProps {
   children?: React.ReactNode;
   onBackPress?: () => void;
   onGoBack?: () => void;
-  showCloseButton?: boolean;
 }
 
 export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
   const {
-    showCloseButton,
     backButtonPosition = 'left',
     backButtonIcon = 'back',
     hideBackButton,
@@ -68,7 +66,8 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
   const backButtonIconName = backButtonIcons[backButtonIcon];
 
   const borderStyle = useAnimatedStyle(() => ({
-    borderBottomColor: scrollY.value > 0 ? theme.separatorCommon : 'transparent',
+    borderBottomColor:
+      scrollY.value > 0 && !gradient ? theme.separatorCommon : 'transparent',
   }));
 
   const backButtonAnimatedStyle = useAnimatedStyle(
@@ -146,7 +145,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
 
   return (
     <React.Fragment>
-      <View style={{ paddingTop: headerHeight }} />
+      {!gradient && <View style={{ paddingTop: headerHeight }} />}
       <Animated.View
         style={[
           { height: headerHeight },

@@ -19,11 +19,13 @@ export function useRecoveryPhraseInputs() {
   const deferredScrollToInput = useRef<(() => void) | null>(null);
   const keyboard = useReanimatedKeyboardHeight({
     enableOnAndroid: true,
-    onWillShow: () => {
-      if (deferredScrollToInput.current) {
-        deferredScrollToInput.current();
-        deferredScrollToInput.current = null;
-      }
+    onWillShow: ({ duration }) => {
+      setTimeout(() => {
+        if (deferredScrollToInput.current) {
+          deferredScrollToInput.current();
+          deferredScrollToInput.current = null;
+        }
+      }, duration + 30);
     },
   });
 
@@ -132,15 +134,7 @@ export function useRecoveryPhraseInputs() {
     [],
   );
 
-  const keyboardSpacerStyle = useAnimatedStyle(
-    () => ({
-      height: keyboard.height.value - safeArea.bottom + 32,
-    }),
-    [keyboard.height],
-  );
-
   return {
-    keyboardSpacerStyle,
     currentIndex: focusedIndex,
     refs: refs.current,
     scrollViewRef,
