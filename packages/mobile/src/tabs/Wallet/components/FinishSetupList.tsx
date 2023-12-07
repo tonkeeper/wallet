@@ -50,7 +50,7 @@ export const FinishSetupList = memo(() => {
               onPress={() => tk.wallet.hideFinishSetup()}
               color="secondary"
               size="header"
-              title="Done"
+              title={t('global_done')}
             />
           ),
         })}

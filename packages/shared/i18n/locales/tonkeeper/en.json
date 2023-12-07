@@ -1043,5 +1043,6 @@
     "title": "Backup Check",
     "caption": "Let's see if you've got everything right. Enter words %{one}, %{two}, and %{three}.",
     "done_button": "Done"
-  }
+  },
+  "global_done": "Done"
 }
