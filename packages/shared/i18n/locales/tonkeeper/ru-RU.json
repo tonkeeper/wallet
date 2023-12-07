@@ -562,7 +562,7 @@
       "insufficient_balance" : "Недостаточно средств",
       "less_than_min" : "Минимум %{minAmount} TON",
       "liquid_jetton_note" : "Отправка токена ликвидности tsTON",
-      "max" : "Max",
+      "max" : "MAX",
       "recipient_label" : "Кому:",
       "remaining" : "Доступно: %{amount}",
       "title" : "Сумма"
@@ -706,7 +706,7 @@
       "note" : "Стейкинг основан на сторонних смарт-контрактах. Tonkeeper не несёт ответственность за стабильность и результат.",
       "pendingDeposit" : "Будет зачислено",
       "pendingWithdraw" : "Ожидают вывод",
-      "pendingWithdrawDesc" : "по окончанию цикла",
+      "pendingWithdrawDesc" : "после окончания цикла",
       "pool_address" : {
         "label" : "Адрес пула"
       },
@@ -785,7 +785,7 @@
       "message" : "Пожалуйста, оставьте минимум {{amount}} TON на вашем балансе.",
       "title" : "У вас не останется для вывода"
     },
-    "withdrawal_request" : "Запрос на вывод"
+    "withdrawal_request" : "Вывод"
   },
   "subscription_back_to_merchant_button" : "Вернуться",
   "subscription_back_to_merchant_caption" : "Транзакция обрабатывается. Ваша подписка будет активна через пару минут.",
