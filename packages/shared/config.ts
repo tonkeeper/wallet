@@ -32,7 +32,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   batteryHost: 'https://battery.tonkeeper.com',
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
   disable_battery: false,
-  disable_battery_iap_module: Platform.OS === 'android',
+  disable_battery_iap_module: true,
   disable_battery_send: true,
 };
 

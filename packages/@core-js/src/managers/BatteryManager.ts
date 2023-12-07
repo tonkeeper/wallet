@@ -1,4 +1,5 @@
 import { WalletContext, WalletIdentity } from '../Wallet';
+import { MessageConsequences } from '../TonAPI';
 
 export class BatteryManager {
   constructor(private ctx: WalletContext, private identity: WalletIdentity) {}
@@ -14,8 +15,18 @@ export class BatteryManager {
           'X-TonConnect-Auth': this.identity.tonProof,
         },
       });
-
       return data.balance;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  public async refetchBalance() {
+    try {
+      await this.ctx.queryClient.refetchQueries({
+        refetchPage: (_, index) => index === 0,
+        queryKey: this.cacheKey,
+      });
     } catch (err) {
       return null;
     }
@@ -47,7 +58,7 @@ export class BatteryManager {
       );
 
       if (data.success) {
-        this.getBalance();
+        this.refetchBalance();
       }
 
       return data;
@@ -67,7 +78,7 @@ export class BatteryManager {
         },
       );
 
-      await this.getBalance();
+      await this.refetchBalance();
 
       return data.transactions;
     } catch (err) {
@@ -86,7 +97,7 @@ export class BatteryManager {
         },
       );
 
-      await this.getBalance();
+      await this.refetchBalance();
 
       return data.purchases;
     } catch (err) {
@@ -99,16 +110,31 @@ export class BatteryManager {
       await this.ctx.batteryapi.sendMessage(
         { boc },
         {
-          format: 'text',
           headers: {
             'X-TonConnect-Auth': this.identity.tonProof,
           },
         },
       );
 
-      await this.getBalance();
+      await this.refetchBalance();
     } catch (err) {
       console.log('[battery sendMessage]', err);
+      throw new Error(err);
+    }
+  }
+
+  public async emulate(boc: string): Promise<MessageConsequences> {
+    try {
+      return await this.ctx.batteryapi.emulate.emulateMessageToWallet(
+        { boc },
+        {
+          headers: {
+            'X-TonConnect-Auth': this.identity.tonProof,
+          },
+        },
+      );
+    } catch (err) {
+      console.log('[battery emulate]', err);
       throw new Error(err);
     }
   }

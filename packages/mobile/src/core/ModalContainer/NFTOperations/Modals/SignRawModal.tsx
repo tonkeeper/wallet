@@ -34,7 +34,10 @@ import { fiatCurrencySelector } from '$store/main';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
 import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
 import { Buffer } from 'buffer';
-import { sendBocWithBattery } from '@tonkeeper/shared/utils/blockchain';
+import {
+  emulateWithBattery,
+  sendBocWithBattery,
+} from '@tonkeeper/shared/utils/blockchain';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -250,7 +253,7 @@ export const openSignRawModal = async (
         seqno: (await tonapi.wallet.getAccountSeqno(tk.wallet.address.ton.raw)).seqno,
         secretKey: Buffer.alloc(64),
       });
-      consequences = await tonapi.wallet.emulateMessageToWallet({ boc });
+      consequences = await emulateWithBattery({ boc });
 
       Toast.hide();
     } catch (err) {

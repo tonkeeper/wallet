@@ -498,6 +498,29 @@ export class BatteryGenerated<SecurityDataType extends unknown> {
       ...params,
     });
 
+  emulate = {
+    /**
+     * @description Emulate sending message to blockchain
+     *
+     * @tags Emulation
+     * @name EmulateMessageToWallet
+     * @request POST:/wallet/emulate
+     */
+    emulateMessageToWallet: (
+      data: {
+        /** @example "te6ccgECBQEAARUAAkWIAWTtae+KgtbrX26Bep8JSq8lFLfGOoyGR/xwdjfvpvEaHg" */
+        boc: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<any, Error>({
+        path: `/wallet/emulate`,
+        method: 'POST',
+        body: data,
+        format: 'json',
+        ...params,
+      }),
+  };
   android = {
     /**
      * @description verify an in-app purchase

@@ -1046,15 +1046,23 @@
   "region_nokyc": "Neutral Waters",
   "nokyc": "no KYC",
   "battery": {
+    "screen_title": "Battery",
+    "promocode": {
+      "button": "Recharge by Promo Code",
+      "placeholder": "Code",
+      "title": "Promo Code",
+      "apply": "Apply"
+    },
+    "settings": "Battery",
     "title": {
       "empty": "Battery for gas fees is almost empty",
       "almost_empty": "Battery for gas fees is half full",
       "full": "Battery for gas fees is full"
     },
     "description": {
-      "empty": "You have enough charge battery for more than 5 transactions.",
-      "almost_empty": "You have enough charge battery for more than 300 transactions.",
-      "full": "You have enough charge battery for more than 700 transactions."
+      "empty": "You have enough charge battery for more than {{cnt}} transactions.",
+      "almost_empty": "You have enough charge battery for more than {{cnt}} transactions.",
+      "full": "You have enough charge battery for more than {{cnt}} transactions."
     },
     "packages": {
       "title": {

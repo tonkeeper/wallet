@@ -16,8 +16,7 @@ import { getServerConfig } from '$shared/constants';
 import { SendApi, Configuration as ConfigurationV1 } from 'tonapi-sdk-js';
 import { Tonapi } from '$libs/Tonapi';
 import { Configuration, NFTApi } from '@tonkeeper/core/src/legacy';
-import { config } from '@tonkeeper/shared/config';
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { sendBocWithBattery } from '@tonkeeper/shared/utils/blockchain';
 
 const { NftItem } = TonWeb.token.nft;
 
@@ -193,15 +192,7 @@ export class NFTOperations {
         const queryMsg = await methods.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
 
-        if (config.get('disable_battery') || config.get('disable_battery_send')) {
-          this.sendApi.sendBoc({ sendBocRequest: { boc } });
-        } else {
-          try {
-            await tk.wallet.battery.sendMessage(boc);
-          } catch (err) {
-            this.sendApi.sendBoc({ sendBocRequest: { boc } });
-          }
-        }
+        await sendBocWithBattery(boc);
 
         onDone?.(boc);
       },

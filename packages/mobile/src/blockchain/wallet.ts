@@ -31,7 +31,10 @@ import { SendApi, Configuration as V1Configuration } from 'tonapi-sdk-js';
 import { Address, Cell, internal, toNano } from '@ton/core';
 import { config } from '@tonkeeper/shared/config';
 import { tk } from '@tonkeeper/shared/tonkeeper';
-import { sendBocWithBattery } from '@tonkeeper/shared/utils/blockchain';
+import {
+  emulateWithBattery,
+  sendBocWithBattery,
+} from '@tonkeeper/shared/utils/blockchain';
 
 const TonWeb = require('tonweb');
 
@@ -340,9 +343,8 @@ export class TonWallet {
   }
 
   private async calcFee(boc: string): Promise<BigNumber> {
-    const estimatedTx = await this.sendApi.estimateTx({ sendBocRequest: { boc } });
-
-    return new BigNumber(estimatedTx.fee.total.toString());
+    const estimatedTx = await emulateWithBattery(boc);
+    return new BigNumber(estimatedTx.event.extra).multipliedBy(-1);
   }
 
   async isInactiveAddress(address: string): Promise<boolean> {

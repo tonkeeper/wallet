@@ -34,7 +34,7 @@ import { ProvidersWithNavigation } from './Providers';
 import { ReceiveModal } from '@tonkeeper/shared/modals/ReceiveModal';
 import { ReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
 import { EditAppConfigModal } from '$core/DevMenu/DevConfigScreen';
-import { RefillBatteryModal } from '../../../shared/modals/RefillBatteryModal/RefillBatteryModal';
+import { RefillBatteryModal } from '../../../shared/modals/RefillBatteryModal';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 

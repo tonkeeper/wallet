@@ -17,6 +17,7 @@ import { Notifications } from '$core/Notifications/Notifications';
 import { JettonsList } from '$core/JettonsList/JettonsList';
 import { ChooseCurrencyScreen } from '$core/ChooseCurrencyScreen';
 import { DevConfigScreen } from '$core/DevMenu/DevConfigScreen';
+import { RefillBattery } from '$core/RefillBattery/RefillBattery';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
@@ -55,6 +56,10 @@ export const SettingsStack: FC = () => {
             backgroundColor: theme.colors.backgroundPrimary,
           },
         }}
+      />
+      <Stack.Screen
+        name={SettingsStackRouteNames.RefillBattery}
+        component={RefillBattery}
       />
       <Stack.Screen
         name={SettingsStackRouteNames.Notifications}

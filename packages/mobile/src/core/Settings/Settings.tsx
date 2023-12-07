@@ -18,10 +18,10 @@ import {
   MainStackRouteNames,
   openDeleteAccountDone,
   openDevMenu,
-  openJettonsListSettingsStack,
   openLegalDocuments,
   openManageTokens,
   openNotifications,
+  openRefillBattery,
   openSecurity,
   openSecurityMigration,
   openSubscriptions,
@@ -58,7 +58,6 @@ import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 import { Address } from '@tonkeeper/core';
 import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
 import { config } from '@tonkeeper/shared/config';
-import { openRefillBatteryModal } from '@tonkeeper/shared/modals/RefillBatteryModal';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -210,7 +209,7 @@ export const Settings: FC = () => {
   }, []);
 
   const handleBattery = useCallback(() => {
-    openRefillBatteryModal();
+    openRefillBattery();
   }, []);
 
   const handleDeleteAccount = useCallback(() => {
