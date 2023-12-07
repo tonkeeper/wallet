@@ -28,7 +28,7 @@ jobs:
       - name: Install yarn dependencies
         uses: nick-fields/retry@v2
         with:
-          timeout_seconds: 15
+          timeout_minutes: 10
           max_attempts: 3
           command: yarn
 
@@ -99,7 +99,7 @@ jobs:
       - name: Install yarn dependencies
         uses: nick-fields/retry@v2
         with:
-          timeout_seconds: 15
+          timeout_minutes: 10
           max_attempts: 3
           command: yarn
 
@@ -170,7 +170,7 @@ jobs:
       - name: Install yarn dependencies
         uses: nick-fields/retry@v2
         with:
-          timeout_seconds: 15
+          timeout_minutes: 10
           max_attempts: 3
           command: yarn
 
