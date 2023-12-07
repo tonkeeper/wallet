@@ -73,6 +73,7 @@ import {
 import {
   batchActions,
   Toast,
+  useAddressUpdateStore,
   useConnectedAppsStore,
   useNotificationsStore,
   useStakingStore,
@@ -161,6 +162,9 @@ function* createWalletWorker(action: CreateWalletAction) {
 
     const wallet = new Wallet(getWalletName(), vault);
     yield call([wallet, 'save']);
+
+    // Dismiss addressUpdate banner for new wallets. It's not necessary to show it for newcomers
+    useAddressUpdateStore.getState().actions.dismiss();
 
     yield put(
       batchActions(
