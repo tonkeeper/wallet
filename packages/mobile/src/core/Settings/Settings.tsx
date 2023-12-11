@@ -58,6 +58,7 @@ import { Address } from '@tonkeeper/core';
 import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { useNewWallet } from '@tonkeeper/shared/hooks/useNewWallet';
+import { useTonkeeper } from '@tonkeeper/shared/hooks/useTonkeeper';
 
 export const Settings: FC = () => {
   const newWallet = useNewWallet();
@@ -76,6 +77,7 @@ export const Settings: FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
   const notificationsBadge = useNotificationsBadge();
   const notifications = useNotifications();
+  const tonkeeper = useTonkeeper();
 
   const fiatCurrency = useSelector(fiatCurrencySelector);
   const dispatch = useDispatch();
@@ -261,7 +263,8 @@ export const Settings: FC = () => {
               title={
                 <View style={styles.listIndicator.static}>
                   <Text type="label1">{t('backup_screen.title')}</Text>
-                  {newWallet.lastBackupTimestamp === null && <List.Indicator />}
+                  {newWallet.lastBackupTimestamp === null &&
+                    tonkeeper.newOnboardWasShown && <List.Indicator />}
                 </View>
               }
               navigate="/backup"
