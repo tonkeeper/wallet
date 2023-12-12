@@ -32,7 +32,7 @@ export const SetupPasscodePage = memo<SetupPasscodePageProps>((props) => {
   const validateOldPin = false;
   const onPinCreated = async (passcode: string) => {
     onButtonPress(passcode);
-    await delay(500);
+    await delay(900);
     pinRef.current?.clearState();
     setValue1('');
     setValue2('');
