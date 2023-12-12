@@ -82,7 +82,7 @@ const styles = Steezy.create(({ colors }) => ({
     marginTop: 48,
   },
   content: {
-    marginTop: 38,
+    marginTop: 32,
     marginVertical: 32,
     backgroundColor: colors.backgroundContent,
     borderRadius: 16,
