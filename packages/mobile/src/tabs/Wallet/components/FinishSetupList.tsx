@@ -129,7 +129,7 @@ const BiometryListItem = () => {
       }
       title={biometryTitle}
       onPress={handleToggle}
-      titleNumberOfLines={2}
+      titleNumberOfLines={3}
       titleTextType="body2"
       leftContent={
         <View style={styles.iconContainer}>

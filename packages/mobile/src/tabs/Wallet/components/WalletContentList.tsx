@@ -173,6 +173,7 @@ const BuyTonListItem = () => {
         onPress={() => nav.openModal('Exchange')}
         title={t('buy_ton_title')}
         subtitle={t('buy_ton_caption')}
+        subtitleNumberOfLines={2}
         leftContent={
           <View style={styles.buyTonPicture}>
             <Icon name="ic-creditcard-28" />
