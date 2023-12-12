@@ -21,6 +21,7 @@ interface KeyboardAccessoryViewProps {
   children: React.ReactNode;
   gradient?: boolean;
   safeArea?: boolean;
+  height: number;
 }
 
 export type KeyboardAccessoryViewRef = {
@@ -32,24 +33,33 @@ export const KeyboardAccessoryView = forwardRef<
   KeyboardAccessoryViewRef,
   KeyboardAccessoryViewProps
 >((props, ref) => {
-  const { children, style, visibleWithKeyboard, gradient, safeArea, poinerEvents } =
-    props;
+  const {
+    children,
+    style,
+    visibleWithKeyboard,
+    gradient,
+    safeArea,
+    poinerEvents,
+    height,
+  } = props;
+
   const visible = useSharedValue(visibleWithKeyboard ? 0 : 1);
-  const { bottom: safeAreaBottom } = useSafeAreaInsets();
-  const keyboard = useAnimatedKeyboard();
+  const safeAreaInsets = useSafeAreaInsets();
+  const keyboard = useAnimatedKeyboard(); // android reanimated bug; plus 4px
   const theme = useTheme();
 
   const heightStyle = useAnimatedStyle(
     () => ({
       transform: [
         {
-          translateY: safeArea
-            ? -Math.max(keyboard.height.value, safeAreaBottom)
-            : -keyboard.height.value,
+          translateY:
+            safeArea && !isAndroid
+              ? -Math.max(keyboard.height.value, safeAreaInsets.bottom)
+              : -(keyboard.height.value + (isAndroid ? safeAreaInsets.bottom : 0)),
         },
       ],
     }),
-    [keyboard.height, safeAreaBottom],
+    [keyboard.height, safeAreaInsets, height],
   );
 
   const opacityStyle = useAnimatedStyle(
@@ -84,10 +94,6 @@ export const KeyboardAccessoryView = forwardRef<
       keyboardWillHideSub.remove();
     };
   }, []);
-
-  const indent = useAnimatedStyle(() => ({
-    paddingBottom: safeAreaBottom,
-  }));
 
   return (
     <Animated.View

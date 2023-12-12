@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
     textAlignVertical: isAndroid ? 'top' : 'auto',
     textAlign: 'right',
     width: 28,
+    height: 24,
     left: 10,
   },
 });

@@ -9,7 +9,7 @@ import {
   InputRef,
 } from '@tonkeeper/uikit';
 
-export function useRecoveryPhraseInputs() {
+export function useRecoveryPhraseInputs(shiftScroll?: number) {
   const positions = useRef<{ [key in string]: number }>({});
   const refs = useRef<{ [key in string]: InputRef }>({});
   const scrollViewRef = useRef<ScreenScrollViewRef>(null);
@@ -71,15 +71,18 @@ export function useRecoveryPhraseInputs() {
     }
   }, []);
 
-  const scrollToInput = useCallback((index: number) => {
-    const inputPos = getPosition(index);
-    if (inputPos !== undefined) {
-      scrollViewRef.current?.scrollTo({
-        y: inputPos - 24,
-        animated: true,
-      });
-    }
-  }, []);
+  const scrollToInput = useCallback(
+    (index: number) => {
+      const inputPos = getPosition(index);
+      if (inputPos !== undefined) {
+        scrollViewRef.current?.scrollTo({
+          y: inputPos + (shiftScroll ?? 24),
+          animated: true,
+        });
+      }
+    },
+    [shiftScroll],
+  );
 
   const onFocus = useCallback(
     (index: number) => () => {

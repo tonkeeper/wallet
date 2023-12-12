@@ -402,6 +402,7 @@ const styles = Steezy.create(({ colors, corners }) => ({
     borderRadius: corners.medium,
     borderWidth: InputBorderWidth,
     flexDirection: 'row',
+    alignItems: 'center',
     position: 'relative',
   },
   indentBottom: {
@@ -442,9 +443,10 @@ const styles = Steezy.create(({ colors, corners }) => ({
     ? inputPaddings.withoutLabel.android
     : inputPaddings.withoutLabel.other,
   leftContent: {
-    paddingTop: 16 - InputBorderWidth,
     position: 'absolute',
     top: 0,
+    bottom: 0,
+    justifyContent: 'center'
   },
   invalidBg: {
     position: 'absolute',

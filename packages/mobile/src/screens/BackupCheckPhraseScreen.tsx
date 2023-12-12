@@ -1,11 +1,14 @@
 import { useRecoveryPhraseInputs } from '@tonkeeper/shared/hooks/useRecoveryPhraseInputs';
 import { InputNumberPrefix } from '@tonkeeper/shared/components/InputNumberPrefix';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useParams } from '@tonkeeper/router/src/imperative';
 import { useNavigation } from '@tonkeeper/router';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { t } from '@tonkeeper/shared/i18n';
 import {
+  KeyboardAccessoryView,
+  isAndroid,
   Screen,
   Steezy,
   View,
@@ -13,13 +16,14 @@ import {
   Input,
   Spacer,
   Button,
-  KeyboardAccessoryView,
 } from '@tonkeeper/uikit';
+import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
 
 export const BackupCheckPhraseScreen = memo(() => {
   const { words } = useParams<{ words: { index: number; word: string }[] }>();
   const [values, setValues] = useState<Record<string, string>>({});
-  const inputs = useRecoveryPhraseInputs();
+  const inputs = useRecoveryPhraseInputs(32);
+  const safeArea = useSafeAreaInsets();
   const nav = useNavigation();
 
   const isValid = useMemo(() => {
@@ -60,6 +64,7 @@ export const BackupCheckPhraseScreen = memo(() => {
 
   const onBlur = useCallback(
     (index: number) => () => {
+      inputs.onBlur(index)();
       const input = inputs.getRef(index);
       const value = input?.getValue().trim();
       if (value && value.length > 0 && words[index].word !== value) {
@@ -69,10 +74,19 @@ export const BackupCheckPhraseScreen = memo(() => {
     [inputs, words],
   );
 
+  const keyboard = useAnimatedKeyboard();
+  const keyboardSpacerStyle = useAnimatedStyle(
+    () => ({
+      height: keyboard.height.value + 104 + (isAndroid ? safeArea.bottom : 0),
+    }),
+    [keyboard.height, safeArea.bottom],
+  );
+
   return (
     <Screen>
       <Screen.Header gradient />
       <Screen.ScrollView
+        ref={inputs.scrollViewRef}
         style={styles.scrollViewContnet.static}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="none"
@@ -116,8 +130,14 @@ export const BackupCheckPhraseScreen = memo(() => {
             </View>
           ))}
         </View>
+        <Animated.View style={keyboardSpacerStyle} />
       </Screen.ScrollView>
-      <KeyboardAccessoryView style={styles.keyboardAccessory} gradient safeArea>
+      <KeyboardAccessoryView
+        style={styles.keyboardAccessory}
+        height={104}
+        gradient
+        safeArea
+      >
         <Button
           title={t('backup_check.done_button')}
           onPress={handleSubmit}

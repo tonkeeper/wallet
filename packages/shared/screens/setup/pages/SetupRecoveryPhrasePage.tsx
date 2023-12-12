@@ -14,6 +14,7 @@ import {
   Text,
   View,
   Input,
+  isAndroid,
 } from '@tonkeeper/uikit';
 import {
   forwardRef,
@@ -103,7 +104,9 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
       if (index < 23) {
         const hint = hintsRef.current?.getRelevantWord();
         if (hint) {
-          inputs.getRef(index)?.setValue(hint);
+          const curInput = inputs.getRef(index);
+          curInput.setValue(hint);
+          curInput.markAsValid();
         }
         inputs.getRef(index + 1)?.focus();
       } else {
@@ -139,15 +142,25 @@ export const SetupRecoveryPhrasePage = memo<SetupPhrasePageProps>((props) => {
 
   const handleHintPress = useCallback((hint: string) => {
     if (hint) {
-      inputs.getRef(inputs.currentIndex.current)?.setValue(hint);
-      inputs.getRef(inputs.currentIndex.current + 1)?.focus();
+      const nextInput = inputs.getRef(inputs.currentIndex.current + 1);
+      const curInput = inputs.getRef(inputs.currentIndex.current);
+      curInput.setValue(hint);
+      curInput.markAsValid();
+
+      if (nextInput) {
+        nextInput.focus();
+      } else {
+        curInput.blur?.();
+      }
     }
   }, []);
 
   const keyboard = useAnimatedKeyboard();
   const keyboardSpacerStyle = useAnimatedStyle(
     () => ({
-      height: interpolate(keyboard.height.value, [0, 100], [safeArea.bottom, 0]),
+      height: isAndroid
+        ? safeArea.bottom
+        : interpolate(keyboard.height.value, [0, 100], [safeArea.bottom, 0]),
     }),
     [keyboard.height, safeArea.bottom],
   );
@@ -243,7 +256,8 @@ const styles = Steezy.create(({ colors }) => ({
     padding: 8,
   },
   hint: {
-    padding: 8,
+    justifyContent: 'center',
+    height: 36,
     width: 113.33,
     borderRadius: 18,
   },
@@ -330,6 +344,7 @@ const KeyboardHints = forwardRef<KeyboardHintsRef, KeyboardHintsProps>((props, r
       style={styles.hintsContainer}
       ref={accessoryViewRef}
       visibleWithKeyboard
+      height={52}
     >
       <Pressable onPress={handleHintPress(words[1])}>
         <View style={styles.hint}>
