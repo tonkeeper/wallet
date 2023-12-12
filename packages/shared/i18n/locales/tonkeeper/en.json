@@ -988,7 +988,7 @@
   "buy_ton_title": "Buy TON",
   "buy_ton_caption": "Instantly with a bank card",
   "start_screen": {
-    "caption": "Create a new wallet or add an existing one",
+    "caption": "Create a new wallet or add \nan existing one",
     "create_wallet_button": "Create New Wallet",
     "import_wallet_button": "Import Existing Wallet"
   },

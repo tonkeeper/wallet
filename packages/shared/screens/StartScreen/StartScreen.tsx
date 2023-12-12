@@ -17,14 +17,15 @@ export const StartScreen = memo(() => {
 
   const origShapesWidth = 560;
   const origShapesHeight = 494;
-  const ratio = dimensions.width / origShapesWidth;
+  const origShapesScreenHeight = 844;
+  const ratioHeight = dimensions.height / origShapesScreenHeight;
   const logoShapesPosX = origShapesWidth / 2 - dimensions.width / 2;
-  const logoShapesPosY = origShapesHeight / 2 - (origShapesHeight * ratio) / 2;
+  const logoShapesPosY = origShapesHeight / 2 - (origShapesHeight * ratioHeight) / 2;
 
   return (
     <Screen>
       <View style={{ flex: 1 }}>
-        <View style={{ height: origShapesHeight }}>
+        <View style={{ height: origShapesHeight - logoShapesPosY }}>
           <View style={styles.logo}>
             <Animated.View style={logoPosStyle}>
               {/* <Icon
@@ -38,7 +39,12 @@ export const StartScreen = memo(() => {
           <Animated.View
             style={[
               styles.absolute.static,
-              { transform: [{ translateX: -logoShapesPosX }] },
+              {
+                transform: [
+                  { translateX: -logoShapesPosX },
+                  { translateY: -logoShapesPosY },
+                ],
+              },
             ]}
           >
             <LogoShapes />
@@ -94,9 +100,9 @@ const styles = Steezy.create(({ safeArea }) => ({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 24 + 3,
+
     paddingHorizontal: 32,
-    paddingBottom: 32,
+    paddingBottom: 8,
   },
   buttons: {
     paddingHorizontal: 32,
