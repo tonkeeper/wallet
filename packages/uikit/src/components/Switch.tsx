@@ -1,6 +1,7 @@
 import { Switch as NativeSwitch } from 'react-native';
 import { useTheme } from '../styles';
 import { memo } from 'react';
+import { isAndroid } from '../utils';
 
 interface SwitchProps {
   onChange: (value: boolean) => void;
@@ -14,6 +15,7 @@ export const Switch = memo<SwitchProps>((props) => {
 
   return (
     <NativeSwitch
+      {...(isAndroid && { thumbColor: '#FFF' })}
       trackColor={{ true: theme.accentBlue }}
       onValueChange={onChange}
       disabled={disabled}
