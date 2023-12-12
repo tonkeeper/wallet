@@ -27,7 +27,7 @@ export const CreateWalletStack = memo(() => {
       }}
     >
       <Stack.Screen name="/create/passcode" component={Step1} />
-      <Stack.Screen name="/create/notifications" component={Step2} />
+      <Stack.Screen name="/create/notifications" component={SetupNotificationsScreen} />
     </Stack.Navigator>
   );
 });
@@ -67,16 +67,5 @@ const Step1 = () => {
         }}
       />
     </Screen>
-  );
-};
-
-const Step2 = () => {
-  const nav = useNavigation();
-
-  return (
-    <SetupNotificationsScreen
-      onEnable={() => nav.replace('Tabs')}
-      onSkip={() => nav.replace('Tabs')}
-    />
   );
 };

@@ -18,6 +18,7 @@ import { useNavigation } from '@tonkeeper/router';
 
 export const SetupNotificationsScreen = memo(() => {
   const params = useParams<{ onNext?: (onDone: () => void) => void }>();
+  const [leterLoading, setLaterLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const notifications = useNotifications();
   const nav = useNavigation();
@@ -27,10 +28,14 @@ export const SetupNotificationsScreen = memo(() => {
       setLoading(true);
       if (params.onNext) {
         params.onNext(async () => {
-          await notifications.subscribe();
-          tk.enableNotificationsDuringSetup();
+          const isSubscribe = await notifications.subscribe();
+          if (isSubscribe) {
+            tk.enableNotificationsDuringSetup();
+          }
           nav.replace('Tabs');
         });
+      } else {
+        Toast.fail('No next function');
       }
     } catch (err) {
       setLoading(false);
@@ -46,10 +51,16 @@ export const SetupNotificationsScreen = memo(() => {
           <View style={styles.headerRightButton}>
             <Button
               title={t('later')}
+              loading={leterLoading}
               onPress={() => {
-                params.onNext?.(() => {
-                  nav.replace('Tabs');
-                });
+                if (params.onNext) {
+                  setLaterLoading(true);
+                  params.onNext(() => {
+                    nav.replace('Tabs');
+                  });
+                } else {
+                  Toast.fail('No next function');
+                }
               }}
               size="header"
               color="secondary"
