@@ -1,25 +1,17 @@
-import { memo, useCallback, useMemo, useRef } from 'react';
+import { NotificationsStatus, useNotificationStatus } from '$hooks/useNotificationStatus';
+import { Button, Icon, IconNames, List, Steezy, View, isIOS } from '@tonkeeper/uikit';
 import { BiometryTypes } from '@tonkeeper/core/src/modules/BiometryModule';
 import { useTonkeeper } from '@tonkeeper/shared/hooks/useTonkeeper';
 import { useNewWallet } from '@tonkeeper/shared/hooks/useNewWallet';
-import { ToastSize } from '@tonkeeper/uikit/src/components/Toast';
 import { useNotifications } from '$hooks/useNotifications';
+import { memo, useCallback, useMemo, useRef } from 'react';
+import { tk } from '@tonkeeper/shared/tonkeeper';
+import { walletActions } from '$store/wallet';
 import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
 import { useDispatch } from 'react-redux';
-import { walletActions } from '$store/wallet';
 import { Switch } from '@tonkeeper/uikit';
-import { tk } from '@tonkeeper/shared/tonkeeper';
-import {
-  Button,
-  Icon,
-  IconNames,
-  List,
-  Steezy,
-  Toast,
-  View,
-  isIOS,
-} from '@tonkeeper/uikit';
+import { Linking } from 'react-native';
 
 export const FinishSetupList = memo(() => {
   const tonkeepr = useTonkeeper();
@@ -86,7 +78,7 @@ const BiometryListItem = () => {
       return isIOS
         ? t('finish_setup.use_faceid')
         : t('finish_setup.use_face_recognition');
-    } else if (tk.biometry.type === BiometryTypes.Fingerprint) {
+    } else {
       return isIOS ? t('finish_setup.use_touchid') : t('finish_setup.use_fingerprint');
     }
   }, []);
@@ -94,7 +86,7 @@ const BiometryListItem = () => {
   const biometryIcon = useMemo(() => {
     if (tk.biometry.type === BiometryTypes.FaceRecognition) {
       return isIOS ? 'ic-faceid-28' : 'ic-faceid-android-28';
-    } else if (tk.biometry.type === BiometryTypes.Fingerprint) {
+    } else {
       return isIOS ? 'ic-fingerprint-28' : 'ic-fingerprint-android-28';
     }
   }, []);
@@ -116,7 +108,7 @@ const BiometryListItem = () => {
         return;
       }
     } else {
-      Toast.show(t('finish_setup.enable_notifications_error'));
+      Linking.openSettings();
     }
   }, [tonkeeper, dispatch]);
 
@@ -149,12 +141,20 @@ const BiometryListItem = () => {
 };
 
 const NotificationsListItem = () => {
+  const notificationStatus = useNotificationStatus();
   const notifications = useNotifications();
   const isSwitchFrozen = useRef(false);
   const tonkeeper = useTonkeeper();
 
+  const isDisableNotifications = notificationStatus === NotificationsStatus.DENIED;
+
   const handleToggle = useCallback(
     async (value: boolean) => {
+      if (isDisableNotifications) {
+        Linking.openSettings();
+        return;
+      }
+
       if (isSwitchFrozen.current) {
         return;
       }
@@ -167,13 +167,14 @@ const NotificationsListItem = () => {
           await notifications.unsubscribe();
         }
       } catch (err) {
-        Toast.fail(t('notifications_not_supported'), { size: ToastSize.Small });
+        // Toast.fail(t('notifications_not_supported'), { size: ToastSize.Small });
+        Linking.openSettings();
         debugLog('[NotificationsSettings]', err);
       } finally {
         isSwitchFrozen.current = false;
       }
     },
-    [notifications],
+    [notifications, isDisableNotifications],
   );
 
   if (tonkeeper.notificationsEnabledDuringSetup) {
@@ -194,8 +195,9 @@ const NotificationsListItem = () => {
       rightContent={
         <View pointerEvents="none">
           <Switch
-            value={tonkeeper.notificationsEnabled}
+            value={tonkeeper.notificationsEnabled && !isDisableNotifications}
             onChange={() => handleToggle(!tonkeeper.notificationsEnabled)}
+            disabled={isDisableNotifications}
           />
         </View>
       }
