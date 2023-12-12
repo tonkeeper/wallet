@@ -174,6 +174,7 @@ function* createWalletWorker(action: CreateWalletAction) {
       ),
     );
 
+    yield call(useStakingStore.getState().actions.fetchPools, true);
     yield put(walletActions.loadBalances());
     // yield put(eventsActions.loadEvents({ isReplace: true }));
     yield put(nftsActions.loadNFTs({ isReplace: true }));
