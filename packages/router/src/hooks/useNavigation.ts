@@ -32,6 +32,10 @@ export const useNavigation = () => {
     nav.dispatch(StackActions.replace(path, params));
   };
 
+  const pop = (level: number) => {
+    nav.dispatch(StackActions.pop(level));
+  };
+
   const navigate = throttle((path: string, params?: any) => {
     const find = sheetRoutes.find((el) => el.path === path);
     if (find) {
@@ -119,6 +123,7 @@ export const useNavigation = () => {
     reset,
     closeModal,
     push,
+    pop,
     go,
   };
 };

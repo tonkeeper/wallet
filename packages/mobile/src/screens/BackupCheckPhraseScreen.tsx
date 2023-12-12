@@ -37,7 +37,7 @@ export const BackupCheckPhraseScreen = memo(() => {
   const handleSubmit = useCallback(async () => {
     if (isValid) {
       await tk.wallet.saveLastBackupTimestamp();
-      nav.navigate('/backup');
+      nav.pop(2);
     }
   }, [nav, isValid]);
 
