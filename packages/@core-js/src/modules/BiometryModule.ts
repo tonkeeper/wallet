@@ -1,8 +1,9 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 
 export enum BiometryTypes {
-  Fingerprint = 'Fingerprint',
   FaceRecognition = 'FaceRecognition',
+  Fingerprint = 'Fingerprint',
+  BothTypes = 'BothTypes',
   None = 'None',
 }
 
@@ -18,9 +19,19 @@ export class BiometryModule {
     const authTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
     this.isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
-    if (authTypes.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
+    const hasFingerprint = authTypes.includes(
+      LocalAuthentication.AuthenticationType.FINGERPRINT,
+    );
+
+    const hasFaceRecognition = authTypes.includes(
+      LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION,
+    );
+
+    if (hasFingerprint && hasFaceRecognition) {
+      this.type = BiometryTypes.BothTypes;
+    } else if (hasFaceRecognition) {
       this.type = BiometryTypes.FaceRecognition;
-    } else if (authTypes.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
+    } else if (hasFingerprint) {
       this.type = BiometryTypes.Fingerprint;
     } else {
       this.type = BiometryTypes.None;

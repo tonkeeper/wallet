@@ -1010,6 +1010,7 @@
     "use_touchid": "Use Touch ID to approve transactions",
     "use_face_recognition": "Use Face Recognition to approve transactions",
     "use_fingerprint": "Use Fingerprint to approve transactions",
+    "use_biomtrics": "Use biometric to approve transactions",
     "enable_notifications": "Enable transaction notifications",
     "enable_notifications_error": "Enable biometrics in device settings",
     "backup": "Back up the wallet recovery phrase",

@@ -98,7 +98,7 @@ export class Tonkeeper {
             },
           );
 
-          this.biometry.init();
+          await this.biometry.init();
           this.rehydrate();
           this.preload();
         }

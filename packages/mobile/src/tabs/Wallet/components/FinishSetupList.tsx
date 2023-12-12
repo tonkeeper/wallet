@@ -73,21 +73,37 @@ const BiometryListItem = () => {
   const tonkeeper = useTonkeeper();
   const dispatch = useDispatch();
 
-  const biometryTitle = useMemo(() => {
-    if (tk.biometry.type === BiometryTypes.FaceRecognition) {
-      return isIOS
-        ? t('finish_setup.use_faceid')
-        : t('finish_setup.use_face_recognition');
-    } else {
-      return isIOS ? t('finish_setup.use_touchid') : t('finish_setup.use_fingerprint');
-    }
-  }, []);
-
-  const biometryIcon = useMemo(() => {
-    if (tk.biometry.type === BiometryTypes.FaceRecognition) {
-      return isIOS ? 'ic-faceid-28' : 'ic-faceid-android-28';
-    } else {
-      return isIOS ? 'ic-fingerprint-28' : 'ic-fingerprint-android-28';
+  const biometry = useMemo(() => {
+    switch (tk.biometry.type) {
+      case BiometryTypes.FaceRecognition:
+        if (isIOS) {
+          return {
+            title: t('finish_setup.use_faceid'),
+            icon: 'ic-faceid-28',
+          };
+        } else {
+          return {
+            title: t('finish_setup.use_face_recognition'),
+            icon: 'ic-faceid-android-28',
+          };
+        }
+      case BiometryTypes.Fingerprint:
+        if (isIOS) {
+          return {
+            title: t('finish_setup.use_touchid'),
+            icon: 'ic-fingerprint-28',
+          };
+        } else {
+          return {
+            title: t('finish_setup.use_fingerprint'),
+            icon: 'ic-fingerprint-android-28',
+          };
+        }
+      default:
+        return {
+          title: t('finish_setup.use_biomtrics'),
+          icon: 'ic-fingerprint-android-28',
+        };
     }
   }, []);
 
@@ -127,13 +143,13 @@ const BiometryListItem = () => {
           />
         </View>
       }
-      title={biometryTitle}
+      title={biometry.title}
       onPress={handleToggle}
       titleNumberOfLines={3}
       titleTextType="body2"
       leftContent={
         <View style={styles.iconContainer}>
-          <Icon name={biometryIcon as IconNames} />
+          <Icon name={biometry.icon as IconNames} />
         </View>
       }
     />
