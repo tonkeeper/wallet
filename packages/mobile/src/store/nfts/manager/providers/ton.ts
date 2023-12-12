@@ -63,59 +63,48 @@ export class TonProvider extends BaseProvider {
   }
 
   async fetchByOwnerAddress(): Promise<any[]> {
-    try {
-      if (!this.canMore) {
-        return [];
-      }
-
-      const resp = await this.accountsApi.getNftItemsByOwner({
-        accountId: this.address,
-        limit: 1000,
-        indirectOwnership: true,
-        offset: 0,
-      });
-
-      const nfts = resp.nftItems;
-
-      if (!nfts) {
-        return [];
-      }
-
-      return nfts;
-    } catch (e) {
-      debugLog(e);
+    if (!this.canMore) {
       return [];
     }
+
+    const resp = await this.accountsApi.getNftItemsByOwner({
+      accountId: this.address,
+      limit: 1000,
+      indirectOwnership: true,
+      offset: 0,
+    });
+
+    const nfts = resp.nftItems;
+
+    if (!nfts) {
+      return [];
+    }
+
+    return nfts;
   }
 
   async loadNext(): Promise<NFTModel[]> {
-    try {
-      if (!this.canMore) {
-        return [];
-      }
-
-      const ownedNfts = await this.fetchByOwnerAddress();
-      let nfts: NFTModel[] = [];
-
-      const collections = await this.loadCollections(
-        _.uniq(
-          ownedNfts
-            .filter((nft) => nft.collection?.address)
-            .map((nft) => nft.collection?.address),
-        ),
-      );
-
-      if (ownedNfts?.length) {
-        nfts = ownedNfts.map((nft) =>
-          this.map(nft, collections[nft.collection?.address]),
-        );
-      }
-      this.canMore = false;
-
-      return nfts;
-    } catch (e) {
+    if (!this.canMore) {
       return [];
     }
+
+    const ownedNfts = await this.fetchByOwnerAddress();
+    let nfts: NFTModel[] = [];
+
+    const collections = await this.loadCollections(
+      _.uniq(
+        ownedNfts
+          .filter((nft) => nft.collection?.address)
+          .map((nft) => nft.collection?.address),
+      ),
+    );
+
+    if (ownedNfts?.length) {
+      nfts = ownedNfts.map((nft) => this.map(nft, collections[nft.collection?.address]));
+    }
+    this.canMore = false;
+
+    return nfts;
   }
 
   async loadNFTItem(address: string): Promise<NFTModel> {
@@ -124,7 +113,9 @@ export class TonProvider extends BaseProvider {
     });
 
     let nft = nfts.nftItems[0];
-    if (!nft) throw new Error('NFT item not loaded');
+    if (!nft) {
+      throw new Error('NFT item not loaded');
+    }
     let collection: CollectionModel | undefined;
 
     if (nft.collection) {
