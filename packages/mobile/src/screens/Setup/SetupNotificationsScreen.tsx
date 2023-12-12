@@ -1,7 +1,11 @@
+import { NotificationsStatus, useNotificationStatus } from '$hooks/useNotificationStatus';
 import { useNotifications } from '$hooks/useNotifications';
 import { t } from '@tonkeeper/shared/i18n';
 import { memo, useCallback, useState } from 'react';
 import { debugLog } from '$utils/debugLog';
+import { tk } from '@tonkeeper/shared/tonkeeper';
+import { useParams } from '$navigation/imperative';
+import { useNavigation } from '@tonkeeper/router';
 import {
   Screen,
   Steezy,
@@ -12,37 +16,42 @@ import {
   Icon,
   Toast,
 } from '@tonkeeper/uikit';
-import { tk } from '@tonkeeper/shared/tonkeeper';
-import { useParams } from '$navigation/imperative';
-import { useNavigation } from '@tonkeeper/router';
+import { Linking } from 'react-native';
 
 export const SetupNotificationsScreen = memo(() => {
   const params = useParams<{ onNext?: (onDone: () => void) => void }>();
   const [leterLoading, setLaterLoading] = useState(false);
+  const notificationStatus = useNotificationStatus();
   const [loading, setLoading] = useState(false);
   const notifications = useNotifications();
   const nav = useNavigation();
 
+  const isDisabledNotifications = notificationStatus === NotificationsStatus.DENIED;
+
   const handleEnableNotifications = useCallback(async () => {
     try {
-      setLoading(true);
-      if (params.onNext) {
-        params.onNext(async () => {
-          const isSubscribe = await notifications.subscribe();
-          if (isSubscribe) {
-            tk.enableNotificationsDuringSetup();
-          }
-          nav.replace('Tabs');
-        });
+      if (!isDisabledNotifications) {
+        setLoading(true);
+        if (params.onNext) {
+          params.onNext(async () => {
+            const isSubscribe = await notifications.subscribe();
+            if (isSubscribe) {
+              tk.enableNotificationsDuringSetup();
+            }
+            nav.replace('Tabs');
+          });
+        } else {
+          Toast.fail('No next function');
+        }
       } else {
-        Toast.fail('No next function');
+        Linking.openSettings();
       }
     } catch (err) {
       setLoading(false);
       Toast.fail(err?.massage);
       debugLog('[SetupNotifications]:', err);
     }
-  }, [nav, notifications, params]);
+  }, [nav, notifications, params, isDisabledNotifications]);
 
   return (
     <Screen>
