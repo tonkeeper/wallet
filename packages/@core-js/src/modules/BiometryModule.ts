@@ -29,10 +29,10 @@ export class BiometryModule {
 
     if (hasFingerprint && hasFaceRecognition) {
       this.type = BiometryTypes.BothTypes;
-    } else if (hasFaceRecognition) {
-      this.type = BiometryTypes.FaceRecognition;
     } else if (hasFingerprint) {
       this.type = BiometryTypes.Fingerprint;
+    } else if (hasFaceRecognition) {
+      this.type = BiometryTypes.FaceRecognition;
     } else {
       this.type = BiometryTypes.None;
     }
