@@ -60,7 +60,8 @@ export class Address {
   }
 
   static isBounceable(address: string) {
-    return new TonWeb.Address(address).isBounceable;
+    const addr = new TonWeb.Address(address);
+    return !addr.isUserFriendly || addr.isBounceable;
   }
 
   static compare(adr1?: string, adr2?: string) {
