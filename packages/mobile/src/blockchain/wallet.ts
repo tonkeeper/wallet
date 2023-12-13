@@ -360,6 +360,7 @@ export class TonWallet {
     });
 
     const transfer = contract.createTransfer({
+      timeout: Math.floor(Date.now() / 1000) + 300,
       seqno,
       secretKey,
       sendMode: SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS,
@@ -522,6 +523,7 @@ export class TonWallet {
       const contract = getTonCoreWalletContract(vault, walletVersion ?? version);
 
       const transfer = contract.createTransfer({
+        timeout: Math.floor(Date.now() / 1000) + 300,
         seqno,
         secretKey,
         sendMode,

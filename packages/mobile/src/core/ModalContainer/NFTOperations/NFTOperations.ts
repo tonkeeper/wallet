@@ -222,6 +222,7 @@ export class NFTOperations {
     });
 
     return this.methods(wallet, {
+      expireAt: Math.floor(Date.now() / 1000) + 300,
       toAddress: nftCollectionAddress,
       amount: amount,
       sendMode: 3,
