@@ -36,6 +36,7 @@ import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
 import { Buffer } from 'buffer';
 import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
+import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -65,10 +66,9 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       contractVersionsMap[vault.getVersion() ?? 'v4R2'],
       Buffer.from(vault.tonPublicKey),
     );
-
     const boc = TransactionService.createTransfer(contract, {
       messages: TransactionService.parseSignRawMessages(params.messages),
-      seqno: (await tonapi.wallet.getAccountSeqno(tk.wallet.address.ton.raw)).seqno,
+      seqno: await getWalletSeqno(),
       sendMode: 3,
       secretKey: Buffer.from(privateKey),
     });
@@ -254,7 +254,7 @@ export const openSignRawModal = async (
     try {
       const boc = TransactionService.createTransfer(contract, {
         messages: TransactionService.parseSignRawMessages(params.messages),
-        seqno: (await tonapi.wallet.getAccountSeqno(tk.wallet.address.ton.raw)).seqno,
+        seqno: await getWalletSeqno(),
         secretKey: Buffer.alloc(64),
       });
       consequences = await tonapi.wallet.emulateMessageToWallet({ boc });
