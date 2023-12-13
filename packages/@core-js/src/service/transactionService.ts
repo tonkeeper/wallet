@@ -33,6 +33,12 @@ export function tonAddress(address: AnyAddress) {
 }
 
 export class TransactionService {
+  private static TTL = 5 * 60;
+
+  private static getTimeout() {
+    return Math.floor(Date.now() / 1e3) + TransactionService.TTL;
+  }
+
   private static externalMessage(contract: WalletContract, seqno: number, body: Cell) {
     return beginCell()
       .storeWritable(
@@ -78,7 +84,9 @@ export class TransactionService {
   }
 
   static createTransfer(contract, transferParams: TransferParams) {
+    console.log(TransactionService.getTimeout());
     const transfer = contract.createTransfer({
+      timeout: TransactionService.getTimeout(),
       seqno: transferParams.seqno,
       secretKey: transferParams.secretKey,
       sendMode:
