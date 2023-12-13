@@ -84,7 +84,6 @@ export class TransactionService {
   }
 
   static createTransfer(contract, transferParams: TransferParams) {
-    console.log(TransactionService.getTimeout());
     const transfer = contract.createTransfer({
       timeout: TransactionService.getTimeout(),
       seqno: transferParams.seqno,
