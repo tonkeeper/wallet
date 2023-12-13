@@ -62,7 +62,7 @@ target 'ton_keeper' do
   
   # Utilities
   pod 'R.swift', '~> 6.1.0'
-  pod 'TonMnemonicSwift', :git => 'git@github.com:tonkeeper/ton-mnemonic-swift.git', :branch => 'main'
+  pod 'TonMnemonicSwift', :git => 'https://github.com/tonkeeper/ton-mnemonic-swift.git', :branch => 'main'
   
   permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
