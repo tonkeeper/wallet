@@ -115,6 +115,8 @@ function* generateVaultWorker() {
     const vault = yield call(Vault.generate, getWalletName());
     yield put(walletActions.setGeneratedVault(vault));
     yield call(trackEvent, 'generate_wallet');
+    // Dismiss addressUpdate banner for new wallets. It's not necessary to show it for newcomers
+    useAddressUpdateStore.getState().actions.dismiss();
   } catch (e) {
     e && debugLog(e.message);
     yield call(Alert.alert, 'Wallet generation error', e.message);
@@ -162,9 +164,6 @@ function* createWalletWorker(action: CreateWalletAction) {
 
     const wallet = new Wallet(getWalletName(), vault);
     yield call([wallet, 'save']);
-
-    // Dismiss addressUpdate banner for new wallets. It's not necessary to show it for newcomers
-    useAddressUpdateStore.getState().actions.dismiss();
 
     yield put(
       batchActions(
