@@ -26,7 +26,7 @@ import {
   openInsufficientFundsModal,
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import BigNumber from 'bignumber.js';
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
 import { Address } from '@tonkeeper/core';
 
 enum States {
@@ -111,7 +111,7 @@ export const СonfirmRenewAllDomains = memo((props) => {
 
         const queryMsg = await tx.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
-        await Tonapi.sendBoc(boc);
+        await tonapi.blockchain.sendBlockchainMessage({ boc }, { format: 'text' });
         tk.wallet.activityList.reload();
 
         await delay(15000);
