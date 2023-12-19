@@ -15,7 +15,7 @@ import {
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { formatter } from '$utils/formatter';
-import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
 import {
   ActionAmountType,
@@ -38,6 +38,9 @@ import {
   emulateWithBattery,
   sendBocWithBattery,
 } from '@tonkeeper/shared/utils/blockchain';
+import { trackEvent } from '$utils/stats';
+import { Events, SendAnalyticsFrom } from '$store/models';
+import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -67,10 +70,9 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       contractVersionsMap[vault.getVersion() ?? 'v4R2'],
       Buffer.from(vault.tonPublicKey),
     );
-
     const boc = TransactionService.createTransfer(contract, {
       messages: TransactionService.parseSignRawMessages(params.messages),
-      seqno: (await tonapi.wallet.getAccountSeqno(tk.wallet.address.ton.raw)).seqno,
+      seqno: await getWalletSeqno(),
       sendMode: 3,
       secretKey: Buffer.from(privateKey),
     });
@@ -78,6 +80,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     await sendBocWithBattery(boc);
 
     if (onSuccess) {
+      trackEvent(Events.SendSuccess, { from: SendAnalyticsFrom.SignRaw });
       await delay(1750);
       onSuccess(boc);
     }
@@ -250,7 +253,7 @@ export const openSignRawModal = async (
     try {
       const boc = TransactionService.createTransfer(contract, {
         messages: TransactionService.parseSignRawMessages(params.messages),
-        seqno: (await tonapi.wallet.getAccountSeqno(tk.wallet.address.ton.raw)).seqno,
+        seqno: await getWalletSeqno(),
         secretKey: Buffer.alloc(64),
       });
       consequences = await emulateWithBattery({ boc });

@@ -501,7 +501,7 @@
       "insufficient_balance" : "Yetersiz bakiye",
       "less_than_min" : "Minimum %{minAmount} TON",
       "liquid_jetton_note" : "tsTON likidite tokeni gönderiliyor",
-      "max" : "Maksimum",
+      "max" : "MAX",
       "recipient_label" : "Alıcı:",
       "remaining" : "Mevcut: %{amount}",
       "title" : "Tutar"

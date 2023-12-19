@@ -6,7 +6,12 @@ import { JettonBalanceModel, JettonMetadata } from '$store/models';
 import _ from 'lodash';
 import { fromNano } from '$utils';
 import { proxyMedia } from '$utils/proxyMedia';
-import { JettonsApi, Configuration, AccountsApi, JettonBalance } from '@tonkeeper/core/src/legacy';
+import {
+  JettonsApi,
+  Configuration,
+  AccountsApi,
+  JettonBalance,
+} from '@tonkeeper/core/src/legacy';
 
 export class TonProvider extends BaseProvider {
   public readonly name = 'TonProvider';
@@ -36,33 +41,28 @@ export class TonProvider extends BaseProvider {
   }
 
   async load(): Promise<JettonBalanceModel[]> {
-    try {
-      const endpoint = getServerConfig('tonapiV2Endpoint');
+    const endpoint = getServerConfig('tonapiV2Endpoint');
 
-      const accountsApi = new AccountsApi(
-        new Configuration({
-          basePath: endpoint,
-          headers: {
-            Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
-          },
-        }),
-      );
+    const accountsApi = new AccountsApi(
+      new Configuration({
+        basePath: endpoint,
+        headers: {
+          Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+        },
+      }),
+    );
 
-      const jettonBalances = await accountsApi.getJettonsBalances({
-        accountId: this.address,
-      });
+    const jettonBalances = await accountsApi.getJettonsBalances({
+      accountId: this.address,
+    });
 
-      const balances = jettonBalances.balances;
+    const balances = jettonBalances.balances;
 
-      if (!_.isArray(balances)) {
-        return [];
-      }
-
-      return balances.map((balance) => this.map(balance));
-    } catch (e) {
-      console.log(e);
+    if (!_.isArray(balances)) {
       return [];
     }
+
+    return balances.map((balance) => this.map(balance));
   }
 
   private map(jettonBalance: JettonBalance): JettonBalanceModel {

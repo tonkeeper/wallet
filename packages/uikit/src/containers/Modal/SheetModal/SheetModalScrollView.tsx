@@ -51,7 +51,6 @@ export const SheetModalScrollView = React.forwardRef<
     },
     (result, previous) => {
       if (result !== previous) {
-        console.log('wtf', result);
         runOnJS(setSpacing)(result);
       }
     },

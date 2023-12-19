@@ -77,6 +77,7 @@ export function useDeeplinkingResolvers() {
     'tonkeeper://',
     'https://app.tonkeeper.com',
     'https://tonhub.com',
+    'https://ton.app',
   ]);
 
   deeplinking.addMiddleware(async (next) => {

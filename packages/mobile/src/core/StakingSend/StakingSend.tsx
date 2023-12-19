@@ -289,7 +289,11 @@ export const StakingSend: FC<Props> = (props) => {
           .minus(new BigNumber(totalAmount))
           .isGreaterThanOrEqualTo(getWithdrawalAlertFee(pool));
 
-        if (!isEnoughToWithdraw && isDeposit) {
+        if (
+          pool.implementation !== PoolImplementationType.LiquidTF &&
+          !isEnoughToWithdraw &&
+          isDeposit
+        ) {
           const shouldContinue = await new Promise((res) =>
             Alert.alert(
               t('staking.withdrawal_fee_warning.title'),

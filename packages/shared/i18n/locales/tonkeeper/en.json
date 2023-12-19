@@ -612,7 +612,7 @@
       "insufficient_balance" : "Insufficient balance",
       "less_than_min" : "Minimum %{minAmount} TON",
       "liquid_jetton_note" : "Sending tsTON liquidity token",
-      "max" : "Max",
+      "max" : "MAX",
       "recipient_label" : "To:",
       "remaining" : "Available: %{amount}",
       "title" : "Amount"
@@ -752,7 +752,7 @@
       "note" : "Staking is based on smart contracts by third parties. Tonkeeper is not responsible for staking experience.",
       "pendingDeposit" : "Pending Stake",
       "pendingWithdraw" : "Pending Unstake",
-      "pendingWithdrawDesc" : "at the end of the cycle",
+      "pendingWithdrawDesc" : "after the end of the cycle",
       "pool_address" : {
         "label" : "Pool address"
       },
@@ -1029,7 +1029,8 @@
     "screen_title" : "Wallet",
     "send_btn" : "Send",
     "swap_btn" : "Swap",
-    "tonkens_tab_lable" : "Tokens"
+    "tonkens_tab_lable" : "Tokens",
+    "updated_at" : "Updated on %{value}"
   },
   "wallet_chat" : "Chat",
   "wallet_community" : "Community",

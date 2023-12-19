@@ -69,7 +69,7 @@ const AmountStepComponent: FC<Props> = (props) => {
 
   const availableTonBalance = useMemo(() => {
     if (pool.implementation === PoolImplementationType.LiquidTF && !isWithdrawal) {
-      const tonAmount = new BigNumber(tonBalance).minus(1.1);
+      const tonAmount = new BigNumber(tonBalance).minus(1.2);
 
       return tonAmount.isGreaterThanOrEqualTo(0)
         ? tonAmount.decimalPlaces(Decimals[CryptoCurrencies.Ton]).toString()

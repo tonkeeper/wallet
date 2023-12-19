@@ -1,8 +1,9 @@
 import { walletActions, walletWalletSelector } from '$store/wallet';
+import { useNetInfo } from '@react-native-community/netinfo';
 import { State } from '@tonkeeper/core';
 import { useExternalState } from '@tonkeeper/shared/hooks/useExternalState';
 import { tk } from '@tonkeeper/shared/tonkeeper';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // temporary fix
@@ -10,6 +11,9 @@ import { useDispatch, useSelector } from 'react-redux';
 export const useBalanceUpdater = () => {
   const wallet = useSelector(walletWalletSelector);
   const dispatch = useDispatch();
+
+  const { isConnected } = useNetInfo();
+  const prevIsConnected = useRef(isConnected);
 
   const isActivityReloading = useExternalState(
     tk.wallet?.activityList.state ??
@@ -28,8 +32,8 @@ export const useBalanceUpdater = () => {
       return;
     }
 
-    if (isActivityReloading) {
+    if (isActivityReloading || (isConnected && prevIsConnected.current === false)) {
       dispatch(walletActions.refreshBalancesPage(false));
     }
-  }, [dispatch, isActivityReloading, wallet]);
+  }, [dispatch, isActivityReloading, isConnected, wallet]);
 };

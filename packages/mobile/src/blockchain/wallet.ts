@@ -702,32 +702,40 @@ export class TonWallet {
   }
 
   async getLockupBalances(info: Account) {
-    if (['empty', 'uninit', 'nonexist'].includes(info?.status ?? '')) {
-      try {
+    try {
+      if (['empty', 'uninit', 'nonexist'].includes(info?.status ?? '')) {
         const balance = (
           await this.blockchainApi.getRawAccount({ accountId: info.address })
         ).balance;
         return [Ton.fromNano(balance), 0, 0];
-      } catch (e) {
+      }
+
+      const balances = await this.vault.tonWallet.getBalances();
+      const result = balances.map((item: number) => Ton.fromNano(item.toString()));
+      result[0] = new BigNumber(result[0]).minus(result[1]).minus(result[2]).toString();
+
+      return result;
+    } catch (e) {
+      if (e?.response?.status === 404) {
         return [Ton.fromNano('0'), 0, 0];
       }
+
+      throw e;
     }
-
-    const balances = await this.vault.tonWallet.getBalances();
-    const result = balances.map((item: number) => Ton.fromNano(item.toString()));
-    result[0] = new BigNumber(result[0]).minus(result[1]).minus(result[2]).toString();
-
-    return result;
   }
 
   async getBalance(): Promise<string> {
-    const account = await this.vault.getTonAddress(this.isTestnet);
     try {
+      const account = await this.vault.getTonAddress(this.isTestnet);
       const balance = (await this.blockchainApi.getRawAccount({ accountId: account }))
         .balance;
       return Ton.fromNano(balance);
     } catch (e) {
-      return Ton.fromNano('0');
+      if (e?.response?.status === 404) {
+        return Ton.fromNano(0);
+      }
+
+      throw e;
     }
   }
 }

@@ -18,14 +18,12 @@ import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { ns } from '$utils';
-import { walletActions, walletSelector } from '$store/wallet';
-import { copyText } from '$hooks/useCopyText';
+import { walletActions, walletSelector, walletUpdatedAtSelector } from '$store/wallet';
 import { useIsFocused } from '@react-navigation/native';
 import { useBalance } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
 import { TonIcon } from '@tonkeeper/uikit';
 import { CryptoCurrencies, TabletMaxWidth } from '$shared/constants';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
@@ -49,6 +47,9 @@ import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { ExpiringDomainCell } from './components/ExpiringDomainCell';
 import { BatteryIcon } from '@tonkeeper/shared/components/BatteryIcon/BatteryIcon';
+import { useNetInfo } from '@react-native-community/netinfo';
+import { format } from 'date-fns';
+import { getLocale } from '$utils/date';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -70,6 +71,10 @@ export const WalletScreen = memo(() => {
   const { data: tronBalances } = useTronBalances();
 
   const notifications = useInternalNotifications();
+
+  const { isConnected } = useNetInfo();
+
+  const walletUpdatedAt = useSelector(walletUpdatedAtSelector);
 
   // TODO: rewrite
   useEffect(() => {
@@ -139,18 +144,18 @@ export const WalletScreen = memo(() => {
             <Spacer x={4} />
             <BatteryIcon />
           </View>
-          {wallet && tk.wallet && (
-            <TouchableOpacity
-              hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
-              style={{ zIndex: 3, marginVertical: 8 }}
-              onPress={() => copyText(tk.wallet.address.ton.friendly)}
-              activeOpacity={0.6}
-            >
+          <ShowBalance amount={balance.total.fiat} />
+          {wallet && tk.wallet && isConnected === false && walletUpdatedAt ? (
+            <View style={{ zIndex: 3, marginVertical: 8 }}>
               <Text color="textSecondary" type="body2">
-                {tk.wallet.address.ton.short}
+                {t('wallet.updated_at', {
+                  value: format(walletUpdatedAt, 'd MMM, HH:mm', {
+                    locale: getLocale(),
+                  }).replace('.', ''),
+                })}
               </Text>
-            </TouchableOpacity>
-          )}
+            </View>
+          ) : null}
         </View>
         <IconButtonList
           horizontalIndent={i18n.locale === 'ru' ? 'large' : 'small'}
