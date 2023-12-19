@@ -1,12 +1,17 @@
 import { memo } from 'react';
 import { RefillBattery as RefillBatteryComponent } from '@tonkeeper/shared/components/RefillBattery/RefillBattery';
-import { Screen } from '@tonkeeper/uikit';
+import { t } from '@tonkeeper/shared/i18n';
+import { ScrollHandler } from '$uikit';
 
 export const RefillBattery = memo(() => {
   return (
-    <Screen>
-      <Screen.Header title={'battery.screen_title'} />
+    <ScrollHandler
+      isLargeNavBar={false}
+      navBarTitle={t('battery.screen_title')}
+      navBarSubtitle={'Beta'}
+      subtitleProps={{ color: 'accentOrange' }}
+    >
       <RefillBatteryComponent />
-    </Screen>
+    </ScrollHandler>
   );
 });

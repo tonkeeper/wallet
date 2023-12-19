@@ -10,6 +10,7 @@ import {
   View,
   PagerView,
   Spacer,
+  copyText,
 } from '@tonkeeper/uikit';
 import { InternalNotification } from '$uikit';
 import { useNavigation } from '@tonkeeper/router';
@@ -50,6 +51,7 @@ import { BatteryIcon } from '@tonkeeper/shared/components/BatteryIcon/BatteryIco
 import { useNetInfo } from '@react-native-community/netinfo';
 import { format } from 'date-fns';
 import { getLocale } from '$utils/date';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export const WalletScreen = memo(() => {
   const flags = useFlags(['disable_swap']);
@@ -144,7 +146,18 @@ export const WalletScreen = memo(() => {
             <Spacer x={4} />
             <BatteryIcon />
           </View>
-          <ShowBalance amount={balance.total.fiat} />
+          {wallet && tk.wallet && isConnected !== false ? (
+            <TouchableOpacity
+              hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
+              style={{ zIndex: 3, marginVertical: 8 }}
+              onPress={() => copyText(tk.wallet.address.ton.friendly)}
+              activeOpacity={0.6}
+            >
+              <Text color="textSecondary" type="body2">
+                {tk.wallet.address.ton.short}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
           {wallet && tk.wallet && isConnected === false && walletUpdatedAt ? (
             <View style={{ zIndex: 3, marginVertical: 8 }}>
               <Text color="textSecondary" type="body2">

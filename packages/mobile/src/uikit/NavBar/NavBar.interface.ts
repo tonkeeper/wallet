@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
-import { AnimateProps, SharedValue } from 'react-native-reanimated';
-import { TextProps, ViewStyle } from 'react-native';
+import { SharedValue } from 'react-native-reanimated';
+import { ViewStyle } from 'react-native';
+import { TextProps } from '../Text/Text';
 
 export interface NavBarProps {
   children: ReactNode;
@@ -8,6 +9,7 @@ export interface NavBarProps {
   isModal?: boolean;
   title?: string | React.ReactNode;
   rightContent?: ReactNode;
+  subtitleProps?: TextProps;
   hideBackButton?: boolean;
   hideTitle?: boolean;
   forceBigTitle?: boolean;
@@ -20,7 +22,7 @@ export interface NavBarProps {
   isCancelButton?: boolean;
   withBackground?: boolean;
   scrollTop?: SharedValue<number>;
-  titleProps?: AnimateProps<TextProps>;
+  titleProps?: TextProps;
   fillBackground?: boolean;
   innerAnimatedStyle?: ViewStyle;
 }

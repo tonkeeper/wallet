@@ -124,6 +124,7 @@
   "auth_failed" : "Authentication failed",
   "balances_setup_wallet" : "Set up wallet",
   "battery": {
+    "screen_title": "Battery",
     "settings": "Battery",
     "ok": "OK",
     "title": {
@@ -1046,40 +1047,4 @@
   "all_regions": "All Regions",
   "region_nokyc": "Neutral Waters",
   "nokyc": "no KYC",
-  "battery": {
-    "screen_title": "Battery",
-    "promocode": {
-      "button": "Recharge by Promo Code",
-      "placeholder": "Code",
-      "title": "Promo Code",
-      "apply": "Apply"
-    },
-    "settings": "Battery",
-    "title": {
-      "empty": "Battery for gas fees is almost empty",
-      "almost_empty": "Battery for gas fees is half full",
-      "full": "Battery for gas fees is full"
-    },
-    "description": {
-      "empty": "You have enough charge battery for more than {{cnt}} transactions.",
-      "almost_empty": "You have enough charge battery for more than {{cnt}} transactions.",
-      "full": "You have enough charge battery for more than {{cnt}} transactions."
-    },
-    "packages": {
-      "title": {
-        "large": "700 transactions for {{price}}",
-        "medium": "400 transactions for {{price}}",
-        "small": "100 transactions for {{price}}"
-      },
-      "subtitle": {
-        "large": "Large gas fees pack",
-        "medium": "Medium gas fees pack",
-        "small": "Small gas fees pack"
-      },
-      "disclaimer": "This is approximate transactions number. Some your transactions may cost more.",
-      "buy": "Buy",
-      "ok": "OK",
-      "refilled": "Your battery is charged"
-    }
-  }
 }
