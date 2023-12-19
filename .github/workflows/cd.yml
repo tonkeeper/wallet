@@ -2,9 +2,6 @@ name: Mobile CD
 on:
   # Allows you to run this workflow manually from the Actions a tab
   workflow_dispatch:
-    inputs:
-      changelog:
-        required: true
 
 jobs:
   ios-testflight-build:
@@ -27,7 +24,7 @@ jobs:
         with:
           cache: 'yarn'
           node-version: ${{ matrix.node-version }}
-
+    
       - name: Install yarn dependencies
         uses: nick-fields/retry@v2
         with:
@@ -64,7 +61,6 @@ jobs:
           ASC_KEY: ${{ secrets.APPLE_KEY_CONTENT }}
           SIGNING_KEY_PASSWORD: ${{ secrets.IOS_DIST_SIGNING_KEY_PASSWORD }}
           SIGNING_KEY_FILE_PATH: signing-cert.p12
-          CHANGELOG: ${{ github.event.inputs.changelog }}
 
       - name: Upload logs to artifacts
         uses: actions/upload-artifact@v3
@@ -99,7 +95,7 @@ jobs:
         with:
           cache: 'yarn'
           node-version: ${{ matrix.node-version }}
-
+    
       - name: Install yarn dependencies
         uses: nick-fields/retry@v2
         with:
@@ -170,7 +166,7 @@ jobs:
         with:
           cache: 'yarn'
           node-version: ${{ matrix.node-version }}
-
+    
       - name: Install yarn dependencies
         uses: nick-fields/retry@v2
         with:
