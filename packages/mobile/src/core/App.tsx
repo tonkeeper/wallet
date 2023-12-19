@@ -17,7 +17,6 @@ import { PortalDestination } from '@alexzunik/rn-native-portals-reborn';
 import { isAndroid } from '$utils';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { HideableAmountProvider } from '$core/HideableAmount/HideableAmountProvider';
-import { BackgroundBlur } from '$core/BackgroundBlur/BackgroundBlur';
 
 import { TonAPIProvider, WalletProvider } from '@tonkeeper/core';
 import { tonapi } from '@tonkeeper/shared/tonkeeper';
@@ -48,40 +47,39 @@ const TonThemeProvider = ({ children }) => {
 export function App() {
   return (
     // <KeyboardProvider>
-      <WalletProvider>
-        <StoreProvider {...{ store }}>
-          <ActionSheetProvider>
-            <QueryClientProvider client={queryClient}>
-              <TonAPIProvider tonapi={tonapi}>
-                <TonThemeProvider>
-                  <SafeAreaProvider>
-                    <ScrollPositionProvider>
-                      <HideableAmountProvider>
-                        <AppNavigator />
-                      </HideableAmountProvider>
-                    </ScrollPositionProvider>
-                    {/* <MobilePasscodeScreen locked={tonkeeper.securitySettings.locked} /> */}
-                    <ToastComponent />
-                    <BackgroundBlur />
-                    {isAndroid ? (
-                      <View
-                        style={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                        }}
-                      >
-                        <PortalDestination name="popupPortal" />
-                      </View>
-                    ) : null}
-                  </SafeAreaProvider>
-                </TonThemeProvider>
-              </TonAPIProvider>
-            </QueryClientProvider>
-          </ActionSheetProvider>
-        </StoreProvider>
-      </WalletProvider>
+    <WalletProvider>
+      <StoreProvider {...{ store }}>
+        <ActionSheetProvider>
+          <QueryClientProvider client={queryClient}>
+            <TonAPIProvider tonapi={tonapi}>
+              <TonThemeProvider>
+                <SafeAreaProvider>
+                  <ScrollPositionProvider>
+                    <HideableAmountProvider>
+                      <AppNavigator />
+                    </HideableAmountProvider>
+                  </ScrollPositionProvider>
+                  {/* <MobilePasscodeScreen locked={tonkeeper.securitySettings.locked} /> */}
+                  <ToastComponent />
+                  {isAndroid ? (
+                    <View
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                      }}
+                    >
+                      <PortalDestination name="popupPortal" />
+                    </View>
+                  ) : null}
+                </SafeAreaProvider>
+              </TonThemeProvider>
+            </TonAPIProvider>
+          </QueryClientProvider>
+        </ActionSheetProvider>
+      </StoreProvider>
+    </WalletProvider>
     // </KeyboardProvider>
   );
 }
