@@ -117,7 +117,7 @@ platform :ios do
       build_configuration: "Release",
       code_signing_identity: "iPhone Distribution"
     )
-    
+
     # build the app
     gym(
       scheme: "ton_keeper", # replace with name of your project’s scheme
@@ -137,6 +137,7 @@ platform :ios do
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
     deliver(
+        release_notes: ENV["CHANGELOG"],
         api_key: api_key,
         skip_screenshots: true,
         skip_metadata: true,
