@@ -22,11 +22,11 @@
   "activity" : {
     "buy_toncoin_btn" : "Buy Toncoin",
     "empty_transaction_caption" : "Make your first transaction!",
-    "empty_transaction_title" : "Your activity will be shown here",
+    "empty_transaction_title" : "Your history will be shown here",
     "failed_transaction" : "Failed",
     "receive_btn" : "Receive",
     "received" : "Received",
-    "screen_title" : "Activity",
+    "screen_title" : "History",
     "sent" : "Sent"
   },
   "add_edit_favorite" : {

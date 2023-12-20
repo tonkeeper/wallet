@@ -22,11 +22,11 @@
   "activity" : {
     "buy_toncoin_btn" : "Купить Toncoin",
     "empty_transaction_caption" : "Совершите первую транзакцию!",
-    "empty_transaction_title" : "Ваша активность будет показана здесь",
+    "empty_transaction_title" : "Ваша история будет показана здесь",
     "failed_transaction" : "Неуспешно",
     "receive_btn" : "Получить",
-    "received" : "Received",
-    "screen_title" : "Активность",
+    "received" : "Получено",
+    "screen_title" : "История",
     "sent" : "Отправить"
   },
   "add_edit_favorite" : {
