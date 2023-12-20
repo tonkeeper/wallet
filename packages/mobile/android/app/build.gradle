@@ -88,7 +88,7 @@ android {
 
     namespace "com.ton_keeper"
     defaultConfig {
-        applicationId "com.ton_keeper"
+        applicationId "com.ton_keeper.purple"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 423

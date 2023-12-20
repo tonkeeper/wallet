@@ -1,6 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.ton_keeper">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <queries>
         <package android:name="org.telegram.messenger" />
