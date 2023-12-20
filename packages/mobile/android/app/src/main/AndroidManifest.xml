@@ -97,6 +97,11 @@
             android:resource="@color/pushIcon"
             tools:replace="android:resource"/>
 
+        <meta-data
+            tools:replace="android:value"
+            android:name="com.facebook.soloader.enabled"
+            android:value="false" />
+
         <activity
             android:name="com.facebook.react.devsupport.DevSettingsActivity"
             android:exported="false"/>
