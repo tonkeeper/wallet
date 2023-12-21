@@ -13,7 +13,7 @@ import {
   AmountFormatter,
   AnyActionItem,
 } from '@tonkeeper/core';
-import { 
+import {
   ListItemContentText,
   IconNames,
   Picture,
@@ -129,12 +129,14 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
         return senderAccount.name;
       } else {
         return Address.parse(senderAccount.address, {
-          bounceable,
+          bounceable: !senderAccount.is_wallet,
         }).toShort();
       }
     } else {
       const account = action.simple_preview.accounts[0];
-      return account ? Address.parse(account.address).toShort() : '-';
+      return account
+        ? Address.parse(account.address, { bounceable: !account.is_wallet }).toShort()
+        : '-';
     }
   }, [
     action.simple_preview,

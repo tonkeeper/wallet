@@ -10,7 +10,6 @@ import { Tonapi } from '$libs/Tonapi';
 import { useStakingStore } from '$store';
 import { ActionItem, ActionType, Address } from '@tonkeeper/core';
 import { tk } from '@tonkeeper/shared/tonkeeper';
-import { getFlag } from '$utils/flags';
 
 export const DOMAIN_ADDRESS_NOT_FOUND = 'DOMAIN_ADDRESS_NOT_FOUND';
 
@@ -97,7 +96,7 @@ export const useSuggestedAddresses = () => {
     ).map(
       (action): SuggestedAddress => ({
         address: Address.parse(action.payload.recipient!.address, {
-          bounceable: !getFlag('address_style_nobounce'),
+          bounceable: !action.payload.recipient?.is_wallet,
         }).toFriendly(),
         name: action.payload.recipient!.name,
         type: SuggestedAddressType.RECENT,
