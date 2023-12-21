@@ -12,7 +12,7 @@
     "clear-cache": "rm -rf tmp/haste-map-react-native-packager && rm -rf node_modules && yarn && yarn start --reset-cache",
     "build:android": "cd android && ./gradlew assembleRelease && ./gradlew bundleRelease && cd .. && node scripts/prepare_builds.js",
     "build:android:apk": "cd android && ./gradlew assembleRelease && cd ..",
-    "build:android:google-play": "git apply ../../patches/google-play-release.patch && yarn build:android:apk && git apply -R ../../patches/google-play-release.patch",
+    "build:android:google-play": "git apply ../../patches/google-play-release.patch && yarn build:android && git apply -R ../../patches/google-play-release.patch",
     "build:android:apk-site": "ENVFILE=.env.site yarn build:android:apk",
     "clean:android": "cd android && ./gradlew clean && cd ..",
     "open_build_folder": "open ./android/app/build/outputs/bundle",
