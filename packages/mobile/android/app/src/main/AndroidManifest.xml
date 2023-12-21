@@ -102,6 +102,9 @@
             android:name="com.facebook.react.devsupport.DevSettingsActivity"
             android:exported="false"/>
 
+        <meta-data
+            android:name="com.facebook.soloader.enabled"
+            tools:node="remove"/>
     </application>
 
 </manifest>
