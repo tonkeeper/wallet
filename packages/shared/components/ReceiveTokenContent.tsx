@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text as NativeText, Share } from 'react-native';
 import QRCode from 'react-native-qrcode-styled';
-import { throttle } from '@tonkeeper/router';
+import { throttle, useNavigation } from '@tonkeeper/router';
 import { t } from '../i18n';
 import {
   TouchableOpacity,
@@ -23,6 +23,7 @@ interface ReceiveTokenContentProps {
   title: string;
   description: string;
   qrCodeScale: number;
+  children?: React.ReactNode;
 }
 
 export const ReceiveTokenContent = memo<ReceiveTokenContentProps>((props) => {
@@ -34,27 +35,17 @@ export const ReceiveTokenContent = memo<ReceiveTokenContentProps>((props) => {
     description,
     title,
     qrCodeScale,
+    children,
   } = props;
 
   const [render, setRender] = useState(renderDelay > 0 ? false : true);
+  const nav = useNavigation();
 
   useEffect(() => {
     if (renderDelay > 0) {
       setTimeout(() => setRender(true), renderDelay);
     }
   }, [renderDelay]);
-
-  const share = useCallback(
-    (address: string) =>
-      throttle(() => {
-        Share.share({
-          message: address,
-        }).catch((err) => {
-          console.log('cant share', err);
-        });
-      }, 1000),
-    [],
-  );
 
   return (
     <View>
@@ -79,24 +70,17 @@ export const ReceiveTokenContent = memo<ReceiveTokenContentProps>((props) => {
           <View style={styles.emptyQrArea} />
         )}
         <TouchableOpacity onPress={copyText(address, t('address_copied'))}>
-          <NativeText style={styles.addressText} allowFontScaling={false}>
+          <NativeText
+            style={styles.addressText}
+            allowFontScaling={false}
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
             {address}
           </NativeText>
         </TouchableOpacity>
       </View>
-      <View style={styles.buttons}>
-        <Button
-          leftContent={<Icon name="ic-copy-16" />}
-          onPress={copyText(address, t('address_copied'))}
-          color="secondary"
-          title={t('receiveModal.copy')}
-          size="medium"
-        />
-        <Spacer x={12} />
-        <Pressable style={steezyStyles.shareButton} onPress={share(address)}>
-          <Icon name="ic-share-16" />
-        </Pressable>
-      </View>
+      <View style={styles.buttons}>{children}</View>
     </View>
   );
 });

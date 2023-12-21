@@ -10,5 +10,7 @@ export const ScreenModalContent = memo<ScreenModalContentProps>((props) => {
 });
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex: 1,
+  },
 });
