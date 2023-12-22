@@ -51,6 +51,12 @@ This script creates a version of the APK for the site with enabled auto-updates.
 $ yarn build:android:apk-site
 ```
 
+### Deploy to site
+
+```bash
+$ yarn publish_apk
+```
+
 ---
 
 ## Adding icons
