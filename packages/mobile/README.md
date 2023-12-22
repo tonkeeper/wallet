@@ -29,6 +29,35 @@ $ yarn android
 
 More information about android build in [android readme](android/README.md).
 
+## Build process
+
+### build:android:google-play
+
+This script prepares the application for release on the Google Play Store.
+
+```bash
+$ yarn build:android:google-play
+```
+
+It's important to build an AAB using this command because we need to disable the native library for auto-updates.
+
+---
+
+### build:android:apk-site
+
+This script creates a version of the APK for the site with enabled auto-updates.
+
+```bash
+$ yarn build:android:apk-site
+```
+
+### Deploy to site
+
+```bash
+$ yarn publish_apk
+```
+
+---
 
 ## Adding icons
 
