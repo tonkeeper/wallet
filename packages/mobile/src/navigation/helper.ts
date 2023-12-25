@@ -291,3 +291,7 @@ export async function openChooseCountry() {
 export function openNotificationsScreen() {
   navigate(ActivityStackRouteNames.NotificationsActivity);
 }
+
+export function openTonInscription(ticker: string) {
+  navigate('/inscription', { ticker });
+}

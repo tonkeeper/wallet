@@ -39,6 +39,7 @@ import { StartScreen } from '@tonkeeper/shared/screens/StartScreen';
 import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
 import { TronTokenScreen } from '../../tabs/Wallet/TronTokenScreen';
 import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
+import { InscriptionScreen } from '$core/InscriptionScreen';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -135,6 +136,7 @@ export const MainStack: FC = () => {
       <Stack.Screen name={MainStackRouteNames.DevStack} component={DevStack} />
       <Stack.Screen name={MainStackRouteNames.EditConfig} component={EditConfig} />
       <Stack.Screen name={MainStackRouteNames.Jetton} component={Jetton} />
+      <Stack.Screen name="/inscription" component={InscriptionScreen} />
       <Stack.Screen name={MainStackRouteNames.JettonsList} component={JettonsList} />
       <Stack.Screen name={MainStackRouteNames.ManageTokens} component={ManageTokens} />
       <Stack.Screen

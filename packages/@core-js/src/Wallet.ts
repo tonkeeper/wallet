@@ -14,6 +14,7 @@ import { TronService } from './TronService';
 import { ActivityLoader } from './Activity/ActivityLoader';
 import { TonActivityList } from './Activity/TonActivityList';
 import { JettonActivityList } from './Activity/JettonActivityList';
+import { TonInscriptions } from './managers/TonInscriptions';
 
 export enum WalletNetwork {
   mainnet = -239,
@@ -92,6 +93,8 @@ export class Wallet {
 
   public tronService: TronService;
 
+  public tonInscriptions: TonInscriptions;
+
   constructor(
     private queryClient: QueryClient,
     private tonapi: TonAPI,
@@ -137,6 +140,8 @@ export class Wallet {
     this.jettonActivityList = new JettonActivityList(this.activityLoader, this.storage);
     this.tonActivityList = new TonActivityList(this.activityLoader, this.storage);
     this.activityList = new ActivityList(this.activityLoader, this.storage);
+
+    this.tonInscriptions = new TonInscriptions(addresses.ton, this.tonapi, this.storage);
 
     this.balances = new BalancesManager(context);
     this.nfts = new NftsManager(context);
