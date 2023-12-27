@@ -1,12 +1,12 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as S from './Wallet.style';
 import { useWalletInfo } from '$hooks/useWalletInfo';
-import { Button, PopupMenu, PopupMenuItem, Text, IconButton, SwapIcon } from '$uikit';
+import { Button, PopupMenu, PopupMenuItem, IconButton, SwapIcon } from '$uikit';
 import { MainStackRouteNames, openDAppBrowser, openSend } from '$navigation';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { walletActions, walletWalletSelector } from '$store/wallet';
-import { Linking, Platform, View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { delay, ns } from '$utils';
 import {
   CryptoCurrencies,
@@ -21,8 +21,7 @@ import { formatter } from '$utils/formatter';
 import { Toast } from '$store';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { TonIcon } from '@tonkeeper/uikit';
-import { Icon, IconNames, Screen } from '@tonkeeper/uikit';
+import { Icon, Screen, TonIcon } from '@tonkeeper/uikit';
 
 import { ActivityList } from '@tonkeeper/shared/components';
 import { useTonActivityList } from '@tonkeeper/shared/query/hooks/useTonActivityList';
@@ -103,49 +102,6 @@ const HeaderList = memo(() => {
   const dispatch = useDispatch();
   const [lockupDeploy, setLockupDeploy] = useState('loading');
   const nav = useNavigation();
-
-  const exploreActions = useRef([
-    {
-      icon: 'ic-globe-16',
-      text: 'ton.org',
-      url: 'https://ton.org',
-    },
-    {
-      icon: 'ic-twitter-16',
-      text: 'Twitter',
-      url: 'https://twitter.com/ton_blockchain',
-      scheme: 'twitter://search',
-    },
-    {
-      icon: 'ic-telegram-16',
-      text: t('wallet_chat'),
-      url: getServerConfig('tonCommunityChatUrl'),
-      scheme: 'tg://',
-    },
-    {
-      icon: 'ic-telegram-16',
-      text: t('wallet_community'),
-      url: getServerConfig('tonCommunityUrl'),
-      scheme: 'tg://',
-    },
-    {
-      icon: 'ic-doc-16',
-      text: 'Whitepaper',
-      openInBrowser: Platform.OS === 'android',
-      url: 'https://ton.org/whitepaper.pdf',
-    },
-    {
-      icon: 'ic-magnifying-glass-16',
-      text: 'tonviewer.com',
-      url: 'https://tonviewer.com',
-    },
-    {
-      icon: 'ic-code-16',
-      text: t('wallet_source_code'),
-      url: 'https://github.com/ton-blockchain/ton',
-      scheme: 'github://',
-    },
-  ]).current;
 
   useEffect(() => {
     if (wallet && wallet.ton.isLockup()) {
@@ -275,34 +231,9 @@ const HeaderList = memo(() => {
           <S.ChartWrap>
             <Chart />
           </S.ChartWrap>
-          <S.Divider style={{ marginBottom: ns(22) }} />
+          <S.Divider style={{ marginBottom: 0 }} />
         </>
       )}
-      <S.ExploreWrap>
-        <Text style={{ marginBottom: ns(14) }} variant="h3" color="foregroundPrimary">
-          {t('wallet_about')}
-        </Text>
-        <S.ExploreButtons>
-          {exploreActions.map((action) => (
-            <Button
-              onPress={() => handleOpenAction(action)}
-              key={action.text}
-              before={
-                <Icon
-                  name={action.icon as IconNames}
-                  color="iconPrimary"
-                  style={{ marginRight: 8 }}
-                />
-              }
-              style={{ marginRight: 8, marginBottom: 8 }}
-              mode="secondary"
-              size="medium_rounded"
-            >
-              {action.text}
-            </Button>
-          ))}
-        </S.ExploreButtons>
-      </S.ExploreWrap>
       {wallet && wallet.ton.isLockup() && (
         <View style={{ padding: ns(16) }}>
           <Button

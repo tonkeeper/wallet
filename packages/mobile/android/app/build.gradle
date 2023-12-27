@@ -104,7 +104,7 @@ android {
     kotlinOptions {
         jvmTarget=11
     }
-    
+
     signingConfigs {
         release {
             if (project.hasProperty('TONKEEPER_UPLOAD_STORE_FILE')) {
