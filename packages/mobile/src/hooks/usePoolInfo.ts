@@ -18,12 +18,13 @@ import {
   PoolInfo,
   PoolImplementationType,
 } from '@tonkeeper/core/src/TonAPI';
-import { useWallet } from './useWallet';
+
 import { useGetTokenPrice } from './useTokenPrice';
 import { useCurrencyToSend } from './useCurrencyToSend';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { Ton } from '$libs/Ton';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
+import { useWallet } from '../tabs/useWallet';
 
 export interface PoolDetailsItem {
   label: string;
