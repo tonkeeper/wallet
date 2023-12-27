@@ -201,7 +201,9 @@ class TonConnectRemoteBridgeService {
 
       await this.send(response, sessionCrypto, from);
 
-      this.redirectIfNeeded();
+      if (request.method !== 'disconnect') {
+        this.redirectIfNeeded();
+      }
     } catch (e) {
       console.log('handleMessage error');
       console.error(e);
