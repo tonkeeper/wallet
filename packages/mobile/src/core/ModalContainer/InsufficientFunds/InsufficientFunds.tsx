@@ -32,10 +32,19 @@ export interface InsufficientFundsParams {
   currency?: string;
   stakingFee?: string;
   fee?: string;
+  isStakingDeposit?: boolean;
 }
 
 export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
-  const { totalAmount, balance, currency = 'TON', decimals = 9, stakingFee, fee } = props;
+  const {
+    totalAmount,
+    balance,
+    currency = 'TON',
+    decimals = 9,
+    stakingFee,
+    fee,
+    isStakingDeposit,
+  } = props;
   const nav = useNavigation();
   const formattedAmount = useMemo(
     () => formatter.format(fromNano(totalAmount, decimals), { decimals }),
@@ -58,6 +67,48 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
     openExploreTab('defi');
   }, [nav]);
 
+  const content = useMemo(() => {
+    if (isStakingDeposit) {
+      return (
+        <Text variant="body1" color="foregroundSecondary" textAlign="center">
+          {t('txActions.signRaw.insufficientFunds.stakingDeposit', {
+            amount: formattedAmount,
+            currency,
+          })}
+          {t('txActions.signRaw.insufficientFunds.yourBalance', {
+            balance: formattedBalance,
+            currency,
+          })}
+        </Text>
+      );
+    }
+
+    if (stakingFee && fee) {
+      return (
+        <Text variant="body1" color="foregroundSecondary" textAlign="center">
+          {t('txActions.signRaw.insufficientFunds.stakingFee', {
+            count: Number(stakingFee),
+            fee,
+          })}
+        </Text>
+      );
+    }
+
+    return (
+      <Text variant="body1" color="foregroundSecondary" textAlign="center">
+        {t('txActions.signRaw.insufficientFunds.toBePaid', {
+          amount: formattedAmount,
+          currency,
+        })}
+        {currency === 'TON' && t('txActions.signRaw.insufficientFunds.withFees')}
+        {t('txActions.signRaw.insufficientFunds.yourBalance', {
+          balance: formattedBalance,
+          currency,
+        })}
+      </Text>
+    );
+  }, [currency, fee, formattedAmount, formattedBalance, isStakingDeposit, stakingFee]);
+
   return (
     <Modal>
       <Modal.Header />
@@ -67,26 +118,7 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
           <Text textAlign="center" variant="h2" style={{ marginBottom: 4 }}>
             {t('txActions.signRaw.insufficientFunds.title')}
           </Text>
-          {stakingFee && fee ? (
-            <Text variant="body1" color="foregroundSecondary" textAlign="center">
-              {t('txActions.signRaw.insufficientFunds.stakingFee', {
-                count: Number(stakingFee),
-                fee,
-              })}
-            </Text>
-          ) : (
-            <Text variant="body1" color="foregroundSecondary" textAlign="center">
-              {t('txActions.signRaw.insufficientFunds.toBePaid', {
-                amount: formattedAmount,
-                currency,
-              })}
-              {currency === 'TON' && t('txActions.signRaw.insufficientFunds.withFees')}
-              {t('txActions.signRaw.insufficientFunds.yourBalance', {
-                balance: formattedBalance,
-                currency,
-              })}
-            </Text>
-          )}
+          {content}
         </S.Wrap>
       </Modal.Content>
       <Modal.Footer>

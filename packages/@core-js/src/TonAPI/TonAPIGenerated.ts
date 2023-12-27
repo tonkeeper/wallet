@@ -33,7 +33,40 @@ export interface AccountAddress {
   is_wallet: boolean;
 }
 
+export interface BlockCurrencyCollection {
+  /**
+   * @format int64
+   * @example 10000000000
+   */
+  grams: number;
+  other: {
+    /**
+     * @format int64
+     * @example 13
+     */
+    id: number;
+    /** @example "10000000000" */
+    value: string;
+  }[];
+}
+
+export interface BlockValueFlow {
+  from_prev_blk: BlockCurrencyCollection;
+  to_next_blk: BlockCurrencyCollection;
+  imported: BlockCurrencyCollection;
+  exported: BlockCurrencyCollection;
+  fees_collected: BlockCurrencyCollection;
+  burned?: BlockCurrencyCollection;
+  fees_imported: BlockCurrencyCollection;
+  recovered: BlockCurrencyCollection;
+  created: BlockCurrencyCollection;
+  minted: BlockCurrencyCollection;
+}
+
 export interface BlockchainBlock {
+  /** @example 130 */
+  tx_quantity: number;
+  value_flow: BlockValueFlow;
   /**
    * @format int32
    * @example 0
@@ -136,6 +169,17 @@ export interface BlockchainBlock {
   created_by: string;
 }
 
+export interface BlockchainBlocks {
+  blocks: BlockchainBlock[];
+}
+
+export interface BlockchainBlockShards {
+  shards: {
+    /** @example "(0,8000000000000000,4234234)" */
+    last_known_block_id: string;
+  }[];
+}
+
 /** @example "active" */
 export enum AccountStatus {
   Nonexist = 'nonexist',
@@ -150,6 +194,8 @@ export interface StateInit {
 }
 
 export interface Message {
+  /** @example "int_msg" */
+  msg_type: MessageMsgTypeEnum;
   /**
    * @format int64
    * @example 25713146000001
@@ -674,9 +720,41 @@ export interface JettonBridgeParams {
 export interface Validator {
   /** @example "0:55e8809519cd3c49098c9ee45afdafcea7a894a74d0f628d94a115a50e045122" */
   address: string;
+  /** @example "10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365" */
+  adnl_address: string;
+  /**
+   * @format int64
+   * @example 123456789
+   */
+  stake: number;
+  /**
+   * @format int64
+   * @example 123456789
+   */
+  max_factor: number;
 }
 
 export interface Validators {
+  /**
+   * @format int64
+   * @example 123456789
+   */
+  elect_at: number;
+  /**
+   * @format int64
+   * @example 123456789
+   */
+  elect_close: number;
+  /**
+   * @format int64
+   * @example 123456789
+   */
+  min_stake: number;
+  /**
+   * @format int64
+   * @example 123456789
+   */
+  total_stake: number;
   validators: Validator[];
 }
 
@@ -1278,6 +1356,7 @@ export interface Action {
   ElectionsRecoverStake?: ElectionsRecoverStakeAction;
   JettonSwap?: JettonSwapAction;
   SmartContractExec?: SmartContractAction;
+  DomainRenew?: DomainRenewAction;
   /** shortly describes what this action is about. */
   simple_preview: ActionSimplePreview;
 }
@@ -1313,6 +1392,14 @@ export interface SmartContractAction {
   operation: string;
   payload?: string;
   refund?: Refund;
+}
+
+export interface DomainRenewAction {
+  /** @example "vasya.ton" */
+  domain: string;
+  /** @example "0:da6b1b6663a0e4d18cc8574ccd9db5296e367dd9324706f3bbd9eb1cd2caf0bf" */
+  contract_address: string;
+  renewer: AccountAddress;
 }
 
 export interface NftItemTransferAction {
@@ -1756,6 +1843,79 @@ export interface JettonQuantity {
   jetton: JettonPreview;
 }
 
+export interface DecodedMessage {
+  destination: AccountAddress;
+  /** @example "v3R2" */
+  destination_wallet_version: string;
+  ext_in_msg_decoded?: {
+    wallet_v3?: {
+      /**
+       * @format uint32
+       * @example 1
+       */
+      subwallet_id: number;
+      /**
+       * @format uint32
+       * @example 1
+       */
+      valid_until: number;
+      /**
+       * @format uint32
+       * @example 1
+       */
+      seqno: number;
+      raw_messages: DecodedRawMessage[];
+    };
+    wallet_v4?: {
+      /**
+       * @format uint32
+       * @example 1
+       */
+      subwallet_id: number;
+      /**
+       * @format uint32
+       * @example 1
+       */
+      valid_until: number;
+      /**
+       * @format uint32
+       * @example 1
+       */
+      seqno: number;
+      /**
+       * @format int8
+       * @example 1
+       */
+      op: number;
+      raw_messages: DecodedRawMessage[];
+    };
+    wallet_highload_v2?: {
+      /**
+       * @format uint32
+       * @example 1
+       */
+      subwallet_id: number;
+      /** @example "34254528475294857" */
+      bounded_query_id: string;
+      raw_messages: DecodedRawMessage[];
+    };
+  };
+}
+
+export interface DecodedRawMessage {
+  message: {
+    /** @example "te6ccgEBAQEABgAACCiAmCMBAgEABwA=" */
+    boc: string;
+    /** @example "nft_transfer" */
+    decoded_op_name?: string;
+    /** @example "0xdeadbeaf" */
+    op_code?: string;
+    decoded_body?: any;
+  };
+  /** @example 2 */
+  mode: number;
+}
+
 export interface Event {
   /** @example "e8b0e3fee4a26bd2317ac1f9952fcdc87dc08fdb617656b5202416323337372e" */
   event_id: string;
@@ -1799,6 +1959,21 @@ export interface JettonMetadata {
   social?: string[];
   websites?: string[];
   catalogs?: string[];
+}
+
+export interface InscriptionBalances {
+  inscriptions: InscriptionBalance[];
+}
+
+export interface InscriptionBalance {
+  /** @example "ton20" */
+  type: InscriptionBalanceTypeEnum;
+  /** @example "nano" */
+  ticker: string;
+  /** @example "1000000000" */
+  balance: string;
+  /** @example 9 */
+  decimals: number;
 }
 
 export interface Jettons {
@@ -2067,6 +2242,13 @@ export interface TokenRates {
   diff_30d?: Record<string, string>;
 }
 
+/** @example "int_msg" */
+export enum MessageMsgTypeEnum {
+  IntMsg = 'int_msg',
+  ExtInMsg = 'ext_in_msg',
+  ExtOutMsg = 'ext_out_msg',
+}
+
 /** @example "cell" */
 export enum TvmStackRecordTypeEnum {
   Cell = 'cell',
@@ -2109,6 +2291,7 @@ export enum ActionTypeEnum {
   SmartContractExec = 'SmartContractExec',
   ElectionsRecoverStake = 'ElectionsRecoverStake',
   ElectionsDepositStake = 'ElectionsDepositStake',
+  DomainRenew = 'DomainRenew',
   Unknown = 'Unknown',
 }
 
@@ -2135,6 +2318,12 @@ export enum NftPurchaseActionAuctionTypeEnum {
   DNSTg = 'DNS.tg',
   Getgems = 'getgems',
   Basic = 'basic',
+}
+
+/** @example "ton20" */
+export enum InscriptionBalanceTypeEnum {
+  Ton20 = 'ton20',
+  Gram20 = 'gram20',
 }
 
 export enum BlockchainAccountInspectCompilerEnum {
@@ -2184,6 +2373,14 @@ export interface ExecGetMethodForBlockchainAccountParams {
    * @example "get_wallet_address"
    */
   methodName: string;
+}
+
+export interface EmulateMessageToEventParams {
+  ignore_signature_check?: boolean;
+}
+
+export interface EmulateMessageToTraceParams {
+  ignore_signature_check?: boolean;
 }
 
 export interface GetAccountJettonsBalancesParams {
@@ -2493,6 +2690,58 @@ export interface GetNftHistoryByIdParams {
    * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
    */
   accountId: string;
+}
+
+export interface GetAccountInscriptionsParams {
+  /**
+   * @max 1000
+   * @default 1000
+   */
+  limit?: number;
+  /** @default 0 */
+  offset?: number;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  accountId: string;
+}
+
+export interface GetInscriptionOpTemplateParams {
+  /** @example "ton20" */
+  type: TypeEnum;
+  destination?: string;
+  comment?: string;
+  /** @example "transfer" */
+  operation: OperationEnum;
+  /** @example "1000000000" */
+  amount: string;
+  /** @example "nano" */
+  ticker: string;
+  /** @example "UQAs87W4yJHlF8mt29ocA4agnMrLsOP69jC1HPyBUjJay7Mg" */
+  who: string;
+}
+
+/** @example "ton20" */
+export enum TypeEnum {
+  Ton20 = 'ton20',
+  Gram20 = 'gram20',
+}
+
+/** @example "transfer" */
+export enum OperationEnum {
+  Transfer = 'transfer',
+}
+
+/** @example "ton20" */
+export enum GetInscriptionOpTemplateParams1TypeEnum {
+  Ton20 = 'ton20',
+  Gram20 = 'gram20',
+}
+
+/** @example "transfer" */
+export enum GetInscriptionOpTemplateParams1OperationEnum {
+  Transfer = 'transfer',
 }
 
 export interface GetJettonsParams {
@@ -2983,6 +3232,96 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       }),
 
     /**
+     * @description Get blockchain block shards
+     *
+     * @tags Blockchain
+     * @name GetBlockchainMasterchainShards
+     * @request GET:/v2/blockchain/masterchain/{masterchain_seqno}/shards
+     */
+    getBlockchainMasterchainShards: (
+      masterchainSeqno: number,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<BlockchainBlockShards, Error>({
+        path: `/v2/blockchain/masterchain/${masterchainSeqno}/shards`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get all blocks in all shards and workchains between target and previous masterchain block according to shards last blocks snapshot in masterchain.  We don't recommend to build your app around this method because it has problem with scalability and will work very slow in the future.
+     *
+     * @tags Blockchain
+     * @name GetBlockchainMasterchainBlocks
+     * @request GET:/v2/blockchain/masterchain/{masterchain_seqno}/blocks
+     */
+    getBlockchainMasterchainBlocks: (
+      masterchainSeqno: number,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<BlockchainBlocks, Error>({
+        path: `/v2/blockchain/masterchain/${masterchainSeqno}/blocks`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get all transactions in all shards and workchains between target and previous masterchain block according to shards last blocks snapshot in masterchain. We don't recommend to build your app around this method because it has problem with scalability and will work very slow in the future.
+     *
+     * @tags Blockchain
+     * @name GetBlockchainMasterchainTransactions
+     * @request GET:/v2/blockchain/masterchain/{masterchain_seqno}/transactions
+     */
+    getBlockchainMasterchainTransactions: (
+      masterchainSeqno: number,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Transactions, Error>({
+        path: `/v2/blockchain/masterchain/${masterchainSeqno}/transactions`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get blockchain config from a specific block, if present.
+     *
+     * @tags Blockchain
+     * @name GetBlockchainConfigFromBlock
+     * @request GET:/v2/blockchain/masterchain/{masterchain_seqno}/config
+     */
+    getBlockchainConfigFromBlock: (
+      masterchainSeqno: number,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<BlockchainConfig, Error>({
+        path: `/v2/blockchain/masterchain/${masterchainSeqno}/config`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get raw blockchain config from a specific block, if present.
+     *
+     * @tags Blockchain
+     * @name GetRawBlockchainConfigFromBlock
+     * @request GET:/v2/blockchain/masterchain/{masterchain_seqno}/config/raw
+     */
+    getRawBlockchainConfigFromBlock: (
+      masterchainSeqno: number,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<RawBlockchainConfig, Error>({
+        path: `/v2/blockchain/masterchain/${masterchainSeqno}/config/raw`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
      * @description Get transactions from block
      *
      * @tags Blockchain
@@ -3193,6 +3532,61 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         ...params,
       }),
   };
+  message = {
+    /**
+     * @description Decode a given message. Only external incoming messages can be decoded currently.
+     *
+     * @tags Emulation
+     * @name DecodeMessage
+     * @request POST:/v2/message/decode
+     */
+    decodeMessage: (
+      data: {
+        /** @example "te6ccgECBQEAARUAAkWIAWTtae+KgtbrX26Bep8JSq8lFLfGOoyGR/xwdjfvpvEaHg" */
+        boc: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DecodedMessage, Error>({
+        path: `/v2/message/decode`,
+        method: 'POST',
+        body: data,
+        format: 'json',
+        ...params,
+      }),
+  };
+  address = {
+    /**
+     * @description parse address and display in all formats
+     *
+     * @tags Accounts
+     * @name AddressParse
+     * @request GET:/v2/address/{account_id}/parse
+     */
+    addressParse: (accountId: string, params: RequestParams = {}) =>
+      this.http.request<
+        {
+          /** @example "0:6e731f2e28b73539a7f85ac47ca104d5840b229351189977bb6151d36b5e3f5e" */
+          raw_form: string;
+          bounceable: {
+            b64: string;
+            b64url: string;
+          };
+          non_bounceable: {
+            b64: string;
+            b64url: string;
+          };
+          given_type: string;
+          test_only: boolean;
+        },
+        Error
+      >({
+        path: `/v2/address/${accountId}/parse`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+  };
   events = {
     /**
      * @description Emulate sending message to blockchain
@@ -3202,6 +3596,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
      * @request POST:/v2/events/emulate
      */
     emulateMessageToEvent: (
+      query: EmulateMessageToEventParams,
       data: {
         /** @example "te6ccgECBQEAARUAAkWIAWTtae+KgtbrX26Bep8JSq8lFLfGOoyGR/xwdjfvpvEaHg" */
         boc: string;
@@ -3211,6 +3606,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       this.http.request<Event, Error>({
         path: `/v2/events/emulate`,
         method: 'POST',
+        query: query,
         body: data,
         format: 'json',
         ...params,
@@ -3255,6 +3651,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
      * @request POST:/v2/traces/emulate
      */
     emulateMessageToTrace: (
+      query: EmulateMessageToTraceParams,
       data: {
         /** @example "te6ccgECBQEAARUAAkWIAWTtae+KgtbrX26Bep8JSq8lFLfGOoyGR/xwdjfvpvEaHg" */
         boc: string;
@@ -3264,6 +3661,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       this.http.request<Trace, Error>({
         path: `/v2/traces/emulate`,
         method: 'POST',
+        query: query,
         body: data,
         format: 'json',
         ...params,
@@ -3296,6 +3694,16 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       data: {
         /** @example "te6ccgECBQEAARUAAkWIAWTtae+KgtbrX26Bep8JSq8lFLfGOoyGR/xwdjfvpvEaHg" */
         boc: string;
+        /** additional per account configuration */
+        params?: {
+          /** @example "0:97146a46acc2654y27947f14c4a4b14273e954f78bc017790b41208b0043200b" */
+          address: string;
+          /**
+           * @format int64
+           * @example 10000000000
+           */
+          balance?: number;
+        }[];
       },
       params: RequestParams = {},
     ) =>
@@ -3740,6 +4148,25 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         format: 'json',
         ...params,
       }),
+
+    /**
+     * @description Get all inscriptions by owner address
+     *
+     * @tags Inscriptions
+     * @name GetAccountInscriptions
+     * @request GET:/v2/accounts/{account_id}/inscriptions
+     */
+    getAccountInscriptions: (
+      { accountId, ...query }: GetAccountInscriptionsParams,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<InscriptionBalances, Error>({
+        path: `/v2/accounts/${accountId}/inscriptions`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
   };
   dns = {
     /**
@@ -3903,6 +4330,34 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
     ) =>
       this.http.request<AccountEvents, Error>({
         path: `/v2/nfts/${accountId}/history`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+  };
+  inscriptions = {
+    /**
+     * @description return comment for making operation with instrospection. please don't use it if you don't know what you are doing
+     *
+     * @tags Inscriptions
+     * @name GetInscriptionOpTemplate
+     * @request GET:/v2/inscriptions/op-template
+     */
+    getInscriptionOpTemplate: (
+      query: GetInscriptionOpTemplateParams,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          /** @example "comment" */
+          comment: string;
+          /** @example "0:0000000000000" */
+          destination: string;
+        },
+        Error
+      >({
+        path: `/v2/inscriptions/op-template`,
         method: 'GET',
         query: query,
         format: 'json',

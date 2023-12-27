@@ -18,7 +18,12 @@ import {
   PoolInfo,
   PoolImplementationType,
 } from '@tonkeeper/core/src/TonAPI';
+import { useWallet } from './useWallet';
 import { useGetTokenPrice } from './useTokenPrice';
+import { useCurrencyToSend } from './useCurrencyToSend';
+import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { Ton } from '$libs/Ton';
+import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 
 export interface PoolDetailsItem {
   label: string;
@@ -29,6 +34,10 @@ export interface PoolDetailsItem {
 
 export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo) => {
   const nav = useNavigation();
+
+  const wallet = useWallet();
+
+  const { balance: tonBalance } = useCurrencyToSend(CryptoCurrencies.Ton);
 
   const jettonBalances = useSelector(jettonsBalancesSelector);
 
@@ -108,11 +117,24 @@ export const usePoolInfo = (pool: PoolInfo, poolStakingInfo?: AccountStakingInfo
   const minDeposit = stakingFormatter.fromNano(pool.min_stake);
 
   const handleTopUpPress = useCallback(() => {
-    nav.push(AppStackRouteNames.StakingSend, {
-      poolAddress: pool.address,
-      transactionType: StakingTransactionType.DEPOSIT,
-    });
-  }, [nav, pool.address]);
+    if (wallet) {
+      const canDeposit = new BigNumber(tonBalance).isGreaterThanOrEqualTo(2.2);
+      if (pool.implementation === PoolImplementationType.LiquidTF && !canDeposit) {
+        return openInsufficientFundsModal({
+          totalAmount: Ton.toNano(2.2),
+          balance: Ton.toNano(tonBalance),
+          isStakingDeposit: true,
+        });
+      }
+
+      nav.push(AppStackRouteNames.StakingSend, {
+        poolAddress: pool.address,
+        transactionType: StakingTransactionType.DEPOSIT,
+      });
+    } else {
+      openRequireWalletModal();
+    }
+  }, [nav, pool.address, pool.implementation, tonBalance, wallet]);
 
   const handleWithdrawalPress = useCallback(() => {
     if (!hasDeposit) {

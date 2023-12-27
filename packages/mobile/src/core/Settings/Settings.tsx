@@ -161,6 +161,21 @@ export const Settings: FC = () => {
     tk.wallet.switchVersion(selectedVersion);
   }, []);
 
+  const handleSwitchLanguage = useCallback(() => {
+    Alert.alert(t('language.language_alert.title'), undefined, [
+      {
+        text: t('language.language_alert.cancel'),
+        style: 'cancel',
+      },
+      {
+        text: t('language.language_alert.open'),
+        onPress: () => {
+          Linking.openSettings();
+        },
+      },
+    ]);
+  }, []);
+
   const handleDevMenu = useCallback(() => {
     openDevMenu();
   }, []);

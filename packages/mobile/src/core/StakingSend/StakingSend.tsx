@@ -13,7 +13,7 @@ import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { getStakingPoolByAddress, Toast, useStakingStore } from '$store';
 import { walletSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
-import { calculateActionsTotalAmount, delay, parseLocaleNumber } from '$utils';
+import { calculateMessageTransferAmount, delay, parseLocaleNumber } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
 import { RouteProp } from '@react-navigation/native';
 import axios from 'axios';
@@ -268,7 +268,7 @@ export const StakingSend: FC<Props> = (props) => {
     try {
       setSending(true);
 
-      const totalAmount = calculateActionsTotalAmount(messages.current);
+      const totalAmount = calculateMessageTransferAmount(messages.current);
       const checkResult = await checkIsInsufficient(totalAmount);
       if (checkResult.insufficient) {
         const stakingFee = Ton.fromNano(getWithdrawalFee(pool));
@@ -289,7 +289,11 @@ export const StakingSend: FC<Props> = (props) => {
           .minus(new BigNumber(totalAmount))
           .isGreaterThanOrEqualTo(getWithdrawalAlertFee(pool));
 
-        if (!isEnoughToWithdraw && isDeposit) {
+        if (
+          pool.implementation !== PoolImplementationType.LiquidTF &&
+          !isEnoughToWithdraw &&
+          isDeposit
+        ) {
           const shouldContinue = await new Promise((res) =>
             Alert.alert(
               t('staking.withdrawal_fee_warning.title'),

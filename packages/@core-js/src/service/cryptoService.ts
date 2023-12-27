@@ -7,7 +7,7 @@
  */
 
 import { Sha256 } from '@aws-crypto/sha256-js';
-import { Address, Cell, beginCell } from 'ton-core';
+import { Address, Cell, beginCell } from '@ton/core';
 import * as ed25519 from '@noble/ed25519';
 import aesjs from 'aes-js';
 import crypto from 'isomorphic-webcrypto';

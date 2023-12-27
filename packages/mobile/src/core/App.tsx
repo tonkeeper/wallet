@@ -16,7 +16,7 @@ import { PortalDestination } from '@alexzunik/rn-native-portals-reborn';
 import { isAndroid } from '$utils';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { HideableAmountProvider } from '$core/HideableAmount/HideableAmountProvider';
-import { BackgroundBlur } from '$core/BackgroundBlur/BackgroundBlur';
+// import { BackgroundBlur } from '$core/BackgroundBlur/BackgroundBlur';
 import * as SplashScreen from 'expo-splash-screen';
 
 import {
@@ -121,7 +121,7 @@ export function App() {
                   </ScrollPositionProvider>
                   {/* <MobilePasscodeScreen locked={tonkeeper.securitySettings.locked} /> */}
                   <ToastComponent />
-                  <BackgroundBlur />
+                  {/* <BackgroundBlur /> */}
                   {isAndroid ? (
                     <View
                       style={{
@@ -141,5 +141,6 @@ export function App() {
         </ActionSheetProvider>
       </StoreProvider>
     </View>
+    // </KeyboardProvider>
   );
 }

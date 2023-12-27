@@ -29,15 +29,21 @@ import { useCallback, useRef } from 'react';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import BigNumber from 'bignumber.js';
 import { Tonapi } from '$libs/Tonapi';
-import { checkFundsAndOpenNFTTransfer } from '$core/ModalContainer/NFTOperations/Modals/NFTTransferModal';
 import { openNFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
 import { getCurrentRoute } from '$navigation/imperative';
 import { IConnectQrQuery } from '$tonconnect/models';
 import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
-import { ActionSource, Address, DNS } from '@tonkeeper/core';
+import {
+  ActionSource,
+  Address,
+  AmountFormatter,
+  ContractService,
+  DNS,
+} from '@tonkeeper/core';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { isMethodIdExists } from '$store/zustand/methodsToBuy/helpers';
 import { openActivityActionModal } from '@tonkeeper/shared/modals/ActivityActionModal';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -70,6 +76,7 @@ export function useDeeplinkingResolvers() {
     'tonkeeper://',
     'https://app.tonkeeper.com',
     'https://tonhub.com',
+    'https://ton.app',
   ]);
 
   deeplinking.addMiddleware(async (next) => {
@@ -305,6 +312,7 @@ export function useDeeplinkingResolvers() {
                 isInactive: details.isInactive,
                 isJetton: true,
                 expiryTimestamp,
+                redirectToActivity: resolveParams.redirectToActivity,
               };
 
               openSend(options);
@@ -330,6 +338,7 @@ export function useDeeplinkingResolvers() {
                 isInactive: details.isInactive,
                 methodId: resolveParams.methodId,
                 expiryTimestamp,
+                redirectToActivity: resolveParams.redirectToActivity,
               };
               if (options.methodId) {
                 nav.openModal('NewConfirmSending', options);
@@ -351,14 +360,39 @@ export function useDeeplinkingResolvers() {
         withGoBack: resolveParams.withGoBack,
         isJetton: true,
         expiryTimestamp,
+        redirectToActivity: resolveParams.redirectToActivity,
       });
     } else if (query.nft) {
       if (!Address.isValid(query.nft)) {
         return Toast.fail(t('transfer_deeplink_nft_address_error'));
       }
-      await checkFundsAndOpenNFTTransfer(query.nft, address);
+      await openSignRawModal(
+        {
+          messages: [
+            {
+              amount: AmountFormatter.toNano(1),
+              address: query.nft,
+              payload: ContractService.createNftTransferBody({
+                queryId: Date.now(),
+                newOwnerAddress: address,
+                excessesAddress: tk.wallet.address.ton.raw,
+              })
+                .toBoc()
+                .toString('base64'),
+            },
+          ],
+        },
+        {},
+      );
     } else {
-      openSend({ currency, address, comment, isJetton: false, expiryTimestamp });
+      openSend({
+        currency,
+        address,
+        comment,
+        isJetton: false,
+        expiryTimestamp,
+        redirectToActivity: resolveParams.redirectToActivity,
+      });
     }
   });
 

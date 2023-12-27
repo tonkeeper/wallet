@@ -22,11 +22,11 @@
   "activity" : {
     "buy_toncoin_btn" : "Купить Toncoin",
     "empty_transaction_caption" : "Совершите первую транзакцию!",
-    "empty_transaction_title" : "Ваша активность будет показана здесь",
+    "empty_transaction_title" : "Ваша история будет показана здесь",
     "failed_transaction" : "Неуспешно",
     "receive_btn" : "Получить",
-    "received" : "Received",
-    "screen_title" : "Активность",
+    "received" : "Получено",
+    "screen_title" : "История",
     "sent" : "Отправить"
   },
   "add_edit_favorite" : {
@@ -308,8 +308,9 @@
   "exchange_modal" : {
     "hide" : "Скрыть",
     "other_ways_to_buy" : "Другие способы покупки",
-    "show_all" : "Показать всё",
-    "title" : "Купить или продать"
+    "show_all" : "Показать все",
+    "buy": "Купить",
+    "sell": "Продать"
   },
   "exchange" : {
     "not_exists" : "Неверный ID обменника"
@@ -561,7 +562,7 @@
       "insufficient_balance" : "Недостаточно средств",
       "less_than_min" : "Минимум %{minAmount} TON",
       "liquid_jetton_note" : "Отправка токена ликвидности tsTON",
-      "max" : "Максимум",
+      "max" : "MAX",
       "recipient_label" : "Кому:",
       "remaining" : "Доступно: %{amount}",
       "title" : "Сумма"
@@ -604,6 +605,17 @@
   "settings_delete_alert_title" : "Вы уверены, что хотите удалить аккаунт?",
   "settings_jettons_list" : "Токены",
   "settings_legal_documents" : "Юридические документы",
+  "language": {
+    "list_item": {
+      "title": "Язык",
+      "value": "Русский"
+    },
+    "language_alert" : {
+      "title": "Чтобы изменить язык приложения, перейдите в настройки устройства",
+      "cancel": "Отмена",
+      "open": "Настройки"
+    }
+  },
   "settings_network_alert_title" : "Выберите сеть",
   "settings_news" : "Новости Tonkeeper",
   "settings_notifications" : "Уведомления",
@@ -688,16 +700,13 @@
         "value" : "%{value} TON"
       },
       "next_cycle" : {
-        "desc" : "Все транзакции исполняются только после завершения цикла.",
-        "desc_liquid" : "Запросы на вывод исполнятся после завершения цикла.",
         "in" : "через",
-        "reward_title" : "Следующая награда",
-        "title" : "Следующий цикл"
+        "message": "Запрос на вывод будет исполнен после завершения цикла через %{value}"
       },
       "note" : "Стейкинг основан на сторонних смарт-контрактах. Tonkeeper не несёт ответственность за стабильность и результат.",
       "pendingDeposit" : "Будет зачислено",
       "pendingWithdraw" : "Ожидают вывод",
-      "pendingWithdrawDesc" : "по окончанию цикла",
+      "pendingWithdrawDesc" : "после окончания цикла",
       "pool_address" : {
         "label" : "Адрес пула"
       },
@@ -708,6 +717,8 @@
       },
       "tap_to_collect" : "Нажмите, чтобы вывести"
     },
+    "estimated_profit" : "%{amount} TON – доход за год,  если внесёте TON сегодня.",
+    "estimated_profit_compare" : "На %{amount} TON в год прибыльнее чем ваш текущий стейкинг",
     "get_withdrawal" : "Получить вывод",
     "highest_apy" : "MAX APY",
     "jetton_note" : "Когда вы вносите TON в пул, вы получаете токен %{token}, который отображает вашу долю в пуле. По мере накопления прибыли в пуле, %{token} представляет всё большее число TON.",
@@ -726,6 +737,13 @@
         "one" : "%{amount} TON будет выведен\n",
         "other" : "%{amount} TON будет выведено\n",
         "zero" : "%{amount} TON будет выведено\n"
+      },
+      "pendingWithdrawLiquid" : {
+        "few" : "%{amount} TON будет выведено\nпосле окончания цикла",
+        "many" : "%{amount} TON будет выведено\nпосле окончания цикла",
+        "one" : "%{amount} TON будет выведен\nпосле окончания цикла",
+        "other" : "%{amount} TON будет выведено\nпосле окончания цикла",
+        "zero" : "%{amount} TON будет выведено\nпосле окончания цикла"
       },
       "readyWithdraw" : {
         "few" : "%{amount} TON готовы к выводу.\nНажмите, чтобы вывести",
@@ -760,14 +778,14 @@
     },
     "widget_desc" : "Годовая доходность до %{apy}%",
     "widget_staking_options" : "Варианты стейкинга",
-    "widget_title" : "Зарабатывайте TON",
+    "widget_title" : "Стейкинг TON",
     "withdraw" : "Вывести",
     "withdrawal_fee_warning" : {
       "continue" : "Продолжить всё равно",
       "message" : "Пожалуйста, оставьте минимум {{amount}} TON на вашем балансе.",
       "title" : "У вас не останется для вывода"
     },
-    "withdrawal_request" : "Запрос на вывод"
+    "withdrawal_request" : "Вывод"
   },
   "subscription_back_to_merchant_button" : "Вернуться",
   "subscription_back_to_merchant_caption" : "Транзакция обрабатывается. Ваша подписка будет активна через пару минут.",
@@ -946,6 +964,7 @@
           "other" : "Для совершения транзакции необходим %{count} TON. Предполагаемая комиссия в размере %{fee} TON будет удержана, остаток будет возвращён.",
           "zero" : "Для совершения транзакции необходимо %{count} TON. Предполагаемая комиссия в размере %{fee} TON будет удержана, остаток будет возвращён."
         },
+        "stakingDeposit" : "Минимальный баланс для участия:\n%{amount} %{currency}\n",
         "title" : "Недостаточно средств",
         "toBePaid" : "Необходимо: %{amount} %{currency}\n",
         "withFees" : "+ комиссия сети.\n",
@@ -999,7 +1018,8 @@
     "screen_title" : "Кошелёк",
     "send_btn" : "Отправить",
     "swap_btn" : "Обменять",
-    "tonkens_tab_lable" : "Токены"
+    "tonkens_tab_lable" : "Токены",
+    "updated_at" : "Обновлён %{value}"
   },
   "wallet_chat" : "Чат",
   "wallet_community" : "Сообщество",

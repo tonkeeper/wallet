@@ -503,6 +503,11 @@
   "settings_delete_alert_title" : "您确定要删除您的账户吗？",
   "settings_jettons_list" : "代币",
   "settings_legal_documents" : "法律文件",
+  "language": {
+    "list_item": {
+      "value": "中文"
+    }
+  },
   "settings_network_alert_title" : "选择网络",
   "settings_news" : "Tonkeeper新闻",
   "settings_news_url" : "https://t.me/tonkeeper",

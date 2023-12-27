@@ -35,6 +35,7 @@ import { Text as RNText } from 'react-native';
 import { ScrollPositionContext } from '$uikit';
 import { useFocusEffect, useTabPress } from '@tonkeeper/router';
 import { useSelectedCountry } from '$store/zustand/methodsToBuy/useSelectedCountry';
+import { CountryButton } from '@tonkeeper/shared/components';
 
 export type DAppsExploreProps = NativeStackScreenProps<
   BrowserStackParamList,
@@ -159,14 +160,12 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
     <Screen>
       <Screen.Header
         rightContent={
-          <Button
-            size={selectedCountryStyle.type === 'emoji' ? 'icon' : 'header'}
-            color="secondary"
-            title={selectedCountryStyle.title}
-            icon={selectedCountryStyle.icon}
-            style={!selectedCountryStyle.icon && styles.regionButton.static}
-            onPress={openChooseCountry}
-          />
+          <View style={styles.countryButtonContainer}>
+            <CountryButton
+              selectedCountry={selectedCountry}
+              onPress={openChooseCountry}
+            />
+          </View>
         }
       >
         <SegmentedControl
@@ -210,8 +209,12 @@ const styles = Steezy.create(({ colors }) => ({
   container: {
     flex: 1,
   },
-  regionButton: {
-    marginRight: 16,
+  countryButtonContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    minWidth: 64,
+    alignItems: 'flex-end',
+    paddingRight: 16,
   },
   segmentedControl: {
     backgroundColor: 'transparent',

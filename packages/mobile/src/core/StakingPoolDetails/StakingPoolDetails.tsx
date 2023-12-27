@@ -2,7 +2,6 @@ import { usePoolInfo } from '$hooks/usePoolInfo';
 import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
 import { MainStackRouteNames, openDAppBrowser } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
-import { NextCycle } from '$shared/components';
 import { getServerConfig, KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
 import { getStakingPoolByAddress, getStakingProviderById, useStakingStore } from '$store';
 import {
@@ -319,20 +318,14 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                 </S.BalanceTouchableContainer>
               </>
             ) : null}
-            {hasAnyBalance ? (
+            {/* {hasAnyBalance && stakingJetton && isLiquidTF ? (
               <>
-                <Spacer y={16} />
-                <NextCycle pool={pool} nextReward={nextReward} />
-                {/* {stakingJetton && isLiquidTF ? (
-                  <>
-                    <Spacer y={24} />
-                    <S.ChartContainer>
-                      <StakingChart stakingJetton={stakingJetton} />
-                    </S.ChartContainer>
-                  </>
-                ) : null} */}
+                <Spacer y={24} />
+                <S.ChartContainer>
+                  <StakingChart stakingJetton={stakingJetton} />
+                </S.ChartContainer>
               </>
-            ) : null}
+            ) : null} */}
             <Spacer y={8} />
             <S.TitleContainer>
               <Text variant="h3">{t('staking.details.about_pool')}</Text>

@@ -13,7 +13,12 @@ import BigNumber from 'bignumber.js';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 
-import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet/index';
+import {
+  walletActions,
+  walletBalancesSelector,
+  walletSelector,
+  walletWalletSelector,
+} from '$store/wallet/index';
 import {
   EncryptedVault,
   jettonTransferAmount,
@@ -55,8 +60,10 @@ import {
   MainDB,
   saveAddedCurrencies,
   saveBalancesToDB,
+  saveBalancesUpdatedAtToDB,
   saveFavorites,
   saveHiddenRecentAddresses,
+  saveOldBalancesToDB,
   saveSubscriptions,
   setIntroShown,
   setIsTestnet,
@@ -66,6 +73,7 @@ import {
 import {
   batchActions,
   Toast,
+  useAddressUpdateStore,
   useConnectedAppsStore,
   useNotificationsStore,
   useStakingStore,
@@ -85,7 +93,7 @@ import { Cache as JettonsCache } from '$store/jettons/manager/cache';
 import { Tonapi } from '$libs/Tonapi';
 import { clearSubscribeStatus } from '$utils/messaging';
 import { useRatesStore } from '$store/zustand/rates';
-import { Cell } from 'ton-core';
+import { Cell } from '@ton/core';
 import nacl from 'tweetnacl';
 import { encryptMessageComment } from '@tonkeeper/core';
 import TonWeb from 'tonweb';
@@ -107,6 +115,8 @@ function* generateVaultWorker() {
     const vault = yield call(Vault.generate, getWalletName());
     yield put(walletActions.setGeneratedVault(vault));
     yield call(trackEvent, 'generate_wallet');
+    // Dismiss addressUpdate banner for new wallets. It's not necessary to show it for newcomers
+    useAddressUpdateStore.getState().actions.dismiss();
   } catch (e) {
     e && debugLog(e.message);
     yield call(Alert.alert, 'Wallet generation error', e.message);
@@ -163,6 +173,7 @@ function* createWalletWorker(action: CreateWalletAction) {
       ),
     );
 
+    yield call(useStakingStore.getState().actions.fetchPools, true);
     yield put(walletActions.loadBalances());
     // yield put(eventsActions.loadEvents({ isReplace: true }));
     yield put(nftsActions.loadNFTs({ isReplace: true }));
@@ -240,8 +251,6 @@ function* loadBalancesWorker() {
       balances[CryptoCurrencies.Ton] = tonBalance;
     }
 
-    yield call(saveBalances, balances);
-
     yield put(
       batchActions(
         walletActions.setBalances(balances),
@@ -249,6 +258,8 @@ function* loadBalancesWorker() {
         mainActions.dismissBadHosts(),
       ),
     );
+
+    yield call(saveBalances, balances);
 
     yield fork(checkLegacyBalances);
   } catch (e) {
@@ -282,6 +293,8 @@ function* checkLegacyBalances() {
     }
 
     yield put(walletActions.setOldWalletBalance(balances));
+
+    yield call(saveOldBalancesToDB, balances);
   } catch (e) {}
 }
 
@@ -551,32 +564,41 @@ function* sendCoinsWorker(action: SendCoinsAction) {
 }
 
 function* reloadBalance(currency: CryptoCurrencies) {
-  const { wallet, balances } = yield select(walletSelector);
+  try {
+    const { wallet } = yield select(walletSelector);
 
-  const tokenConfig = getTokenConfig(currency);
-  let amount: string = '0';
+    let amount: string = '0';
 
-  if (currency === CryptoCurrencies.Ton && wallet.ton.isLockup()) {
-    const balances = yield call([wallet.ton, 'getLockupBalances']);
+    if (currency === CryptoCurrencies.Ton && wallet.ton.isLockup()) {
+      const balances = yield call([wallet.ton, 'getLockupBalances']);
 
-    yield put(
-      walletActions.setBalances({
+      yield put(
+        walletActions.setBalances({
+          [CryptoCurrencies.Ton]: balances[0],
+          [CryptoCurrencies.TonRestricted]: balances[1],
+          [CryptoCurrencies.TonLocked]: balances[2],
+        }),
+      );
+
+      yield call(saveBalances, {
         [CryptoCurrencies.Ton]: balances[0],
         [CryptoCurrencies.TonRestricted]: balances[1],
         [CryptoCurrencies.TonLocked]: balances[2],
-      }),
-    );
-  } else {
-    if (PrimaryCryptoCurrencies.indexOf(currency) > -1) {
-      amount = yield call([wallet[currency], 'getBalance']);
-    }
+      });
+    } else {
+      if (PrimaryCryptoCurrencies.indexOf(currency) > -1) {
+        amount = yield call([wallet[currency], 'getBalance']);
+      }
 
-    yield put(
-      walletActions.setBalances({
+      const balances = {
         [currency]: amount,
-      }),
-    );
-  }
+      };
+
+      yield put(walletActions.setBalances(balances));
+
+      yield call(saveBalances, balances);
+    }
+  } catch {}
 }
 
 function* changeBalanceAndReloadWorker(action: ChangeBalanceAndReloadAction) {
@@ -774,6 +796,11 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
 function* saveBalances(balances: { [index: string]: string }) {
   try {
     yield call(saveBalancesToDB, balances);
+
+    const updatedAt = Date.now();
+
+    yield put(walletActions.setUpdatedAt(updatedAt));
+    yield call(saveBalancesUpdatedAtToDB, updatedAt);
   } catch (e) {}
 }
 

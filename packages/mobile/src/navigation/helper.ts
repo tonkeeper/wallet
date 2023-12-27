@@ -30,6 +30,7 @@ export interface OpenSendParams {
   isInactive?: boolean;
   from?: SendAnalyticsFrom;
   expiryTimestamp?: number | null;
+  redirectToActivity?: boolean;
 }
 
 export function openSend(params: OpenSendParams = {}) {

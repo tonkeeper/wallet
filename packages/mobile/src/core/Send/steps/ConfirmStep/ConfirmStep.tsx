@@ -41,6 +41,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     comment,
     isCommentEncrypted,
     onConfirm: sendTx,
+    redirectToActivity,
   } = props;
 
   const { footerRef, onConfirm } = useActionFooter();
@@ -348,6 +349,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
           withCloseButton={false}
           confirmTitle={t('confirm_sending_submit')}
           onPressConfirm={handleConfirm}
+          redirectToActivity={redirectToActivity}
           ref={footerRef}
         />
       </S.FooterContainer>

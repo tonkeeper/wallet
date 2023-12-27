@@ -5,13 +5,18 @@ import { getUnixTime } from 'date-fns';
 import { store } from '$store';
 import { getServerConfig } from '$shared/constants';
 import { UnlockedVault, Vault } from './vault';
-import { Address as AddressFormatter, AmountFormatter } from '@tonkeeper/core';
+import {
+  Address as AddressFormatter,
+  ContractService,
+  contractVersionsMap,
+  TransactionService,
+  isActiveAccount,
+} from '@tonkeeper/core';
 import { debugLog } from '$utils/debugLog';
 import { getChainName, getWalletName } from '$shared/dynamicConfig';
 import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 
-import axios from 'axios';
 import { Tonapi } from '$libs/Tonapi';
 import { Address as TAddress } from '$store/wallet/interface';
 import {
@@ -20,19 +25,13 @@ import {
   AccountsApi,
   Account,
 } from '@tonkeeper/core/src/legacy';
-import { SendApi, Configuration as V1Configuration } from 'tonapi-sdk-js';
-import {
-  externalMessage,
-  getTonCoreWalletContract,
-  jettonTransferBody,
-} from './contractService';
-import { Address, Cell, SendMode, internal, toNano } from 'ton-core';
-import { isActiveAccount } from '@tonkeeper/core';
+
+import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
+import { Address, Cell, internal, toNano } from '@ton/core';
 
 const TonWeb = require('tonweb');
 
 export const jettonTransferAmount = toNano('0.64');
-const jettonTransferForwardAmount = BigInt('1');
 
 interface TonTransferParams {
   seqno: number;
@@ -116,7 +115,6 @@ export class TonWallet {
   private vault: Vault;
   private blockchainApi: BlockchainApi;
   private accountsApi: AccountsApi;
-  private sendApi: SendApi;
 
   constructor(vault: Vault, provider: any = null) {
     if (!provider) {
@@ -135,15 +133,6 @@ export class TonWallet {
     });
     this.blockchainApi = new BlockchainApi(tonApiConfiguration);
     this.accountsApi = new AccountsApi(tonApiConfiguration);
-
-    this.sendApi = new SendApi(
-      new V1Configuration({
-        basePath: getServerConfig('tonapiIOEndpoint'),
-        headers: {
-          Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-        },
-      }),
-    );
   }
 
   static fromJSON(json: any, vault: Vault): TonWallet {
@@ -198,16 +187,9 @@ export class TonWallet {
 
   async getSeqno(address: string): Promise<number> {
     try {
-      const endpoint = getServerConfig('tonapiIOEndpoint');
-      const response: any = await axios.get(`${endpoint}/v1/wallet/getSeqno`, {
-        headers: {
-          Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-        },
-        params: {
-          account: address,
-        },
-      });
-      return response.data?.seqno ?? 0;
+      const seqno = (await tonapi.wallet.getAccountSeqno(address)).seqno;
+
+      return seqno;
     } catch (err) {
       if (err.response.status === 400) {
         return 0;
@@ -328,9 +310,9 @@ export class TonWallet {
   }
 
   private async calcFee(boc: string): Promise<BigNumber> {
-    const estimatedTx = await this.sendApi.estimateTx({ sendBocRequest: { boc } });
+    const estimatedTx = await tonapi.wallet.emulateMessageToWallet({ boc });
 
-    return new BigNumber(estimatedTx.fee.total.toString());
+    return new BigNumber(estimatedTx.event.extra).multipliedBy(-1);
   }
 
   async isInactiveAddress(address: string): Promise<boolean> {
@@ -359,34 +341,36 @@ export class TonWallet {
     vault: Vault,
     secretKey: Buffer = Buffer.alloc(64),
   ) {
-    const contract = getTonCoreWalletContract(vault, vault.getVersion());
+    const version = vault.getVersion();
+    const lockupConfig = vault.getLockupConfig();
+    const contract = ContractService.getWalletContract(
+      contractVersionsMap[version ?? 'v4R2'],
+      Buffer.from(vault.tonPublicKey),
+      {
+        allowedDestinations: lockupConfig?.allowed_destinations,
+      },
+    );
 
     const jettonAmount = BigInt(amountNano);
 
-    const body = jettonTransferBody({
-      queryId: Date.now(),
-      jettonAmount,
-      toAddress: Address.parseRaw(recipient.address),
-      responseAddress: Address.parseRaw(sender.address),
-      forwardAmount: jettonTransferForwardAmount,
-      forwardPayload: payload,
-    });
-
-    const transfer = contract.createTransfer({
+    return TransactionService.createTransfer(contract, {
       seqno,
       secretKey,
-      sendMode: SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS,
       messages: [
         internal({
           to: Address.parse(jettonWalletAddress),
           bounce: true,
           value: jettonTransferAmount,
-          body: body,
+          body: ContractService.createJettonTransferBody({
+            queryId: Date.now(),
+            jettonAmount,
+            receiverAddress: recipient.address,
+            excessesAddress: tk.wallet.address.ton.raw,
+            forwardBody: payload,
+          }),
         }),
       ],
     });
-
-    return externalMessage(contract, seqno, transfer).toBoc().toString('base64');
   }
 
   async estimateJettonFee(
@@ -490,7 +474,7 @@ export class TonWallet {
     }
 
     try {
-      await this.sendApi.sendBoc({ sendBocRequest: { boc } });
+      await tonapi.blockchain.sendBlockchainMessage({ boc }, { format: 'text' });
     } catch (e) {
       if (!store.getState().main.isTimeSynced) {
         throw new Error('wrong_time');
@@ -516,43 +500,28 @@ export class TonWallet {
     secretKey = Buffer.alloc(64),
   }: TonTransferParams) {
     const version = vault.getVersion();
-    const isLockup = version && version.substr(0, 6) === 'lockup';
-
-    if (isLockup) {
-      const wallet = vault.tonWallet;
-      const toAddress = new TonWeb.utils.Address(recipient.address);
-      toAddress.isBounceable = bounce;
-
-      const tx = wallet.methods.transfer({
-        secretKey,
-        toAddress,
-        amount: AmountFormatter.toNano(amount),
-        seqno: seqno,
-        payload,
-        sendMode,
-      });
-
-      const query = await tx.getQuery();
-      return TonWeb.utils.bytesToBase64(await query.toBoc(false));
-    } else {
-      const contract = getTonCoreWalletContract(vault, walletVersion ?? version);
-
-      const transfer = contract.createTransfer({
-        seqno,
-        secretKey,
-        sendMode,
-        messages: [
-          internal({
-            to: Address.parseRaw(recipient.address),
-            bounce,
-            value: amount,
-            body: payload !== '' ? payload : undefined,
-          }),
-        ],
-      });
-
-      return externalMessage(contract, seqno, transfer).toBoc().toString('base64');
-    }
+    const lockupConfig = vault.getLockupConfig();
+    const contract = ContractService.getWalletContract(
+      contractVersionsMap[walletVersion ?? version ?? 'v4R2'],
+      Buffer.from(vault.tonPublicKey),
+      {
+        lockupPubKey: lockupConfig?.config_pubkey,
+        allowedDestinations: lockupConfig?.allowed_destinations,
+      },
+    );
+    return TransactionService.createTransfer(contract, {
+      seqno,
+      secretKey,
+      sendMode,
+      messages: [
+        internal({
+          to: recipient.address,
+          bounce,
+          value: amount,
+          body: payload !== '' ? payload : undefined,
+        }),
+      ],
+    });
   }
 
   async estimateFee(
@@ -584,7 +553,7 @@ export class TonWallet {
       vault,
       walletVersion,
       bounce: isActiveAccount(recipientInfo.status)
-        ? AddressFormatter.isBounceable(recipientInfo.address)
+        ? AddressFormatter.isBounceable(address)
         : false,
     });
 
@@ -639,7 +608,7 @@ export class TonWallet {
       secretKey: Buffer.from(secretKey),
       // We should keep bounce flag from user input. We should check contract status till Jan 1, 2024 according to internal Address reform roadmap
       bounce: isActiveAccount(recipientInfo.status)
-        ? AddressFormatter.isBounceable(recipientInfo.address)
+        ? AddressFormatter.isBounceable(address)
         : false,
     });
 
@@ -663,7 +632,7 @@ export class TonWallet {
     }
 
     try {
-      await this.sendApi.sendBoc({ sendBocRequest: { boc } });
+      await tonapi.blockchain.sendBlockchainMessage({ boc }, { format: 'text' });
     } catch (e) {
       if (!store.getState().main.isTimeSynced) {
         throw new Error('wrong_time');
@@ -689,32 +658,40 @@ export class TonWallet {
   }
 
   async getLockupBalances(info: Account) {
-    if (['empty', 'uninit', 'nonexist'].includes(info?.status ?? '')) {
-      try {
+    try {
+      if (['empty', 'uninit', 'nonexist'].includes(info?.status ?? '')) {
         const balance = (
           await this.blockchainApi.getRawAccount({ accountId: info.address })
         ).balance;
         return [Ton.fromNano(balance), 0, 0];
-      } catch (e) {
+      }
+
+      const balances = await this.vault.tonWallet.getBalances();
+      const result = balances.map((item: number) => Ton.fromNano(item.toString()));
+      result[0] = new BigNumber(result[0]).minus(result[1]).minus(result[2]).toString();
+
+      return result;
+    } catch (e) {
+      if (e?.response?.status === 404) {
         return [Ton.fromNano('0'), 0, 0];
       }
+
+      throw e;
     }
-
-    const balances = await this.vault.tonWallet.getBalances();
-    const result = balances.map((item: number) => Ton.fromNano(item.toString()));
-    result[0] = new BigNumber(result[0]).minus(result[1]).minus(result[2]).toString();
-
-    return result;
   }
 
   async getBalance(): Promise<string> {
-    const account = await this.vault.getTonAddress(this.isTestnet);
     try {
+      const account = await this.vault.getTonAddress(this.isTestnet);
       const balance = (await this.blockchainApi.getRawAccount({ accountId: account }))
         .balance;
       return Ton.fromNano(balance);
     } catch (e) {
-      return Ton.fromNano('0');
+      if (e?.response?.status === 404) {
+        return Ton.fromNano(0);
+      }
+
+      throw e;
     }
   }
 }
