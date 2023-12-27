@@ -84,7 +84,7 @@ jobs:
         os: [macos-13]
         node-version: [18.18.0]
         ruby-version: [3.2]
-        java-version: [11.0.10]
+        java-version: [11.0.12]
 
     runs-on: ${{ matrix.os }}
 
@@ -160,7 +160,7 @@ jobs:
         os: [macos-13]
         node-version: [18.18.0]
         ruby-version: [3.2]
-        java-version: [11.0.10]
+        java-version: [11.0.12]
 
     runs-on: ${{ matrix.os }}
 
