@@ -17,7 +17,6 @@ import { getChainName, getWalletName } from '$shared/dynamicConfig';
 import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 
-import axios from 'axios';
 import { Tonapi } from '$libs/Tonapi';
 import { Address as TAddress } from '$store/wallet/interface';
 import {
@@ -26,11 +25,10 @@ import {
   AccountsApi,
   Account,
 } from '@tonkeeper/core/src/legacy';
-import { SendApi, Configuration as V1Configuration } from 'tonapi-sdk-js';
 
+import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
 import { Address, Cell, internal, toNano } from '@ton/core';
 import { config } from '@tonkeeper/shared/config';
-import { tk } from '@tonkeeper/shared/tonkeeper';
 import {
   emulateWithBattery,
   sendBocWithBattery,
@@ -122,7 +120,6 @@ export class TonWallet {
   private vault: Vault;
   private blockchainApi: BlockchainApi;
   private accountsApi: AccountsApi;
-  private sendApi: SendApi;
 
   constructor(vault: Vault, provider: any = null) {
     if (!provider) {
@@ -141,15 +138,6 @@ export class TonWallet {
     });
     this.blockchainApi = new BlockchainApi(tonApiConfiguration);
     this.accountsApi = new AccountsApi(tonApiConfiguration);
-
-    this.sendApi = new SendApi(
-      new V1Configuration({
-        basePath: getServerConfig('tonapiIOEndpoint'),
-        headers: {
-          Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-        },
-      }),
-    );
   }
 
   static fromJSON(json: any, vault: Vault): TonWallet {
@@ -209,16 +197,9 @@ export class TonWallet {
 
   async getSeqno(address: string): Promise<number> {
     try {
-      const endpoint = getServerConfig('tonapiIOEndpoint');
-      const response: any = await axios.get(`${endpoint}/v1/wallet/getSeqno`, {
-        headers: {
-          Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-        },
-        params: {
-          account: address,
-        },
-      });
-      return response.data?.seqno ?? 0;
+      const seqno = (await tonapi.wallet.getAccountSeqno(address)).seqno;
+
+      return seqno;
     } catch (err) {
       if (err.response.status === 400) {
         return 0;

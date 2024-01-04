@@ -20,7 +20,7 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
   const subtitle = payload.user_wallet.name
     ? payload.user_wallet.name
     : Address.parse(payload.user_wallet.address, {
-        bounceable: !getFlag('address_style_nobounce'),
+        bounceable: !payload.user_wallet.is_wallet,
       }).toShort();
 
   const amountIn = useMemo(() => {

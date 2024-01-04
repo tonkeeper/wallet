@@ -20,6 +20,7 @@ import { push } from '$navigation/imperative';
 import { SheetActions } from '@tonkeeper/router';
 import { openReplaceDomainAddress } from './NFTOperations/ReplaceDomainAddressModal';
 import { Address } from '@tonkeeper/core';
+import { tonapi } from '@tonkeeper/shared/tonkeeper';
 
 const TonWeb = require('tonweb');
 
@@ -61,8 +62,8 @@ export class LinkingDomainActions {
   public async calculateFee() {
     try {
       const boc = await this.createBoc();
-      const estimatedFee = await Tonapi.estimateTx(boc);
-      const feeNano = new BigNumber(estimatedFee.fee.total.toString());
+      const feeInfo = await tonapi.wallet.emulateMessageToWallet({ boc });
+      const feeNano = new BigNumber(feeInfo.event.extra).multipliedBy(-1);
 
       return truncateDecimal(Ton.fromNano(feeNano.toString()), 1);
     } catch (err) {
@@ -136,7 +137,7 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
     setIsDisabled(true);
 
     const boc = await linkingActions.createBoc(privateKey);
-    await Tonapi.sendBoc(boc);
+    await tonapi.blockchain.sendBlockchainMessage({ boc }, { format: 'text' });
   });
 
   const handleReplace = React.useCallback(() => {

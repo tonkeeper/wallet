@@ -33,7 +33,40 @@ export interface AccountAddress {
   is_wallet: boolean;
 }
 
+export interface BlockCurrencyCollection {
+  /**
+   * @format int64
+   * @example 10000000000
+   */
+  grams: number;
+  other: {
+    /**
+     * @format int64
+     * @example 13
+     */
+    id: number;
+    /** @example "10000000000" */
+    value: string;
+  }[];
+}
+
+export interface BlockValueFlow {
+  from_prev_blk: BlockCurrencyCollection;
+  to_next_blk: BlockCurrencyCollection;
+  imported: BlockCurrencyCollection;
+  exported: BlockCurrencyCollection;
+  fees_collected: BlockCurrencyCollection;
+  burned?: BlockCurrencyCollection;
+  fees_imported: BlockCurrencyCollection;
+  recovered: BlockCurrencyCollection;
+  created: BlockCurrencyCollection;
+  minted: BlockCurrencyCollection;
+}
+
 export interface BlockchainBlock {
+  /** @example 130 */
+  tx_quantity: number;
+  value_flow: BlockValueFlow;
   /**
    * @format int32
    * @example 0
@@ -136,6 +169,17 @@ export interface BlockchainBlock {
   created_by: string;
 }
 
+export interface BlockchainBlocks {
+  blocks: BlockchainBlock[];
+}
+
+export interface BlockchainBlockShards {
+  shards: {
+    /** @example "(0,8000000000000000,4234234)" */
+    last_known_block_id: string;
+  }[];
+}
+
 /** @example "active" */
 export enum AccountStatus {
   Nonexist = 'nonexist',
@@ -150,6 +194,8 @@ export interface StateInit {
 }
 
 export interface Message {
+  /** @example "int_msg" */
+  msg_type: MessageMsgTypeEnum;
   /**
    * @format int64
    * @example 25713146000001
@@ -367,23 +413,348 @@ export interface Transactions {
   transactions: Transaction[];
 }
 
+export interface ConfigProposalSetup {
+  /** @example 2 */
+  min_tot_rounds: number;
+  /** @example 6 */
+  max_tot_rounds: number;
+  /** @example 2 */
+  min_wins: number;
+  /** @example 6 */
+  max_losses: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  min_store_sec: number;
+  /**
+   * @format int64
+   * @example 10000000
+   */
+  max_store_sec: number;
+  /**
+   * @format int64
+   * @example 1
+   */
+  bit_price: number;
+  /**
+   * @format int64
+   * @example 500
+   */
+  cell_price: number;
+}
+
+export interface GasLimitPrices {
+  /** @format int64 */
+  special_gas_limit?: number;
+  /** @format int64 */
+  flat_gas_limit?: number;
+  /** @format int64 */
+  flat_gas_price?: number;
+  /**
+   * @format int64
+   * @example 1
+   */
+  gas_price: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  gas_limit: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  gas_credit: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  block_gas_limit: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  freeze_due_limit: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  delete_due_limit: number;
+}
+
+export interface BlockParamLimits {
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  underload: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  soft_limit: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  hard_limit: number;
+}
+
+export interface BlockLimits {
+  bytes: BlockParamLimits;
+  gas: BlockParamLimits;
+  lt_delta: BlockParamLimits;
+}
+
+export interface MsgForwardPrices {
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  lump_price: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  bit_price: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  cell_price: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  ihr_price_factor: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  first_frac: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  next_frac: number;
+}
+
+export interface WorkchainDescr {
+  /**
+   * @format int
+   * @example 0
+   */
+  workchain: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  enabled_since: number;
+  /**
+   * @format int
+   * @example 1000000
+   */
+  actual_min_split: number;
+  /**
+   * @format int
+   * @example 1000000
+   */
+  min_split: number;
+  /**
+   * @format int
+   * @example 1000000
+   */
+  max_split: number;
+  /** @example 1000000 */
+  basic: number;
+  /** @example true */
+  active: boolean;
+  /** @example true */
+  accept_msgs: boolean;
+  /**
+   * @format int
+   * @example 1000000
+   */
+  flags: number;
+  /** @example 1000000 */
+  zerostate_root_hash: string;
+  /** @example 1000000 */
+  zerostate_file_hash: string;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  version: number;
+}
+
+export interface MisbehaviourPunishmentConfig {
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  default_flat_fine: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  default_proportional_fine: number;
+  /** @example 1000000 */
+  severity_flat_mult: number;
+  /** @example 1000000 */
+  severity_proportional_mult: number;
+  /** @example 1000000 */
+  unpunishable_interval: number;
+  /** @example 1000000 */
+  long_interval: number;
+  /** @example 1000000 */
+  long_flat_mult: number;
+  /** @example 1000000 */
+  long_proportional_mult: number;
+  /** @example 1000000 */
+  medium_interval: number;
+  /** @example 1000000 */
+  medium_flat_mult: number;
+  /** @example 1000000 */
+  medium_proportional_mult: number;
+}
+
+export interface SizeLimitsConfig {
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  max_msg_bits: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  max_msg_cells: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  max_library_cells: number;
+  /**
+   * @format int
+   * @example 1000000
+   */
+  max_vm_data_depth: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  max_ext_msg_size: number;
+  /**
+   * @format int
+   * @example 1000000
+   */
+  max_ext_msg_depth: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  max_acc_state_cells?: number;
+  /**
+   * @format int64
+   * @example 1000000
+   */
+  max_acc_state_bits?: number;
+}
+
 export interface ValidatorsSet {
   utime_since: number;
   utime_until: number;
   total: number;
   main: number;
+  /** @format int64 */
   total_weight?: number;
   list: {
     public_key: string;
+    /** @format int64 */
+    weight: number;
+    adnl_addr?: string;
   }[];
+}
+
+export interface Oracle {
+  /** @example "0:55e8809519cd3c49098c9ee45afdafcea7a894a74d0f628d94a115a50e045122" */
+  address: string;
+  /** @example "00000000000000000000000017dcab1b1481610f6c7a7a98cf0370dc0ec704a6" */
+  secp_pubkey: string;
+}
+
+export interface OracleBridgeParams {
+  bridge_addr: string;
+  oracle_multisig_address: string;
+  external_chain_address: string;
+  oracles: Oracle[];
+}
+
+export interface JettonBridgePrices {
+  /** @format int64 */
+  bridge_burn_fee: number;
+  /** @format int64 */
+  bridge_mint_fee: number;
+  /** @format int64 */
+  wallet_min_tons_for_storage: number;
+  /** @format int64 */
+  wallet_gas_consumption: number;
+  /** @format int64 */
+  minter_min_tons_for_storage: number;
+  /** @format int64 */
+  discover_gas_consumption: number;
+}
+
+export interface JettonBridgeParams {
+  bridge_address: string;
+  oracles_address: string;
+  state_flags: number;
+  /** @format int64 */
+  burn_bridge_fee?: number;
+  oracles: Oracle[];
+  external_chain_address?: string;
+  prices?: JettonBridgePrices;
 }
 
 export interface Validator {
   /** @example "0:55e8809519cd3c49098c9ee45afdafcea7a894a74d0f628d94a115a50e045122" */
   address: string;
+  /** @example "10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365" */
+  adnl_address: string;
+  /**
+   * @format int64
+   * @example 123456789
+   */
+  stake: number;
+  /**
+   * @format int64
+   * @example 123456789
+   */
+  max_factor: number;
 }
 
 export interface Validators {
+  /**
+   * @format int64
+   * @example 123456789
+   */
+  elect_at: number;
+  /**
+   * @format int64
+   * @example 123456789
+   */
+  elect_close: number;
+  /**
+   * @format int64
+   * @example 123456789
+   */
+  min_stake: number;
+  /**
+   * @format int64
+   * @example 123456789
+   */
+  total_stake: number;
   validators: Validator[];
 }
 
@@ -498,6 +869,11 @@ export interface TvmStackRecord {
   tuple?: TvmStackRecord[];
 }
 
+export interface RawBlockchainConfig {
+  /** @example {} */
+  config: Record<string, any>;
+}
+
 export interface BlockchainConfig {
   /** config address */
   '0': string;
@@ -505,18 +881,301 @@ export interface BlockchainConfig {
   '1': string;
   /** minter address */
   '2': string;
+  /** The address of the transaction fee collector. */
+  '3'?: string;
   /** dns root address */
   '4': string;
+  '5'?: {
+    blackhole_addr?: string;
+    /** @format int64 */
+    fee_burn_nom: number;
+    /** @format int64 */
+    fee_burn_denom: number;
+  };
+  /** Minting fees of new currencies. */
+  '6'?: {
+    /** @format int64 */
+    mint_new_price: number;
+    /** @format int64 */
+    mint_add_price: number;
+  };
+  /** The volume of each of the additional currencies in circulation. */
+  '7'?: {
+    currencies: {
+      /** @format int64 */
+      currency_id: number;
+      amount: string;
+    }[];
+  };
+  /** The network version and additional capabilities supported by the validators. */
+  '8'?: {
+    /** @format int64 */
+    version: number;
+    /** @format int64 */
+    capabilities: number;
+  };
+  /** List of mandatory parameters of the blockchain config. */
+  '9'?: {
+    mandatory_params: number[];
+  };
+  /** List of critical TON parameters, the change of which significantly affects the network, so more voting rounds are held. */
+  '10'?: {
+    critical_params: number[];
+  };
+  /** This parameter indicates under what conditions proposals to change the TON configuration are accepted. */
+  '11'?: {
+    normal_params: ConfigProposalSetup;
+    critical_params: ConfigProposalSetup;
+  };
+  /** Workchains in the TON Blockchain */
+  '12'?: {
+    workchains: WorkchainDescr[];
+  };
+  /** The cost of filing complaints about incorrect operation of validators. */
+  '13'?: {
+    /** @format int64 */
+    deposit: number;
+    /** @format int64 */
+    bit_price: number;
+    /** @format int64 */
+    cell_price: number;
+  };
+  /** The reward in nanoTons for block creation in the TON blockchain. */
+  '14'?: {
+    /** @format int64 */
+    masterchain_block_fee: number;
+    /** @format int64 */
+    basechain_block_fee: number;
+  };
+  /** The reward in nanoTons for block creation in the TON blockchain. */
+  '15'?: {
+    /**
+     * @format int64
+     * @example 65536
+     */
+    validators_elected_for: number;
+    /**
+     * @format int64
+     * @example 32768
+     */
+    elections_start_before: number;
+    /**
+     * @format int64
+     * @example 8192
+     */
+    elections_end_before: number;
+    /**
+     * @format int64
+     * @example 32768
+     */
+    stake_held_for: number;
+  };
+  /** The limits on the number of validators in the TON blockchain. */
+  '16'?: {
+    /** @example 400 */
+    max_validators: number;
+    /** @example 100 */
+    max_main_validators: number;
+    /** @example 75 */
+    min_validators: number;
+  };
+  /** The stake parameters configuration in the TON blockchain. */
+  '17'?: {
+    min_stake: string;
+    max_stake: string;
+    min_total_stake: string;
+    /** @format int64 */
+    max_stake_factor: number;
+  };
+  /** The prices for data storage. */
+  '18'?: {
+    storage_prices: {
+      /**
+       * @format int64
+       * @example 0
+       */
+      utime_since: number;
+      /**
+       * @format int64
+       * @example 1
+       */
+      bit_price_ps: number;
+      /**
+       * @format int64
+       * @example 500
+       */
+      cell_price_ps: number;
+      /**
+       * @format int64
+       * @example 1000
+       */
+      mc_bit_price_ps: number;
+      /**
+       * @format int64
+       * @example 500000
+       */
+      mc_cell_price_ps: number;
+    }[];
+  };
+  /** The cost of computations in the masterchain. The complexity of any computation is estimated in gas units. */
+  '20'?: {
+    gas_limits_prices: GasLimitPrices;
+  };
+  /** The cost of computations in the basechains. The complexity of any computation is estimated in gas units. */
+  '21'?: {
+    gas_limits_prices: GasLimitPrices;
+  };
+  /** The limits on the block in the masterchain, upon reaching which the block is finalized and the callback of the remaining messages (if any) is carried over to the next block. */
+  '22'?: {
+    block_limits: BlockLimits;
+  };
+  /** The limits on the block in the basechains, upon reaching which the block is finalized and the callback of the remaining messages (if any) is carried over to the next block. */
+  '23'?: {
+    block_limits: BlockLimits;
+  };
+  /** The cost of sending messages in the masterchain of the TON blockchain. */
+  '24'?: {
+    msg_forward_prices: MsgForwardPrices;
+  };
+  /** The cost of sending messages in the basechains of the TON blockchain. */
+  '25'?: {
+    msg_forward_prices: MsgForwardPrices;
+  };
+  /** The configuration for the Catchain protocol. */
+  '28'?: {
+    /**
+     * @format int64
+     * @example 1000000
+     */
+    mc_catchain_lifetime: number;
+    /**
+     * @format int64
+     * @example 1000000
+     */
+    shard_catchain_lifetime: number;
+    /**
+     * @format int64
+     * @example 1000000
+     */
+    shard_validators_lifetime: number;
+    /**
+     * @format int64
+     * @example 1000000
+     */
+    shard_validators_num: number;
+    /**
+     * @format int
+     * @example 1000000
+     */
+    flags?: number;
+    shuffle_mc_validators?: boolean;
+  };
+  /** The configuration for the consensus protocol above catchain. */
+  '29'?: {
+    /**
+     * @format int
+     * @example 0
+     */
+    flags?: number;
+    /** @example true */
+    new_catchain_ids?: boolean;
+    /**
+     * @format int64
+     * @example 3
+     */
+    round_candidates: number;
+    /**
+     * @format int64
+     * @example 2000
+     */
+    next_candidate_delay_ms: number;
+    /**
+     * @format int64
+     * @example 16000
+     */
+    consensus_timeout_ms: number;
+    /**
+     * @format int64
+     * @example 3
+     */
+    fast_attempts: number;
+    /**
+     * @format int64
+     * @example 8
+     */
+    attempt_duration: number;
+    /**
+     * @format int64
+     * @example 4
+     */
+    catchain_max_deps: number;
+    /**
+     * @format int64
+     * @example 2097152
+     */
+    max_block_bytes: number;
+    /**
+     * @format int64
+     * @example 2097152
+     */
+    max_collated_bytes: number;
+    /**
+     * @format int64
+     * @example 2
+     */
+    proto_version?: number;
+    /**
+     * @format int64
+     * @example 10000
+     */
+    catchain_max_blocks_coeff?: number;
+  };
+  /** The configuration for the consensus protocol above catchain. */
+  '31'?: {
+    fundamental_smc_addr: string[];
+  };
   '32'?: ValidatorsSet;
   '33'?: ValidatorsSet;
   '34'?: ValidatorsSet;
   '35'?: ValidatorsSet;
   '36'?: ValidatorsSet;
   '37'?: ValidatorsSet;
+  /** The configuration for punishment for improper behavior (non-validation). In the absence of the parameter, the default fine size is 101 TON */
+  '40'?: {
+    misbehaviour_punishment_config: MisbehaviourPunishmentConfig;
+  };
+  /** The size limits and some other characteristics of accounts and messages. */
+  '43'?: {
+    size_limits_config: SizeLimitsConfig;
+  };
   /** suspended accounts */
   '44': {
     accounts: string[];
     suspended_until: number;
+  };
+  /** Bridge parameters for wrapping TON in other networks. */
+  '71'?: {
+    oracle_bridge_params: OracleBridgeParams;
+  };
+  /** Bridge parameters for wrapping TON in other networks. */
+  '72'?: {
+    oracle_bridge_params: OracleBridgeParams;
+  };
+  /** Bridge parameters for wrapping TON in other networks. */
+  '73'?: {
+    oracle_bridge_params: OracleBridgeParams;
+  };
+  /** Bridge parameters for wrapping tokens from other networks into tokens on the TON network. */
+  '79'?: {
+    jetton_bridge_params: JettonBridgeParams;
+  };
+  /** Bridge parameters for wrapping tokens from other networks into tokens on the TON network. */
+  '81'?: {
+    jetton_bridge_params: JettonBridgeParams;
+  };
+  /** Bridge parameters for wrapping tokens from other networks into tokens on the TON network. */
+  '82'?: {
+    jetton_bridge_params: JettonBridgeParams;
   };
   /**
    * config boc in base64 format
@@ -577,8 +1236,7 @@ export interface JettonPreview {
 export interface JettonBalance {
   /** @example 597968399 */
   balance: string;
-  /** @example {} */
-  price?: any;
+  price?: TokenRates;
   wallet_address: AccountAddress;
   jetton: JettonPreview;
 }
@@ -698,6 +1356,7 @@ export interface Action {
   ElectionsRecoverStake?: ElectionsRecoverStakeAction;
   JettonSwap?: JettonSwapAction;
   SmartContractExec?: SmartContractAction;
+  DomainRenew?: DomainRenewAction;
   /** shortly describes what this action is about. */
   simple_preview: ActionSimplePreview;
 }
@@ -733,6 +1392,14 @@ export interface SmartContractAction {
   operation: string;
   payload?: string;
   refund?: Refund;
+}
+
+export interface DomainRenewAction {
+  /** @example "vasya.ton" */
+  domain: string;
+  /** @example "0:da6b1b6663a0e4d18cc8574ccd9db5296e367dd9324706f3bbd9eb1cd2caf0bf" */
+  contract_address: string;
+  renewer: AccountAddress;
 }
 
 export interface NftItemTransferAction {
@@ -1176,6 +1843,79 @@ export interface JettonQuantity {
   jetton: JettonPreview;
 }
 
+export interface DecodedMessage {
+  destination: AccountAddress;
+  /** @example "v3R2" */
+  destination_wallet_version: string;
+  ext_in_msg_decoded?: {
+    wallet_v3?: {
+      /**
+       * @format uint32
+       * @example 1
+       */
+      subwallet_id: number;
+      /**
+       * @format uint32
+       * @example 1
+       */
+      valid_until: number;
+      /**
+       * @format uint32
+       * @example 1
+       */
+      seqno: number;
+      raw_messages: DecodedRawMessage[];
+    };
+    wallet_v4?: {
+      /**
+       * @format uint32
+       * @example 1
+       */
+      subwallet_id: number;
+      /**
+       * @format uint32
+       * @example 1
+       */
+      valid_until: number;
+      /**
+       * @format uint32
+       * @example 1
+       */
+      seqno: number;
+      /**
+       * @format int8
+       * @example 1
+       */
+      op: number;
+      raw_messages: DecodedRawMessage[];
+    };
+    wallet_highload_v2?: {
+      /**
+       * @format uint32
+       * @example 1
+       */
+      subwallet_id: number;
+      /** @example "34254528475294857" */
+      bounded_query_id: string;
+      raw_messages: DecodedRawMessage[];
+    };
+  };
+}
+
+export interface DecodedRawMessage {
+  message: {
+    /** @example "te6ccgEBAQEABgAACCiAmCMBAgEABwA=" */
+    boc: string;
+    /** @example "nft_transfer" */
+    decoded_op_name?: string;
+    /** @example "0xdeadbeaf" */
+    op_code?: string;
+    decoded_body?: any;
+  };
+  /** @example 2 */
+  mode: number;
+}
+
 export interface Event {
   /** @example "e8b0e3fee4a26bd2317ac1f9952fcdc87dc08fdb617656b5202416323337372e" */
   event_id: string;
@@ -1219,6 +1959,21 @@ export interface JettonMetadata {
   social?: string[];
   websites?: string[];
   catalogs?: string[];
+}
+
+export interface InscriptionBalances {
+  inscriptions: InscriptionBalance[];
+}
+
+export interface InscriptionBalance {
+  /** @example "ton20" */
+  type: InscriptionBalanceTypeEnum;
+  /** @example "nano" */
+  ticker: string;
+  /** @example "1000000000" */
+  balance: string;
+  /** @example 9 */
+  decimals: number;
 }
 
 export interface Jettons {
@@ -1476,6 +2231,24 @@ export enum PoolImplementationType {
   LiquidTF = 'liquidTF',
 }
 
+export interface TokenRates {
+  /** @example {"TON":1.3710752873163712} */
+  prices?: Record<string, number>;
+  /** @example {"TON":"-1.28%"} */
+  diff_24h?: Record<string, string>;
+  /** @example {"TON":"-2.74%"} */
+  diff_7d?: Record<string, string>;
+  /** @example {"TON":"-0.56%"} */
+  diff_30d?: Record<string, string>;
+}
+
+/** @example "int_msg" */
+export enum MessageMsgTypeEnum {
+  IntMsg = 'int_msg',
+  ExtInMsg = 'ext_in_msg',
+  ExtOutMsg = 'ext_out_msg',
+}
+
 /** @example "cell" */
 export enum TvmStackRecordTypeEnum {
   Cell = 'cell',
@@ -1518,6 +2291,7 @@ export enum ActionTypeEnum {
   SmartContractExec = 'SmartContractExec',
   ElectionsRecoverStake = 'ElectionsRecoverStake',
   ElectionsDepositStake = 'ElectionsDepositStake',
+  DomainRenew = 'DomainRenew',
   Unknown = 'Unknown',
 }
 
@@ -1544,6 +2318,12 @@ export enum NftPurchaseActionAuctionTypeEnum {
   DNSTg = 'DNS.tg',
   Getgems = 'getgems',
   Basic = 'basic',
+}
+
+/** @example "ton20" */
+export enum InscriptionBalanceTypeEnum {
+  Ton20 = 'ton20',
+  Gram20 = 'gram20',
 }
 
 export enum BlockchainAccountInspectCompilerEnum {
@@ -1593,6 +2373,14 @@ export interface ExecGetMethodForBlockchainAccountParams {
    * @example "get_wallet_address"
    */
   methodName: string;
+}
+
+export interface EmulateMessageToEventParams {
+  ignore_signature_check?: boolean;
+}
+
+export interface EmulateMessageToTraceParams {
+  ignore_signature_check?: boolean;
 }
 
 export interface GetAccountJettonsBalancesParams {
@@ -1904,6 +2692,58 @@ export interface GetNftHistoryByIdParams {
   accountId: string;
 }
 
+export interface GetAccountInscriptionsParams {
+  /**
+   * @max 1000
+   * @default 1000
+   */
+  limit?: number;
+  /** @default 0 */
+  offset?: number;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  accountId: string;
+}
+
+export interface GetInscriptionOpTemplateParams {
+  /** @example "ton20" */
+  type: TypeEnum;
+  destination?: string;
+  comment?: string;
+  /** @example "transfer" */
+  operation: OperationEnum;
+  /** @example "1000000000" */
+  amount: string;
+  /** @example "nano" */
+  ticker: string;
+  /** @example "UQAs87W4yJHlF8mt29ocA4agnMrLsOP69jC1HPyBUjJay7Mg" */
+  who: string;
+}
+
+/** @example "ton20" */
+export enum TypeEnum {
+  Ton20 = 'ton20',
+  Gram20 = 'gram20',
+}
+
+/** @example "transfer" */
+export enum OperationEnum {
+  Transfer = 'transfer',
+}
+
+/** @example "ton20" */
+export enum GetInscriptionOpTemplateParams1TypeEnum {
+  Ton20 = 'ton20',
+  Gram20 = 'gram20',
+}
+
+/** @example "transfer" */
+export enum GetInscriptionOpTemplateParams1OperationEnum {
+  Transfer = 'transfer',
+}
+
 export interface GetJettonsParams {
   /**
    * @format int32
@@ -1999,6 +2839,19 @@ export interface GetRawBlockchainBlockHeaderParams {
    * @example "(-1,8000000000000000,4234234,3E575DAB1D25...90D8,47192E5C46C...BB29)"
    */
   blockId: string;
+}
+
+export interface GetRawAccountStateParams {
+  /**
+   * target block: (workchain,shard,seqno,root_hash,file_hash)
+   * @example "(-1,8000000000000000,4234234,3E575DAB1D25...90D8,47192E5C46C...BB29)"
+   */
+  target_block?: string;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  accountId: string;
 }
 
 export interface GetRawShardInfoParams {
@@ -2379,6 +3232,96 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       }),
 
     /**
+     * @description Get blockchain block shards
+     *
+     * @tags Blockchain
+     * @name GetBlockchainMasterchainShards
+     * @request GET:/v2/blockchain/masterchain/{masterchain_seqno}/shards
+     */
+    getBlockchainMasterchainShards: (
+      masterchainSeqno: number,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<BlockchainBlockShards, Error>({
+        path: `/v2/blockchain/masterchain/${masterchainSeqno}/shards`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get all blocks in all shards and workchains between target and previous masterchain block according to shards last blocks snapshot in masterchain.  We don't recommend to build your app around this method because it has problem with scalability and will work very slow in the future.
+     *
+     * @tags Blockchain
+     * @name GetBlockchainMasterchainBlocks
+     * @request GET:/v2/blockchain/masterchain/{masterchain_seqno}/blocks
+     */
+    getBlockchainMasterchainBlocks: (
+      masterchainSeqno: number,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<BlockchainBlocks, Error>({
+        path: `/v2/blockchain/masterchain/${masterchainSeqno}/blocks`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get all transactions in all shards and workchains between target and previous masterchain block according to shards last blocks snapshot in masterchain. We don't recommend to build your app around this method because it has problem with scalability and will work very slow in the future.
+     *
+     * @tags Blockchain
+     * @name GetBlockchainMasterchainTransactions
+     * @request GET:/v2/blockchain/masterchain/{masterchain_seqno}/transactions
+     */
+    getBlockchainMasterchainTransactions: (
+      masterchainSeqno: number,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Transactions, Error>({
+        path: `/v2/blockchain/masterchain/${masterchainSeqno}/transactions`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get blockchain config from a specific block, if present.
+     *
+     * @tags Blockchain
+     * @name GetBlockchainConfigFromBlock
+     * @request GET:/v2/blockchain/masterchain/{masterchain_seqno}/config
+     */
+    getBlockchainConfigFromBlock: (
+      masterchainSeqno: number,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<BlockchainConfig, Error>({
+        path: `/v2/blockchain/masterchain/${masterchainSeqno}/config`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get raw blockchain config from a specific block, if present.
+     *
+     * @tags Blockchain
+     * @name GetRawBlockchainConfigFromBlock
+     * @request GET:/v2/blockchain/masterchain/{masterchain_seqno}/config/raw
+     */
+    getRawBlockchainConfigFromBlock: (
+      masterchainSeqno: number,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<RawBlockchainConfig, Error>({
+        path: `/v2/blockchain/masterchain/${masterchainSeqno}/config/raw`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
      * @description Get transactions from block
      *
      * @tags Blockchain
@@ -2545,6 +3488,21 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       }),
 
     /**
+     * @description Get raw blockchain config
+     *
+     * @tags Blockchain
+     * @name GetRawBlockchainConfig
+     * @request GET:/v2/blockchain/config/raw
+     */
+    getRawBlockchainConfig: (params: RequestParams = {}) =>
+      this.http.request<RawBlockchainConfig, Error>({
+        path: `/v2/blockchain/config/raw`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
      * @description Blockchain account inspect
      *
      * @tags Blockchain
@@ -2559,6 +3517,61 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         ...params,
       }),
   };
+  message = {
+    /**
+     * @description Decode a given message. Only external incoming messages can be decoded currently.
+     *
+     * @tags Emulation
+     * @name DecodeMessage
+     * @request POST:/v2/message/decode
+     */
+    decodeMessage: (
+      data: {
+        /** @example "te6ccgECBQEAARUAAkWIAWTtae+KgtbrX26Bep8JSq8lFLfGOoyGR/xwdjfvpvEaHg" */
+        boc: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DecodedMessage, Error>({
+        path: `/v2/message/decode`,
+        method: 'POST',
+        body: data,
+        format: 'json',
+        ...params,
+      }),
+  };
+  address = {
+    /**
+     * @description parse address and display in all formats
+     *
+     * @tags Accounts
+     * @name AddressParse
+     * @request GET:/v2/address/{account_id}/parse
+     */
+    addressParse: (accountId: string, params: RequestParams = {}) =>
+      this.http.request<
+        {
+          /** @example "0:6e731f2e28b73539a7f85ac47ca104d5840b229351189977bb6151d36b5e3f5e" */
+          raw_form: string;
+          bounceable: {
+            b64: string;
+            b64url: string;
+          };
+          non_bounceable: {
+            b64: string;
+            b64url: string;
+          };
+          given_type: string;
+          test_only: boolean;
+        },
+        Error
+      >({
+        path: `/v2/address/${accountId}/parse`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+  };
   events = {
     /**
      * @description Emulate sending message to blockchain
@@ -2568,6 +3581,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
      * @request POST:/v2/events/emulate
      */
     emulateMessageToEvent: (
+      query: EmulateMessageToEventParams,
       data: {
         /** @example "te6ccgECBQEAARUAAkWIAWTtae+KgtbrX26Bep8JSq8lFLfGOoyGR/xwdjfvpvEaHg" */
         boc: string;
@@ -2577,6 +3591,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       this.http.request<Event, Error>({
         path: `/v2/events/emulate`,
         method: 'POST',
+        query: query,
         body: data,
         format: 'json',
         ...params,
@@ -2621,6 +3636,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
      * @request POST:/v2/traces/emulate
      */
     emulateMessageToTrace: (
+      query: EmulateMessageToTraceParams,
       data: {
         /** @example "te6ccgECBQEAARUAAkWIAWTtae+KgtbrX26Bep8JSq8lFLfGOoyGR/xwdjfvpvEaHg" */
         boc: string;
@@ -2630,6 +3646,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       this.http.request<Trace, Error>({
         path: `/v2/traces/emulate`,
         method: 'POST',
+        query: query,
         body: data,
         format: 'json',
         ...params,
@@ -2662,6 +3679,16 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       data: {
         /** @example "te6ccgECBQEAARUAAkWIAWTtae+KgtbrX26Bep8JSq8lFLfGOoyGR/xwdjfvpvEaHg" */
         boc: string;
+        /** additional per account configuration */
+        params?: {
+          /** @example "0:97146a46acc2654y27947f14c4a4b14273e954f78bc017790b41208b0043200b" */
+          address: string;
+          /**
+           * @format int64
+           * @example 10000000000
+           */
+          balance?: number;
+        }[];
       },
       params: RequestParams = {},
     ) =>
@@ -3106,6 +4133,25 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         format: 'json',
         ...params,
       }),
+
+    /**
+     * @description Get all inscriptions by owner address
+     *
+     * @tags Inscriptions
+     * @name GetAccountInscriptions
+     * @request GET:/v2/accounts/{account_id}/inscriptions
+     */
+    getAccountInscriptions: (
+      { accountId, ...query }: GetAccountInscriptionsParams,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<InscriptionBalances, Error>({
+        path: `/v2/accounts/${accountId}/inscriptions`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
   };
   dns = {
     /**
@@ -3275,6 +4321,34 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         ...params,
       }),
   };
+  inscriptions = {
+    /**
+     * @description return comment for making operation with instrospection. please don't use it if you don't know what you are doing
+     *
+     * @tags Inscriptions
+     * @name GetInscriptionOpTemplate
+     * @request GET:/v2/inscriptions/op-template
+     */
+    getInscriptionOpTemplate: (
+      query: GetInscriptionOpTemplateParams,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          /** @example "comment" */
+          comment: string;
+          /** @example "0:0000000000000" */
+          destination: string;
+        },
+        Error
+      >({
+        path: `/v2/inscriptions/op-template`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+  };
   jettons = {
     /**
      * @description Get a list of all indexed jetton masters in the blockchain.
@@ -3437,8 +4511,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
     getRates: (query: GetRatesParams, params: RequestParams = {}) =>
       this.http.request<
         {
-          /** @example {} */
-          rates: any;
+          rates: Record<string, TokenRates>;
         },
         Error
       >({
@@ -3746,7 +4819,10 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
      * @name GetRawAccountState
      * @request GET:/v2/liteserver/get_account_state/{account_id}
      */
-    getRawAccountState: (accountId: string, params: RequestParams = {}) =>
+    getRawAccountState: (
+      { accountId, ...query }: GetRawAccountStateParams,
+      params: RequestParams = {},
+    ) =>
       this.http.request<
         {
           id: BlockRaw;
@@ -3762,6 +4838,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       >({
         path: `/v2/liteserver/get_account_state/${accountId}`,
         method: 'GET',
+        query: query,
         format: 'json',
         ...params,
       }),

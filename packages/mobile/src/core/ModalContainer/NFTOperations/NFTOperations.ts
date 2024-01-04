@@ -13,10 +13,9 @@ import { Address } from '@ton/core';
 import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 import { getServerConfig } from '$shared/constants';
-import { SendApi, Configuration as ConfigurationV1 } from 'tonapi-sdk-js';
-import { Tonapi } from '$libs/Tonapi';
 import { Configuration, NFTApi } from '@tonkeeper/core/src/legacy';
 import { sendBocWithBattery } from '@tonkeeper/shared/utils/blockchain';
+import { tonapi } from '@tonkeeper/shared/tonkeeper';
 
 const { NftItem } = TonWeb.token.nft;
 
@@ -35,30 +34,11 @@ export class NFTOperations {
     }),
   );
 
-  private sendApi = new SendApi(
-    new ConfigurationV1({
-      basePath: getServerConfig('tonapiIOEndpoint'),
-      headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-      },
-    }),
-  );
-
   private myAddresses: { [key: string]: string } = {};
 
   constructor(wallet: Wallet) {
     this.tonwebWallet = wallet.vault.tonWallet;
     this.wallet = wallet;
-
-    const tonApiConfiguration = new ConfigurationV1({
-      basePath: getServerConfig('tonapiIOEndpoint'),
-      headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
-      },
-    });
-
-    this.sendApi = new SendApi(tonApiConfiguration);
-
     this.getMyAddresses();
   }
 
@@ -181,8 +161,8 @@ export class NFTOperations {
         const methods = await signRawMethods();
         const queryMsg = await methods.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
-        const feeInfo = await Tonapi.estimateTx(boc);
-        const fee = new BigNumber(feeInfo.fee.total).toNumber();
+        const feeInfo = await tonapi.wallet.emulateMessageToWallet({ boc });
+        const fee = new BigNumber(feeInfo.event.extra).multipliedBy(-1).toNumber();
 
         return truncateDecimal(Ton.fromNano(fee.toString()), 2, true);
       },
@@ -252,8 +232,8 @@ export class NFTOperations {
         const methods = transfer(params);
         const queryMsg = await methods.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
-        const feeInfo = await Tonapi.estimateTx(boc);
-        const fee = new BigNumber(feeInfo.fee.total).toNumber();
+        const feeInfo = await tonapi.wallet.emulateMessageToWallet({ boc });
+        const fee = new BigNumber(feeInfo.event.extra).multipliedBy(-1).toNumber();
 
         return truncateDecimal(Ton.fromNano(fee.toString()), 2, true);
       },
@@ -278,8 +258,8 @@ export class NFTOperations {
         try {
           const query = await transfer.getQuery();
           const boc = Base64.encodeBytes(await query.toBoc(false));
-          const feeInfo = await Tonapi.estimateTx(boc);
-          feeNano = new BigNumber(feeInfo.fee.total);
+          const feeInfo = await tonapi.wallet.emulateMessageToWallet({ boc });
+          feeNano = new BigNumber(feeInfo.event.extra).multipliedBy(-1);
         } catch (e) {
           throw new NFTOperationError(t('send_fee_estimation_error'));
         }
@@ -295,7 +275,7 @@ export class NFTOperations {
         const queryMsg = await transfer.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
 
-        await this.sendApi.sendBoc({ sendBocRequest: { boc } });
+        await tonapi.blockchain.sendBlockchainMessage({ boc }, { format: 'text' });
       },
     };
   }

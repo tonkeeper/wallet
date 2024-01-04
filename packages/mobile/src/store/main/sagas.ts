@@ -367,10 +367,10 @@ function* setTonCustomIconWorker(action: SetTonCustomIcon) {
 
 function* getTimeSyncedWorker() {
   try {
-    const endpoint = `${getServerConfig('tonapiIOEndpoint')}/v1/system/time`;
+    const endpoint = `${getServerConfig('tonapiV2Endpoint')}/v2/liteserver/get_time`;
 
     const response = yield call(axios.get, endpoint, {
-      headers: { Authorization: `Bearer ${getServerConfig('tonApiKey')}` },
+      headers: { Authorization: `Bearer ${getServerConfig('tonApiV2Key')}` },
     });
     const time = response?.data?.time;
     const isSynced = Math.abs(Date.now() - time * 1000) <= 7000;
