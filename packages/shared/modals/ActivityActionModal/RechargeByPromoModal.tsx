@@ -29,6 +29,7 @@ export const RechargeByPromoModal = memo(() => {
       <Modal.Content>
         <View style={styles.contentContainer}>
           <Input
+            component={Modal.Input}
             autoFocus
             withPasteButton
             label={t('battery.promocode.placeholder')}

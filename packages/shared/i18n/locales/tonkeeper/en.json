@@ -128,13 +128,13 @@
     "settings": "Battery",
     "ok": "OK",
     "title": {
-      "empty": "Battery for gas fees is empty",
+      "empty": "Recharge your battery for gas fees",
       "almost_empty": "Battery for gas fees is almost empty",
       "medium": "Battery for gas fees is half full",
       "full": "Battery for gas fees is full"
     },
     "description": {
-      "empty": "You have enough charge battery for 0 transactions.",
+      "empty": "Send tokens and NFTs, pay for staking actions with empty balance with the battery for gas fees.",
       "almost_empty": "You have enough charge battery for more than %{cnt} transactions.",
       "medium": "You have enough charge battery for more than %{cnt} transactions.",
       "full": "You have enough charge battery for more than %{cnt} transactions."
