@@ -36,7 +36,7 @@ export const ScanQRButton = memo(() => {
           delay: 200,
           origin: DeeplinkOrigin.QR_CODE,
         });
-        console.log(resolver);
+
         if (resolver) {
           resolver();
           return true;
