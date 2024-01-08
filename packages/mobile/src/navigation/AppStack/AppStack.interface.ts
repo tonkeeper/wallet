@@ -3,13 +3,14 @@ import { AppStackRouteNames } from '$navigation';
 import { CryptoCurrency } from '$shared/constants';
 import { SendAnalyticsFrom, SubscriptionModel } from '$store/models';
 import { NFTKeyPair } from '$store/nfts/interface';
+import { TokenType } from '$core/Send/Send.interface';
 
 export type AppStackParamList = {
   [AppStackRouteNames.Intro]: {};
   [AppStackRouteNames.MainStack]: {};
   [AppStackRouteNames.Receive]: {
     currency: CryptoCurrency;
-    isJetton?: boolean;
+    tokenType?: TokenType;
     jettonAddress?: string;
     isFromMainScreen?: boolean;
   };
@@ -17,7 +18,6 @@ export type AppStackParamList = {
     currency?: CryptoCurrency | string;
     address?: string;
     comment?: string;
-    isJetton?: boolean;
     amount?: string;
     fee?: string;
     isInactive?: boolean;
@@ -25,6 +25,7 @@ export type AppStackParamList = {
     from?: SendAnalyticsFrom;
     expiryTimestamp?: number | null;
     redirectToActivity?: boolean;
+    tokenType?: TokenType;
   };
   [AppStackRouteNames.ScanQR]: {
     onScan: (url: string) => boolean | Promise<boolean>;

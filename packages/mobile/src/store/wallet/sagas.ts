@@ -13,12 +13,7 @@ import BigNumber from 'bignumber.js';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 
-import {
-  walletActions,
-  walletBalancesSelector,
-  walletSelector,
-  walletWalletSelector,
-} from '$store/wallet/index';
+import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet/index';
 import {
   EncryptedVault,
   jettonTransferAmount,
@@ -81,9 +76,9 @@ import {
 import { subscriptionsActions } from '$store/subscriptions';
 import { t } from '@tonkeeper/shared/i18n';
 import { initHandler } from '$store/main/sagas';
-import { getChainName, getTokenConfig, getWalletName } from '$shared/dynamicConfig';
+import { getChainName, getWalletName } from '$shared/dynamicConfig';
 import { withRetryCtx } from '$store/retry';
-import { detectBiometryType, toNano } from '$utils';
+import { detectBiometryType, fromNano, toNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { Api } from '$api';
 import { nftsActions } from '$store/nfts';
@@ -96,12 +91,12 @@ import { useRatesStore } from '$store/zustand/rates';
 import { Cell } from '@ton/core';
 import nacl from 'tweetnacl';
 import { encryptMessageComment } from '@tonkeeper/core';
-import TonWeb from 'tonweb';
 import { goBack } from '$navigation/imperative';
 import { trackEvent } from '$utils/stats';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { getFlag } from '$utils/flags';
 import { Address } from '@tonkeeper/shared/Address';
+import { TokenType } from '$core/Send/Send.interface';
 
 function* loadRatesAfterJettons() {
   try {
@@ -352,7 +347,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
       onEnd,
       onNext,
       onInsufficientFunds,
-      isJetton,
+      tokenType,
       isSendAll,
       jettonWalletAddress,
       decimals = 0,
@@ -393,7 +388,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
     let fee: string = '0';
     let isEstimateFeeError = false;
     try {
-      if (isJetton) {
+      if (tokenType === TokenType.Jetton) {
         fee = yield call(
           [wallet.ton, 'estimateJettonFee'],
           jettonWalletAddress,
@@ -402,7 +397,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
           wallet.vault,
           commentValue,
         );
-      } else {
+      } else if (tokenType === TokenType.TON) {
         if (currency === CryptoCurrencies.Ton) {
           fee = yield call(
             [wallet.ton, 'estimateFee'],
@@ -414,6 +409,15 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
           );
           isUninit = yield call([wallet.ton, 'isInactiveAddress'], address);
         }
+      } else if (tokenType === TokenType.Inscription) {
+        fee = yield call(
+          [wallet.ton, 'estimateInscriptionFee'],
+          currency,
+          address,
+          toNano(amount, decimals!),
+          wallet.vault,
+          commentValue,
+        );
       }
     } catch (e) {
       console.log(e);
@@ -434,7 +438,10 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
 
     if (onNext) {
       if (isEstimateFeeError && onInsufficientFunds) {
-        const amountNano = isJetton ? jettonTransferAmount.toString() : toNano(amount);
+        const amountNano =
+          tokenType === TokenType.Jetton
+            ? jettonTransferAmount.toString()
+            : toNano(amount);
         const address = yield call([wallet.ton, 'getAddress']);
         const { balance } = yield call(Tonapi.getWalletInfo, address);
         if (new BigNumber(amountNano).gt(new BigNumber(balance))) {
@@ -471,7 +478,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       onDone,
       onFail,
       isSendAll,
-      isJetton,
+      tokenType,
       jettonWalletAddress,
       decimals,
     } = action.payload;
@@ -511,7 +518,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       commentValue = encryptedCommentCell;
     }
 
-    if (isJetton) {
+    if (tokenType === TokenType.Jetton) {
       yield call(
         [wallet.ton, 'jettonTransfer'],
         jettonWalletAddress,
@@ -520,7 +527,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         unlockedVault,
         commentValue,
       );
-    } else if (currency === CryptoCurrencies.Ton) {
+    } else if (tokenType === TokenType.TON && currency === CryptoCurrencies.Ton) {
       yield call(
         [wallet.ton, 'transfer'],
         address,
@@ -528,6 +535,15 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         unlockedVault,
         commentValue,
         isSendAll ? 128 : 3,
+      );
+    } else if (tokenType === TokenType.Inscription) {
+      yield call(
+        [wallet.ton, 'inscriptionTransfer'],
+        currency,
+        address,
+        toNano(amount, decimals!),
+        unlockedVault,
+        commentValue,
       );
     } else {
       Alert.alert('not supported');

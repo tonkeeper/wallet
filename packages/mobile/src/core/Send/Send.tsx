@@ -17,9 +17,9 @@ import React, {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
-import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   AccountWithPubKey,
@@ -27,6 +27,7 @@ import {
   SendProps,
   SendRecipient,
   SendSteps,
+  TokenType,
 } from './Send.interface';
 import { AddressStep } from './steps/AddressStep/AddressStep';
 import { AmountStep } from './steps/AmountStep/AmountStep';
@@ -38,7 +39,7 @@ import {
   CanceledActionError,
   DismissedActionError,
 } from './steps/ConfirmStep/ActionErrors';
-import { Configuration, AccountsApi } from '@tonkeeper/core/src/legacy';
+import { AccountsApi, Configuration } from '@tonkeeper/core/src/legacy';
 import { formatter } from '$utils/formatter';
 import { Events } from '$store/models';
 import { trackEvent } from '$utils/stats';
@@ -60,7 +61,8 @@ export const Send: FC<SendProps> = ({ route }) => {
     currency: initialCurrency,
     address: propsAddress,
     comment: initalComment = '',
-    isJetton: initialIsJetton,
+    tokenType: initialTokenType,
+
     amount: initialAmount = '0',
     fee: initialFee = '0',
     isInactive: initialIsInactive = false,
@@ -93,10 +95,9 @@ export const Send: FC<SendProps> = ({ route }) => {
     return new AccountsApi(tonApiConfiguration);
   });
 
-  const [{ currency, isJetton, isUSDT }, setCurrency] = useState({
+  const [{ currency, tokenType }, setCurrency] = useState({
     currency: initialCurrency || CryptoCurrencies.Ton,
-    isJetton: !!initialIsJetton,
-    isUSDT: false,
+    tokenType: initialTokenType || TokenType.TON,
   });
 
   const [recipient, setRecipient] = useState<SendRecipient | null>(
@@ -127,7 +128,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     useState<InsufficientFundsParams | null>(null);
 
   const { balance, currencyTitle, decimals, jettonWalletAddress, trcToken } =
-    useCurrencyToSend(currency, isJetton, isUSDT);
+    useCurrencyToSend(currency, tokenType);
 
   const tokenPrice = useTokenPrice(currency);
 
@@ -163,13 +164,13 @@ export const Send: FC<SendProps> = ({ route }) => {
     (
       nextCurrency: CryptoCurrency | string,
       nextDecimals: number,
-      nextIsJetton: boolean,
+      nextTokenType: TokenType,
     ) => {
       setAmount({
         value: '0',
         all: false,
       });
-      setCurrency({ currency: nextCurrency, isJetton: !!nextIsJetton, isUSDT: false });
+      setCurrency({ currency: nextCurrency, tokenType: nextTokenType });
     },
     [],
   );
@@ -179,7 +180,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       value: '0',
       all: false,
     });
-    setCurrency({ currency: nextCurrency, isJetton: false, isUSDT: true });
+    setCurrency({ currency: nextCurrency, tokenType: TokenType.USDT });
   }, []);
 
   const parsedAmount = useMemo(() => {
@@ -206,7 +207,7 @@ export const Send: FC<SendProps> = ({ route }) => {
           amount: parsedAmount,
           isSendAll: amount.all,
           address: recipient.address,
-          isJetton,
+          tokenType,
           jettonWalletAddress,
           decimals,
           comment,
@@ -248,7 +249,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     decimals,
     dispatch,
     isCommentEncrypted,
-    isJetton,
+    tokenType,
     jettonWalletAddress,
     parsedAmount,
     recipient,
@@ -286,7 +287,7 @@ export const Send: FC<SendProps> = ({ route }) => {
             address: recipient.address,
             comment,
             isCommentEncrypted,
-            isJetton,
+            tokenType,
             jettonWalletAddress,
             decimals,
             onDone: () => {
@@ -323,7 +324,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       from,
       insufficientFundsParams,
       isCommentEncrypted,
-      isJetton,
+      tokenType,
       jettonWalletAddress,
       parsedAmount,
       recipient,
@@ -480,7 +481,7 @@ export const Send: FC<SendProps> = ({ route }) => {
               recipientAccountInfo={recipientAccountInfo}
               amount={amount}
               decimals={decimals}
-              isJetton={isJetton}
+              tokenType={tokenType}
               fee={fee}
               isInactive={isInactive}
               comment={comment}

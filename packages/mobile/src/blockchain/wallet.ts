@@ -9,8 +9,8 @@ import {
   Address as AddressFormatter,
   ContractService,
   contractVersionsMap,
-  TransactionService,
   isActiveAccount,
+  TransactionService,
 } from '@tonkeeper/core';
 import { debugLog } from '$utils/debugLog';
 import { getChainName, getWalletName } from '$shared/dynamicConfig';
@@ -20,18 +20,20 @@ import { Ton } from '$libs/Ton';
 import { Tonapi } from '$libs/Tonapi';
 import { Address as TAddress } from '$store/wallet/interface';
 import {
-  Configuration,
-  BlockchainApi,
-  AccountsApi,
   Account,
+  AccountsApi,
+  BlockchainApi,
+  Configuration,
 } from '@tonkeeper/core/src/legacy';
 
 import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
 import { Address, Cell, internal, toNano } from '@ton/core';
+import { OperationEnum, TypeEnum } from '@tonkeeper/core/src/TonAPI';
 
 const TonWeb = require('tonweb');
 
 export const jettonTransferAmount = toNano('0.64');
+export const inscriptionTransferAmount = '0.05';
 
 interface TonTransferParams {
   seqno: number;
@@ -524,11 +526,36 @@ export class TonWallet {
     });
   }
 
+  async estimateInscriptionFee(
+    ticker: string,
+    address: string,
+    amount: string,
+    vault: Vault,
+    payload: string = '',
+  ) {
+    const opTemplate = await tonapi.experimental.getInscriptionOpTemplate({
+      destination: address,
+      amount,
+      who: tk.wallet.address.ton.raw,
+      type: TypeEnum.Ton20,
+      operation: OperationEnum.Transfer,
+      comment: payload,
+      ticker,
+    });
+    return this.estimateFee(
+      tk.wallet.address.ton.raw,
+      inscriptionTransferAmount,
+      vault,
+      opTemplate.comment,
+      3,
+    );
+  }
+
   async estimateFee(
     address: string,
     amount: string,
     vault: Vault,
-    payload: Cell | '' = '',
+    payload: Cell | string = '',
     sendMode = 3,
     walletVersion: string | null = null,
   ) {
@@ -569,11 +596,36 @@ export class TonWallet {
     await wallet.deploy(secretKey).send();
   }
 
+  async inscriptionTransfer(
+    ticker: string,
+    address: string,
+    amount: string,
+    vault: UnlockedVault,
+    payload: string = '',
+  ) {
+    const opTemplate = await tonapi.experimental.getInscriptionOpTemplate({
+      destination: address,
+      amount,
+      who: tk.wallet.address.ton.raw,
+      type: TypeEnum.Ton20,
+      operation: OperationEnum.Transfer,
+      comment: payload,
+      ticker,
+    });
+    return this.transfer(
+      tk.wallet.address.ton.raw,
+      inscriptionTransferAmount,
+      vault,
+      opTemplate.comment,
+      3,
+    );
+  }
+
   async transfer(
     address: string,
     amount: string,
     unlockedVault: UnlockedVault,
-    payload: Cell | '' = '',
+    payload: Cell | string = '',
     sendMode = 3,
     walletVersion: string | null = null,
   ) {

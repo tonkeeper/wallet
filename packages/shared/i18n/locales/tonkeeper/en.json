@@ -885,6 +885,8 @@
   "transaction_wallet_initialized_date" : "%{date}",
   "transaction_your_bid" : "Your bid",
   "transfer_deeplink_address_error" : "Incorrect recipient address",
+  "transfer_deeplink_unknown_token" : "Unknown token",
+  "transfer_deeplink_wrong_params": "Wrong parameters",
   "transfer_deeplink_amount_error" : "Incorrect amount request",
   "transfer_deeplink_expired_error" : "Expired link",
   "transfer_deeplink_nft_address_error" : "Incorrect NFT address",

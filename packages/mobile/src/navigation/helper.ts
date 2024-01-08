@@ -14,6 +14,7 @@ import { SendAnalyticsFrom } from '$store/models';
 import { NFTKeyPair } from '$store/nfts/interface';
 import _ from 'lodash';
 import { getCurrentRoute, navigate, push, replace } from './imperative';
+import { TokenType } from '$core/Send/Send.interface';
 
 export function openExploreTab(initialCategory?: string) {
   navigate(BrowserStackRouteNames.Explore, { initialCategory });
@@ -24,7 +25,7 @@ export interface OpenSendParams {
   address?: string;
   comment?: string;
   withGoBack?: boolean;
-  isJetton?: boolean;
+  tokenType?: TokenType;
   amount?: string;
   fee?: string;
   isInactive?: boolean;
@@ -292,6 +293,6 @@ export function openNotificationsScreen() {
   navigate(ActivityStackRouteNames.NotificationsActivity);
 }
 
-export function openTonInscription(ticker: string) {
-  navigate('/inscription', { ticker });
+export function openTonInscription(params: { ticker: string; type: string }) {
+  navigate('/inscription', params);
 }

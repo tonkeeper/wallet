@@ -4,6 +4,7 @@ import {
   SendAmount,
   SendRecipient,
   SendSteps,
+  TokenType,
 } from '$core/Send/Send.interface';
 import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
 import { CryptoCurrency } from '$shared/constants';
@@ -16,7 +17,7 @@ export interface ConfirmStepProps {
   recipientAccountInfo: AccountWithPubKey | null;
   amount: SendAmount;
   decimals: number;
-  isJetton: boolean;
+  tokenType: TokenType;
   fee: string;
   isInactive: boolean;
   comment: string;

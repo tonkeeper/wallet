@@ -4,6 +4,13 @@ import { AppStackParamList } from '$navigation/AppStack';
 import { AppStackRouteNames } from '$navigation';
 import { Account } from '@tonkeeper/core/src/legacy';
 
+export enum TokenType {
+  TON = 'TON',
+  Jetton = 'Jetton',
+  Inscription = 'Inscription',
+  USDT = 'USDT',
+}
+
 export interface SendProps {
   route: RouteProp<AppStackParamList, AppStackRouteNames.Send>;
 }
@@ -32,7 +39,7 @@ export interface SendRecipient {
   name?: string;
   domain?: string;
   address: string;
-  blockchain: 'ton' | 'tron'
+  blockchain: 'ton' | 'tron';
 }
 
 export interface SendAmount {

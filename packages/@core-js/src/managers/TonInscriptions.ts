@@ -28,7 +28,7 @@ export class TonInscriptions {
   public async getInscriptions() {
     try {
       this.state.set({ isLoading: true });
-      const data = await this.tonapi.accounts.getAccountInscriptions({
+      const data = await this.tonapi.experimental.getAccountInscriptions({
         accountId: this.tonAddress,
       });
       this.state.set({ items: data.inscriptions });

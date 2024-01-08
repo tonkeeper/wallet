@@ -310,9 +310,9 @@ export const WalletContentList = memo<BalancesListProps>(
       if (inscriptions.items.length > 0) {
         content.push(
           ...inscriptions.items.map((item) => ({
-            type: ContentType.Token,
             key: 'inscriptions' + item.ticker,
-            onPress: () => openTonInscription(item.ticker),
+            onPress: () => openTonInscription({ ticker: item.ticker, type: item.type }),
+            type: ContentType.Token,
             tag: item.type,
             picture:
               'https://cache.tonapi.io/imgproxy/VHZ7p-sK4L15POAZZtddlRMlfzi08EWMvBibzHWsufM/rs:fill:512:512:1/g:no/aHR0cHM6Ly9jYWNoZS50b25hcGkuaW8vaW1ncHJveHkva21aMl9qV29tamRtcDRJeTdUSzE5QW5FWUVxQVc3WGZ2RFpxOFFDcVV4VS9yczpmaWxsOjIwMDoyMDA6MS9nOm5vL2FIUjBjSE02THk5eVlYY3VaMmwwYUhWaWRYTmxjbU52Ym5SbGJuUXVZMjl0TDNSdmJtdGxaWEJsY2k5dmNHVnVkRzl1WVhCcEwyMWhjM1JsY2k5d2EyY3ZjbVZtWlhKbGJtTmxjeTl0WldScFlTOTBiMnRsYmw5d2JHRmpaV2h2YkdSbGNpNXdibWMud2VicA.png',

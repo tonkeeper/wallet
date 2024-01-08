@@ -9,21 +9,30 @@ import React, { FC, memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
 import { JettonIcon, TonIcon } from '@tonkeeper/uikit';
+import { TokenType } from '$core/Send/Send.interface';
+import { useTonInscriptions } from '@tonkeeper/shared/query/hooks/useTonInscriptions';
+import { formatter } from '@tonkeeper/shared/formatter';
 
 type CoinItem =
-  | { isJetton: false; currency: string; balance: string; decimals: number }
+  | { tokenType: TokenType.TON; currency: string; balance: string; decimals: number }
   | {
-      isJetton: true;
+      tokenType: TokenType.Jetton;
       jetton: JettonBalanceModel;
       currency: string;
       balance: string;
       decimals: number;
+    }
+  | {
+      tokenType: TokenType.Inscription;
+      currency: string;
+      decimals: number;
+      balance: string;
     };
 
 interface Props {
   currency: string;
   currencyTitle: string;
-  onChangeCurrency: (currency: string, decimals: number, isJetton: boolean) => void;
+  onChangeCurrency: (currency: string, decimals: number, tokenType: TokenType) => void;
 }
 
 const CoinDropdownComponent: FC<Props> = (props) => {
@@ -32,6 +41,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
   const { currencies, balances } = useSelector(walletSelector);
 
   const { enabled: jettons } = useJettonBalances(false, true);
+  const inscriptions = useTonInscriptions();
   const { format } = useHideableFormatter();
 
   const coins = useMemo((): CoinItem[] => {
@@ -50,7 +60,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
       }),
     ].map(
       (item): CoinItem => ({
-        isJetton: false,
+        tokenType: TokenType.TON,
         currency: item,
         balance: balances[item],
         decimals: Decimals[item],
@@ -61,11 +71,19 @@ const CoinDropdownComponent: FC<Props> = (props) => {
       ...list,
       ...jettons.map((jetton): CoinItem => {
         return {
-          isJetton: true,
+          tokenType: TokenType.Jetton,
           jetton: jetton,
           currency: jetton.jettonAddress,
           balance: jetton.balance,
           decimals: jetton.metadata.decimals,
+        };
+      }),
+      ...inscriptions.items.map((inscription): CoinItem => {
+        return {
+          tokenType: TokenType.Inscription,
+          currency: inscription.ticker,
+          decimals: inscription.decimals,
+          balance: formatter.fromNano(inscription.balance, inscription.decimals),
         };
       }),
     ];
@@ -77,7 +95,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
   );
 
   const getTitle = useCallback((coin: CoinItem) => {
-    if (coin.isJetton) {
+    if (coin.tokenType === TokenType.Jetton) {
       return coin.jetton.metadata.symbol ?? '';
     }
 
@@ -93,17 +111,19 @@ const CoinDropdownComponent: FC<Props> = (props) => {
       <PopupSelect
         items={coins}
         selected={selectedCoin}
-        onChange={(item) => onChangeCurrency(item.currency, item.decimals, item.isJetton)}
+        onChange={(item) =>
+          onChangeCurrency(item.currency, item.decimals, item.tokenType)
+        }
         keyExtractor={(item) => item.currency}
         width={ns(220)}
         maxHeight={ns(216)}
         asFullWindowOverlay
         renderItem={(item) => (
           <>
-            {item.isJetton ? (
+            {item.tokenType === TokenType.Jetton ? (
               <JettonIcon size="xsmall" uri={item.jetton.metadata.image!} />
             ) : null}
-            {!item.isJetton ? (
+            {item.tokenType === TokenType.TON ? (
               <TonIcon
                 size="xsmall"
                 locked={[

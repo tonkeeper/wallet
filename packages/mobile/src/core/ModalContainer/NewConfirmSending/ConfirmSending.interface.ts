@@ -1,4 +1,5 @@
 import { CryptoCurrency } from '$shared/constants';
+import { TokenType } from '$core/Send/Send.interface';
 
 export interface ConfirmSendingProps {
   currency: CryptoCurrency;
@@ -8,7 +9,7 @@ export interface ConfirmSendingProps {
   fee: string;
   withGoBack?: boolean;
   isInactive: boolean;
-  isJetton: boolean;
+  tokenType: TokenType;
   domain?: string;
   methodId?: string;
 }

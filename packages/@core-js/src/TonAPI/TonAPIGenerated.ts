@@ -667,8 +667,8 @@ export interface ValidatorsSet {
   utime_until: number;
   total: number;
   main: number;
-  /** @format int64 */
-  total_weight?: number;
+  /** @example "1152921504606846800" */
+  total_weight?: string;
   list: {
     public_key: string;
     /** @format int64 */
@@ -4133,25 +4133,6 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         format: 'json',
         ...params,
       }),
-
-    /**
-     * @description Get all inscriptions by owner address
-     *
-     * @tags Inscriptions
-     * @name GetAccountInscriptions
-     * @request GET:/v2/accounts/{account_id}/inscriptions
-     */
-    getAccountInscriptions: (
-      { accountId, ...query }: GetAccountInscriptionsParams,
-      params: RequestParams = {},
-    ) =>
-      this.http.request<InscriptionBalances, Error>({
-        path: `/v2/accounts/${accountId}/inscriptions`,
-        method: 'GET',
-        query: query,
-        format: 'json',
-        ...params,
-      }),
   };
   dns = {
     /**
@@ -4321,13 +4302,32 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         ...params,
       }),
   };
-  inscriptions = {
+  experimental = {
+    /**
+     * @description Get all inscriptions by owner address. It's experimental API and can be dropped in the future.
+     *
+     * @tags Inscriptions
+     * @name GetAccountInscriptions
+     * @request GET:/v2/experimental/accounts/{account_id}/inscriptions
+     */
+    getAccountInscriptions: (
+      { accountId, ...query }: GetAccountInscriptionsParams,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<InscriptionBalances, Error>({
+        path: `/v2/experimental/accounts/${accountId}/inscriptions`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
     /**
      * @description return comment for making operation with instrospection. please don't use it if you don't know what you are doing
      *
      * @tags Inscriptions
      * @name GetInscriptionOpTemplate
-     * @request GET:/v2/inscriptions/op-template
+     * @request GET:/v2/experimental/inscriptions/op-template
      */
     getInscriptionOpTemplate: (
       query: GetInscriptionOpTemplateParams,
@@ -4342,7 +4342,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         },
         Error
       >({
-        path: `/v2/inscriptions/op-template`,
+        path: `/v2/experimental/inscriptions/op-template`,
         method: 'GET',
         query: query,
         format: 'json',

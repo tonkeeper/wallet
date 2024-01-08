@@ -1,23 +1,30 @@
 import { useTonInscription } from '@tonkeeper/shared/query/hooks/useTonInscription';
 import { useParams } from '@tonkeeper/router/src/imperative';
 import {
+  IconButton,
+  IconButtonList,
   Picture,
   Screen,
   Steezy,
-  View,
   Text,
-  IconButton,
-  IconButtonList,
+  View,
 } from '@tonkeeper/uikit';
 import { memo, useCallback } from 'react';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { t } from '@tonkeeper/shared/i18n';
+import { openSend } from '$navigation';
+import { TokenType } from '$core/Send/Send.interface';
 
 export const InscriptionScreen = memo(() => {
-  const params = useParams<{ ticker: string }>();
-  const inscription = useTonInscription(params.ticker!);
+  const params = useParams<{ ticker: string; type: string }>();
+  const inscription = useTonInscription(params);
 
-  const handleSend = useCallback(() => {}, []);
+  const handleSend = useCallback(() => {
+    openSend({
+      currency: params.ticker,
+      tokenType: TokenType.Inscription,
+    });
+  }, [params.ticker]);
   const handleReceive = useCallback(() => {}, []);
 
   return (
@@ -26,7 +33,7 @@ export const InscriptionScreen = memo(() => {
         title={
           <View>
             <Text type="h3" textAlign="center" numberOfLines={1}>
-              {inscription.ticker}
+              {inscription.ticker.toUpperCase()}
             </Text>
             <Text type="body2" color="textSecondary" textAlign="center" numberOfLines={1}>
               {inscription.type.toUpperCase()}
@@ -40,7 +47,7 @@ export const InscriptionScreen = memo(() => {
             <Text type="h2">
               {formatter.formatNano(inscription.balance, {
                 decimals: inscription.decimals,
-                postfix: inscription.ticker,
+                postfix: inscription.ticker.toUpperCase(),
               })}
             </Text>
             <Text style={styles.tokenText.static} type="body2" color="textSecondary">
