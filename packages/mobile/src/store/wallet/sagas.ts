@@ -78,7 +78,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { initHandler } from '$store/main/sagas';
 import { getChainName, getWalletName } from '$shared/dynamicConfig';
 import { withRetryCtx } from '$store/retry';
-import { detectBiometryType, fromNano, toNano } from '$utils';
+import { detectBiometryType, toNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { Api } from '$api';
 import { nftsActions } from '$store/nfts';
@@ -96,7 +96,7 @@ import { trackEvent } from '$utils/stats';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { getFlag } from '$utils/flags';
 import { Address } from '@tonkeeper/shared/Address';
-import { TokenType } from '$core/Send/Send.interface';
+import { InscriptionAdditionalParams, TokenType } from '$core/Send/Send.interface';
 
 function* loadRatesAfterJettons() {
   try {
@@ -331,6 +331,7 @@ function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
     yield call(useStakingStore.getState().actions.fetchPools, !isRefreshing);
     yield call(setLastRefreshedAt, Date.now());
     yield put(subscriptionsActions.loadSubscriptions());
+    yield call([tk.wallet.tonInscriptions, 'getInscriptions']);
   } catch (e) {
     yield put(walletActions.endRefreshBalancesPage());
   }
@@ -351,6 +352,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
       isSendAll,
       jettonWalletAddress,
       decimals = 0,
+      currencyAdditionalParams,
     } = action.payload;
 
     if (!onEnd) {
@@ -410,9 +412,11 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
           isUninit = yield call([wallet.ton, 'isInactiveAddress'], address);
         }
       } else if (tokenType === TokenType.Inscription) {
+        const type = (currencyAdditionalParams as InscriptionAdditionalParams).type;
         fee = yield call(
           [wallet.ton, 'estimateInscriptionFee'],
           currency,
+          type,
           address,
           toNano(amount, decimals!),
           wallet.vault,
@@ -481,6 +485,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       tokenType,
       jettonWalletAddress,
       decimals,
+      currencyAdditionalParams,
     } = action.payload;
 
     const featureEnabled = yield call(Api.get, '/feature/enabled', {
@@ -537,9 +542,11 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         isSendAll ? 128 : 3,
       );
     } else if (tokenType === TokenType.Inscription) {
+      const type = (currencyAdditionalParams as InscriptionAdditionalParams).type;
       yield call(
         [wallet.ton, 'inscriptionTransfer'],
         currency,
+        type,
         address,
         toNano(amount, decimals!),
         unlockedVault,

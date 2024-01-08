@@ -1,6 +1,7 @@
 import { useTonInscription } from '@tonkeeper/shared/query/hooks/useTonInscription';
 import { useParams } from '@tonkeeper/router/src/imperative';
 import {
+  DEFAULT_TOKEN_LOGO,
   IconButton,
   IconButtonList,
   Picture,
@@ -14,6 +15,7 @@ import { formatter } from '@tonkeeper/shared/formatter';
 import { t } from '@tonkeeper/shared/i18n';
 import { openSend } from '$navigation';
 import { TokenType } from '$core/Send/Send.interface';
+import { openReceiveInscriptionModal } from '@tonkeeper/shared/modals/ReceiveInscriptionModal';
 
 export const InscriptionScreen = memo(() => {
   const params = useParams<{ ticker: string; type: string }>();
@@ -23,9 +25,13 @@ export const InscriptionScreen = memo(() => {
     openSend({
       currency: params.ticker,
       tokenType: TokenType.Inscription,
+      currencyAdditionalParams: { type: params.type },
     });
-  }, [params.ticker]);
-  const handleReceive = useCallback(() => {}, []);
+  }, [params.ticker, params.type]);
+
+  const handleReceive = useCallback(() => {
+    openReceiveInscriptionModal({ ticker: params.ticker!, type: params.type! });
+  }, [params.ticker, params.type]);
 
   return (
     <Screen>
@@ -33,7 +39,7 @@ export const InscriptionScreen = memo(() => {
         title={
           <View>
             <Text type="h3" textAlign="center" numberOfLines={1}>
-              {inscription.ticker.toUpperCase()}
+              {inscription.ticker}
             </Text>
             <Text type="body2" color="textSecondary" textAlign="center" numberOfLines={1}>
               {inscription.type.toUpperCase()}
@@ -47,17 +53,14 @@ export const InscriptionScreen = memo(() => {
             <Text type="h2">
               {formatter.formatNano(inscription.balance, {
                 decimals: inscription.decimals,
-                postfix: inscription.ticker.toUpperCase(),
+                postfix: inscription.ticker,
               })}
             </Text>
             <Text style={styles.tokenText.static} type="body2" color="textSecondary">
               Token
             </Text>
           </View>
-          <Picture
-            uri="https://cache.tonapi.io/imgproxy/VHZ7p-sK4L15POAZZtddlRMlfzi08EWMvBibzHWsufM/rs:fill:512:512:1/g:no/aHR0cHM6Ly9jYWNoZS50b25hcGkuaW8vaW1ncHJveHkva21aMl9qV29tamRtcDRJeTdUSzE5QW5FWUVxQVc3WGZ2RFpxOFFDcVV4VS9yczpmaWxsOjIwMDoyMDA6MS9nOm5vL2FIUjBjSE02THk5eVlYY3VaMmwwYUhWaWRYTmxjbU52Ym5SbGJuUXVZMjl0TDNSdmJtdGxaWEJsY2k5dmNHVnVkRzl1WVhCcEwyMWhjM1JsY2k5d2EyY3ZjbVZtWlhKbGJtTmxjeTl0WldScFlTOTBiMnRsYmw5d2JHRmpaV2h2YkdSbGNpNXdibWMud2VicA.png"
-            style={styles.tokenPicture}
-          />
+          <Picture uri={DEFAULT_TOKEN_LOGO} style={styles.tokenPicture} />
         </View>
         <View style={styles.buttons}>
           <IconButtonList>

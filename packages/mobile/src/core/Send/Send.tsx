@@ -23,6 +23,7 @@ import React, {
 import { useDispatch } from 'react-redux';
 import {
   AccountWithPubKey,
+  CurrencyAdditionalParams,
   SendAmount,
   SendProps,
   SendRecipient,
@@ -62,7 +63,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     address: propsAddress,
     comment: initalComment = '',
     tokenType: initialTokenType,
-
+    currencyAdditionalParams: initialCurrencyAdditionalParams,
     amount: initialAmount = '0',
     fee: initialFee = '0',
     isInactive: initialIsInactive = false,
@@ -95,8 +96,9 @@ export const Send: FC<SendProps> = ({ route }) => {
     return new AccountsApi(tonApiConfiguration);
   });
 
-  const [{ currency, tokenType }, setCurrency] = useState({
+  const [{ currency, tokenType, currencyAdditionalParams }, setCurrency] = useState({
     currency: initialCurrency || CryptoCurrencies.Ton,
+    currencyAdditionalParams: initialCurrencyAdditionalParams,
     tokenType: initialTokenType || TokenType.TON,
   });
 
@@ -165,12 +167,17 @@ export const Send: FC<SendProps> = ({ route }) => {
       nextCurrency: CryptoCurrency | string,
       nextDecimals: number,
       nextTokenType: TokenType,
+      nextCurrencyAdditionalParams?: CurrencyAdditionalParams,
     ) => {
       setAmount({
         value: '0',
         all: false,
       });
-      setCurrency({ currency: nextCurrency, tokenType: nextTokenType });
+      setCurrency({
+        currency: nextCurrency,
+        tokenType: nextTokenType,
+        currencyAdditionalParams: nextCurrencyAdditionalParams,
+      });
     },
     [],
   );
@@ -180,7 +187,11 @@ export const Send: FC<SendProps> = ({ route }) => {
       value: '0',
       all: false,
     });
-    setCurrency({ currency: nextCurrency, tokenType: TokenType.USDT });
+    setCurrency({
+      currency: nextCurrency,
+      tokenType: TokenType.USDT,
+      currencyAdditionalParams: {},
+    });
   }, []);
 
   const parsedAmount = useMemo(() => {
@@ -203,6 +214,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     if (recipient.blockchain === 'ton') {
       dispatch(
         walletActions.confirmSendCoins({
+          currencyAdditionalParams: currencyAdditionalParams,
           currency: currency as CryptoCurrency,
           amount: parsedAmount,
           isSendAll: amount.all,
@@ -281,6 +293,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       if (recipient.blockchain === 'ton') {
         dispatch(
           walletActions.sendCoins({
+            currencyAdditionalParams: currencyAdditionalParams,
             currency: currency as CryptoCurrency,
             amount: parsedAmount,
             isSendAll: amount.all,

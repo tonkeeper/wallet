@@ -8,7 +8,6 @@ import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { Address } from '@tonkeeper/core';
 
-
 export const ScanQRButton = memo(() => {
   const deeplinking = useDeeplinking();
 
@@ -37,6 +36,7 @@ export const ScanQRButton = memo(() => {
           delay: 200,
           origin: DeeplinkOrigin.QR_CODE,
         });
+        console.log(resolver);
         if (resolver) {
           resolver();
           return true;

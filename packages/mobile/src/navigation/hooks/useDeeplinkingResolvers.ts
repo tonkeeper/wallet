@@ -220,9 +220,16 @@ export function useDeeplinkingResolvers() {
 
       const ticker = query.ticker;
       const type = query.type;
+      const amount = query.amount;
+
       if (!type || !ticker) {
         return Toast.fail(t('transfer_deeplink_wrong_params'));
       }
+
+      if (amount && Number.isNaN(Number(amount))) {
+        return Toast.fail(t('transfer_deeplink_amount_error'));
+      }
+
       await tk.wallet.tonInscriptions.getInscriptions();
       let inscriptions = tk.wallet?.tonInscriptions.state.getSnapshot();
       const inscription = inscriptions?.items.find(
@@ -231,13 +238,17 @@ export function useDeeplinkingResolvers() {
       if (!inscription) {
         return Toast.fail(t('transfer_deeplink_unknown_token'));
       }
+
       openSend({
-        currency: query.ticker,
+        currency: inscription.ticker,
+        currencyAdditionalParams: { type: inscription.type },
         address,
         withGoBack: resolveParams.withGoBack,
         tokenType: TokenType.Inscription,
         redirectToActivity: resolveParams.redirectToActivity,
+        amount: fromNano(amount, inscription.decimals),
       });
+      return Toast.hide();
     },
   );
 

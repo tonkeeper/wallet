@@ -9,22 +9,34 @@ import React, { FC, memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
 import { JettonIcon, TonIcon } from '@tonkeeper/uikit';
-import { TokenType } from '$core/Send/Send.interface';
+import {
+  CurrencyAdditionalParams,
+  InscriptionAdditionalParams,
+  TokenType,
+} from '$core/Send/Send.interface';
 import { useTonInscriptions } from '@tonkeeper/shared/query/hooks/useTonInscriptions';
 import { formatter } from '@tonkeeper/shared/formatter';
 
 type CoinItem =
-  | { tokenType: TokenType.TON; currency: string; balance: string; decimals: number }
+  | {
+      tokenType: TokenType.TON;
+      currency: string;
+      balance: string;
+      decimals: number;
+      currencyAdditionalParams?: {};
+    }
   | {
       tokenType: TokenType.Jetton;
       jetton: JettonBalanceModel;
       currency: string;
       balance: string;
       decimals: number;
+      currencyAdditionalParams?: {};
     }
   | {
       tokenType: TokenType.Inscription;
       currency: string;
+      currencyAdditionalParams: InscriptionAdditionalParams;
       decimals: number;
       balance: string;
     };
@@ -32,7 +44,12 @@ type CoinItem =
 interface Props {
   currency: string;
   currencyTitle: string;
-  onChangeCurrency: (currency: string, decimals: number, tokenType: TokenType) => void;
+  onChangeCurrency: (
+    currency: string,
+    decimals: number,
+    tokenType: TokenType,
+    currencyAdditionalParams?: CurrencyAdditionalParams,
+  ) => void;
 }
 
 const CoinDropdownComponent: FC<Props> = (props) => {
@@ -82,12 +99,15 @@ const CoinDropdownComponent: FC<Props> = (props) => {
         return {
           tokenType: TokenType.Inscription,
           currency: inscription.ticker,
+          currencyAdditionalParams: {
+            type: inscription.type,
+          },
           decimals: inscription.decimals,
           balance: formatter.fromNano(inscription.balance, inscription.decimals),
         };
       }),
     ];
-  }, [jettons, balances, currencies]);
+  }, [jettons, inscriptions.items, balances, currencies]);
 
   const selectedCoin = useMemo(
     () => coins.find((item) => item.currency === currency),
@@ -112,7 +132,12 @@ const CoinDropdownComponent: FC<Props> = (props) => {
         items={coins}
         selected={selectedCoin}
         onChange={(item) =>
-          onChangeCurrency(item.currency, item.decimals, item.tokenType)
+          onChangeCurrency(
+            item.currency,
+            item.decimals,
+            item.tokenType,
+            item.currencyAdditionalParams,
+          )
         }
         keyExtractor={(item) => item.currency}
         width={ns(220)}

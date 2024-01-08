@@ -47,7 +47,7 @@ export const useStakingStore = create(
     (set, getState) => ({
       ...initialState,
       actions: {
-        fetchPools: async (silent) => {
+        fetchPools: async (silent, updateIfBalanceSame = true) => {
           const { status } = getState();
 
           if (status !== StakingApiStatus.Idle) {
@@ -220,7 +220,10 @@ export const useStakingStore = create(
               return;
             }
 
-            if (!silent || !_.isEqual(nextState.stakingInfo, getState().stakingInfo)) {
+            if (
+              updateIfBalanceSame ||
+              !_.isEqual(nextState.stakingInfo, getState().stakingInfo)
+            ) {
               set({ ...nextState });
             }
           } catch (e) {

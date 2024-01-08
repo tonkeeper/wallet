@@ -34,6 +34,7 @@ import { ProvidersWithNavigation } from './Providers';
 import { ReceiveModal } from '@tonkeeper/shared/modals/ReceiveModal';
 import { ReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
 import { EditAppConfigModal } from '$core/DevMenu/DevConfigScreen';
+import { ReceiveInscriptionModal } from '@tonkeeper/shared/modals/ReceiveInscriptionModal';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -56,6 +57,7 @@ export const ModalStack = React.memo(() => (
     <Stack.Group behavior="modal">
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />
       <Stack.Modal component={ReceiveJettonModal} path="/receive/jetton/" />
+      <Stack.Modal component={ReceiveInscriptionModal} path="/receive/inscription/" />
       <Stack.Modal component={NFT} path="NFTItemDetails" />
       <Stack.Modal component={Send} path={AppStackRouteNames.Send} />
       <Stack.Modal component={RenewAllDomainModal} path="RenewAllDomains" />

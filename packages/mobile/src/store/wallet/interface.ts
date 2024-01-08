@@ -2,7 +2,7 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { UnlockedVault, Wallet } from '$blockchain';
 import { CryptoCurrency, SelectableVersion } from '$shared/constants';
 import { InsufficientFundsParams } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
-import { TokenType } from '$core/Send/Send.interface';
+import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
 
 export type OldWalletBalanceItem = {
   version: string;
@@ -53,6 +53,7 @@ export type ConfirmSendCoinsAction = PayloadAction<{
   isSendAll?: boolean;
   decimals?: number;
   jettonWalletAddress?: string;
+  currencyAdditionalParams?: CurrencyAdditionalParams;
 }>;
 export type SendCoinsAction = PayloadAction<{
   currency: CryptoCurrency;
@@ -66,6 +67,7 @@ export type SendCoinsAction = PayloadAction<{
   decimals?: number;
   onDone: () => void;
   onFail: () => void;
+  currencyAdditionalParams?: CurrencyAdditionalParams;
 }>;
 export type ChangeBalanceAndReloadAction = PayloadAction<{
   currency: CryptoCurrency;

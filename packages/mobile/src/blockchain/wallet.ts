@@ -528,6 +528,7 @@ export class TonWallet {
 
   async estimateInscriptionFee(
     ticker: string,
+    type: TypeEnum,
     address: string,
     amount: string,
     vault: Vault,
@@ -537,13 +538,13 @@ export class TonWallet {
       destination: address,
       amount,
       who: tk.wallet.address.ton.raw,
-      type: TypeEnum.Ton20,
+      type,
       operation: OperationEnum.Transfer,
       comment: payload,
       ticker,
     });
     return this.estimateFee(
-      tk.wallet.address.ton.raw,
+      opTemplate.destination,
       inscriptionTransferAmount,
       vault,
       opTemplate.comment,
@@ -598,6 +599,7 @@ export class TonWallet {
 
   async inscriptionTransfer(
     ticker: string,
+    type: TypeEnum,
     address: string,
     amount: string,
     vault: UnlockedVault,
@@ -607,13 +609,13 @@ export class TonWallet {
       destination: address,
       amount,
       who: tk.wallet.address.ton.raw,
-      type: TypeEnum.Ton20,
+      type,
       operation: OperationEnum.Transfer,
       comment: payload,
       ticker,
     });
     return this.transfer(
-      tk.wallet.address.ton.raw,
+      opTemplate.destination,
       inscriptionTransferAmount,
       vault,
       opTemplate.comment,

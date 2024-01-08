@@ -3,7 +3,7 @@ import { AppStackRouteNames } from '$navigation';
 import { CryptoCurrency } from '$shared/constants';
 import { SendAnalyticsFrom, SubscriptionModel } from '$store/models';
 import { NFTKeyPair } from '$store/nfts/interface';
-import { TokenType } from '$core/Send/Send.interface';
+import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
 
 export type AppStackParamList = {
   [AppStackRouteNames.Intro]: {};
@@ -26,6 +26,7 @@ export type AppStackParamList = {
     expiryTimestamp?: number | null;
     redirectToActivity?: boolean;
     tokenType?: TokenType;
+    currencyAdditionalParams?: CurrencyAdditionalParams;
   };
   [AppStackRouteNames.ScanQR]: {
     onScan: (url: string) => boolean | Promise<boolean>;

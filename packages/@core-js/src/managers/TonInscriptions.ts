@@ -31,7 +31,9 @@ export class TonInscriptions {
       const data = await this.tonapi.experimental.getAccountInscriptions({
         accountId: this.tonAddress,
       });
-      this.state.set({ items: data.inscriptions });
+      this.state.set({
+        items: data.inscriptions.filter((inscription) => inscription.balance !== '0'),
+      });
     } catch (err) {
       this.state.set({ isLoading: false });
     }

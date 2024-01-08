@@ -11,6 +11,12 @@ export enum TokenType {
   USDT = 'USDT',
 }
 
+export type InscriptionAdditionalParams = {
+  type: string;
+};
+
+export type CurrencyAdditionalParams = {} | InscriptionAdditionalParams;
+
 export interface SendProps {
   route: RouteProp<AppStackParamList, AppStackRouteNames.Send>;
 }

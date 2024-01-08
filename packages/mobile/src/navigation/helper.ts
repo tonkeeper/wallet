@@ -14,7 +14,7 @@ import { SendAnalyticsFrom } from '$store/models';
 import { NFTKeyPair } from '$store/nfts/interface';
 import _ from 'lodash';
 import { getCurrentRoute, navigate, push, replace } from './imperative';
-import { TokenType } from '$core/Send/Send.interface';
+import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
 
 export function openExploreTab(initialCategory?: string) {
   navigate(BrowserStackRouteNames.Explore, { initialCategory });
@@ -32,6 +32,7 @@ export interface OpenSendParams {
   from?: SendAnalyticsFrom;
   expiryTimestamp?: number | null;
   redirectToActivity?: boolean;
+  currencyAdditionalParams?: CurrencyAdditionalParams;
 }
 
 export function openSend(params: OpenSendParams = {}) {

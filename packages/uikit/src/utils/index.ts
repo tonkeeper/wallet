@@ -4,3 +4,4 @@ export * from './device';
 export * from './haptics';
 export * from './copyText';
 export * from './strings';
+export * from './picture';
