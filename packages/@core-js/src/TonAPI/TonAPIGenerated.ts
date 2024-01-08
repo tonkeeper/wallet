@@ -667,8 +667,8 @@ export interface ValidatorsSet {
   utime_until: number;
   total: number;
   main: number;
-  /** @example "1152921504606846800" */
-  total_weight?: string;
+  /** @format int64 */
+  total_weight?: number;
   list: {
     public_key: string;
     /** @format int64 */
@@ -4128,6 +4128,25 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         Error
       >({
         path: `/v2/accounts/${accountId}/diff`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get all inscriptions by owner address
+     *
+     * @tags Inscriptions
+     * @name GetAccountInscriptions
+     * @request GET:/v2/accounts/{account_id}/inscriptions
+     */
+    getAccountInscriptions: (
+      { accountId, ...query }: GetAccountInscriptionsParams,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<InscriptionBalances, Error>({
+        path: `/v2/accounts/${accountId}/inscriptions`,
         method: 'GET',
         query: query,
         format: 'json',

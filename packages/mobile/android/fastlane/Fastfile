@@ -20,13 +20,19 @@ platform :android do
     lane :fetch_and_increment_build_number do
         app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
 
-        version_codes = google_play_track_version_codes(
+        internal_version_codes = google_play_track_version_codes(
             package_name: app_identifier,
             track: "internal",
             json_key: ENV["ANDROID_JSON_KEY_FILE"]
         )
+
+        production_version_codes = google_play_track_version_codes(
+            package_name: app_identifier,
+            json_key: ENV["ANDROID_JSON_KEY_FILE"]
+        )
         
-        updated_version_code = version_codes[0] + 1
+        max = internal_version_codes[0] > production_version_codes[0] ? internal_version_codes[0] : production_version_codes[0]
+        updated_version_code = max + 1
         
         increment_version_code(
             gradle_file_path: "./app/build.gradle",
