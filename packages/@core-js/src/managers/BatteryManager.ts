@@ -113,6 +113,7 @@ export class BatteryManager {
           headers: {
             'X-TonConnect-Auth': this.identity.tonProof,
           },
+          format: 'text',
         },
       );
 

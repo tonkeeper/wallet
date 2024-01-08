@@ -23,7 +23,6 @@ import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { t } from '@tonkeeper/shared/i18n';
 import { openInactiveInfo } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
 import { Address } from '@tonkeeper/core';
-import { ItemRowContainer } from './ConfirmStep.style';
 import { useBatteryState } from '@tonkeeper/shared/query/hooks/useBatteryState';
 import { BatteryState } from '@tonkeeper/shared/utils/battery';
 
@@ -39,6 +38,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     fee,
     active,
     isInactive,
+    isBattery,
     amount,
     comment,
     isCommentEncrypted,
@@ -287,7 +287,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
                 )}
               </S.ItemRow>
               <S.ItemRow>
-                {batteryState !== BatteryState.Empty ? (
+                {batteryState !== BatteryState.Empty && isBattery ? (
                   <S.ItemSubLabel>
                     {t('send_screen_steps.comfirm.will_be_paid_with_battery')}
                   </S.ItemSubLabel>

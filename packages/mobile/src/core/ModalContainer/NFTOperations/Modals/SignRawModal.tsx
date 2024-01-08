@@ -6,7 +6,7 @@ import { calculateMessageTransferAmount, delay } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
 import { store, Toast } from '$store';
-import { List, Modal, Steezy, Text, View } from '@tonkeeper/uikit';
+import { List, Modal, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
 import { SheetActions } from '@tonkeeper/router';
 import {
@@ -49,11 +49,19 @@ interface SignRawModalProps {
   onSuccess?: (boc: string) => void;
   onDismiss?: () => void;
   redirectToActivity?: boolean;
+  isBattery?: boolean;
 }
 
 export const SignRawModal = memo<SignRawModalProps>((props) => {
-  const { options, params, onSuccess, onDismiss, consequences, redirectToActivity } =
-    props;
+  const {
+    options,
+    params,
+    onSuccess,
+    onDismiss,
+    consequences,
+    isBattery,
+    redirectToActivity,
+  } = props;
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const unlockVault = useUnlockVault();
 
@@ -203,6 +211,14 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
             ≈ {extra.value} · {extra.fiat}
           </Text>
         </View>
+        {isBattery && (
+          <View style={styles.withBatteryContainer}>
+            <Text type="body2" color="textSecondary">
+              {t('confirmSendModal.will_be_paid_with_battery')}
+            </Text>
+          </View>
+        )}
+        <Spacer y={16} />
       </Modal.ScrollView>
       <Modal.Footer>
         <NFTOperationFooter
@@ -240,28 +256,31 @@ export const openSignRawModal = async (
       Buffer.from(wallet.ton.vault.tonPublicKey),
     );
 
-    // in case of error we should check current TON balance and show "insufficient funds" modal
-    const totalAmount = calculateMessageTransferAmount(params.messages);
-    const checkResult = await checkIsInsufficient(totalAmount);
-    if (checkResult.insufficient) {
-      Toast.hide();
-      onDismiss?.();
-      return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
-    }
-
     let consequences: MessageConsequences | null = null;
+    let isBattery = false;
     try {
       const boc = TransactionService.createTransfer(contract, {
         messages: TransactionService.parseSignRawMessages(params.messages),
         seqno: await getWalletSeqno(),
         secretKey: Buffer.alloc(64),
       });
-      consequences = await emulateWithBattery({ boc });
+      const { emulateResult, battery } = await emulateWithBattery(boc);
+      consequences = emulateResult;
+      isBattery = battery;
 
       Toast.hide();
     } catch (err) {
       console.log(err);
       debugLog('[SignRaw]: estimateTx error', JSON.stringify(err));
+
+      // in case of error we should check current TON balance and show "insufficient funds" modal
+      const totalAmount = calculateMessageTransferAmount(params.messages);
+      const checkResult = await checkIsInsufficient(totalAmount);
+      if (checkResult.insufficient) {
+        Toast.hide();
+        onDismiss?.();
+        return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
+      }
 
       const tonapiError = err?.response?.data?.error;
       const errorMessage = tonapiError ?? `no response; status code: ${err.status};`;
@@ -279,6 +298,7 @@ export const openSignRawModal = async (
         onSuccess,
         onDismiss,
         redirectToActivity,
+        isBattery,
       },
       path: 'SignRaw',
     });
@@ -296,9 +316,11 @@ const styles = Steezy.create({
   feeContainer: {
     paddingHorizontal: 32,
     paddingTop: 12,
-    paddingBottom: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  withBatteryContainer: {
+    paddingHorizontal: 32,
   },
   actionsList: {
     marginBottom: 0,

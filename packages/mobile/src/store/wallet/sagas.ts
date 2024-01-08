@@ -398,10 +398,11 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
 
     let isUninit = false;
     let fee: string = '0';
+    let isBattery = false;
     let isEstimateFeeError = false;
     try {
       if (isJetton) {
-        fee = yield call(
+        const [feeNano, battery] = yield call(
           [wallet.ton, 'estimateJettonFee'],
           jettonWalletAddress,
           address,
@@ -409,9 +410,11 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
           wallet.vault,
           commentValue,
         );
+        fee = feeNano;
+        isBattery = battery;
       } else {
         if (currency === CryptoCurrencies.Ton) {
-          fee = yield call(
+          const [feeNano, battery] = yield call(
             [wallet.ton, 'estimateFee'],
             address,
             amount,
@@ -419,6 +422,8 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
             commentValue,
             isSendAll ? 128 : 3,
           );
+          fee = feeNano;
+          isBattery = battery;
           isUninit = yield call([wallet.ton, 'isInactiveAddress'], address);
         }
       }
@@ -447,10 +452,10 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
         if (new BigNumber(amountNano).gt(new BigNumber(balance))) {
           return onInsufficientFunds({ totalAmount: amountNano, balance });
         } else {
-          yield call(onNext, { fee, isInactive: isUninit });
+          yield call(onNext, { fee, isInactive: isUninit, isBattery });
         }
       } else {
-        yield call(onNext, { fee, isInactive: isUninit });
+        yield call(onNext, { fee, isInactive: isUninit, isBattery });
       }
     }
 
@@ -481,6 +486,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       isJetton,
       jettonWalletAddress,
       decimals,
+      sendWithBattery,
     } = action.payload;
 
     const featureEnabled = yield call(Api.get, '/feature/enabled', {
@@ -526,6 +532,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         toNano(amount, decimals),
         unlockedVault,
         commentValue,
+        sendWithBattery,
       );
     } else if (currency === CryptoCurrencies.Ton) {
       yield call(

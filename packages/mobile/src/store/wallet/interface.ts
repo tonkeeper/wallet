@@ -47,7 +47,7 @@ export type ConfirmSendCoinsAction = PayloadAction<{
   isCommentEncrypted?: boolean;
   onEnd?: () => void;
   onInsufficientFunds?: (params: InsufficientFundsParams) => void;
-  onNext: (info: { fee: string; isInactive: boolean }) => void;
+  onNext: (info: { fee: string; isInactive: boolean; isBattery: boolean }) => void;
   isJetton?: boolean;
   isSendAll?: boolean;
   decimals?: number;
@@ -65,6 +65,7 @@ export type SendCoinsAction = PayloadAction<{
   decimals?: number;
   onDone: () => void;
   onFail: () => void;
+  sendWithBattery?: boolean;
 }>;
 export type ChangeBalanceAndReloadAction = PayloadAction<{
   currency: CryptoCurrency;

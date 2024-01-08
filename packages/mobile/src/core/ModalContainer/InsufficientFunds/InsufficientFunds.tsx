@@ -13,6 +13,7 @@ import { store } from '$store';
 import { formatter } from '$utils/formatter';
 import { push } from '$navigation/imperative';
 import { useBatteryBalance } from '@tonkeeper/shared/query/hooks/useBatteryBalance';
+import { config } from '@tonkeeper/shared/config';
 
 export interface InsufficientFundsParams {
   /**
@@ -56,6 +57,8 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
     () => formatter.format(fromNano(balance, decimals), { decimals }),
     [balance, decimals],
   );
+  const shouldShowRefillBatteryButton =
+    !config.get('disable_battery') && currency === 'TON' && batteryBalance === '0';
 
   const handleOpenRechargeWallet = useCallback(async () => {
     nav.goBack();
@@ -133,14 +136,14 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
       </Modal.Content>
       <Modal.Footer>
         <S.FooterWrap>
-          {currency === 'TON' && batteryBalance === '0' ? (
+          {shouldShowRefillBatteryButton && (
             <>
               <Button mode="secondary" onPress={handleOpenRefillBattery}>
                 {t('txActions.signRaw.insufficientFunds.rechargeBattery')}
               </Button>
               <Spacer y={16} />
             </>
-          ) : null}
+          )}
           <Button
             mode="secondary"
             onPress={

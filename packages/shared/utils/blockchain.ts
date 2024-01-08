@@ -23,10 +23,12 @@ export async function emulateWithBattery(boc) {
     if (config.get('disable_battery') || config.get('disable_battery_send')) {
       throw new Error('Battery disabled');
     }
-    return await tk.wallet.battery.emulate(boc);
+    const emulateResult = await tk.wallet.battery.emulate(boc);
+    return { emulateResult, battery: true };
   } catch (err) {
-    return tonapi.wallet.emulateMessageToWallet({
+    const emulateResult = await tonapi.wallet.emulateMessageToWallet({
       boc,
     });
+    return { emulateResult, battery: false };
   }
 }

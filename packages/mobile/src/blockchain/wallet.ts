@@ -311,7 +311,7 @@ export class TonWallet {
     const query = await tx.getQuery();
     const boc = TonWeb.utils.bytesToBase64(await query.toBoc(false));
 
-    const fee = await this.calcFee(boc);
+    const [fee, isBattery] = await this.calcFee(boc);
     if (fee.isGreaterThan(myinfo.balance)) {
       throw new Error('Insufficient funds');
     }
@@ -323,9 +323,9 @@ export class TonWallet {
     return await this.vault.tonWallet.methods.isPluginInstalled(subscriptionAddress);
   }
 
-  private async calcFee(boc: string): Promise<BigNumber> {
-    const estimatedTx = await emulateWithBattery(boc);
-    return new BigNumber(estimatedTx.event.extra).multipliedBy(-1);
+  private async calcFee(boc: string): Promise<[BigNumber, boolean]> {
+    const { emulateResult, battery } = await emulateWithBattery(boc);
+    return [new BigNumber(emulateResult.event.extra).multipliedBy(-1), battery];
   }
 
   async isInactiveAddress(address: string): Promise<boolean> {
@@ -406,10 +406,6 @@ export class TonWallet {
       throw new Error(t('send_get_wallet_info_error'));
     }
 
-    const excessesAccount = !config.get('disable_battery_send')
-      ? await tk.wallet.battery.getExcessesAccount()
-      : null;
-
     const boc = this.createJettonTransfer(
       seqno,
       jettonWalletAddress,
@@ -419,12 +415,11 @@ export class TonWallet {
       payload,
       vault,
       undefined,
-      excessesAccount,
     );
 
-    let feeNano = await this.calcFee(boc);
+    let [feeNano, isBattery] = await this.calcFee(boc);
 
-    return Ton.fromNano(feeNano.toString());
+    return [Ton.fromNano(feeNano.toString()), isBattery];
   }
 
   async jettonTransfer(
@@ -433,6 +428,7 @@ export class TonWallet {
     amountNano: string,
     unlockedVault: UnlockedVault,
     payload: Cell | string = '',
+    sendWithBattery: boolean,
   ) {
     let sender: Account;
     let recipient: Account;
@@ -458,9 +454,10 @@ export class TonWallet {
       throw new Error(t('send_insufficient_funds'));
     }
 
-    const excessesAccount = !config.get('disable_battery_send')
-      ? await tk.wallet.battery.getExcessesAccount()
-      : null;
+    const excessesAccount =
+      sendWithBattery && !config.get('disable_battery_send')
+        ? await tk.wallet.battery.getExcessesAccount()
+        : null;
 
     const boc = this.createJettonTransfer(
       seqno,
@@ -475,8 +472,11 @@ export class TonWallet {
     );
 
     let feeNano: BigNumber;
+    let isBattery = false;
     try {
-      feeNano = await this.calcFee(boc);
+      const [fee, battery] = await this.calcFee(boc);
+      feeNano = fee;
+      isBattery = battery;
     } catch (e) {
       throw new Error(t('send_fee_estimation_error'));
     }
@@ -490,9 +490,8 @@ export class TonWallet {
       }
     } else {
       if (
-        new BigNumber(jettonTransferAmount.toString())
-          .plus(feeNano)
-          .isGreaterThan(sender.balance)
+        !isBattery &&
+        new BigNumber(jettonTransferAmount.toString()).isGreaterThan(sender.balance)
       ) {
         throw new Error(t('send_insufficient_funds'));
       }
@@ -582,9 +581,9 @@ export class TonWallet {
         : false,
     });
 
-    let feeNano = await this.calcFee(boc);
+    const [feeNano, isBattery] = await this.calcFee(boc);
 
-    return Ton.fromNano(feeNano.toString());
+    return [Ton.fromNano(feeNano.toString()), isBattery];
   }
 
   async deploy(unlockedVault: UnlockedVault) {
@@ -639,7 +638,8 @@ export class TonWallet {
 
     let feeNano: BigNumber;
     try {
-      feeNano = await this.calcFee(boc);
+      const [fee, isBattery] = await this.calcFee(boc);
+      feeNano = fee;
     } catch (e) {
       feeNano = new BigNumber('0');
       debugLog('[Transfer]: error estimate fee', e);

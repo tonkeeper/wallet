@@ -16,15 +16,11 @@ import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { openScanQR } from '$navigation';
 import { SheetActions } from '@tonkeeper/router';
 import { push } from '$navigation/imperative';
-import {
-  Address,
-  AmountFormatter,
-  ContractService,
-  TransactionService,
-} from '@tonkeeper/core';
+import { Address, AmountFormatter, ContractService } from '@tonkeeper/core';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { config } from '@tonkeeper/shared/config';
+import { useBatteryBalance } from '@tonkeeper/shared/query/hooks/useBatteryBalance';
 
 export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalProps>(
   ({ nftAddress }) => {
@@ -33,6 +29,7 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
     const [isSameAddress, setIsSameAddress] = useState<boolean>(false);
     const { isValid } = useValidateAddress(address);
     const [dnsLoading, setDnsLoading] = React.useState(false);
+    const { data: batteryBalance } = useBatteryBalance();
 
     const nav = useNavigation();
 
@@ -46,9 +43,10 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
     }, [address, isSameAddress, nftAddress]);
 
     const handleContinue = useCallback(async () => {
-      const excessesAccount = !config.get('disable_battery_send')
-        ? await tk.wallet.battery.getExcessesAccount()
-        : null;
+      const excessesAccount =
+        batteryBalance !== '0' && !config.get('disable_battery_send')
+          ? await tk.wallet.battery.getExcessesAccount()
+          : null;
 
       await openSignRawModal(
         {
@@ -68,7 +66,7 @@ export const NFTTransferInputAddressModal = memo<NFTTransferInputAddressModalPro
         },
         {},
       );
-    }, [address, nftAddress]);
+    }, [address, batteryBalance, nftAddress]);
 
     // todo: move logic to separated hook
     const getAddressByDomain = useMemo(

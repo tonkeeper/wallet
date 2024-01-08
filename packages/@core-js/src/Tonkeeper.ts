@@ -9,6 +9,8 @@ import { TronAPI } from './TronAPI';
 import { TonAPI } from './TonAPI';
 import { BatteryAPI } from './BatteryAPI';
 import { signProofForTonkeeper } from './utils/tonProof';
+import { WalletContractV4 } from '@ton/ton';
+import nacl from 'tweetnacl';
 
 class PermissionsManager {
   public notifications = true;
@@ -154,14 +156,18 @@ export class Tonkeeper {
     }
   }
 
-  public async obtainProofToken(tonPrivateKey: Uint8Array) {
+  public async obtainProofToken(keyPair: nacl.SignKeyPair) {
     try {
       const { payload } = await this.tonapi.tonconnect.getTonConnectPayload();
+      const contract = WalletContractV4.create({
+        workchain: 0,
+        publicKey: Buffer.from(keyPair.publicKey),
+      });
       const proof = await signProofForTonkeeper(
-        this.wallet.address.ton.raw,
-        tonPrivateKey,
+        contract.address.toRawString(),
+        keyPair.secretKey,
         payload,
-        this.wallet.identity.stateInit,
+        contract.init.code.toString(),
       );
       const { token } = await this.tonapi.wallet.tonConnectProof(proof);
 
