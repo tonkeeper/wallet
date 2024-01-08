@@ -158,7 +158,7 @@ export const WalletContentList = memo<BalancesListProps>(
   }) => {
     const theme = useTheme();
     const dispatch = useDispatch();
-    const usdtRate = useTokenPrice('USDT');
+
     const fiatCurrency = useSelector(fiatCurrencySelector);
     const shouldShowTonDiff = fiatCurrency !== FiatCurrencies.Ton;
 
