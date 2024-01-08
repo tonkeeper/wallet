@@ -8,7 +8,7 @@ import { ns } from '$utils';
 import React, { FC, memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
-import { JettonIcon, TonIcon } from '@tonkeeper/uikit';
+import { DEFAULT_TOKEN_LOGO, JettonIcon, TonIcon } from '@tonkeeper/uikit';
 import {
   CurrencyAdditionalParams,
   InscriptionAdditionalParams,
@@ -147,6 +147,9 @@ const CoinDropdownComponent: FC<Props> = (props) => {
           <>
             {item.tokenType === TokenType.Jetton ? (
               <JettonIcon size="xsmall" uri={item.jetton.metadata.image!} />
+            ) : null}
+            {item.tokenType === TokenType.Inscription ? (
+              <JettonIcon size="xsmall" uri={DEFAULT_TOKEN_LOGO} />
             ) : null}
             {item.tokenType === TokenType.TON ? (
               <TonIcon
