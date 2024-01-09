@@ -348,7 +348,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
       onEnd,
       onNext,
       onInsufficientFunds,
-      tokenType,
+      tokenType = TokenType.TON,
       isSendAll,
       jettonWalletAddress,
       decimals = 0,

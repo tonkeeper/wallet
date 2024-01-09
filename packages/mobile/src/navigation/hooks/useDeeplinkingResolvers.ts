@@ -221,6 +221,7 @@ export function useDeeplinkingResolvers() {
       const ticker = query.ticker;
       const type = query.type;
       const amount = query.amount;
+      const comment = query.text ?? '';
 
       if (!type || !ticker) {
         return Toast.fail(t('transfer_deeplink_wrong_params'));
@@ -239,15 +240,44 @@ export function useDeeplinkingResolvers() {
         return Toast.fail(t('transfer_deeplink_unknown_token'));
       }
 
-      openSend({
-        currency: inscription.ticker,
-        currencyAdditionalParams: { type: inscription.type },
-        address,
-        withGoBack: resolveParams.withGoBack,
-        tokenType: TokenType.Inscription,
-        redirectToActivity: resolveParams.redirectToActivity,
-        amount: fromNano(amount, inscription.decimals),
-      });
+      if (amount) {
+        dispatch(
+          walletActions.confirmSendCoins({
+            currency: inscription.ticker,
+            amount: fromNano(amount, inscription.decimals),
+            address,
+            comment,
+            tokenType: TokenType.Inscription,
+            currencyAdditionalParams: { type: inscription.type },
+            onNext: (details) => {
+              const options = {
+                currency: inscription.ticker,
+                address,
+                comment,
+                currencyAdditionalParams: { type: inscription.type },
+                amount: fromNano(amount, inscription.decimals),
+                tokenType: TokenType.Inscription,
+                fee: details.fee,
+                isInactive: details.isInactive,
+                methodId: resolveParams.methodId,
+                redirectToActivity: resolveParams.redirectToActivity,
+              };
+              openSend(options);
+            },
+          }),
+        );
+      } else {
+        openSend({
+          currency: inscription.ticker,
+          currencyAdditionalParams: { type: inscription.type },
+          address,
+          withGoBack: resolveParams.withGoBack,
+          tokenType: TokenType.Inscription,
+          redirectToActivity: resolveParams.redirectToActivity,
+          amount: fromNano(amount, inscription.decimals),
+        });
+      }
+
       return Toast.hide();
     },
   );
@@ -386,6 +416,7 @@ export function useDeeplinkingResolvers() {
                 address,
                 comment,
                 amount,
+                tokenType: TokenType.TON,
                 fee: details.fee,
                 isInactive: details.isInactive,
                 methodId: resolveParams.methodId,
