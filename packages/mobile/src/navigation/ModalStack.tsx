@@ -57,7 +57,10 @@ export const ModalStack = React.memo(() => (
     <Stack.Group behavior="modal">
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />
       <Stack.Modal component={ReceiveJettonModal} path="/receive/jetton/" />
-      <Stack.Modal component={ReceiveInscriptionModal} path="/receive/inscription/" />
+      <Stack.Modal
+        component={ReceiveInscriptionModal}
+        path={AppStackRouteNames.ReceiveInscription}
+      />
       <Stack.Modal component={NFT} path="NFTItemDetails" />
       <Stack.Modal component={Send} path={AppStackRouteNames.Send} />
       <Stack.Modal component={RenewAllDomainModal} path="RenewAllDomains" />

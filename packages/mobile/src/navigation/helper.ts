@@ -295,5 +295,5 @@ export function openNotificationsScreen() {
 }
 
 export function openTonInscription(params: { ticker: string; type: string }) {
-  navigate('/inscription', params);
+  navigate(MainStackRouteNames.Inscription, params);
 }

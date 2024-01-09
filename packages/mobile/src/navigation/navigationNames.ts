@@ -26,6 +26,7 @@ export enum AppStackRouteNames {
   DAppBrowser = 'DAppBrowser',
   StakingSend = 'StakingSend',
   Swap = 'Swap',
+  ReceiveInscription = 'ReceiveInscription',
 }
 
 export enum MainStackRouteNames {
@@ -48,6 +49,7 @@ export enum MainStackRouteNames {
   EditConfig = 'EditConfig',
   ManageTokens = 'ManageTokens',
   AddressUpdateInfo = 'AddressUpdateInfo',
+  Inscription = 'Inscription',
 }
 
 export enum TabsStackRouteNames {

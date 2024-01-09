@@ -7,7 +7,7 @@ export interface UseTonInscriptionParams {
   type: string;
 }
 
-export const useTonInscription = (params: Partial<UseTonInscriptionParams>) => {
+export const useTonInscription = (params: UseTonInscriptionParams) => {
   const state = useExternalState(tk.wallet.tonInscriptions.state);
 
   return useMemo(() => {

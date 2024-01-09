@@ -41,7 +41,7 @@ export type RestoreWalletAction = PayloadAction<{
 }>;
 export type SetAddressesAction = PayloadAction<{ [index: string]: string }>;
 export type ConfirmSendCoinsAction = PayloadAction<{
-  currency: CryptoCurrency;
+  currency: string;
   amount: string;
   address: string;
   comment?: string;

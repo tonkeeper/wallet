@@ -6,6 +6,7 @@ import { t } from '../i18n';
 
 import { tk } from '../tonkeeper';
 import { useTonInscription } from '../query/hooks/useTonInscription';
+import { AppStackRouteNames } from '@tonkeeper/mobile/src/navigation';
 
 interface ReceiveInscriptionModalProps {
   type: string;
@@ -43,7 +44,7 @@ export const ReceiveInscriptionModal = memo<ReceiveInscriptionModalProps>((props
 });
 
 export function openReceiveInscriptionModal(params: ReceiveInscriptionModalProps) {
-  navigation.push('/receive/inscription/', params);
+  navigation.push(AppStackRouteNames.ReceiveInscription, params);
 }
 
 const styles = Steezy.create(() => ({

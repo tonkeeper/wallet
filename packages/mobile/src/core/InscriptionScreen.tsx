@@ -19,7 +19,12 @@ import { openReceiveInscriptionModal } from '@tonkeeper/shared/modals/ReceiveIns
 
 export const InscriptionScreen = memo(() => {
   const params = useParams<{ ticker: string; type: string }>();
-  const inscription = useTonInscription(params);
+
+  if (!params.ticker || !params.type) {
+    throw Error('Wrong parameters');
+  }
+
+  const inscription = useTonInscription({ ticker: params.ticker, type: params.type });
 
   const handleSend = useCallback(() => {
     openSend({
