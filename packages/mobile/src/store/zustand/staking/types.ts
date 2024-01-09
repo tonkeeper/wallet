@@ -42,7 +42,7 @@ export interface IStakingStore {
   mainFlashShownCount: number;
   stakingFlashShownCount: number;
   actions: {
-    fetchPools: (silent?: boolean) => Promise<void>;
+    fetchPools: (silent?: boolean, updateIfBalanceSame?: boolean) => Promise<void>;
     reset: () => void;
     fetchChart: (jetton: JettonBalanceModel) => Promise<void>;
     increaseMainFlashShownCount: () => void;

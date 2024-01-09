@@ -31,14 +31,10 @@ import { useNotificationsResolver } from '$hooks/useNotificationsResolver';
 import { AccessConfirmation, AddressUpdateInfo, Intro } from '$core';
 import { ModalStack } from '$navigation/ModalStack';
 import { withModalStack } from '@tonkeeper/router';
-
-import { ImportWatchWalletScreen } from '@tonkeeper/shared/screens/setup/ImportWatchWalletScreen';
-import { ImportWalletScreen } from '@tonkeeper/shared/screens/setup/ImportWalletScreen';
-import { CreateWalletScreen } from '@tonkeeper/shared/screens/setup/CreateWalletScreen';
-import { StartScreen } from '@tonkeeper/shared/screens/StartScreen';
 import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
 import { TronTokenScreen } from '../../tabs/Wallet/TronTokenScreen';
 import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
+import { InscriptionScreen } from '$core/InscriptionScreen';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -135,6 +131,10 @@ export const MainStack: FC = () => {
       <Stack.Screen name={MainStackRouteNames.DevStack} component={DevStack} />
       <Stack.Screen name={MainStackRouteNames.EditConfig} component={EditConfig} />
       <Stack.Screen name={MainStackRouteNames.Jetton} component={Jetton} />
+      <Stack.Screen
+        name={MainStackRouteNames.Inscription}
+        component={InscriptionScreen}
+      />
       <Stack.Screen name={MainStackRouteNames.JettonsList} component={JettonsList} />
       <Stack.Screen name={MainStackRouteNames.ManageTokens} component={ManageTokens} />
       <Stack.Screen

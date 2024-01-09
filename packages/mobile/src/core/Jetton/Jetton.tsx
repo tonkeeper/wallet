@@ -10,13 +10,13 @@ import {
   SwapIcon,
   Text,
 } from '$uikit';
-import { delay, ns } from '$utils';
+import { ns } from '$utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
 import { useTheme } from '$hooks/useTheme';
 import { useTokenPrice } from '$hooks/useTokenPrice';
 import { openDAppBrowser, openSend } from '$navigation';
-import { CryptoCurrencies, getServerConfig } from '$shared/constants';
+import { getServerConfig } from '$shared/constants';
 import { useSelector } from 'react-redux';
 
 import { walletAddressSelector } from '$store/wallet';
@@ -30,11 +30,12 @@ import { Events, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
-import { Screen, Steezy, View } from '@tonkeeper/uikit';
+import { Screen } from '@tonkeeper/uikit';
 
 import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonActivityList';
 import { ActivityList } from '@tonkeeper/shared/components';
 import { openReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
+import { TokenType } from '$core/Send/Send.interface';
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const theme = useTheme();
@@ -53,7 +54,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     trackEvent(Events.SendOpen, { from: SendAnalyticsFrom.TokenScreen });
     openSend({
       currency: jetton.jettonAddress,
-      isJetton: true,
+      tokenType: TokenType.Jetton,
       from: SendAnalyticsFrom.TokenScreen,
     });
   }, [jetton.jettonAddress]);

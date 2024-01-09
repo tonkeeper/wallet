@@ -18,9 +18,10 @@ import {
 } from '../NFTOperations/NFTOperationFooter';
 import { Separator } from '$uikit';
 import { t } from '@tonkeeper/shared/i18n';
+import { TokenType } from '$core/Send/Send.interface';
 
 export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
-  const { currency, address, amount, comment, fee, isJetton, methodId } = props;
+  const { currency, address, amount, comment, fee, tokenType, methodId } = props;
 
   const dispatch = useDispatch();
 
@@ -32,7 +33,7 @@ export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
 
   const { decimals, jettonWalletAddress, currencyTitle } = useCurrencyToSend(
     currency,
-    isJetton,
+    tokenType,
   );
 
   const doSend = onConfirm(async ({ startLoading }) => {
@@ -45,7 +46,7 @@ export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
           amount,
           address,
           comment,
-          isJetton,
+          tokenType,
           jettonWalletAddress,
           decimals,
           onDone: resolve,
@@ -83,12 +84,12 @@ export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
     const tokenConfig = getTokenConfig(currency);
     if (tokenConfig && tokenConfig.blockchain === 'ethereum') {
       return CryptoCurrencies.Eth;
-    } else if (isJetton) {
+    } else if (tokenType === TokenType.Jetton) {
       return CryptoCurrencies.Ton;
     } else {
       return currency;
     }
-  }, [currency, isJetton]);
+  }, [currency, tokenType]);
 
   const feeValue = React.useMemo(() => {
     if (fee === '0') {
