@@ -34,6 +34,7 @@ import { ProvidersWithNavigation } from './Providers';
 import { ReceiveModal } from '@tonkeeper/shared/modals/ReceiveModal';
 import { ReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
 import { EditAppConfigModal } from '$core/DevMenu/DevConfigScreen';
+import { NFTSend } from '$core/NFTSend/NFTSend';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -61,6 +62,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={RenewAllDomainModal} path="RenewAllDomains" />
       <Stack.Modal component={ChooseCountry} path={AppStackRouteNames.ChooseCountry} />
       <Stack.Modal component={StakingSend} path={AppStackRouteNames.StakingSend} />
+      <Stack.Modal component={NFTSend} path={AppStackRouteNames.NFTSend} />
       <Stack.Modal component={ScanQR} path={AppStackRouteNames.ScanQR} />
       <Stack.Modal component={Swap} path={AppStackRouteNames.Swap} />
     </Stack.Group>

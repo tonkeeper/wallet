@@ -1034,5 +1034,8 @@
   "yesterday" : "Вчера",
   "all_regions": "Все регионы",
   "region_nokyc": "Нейтральные воды",
-  "nokyc": "без KYC"
+  "nokyc": "без KYC",
+  "nft_transfer": {
+    "title": "Передача NFT"
+  }
 }

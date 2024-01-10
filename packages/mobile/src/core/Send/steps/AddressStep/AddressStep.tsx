@@ -51,6 +51,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     setRecipient,
     changeBlockchain,
     active,
+    enableEncryption = true,
     setRecipientAccountInfo,
     setAmount,
     setComment,
@@ -64,11 +65,11 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
   /*
     TODO: uncomment when feature will be completely ready
-    const isAbleToEncryptComment = recipientAccountInfo
+    const isAbleToEncryptComment = enableEncryption && recipientAccountInfo
     ? !isCommentRequired && !!recipientAccountInfo.publicKey
     : true;
   */
-  const isAbleToEncryptComment = false;
+  const isAbleToEncryptComment = enableEncryption;
 
   const isReadyToContinue = !!recipient && (!isCommentRequired || comment.length);
 
@@ -143,7 +144,11 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           link.operation === 'transfer' &&
           Address.isValid(link.address)
         ) {
-          if (link.query.amount && !Number.isNaN(Number(link.query.amount))) {
+          if (
+            setAmount &&
+            link.query.amount &&
+            !Number.isNaN(Number(link.query.amount))
+          ) {
             const parsedAmount = Ton.fromNano(new TonWeb.utils.BN(link.query.amount));
             setAmount({
               value: formatInputAmount(parsedAmount, decimals, true),
@@ -217,13 +222,13 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           }
         }
 
-        if (seeIfValidTronAddress(value)) {
-          console.log('tron');
-
+        /* TODO: revise feature and fix
+        if (seeIfValidTronAddress(value) && changeBlockchain) {
           setRecipient({ address: value, blockchain: 'tron' });
           changeBlockchain(CryptoCurrencies.Usdt);
           return true;
         }
+        */
 
         setRecipient(null);
 

@@ -8,6 +8,7 @@ export enum AppStackRouteNames {
   ChooseCountry = 'ChooseCountry',
   ScanQR = 'ScanQR',
   RequireWalletModal = 'RequireWalletModal',
+  NFTSend = 'NFTSend',
   Subscription = 'Subscription',
   SetupWalletStack = 'SetupWalletStack',
   BuyFiat = 'BuyFiat',
