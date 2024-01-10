@@ -47,8 +47,6 @@ const ConfirmStepComponent: FC<Props> = (props) => {
     sendTx,
   } = props;
 
-  console.log(total);
-
   const fiatFee = useFiatValue(CryptoCurrencies.Ton, total?.amount || '0');
 
   const { bottom: bottomInset } = useSafeAreaInsets();
