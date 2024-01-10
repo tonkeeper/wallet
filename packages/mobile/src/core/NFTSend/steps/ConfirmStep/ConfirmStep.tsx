@@ -165,9 +165,9 @@ const ConfirmStepComponent: FC<Props> = (props) => {
       </StepScrollView>
       <S.FooterContainer bottomInset={bottomInset}>
         <ActionFooter
-          withCloseButton
+          withCloseButton={false}
           disabled={isPreparing}
-          confirmTitle={t('confirm')}
+          confirmTitle={t('confirm_sending_submit')}
           onPressConfirm={handleConfirm}
           ref={footerRef}
         />
