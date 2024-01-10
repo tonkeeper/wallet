@@ -27,7 +27,6 @@ interface Props extends StepComponentProps {
   totalFee?: string;
   amount: SendAmount;
   decimals: number;
-  isJetton: boolean;
   stepsScrollTop: SharedValue<Record<StakingSendSteps, number>>;
   isPreparing: boolean;
   sendTx: () => Promise<void>;
@@ -53,7 +52,6 @@ const ConfirmStepComponent: FC<Props> = (props) => {
     totalFee,
     amount,
     decimals,
-    isJetton,
     stepsScrollTop,
     isPreparing,
     sendTx,
@@ -68,7 +66,6 @@ const ConfirmStepComponent: FC<Props> = (props) => {
     CryptoCurrencies.Ton,
     parseLocaleNumber(amount.value),
     decimals,
-    isJetton,
     'TON',
   );
   const fiatFee = useFiatValue(CryptoCurrencies.Ton, totalFee || '0');

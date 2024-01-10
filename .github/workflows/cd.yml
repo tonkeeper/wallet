@@ -83,6 +83,8 @@ jobs:
       matrix:
         os: [macos-13]
         node-version: [18.18.0]
+        ruby-version: [3.2]
+        java-version: [11.0.12]
 
     runs-on: ${{ matrix.os }}
 
@@ -110,8 +112,11 @@ jobs:
           bundler-cache: true
           working-directory: './packages/mobile'
 
-      - name: Update Java home to 11 version
-        run: export JAVA_HOME=$JAVA_HOME_11_X64
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java-version }}
 
       - name: Decode signing certificate into a file
         working-directory: './packages/mobile/android/app'
@@ -154,6 +159,8 @@ jobs:
       matrix:
         os: [macos-13]
         node-version: [18.18.0]
+        ruby-version: [3.2]
+        java-version: [11.0.12]
 
     runs-on: ${{ matrix.os }}
 
@@ -181,8 +188,11 @@ jobs:
           bundler-cache: true
           working-directory: './packages/mobile'
 
-      - name: Update Java home to 11 version
-        run: export JAVA_HOME=$JAVA_HOME_11_X64
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java-version }}
 
       - name: Update ENVFILE for site
         working-directory: './packages/mobile'

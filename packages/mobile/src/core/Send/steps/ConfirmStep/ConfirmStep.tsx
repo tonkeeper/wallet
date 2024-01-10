@@ -23,6 +23,7 @@ import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { t } from '@tonkeeper/shared/i18n';
 import { openInactiveInfo } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
 import { Address } from '@tonkeeper/core';
+import { TokenType } from '$core/Send/Send.interface';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -31,7 +32,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     recipient,
     recipientAccountInfo,
     decimals,
-    isJetton,
+    tokenType,
     isPreparing,
     fee,
     active,
@@ -52,7 +53,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const balances = useSelector(walletBalancesSelector);
   const wallet = useSelector(walletWalletSelector);
 
-  const { Logo, liquidJettonPool } = useCurrencyToSend(currency, isJetton);
+  const { Logo, liquidJettonPool } = useCurrencyToSend(currency, tokenType);
 
   const showLockupAlert = useCallback(
     () =>
@@ -134,27 +135,22 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
       return 'USDT';
     } else if (tokenConfig && tokenConfig.blockchain === 'ethereum') {
       return CryptoCurrencies.Eth;
-    } else if (isJetton) {
+    } else if ([TokenType.Jetton, TokenType.Inscription].includes(tokenType)) {
       return CryptoCurrencies.Ton;
     } else {
       return currency;
     }
-  }, [currency, isJetton]);
+  }, [currency, tokenType]);
 
   const calculatedValue = useMemo(() => {
-    if (amount.all && !isJetton) {
+    if (amount.all && tokenType === TokenType.TON) {
       return new BigNumber(parseLocaleNumber(amount.value)).minus(fee).toString();
     }
 
     return parseLocaleNumber(amount.value);
-  }, [amount.all, amount.value, fee, isJetton]);
+  }, [amount.all, amount.value, fee, tokenType]);
 
-  const fiatValue = useFiatValue(
-    currency as CryptoCurrency,
-    calculatedValue,
-    decimals,
-    isJetton,
-  );
+  const fiatValue = useFiatValue(currency as CryptoCurrency, calculatedValue, decimals);
 
   const fiatFee = useFiatValue(
     currency === 'usdt' ? 'USDT' : CryptoCurrencies.Ton,
@@ -181,12 +177,12 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
       currency: currencyTitle,
       currencySeparator: 'wide',
     });
-    if (amount.all && !isJetton) {
+    if (amount.all && tokenType === TokenType.TON) {
       return `≈ ${value}`;
     }
 
     return value;
-  }, [calculatedValue, decimals, currencyTitle, amount.all, isJetton]);
+  }, [calculatedValue, decimals, currencyTitle, amount.all, tokenType]);
 
   const handleCopy = useCallback(
     (text: string, toastText?: string) => () => {

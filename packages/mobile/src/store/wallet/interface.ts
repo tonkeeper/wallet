@@ -2,6 +2,7 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { UnlockedVault, Wallet } from '$blockchain';
 import { CryptoCurrency, SelectableVersion } from '$shared/constants';
 import { InsufficientFundsParams } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
 
 export type OldWalletBalanceItem = {
   version: string;
@@ -40,7 +41,7 @@ export type RestoreWalletAction = PayloadAction<{
 }>;
 export type SetAddressesAction = PayloadAction<{ [index: string]: string }>;
 export type ConfirmSendCoinsAction = PayloadAction<{
-  currency: CryptoCurrency;
+  currency: string;
   amount: string;
   address: string;
   comment?: string;
@@ -48,10 +49,11 @@ export type ConfirmSendCoinsAction = PayloadAction<{
   onEnd?: () => void;
   onInsufficientFunds?: (params: InsufficientFundsParams) => void;
   onNext: (info: { fee: string; isInactive: boolean }) => void;
-  isJetton?: boolean;
+  tokenType?: TokenType;
   isSendAll?: boolean;
   decimals?: number;
   jettonWalletAddress?: string;
+  currencyAdditionalParams?: CurrencyAdditionalParams;
 }>;
 export type SendCoinsAction = PayloadAction<{
   currency: CryptoCurrency;
@@ -59,12 +61,13 @@ export type SendCoinsAction = PayloadAction<{
   address: string;
   comment: string;
   isCommentEncrypted?: boolean;
-  isJetton?: boolean;
+  tokenType?: TokenType;
   jettonWalletAddress?: string;
   isSendAll?: boolean;
   decimals?: number;
   onDone: () => void;
   onFail: () => void;
+  currencyAdditionalParams?: CurrencyAdditionalParams;
 }>;
 export type ChangeBalanceAndReloadAction = PayloadAction<{
   currency: CryptoCurrency;
