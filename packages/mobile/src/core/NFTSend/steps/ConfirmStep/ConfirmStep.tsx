@@ -22,7 +22,7 @@ import { truncateDecimal } from '$utils';
 interface Props extends StepComponentProps {
   recipient: SendRecipient | null;
   recipientAccountInfo: AccountWithPubKey | null;
-  totalFee?: string;
+  total: { amount: string; isRefund: boolean };
   nftName?: string;
   nftCollection?: string;
   nftIcon?: string;
@@ -41,13 +41,15 @@ const ConfirmStepComponent: FC<Props> = (props) => {
     nftIcon,
     nftCollection,
     comment,
-    totalFee,
+    total,
     stepsScrollTop,
     isPreparing,
     sendTx,
   } = props;
 
-  const fiatFee = useFiatValue(CryptoCurrencies.Ton, totalFee || '0');
+  console.log(total);
+
+  const fiatFee = useFiatValue(CryptoCurrencies.Ton, total?.amount || '0');
 
   const { bottom: bottomInset } = useSafeAreaInsets();
 
@@ -118,7 +120,11 @@ const ConfirmStepComponent: FC<Props> = (props) => {
             </Highlight>
             <Separator />
             <S.Item>
-              <S.ItemLabel>{t('staking.confirm.fee.label')}</S.ItemLabel>
+              <S.ItemLabel>
+                {total.isRefund
+                  ? t('nft_transfer.confirm.fee.refund_label')
+                  : t('nft_transfer.confirm.fee.label')}
+              </S.ItemLabel>
               <S.ItemContent>
                 {isPreparing ? (
                   <>
@@ -133,12 +139,12 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                 ) : (
                   <>
                     <S.ItemValue numberOfLines={1}>
-                      {t('staking.confirm.fee.value', {
-                        value: totalFee ? truncateDecimal(totalFee, 1) : '?',
+                      {t('nft_transfer.confirm.fee.value', {
+                        value: total.amount ? truncateDecimal(total.amount, 1) : '?',
                       })}
                     </S.ItemValue>
                     <S.ItemSubValue>
-                      {totalFee ? `≈ ${fiatFee.formatted.totalFiat}` : ' '}
+                      {total?.amount ? `≈ ${fiatFee.formatted.totalFiat}` : ' '}
                     </S.ItemSubValue>
                   </>
                 )}

@@ -1036,6 +1036,13 @@
   "region_nokyc": "Нейтральные воды",
   "nokyc": "без KYC",
   "nft_transfer": {
-    "title": "Передача NFT"
+    "title": "Передача NFT",
+    "confirm": {
+      "fee": {
+        "label": "Комиссия",
+        "refund_label": "Возврат",
+        "value" : "≈ %{value} TON"
+      }
+    }
   }
 }

@@ -988,6 +988,13 @@
   "region_nokyc": "Neutral Waters",
   "nokyc": "no KYC",
   "nft_transfer": {
-    "title": "NFT transfer"
+    "title": "NFT transfer",
+    "confirm": {
+      "fee": {
+        "label": "Fee",
+        "refund_label": "Refund",
+        "value" : "≈ %{value} TON"
+      }
+    }
   }
 }

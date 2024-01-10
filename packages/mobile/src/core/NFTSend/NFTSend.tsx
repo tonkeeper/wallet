@@ -166,10 +166,10 @@ export const NFTSend: FC<Props> = (props) => {
     }
   }, [unlockVault]);
 
-  const totalFee = useMemo(() => {
-    const fee = new BigNumber(Ton.fromNano(consequences?.event.extra ?? 0)).abs();
+  const total = useMemo(() => {
+    const fee = new BigNumber(Ton.fromNano(consequences?.event.extra ?? 0));
 
-    return fee.toString();
+    return { amount: fee.abs().toString(), isRefund: !fee.isNegative() };
   }, [consequences?.event.extra]);
 
   return (
@@ -215,7 +215,7 @@ export const NFTSend: FC<Props> = (props) => {
               recipient={recipient}
               recipientAccountInfo={recipientAccountInfo}
               decimals={9}
-              totalFee={totalFee}
+              total={total}
               nftCollection={nft.collection?.name}
               nftName={nft.name}
               nftIcon={nft.content.image.baseUrl}
