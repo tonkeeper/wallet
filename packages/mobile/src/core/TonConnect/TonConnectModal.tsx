@@ -44,12 +44,12 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   const unlockVault = useUnlockVault();
   const theme = useTheme();
   const nav = useNavigation();
-  const [withNotifications, setWithNotifications] = React.useState(true);
+  const showNotifications = useNotificationsStore(shouldShowNotifications);
+  const [withNotifications, setWithNotifications] = React.useState(showNotifications);
 
   const { version } = useSelector(walletSelector);
   const { isTestnet } = useSelector(mainSelector);
   const maskedAddress = Address.toShort(animation.address);
-  const showNotifications = useNotificationsStore(shouldShowNotifications);
 
   const handleSwitchNotifications = useCallback(() => {
     triggerSelection();

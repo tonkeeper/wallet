@@ -2,9 +2,10 @@ import { FastImage, List, Steezy, copyText } from '@tonkeeper/uikit';
 import { AddressListItem } from '../components/AddressListItem';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
-import { ActionItem, ActionType } from '@tonkeeper/core';
+import { ActionItem, ActionType, isJettonTransferAction } from '@tonkeeper/core';
 import { t } from '../../../i18n';
 import { memo } from 'react';
+import { JettonVerificationType } from '@tonkeeper/core/src/TonAPI';
 
 interface JettonTransferContentProps {
   action: ActionItem<ActionType.JettonTransfer>;
@@ -14,6 +15,10 @@ export const JettonTransferActionContent = memo<JettonTransferContentProps>((pro
   const { action } = props;
 
   const source = { uri: action.payload.jetton?.image };
+
+  const isScam =
+    action.event.is_scam ||
+    action.payload.jetton.verification === JettonVerificationType.Blacklist;
 
   return (
     <ActionModalContent
@@ -25,7 +30,7 @@ export const JettonTransferActionContent = memo<JettonTransferContentProps>((pro
           destination={action.destination}
           recipient={action.payload.recipient}
           sender={action.payload.sender}
-          hideName={action.event.is_scam}
+          hideName={isScam}
         />
         <ExtraListItem extra={action.event.extra} />
         {!!action.payload.comment && (

@@ -53,8 +53,6 @@ const AddressInputComponent: FC<Props> = (props) => {
 
   const canScanQR = value.length === 0;
 
-  
-
   const textInputRef = useRef<TextInput>(null);
 
   const updateHints = useCallback(() => {
@@ -144,7 +142,7 @@ const AddressInputComponent: FC<Props> = (props) => {
 
       return await updateRecipient(code);
     });
-  }, [t, updateRecipient]);
+  }, [updateRecipient]);
 
   const showLoader = dnsLoading && value.length > 0;
 
