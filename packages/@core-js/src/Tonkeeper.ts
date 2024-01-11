@@ -182,6 +182,7 @@ export class Tonkeeper {
   // Invoke in background after hide splash screen
   private preload() {
     this.wallet.activityList.preload();
+    this.wallet.tonInscriptions.preload();
     // TODO:
     this.wallet.subscriptions.prefetch();
     this.wallet.balances.prefetch();

@@ -1,10 +1,18 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
-import { Screen, Spacer, SpacerSizes, View, List, PagerView } from '@tonkeeper/uikit';
+import {
+  Screen,
+  Spacer,
+  SpacerSizes,
+  View,
+  List,
+  PagerView,
+  DEFAULT_TOKEN_LOGO,
+} from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { openJetton } from '$navigation';
+import { openJetton, openTonInscription } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { Rate } from '../hooks/useBalance';
 import { ListItemRate } from './ListItemRate';
@@ -20,6 +28,9 @@ import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { TronBalance } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
 import { fiatCurrencySelector } from '$store/main';
 import { FiatCurrencies } from '@tonkeeper/core';
+import { useTonInscriptions } from '@tonkeeper/shared/query/hooks/useTonInscriptions';
+import { formatter } from '@tonkeeper/shared/formatter';
+import { Text } from '@tonkeeper/uikit';
 
 enum ContentType {
   Token,
@@ -43,7 +54,7 @@ type TokenItem = {
   rate?: Rate;
   picture?: string;
   tonIcon?: boolean | TonIconProps;
-  label?: string;
+  tag?: string;
 };
 
 type SpacerItem = {
@@ -87,7 +98,24 @@ const RenderItem = ({ item }: { item: Content }) => {
           <List.Item
             leftContent={renderLeftContent()}
             onPress={item.onPress}
-            title={item.title}
+            title={
+              <View style={styles.tokenTitle}>
+                <HideableAmount
+                  style={styles.valueText.static}
+                  variant="label1"
+                  stars="* * *"
+                >
+                  {item.title}
+                </HideableAmount>
+                {!!item.tag && (
+                  <View style={styles.tag}>
+                    <Text type="body4" color="textSecondary">
+                      {item.tag.toUpperCase()}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            }
             picture={item.picture}
             value={
               <HideableAmount
@@ -96,7 +124,6 @@ const RenderItem = ({ item }: { item: Content }) => {
                 stars=" * * *"
               >{` ${item.value}`}</HideableAmount>
             }
-            label={item.label}
             subvalue={
               item.subvalue && (
                 <HideableAmount
@@ -161,6 +188,7 @@ export const WalletContentList = memo<BalancesListProps>(
 
     const fiatCurrency = useSelector(fiatCurrencySelector);
     const shouldShowTonDiff = fiatCurrency !== FiatCurrencies.Ton;
+    const inscriptions = useTonInscriptions();
 
     const handleMigrate = useCallback(
       (fromVersion: string) => () => {
@@ -287,6 +315,20 @@ export const WalletContentList = memo<BalancesListProps>(
         })),
       );
 
+      if (inscriptions?.items?.length > 0) {
+        content.push(
+          ...inscriptions.items.map((item) => ({
+            key: 'inscriptions' + item.ticker,
+            onPress: () => openTonInscription({ ticker: item.ticker, type: item.type }),
+            type: ContentType.Token,
+            tag: item.type,
+            picture: DEFAULT_TOKEN_LOGO,
+            title: item.ticker,
+            value: formatter.formatNano(item.balance, { decimals: item.decimals }),
+          })),
+        );
+      }
+
       const firstTonkenElement = content[0] as TokenItem;
       const lastTokenElement = content[content.length - 1] as TokenItem;
 
@@ -348,14 +390,6 @@ const styles = Steezy.create(({ colors, corners }) => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  trcLabel: {
-    backgroundColor: colors.backgroundContentTint,
-    paddingHorizontal: 5,
-    paddingTop: 2.5,
-    paddingBottom: 3.5,
-    borderRadius: 4,
-    marginLeft: 6,
-  },
   firstListItem: {
     borderTopLeftRadius: corners.medium,
     borderTopRightRadius: corners.medium,
@@ -395,5 +429,17 @@ const styles = Steezy.create(({ colors, corners }) => ({
   },
   scrollContainer: {
     paddingHorizontal: 12,
+  },
+  tokenTitle: {
+    flexDirection: 'row',
+  },
+  tag: {
+    backgroundColor: colors.backgroundContentTint,
+    alignSelf: 'center',
+    paddingHorizontal: 5,
+    paddingTop: 2.5,
+    paddingBottom: 3.5,
+    borderRadius: 4,
+    marginLeft: 6,
   },
 }));

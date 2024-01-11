@@ -12,9 +12,10 @@ import {
   ActionType,
   AmountFormatter,
   AnyActionItem,
+  isJettonTransferAction,
 } from '@tonkeeper/core';
 import { formatTransactionDetailsTime } from '../../utils/date';
-import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
+import { ActionStatusEnum, JettonVerificationType } from '@tonkeeper/core/src/TonAPI';
 import { memo, useCallback, useMemo } from 'react';
 import { formatter } from '../../formatter';
 import { config } from '../../config';
@@ -44,6 +45,11 @@ interface ActionModalContentProps {
 export const ActionModalContent = memo<ActionModalContentProps>((props) => {
   const { children, header, title, action, label, amountFiat, isSimplePreview } = props;
   const { formatNano, format } = useHideableFormatter();
+
+  const isScam =
+    action.event.is_scam ||
+    (isJettonTransferAction(action) &&
+      action.payload.jetton.verification === JettonVerificationType.Blacklist);
 
   const hash = ` ${action.event.event_id.substring(0, 8)}`;
 
@@ -120,7 +126,7 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
   return (
     <View style={styles.container}>
       <View style={styles.info}>
-        {action.event.is_scam ? (
+        {isScam ? (
           <View style={styles.scam}>
             <Text type="label2" color="constantWhite">
               {t('transactionDetails.spam')}

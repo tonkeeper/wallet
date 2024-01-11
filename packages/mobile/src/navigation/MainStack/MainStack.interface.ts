@@ -7,6 +7,10 @@ export type MainStackParamList = {
   [MainStackRouteNames.Wallet]: {
     currency: CryptoCurrency;
   };
+  [MainStackRouteNames.Inscription]: {
+    type: string;
+    ticker: string;
+  };
   [MainStackRouteNames.ImportWallet]: {};
   [MainStackRouteNames.Subscriptions]: {};
   [MainStackRouteNames.BackupWords]: {

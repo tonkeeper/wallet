@@ -26,7 +26,7 @@ export const useStaking = () => {
     useStakingStore.getState().actions.fetchPools(true);
 
     const timerId = setInterval(() => {
-      useStakingStore.getState().actions.fetchPools(true);
+      useStakingStore.getState().actions.fetchPools(true, false);
     }, 10000);
 
     return () => {

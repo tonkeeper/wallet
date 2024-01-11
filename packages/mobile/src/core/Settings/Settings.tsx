@@ -138,8 +138,10 @@ export const Settings: FC = () => {
         text: t('settings_reset_alert_button'),
         style: 'destructive',
         onPress: () => {
+          if (showNotifications) {
+            notifications.unsubscribe();
+          }
           dispatch(walletActions.cleanWallet());
-          notifications.unsubscribe();
         },
       },
     ]);

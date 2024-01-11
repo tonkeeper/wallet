@@ -8,7 +8,6 @@ export function useFiatValue(
   currency: CryptoCurrency,
   value: string,
   decimals?: number,
-  isJetton?: boolean,
   symbol = 'TON',
 ) {
   const amountDecimals = decimals ?? Decimals[currency];

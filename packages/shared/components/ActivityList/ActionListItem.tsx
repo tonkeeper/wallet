@@ -1,6 +1,17 @@
 import { openActivityActionModal } from '../../modals/ActivityActionModal';
-import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
-import { ListItemContent, Steezy } from '@tonkeeper/uikit';
+import { ActionStatusEnum, JettonVerificationType } from '@tonkeeper/core/src/TonAPI';
+import {
+  Icon,
+  IconNames,
+  List,
+  ListItemContent,
+  ListItemContentText,
+  Loader,
+  Picture,
+  Steezy,
+  Text,
+  View,
+} from '@tonkeeper/uikit';
 import { formatTransactionTime } from '../../utils/date';
 import { findSenderAccount } from './findSenderAccount';
 import { memo, useCallback, useMemo } from 'react';
@@ -12,17 +23,8 @@ import {
   ActionType,
   AmountFormatter,
   AnyActionItem,
+  isJettonTransferAction,
 } from '@tonkeeper/core';
-import {
-  ListItemContentText,
-  IconNames,
-  Picture,
-  Loader,
-  Icon,
-  List,
-  Text,
-  View,
-} from '@tonkeeper/uikit';
 
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 import { useFlags } from '@tonkeeper/mobile/src/utils/flags';
@@ -58,6 +60,11 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
     isSimplePreview,
   } = props;
   const { formatNano } = useHideableFormatter();
+
+  const isScam =
+    action.event.is_scam ||
+    (isJettonTransferAction(action) &&
+      action.payload.jetton.verification === JettonVerificationType.Blacklist);
 
   const flags = useFlags(['address_style_nobounce']);
 
@@ -120,7 +127,7 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
   }, [action.destination, props.title]);
 
   const subtitle = useMemo(() => {
-    if (action.event.is_scam) {
+    if (isScam) {
       return t('transactions.spam');
     } else if (props.subtitle !== undefined) {
       return props.subtitle;
@@ -138,13 +145,7 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
         ? Address.parse(account.address, { bounceable: !account.is_wallet }).toShort()
         : '-';
     }
-  }, [
-    action.simple_preview,
-    action.event.is_scam,
-    senderAccount,
-    props.subtitle,
-    bounceable,
-  ]);
+  }, [action.simple_preview, isScam, senderAccount, props.subtitle, bounceable]);
 
   const value = useMemo(() => {
     if (props.value !== undefined) {
@@ -181,7 +182,7 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
 
   const valueStyle = [
     (action.destination === 'in' || greenValue) && styles.receiveValue,
-    action.event.is_scam && styles.scamAmountText,
+    isScam && styles.scamAmountText,
     action.type === ActionType.WithdrawStakeRequest && styles.withdrawalRequest,
   ];
 
@@ -213,7 +214,7 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
       title={title}
       value={value}
     >
-      {!action.event.is_scam && children}
+      {!isScam && children}
       {isSimplePreview && !!action.simple_preview.description && (
         <ListItemContentText text={action.simple_preview.description} />
       )}

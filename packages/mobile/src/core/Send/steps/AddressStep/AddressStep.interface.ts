@@ -16,10 +16,11 @@ export interface AddressStepProps {
   isCommentEncrypted: boolean;
   recipientAccountInfo: AccountWithPubKey | null;
   setRecipient: React.Dispatch<React.SetStateAction<SendRecipient | null>>;
-  changeBlockchain: (currency: CryptoCurrencies) => void;
+  changeBlockchain?: (currency: CryptoCurrencies) => void;
   setRecipientAccountInfo: React.Dispatch<React.SetStateAction<AccountWithPubKey | null>>;
-  setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;
+  setAmount?: React.Dispatch<React.SetStateAction<SendAmount>>;
   setComment: React.Dispatch<React.SetStateAction<string>>;
   setCommentEncrypted: React.Dispatch<React.SetStateAction<boolean>>;
+  enableEncryption?: boolean;
   onContinue: () => void;
 }

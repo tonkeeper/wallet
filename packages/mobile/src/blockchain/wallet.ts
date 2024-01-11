@@ -9,8 +9,8 @@ import {
   Address as AddressFormatter,
   ContractService,
   contractVersionsMap,
-  TransactionService,
   isActiveAccount,
+  TransactionService,
 } from '@tonkeeper/core';
 import { debugLog } from '$utils/debugLog';
 import { getChainName, getWalletName } from '$shared/dynamicConfig';
@@ -20,10 +20,10 @@ import { Ton } from '$libs/Ton';
 import { Tonapi } from '$libs/Tonapi';
 import { Address as TAddress } from '$store/wallet/interface';
 import {
-  Configuration,
-  BlockchainApi,
-  AccountsApi,
   Account,
+  AccountsApi,
+  BlockchainApi,
+  Configuration,
 } from '@tonkeeper/core/src/legacy';
 
 import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
@@ -33,10 +33,12 @@ import {
   emulateWithBattery,
   sendBocWithBattery,
 } from '@tonkeeper/shared/utils/blockchain';
+import { OperationEnum, TypeEnum } from '@tonkeeper/core/src/TonAPI';
 
 const TonWeb = require('tonweb');
 
 export const jettonTransferAmount = toNano('0.64');
+export const inscriptionTransferAmount = '0.05';
 
 interface TonTransferParams {
   seqno: number;
@@ -311,7 +313,7 @@ export class TonWallet {
     const query = await tx.getQuery();
     const boc = TonWeb.utils.bytesToBase64(await query.toBoc(false));
 
-    const [fee, isBattery] = await this.calcFee(boc);
+    const [fee] = await this.calcFee(boc);
     if (fee.isGreaterThan(myinfo.balance)) {
       throw new Error('Insufficient funds');
     }
@@ -548,11 +550,37 @@ export class TonWallet {
     });
   }
 
+  async estimateInscriptionFee(
+    ticker: string,
+    type: TypeEnum,
+    address: string,
+    amount: string,
+    vault: Vault,
+    payload: string = '',
+  ) {
+    const opTemplate = await tonapi.experimental.getInscriptionOpTemplate({
+      destination: address,
+      amount,
+      who: tk.wallet.address.ton.raw,
+      type,
+      operation: OperationEnum.Transfer,
+      comment: payload,
+      ticker,
+    });
+    return this.estimateFee(
+      opTemplate.destination,
+      inscriptionTransferAmount,
+      vault,
+      opTemplate.comment,
+      3,
+    );
+  }
+
   async estimateFee(
     address: string,
     amount: string,
     vault: Vault,
-    payload: Cell | '' = '',
+    payload: Cell | string = '',
     sendMode = 3,
     walletVersion: string | null = null,
   ) {
@@ -593,11 +621,37 @@ export class TonWallet {
     await wallet.deploy(secretKey).send();
   }
 
+  async inscriptionTransfer(
+    ticker: string,
+    type: TypeEnum,
+    address: string,
+    amount: string,
+    vault: UnlockedVault,
+    payload: string = '',
+  ) {
+    const opTemplate = await tonapi.experimental.getInscriptionOpTemplate({
+      destination: address,
+      amount,
+      who: tk.wallet.address.ton.raw,
+      type,
+      operation: OperationEnum.Transfer,
+      comment: payload,
+      ticker,
+    });
+    return this.transfer(
+      opTemplate.destination,
+      inscriptionTransferAmount,
+      vault,
+      opTemplate.comment,
+      3,
+    );
+  }
+
   async transfer(
     address: string,
     amount: string,
     unlockedVault: UnlockedVault,
-    payload: Cell | '' = '',
+    payload: Cell | string = '',
     sendMode = 3,
     walletVersion: string | null = null,
   ) {
@@ -638,7 +692,7 @@ export class TonWallet {
 
     let feeNano: BigNumber;
     try {
-      const [fee, isBattery] = await this.calcFee(boc);
+      const [fee] = await this.calcFee(boc);
       feeNano = fee;
     } catch (e) {
       feeNano = new BigNumber('0');
@@ -673,6 +727,10 @@ export class TonWallet {
 
   async getWalletInfo(address: string) {
     return await this.accountsApi.getAccount({ accountId: address });
+  }
+
+  async getTonPublicKey() {
+    return this.vault.tonPublicKey;
   }
 
   async getPublicKeyByAddress(address: string): Promise<Buffer> {
