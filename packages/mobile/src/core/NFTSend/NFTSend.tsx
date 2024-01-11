@@ -16,7 +16,7 @@ import {
   contractVersionsMap,
   TransactionService,
 } from '@tonkeeper/core';
-import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
 import { Buffer } from 'buffer';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
@@ -28,6 +28,10 @@ import { Toast } from '$store';
 import axios from 'axios';
 import { useWallet } from '$hooks/useWallet';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
+import {
+  emulateWithBattery,
+  sendBocWithBattery,
+} from '@tonkeeper/shared/utils/blockchain';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.NFTSend>;
@@ -82,6 +86,7 @@ export const NFTSend: FC<Props> = (props) => {
   const [consequences, setConsequences] = useState<MessageConsequences | null>(null);
   const [isPreparing, setPreparing] = useState(false);
   const [isSending, setSending] = useState(false);
+  const [isBattery, setIsBattery] = useState(false);
 
   const isBackDisabled = isSending || isPreparing;
 
@@ -115,9 +120,10 @@ export const NFTSend: FC<Props> = (props) => {
         seqno: await getWalletSeqno(),
         secretKey: Buffer.alloc(64),
       });
-      const response = await tonapi.wallet.emulateMessageToWallet({ boc });
+      const response = await emulateWithBattery(boc);
       messages.current = nftTransferMessages;
-      setConsequences(response);
+      setConsequences(response.emulateResult);
+      setIsBattery(response.battery);
 
       await delay(100);
 
@@ -153,12 +159,7 @@ export const NFTSend: FC<Props> = (props) => {
         secretKey: Buffer.from(privateKey),
       });
 
-      await tonapi.blockchain.sendBlockchainMessage(
-        {
-          boc,
-        },
-        { format: 'text' },
-      );
+      await sendBocWithBattery(boc);
     } catch (e) {
       throw e;
     } finally {
@@ -212,6 +213,7 @@ export const NFTSend: FC<Props> = (props) => {
         <StepViewItem id={NFTSendSteps.CONFIRM}>
           {(stepProps) => (
             <ConfirmStep
+              isBattery={isBattery}
               recipient={recipient}
               recipientAccountInfo={recipientAccountInfo}
               decimals={9}

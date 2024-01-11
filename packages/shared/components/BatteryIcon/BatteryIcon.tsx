@@ -16,7 +16,7 @@ const hitSlop = { top: 8, bottom: 8, right: 8, left: 8 };
 
 export const BatteryIcon = memo(() => {
   const { data: balance } = useBatteryBalance();
-  if (!balance || config.get('disable_battery')) return null;
+  if (!balance || balance === '0' || config.get('disable_battery')) return null;
 
   const iconName = iconNames[getBatteryState(balance)];
 

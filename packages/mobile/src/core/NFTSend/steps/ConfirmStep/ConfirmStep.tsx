@@ -18,6 +18,9 @@ import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { AccountWithPubKey, SendRecipient } from '$core/Send/Send.interface';
 import { Address } from '@tonkeeper/core';
 import { truncateDecimal } from '$utils';
+import { BatteryState } from '@tonkeeper/shared/utils/battery';
+import styled from '$styled';
+import { useBatteryState } from '@tonkeeper/shared/query/hooks/useBatteryState';
 
 interface Props extends StepComponentProps {
   recipient: SendRecipient | null;
@@ -28,6 +31,7 @@ interface Props extends StepComponentProps {
   nftIcon?: string;
   stepsScrollTop: SharedValue<Record<StakingSendSteps, number>>;
   isPreparing: boolean;
+  isBattery: boolean;
   comment: string;
   sendTx: () => Promise<void>;
 }
@@ -40,6 +44,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
     nftName,
     nftIcon,
     nftCollection,
+    isBattery,
     comment,
     total,
     stepsScrollTop,
@@ -48,6 +53,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
   } = props;
 
   const fiatFee = useFiatValue(CryptoCurrencies.Ton, total?.amount || '0');
+  const batteryState = useBatteryState();
 
   const { bottom: bottomInset } = useSafeAreaInsets();
 
@@ -136,6 +142,13 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                   </>
                 ) : (
                   <>
+                    {batteryState !== BatteryState.Empty && isBattery ? (
+                      <Text color={'textTertiary'} variant={'body2'}>
+                        {t('send_screen_steps.comfirm.will_be_paid_with_battery')}
+                      </Text>
+                    ) : (
+                      <Text color={'textTertiary'} variant={'body2'} />
+                    )}
                     <S.ItemValue numberOfLines={1}>
                       {t('nft_transfer.confirm.fee.value', {
                         value: total.amount ? truncateDecimal(total.amount, 1) : '?',
