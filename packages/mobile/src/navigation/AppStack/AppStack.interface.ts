@@ -14,6 +14,9 @@ export type AppStackParamList = {
     jettonAddress?: string;
     isFromMainScreen?: boolean;
   };
+  [AppStackRouteNames.NFTSend]: {
+    nftAddress: string;
+  };
   [AppStackRouteNames.Send]: {
     currency?: CryptoCurrency | string;
     address?: string;

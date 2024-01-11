@@ -27,7 +27,7 @@ import { getFlag, useFlags } from '$utils/flags';
 import { LinkingDomainButton } from './LinkingDomainButton';
 import { nftsActions } from '$store/nfts';
 import { navigation, useNavigation } from '@tonkeeper/router';
-import { openDAppBrowser } from '$navigation';
+import { AppStackRouteNames, openDAppBrowser } from '$navigation';
 import { RenewDomainButton, RenewDomainButtonRef } from './RenewDomainButton';
 import { Tonapi } from '$libs/Tonapi';
 import { Toast } from '$store';
@@ -128,10 +128,10 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
   }, []);
 
   const handleTransferNft = useCallback(() => {
-    nav.openModal('NFTTransferInputAddress', {
+    nav.push(AppStackRouteNames.NFTSend, {
       nftAddress: nft.address,
     });
-  }, [nft.address]);
+  }, [nav, nft.address]);
 
   const handleShare = useCallback(() => {
     if (!nft.marketplaceURL) {

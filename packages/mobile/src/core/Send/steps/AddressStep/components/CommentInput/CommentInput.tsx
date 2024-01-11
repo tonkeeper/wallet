@@ -26,8 +26,6 @@ const CommentInputComponent: FC<Props> = (props) => {
     onSubmit,
   } = props;
 
-  
-
   const [commentRequiredError, setCommentRequiredError] = useState(false);
 
   const toggleEncrypted = useCallback(() => {

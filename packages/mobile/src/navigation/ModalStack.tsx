@@ -2,7 +2,6 @@ import React from 'react';
 import { SecurityMigrationStack } from './SecurityMigrationStack/SecurityMigrationStack';
 import { ResetPinStack } from './ResetPinStack/ResetPinStack';
 import { createModalStackNavigator } from '@tonkeeper/router';
-import { NFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
 import { NFT } from '$core/NFT/NFT';
 import { SignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 import { AppStackRouteNames } from './navigationNames';
@@ -34,6 +33,7 @@ import { ProvidersWithNavigation } from './Providers';
 import { ReceiveModal } from '@tonkeeper/shared/modals/ReceiveModal';
 import { ReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
 import { EditAppConfigModal } from '$core/DevMenu/DevConfigScreen';
+import { NFTSend } from '$core/NFTSend/NFTSend';
 import { ReceiveInscriptionModal } from '@tonkeeper/shared/modals/ReceiveInscriptionModal';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
@@ -44,10 +44,6 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={ExchangeModal} path="Exchange" />
       <Stack.Modal component={OldExchange} path="OldExchange" />
       <Stack.Modal component={СonfirmRenewAllDomains} path="СonfirmRenewAllDomains" />
-      <Stack.Modal
-        component={NFTTransferInputAddressModal}
-        path="NFTTransferInputAddress"
-      />
       <Stack.Modal component={EditAppConfigModal} path="/dev/config/edit" />
       <Stack.Modal component={SignRawModal} path="SignRaw" />
       <Stack.Modal component={NewConfirmSending} path="NewConfirmSending" />
@@ -66,6 +62,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={RenewAllDomainModal} path="RenewAllDomains" />
       <Stack.Modal component={ChooseCountry} path={AppStackRouteNames.ChooseCountry} />
       <Stack.Modal component={StakingSend} path={AppStackRouteNames.StakingSend} />
+      <Stack.Modal component={NFTSend} path={AppStackRouteNames.NFTSend} />
       <Stack.Modal component={ScanQR} path={AppStackRouteNames.ScanQR} />
       <Stack.Modal component={Swap} path={AppStackRouteNames.Swap} />
     </Stack.Group>

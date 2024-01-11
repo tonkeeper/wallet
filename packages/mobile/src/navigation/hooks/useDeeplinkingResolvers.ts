@@ -29,7 +29,6 @@ import { useCallback, useRef } from 'react';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import BigNumber from 'bignumber.js';
 import { Tonapi } from '$libs/Tonapi';
-import { openNFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
 import { getCurrentRoute } from '$navigation/imperative';
 import { IConnectQrQuery } from '$tonconnect/models';
 import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
@@ -485,7 +484,7 @@ export function useDeeplinkingResolvers() {
       if (!Address.isValid(nft)) {
         return Toast.fail(t('transfer_deeplink_nft_address_error'));
       }
-      await openNFTTransferInputAddressModal({ nftAddress: nft });
+      await nav.push(AppStackRouteNames.NFTSend, { nftAddress: nft });
     } else {
       openSend({ currency: CryptoCurrencies.Ton });
     }

@@ -198,7 +198,9 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
         </List>
         <View style={styles.feeContainer}>
           <Text type="body2" color="textSecondary">
-            {t('confirmSendModal.network_fee')}
+            {extra.isNegative
+              ? t('confirmSendModal.network_fee')
+              : t('confirmSendModal.refund')}
           </Text>
           <Text type="body2" color="textSecondary">
             ≈ {extra.value} · {extra.fiat}

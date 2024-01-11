@@ -704,6 +704,10 @@ export class TonWallet {
     return await this.accountsApi.getAccount({ accountId: address });
   }
 
+  async getTonPublicKey() {
+    return this.vault.tonPublicKey;
+  }
+
   async getPublicKeyByAddress(address: string): Promise<Buffer> {
     const { publicKey } = await this.accountsApi.getPublicKeyByAccountID({
       accountId: address,
