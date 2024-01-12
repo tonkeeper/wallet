@@ -580,9 +580,7 @@ export class TonWallet {
       sendMode,
       vault,
       walletVersion,
-      bounce: isActiveAccount(recipientInfo.status)
-        ? AddressFormatter.isBounceable(address)
-        : false,
+      bounce: AddressFormatter.isBounceable(address),
     });
 
     let feeNano = await this.calcFee(boc);
@@ -660,10 +658,7 @@ export class TonWallet {
       vault: unlockedVault,
       walletVersion,
       secretKey: Buffer.from(secretKey),
-      // We should keep bounce flag from user input. We should check contract status till Jan 1, 2024 according to internal Address reform roadmap
-      bounce: isActiveAccount(recipientInfo.status)
-        ? AddressFormatter.isBounceable(address)
-        : false,
+      bounce: AddressFormatter.isBounceable(address),
     });
 
     let feeNano: BigNumber;
