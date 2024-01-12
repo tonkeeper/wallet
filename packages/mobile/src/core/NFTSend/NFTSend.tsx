@@ -12,6 +12,7 @@ import { NFTSendSteps } from '$core/NFTSend/types';
 import { ConfirmStep } from '$core/NFTSend/steps/ConfirmStep/ConfirmStep';
 import { useNFT } from '$hooks/useNFT';
 import {
+  BASE_FORWARD_AMOUNT,
   ContractService,
   contractVersionsMap,
   ONE_TON,
@@ -145,9 +146,9 @@ export const NFTSend: FC<Props> = (props) => {
   }, [comment, nftAddress, recipient, wallet.ton]);
 
   const total = useMemo(() => {
-    const fee = new BigNumber(Ton.fromNano(consequences?.event.extra ?? 0));
+    const extra = new BigNumber(Ton.fromNano(consequences?.event.extra ?? 0));
 
-    return { amount: fee.abs().toString(), isRefund: !fee.isNegative() };
+    return { amount: extra.abs().toString(), isRefund: !extra.isNegative() };
   }, [consequences?.event.extra]);
 
   const sendTx = useCallback(async () => {
@@ -158,8 +159,8 @@ export const NFTSend: FC<Props> = (props) => {
       const privateKey = await vault.getTonPrivateKey();
 
       const totalAmount = total.isRefund
-        ? toNano('0.05')
-        : BigInt(Math.abs(consequences?.event.extra!)) + toNano('0.05');
+        ? BASE_FORWARD_AMOUNT
+        : BigInt(Math.abs(consequences?.event.extra!)) + BASE_FORWARD_AMOUNT;
 
       const checkResult = await checkIsInsufficient(totalAmount.toString());
       if (checkResult.insufficient) {
