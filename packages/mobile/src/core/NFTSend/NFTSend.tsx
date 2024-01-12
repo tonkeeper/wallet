@@ -28,6 +28,7 @@ import { Toast } from '$store';
 import axios from 'axios';
 import { useWallet } from '$hooks/useWallet';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
+import { Keyboard } from 'react-native';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.NFTSend>;
@@ -119,6 +120,7 @@ export const NFTSend: FC<Props> = (props) => {
       messages.current = nftTransferMessages;
       setConsequences(response);
 
+      Keyboard.dismiss();
       await delay(100);
 
       stepViewRef.current?.go(NFTSendSteps.CONFIRM);
