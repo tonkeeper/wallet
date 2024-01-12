@@ -35,6 +35,7 @@ import {
   openInsufficientFundsModal,
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
+import { Keyboard } from 'react-native';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.NFTSend>;
@@ -129,6 +130,7 @@ export const NFTSend: FC<Props> = (props) => {
 
       setConsequences(response);
 
+      Keyboard.dismiss();
       await delay(100);
 
       stepViewRef.current?.go(NFTSendSteps.CONFIRM);
