@@ -8,3 +8,7 @@ export async function getWalletSeqno() {
     return 0;
   }
 }
+
+export function setBalanceForEmulation(balance: bigint) {
+  return { balance: Number(balance), address: tk.wallet.address.ton.raw };
+}
