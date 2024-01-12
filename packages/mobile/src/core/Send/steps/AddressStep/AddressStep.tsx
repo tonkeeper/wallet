@@ -51,7 +51,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     setRecipient,
     changeBlockchain,
     active,
-    enableEncryption = true,
+    enableEncryption = false, // TODO: replace with true here when encryption will be ready
     setRecipientAccountInfo,
     setAmount,
     setComment,
