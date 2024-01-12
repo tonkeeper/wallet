@@ -9,7 +9,6 @@ import {
   Address as AddressFormatter,
   ContractService,
   contractVersionsMap,
-  isActiveAccount,
   TransactionService,
 } from '@tonkeeper/core';
 import { debugLog } from '$utils/debugLog';
