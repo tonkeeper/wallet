@@ -14,13 +14,14 @@ import { useNFT } from '$hooks/useNFT';
 import {
   ContractService,
   contractVersionsMap,
+  ONE_TON,
   TransactionService,
 } from '@tonkeeper/core';
 import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
-import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
+import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import { Buffer } from 'buffer';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
-import { internal, MessageRelaxed, toNano } from '@ton/core';
+import { internal, toNano } from '@ton/core';
 import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { delay } from '$utils';
@@ -28,6 +29,11 @@ import { Toast } from '$store';
 import axios from 'axios';
 import { useWallet } from '$hooks/useWallet';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
+import {
+  checkIsInsufficient,
+  openInsufficientFundsModal,
+} from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.NFTSend>;
@@ -68,7 +74,6 @@ export const NFTSend: FC<Props> = (props) => {
   const [recipient, setRecipient] = useState<SendRecipient | null>(null);
   const [recipientAccountInfo, setRecipientAccountInfo] =
     useState<AccountWithPubKey | null>(null);
-  const messages = useRef<MessageRelaxed[]>([]);
 
   const handleBack = useCallback(() => stepViewRef.current?.goBack(), []);
 
@@ -94,7 +99,7 @@ export const NFTSend: FC<Props> = (props) => {
       const nftTransferMessages = [
         internal({
           to: nftAddress,
-          value: toNano('1'),
+          value: ONE_TON,
           body: ContractService.createNftTransferBody({
             queryId: Date.now(),
             newOwnerAddress: recipient!.address,
@@ -115,8 +120,12 @@ export const NFTSend: FC<Props> = (props) => {
         seqno: await getWalletSeqno(),
         secretKey: Buffer.alloc(64),
       });
-      const response = await tonapi.wallet.emulateMessageToWallet({ boc });
-      messages.current = nftTransferMessages;
+
+      const response = await tonapi.wallet.emulateMessageToWallet({
+        boc,
+        params: [setBalanceForEmulation(toNano('2'))], // Emulate with higher balance to calculate fair amount to send
+      });
+
       setConsequences(response);
 
       await delay(100);
@@ -135,6 +144,12 @@ export const NFTSend: FC<Props> = (props) => {
     }
   }, [comment, nftAddress, recipient, wallet.ton]);
 
+  const total = useMemo(() => {
+    const fee = new BigNumber(Ton.fromNano(consequences?.event.extra ?? 0));
+
+    return { amount: fee.abs().toString(), isRefund: !fee.isNegative() };
+  }, [consequences?.event.extra]);
+
   const sendTx = useCallback(async () => {
     try {
       setSending(true);
@@ -142,12 +157,42 @@ export const NFTSend: FC<Props> = (props) => {
       const vault = await unlockVault();
       const privateKey = await vault.getTonPrivateKey();
 
+      const totalAmount = total.isRefund
+        ? toNano('0.05')
+        : BigInt(Math.abs(consequences?.event.extra!)) + toNano('0.05');
+
+      const checkResult = await checkIsInsufficient(totalAmount.toString());
+      if (checkResult.insufficient) {
+        openInsufficientFundsModal({
+          totalAmount: totalAmount.toString(),
+          balance: checkResult.balance,
+        });
+
+        await delay(200);
+        throw new CanceledActionError();
+      }
+
+      const nftTransferMessages = [
+        internal({
+          to: nftAddress,
+          value: totalAmount,
+          body: ContractService.createNftTransferBody({
+            queryId: Date.now(),
+            newOwnerAddress: recipient!.address,
+            excessesAddress: tk.wallet.address.ton.raw,
+            forwardBody: comment,
+          }),
+          bounce: true,
+        }),
+      ];
+
       const contract = ContractService.getWalletContract(
-        contractVersionsMap[vault.getVersion() ?? 'v4R2'],
-        Buffer.from(vault.tonPublicKey),
+        contractVersionsMap[wallet.ton.version ?? 'v4R2'],
+        Buffer.from(await wallet.ton.getTonPublicKey()),
       );
+
       const boc = TransactionService.createTransfer(contract, {
-        messages: messages.current,
+        messages: nftTransferMessages,
         seqno: await getWalletSeqno(),
         sendMode: 3,
         secretKey: Buffer.from(privateKey),
@@ -164,13 +209,15 @@ export const NFTSend: FC<Props> = (props) => {
     } finally {
       setSending(false);
     }
-  }, [unlockVault]);
-
-  const total = useMemo(() => {
-    const fee = new BigNumber(Ton.fromNano(consequences?.event.extra ?? 0));
-
-    return { amount: fee.abs().toString(), isRefund: !fee.isNegative() };
-  }, [consequences?.event.extra]);
+  }, [
+    comment,
+    consequences?.event.extra,
+    nftAddress,
+    recipient,
+    total.isRefund,
+    unlockVault,
+    wallet.ton,
+  ]);
 
   return (
     <>

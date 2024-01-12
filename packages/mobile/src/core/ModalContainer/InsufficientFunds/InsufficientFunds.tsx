@@ -150,7 +150,7 @@ export async function checkIsInsufficient(amount: string | number) {
   return { insufficient: false, balance: null };
 }
 
-export const openInsufficientFundsModal = async (params: InsufficientFundsParams) => {
+export const openInsufficientFundsModal = (params: InsufficientFundsParams) => {
   push('SheetsProvider', {
     $$action: SheetActions.ADD,
     component: InsufficientFundsModal,
