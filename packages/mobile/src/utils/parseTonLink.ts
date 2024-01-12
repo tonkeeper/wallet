@@ -7,6 +7,15 @@ const prefixes = [
   'tonkeeper://',
 ];
 
+export enum TransferOperationType {
+  InscriptionTransfer = 'inscription-transfer',
+  Transfer = 'transfer',
+}
+
+export function isTransferOp(operation: string): operation is TransferOperationType {
+  return (Object.values(TransferOperationType) as string[]).includes(operation);
+}
+
 type ParsedTonLink = {
   match: boolean;
   address: string;

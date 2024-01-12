@@ -2,7 +2,7 @@ import { useSuggestedAddresses } from '../../hooks/useSuggestedAddresses';
 import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
 import { Ton } from '$libs/Ton';
 import { Button, FormItem } from '$uikit';
-import { asyncDebounce, formatInputAmount, parseTonLink } from '$utils';
+import { asyncDebounce, formatInputAmount, isTransferOp, parseTonLink } from '$utils';
 import React, {
   FC,
   memo,
@@ -139,11 +139,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           setDnsLoading(false);
         }
 
-        if (
-          link.match &&
-          link.operation === 'transfer' &&
-          Address.isValid(link.address)
-        ) {
+        if (link.match && isTransferOp(link.operation) && Address.isValid(link.address)) {
           if (
             setAmount &&
             link.query.amount &&
