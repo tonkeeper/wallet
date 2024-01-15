@@ -35,8 +35,6 @@ import { AddressInput, AddressSuggests, CommentInput } from './components';
 import { TextInput } from 'react-native-gesture-handler';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
-import { seeIfValidTronAddress } from '@tonkeeper/core/src/utils/tronUtils';
-import { CryptoCurrencies } from '$shared/constants';
 
 const TonWeb = require('tonweb');
 
@@ -51,7 +49,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     setRecipient,
     changeBlockchain,
     active,
-    enableEncryption = false, // TODO: replace with true here when encryption will be ready
+    enableEncryption = true,
     setRecipientAccountInfo,
     setAmount,
     setComment,
@@ -63,13 +61,9 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
   const isCommentRequired = !!recipientAccountInfo?.memoRequired;
 
-  /*
-    TODO: uncomment when feature will be completely ready
-    const isAbleToEncryptComment = enableEncryption && recipientAccountInfo
-    ? !isCommentRequired && !!recipientAccountInfo.publicKey
-    : true;
-  */
-  const isAbleToEncryptComment = enableEncryption;
+  const isAbleToEncryptComment = recipientAccountInfo
+    ? enableEncryption && !isCommentRequired && !!recipientAccountInfo.publicKey
+    : enableEncryption;
 
   const isReadyToContinue = !!recipient && (!isCommentRequired || comment.length);
 

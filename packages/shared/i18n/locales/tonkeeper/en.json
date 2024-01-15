@@ -997,5 +997,9 @@
         "value" : "≈ %{value} TON"
       }
     }
+  },
+  "encryptedComments": {
+    "encryptedComment": "Encrypted comment",
+    "show": "Show"
   }
 }
