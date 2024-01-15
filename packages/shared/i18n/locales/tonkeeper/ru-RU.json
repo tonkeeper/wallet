@@ -1045,5 +1045,9 @@
         "value" : "≈ %{value} TON"
       }
     }
+  },
+  "encryptedComments": {
+    "encryptedComment": "Комментарий",
+    "show": "Показать"
   }
 }
