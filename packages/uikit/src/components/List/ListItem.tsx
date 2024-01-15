@@ -12,7 +12,7 @@ import { SText as Text } from '../Text';
 import { Icon } from '../Icon';
 import { View } from '../View';
 
-interface ListItemProps {
+export interface ListItemProps {
   titleType?: 'primary' | 'secondary';
   title?: string | React.ReactNode;
   subtitle?: string | React.ReactNode;

@@ -1,7 +1,7 @@
 import { UnSubscribeActionListItem } from './items/UnSubscribeActionListItem';
 import { JettonSwapActionListItem } from './items/JettonSwapActionListItem';
 import { SubscribeActionListItem } from './items/SubscribeActionListItem';
-import { ListItemContentText, ListItemContainer } from '@tonkeeper/uikit';
+import { ListItemContentText, ListItemContainer, Steezy } from '@tonkeeper/uikit';
 import { modifyNftName } from '@tonkeeper/core/src/managers/NftsManager';
 import { ActionListItem, ActionListItemProps } from './ActionListItem';
 import { ActionType, Address, AnyActionItem } from '@tonkeeper/core';
@@ -11,6 +11,7 @@ import { memo } from 'react';
 
 import { getImplementationIcon } from '@tonkeeper/mobile/src/utils/staking';
 import { excludeUndefinedValues } from '@tonkeeper/core/src/utils/common';
+import { DomainRenewActionListItem } from './items/DomainRenewActionListItem';
 
 export const ActionListItemByType = memo<ActionListItemProps>((props) => {
   const { action } = props;
@@ -144,6 +145,8 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
           {...pureProps}
         />
       );
+    case ActionType.DomainRenew:
+      return <DomainRenewActionListItem {...pureProps} action={action} />;
     case ActionType.JettonSwap:
       return <JettonSwapActionListItem {...pureProps} action={action} />;
     case ActionType.Subscribe:

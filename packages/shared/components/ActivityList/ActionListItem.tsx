@@ -28,6 +28,7 @@ import {
 
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 import { useFlags } from '@tonkeeper/mobile/src/utils/flags';
+import { ListItemProps } from '@tonkeeper/uikit/src/components/List/ListItem';
 
 export interface ActionListItemProps<TActionType extends ActionType = ActionType> {
   onPress?: () => void;
@@ -36,6 +37,7 @@ export interface ActionListItemProps<TActionType extends ActionType = ActionType
   subtitleNumberOfLines?: number;
   children?: React.ReactNode;
   pictureSource?: ImageRequireSource;
+  valueStyle?: ListItemProps['valueStyle'];
   pictureUri?: string;
   iconName?: IconNames;
   leftContent?: React.ReactNode;
@@ -54,6 +56,7 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
     children,
     onPress,
     subtitleNumberOfLines,
+    valueStyle: _valueStyle,
     greenValue,
     ignoreFailed,
     disablePressable,
@@ -208,7 +211,7 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
       onPress={!disablePressable ? handlePress : undefined}
       leftContent={props.leftContent ?? leftContent}
       subtitleNumberOfLines={subtitleNumberOfLines}
-      valueStyle={valueStyle}
+      valueStyle={[valueStyle, _valueStyle]}
       subvalue={subvalue}
       subtitle={subtitle}
       title={title}

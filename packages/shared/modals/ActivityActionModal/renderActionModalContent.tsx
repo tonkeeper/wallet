@@ -16,6 +16,7 @@ import { DepositStakeActionContent } from './content/DepositStakeActionContent';
 import { WithdrawStakeActionContent } from './content/WithdrawStakeActionContent';
 import { WithdrawStakeRequestActionContent } from './content/WithdrawStakeRequestActionContent';
 import { SubscribeActionContent } from './content/SubscribeActionContent';
+import { DomainRenewActionContent } from './content/DomainRenewActionContent';
 
 export function renderActionModalContent(action: AnyActionItem) {
   switch (action.type) {
@@ -49,6 +50,8 @@ export function renderActionModalContent(action: AnyActionItem) {
       return <WithdrawStakeActionContent action={action} />;
     case ActionType.WithdrawStakeRequest:
       return <WithdrawStakeRequestActionContent action={action} />;
+    case ActionType.DomainRenew:
+      return <DomainRenewActionContent action={action} />;
     default:
       return <ActionModalContent action={action} isSimplePreview />;
   }

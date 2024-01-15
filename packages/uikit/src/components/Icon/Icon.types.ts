@@ -51,6 +51,7 @@ export type IconNames =
   | 'ic-arrow-up-28'
   | 'ic-bell-28'
   | 'ic-doc-28'
+  | 'ic-domain-renew-28'
   | 'ic-done-28'
   | 'ic-donemark-28'
   | 'ic-donemark-thin-28'
@@ -173,6 +174,7 @@ export const AllIcons = [
   'ic-arrow-up-28',
   'ic-bell-28',
   'ic-doc-28',
+  'ic-domain-renew-28',
   'ic-done-28',
   'ic-donemark-28',
   'ic-donemark-thin-28',
@@ -296,6 +298,7 @@ export const IconSizes = {
   'ic-arrow-up-28': 28,
   'ic-bell-28': 28,
   'ic-doc-28': 28,
+  'ic-domain-renew-28': 28,
   'ic-done-28': 28,
   'ic-donemark-28': 28,
   'ic-donemark-thin-28': 28,

@@ -17,7 +17,8 @@
     "swapped" : "Обмен",
     "time_on" : "%{time}",
     "withdraw" : "Вывод",
-    "withdrawal_request" : "Запрос на вывод"
+    "withdrawal_request" : "Запрос на вывод",
+    "domain_renew": "Продление домена"
   },
   "activity" : {
     "buy_toncoin_btn" : "Купить Toncoin",
@@ -871,7 +872,8 @@
     "swapped_date" : "Обмен %{time}",
     "transaction" : "Транзакция",
     "unsubscription_title" : "Отмена подписки",
-    "withdraw_amount" : "Сумма вывода"
+    "withdraw_amount" : "Сумма вывода",
+    "domain": "Домен"
   },
   "transaction_exchange_from_currency" : "Из",
   "transaction_fee" : "Комиссия",
@@ -899,7 +901,8 @@
     "unsubscription" : "Отмена подписки",
     "wallet_initialized" : "Кошелёк инициализирован",
     "withdraw" : "Вывод",
-    "withdrawal_request" : "Запрос на вывод"
+    "withdrawal_request" : "Запрос на вывод",
+    "domain_renew": "Продление домена"
   },
   "transaction_sender" : "Отправитель",
   "transaction_sender_address" : "Адрес отправителя",

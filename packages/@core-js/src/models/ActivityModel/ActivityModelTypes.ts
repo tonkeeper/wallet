@@ -6,6 +6,7 @@ import {
   AuctionBidAction,
   ContractDeployAction,
   DepositStakeAction,
+  DomainRenewAction,
   ElectionsDepositStakeAction,
   ElectionsRecoverStakeAction,
   JettonBurnAction,
@@ -84,6 +85,7 @@ export enum ActionType {
   WithdrawStakeRequest = 'WithdrawStakeRequest',
   ElectionsRecoverStake = 'ElectionsRecoverStake',
   ElectionsDepositStake = 'ElectionsDepositStake',
+  DomainRenew = 'DomainRenew',
   Unknown = 'Unknown',
 }
 
@@ -107,6 +109,7 @@ export type ActionPayload = {
   [ActionType.WithdrawStakeRequest]: WithdrawStakeRequestAction;
   [ActionType.ElectionsRecoverStake]: ElectionsRecoverStakeAction;
   [ActionType.ElectionsDepositStake]: ElectionsDepositStakeAction;
+  [ActionType.DomainRenew]: DomainRenewAction;
   [ActionType.Unknown]: undefined;
 };
 

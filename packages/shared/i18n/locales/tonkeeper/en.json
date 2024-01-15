@@ -17,7 +17,8 @@
     "swapped" : "Swapped",
     "time_on" : "on %{time}",
     "withdraw" : "Unstake",
-    "withdrawal_request" : "Unstake Request"
+    "withdrawal_request" : "Unstake Request",
+    "domain_renew": "Domain Renew"
   },
   "activity" : {
     "buy_toncoin_btn" : "Buy Toncoin",
@@ -827,7 +828,8 @@
     "subscription_product_label" : "Subscription",
     "transaction" : "Transaction",
     "unsubscription_title" : "Unsubscribed",
-    "withdraw_amount" : "Unstake amount"
+    "withdraw_amount" : "Unstake amount",
+    "domain": "Domain"
   },
   "transaction_exchange_from_currency" : "From",
   "transaction_fee" : "Fee",
@@ -855,7 +857,8 @@
     "unsubscription" : "Unsubscribed",
     "wallet_initialized" : "Wallet initialized",
     "withdraw" : "Unstake",
-    "withdrawal_request" : "Unstake Request"
+    "withdrawal_request" : "Unstake Request",
+    "domain_renew": "Domain Renew"
   },
   "transaction_sender" : "Sender",
   "transaction_sender_address" : "Sender address",

@@ -51,6 +51,7 @@ export const IconList = {
   'ic-arrow-up-28': require('../../../assets/icons/png/ic-arrow-up-28.png'),
   'ic-bell-28': require('../../../assets/icons/png/ic-bell-28.png'),
   'ic-doc-28': require('../../../assets/icons/png/ic-doc-28.png'),
+  'ic-domain-renew-28': require('../../../assets/icons/png/ic-domain-renew-28.png'),
   'ic-done-28': require('../../../assets/icons/png/ic-done-28.png'),
   'ic-donemark-28': require('../../../assets/icons/png/ic-donemark-28.png'),
   'ic-donemark-thin-28': require('../../../assets/icons/png/ic-donemark-thin-28.png'),
