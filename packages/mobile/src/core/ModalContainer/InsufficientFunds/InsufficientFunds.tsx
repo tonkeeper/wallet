@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { Modal, Spacer } from '@tonkeeper/uikit';
-import { openExploreTab, openRefillBattery } from '$navigation';
+import { openExploreTab } from '$navigation';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { Button, Icon, Text } from '$uikit';
 import * as S from './InsufficientFunds.style';
@@ -14,6 +14,7 @@ import { formatter } from '$utils/formatter';
 import { push } from '$navigation/imperative';
 import { useBatteryBalance } from '@tonkeeper/shared/query/hooks/useBatteryBalance';
 import { config } from '@tonkeeper/shared/config';
+import { openRefillBatteryModal } from '@tonkeeper/shared/modals/RefillBatteryModal';
 
 export interface InsufficientFundsParams {
   /**
@@ -47,7 +48,7 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
     fee,
     isStakingDeposit,
   } = props;
-  const { batteryBalance } = useBatteryBalance();
+  const { balance: batteryBalance } = useBatteryBalance();
   const nav = useNavigation();
   const formattedAmount = useMemo(
     () => formatter.format(fromNano(totalAmount, decimals), { decimals }),
@@ -69,7 +70,7 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
   const handleOpenRefillBattery = useCallback(async () => {
     nav.goBack();
     await delay(550);
-    openRefillBattery();
+    openRefillBatteryModal();
   }, [nav]);
 
   const handleOpenDappBrowser = useCallback(async () => {
@@ -138,7 +139,7 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
         <S.FooterWrap>
           {shouldShowRefillBatteryButton && (
             <>
-              <Button mode="secondary" onPress={handleOpenRefillBattery}>
+              <Button mode="primary" onPress={handleOpenRefillBattery}>
                 {t('txActions.signRaw.insufficientFunds.rechargeBattery')}
               </Button>
               <Spacer y={16} />

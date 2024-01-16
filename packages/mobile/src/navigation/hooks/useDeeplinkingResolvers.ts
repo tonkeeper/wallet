@@ -450,9 +450,11 @@ export function useDeeplinkingResolvers() {
       if (!Address.isValid(query.nft)) {
         return Toast.fail(t('transfer_deeplink_nft_address_error'));
       }
-      const excessesAccount = !config.get('disable_battery_send')
-        ? await tk.wallet.battery.getExcessesAccount()
-        : null;
+      const excessesAccount =
+        !config.get('disable_battery_send') &&
+        tk.wallet.battery.state.data.balance !== '0'
+          ? await tk.wallet.battery.getExcessesAccount()
+          : null;
 
       await openSignRawModal(
         {

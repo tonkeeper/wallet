@@ -9,9 +9,12 @@ import { TronAPI } from './TronAPI';
 import { TonAPI } from './TonAPI';
 import { BatteryAPI } from './BatteryAPI';
 import { signProofForTonkeeper } from './utils/tonProof';
-import { WalletContractV4 } from '@ton/ton';
+import { storeStateInit } from '@ton/ton';
 import nacl from 'tweetnacl';
 import { batteryState } from './managers/BatteryManager';
+import { beginCell } from '@ton/core';
+import { getWalletContract } from '../dist/service/walletService';
+import { WalletVersion } from '../dist/entries/wallet';
 
 class PermissionsManager {
   public notifications = true;
@@ -122,7 +125,7 @@ export class Tonkeeper {
   }
 
   public tronStorageKey = 'temp-tron-address';
-  public tonProofStorageKey = 'temp-ton-proof';
+  public tonProofStorageKey = 'temp-ton-proof'; // TODO: rewrite it with multi-accounts
 
   public async load() {
     try {
@@ -158,24 +161,28 @@ export class Tonkeeper {
   }
 
   public async obtainProofToken(keyPair: nacl.SignKeyPair) {
+    const contract = getWalletContract(
+      Buffer.from(keyPair.publicKey),
+      WalletVersion.v4R2,
+    );
+    const stateInitCell = beginCell().store(storeStateInit(contract.init)).endCell();
+    const rawAddress = contract.address.toRawString();
+
     try {
       const { payload } = await this.tonapi.tonconnect.getTonConnectPayload();
-      const contract = WalletContractV4.create({
-        workchain: 0,
-        publicKey: Buffer.from(keyPair.publicKey),
-      });
       const proof = await signProofForTonkeeper(
-        contract.address.toRawString(),
+        rawAddress,
         keyPair.secretKey,
         payload,
-        contract.init.code.toString(),
+        stateInitCell.toBoc({ idx: false }).toString('base64'),
       );
       const { token } = await this.tonapi.wallet.tonConnectProof(proof);
 
       await this.storage.setItem(this.tonProofStorageKey, JSON.stringify(token));
       return token;
     } catch (err) {
-      console.error('[Tonkeeper]', err);
+      console.log('33333', err);
+      await this.storage.removeItem(this.tonProofStorageKey);
     }
   }
 

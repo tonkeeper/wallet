@@ -472,10 +472,9 @@ export class TonWallet {
       throw new Error(t('send_insufficient_funds'));
     }
 
-    const excessesAccount =
-      sendWithBattery && !config.get('disable_battery_send')
-        ? await tk.wallet.battery.getExcessesAccount()
-        : null;
+    const excessesAccount = sendWithBattery
+      ? await tk.wallet.battery.getExcessesAccount()
+      : tk.wallet.address.ton.raw;
 
     const boc = this.createJettonTransfer({
       seqno,

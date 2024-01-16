@@ -65,12 +65,12 @@ export async function createTonProof({
       proof: {
         timestamp,
         domain: {
-          lengthBytes: domainBuffer.byteLength,
+          length_bytes: domainBuffer.byteLength,
           value: domain,
         },
         signature,
         payload,
-        stateInit: walletStateInit,
+        state_init: walletStateInit,
       },
     };
   } catch (e) {

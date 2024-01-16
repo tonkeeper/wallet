@@ -104,10 +104,6 @@ export const NFTSend: FC<Props> = (props) => {
     try {
       setPreparing(true);
 
-      const excessesAccount = !config.get('disable_battery_send')
-        ? await tk.wallet.battery.getExcessesAccount()
-        : undefined;
-
       const nftTransferMessages = [
         internal({
           to: nftAddress,
@@ -115,7 +111,7 @@ export const NFTSend: FC<Props> = (props) => {
           body: ContractService.createNftTransferBody({
             queryId: Date.now(),
             newOwnerAddress: recipient!.address,
-            excessesAddress: excessesAccount,
+            excessesAddress: tk.wallet.address.ton.raw,
             forwardBody: comment,
           }),
           bounce: true,
@@ -186,6 +182,8 @@ export const NFTSend: FC<Props> = (props) => {
         throw new CanceledActionError();
       }
 
+      const excessesAccount = isBattery && (await tk.wallet.battery.getExcessesAccount());
+
       const nftTransferMessages = [
         internal({
           to: nftAddress,
@@ -193,7 +191,7 @@ export const NFTSend: FC<Props> = (props) => {
           body: ContractService.createNftTransferBody({
             queryId: Date.now(),
             newOwnerAddress: recipient!.address,
-            excessesAddress: tk.wallet.address.ton.raw,
+            excessesAddress: excessesAccount || tk.wallet.address.ton.raw,
             forwardBody: comment,
           }),
           bounce: true,
