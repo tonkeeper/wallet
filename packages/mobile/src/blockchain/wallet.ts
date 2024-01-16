@@ -483,6 +483,8 @@ export class TonWallet {
       throw new Error(t('send_fee_estimation_error'));
     }
 
+    const transferAmount = feeNano.plus(toNano('0.05').toString());
+
     if (this.isLockup()) {
       const lockupBalances = await this.getLockupBalances(sender);
       if (
@@ -491,10 +493,7 @@ export class TonWallet {
         throw new Error(t('send_insufficient_funds'));
       }
     } else {
-      if (
-        !isBattery &&
-        new BigNumber(jettonTransferAmount.toString()).isGreaterThan(sender.balance)
-      ) {
+      if (!isBattery && new BigNumber(transferAmount).isGreaterThan(sender.balance)) {
         throw new Error(t('send_insufficient_funds'));
       }
     }
