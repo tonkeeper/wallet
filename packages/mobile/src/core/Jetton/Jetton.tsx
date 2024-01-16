@@ -94,7 +94,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
               variant="body2"
               color="foregroundSecondary"
             >
-              {jettonPrice.formatted.totalFiat || t('jetton_token')}
+              {jettonPrice.formatted.totalFiat}
             </HideableAmount>
             {jettonPrice.formatted.fiat ? (
               <Text style={{ marginTop: 12 }} variant="body2" color="foregroundSecondary">

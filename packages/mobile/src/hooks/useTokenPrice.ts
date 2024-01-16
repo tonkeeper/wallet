@@ -88,12 +88,10 @@ export const useGetTokenPrice = () => {
         totalFiat,
         fiatDiff,
         formatted: {
-          ton: ton ? formatter.format(ton, { currency: 'TON' }) : null,
-          totalTon: totalTon ? formatter.format(totalTon, { currency: 'TON' }) : null,
-          fiat: fiat ? formatter.format(fiat, { currency: fiatCurrency }) : null,
-          totalFiat: totalFiat
-            ? formatter.format(totalFiat, { currency: fiatCurrency })
-            : null,
+          ton: formatter.format(ton, { currency: 'TON' }),
+          totalTon: formatter.format(totalTon, { currency: 'TON' }),
+          fiat: formatter.format(fiat, { currency: fiatCurrency }),
+          totalFiat: formatter.format(totalFiat, { currency: fiatCurrency }),
         },
       };
     },
@@ -101,7 +99,7 @@ export const useGetTokenPrice = () => {
   );
 };
 
-// NOTE: currency in friendly address format 
+// NOTE: currency in friendly address format
 // TODO: Change prices map to raw address as key
 export const useTokenPrice = (currency: string, amount = '0') => {
   const getTokenPrice = useGetTokenPrice();
