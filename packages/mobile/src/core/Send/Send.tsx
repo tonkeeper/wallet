@@ -295,6 +295,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       if (recipient.blockchain === 'ton') {
         dispatch(
           walletActions.sendCoins({
+            fee,
             currencyAdditionalParams: currencyAdditionalParams,
             currency: currency as CryptoCurrency,
             amount: parsedAmount,
@@ -331,6 +332,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       }
     },
     [
+      fee,
       recipient,
       expiryTimestamp,
       insufficientFundsParams,

@@ -10,6 +10,7 @@ import {
   ContractService,
   contractVersionsMap,
   isActiveAccount,
+  ONE_TON,
   TransactionService,
 } from '@tonkeeper/core';
 import { debugLog } from '$utils/debugLog';
@@ -34,11 +35,23 @@ import {
   sendBocWithBattery,
 } from '@tonkeeper/shared/utils/blockchain';
 import { OperationEnum, TypeEnum } from '@tonkeeper/core/src/TonAPI';
+import { setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 
 const TonWeb = require('tonweb');
 
-export const jettonTransferAmount = toNano('0.64');
 export const inscriptionTransferAmount = '0.05';
+
+interface JettonTransferParams {
+  seqno: number;
+  jettonWalletAddress: string;
+  recipient: Account;
+  amountNano: string;
+  payload: Cell | string;
+  vault: Vault;
+  secretKey?: Buffer;
+  excessesAccount?: string | null;
+  jettonTransferAmount?: bigint;
+}
 
 interface TonTransferParams {
   seqno: number;
@@ -325,8 +338,8 @@ export class TonWallet {
     return await this.vault.tonWallet.methods.isPluginInstalled(subscriptionAddress);
   }
 
-  private async calcFee(boc: string): Promise<[BigNumber, boolean]> {
-    const { emulateResult, battery } = await emulateWithBattery(boc);
+  private async calcFee(boc: string, params?): Promise<[BigNumber, boolean]> {
+    const { emulateResult, battery } = await emulateWithBattery(boc, params);
     return [new BigNumber(emulateResult.event.extra).multipliedBy(-1), battery];
   }
 
@@ -346,17 +359,17 @@ export class TonWallet {
     return ['empty', 'uninit', 'nonexist'].includes(info?.status ?? '');
   }
 
-  createJettonTransfer(
-    seqno: number,
-    jettonWalletAddress: string,
-    sender: Account,
-    recipient: Account,
-    amountNano: string,
-    payload: Cell | string = '',
-    vault: Vault,
-    secretKey: Buffer = Buffer.alloc(64),
-    excessesAccount?: string | null,
-  ) {
+  createJettonTransfer({
+    seqno,
+    jettonWalletAddress,
+    recipient,
+    amountNano,
+    payload = '',
+    vault,
+    secretKey = Buffer.alloc(64),
+    excessesAccount = null,
+    jettonTransferAmount = ONE_TON,
+  }: JettonTransferParams) {
     const version = vault.getVersion();
     const lockupConfig = vault.getLockupConfig();
     const contract = ContractService.getWalletContract(
@@ -396,30 +409,31 @@ export class TonWallet {
     vault: Vault,
     payload: Cell | string = '',
   ) {
-    let sender: Account;
     let recipient: Account;
     let seqno: number;
     try {
       const fromAddress = await this.getAddress();
-      sender = await this.getWalletInfo(fromAddress);
       recipient = await this.getWalletInfo(address);
       seqno = await this.getSeqno(fromAddress);
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
 
-    const boc = this.createJettonTransfer(
+    const boc = this.createJettonTransfer({
       seqno,
       jettonWalletAddress,
-      sender,
       recipient,
       amountNano,
       payload,
       vault,
-      undefined,
-    );
+      excessesAccount: null,
+      jettonTransferAmount: ONE_TON,
+    });
 
-    let [feeNano, isBattery] = await this.calcFee(boc);
+    let [feeNano, isBattery] = await this.calcFee(
+      boc,
+      [setBalanceForEmulation(toNano('2'))], // Emulate with higher balance to calculate fair amount to send
+    );
 
     return [Ton.fromNano(feeNano.toString()), isBattery];
   }
@@ -431,6 +445,7 @@ export class TonWallet {
     unlockedVault: UnlockedVault,
     payload: Cell | string = '',
     sendWithBattery: boolean,
+    forwardAmount: string,
   ) {
     let sender: Account;
     let recipient: Account;
@@ -461,17 +476,17 @@ export class TonWallet {
         ? await tk.wallet.battery.getExcessesAccount()
         : null;
 
-    const boc = this.createJettonTransfer(
+    const boc = this.createJettonTransfer({
       seqno,
       jettonWalletAddress,
-      sender,
       recipient,
       amountNano,
       payload,
-      unlockedVault,
-      Buffer.from(secretKey),
+      vault: unlockedVault,
+      secretKey: Buffer.from(secretKey),
       excessesAccount,
-    );
+      jettonTransferAmount: BigInt(forwardAmount),
+    });
 
     let feeNano: BigNumber;
     let isBattery = false;

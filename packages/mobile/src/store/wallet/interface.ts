@@ -56,6 +56,7 @@ export type ConfirmSendCoinsAction = PayloadAction<{
   currencyAdditionalParams?: CurrencyAdditionalParams;
 }>;
 export type SendCoinsAction = PayloadAction<{
+  fee: string;
   currency: CryptoCurrency;
   amount: string;
   address: string;
