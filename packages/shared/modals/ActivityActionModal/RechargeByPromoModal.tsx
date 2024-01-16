@@ -1,5 +1,14 @@
 import { memo, useCallback, useState } from 'react';
-import { Button, Input, Modal, Spacer, Steezy, Toast, View } from '@tonkeeper/uikit';
+import {
+  Button,
+  Input,
+  isIOS,
+  Modal,
+  Spacer,
+  Steezy,
+  Toast,
+  View,
+} from '@tonkeeper/uikit';
 import { navigation, SheetActions, useNavigation } from '@tonkeeper/router';
 import { t } from '@tonkeeper/shared/i18n';
 import { tk } from '../../tonkeeper';
@@ -36,10 +45,10 @@ export const RechargeByPromoModal = memo(() => {
             withClearButton
             value={code}
             onChangeText={onChangeText}
-            placeholder={t('battery.promocode.placeholder')}
           />
           <Spacer y={32} />
           <Button onPress={applyPromo} title={t('battery.promocode.apply')} />
+          <Spacer y={16} />
         </View>
         <Modal.Footer />
       </Modal.Content>

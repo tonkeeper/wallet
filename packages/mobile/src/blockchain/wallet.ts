@@ -7,6 +7,7 @@ import { getServerConfig } from '$shared/constants';
 import { UnlockedVault, Vault } from './vault';
 import {
   Address as AddressFormatter,
+  BASE_FORWARD_AMOUNT,
   ContractService,
   contractVersionsMap,
   isActiveAccount,
@@ -498,7 +499,7 @@ export class TonWallet {
       throw new Error(t('send_fee_estimation_error'));
     }
 
-    const transferAmount = feeNano.plus(toNano('0.05').toString());
+    const transferAmount = feeNano.plus(BASE_FORWARD_AMOUNT.toString()).toString();
 
     if (this.isLockup()) {
       const lockupBalances = await this.getLockupBalances(sender);

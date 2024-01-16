@@ -106,7 +106,7 @@ export const NFTSend: FC<Props> = (props) => {
 
       const excessesAccount = !config.get('disable_battery_send')
         ? await tk.wallet.battery.getExcessesAccount()
-        : null;
+        : undefined;
 
       const nftTransferMessages = [
         internal({
@@ -133,9 +133,10 @@ export const NFTSend: FC<Props> = (props) => {
         secretKey: Buffer.alloc(64),
       });
 
-      const response = await emulateWithBattery(boc, {
-        params: [setBalanceForEmulation(toNano('2'))], // Emulate with higher balance to calculate fair amount to send
-      });
+      const response = await emulateWithBattery(
+        boc,
+        [setBalanceForEmulation(toNano('2'))], // Emulate with higher balance to calculate fair amount to send
+      );
 
       setConsequences(response.emulateResult);
       setIsBattery(response.battery);
@@ -175,7 +176,7 @@ export const NFTSend: FC<Props> = (props) => {
         : BigInt(Math.abs(consequences?.event.extra!)) + BASE_FORWARD_AMOUNT;
 
       const checkResult = await checkIsInsufficient(totalAmount.toString());
-      if (checkResult.insufficient) {
+      if (!isBattery && checkResult.insufficient) {
         openInsufficientFundsModal({
           totalAmount: totalAmount.toString(),
           balance: checkResult.balance,
@@ -220,6 +221,7 @@ export const NFTSend: FC<Props> = (props) => {
   }, [
     comment,
     consequences?.event.extra,
+    isBattery,
     nftAddress,
     recipient,
     total.isRefund,

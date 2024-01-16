@@ -84,7 +84,7 @@ import { clearSubscribeStatus } from '$utils/messaging';
 import { useRatesStore } from '$store/zustand/rates';
 import { Cell } from '@ton/core';
 import nacl from 'tweetnacl';
-import { encryptMessageComment } from '@tonkeeper/core';
+import { BASE_FORWARD_AMOUNT, encryptMessageComment } from '@tonkeeper/core';
 import { goBack } from '$navigation/imperative';
 import { trackEvent } from '$utils/stats';
 import { tk } from '@tonkeeper/shared/tonkeeper';
@@ -448,10 +448,10 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
     yield delay(100);
 
     if (onNext) {
-      if (!isSendAll && onInsufficientFunds) {
+      if ((tokenType !== TokenType.TON || !isSendAll) && onInsufficientFunds) {
         const amountNano =
           tokenType === TokenType.Jetton
-            ? new BigNumber(toNano(fee)).plus(toNano('0.05')).toString()
+            ? new BigNumber(toNano(fee)).plus(BASE_FORWARD_AMOUNT.toString()).toString()
             : new BigNumber(toNano(fee)).plus(toNano(amount)).toString();
         const address = yield call([wallet.ton, 'getAddress']);
         const { balance } = yield call(Tonapi.getWalletInfo, address);
@@ -541,7 +541,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         unlockedVault,
         commentValue,
         sendWithBattery,
-        BigNumber(toNano(fee)).plus(toNano('0.05')).toString(),
+        BigNumber(toNano(fee)).plus(BASE_FORWARD_AMOUNT.toString()).toString(),
       );
     } else if (tokenType === TokenType.TON && currency === CryptoCurrencies.Ton) {
       yield call(

@@ -1,32 +1,42 @@
 import { WalletContext, WalletIdentity } from '../Wallet';
 import { MessageConsequences } from '../TonAPI';
+import { Storage } from '../declarations/Storage';
+import { State } from '../utils/State';
+
+export interface BatteryState {
+  isLoading: boolean;
+  balance?: string;
+}
+
+export const batteryState = new State<BatteryState>({
+  isLoading: false,
+  balance: undefined,
+});
 
 export class BatteryManager {
-  constructor(private ctx: WalletContext, private identity: WalletIdentity) {}
+  public state = batteryState;
 
-  public get cacheKey() {
-    return ['battery', this.ctx.address.ton.raw];
+  constructor(
+    private ctx: WalletContext,
+    private identity: WalletIdentity,
+    private storage: Storage,
+  ) {
+    this.state.persist({
+      partialize: ({ balance }) => ({ balance }),
+      storage: this.storage,
+      key: 'battery',
+    });
   }
 
-  public async getBalance() {
+  public async fetchBalance() {
     try {
+      this.state.set({ isLoading: true });
       const data = await this.ctx.batteryapi.getBalance({
         headers: {
           'X-TonConnect-Auth': this.identity.tonProof,
         },
       });
-      return data.balance;
-    } catch (err) {
-      return null;
-    }
-  }
-
-  public async refetchBalance() {
-    try {
-      await this.ctx.queryClient.refetchQueries({
-        refetchPage: (_, index) => index === 0,
-        queryKey: this.cacheKey,
-      });
+      this.state.set({ isLoading: false, balance: data.balance });
     } catch (err) {
       return null;
     }
@@ -58,7 +68,7 @@ export class BatteryManager {
       );
 
       if (data.success) {
-        this.refetchBalance();
+        this.fetchBalance();
       }
 
       return data;
@@ -78,7 +88,7 @@ export class BatteryManager {
         },
       );
 
-      await this.refetchBalance();
+      await this.fetchBalance();
 
       return data.transactions;
     } catch (err) {
@@ -97,7 +107,7 @@ export class BatteryManager {
         },
       );
 
-      await this.refetchBalance();
+      await this.fetchBalance();
 
       return data.purchases;
     } catch (err) {
@@ -117,7 +127,7 @@ export class BatteryManager {
         },
       );
 
-      await this.refetchBalance();
+      await this.fetchBalance();
     } catch (err) {
       console.log('[battery sendMessage]', err);
       throw new Error(err);
@@ -138,5 +148,13 @@ export class BatteryManager {
       console.log('[battery emulate]', err);
       throw new Error(err);
     }
+  }
+
+  public async rehydrate() {
+    return this.state.rehydrate();
+  }
+
+  public async clear() {
+    return this.state.clear();
   }
 }
