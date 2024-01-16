@@ -11,6 +11,7 @@ import { BatteryAPI } from './BatteryAPI';
 import { signProofForTonkeeper } from './utils/tonProof';
 import { WalletContractV4 } from '@ton/ton';
 import nacl from 'tweetnacl';
+import { batteryState } from './managers/BatteryManager';
 
 class PermissionsManager {
   public notifications = true;
@@ -183,6 +184,7 @@ export class Tonkeeper {
   private preload() {
     this.wallet.activityList.preload();
     this.wallet.tonInscriptions.preload();
+    this.wallet.battery.fetchBalance();
     // TODO:
     this.wallet.subscriptions.prefetch();
     this.wallet.balances.prefetch();
@@ -193,6 +195,7 @@ export class Tonkeeper {
     this.wallet.jettonActivityList.rehydrate();
     this.wallet.tonActivityList.rehydrate();
     this.wallet.activityList.rehydrate();
+    this.wallet.battery.rehydrate();
   }
 
   public async lock() {
@@ -235,6 +238,7 @@ export class Tonkeeper {
   }
 
   public destroy() {
+    batteryState.clear();
     this.wallet?.destroy();
     this.queryClient.clear();
     this.wallet = null!;

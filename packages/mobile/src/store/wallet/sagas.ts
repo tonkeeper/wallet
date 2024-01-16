@@ -333,6 +333,7 @@ function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
     yield call(setLastRefreshedAt, Date.now());
     yield put(subscriptionsActions.loadSubscriptions());
     yield call([tk.wallet.tonInscriptions, 'getInscriptions']);
+    yield call([tk.wallet.battery, 'fetchBalance']);
   } catch (e) {
     yield put(walletActions.endRefreshBalancesPage());
   }

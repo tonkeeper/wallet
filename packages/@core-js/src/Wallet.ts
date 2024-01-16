@@ -156,7 +156,7 @@ export class Wallet {
     this.balances = new BalancesManager(context);
     this.nfts = new NftsManager(context);
     this.tronService = new TronService(context);
-    this.battery = new BatteryManager(context, this.identity);
+    this.battery = new BatteryManager(context, this.identity, this.storage);
 
     this.listenTransactions();
   }

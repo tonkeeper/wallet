@@ -1,13 +1,13 @@
 import { tk } from '../../tonkeeper';
-import { useQuery } from 'react-query';
+import { useExternalState } from '../../hooks/useExternalState';
+import { batteryState } from '@tonkeeper/core/src/managers/BatteryManager';
 
 export const useBatteryBalance = () => {
-  return useQuery({
-    enabled: !!tk.wallet?.address.ton,
-    queryKey: tk.wallet?.battery.cacheKey,
-    cacheTime: Infinity,
-    queryFn: async () => {
-      return tk.wallet?.battery.getBalance();
-    },
-  });
+  const state = useExternalState(batteryState);
+
+  return {
+    reload: () => tk.wallet?.battery.fetchBalance(),
+    isLoading: state.isLoading,
+    balance: state.balance,
+  };
 };

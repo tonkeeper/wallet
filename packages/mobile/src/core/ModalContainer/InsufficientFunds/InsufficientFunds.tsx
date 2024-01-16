@@ -47,7 +47,7 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
     fee,
     isStakingDeposit,
   } = props;
-  const { data: batteryBalance } = useBatteryBalance();
+  const { batteryBalance } = useBatteryBalance();
   const nav = useNavigation();
   const formattedAmount = useMemo(
     () => formatter.format(fromNano(totalAmount, decimals), { decimals }),

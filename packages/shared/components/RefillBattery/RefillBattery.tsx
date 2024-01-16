@@ -21,7 +21,7 @@ const iconNames: { [key: string]: IconNames } = {
 };
 
 export const RefillBattery = memo(() => {
-  const { data: balance } = useBatteryBalance();
+  const { balance } = useBatteryBalance();
   const batteryState = getBatteryState(balance ?? '0');
   const iconName = iconNames[batteryState];
 

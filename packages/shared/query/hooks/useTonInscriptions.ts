@@ -7,7 +7,7 @@ export const useTonInscriptions = () => {
     tk.wallet?.tonInscriptions.state ??
       new State({
         isLoading: false,
-        inscriptions: [],
+        items: [],
       }),
   );
 
