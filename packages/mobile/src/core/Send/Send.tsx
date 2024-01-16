@@ -449,6 +449,7 @@ export const Send: FC<SendProps> = ({ route }) => {
         <StepViewItem id={SendSteps.ADDRESS}>
           {(stepProps) => (
             <AddressStep
+              enableEncryption={tokenType !== TokenType.Inscription}
               recipient={recipient}
               decimals={decimals}
               changeBlockchain={changeBlockchain}

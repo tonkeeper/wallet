@@ -271,6 +271,7 @@ export function useDeeplinkingResolvers() {
           currency: inscription.ticker,
           currencyAdditionalParams: { type: inscription.type },
           address,
+          comment,
           withGoBack: resolveParams.withGoBack,
           tokenType: TokenType.Inscription,
           redirectToActivity: resolveParams.redirectToActivity,
