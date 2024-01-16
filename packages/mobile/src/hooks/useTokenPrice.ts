@@ -73,7 +73,7 @@ export const useGetTokenPrice = () => {
       percent = toLocaleNumber(percent);
 
       const fiatDiff = {
-        percent,
+        percent: ton !== 0 && percent,
         percentAbs: percent !== '-' ? percent.replace(/[-–]/, '') : percent,
         color,
         trend,
