@@ -11,10 +11,10 @@ export enum BatteryState {
 const valuesForBatteryState = {
   [BatteryState.Medium]: '2',
   [BatteryState.AlmostEmpty]: '1',
-  [BatteryState.Empty]: '0.01',
+  [BatteryState.Empty]: '0.03',
 };
 
-export const MEAN_FEES = '0.02';
+export const MEAN_FEES = '0.08';
 
 export function getBatteryState(batteryBalance: string) {
   const balance = new BigNumber(batteryBalance);

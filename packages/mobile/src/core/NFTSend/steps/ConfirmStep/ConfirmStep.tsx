@@ -123,13 +123,13 @@ const ConfirmStepComponent: FC<Props> = (props) => {
               </S.Item>
             </Highlight>
             <Separator />
-            <S.Item>
-              <S.ItemLabel>
-                {total.isRefund
-                  ? t('nft_transfer.confirm.fee.refund_label')
-                  : t('nft_transfer.confirm.fee.label')}
-              </S.ItemLabel>
-              <S.ItemContent>
+            <S.ItemRowContainer>
+              <S.ItemRow>
+                <S.ItemLabel>
+                  {total.isRefund
+                    ? t('nft_transfer.confirm.fee.refund_label')
+                    : t('nft_transfer.confirm.fee.label')}
+                </S.ItemLabel>
                 {isPreparing ? (
                   <>
                     <S.ItemSkeleton>
@@ -142,25 +142,27 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                   </>
                 ) : (
                   <>
-                    {batteryState !== BatteryState.Empty && isBattery ? (
-                      <Text color={'textTertiary'} variant={'body2'}>
-                        {t('send_screen_steps.comfirm.will_be_paid_with_battery')}
-                      </Text>
-                    ) : (
-                      <Text color={'textTertiary'} variant={'body2'} />
-                    )}
                     <S.ItemValue numberOfLines={1}>
                       {t('nft_transfer.confirm.fee.value', {
                         value: total.amount ? truncateDecimal(total.amount, 1) : '?',
                       })}
                     </S.ItemValue>
-                    <S.ItemSubValue>
-                      {total?.amount ? `≈ ${fiatFee.formatted.totalFiat}` : ' '}
-                    </S.ItemSubValue>
                   </>
                 )}
-              </S.ItemContent>
-            </S.Item>
+              </S.ItemRow>
+              <S.ItemRow>
+                {batteryState !== BatteryState.Empty && isBattery ? (
+                  <Text color={'textTertiary'} variant={'body2'}>
+                    {t('send_screen_steps.comfirm.will_be_paid_with_battery')}
+                  </Text>
+                ) : (
+                  <Text color={'textTertiary'} variant={'body2'} />
+                )}
+                <S.ItemSubValue>
+                  {total?.amount ? `≈ ${fiatFee.formatted.totalFiat}` : ' '}
+                </S.ItemSubValue>
+              </S.ItemRow>
+            </S.ItemRowContainer>
             {comment.length > 0 ? (
               <>
                 <Separator />

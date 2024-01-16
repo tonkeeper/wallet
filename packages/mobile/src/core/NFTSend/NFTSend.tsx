@@ -40,6 +40,7 @@ import {
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { Keyboard } from 'react-native';
+import { config } from '@tonkeeper/shared/config';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.NFTSend>;
@@ -103,6 +104,10 @@ export const NFTSend: FC<Props> = (props) => {
     try {
       setPreparing(true);
 
+      const excessesAccount = !config.get('disable_battery_send')
+        ? await tk.wallet.battery.getExcessesAccount()
+        : null;
+
       const nftTransferMessages = [
         internal({
           to: nftAddress,
@@ -110,7 +115,7 @@ export const NFTSend: FC<Props> = (props) => {
           body: ContractService.createNftTransferBody({
             queryId: Date.now(),
             newOwnerAddress: recipient!.address,
-            excessesAddress: tk.wallet.address.ton.raw,
+            excessesAddress: excessesAccount,
             forwardBody: comment,
           }),
           bounce: true,

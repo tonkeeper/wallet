@@ -45,6 +45,17 @@ export const ItemValue = styled(Text).attrs({
   numberOfLines: 1,
 })``;
 
+export const ItemRowContainer = styled.View`
+  padding: ${ns(16)}px 0;
+`;
+
+export const ItemRow = styled.View`
+  padding: 0 ${ns(16)}px;
+  flex: 1;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
 export const ItemSubValue = styled(Text).attrs({
   variant: 'body2',
   color: 'foregroundSecondary',
