@@ -37,9 +37,14 @@ export const RefillBattery = memo(() => {
         </Text>
         <Spacer y={4} />
         <Text textAlign="center" type="body2" color="textSecondary">
-          {t(`battery.description.${batteryState.toLowerCase()}`, {
-            cnt: calculateAvailableNumOfTransactions(balance ?? '0'),
-          })}
+          {t(
+            `battery.description.${
+              batteryState === BatteryState.Empty ? 'empty' : 'other'
+            }`,
+            {
+              cnt: calculateAvailableNumOfTransactions(balance ?? '0'),
+            },
+          )}
         </Text>
         <Spacer y={16} />
       </View>

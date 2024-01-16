@@ -10,14 +10,17 @@ import { SkeletonLine } from '@tonkeeper/mobile/src/uikit/Skeleton/SkeletonLine'
 const packages = [
   {
     key: 'large',
+    transactions: 700,
     packageId: 'Battery700',
   },
   {
     key: 'medium',
+    transactions: 400,
     packageId: 'Battery400',
   },
   {
     key: 'small',
+    transactions: 100,
     packageId: 'Battery100',
   },
 ];
@@ -69,8 +72,9 @@ export const RefillBatteryIAP = memo(() => {
                 <View>
                   <View style={styles.titleContainer}>
                     <Text type="label1">
-                      {t(`battery.packages.title.${item.key}`, {
+                      {t(`battery.packages.title`, {
                         price: product?.localizedPrice ?? '',
+                        cnt: item.transactions,
                       })}
                     </Text>
                     <Spacer x={4} />

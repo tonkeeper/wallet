@@ -134,10 +134,8 @@
       "full": "Battery for gas fees is full"
     },
     "description": {
-      "empty": "Send tokens and NFTs, pay for staking actions with empty balance with the battery for gas fees.",
-      "almost_empty": "You have enough charge battery for more than %{cnt} transactions.",
-      "medium": "You have enough charge battery for more than %{cnt} transactions.",
-      "full": "You have enough charge battery for more than %{cnt} transactions."
+      "empty": "Send tokens and NFTs, pay for staking actions with empty main balance.",
+      "other": "You have enough charge battery for more than %{cnt} transactions."
     },
     "promocode": {
       "button": "Recharge by Promo Code",
@@ -147,11 +145,7 @@
       "success": "Your battery is charged"
     },
     "packages": {
-      "title": {
-        "large": "700 transactions for {{price}}",
-        "medium": "400 transactions for {{price}}",
-        "small": "100 transactions for {{price}}"
-      },
+      "title": "{{cnt}} transactions for {{price}}",
       "subtitle": {
         "large": "Large gas fees pack",
         "medium": "Medium gas fees pack",
