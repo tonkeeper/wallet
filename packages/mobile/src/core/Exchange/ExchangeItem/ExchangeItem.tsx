@@ -9,6 +9,7 @@ import { Linking } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
 import { openExchangeMethodModal } from '$core/ModalContainer/ExchangeMethod/ExchangeMethod';
 import { getCryptoAssetIconSource } from '@tonkeeper/uikit/assets/cryptoAssets';
+import { Pressable, Steezy } from '@tonkeeper/uikit';
 
 export const ExchangeItem: FC<ExchangeItemProps> = ({
   methodId,
@@ -59,11 +60,15 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
 
   return (
     <S.Wrap>
-      <S.Card
-        topRadius={topRadius}
-        bottomRadius={bottomRadius}
+      <Pressable
+        underlayColor={theme.colors.backgroundTertiary}
+        style={[
+          styles.cardPressable,
+          topRadius && styles.topBorderRadius,
+          bottomRadius && styles.bottomBorderRadius,
+        ]}
         onPress={handlePress}
-        isDisabled={!!method.disabled}
+        disabled={!!method.disabled}
       >
         <S.CardIn>
           <S.Icon source={{ uri: method.icon_url }} />
@@ -103,9 +108,24 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
             <Icon name="ic-chevron-16" color="foregroundTertiary" />
           </S.IconContain>
         </S.CardIn>
-      </S.Card>
+      </Pressable>
       {renderBadge()}
       {!bottomRadius ? <S.Divider /> : null}
     </S.Wrap>
   );
 };
+
+const styles = Steezy.create({
+  cardPressable: {
+    overflow: 'hidden',
+    padding: 16,
+  },
+  topBorderRadius: {
+    borderTopStartRadius: 16,
+    borderTopEndRadius: 16,
+  },
+  bottomBorderRadius: {
+    borderBottomStartRadius: 16,
+    borderBottomEndRadius: 16,
+  },
+});

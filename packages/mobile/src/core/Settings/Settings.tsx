@@ -8,12 +8,13 @@ import Animated from 'react-native-reanimated';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
-import { Icon, PopupSelect, ScrollHandler, Spacer, Text, List } from '$uikit';
+import { Icon, PopupSelect, ScrollHandler, Spacer, Text } from '$uikit';
 import { Icon as NewIcon } from '@tonkeeper/uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
+import { List } from '@tonkeeper/uikit';
 import {
   MainStackRouteNames,
   openDeleteAccountDone,
