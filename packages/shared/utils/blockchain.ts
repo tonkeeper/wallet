@@ -18,7 +18,7 @@ export async function sendBocWithBattery(boc) {
   }
 }
 
-export async function emulateWithBattery(boc) {
+export async function emulateWithBattery(boc, params?) {
   try {
     if (config.get('disable_battery') || config.get('disable_battery_send')) {
       throw new Error('Battery disabled');
@@ -28,6 +28,7 @@ export async function emulateWithBattery(boc) {
   } catch (err) {
     const emulateResult = await tonapi.wallet.emulateMessageToWallet({
       boc,
+      params,
     });
     return { emulateResult, battery: false };
   }
