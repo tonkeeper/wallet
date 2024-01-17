@@ -1,0 +1,130 @@
+diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
+index f20e3dc..0a0e283 100644
+--- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
++++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
+@@ -692,9 +692,9 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetProps>(
+           method: animateToPosition.name,
+           params: {
+             currentPosition: animatedPosition.value,
+-            position,
++            nextPosition: position,
+             velocity,
+-            animatedContainerHeight: animatedContainerHeight.value,
++            source,
+           },
+         });
+ 
+@@ -742,6 +742,47 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetProps>(
+       },
+       [handleOnAnimate, _providedAnimationConfigs]
+     );
++    /**
++     * Set to position without animation.
++     *
++     * @param targetPosition position to be set.
++     */
++    const setToPosition = useWorkletCallback(function setToPosition(
++        targetPosition: number
++      ) {
++        if (
++          targetPosition === animatedPosition.value ||
++          targetPosition === undefined ||
++          (animatedAnimationState.value === ANIMATION_STATE.RUNNING &&
++            targetPosition === animatedNextPosition.value)
++        ) {
++          return;
++        }
++
++        runOnJS(print)({
++          component: BottomSheet.name,
++          method: setToPosition.name,
++          params: {
++            currentPosition: animatedPosition.value,
++            targetPosition,
++          },
++        });
++
++        /**
++         * store next position
++         */
++        animatedNextPosition.value = targetPosition;
++        animatedNextPositionIndex.value =
++          animatedSnapPoints.value.indexOf(targetPosition);
++
++        stopAnimation();
++
++        /**
++         * set position.
++         */
++        animatedPosition.value = targetPosition;
++      },
++      []);
+     //#endregion
+ 
+     //#region public methods
+@@ -1320,16 +1361,8 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetProps>(
+           animatedNextPositionIndex.value === -1 &&
+           _previousContainerHeight !== containerHeight
+         ) {
+-          animationSource = ANIMATION_SOURCE.CONTAINER_RESIZE;
+-          animationConfig = {
+-            duration: 0,
+-          };
+-          animateToPosition(
+-            containerHeight,
+-            animationSource,
+-            0,
+-            animationConfig
+-          );
++          setToPosition(containerHeight);
++          return;
+         }
+ 
+         if (
+@@ -1370,13 +1403,11 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetProps>(
+ 
+           /**
+            * if snap points changes because of the container height change,
+-           * then we skip the snap animation by setting the duration to 0.
++           * then we set the new position without animation.
+            */
+           if (containerHeight !== _previousContainerHeight) {
+-            animationSource = ANIMATION_SOURCE.CONTAINER_RESIZE;
+-            animationConfig = {
+-              duration: 0,
+-            };
++            setToPosition(nextPosition);
++            return;
+           }
+         }
+         animateToPosition(nextPosition, animationSource, 0, animationConfig);
+@@ -1515,6 +1546,7 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetProps>(
+       }),
+       ({
+         _animatedIndex,
++         _animatedPosition,
+         _animationState,
+         _contentGestureState,
+         _handleGestureState,
+@@ -1526,6 +1558,21 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetProps>(
+           return;
+         }
+ 
++        /**
++         * exit the method if index value is not synced with
++         * position value.
++         *
++         * [read more](https://github.com/gorhom/react-native-bottom-sheet/issues/1356)
++         */
++        if (
++          animatedNextPosition.value !== INITIAL_VALUE &&
++          animatedNextPositionIndex.value !== INITIAL_VALUE &&
++          (_animatedPosition !== animatedNextPosition.value ||
++            _animatedIndex !== animatedNextPositionIndex.value)
++        ) {
++          return;
++        }
++
+         /**
+          * exit the method if animated index value
+          * has fraction, e.g. 1.99, 0.52

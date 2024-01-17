@@ -13,7 +13,7 @@ import { Theme, useTheme } from '../styles';
 import { Loader } from './Loader';
 import { Text } from './Text';
 import { ns } from '../utils';
-import { IconNames, Icon, IconColors } from '@tonkeeper/uikit';
+import { IconNames, Icon, IconColors } from './Icon';
 
 export type ButtonColors = 'green' | 'primary' | 'secondary' | 'tertiary';
 export type ButtonSizes = 'large' | 'medium' | 'small' | 'header' | 'icon';
