@@ -1,11 +1,11 @@
 import {
-  SText as Text,
   Button,
+  copyText,
   Icon,
-  View,
   List,
   Steezy,
-  copyText,
+  SText as Text,
+  View,
 } from '@tonkeeper/uikit';
 import {
   ActionAmountType,
@@ -22,7 +22,7 @@ import { config } from '../../config';
 import { t } from '../../i18n';
 
 // TODO: move to manager
-import { useGetTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
+import { TokenPrice, useGetTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 
 // TODO: move to shared
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
@@ -109,15 +109,13 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
         action.amount.type === ActionAmountType.Jetton
           ? getTokenPrice(Address.parse(action.amount.jettonAddress).toFriendly())
           : getTokenPrice('ton');
-      if (tokenPrice.fiat) {
-        const parsedAmount = parseFloat(
-          formatter.fromNano(action.amount.value, action.amount.decimals),
-        );
-        return format(tokenPrice.fiat * parsedAmount, {
-          currency: fiatCurrency,
-          decimals: 9,
-        });
-      }
+      const parsedAmount = parseFloat(
+        formatter.fromNano(action.amount.value, action.amount.decimals),
+      );
+      return format(tokenPrice.fiat * parsedAmount, {
+        currency: fiatCurrency,
+        decimals: 9,
+      });
     }
   }, [action.amount, getTokenPrice, fiatCurrency]);
 
