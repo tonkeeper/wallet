@@ -151,10 +151,6 @@ export function* loadMarketplacesWorker() {
     );
     const marketplaces: MarketplaceModel[] = resp?.data?.data?.marketplaces || [];
 
-    FastImage.preload(
-      marketplaces.map((marketplace) => ({ uri: marketplace.marketplace_url })),
-    );
-
     yield put(nftsActions.setLoadedMarketplaces(marketplaces));
   } catch (e) {}
 }

@@ -181,7 +181,6 @@ export class Tonkeeper {
       await this.storage.setItem(this.tonProofStorageKey, JSON.stringify(token));
       return token;
     } catch (err) {
-      console.log('33333', err);
       await this.storage.removeItem(this.tonProofStorageKey);
     }
   }

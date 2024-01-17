@@ -129,7 +129,6 @@ export class BatteryManager {
 
       await this.fetchBalance();
     } catch (err) {
-      console.log('[battery sendMessage]', err);
       throw new Error(err);
     }
   }
@@ -145,7 +144,6 @@ export class BatteryManager {
         },
       );
     } catch (err) {
-      console.log('[battery emulate]', err);
       throw new Error(err);
     }
   }
