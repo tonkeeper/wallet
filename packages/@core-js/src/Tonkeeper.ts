@@ -13,8 +13,7 @@ import { storeStateInit } from '@ton/ton';
 import nacl from 'tweetnacl';
 import { batteryState } from './managers/BatteryManager';
 import { beginCell } from '@ton/core';
-import { getWalletContract } from '../dist/service/walletService';
-import { WalletVersion } from '../dist/entries/wallet';
+import { ContractService, WalletVersion } from './service';
 
 class PermissionsManager {
   public notifications = true;
@@ -161,9 +160,9 @@ export class Tonkeeper {
   }
 
   public async obtainProofToken(keyPair: nacl.SignKeyPair) {
-    const contract = getWalletContract(
-      Buffer.from(keyPair.publicKey),
+    const contract = ContractService.getWalletContract(
       WalletVersion.v4R2,
+      Buffer.from(keyPair.publicKey),
     );
     const stateInitCell = beginCell().store(storeStateInit(contract.init)).endCell();
     const rawAddress = contract.address.toRawString();
