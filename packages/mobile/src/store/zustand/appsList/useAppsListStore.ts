@@ -24,12 +24,15 @@ export const useAppsListStore = create(
         fetchPopularApps: async () => {
           set({ fetching: true });
           try {
-            const response = await axios.get(`${getServerConfig('tonkeeperEndpoint')}/apps/popular`, {
-              params: {
-                lang: i18n.locale,
-                build: DeviceInfo.getReadableVersion(),
-              }
-            });
+            const response = await axios.get(
+              `https://dev.tonapi.io/tonendpoint/apps/popular`,
+              {
+                params: {
+                  lang: i18n.locale,
+                  build: DeviceInfo.getReadableVersion(),
+                },
+              },
+            );
 
             const { categories, moreEnabled, moreUrl } = response.data.data as {
               categories: IAppCategory[];
