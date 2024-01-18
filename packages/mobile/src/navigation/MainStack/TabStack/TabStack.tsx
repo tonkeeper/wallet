@@ -3,10 +3,9 @@ import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom
 import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet } from 'react-native';
-import { DAppsExplore } from '$core';
 import { TabsStackRouteNames } from '$navigation';
 import { TabStackParamList } from './TabStack.interface';
-import { Icon, ScrollPositionContext, View } from '$uikit';
+import { ScrollPositionContext, View } from '$uikit';
 import { usePreloadChart } from '$hooks/usePreloadChart';
 import { useTheme } from '$hooks/useTheme';
 import { isAndroid, nfs, ns } from '$utils';
@@ -27,6 +26,7 @@ import { trackEvent } from '$utils/stats';
 import { useRemoteBridge } from '$tonconnect';
 import { useBalanceUpdater } from '$hooks/useBalanceUpdater';
 import { BrowserStack } from '$navigation/BrowserStack/BrowserStack';
+import { Icon } from '@tonkeeper/uikit';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -111,7 +111,7 @@ export const TabStack: FC = () => {
           tabBarLabel: t('activity.screen_title'),
           tabBarIcon: ({ color }) => (
             <View style={styles.settingsIcon}>
-              <Icon colorHex={color} name="ic-flash-28" />
+              <Icon colorHex={color} name="ic-clock-28" />
               <TabBarBadgeIndicator isVisible={shouldShowRedDot} />
             </View>
           ),
