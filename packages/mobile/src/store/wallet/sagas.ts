@@ -488,16 +488,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       currencyAdditionalParams,
     } = action.payload;
 
-    const featureEnabled = yield call(Api.get, '/feature/enabled', {
-      params: {
-        currency,
-        feature: 'send_crypto',
-      },
-    });
-    if (!featureEnabled.enabled) {
-      throw new Error(featureEnabled.message);
-    }
-
     const { wallet } = yield select(walletSelector);
 
     const unlockedVault = yield call(walletGetUnlockedVault);

@@ -14,7 +14,9 @@ export const ActivityActionModal = memo<ActivityActionModalProps>((props) => {
 
   // TODO: need auto detect modal content size
   const Content =
-    (action as any)?.payload?.comment || (action as any)?.payload?.comment ? Modal.ScrollView : Modal.Content;
+    (action as any)?.payload?.comment || (action as any)?.payload?.encrypted_comment
+      ? Modal.ScrollView
+      : Modal.Content;
 
   return (
     <Modal>

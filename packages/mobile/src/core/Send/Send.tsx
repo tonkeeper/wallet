@@ -178,6 +178,9 @@ export const Send: FC<SendProps> = ({ route }) => {
         tokenType: nextTokenType,
         currencyAdditionalParams: nextCurrencyAdditionalParams,
       });
+      if (nextTokenType === TokenType.Inscription) {
+        setCommentEncrypted(false);
+      }
     },
     [],
   );
