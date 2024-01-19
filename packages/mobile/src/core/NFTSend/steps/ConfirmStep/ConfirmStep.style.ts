@@ -42,7 +42,6 @@ export const ItemContent = styled.View`
 export const ItemValue = styled(Text).attrs({
   variant: 'label1',
   textAlign: 'right',
-  numberOfLines: 1,
 })``;
 
 export const ItemSubValue = styled(Text).attrs({
