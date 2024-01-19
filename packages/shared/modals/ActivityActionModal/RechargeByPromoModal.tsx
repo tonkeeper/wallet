@@ -16,12 +16,6 @@ import { tk } from '../../tonkeeper';
 export const RechargeByPromoModal = memo(() => {
   const [code, setCode] = useState<string>('');
   const { goBack } = useNavigation();
-  const onChangeText = useCallback(
-    (text: string) => {
-      setCode(text.toUpperCase());
-    },
-    [setCode],
-  );
 
   const applyPromo = useCallback(async () => {
     const data = await tk.wallet.battery.applyPromo(code);
@@ -44,7 +38,7 @@ export const RechargeByPromoModal = memo(() => {
             label={t('battery.promocode.placeholder')}
             withClearButton
             value={code}
-            onChangeText={onChangeText}
+            onChangeText={setCode}
           />
           <Spacer y={32} />
           <Button onPress={applyPromo} title={t('battery.promocode.apply')} />
