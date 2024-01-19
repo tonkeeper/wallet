@@ -78,7 +78,7 @@ export const EncryptedCommentModal = memo<EncryptedCommentModalProps>((props) =>
 });
 
 export function openEncryptedCommentModalIfNeeded(callback: () => void) {
-  if (!useEncryptedCommentsStore.getState().shouldOpenEncryptedCommentModal) {
+  if (useEncryptedCommentsStore.getState().shouldOpenEncryptedCommentModal) {
     return navigation.push('SheetsProvider', {
       $$action: SheetActions.ADD,
       component: EncryptedCommentModal,
