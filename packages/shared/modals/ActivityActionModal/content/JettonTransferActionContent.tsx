@@ -6,6 +6,7 @@ import { ActionItem, ActionType, isJettonTransferAction } from '@tonkeeper/core'
 import { t } from '../../../i18n';
 import { memo } from 'react';
 import { JettonVerificationType } from '@tonkeeper/core/src/TonAPI';
+import { EncryptedComment, EncryptedCommentLayout } from '../../../components';
 
 interface JettonTransferContentProps {
   action: ActionItem<ActionType.JettonTransfer>;
@@ -40,6 +41,14 @@ export const JettonTransferActionContent = memo<JettonTransferContentProps>((pro
             onPress={copyText(action.payload.comment)}
             value={action.payload.comment}
             valueMultiline
+          />
+        )}
+        {action.payload?.encrypted_comment && (
+          <EncryptedComment
+            layout={EncryptedCommentLayout.LIST_ITEM}
+            encryptedComment={action.payload.encrypted_comment}
+            actionId={action.action_id}
+            sender={action.payload.sender!}
           />
         )}
       </List>

@@ -7,6 +7,7 @@ export type IconNames =
   | 'ic-lock-12'
   | 'ic-star-12'
   | 'ic-up-12'
+  | 'ic-lock-128'
   | 'ic-notification-128'
   | 'ic-appearance-16'
   | 'ic-arrow-down-16'
@@ -129,6 +130,7 @@ export const AllIcons = [
   'ic-lock-12',
   'ic-star-12',
   'ic-up-12',
+  'ic-lock-128',
   'ic-notification-128',
   'ic-appearance-16',
   'ic-arrow-down-16',
@@ -252,6 +254,7 @@ export const IconSizes = {
   'ic-lock-12': 12,
   'ic-star-12': 12,
   'ic-up-12': 12,
+  'ic-lock-128': 128,
   'ic-notification-128': 128,
   'ic-appearance-16': 16,
   'ic-arrow-down-16': 16,

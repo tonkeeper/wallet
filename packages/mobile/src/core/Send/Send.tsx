@@ -57,6 +57,8 @@ import {
 import { getTimeSec } from '$utils/getTimeSec';
 import { Toast } from '$store';
 
+const tokensWithAllowedEncryption = [TokenType.TON, TokenType.Jetton];
+
 export const Send: FC<SendProps> = ({ route }) => {
   const {
     currency: initialCurrency,
@@ -178,6 +180,9 @@ export const Send: FC<SendProps> = ({ route }) => {
         tokenType: nextTokenType,
         currencyAdditionalParams: nextCurrencyAdditionalParams,
       });
+      if (!tokensWithAllowedEncryption.includes(nextTokenType)) {
+        setCommentEncrypted(false);
+      }
     },
     [],
   );
@@ -447,7 +452,7 @@ export const Send: FC<SendProps> = ({ route }) => {
         <StepViewItem id={SendSteps.ADDRESS}>
           {(stepProps) => (
             <AddressStep
-              enableEncryption={tokenType !== TokenType.Inscription}
+              enableEncryption={tokensWithAllowedEncryption.includes(tokenType)}
               recipient={recipient}
               decimals={decimals}
               stepsScrollTop={stepsScrollTop}

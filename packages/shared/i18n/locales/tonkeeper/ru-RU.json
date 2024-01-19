@@ -574,6 +574,7 @@
       "comment_description" : "Будет виден всем.",
       "comment_description_encrypted" : "Будет виден только получателю и вам.",
       "comment_encrypt" : "Зашифровать комментарий",
+      "comment_label_encrypted" : "Зашифрованный комментарий",
       "comment_label" : "Комментарий",
       "comment_label_required" : "Комментарий",
       "comment_required_text" : "Обязательно укажите memo или тег при отправке на биржу. ",
@@ -1048,6 +1049,12 @@
   },
   "encryptedComments": {
     "encryptedComment": "Комментарий",
-    "show": "Показать"
+    "show": "Показать",
+    "encryptedCommentModal": {
+      "title": "Зашифрованный комментарий",
+      "description": "Комментарий зашифрован отправителем и может быть расшифрован только вами. Пожалуйста, осторжно относитесь к содержанию и остерегайтесь мошенничества.",
+      "button": "Расшифровать комментарий",
+      "checkboxLabel": "Не показывать снова"
+    }
   }
 }
