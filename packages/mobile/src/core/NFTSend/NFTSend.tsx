@@ -4,7 +4,14 @@ import { AppStackParamList } from '$navigation/AppStack';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import { NavBar } from '$uikit';
 import { RouteProp } from '@react-navigation/native';
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  FC,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { t } from '@tonkeeper/shared/i18n';
 import { AddressStep } from '$core/Send/steps/AddressStep/AddressStep';
@@ -38,6 +45,9 @@ import {
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { Keyboard } from 'react-native';
 import nacl from 'tweetnacl';
+import { useInstance } from '$hooks/useInstance';
+import { AccountsApi, Configuration } from '@tonkeeper/core/src/legacy';
+import { getServerConfig } from '$shared/constants';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.NFTSend>;
@@ -161,6 +171,53 @@ export const NFTSend: FC<Props> = (props) => {
       setPreparing(false);
     }
   }, [comment, isCommentEncrypted, nftAddress, recipient, wallet.ton]);
+
+  const accountsApi = useInstance(() => {
+    const tonApiConfiguration = new Configuration({
+      basePath: getServerConfig('tonapiV2Endpoint'),
+      headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+      },
+    });
+
+    return new AccountsApi(tonApiConfiguration);
+  });
+
+  const fetchRecipientAccountInfo = useCallback(async () => {
+    if (!recipient) {
+      setRecipientAccountInfo(null);
+      return;
+    }
+
+    const accountId = recipient.address;
+
+    try {
+      const [accountInfoResponse, pubKeyResponse] = await Promise.allSettled([
+        accountsApi.getAccount({ accountId }),
+        accountsApi.getPublicKeyByAccountID({ accountId }),
+      ]);
+
+      if (accountInfoResponse.status === 'rejected') {
+        throw new Error(accountInfoResponse.reason);
+      }
+
+      const accountInfo: AccountWithPubKey = { ...accountInfoResponse.value };
+
+      if (pubKeyResponse.status === 'fulfilled') {
+        accountInfo.publicKey = pubKeyResponse.value.publicKey;
+      }
+
+      if (!accountInfo.publicKey || accountInfo.memoRequired) {
+        setCommentEncrypted(false);
+      }
+
+      setRecipientAccountInfo(accountInfo);
+    } catch {}
+  }, [accountsApi, recipient]);
+
+  useLayoutEffect(() => {
+    fetchRecipientAccountInfo();
+  }, [fetchRecipientAccountInfo]);
 
   const total = useMemo(() => {
     const extra = new BigNumber(Ton.fromNano(consequences?.event.extra ?? 0));
