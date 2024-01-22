@@ -28,11 +28,11 @@ export const EncryptedCommentModal = memo<EncryptedCommentModalProps>((props) =>
     setDoNotShowAgain(!doNotShowAgain);
   }, [setDoNotShowAgain, doNotShowAgain]);
 
-  const handleDecryptComment = useCallback(() => {
+  const handleDecryptComment = useCallback(async () => {
     if (doNotShowAgain) {
       setShouldOpenEncryptedCommentModal(false);
     }
-    props.callback();
+    await props.callback();
     nav.goBack();
   }, [nav, doNotShowAgain]);
 
@@ -43,7 +43,9 @@ export const EncryptedCommentModal = memo<EncryptedCommentModalProps>((props) =>
         <View style={styles.wrap}>
           <Icon color={'accentGreen'} name={'ic-lock-128'} />
           <Spacer y={16} />
-          <Text type="h2">{t('encryptedComments.encryptedCommentModal.title')}</Text>
+          <Text textAlign="center" type="h2">
+            {t('encryptedComments.encryptedCommentModal.title')}
+          </Text>
           <Spacer y={4} />
           <Text textAlign="center" color="textSecondary" type="body1">
             {t('encryptedComments.encryptedCommentModal.description')}
@@ -77,7 +79,7 @@ export const EncryptedCommentModal = memo<EncryptedCommentModalProps>((props) =>
   );
 });
 
-export function openEncryptedCommentModalIfNeeded(callback: () => void) {
+export function openEncryptedCommentModalIfNeeded(callback: () => Promise<void>) {
   if (useEncryptedCommentsStore.getState().shouldOpenEncryptedCommentModal) {
     return navigation.push('SheetsProvider', {
       $$action: SheetActions.ADD,
