@@ -799,7 +799,7 @@
   "ton_login_connect_button" : "Connect wallet",
   "ton_login_notice" : "Be sure to check the service address before connecting the wallet.",
   "ton_login_success" : "Done",
-  "ton_login_title" : "Connect to %{name}?",
+  "ton_login_title" : "Connect to %domain?",
   "transaction_bid_collection_name" : "Issuer",
   "transaction_bid_date" : "Bid %{date}",
   "transaction_bid_dns" : "Name",
