@@ -15,6 +15,7 @@ import {
   BASE_FORWARD_AMOUNT,
   ContractService,
   contractVersionsMap,
+  encryptMessageComment,
   ONE_TON,
   TransactionService,
 } from '@tonkeeper/core';
@@ -22,7 +23,7 @@ import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
 import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import { Buffer } from 'buffer';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
-import { internal, toNano } from '@ton/core';
+import { Cell, internal, toNano } from '@ton/core';
 import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { delay } from '$utils';
@@ -36,6 +37,7 @@ import {
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { Keyboard } from 'react-native';
+import nacl from 'tweetnacl';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.NFTSend>;
@@ -89,6 +91,7 @@ export const NFTSend: FC<Props> = (props) => {
   const [consequences, setConsequences] = useState<MessageConsequences | null>(null);
   const [isPreparing, setPreparing] = useState(false);
   const [isSending, setSending] = useState(false);
+  const [isCommentEncrypted, setCommentEncrypted] = useState(false);
 
   const isBackDisabled = isSending || isPreparing;
 
@@ -98,6 +101,18 @@ export const NFTSend: FC<Props> = (props) => {
     try {
       setPreparing(true);
 
+      let commentValue: Cell | string = comment;
+      if (isCommentEncrypted) {
+        const tempKeyPair = nacl.sign.keyPair();
+        commentValue = await encryptMessageComment(
+          comment,
+          tempKeyPair.publicKey,
+          tempKeyPair.publicKey,
+          tempKeyPair.secretKey,
+          tk.wallet.address.ton.raw,
+        );
+      }
+
       const nftTransferMessages = [
         internal({
           to: nftAddress,
@@ -106,7 +121,7 @@ export const NFTSend: FC<Props> = (props) => {
             queryId: Date.now(),
             newOwnerAddress: recipient!.address,
             excessesAddress: tk.wallet.address.ton.raw,
-            forwardBody: comment,
+            forwardBody: commentValue,
           }),
           bounce: true,
         }),
@@ -145,7 +160,7 @@ export const NFTSend: FC<Props> = (props) => {
     } finally {
       setPreparing(false);
     }
-  }, [comment, nftAddress, recipient, wallet.ton]);
+  }, [comment, isCommentEncrypted, nftAddress, recipient, wallet.ton]);
 
   const total = useMemo(() => {
     const extra = new BigNumber(Ton.fromNano(consequences?.event.extra ?? 0));
@@ -159,6 +174,22 @@ export const NFTSend: FC<Props> = (props) => {
 
       const vault = await unlockVault();
       const privateKey = await vault.getTonPrivateKey();
+
+      let commentValue: Cell | string = comment;
+      if (isCommentEncrypted && comment.length) {
+        const secretKey = await vault.getTonPrivateKey();
+        const recipientPubKey = (
+          await tonapi.accounts.getAccountPublicKey(recipient!.address)
+        ).public_key;
+
+        commentValue = await encryptMessageComment(
+          comment,
+          wallet.vault.tonPublicKey,
+          Buffer.from(recipientPubKey!, 'hex'),
+          secretKey,
+          tk.wallet.address.ton.raw,
+        );
+      }
 
       const totalAmount = total.isRefund
         ? BASE_FORWARD_AMOUNT
@@ -183,7 +214,7 @@ export const NFTSend: FC<Props> = (props) => {
             queryId: Date.now(),
             newOwnerAddress: recipient!.address,
             excessesAddress: tk.wallet.address.ton.raw,
-            forwardBody: comment,
+            forwardBody: commentValue,
           }),
           bounce: true,
         }),
@@ -215,11 +246,14 @@ export const NFTSend: FC<Props> = (props) => {
   }, [
     comment,
     consequences?.event.extra,
+    isCommentEncrypted,
     nftAddress,
     recipient,
+    recipientAccountInfo?.publicKey,
     total.isRefund,
     unlockVault,
     wallet.ton,
+    wallet.vault.tonPublicKey,
   ]);
 
   return (
@@ -252,7 +286,8 @@ export const NFTSend: FC<Props> = (props) => {
               setRecipientAccountInfo={setRecipientAccountInfo}
               recipientAccountInfo={recipientAccountInfo}
               comment={comment}
-              enableEncryption={false}
+              isCommentEncrypted={isCommentEncrypted}
+              setCommentEncrypted={setCommentEncrypted}
               setComment={setComment}
               onContinue={prepareConfirmSending}
               {...stepProps}
@@ -262,6 +297,7 @@ export const NFTSend: FC<Props> = (props) => {
         <StepViewItem id={NFTSendSteps.CONFIRM}>
           {(stepProps) => (
             <ConfirmStep
+              isCommentEncrypted={isCommentEncrypted}
               recipient={recipient}
               recipientAccountInfo={recipientAccountInfo}
               decimals={9}

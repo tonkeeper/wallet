@@ -45,6 +45,11 @@ export const ItemValue = styled(Text).attrs({
   numberOfLines: 1,
 })``;
 
+export const ItemInline = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+
 export const ItemSubValue = styled(Text).attrs({
   variant: 'body2',
   color: 'foregroundSecondary',

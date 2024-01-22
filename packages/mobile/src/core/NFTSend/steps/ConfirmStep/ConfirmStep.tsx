@@ -1,7 +1,7 @@
 import React, { FC, memo } from 'react';
 import { useCopyText } from '$hooks/useCopyText';
 import { useFiatValue } from '$hooks/useFiatValue';
-import { Highlight, Separator, Spacer, Text } from '$uikit';
+import { Highlight, Icon, Separator, Spacer, Text } from '$uikit';
 import * as S from './ConfirmStep.style';
 import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
@@ -28,6 +28,7 @@ interface Props extends StepComponentProps {
   nftIcon?: string;
   stepsScrollTop: SharedValue<Record<StakingSendSteps, number>>;
   isPreparing: boolean;
+  isCommentEncrypted: boolean;
   comment: string;
   sendTx: () => Promise<void>;
 }
@@ -44,6 +45,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
     total,
     stepsScrollTop,
     isPreparing,
+    isCommentEncrypted,
     sendTx,
   } = props;
 
@@ -153,9 +155,17 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                 <Separator />
                 <Highlight onPress={() => copyText(comment)}>
                   <S.Item>
-                    <S.ItemLabel>
-                      {t('send_screen_steps.comfirm.comment_label')}
-                    </S.ItemLabel>
+                    <S.ItemInline>
+                      <S.ItemLabel>
+                        {t('send_screen_steps.comfirm.comment_label')}
+                      </S.ItemLabel>
+                      {isCommentEncrypted ? (
+                        <>
+                          <Spacer x={4} />
+                          <Icon name="ic-lock-16" color="accentPositive" />
+                        </>
+                      ) : null}
+                    </S.ItemInline>
                     <S.ItemContent>
                       <S.ItemValue>{comment}</S.ItemValue>
                     </S.ItemContent>
