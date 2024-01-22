@@ -16,6 +16,7 @@ type AppConfigVars = {
   tonapiTestnetHost: string;
   tronapiHost: string;
   tronapiTestnetHost: string;
+  disable_show_unverified_token: boolean;
 };
 
 const defaultConfig: Partial<AppConfigVars> = {
@@ -24,6 +25,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   tonapiV2Endpoint: 'https://tonapi.io',
   tronapiHost: 'https://tron.tonkeeper.com',
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
+  disable_show_unverified_token: false,
 };
 
 export const config = new AppConfig<AppConfigVars>({

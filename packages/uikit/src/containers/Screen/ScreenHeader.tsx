@@ -33,6 +33,7 @@ export interface ScreenHeaderProps {
   gradient?: boolean;
   isModal?: boolean;
   title?: string | React.ReactNode;
+  subtitle?: string | React.ReactNode;
   children?: React.ReactNode;
   onBackPress?: () => void;
   onGoBack?: () => void;
@@ -53,6 +54,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
     children,
     onBackPress,
     onGoBack,
+    subtitle,
   } = props;
 
   const { scrollY, headerEjectionPoint } = useScreenScroll();
@@ -170,15 +172,29 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
               <>
                 {!hideBackButton && !isBackButtonRight && backButtonSlot}
                 {isString(title) ? (
-                  <Text
-                    style={[styles.title, titleAnimatedStyle]}
-                    type={isSmallTitle ? 'label1' : 'h3'}
-                    textAlign="center"
-                    numberOfLines={1}
-                    reanimated
-                  >
-                    {title}
-                  </Text>
+                  <View style={[styles.titleContainer]}>
+                    <Text
+                      style={[styles.title, titleAnimatedStyle]}
+                      type={!isSmallTitle ? 'label1' : 'h3'}
+                      textAlign="center"
+                      numberOfLines={1}
+                      reanimated
+                    >
+                      {title}
+                    </Text>
+                    {isString(subtitle) ? (
+                      <Text
+                        textAlign="center"
+                        type="body2"
+                        numberOfLines={1}
+                        color="textSecondary"
+                      >
+                        {subtitle}
+                      </Text>
+                    ) : (
+                      subtitle
+                    )}
+                  </View>
                 ) : (
                   <View style={styles.title}>{title}</View>
                 )}
@@ -219,6 +235,12 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
     zIndex: 2,
   },
+  titleContainer: {
+    flex: 1,
+    marginHorizontal: ScreenHeaderHeight - 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   content: {
     flex: 1,
     flexDirection: 'row',
@@ -227,9 +249,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   title: {
-    marginHorizontal: ScreenHeaderHeight - 24,
     zIndex: 1,
-    flex: 1,
   },
   leftContainer: {
     height: ScreenHeaderHeight,

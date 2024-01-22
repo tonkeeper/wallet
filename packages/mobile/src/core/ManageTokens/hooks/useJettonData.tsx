@@ -10,16 +10,27 @@ import { ListButton, Spacer } from '$uikit';
 import { CellItem, Content, ContentType } from '$core/ManageTokens/ManageTokens.types';
 import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { useJettonBalances } from '$hooks/useJettonBalances';
+import { config } from '@tonkeeper/shared/config';
+import { JettonVerification } from '$store/models';
+import { Text } from '@tonkeeper/uikit';
 
 const baseJettonCellData = (jettonBalance) => ({
   type: ContentType.Cell,
   id: jettonBalance.jettonAddress,
   picture: jettonBalance.metadata?.image,
   title: jettonBalance.metadata?.name,
-  subtitle: formatter.format(jettonBalance.balance, {
-    currency: jettonBalance.metadata?.symbol,
-    currencySeparator: 'wide',
-  }),
+  subtitle:
+    !config.get('disable_show_unverified_token') &&
+    jettonBalance.verification === JettonVerification.NONE ? (
+      <Text type="body2" color="accentOrange">
+        {t('approval.unverified_token')}
+      </Text>
+    ) : (
+      formatter.format(jettonBalance.balance, {
+        currency: jettonBalance.metadata?.symbol,
+        currencySeparator: 'wide',
+      })
+    ),
   onPress: () =>
     openApproveTokenModal({
       type: TokenApprovalType.Token,

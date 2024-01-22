@@ -3,6 +3,7 @@ export type IconNames =
   | 'ic-dot-12'
   | 'ic-down-12'
   | 'ic-dropdown-12'
+  | 'ic-exclamationmark-triangle-12'
   | 'ic-loader-xsmall-12'
   | 'ic-lock-12'
   | 'ic-star-12'
@@ -126,6 +127,7 @@ export const AllIcons = [
   'ic-dot-12',
   'ic-down-12',
   'ic-dropdown-12',
+  'ic-exclamationmark-triangle-12',
   'ic-loader-xsmall-12',
   'ic-lock-12',
   'ic-star-12',
@@ -250,6 +252,7 @@ export const IconSizes = {
   'ic-dot-12': 12,
   'ic-down-12': 12,
   'ic-dropdown-12': 12,
+  'ic-exclamationmark-triangle-12': 12,
   'ic-loader-xsmall-12': 12,
   'ic-lock-12': 12,
   'ic-star-12': 12,

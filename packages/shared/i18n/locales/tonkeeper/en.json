@@ -74,6 +74,7 @@
   "appearance_title" : "Theme",
   "app_name" : "Tonkeeper",
   "approval" : {
+    "unverified_token": "Unverified Token",
     "accept" : "Accept",
     "accepted" : "Visible",
     "accepted_at_collection" : "Accepted on %{date}",

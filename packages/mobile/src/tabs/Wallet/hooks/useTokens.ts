@@ -3,6 +3,7 @@ import { useJettonBalances } from '$hooks/useJettonBalances';
 import { formatter } from '$utils/formatter';
 import { useMemo } from 'react';
 import TonWeb from 'tonweb';
+import { JettonVerification } from '$store/models';
 
 type WalletAddress = {
   friendlyAddress: string;
@@ -29,6 +30,7 @@ type TokenInfo = {
     total: string | null;
     total_numeric: number | null;
   };
+  verification: JettonVerification;
 };
 
 export const useTonkens = (): {
@@ -59,6 +61,7 @@ export const useTonkens = (): {
         description: item.metadata.description,
         iconUrl: item.metadata.image,
         decimals: item.metadata.decimals,
+        verification: item.verification,
         quantity: {
           value: item.balance,
           formatted: formatter.format(item.balance),

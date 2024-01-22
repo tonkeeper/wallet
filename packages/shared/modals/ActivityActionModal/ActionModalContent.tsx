@@ -16,13 +16,13 @@ import {
 } from '@tonkeeper/core';
 import { formatTransactionDetailsTime } from '../../utils/date';
 import { ActionStatusEnum, JettonVerificationType } from '@tonkeeper/core/src/TonAPI';
-import { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { formatter } from '../../formatter';
 import { config } from '../../config';
 import { t } from '../../i18n';
 
 // TODO: move to manager
-import { TokenPrice, useGetTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
+import { useGetTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 
 // TODO: move to shared
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
@@ -36,14 +36,26 @@ interface ActionModalContentProps {
   children?: React.ReactNode;
   header?: React.ReactNode;
   title?: string;
+  subtitle?: React.ReactNode;
   action: AnyActionItem;
   amountFiat?: string;
   label?: string;
   isSimplePreview?: boolean;
+  shouldShowFiatAmount?: boolean;
 }
 
 export const ActionModalContent = memo<ActionModalContentProps>((props) => {
-  const { children, header, title, action, label, amountFiat, isSimplePreview } = props;
+  const {
+    children,
+    header,
+    title,
+    subtitle,
+    action,
+    label,
+    amountFiat,
+    isSimplePreview,
+    shouldShowFiatAmount = true,
+  } = props;
   const { formatNano, format } = useHideableFormatter();
 
   const isScam =
@@ -141,11 +153,14 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
               {titleText}
             </Text>
           )}
-          {!title && fiatAmount && action.status === ActionStatusEnum.Ok && (
-            <Text type="body1" color="textSecondary" style={styles.fiatText}>
-              {fiatAmount}
-            </Text>
-          )}
+          {subtitle}
+          {(!subtitle || !shouldShowFiatAmount) &&
+            fiatAmount &&
+            action.status === ActionStatusEnum.Ok && (
+              <Text type="body1" color="textSecondary" style={styles.fiatText}>
+                {fiatAmount}
+              </Text>
+            )}
         </View>
         <Text type="body1" color="textSecondary" style={styles.timeText}>
           {time}

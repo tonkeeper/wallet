@@ -1,12 +1,13 @@
-import { FastImage, List, Steezy, copyText } from '@tonkeeper/uikit';
+import { FastImage, List, Steezy, copyText, Text } from '@tonkeeper/uikit';
 import { AddressListItem } from '../components/AddressListItem';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
-import { ActionItem, ActionType, isJettonTransferAction } from '@tonkeeper/core';
+import { ActionItem, ActionType } from '@tonkeeper/core';
 import { t } from '../../../i18n';
 import { memo } from 'react';
 import { JettonVerificationType } from '@tonkeeper/core/src/TonAPI';
 import { EncryptedComment, EncryptedCommentLayout } from '../../../components';
+import { config } from '../../../config';
 
 interface JettonTransferContentProps {
   action: ActionItem<ActionType.JettonTransfer>;
@@ -24,6 +25,14 @@ export const JettonTransferActionContent = memo<JettonTransferContentProps>((pro
   return (
     <ActionModalContent
       header={<FastImage style={styles.jettonImage} resizeMode="cover" source={source} />}
+      subtitle={
+        !config.get('disable_show_unverified_token') &&
+        action.payload.jetton.verification === JettonVerificationType.None && (
+          <Text style={styles.subtitleStyle.static} type="body1" color="accentOrange">
+            {t('approval.unverified_token')}
+          </Text>
+        )
+      }
       action={action}
     >
       <List>
@@ -62,5 +71,8 @@ const styles = Steezy.create(({ colors }) => ({
     height: 96,
     borderRadius: 96 / 2,
     backgroundColor: colors.backgroundContent,
+  },
+  subtitleStyle: {
+    marginTop: 4,
   },
 }));

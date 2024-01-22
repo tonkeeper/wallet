@@ -1,19 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
-import {
-  Icon,
-  IconButton,
-  PopupMenu,
-  PopupMenuItem,
-  Skeleton,
-  SwapIcon,
-  Text,
-} from '$uikit';
+import { IconButton, PopupMenu, PopupMenuItem, Skeleton, SwapIcon, Text } from '$uikit';
 import { ns } from '$utils';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useJetton } from '$hooks/useJetton';
-import { useTheme } from '$hooks/useTheme';
 import { useTokenPrice } from '$hooks/useTokenPrice';
 import { openDAppBrowser, openSend } from '$navigation';
 import { getServerConfig } from '$shared/constants';
@@ -26,21 +16,20 @@ import { useSwapStore } from '$store/zustand/swap';
 import { shallow } from 'zustand/shallow';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { Events, SendAnalyticsFrom } from '$store/models';
+import { Events, JettonVerification, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
-import { Screen } from '@tonkeeper/uikit';
+import { Screen, Steezy, View, Icon, Spacer } from '@tonkeeper/uikit';
 
 import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonActivityList';
 import { ActivityList } from '@tonkeeper/shared/components';
 import { openReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
 import { TokenType } from '$core/Send/Send.interface';
+import { config } from '@tonkeeper/shared/config';
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
-  const theme = useTheme();
   const flags = useFlags(['disable_swap']);
-  const { bottom: bottomInset } = useSafeAreaInsets();
   const jetton = useJetton(route.params.jettonAddress);
   const jettonActivityList = useJettonActivityList(jetton.jettonAddress);
   const address = useSelector(walletAddressSelector);
@@ -147,6 +136,20 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   return (
     <Screen>
       <Screen.Header
+        subtitle={
+          !config.get('disable_show_unverified_token') &&
+          jetton.verification === JettonVerification.NONE && (
+            <View style={styles.subtitleContainer}>
+              <View style={styles.iconContainer}>
+                <Icon name="ic-exclamationmark-triangle-12" color="accentOrange" />
+              </View>
+              <Spacer x={4} />
+              <Text variant="body2" color="accentOrange">
+                {t('approval.unverified_token')}
+              </Text>
+            </View>
+          )
+        }
         title={jetton.metadata?.name || Address.toShort(jetton.jettonAddress)}
         rightContent={
           <PopupMenu
@@ -180,3 +183,13 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     </Screen>
   );
 };
+
+const styles = Steezy.create({
+  subtitleContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  iconContainer: {
+    marginTop: 2,
+  },
+});
