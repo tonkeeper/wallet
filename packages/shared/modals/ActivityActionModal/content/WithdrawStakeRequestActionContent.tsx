@@ -45,6 +45,7 @@ export const WithdrawStakeRequestActionContent =
 
     return (
       <ActionModalContent
+        shouldShowFiatAmount={false} // TODO: is it actually should be here?
         title={t('activityActionModal.withdrawal_request')}
         header={<StakingIcon implementation={action.payload.implementation} />}
         action={action}

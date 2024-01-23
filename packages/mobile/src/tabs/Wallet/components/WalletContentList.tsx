@@ -31,6 +31,9 @@ import { FiatCurrencies } from '@tonkeeper/core';
 import { useTonInscriptions } from '@tonkeeper/shared/query/hooks/useTonInscriptions';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { Text } from '@tonkeeper/uikit';
+import { JettonVerification } from '$store/models';
+import { ListItemProps } from '$uikit/List/ListItem';
+import { config } from '@tonkeeper/shared/config';
 
 enum ContentType {
   Token,
@@ -45,7 +48,7 @@ type TokenItem = {
   key: string;
   isFirst?: boolean;
   isLast?: boolean;
-
+  subtitleStyle?: ListItemProps['subtitleStyle'];
   onPress?: () => void;
   title: string;
   subtitle?: string;
@@ -136,16 +139,16 @@ const RenderItem = ({ item }: { item: Content }) => {
               )
             }
             subtitle={
-              item.rate ? (
+              item.subtitle ||
+              (item.rate && (
                 <ListItemRate
                   percent={item.rate.percent}
                   price={item.rate.price}
                   trend={item.rate.trend}
                 />
-              ) : (
-                item.subtitle
-              )
+              ))
             }
+            subtitleStyle={item.subtitleStyle}
           />
           {!item.isLast && <ListSeparator />}
         </View>
@@ -312,6 +315,15 @@ export const WalletContentList = memo<BalancesListProps>(
                 trend: item.price.fiatDiff.trend,
               }
             : undefined,
+          subtitleStyle:
+            !config.get('disable_show_unverified_token') &&
+            item.verification === JettonVerification.NONE &&
+            styles.unverifiedSubtitleStyle,
+          subtitle:
+            !config.get('disable_show_unverified_token') &&
+            item.verification === JettonVerification.NONE
+              ? t('approval.unverified_token')
+              : undefined,
         })),
       );
 
@@ -385,6 +397,9 @@ export const WalletContentList = memo<BalancesListProps>(
 );
 
 const styles = Steezy.create(({ colors, corners }) => ({
+  unverifiedSubtitleStyle: {
+    color: colors.accentOrange,
+  },
   trcTitle: {
     flexDirection: 'row',
     justifyContent: 'center',

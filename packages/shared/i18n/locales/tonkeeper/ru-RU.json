@@ -74,6 +74,7 @@
   "appearance_title" : "Оформление",
   "app_name" : "Tonkeeper",
   "approval" : {
+    "unverified_token": "Непроверенный токен",
     "accept" : "Принять",
     "accepted" : "Видимые",
     "accepted_at_collection" : "Принята %{date}",
