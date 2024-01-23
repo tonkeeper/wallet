@@ -838,7 +838,7 @@
   "ton_login_connect_button" : "Подключить кошелёк",
   "ton_login_notice" : "Обязательно проверьте адрес сервиса перед подключением кошелька.",
   "ton_login_success" : "Готово",
-  "ton_login_title" : "Войти в %{name}",
+  "ton_login_title" : "Войти в %domain",
   "transaction_bid_collection_name" : "Эмитент",
   "transaction_bid_date" : "Ставка %{date}",
   "transaction_bid_dns" : "Имя",
