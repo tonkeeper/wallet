@@ -15,6 +15,8 @@ import {
   EncryptedComment as IEncryptedComment,
 } from '@tonkeeper/core/src/TonAPI';
 import { SpoilerViewMock } from './components/SpoilerViewMock';
+import { useCopyText } from '@tonkeeper/mobile/src/hooks/useCopyText';
+import { openEncryptedCommentModalIfNeeded } from '../../modals/EncryptedCommentModal';
 
 export enum EncryptedCommentLayout {
   LIST_ITEM,
@@ -39,6 +41,12 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
 
   const wallet = useSelector(walletWalletSelector);
   const unlockVault = useUnlockVault();
+  const copyText = useCopyText();
+
+  const handleCopyComment = useCallback(
+    () => copyText(decryptedComment),
+    [decryptedComment],
+  );
 
   const saveDecryptedComment = useEncryptedCommentsStore(
     (s) => s.actions.saveDecryptedComment,
@@ -78,7 +86,9 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
   );
 
   const handleDecryptComment = useCallback(() => {
-    decryptComment(props.actionId, props.encryptedComment, props.sender.address);
+    openEncryptedCommentModalIfNeeded(() =>
+      decryptComment(props.actionId, props.encryptedComment, props.sender.address),
+    );
   }, [decryptComment]);
 
   const encryptedCommentMock = 's'.repeat(encryptedCommentLength);
@@ -86,7 +96,7 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
   if (props.layout === EncryptedCommentLayout.LIST_ITEM) {
     return (
       <List.Item
-        onPress={decryptedComment ? () => null : handleDecryptComment}
+        onPress={decryptedComment ? handleCopyComment : handleDecryptComment}
         title={
           <View style={styles.encryptedCommentContainer}>
             <Text style={styles.labelText.static} color="textSecondary" type="body1">

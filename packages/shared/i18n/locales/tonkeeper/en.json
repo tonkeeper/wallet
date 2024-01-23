@@ -75,6 +75,7 @@
   "appearance_title" : "Theme",
   "app_name" : "Tonkeeper",
   "approval" : {
+    "unverified_token": "Unverified Token",
     "accept" : "Accept",
     "accepted" : "Visible",
     "accepted_at_collection" : "Accepted on %{date}",
@@ -620,6 +621,7 @@
       "comment_description" : "Will be visible to everyone.",
       "comment_description_encrypted" : "Will be visible only to recipient and you.",
       "comment_encrypt" : "Encrypt comment",
+      "comment_label_encrypted" : "Encrypted comment",
       "comment_label" : "Comment",
       "comment_label_required" : "Required comment",
       "comment_required_text" : "You must include the note from the exchange for transfer. Without it your funds will be lost. ",
@@ -855,7 +857,7 @@
   "ton_login_connect_button" : "Connect wallet",
   "ton_login_notice" : "Be sure to check the service address before connecting the wallet.",
   "ton_login_success" : "Done",
-  "ton_login_title" : "Connect to %{name}?",
+  "ton_login_title" : "Connect to %domain?",
   "transaction_bid_collection_name" : "Issuer",
   "transaction_bid_date" : "Bid %{date}",
   "transaction_bid_dns" : "Name",
@@ -1019,7 +1021,7 @@
   "wallet_about" : "About",
   "wallet_buy" : "Buy",
   "wallet" : {
-    "buy_btn" : "Buy TON",
+    "buy_btn" : "Buy & Sell",
     "collectibles_tab_lable" : "Collectibles",
     "edit_tokens_btn" : "Edit",
     "nft_tab_lable" : "Collectibles",
@@ -1058,6 +1060,12 @@
   },
   "encryptedComments": {
     "encryptedComment": "Encrypted comment",
-    "show": "Show"
+    "show": "Show",
+    "encryptedCommentModal": {
+      "title": "Encrypted comment",
+      "description": "The comment is encrypted by sender and can only be decrypted by you. Please be careful with the content and beware of scams.",
+      "button": "Decrypt the comment",
+      "checkboxLabel": "Do not show again"
+    }
   }
 }

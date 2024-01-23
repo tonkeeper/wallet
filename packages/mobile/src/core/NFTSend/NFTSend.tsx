@@ -4,7 +4,14 @@ import { AppStackParamList } from '$navigation/AppStack';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import { NavBar } from '$uikit';
 import { RouteProp } from '@react-navigation/native';
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  FC,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { t } from '@tonkeeper/shared/i18n';
 import { AddressStep } from '$core/Send/steps/AddressStep/AddressStep';
@@ -15,6 +22,7 @@ import {
   BASE_FORWARD_AMOUNT,
   ContractService,
   contractVersionsMap,
+  encryptMessageComment,
   ONE_TON,
   TransactionService,
 } from '@tonkeeper/core';
@@ -22,7 +30,7 @@ import { tk } from '@tonkeeper/shared/tonkeeper';
 import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import { Buffer } from 'buffer';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
-import { internal, toNano } from '@ton/core';
+import { Cell, internal, toNano } from '@ton/core';
 import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { delay } from '$utils';
@@ -40,7 +48,10 @@ import {
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { Keyboard } from 'react-native';
-import { config } from '@tonkeeper/shared/config';
+import nacl from 'tweetnacl';
+import { useInstance } from '$hooks/useInstance';
+import { AccountsApi, Configuration } from '@tonkeeper/core/src/legacy';
+import { getServerConfig } from '$shared/constants';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.NFTSend>;
@@ -95,6 +106,7 @@ export const NFTSend: FC<Props> = (props) => {
   const [isPreparing, setPreparing] = useState(false);
   const [isSending, setSending] = useState(false);
   const [isBattery, setIsBattery] = useState(false);
+  const [isCommentEncrypted, setCommentEncrypted] = useState(false);
 
   const isBackDisabled = isSending || isPreparing;
 
@@ -104,6 +116,18 @@ export const NFTSend: FC<Props> = (props) => {
     try {
       setPreparing(true);
 
+      let commentValue: Cell | string = comment;
+      if (isCommentEncrypted) {
+        const tempKeyPair = nacl.sign.keyPair();
+        commentValue = await encryptMessageComment(
+          comment,
+          tempKeyPair.publicKey,
+          tempKeyPair.publicKey,
+          tempKeyPair.secretKey,
+          tk.wallet.address.ton.raw,
+        );
+      }
+
       const nftTransferMessages = [
         internal({
           to: nftAddress,
@@ -112,7 +136,7 @@ export const NFTSend: FC<Props> = (props) => {
             queryId: Date.now(),
             newOwnerAddress: recipient!.address,
             excessesAddress: tk.wallet.address.ton.raw,
-            forwardBody: comment,
+            forwardBody: commentValue,
           }),
           bounce: true,
         }),
@@ -152,7 +176,54 @@ export const NFTSend: FC<Props> = (props) => {
     } finally {
       setPreparing(false);
     }
-  }, [comment, nftAddress, recipient, wallet.ton]);
+  }, [comment, isCommentEncrypted, nftAddress, recipient, wallet.ton]);
+
+  const accountsApi = useInstance(() => {
+    const tonApiConfiguration = new Configuration({
+      basePath: getServerConfig('tonapiV2Endpoint'),
+      headers: {
+        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+      },
+    });
+
+    return new AccountsApi(tonApiConfiguration);
+  });
+
+  const fetchRecipientAccountInfo = useCallback(async () => {
+    if (!recipient) {
+      setRecipientAccountInfo(null);
+      return;
+    }
+
+    const accountId = recipient.address;
+
+    try {
+      const [accountInfoResponse, pubKeyResponse] = await Promise.allSettled([
+        accountsApi.getAccount({ accountId }),
+        accountsApi.getPublicKeyByAccountID({ accountId }),
+      ]);
+
+      if (accountInfoResponse.status === 'rejected') {
+        throw new Error(accountInfoResponse.reason);
+      }
+
+      const accountInfo: AccountWithPubKey = { ...accountInfoResponse.value };
+
+      if (pubKeyResponse.status === 'fulfilled') {
+        accountInfo.publicKey = pubKeyResponse.value.publicKey;
+      }
+
+      if (!accountInfo.publicKey || accountInfo.memoRequired) {
+        setCommentEncrypted(false);
+      }
+
+      setRecipientAccountInfo(accountInfo);
+    } catch {}
+  }, [accountsApi, recipient]);
+
+  useLayoutEffect(() => {
+    fetchRecipientAccountInfo();
+  }, [fetchRecipientAccountInfo]);
 
   const total = useMemo(() => {
     const extra = new BigNumber(Ton.fromNano(consequences?.event.extra ?? 0));
@@ -166,6 +237,22 @@ export const NFTSend: FC<Props> = (props) => {
 
       const vault = await unlockVault();
       const privateKey = await vault.getTonPrivateKey();
+
+      let commentValue: Cell | string = comment;
+      if (isCommentEncrypted && comment.length) {
+        const secretKey = await vault.getTonPrivateKey();
+        const recipientPubKey = (
+          await tonapi.accounts.getAccountPublicKey(recipient!.address)
+        ).public_key;
+
+        commentValue = await encryptMessageComment(
+          comment,
+          wallet.vault.tonPublicKey,
+          Buffer.from(recipientPubKey!, 'hex'),
+          secretKey,
+          tk.wallet.address.ton.raw,
+        );
+      }
 
       const totalAmount = total.isRefund
         ? BASE_FORWARD_AMOUNT
@@ -192,7 +279,7 @@ export const NFTSend: FC<Props> = (props) => {
             queryId: Date.now(),
             newOwnerAddress: recipient!.address,
             excessesAddress: excessesAccount || tk.wallet.address.ton.raw,
-            forwardBody: comment,
+            forwardBody: commentValue,
           }),
           bounce: true,
         }),
@@ -220,11 +307,14 @@ export const NFTSend: FC<Props> = (props) => {
     comment,
     consequences?.event.extra,
     isBattery,
+    isCommentEncrypted,
     nftAddress,
     recipient,
+    recipientAccountInfo?.publicKey,
     total.isRefund,
     unlockVault,
     wallet.ton,
+    wallet.vault.tonPublicKey,
   ]);
 
   return (
@@ -257,7 +347,8 @@ export const NFTSend: FC<Props> = (props) => {
               setRecipientAccountInfo={setRecipientAccountInfo}
               recipientAccountInfo={recipientAccountInfo}
               comment={comment}
-              enableEncryption={false}
+              isCommentEncrypted={isCommentEncrypted}
+              setCommentEncrypted={setCommentEncrypted}
               setComment={setComment}
               onContinue={prepareConfirmSending}
               {...stepProps}
@@ -268,6 +359,7 @@ export const NFTSend: FC<Props> = (props) => {
           {(stepProps) => (
             <ConfirmStep
               isBattery={isBattery}
+              isCommentEncrypted={isCommentEncrypted}
               recipient={recipient}
               recipientAccountInfo={recipientAccountInfo}
               decimals={9}

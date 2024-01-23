@@ -1,6 +1,14 @@
 import { t } from '@tonkeeper/shared/i18n';
 import { FormItem, Input, Text } from '$uikit';
-import React, { FC, RefObject, memo, useCallback, useEffect, useState } from 'react';
+import React, {
+  FC,
+  RefObject,
+  memo,
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+} from 'react';
 import { TextInput } from 'react-native-gesture-handler';
 
 interface Props {
@@ -35,6 +43,16 @@ const CommentInputComponent: FC<Props> = (props) => {
   const commentVisibilityText = isCommentEncrypted
     ? t('send_screen_steps.comfirm.comment_description_encrypted')
     : t('send_screen_steps.comfirm.comment_description');
+
+  const commentLabel = useMemo(() => {
+    if (isCommentRequired) {
+      return t('send_screen_steps.comfirm.comment_label_required');
+    }
+    if (isCommentEncrypted) {
+      return t('send_screen_steps.comfirm.comment_label_encrypted');
+    }
+    return t('send_screen_steps.comfirm.comment_label');
+  }, [isCommentRequired, isCommentEncrypted]);
 
   const commentDescription =
     comment.length > 0 || isCommentRequired ? (
@@ -80,11 +98,7 @@ const CommentInputComponent: FC<Props> = (props) => {
         isSuccessful={isCommentEncrypted}
         value={comment}
         onChangeText={handleCommentChange}
-        label={
-          isCommentRequired
-            ? t('send_screen_steps.comfirm.comment_label_required')
-            : t('send_screen_steps.comfirm.comment_label')
-        }
+        label={commentLabel}
         returnKeyType="next"
         onSubmitEditing={onSubmit}
         multiline

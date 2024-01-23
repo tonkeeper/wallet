@@ -16,6 +16,7 @@ interface ListItemProps {
   titleType?: 'primary' | 'secondary';
   title?: string | React.ReactNode;
   subtitle?: string | React.ReactNode;
+  subtitleStyle?: StyleProp<TextStyle>;
   value?: string | React.ReactNode;
   subvalue?: string | React.ReactNode;
   valueStyle?: StyleProp<TextStyle>;
@@ -141,6 +142,7 @@ export const ListItem = memo<ListItemProps>((props) => {
               <View style={styles.subtitleContainer}>
                 {isString(props.subtitle) ? (
                   <Text
+                    style={props.subtitleStyle}
                     numberOfLines={subtitleNumberOfLines}
                     color="textSecondary"
                     type="body2"

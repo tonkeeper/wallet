@@ -75,6 +75,7 @@
   "appearance_title" : "Оформление",
   "app_name" : "Tonkeeper",
   "approval" : {
+    "unverified_token": "Непроверенный токен",
     "accept" : "Принять",
     "accepted" : "Видимые",
     "accepted_at_collection" : "Принята %{date}",
@@ -595,6 +596,7 @@
       "comment_description" : "Будет виден всем.",
       "comment_description_encrypted" : "Будет виден только получателю и вам.",
       "comment_encrypt" : "Зашифровать комментарий",
+      "comment_label_encrypted" : "Зашифрованный комментарий",
       "comment_label" : "Комментарий",
       "comment_label_required" : "Комментарий",
       "comment_required_text" : "Обязательно укажите memo или тег при отправке на биржу. ",
@@ -858,7 +860,7 @@
   "ton_login_connect_button" : "Подключить кошелёк",
   "ton_login_notice" : "Обязательно проверьте адрес сервиса перед подключением кошелька.",
   "ton_login_success" : "Готово",
-  "ton_login_title" : "Войти в %{name}",
+  "ton_login_title" : "Войти в %domain",
   "transaction_bid_collection_name" : "Эмитент",
   "transaction_bid_date" : "Ставка %{date}",
   "transaction_bid_dns" : "Имя",
@@ -1104,6 +1106,12 @@
   },
   "encryptedComments": {
     "encryptedComment": "Комментарий",
-    "show": "Показать"
+    "show": "Показать",
+    "encryptedCommentModal": {
+      "title": "Зашифрованный комментарий",
+      "description": "Комментарий зашифрован отправителем и может быть расшифрован только вами. Пожалуйста, осторжно относитесь к содержанию и остерегайтесь мошенничества.",
+      "button": "Расшифровать комментарий",
+      "checkboxLabel": "Не показывать снова"
+    }
   }
 }

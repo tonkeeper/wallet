@@ -42,7 +42,6 @@ export const ItemContent = styled.View`
 export const ItemValue = styled(Text).attrs({
   variant: 'label1',
   textAlign: 'right',
-  numberOfLines: 1,
 })``;
 
 export const ItemRowContainer = styled.View`
@@ -54,6 +53,11 @@ export const ItemRow = styled.View`
   flex: 1;
   flex-direction: row;
   justify-content: space-between;
+`;
+
+export const ItemInline = styled.View`
+  flex-direction: row;
+  align-items: center;
 `;
 
 export const ItemSubValue = styled(Text).attrs({

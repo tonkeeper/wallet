@@ -3,6 +3,7 @@ export type IconNames =
   | 'ic-dot-12'
   | 'ic-down-12'
   | 'ic-dropdown-12'
+  | 'ic-exclamationmark-triangle-12'
   | 'ic-loader-xsmall-12'
   | 'ic-lock-12'
   | 'ic-star-12'
@@ -10,6 +11,7 @@ export type IconNames =
   | 'ic-almost-empty-battery-128'
   | 'ic-empty-battery-128'
   | 'ic-full-battery-128'
+  | 'ic-lock-128'
   | 'ic-notification-128'
   | 'ic-appearance-16'
   | 'ic-arrow-down-16'
@@ -100,6 +102,7 @@ export type IconNames =
   | 'ic-trash-bin-28'
   | 'ic-tray-arrow-down-28'
   | 'ic-tray-arrow-up-28'
+  | 'ic-usd-28'
   | 'ic-viewfinder-28'
   | 'ic-wallet-28'
   | 'ic-warning-28'
@@ -132,6 +135,7 @@ export const AllIcons = [
   'ic-dot-12',
   'ic-down-12',
   'ic-dropdown-12',
+  'ic-exclamationmark-triangle-12',
   'ic-loader-xsmall-12',
   'ic-lock-12',
   'ic-star-12',
@@ -139,6 +143,7 @@ export const AllIcons = [
   'ic-almost-empty-battery-128',
   'ic-empty-battery-128',
   'ic-full-battery-128',
+  'ic-lock-128',
   'ic-notification-128',
   'ic-appearance-16',
   'ic-arrow-down-16',
@@ -229,6 +234,7 @@ export const AllIcons = [
   'ic-trash-bin-28',
   'ic-tray-arrow-down-28',
   'ic-tray-arrow-up-28',
+  'ic-usd-28',
   'ic-viewfinder-28',
   'ic-wallet-28',
   'ic-warning-28',
@@ -262,6 +268,7 @@ export const IconSizes = {
   'ic-dot-12': 12,
   'ic-down-12': 12,
   'ic-dropdown-12': 12,
+  'ic-exclamationmark-triangle-12': 12,
   'ic-loader-xsmall-12': 12,
   'ic-lock-12': 12,
   'ic-star-12': 12,
@@ -269,6 +276,7 @@ export const IconSizes = {
   'ic-almost-empty-battery-128': 128,
   'ic-empty-battery-128': 128,
   'ic-full-battery-128': 128,
+  'ic-lock-128': 128,
   'ic-notification-128': 128,
   'ic-appearance-16': 16,
   'ic-arrow-down-16': 16,
@@ -359,6 +367,7 @@ export const IconSizes = {
   'ic-trash-bin-28': 28,
   'ic-tray-arrow-down-28': 28,
   'ic-tray-arrow-up-28': 28,
+  'ic-usd-28': 28,
   'ic-viewfinder-28': 28,
   'ic-wallet-28': 28,
   'ic-warning-28': 28,

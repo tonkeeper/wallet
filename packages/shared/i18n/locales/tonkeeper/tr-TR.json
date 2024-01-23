@@ -736,7 +736,7 @@
   "ton_login_connect_button" : "Cüzdanı bağlayın",
   "ton_login_notice" : "Cüzdanı bağlamadan önce servis adresini kontrol ettiğinizden emin olun.",
   "ton_login_success" : "Tamamlandı",
-  "ton_login_title" : "%{name}'e bağlanılsın mı?",
+  "ton_login_title" : "%domain'e bağlanılsın mı?",
   "transaction_bid_collection_name" : "Koleksiyon yayıncısı",
   "transaction_bid_date" : "%{date} tarihli teklif",
   "transaction_bid_dns" : "İsim",

@@ -84,7 +84,6 @@
 
                 <data android:scheme="https"/>
                 <data android:host="app.tonkeeper.com"/>
-                <data android:host="ton.app"/>
             </intent-filter>
 
         </activity>

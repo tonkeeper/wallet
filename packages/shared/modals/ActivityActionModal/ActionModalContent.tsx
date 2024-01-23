@@ -1,11 +1,11 @@
 import {
-  SText as Text,
   Button,
+  copyText,
   Icon,
-  View,
   List,
   Steezy,
-  copyText,
+  SText as Text,
+  View,
 } from '@tonkeeper/uikit';
 import {
   ActionAmountType,
@@ -16,7 +16,7 @@ import {
 } from '@tonkeeper/core';
 import { formatTransactionDetailsTime } from '../../utils/date';
 import { ActionStatusEnum, JettonVerificationType } from '@tonkeeper/core/src/TonAPI';
-import { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { formatter } from '../../formatter';
 import { config } from '../../config';
 import { t } from '../../i18n';
@@ -36,14 +36,26 @@ interface ActionModalContentProps {
   children?: React.ReactNode;
   header?: React.ReactNode;
   title?: string;
+  subtitle?: React.ReactNode;
   action: AnyActionItem;
   amountFiat?: string;
   label?: string;
   isSimplePreview?: boolean;
+  shouldShowFiatAmount?: boolean;
 }
 
 export const ActionModalContent = memo<ActionModalContentProps>((props) => {
-  const { children, header, title, action, label, amountFiat, isSimplePreview } = props;
+  const {
+    children,
+    header,
+    title,
+    subtitle,
+    action,
+    label,
+    amountFiat,
+    isSimplePreview,
+    shouldShowFiatAmount = true,
+  } = props;
   const { formatNano, format } = useHideableFormatter();
 
   const isScam =
@@ -109,15 +121,13 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
         action.amount.type === ActionAmountType.Jetton
           ? getTokenPrice(Address.parse(action.amount.jettonAddress).toFriendly())
           : getTokenPrice('ton');
-      if (tokenPrice.fiat) {
-        const parsedAmount = parseFloat(
-          formatter.fromNano(action.amount.value, action.amount.decimals),
-        );
-        return format(tokenPrice.fiat * parsedAmount, {
-          currency: fiatCurrency,
-          decimals: 9,
-        });
-      }
+      const parsedAmount = parseFloat(
+        formatter.fromNano(action.amount.value, action.amount.decimals),
+      );
+      return format(tokenPrice.fiat * parsedAmount, {
+        currency: fiatCurrency,
+        decimals: 9,
+      });
     }
   }, [action.amount, getTokenPrice, fiatCurrency]);
 
@@ -143,11 +153,14 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
               {titleText}
             </Text>
           )}
-          {!title && fiatAmount && action.status === ActionStatusEnum.Ok && (
-            <Text type="body1" color="textSecondary" style={styles.fiatText}>
-              {fiatAmount}
-            </Text>
-          )}
+          {subtitle}
+          {(!subtitle || !shouldShowFiatAmount) &&
+            fiatAmount &&
+            action.status === ActionStatusEnum.Ok && (
+              <Text type="body1" color="textSecondary" style={styles.fiatText}>
+                {fiatAmount}
+              </Text>
+            )}
         </View>
         <Text type="body1" color="textSecondary" style={styles.timeText}>
           {time}

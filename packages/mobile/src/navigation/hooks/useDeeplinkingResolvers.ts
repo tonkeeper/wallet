@@ -152,6 +152,14 @@ export function useDeeplinkingResolvers() {
     return openActivityActionModal(actionId, source ?? ActionSource.Ton);
   });
 
+  deeplinking.add('/exchange', async () => {
+    if (!getWallet()) {
+      return openRequireWalletModal();
+    } else {
+      nav.openModal('Exchange');
+    }
+  });
+
   deeplinking.add('/exchange/:id', async ({ params }) => {
     const methodId = params.id;
     if (!getWallet()) {

@@ -5,6 +5,7 @@ import { IEcryptedCommentsStore } from './types';
 
 const initialState: Omit<IEcryptedCommentsStore, 'actions'> = {
   decryptedComments: {},
+  shouldOpenEncryptedCommentModal: true,
 };
 
 export const useEncryptedCommentsStore = create(
@@ -12,6 +13,9 @@ export const useEncryptedCommentsStore = create(
     (set, getState) => ({
       ...initialState,
       actions: {
+        setShouldOpenEncryptedCommentModal: (value: boolean) => {
+          set({ shouldOpenEncryptedCommentModal: value });
+        },
         saveDecryptedComment: (id, comment) => {
           const decryptedComments = getState().decryptedComments;
 
@@ -24,8 +28,18 @@ export const useEncryptedCommentsStore = create(
     {
       name: 'encryptedComments',
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: ({ decryptedComments }) =>
-        ({ decryptedComments } as IEcryptedCommentsStore),
+      version: 2,
+      migrate: (persistedState: IEcryptedCommentsStore, version) => {
+        if (version < 2) {
+          persistedState.shouldOpenEncryptedCommentModal = true;
+          return persistedState;
+        }
+      },
+      partialize: ({ decryptedComments, shouldOpenEncryptedCommentModal }) =>
+        ({
+          decryptedComments,
+          shouldOpenEncryptedCommentModal,
+        } as IEcryptedCommentsStore),
     },
   ),
 );

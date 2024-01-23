@@ -673,7 +673,7 @@
   "ton_login_connect_button" : "连接钱包",
   "ton_login_notice" : "连接钱包之前，请务必检查服务地址。",
   "ton_login_success" : "完成",
-  "ton_login_title" : "连接到%{name}？",
+  "ton_login_title" : "连接到%domain？",
   "transaction_bid_collection_name" : "发行者",
   "transaction_bid_date" : "出价日期 %{date}",
   "transaction_bid_dns" : "名称",

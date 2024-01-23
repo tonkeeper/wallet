@@ -7,6 +7,7 @@ import { ActionItem, ActionType } from '@tonkeeper/core';
 import { copyText, List, Text } from '@tonkeeper/uikit';
 import { memo } from 'react';
 import { t } from '../../../i18n';
+import { EncryptedComment, EncryptedCommentLayout } from '../../../components';
 
 interface NftItemTransferActionContenttProps {
   action: ActionItem<ActionType.NftItemTransfer>;
@@ -34,6 +35,14 @@ export const NftItemTransferActionContent = memo<NftItemTransferActionContenttPr
             sender={action.payload.sender}
           />
           <ExtraListItem extra={action.event.extra} />
+          {action.payload?.encrypted_comment && (
+            <EncryptedComment
+              layout={EncryptedCommentLayout.LIST_ITEM}
+              encryptedComment={action.payload.encrypted_comment}
+              actionId={action.action_id}
+              sender={action.payload.sender!}
+            />
+          )}
           {!!action.payload.comment && (
             <List.Item
               titleType="secondary"

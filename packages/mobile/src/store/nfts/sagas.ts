@@ -19,7 +19,6 @@ import axios from 'axios';
 import { getServerConfig } from '$shared/constants';
 import { i18n } from '$translation';
 import DeviceInfo from 'react-native-device-info';
-import FastImage from 'react-native-fast-image';
 
 let manager: NFTsManager | null;
 

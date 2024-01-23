@@ -28,6 +28,7 @@ import {
 
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 import { useFlags } from '@tonkeeper/mobile/src/utils/flags';
+import { config } from '../../config';
 
 export interface ActionListItemProps<TActionType extends ActionType = ActionType> {
   onPress?: () => void;
@@ -218,8 +219,15 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
       {isSimplePreview && !!action.simple_preview.description && (
         <ListItemContentText text={action.simple_preview.description} />
       )}
+      {!config.get('disable_show_unverified_token') &&
+        isJettonTransferAction(action) &&
+        action.payload.jetton.verification === JettonVerificationType.None && (
+          <Text type="body2" color="accentOrange" style={styles.warn.static}>
+            {t('approval.unverified_token')}
+          </Text>
+        )}
       {isFailed && !ignoreFailed && (
-        <Text type="body2" color="accentOrange" style={styles.failedText.static}>
+        <Text type="body2" color="accentOrange" style={styles.warn.static}>
           {t('transactions.failed')}
         </Text>
       )}
@@ -245,7 +253,7 @@ const styles = Steezy.create(({ colors }) => ({
     marginTop: -3,
     marginBottom: -1.5,
   },
-  failedText: {
+  warn: {
     marginTop: 8,
   },
   scamAmountText: {
