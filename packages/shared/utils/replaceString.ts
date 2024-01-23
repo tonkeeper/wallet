@@ -1,6 +1,18 @@
 import { isString } from '@tonkeeper/uikit';
+import React from 'react';
 
-export function replaceString(str, match, fn) {
+let escapeRegExp = function escapeRegExp(str: string) {
+  let reRegExpChar = /[\\^$.*+?()[\]{}|]/g,
+    reHasRegExpChar = RegExp(reRegExpChar.source);
+
+  return str && reHasRegExpChar.test(str) ? str.replace(reRegExpChar, '\\$&') : str;
+};
+
+export function replaceString(
+  str: string,
+  match: string,
+  fn: (str: string, i: number, c: number) => React.ReactNode,
+): React.ReactNode[] | React.ReactNode {
   let curCharStart = 0;
   let curCharLen = 0;
 
@@ -12,21 +24,22 @@ export function replaceString(str, match, fn) {
     );
   }
 
-  let result = str.split(match);
+  let re = new RegExp('(' + escapeRegExp(match) + ')', 'gi');
 
-  // Apply fn to all odd elements
-  for (let i = 1, length = result.length; i < length; i += 2) {
-    /** @see {@link https://github.com/iansinnott/react-string-replace/issues/74} */
-    if (result[i] === undefined || result[i - 1] === undefined) {
+  let matches: undefined | string[] = str.split(re);
+  let toReturn: React.ReactNode = matches;
+
+  for (let i = 1, length = matches.length; i < length; i += 2) {
+    if (matches[i] === undefined || matches[i - 1] === undefined) {
       console.warn('Encountered undefined value during string replacement');
       continue;
     }
 
-    curCharLen = result[i].length;
-    curCharStart += result[i - 1].length;
-    result[i] = fn(result[i], i, curCharStart);
+    curCharLen = matches[i].length;
+    curCharStart += matches[i - 1].length;
+    toReturn[i] = fn(matches[i], i, curCharStart);
     curCharStart += curCharLen;
   }
 
-  return result;
+  return toReturn;
 }
