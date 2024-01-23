@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { formatter } from '../formatter';
+import { config } from '../config';
 
 export enum BatteryState {
   Full = 'FULL',
@@ -14,7 +14,7 @@ const valuesForBatteryState = {
   [BatteryState.Empty]: '0.03',
 };
 
-export const MEAN_FEES = '0.08';
+export const MEAN_FEES = config.get('batteryMeanFees');
 
 export function getBatteryState(batteryBalance: string) {
   const balance = new BigNumber(batteryBalance);
