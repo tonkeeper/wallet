@@ -14,13 +14,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 
 import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet/index';
-import {
-  EncryptedVault,
-  jettonTransferAmount,
-  UnlockedVault,
-  Vault,
-  Wallet,
-} from '$blockchain';
+import { EncryptedVault, UnlockedVault, Vault, Wallet } from '$blockchain';
 import { mainActions } from '$store/main';
 import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
 import {
@@ -90,7 +84,7 @@ import { clearSubscribeStatus } from '$utils/messaging';
 import { useRatesStore } from '$store/zustand/rates';
 import { Cell } from '@ton/core';
 import nacl from 'tweetnacl';
-import { encryptMessageComment } from '@tonkeeper/core';
+import { BASE_FORWARD_AMOUNT, encryptMessageComment } from '@tonkeeper/core';
 import { goBack } from '$navigation/imperative';
 import { trackEvent } from '$utils/stats';
 import { tk } from '@tonkeeper/shared/tonkeeper';
@@ -176,11 +170,14 @@ function* createWalletWorker(action: CreateWalletAction) {
     yield fork(loadRatesAfterJettons);
     const addr = yield call([wallet.ton, 'getAddress']);
     const data = yield call([tk, 'load']);
+    const stateInit = yield call([wallet.ton, 'createStateInitBase64']);
     yield call(
       [tk, 'init'],
       addr,
       getChainName() === 'testnet',
       data.tronAddress,
+      data.tonProof,
+      stateInit,
       !getFlag('address_style_nobounce'),
     );
     onDone();
@@ -307,11 +304,15 @@ function* switchVersionWorker() {
   const addr = yield call([newWallet.ton, 'getAddress']);
   yield call([tk, 'destroy']);
   const data = yield call([tk, 'load']);
+  const stateInit = yield call([newWallet.ton, 'createStateInitBase64']);
+
   yield call(
     [tk, 'init'],
     addr,
     getChainName() === 'testnet',
     data.tronAddress,
+    data.tonProof,
+    stateInit,
     !getFlag('address_style_nobounce'),
   );
 
@@ -332,6 +333,7 @@ function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
     yield call(setLastRefreshedAt, Date.now());
     yield put(subscriptionsActions.loadSubscriptions());
     yield call([tk.wallet.tonInscriptions, 'getInscriptions']);
+    yield call([tk.wallet.battery, 'fetchBalance']);
   } catch (e) {
     yield put(walletActions.endRefreshBalancesPage());
   }
@@ -388,10 +390,11 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
 
     let isUninit = false;
     let fee: string = '0';
+    let isBattery = false;
     let isEstimateFeeError = false;
     try {
       if (tokenType === TokenType.Jetton) {
-        fee = yield call(
+        const [estimatedFee, battery] = yield call(
           [wallet.ton, 'estimateJettonFee'],
           jettonWalletAddress,
           address,
@@ -399,21 +402,23 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
           wallet.vault,
           commentValue,
         );
+        fee = estimatedFee;
+        isBattery = battery;
       } else if (tokenType === TokenType.TON) {
-        if (currency === CryptoCurrencies.Ton) {
-          fee = yield call(
-            [wallet.ton, 'estimateFee'],
-            address,
-            amount,
-            wallet.vault,
-            commentValue,
-            isSendAll ? 128 : 3,
-          );
-          isUninit = yield call([wallet.ton, 'isInactiveAddress'], address);
-        }
+        const [estimatedFee, battery] = yield call(
+          [wallet.ton, 'estimateFee'],
+          address,
+          amount,
+          wallet.vault,
+          commentValue,
+          isSendAll ? 128 : 3,
+        );
+        fee = estimatedFee;
+        isBattery = battery;
+        isUninit = yield call([wallet.ton, 'isInactiveAddress'], address);
       } else if (tokenType === TokenType.Inscription) {
         const type = (currencyAdditionalParams as InscriptionAdditionalParams).type;
-        fee = yield call(
+        const [estimatedFee, battery] = yield call(
           [wallet.ton, 'estimateInscriptionFee'],
           currency,
           type,
@@ -422,6 +427,8 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
           wallet.vault,
           commentValue,
         );
+        fee = estimatedFee;
+        isBattery = battery;
       }
     } catch (e) {
       console.log(e);
@@ -441,20 +448,20 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
     yield delay(100);
 
     if (onNext) {
-      if (isEstimateFeeError && onInsufficientFunds) {
+      if ((tokenType !== TokenType.TON || !isSendAll) && onInsufficientFunds) {
         const amountNano =
           tokenType === TokenType.Jetton
-            ? jettonTransferAmount.toString()
-            : toNano(amount);
+            ? new BigNumber(toNano(fee)).plus(BASE_FORWARD_AMOUNT.toString()).toString()
+            : new BigNumber(toNano(fee)).plus(toNano(amount)).toString();
         const address = yield call([wallet.ton, 'getAddress']);
         const { balance } = yield call(Tonapi.getWalletInfo, address);
         if (new BigNumber(amountNano).gt(new BigNumber(balance))) {
           return onInsufficientFunds({ totalAmount: amountNano, balance });
         } else {
-          yield call(onNext, { fee, isInactive: isUninit });
+          yield call(onNext, { fee, isInactive: isUninit, isBattery });
         }
       } else {
-        yield call(onNext, { fee, isInactive: isUninit });
+        yield call(onNext, { fee, isInactive: isUninit, isBattery });
       }
     }
 
@@ -479,12 +486,14 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       address,
       comment,
       isCommentEncrypted,
+      fee,
       onDone,
       onFail,
       isSendAll,
       tokenType,
       jettonWalletAddress,
       decimals,
+      sendWithBattery,
       currencyAdditionalParams,
     } = action.payload;
 
@@ -521,6 +530,8 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         toNano(amount, decimals),
         unlockedVault,
         commentValue,
+        sendWithBattery,
+        BigNumber(toNano(fee)).plus(BASE_FORWARD_AMOUNT.toString()).toString(),
       );
     } else if (tokenType === TokenType.TON && currency === CryptoCurrencies.Ton) {
       yield call(
@@ -926,11 +937,14 @@ function* doMigration(wallet: Wallet, newAddress: string) {
     const addr = yield call([newWallet.ton, 'getAddress']);
     yield call([tk, 'destroy']);
     const data = yield call([tk, 'load']);
+    const stateInit = yield call([newWallet.ton, 'createStateInitBase64']);
     yield call(
       [tk, 'init'],
       addr,
       getChainName() === 'testnet',
       data.tronAddress,
+      data.tonProof,
+      stateInit,
       !getFlag('address_style_nobounce'),
     );
 

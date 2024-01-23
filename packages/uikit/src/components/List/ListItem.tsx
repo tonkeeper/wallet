@@ -20,6 +20,7 @@ interface ListItemProps {
   value?: string | React.ReactNode;
   subvalue?: string | React.ReactNode;
   valueStyle?: StyleProp<TextStyle>;
+  valueContainerStyle?: StyleProp<ViewStyle>;
   picture?: string;
   pictureStyle?: StyleProp<ViewStyle>;
   pictureCorner?: 'full' | 'small';
@@ -122,7 +123,7 @@ export const ListItem = memo<ListItemProps>((props) => {
                   props.title
                 )}
               </View>
-              <View style={styles.valueContainer}>
+              <View style={[styles.valueContainer, props.valueContainerStyle]}>
                 {isString(props.value) ? (
                   <Text
                     numberOfLines={!valueMultiline ? 1 : undefined}

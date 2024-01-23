@@ -20,6 +20,7 @@ export const ScrollHandler: FC<ScrollHandlerProps> = (props) => {
     isLargeNavBar = true,
     hideBackButton,
     hitSlop,
+    subtitleProps = {},
     titleProps = {},
   } = props;
 
@@ -50,6 +51,7 @@ export const ScrollHandler: FC<ScrollHandlerProps> = (props) => {
             scrollTop={scrollTop}
             rightContent={navBarRight}
             subtitle={navBarSubtitle}
+            subtitleProps={subtitleProps}
           >
             {navBarTitle}
           </NavBar>

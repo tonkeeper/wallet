@@ -87,6 +87,7 @@ export enum SettingsStackRouteNames {
   FontLicense = 'FontLicense',
   Notifications = 'Notifications',
   ChooseCurrency = 'ChooseCurrency',
+  RefillBattery = 'RefillBattery',
 }
 
 export enum ActivityStackRouteNames {

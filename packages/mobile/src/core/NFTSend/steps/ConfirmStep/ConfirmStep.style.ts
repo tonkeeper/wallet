@@ -44,6 +44,17 @@ export const ItemValue = styled(Text).attrs({
   textAlign: 'right',
 })``;
 
+export const ItemRowContainer = styled.View`
+  padding: ${ns(16)}px 0;
+`;
+
+export const ItemRow = styled.View`
+  padding: 0 ${ns(16)}px;
+  flex: 1;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
 export const ItemInline = styled.View`
   flex-direction: row;
   align-items: center;

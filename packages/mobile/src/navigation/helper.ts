@@ -244,6 +244,10 @@ export function openJettonsList() {
   push(MainStackRouteNames.JettonsList);
 }
 
+export function openRefillBattery() {
+  push(SettingsStackRouteNames.RefillBattery);
+}
+
 export function openManageTokens(initialTab?: string) {
   _.throttle(() => {
     push(MainStackRouteNames.ManageTokens, { initialTab });

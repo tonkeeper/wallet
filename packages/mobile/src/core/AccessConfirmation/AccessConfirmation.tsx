@@ -24,9 +24,9 @@ import { Toast, ToastSize } from '$store';
 import { goBack, useParams } from '$navigation/imperative';
 import { t } from '@tonkeeper/shared/i18n';
 
-import { createTronOwnerAddress } from '@tonkeeper/core/src/utils/tronUtils';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
+import nacl from 'tweetnacl';
 
 export const AccessConfirmation: FC = () => {
   const route = useRoute();
@@ -70,6 +70,20 @@ export const AccessConfirmation: FC = () => {
       }
     } catch (err) {
       console.error('[generate tron address]', err);
+    }
+  }, []);
+
+  const obtainTonProof = useCallback(async (keyPair: nacl.SignKeyPair) => {
+    try {
+      // Obtain tonProof
+      if (!tk.wallet.identity.tonProof) {
+        const tonProof = await tk.obtainProofToken(keyPair);
+        if (tonProof) {
+          tk.wallet.setTonProof(tonProof);
+        }
+      }
+    } catch (err) {
+      console.error('[obtain tonProof]', err);
     }
   }, []);
 
@@ -118,10 +132,9 @@ export const AccessConfirmation: FC = () => {
 
                       setTimeout(async () => {
                         if (isUnlock) {
-                          const privateKey = await (
-                            unlockedVault as any
-                          ).getTonPrivateKey();
+                          const keyPair = await (unlockedVault as any).getKeyPair();
                           // createTronAddress(privateKey);
+                          obtainTonProof(keyPair);
 
                           dispatch(mainActions.setUnlocked(true));
                         } else {
@@ -162,9 +175,6 @@ export const AccessConfirmation: FC = () => {
         setTimeout(async () => {
           // Lock screen
           if (isUnlock) {
-            const privateKey = await (unlockedVault as any).getTonPrivateKey();
-            // createTronAddress(privateKey);
-
             dispatch(mainActions.setUnlocked(true));
           } else {
             goBack();

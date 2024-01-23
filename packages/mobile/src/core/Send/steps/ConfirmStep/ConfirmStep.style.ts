@@ -29,10 +29,26 @@ export const ItemInline = styled.View`
   align-items: center;
 `;
 
+export const ItemSubLabel = styled(Text).attrs({
+  color: 'textTertiary',
+  variant: 'body2',
+})``;
+
 export const ItemLabel = styled(Text).attrs({
   color: 'foregroundSecondary',
   variant: 'body1',
 })``;
+
+export const ItemRowContainer = styled.View`
+  padding: ${ns(16)}px 0;
+`;
+
+export const ItemRow = styled.View`
+  padding: 0 ${ns(16)}px;
+  flex: 1;
+  flex-direction: row;
+  justify-content: space-between;
+`;
 
 export const ItemContent = styled.View`
   flex: 1;

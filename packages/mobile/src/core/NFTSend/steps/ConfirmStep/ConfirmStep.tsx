@@ -18,6 +18,8 @@ import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { AccountWithPubKey, SendRecipient } from '$core/Send/Send.interface';
 import { Address } from '@tonkeeper/core';
 import { truncateDecimal } from '$utils';
+import { BatteryState } from '@tonkeeper/shared/utils/battery';
+import { useBatteryState } from '@tonkeeper/shared/query/hooks/useBatteryState';
 
 interface Props extends StepComponentProps {
   recipient: SendRecipient | null;
@@ -28,6 +30,7 @@ interface Props extends StepComponentProps {
   nftIcon?: string;
   stepsScrollTop: SharedValue<Record<StakingSendSteps, number>>;
   isPreparing: boolean;
+  isBattery: boolean;
   isCommentEncrypted: boolean;
   comment: string;
   sendTx: () => Promise<void>;
@@ -41,6 +44,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
     nftName,
     nftIcon,
     nftCollection,
+    isBattery,
     comment,
     total,
     stepsScrollTop,
@@ -50,6 +54,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
   } = props;
 
   const fiatFee = useFiatValue(CryptoCurrencies.Ton, total?.amount || '0');
+  const batteryState = useBatteryState();
 
   const { bottom: bottomInset } = useSafeAreaInsets();
 
@@ -119,13 +124,13 @@ const ConfirmStepComponent: FC<Props> = (props) => {
               </S.Item>
             </Highlight>
             <Separator />
-            <S.Item>
-              <S.ItemLabel>
-                {total.isRefund
-                  ? t('nft_transfer.confirm.fee.refund_label')
-                  : t('nft_transfer.confirm.fee.label')}
-              </S.ItemLabel>
-              <S.ItemContent>
+            <S.ItemRowContainer>
+              <S.ItemRow>
+                <S.ItemLabel>
+                  {total.isRefund
+                    ? t('nft_transfer.confirm.fee.refund_label')
+                    : t('nft_transfer.confirm.fee.label')}
+                </S.ItemLabel>
                 {isPreparing ? (
                   <>
                     <S.ItemSkeleton>
@@ -143,13 +148,22 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                         value: total.amount ? truncateDecimal(total.amount, 1) : '?',
                       })}
                     </S.ItemValue>
-                    <S.ItemSubValue>
-                      {total?.amount ? `≈ ${fiatFee.formatted.totalFiat}` : ' '}
-                    </S.ItemSubValue>
                   </>
                 )}
-              </S.ItemContent>
-            </S.Item>
+              </S.ItemRow>
+              <S.ItemRow>
+                {batteryState !== BatteryState.Empty && isBattery ? (
+                  <Text color={'textTertiary'} variant={'body2'}>
+                    {t('send_screen_steps.comfirm.will_be_paid_with_battery')}
+                  </Text>
+                ) : (
+                  <Text color={'textTertiary'} variant={'body2'} />
+                )}
+                <S.ItemSubValue>
+                  {total?.amount ? `≈ ${fiatFee.formatted.totalFiat}` : ' '}
+                </S.ItemSubValue>
+              </S.ItemRow>
+            </S.ItemRowContainer>
             {comment.length > 0 ? (
               <>
                 <Separator />

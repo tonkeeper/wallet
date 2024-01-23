@@ -94,6 +94,7 @@ android {
         versionCode 433
         versionName "3.6"
         missingDimensionStrategy 'react-native-camera', 'general'
+        missingDimensionStrategy 'store', 'play'
     }
 
     compileOptions {

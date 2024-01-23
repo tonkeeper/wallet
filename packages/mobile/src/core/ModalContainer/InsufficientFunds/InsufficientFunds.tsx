@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
-import { Modal } from '@tonkeeper/uikit';
+import { Modal, Spacer } from '@tonkeeper/uikit';
 import { openExploreTab } from '$navigation';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { Button, Icon, Text } from '$uikit';
@@ -12,6 +12,9 @@ import { Tonapi } from '$libs/Tonapi';
 import { store } from '$store';
 import { formatter } from '$utils/formatter';
 import { push } from '$navigation/imperative';
+import { useBatteryBalance } from '@tonkeeper/shared/query/hooks/useBatteryBalance';
+import { config } from '@tonkeeper/shared/config';
+import { openRefillBatteryModal } from '@tonkeeper/shared/modals/RefillBatteryModal';
 
 export interface InsufficientFundsParams {
   /**
@@ -45,6 +48,7 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
     fee,
     isStakingDeposit,
   } = props;
+  const { balance: batteryBalance } = useBatteryBalance();
   const nav = useNavigation();
   const formattedAmount = useMemo(
     () => formatter.format(fromNano(totalAmount, decimals), { decimals }),
@@ -54,11 +58,19 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
     () => formatter.format(fromNano(balance, decimals), { decimals }),
     [balance, decimals],
   );
+  const shouldShowRefillBatteryButton =
+    !config.get('disable_battery') && currency === 'TON' && batteryBalance === '0';
 
   const handleOpenRechargeWallet = useCallback(async () => {
     nav.goBack();
     await delay(550);
     nav.openModal('Exchange');
+  }, [nav]);
+
+  const handleOpenRefillBattery = useCallback(async () => {
+    nav.goBack();
+    await delay(550);
+    openRefillBatteryModal();
   }, [nav]);
 
   const handleOpenDappBrowser = useCallback(async () => {
@@ -114,24 +126,34 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
       <Modal.Header />
       <Modal.Content>
         <S.Wrap>
-          <Icon style={{ marginBottom: 12 }} name={'ic-exclamationmark-circle-84'} />
-          <Text textAlign="center" variant="h2" style={{ marginBottom: 4 }}>
+          <Icon name={'ic-exclamationmark-circle-84'} />
+          <Spacer y={12} />
+          <Text textAlign="center" variant="h2">
             {t('txActions.signRaw.insufficientFunds.title')}
           </Text>
+          <Spacer y={4} />
           {content}
         </S.Wrap>
       </Modal.Content>
       <Modal.Footer>
         <S.FooterWrap>
+          {shouldShowRefillBatteryButton && (
+            <>
+              <Button mode="primary" onPress={handleOpenRefillBattery}>
+                {t('txActions.signRaw.insufficientFunds.rechargeBattery')}
+              </Button>
+              <Spacer y={16} />
+            </>
+          )}
           <Button
-            style={{ marginBottom: 16 }}
             mode="secondary"
             onPress={
               currency === 'TON' ? handleOpenRechargeWallet : handleOpenDappBrowser
             }
           >
-            {t('txActions.signRaw.insufficientFunds.rechargeWallet')}
+            {t('txActions.signRaw.insufficientFunds.rechargeWallet', { currency })}
           </Button>
+          <Spacer y={16} />
         </S.FooterWrap>
       </Modal.Footer>
     </Modal>

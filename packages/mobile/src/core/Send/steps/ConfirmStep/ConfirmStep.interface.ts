@@ -12,6 +12,7 @@ import { CryptoCurrency } from '$shared/constants';
 export interface ConfirmStepProps {
   active: boolean;
   currencyTitle: string;
+  isBattery: boolean;
   currency: CryptoCurrency | string;
   recipient: SendRecipient | null;
   recipientAccountInfo: AccountWithPubKey | null;

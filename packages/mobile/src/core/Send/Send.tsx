@@ -127,6 +127,7 @@ export const Send: FC<SendProps> = ({ route }) => {
   const [fee, setFee] = useState(initialFee);
 
   const [isInactive, setInactive] = useState(initialIsInactive);
+  const [isBattery, setBattery] = useState(false);
 
   const [insufficientFundsParams, setInsufficientFundsParams] =
     useState<InsufficientFundsParams | null>(null);
@@ -240,6 +241,7 @@ export const Send: FC<SendProps> = ({ route }) => {
             setInsufficientFundsParams(null);
             setFee(details.fee);
             setInactive(details.isInactive);
+            setBattery(details.isBattery);
 
             stepViewRef.current?.go(SendSteps.CONFIRM);
           },
@@ -298,6 +300,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       if (recipient.blockchain === 'ton') {
         dispatch(
           walletActions.sendCoins({
+            fee,
             currencyAdditionalParams: currencyAdditionalParams,
             currency: currency as CryptoCurrency,
             amount: parsedAmount,
@@ -308,6 +311,7 @@ export const Send: FC<SendProps> = ({ route }) => {
             tokenType,
             jettonWalletAddress,
             decimals,
+            sendWithBattery: isBattery,
             onDone: () => {
               trackEvent(Events.SendSuccess, { from });
               dispatch(favoritesActions.restoreHiddenAddress(recipient.address));
@@ -333,20 +337,23 @@ export const Send: FC<SendProps> = ({ route }) => {
       }
     },
     [
+      fee,
+      recipient,
+      expiryTimestamp,
+      insufficientFundsParams,
+      trcPayload.value,
+      isBattery,
+      dispatch,
+      currencyAdditionalParams,
+      currency,
+      parsedAmount,
       amount.all,
       comment,
-      currency,
-      decimals,
-      dispatch,
-      expiryTimestamp,
-      from,
-      insufficientFundsParams,
       isCommentEncrypted,
       tokenType,
       jettonWalletAddress,
-      parsedAmount,
-      recipient,
-      trcPayload.value,
+      decimals,
+      from,
       unlock,
     ],
   );
@@ -445,7 +452,6 @@ export const Send: FC<SendProps> = ({ route }) => {
         ref={stepViewRef}
         backDisabled={isBackDisabled}
         onChangeStep={handleChangeStep}
-        initialStepId={initialStepId}
         useBackHandler
         swipeBackEnabled={!isBackDisabled}
       >
@@ -455,7 +461,6 @@ export const Send: FC<SendProps> = ({ route }) => {
               enableEncryption={tokensWithAllowedEncryption.includes(tokenType)}
               recipient={recipient}
               decimals={decimals}
-              stepsScrollTop={stepsScrollTop}
               changeBlockchain={changeBlockchain}
               setRecipient={setRecipient}
               setRecipientAccountInfo={setRecipientAccountInfo}
@@ -493,7 +498,8 @@ export const Send: FC<SendProps> = ({ route }) => {
         <StepViewItem id={SendSteps.CONFIRM}>
           {(stepProps) => (
             <ConfirmStep
-              stepsScrollTop={stepsScrollTop}
+              isPreparing={isPreparing}
+              isBattery={isBattery}
               currencyTitle={currencyTitle}
               currency={currency}
               recipient={recipient}

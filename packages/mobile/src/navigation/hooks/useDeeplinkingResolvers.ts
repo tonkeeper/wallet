@@ -43,6 +43,7 @@ import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBu
 import { isMethodIdExists } from '$store/zustand/methodsToBuy/helpers';
 import { openActivityActionModal } from '@tonkeeper/shared/modals/ActivityActionModal';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import { config } from '@tonkeeper/shared/config';
 import { TokenType } from '$core/Send/Send.interface';
 
 const getWallet = () => {
@@ -457,6 +458,12 @@ export function useDeeplinkingResolvers() {
       if (!Address.isValid(query.nft)) {
         return Toast.fail(t('transfer_deeplink_nft_address_error'));
       }
+      const excessesAccount =
+        !config.get('disable_battery_send') &&
+        tk.wallet.battery.state.data.balance !== '0'
+          ? await tk.wallet.battery.getExcessesAccount()
+          : null;
+
       await openSignRawModal(
         {
           messages: [
@@ -466,7 +473,7 @@ export function useDeeplinkingResolvers() {
               payload: ContractService.createNftTransferBody({
                 queryId: Date.now(),
                 newOwnerAddress: address,
-                excessesAddress: tk.wallet.address.ton.raw,
+                excessesAddress: excessesAccount || tk.wallet.address.ton.raw,
               })
                 .toBoc()
                 .toString('base64'),

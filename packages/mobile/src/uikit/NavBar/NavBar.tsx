@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LayoutChangeEvent, View } from 'react-native';
 import Animated, {
@@ -15,6 +15,7 @@ import { useTheme } from '$hooks/useTheme';
 import { NavBarHeight } from '$shared/constants';
 import { hNs } from '$utils';
 import { Text } from '../Text/Text';
+import { Steezy } from '@tonkeeper/uikit';
 
 export const NavBarHelper: FC = () => {
   const { top } = useSafeAreaInsets();
@@ -47,6 +48,7 @@ export const NavBar: FC<NavBarProps> = (props) => {
     fillBackground = false,
     innerAnimatedStyle,
     titleProps = {},
+    subtitleProps = {},
     scrollTop,
     subtitle,
   } = props;
@@ -167,26 +169,30 @@ export const NavBar: FC<NavBarProps> = (props) => {
           </S.BackButtonContainer>
           <S.CenterContent style={titleAnimatedStyle}>
             {typeof children === 'string' ? (
-              <S.Title
+              <Text
+                textAlign="center"
                 variant={isSmallTitle ? 'label1' : 'h3'}
                 numberOfLines={1}
                 {...titleProps}
               >
                 {children}
-              </S.Title>
+              </Text>
             ) : (
               children
             )}
             <Animated.View style={subtitleAnimatedStyle}>
               {subtitle ? (
-                <S.Subtitle
+                <Text
+                  textAlign="center"
                   variant="body2"
                   numberOfLines={1}
                   color="textSecondary"
+                  style={styles.subtitle.static}
                   onLayout={handleSubtitleLayout}
+                  {...subtitleProps}
                 >
                   {subtitle}
-                </S.Subtitle>
+                </Text>
               ) : null}
             </Animated.View>
           </S.CenterContent>
@@ -196,3 +202,10 @@ export const NavBar: FC<NavBarProps> = (props) => {
     </S.Wrap>
   );
 };
+
+const styles = Steezy.create({
+  subtitle: {
+    position: 'absolute',
+    width: '100%',
+  },
+});

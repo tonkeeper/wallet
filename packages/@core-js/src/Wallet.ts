@@ -14,6 +14,8 @@ import { TronService } from './TronService';
 import { ActivityLoader } from './Activity/ActivityLoader';
 import { TonActivityList } from './Activity/TonActivityList';
 import { JettonActivityList } from './Activity/JettonActivityList';
+import { BatteryAPI } from './BatteryAPI';
+import { BatteryManager } from './managers/BatteryManager';
 import { TonInscriptions } from './managers/TonInscriptions';
 
 export enum WalletNetwork {
@@ -27,9 +29,11 @@ export enum WalletKind {
   WatchOnly = 'WatchOnly',
 }
 
-type WalletIdentity = {
+export type WalletIdentity = {
   network: WalletNetwork;
   kind: WalletKind;
+  stateInit: string;
+  tonProof: string;
   // id: string;
 };
 
@@ -73,6 +77,7 @@ export type WalletContext = {
   sse: ServerSentEvents;
   tonapi: TonAPI;
   tronapi: TronAPI;
+  batteryapi: BatteryAPI;
 };
 
 export class Wallet {
@@ -83,6 +88,7 @@ export class Wallet {
 
   public subscriptions: SubscriptionsManager;
   public balances: BalancesManager;
+  public battery: BatteryManager;
 
   public nfts: NftsManager;
 
@@ -99,6 +105,7 @@ export class Wallet {
     private queryClient: QueryClient,
     private tonapi: TonAPI,
     private tronapi: TronAPI,
+    private batteryapi: BatteryAPI,
     private vault: Vault,
     private sse: ServerSentEvents,
     private storage: IStorage,
@@ -107,6 +114,8 @@ export class Wallet {
     this.identity = {
       kind: WalletKind.Regular,
       network: walletInfo.network,
+      stateInit: walletInfo.stateInit,
+      tonProof: walletInfo.tonProof,
     };
 
     const tonAddresses = Address.parse(walletInfo.address, {
@@ -126,6 +135,7 @@ export class Wallet {
       address: this.address,
       tronapi: this.tronapi,
       tonapi: this.tonapi,
+      batteryapi: this.batteryapi,
       sse: this.sse,
     };
 
@@ -146,6 +156,7 @@ export class Wallet {
     this.balances = new BalancesManager(context);
     this.nfts = new NftsManager(context);
     this.tronService = new TronService(context);
+    this.battery = new BatteryManager(context, this.identity, this.storage);
 
     this.listenTransactions();
   }
@@ -169,6 +180,10 @@ export class Wallet {
   // For migrate
   public async setTronAddress(addresses: TronAddresses) {
     this.address.tron = addresses;
+  }
+
+  public async setTonProof(tonProof: string) {
+    this.identity.tonProof = tonProof;
   }
 
   private listenTransactions() {

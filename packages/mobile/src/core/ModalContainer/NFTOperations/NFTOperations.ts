@@ -14,6 +14,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 import { getServerConfig } from '$shared/constants';
 import { Configuration, NFTApi } from '@tonkeeper/core/src/legacy';
+import { sendBocWithBattery } from '@tonkeeper/shared/utils/blockchain';
 import { tonapi } from '@tonkeeper/shared/tonkeeper';
 
 const { NftItem } = TonWeb.token.nft;
@@ -171,14 +172,9 @@ export class NFTOperations {
         const queryMsg = await methods.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
 
-        const response = await tonapi.blockchain.sendBlockchainMessage(
-          { boc },
-          { format: 'text' },
-        );
+        await sendBocWithBattery(boc);
 
         onDone?.(boc);
-
-        return response;
       },
     };
   }

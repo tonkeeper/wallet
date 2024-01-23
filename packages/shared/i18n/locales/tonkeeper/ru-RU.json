@@ -54,6 +54,7 @@
     "why_change" : "Для чего это обновление?",
     "your_wallet" : "Ваш кошелёк"
   },
+  "all_regions" : "Все регионы",
   "appearance_accent_name" : {
     "andromeda" : "Андромеда",
     "arctic" : "Арктика",
@@ -140,8 +141,13 @@
       "refresh" : "Обновить",
       "share" : "Поделиться"
     },
+    "apps_all" : "Все",
+    "connected" : "Подключённые",
+    "connected_empty_text" : "Исследуйте приложения и сервисы в браузере Tonkeeper.",
+    "connected_empty_title" : "Подключённые приложения будут отображаться здесь",
     "connected_title" : "Подключённые",
     "empty_search" : "По вашему запросу ничего не найдено",
+    "explore" : "Витрина",
     "explore_all" : "Другие",
     "more_description" : "Маркеты, биржи и другие",
     "more_title" : "Исследуйте все сервисы",
@@ -179,6 +185,7 @@
   "check_words_success" : "Поздравляем! Ваш кошелёк готов",
   "check_words_title" : "Давайте проверим",
   "choose_country" : {
+    "auto" : "Автоматически",
     "cancel" : "Отмена",
     "empty_placeholder" : "По вашему запросу ничего не найдено",
     "search" : "Поиск",
@@ -235,6 +242,7 @@
   "confirmSendModal" : {
     "refund": "Возврат",
     "network_fee" : "Комиссия сети",
+    "will_be_paid_with_battery": "Будет оплачена батарейкой",
     "title" : "Подтвердить действие",
     "to_your_address" : "На ваш адрес",
     "transaction_type" : {
@@ -349,6 +357,17 @@
   "jettons_list_title" : "Токены",
   "jettons_manage_tokens" : "Настроить токены",
   "jetton_token" : "Токен",
+  "language" : {
+    "language_alert" : {
+      "cancel" : "Отмена",
+      "open" : "Настройки",
+      "title" : "Чтобы изменить язык приложения, перейдите в настройки устройства"
+    },
+    "list_item" : {
+      "title" : "Язык",
+      "value" : "Русский"
+    }
+  },
   "later" : "Позже",
   "legal_font_license" : "Шрифт Montserrat",
   "legal_header_title" : "Документы",
@@ -428,6 +447,7 @@
   "nft_unlink_domain_button" : "Связан с {{address}}",
   "nft_unnamed_collection" : "Коллекция без названия",
   "nft_view_in_explorer" : "Подробнее",
+  "nokyc" : "без KYC",
   "notifications" : {
     "alert" : {
       "cancel" : "Отмена",
@@ -510,6 +530,7 @@
   "receive_title" : "Получить %{currency}",
   "receive_ton_and_jettons" : "Получить TON и другие токены",
   "refresh_app" : "Перезапустить",
+  "region_nokyc" : "Нейтральные воды",
   "reminder_notifications_caption" : "Получайте уведомления при получении TON, токенов и NFT.",
   "reminder_notifications_enable_button" : "Включить уведомления",
   "reminder_notifications_later_button" : "Позже",
@@ -581,7 +602,8 @@
       "comment_required_text" : "Обязательно укажите memo или тег при отправке на биржу. ",
       "details_label" : "Детали",
       "details_max_balance_label" : "Отправка всего баланса %{currency}",
-      "title" : "Подтвердить действие"
+      "title" : "Подтвердить действие",
+      "will_be_paid_with_battery": "Будет оплачена батарейкой"
     },
     "done" : {
       "add_favorite" : "Добавить адрес в избранное",
@@ -1038,6 +1060,40 @@
   "all_regions": "Все регионы",
   "region_nokyc": "Нейтральные воды",
   "nokyc": "без KYC",
+  "battery": {
+    "screen_title": "Батарейка",
+    "settings": "Батарейка",
+    "ok": "OK",
+    "title": {
+      "empty": "Перезарядите свою батарейку для оплаты комиссий в сети",
+      "almost_empty": "Батарейка для оплаты комиссий почти разряжена",
+      "medium": "Батарейка для оплаты комиссий заряжена наполовину",
+      "full": "Батарейка для оплаты комиссий полностью заряжена"
+    },
+    "description": {
+      "empty": "Отправляйте токены и NFT, взаимодействуйте со стейкингом при нулевом балансе кошелька.",
+      "other": "У вас достаточно заряда для более чем {{cnt}} транзакций."
+    },
+    "promocode": {
+      "button": "Зарядить с помощью промокода",
+      "title": "Промокод",
+      "placeholder": "Промокод",
+      "apply": "Применить",
+      "success": "Ваша батарейка заряжена"
+    },
+    "packages": {
+      "title": "{{cnt}} транзакций за {{price}}",
+      "subtitle": {
+        "large": "Большой пакет",
+        "medium": "Средний пакет",
+        "small": "Малый пакет"
+      },
+      "disclaimer": "Указано примерное количество транзакций. Некоторые транзакции могут стоить дороже.",
+      "buy": "Купить",
+      "ok": "OK",
+      "refilled": "Ваша батарейка заряжена"
+    }
+  },
   "nft_transfer": {
     "title": "Передача NFT",
     "confirm": {

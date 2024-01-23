@@ -8,6 +8,9 @@ export type IconNames =
   | 'ic-lock-12'
   | 'ic-star-12'
   | 'ic-up-12'
+  | 'ic-almost-empty-battery-128'
+  | 'ic-empty-battery-128'
+  | 'ic-full-battery-128'
   | 'ic-lock-128'
   | 'ic-notification-128'
   | 'ic-appearance-16'
@@ -48,20 +51,24 @@ export type IconNames =
   | 'ic-key-24'
   | 'ic-reset-24'
   | 'ic-ton-disabled-24'
+  | 'ic-almost-empty-battery-28'
   | 'ic-appearance-28'
   | 'ic-arrow-down-28'
   | 'ic-arrow-up-28'
+  | 'ic-battery-28'
   | 'ic-bell-28'
   | 'ic-doc-28'
   | 'ic-done-28'
   | 'ic-donemark-28'
   | 'ic-donemark-thin-28'
   | 'ic-door-28'
+  | 'ic-empty-battery-28'
   | 'ic-envelope-28'
   | 'ic-exclamationmark-circle-28'
   | 'ic-explore-28'
   | 'ic-fire-28'
   | 'ic-flash-28'
+  | 'ic-full-battery-28'
   | 'ic-gear-28'
   | 'ic-globe-28'
   | 'ic-home-28'
@@ -133,6 +140,9 @@ export const AllIcons = [
   'ic-lock-12',
   'ic-star-12',
   'ic-up-12',
+  'ic-almost-empty-battery-128',
+  'ic-empty-battery-128',
+  'ic-full-battery-128',
   'ic-lock-128',
   'ic-notification-128',
   'ic-appearance-16',
@@ -173,20 +183,24 @@ export const AllIcons = [
   'ic-key-24',
   'ic-reset-24',
   'ic-ton-disabled-24',
+  'ic-almost-empty-battery-28',
   'ic-appearance-28',
   'ic-arrow-down-28',
   'ic-arrow-up-28',
+  'ic-battery-28',
   'ic-bell-28',
   'ic-doc-28',
   'ic-done-28',
   'ic-donemark-28',
   'ic-donemark-thin-28',
   'ic-door-28',
+  'ic-empty-battery-28',
   'ic-envelope-28',
   'ic-exclamationmark-circle-28',
   'ic-explore-28',
   'ic-fire-28',
   'ic-flash-28',
+  'ic-full-battery-28',
   'ic-gear-28',
   'ic-globe-28',
   'ic-home-28',
@@ -259,6 +273,9 @@ export const IconSizes = {
   'ic-lock-12': 12,
   'ic-star-12': 12,
   'ic-up-12': 12,
+  'ic-almost-empty-battery-128': 128,
+  'ic-empty-battery-128': 128,
+  'ic-full-battery-128': 128,
   'ic-lock-128': 128,
   'ic-notification-128': 128,
   'ic-appearance-16': 16,
@@ -299,20 +316,24 @@ export const IconSizes = {
   'ic-key-24': 24,
   'ic-reset-24': 24,
   'ic-ton-disabled-24': 24,
+  'ic-almost-empty-battery-28': 28,
   'ic-appearance-28': 28,
   'ic-arrow-down-28': 28,
   'ic-arrow-up-28': 28,
+  'ic-battery-28': 28,
   'ic-bell-28': 28,
   'ic-doc-28': 28,
   'ic-done-28': 28,
   'ic-donemark-28': 28,
   'ic-donemark-thin-28': 28,
   'ic-door-28': 28,
+  'ic-empty-battery-28': 28,
   'ic-envelope-28': 28,
   'ic-exclamationmark-circle-28': 28,
   'ic-explore-28': 28,
   'ic-fire-28': 28,
   'ic-flash-28': 28,
+  'ic-full-battery-28': 28,
   'ic-gear-28': 28,
   'ic-globe-28': 28,
   'ic-home-28': 28,

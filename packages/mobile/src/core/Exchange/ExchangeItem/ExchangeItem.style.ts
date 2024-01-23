@@ -29,14 +29,6 @@ const radius = (topRadius: boolean, bottomRadius: boolean) => {
   `;
 };
 
-export const Card = styled(Pressable).attrs(({ theme }) => ({
-  underlayColor: theme.colors.backgroundTertiary,
-}))<{ topRadius: boolean; bottomRadius: boolean }>`
-  overflow: hidden;
-  padding: ${hNs(16)}px ${ns(16)}px;
-  ${({ bottomRadius, topRadius }) => radius(topRadius, bottomRadius)}
-`;
-
 export const CardIn = styled.View`
   flex-direction: row;
   align-items: center;

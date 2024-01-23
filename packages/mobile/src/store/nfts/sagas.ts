@@ -149,6 +149,7 @@ export function* loadMarketplacesWorker() {
       },
     );
     const marketplaces: MarketplaceModel[] = resp?.data?.data?.marketplaces || [];
+
     yield put(nftsActions.setLoadedMarketplaces(marketplaces));
   } catch (e) {}
 }

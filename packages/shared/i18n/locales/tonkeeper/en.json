@@ -54,6 +54,7 @@
     "why_change" : "Why change?",
     "your_wallet" : "Your wallet"
   },
+  "all_regions" : "All Regions",
   "appearance_accent_name" : {
     "andromeda" : "Andromeda",
     "arctic" : "Arctic",
@@ -123,6 +124,40 @@
   },
   "auth_failed" : "Authentication failed",
   "balances_setup_wallet" : "Set up wallet",
+  "battery": {
+    "screen_title": "Battery",
+    "settings": "Battery",
+    "ok": "OK",
+    "title": {
+      "empty": "Recharge your battery for gas fees",
+      "almost_empty": "Battery for gas fees is almost empty",
+      "medium": "Battery for gas fees is half full",
+      "full": "Battery for gas fees is full"
+    },
+    "description": {
+      "empty": "Send tokens and NFTs, pay for staking actions with empty main balance.",
+      "other": "You have enough charge battery for more than %{cnt} transactions."
+    },
+    "promocode": {
+      "button": "Recharge by Promo Code",
+      "title": "Promo Code",
+      "placeholder": "Code",
+      "apply": "Apply",
+      "success": "Your battery is charged"
+    },
+    "packages": {
+      "title": "{{cnt}} transactions for {{price}}",
+      "subtitle": {
+        "large": "Large gas fees pack",
+        "medium": "Medium gas fees pack",
+        "small": "Small gas fees pack"
+      },
+      "disclaimer": "This is approximate transactions number. Some your transactions may cost more.",
+      "buy": "Buy",
+      "ok": "OK",
+      "refilled": "Your battery is charged"
+    }
+  },
   "browser" : {
     "about_dapps_caption" : "Explore apps and services where you can use Tonkeeper for sign-in and payments.",
     "about_dapps_learn_more" : "Learn more",
@@ -134,8 +169,13 @@
       "refresh" : "Refresh",
       "share" : "Share"
     },
+    "apps_all" : "All",
+    "connected" : "Connected",
+    "connected_empty_text" : "Explore apps and services in Tonkeeper browser.",
+    "connected_empty_title" : "Connected apps will be shown here",
     "connected_title" : "Connected",
     "empty_search" : "Your search returned no results",
+    "explore" : "Explore",
     "explore_all" : "Explore all",
     "more_description" : "Markets, exchanges and more",
     "more_title" : "Explore all services",
@@ -173,6 +213,7 @@
   "check_words_success" : "Congratulations! You’ve set up your wallet",
   "check_words_title" : "So, let’s check",
   "choose_country" : {
+    "auto" : "Auto",
     "cancel" : "Cancel",
     "empty_placeholder" : "Your search returned no results",
     "search" : "Search",
@@ -202,6 +243,7 @@
       "NGN" : "Nigerian Naira",
       "RUB" : "Russian Ruble",
       "THB" : "Thai Baht",
+      "TON" : "Toncoin",
       "TRY" : "Turkish Lira",
       "UAH" : "Ukrainian hryvnia",
       "USD" : "United States Dollar",
@@ -230,6 +272,7 @@
   "confirmSendModal" : {
     "refund": "Refund",
     "network_fee" : "Network fee",
+    "will_be_paid_with_battery": "Will be paid with Battery",
     "title" : "Confirm action",
     "to_your_address" : "To your address",
     "transaction_type" : {
@@ -338,6 +381,17 @@
   "jettons_manage_tokens" : "Manage tokens",
   "jettons_show_jettons" : "Show tokens in wallet",
   "jetton_token" : "Token",
+  "language" : {
+    "language_alert" : {
+      "cancel" : "Cancel",
+      "open" : "Settings",
+      "title" : "To change the language of the app, go to device Settings"
+    },
+    "list_item" : {
+      "title" : "Language",
+      "value" : "English"
+    }
+  },
   "later" : "Later",
   "legal_font_license" : "Montserrat font",
   "legal_header_title" : "Legal",
@@ -417,6 +471,7 @@
   "nft_unlink_domain_button" : "Linked with {{address}}",
   "nft_unnamed_collection" : "Unnamed collection",
   "nft_view_in_explorer" : "View in explorer",
+  "nokyc" : "no KYC",
   "notifications" : {
     "alert" : {
       "cancel" : "Cancel",
@@ -499,6 +554,7 @@
   "receive_title" : "Receive %{currency}",
   "receive_ton_and_jettons" : "Receive TON and other tokens",
   "refresh_app" : "Restart",
+  "region_nokyc" : "Neutral Waters",
   "reminder_notifications_caption" : "Get notifications when you receive TON, tokens and NFTs.",
   "reminder_notifications_enable_button" : "Enable notifications",
   "reminder_notifications_later_button" : "Later",
@@ -571,7 +627,8 @@
       "comment_required_text" : "You must include the note from the exchange for transfer. Without it your funds will be lost. ",
       "details_label" : "Details",
       "details_max_balance_label" : "Sending max. balance of %{currency}",
-      "title" : "Confirm action"
+      "title" : "Confirm action",
+      "will_be_paid_with_battery": "Will be paid with Battery"
     },
     "done" : {
       "add_favorite" : "Save address to favorites",
@@ -917,7 +974,8 @@
       },
       "comment" : "Comment",
       "insufficientFunds" : {
-        "rechargeWallet" : "Recharge wallet",
+        "rechargeBattery": "Recharge Battery",
+        "rechargeWallet" : "Buy %{currency}",
         "stakingFee" : "%{count} TON needed for transaction. Estimated fee %{fee} TON will be deducted, the rest will be refunded.",
         "stakingDeposit" : "Minimum balance for participate:\n%{amount} %{currency}\n",
         "title" : "Insufficient funds",

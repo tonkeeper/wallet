@@ -26,7 +26,7 @@ import {
   ONE_TON,
   TransactionService,
 } from '@tonkeeper/core';
-import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '@tonkeeper/shared/tonkeeper';
 import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import { Buffer } from 'buffer';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
@@ -38,6 +38,10 @@ import { Toast } from '$store';
 import axios from 'axios';
 import { useWallet } from '$hooks/useWallet';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
+import {
+  emulateWithBattery,
+  sendBocWithBattery,
+} from '@tonkeeper/shared/utils/blockchain';
 import {
   checkIsInsufficient,
   openInsufficientFundsModal,
@@ -101,6 +105,7 @@ export const NFTSend: FC<Props> = (props) => {
   const [consequences, setConsequences] = useState<MessageConsequences | null>(null);
   const [isPreparing, setPreparing] = useState(false);
   const [isSending, setSending] = useState(false);
+  const [isBattery, setIsBattery] = useState(false);
   const [isCommentEncrypted, setCommentEncrypted] = useState(false);
 
   const isBackDisabled = isSending || isPreparing;
@@ -148,12 +153,13 @@ export const NFTSend: FC<Props> = (props) => {
         secretKey: Buffer.alloc(64),
       });
 
-      const response = await tonapi.wallet.emulateMessageToWallet({
+      const response = await emulateWithBattery(
         boc,
-        params: [setBalanceForEmulation(toNano('2'))], // Emulate with higher balance to calculate fair amount to send
-      });
+        [setBalanceForEmulation(toNano('2'))], // Emulate with higher balance to calculate fair amount to send
+      );
 
-      setConsequences(response);
+      setConsequences(response.emulateResult);
+      setIsBattery(response.battery);
 
       Keyboard.dismiss();
       await delay(100);
@@ -253,7 +259,7 @@ export const NFTSend: FC<Props> = (props) => {
         : BigInt(Math.abs(consequences?.event.extra!)) + BASE_FORWARD_AMOUNT;
 
       const checkResult = await checkIsInsufficient(totalAmount.toString());
-      if (checkResult.insufficient) {
+      if (!isBattery && checkResult.insufficient) {
         openInsufficientFundsModal({
           totalAmount: totalAmount.toString(),
           balance: checkResult.balance,
@@ -263,6 +269,8 @@ export const NFTSend: FC<Props> = (props) => {
         throw new CanceledActionError();
       }
 
+      const excessesAccount = isBattery && (await tk.wallet.battery.getExcessesAccount());
+
       const nftTransferMessages = [
         internal({
           to: nftAddress,
@@ -270,7 +278,7 @@ export const NFTSend: FC<Props> = (props) => {
           body: ContractService.createNftTransferBody({
             queryId: Date.now(),
             newOwnerAddress: recipient!.address,
-            excessesAddress: tk.wallet.address.ton.raw,
+            excessesAddress: excessesAccount || tk.wallet.address.ton.raw,
             forwardBody: commentValue,
           }),
           bounce: true,
@@ -289,12 +297,7 @@ export const NFTSend: FC<Props> = (props) => {
         secretKey: Buffer.from(privateKey),
       });
 
-      await tonapi.blockchain.sendBlockchainMessage(
-        {
-          boc,
-        },
-        { format: 'text' },
-      );
+      await sendBocWithBattery(boc);
     } catch (e) {
       throw e;
     } finally {
@@ -303,6 +306,7 @@ export const NFTSend: FC<Props> = (props) => {
   }, [
     comment,
     consequences?.event.extra,
+    isBattery,
     isCommentEncrypted,
     nftAddress,
     recipient,
@@ -354,6 +358,7 @@ export const NFTSend: FC<Props> = (props) => {
         <StepViewItem id={NFTSendSteps.CONFIRM}>
           {(stepProps) => (
             <ConfirmStep
+              isBattery={isBattery}
               isCommentEncrypted={isCommentEncrypted}
               recipient={recipient}
               recipientAccountInfo={recipientAccountInfo}
