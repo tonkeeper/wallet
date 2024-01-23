@@ -15,7 +15,7 @@ import {
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { formatter } from '$utils/formatter';
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
 import {
   ActionAmountType,
@@ -34,10 +34,6 @@ import { fiatCurrencySelector } from '$store/main';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
 import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
 import { Buffer } from 'buffer';
-import {
-  emulateWithBattery,
-  sendBocWithBattery,
-} from '@tonkeeper/shared/utils/blockchain';
 import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
@@ -85,7 +81,9 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       secretKey: Buffer.from(privateKey),
     });
 
-    await sendBocWithBattery(boc);
+    await tonapi.blockchain.sendBlockchainMessage({
+      boc,
+    });
 
     if (onSuccess) {
       trackEvent(Events.SendSuccess, { from: SendAnalyticsFrom.SignRaw });
@@ -160,7 +158,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
         }),
       };
     }
-  }, [consequences]);
+  }, [consequences, fiatCurrency, getTokenPrice]);
 
   const amountToFiat = (action: AnyActionItem) => {
     if (action.amount) {
@@ -266,9 +264,9 @@ export const openSignRawModal = async (
         seqno: await getWalletSeqno(),
         secretKey: Buffer.alloc(64),
       });
-      const { emulateResult, battery } = await emulateWithBattery(boc);
-      consequences = emulateResult;
-      isBattery = battery;
+      consequences = await tonapi.wallet.emulateMessageToWallet({
+        boc,
+      });
 
       Toast.hide();
     } catch (err) {
