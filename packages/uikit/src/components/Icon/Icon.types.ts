@@ -95,6 +95,7 @@ export type IconNames =
   | 'ic-trash-bin-28'
   | 'ic-tray-arrow-down-28'
   | 'ic-tray-arrow-up-28'
+  | 'ic-usd-28'
   | 'ic-viewfinder-28'
   | 'ic-wallet-28'
   | 'ic-warning-28'
@@ -219,6 +220,7 @@ export const AllIcons = [
   'ic-trash-bin-28',
   'ic-tray-arrow-down-28',
   'ic-tray-arrow-up-28',
+  'ic-usd-28',
   'ic-viewfinder-28',
   'ic-wallet-28',
   'ic-warning-28',
@@ -344,6 +346,7 @@ export const IconSizes = {
   'ic-trash-bin-28': 28,
   'ic-tray-arrow-down-28': 28,
   'ic-tray-arrow-up-28': 28,
+  'ic-usd-28': 28,
   'ic-viewfinder-28': 28,
   'ic-wallet-28': 28,
   'ic-warning-28': 28,

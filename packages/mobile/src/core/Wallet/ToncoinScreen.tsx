@@ -2,7 +2,7 @@ import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as S from './Wallet.style';
 import { useWalletInfo } from '$hooks/useWalletInfo';
-import { Button, PopupMenu, PopupMenuItem, IconButton, SwapIcon } from '$uikit';
+import { Button, PopupMenu, PopupMenuItem } from '$uikit';
 import { MainStackRouteNames, openDAppBrowser, openSend } from '$navigation';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { walletActions, walletWalletSelector } from '$store/wallet';
@@ -21,7 +21,7 @@ import { formatter } from '$utils/formatter';
 import { Toast } from '$store';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { Icon, Screen, TonIcon } from '@tonkeeper/uikit';
+import { Icon, Screen, TonIcon, IconButton } from '@tonkeeper/uikit';
 
 import { ActivityList } from '@tonkeeper/shared/components';
 import { useTonActivityList } from '@tonkeeper/shared/query/hooks/useTonActivityList';
@@ -213,13 +213,13 @@ const HeaderList = memo(() => {
           />
           <IconButton
             onPress={handleOpenExchange}
-            iconName="ic-plus-28"
+            iconName="ic-usd-28"
             title={t('wallet.buy_btn')}
           />
           {!flags.disable_swap && (
             <IconButton
               onPress={handlePressSwap}
-              icon={<SwapIcon />}
+              iconName="ic-swap-horizontal-28"
               title={t('wallet.swap_btn')}
             />
           )}

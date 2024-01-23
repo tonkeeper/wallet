@@ -963,7 +963,7 @@
   "wallet_about" : "About",
   "wallet_buy" : "Buy",
   "wallet" : {
-    "buy_btn" : "Buy TON",
+    "buy_btn" : "Buy & Sell",
     "collectibles_tab_lable" : "Collectibles",
     "edit_tokens_btn" : "Edit",
     "nft_tab_lable" : "Collectibles",

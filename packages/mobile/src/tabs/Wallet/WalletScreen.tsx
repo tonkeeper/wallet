@@ -180,7 +180,7 @@ export const WalletScreen = memo(() => {
           />
           <IconButton
             onPress={handlePressBuy}
-            iconName="ic-plus-28"
+            iconName="ic-usd-28"
             title={t('wallet.buy_btn')}
           />
           {!flags.disable_swap && (
