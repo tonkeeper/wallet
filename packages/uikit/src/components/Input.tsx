@@ -327,7 +327,7 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
           {withPasteButton && (
             <TouchableOpacity style={styles.rightButton} onPress={handlePastePress}>
               <Text type="label1" color="textAccent">
-                {pasteButtonTitle ?? 'Paste'}
+                {pasteButtonTitle ?? t('paste')}
               </Text>
             </TouchableOpacity>
           )}
