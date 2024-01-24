@@ -451,6 +451,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       <StepView
         ref={stepViewRef}
         backDisabled={isBackDisabled}
+        initialStepId={initialStepId}
         onChangeStep={handleChangeStep}
         useBackHandler
         swipeBackEnabled={!isBackDisabled}
