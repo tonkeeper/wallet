@@ -448,7 +448,11 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
     yield delay(100);
 
     if (onNext) {
-      if ((tokenType !== TokenType.TON || !isSendAll) && onInsufficientFunds) {
+      if (
+        (tokenType !== TokenType.TON || !isSendAll) &&
+        !isBattery &&
+        onInsufficientFunds
+      ) {
         const amountNano =
           tokenType === TokenType.Jetton
             ? new BigNumber(toNano(fee)).plus(BASE_FORWARD_AMOUNT.toString()).toString()

@@ -26,7 +26,7 @@ import {
   ONE_TON,
   TransactionService,
 } from '@tonkeeper/core';
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
 import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import { Buffer } from 'buffer';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
