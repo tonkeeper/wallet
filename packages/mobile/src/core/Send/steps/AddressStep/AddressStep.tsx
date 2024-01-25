@@ -49,7 +49,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     setRecipient,
     changeBlockchain,
     active,
-    enableEncryption = false,
+    enableEncryption = true,
     setRecipientAccountInfo,
     setAmount,
     setComment,
