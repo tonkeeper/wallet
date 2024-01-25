@@ -271,19 +271,23 @@ export const openSignRawModal = async (
         boc,
       });
 
+      if (!isBattery) {
+        const totalAmount = calculateMessageTransferAmount(params.messages);
+        const checkResult = await checkIsInsufficient(totalAmount);
+        if (checkResult.insufficient) {
+          Toast.hide();
+          onDismiss?.();
+          return openInsufficientFundsModal({
+            totalAmount,
+            balance: checkResult.balance,
+          });
+        }
+      }
+
       Toast.hide();
     } catch (err) {
       console.log(err);
       debugLog('[SignRaw]: estimateTx error', JSON.stringify(err));
-
-      // in case of error we should check current TON balance and show "insufficient funds" modal
-      const totalAmount = calculateMessageTransferAmount(params.messages);
-      const checkResult = await checkIsInsufficient(totalAmount);
-      if (checkResult.insufficient) {
-        Toast.hide();
-        onDismiss?.();
-        return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
-      }
 
       const tonapiError = err?.response?.data?.error;
       const errorMessage = tonapiError ?? `no response; status code: ${err.status};`;
