@@ -145,6 +145,7 @@ export const NFTSend: FC<Props> = (props) => {
       const contract = ContractService.getWalletContract(
         contractVersionsMap[wallet.ton.version ?? 'v4R2'],
         Buffer.from(await wallet.ton.getTonPublicKey()),
+        wallet.ton.workchain,
       );
 
       const boc = TransactionService.createTransfer(contract, {
@@ -288,6 +289,7 @@ export const NFTSend: FC<Props> = (props) => {
       const contract = ContractService.getWalletContract(
         contractVersionsMap[wallet.ton.version ?? 'v4R2'],
         Buffer.from(await wallet.ton.getTonPublicKey()),
+        vault.workchain,
       );
 
       const boc = TransactionService.createTransfer(contract, {

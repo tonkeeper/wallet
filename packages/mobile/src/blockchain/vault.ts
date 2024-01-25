@@ -209,6 +209,10 @@ export class Vault {
     return null;
   }
 
+  public get workchain() {
+    return this.info.workchain ?? 0;
+  }
+
   isMasterChain() {
     return this.info.workchain === -1;
   }

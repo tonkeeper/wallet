@@ -163,6 +163,7 @@ export class Tonkeeper {
     const contract = ContractService.getWalletContract(
       WalletVersion.v4R2,
       Buffer.from(keyPair.publicKey),
+      0,
     );
     const stateInitCell = beginCell().store(storeStateInit(contract.init)).endCell();
     const rawAddress = contract.address.toRawString();
