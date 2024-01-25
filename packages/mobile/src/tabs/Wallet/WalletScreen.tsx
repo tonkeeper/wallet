@@ -150,7 +150,7 @@ export const WalletScreen = memo(() => {
             <TouchableOpacity
               hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
               style={{ zIndex: 3, marginVertical: 8 }}
-              onPress={() => copyText(tk.wallet.address.ton.friendly)}
+              onPress={copyText(tk.wallet.address.ton.friendly)}
               activeOpacity={0.6}
             >
               <Text color="textSecondary" type="body2">
