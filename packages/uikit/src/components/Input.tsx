@@ -32,6 +32,7 @@ import {
   useMemo,
   useRef,
 } from 'react';
+import { t } from '@tonkeeper/shared/i18n';
 
 type FocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 
