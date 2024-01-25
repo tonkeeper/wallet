@@ -14,14 +14,14 @@ import {
   Decimals,
   getServerConfig,
 } from '$shared/constants';
-import { t } from '@tonkeeper/shared/i18n';
+import { i18n, t } from '@tonkeeper/shared/i18n';
 import { useNavigation } from '@tonkeeper/router';
 import { Chart } from '$shared/components/Chart/new/Chart';
 import { formatter } from '$utils/formatter';
 import { Toast } from '$store';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { Icon, Screen, TonIcon, IconButton } from '@tonkeeper/uikit';
+import { Icon, Screen, TonIcon, IconButton, IconButtonList } from '@tonkeeper/uikit';
 
 import { ActivityList } from '@tonkeeper/shared/components';
 import { useTonActivityList } from '@tonkeeper/shared/query/hooks/useTonActivityList';
@@ -201,28 +201,30 @@ const HeaderList = memo(() => {
         </S.FlexRow>
         <S.Divider style={{ marginBottom: ns(16) }} />
         <S.ActionsContainer>
-          <IconButton
-            onPress={handleSend}
-            iconName="ic-arrow-up-28"
-            title={t('wallet.send_btn')}
-          />
-          <IconButton
-            onPress={handleReceive}
-            iconName="ic-arrow-down-28"
-            title={t('wallet.receive_btn')}
-          />
-          <IconButton
-            onPress={handleOpenExchange}
-            iconName="ic-usd-28"
-            title={t('wallet.buy_btn')}
-          />
-          {!flags.disable_swap && (
+          <IconButtonList horizontalIndent={i18n.locale === 'ru' ? 'large' : 'small'}>
             <IconButton
-              onPress={handlePressSwap}
-              iconName="ic-swap-horizontal-28"
-              title={t('wallet.swap_btn')}
+              onPress={handleSend}
+              iconName="ic-arrow-up-28"
+              title={t('wallet.send_btn')}
             />
-          )}
+            <IconButton
+              onPress={handleReceive}
+              iconName="ic-arrow-down-28"
+              title={t('wallet.receive_btn')}
+            />
+            <IconButton
+              onPress={handleOpenExchange}
+              iconName="ic-usd-28"
+              title={t('wallet.buy_btn')}
+            />
+            {!flags.disable_swap && (
+              <IconButton
+                onPress={handlePressSwap}
+                iconName="ic-swap-horizontal-28"
+                title={t('wallet.swap_btn')}
+              />
+            )}
+          </IconButtonList>
         </S.ActionsContainer>
         <S.Divider />
       </S.TokenInfoWrap>

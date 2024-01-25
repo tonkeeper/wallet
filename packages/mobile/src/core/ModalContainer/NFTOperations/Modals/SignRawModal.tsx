@@ -81,9 +81,12 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       secretKey: Buffer.from(privateKey),
     });
 
-    await tonapi.blockchain.sendBlockchainMessage({
-      boc,
-    });
+    await tonapi.blockchain.sendBlockchainMessage(
+      {
+        boc,
+      },
+      { format: 'text' },
+    );
 
     if (onSuccess) {
       trackEvent(Events.SendSuccess, { from: SendAnalyticsFrom.SignRaw });

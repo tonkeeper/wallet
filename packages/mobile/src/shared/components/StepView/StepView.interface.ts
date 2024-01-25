@@ -13,7 +13,7 @@ export interface StepViewProps {
   children: (ReactElement<StepViewItemProps> | null)[];
   backDisabled?: boolean;
   useBackHandler?: boolean;
-  initialStepId?: string;
+  initialStepId?: number;
   autoHeight?: boolean;
   swipeEnabled?: boolean;
   swipeBackEnabled?: boolean;
