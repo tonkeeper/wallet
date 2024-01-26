@@ -1,13 +1,14 @@
 import React, { memo, useMemo } from 'react';
 import { Steezy } from '$styles';
-import { Spacer, SText, View, List } from '$uikit';
+import { SText, View } from '$uikit';
 import { Icon } from '@tonkeeper/uikit';
 import { ViewStyle } from 'react-native';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { ONE_YEAR_MILISEC, format, getCountOfDays, getLocale } from '$utils/date';
 import { t } from '$translation';
 import { openRenewAllDomainModal } from '../RenewAllDomainModal';
-import { maskifyAddress, maskifyDomain } from '$utils/address';
+import { maskifyDomain } from '$utils/address';
+import { List } from '@tonkeeper/uikit';
 
 interface ApprovalCellProps {
   withoutSpacer?: boolean;
