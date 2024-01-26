@@ -50,11 +50,11 @@ export interface CreateJettonTransferBodyParams {
   queryId?: number;
 }
 
-const workchain = 0;
 export class ContractService {
   static getWalletContract(
     version: WalletVersion,
     publicKey: Buffer,
+    workchain: number,
     additionalParams?: LockupContractV1AdditionalParams,
   ) {
     switch (version) {

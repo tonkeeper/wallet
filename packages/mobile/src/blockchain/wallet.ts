@@ -177,6 +177,10 @@ export class TonWallet {
     return this.vault.getVersion();
   }
 
+  get workchain() {
+    return this.vault.workchain;
+  }
+
   isV4() {
     return this.vault.getVersion() === 'v4R2';
   }
@@ -376,6 +380,7 @@ export class TonWallet {
     const contract = ContractService.getWalletContract(
       contractVersionsMap[version ?? 'v4R2'],
       Buffer.from(vault.tonPublicKey),
+      vault.workchain,
       {
         allowedDestinations: lockupConfig?.allowed_destinations,
       },
@@ -544,6 +549,7 @@ export class TonWallet {
     const contract = ContractService.getWalletContract(
       contractVersionsMap[walletVersion ?? version ?? 'v4R2'],
       Buffer.from(vault.tonPublicKey),
+      vault.workchain,
       {
         lockupPubKey: lockupConfig?.config_pubkey,
         allowedDestinations: lockupConfig?.allowed_destinations,

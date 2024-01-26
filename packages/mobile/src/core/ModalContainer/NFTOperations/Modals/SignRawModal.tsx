@@ -73,6 +73,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     const contract = ContractService.getWalletContract(
       contractVersionsMap[vault.getVersion() ?? 'v4R2'],
       Buffer.from(vault.tonPublicKey),
+      vault.workchain,
     );
     const boc = TransactionService.createTransfer(contract, {
       messages: TransactionService.parseSignRawMessages(params.messages),
@@ -257,6 +258,7 @@ export const openSignRawModal = async (
     const contract = ContractService.getWalletContract(
       contractVersionsMap[wallet.ton.version],
       Buffer.from(wallet.ton.vault.tonPublicKey),
+      wallet.ton.vault.workchain,
     );
 
     let consequences: MessageConsequences | null = null;
