@@ -68,17 +68,6 @@ export const DevConfigScreen = memo(() => {
             }
           />
           <List.Item
-            title="Disable battery IAPs"
-            onPress={handleBooleanSwitch('disable_battery_iap_module')}
-            rightContent={
-              <Switch
-                trackColor={{ true: theme.accentBlue }}
-                value={config.get('disable_battery_iap_module')}
-                onChange={handleBooleanSwitch('disable_battery_iap_module')}
-              />
-            }
-          />
-          <List.Item
             title="Disable send using battery"
             onPress={handleBooleanSwitch('disable_battery_send')}
             rightContent={
