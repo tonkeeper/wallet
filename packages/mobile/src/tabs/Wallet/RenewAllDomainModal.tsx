@@ -4,7 +4,7 @@ import { navigate } from '$navigation/imperative';
 import { ExpiringDomainItem } from '$store/zustand/domains/types';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { t } from '$translation';
-import { Button, List, NavBar, SText } from '$uikit';
+import { Button, NavBar, SText } from '$uikit';
 import { ONE_YEAR_MILISEC, delay, format, getCountOfDays, getLocale, ns } from '$utils';
 import { memo, useCallback, useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
@@ -17,6 +17,7 @@ import { BottomButtonWrap, BottomButtonWrapHelper } from '$shared/components';
 import { openСonfirmRenewAllDomains } from './components/СonfirmRenewAllDomains';
 import { CryptoCurrencies } from '$shared/constants';
 import { Address } from '@tonkeeper/shared/Address';
+import { List } from '@tonkeeper/uikit';
 
 export const RenewAllDomainModal = memo(() => {
   const safeArea = useSafeAreaInsets();
