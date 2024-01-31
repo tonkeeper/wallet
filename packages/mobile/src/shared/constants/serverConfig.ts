@@ -58,7 +58,7 @@ export function setServerConfig(data: any, isTestnet: boolean) {
     tonapiV2Endpoint: data.tonapiV2Endpoint || 'https://tonapi.io',
     tonApiKey: data.tonApiKey,
     tonApiV2Key: data.tonApiV2Key,
-    subscriptionsHost: data.subscriptionsHost || 'https://api.tonkeeper.com',
+    subscriptionsHost: 'https://subscriptions-v1-staging.tonkeeper.com',
     tonapiMainnetHost: data.tonapiMainnetHost || 'https://tonapi.io',
     tonapiTestnetHost: data.tonapiTestnetHost || 'https://testnet.tonapi.io',
     cachedMediaEndpoint: data.cachedMediaEndpoint,
