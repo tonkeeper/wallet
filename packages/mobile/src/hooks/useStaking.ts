@@ -1,5 +1,6 @@
 import { useStakingStore } from '$store';
 import { walletSelector, walletWalletSelector } from '$store/wallet';
+import { useNetInfo } from '@react-native-community/netinfo';
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -9,6 +10,9 @@ export const useStaking = () => {
   const address = walletStore?.address?.ton;
 
   const prevAddress = useRef(address);
+
+  const { isConnected } = useNetInfo();
+  const prevIsConnected = useRef(isConnected);
 
   const hasWallet = !!wallet;
 
@@ -22,7 +26,7 @@ export const useStaking = () => {
     useStakingStore.getState().actions.fetchPools(true);
 
     const timerId = setInterval(() => {
-      useStakingStore.getState().actions.fetchPools(true);
+      useStakingStore.getState().actions.fetchPools(true, false);
     }, 10000);
 
     return () => {
@@ -31,11 +35,14 @@ export const useStaking = () => {
   }, [hasWallet]);
 
   useEffect(() => {
-    if (address !== prevAddress.current) {
-      useStakingStore.getState().actions.reset();
+    if (
+      address !== prevAddress.current ||
+      (isConnected && prevIsConnected.current === false)
+    ) {
       useStakingStore.getState().actions.fetchPools();
     }
 
     prevAddress.current = address;
-  }, [address]);
+    prevIsConnected.current = isConnected;
+  }, [address, isConnected]);
 };

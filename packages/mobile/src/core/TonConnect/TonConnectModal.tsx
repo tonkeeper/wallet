@@ -38,18 +38,19 @@ import { WalletApi, Configuration } from '@tonkeeper/core/src/legacy';
 import * as SecureStore from 'expo-secure-store';
 import { Address } from '@tonkeeper/core';
 import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
+import { replaceString } from '@tonkeeper/shared/utils/replaceString';
 
 export const TonConnectModal = (props: TonConnectModalProps) => {
   const animation = useTonConnectAnimation();
   const unlockVault = useUnlockVault();
   const theme = useTheme();
   const nav = useNavigation();
-  const [withNotifications, setWithNotifications] = React.useState(true);
+  const showNotifications = useNotificationsStore(shouldShowNotifications);
+  const [withNotifications, setWithNotifications] = React.useState(showNotifications);
 
   const { version } = useSelector(walletSelector);
   const { isTestnet } = useSelector(mainSelector);
   const maskedAddress = Address.toShort(animation.address);
-  const showNotifications = useNotificationsStore(shouldShowNotifications);
 
   const handleSwitchNotifications = useCallback(() => {
     triggerSelection();
@@ -322,11 +323,15 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
           <S.Content>
             <S.TitleWrapper>
               <Text variant="h2" textAlign="center">
-                {t('ton_login_title', { name: appName })}
+                {replaceString(t('ton_login_title'), '%domain', () => (
+                  <Text key={domain} variant="h2" color="accentBlue">
+                    {domain}
+                  </Text>
+                ))}
               </Text>
             </S.TitleWrapper>
             <Text color="foregroundSecondary" variant="body1" textAlign="center">
-              {t('ton_login_caption', { name: domain })}
+              {t('ton_login_caption', { name: appName })}
               <Text color="foregroundTertiary" variant="body1" textAlign="center">
                 {maskedAddress}{' '}
               </Text>

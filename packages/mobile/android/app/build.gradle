@@ -91,9 +91,19 @@ android {
         applicationId "com.ton_keeper"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 392
-        versionName "3.4.4"
+        versionCode 433
+        versionName "3.6"
         missingDimensionStrategy 'react-native-camera', 'general'
+        missingDimensionStrategy 'store', 'play'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget=11
     }
 
     signingConfigs {
@@ -103,6 +113,11 @@ android {
                 storePassword TONKEEPER_UPLOAD_STORE_PASSWORD
                 keyAlias TONKEEPER_UPLOAD_KEY_ALIAS
                 keyPassword TONKEEPER_UPLOAD_KEY_PASSWORD
+            } else if (project.hasProperty('android.injected.signing.store.file')) {
+                storeFile file(project.property('android.injected.signing.store.file'))
+                storePassword project.property('android.injected.signing.store.password')
+                keyAlias project.property('android.injected.signing.key.alias')
+                keyPassword project.property('android.injected.signing.key.password')
             }
         }
         debug {

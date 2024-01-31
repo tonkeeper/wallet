@@ -1,6 +1,17 @@
 import { openActivityActionModal } from '../../modals/ActivityActionModal';
-import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
-import { ListItemContent, Steezy } from '@tonkeeper/uikit';
+import { ActionStatusEnum, JettonVerificationType } from '@tonkeeper/core/src/TonAPI';
+import {
+  Icon,
+  IconNames,
+  List,
+  ListItemContent,
+  ListItemContentText,
+  Loader,
+  Picture,
+  Steezy,
+  Text,
+  View,
+} from '@tonkeeper/uikit';
 import { formatTransactionTime } from '../../utils/date';
 import { findSenderAccount } from './findSenderAccount';
 import { memo, useCallback, useMemo } from 'react';
@@ -12,20 +23,12 @@ import {
   ActionType,
   AmountFormatter,
   AnyActionItem,
+  isJettonTransferAction,
 } from '@tonkeeper/core';
-import { 
-  ListItemContentText,
-  IconNames,
-  Picture,
-  Loader,
-  Icon,
-  List,
-  Text,
-  View,
-} from '@tonkeeper/uikit';
 
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 import { useFlags } from '@tonkeeper/mobile/src/utils/flags';
+import { config } from '../../config';
 
 export interface ActionListItemProps<TActionType extends ActionType = ActionType> {
   onPress?: () => void;
@@ -58,6 +61,11 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
     isSimplePreview,
   } = props;
   const { formatNano } = useHideableFormatter();
+
+  const isScam =
+    action.event.is_scam ||
+    (isJettonTransferAction(action) &&
+      action.payload.jetton.verification === JettonVerificationType.Blacklist);
 
   const flags = useFlags(['address_style_nobounce']);
 
@@ -120,7 +128,7 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
   }, [action.destination, props.title]);
 
   const subtitle = useMemo(() => {
-    if (action.event.is_scam) {
+    if (isScam) {
       return t('transactions.spam');
     } else if (props.subtitle !== undefined) {
       return props.subtitle;
@@ -129,20 +137,16 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
         return senderAccount.name;
       } else {
         return Address.parse(senderAccount.address, {
-          bounceable,
+          bounceable: !senderAccount.is_wallet,
         }).toShort();
       }
     } else {
       const account = action.simple_preview.accounts[0];
-      return account ? Address.parse(account.address).toShort() : '-';
+      return account
+        ? Address.parse(account.address, { bounceable: !account.is_wallet }).toShort()
+        : '-';
     }
-  }, [
-    action.simple_preview,
-    action.event.is_scam,
-    senderAccount,
-    props.subtitle,
-    bounceable,
-  ]);
+  }, [action.simple_preview, isScam, senderAccount, props.subtitle, bounceable]);
 
   const value = useMemo(() => {
     if (props.value !== undefined) {
@@ -179,7 +183,7 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
 
   const valueStyle = [
     (action.destination === 'in' || greenValue) && styles.receiveValue,
-    action.event.is_scam && styles.scamAmountText,
+    isScam && styles.scamAmountText,
     action.type === ActionType.WithdrawStakeRequest && styles.withdrawalRequest,
   ];
 
@@ -211,12 +215,19 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
       title={title}
       value={value}
     >
-      {!action.event.is_scam && children}
+      {!isScam && children}
       {isSimplePreview && !!action.simple_preview.description && (
         <ListItemContentText text={action.simple_preview.description} />
       )}
+      {!config.get('disable_show_unverified_token') &&
+        isJettonTransferAction(action) &&
+        action.payload.jetton.verification === JettonVerificationType.None && (
+          <Text type="body2" color="accentOrange" style={styles.warn.static}>
+            {t('approval.unverified_token')}
+          </Text>
+        )}
       {isFailed && !ignoreFailed && (
-        <Text type="body2" color="accentOrange" style={styles.failedText.static}>
+        <Text type="body2" color="accentOrange" style={styles.warn.static}>
           {t('transactions.failed')}
         </Text>
       )}
@@ -242,7 +253,7 @@ const styles = Steezy.create(({ colors }) => ({
     marginTop: -3,
     marginBottom: -1.5,
   },
-  failedText: {
+  warn: {
     marginTop: 8,
   },
   scamAmountText: {

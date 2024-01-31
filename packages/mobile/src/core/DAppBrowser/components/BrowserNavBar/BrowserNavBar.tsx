@@ -63,9 +63,11 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
 
   const domain = getDomainFromURL(url);
 
-  const shortAddress = Address.parse(walletAddress, {
-    bounceable: !getFlag('address_style_nobounce'),
-  }).toShort();
+  const shortAddress =
+    walletAddress &&
+    Address.parse(walletAddress, {
+      bounceable: !getFlag('address_style_nobounce'),
+    }).toShort();
 
   const popupItems = useMemo(() => {
     const items: PopupAction[] = [

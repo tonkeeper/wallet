@@ -2,7 +2,7 @@ import { useSuggestedAddresses } from '../../hooks/useSuggestedAddresses';
 import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
 import { Ton } from '$libs/Ton';
 import { Button, FormItem } from '$uikit';
-import { asyncDebounce, formatInputAmount, parseTonLink } from '$utils';
+import { asyncDebounce, formatInputAmount, isTransferOp, parseTonLink } from '$utils';
 import React, {
   FC,
   memo,
@@ -35,8 +35,6 @@ import { AddressInput, AddressSuggests, CommentInput } from './components';
 import { TextInput } from 'react-native-gesture-handler';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
-import { seeIfValidTronAddress } from '@tonkeeper/core/src/utils/tronUtils';
-import { CryptoCurrencies } from '$shared/constants';
 
 const TonWeb = require('tonweb');
 
@@ -51,6 +49,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     setRecipient,
     changeBlockchain,
     active,
+    enableEncryption = true,
     setRecipientAccountInfo,
     setAmount,
     setComment,
@@ -62,13 +61,9 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
 
   const isCommentRequired = !!recipientAccountInfo?.memoRequired;
 
-  /*
-    TODO: uncomment when feature will be completely ready
-    const isAbleToEncryptComment = recipientAccountInfo
-    ? !isCommentRequired && !!recipientAccountInfo.publicKey
-    : true;
-  */
-  const isAbleToEncryptComment = false;
+  const isAbleToEncryptComment = recipientAccountInfo
+    ? enableEncryption && !isCommentRequired && !!recipientAccountInfo.publicKey
+    : enableEncryption;
 
   const isReadyToContinue = !!recipient && (!isCommentRequired || comment.length);
 
@@ -138,12 +133,12 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           setDnsLoading(false);
         }
 
-        if (
-          link.match &&
-          link.operation === 'transfer' &&
-          Address.isValid(link.address)
-        ) {
-          if (link.query.amount && !Number.isNaN(Number(link.query.amount))) {
+        if (link.match && isTransferOp(link.operation) && Address.isValid(link.address)) {
+          if (
+            setAmount &&
+            link.query.amount &&
+            !Number.isNaN(Number(link.query.amount))
+          ) {
             const parsedAmount = Ton.fromNano(new TonWeb.utils.BN(link.query.amount));
             setAmount({
               value: formatInputAmount(parsedAmount, decimals, true),
@@ -217,13 +212,13 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           }
         }
 
-        if (seeIfValidTronAddress(value)) {
-          console.log('tron');
-
+        /* TODO: revise feature and fix
+        if (seeIfValidTronAddress(value) && changeBlockchain) {
           setRecipient({ address: value, blockchain: 'tron' });
           changeBlockchain(CryptoCurrencies.Usdt);
           return true;
         }
+        */
 
         setRecipient(null);
 

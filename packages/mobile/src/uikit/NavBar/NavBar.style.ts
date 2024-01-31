@@ -3,8 +3,8 @@ import Animated from 'react-native-reanimated';
 
 import styled, { css } from '$styled';
 import { ns, hNs } from '$utils';
-import { IsTablet, NavBarHeight, Opacity, TabletMaxWidth } from '$shared/constants';
-import { Text } from '$uikit/Text/Text';
+import { NavBarHeight, Opacity } from '$shared/constants';
+import { Text } from '@tonkeeper/uikit';
 
 export const Wrap = styled.View<{ isTransparent: boolean; isBackground: boolean }>`
   z-index: 10;
@@ -89,15 +89,4 @@ export const CenterContent = styled(Animated.View)`
   flex: 1;
   z-index: 1;
   margin: 0 ${hNs(NavBarHeight - 24)}px;
-`;
-
-export const Title = styled(Text).attrs(() => ({
-  textAlign: 'center',
-}))``;
-
-export const Subtitle = styled(Text).attrs(() => ({
-  textAlign: 'center',
-}))`
-  position: absolute;
-  width: 100%;
 `;

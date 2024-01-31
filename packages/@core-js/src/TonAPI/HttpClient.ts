@@ -134,6 +134,7 @@ export class HttpClient {
     type,
     cancelToken,
     method,
+    headers,
   }: FullRequestParams): Promise<T> => {
     const queryString = query && this.toQueryString(query);
     const payloadFormatter = this.contentFormatters[type || ContentType.Json];
@@ -154,6 +155,7 @@ export class HttpClient {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
+          ...(headers ?? {}),
         },
         signal: cancelToken ? this.createAbortSignal(cancelToken) : null,
         body:

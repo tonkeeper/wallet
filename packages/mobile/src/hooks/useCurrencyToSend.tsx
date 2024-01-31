@@ -12,24 +12,25 @@ import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { useGetTokenPrice } from './useTokenPrice';
 import { JettonIcon, TonIcon } from '@tonkeeper/uikit';
+import { TokenType } from '$core/Send/Send.interface';
+import { useTonInscriptions } from '@tonkeeper/shared/query/hooks/useTonInscriptions';
 
 export function useCurrencyToSend(
   currency: CryptoCurrency | string,
-  isJetton?: boolean,
-  isUSDT?: boolean,
+  tokenType: TokenType = TokenType.TON,
 ) {
   const { balances } = useSelector(walletSelector);
   const { jettonBalances } = useSelector(jettonsSelector);
   const tronBalances = useTronBalances();
-
+  const inscriptions = useTonInscriptions();
   const stakingPools = useStakingStore((s) => s.pools, shallow);
 
   const jetton = useMemo(() => {
-    return (isJetton &&
+    return (tokenType === TokenType.Jetton &&
       jettonBalances.find((item) => item.jettonAddress === currency)) as
       | JettonBalanceModel
       | undefined;
-  }, [currency, isJetton, jettonBalances]);
+  }, [currency, tokenType, jettonBalances]);
 
   const liquidJettonPool = useMemo(
     () =>
@@ -43,16 +44,14 @@ export function useCurrencyToSend(
   );
 
   const decimals = useMemo(() => {
-    if (isUSDT) {
-      return;
-    }
-
-    return isJetton ? jetton?.metadata?.decimals || 0 : Decimals[currency];
-  }, [currency, isJetton, jetton, isUSDT]);
+    return tokenType === TokenType.Jetton
+      ? jetton?.metadata?.decimals || 0
+      : Decimals[currency];
+  }, [currency, tokenType, jetton]);
 
   const Logo = useMemo(
     () =>
-      isJetton ? (
+      tokenType === TokenType.Jetton ? (
         <JettonIcon size="large" uri={jetton?.metadata?.image || ''} />
       ) : (
         <TonIcon
@@ -63,51 +62,60 @@ export function useCurrencyToSend(
           )}
         />
       ),
-    [currency, isJetton, jetton],
+    [currency, tokenType, jetton],
   );
 
   const getTokenPrice = useGetTokenPrice();
 
   const currencyToSend = useMemo(() => {
-    if (isJetton) {
-      const price = getTokenPrice(currency, jetton?.balance);
+    switch (tokenType) {
+      case TokenType.Jetton:
+        const price = getTokenPrice(currency, jetton?.balance);
 
-      return {
-        decimals: jetton?.metadata?.decimals || 0,
-        balance: formatAmount(jetton?.balance ?? '0', decimals),
-        price,
-        currencyTitle: jetton?.metadata?.symbol || Address.toShort(jetton?.jettonAddress),
-        Logo,
-        jettonWalletAddress: jetton?.walletAddress,
-        isLiquidJetton: !!liquidJettonPool,
-      };
-    } else if (isUSDT) {
-      const usdt = tronBalances.data?.[0];
+        return {
+          decimals: jetton?.metadata?.decimals || 0,
+          balance: formatAmount(jetton?.balance ?? '0', decimals),
+          price,
+          currencyTitle:
+            jetton?.metadata?.symbol || Address.toShort(jetton?.jettonAddress),
+          Logo,
+          jettonWalletAddress: jetton?.walletAddress,
+          isLiquidJetton: !!liquidJettonPool,
+        };
+      case TokenType.USDT:
+        const usdt = tronBalances.data?.[0];
 
-      console.log(usdt);
-      return {
-        trcToken: usdt!.token.address,
-        decimals: usdt!.token.decimals ?? 6,
-        balance: formatter.fromNano(usdt!.weiAmount, usdt!.token.decimals),
-        currencyTitle: usdt!.token.symbol,
-        jettonWalletAddress: undefined,
-        isLiquidJetton: false,
-        Logo: null,
-      };
-    } else {
-      return {
-        decimals: Decimals[currency],
-        balance: formatAmount(balances[currency], decimals),
-        currencyTitle: currency.toUpperCase(),
-        Logo,
-        jettonWalletAddress: undefined,
-        isLiquidJetton: false,
-        liquidJettonPool: null,
-      };
+        console.log(usdt);
+        return {
+          trcToken: usdt!.token.address,
+          decimals: usdt!.token.decimals ?? 6,
+          balance: formatter.fromNano(usdt!.weiAmount, usdt!.token.decimals),
+          currencyTitle: usdt!.token.symbol,
+          jettonWalletAddress: undefined,
+          isLiquidJetton: false,
+          Logo: null,
+        };
+      case TokenType.TON:
+        return {
+          decimals: Decimals[currency],
+          balance: formatAmount(balances[currency], decimals),
+          currencyTitle: currency.toUpperCase(),
+          Logo,
+          jettonWalletAddress: undefined,
+          isLiquidJetton: false,
+          liquidJettonPool: null,
+        };
+      case TokenType.Inscription:
+        const inscription = inscriptions.items?.find((item) => item.ticker === currency)!;
+        return {
+          currencyTitle: inscription.ticker.toUpperCase(),
+          decimals: inscription.decimals,
+          balance: formatter.fromNano(inscription.balance, inscription.decimals),
+          type: inscription.type,
+        };
     }
   }, [
-    isJetton,
-    isUSDT,
+    tokenType,
     getTokenPrice,
     currency,
     jetton,

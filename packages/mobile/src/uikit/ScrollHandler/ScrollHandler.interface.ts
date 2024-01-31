@@ -13,4 +13,5 @@ export interface ScrollHandlerProps {
   hitSlop?: Insets;
   bottomComponent?: ReactNode;
   titleProps?: TextProps;
+  subtitleProps?: TextProps;
 }

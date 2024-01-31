@@ -3,7 +3,7 @@ import DeviceInfo from 'react-native-device-info';
 import { AppConfig } from './modules/AppConfig';
 import { Platform } from 'react-native';
 
-type AppConfigVars = {
+export type AppConfigVars = {
   // tonapiTestnetHost: string;
   // tonapiProdHost: string;
   // tonapiDevHost: string;
@@ -16,6 +16,13 @@ type AppConfigVars = {
   tonapiTestnetHost: string;
   tronapiHost: string;
   tronapiTestnetHost: string;
+  batteryHost: string;
+  batteryTestnetHost: string;
+  batteryMeanFees: string;
+  disable_battery: boolean;
+  disable_battery_iap_module: boolean;
+  disable_battery_send: boolean;
+  disable_show_unverified_token: boolean;
 };
 
 const defaultConfig: Partial<AppConfigVars> = {
@@ -24,6 +31,13 @@ const defaultConfig: Partial<AppConfigVars> = {
   tonapiV2Endpoint: 'https://tonapi.io',
   tronapiHost: 'https://tron.tonkeeper.com',
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
+  batteryHost: 'https://battery.tonkeeper.com',
+  batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
+  batteryMeanFees: '0.08',
+  disable_battery: true,
+  disable_battery_iap_module: true,
+  disable_battery_send: true,
+  disable_show_unverified_token: false,
 };
 
 export const config = new AppConfig<AppConfigVars>({

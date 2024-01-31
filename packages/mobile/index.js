@@ -21,6 +21,7 @@ import { store, useNotificationsStore } from './src/store';
 import { getAttachScreenFromStorage } from '$navigation/AttachScreen';
 import crashlytics from '@react-native-firebase/crashlytics';
 import messaging from '@react-native-firebase/messaging';
+import { withIAPContext } from 'react-native-iap';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -64,4 +65,4 @@ setNativeExceptionHandler((exceptionString) => {
 store.dispatch(mainActions.init());
 // tonkeeper.init();
 
-AppRegistry.registerComponent(appName, () => gestureHandlerRootHOC(App));
+AppRegistry.registerComponent(appName, () => withIAPContext(gestureHandlerRootHOC(App)));

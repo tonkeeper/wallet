@@ -2,6 +2,7 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { UnlockedVault, Wallet } from '$blockchain';
 import { CryptoCurrency, SelectableVersion } from '$shared/constants';
 import { InsufficientFundsParams } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
 
 export type OldWalletBalanceItem = {
   version: string;
@@ -23,6 +24,7 @@ export interface WalletState {
   readableAddress: Address | null;
   currencies: CryptoCurrency[];
   balances: { [index: string]: string };
+  updatedAt: number | null;
   address: { [index: string]: string };
   oldWalletBalances: OldWalletBalanceItem[];
 }
@@ -39,31 +41,35 @@ export type RestoreWalletAction = PayloadAction<{
 }>;
 export type SetAddressesAction = PayloadAction<{ [index: string]: string }>;
 export type ConfirmSendCoinsAction = PayloadAction<{
-  currency: CryptoCurrency;
+  currency: string;
   amount: string;
   address: string;
   comment?: string;
   isCommentEncrypted?: boolean;
   onEnd?: () => void;
   onInsufficientFunds?: (params: InsufficientFundsParams) => void;
-  onNext: (info: { fee: string; isInactive: boolean }) => void;
-  isJetton?: boolean;
+  onNext: (info: { fee: string; isInactive: boolean; isBattery: boolean }) => void;
+  tokenType?: TokenType;
   isSendAll?: boolean;
   decimals?: number;
   jettonWalletAddress?: string;
+  currencyAdditionalParams?: CurrencyAdditionalParams;
 }>;
 export type SendCoinsAction = PayloadAction<{
+  fee: string;
   currency: CryptoCurrency;
   amount: string;
   address: string;
   comment: string;
   isCommentEncrypted?: boolean;
-  isJetton?: boolean;
+  tokenType?: TokenType;
   jettonWalletAddress?: string;
   isSendAll?: boolean;
   decimals?: number;
   onDone: () => void;
   onFail: () => void;
+  sendWithBattery?: boolean;
+  currencyAdditionalParams?: CurrencyAdditionalParams;
 }>;
 export type ChangeBalanceAndReloadAction = PayloadAction<{
   currency: CryptoCurrency;
@@ -92,6 +98,7 @@ export type WaitMigrationAction = PayloadAction<{
   onFail: () => void;
 }>;
 export type SetBalancesAction = PayloadAction<any>;
+export type SetUpdatedAtAction = PayloadAction<number | null>;
 export type DeployWalletAction = PayloadAction<{
   onDone: () => void;
   onFail: () => void;

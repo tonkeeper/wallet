@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { useValidateAddress } from '$hooks/useValidateAddress';
 import { Button, Input, Text } from '$uikit';
-import * as S from '../NFTTransferInputAddressModal/NFTTransferInputAddressModal.style';
+import * as S from './ReplaceDomainAddressModal.style';
 import { t } from '@tonkeeper/shared/i18n';
 import { ns } from '$utils';
 import { Modal } from '@tonkeeper/uikit';

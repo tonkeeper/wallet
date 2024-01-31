@@ -16,9 +16,11 @@ interface ListItemProps {
   titleType?: 'primary' | 'secondary';
   title?: string | React.ReactNode;
   subtitle?: string | React.ReactNode;
+  subtitleStyle?: StyleProp<TextStyle>;
   value?: string | React.ReactNode;
   subvalue?: string | React.ReactNode;
   valueStyle?: StyleProp<TextStyle>;
+  valueContainerStyle?: StyleProp<ViewStyle>;
   picture?: string;
   pictureStyle?: StyleProp<ViewStyle>;
   pictureCorner?: 'full' | 'small';
@@ -121,7 +123,7 @@ export const ListItem = memo<ListItemProps>((props) => {
                   props.title
                 )}
               </View>
-              <View style={styles.valueContainer}>
+              <View style={[styles.valueContainer, props.valueContainerStyle]}>
                 {isString(props.value) ? (
                   <Text
                     numberOfLines={!valueMultiline ? 1 : undefined}
@@ -140,6 +142,7 @@ export const ListItem = memo<ListItemProps>((props) => {
               <View style={styles.subtitleContainer}>
                 {isString(props.subtitle) ? (
                   <Text
+                    style={props.subtitleStyle}
                     numberOfLines={subtitleNumberOfLines}
                     color="textSecondary"
                     type="body2"

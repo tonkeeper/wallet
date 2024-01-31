@@ -19,7 +19,6 @@ import axios from 'axios';
 import { getServerConfig } from '$shared/constants';
 import { i18n } from '$translation';
 import DeviceInfo from 'react-native-device-info';
-import FastImage from 'react-native-fast-image';
 
 let manager: NFTsManager | null;
 
@@ -150,10 +149,6 @@ export function* loadMarketplacesWorker() {
       },
     );
     const marketplaces: MarketplaceModel[] = resp?.data?.data?.marketplaces || [];
-
-    FastImage.preload(
-      marketplaces.map((marketplace) => ({ uri: marketplace.marketplace_url })),
-    );
 
     yield put(nftsActions.setLoadedMarketplaces(marketplaces));
   } catch (e) {}

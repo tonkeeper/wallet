@@ -33,6 +33,7 @@ export enum COMMON_COLORS {
   accentPrimaryDark = '#378BC4',
   accentPositive = '#39CC83',
   accentNegative = '#FF4766',
+  accentBlue = '#45AEF5',
   accentOrange = '#F2A73D',
   accentOrangeActive = '#F2B155',
 }

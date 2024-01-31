@@ -42,6 +42,7 @@
   "address_update" : {
     "title" : "Adres güncelleme"
   },
+  "all_regions" : "Tüm bölgeler",
   "appearance_accent_name" : {
     "andromeda" : "Andromeda",
     "arctic" : "Arctic",
@@ -115,8 +116,11 @@
       "refresh" : "Yenileyin",
       "share" : "Paylaşın"
     },
+    "apps_all" : "Tümü",
+    "connected" : "Bağlı",
     "connected_title" : "Bağlandı",
     "empty_search" : "Aramanız hiçbir sonuç vermedi",
+    "explore" : "Keşfet",
     "explore_all" : "Tümünü keşfedin",
     "more_description" : "Marketler, borsalar ve daha fazlası",
     "more_title" : "Tüm hizmetleri keşfedin",
@@ -280,6 +284,11 @@
   "jettons_manage_tokens" : "Token'ları yönetin",
   "jettons_show_jettons" : "Cüzdandaki token'ları göster",
   "jetton_token" : "Token",
+  "language" : {
+    "list_item" : {
+      "value" : "Türkçe"
+    }
+  },
   "later" : "Daha sonra",
   "legal_font_license" : "Montserrat yazı tipi",
   "legal_header_title" : "Hukuki açıklama",
@@ -492,7 +501,7 @@
       "insufficient_balance" : "Yetersiz bakiye",
       "less_than_min" : "Minimum %{minAmount} TON",
       "liquid_jetton_note" : "tsTON likidite tokeni gönderiliyor",
-      "max" : "Maksimum",
+      "max" : "MAX",
       "recipient_label" : "Alıcı:",
       "remaining" : "Mevcut: %{amount}",
       "title" : "Tutar"
@@ -535,6 +544,11 @@
   "settings_delete_alert_title" : "Hesabınızı silmek istediğinize emin misiniz?",
   "settings_jettons_list" : "Token'lar",
   "settings_legal_documents" : "Hukuki açıklama",
+  "language": {
+    "list_item": {
+      "value": "Türkçe"
+    }
+  },
   "settings_network_alert_title" : "Ağ seçin",
   "settings_news" : "Tonkeeper Haberleri",
   "settings_notifications" : "Bildirimler",
@@ -722,7 +736,7 @@
   "ton_login_connect_button" : "Cüzdanı bağlayın",
   "ton_login_notice" : "Cüzdanı bağlamadan önce servis adresini kontrol ettiğinizden emin olun.",
   "ton_login_success" : "Tamamlandı",
-  "ton_login_title" : "%{name}'e bağlanılsın mı?",
+  "ton_login_title" : "%domain'e bağlanılsın mı?",
   "transaction_bid_collection_name" : "Koleksiyon yayıncısı",
   "transaction_bid_date" : "%{date} tarihli teklif",
   "transaction_bid_dns" : "İsim",

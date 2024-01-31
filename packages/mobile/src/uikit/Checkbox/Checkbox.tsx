@@ -12,25 +12,30 @@ import { useTheme } from '$hooks/useTheme';
 import { useEffect } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Platform, TouchableOpacity as NTouchableOpacity } from 'react-native';
-export interface CheckboxProps {
+
+export interface CheckboxViewProps {
   checked: boolean;
-  onChange: () => void;
-  disabled?: boolean;
   /*
-    Used to change opacity when user press on ListItem
-   */
+  Used to change opacity when user press on ListItem
+ */
   isPressedListItem?: SharedValue<boolean>;
 }
 
-const TouchableComponent =
-  Platform.OS === 'android' ? NTouchableOpacity : TouchableOpacity;
+export interface CheckboxProps extends CheckboxViewProps {
+  onChange: () => void;
+  disabled?: boolean;
+}
 
-const STouchableOpacity = Steezy.withStyle(TouchableComponent);
-
-const Checkbox: React.FC<CheckboxProps> = (props) => {
-  const { checked, onChange } = props;
-  const colorProgress = useSharedValue(checked ? 1 : 0);
+export const CheckboxView: React.FC<CheckboxViewProps> = (props) => {
   const { colors } = useTheme();
+
+  const colorProgress = useSharedValue(props.checked ? 1 : 0);
+
+  useEffect(() => {
+    colorProgress.value = withTiming(props.checked ? 1 : 0, {
+      duration: 200,
+    });
+  }, [props.checked, colorProgress]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -61,19 +66,27 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
     };
   });
 
-  useEffect(() => {
-    colorProgress.value = withTiming(checked ? 1 : 0, {
-      duration: 200,
-    });
-  }, [checked, colorProgress]);
+  return (
+    <Animated.View style={[styles.checkbox.static, opacityStyle, animatedStyle]}>
+      <Animated.View style={iconStyle}>
+        <Icon name="ic-done-bold-16" color="foregroundPrimary" />
+      </Animated.View>
+    </Animated.View>
+  );
+};
+
+const TouchableComponent =
+  Platform.OS === 'android' ? NTouchableOpacity : TouchableOpacity;
+
+// @ts-ignore
+const STouchableOpacity = Steezy.withStyle(TouchableComponent);
+
+const Checkbox: React.FC<CheckboxProps> = (props) => {
+  const { onChange, disabled, ...passProps } = props;
 
   return (
-    <STouchableOpacity onPress={onChange} activeOpacity={0.6}>
-      <Animated.View style={[styles.checkbox.static, opacityStyle, animatedStyle]}>
-        <Animated.View style={iconStyle}>
-          <Icon name="ic-done-bold-16" color="foregroundPrimary" />
-        </Animated.View>
-      </Animated.View>
+    <STouchableOpacity disabled={disabled} onPress={onChange} activeOpacity={0.6}>
+      <CheckboxView {...passProps} />
     </STouchableOpacity>
   );
 };
@@ -89,9 +102,5 @@ const styles = Steezy.create(({ colors }) => ({
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  checkboxChecked: {
-    backgroundColor: colors.buttonPrimaryBackground,
-    borderColor: 'transparent',
   },
 }));

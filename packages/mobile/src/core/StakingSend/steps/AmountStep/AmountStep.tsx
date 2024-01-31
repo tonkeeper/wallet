@@ -1,7 +1,7 @@
 import { useFiatValue } from '$hooks/useFiatValue';
 import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
 import { useTokenPrice } from '$hooks/useTokenPrice';
-import { Button, Separator, Spacer, Text } from '$uikit';
+import { Button, Spacer, Text } from '$uikit';
 import React, { FC, memo, useEffect, useMemo, useRef } from 'react';
 import * as S from './AmountStep.style';
 import { parseLocaleNumber } from '$utils';
@@ -17,7 +17,7 @@ import {
   StepScrollView,
 } from '$shared/components';
 import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
-import { SendAmount } from '$core/Send/Send.interface';
+import { SendAmount, TokenType } from '$core/Send/Send.interface';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
@@ -34,7 +34,7 @@ interface Props extends StepComponentProps {
   isPreparing: boolean;
   amount: SendAmount;
   currency: CryptoCurrencies;
-  isJetton: boolean;
+  tokenType: TokenType;
   stepsScrollTop: SharedValue<Record<StakingSendSteps, number>>;
   afterTopUpReward: ReturnType<typeof useFiatValue>;
   currentReward: ReturnType<typeof useFiatValue>;
@@ -51,7 +51,7 @@ const AmountStepComponent: FC<Props> = (props) => {
     active,
     amount,
     currency,
-    isJetton,
+    tokenType,
     stepsScrollTop,
     afterTopUpReward,
     currentReward,
@@ -65,9 +65,21 @@ const AmountStepComponent: FC<Props> = (props) => {
     price,
     balance: tonBalance,
     isLiquidJetton,
-  } = useCurrencyToSend(currency, isJetton);
+  } = useCurrencyToSend(currency, tokenType);
 
-  const walletBalance = isLiquidJetton ? price!.totalTon : tonBalance;
+  const availableTonBalance = useMemo(() => {
+    if (pool.implementation === PoolImplementationType.LiquidTF && !isWithdrawal) {
+      const tonAmount = new BigNumber(tonBalance).minus(1.2);
+
+      return tonAmount.isGreaterThanOrEqualTo(0)
+        ? tonAmount.decimalPlaces(Decimals[CryptoCurrencies.Ton]).toString()
+        : '0';
+    }
+
+    return tonBalance;
+  }, [isWithdrawal, pool.implementation, tonBalance]);
+
+  const walletBalance = isLiquidJetton ? price!.totalTon : availableTonBalance;
 
   const minAmount = isWithdrawal ? '0' : Ton.fromNano(pool.min_stake);
 

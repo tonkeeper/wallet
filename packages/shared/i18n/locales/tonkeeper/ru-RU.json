@@ -22,11 +22,11 @@
   "activity" : {
     "buy_toncoin_btn" : "Купить Toncoin",
     "empty_transaction_caption" : "Совершите первую транзакцию!",
-    "empty_transaction_title" : "Ваша активность будет показана здесь",
+    "empty_transaction_title" : "Ваша история будет показана здесь",
     "failed_transaction" : "Неуспешно",
     "receive_btn" : "Получить",
-    "received" : "Received",
-    "screen_title" : "Активность",
+    "received" : "Получено",
+    "screen_title" : "История",
     "sent" : "Отправить"
   },
   "add_edit_favorite" : {
@@ -54,6 +54,7 @@
     "why_change" : "Для чего это обновление?",
     "your_wallet" : "Ваш кошелёк"
   },
+  "all_regions" : "Все регионы",
   "appearance_accent_name" : {
     "andromeda" : "Андромеда",
     "arctic" : "Арктика",
@@ -74,6 +75,7 @@
   "appearance_title" : "Оформление",
   "app_name" : "Tonkeeper",
   "approval" : {
+    "unverified_token": "Непроверенный токен",
     "accept" : "Принять",
     "accepted" : "Видимые",
     "accepted_at_collection" : "Принята %{date}",
@@ -139,8 +141,13 @@
       "refresh" : "Обновить",
       "share" : "Поделиться"
     },
+    "apps_all" : "Все",
+    "connected" : "Подключённые",
+    "connected_empty_text" : "Исследуйте приложения и сервисы в браузере Tonkeeper.",
+    "connected_empty_title" : "Подключённые приложения будут отображаться здесь",
     "connected_title" : "Подключённые",
     "empty_search" : "По вашему запросу ничего не найдено",
+    "explore" : "Витрина",
     "explore_all" : "Другие",
     "more_description" : "Маркеты, биржи и другие",
     "more_title" : "Исследуйте все сервисы",
@@ -178,6 +185,7 @@
   "check_words_success" : "Поздравляем! Ваш кошелёк готов",
   "check_words_title" : "Давайте проверим",
   "choose_country" : {
+    "auto" : "Автоматически",
     "cancel" : "Отмена",
     "empty_placeholder" : "По вашему запросу ничего не найдено",
     "search" : "Поиск",
@@ -232,7 +240,9 @@
   "confirm_sending_submit" : "Подтвердить и отправить",
   "confirm_sending_title" : "Перевод",
   "confirmSendModal" : {
+    "refund": "Возврат",
     "network_fee" : "Комиссия сети",
+    "will_be_paid_with_battery": "Будет оплачена батарейкой",
     "title" : "Подтвердить действие",
     "to_your_address" : "На ваш адрес",
     "transaction_type" : {
@@ -308,8 +318,9 @@
   "exchange_modal" : {
     "hide" : "Скрыть",
     "other_ways_to_buy" : "Другие способы покупки",
-    "show_all" : "Показать всё",
-    "title" : "Купить или продать"
+    "show_all" : "Показать все",
+    "buy": "Купить",
+    "sell": "Продать"
   },
   "exchange" : {
     "not_exists" : "Неверный ID обменника"
@@ -346,6 +357,17 @@
   "jettons_list_title" : "Токены",
   "jettons_manage_tokens" : "Настроить токены",
   "jetton_token" : "Токен",
+  "language" : {
+    "language_alert" : {
+      "cancel" : "Отмена",
+      "open" : "Настройки",
+      "title" : "Чтобы изменить язык приложения, перейдите в настройки устройства"
+    },
+    "list_item" : {
+      "title" : "Язык",
+      "value" : "Русский"
+    }
+  },
   "later" : "Позже",
   "legal_font_license" : "Шрифт Montserrat",
   "legal_header_title" : "Документы",
@@ -425,6 +447,7 @@
   "nft_unlink_domain_button" : "Связан с {{address}}",
   "nft_unnamed_collection" : "Коллекция без названия",
   "nft_view_in_explorer" : "Подробнее",
+  "nokyc" : "без KYC",
   "notifications" : {
     "alert" : {
       "cancel" : "Отмена",
@@ -507,6 +530,7 @@
   "receive_title" : "Получить %{currency}",
   "receive_ton_and_jettons" : "Получить TON и другие токены",
   "refresh_app" : "Перезапустить",
+  "region_nokyc" : "Нейтральные воды",
   "reminder_notifications_caption" : "Получайте уведомления при получении TON, токенов и NFT.",
   "reminder_notifications_enable_button" : "Включить уведомления",
   "reminder_notifications_later_button" : "Позже",
@@ -561,7 +585,7 @@
       "insufficient_balance" : "Недостаточно средств",
       "less_than_min" : "Минимум %{minAmount} TON",
       "liquid_jetton_note" : "Отправка токена ликвидности tsTON",
-      "max" : "Максимум",
+      "max" : "MAX",
       "recipient_label" : "Кому:",
       "remaining" : "Доступно: %{amount}",
       "title" : "Сумма"
@@ -572,12 +596,14 @@
       "comment_description" : "Будет виден всем.",
       "comment_description_encrypted" : "Будет виден только получателю и вам.",
       "comment_encrypt" : "Зашифровать комментарий",
+      "comment_label_encrypted" : "Зашифрованный комментарий",
       "comment_label" : "Комментарий",
       "comment_label_required" : "Комментарий",
       "comment_required_text" : "Обязательно укажите memo или тег при отправке на биржу. ",
       "details_label" : "Детали",
       "details_max_balance_label" : "Отправка всего баланса %{currency}",
-      "title" : "Подтвердить действие"
+      "title" : "Подтвердить действие",
+      "will_be_paid_with_battery": "Будет оплачена батарейкой"
     },
     "done" : {
       "add_favorite" : "Добавить адрес в избранное",
@@ -604,6 +630,17 @@
   "settings_delete_alert_title" : "Вы уверены, что хотите удалить аккаунт?",
   "settings_jettons_list" : "Токены",
   "settings_legal_documents" : "Юридические документы",
+  "language": {
+    "list_item": {
+      "title": "Язык",
+      "value": "Русский"
+    },
+    "language_alert" : {
+      "title": "Чтобы изменить язык приложения, перейдите в настройки устройства",
+      "cancel": "Отмена",
+      "open": "Настройки"
+    }
+  },
   "settings_network_alert_title" : "Выберите сеть",
   "settings_news" : "Новости Tonkeeper",
   "settings_notifications" : "Уведомления",
@@ -688,16 +725,13 @@
         "value" : "%{value} TON"
       },
       "next_cycle" : {
-        "desc" : "Все транзакции исполняются только после завершения цикла.",
-        "desc_liquid" : "Запросы на вывод исполнятся после завершения цикла.",
         "in" : "через",
-        "reward_title" : "Следующая награда",
-        "title" : "Следующий цикл"
+        "message": "Запрос на вывод будет исполнен после завершения цикла через %{value}"
       },
       "note" : "Стейкинг основан на сторонних смарт-контрактах. Tonkeeper не несёт ответственность за стабильность и результат.",
       "pendingDeposit" : "Будет зачислено",
       "pendingWithdraw" : "Ожидают вывод",
-      "pendingWithdrawDesc" : "по окончанию цикла",
+      "pendingWithdrawDesc" : "после окончания цикла",
       "pool_address" : {
         "label" : "Адрес пула"
       },
@@ -708,6 +742,8 @@
       },
       "tap_to_collect" : "Нажмите, чтобы вывести"
     },
+    "estimated_profit" : "%{amount} TON – доход за год,  если внесёте TON сегодня.",
+    "estimated_profit_compare" : "На %{amount} TON в год прибыльнее чем ваш текущий стейкинг",
     "get_withdrawal" : "Получить вывод",
     "highest_apy" : "MAX APY",
     "jetton_note" : "Когда вы вносите TON в пул, вы получаете токен %{token}, который отображает вашу долю в пуле. По мере накопления прибыли в пуле, %{token} представляет всё большее число TON.",
@@ -726,6 +762,13 @@
         "one" : "%{amount} TON будет выведен\n",
         "other" : "%{amount} TON будет выведено\n",
         "zero" : "%{amount} TON будет выведено\n"
+      },
+      "pendingWithdrawLiquid" : {
+        "few" : "%{amount} TON будет выведено\nпосле окончания цикла",
+        "many" : "%{amount} TON будет выведено\nпосле окончания цикла",
+        "one" : "%{amount} TON будет выведен\nпосле окончания цикла",
+        "other" : "%{amount} TON будет выведено\nпосле окончания цикла",
+        "zero" : "%{amount} TON будет выведено\nпосле окончания цикла"
       },
       "readyWithdraw" : {
         "few" : "%{amount} TON готовы к выводу.\nНажмите, чтобы вывести",
@@ -760,14 +803,14 @@
     },
     "widget_desc" : "Годовая доходность до %{apy}%",
     "widget_staking_options" : "Варианты стейкинга",
-    "widget_title" : "Зарабатывайте TON",
+    "widget_title" : "Стейкинг TON",
     "withdraw" : "Вывести",
     "withdrawal_fee_warning" : {
       "continue" : "Продолжить всё равно",
       "message" : "Пожалуйста, оставьте минимум {{amount}} TON на вашем балансе.",
       "title" : "У вас не останется для вывода"
     },
-    "withdrawal_request" : "Запрос на вывод"
+    "withdrawal_request" : "Вывод"
   },
   "subscription_back_to_merchant_button" : "Вернуться",
   "subscription_back_to_merchant_caption" : "Транзакция обрабатывается. Ваша подписка будет активна через пару минут.",
@@ -817,7 +860,7 @@
   "ton_login_connect_button" : "Подключить кошелёк",
   "ton_login_notice" : "Обязательно проверьте адрес сервиса перед подключением кошелька.",
   "ton_login_success" : "Готово",
-  "ton_login_title" : "Войти в %{name}",
+  "ton_login_title" : "Войти в %domain",
   "transaction_bid_collection_name" : "Эмитент",
   "transaction_bid_date" : "Ставка %{date}",
   "transaction_bid_dns" : "Имя",
@@ -946,6 +989,7 @@
           "other" : "Для совершения транзакции необходим %{count} TON. Предполагаемая комиссия в размере %{fee} TON будет удержана, остаток будет возвращён.",
           "zero" : "Для совершения транзакции необходимо %{count} TON. Предполагаемая комиссия в размере %{fee} TON будет удержана, остаток будет возвращён."
         },
+        "stakingDeposit" : "Минимальный баланс для участия:\n%{amount} %{currency}\n",
         "title" : "Недостаточно средств",
         "toBePaid" : "Необходимо: %{amount} %{currency}\n",
         "withFees" : "+ комиссия сети.\n",
@@ -999,7 +1043,8 @@
     "screen_title" : "Кошелёк",
     "send_btn" : "Отправить",
     "swap_btn" : "Обменять",
-    "tonkens_tab_lable" : "Токены"
+    "tonkens_tab_lable" : "Токены",
+    "updated_at" : "Обновлён %{value}"
   },
   "wallet_chat" : "Чат",
   "wallet_community" : "Сообщество",
@@ -1014,5 +1059,59 @@
   "yesterday" : "Вчера",
   "all_regions": "Все регионы",
   "region_nokyc": "Нейтральные воды",
-  "nokyc": "без KYC"
+  "nokyc": "без KYC",
+  "battery": {
+    "screen_title": "Батарейка",
+    "settings": "Батарейка",
+    "ok": "OK",
+    "title": {
+      "empty": "Перезарядите свою батарейку для оплаты комиссий в сети",
+      "almost_empty": "Батарейка для оплаты комиссий почти разряжена",
+      "medium": "Батарейка для оплаты комиссий заряжена наполовину",
+      "full": "Батарейка для оплаты комиссий полностью заряжена"
+    },
+    "description": {
+      "empty": "Отправляйте токены и NFT, взаимодействуйте со стейкингом при нулевом балансе кошелька.",
+      "other": "У вас достаточно заряда для более чем {{cnt}} транзакций."
+    },
+    "promocode": {
+      "button": "Зарядить с помощью промокода",
+      "title": "Промокод",
+      "placeholder": "Промокод",
+      "apply": "Применить",
+      "success": "Ваша батарейка заряжена"
+    },
+    "packages": {
+      "title": "{{cnt}} транзакций за {{price}}",
+      "subtitle": {
+        "large": "Большой пакет",
+        "medium": "Средний пакет",
+        "small": "Малый пакет"
+      },
+      "disclaimer": "Указано примерное количество транзакций. Некоторые транзакции могут стоить дороже.",
+      "buy": "Купить",
+      "ok": "OK",
+      "refilled": "Ваша батарейка заряжена"
+    }
+  },
+  "nft_transfer": {
+    "title": "Передача NFT",
+    "confirm": {
+      "fee": {
+        "label": "Комиссия",
+        "refund_label": "Возврат",
+        "value" : "≈ %{value} TON"
+      }
+    }
+  },
+  "encryptedComments": {
+    "encryptedComment": "Комментарий",
+    "show": "Показать",
+    "encryptedCommentModal": {
+      "title": "Зашифрованный комментарий",
+      "description": "Комментарий зашифрован отправителем и может быть расшифрован только вами. Пожалуйста, осторожно относитесь к содержанию и остерегайтесь мошенничества.",
+      "button": "Расшифровать комментарий",
+      "checkboxLabel": "Не показывать снова"
+    }
+  }
 }

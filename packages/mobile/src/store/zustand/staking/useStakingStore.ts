@@ -47,7 +47,7 @@ export const useStakingStore = create(
     (set, getState) => ({
       ...initialState,
       actions: {
-        fetchPools: async (silent) => {
+        fetchPools: async (silent, updateIfBalanceSame = true) => {
           const { status } = getState();
 
           if (status !== StakingApiStatus.Idle) {
@@ -74,7 +74,7 @@ export const useStakingStore = create(
             const [poolsResponse, nominatorsResponse] = await Promise.allSettled([
               tonapi.staking.getStakingPools({
                 available_for: rawAddress,
-                include_unverified: true,
+                include_unverified: false,
               }),
               tonapi.staking.getAccountNominatorsPools(rawAddress!),
             ]);
@@ -220,7 +220,10 @@ export const useStakingStore = create(
               return;
             }
 
-            if (!silent || !_.isEqual(nextState.stakingInfo, getState().stakingInfo)) {
+            if (
+              updateIfBalanceSame ||
+              !_.isEqual(nextState.stakingInfo, getState().stakingInfo)
+            ) {
               set({ ...nextState });
             }
           } catch (e) {
@@ -323,8 +326,9 @@ export const useStakingStore = create(
 
           set({ chart });
         },
-        reset: () =>
-          set({ stakingInfo: {}, stakingBalance: '0', status: StakingApiStatus.Idle }),
+        reset: () => {
+          set({ stakingInfo: {}, stakingBalance: '0', status: StakingApiStatus.Idle });
+        },
         increaseMainFlashShownCount: () => {
           set({ mainFlashShownCount: getState().mainFlashShownCount + 1 });
         },
@@ -334,30 +338,10 @@ export const useStakingStore = create(
       },
     }),
     {
-      name: 'staking_v3',
+      name: 'staking_v4',
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: ({
-        pools,
-        providers,
-        stakingInfo,
-        stakingJettons,
-        stakingJettonsUpdatedAt,
-        highestApyPool,
-        stakingBalance,
-        mainFlashShownCount,
-        stakingFlashShownCount,
-      }) =>
-        ({
-          pools,
-          providers,
-          stakingInfo,
-          stakingJettons,
-          stakingJettonsUpdatedAt,
-          highestApyPool,
-          stakingBalance,
-          mainFlashShownCount,
-          stakingFlashShownCount,
-        } as IStakingStore),
+      partialize: ({ status: _status, actions: _actions, ...state }) =>
+        state as IStakingStore,
     },
   ),
 );

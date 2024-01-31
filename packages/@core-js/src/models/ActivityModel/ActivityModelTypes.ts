@@ -148,3 +148,9 @@ export type ActivitySection = {
 export type ActivitySectionsByGroups = {
   [key in GroupKey]: ActivitySection;
 };
+
+export function isJettonTransferAction(
+  action: ActionItem,
+): action is ActionItem<ActionType.JettonTransfer> {
+  return action.type === ActionType.JettonTransfer;
+}

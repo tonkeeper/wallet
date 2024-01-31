@@ -29,15 +29,22 @@ import { useCallback, useRef } from 'react';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import BigNumber from 'bignumber.js';
 import { Tonapi } from '$libs/Tonapi';
-import { checkFundsAndOpenNFTTransfer } from '$core/ModalContainer/NFTOperations/Modals/NFTTransferModal';
-import { openNFTTransferInputAddressModal } from '$core/ModalContainer/NFTTransferInputAddressModal/NFTTransferInputAddressModal';
 import { getCurrentRoute } from '$navigation/imperative';
 import { IConnectQrQuery } from '$tonconnect/models';
 import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
-import { ActionSource, Address, DNS } from '@tonkeeper/core';
+import {
+  ActionSource,
+  Address,
+  AmountFormatter,
+  ContractService,
+  DNS,
+} from '@tonkeeper/core';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { isMethodIdExists } from '$store/zustand/methodsToBuy/helpers';
 import { openActivityActionModal } from '@tonkeeper/shared/modals/ActivityActionModal';
+import { tk } from '@tonkeeper/shared/tonkeeper';
+import { config } from '@tonkeeper/shared/config';
+import { TokenType } from '$core/Send/Send.interface';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -70,6 +77,7 @@ export function useDeeplinkingResolvers() {
     'tonkeeper://',
     'https://app.tonkeeper.com',
     'https://tonhub.com',
+    'https://ton.app',
   ]);
 
   deeplinking.addMiddleware(async (next) => {
@@ -144,6 +152,14 @@ export function useDeeplinkingResolvers() {
     return openActivityActionModal(actionId, source ?? ActionSource.Ton);
   });
 
+  deeplinking.add('/exchange', async () => {
+    if (!getWallet()) {
+      return openRequireWalletModal();
+    } else {
+      nav.openModal('Exchange');
+    }
+  });
+
   deeplinking.add('/exchange/:id', async ({ params }) => {
     const methodId = params.id;
     if (!getWallet()) {
@@ -192,6 +208,88 @@ export function useDeeplinkingResolvers() {
       nav.openModal('Swap', { ft: query.ft, tt: query.tt });
     }
   });
+
+  deeplinking.add(
+    '/inscription-transfer/:address',
+    async ({ params, query, resolveParams }) => {
+      Toast.loading();
+
+      let address = params.address;
+      if (DNS.isValid(address)) {
+        const dnsRecord = await Tonapi.resolveDns(address);
+        if (dnsRecord) {
+          address = new Address(dnsRecord.wallet.address).toFriendly({
+            bounceable: true,
+          });
+        } else {
+          return Toast.fail(t('transfer_deeplink_address_error'));
+        }
+      }
+
+      const ticker = query.ticker;
+      const type = query.type;
+      const amount = query.amount;
+      const comment = query.text ?? '';
+
+      if (!type || !ticker) {
+        return Toast.fail(t('transfer_deeplink_wrong_params'));
+      }
+
+      if (amount && Number.isNaN(Number(amount))) {
+        return Toast.fail(t('transfer_deeplink_amount_error'));
+      }
+
+      await tk.wallet.tonInscriptions.getInscriptions();
+      let inscriptions = tk.wallet?.tonInscriptions.state.getSnapshot();
+      const inscription = inscriptions?.items.find(
+        (item) => item.ticker === ticker && item.type === type,
+      );
+      if (!inscription) {
+        return Toast.fail(t('transfer_deeplink_unknown_token'));
+      }
+
+      if (amount) {
+        dispatch(
+          walletActions.confirmSendCoins({
+            currency: inscription.ticker,
+            amount: fromNano(amount, inscription.decimals),
+            address,
+            comment,
+            tokenType: TokenType.Inscription,
+            currencyAdditionalParams: { type: inscription.type },
+            onNext: (details) => {
+              const options = {
+                currency: inscription.ticker,
+                address,
+                comment,
+                currencyAdditionalParams: { type: inscription.type },
+                amount: fromNano(amount, inscription.decimals),
+                tokenType: TokenType.Inscription,
+                fee: details.fee,
+                isInactive: details.isInactive,
+                methodId: resolveParams.methodId,
+                redirectToActivity: resolveParams.redirectToActivity,
+              };
+              openSend(options);
+            },
+          }),
+        );
+      } else {
+        openSend({
+          currency: inscription.ticker,
+          currencyAdditionalParams: { type: inscription.type },
+          address,
+          comment,
+          withGoBack: resolveParams.withGoBack,
+          tokenType: TokenType.Inscription,
+          redirectToActivity: resolveParams.redirectToActivity,
+          amount: fromNano(amount, inscription.decimals),
+        });
+      }
+
+      return Toast.hide();
+    },
+  );
 
   deeplinking.add('/transfer/:address', async ({ params, query, resolveParams }) => {
     const currency = CryptoCurrencies.Ton;
@@ -293,7 +391,7 @@ export function useDeeplinkingResolvers() {
             address,
             comment,
             jettonWalletAddress: query.jetton,
-            isJetton: true,
+            tokenType: TokenType.Jetton,
             onInsufficientFunds: openInsufficientFundsModal,
             onNext: (details) => {
               const options = {
@@ -303,8 +401,9 @@ export function useDeeplinkingResolvers() {
                 amount,
                 fee: details.fee,
                 isInactive: details.isInactive,
-                isJetton: true,
+                tokenType: TokenType.Jetton,
                 expiryTimestamp,
+                redirectToActivity: resolveParams.redirectToActivity,
               };
 
               openSend(options);
@@ -326,10 +425,12 @@ export function useDeeplinkingResolvers() {
                 address,
                 comment,
                 amount,
+                tokenType: TokenType.TON,
                 fee: details.fee,
                 isInactive: details.isInactive,
                 methodId: resolveParams.methodId,
                 expiryTimestamp,
+                redirectToActivity: resolveParams.redirectToActivity,
               };
               if (options.methodId) {
                 nav.openModal('NewConfirmSending', options);
@@ -349,16 +450,47 @@ export function useDeeplinkingResolvers() {
         address,
         comment,
         withGoBack: resolveParams.withGoBack,
-        isJetton: true,
+        tokenType: TokenType.Jetton,
         expiryTimestamp,
+        redirectToActivity: resolveParams.redirectToActivity,
       });
     } else if (query.nft) {
       if (!Address.isValid(query.nft)) {
         return Toast.fail(t('transfer_deeplink_nft_address_error'));
       }
-      await checkFundsAndOpenNFTTransfer(query.nft, address);
+      const excessesAccount =
+        !config.get('disable_battery_send') &&
+        tk.wallet.battery.state.data.balance !== '0'
+          ? await tk.wallet.battery.getExcessesAccount()
+          : null;
+
+      await openSignRawModal(
+        {
+          messages: [
+            {
+              amount: AmountFormatter.toNano(1),
+              address: query.nft,
+              payload: ContractService.createNftTransferBody({
+                queryId: Date.now(),
+                newOwnerAddress: address,
+                excessesAddress: excessesAccount || tk.wallet.address.ton.raw,
+              })
+                .toBoc()
+                .toString('base64'),
+            },
+          ],
+        },
+        {},
+      );
     } else {
-      openSend({ currency, address, comment, isJetton: false, expiryTimestamp });
+      openSend({
+        currency,
+        address,
+        comment,
+        tokenType: TokenType.TON,
+        expiryTimestamp,
+        redirectToActivity: resolveParams.redirectToActivity,
+      });
     }
   });
 
@@ -368,7 +500,7 @@ export function useDeeplinkingResolvers() {
       if (!Address.isValid(nft)) {
         return Toast.fail(t('transfer_deeplink_nft_address_error'));
       }
-      await openNFTTransferInputAddressModal({ nftAddress: nft });
+      await nav.push(AppStackRouteNames.NFTSend, { nftAddress: nft });
     } else {
       openSend({ currency: CryptoCurrencies.Ton });
     }

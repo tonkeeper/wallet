@@ -176,6 +176,7 @@ export const ChooseCountry: React.FC = () => {
           />
         )}
         data={filteredListBySearch}
+        keyboardShouldPersistTaps="handled"
       />
     </Screen>
   );

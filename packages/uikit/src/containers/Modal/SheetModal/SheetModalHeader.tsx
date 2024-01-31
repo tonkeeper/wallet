@@ -6,22 +6,33 @@ import { Text } from '../../../components/Text';
 import { Icon } from '../../../components/Icon';
 import { memo, useLayoutEffect } from 'react';
 import { useTheme } from '../../../styles';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 export interface SheetModalHeaderProps {
   onIconLeftPress?: () => void;
   onClose?: () => void;
   iconLeft?: IconNames;
+  leftContent?: React.ReactNode;
   gradient?: boolean;
   title?: string | React.ReactNode;
   center?: boolean;
 }
 
 export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
-  const { gradient, title, onClose, iconLeft, onIconLeftPress, center } = props;
-  const { measureHeader, close } = useSheetInternal();
+  const { gradient, title, onClose, iconLeft, onIconLeftPress, leftContent, center } =
+    props;
+  const { measureHeader, close, scrollY } = useSheetInternal();
   const theme = useTheme();
 
   const hasTitle = !!title;
+
+  const borderAnimatedStyle = useAnimatedStyle(
+    () => ({
+      borderBottomColor:
+        hasTitle && scrollY.value > 0 ? theme.separatorAlternate : 'transparent',
+    }),
+    [hasTitle],
+  );
 
   useLayoutEffect(() => {
     if (hasTitle) {
@@ -34,7 +45,9 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
   }, [hasTitle]);
 
   return (
-    <View style={[styles.container, !hasTitle && styles.absolute]}>
+    <Animated.View
+      style={[styles.container, borderAnimatedStyle, !hasTitle && styles.absolute]}
+    >
       {gradient && (
         <LinearGradient
           colors={[theme.backgroundContent, 'rgba(16, 22, 31, 0)']}
@@ -55,13 +68,19 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
               <Icon name={iconLeft} color="constantWhite" />
             </View>
           </TouchableOpacity>
-        ) : null}
+        ) : (
+          <View style={styles.leftContent}>{leftContent}</View>
+        )}
 
         {hasTitle && (
           <View style={[styles.headerTitle, center && styles.titleByCenter]}>
-            <Text type="h3" textAlign={center ? 'center' : 'left'}>
-              {title}
-            </Text>
+            {typeof title === 'string' ? (
+              <Text type="h3" textAlign={center ? 'center' : 'left'}>
+                {title}
+              </Text>
+            ) : (
+              title
+            )}
           </View>
         )}
 
@@ -78,13 +97,14 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
           </View>
         </TouchableOpacity>
       </View>
-    </View>
+    </Animated.View>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
     height: 64,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   absolute: {
     position: 'absolute',
@@ -125,6 +145,15 @@ const styles = StyleSheet.create({
   },
   leftButton: {
     left: 0,
+  },
+  leftContent: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    zIndex: 2,
+    height: 64,
+    justifyContent: 'center',
+    paddingLeft: 16,
   },
   close: {
     width: 32,

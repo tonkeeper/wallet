@@ -5,7 +5,7 @@ import { TouchableOpacity } from './TouchableOpacity';
 import { corners } from '../styles/constants';
 import { Steezy, useTheme } from '../styles';
 import { Font } from './Text/TextStyles';
-import { isAndroid } from '../utils';
+import { isAndroid, isIOS } from '../utils';
 import { Icon } from './Icon';
 import { View } from './View';
 import { Text } from './Text';
@@ -32,6 +32,7 @@ import {
   useMemo,
   useRef,
 } from 'react';
+import { t } from '@tonkeeper/shared/i18n';
 
 type FocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 
@@ -73,6 +74,7 @@ enum InputState {
 
 const LABEL_SCALE_RATIO = 0.8;
 const ANIM_DURATION = 100;
+const LABEL_TRANSLATE_X_TO = isIOS ? -32 : -30;
 
 export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
   const {
@@ -248,7 +250,7 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
   const labelContainerStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        translateX: interpolate(hasValueAnim.value, [0, 1], [0, -30]),
+        translateX: interpolate(hasValueAnim.value, [0, 1], [0, LABEL_TRANSLATE_X_TO]),
       },
       {
         translateY: interpolate(hasValueAnim.value, [0, 1], [0, -13]),
@@ -326,7 +328,7 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
           {withPasteButton && (
             <TouchableOpacity style={styles.rightButton} onPress={handlePastePress}>
               <Text type="label1" color="textAccent">
-                {pasteButtonTitle ?? 'Paste'}
+                {pasteButtonTitle ?? t('paste')}
               </Text>
             </TouchableOpacity>
           )}

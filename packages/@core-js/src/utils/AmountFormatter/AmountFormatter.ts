@@ -38,9 +38,9 @@ export class AmountFormatter {
   };
 
   static sign = {
-    minus:  '−',
+    minus: '−',
     plus: '+',
-  }
+  };
 
   constructor(options: AmountFormatterOptions) {
     if (options.getDefaultDecimals) {
@@ -71,11 +71,15 @@ export class AmountFormatter {
     return bn.shiftedBy(decimals ?? 9).toString(10);
   }
 
-  public fromNano(amount: AmountNumber, decimals: number = 9) {
+  static fromNanoStatic(amount: AmountNumber, decimals: number = 9) {
     return new BigNumber(amount ?? 0)
       .shiftedBy(-decimals)
       .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
       .toString(10);
+  }
+
+  public fromNano(amount: AmountNumber, decimals: number = 9) {
+    return AmountFormatter.fromNanoStatic(amount, decimals);
   }
 
   private toBN(amount: AmountNumber = 0) {

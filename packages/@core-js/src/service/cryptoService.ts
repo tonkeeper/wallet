@@ -7,7 +7,7 @@
  */
 
 import { Sha256 } from '@aws-crypto/sha256-js';
-import { Address, Cell, beginCell } from 'ton-core';
+import { Address, Cell, beginCell } from '@ton/core';
 import * as ed25519 from '@noble/ed25519';
 import aesjs from 'aes-js';
 import crypto from 'isomorphic-webcrypto';
@@ -148,6 +148,20 @@ const encryptData = async (
   return prefixedEncrypted;
 };
 
+const storeDeepRef = (bytes: Uint8Array): Cell => {
+  const CELL_BYTE_LENGTH = 127;
+  if (bytes.length <= CELL_BYTE_LENGTH) {
+    return beginCell()
+      .storeBuffer(Buffer.from(bytes.slice(0, CELL_BYTE_LENGTH)))
+      .endCell();
+  } else {
+    return beginCell()
+      .storeBuffer(Buffer.from(bytes.slice(0, Math.min(bytes.length, CELL_BYTE_LENGTH))))
+      .storeRef(storeDeepRef(Buffer.from(bytes.slice(CELL_BYTE_LENGTH, bytes.length))))
+      .endCell();
+  }
+};
+
 const makeSnakeCells = (bytes: Uint8Array): Cell => {
   const ROOT_CELL_BYTE_LENGTH = 35 + 4;
   const CELL_BYTE_LENGTH = 127;
@@ -160,15 +174,9 @@ const makeSnakeCells = (bytes: Uint8Array): Cell => {
     throw new Error('Text too long');
   }
 
-  let cell = rootCellBuilder;
-  for (let i = 0; i < cellCount; i++) {
-    const prevCell = cell;
-    const cursor = ROOT_CELL_BYTE_LENGTH + i * CELL_BYTE_LENGTH;
-    cell = beginCell().storeBuffer(
-      Buffer.from(bytes.slice(cursor, Math.min(bytes.length, cursor + CELL_BYTE_LENGTH))),
-    );
-    prevCell.storeRef(cell);
-  }
+  rootCellBuilder.storeRef(
+    storeDeepRef(Buffer.from(bytes.slice(ROOT_CELL_BYTE_LENGTH, bytes.length))),
+  );
 
   return rootCellBuilder.endCell();
 };
@@ -192,7 +200,7 @@ export const encryptMessageComment = async (
     senderAddress instanceof Address ? senderAddress : Address.parse(senderAddress);
 
   const salt = new TextEncoder().encode(
-    address.toString({ bounceable: true, urlSafe: true }),
+    address.toString({ bounceable: true, urlSafe: true, testOnly: false }),
   );
 
   const encryptedBytes = await encryptData(

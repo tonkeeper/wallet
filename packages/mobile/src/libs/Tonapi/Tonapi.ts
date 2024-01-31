@@ -12,42 +12,6 @@ const prepareHeaders = (restHeaders?: { [key: string]: string }) => {
   };
 };
 
-const getBulkInfo = async (addresses: string[]) => {
-  const endpoint = getServerConfig('tonapiIOEndpoint');
-
-  const resp = await axios.post(
-    `${endpoint}/v1/account/getBulkInfo`,
-    {
-      addresses: addresses.join(','),
-    },
-    {
-      headers: prepareHeaders(),
-    },
-  );
-};
-
-const findByPubkey = async (pubkey: string) => {
-  const endpoint = getServerConfig('tonapiIOEndpoint');
-
-  try {
-    const resp = await axios.get(`${endpoint}/v1/wallet/findByPubkey`, {
-      params: {
-        public_key: pubkey,
-      },
-      headers: prepareHeaders(),
-    });
-
-    if (!resp.data.wallets) {
-      console.log(resp.data);
-    }
-
-    return resp.data?.wallets ?? [];
-  } catch (err) {
-    console.log(err, err.response.data);
-    return [];
-  }
-};
-
 async function getWalletInfo(address: string) {
   try {
     const endpoint = getServerConfig('tonapiV2Endpoint');
@@ -61,11 +25,6 @@ async function getWalletInfo(address: string) {
     console.log(e);
   }
 }
-
-type Balances = {
-  balance: number;
-  version: string;
-};
 
 async function resolveDns(domain: string, signal?: AbortSignal) {
   try {
@@ -98,81 +57,6 @@ async function getJettonBalances(address: string) {
       }),
     });
     return resp.data;
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-async function estimateTx(boc: string) {
-  try {
-    const endpoint = getServerConfig('tonapiIOEndpoint');
-    const response: any = await axios.post(
-      `${endpoint}/v1/send/estimateTx`,
-      {
-        boc,
-      },
-      {
-        headers: prepareHeaders(),
-      },
-    );
-    return response.data;
-  } catch (e) {
-    console.log(e);
-  }
-}
-/*async function estimateTx(boc: string) {
-  try {
-    const endpoint = getServerConfig('tonapiV2Endpoint');
-    const response: any = await axios.post(
-      `${endpoint}/v2/blockchain/message/emulate`,
-      {
-        boc,
-      },
-      {
-        headers: prepareHeaders({
-          Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
-        }),
-      },
-    );
-    return response.data;
-  } catch (e) {
-    console.log(e);
-  }
-}*/
-
-/*async function sendBoc(boc: string) {
-  try {
-    const endpoint = getServerConfig('tonapiV2Endpoint');
-    const response: any = await axios.post(
-      `${endpoint}/v2/blockchain/message`,
-      {
-        boc,
-      },
-      {
-        headers: prepareHeaders({
-          Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
-        }),
-      },
-    );
-    return response.data;
-  } catch (e) {
-    console.log(e);
-  }
-}*/
-
-async function sendBoc(boc: string) {
-  try {
-    const endpoint = getServerConfig('tonapiIOEndpoint');
-    const response: any = await axios.post(
-      `${endpoint}/v1/send/boc`,
-      {
-        boc,
-      },
-      {
-        headers: prepareHeaders(),
-      },
-    );
-    return response.data;
   } catch (e) {
     console.log(e);
   }
@@ -232,28 +116,6 @@ async function unsubscribeFromNotifications(
     throw new Error(`Unable to unsubscribe from notifications: ${e.message}`);
   }
 }
-async function getBalances(pubkey: string) {
-  const wallets = await findByPubkey(pubkey);
-
-  const balances: Balances[] = [];
-  for (let wallet of wallets) {
-    const versions = ['wallet_v3R1', 'wallet_v3R2', 'wallet_v4R1', 'wallet_v4R2'];
-    const detectedVersion = wallet.interfaces.find((version) =>
-      versions.includes(version),
-    );
-    if (detectedVersion) {
-      if (wallet.balance > 0) {
-        const version = detectedVersion.replace('wallet_', '');
-        balances.push({
-          balance: wallet.balance,
-          version,
-        });
-      }
-    }
-  }
-
-  return balances;
-}
 
 type GetExpiringDNSParams = {
   account_id: string;
@@ -289,15 +151,10 @@ const getDNSLastFillTime = async (domainAddress: string): Promise<number> => {
 
 export const Tonapi = {
   getJettonBalances,
-  getBulkInfo,
-  findByPubkey,
   getWalletInfo,
-  getBalances,
   subscribeToNotifications,
   unsubscribeFromNotifications,
   resolveDns,
-  estimateTx,
-  sendBoc,
   getExpiringDNS,
   getDNSLastFillTime,
 };

@@ -8,19 +8,21 @@ import Animated from 'react-native-reanimated';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
-import { Icon, PopupSelect, ScrollHandler, Spacer, Text, List } from '$uikit';
+import { Icon, PopupSelect, ScrollHandler, Spacer, Text } from '$uikit';
+import { Icon as NewIcon } from '@tonkeeper/uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
 import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
 import { hasSubscriptionsSelector } from '$store/subscriptions';
+import { List } from '@tonkeeper/uikit';
 import {
   MainStackRouteNames,
   openDeleteAccountDone,
   openDevMenu,
-  openJettonsListSettingsStack,
   openLegalDocuments,
   openManageTokens,
   openNotifications,
+  openRefillBattery,
   openSecurity,
   openSecurityMigration,
   openSubscriptions,
@@ -56,6 +58,7 @@ import { trackEvent } from '$utils/stats';
 import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 import { Address } from '@tonkeeper/core';
 import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
+import { config } from '@tonkeeper/shared/config';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -83,6 +86,8 @@ export const Settings: FC = () => {
   const showV4R1 = useSelector(showV4R1Selector);
   const shouldShowTokensButton = useShouldShowTokensButton();
   const showNotifications = useNotificationsStore(shouldShowNotifications);
+
+  const isBatteryVisible = !config.get('disable_battery');
 
   const searchEngine = useBrowserStore((state) => state.searchEngine);
   const setSearchEngine = useBrowserStore((state) => state.actions.setSearchEngine);
@@ -134,8 +139,10 @@ export const Settings: FC = () => {
         text: t('settings_reset_alert_button'),
         style: 'destructive',
         onPress: () => {
+          if (showNotifications) {
+            notifications.unsubscribe();
+          }
           dispatch(walletActions.cleanWallet());
-          notifications.unsubscribe();
         },
       },
     ]);
@@ -167,6 +174,21 @@ export const Settings: FC = () => {
     [dispatch],
   );
 
+  const handleSwitchLanguage = useCallback(() => {
+    Alert.alert(t('language.language_alert.title'), undefined, [
+      {
+        text: t('language.language_alert.cancel'),
+        style: 'cancel',
+      },
+      {
+        text: t('language.language_alert.open'),
+        onPress: () => {
+          Linking.openSettings();
+        },
+      },
+    ]);
+  }, []);
+
   const handleDevMenu = useCallback(() => {
     openDevMenu();
   }, []);
@@ -185,12 +207,12 @@ export const Settings: FC = () => {
     openAppearance();
   }, []);
 
-  const handleJettonsList = useCallback(() => {
-    openJettonsListSettingsStack();
-  }, []);
-
   const handleManageTokens = useCallback(() => {
     openManageTokens();
+  }, []);
+
+  const handleBattery = useCallback(() => {
+    openRefillBattery();
   }, []);
 
   const handleDeleteAccount = useCallback(() => {
@@ -293,6 +315,19 @@ export const Settings: FC = () => {
                 onPress={handleAppearance}
               />
             )}
+            {isBatteryVisible && (
+              <List.Item
+                value={
+                  <NewIcon
+                    style={styles.icon.static}
+                    color="accentBlue"
+                    name={'ic-battery-28'}
+                  />
+                }
+                title={t('battery.settings')}
+                onPress={handleBattery}
+              />
+            )}
           </List>
           <Spacer y={16} />
           <List>
@@ -334,6 +369,15 @@ export const Settings: FC = () => {
                 title={t('settings_search_engine')}
               />
             </PopupSelect>
+            <List.Item
+              onPress={handleSwitchLanguage}
+              value={
+                <Text variant="label1" color="accentPrimary">
+                  {t('language.list_item.value')}
+                </Text>
+              }
+              title={t('language.list_item.title')}
+            />
             {!!wallet && (
               <PopupSelect
                 items={versions}

@@ -102,6 +102,7 @@ export class Vault {
     const tonPubkey = tonKeyPair.publicKey;
 
     // await tk.generateTronAddress(tonKeyPair.secretKey);
+    await tk.obtainProofToken(tonKeyPair);
 
     const info: VaultInfo = {
       name: name,
@@ -206,6 +207,10 @@ export class Vault {
     }
 
     return null;
+  }
+
+  public get workchain() {
+    return this.info.workchain ?? 0;
   }
 
   isMasterChain() {
@@ -507,6 +512,10 @@ export class UnlockedVault extends Vault {
   async getTonPrivateKey(): Promise<Uint8Array> {
     const keyPair = await Ton.mnemonic.mnemonicToKeyPair(this.mnemonic.split(' '));
     return keyPair.secretKey;
+  }
+
+  async getKeyPair(): Promise<nacl.SignKeyPair> {
+    return await Ton.mnemonic.mnemonicToKeyPair(this.mnemonic.split(' '));
   }
 
   public setConfig(config: any) {

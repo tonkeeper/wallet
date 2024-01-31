@@ -52,8 +52,8 @@ export const NftPreviewContent = memo<NftPreviewContentProps>((props) => {
               imageStyle={styles.picture}
               image={
                 <Picture
-                  preview={nft.image.preview}
-                  uri={nft.image.small}
+                  preview={nft.image?.preview}
+                  uri={nft.image?.small}
                   style={styles.picture}
                 />
               }
@@ -77,7 +77,7 @@ export const NftPreviewContent = memo<NftPreviewContentProps>((props) => {
               >
                 {nft.collection?.name || t('nft_single_nft')}
               </HideableAmount>
-              {nft.approved_by.length > 0 && (
+              {nft.approved_by?.length > 0 && (
                 <Animated.View
                   style={[styles.verificationIcon.static, hideableAnimStyle]}
                 >

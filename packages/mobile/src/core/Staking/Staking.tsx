@@ -21,7 +21,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/shared/Address';
 import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 import { walletSelector } from '$store/wallet';
-import { CryptoCurrencies, getServerConfig } from '$shared/constants';
+import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
 import { Flash } from '@tonkeeper/uikit';
 import { Ton } from '$libs/Ton';
 
@@ -142,8 +142,45 @@ export const Staking: FC<Props> = () => {
     openDAppBrowser(getServerConfig('stakingInfoUrl'));
   }, []);
 
+  const otherPoolsEstimation = useMemo(() => {
+    const otherPools = activePools.filter(
+      (pool) => pool.implementation !== PoolImplementationType.LiquidTF,
+    );
+
+    return otherPools.reduce(
+      (acc, pool) => {
+        return {
+          balance: new BigNumber(acc.balance)
+            .plus(pool.balance || '0')
+            .decimalPlaces(Decimals[CryptoCurrencies.Ton])
+            .toString(),
+          estimatedProfit: new BigNumber(pool.balance || '0')
+            .multipliedBy(new BigNumber(pool.apy).dividedBy(100))
+            .plus(acc.estimatedProfit)
+            .decimalPlaces(Decimals[CryptoCurrencies.Ton])
+            .toString(),
+        };
+      },
+      { balance: '0', estimatedProfit: '0' },
+    );
+  }, [activePools]);
+
   const getEstimateProfitMessage = useCallback(
     (provider: StakingProvider) => {
+      if (new BigNumber(otherPoolsEstimation.balance).isGreaterThan(0)) {
+        const estimatedProfit = new BigNumber(otherPoolsEstimation.balance).multipliedBy(
+          new BigNumber(provider.maxApy).dividedBy(100),
+        );
+
+        const profitDiff = estimatedProfit.minus(otherPoolsEstimation.estimatedProfit);
+
+        if (profitDiff.isGreaterThan(0)) {
+          return t('staking.estimated_profit_compare', {
+            amount: formatter.format(profitDiff),
+          });
+        }
+      }
+
       const balance = new BigNumber(tonBalance);
 
       if (balance.isGreaterThanOrEqualTo(10)) {
@@ -156,7 +193,7 @@ export const Staking: FC<Props> = () => {
         });
       }
     },
-    [tonBalance],
+    [otherPoolsEstimation, tonBalance],
   );
 
   useEffect(() => {

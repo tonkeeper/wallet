@@ -366,7 +366,7 @@
     "amount" : {
       "insufficient_balance" : "Fondi insufficienti",
       "less_than_min" : "Minimo %{minAmount} TON",
-      "max" : "Massimo",
+      "max" : "MAX",
       "recipient_label" : "Invia A:",
       "remaining" : "Rimanente: %{amount}"
     },
@@ -564,7 +564,7 @@
   "ton_login_connect_button" : "Collega wallet",
   "ton_login_notice" : "Assicurati di controllare l'indirizzo del servizio prima di collegare il wallet.",
   "ton_login_success" : "Fatto",
-  "ton_login_title" : "Connetti a %{name}?",
+  "ton_login_title" : "Connetti a %domain?",
   "transaction_bid_collection_name" : "Emittente",
   "transaction_bid_date" : "Offerta %{date}",
   "transaction_bid_dns" : "Nome",

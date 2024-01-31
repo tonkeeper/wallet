@@ -1,18 +1,22 @@
 import React, { memo, useCallback } from 'react';
-import { Icon, List, Steezy, SText as Text, View } from '@tonkeeper/uikit';
+import { Icon, isAndroid, List, Steezy, SText as Text, View } from '@tonkeeper/uikit';
 import { SpoilerView } from '@tonkeeper/mobile/src/uikit';
 import { Toast, useEncryptedCommentsStore } from '@tonkeeper/mobile/src/store';
 import { shallow } from 'zustand/shallow';
-import { TransactionDetails } from '../../mappers/AccountEventsMapper';
 import { decryptMessageComment } from '@tonkeeper/core';
 import { t } from '../../i18n';
 import { useSelector } from 'react-redux';
 import { walletWalletSelector } from '@tonkeeper/mobile/src/store/wallet';
 import { useUnlockVault } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/useUnlockVault';
 import { TouchableWithoutFeedback } from 'react-native';
-import Clipboard from '@react-native-community/clipboard';
 import Animated from 'react-native-reanimated';
-import { AccountAddress } from '@tonkeeper/core/src/TonAPI';
+import {
+  AccountAddress,
+  EncryptedComment as IEncryptedComment,
+} from '@tonkeeper/core/src/TonAPI';
+import { SpoilerViewMock } from './components/SpoilerViewMock';
+import { useCopyText } from '@tonkeeper/mobile/src/hooks/useCopyText';
+import { openEncryptedCommentModalIfNeeded } from '../../modals/EncryptedCommentModal';
 
 export enum EncryptedCommentLayout {
   LIST_ITEM,
@@ -20,23 +24,29 @@ export enum EncryptedCommentLayout {
 }
 
 export interface EncryptedCommentProps {
-  transactionId: TransactionDetails['id'];
-  transactionType: TransactionDetails['type'] | 'SimplePreview';
-  encryptedComment: TransactionDetails['encryptedComment'];
+  actionId: string;
+  encryptedComment: IEncryptedComment;
   sender: AccountAddress;
   layout: EncryptedCommentLayout;
   backgroundStyle?: { backgroundColor: string };
 }
 
+const SpoilerViewComponent = isAndroid ? SpoilerViewMock : SpoilerView;
+
 const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
-  const actionKey = props.transactionId + props.transactionType;
   const decryptedComment: string | undefined = useEncryptedCommentsStore(
-    (s) => s.decryptedComments[actionKey],
+    (s) => s.decryptedComments[props.actionId],
     shallow,
   );
 
   const wallet = useSelector(walletWalletSelector);
   const unlockVault = useUnlockVault();
+  const copyText = useCopyText();
+
+  const handleCopyComment = useCallback(
+    () => copyText(decryptedComment),
+    [decryptedComment],
+  );
 
   const saveDecryptedComment = useEncryptedCommentsStore(
     (s) => s.actions.saveDecryptedComment,
@@ -75,28 +85,19 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
     [saveDecryptedComment, t, unlockVault, wallet],
   );
 
-  // TODO: replace on useCopyText
-  const copyText = useCallback(
-    (value: string) => () => {
-      Clipboard.setString(value);
-      // Toast.success(t('copied')); // TODO: Move toast to shared
-    },
-    [],
-  );
-
   const handleDecryptComment = useCallback(() => {
-    decryptComment(actionKey, props.encryptedComment, props.sender.address);
+    openEncryptedCommentModalIfNeeded(() =>
+      decryptComment(props.actionId, props.encryptedComment, props.sender.address),
+    );
   }, [decryptComment]);
 
   const encryptedCommentMock = 's'.repeat(encryptedCommentLength);
 
-  // Feature not ready yet
-  return null;
-
   if (props.layout === EncryptedCommentLayout.LIST_ITEM) {
     return (
       <List.Item
-        label={
+        onPress={decryptedComment ? handleCopyComment : handleDecryptComment}
+        title={
           <View style={styles.encryptedCommentContainer}>
             <Text style={styles.labelText.static} color="textSecondary" type="body1">
               {t('transactionDetails.comment')}
@@ -108,15 +109,13 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
         }
         value={
           <View style={styles.listItemSpoilerView}>
-            <SpoilerView isOn={!decryptedComment}>
-              <TouchableWithoutFeedback
-                onPress={
-                  decryptedComment ? copyText(decryptedComment) : handleDecryptComment
-                }
-              >
-                <Text type="label1">{decryptedComment || encryptedCommentMock}</Text>
-              </TouchableWithoutFeedback>
-            </SpoilerView>
+            <SpoilerViewComponent
+              mockText={t('encryptedComments.show')}
+              mockTextType="label1"
+              isOn={!decryptedComment}
+            >
+              <Text type="label1">{decryptedComment || encryptedCommentMock}</Text>
+            </SpoilerViewComponent>
           </View>
         }
       />
@@ -128,9 +127,9 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
         onPress={handleDecryptComment}
       >
         <Animated.View style={[styles.bubble.static, props.backgroundStyle]}>
-          <SpoilerView isOn={!decryptedComment}>
+          <SpoilerViewComponent withIcon isOn={!decryptedComment}>
             <Text type="body2">{decryptedComment || encryptedCommentMock}</Text>
-          </SpoilerView>
+          </SpoilerViewComponent>
         </Animated.View>
       </TouchableWithoutFeedback>
     );

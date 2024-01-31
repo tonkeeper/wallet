@@ -2,16 +2,11 @@ import React, { memo, useEffect, useMemo } from 'react';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
-import { NFTOperations } from '../NFTOperations';
-import {
-  calculateActionsTotalAmount,
-  calculateMessageTransferAmount,
-  delay,
-} from '$utils';
+import { calculateMessageTransferAmount, delay } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
 import { store, Toast } from '$store';
-import { Modal, View, Text, Steezy, List } from '@tonkeeper/uikit';
+import { List, Modal, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
 import { SheetActions } from '@tonkeeper/router';
 import {
@@ -29,31 +24,38 @@ import {
   ActivityModel,
   Address,
   AnyActionItem,
+  ContractService,
+  contractVersionsMap,
+  TransactionService,
 } from '@tonkeeper/core';
 import { ActionListItemByType } from '@tonkeeper/shared/components/ActivityList/ActionListItemByType';
 import { useSelector } from 'react-redux';
 import { fiatCurrencySelector } from '$store/main';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
 import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
+import { Buffer } from 'buffer';
+import { trackEvent } from '$utils/stats';
+import { Events, SendAnalyticsFrom } from '$store/models';
+import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
 
 interface SignRawModalProps {
-  action: Awaited<ReturnType<NFTOperations['signRaw']>>;
   consequences?: MessageConsequences;
   options: TxBodyOptions;
   params: SignRawParams;
   onSuccess?: (boc: string) => void;
   onDismiss?: () => void;
   redirectToActivity?: boolean;
+  isBattery?: boolean;
 }
 
 export const SignRawModal = memo<SignRawModalProps>((props) => {
   const {
     options,
     params,
-    action,
     onSuccess,
     onDismiss,
     consequences,
+    isBattery,
     redirectToActivity,
   } = props;
   const { footerRef, onConfirm } = useNFTOperationState(options);
@@ -68,12 +70,30 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 
     startLoading();
 
-    await action.send(privateKey, async (boc) => {
-      if (onSuccess) {
-        await delay(1750);
-        onSuccess(boc);
-      }
+    const contract = ContractService.getWalletContract(
+      contractVersionsMap[vault.getVersion() ?? 'v4R2'],
+      Buffer.from(vault.tonPublicKey),
+      vault.workchain,
+    );
+    const boc = TransactionService.createTransfer(contract, {
+      messages: TransactionService.parseSignRawMessages(params.messages),
+      seqno: await getWalletSeqno(),
+      sendMode: 3,
+      secretKey: Buffer.from(privateKey),
     });
+
+    await tonapi.blockchain.sendBlockchainMessage(
+      {
+        boc,
+      },
+      { format: 'text' },
+    );
+
+    if (onSuccess) {
+      trackEvent(Events.SendSuccess, { from: SendAnalyticsFrom.SignRaw });
+      await delay(1750);
+      onSuccess(boc);
+    }
   });
 
   useEffect(() => {
@@ -142,7 +162,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
         }),
       };
     }
-  }, [consequences]);
+  }, [consequences, fiatCurrency, getTokenPrice]);
 
   const amountToFiat = (action: AnyActionItem) => {
     if (action.amount) {
@@ -187,12 +207,22 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
         </List>
         <View style={styles.feeContainer}>
           <Text type="body2" color="textSecondary">
-            {t('confirmSendModal.network_fee')}
+            {extra.isNegative
+              ? t('confirmSendModal.network_fee')
+              : t('confirmSendModal.refund')}
           </Text>
           <Text type="body2" color="textSecondary">
             ≈ {extra.value} · {extra.fiat}
           </Text>
         </View>
+        {isBattery && (
+          <View style={styles.withBatteryContainer}>
+            <Text type="body2" color="textSecondary">
+              {t('confirmSendModal.will_be_paid_with_battery')}
+            </Text>
+          </View>
+        )}
+        <Spacer y={16} />
       </Modal.ScrollView>
       <Modal.Footer>
         <NFTOperationFooter
@@ -225,13 +255,36 @@ export const openSignRawModal = async (
       await TonConnectRemoteBridge.closeOtherTransactions();
     }
 
-    const operations = new NFTOperations(wallet);
-    const action = await operations.signRaw(params);
+    const contract = ContractService.getWalletContract(
+      contractVersionsMap[wallet.ton.version],
+      Buffer.from(wallet.ton.vault.tonPublicKey),
+      wallet.ton.vault.workchain,
+    );
 
     let consequences: MessageConsequences | null = null;
+    let isBattery = false;
     try {
-      const boc = await action.getBoc();
-      consequences = await tonapi.wallet.emulateMessageToWallet({ boc });
+      const boc = TransactionService.createTransfer(contract, {
+        messages: TransactionService.parseSignRawMessages(params.messages),
+        seqno: await getWalletSeqno(),
+        secretKey: Buffer.alloc(64),
+      });
+      consequences = await tonapi.wallet.emulateMessageToWallet({
+        boc,
+      });
+
+      if (!isBattery) {
+        const totalAmount = calculateMessageTransferAmount(params.messages);
+        const checkResult = await checkIsInsufficient(totalAmount);
+        if (checkResult.insufficient) {
+          Toast.hide();
+          onDismiss?.();
+          return openInsufficientFundsModal({
+            totalAmount,
+            balance: checkResult.balance,
+          });
+        }
+      }
 
       Toast.hide();
     } catch (err) {
@@ -241,26 +294,7 @@ export const openSignRawModal = async (
       const tonapiError = err?.response?.data?.error;
       const errorMessage = tonapiError ?? `no response; status code: ${err.status};`;
 
-      // in case of error we should check current TON balance and show "insufficient funds" modal
-      const totalAmount = calculateMessageTransferAmount(params.messages);
-      const checkResult = await checkIsInsufficient(totalAmount);
-      if (checkResult.insufficient) {
-        Toast.hide();
-        onDismiss?.();
-        return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
-      }
-
       Toast.fail(`Emulation error: ${errorMessage}`, { duration: 5000 });
-    }
-
-    if (params.messages) {
-      const totalAmount = calculateActionsTotalAmount(params.messages);
-      const checkResult = await checkIsInsufficient(totalAmount);
-      if (checkResult.insufficient) {
-        Toast.hide();
-        onDismiss?.();
-        return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
-      }
     }
 
     push('SheetsProvider', {
@@ -270,10 +304,10 @@ export const openSignRawModal = async (
         consequences,
         options,
         params,
-        action,
         onSuccess,
         onDismiss,
         redirectToActivity,
+        isBattery,
       },
       path: 'SignRaw',
     });
@@ -291,9 +325,11 @@ const styles = Steezy.create({
   feeContainer: {
     paddingHorizontal: 32,
     paddingTop: 12,
-    paddingBottom: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  withBatteryContainer: {
+    paddingHorizontal: 32,
   },
   actionsList: {
     marginBottom: 0,

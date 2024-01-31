@@ -1,5 +1,7 @@
 import { SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { INITIAL_SNAP_POINT } from '@gorhom/bottom-sheet/src/components/bottomSheet/constants';
+import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { useCallback } from 'react';
 
 export type LayoutMeasurementEvent = {
   nativeEvent: {
@@ -13,6 +15,8 @@ export type SheetMeasurements = {
   measureHeader: (ev: LayoutMeasurementEvent) => void;
   measureContent: (ev: LayoutMeasurementEvent) => void;
   measureFooter: (ev: LayoutMeasurementEvent) => void;
+  scrollHandler: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  scrollY: SharedValue<number>;
   snapPoints: SharedValue<(string | number)[]>;
   handleHeight: SharedValue<number>;
   headerHeight: SharedValue<number>;
@@ -25,6 +29,12 @@ export const useSheetMeasurements = (): SheetMeasurements => {
   const headerHeight = useSharedValue(0);
   const contentHeight = useSharedValue(0);
   const footerHeight = useSharedValue(0);
+
+  const scrollY = useSharedValue(0);
+
+  const scrollHandler = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    scrollY.value = event.nativeEvent.contentOffset.y;
+  }, []);
 
   const snapPoints = useDerivedValue(() => {
     if (contentHeight.value === 0) {
@@ -51,6 +61,8 @@ export const useSheetMeasurements = (): SheetMeasurements => {
     measureHeader,
     measureContent,
     measureFooter,
+    scrollHandler,
+    scrollY,
     handleHeight,
     headerHeight,
     contentHeight,

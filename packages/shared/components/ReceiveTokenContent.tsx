@@ -18,7 +18,7 @@ import {
 interface ReceiveTokenContentProps {
   address: string;
   renderDelay?: number;
-  logo: React.ReactNode;
+  logo?: React.ReactNode;
   qrAddress?: string;
   title: string;
   description: string;
@@ -73,7 +73,7 @@ export const ReceiveTokenContent = memo<ReceiveTokenContentProps>((props) => {
             <View style={{ transform: [{ scale: qrCodeScale }] }}>
               <QRCode data={qrAddress ?? address} style={styles.qrCode} pieceSize={8} />
             </View>
-            <View style={steezyStyles.logoContainer}>{logo}</View>
+            {logo ? <View style={steezyStyles.logoContainer}>{logo}</View> : null}
           </View>
         ) : (
           <View style={styles.emptyQrArea} />

@@ -31,10 +31,12 @@ import {
 import {
   getAddedCurrencies,
   getBalances,
+  getBalancesUpdatedAt,
   getHiddenNotifications,
   getIntroShown,
   getIsTestnet,
   getMigrationState,
+  getOldWalletBalances,
   getPrimaryFiatCurrency,
   getSavedLogs,
   getSavedServerConfig,
@@ -133,6 +135,8 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
   const isIntroShown = yield call(getIntroShown);
   const primaryCurrency = yield call(getPrimaryFiatCurrency);
   const balances = yield call(getBalances);
+  const oldWalletBalances = yield call(getOldWalletBalances);
+  const balancesUpdatedAt = yield call(getBalancesUpdatedAt);
   const isNewSecurityFlow = yield call(MainDB.isNewSecurityFlow);
   const excludedJettons = yield call(MainDB.getExcludedJettons);
   const accent = yield call(MainDB.getAccent);
@@ -158,6 +162,8 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
         walletActions.setCurrencies(currencies),
         subscriptionsActions.reset(),
         walletActions.setBalances(balances),
+        walletActions.setOldWalletBalance(oldWalletBalances),
+        walletActions.setUpdatedAt(balancesUpdatedAt),
         jettonsActions.setJettonBalances({ jettonBalances }),
       ),
     );
@@ -192,6 +198,8 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
       walletActions.setCurrencies(currencies),
       subscriptionsActions.reset(),
       walletActions.setBalances(balances),
+      walletActions.setOldWalletBalance(oldWalletBalances),
+      walletActions.setUpdatedAt(balancesUpdatedAt),
       mainActions.setAccent(accent),
       mainActions.setTonCustomIcon(tonCustomIcon),
       jettonsActions.setJettonBalances({ jettonBalances }),
@@ -215,11 +223,14 @@ export function* initHandler(isTestnet: boolean, canRetry = false) {
     const { wallet: walletNew } = yield select(walletSelector);
     const addr = yield call([walletNew.ton, 'getAddress']);
     const data = yield call([tk, 'load']);
+    const stateInit = yield call([walletNew.ton, 'createStateInitBase64']);
     yield call(
       [tk, 'init'],
       addr,
       isTestnet,
       data.tronAddress,
+      data.tonProof,
+      stateInit,
       !getFlag('address_style_nobounce'),
     );
     useSwapStore.getState().actions.fetchAssets();
@@ -356,10 +367,10 @@ function* setTonCustomIconWorker(action: SetTonCustomIcon) {
 
 function* getTimeSyncedWorker() {
   try {
-    const endpoint = `${getServerConfig('tonapiIOEndpoint')}/v1/system/time`;
+    const endpoint = `${getServerConfig('tonapiV2Endpoint')}/v2/liteserver/get_time`;
 
     const response = yield call(axios.get, endpoint, {
-      headers: { Authorization: `Bearer ${getServerConfig('tonApiKey')}` },
+      headers: { Authorization: `Bearer ${getServerConfig('tonApiV2Key')}` },
     });
     const time = response?.data?.time;
     const isSynced = Math.abs(Date.now() - time * 1000) <= 7000;

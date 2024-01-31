@@ -12,6 +12,7 @@ export type IconColors =
   | 'iconPrimaryAlternate'
   | 'constantWhite'
   | 'accentBlue'
+  | 'accentOrange'
   | 'accentGreen';
 
 export interface IconProps {

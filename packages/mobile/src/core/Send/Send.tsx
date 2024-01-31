@@ -17,16 +17,18 @@ import React, {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
-import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   AccountWithPubKey,
+  CurrencyAdditionalParams,
   SendAmount,
   SendProps,
   SendRecipient,
   SendSteps,
+  TokenType,
 } from './Send.interface';
 import { AddressStep } from './steps/AddressStep/AddressStep';
 import { AmountStep } from './steps/AmountStep/AmountStep';
@@ -38,7 +40,7 @@ import {
   CanceledActionError,
   DismissedActionError,
 } from './steps/ConfirmStep/ActionErrors';
-import { Configuration, AccountsApi } from '@tonkeeper/core/src/legacy';
+import { AccountsApi, Configuration } from '@tonkeeper/core/src/legacy';
 import { formatter } from '$utils/formatter';
 import { Events } from '$store/models';
 import { trackEvent } from '$utils/stats';
@@ -55,17 +57,21 @@ import {
 import { getTimeSec } from '$utils/getTimeSec';
 import { Toast } from '$store';
 
+const tokensWithAllowedEncryption = [TokenType.TON, TokenType.Jetton];
+
 export const Send: FC<SendProps> = ({ route }) => {
   const {
     currency: initialCurrency,
     address: propsAddress,
     comment: initalComment = '',
-    isJetton: initialIsJetton,
+    tokenType: initialTokenType,
+    currencyAdditionalParams: initialCurrencyAdditionalParams,
     amount: initialAmount = '0',
     fee: initialFee = '0',
     isInactive: initialIsInactive = false,
     from,
     expiryTimestamp,
+    redirectToActivity = true,
   } = route.params;
 
   const initialAddress =
@@ -92,10 +98,10 @@ export const Send: FC<SendProps> = ({ route }) => {
     return new AccountsApi(tonApiConfiguration);
   });
 
-  const [{ currency, isJetton, isUSDT }, setCurrency] = useState({
+  const [{ currency, tokenType, currencyAdditionalParams }, setCurrency] = useState({
     currency: initialCurrency || CryptoCurrencies.Ton,
-    isJetton: !!initialIsJetton,
-    isUSDT: false,
+    currencyAdditionalParams: initialCurrencyAdditionalParams,
+    tokenType: initialTokenType || TokenType.TON,
   });
 
   const [recipient, setRecipient] = useState<SendRecipient | null>(
@@ -121,12 +127,13 @@ export const Send: FC<SendProps> = ({ route }) => {
   const [fee, setFee] = useState(initialFee);
 
   const [isInactive, setInactive] = useState(initialIsInactive);
+  const [isBattery, setBattery] = useState(false);
 
   const [insufficientFundsParams, setInsufficientFundsParams] =
     useState<InsufficientFundsParams | null>(null);
 
   const { balance, currencyTitle, decimals, jettonWalletAddress, trcToken } =
-    useCurrencyToSend(currency, isJetton, isUSDT);
+    useCurrencyToSend(currency, tokenType);
 
   const tokenPrice = useTokenPrice(currency);
 
@@ -162,13 +169,21 @@ export const Send: FC<SendProps> = ({ route }) => {
     (
       nextCurrency: CryptoCurrency | string,
       nextDecimals: number,
-      nextIsJetton: boolean,
+      nextTokenType: TokenType,
+      nextCurrencyAdditionalParams?: CurrencyAdditionalParams,
     ) => {
       setAmount({
         value: '0',
         all: false,
       });
-      setCurrency({ currency: nextCurrency, isJetton: !!nextIsJetton, isUSDT: false });
+      setCurrency({
+        currency: nextCurrency,
+        tokenType: nextTokenType,
+        currencyAdditionalParams: nextCurrencyAdditionalParams,
+      });
+      if (!tokensWithAllowedEncryption.includes(nextTokenType)) {
+        setCommentEncrypted(false);
+      }
     },
     [],
   );
@@ -178,7 +193,11 @@ export const Send: FC<SendProps> = ({ route }) => {
       value: '0',
       all: false,
     });
-    setCurrency({ currency: nextCurrency, isJetton: false, isUSDT: true });
+    setCurrency({
+      currency: nextCurrency,
+      tokenType: TokenType.USDT,
+      currencyAdditionalParams: {},
+    });
   }, []);
 
   const parsedAmount = useMemo(() => {
@@ -201,11 +220,12 @@ export const Send: FC<SendProps> = ({ route }) => {
     if (recipient.blockchain === 'ton') {
       dispatch(
         walletActions.confirmSendCoins({
+          currencyAdditionalParams: currencyAdditionalParams,
           currency: currency as CryptoCurrency,
           amount: parsedAmount,
           isSendAll: amount.all,
           address: recipient.address,
-          isJetton,
+          tokenType,
           jettonWalletAddress,
           decimals,
           comment,
@@ -221,6 +241,7 @@ export const Send: FC<SendProps> = ({ route }) => {
             setInsufficientFundsParams(null);
             setFee(details.fee);
             setInactive(details.isInactive);
+            setBattery(details.isBattery);
 
             stepViewRef.current?.go(SendSteps.CONFIRM);
           },
@@ -247,7 +268,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     decimals,
     dispatch,
     isCommentEncrypted,
-    isJetton,
+    tokenType,
     jettonWalletAddress,
     parsedAmount,
     recipient,
@@ -279,15 +300,18 @@ export const Send: FC<SendProps> = ({ route }) => {
       if (recipient.blockchain === 'ton') {
         dispatch(
           walletActions.sendCoins({
+            fee,
+            currencyAdditionalParams: currencyAdditionalParams,
             currency: currency as CryptoCurrency,
             amount: parsedAmount,
             isSendAll: amount.all,
             address: recipient.address,
             comment,
             isCommentEncrypted,
-            isJetton,
+            tokenType,
             jettonWalletAddress,
             decimals,
+            sendWithBattery: isBattery,
             onDone: () => {
               trackEvent(Events.SendSuccess, { from });
               dispatch(favoritesActions.restoreHiddenAddress(recipient.address));
@@ -313,20 +337,23 @@ export const Send: FC<SendProps> = ({ route }) => {
       }
     },
     [
+      fee,
+      recipient,
+      expiryTimestamp,
+      insufficientFundsParams,
+      trcPayload.value,
+      isBattery,
+      dispatch,
+      currencyAdditionalParams,
+      currency,
+      parsedAmount,
       amount.all,
       comment,
-      currency,
-      decimals,
-      dispatch,
-      expiryTimestamp,
-      from,
-      insufficientFundsParams,
       isCommentEncrypted,
-      isJetton,
+      tokenType,
       jettonWalletAddress,
-      parsedAmount,
-      recipient,
-      trcPayload.value,
+      decimals,
+      from,
       unlock,
     ],
   );
@@ -424,17 +451,17 @@ export const Send: FC<SendProps> = ({ route }) => {
       <StepView
         ref={stepViewRef}
         backDisabled={isBackDisabled}
-        onChangeStep={handleChangeStep}
         initialStepId={initialStepId}
+        onChangeStep={handleChangeStep}
         useBackHandler
         swipeBackEnabled={!isBackDisabled}
       >
         <StepViewItem id={SendSteps.ADDRESS}>
           {(stepProps) => (
             <AddressStep
+              enableEncryption={tokensWithAllowedEncryption.includes(tokenType)}
               recipient={recipient}
               decimals={decimals}
-              stepsScrollTop={stepsScrollTop}
               changeBlockchain={changeBlockchain}
               setRecipient={setRecipient}
               setRecipientAccountInfo={setRecipientAccountInfo}
@@ -472,19 +499,21 @@ export const Send: FC<SendProps> = ({ route }) => {
         <StepViewItem id={SendSteps.CONFIRM}>
           {(stepProps) => (
             <ConfirmStep
-              stepsScrollTop={stepsScrollTop}
+              isPreparing={isPreparing}
+              isBattery={isBattery}
               currencyTitle={currencyTitle}
               currency={currency}
               recipient={recipient}
               recipientAccountInfo={recipientAccountInfo}
               amount={amount}
               decimals={decimals}
-              isJetton={isJetton}
+              tokenType={tokenType}
               fee={fee}
               isInactive={isInactive}
               comment={comment}
               isCommentEncrypted={isCommentEncrypted}
               onConfirm={handleSend}
+              redirectToActivity={redirectToActivity}
               {...stepProps}
             />
           )}

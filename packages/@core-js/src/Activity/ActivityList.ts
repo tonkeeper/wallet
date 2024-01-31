@@ -36,7 +36,12 @@ export class ActivityList {
     this.state.persist({
       storage: this.storage,
       key: 'ActivityList',
-      partialize: ({ sections }) => ({ sections }),
+      partialize: ({ sections }) => ({
+        sections: sections.map((section) => ({
+          ...section,
+          data: section.data.slice(0, 100),
+        })),
+      }),
       rehydrated: ({ sections }) => {
         sections.forEach((section) => {
           this.activityLoader.setLoadedActions(section.data);

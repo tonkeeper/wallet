@@ -1,0 +1,17 @@
+diff --git a/node_modules/@ton/crypto-primitives/dist/native/pbkdf2_sha512.js b/node_modules/@ton/crypto-primitives/dist/native/pbkdf2_sha512.js
+index bef96bf..166212a 100644
+--- a/node_modules/@ton/crypto-primitives/dist/native/pbkdf2_sha512.js
++++ b/node_modules/@ton/crypto-primitives/dist/native/pbkdf2_sha512.js
+@@ -3,9 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.pbkdf2_sha512 = void 0;
+ async function pbkdf2_sha512(key, salt, iterations, keyLen) {
+     const keyBuffer = typeof key === 'string' ? Buffer.from(key, 'utf-8') : key;
+-    const saltBuffer = typeof salt === 'string' ? Buffer.from(salt, 'utf-8') : salt;
+-    let pbkdf2 = require('react-native-fast-pbkdf2').default;
+-    let res = await pbkdf2.derive(keyBuffer.toString('base64'), saltBuffer.toString('base64'), iterations, keyLen, 'sha-512');
+-    return Buffer.from(res, 'base64');
++    let pbkdf2 = require('react-native').NativeModules.TonPbkdf2;
++    let res = await pbkdf2.derivationKey(keyBuffer.toString('hex'), typeof salt === 'string' ? salt : salt.toString('utf-8'), iterations);
++    return Buffer.from(res, 'hex');
+ }
+ exports.pbkdf2_sha512 = pbkdf2_sha512;

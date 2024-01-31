@@ -1,0 +1,230 @@
+name: Mobile CD
+on:
+  # Allows you to run this workflow manually from the Actions a tab
+  workflow_dispatch:
+
+jobs:
+  ios-testflight-build:
+    name: ios-testflight-build
+    strategy:
+      matrix:
+        os: [macos-13]
+        node-version: [18.18.0]
+        ruby-version: [3.2]
+        xcode: [15.0.1]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout to git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+          node-version: ${{ matrix.node-version }}
+    
+      - name: Install yarn dependencies
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: yarn
+
+      - name: Install pods dependencies
+        run: yarn pods
+
+      - name: Set up Ruby and Gemfile dependencies
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+          working-directory: './packages/mobile'
+
+      - name: Decode signing certificate into a file
+        working-directory: './packages/mobile/ios'
+        env:
+         CERTIFICATE_BASE64: ${{ secrets.IOS_DIST_SIGNING_KEY }}
+        run: |
+         echo $CERTIFICATE_BASE64 | base64 --decode > signing-cert.p12
+
+      - name: Build & upload iOS binary
+        working-directory: './packages/mobile/ios'
+        run: bundle exec fastlane ios beta
+        env:
+          X_CODE: ${{ matrix.xcode }}
+          DEVELOPER_APP_IDENTIFIER: ${{ secrets.DEVELOPER_APP_IDENTIFIER }}
+          DEVELOPER_TEAM_ID: ${{ secrets.DEVELOPER_TEAM_ID }}
+          ASC_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+          ASC_KEY: ${{ secrets.APPLE_KEY_CONTENT }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.IOS_DIST_SIGNING_KEY_PASSWORD }}
+          SIGNING_KEY_FILE_PATH: signing-cert.p12
+
+      - name: Upload logs to artifacts
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: gum-logs
+          path: /Users/runner/Library/Logs/gym/ton_keeper-ton_keeper.log
+
+      - name: Upload app-store ipa and dsyms to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Tonkeeper ipa & dsyms ${{ env.VERSION_CODE }}
+          path: |
+            ./packages/mobile/ios/ton_keeper.ipa
+            ./packages/mobile/ios/*.app.dSYM.zip
+
+  android-store-build:
+    name: android-store-build
+    strategy:
+      matrix:
+        os: [macos-13]
+        node-version: [18.18.0]
+        ruby-version: [3.2]
+        java-version: [11.0.12]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout to git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+          node-version: ${{ matrix.node-version }}
+    
+      - name: Install yarn dependencies
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: yarn
+
+      - name: Set up Ruby and Gemfile dependencies
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+          working-directory: './packages/mobile'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java-version }}
+
+      - name: Decode signing certificate into a file
+        working-directory: './packages/mobile/android/app'
+        env:
+         CERTIFICATE_BASE64: ${{ secrets.ANDROID_DIST_SIGNING_KEY }}
+        run: |
+         echo $CERTIFICATE_BASE64 | base64 --decode > google-release.keystore
+
+      - name: Decode service account into a file
+        working-directory: './packages/mobile/android'
+        env:
+         CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
+        run: |
+         echo $CREDENTIALS > service-account.json
+
+      - name: Patch for Google Play (remove REQUEST_INSTALL_PACKAGES)
+        run: |
+         git apply ./patches/google-play-release.patch
+
+      - name: Build & deploy Android release
+        working-directory: './packages/mobile/android'
+        run: bundle exec fastlane android beta
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/packages/mobile/android/app/google-release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.TONKEEPER_UPLOAD_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.TONKEEPER_UPLOAD_KEY_ALIAS}}
+          KEY_PASSWORD: ${{ secrets.TONKEEPER_UPLOAD_KEY_PASSWORD }}
+          ANDROID_JSON_KEY_FILE: service-account.json
+
+      - name: Upload android google play release to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Tonkeeper aab ${{ env.VERSION_CODE }}
+          path: |
+            ${{ github.workspace }}/packages/mobile/android/app/build/outputs
+
+  android-site-build:
+    name: android-site-build
+    strategy:
+      matrix:
+        os: [macos-13]
+        node-version: [18.18.0]
+        ruby-version: [3.2]
+        java-version: [11.0.12]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout to git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+          node-version: ${{ matrix.node-version }}
+    
+      - name: Install yarn dependencies
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: yarn
+
+      - name: Set up Ruby and Gemfile dependencies
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+          working-directory: './packages/mobile'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java-version }}
+
+      - name: Update ENVFILE for site
+        working-directory: './packages/mobile'
+        run: cp .env.site .env
+
+      - name: Decode signing certificate into a file
+        working-directory: './packages/mobile/android/app'
+        env:
+         CERTIFICATE_BASE64: ${{ secrets.ANDROID_DIST_SIGNING_KEY }}
+        run: |
+         echo $CERTIFICATE_BASE64 | base64 --decode > google-release.keystore
+
+      - name: Decode service account into a file
+        working-directory: './packages/mobile/android'
+        env:
+         CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
+        run: |
+         echo $CREDENTIALS > service-account.json
+
+      - name: Build android apk
+        working-directory: './packages/mobile/android'
+        run: bundle exec fastlane android apk
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/packages/mobile/android/app/google-release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.TONKEEPER_UPLOAD_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.TONKEEPER_UPLOAD_KEY_ALIAS}}
+          KEY_PASSWORD: ${{ secrets.TONKEEPER_UPLOAD_KEY_PASSWORD }}
+          ANDROID_JSON_KEY_FILE: service-account.json
+
+      - name: Upload android apk to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Tonkeeper apk ${{ env.VERSION_CODE }}
+          path: |
+            ${{ github.workspace }}/packages/mobile/android/app/build/outputs

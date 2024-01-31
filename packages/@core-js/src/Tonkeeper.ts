@@ -7,6 +7,13 @@ import { Vault } from './declarations/Vault';
 import { QueryClient } from 'react-query';
 import { TronAPI } from './TronAPI';
 import { TonAPI } from './TonAPI';
+import { BatteryAPI } from './BatteryAPI';
+import { signProofForTonkeeper } from './utils/tonProof';
+import { storeStateInit } from '@ton/ton';
+import nacl from 'tweetnacl';
+import { batteryState } from './managers/BatteryManager';
+import { beginCell } from '@ton/core';
+import { ContractService, WalletVersion } from './service';
 
 class PermissionsManager {
   public notifications = true;
@@ -19,6 +26,7 @@ type TonkeeperOptions = {
   tronapi: TronAPI;
   storage: Storage;
   tonapi: TonAPI;
+  batteryapi: BatteryAPI;
   vault: Vault;
 };
 
@@ -44,6 +52,7 @@ export class Tonkeeper {
   private queryClient: QueryClient;
   private tronapi: TronAPI;
   private tonapi: TonAPI;
+  private batteryapi: BatteryAPI;
   private vault: Vault;
 
   constructor(options: TonkeeperOptions) {
@@ -51,6 +60,7 @@ export class Tonkeeper {
     this.storage = options.storage;
     this.tronapi = options.tronapi;
     this.tonapi = options.tonapi;
+    this.batteryapi = options.batteryapi;
     this.vault = options.vault;
     this.sse = options.sse;
 
@@ -63,6 +73,8 @@ export class Tonkeeper {
     address: string,
     isTestnet: boolean,
     tronAddress: string,
+    tonProof: string,
+    walletStateInit: string,
     // TODO: remove after transition to UQ address format
     bounceable = true,
   ) {
@@ -74,6 +86,7 @@ export class Tonkeeper {
             this.queryClient,
             this.tonapi,
             this.tronapi,
+            this.batteryapi,
             this.vault,
             this.sse,
             this.storage,
@@ -82,6 +95,7 @@ export class Tonkeeper {
               tronAddress: tronAddress,
               address: address,
               bounceable,
+              tonProof,
             },
           );
 
@@ -109,18 +123,20 @@ export class Tonkeeper {
     // }
   }
 
-  public tronStrorageKey = 'temp-tron-address';
+  public tronStorageKey = 'temp-tron-address';
+  public tonProofStorageKey = 'temp-ton-proof'; // TODO: rewrite it with multi-accounts
 
   public async load() {
     try {
-      const tronAddress = await this.storage.getItem(this.tronStrorageKey);
-      if (tronAddress) {
-        return { tronAddress: JSON.parse(tronAddress) };
-      }
-      return { tronAddress: null };
+      const tonProof = await this.storage.getItem(this.tonProofStorageKey);
+      const tronAddress = await this.storage.getItem(this.tronStorageKey);
+      return {
+        tronAddress: tronAddress ? JSON.parse(tronAddress) : null,
+        tonProof: tonProof ? JSON.parse(tonProof) : null,
+      };
     } catch (err) {
       console.error('[tk:load]', err);
-      return { tronAddress: null };
+      return { tronAddress: null, tonProof: null };
     }
   }
 
@@ -135,7 +151,7 @@ export class Tonkeeper {
         owner: ownerAddress,
       };
 
-      await this.storage.setItem(this.tronStrorageKey, JSON.stringify(tronAddress));
+      await this.storage.setItem(this.tronStorageKey, JSON.stringify(tronAddress));
 
       return tronAddress;
     } catch (err) {
@@ -143,10 +159,38 @@ export class Tonkeeper {
     }
   }
 
+  public async obtainProofToken(keyPair: nacl.SignKeyPair) {
+    const contract = ContractService.getWalletContract(
+      WalletVersion.v4R2,
+      Buffer.from(keyPair.publicKey),
+      0,
+    );
+    const stateInitCell = beginCell().store(storeStateInit(contract.init)).endCell();
+    const rawAddress = contract.address.toRawString();
+
+    try {
+      const { payload } = await this.tonapi.tonconnect.getTonConnectPayload();
+      const proof = await signProofForTonkeeper(
+        rawAddress,
+        keyPair.secretKey,
+        payload,
+        stateInitCell.toBoc({ idx: false }).toString('base64'),
+      );
+      const { token } = await this.tonapi.wallet.tonConnectProof(proof);
+
+      await this.storage.setItem(this.tonProofStorageKey, JSON.stringify(token));
+      return token;
+    } catch (err) {
+      await this.storage.removeItem(this.tonProofStorageKey);
+    }
+  }
+
   // Update all data,
   // Invoke in background after hide splash screen
   private preload() {
     this.wallet.activityList.preload();
+    this.wallet.tonInscriptions.preload();
+    this.wallet.battery.fetchBalance();
     // TODO:
     this.wallet.subscriptions.prefetch();
     this.wallet.balances.prefetch();
@@ -157,6 +201,7 @@ export class Tonkeeper {
     this.wallet.jettonActivityList.rehydrate();
     this.wallet.tonActivityList.rehydrate();
     this.wallet.activityList.rehydrate();
+    this.wallet.battery.rehydrate();
   }
 
   public async lock() {
@@ -199,6 +244,7 @@ export class Tonkeeper {
   }
 
   public destroy() {
+    batteryState.clear();
     this.wallet?.destroy();
     this.queryClient.clear();
     this.wallet = null!;

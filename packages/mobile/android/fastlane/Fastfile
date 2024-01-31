@@ -1,0 +1,98 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+
+platform :android do
+
+    desc "Fetches the latest version code from the Play Console and increments it by 1"
+    lane :fetch_and_increment_build_number do
+        app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
+
+        internal_version_codes = google_play_track_version_codes(
+            package_name: app_identifier,
+            track: "internal",
+            json_key: ENV["ANDROID_JSON_KEY_FILE"]
+        )
+
+        production_version_codes = google_play_track_version_codes(
+            package_name: app_identifier,
+            json_key: ENV["ANDROID_JSON_KEY_FILE"]
+        )
+        
+        max = internal_version_codes[0] > production_version_codes[0] ? internal_version_codes[0] : production_version_codes[0]
+        updated_version_code = max + 1
+        
+        increment_version_code(
+            gradle_file_path: "./app/build.gradle",
+            version_code: updated_version_code
+        )
+        
+        sh("echo VERSION_CODE=#{updated_version_code} >> $GITHUB_ENV")
+    end
+
+    desc "Build the android aab for release"
+    lane :build_release do |options|
+        gradle(
+            task: "bundle",
+            build_type: "Release",
+            properties: {
+                "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
+                "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
+                "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+                "android.injected.signing.key.password" => ENV["KEY_PASSWORD"],
+            }  
+        )
+    end
+
+    desc "Build the android apk"
+    lane :assemble_release do |options|
+        gradle(
+            task: "assemble",
+            build_type: "Release",
+            properties: {
+                "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
+                "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
+                "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+                "android.injected.signing.key.password" => ENV["KEY_PASSWORD"],
+            }  
+        )
+    end
+
+    desc "Upload to GooglePlay"
+    lane :upload_release do
+        aab_path = lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
+        app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
+
+        upload_to_play_store(
+            track: "internal",
+            json_key: ENV["ANDROID_JSON_KEY_FILE"],
+            aab: aab_path,
+            package_name: app_identifier,
+        )
+    end
+
+    desc "Build and upload to GooglePlay"
+    lane :beta do
+        fetch_and_increment_build_number
+        build_release
+        upload_release
+    end
+
+    desc "Build APK"
+    lane :apk do
+        fetch_and_increment_build_number
+        assemble_release
+    end
+end

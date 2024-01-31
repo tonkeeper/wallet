@@ -3,7 +3,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { openScanQR } from '$navigation';
 import { WordHintsPopupRef } from '$shared/components/ImportWalletForm/WordHintsPopup';
 import { Icon, Input, Loader, Text } from '$uikit';
-import { isAndroid, ns, parseTonLink } from '$utils';
+import { isAndroid, isTransferOp, ns, parseTonLink } from '$utils';
 import React, {
   FC,
   memo,
@@ -52,8 +52,6 @@ const AddressInputComponent: FC<Props> = (props) => {
   const isFailed = showFailed && !dnsLoading && value.length > 0 && !recipient;
 
   const canScanQR = value.length === 0;
-
-  
 
   const textInputRef = useRef<TextInput>(null);
 
@@ -136,15 +134,14 @@ const AddressInputComponent: FC<Props> = (props) => {
   const handleScanQR = useCallback(() => {
     openScanQR(async (code: string) => {
       const link = parseTonLink(code);
-
-      if (link.match && link.operation === 'transfer' && !Address.isValid(link.address)) {
+      if (link.match && isTransferOp(link.operation) && !Address.isValid(link.address)) {
         Toast.fail(t('transfer_deeplink_address_error'));
         return false;
       }
 
       return await updateRecipient(code);
     });
-  }, [t, updateRecipient]);
+  }, [updateRecipient]);
 
   const showLoader = dnsLoading && value.length > 0;
 

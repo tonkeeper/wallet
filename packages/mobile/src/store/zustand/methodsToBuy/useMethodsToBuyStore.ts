@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { IMethodsToBuyStore } from './types';
+import { IExchangeCategory, IMethodsToBuyStore } from './types';
 import { getCountry } from 'react-native-localize';
 import axios from 'axios';
 import { getServerConfig } from '$shared/constants';
@@ -11,11 +11,14 @@ import DeviceInfo from 'react-native-device-info';
 import { getIsTestnet } from '$database';
 import { fiatCurrencySelector } from '$store/main';
 import { store } from '$store';
+import { flatMap, uniqBy } from 'lodash';
 
 const initialState: Omit<IMethodsToBuyStore, 'actions'> = {
   selectedCountry: 'AUTO',
   layoutByCountry: [],
-  categories: [],
+  buy: [],
+  sell: [],
+  allMethods: [],
   defaultLayout: {
     methods: ['mercuryo', 'neocrypto'],
   },
@@ -51,7 +54,16 @@ export const useMethodsToBuyStore = create(
               },
             },
           );
-          set(resp.data.data);
+
+          const allMethods = uniqBy(
+            flatMap(
+              [...resp.data.data.buy, ...resp.data.data.sell] as IExchangeCategory[],
+              (item) => item.items,
+            ),
+            'id',
+          );
+
+          set({ ...resp.data.data, allMethods });
         },
       },
     }),
@@ -73,17 +85,21 @@ export const useMethodsToBuyStore = create(
       },
       partialize: ({
         selectedCountry,
-        categories,
         defaultLayout,
         layoutByCountry,
         lastUsedCountries,
+        buy,
+        sell,
+        allMethods,
       }) =>
         ({
           selectedCountry,
-          categories,
           defaultLayout,
           layoutByCountry,
           lastUsedCountries,
+          buy,
+          sell,
+          allMethods,
         } as IMethodsToBuyStore),
     },
   ),

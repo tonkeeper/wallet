@@ -33,3 +33,7 @@ export const OtherWaysButtonLabel = styled(Text).attrs(() => ({
   variant: 'body2',
   color: 'foregroundSecondary',
 }))``;
+
+export const TitleContainer = styled.View`
+  padding: ${ns(14)}px ${ns(16)}px;
+`;

@@ -1,4 +1,4 @@
-import { SendRecipient, SendAmount } from '../../Send.interface';
+import { SendRecipient, SendAmount, TokenType } from '../../Send.interface';
 import React from 'react';
 
 export interface AmountStepProps {
@@ -11,7 +11,7 @@ export interface AmountStepProps {
   amount: SendAmount;
   fiatRate: number;
   isPreparing: boolean;
-  onChangeCurrency: (currency: string, decimals: number, isJetton: boolean) => void;
+  onChangeCurrency: (currency: string, decimals: number, tokenType: TokenType) => void;
   setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;
   onContinue: () => void;
 }
