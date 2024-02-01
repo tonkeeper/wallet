@@ -1070,11 +1070,11 @@
   },
   "unverifiedTokenDetails": {
     "title": "Unverified Token",
-    "description": "This token may not be safe to use for one of the following reasons.",
+    "description": "This token looks suspicious for one or several reasons.",
     "paragraphs": {
       "p1": "Token has zero market price or low liquidity and not listed on known trading platforms.",
       "p2": "Spam: token is used in many unwanted transactions.",
-      "p3": "Fake token: it attempts to look like another well-known token.",
+      "p3": "Fake token: it attempts to look like another well-known token."
     },
     "button": "OK"
   }
