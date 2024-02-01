@@ -1,22 +1,41 @@
-import { FastImage, List, Steezy, copyText, Text } from '@tonkeeper/uikit';
+import {
+  FastImage,
+  List,
+  Steezy,
+  copyText,
+  Text,
+  TouchableOpacity,
+} from '@tonkeeper/uikit';
 import { AddressListItem } from '../components/AddressListItem';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
 import { ActionItem, ActionType } from '@tonkeeper/core';
 import { t } from '../../../i18n';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { JettonVerificationType } from '@tonkeeper/core/src/TonAPI';
 import { EncryptedComment, EncryptedCommentLayout } from '../../../components';
 import { config } from '../../../config';
+import { useNavigation } from '@tonkeeper/router';
+import { sleep } from '@tonkeeper/mobile/src/utils';
+import { openUnverifiedTokenDetailsModal } from '../../UnverifiedTokenDetailsModal';
 
 interface JettonTransferContentProps {
   action: ActionItem<ActionType.JettonTransfer>;
 }
 
+const unverifiedTokenHitSlop = { top: 4, left: 4, bottom: 4, right: 4 };
+
 export const JettonTransferActionContent = memo<JettonTransferContentProps>((props) => {
   const { action } = props;
+  const { goBack } = useNavigation();
 
   const source = { uri: action.payload.jetton?.image };
+
+  const handleOpenUnverifiedTokenModal = useCallback(async () => {
+    goBack();
+    await sleep(500);
+    openUnverifiedTokenDetailsModal();
+  }, []);
 
   const isScam =
     action.event.is_scam ||
@@ -28,9 +47,14 @@ export const JettonTransferActionContent = memo<JettonTransferContentProps>((pro
       subtitle={
         !config.get('disable_show_unverified_token') &&
         action.payload.jetton.verification === JettonVerificationType.None && (
-          <Text style={styles.subtitleStyle.static} type="body1" color="accentOrange">
-            {t('approval.unverified_token')}
-          </Text>
+          <TouchableOpacity
+            onPress={handleOpenUnverifiedTokenModal}
+            hitSlop={unverifiedTokenHitSlop}
+          >
+            <Text style={styles.subtitleStyle.static} type="body1" color="accentOrange">
+              {t('approval.unverified_token')}
+            </Text>
+          </TouchableOpacity>
         )
       }
       action={action}
