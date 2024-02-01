@@ -1,9 +1,11 @@
 import { memo } from 'react';
 import { Button, Modal, Spacer, Steezy, Table, Text, View } from '@tonkeeper/uikit';
-import { navigation, SheetActions } from '@tonkeeper/router';
+import { navigation, SheetActions, useNavigation } from '@tonkeeper/router';
 import { t } from '@tonkeeper/shared/i18n';
 
 export const UnverifiedTokenDetailsModal = memo(() => {
+  const { goBack } = useNavigation();
+
   return (
     <Modal>
       <Modal.Header />
@@ -26,7 +28,11 @@ export const UnverifiedTokenDetailsModal = memo(() => {
             <Table.Paragraph>{t('unverifiedTokenDetails.paragraphs.p4')}</Table.Paragraph>
           </Table>
           <Spacer y={32} />
-          <Button color="secondary" title={t('unverifiedTokenDetails.button')} />
+          <Button
+            onPress={goBack}
+            color="secondary"
+            title={t('unverifiedTokenDetails.button')}
+          />
         </View>
         <Spacer y={16} />
       </Modal.Content>
