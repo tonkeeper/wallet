@@ -41,16 +41,8 @@ export const InscriptionScreen = memo(() => {
   return (
     <Screen>
       <Screen.Header
-        title={
-          <View>
-            <Text type="h3" textAlign="center" numberOfLines={1}>
-              {inscription.ticker}
-            </Text>
-            <Text type="body2" color="textSecondary" textAlign="center" numberOfLines={1}>
-              {inscription.type.toUpperCase()}
-            </Text>
-          </View>
-        }
+        subtitle={inscription.type.toUpperCase()}
+        title={inscription.ticker}
       />
       <Screen.ScrollView>
         <View style={styles.tokenContainer}>
