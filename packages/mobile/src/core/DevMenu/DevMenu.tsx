@@ -18,6 +18,8 @@ import { openLogs } from '$navigation';
 import { Alert } from 'react-native';
 import { Icon } from '$uikit';
 import { tk } from '@tonkeeper/shared/tonkeeper';
+import Clipboard from '@react-native-community/clipboard';
+import { getToken } from '$utils/messaging';
 
 export const DevMenu: FC = () => {
   const nav = useNavigation();
@@ -88,6 +90,11 @@ export const DevMenu: FC = () => {
     devLanguage,
     actions: { toggleFeature, setDevLanguage },
   } = useDevFeaturesToggle();
+
+  const handleCopyFCMToken = useCallback(async () => {
+    const token = await getToken();
+    Clipboard.setString(String(token));
+  }, []);
 
   const toggleHttpProtocol = useCallback(() => {
     toggleFeature(DevFeature.UseHttpProtocol);
@@ -194,6 +201,7 @@ export const DevMenu: FC = () => {
           <List.Item onPress={handleClearNFTsCache} title="Clear NFTs cache" />
         </List>
         <List>
+          <List.Item onPress={handleCopyFCMToken} title="Copy FCM token" />
           <List.Item onPress={handlePushNotification} title="Push notification" />
         </List>
       </Screen.ScrollView>
