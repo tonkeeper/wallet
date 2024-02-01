@@ -33,7 +33,7 @@ export const JettonTransferActionContent = memo<JettonTransferContentProps>((pro
 
   const handleOpenUnverifiedTokenModal = useCallback(async () => {
     goBack();
-    await sleep(500);
+    await sleep(700);
     openUnverifiedTokenDetailsModal();
   }, []);
 
