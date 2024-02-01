@@ -20,13 +20,16 @@ import { Events, JettonVerification, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
-import { Screen, Steezy, View, Icon, Spacer } from '@tonkeeper/uikit';
+import { Screen, Steezy, View, Icon, Spacer, TouchableOpacity } from '@tonkeeper/uikit';
 
 import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonActivityList';
 import { ActivityList } from '@tonkeeper/shared/components';
 import { openReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
 import { TokenType } from '$core/Send/Send.interface';
 import { config } from '@tonkeeper/shared/config';
+import { openUnverifiedTokenDetailsModal } from '@tonkeeper/shared/modals/UnverifiedTokenDetailsModal';
+
+const unverifiedTokenHitSlop = { top: 4, left: 4, bottom: 4, right: 4 };
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const flags = useFlags(['disable_swap']);
@@ -139,15 +142,19 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         subtitle={
           !config.get('disable_show_unverified_token') &&
           jetton.verification === JettonVerification.NONE && (
-            <View style={styles.subtitleContainer}>
-              <View style={styles.iconContainer}>
-                <Icon name="ic-exclamationmark-triangle-12" color="accentOrange" />
-              </View>
-              <Spacer x={4} />
+            <TouchableOpacity
+              onPress={openUnverifiedTokenDetailsModal}
+              hitSlop={unverifiedTokenHitSlop}
+              style={styles.subtitleContainer}
+            >
               <Text variant="body2" color="accentOrange">
                 {t('approval.unverified_token')}
               </Text>
-            </View>
+              <Spacer x={4} />
+              <View style={styles.iconContainer}>
+                <Icon name="ic-information-circle-12" color="accentOrange" />
+              </View>
+            </TouchableOpacity>
           )
         }
         title={jetton.metadata?.name || Address.toShort(jetton.jettonAddress)}
