@@ -25,6 +25,7 @@ export const UnverifiedTokenDetailsModal = memo(() => {
             <Table.Paragraph>{t('unverifiedTokenDetails.paragraphs.p1')}</Table.Paragraph>
             <Table.Paragraph>{t('unverifiedTokenDetails.paragraphs.p2')}</Table.Paragraph>
             <Table.Paragraph>{t('unverifiedTokenDetails.paragraphs.p3')}</Table.Paragraph>
+            <Table.Paragraph>{t('unverifiedTokenDetails.paragraphs.p4')}</Table.Paragraph>
           </Table>
           <Spacer y={32} />
           <Button

@@ -1070,11 +1070,12 @@
   },
   "unverifiedTokenDetails": {
     "title": "Unverified Token",
-    "description": "This token looks suspicious for one or several reasons.",
+    "description": "This token looks suspicious for one or several reasons.",
     "paragraphs": {
-      "p1": "Token has zero market price or low liquidity and not listed on known trading platforms.",
-      "p2": "Spam: token is used in many unwanted transactions.",
-      "p3": "Fake token: it attempts to look like another well-known token."
+      "p1": "Low liquidity. Token may have some value, but it is extremely low.",
+      "p2": "Token is not listed on trading platforms and has limited demand.",
+      "p3": "Used for spam. Employed for sending unwanted and often irrelevant messages at scale.",
+      "p4": "Used for scam. Token's name or image can lead users into deception."
     },
     "button": "OK"
   }
