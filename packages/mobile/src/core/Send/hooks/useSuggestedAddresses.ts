@@ -7,7 +7,6 @@ import { SuggestedAddress, SuggestedAddressType } from '../Send.interface';
 import { walletAddressSelector } from '$store/wallet';
 import { CryptoCurrencies } from '$shared/constants';
 import { Tonapi } from '$libs/Tonapi';
-import { useStakingStore } from '$store';
 import { ActionItem, ActionType, Address } from '@tonkeeper/core';
 import { tk } from '@tonkeeper/shared/tonkeeper';
 
@@ -21,8 +20,6 @@ export const useSuggestedAddresses = () => {
   const { favorites, hiddenRecentAddresses, updatedDnsAddresses } =
     useSelector(favoritesSelector);
   const address = useSelector(walletAddressSelector);
-
-  const stakingPools = useStakingStore((s) => s.pools.map((pool) => pool.address));
 
   const favoriteAddresses = useMemo(
     (): SuggestedAddress[] =>
@@ -77,17 +74,11 @@ export const useSuggestedAddresses = () => {
             Address.compare(favorite.address, recipientAddress),
           ) !== -1;
 
-        const isStakingPool =
-          stakingPools.findIndex((poolAddress) =>
-            Address.compare(poolAddress, recipientAddress),
-          ) !== -1;
-
         const rawAddress = Address.parse(recipientAddress).toRaw();
 
         if (
           hiddenRecentAddresses.some((addr) => Address.compare(addr, rawAddress)) ||
-          isFavorite ||
-          isStakingPool
+          isFavorite
         ) {
           return false;
         }
@@ -106,7 +97,7 @@ export const useSuggestedAddresses = () => {
     );
 
     return uniqBy(addresses, (item) => item.address).slice(0, 8);
-  }, [address, favoriteAddresses, hiddenRecentAddresses, stakingPools]);
+  }, [address, favoriteAddresses, hiddenRecentAddresses]);
 
   const suggestedAddresses = useMemo(
     () => [...favoriteAddresses, ...recentAddresses],
