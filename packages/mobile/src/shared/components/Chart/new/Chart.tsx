@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   ChartDot,
   ChartPath,
   ChartPathProvider,
   CurrentPositionVerticalLine,
-  stepInterpolation,
 } from '@rainbow-me/animated-charts';
 import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks/useTheme';
@@ -20,7 +19,7 @@ import { loadChartData } from './Chart.api';
 import { ChartYLabels } from './ChartYLabels/ChartYLabels';
 import { changeAlphaValue, convertHexToRGBA, ns } from '$utils';
 import { ChartXLabels } from './ChartXLabels/ChartXLabels';
-import { ChartPeriod, useChartStore } from '$store/zustand/chart';
+import { useChartStore } from '$store/zustand/chart';
 import { Fallback } from './Fallback/Fallback';
 import BigNumber from 'bignumber.js';
 import { isIOS } from '@tonkeeper/uikit';
@@ -38,24 +37,17 @@ const ChartComponent: React.FC = () => {
     queryKey: ['chartFetch', selectedPeriod],
     queryFn: () => loadChartData(selectedPeriod),
     refetchInterval: 60 * 1000,
+    keepPreviousData: true,
     staleTime: 120 * 1000,
   });
 
-  const [cachedData, setCachedData] = useState(data?.data ?? []);
-
-  useEffect(() => {
-    if ((data && !isFetching && !isLoading) || !cachedData) {
-      setCachedData(
-        selectedPeriod === ChartPeriod.ONE_HOUR
-          ? stepInterpolation(data.data)
-          : data.data,
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, selectedPeriod, isFetching, isLoading]);
+  const points = useMemo(
+    () => (data?.points ? data.points.map(([x, y]) => ({ x, y })).reverse() : []),
+    [data],
+  );
 
   const fiatCurrency = useWalletCurrency();
-  const shouldRenderChart = !!cachedData.length;
+  const shouldRenderChart = !!points.length;
 
   const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
 
@@ -68,25 +60,25 @@ const ChartComponent: React.FC = () => {
   }, [fiatCurrency, tonPrice.fiat, tonPrice.usd]);
 
   const [maxPrice, minPrice] = React.useMemo(() => {
-    if (!cachedData.length) {
+    if (!points.length) {
       return ['0', '0'];
     }
-    const mappedPoints = cachedData.map((o) => o.y);
+    const mappedPoints = points.map((o) => o.y);
     return [Math.max(...mappedPoints), Math.min(...mappedPoints)].map((value) =>
       formatFiatCurrencyAmount((value * fiatRate).toFixed(2), fiatCurrency, true),
     );
-  }, [cachedData, fiatRate, fiatCurrency]);
+  }, [points, fiatRate, fiatCurrency]);
 
   const [firstPoint, latestPoint] = React.useMemo(() => {
-    if (!cachedData.length) {
+    if (!points.length) {
       return [0, 0];
     }
-    const latest = cachedData[cachedData.length - 1].y;
-    const first = cachedData[0].y;
+    const latest = points[points.length - 1].y;
+    const first = points[0].y;
     return [first, latest];
-  }, [cachedData]);
+  }, [points]);
 
-  if (isLoading && !cachedData) {
+  if (isLoading && !points) {
     return null;
   }
 
@@ -95,7 +87,7 @@ const ChartComponent: React.FC = () => {
       <View>
         <ChartPathProvider
           data={{
-            points: cachedData,
+            points,
           }}
         >
           <View style={{ paddingHorizontal: 28 }}>
