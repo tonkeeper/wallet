@@ -68,7 +68,7 @@ const ChartComponent: React.FC<ChartProps> = (props) => {
     return [first, latest];
   }, [points]);
 
-  if (isLoading && !points?.length) {
+  if (isLoading && !points) {
     return null;
   }
 
@@ -81,13 +81,17 @@ const ChartComponent: React.FC<ChartProps> = (props) => {
           }}
         >
           <View style={{ paddingHorizontal: 28 }}>
-            <Rate fiatCurrency={props.currency} latestPoint={latestPoint} />
-            <PercentDiff
-              fiatCurrency={props.currency}
-              latestPoint={latestPoint}
-              firstPoint={firstPoint}
-            />
-            <PriceLabel selectedPeriod={selectedPeriod} />
+            {latestPoint ? (
+              <>
+                <Rate fiatCurrency={props.currency} latestPoint={latestPoint} />
+                <PercentDiff
+                  fiatCurrency={props.currency}
+                  latestPoint={latestPoint}
+                  firstPoint={firstPoint}
+                />
+                <PriceLabel selectedPeriod={selectedPeriod} />
+              </>
+            ) : null}
           </View>
           <View style={{ paddingVertical: 30 }}>
             <View>

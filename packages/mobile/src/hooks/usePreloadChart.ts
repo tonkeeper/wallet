@@ -2,8 +2,11 @@ import { useChartStore } from '$store/zustand/chart';
 import { loadChartData } from '$shared/components/Chart/new/Chart.api';
 import { useEffect } from 'react';
 import { useQueryClient } from 'react-query';
+import { useSelector } from 'react-redux';
+import { fiatCurrencySelector } from '$store/main';
 
 export function usePreloadChart() {
+  const fiatCurrency = useSelector(fiatCurrencySelector);
   const selectedPeriod = useChartStore(
     (state) => state.selectedPeriod,
     () => true,
@@ -11,8 +14,8 @@ export function usePreloadChart() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    queryClient.prefetchQuery(['chartFetch', selectedPeriod], () =>
-      loadChartData(selectedPeriod),
+    queryClient.prefetchQuery(['chartFetch', 'ton', fiatCurrency, selectedPeriod], () =>
+      loadChartData(selectedPeriod, 'ton', fiatCurrency),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -49,6 +49,7 @@ export type AppConfigVars = {
   holdersAppEndpoint: string;
   holdersService: string;
   disable_battery: boolean;
+  disable_jetton_charts: boolean;
   disable_battery_iap_module: boolean;
   disable_battery_send: boolean;
   disable_show_unverified_token: boolean;
@@ -85,6 +86,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   disable_show_unverified_token: false,
   disable_tonstakers: false,
   disable_holders_cards: true,
+  disable_jetton_charts: false,
 };
 
 export const config = new AppConfig<AppConfigVars>({

@@ -39,8 +39,8 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const wallet = useWallet();
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
-  const shouldShowChart = jettonPrice.fiat !== 0;
   const fiatCurrency = useWalletCurrency();
+  const shouldShowChart = !config.get('disable_jetton_charts') && jettonPrice.fiat !== 0;
 
   const nav = useNavigation();
 
