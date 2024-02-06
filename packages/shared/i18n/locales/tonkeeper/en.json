@@ -136,7 +136,8 @@
     },
     "description": {
       "empty": "Send tokens and NFTs, pay for staking actions with empty main balance.",
-      "other": "You have enough charge battery for more than %{cnt} transactions."
+      "other": "You have enough charge battery for more than %{cnt} transactions.",
+      "less_10": "You have enough charge battery for less than 10 transactions."
     },
     "promocode": {
       "button": "Recharge by Promo Code",
@@ -148,9 +149,9 @@
     "packages": {
       "title": "{{cnt}} transactions for {{price}}",
       "subtitle": {
-        "large": "Large gas fees pack",
-        "medium": "Medium gas fees pack",
-        "small": "Small gas fees pack"
+        "large": "Large pack",
+        "medium": "Medium pack",
+        "small": "Small pack"
       },
       "disclaimer": "This is approximate transactions number. Some your transactions may cost more.",
       "buy": "Buy",

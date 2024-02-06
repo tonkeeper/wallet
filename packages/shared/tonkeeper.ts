@@ -8,6 +8,7 @@ import { queryClient } from './queryClient';
 import { TonAPI } from '@tonkeeper/core';
 import { config } from './config';
 import { BatteryAPI } from '@tonkeeper/core/src/BatteryAPI';
+import { i18n } from './i18n';
 
 export const sse = new AppServerSentEvents({
   baseUrl: () => config.get('tonapiIOEndpoint'),
@@ -15,7 +16,9 @@ export const sse = new AppServerSentEvents({
 });
 
 export const tonapi = new TonAPI({
-  token: () => config.get('tonApiV2Key'),
+  baseHeaders: () => ({
+    Authorization: `Bearer ${config.get('tonApiV2Key')}`,
+  }),
   baseUrl: () => {
     if (tk.wallet?.identity.network === WalletNetwork.testnet) {
       return config.get('tonapiTestnetHost');
@@ -42,6 +45,9 @@ export const batteryapi = new BatteryAPI({
     }
 
     return config.get('batteryHost');
+  },
+  baseHeaders: {
+    'Accept-Language': i18n.locale,
   },
 });
 
