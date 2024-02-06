@@ -19,13 +19,8 @@ const RateComponent: React.FC<{
   const chartData = useChartData();
   const [activePoint, setActivePoint] = useState(props.latestPoint);
   const formattedLatestPrice = useMemo(
-    () =>
-      formatFiatCurrencyAmount(
-        (activePoint * props.fiatRate).toFixed(4),
-        props.fiatCurrency,
-        true,
-      ),
-    [props.fiatCurrency, props.fiatRate, activePoint],
+    () => formatFiatCurrencyAmount(activePoint.toFixed(4), props.fiatCurrency, true),
+    [props.fiatCurrency, activePoint],
   );
 
   const formatPriceWrapper = useCallback(
@@ -49,7 +44,7 @@ const RateComponent: React.FC<{
     },
     (result, previous) => {
       if (result !== previous) {
-        runOnJS(formatPriceWrapper)(result);
+        runOnJS(formatPriceWrapper)(parseFloat(result));
       }
     },
     [formatPriceWrapper],

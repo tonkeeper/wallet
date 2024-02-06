@@ -11,6 +11,8 @@ function getPeriodFromTimestamp(period) {
       return dateNowSec - ONE_HOUR;
     case ChartPeriod.ONE_DAY:
       return dateNowSec - ONE_DAY;
+    case ChartPeriod.SEVEN_DAYS:
+      return dateNowSec - ONE_DAY * 7;
     case ChartPeriod.ONE_MONTH:
       return dateNowSec - ONE_DAY * 31;
     case ChartPeriod.SIX_MONTHS:
@@ -20,10 +22,10 @@ function getPeriodFromTimestamp(period) {
   }
 }
 
-export function loadChartData(period: ChartPeriod) {
+export function loadChartData(period: ChartPeriod, token: string, currency: string) {
   return tk.wallet.tonapi.rates.getChartRates({
-    token: 'ton',
-    currency: 'usd',
+    token,
+    currency,
     end_date: Math.round(Date.now() / 1000),
     start_date: getPeriodFromTimestamp(period),
   });

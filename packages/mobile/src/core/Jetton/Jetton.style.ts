@@ -9,6 +9,10 @@ export const Wrap = styled.View`
   flex: 1;
 `;
 
+export const ChartWrap = styled.View`
+  margin-bottom: ${ns(24.5)}px;
+`;
+
 export const HeaderWrap = styled.View`
   align-items: center;
   padding-horizontal: ${ns(16)}px;
@@ -101,15 +105,13 @@ export const ActionLabelWrapper = styled.View`
   margin-top: ${ns(2)}px;
 `;
 
-
 export const ActionsContainer = styled.View`
   justify-content: center;
   flex-direction: row;
   margin-bottom: ${ns(12)}px;
 `;
 
-export const IconWrap = styled.View`
-`;
+export const IconWrap = styled.View``;
 
 export const HeaderViewDetailsButton = styled(TouchableOpacity).attrs({
   activeOpacity: Opacity.ForSmall,

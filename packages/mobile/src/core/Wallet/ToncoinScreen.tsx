@@ -232,7 +232,7 @@ const HeaderList = memo(() => {
       {shouldShowChart && (
         <>
           <S.ChartWrap>
-            <Chart />
+            <Chart currency={fiatCurrency} token={'ton'} />
           </S.ChartWrap>
           <S.Divider style={{ marginBottom: 0 }} />
         </>

@@ -7,8 +7,6 @@ import {
 } from '@rainbow-me/animated-charts';
 import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks/useTheme';
-import { useTokenPrice } from '$hooks/useTokenPrice';
-import { CryptoCurrencies } from '$shared/constants';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { PriceLabel } from './PriceLabel/PriceLabel';
 import { PercentDiff } from './PercentDiff/PercentDiff';
@@ -21,21 +19,24 @@ import { changeAlphaValue, convertHexToRGBA, ns } from '$utils';
 import { ChartXLabels } from './ChartXLabels/ChartXLabels';
 import { useChartStore } from '$store/zustand/chart';
 import { Fallback } from './Fallback/Fallback';
-import BigNumber from 'bignumber.js';
 import { isIOS } from '@tonkeeper/uikit';
-import { useWalletCurrency } from '@tonkeeper/shared/hooks';
 import { WalletCurrency } from '@tonkeeper/core';
 
 export const { width: SIZE } = Dimensions.get('window');
 
-const ChartComponent: React.FC = () => {
+export interface ChartProps {
+  token: string;
+  currency: WalletCurrency;
+}
+
+const ChartComponent: React.FC<ChartProps> = (props) => {
   const theme = useTheme();
   const selectedPeriod = useChartStore((state) => state.selectedPeriod);
   const setChartPeriod = useChartStore((state) => state.actions.setChartPeriod);
 
   const { isLoading, isFetching, data, isError } = useQuery({
-    queryKey: ['chartFetch', selectedPeriod],
-    queryFn: () => loadChartData(selectedPeriod),
+    queryKey: ['chartFetch', props.token, props.currency, selectedPeriod],
+    queryFn: () => loadChartData(selectedPeriod, props.token, props.currency),
     refetchInterval: 60 * 1000,
     keepPreviousData: true,
     staleTime: 120 * 1000,
@@ -46,18 +47,7 @@ const ChartComponent: React.FC = () => {
     [data],
   );
 
-  const fiatCurrency = useWalletCurrency();
   const shouldRenderChart = !!points.length;
-
-  const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
-
-  const fiatRate = useMemo(() => {
-    if (fiatCurrency === WalletCurrency.USD) {
-      return 1;
-    }
-
-    return new BigNumber(tonPrice.fiat).dividedBy(tonPrice.usd).toNumber();
-  }, [fiatCurrency, tonPrice.fiat, tonPrice.usd]);
 
   const [maxPrice, minPrice] = React.useMemo(() => {
     if (!points.length) {
@@ -65,9 +55,9 @@ const ChartComponent: React.FC = () => {
     }
     const mappedPoints = points.map((o) => o.y);
     return [Math.max(...mappedPoints), Math.min(...mappedPoints)].map((value) =>
-      formatFiatCurrencyAmount((value * fiatRate).toFixed(2), fiatCurrency, true),
+      formatFiatCurrencyAmount(value.toFixed(2), props.currency, true),
     );
-  }, [points, fiatRate, fiatCurrency]);
+  }, [points, props.currency]);
 
   const [firstPoint, latestPoint] = React.useMemo(() => {
     if (!points.length) {
@@ -78,7 +68,7 @@ const ChartComponent: React.FC = () => {
     return [first, latest];
   }, [points]);
 
-  if (isLoading && !points) {
+  if (isLoading && !points?.length) {
     return null;
   }
 
@@ -91,14 +81,9 @@ const ChartComponent: React.FC = () => {
           }}
         >
           <View style={{ paddingHorizontal: 28 }}>
-            <Rate
-              fiatCurrency={fiatCurrency}
-              fiatRate={fiatRate}
-              latestPoint={latestPoint}
-            />
+            <Rate fiatCurrency={props.currency} latestPoint={latestPoint} />
             <PercentDiff
-              fiatCurrency={fiatCurrency}
-              fiatRate={fiatRate}
+              fiatCurrency={props.currency}
               latestPoint={latestPoint}
               firstPoint={firstPoint}
             />

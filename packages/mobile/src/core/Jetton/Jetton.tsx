@@ -25,8 +25,9 @@ import { openReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonMo
 import { TokenType } from '$core/Send/Send.interface';
 import { config } from '$config';
 import { openUnverifiedTokenDetailsModal } from '@tonkeeper/shared/modals/UnverifiedTokenDetailsModal';
-import { useWallet } from '@tonkeeper/shared/hooks';
+import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
+import { Chart } from '$shared/components/Chart/new/Chart';
 
 const unverifiedTokenHitSlop = { top: 4, left: 4, bottom: 4, right: 4 };
 
@@ -38,6 +39,8 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const wallet = useWallet();
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
+  const shouldShowChart = jettonPrice.fiat !== 0;
+  const fiatCurrency = useWalletCurrency();
 
   const nav = useNavigation();
 
@@ -123,6 +126,14 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
           ) : null}
         </S.ActionsContainer>
         <S.Divider style={{ marginBottom: 10 }} />
+        {shouldShowChart && (
+          <>
+            <S.ChartWrap>
+              <Chart currency={fiatCurrency} token={route.params.jettonAddress} />
+            </S.ChartWrap>
+            <S.Divider style={{ marginBottom: 0 }} />
+          </>
+        )}
       </S.HeaderWrap>
     );
   }, [
@@ -134,6 +145,9 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     showSwap,
     flags.disable_swap,
     handlePressSwap,
+    shouldShowChart,
+    fiatCurrency,
+    route.params.jettonAddress,
   ]);
 
   if (!jetton) {
@@ -170,12 +184,12 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
                 shouldCloseMenu
                 onPress={handleOpenExplorer}
                 text={t('jetton_open_explorer')}
-                icon={<Icon name="ic-globe-16" color="accentPrimary" />}
+                icon={<Icon name="ic-globe-16" color="accentBlue" />}
               />,
             ]}
           >
             <S.HeaderViewDetailsButton onPress={() => null}>
-              <Icon name="ic-ellipsis-16" color="foregroundPrimary" />
+              <Icon name="ic-ellipsis-16" color="iconPrimary" />
             </S.HeaderViewDetailsButton>
           </PopupMenu>
         }
