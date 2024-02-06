@@ -24,6 +24,9 @@ export const RefillBattery = memo(() => {
   const { balance } = useBatteryBalance();
   const batteryState = getBatteryState(balance ?? '0');
   const iconName = iconNames[batteryState];
+  const availableNumOfTransactionsCount = calculateAvailableNumOfTransactions(
+    balance ?? '0',
+  );
 
   const isInAppPurchasesDisabled = config.get('disable_battery_iap_module');
 
@@ -39,10 +42,14 @@ export const RefillBattery = memo(() => {
         <Text textAlign="center" type="body2" color="textSecondary">
           {t(
             `battery.description.${
-              batteryState === BatteryState.Empty ? 'empty' : 'other'
+              batteryState === BatteryState.Empty
+                ? 'empty'
+                : availableNumOfTransactionsCount
+                ? 'other'
+                : 'less_10'
             }`,
             {
-              cnt: calculateAvailableNumOfTransactions(balance ?? '0'),
+              cnt: availableNumOfTransactionsCount,
             },
           )}
         </Text>
@@ -52,11 +59,9 @@ export const RefillBattery = memo(() => {
         {!isInAppPurchasesDisabled ? <RefillBatteryIAP /> : null}
         <RechargeByPromoButton />
         <Spacer y={16} />
-        {!isInAppPurchasesDisabled && (
-          <Text type="label2" textAlign="center" color="textTertiary">
-            {t('battery.packages.disclaimer')}
-          </Text>
-        )}
+        <Text type="label2" textAlign="center" color="textTertiary">
+          {t('battery.packages.disclaimer')}
+        </Text>
       </View>
     </>
   );

@@ -87,7 +87,7 @@ export const Settings: FC = () => {
   const shouldShowTokensButton = useShouldShowTokensButton();
   const showNotifications = useNotificationsStore(shouldShowNotifications);
 
-  const isBatteryVisible = !config.get('disable_battery');
+  const isBatteryVisible = !!wallet && !config.get('disable_battery');
 
   const searchEngine = useBrowserStore((state) => state.searchEngine);
   const setSearchEngine = useBrowserStore((state) => state.actions.setSearchEngine);

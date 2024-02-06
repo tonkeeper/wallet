@@ -10,7 +10,7 @@ type CancelToken = Symbol | string | number;
 
 export type HttpClientOptions = {
   baseUrl: string | (() => string);
-  token?: string | (() => string);
+  baseHeaders?: { [key: string]: string } | (() => { [key: string]: string });
 };
 
 export class HttpClient {
@@ -143,10 +143,10 @@ export class HttpClient {
       typeof this.options.baseUrl === 'function'
         ? this.options.baseUrl()
         : this.options.baseUrl;
-    const token =
-      typeof this.options.token === 'function'
-        ? this.options.token()
-        : this.options.token;
+    const baseHeaders =
+      typeof this.options.baseHeaders === 'function'
+        ? this.options.baseHeaders()
+        : this.options.baseHeaders;
 
     const response = await this.customFetch(
       `${baseUrl}${path}${queryString ? `?${queryString}` : ''}`,
@@ -154,7 +154,7 @@ export class HttpClient {
         method,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          ...(baseHeaders ?? {}),
           ...(headers ?? {}),
         },
         signal: cancelToken ? this.createAbortSignal(cancelToken) : null,
