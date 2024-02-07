@@ -117,6 +117,7 @@ export const IconList = {
   'ic-exclamationmark-triangle-36': require('../../../assets/icons/png/ic-exclamationmark-triangle-36.png'),
   'ic-faceid-36': require('../../../assets/icons/png/ic-faceid-36.png'),
   'ic-fingerprint-36': require('../../../assets/icons/png/ic-fingerprint-36.png'),
+  'ic-cards-stack-44': require('../../../assets/icons/png/ic-cards-stack-44.png'),
   'ic-ton-old-wallets-44': require('../../../assets/icons/png/ic-ton-old-wallets-44.png'),
   'ic-logo-48': require('../../../assets/icons/png/ic-logo-48.png'),
   'ic-flashlight-off-56': require('../../../assets/icons/png/ic-flashlight-off-56.png'),

@@ -34,6 +34,7 @@ import { useExternalState } from '@tonkeeper/shared/hooks/useExternalState';
 import { tk } from '$wallet';
 import { MigrationStack } from '$navigation/MigrationStack';
 import { useTonPriceUpdater } from '$hooks/useTonPriceUpdater';
+import { HoldersWebView } from '@tonkeeper/shared/components/HoldersWebView/HoldersWebView';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -135,6 +136,10 @@ export const MainStack: FC = () => {
       <Stack.Screen
         name={MainStackRouteNames.AddressUpdateInfo}
         component={AddressUpdateInfo}
+      />
+      <Stack.Screen
+        name={MainStackRouteNames.HoldersWebView}
+        component={HoldersWebView}
       />
     </Stack.Navigator>
   );

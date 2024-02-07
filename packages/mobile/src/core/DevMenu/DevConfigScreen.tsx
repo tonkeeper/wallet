@@ -57,6 +57,17 @@ export const DevConfigScreen = memo(() => {
             }
           />
           <List.Item
+            title="Disable holders cards"
+            onPress={handleBooleanSwitch('disable_holders_cards')}
+            rightContent={
+              <Switch
+                trackColor={{ true: theme.accentBlue }}
+                value={config.get('disable_holders_cards')}
+                onChange={handleBooleanSwitch('disable_holders_cards')}
+              />
+            }
+          />
+          <List.Item
             title="Disable battery"
             onPress={handleBooleanSwitch('disable_battery')}
             rightContent={

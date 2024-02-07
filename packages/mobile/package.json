@@ -127,7 +127,7 @@
     "react-native-tweetnacl": "^1.0.5",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-video": "^5.2.0",
-    "react-native-webview": "^11.14.0",
+    "react-native-webview": "^13.7.1",
     "react-query": "^3.39.3",
     "react-redux": "^7.2.4",
     "redux-saga": "^1.1.3",

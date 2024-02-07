@@ -34,4 +34,5 @@ export type MainStackParamList = {
   [MainStackRouteNames.ManageTokens]: {};
   [MainStackRouteNames.AddressUpdateInfo]: {};
   [MainStackRouteNames.AddWatchOnlyStack]: {};
+  [MainStackRouteNames.HoldersWebView]: {};
 };

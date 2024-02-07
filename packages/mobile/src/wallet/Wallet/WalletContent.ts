@@ -24,6 +24,7 @@ import { BatteryManager } from '../managers/BatteryManager';
 import { NotificationsManager } from '../managers/NotificationsManager';
 import { TonProofManager } from '../managers/TonProofManager';
 import { JettonVerification } from '../models/JettonBalanceModel';
+import { CardsManager } from '$wallet/managers/CardsManager';
 
 export interface WalletStatusState {
   isReloading: boolean;
@@ -46,6 +47,7 @@ export class WalletContent extends WalletBase {
   public activityList: ActivityList;
   public tonActivityList: TonActivityList;
   public jettonActivityList: JettonActivityList;
+  public cards: CardsManager;
 
   constructor(
     public config: WalletConfig,
@@ -89,6 +91,7 @@ export class WalletContent extends WalletBase {
       this.batteryapi,
       this.storage,
     );
+    this.cards = new CardsManager(tonRawAddress, this.storage);
     this.notifications = new NotificationsManager(
       tonRawAddress,
       this.isTestnet,
@@ -132,6 +135,7 @@ export class WalletContent extends WalletBase {
     this.activityList.rehydrate();
     this.tonActivityList.rehydrate();
     this.jettonActivityList.rehydrate();
+    this.cards.rehydrate();
   }
 
   protected async preload() {
@@ -144,6 +148,7 @@ export class WalletContent extends WalletBase {
       this.subscriptions.load(),
       this.battery.load(),
       this.activityList.load(),
+      this.cards.load(),
     ]);
   }
 
@@ -157,6 +162,7 @@ export class WalletContent extends WalletBase {
       this.subscriptions.reload(),
       this.battery.load(),
       this.activityList.reload(),
+      this.cards.load(),
     ]);
   }
 

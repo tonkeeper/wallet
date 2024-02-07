@@ -117,6 +117,7 @@ export type IconNames =
   | 'ic-exclamationmark-triangle-36'
   | 'ic-faceid-36'
   | 'ic-fingerprint-36'
+  | 'ic-cards-stack-44'
   | 'ic-ton-old-wallets-44'
   | 'ic-logo-48'
   | 'ic-flashlight-off-56'
@@ -253,6 +254,7 @@ export const AllIcons = [
   'ic-exclamationmark-triangle-36',
   'ic-faceid-36',
   'ic-fingerprint-36',
+  'ic-cards-stack-44',
   'ic-ton-old-wallets-44',
   'ic-logo-48',
   'ic-flashlight-off-56',
@@ -390,6 +392,7 @@ export const IconSizes = {
   'ic-exclamationmark-triangle-36': 36,
   'ic-faceid-36': 36,
   'ic-fingerprint-36': 36,
+  'ic-cards-stack-44': 44,
   'ic-ton-old-wallets-44': 44,
   'ic-logo-48': 48,
   'ic-flashlight-off-56': 56,

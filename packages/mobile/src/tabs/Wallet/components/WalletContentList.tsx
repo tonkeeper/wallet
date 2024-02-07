@@ -32,6 +32,7 @@ import { JettonVerification } from '$store/models';
 import { ListItemProps } from '$uikit/List/ListItem';
 import { config } from '$config';
 import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
+import { CardsWidget } from '@tonkeeper/shared/components/CardsWidget/CardsWidget';
 
 enum ContentType {
   Token,
@@ -39,6 +40,7 @@ enum ContentType {
   Spacer,
   NFTCardsRow,
   Staking,
+  Cards,
 }
 
 type TokenItem = {
@@ -76,7 +78,12 @@ type StakingItem = {
   isWatchOnly: boolean;
 };
 
-type Content = TokenItem | SpacerItem | NFTCardsRowItem | StakingItem;
+type CardsItem = {
+  key: string;
+  type: ContentType.Cards;
+};
+
+type Content = TokenItem | SpacerItem | NFTCardsRowItem | StakingItem | CardsItem;
 
 const RenderItem = ({ item }: { item: Content }) => {
   switch (item.type) {
@@ -158,6 +165,8 @@ const RenderItem = ({ item }: { item: Content }) => {
       return <NFTsList nfts={item.items} />;
     case ContentType.Staking:
       return <StakingWidget isWatchOnly={item.isWatchOnly} />;
+    case ContentType.Cards:
+      return <CardsWidget />;
   }
 };
 
@@ -273,6 +282,13 @@ export const WalletContentList = memo<BalancesListProps>(
         type: ContentType.Spacer,
         bottom: 32,
       });
+
+      if (!config.get('disable_holders_cards')) {
+        content.push({
+          key: 'cards',
+          type: ContentType.Cards,
+        });
+      }
 
       content.push(
         ...tokens.list.map((item, index) => ({

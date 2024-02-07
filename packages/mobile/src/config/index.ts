@@ -49,6 +49,7 @@ export type AppConfigVars = {
   disable_battery_send: boolean;
   disable_show_unverified_token: boolean;
   disable_tonstakers: boolean;
+  disable_holders_cards: boolean;
 };
 
 const defaultConfig: Partial<AppConfigVars> = {
@@ -75,6 +76,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   disable_battery_send: true,
   disable_show_unverified_token: false,
   disable_tonstakers: false,
+  disable_holders_cards: true,
 };
 
 export const config = new AppConfig<AppConfigVars>({
