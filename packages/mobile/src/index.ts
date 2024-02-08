@@ -13,7 +13,6 @@ export const startApp = async () => {
   await config.load();
 
   tk.onChangeWallet(() => {
-    console.log('onChangeWallet');
     if (tk.wallet) {
       const vault = Vault.fromJSON({
         name: '',

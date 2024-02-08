@@ -86,8 +86,6 @@ export class Tonkeeper {
 
       await this.migrate();
 
-      console.log('this.walletsStore.data.wallets', this.walletsStore.data.wallets);
-
       await Promise.all(
         this.walletsStore.data.wallets.map((walletConfig) =>
           this.createWalletInstance(walletConfig),

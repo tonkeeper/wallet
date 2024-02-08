@@ -43,8 +43,6 @@ export const CustomizeWallet = memo(() => {
       return;
     }
 
-    console.log('containerWidth', containerWidth);
-
     const selectedColorIndex = COLORS_LIST.indexOf(selectedColor);
 
     colorsScrollViewRef.current?.scrollTo({
