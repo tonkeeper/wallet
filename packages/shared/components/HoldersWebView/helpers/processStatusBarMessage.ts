@@ -1,4 +1,4 @@
-import { StatusBarStyle } from 'react-native';
+import { Platform, StatusBarStyle } from 'react-native';
 
 export function processStatusBarMessage(
   parsed: any,
@@ -15,15 +15,18 @@ export function processStatusBarMessage(
       case 'setStatusBarStyle':
         const style = parsed.data.args[0];
         if (style === 'dark') {
-          setStatusBarStyle('light-content');
-        } else if (style === 'light') {
           setStatusBarStyle('dark-content');
+        } else if (style === 'light') {
+          setStatusBarStyle('light-content');
         } else {
           console.warn('Invalid status bar style');
         }
         break;
       case 'setStatusBarBackgroundColor':
         const backgroundColor = parsed.data.args[0];
+        if (Platform.OS === 'ios') {
+          break;
+        }
         setStatusBarBackgroundColor(backgroundColor, true);
         break;
       default:

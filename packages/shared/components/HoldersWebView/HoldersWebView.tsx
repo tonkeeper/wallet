@@ -4,7 +4,6 @@ import React, {
   useEffect,
   useMemo,
   useReducer,
-  useRef,
   useState,
 } from 'react';
 import { Steezy } from '@tonkeeper/uikit';
@@ -33,10 +32,20 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { tk } from '@tonkeeper/mobile/src/wallet';
 import { processStatusBarMessage } from './helpers/processStatusBarMessage';
 import { extractWebViewQueryAPIParams } from './utils/extractWebViewQueryAPIParams';
+import { useDAppBridge } from '@tonkeeper/mobile/src/core/DAppBrowser/hooks/useDAppBridge';
+import { i18n } from '../../i18n';
+import { useSelector } from 'react-redux';
+import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
 
-export const HoldersWebView = memo(() => {
+const endpoint = 'https://tonkeeper-dev.holders.io/';
+
+export interface HoldersWebViewProps {
+  path?: string;
+}
+
+export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
+  const containerStyle = Steezy.useStyle(styles.container);
   const navigation = useNavigation();
-  const webRef = useRef<WebView>(null);
   const safeAreaInsets = useSafeAreaInsets();
   const [mainButton, dispatchMainButton] = useReducer(reduceMainButton(), {
     text: '',
@@ -48,6 +57,16 @@ export const HoldersWebView = memo(() => {
     isProgressVisible: false,
     onPress: undefined,
   });
+  const currency = useSelector(fiatCurrencySelector);
+
+  const queryParams = new URLSearchParams({
+    lang: i18n.locale,
+    currency: currency,
+    theme: 'holders',
+    'theme-style': 'dark',
+  });
+
+  const url = `${endpoint}${props.path ?? ''}?${queryParams.toString()}`;
 
   const [holdersParams, setHoldersParams] = useState({
     backPolicy: 'back',
@@ -55,10 +74,11 @@ export const HoldersWebView = memo(() => {
     lockScroll: true,
   });
 
-  const injectionEngine = useInjectEngine(
-    getDomainFromURL('https://tonkeeper-dev.holders.io'),
-    'Title',
-    true,
+  const injectionEngine = useInjectEngine(getDomainFromURL(url), 'Title', true);
+
+  const { injectedJavaScriptBeforeContentLoaded, ref, onMessage } = useDAppBridge(
+    tk.wallet.address.ton.raw,
+    url,
   );
 
   const handleWebViewMessage = useCallback((event: WebViewMessageEvent) => {
@@ -71,12 +91,17 @@ export const HoldersWebView = memo(() => {
     let processed = false;
     try {
       let parsed = JSON.parse(nativeEvent.data);
-      // Main button API
+
+      if (!parsed.data) {
+        onMessage(event);
+        return;
+      }
+
       let processed = processMainButtonMessage(
         parsed,
         dispatchMainButton,
         dispatchMainButtonResponse,
-        webRef,
+        ref,
       );
 
       if (processed) {
@@ -93,10 +118,6 @@ export const HoldersWebView = memo(() => {
         return;
       }
 
-      if (typeof parsed.id !== 'number') {
-        console.warn('Invalid operation id');
-        return;
-      }
       id = parsed.id;
       data = parsed.data;
     } catch (e) {
@@ -117,7 +138,7 @@ export const HoldersWebView = memo(() => {
       } catch (e) {
         console.warn(e);
       }
-      dispatchResponse(webRef, { id, data: res });
+      dispatchResponse(ref, { id, data: res });
     })();
   }, []);
 
@@ -154,8 +175,8 @@ export const HoldersWebView = memo(() => {
       return true;
     }
     if (holdersParams.backPolicy === 'back') {
-      if (webRef.current) {
-        webRef.current.goBack();
+      if (ref.current) {
+        ref.current.goBack();
       }
       return true;
     }
@@ -174,17 +195,6 @@ export const HoldersWebView = memo(() => {
   }, [onHardwareBackPress]);
 
   const injectSource = useMemo(() => {
-    const initialState = {};
-
-    const initialInjection = `
-        window.initialState = ${JSON.stringify(initialState)};
-        window['tonkeeper'] = (() => {
-            const obj = {};
-            Object.freeze(obj);
-            return obj;
-        })();
-        `;
-
     return createInjectSource({
       config: {
         version: 1,
@@ -192,31 +202,22 @@ export const HoldersWebView = memo(() => {
         platformVersion: Platform.Version,
         network: tk.wallet.identity.network,
         address: tk.wallet.address.ton.raw,
-        publicKey: tk.wallet.identity.pubKey,
+        publicKey: Buffer.from(tk.wallet.identity.pubKey).toString('base64'),
       },
       safeArea: safeAreaInsets,
-      additionalInjections: initialInjection,
+      additionalInjections: injectedJavaScriptBeforeContentLoaded,
       useMainButtonAPI: true,
       useStatusBarAPI: true,
     });
-  }, []);
+  }, [injectedJavaScriptBeforeContentLoaded]);
 
   return (
-    <Animated.View
-      style={{
-        flexGrow: 1,
-        flexBasis: 0,
-        height: '100%',
-      }}
-      entering={FadeIn}
-    >
+    <Animated.View style={styles.container.static} entering={FadeIn}>
       <WebView
-        webviewDebuggingEnabled
-        ref={webRef}
-        javaScriptEnabled
-        domStorageEnabled
+        ref={ref}
+        startInLoadingState
         source={{
-          uri: 'https://tonkeeper-dev.holders.io',
+          uri: url,
         }}
         onMessage={handleWebViewMessage}
         onNavigationStateChange={(event: WebViewNavigation) => {
@@ -230,14 +231,18 @@ export const HoldersWebView = memo(() => {
         decelerationRate="normal"
         javaScriptCanOpenWindowsAutomatically
         mixedContentMode="always"
-        hideKeyboardAccessoryView
-        thirdPartyCookiesEnabled
-        allowFileAccess
-        forceDarkOn
+        allowFileAccessFromFileURLs={false}
+        allowUniversalAccessFromFileURLs={false}
+        scrollEnabled={!holdersParams.lockScroll}
+        autoManageStatusBarEnabled={false}
         allowsInlineMediaPlayback
         allowsFullscreenVideo
         keyboardDisplayRequiresUserAction={false}
+        hideKeyboardAccessoryView={!holdersParams.showKeyboardAccessoryView}
+        bounces={false}
         mediaPlaybackRequiresUserAction={false}
+        incognito
+        contentInset={{ top: 0, bottom: 0 }}
         style={styles.webView.static}
       />
       {mainButton && mainButton.isVisible && (
@@ -270,6 +275,12 @@ export const HoldersWebView = memo(() => {
 });
 
 const styles = Steezy.create({
+  container: {
+    flexGrow: 1,
+    flexBasis: 0,
+    height: '100%',
+    backgroundColor: 'black',
+  },
   webView: {
     flex: 1,
   },

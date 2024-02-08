@@ -1,5 +1,6 @@
 import WebView from 'react-native-webview';
 import { EdgeInsets } from 'react-native-safe-area-context';
+import { tonConnectDeviceInfo } from '@tonkeeper/mobile/src/tonconnect';
 
 export const mainButtonAPI = `
 window['main-button'] = (() => {
