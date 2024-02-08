@@ -1,10 +1,31 @@
-import { Storage } from '@tonkeeper/core';
-import { State } from '@tonkeeper/core/src/utils/State';
-import { TonRawAddress } from '$wallet/WalletTypes';
+import { WalletContext, WalletIdentity, WalletNetwork } from '../Wallet';
+import { Storage } from '../declarations/Storage';
+import { State } from '../utils/State';
+
+export interface AccountCard {
+  lastFourDigits?: string | null;
+  productId: string;
+  personalizationCode: string;
+  provider: string;
+  kind: string;
+}
+
+export interface AccountState {
+  id: string;
+  address: string;
+  state: string;
+  name: string;
+  balance: string;
+  partner: string;
+  tzOffset: number;
+  cards: AccountCard[];
+  contract: string;
+  network: 'ton-mainnet' | 'ton-testnet';
+}
 
 export interface CardsState {
   onboardBannerDismissed: boolean;
-  accounts: any[];
+  accounts: AccountState[];
   accountsLoading: boolean;
 }
 
@@ -17,18 +38,22 @@ export const cardsState = new State<CardsState>({
 export class CardsManager {
   public state = cardsState;
 
-  constructor(private tonRawAddress: TonRawAddress, private storage: Storage) {
+  constructor(
+    private ctx: WalletContext,
+    private identity: WalletIdentity,
+    private storage: Storage,
+  ) {
     this.state.persist({
       partialize: ({ onboardBannerDismissed, accounts }) => ({
         onboardBannerDismissed,
         accounts,
       }),
       storage: this.storage,
-      key: `${tonRawAddress}/cards`,
+      key: `cards`,
     });
   }
 
-  public async fetchAccounts() {
+  public async fetchAccount() {
     this.state.set({ accounts: [], accountsLoading: true });
     const resp = await fetch('https://card-staging.whales-api.com/v2/public/accounts', {
       method: 'POST',
@@ -37,8 +62,9 @@ export class CardsManager {
       },
       body: JSON.stringify({
         walletKind: 'tonkeeper',
-        network: 'ton-testnet',
-        address: this.tonRawAddress,
+        network:
+          this.identity.network === WalletNetwork.mainnet ? 'ton-mainnet' : 'ton-testnet',
+        address: this.ctx.address.ton.raw,
       }),
     });
     const data = await resp.json();
@@ -46,11 +72,7 @@ export class CardsManager {
   }
 
   public async prefetch() {
-    return await this.fetchAccounts();
-  }
-
-  public async load() {
-    return await this.fetchAccounts();
+    return await this.fetchAccount();
   }
 
   public async dismissOnboardBanner() {

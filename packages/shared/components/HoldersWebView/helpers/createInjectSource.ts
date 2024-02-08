@@ -1,6 +1,7 @@
 import WebView from 'react-native-webview';
+import { EdgeInsets } from 'react-native-safe-area-context';
 
-const mainButtonAPI = `
+export const mainButtonAPI = `
 window['main-button'] = (() => {
     let requestId = 0;
     let callbacks = {};
@@ -74,18 +75,95 @@ window['main-button'] = (() => {
 })();
 `;
 
-export function createInjectSource(
-  config: any,
-  additionalInjections?: string,
-  useMainButtonAPI?: boolean,
-) {
+export const toasterAPI = `
+window['toaster'] = (() => {
+    let __TOASTER_AVAILIBLE = true;
+
+    const show = (props) => {
+        window.ReactNativeWebView.postMessage(JSON.stringify({ data: { name: 'toaster.show', args: props } }));
+    };
+
+    const clear = () => {
+        window.ReactNativeWebView.postMessage(JSON.stringify({ data: { name: 'toaster.clear' } }));
+    };
+
+    const push = (props) => {
+        window.ReactNativeWebView.postMessage(JSON.stringify({ data: { name: 'toaster.push', args: props } }));
+    };
+
+    const pop = () => {
+        window.ReactNativeWebView.postMessage(JSON.stringify({ data: { name: 'toaster.pop' } }));
+    };
+
+    const obj = { show, clear, push, pop, __TOASTER_AVAILIBLE };
+    Object.freeze(obj);
+    return obj;
+})();
+`;
+
+export const statusBarAPI = (safeArea: EdgeInsets) => {
   return `
-    ${additionalInjections || ''}
-    ${useMainButtonAPI ? mainButtonAPI : ''}
+    window['status-bar'] = (() => {
+        let __STATUS_BAR_AVAILIBLE = true;
+        const safeArea = ${JSON.stringify(safeArea)};
+
+        const setStatusBarStyle = (style) => {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ data: { name: 'status-bar.setStatusBarStyle', args: [style] } }));
+        };
+
+        const setStatusBarBackgroundColor = (backgroundColor) => {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ data: { name: 'status-bar.setStatusBarBackgroundColor', args: [backgroundColor] } }));
+        };
+
+        const statusBar = { setStatusBarStyle, setStatusBarBackgroundColor };
+
+        Object.freeze(statusBar);
+        Object.freeze(safeArea);
+
+        const obj = { __STATUS_BAR_AVAILIBLE, statusBar, safeArea };
+
+        Object.freeze(obj);
+        return obj;
+    })();
+    `;
+};
+
+type InjectionConfig = {
+  version: number;
+  platform: 'ios' | 'android' | 'windows' | 'macos' | 'web';
+  platformVersion: string | number;
+  network: string;
+  address: string;
+  publicKey: string;
+  walletConfig: string;
+  walletType: string;
+  signature: string;
+  time: number;
+  subkey: {
+    domain: string;
+    publicKey: string;
+    time: number;
+    signature: string;
+  };
+};
+
+type InjectSourceProps = {
+  config: InjectionConfig;
+  safeArea: EdgeInsets;
+  additionalInjections?: string;
+  useMainButtonAPI?: boolean;
+  useStatusBarAPI?: boolean;
+};
+
+export function createInjectSource(sourceProps: InjectSourceProps) {
+  return `
+    ${sourceProps.additionalInjections || ''}
+    ${sourceProps.useMainButtonAPI ? mainButtonAPI : ''}
+    ${sourceProps.useStatusBarAPI ? statusBarAPI(sourceProps.safeArea) : ''}
     window['ton-x'] = (() => {
         let requestId = 0;
         let callbacks = {};
-        let config = ${JSON.stringify(config)};
+        let config = ${JSON.stringify(sourceProps.config)};
         let __IS_TON_X = true;
     
         const call = (name, args, callback) => {
@@ -101,6 +179,8 @@ export function createInjectSource(
                 c(ev.data);
             }
         }
+
+        Object.freeze(config);
         
         const obj = { call, config, __IS_TON_X, __response };
         Object.freeze(obj);

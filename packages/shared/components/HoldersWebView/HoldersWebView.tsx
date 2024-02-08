@@ -1,4 +1,12 @@
-import React, { memo, useCallback, useMemo, useReducer, useRef } from 'react';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
 import { Steezy } from '@tonkeeper/uikit';
 import WebView from 'react-native-webview';
 import {
@@ -6,20 +14,25 @@ import {
   processMainButtonMessage,
   reduceMainButton,
 } from './components/DAppMainButton';
-import { KeyboardAvoidingView, Platform } from 'react-native';
+import { BackHandler, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
 import {
   createInjectSource,
   dispatchMainButtonResponse,
   dispatchResponse,
 } from './helpers/createInjectSource';
-import { WebViewMessageEvent } from 'react-native-webview/lib/WebViewTypes';
+import {
+  WebViewMessageEvent,
+  WebViewNavigation,
+} from 'react-native-webview/lib/WebViewTypes';
 import { getDomainFromURL } from '@tonkeeper/mobile/src/utils';
 import Animated, { FadeInDown, FadeOutDown, FadeIn } from 'react-native-reanimated';
 import { useNavigation } from '@tonkeeper/router';
 import { useInjectEngine } from './hooks/useInjectEngine';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { tk } from '@tonkeeper/mobile/src/wallet';
+import { processStatusBarMessage } from './helpers/processStatusBarMessage';
+import { extractWebViewQueryAPIParams } from './utils/extractWebViewQueryAPIParams';
 
 export const HoldersWebView = memo(() => {
   const navigation = useNavigation();
@@ -36,6 +49,12 @@ export const HoldersWebView = memo(() => {
     onPress: undefined,
   });
 
+  const [holdersParams, setHoldersParams] = useState({
+    backPolicy: 'back',
+    showKeyboardAccessoryView: false,
+    lockScroll: true,
+  });
+
   const injectionEngine = useInjectEngine(
     getDomainFromURL('https://tonkeeper-dev.holders.io'),
     'Title',
@@ -49,14 +68,25 @@ export const HoldersWebView = memo(() => {
     let data: any;
     console.log(nativeEvent.data);
     let id: number;
+    let processed = false;
     try {
       let parsed = JSON.parse(nativeEvent.data);
       // Main button API
-      const processed = processMainButtonMessage(
+      let processed = processMainButtonMessage(
         parsed,
         dispatchMainButton,
         dispatchMainButtonResponse,
         webRef,
+      );
+
+      if (processed) {
+        return;
+      }
+
+      processed = processStatusBarMessage(
+        parsed,
+        StatusBar.setBarStyle,
+        StatusBar.setBackgroundColor,
       );
 
       if (processed) {
@@ -95,36 +125,68 @@ export const HoldersWebView = memo(() => {
     console.log(err);
   }, []);
 
-  const injectSource = useMemo(() => {
-    const accountState = tk.wallet.cards.state.data.accounts;
-    const cardsState = [];
+  const onCloseApp = useCallback(() => {
+    navigation.goBack();
+  }, []);
 
-    const initialState = {
-      ...(accountState
-        ? {
-            account: {
-              status: {
-                state: {},
-                kycStatus: null,
-                suspended: false,
-              },
-            },
-          }
-        : {}),
-      ...(cardsState ? { cardsList: [] } : {}),
+  const onNavigation = useCallback(
+    (url: string) => {
+      const params = extractWebViewQueryAPIParams(url);
+      if (params.closeApp) {
+        onCloseApp();
+        return;
+      }
+      setHoldersParams((prev) => {
+        const newValue = {
+          ...prev,
+          ...Object.fromEntries(
+            Object.entries(params).filter(([, value]) => value !== undefined),
+          ),
+        };
+        return newValue;
+      });
+    },
+    [setHoldersParams],
+  );
+
+  const onHardwareBackPress = useCallback(() => {
+    if (holdersParams.backPolicy === 'lock') {
+      return true;
+    }
+    if (holdersParams.backPolicy === 'back') {
+      if (webRef.current) {
+        webRef.current.goBack();
+      }
+      return true;
+    }
+    if (holdersParams.backPolicy === 'close') {
+      navigation.goBack();
+      return true;
+    }
+    return false;
+  }, [holdersParams.backPolicy]);
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', onHardwareBackPress);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', onHardwareBackPress);
     };
+  }, [onHardwareBackPress]);
+
+  const injectSource = useMemo(() => {
+    const initialState = {};
 
     const initialInjection = `
         window.initialState = ${JSON.stringify(initialState)};
-        window['tonhub'] = (() => {
+        window['tonkeeper'] = (() => {
             const obj = {};
             Object.freeze(obj);
             return obj;
         })();
         `;
 
-    return createInjectSource(
-      {
+    return createInjectSource({
+      config: {
         version: 1,
         platform: Platform.OS,
         platformVersion: Platform.Version,
@@ -132,9 +194,11 @@ export const HoldersWebView = memo(() => {
         address: tk.wallet.address.ton.raw,
         publicKey: tk.wallet.identity.pubKey,
       },
-      initialInjection,
-      true,
-    );
+      safeArea: safeAreaInsets,
+      additionalInjections: initialInjection,
+      useMainButtonAPI: true,
+      useStatusBarAPI: true,
+    });
   }, []);
 
   return (
@@ -143,8 +207,6 @@ export const HoldersWebView = memo(() => {
         flexGrow: 1,
         flexBasis: 0,
         height: '100%',
-        paddingTop: safeAreaInsets.top,
-        paddingBottom: safeAreaInsets.bottom,
       }}
       entering={FadeIn}
     >
@@ -157,6 +219,10 @@ export const HoldersWebView = memo(() => {
           uri: 'https://tonkeeper-dev.holders.io',
         }}
         onMessage={handleWebViewMessage}
+        onNavigationStateChange={(event: WebViewNavigation) => {
+          // Searching for supported query
+          onNavigation(event.url);
+        }}
         onError={handleError}
         onHttpError={handleError}
         injectedJavaScriptBeforeContentLoaded={injectSource}
