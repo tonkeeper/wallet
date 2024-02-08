@@ -241,7 +241,6 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
         hideKeyboardAccessoryView={!holdersParams.showKeyboardAccessoryView}
         bounces={false}
         mediaPlaybackRequiresUserAction={false}
-        incognito
         contentInset={{ top: 0, bottom: 0 }}
         style={styles.webView.static}
       />

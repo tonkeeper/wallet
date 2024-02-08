@@ -1,6 +1,11 @@
 import { WalletContext, WalletIdentity, WalletNetwork } from '../Wallet';
 import { Storage } from '../declarations/Storage';
 import { State } from '../utils/State';
+import { Address } from '../formatters/Address';
+
+export enum CardKind {
+  VIRTUAL = 'virtual',
+}
 
 export interface AccountCard {
   lastFourDigits?: string | null;
@@ -55,7 +60,7 @@ export class CardsManager {
 
   public async fetchAccount() {
     this.state.set({ accounts: [], accountsLoading: true });
-    const resp = await fetch('https://card-staging.whales-api.com/v2/public/accounts', {
+    const resp = await fetch('https://card-dev.whales-api.com/v2/public/accounts', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -64,7 +69,12 @@ export class CardsManager {
         walletKind: 'tonkeeper',
         network:
           this.identity.network === WalletNetwork.mainnet ? 'ton-mainnet' : 'ton-testnet',
-        address: this.ctx.address.ton.raw,
+        // Holder's API works only with user-friendly bounceable address
+        address: new Address(this.ctx.address.ton.raw).toString({
+          urlSafe: true,
+          testOnly: this.identity.network === WalletNetwork.testnet,
+          bounceable: true,
+        }),
       }),
     });
     const data = await resp.json();

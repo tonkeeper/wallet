@@ -1,5 +1,6 @@
 export type IconNames =
   | 'ic-chevron-right-12'
+  | 'ic-cloud-12'
   | 'ic-dot-12'
   | 'ic-down-12'
   | 'ic-dropdown-12'
@@ -58,6 +59,7 @@ export type IconNames =
   | 'ic-arrow-up-28'
   | 'ic-battery-28'
   | 'ic-bell-28'
+  | 'ic-creditcard-28'
   | 'ic-doc-28'
   | 'ic-done-28'
   | 'ic-donemark-28'
@@ -137,6 +139,7 @@ export type IconNames =
 
 export const AllIcons = [
   'ic-chevron-right-12',
+  'ic-cloud-12',
   'ic-dot-12',
   'ic-down-12',
   'ic-dropdown-12',
@@ -195,6 +198,7 @@ export const AllIcons = [
   'ic-arrow-up-28',
   'ic-battery-28',
   'ic-bell-28',
+  'ic-creditcard-28',
   'ic-doc-28',
   'ic-done-28',
   'ic-donemark-28',
@@ -275,6 +279,7 @@ export const AllIcons = [
 
 export const IconSizes = {
   'ic-chevron-right-12': 12,
+  'ic-cloud-12': 12,
   'ic-dot-12': 12,
   'ic-down-12': 12,
   'ic-dropdown-12': 12,
@@ -333,6 +338,7 @@ export const IconSizes = {
   'ic-arrow-up-28': 28,
   'ic-battery-28': 28,
   'ic-bell-28': 28,
+  'ic-creditcard-28': 28,
   'ic-doc-28': 28,
   'ic-done-28': 28,
   'ic-donemark-28': 28,

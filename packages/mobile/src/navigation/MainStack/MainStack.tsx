@@ -140,6 +140,7 @@ export const MainStack: FC = () => {
       <Stack.Screen
         name={MainStackRouteNames.HoldersWebView}
         component={HoldersWebView}
+        options={{ gestureEnabled: false }}
       />
     </Stack.Navigator>
   );

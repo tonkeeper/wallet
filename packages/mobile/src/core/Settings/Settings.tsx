@@ -365,6 +365,19 @@ export const Settings: FC = () => {
                 onPress={handleSecurity}
               />
             )}
+            {!config.get('disable_holders_cards') && !!wallet && (
+              <List.Item
+                value={
+                  <NewIcon
+                    style={styles.icon.static}
+                    color="accentBlue"
+                    name={'ic-creditcard-28'}
+                  />
+                }
+                title={t('settings_bank_card')}
+                onPress={() => nav.navigate(MainStackRouteNames.HoldersWebView)}
+              />
+            )}
             <PopupSelect
               items={searchEngineVariants}
               selected={searchEngine}

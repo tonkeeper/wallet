@@ -1,22 +1,95 @@
-import React, { memo } from 'react';
-import { AccountState } from '@tonkeeper/core/src/managers/CardsManager';
-import { List } from '@tonkeeper/uikit';
+import React, { memo, useCallback } from 'react';
+import { AccountState, CardKind } from '@tonkeeper/core/src/managers/CardsManager';
+import { Icon, List, Steezy, View } from '@tonkeeper/uikit';
+import { formatter } from '../../../formatter';
+import { MainStackRouteNames } from '@tonkeeper/mobile/src/navigation';
+import { useNavigation } from '@tonkeeper/router';
+import { Platform, Text } from 'react-native';
+import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
+import { capitalizeFirstLetter } from '../../../utils/date';
 
 export interface CardsListProps {
   accounts: AccountState[];
 }
 
+const colorsForCardIconBackground = [
+  DarkTheme.accentGreen,
+  DarkTheme.accentOrange,
+  DarkTheme.accentBlue,
+  DarkTheme.accentRed,
+  DarkTheme.accentPurple,
+];
+
+function getColorByFourDigits(fourDigits: string | null | undefined) {
+  const sumOfDigits =
+    fourDigits
+      ?.split('')
+      .map(Number)
+      .reduce((acc, val) => acc + val, 0) ?? 0;
+
+  return colorsForCardIconBackground[sumOfDigits % colorsForCardIconBackground.length];
+}
+
+const fontFamily = Platform.select({
+  ios: 'SFMono-Bold',
+  android: 'RobotoMono-Bold',
+});
+
 export const CardsList = memo<CardsListProps>((props) => {
+  const cardNumberStyle = Steezy.useStyle(styles.cardNumber);
+  const nav = useNavigation();
+  const openWebView = useCallback(() => {
+    nav.push(MainStackRouteNames.HoldersWebView);
+  }, [nav]);
+
   return (
-    <List>
-      {props.accounts.map((account) => (
-        <List.Item
-          value={`${account.balance} TON`}
-          subvalue={`${account.balance} euro`}
-          subtitle={account.cards[0].kind}
-          title={`Card *${account.cards[0].lastFourDigits}`}
-        />
-      ))}
+    <List indent={false}>
+      {props.accounts.map((account) =>
+        account.cards.map((card) => (
+          <List.Item
+            leftContent={
+              <View
+                style={[
+                  styles.cardIcon,
+                  { backgroundColor: getColorByFourDigits(card.lastFourDigits) },
+                ]}
+              >
+                <Text style={cardNumberStyle}>{card.lastFourDigits}</Text>
+                {card.kind === CardKind.VIRTUAL && (
+                  <Icon style={styles.cloudIcon.static} name={'ic-cloud-12'} />
+                )}
+              </View>
+            }
+            onPress={openWebView}
+            value={`${formatter.fromNano(account.balance)} TON`}
+            subvalue={`22.92 €`}
+            subtitle={capitalizeFirstLetter(card.kind)}
+            title={`Card *${card.lastFourDigits}`}
+          />
+        )),
+      )}
     </List>
   );
 });
+
+export const styles = Steezy.create(({ colors }) => ({
+  cardIcon: {
+    height: 44,
+    width: 30,
+    borderRadius: 4,
+    paddingTop: 3,
+    paddingBottom: 2,
+  },
+  cardNumber: {
+    fontFamily,
+    textAlign: 'center',
+    fontSize: 8.5,
+    lineHeight: 10,
+    color: colors.constantWhite,
+  },
+  cloudIcon: {
+    position: 'absolute',
+    bottom: 2,
+    right: 4,
+  },
+}));

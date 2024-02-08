@@ -645,6 +645,7 @@
   "settings_news" : "Новости Tonkeeper",
   "settings_notifications" : "Уведомления",
   "settings_primary_currency" : "Валюта",
+  "settings_bank_card": "Банковская карта",
   "settings_rate" : "Оценить Tonkeeper",
   "settings_recovery_phrase" : "Секретный ключ",
   "settings_reset" : "Выйти",

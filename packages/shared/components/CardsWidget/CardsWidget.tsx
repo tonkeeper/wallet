@@ -16,7 +16,7 @@ export const CardsWidget = memo(() => {
       {state.accounts.length ? (
         <>
           <CardsList accounts={state.accounts} />
-          <Spacer y={32} />
+          <Spacer y={16} />
         </>
       ) : null}
     </View>
