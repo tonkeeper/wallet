@@ -250,8 +250,8 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
           tokenType === TokenType.Jetton
             ? new BigNumber(toNano(fee)).plus(BASE_FORWARD_AMOUNT.toString()).toString()
             : new BigNumber(toNano(fee)).plus(toNano(amount)).toString();
-        yield call(tk.wallet.balances.load);
-        const balance = tk.wallet.balances.state.data.ton;
+        yield call([tk.wallet.balances, 'load']);
+        const balance = toNano(tk.wallet.balances.state.data.ton);
         if (new BigNumber(amountNano).gt(new BigNumber(balance))) {
           return onInsufficientFunds({ totalAmount: amountNano, balance });
         } else {
