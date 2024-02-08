@@ -26,6 +26,7 @@ export const AddWatchOnly: FC = () => {
   const [account, setAccount] = useState<Omit<SendRecipient, 'blockchain'> | null>(null);
   const [dnsLoading, setDnsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const getAddressByDomain = useMemo(
     () =>
@@ -52,6 +53,7 @@ export const AddWatchOnly: FC = () => {
 
   const validate = useCallback(
     async (value: string) => {
+      setError(false);
       if (value.length === 0) {
         setAccount(null);
 
@@ -137,6 +139,7 @@ export const AddWatchOnly: FC = () => {
         Toast.fail(t('add_watch_only.wallet_not_found'));
       }
       setLoading(false);
+      setError(true);
     }
   }, [account]);
 
@@ -161,6 +164,7 @@ export const AddWatchOnly: FC = () => {
             updateRecipient={validate}
             shouldFocus={true}
             dnsLoading={dnsLoading}
+            error={error}
             editable
           />
         </View>

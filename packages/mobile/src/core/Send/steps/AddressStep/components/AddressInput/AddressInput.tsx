@@ -27,6 +27,7 @@ interface Props {
   recipient: SendRecipient | null;
   dnsLoading: boolean;
   editable: boolean;
+  error?: boolean;
   updateRecipient: (value: string) => Promise<boolean>;
   onSubmit?: () => void;
 }
@@ -36,6 +37,7 @@ const AddressInputComponent: FC<Props> = (props) => {
     wordHintsRef,
     shouldFocus,
     recipient,
+    error,
     dnsLoading,
     editable,
     updateRecipient,
@@ -49,7 +51,7 @@ const AddressInputComponent: FC<Props> = (props) => {
 
   const [showFailed, setShowFailed] = useState(true);
 
-  const isFailed = showFailed && !dnsLoading && value.length > 0 && !recipient;
+  const isFailed = error || (showFailed && !dnsLoading && value.length > 0 && !recipient);
 
   const canScanQR = value.length === 0;
 
