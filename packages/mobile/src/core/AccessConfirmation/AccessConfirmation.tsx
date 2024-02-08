@@ -160,7 +160,7 @@ export const AccessConfirmation: FC = () => {
         }
       }
     },
-    [dispatch, isBiometryFailed, isUnlock, triggerError, wallet],
+    [dispatch, isBiometryFailed, isUnlock, obtainTonProof, triggerError, wallet],
   );
 
   const handleBiometry = useCallback(() => {
@@ -175,6 +175,9 @@ export const AccessConfirmation: FC = () => {
         setTimeout(async () => {
           // Lock screen
           if (isUnlock) {
+            const keyPair = await (unlockedVault as any).getKeyPair();
+            // createTronAddress(privateKey);
+            obtainTonProof(keyPair);
             dispatch(mainActions.setUnlocked(true));
           } else {
             goBack();
@@ -187,7 +190,7 @@ export const AccessConfirmation: FC = () => {
         setBiometryFailed(true);
         triggerError();
       });
-  }, [dispatch, isUnlock, triggerError, wallet]);
+  }, [dispatch, isUnlock, obtainTonProof, triggerError, wallet]);
 
   useEffect(() => {
     if (params.withoutBiometryOnOpen) {
