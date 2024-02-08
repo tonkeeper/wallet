@@ -3,15 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { useTheme } from '$hooks/useTheme';
 import { SettingsStackRouteNames } from '$navigation';
-import {
-  DevMenu,
-  Logs,
-  Security,
-  SecurityMigration,
-  Settings,
-  LegalDocuments,
-  FontLicense,
-} from '$core';
+import { DevMenu, Logs, Security, Settings, LegalDocuments, FontLicense } from '$core';
 import { SettingsStackParamList } from '$navigation/SettingsStack/SettingsStack.interface';
 import { Notifications } from '$core/Notifications/Notifications';
 import { ChooseCurrencyScreen } from '$core/ChooseCurrencyScreen';
@@ -45,17 +37,6 @@ export const SettingsStack: FC = () => {
         component={LegalDocuments}
       />
       <Stack.Screen name={SettingsStackRouteNames.FontLicense} component={FontLicense} />
-      <Stack.Screen
-        name={SettingsStackRouteNames.SecurityMigration}
-        component={SecurityMigration}
-        options={{
-          presentation: 'transparentModal',
-          animation: 'fade',
-          contentStyle: {
-            backgroundColor: theme.colors.backgroundPrimary,
-          },
-        }}
-      />
       <Stack.Screen
         name={SettingsStackRouteNames.RefillBattery}
         component={RefillBattery}

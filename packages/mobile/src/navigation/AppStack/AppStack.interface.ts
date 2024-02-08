@@ -61,7 +61,6 @@ export type AppStackParamList = {
   [AppStackRouteNames.MainAccessConfirmation]: {};
   [AppStackRouteNames.ChangePin]: {};
   [AppStackRouteNames.ResetPin]: {};
-  [AppStackRouteNames.SecurityMigration]: {};
   [AppStackRouteNames.NFT]: {
     keyPair: NFTKeyPair;
   };

@@ -1,5 +1,4 @@
 import React from 'react';
-import { SecurityMigrationStack } from './SecurityMigrationStack/SecurityMigrationStack';
 import { ResetPinStack } from './ResetPinStack/ResetPinStack';
 import { createModalStackNavigator } from '@tonkeeper/router';
 import { NFT } from '$core/NFT/NFT';
@@ -91,10 +90,6 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={DAppBrowser} path={AppStackRouteNames.DAppBrowser} />
     </Stack.Group>
     <Stack.Group behavior="fullScreenModal" animation="fade">
-      <Stack.Modal
-        component={SecurityMigrationStack}
-        path={AppStackRouteNames.SecurityMigration}
-      />
       <Stack.Modal component={ResetPinStack} path={AppStackRouteNames.ResetPin} />
       <Stack.Modal component={Migration} path={AppStackRouteNames.Migration} />
       <Stack.Modal

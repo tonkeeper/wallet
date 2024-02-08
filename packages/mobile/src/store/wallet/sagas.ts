@@ -1,8 +1,6 @@
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { Alert, Keyboard } from 'react-native';
 import BigNumber from 'bignumber.js';
-import * as LocalAuthentication from 'expo-local-authentication';
-import * as SecureStore from 'expo-secure-store';
 
 import { walletActions, walletSelector } from '$store/wallet/index';
 import { EncryptedVault, UnlockedVault, Vault, VaultJSON } from '$blockchain';
@@ -11,10 +9,7 @@ import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
 import {
   openAccessConfirmation,
   openBackupWords,
-  openCreatePin,
   openMigration,
-  openSetupBiometryAfterMigration,
-  openSetupWalletDone,
   TabsStackRouteNames,
 } from '$navigation';
 import {
@@ -37,7 +32,7 @@ import { getMigrationState, MainDB, setMigrationState } from '$database';
 import { Toast, useAddressUpdateStore, useConnectedAppsStore } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
 import { getChainName } from '$shared/dynamicConfig';
-import { detectBiometryType, toNano } from '$utils';
+import { toNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { Ton } from '$libs/Ton';
 import { clearSubscribeStatus } from '$utils/messaging';
@@ -746,40 +741,6 @@ function* changePinWorker(action: ChangePinAction) {
   }
 }
 
-function* securityMigrateWorker() {
-  try {
-    const vault = yield call(walletGetUnlockedVault);
-    yield put(walletActions.setGeneratedVault(vault));
-
-    const pin = getLastEnteredPasscode();
-    if (pin) {
-      const [types, isProtected] = yield all([
-        call(LocalAuthentication.supportedAuthenticationTypesAsync),
-        call(SecureStore.isAvailableAsync),
-      ]);
-
-      const biometryType = yield call(detectBiometryType, types);
-      if (biometryType && isProtected) {
-        yield call(openSetupBiometryAfterMigration, pin, biometryType);
-      } else {
-        yield put(
-          walletActions.createWallet({
-            pin,
-            onDone: () => {
-              openSetupWalletDone();
-            },
-            onFail: () => {},
-          }),
-        );
-      }
-    } else {
-      yield call(openCreatePin);
-    }
-  } catch (e) {
-    yield call(Toast.fail, e.message);
-  }
-}
-
 export function* walletSaga() {
   yield all([
     takeLatest(walletActions.generateVault, generateVaultWorker),
@@ -798,7 +759,6 @@ export function* walletSaga() {
     takeLatest(walletActions.deployWallet, deployWalletWorker),
     takeLatest(walletActions.toggleBiometry, toggleBiometryWorker),
     takeLatest(walletActions.changePin, changePinWorker),
-    takeLatest(walletActions.securityMigrate, securityMigrateWorker),
     takeLatest(walletActions.walletGetUnlockedVault, walletGetUnlockedVault),
   ]);
 }

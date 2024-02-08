@@ -19,7 +19,6 @@ export enum AppStackRouteNames {
   MainAccessConfirmation = 'MainAccessConfirmation',
   ChangePin = 'ChangePin',
   ResetPin = 'AppResetPin',
-  SecurityMigration = 'SecurityMigration',
   NFT = 'NFT',
   WebView = 'WebView',
   DevStack = 'DevStack',
@@ -81,7 +80,6 @@ export enum SettingsStackRouteNames {
   DevMenu = 'DevMenu',
   Logs = 'Logs',
   Security = 'Security',
-  SecurityMigration = 'SettingsSecurityMigration',
   LegalDocuments = 'LegalDocuments',
   FontLicense = 'FontLicense',
   Notifications = 'Notifications',
@@ -98,14 +96,6 @@ export enum ActivityStackRouteNames {
 export enum ResetPinStackRouteNames {
   ResetPin = 'ResetPin',
   SetupBiometry = 'ResetPinSetupBiometry',
-}
-
-export enum SecurityMigrationStackRouteNames {
-  SecurityMigration = 'SecurityMigration',
-  SetupBiometry = 'SecurityMigrationSetupBiometry',
-  AccessConfirmation = 'SecurityMigrationAccessConfirmation',
-  SetupWalletDone = 'SecurityMigrationSetupWalletDone',
-  CreatePin = 'SecurityMigrationCreatePin',
 }
 
 export enum DevComponents {
@@ -125,7 +115,6 @@ type ScreenNames =
   | `${SetupWalletStackRouteNames}`
   | `${SettingsStackRouteNames}`
   | `${ResetPinStackRouteNames}`
-  | `${SecurityMigrationStackRouteNames}`
   | `${DevComponents}`;
 
 type ScreenProps = { [key in ScreenNames]: any };

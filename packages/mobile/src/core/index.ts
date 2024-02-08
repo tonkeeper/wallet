@@ -22,7 +22,6 @@ export { SetupBiometry } from './SetupBiometry/SetupBiometry';
 export { Security } from './Security/Security';
 export { ChangePin } from './ChangePin/ChangePin';
 export { ResetPin } from './ResetPin/ResetPin';
-export { SecurityMigration } from './SecurityMigration/SecurityMigration';
 export { LegalDocuments } from './LegalDocuments/LegalDocuments';
 export { FontLicense } from './LegalDocuments/FontLicense';
 export { DAppsExplore } from './DAppsExplore/DAppsExplore';

@@ -123,7 +123,6 @@ export const { actions, reducer } = createSlice({
     },
     toggleBiometry(_, __: ToggleBiometryAction) {},
     changePin(_, __: ChangePinAction) {},
-    securityMigrate() {},
     walletGetUnlockedVault(_, __: WalletGetUnlockedVaultAction) {},
   },
 });

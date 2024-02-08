@@ -4,10 +4,7 @@ import LottieView from 'lottie-react-native';
 import { Icon, Text } from '$uikit';
 import * as CreateWalletStyle from '$core/CreateWallet/CreateWallet.style';
 import { useTheme } from '$hooks/useTheme';
-import {
-  SecurityMigrationStackRouteNames,
-  SetupWalletStackRouteNames,
-} from '$navigation';
+import { SetupWalletStackRouteNames } from '$navigation';
 import { getCurrentRoute, goBack, popToTop } from '$navigation/imperative';
 import * as S from './SetupWalletDone.style';
 import { ns, triggerNotificationSuccess } from '$utils';
@@ -15,7 +12,7 @@ import { t } from '@tonkeeper/shared/i18n';
 
 export const SetupWalletDone: FC = () => {
   const theme = useTheme();
-  
+
   const confettiRef = useRef<LottieView>(null);
   const checkIconRef = useRef<LottieView>(null);
 
@@ -33,8 +30,7 @@ export const SetupWalletDone: FC = () => {
   const handleAnimationEnd = useCallback(() => {
     const timer = setTimeout(() => {
       const isCreate =
-        getCurrentRoute()?.name === SetupWalletStackRouteNames.SetupWalletDone ||
-        getCurrentRoute()?.name === SecurityMigrationStackRouteNames.SetupWalletDone;
+        getCurrentRoute()?.name === SetupWalletStackRouteNames.SetupWalletDone;
       popToTop();
       if (isCreate) {
         setTimeout(() => goBack(), 10);

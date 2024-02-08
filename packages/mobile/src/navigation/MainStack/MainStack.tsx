@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { MainStackParamList } from './MainStack.interface';
@@ -56,8 +56,12 @@ export const MainStack: FC = () => {
     ? MainStackRouteNames.Tabs
     : MainStackRouteNames.DevStack;
 
-  function renderRoot() {
-    if (!wallet && isIntroShown) {
+  const hasWallet = !!wallet;
+
+  const showLockScreen = !isUnlocked && hasWallet && !attachedScreen.pathname;
+
+  const root = useMemo(() => {
+    if (!hasWallet && isIntroShown) {
       return (
         <Stack.Screen
           name={AppStackRouteNames.Intro}
@@ -67,7 +71,7 @@ export const MainStack: FC = () => {
           }}
         />
       );
-    } else if (!isUnlocked && wallet && !attachedScreen.pathname) {
+    } else if (showLockScreen) {
       return (
         <Stack.Screen
           name={AppStackRouteNames.MainAccessConfirmation}
@@ -77,7 +81,7 @@ export const MainStack: FC = () => {
     } else {
       return <Stack.Screen name={MainStackRouteNames.Tabs} component={TabStack} />;
     }
-  }
+  }, [hasWallet, isIntroShown, showLockScreen, theme.colors.backgroundPrimary]);
 
   return (
     <Stack.Navigator
@@ -91,7 +95,7 @@ export const MainStack: FC = () => {
         fullScreenGestureEnabled: true,
       }}
     >
-      {renderRoot()}
+      {root}
       <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
       <Stack.Screen name={'TronTokenScreen'} component={TronTokenScreen} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />

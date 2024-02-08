@@ -14,11 +14,13 @@ import {
   TouchableOpacity,
   View,
   ns,
+  useReanimatedKeyboardHeight,
 } from '@tonkeeper/uikit';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const COLORS_LIST = Object.values(WalletColor);
 
@@ -32,12 +34,9 @@ export const CustomizeWallet = memo(() => {
 
   const colorsScrollViewRef = useRef<ScrollView>(null);
 
-  const keyboard = useAnimatedKeyboard();
-  const [containerWidth, setContainerWidth] = useState(0);
+  const { spacerStyle } = useReanimatedKeyboardHeight();
 
-  const keyboardStyle = useAnimatedStyle(() => ({
-    height: keyboard.height.value,
-  }));
+  const [containerWidth, setContainerWidth] = useState(0);
 
   useEffect(() => {
     if (containerWidth === 0) {
@@ -83,6 +82,10 @@ export const CustomizeWallet = memo(() => {
             defaultValue={name}
             onChangeText={setName}
             autoFocus
+            autoComplete="off"
+            textContentType="none"
+            autoCorrect={false}
+            spellCheck={false}
           />
         </View>
         <Spacer y={16} />
@@ -116,12 +119,13 @@ export const CustomizeWallet = memo(() => {
           onPress={handleSave}
         />
       </View>
-      <Animated.View style={keyboardStyle} />
+      <Animated.View style={spacerStyle} />
+      <SafeAreaView edges={['bottom']} />
     </Modal>
   );
 });
 
-const styles = Steezy.create(({ safeArea, colors }) => ({
+const styles = Steezy.create(({ colors }) => ({
   container: { flex: 1 },
   topContainer: {
     paddingHorizontal: 32,
@@ -146,7 +150,7 @@ const styles = Steezy.create(({ safeArea, colors }) => ({
     borderWidth: 5,
   },
   buttonContainer: {
-    paddingBottom: safeArea.bottom,
     paddingHorizontal: 32,
+    paddingBottom: 32,
   },
 }));

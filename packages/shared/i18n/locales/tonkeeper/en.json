@@ -1100,7 +1100,8 @@
   },
   "add_watch_only": {
     "title": "Watch Account",
-    "subtitle": "Monitor wallet activity without recovery phrase. You will be notified of any transactions from this wallet."
+    "subtitle": "Monitor wallet activity without recovery phrase. You will be notified of any transactions from this wallet.",
+    "wallet_not_found": "Wallet not found"
   },
   "watch_only": "Watch only",
   "stop_watch": "Delete Watch Account",

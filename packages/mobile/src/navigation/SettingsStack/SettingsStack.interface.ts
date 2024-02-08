@@ -5,7 +5,6 @@ export type SettingsStackParamList = {
   [SettingsStackRouteNames.DevMenu]: {};
   [SettingsStackRouteNames.Logs]: {};
   [SettingsStackRouteNames.Security]: {};
-  [SettingsStackRouteNames.SecurityMigration]: {};
   [SettingsStackRouteNames.LegalDocuments]: {};
   [SettingsStackRouteNames.FontLicense]: {};
   [SettingsStackRouteNames.Notifications]: {};

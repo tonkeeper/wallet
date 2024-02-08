@@ -11,7 +11,7 @@ import { memo, useCallback, useEffect } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { LayoutAnimation } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
-import { useWallet } from '../useWallet';
+import { useWallet } from '@tonkeeper/shared/hooks';
 
 export const ActivityScreen = memo(() => {
   const activityList = useActivityList();
@@ -26,20 +26,20 @@ export const ActivityScreen = memo(() => {
   );
 
   const handlePressRecevie = useCallback(() => {
-    if (!!wallet.address.ton.raw) {
+    if (wallet) {
       nav.go('ReceiveModal');
     } else {
       openRequireWalletModal();
     }
-  }, [wallet.address.ton.raw]);
+  }, [nav, wallet]);
 
   const handlePressBuy = useCallback(() => {
-    if (!!wallet.address.ton.raw) {
+    if (wallet) {
       nav.openModal('Exchange', { category: 'buy' });
     } else {
       openRequireWalletModal();
     }
-  }, [wallet.address.ton.raw]);
+  }, [nav, wallet]);
 
   const onRemoveNotification = useCallback(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -57,9 +57,13 @@ export const ActivityScreen = memo(() => {
     openNotificationsScreen();
   }, []);
 
+  const isWatchOnly = wallet && wallet.isWatchOnly;
+
   if (
-    !wallet.address.ton.raw ||
-    (!activityList.isLoading && activityList.sections.length < 1) && activityList.error === null
+    !wallet ||
+    (!activityList.isLoading &&
+      activityList.sections.length < 1 &&
+      activityList.error === null)
   ) {
     return (
       <Screen>
@@ -71,21 +75,23 @@ export const ActivityScreen = memo(() => {
           <Text type="body1" color="textSecondary">
             {t('activity.empty_transaction_caption')}
           </Text>
-          <View style={styles.emptyButtons}>
-            <Button
-              title={t('activity.buy_toncoin_btn')}
-              onPress={handlePressBuy}
-              color="secondary"
-              size="small"
-            />
-            <Spacer x={12} />
-            <Button
-              title={t('activity.receive_btn')}
-              onPress={handlePressRecevie}
-              color="secondary"
-              size="small"
-            />
-          </View>
+          {!isWatchOnly ? (
+            <View style={styles.emptyButtons}>
+              <Button
+                title={t('activity.buy_toncoin_btn')}
+                onPress={handlePressBuy}
+                color="secondary"
+                size="small"
+              />
+              <Spacer x={12} />
+              <Button
+                title={t('activity.receive_btn')}
+                onPress={handlePressRecevie}
+                color="secondary"
+                size="small"
+              />
+            </View>
+          ) : null}
         </View>
       </Screen>
     );

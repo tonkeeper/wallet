@@ -1,26 +1,31 @@
 import { SendRecipient } from '$core/Send/Send.interface';
 import { AddressInput } from '$core/Send/steps/AddressStep/components';
 import { Tonapi } from '$libs/Tonapi';
-import {
-  AppStackRouteNames,
-  TabsStackRouteNames,
-  openSetupWalletDone,
-} from '$navigation';
-import { goBack, navigate } from '$navigation/imperative';
+import { openSetupWalletDone } from '$navigation';
 import { asyncDebounce, isTransferOp, parseTonLink } from '$utils';
 import { tk } from '$wallet';
-import { WalletColor } from '$wallet/WalletTypes';
 import { Address } from '@tonkeeper/core';
 import { t } from '@tonkeeper/shared/i18n';
-import { Button, Screen, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
+import {
+  Button,
+  Screen,
+  Spacer,
+  Steezy,
+  Text,
+  Toast,
+  View,
+  useReanimatedKeyboardHeight,
+} from '@tonkeeper/uikit';
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 let dnsAbortController: null | AbortController = null;
 
 export const AddWatchOnly: FC = () => {
   const [account, setAccount] = useState<Omit<SendRecipient, 'blockchain'> | null>(null);
   const [dnsLoading, setDnsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const getAddressByDomain = useMemo(
     () =>
@@ -119,16 +124,23 @@ export const AddWatchOnly: FC = () => {
       return;
     }
 
-    await tk.addWatchOnlyWallet(account.address);
+    setLoading(true);
 
-    openSetupWalletDone();
+    try {
+      await tk.addWatchOnlyWallet(account.address);
+
+      setTimeout(() => {
+        openSetupWalletDone();
+      }, 300);
+    } catch (e) {
+      if (e.error) {
+        Toast.fail(t('add_watch_only.wallet_not_found'));
+      }
+      setLoading(false);
+    }
   }, [account]);
 
-  const keyboard = useAnimatedKeyboard();
-
-  const keyboardStyle = useAnimatedStyle(() => ({
-    height: keyboard.height.value,
-  }));
+  const { spacerStyle } = useReanimatedKeyboardHeight();
 
   return (
     <Screen>
@@ -154,21 +166,27 @@ export const AddWatchOnly: FC = () => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <Button title={t('continue')} onPress={handleContinue} disabled={!account} />
+          <Button
+            title={t('continue')}
+            onPress={handleContinue}
+            loading={loading}
+            disabled={!account}
+          />
         </View>
-        <Animated.View style={keyboardStyle} />
+        <Animated.View style={spacerStyle} />
+        <SafeAreaView edges={['bottom']} />
       </Screen.Content>
     </Screen>
   );
 };
 
-const styles = Steezy.create(({ safeArea }) => ({
+const styles = Steezy.create(() => ({
   container: {
     paddingHorizontal: 32,
     flex: 1,
   },
   buttonContainer: {
-    paddingBottom: safeArea.bottom,
     paddingHorizontal: 32,
+    paddingBottom: 32,
   },
 }));

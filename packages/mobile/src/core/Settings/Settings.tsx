@@ -25,7 +25,6 @@ import {
   openNotifications,
   openRefillBattery,
   openSecurity,
-  openSecurityMigration,
   openSubscriptions,
 } from '$navigation';
 import { walletActions } from '$store/wallet';
@@ -38,7 +37,6 @@ import {
 import { checkIsTonDiamondsNFT, hNs, ns, throttle } from '$utils';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { CellSectionItem } from '$shared/components';
-import { MainDB } from '$database';
 import { useNotifications } from '$hooks/useNotifications';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
 import { useFlags } from '$utils/flags';

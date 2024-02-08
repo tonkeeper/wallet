@@ -149,7 +149,7 @@ export const CheckSecretWords: FC = () => {
       generatedVault!.setConfig(configParsed);
     }
 
-    if (tk.wallet) {
+    if (tk.walletForUnlock) {
       try {
         await unlockVault();
         const pin = getLastEnteredPasscode();

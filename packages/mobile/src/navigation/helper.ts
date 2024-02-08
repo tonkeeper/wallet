@@ -5,16 +5,14 @@ import {
   BrowserStackRouteNames,
   MainStackRouteNames,
   ResetPinStackRouteNames,
-  SecurityMigrationStackRouteNames,
   SettingsStackRouteNames,
   SetupWalletStackRouteNames,
-  TabsStackRouteNames,
 } from '$navigation/navigationNames';
 import { CryptoCurrency } from '$shared/constants';
 import { SendAnalyticsFrom } from '$store/models';
 import { NFTKeyPair } from '$store/nfts/interface';
 import _ from 'lodash';
-import { getCurrentRoute, navigate, push, replace } from './imperative';
+import { getCurrentRoute, navigate, push, replace, reset } from './imperative';
 import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
 import { tk } from '$wallet';
 
@@ -78,11 +76,6 @@ export function openCreatePin() {
     navigate(AppStackRouteNames.SetupWalletStack, {
       screen: SetupWalletStackRouteNames.SetupCreatePin,
     });
-  } else if (
-    getCurrentRoute()?.name === SecurityMigrationStackRouteNames.SecurityMigration ||
-    getCurrentRoute()?.name === SecurityMigrationStackRouteNames.AccessConfirmation
-  ) {
-    navigate(SecurityMigrationStackRouteNames.CreatePin);
   } else {
     navigate(MainStackRouteNames.CreatePin, {});
   }
@@ -92,32 +85,17 @@ export function openSetupBiometry(
   pin: string,
   biometryType: LocalAuthentication.AuthenticationType,
 ) {
-  if (getCurrentRoute()?.name === SetupWalletStackRouteNames.SetupCreatePin) {
-    navigate(AppStackRouteNames.SetupWalletStack, {
-      screen: SetupWalletStackRouteNames.SetupBiometry,
-      params: {
-        pin,
-        biometryType,
-      },
-    });
-  } else if (
-    getCurrentRoute()?.name === SecurityMigrationStackRouteNames.CreatePin ||
-    getCurrentRoute()?.name === SecurityMigrationStackRouteNames.SecurityMigration
-  ) {
-    navigate(SecurityMigrationStackRouteNames.SetupBiometry, {
+  navigate(AppStackRouteNames.SetupWalletStack, {
+    screen: SetupWalletStackRouteNames.SetupBiometry,
+    params: {
       pin,
       biometryType,
-    });
-  } else {
-    navigate(MainStackRouteNames.SetupBiometry, {
-      pin,
-      biometryType,
-    });
-  }
+    },
+  });
 }
 
 export function openSetupNotifications() {
-  navigate(SetupWalletStackRouteNames.SetupNotifications);
+  reset(SetupWalletStackRouteNames.SetupNotifications);
 }
 
 export function openImportSetupNotifications() {
@@ -134,18 +112,8 @@ export function openSetupBiometryAfterRestore(
   });
 }
 
-export function openSetupBiometryAfterMigration(
-  pin: string,
-  biometryType: LocalAuthentication.AuthenticationType,
-) {
-  push(SecurityMigrationStackRouteNames.SetupBiometry, {
-    pin,
-    biometryType,
-  });
-}
-
 export function openSetupWalletDone() {
-  navigate(TabsStackRouteNames.Balances);
+  navigate(MainStackRouteNames.Tabs);
   if (tk.wallets.size > 1) {
     navigate(AppStackRouteNames.CustomizeWallet);
   }
@@ -217,13 +185,9 @@ export function openFontLicense() {
 }
 
 export function openAccessConfirmation(withoutBiometryOnOpen?: boolean) {
-  if (getCurrentRoute()?.name === SecurityMigrationStackRouteNames.SecurityMigration) {
-    navigate(SecurityMigrationStackRouteNames.AccessConfirmation);
-  } else {
-    navigate(AppStackRouteNames.AccessConfirmation, {
-      withoutBiometryOnOpen,
-    });
-  }
+  navigate(AppStackRouteNames.AccessConfirmation, {
+    withoutBiometryOnOpen,
+  });
 }
 
 export function openSecurity() {
@@ -246,10 +210,6 @@ export function openChangePin() {
 
 export function openResetPin() {
   push(AppStackRouteNames.ResetPin);
-}
-
-export function openSecurityMigration() {
-  navigate(SecurityMigrationStackRouteNames.SecurityMigration);
 }
 
 export function openNFT(keyPair: NFTKeyPair) {

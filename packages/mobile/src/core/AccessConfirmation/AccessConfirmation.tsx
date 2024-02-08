@@ -81,7 +81,8 @@ export const AccessConfirmation: FC = () => {
         setTimeout(async () => {
           try {
             const promise = getCurrentConfirmationVaultPromise();
-            const pubkey = isUnlock ? tk.walletForUnlock.pubkey : wallet.pubkey;
+            const pubkey =
+              isUnlock || wallet.isWatchOnly ? tk.walletForUnlock.pubkey : wallet.pubkey;
             const mnemonic = await vault.exportWithPasscode(pubkey, pin);
             const unlockedVault = new UnlockedVault(
               {
