@@ -45,7 +45,7 @@ export const useMethodsToBuyStore = create(
             {
               params: {
                 lang: i18n.locale,
-                build: DeviceInfo.getReadableVersion(),
+                build: DeviceInfo.getVersion(),
                 chainName: 'mainnet',
                 currency,
               },

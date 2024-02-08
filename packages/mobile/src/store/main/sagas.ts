@@ -109,7 +109,7 @@ function* loadNotificationsWorker() {
       {
         params: {
           platform: Platform.OS,
-          version: DeviceInfo.getReadableVersion(),
+          version: DeviceInfo.getVersion(),
           lang: i18n.locale,
         },
       },

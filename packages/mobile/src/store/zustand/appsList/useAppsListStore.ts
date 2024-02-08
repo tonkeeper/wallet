@@ -29,7 +29,7 @@ export const useAppsListStore = create(
               {
                 params: {
                   lang: i18n.locale,
-                  build: DeviceInfo.getReadableVersion(),
+                  build: DeviceInfo.getVersion(),
                 },
               },
             );

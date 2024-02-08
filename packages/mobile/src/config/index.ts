@@ -82,7 +82,7 @@ export const config = new AppConfig<AppConfigVars>({
   request: {
     host: 'https://boot.tonkeeper.com/keys/all',
     params: () => ({
-      build: DeviceInfo.getReadableVersion(),
+      build: DeviceInfo.getVersion(),
       platform: Platform.OS,
     }),
   },
