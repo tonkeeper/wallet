@@ -210,6 +210,10 @@ export const Settings: FC = () => {
     openSecurity();
   }, []);
 
+  const handleBackupSettings = useCallback(() => {
+    dispatch(walletActions.backupWallet());
+  }, [dispatch]);
+
   const handleAppearance = useCallback(() => {
     openAppearance();
   }, []);
@@ -275,8 +279,6 @@ export const Settings: FC = () => {
 
   const wallets = useWallets();
 
-  const showTopList = tk.walletForUnlock || shouldShowTokensButton;
-
   return (
     <S.Wrap>
       <ScrollHandler navBarTitle={t('settings_title')}>
@@ -302,78 +304,46 @@ export const Settings: FC = () => {
               <Spacer y={16} />
             </>
           ) : null}
-          {showTopList ? (
-            <List>
-              {!!wallet && tk.walletForUnlock && (
-                <List.Item
-                  value={
-                    <Icon
-                      style={styles.icon.static}
-                      color="accentPrimary"
-                      name={'ic-key-28'}
-                    />
-                  }
-                  title={t('settings_security')}
-                  onPress={handleSecurity}
-                />
-              )}
-              {shouldShowTokensButton && (
-                <List.Item
-                  value={
-                    <Icon
-                      style={styles.icon.static}
-                      color="accentPrimary"
-                      name={'ic-jetton-28'}
-                    />
-                  }
-                  title={t('settings_jettons_list')}
-                  onPress={handleManageTokens}
-                />
-              )}
-              {hasSubscriptions && (
-                <List.Item
-                  value={
-                    <Icon
-                      style={styles.icon.static}
-                      color="accentPrimary"
-                      name={'ic-ticket-28'}
-                    />
-                  }
-                  title={t('settings_subscriptions')}
-                  onPress={handleSubscriptions}
-                />
-              )}
-              {isAppearanceVisible && (
-                <List.Item
-                  value={
-                    <Icon
-                      style={styles.icon.static}
-                      color="accentPrimary"
-                      name={'ic-appearance-28'}
-                    />
-                  }
-                  title={t('settings_appearance')}
-                  onPress={handleAppearance}
-                />
-              )}
-              {isBatteryVisible && (
-                <List.Item
-                  value={
-                    <NewIcon
-                      style={styles.icon.static}
-                      color="accentBlue"
-                      name={'ic-battery-28'}
-                    />
-                  }
-                  title={t('battery.settings')}
-                  onPress={handleBattery}
-                />
-              )}
-            </List>
-          ) : null}
-
-          <Spacer y={16} />
           <List>
+            {!!wallet && tk.walletForUnlock && (
+              <List.Item
+                value={
+                  <Icon
+                    style={styles.icon.static}
+                    color="accentPrimary"
+                    name={'ic-key-28'}
+                  />
+                }
+                title={t('settings_backup_seed')}
+                onPress={handleBackupSettings}
+              />
+            )}
+            {shouldShowTokensButton && (
+              <List.Item
+                value={
+                  <Icon
+                    style={styles.icon.static}
+                    color="accentPrimary"
+                    name={'ic-jetton-28'}
+                  />
+                }
+                title={t('settings_jettons_list')}
+                onPress={handleManageTokens}
+              />
+            )}
+            {hasSubscriptions && (
+              <List.Item
+                value={
+                  <Icon
+                    style={styles.icon.static}
+                    color="accentPrimary"
+                    name={'ic-ticket-28'}
+                  />
+                }
+                title={t('settings_subscriptions')}
+                onPress={handleSubscriptions}
+              />
+            )}
             {!!wallet && showNotifications && (
               <List.Item
                 value={<Icon color="accentPrimary" name={'ic-notification-28'} />}
@@ -388,6 +358,19 @@ export const Settings: FC = () => {
                 onPress={handleNotifications}
               />
             )}
+            {isAppearanceVisible && (
+              <List.Item
+                value={
+                  <Icon
+                    style={styles.icon.static}
+                    color="accentPrimary"
+                    name={'ic-appearance-28'}
+                  />
+                }
+                title={t('settings_appearance')}
+                onPress={handleAppearance}
+              />
+            )}
             <List.Item
               value={
                 <S.SelectedCurrency>{fiatCurrency.toUpperCase()}</S.SelectedCurrency>
@@ -395,32 +378,7 @@ export const Settings: FC = () => {
               title={t('settings_primary_currency')}
               onPress={() => nav.navigate('ChooseCurrency')}
             />
-            <PopupSelect
-              items={searchEngineVariants}
-              selected={searchEngine}
-              onChange={setSearchEngine}
-              keyExtractor={(item) => item}
-              width={176}
-              renderItem={(item) => <Text variant="label1">{item}</Text>}
-            >
-              <List.Item
-                value={
-                  <Text variant="label1" color="accentPrimary">
-                    {searchEngine}
-                  </Text>
-                }
-                title={t('settings_search_engine')}
-              />
-            </PopupSelect>
-            <List.Item
-              onPress={handleSwitchLanguage}
-              value={
-                <Text variant="label1" color="accentPrimary">
-                  {t('language.list_item.value')}
-                </Text>
-              }
-              title={t('language.list_item.title')}
-            />
+
             {!!wallet && (
               <PopupSelect
                 items={versions}
@@ -456,6 +414,61 @@ export const Settings: FC = () => {
                 />
               </PopupSelect>
             )}
+            {isBatteryVisible && (
+              <List.Item
+                value={
+                  <NewIcon
+                    style={styles.icon.static}
+                    color="accentBlue"
+                    name={'ic-battery-28'}
+                  />
+                }
+                title={t('battery.settings')}
+                onPress={handleBattery}
+              />
+            )}
+          </List>
+          <Spacer y={16} />
+          <List>
+            {!!wallet && tk.walletForUnlock && (
+              <List.Item
+                value={
+                  <Icon
+                    style={styles.icon.static}
+                    color="accentPrimary"
+                    name="ic-lock-28"
+                  />
+                }
+                title={t('settings_security')}
+                onPress={handleSecurity}
+              />
+            )}
+            <PopupSelect
+              items={searchEngineVariants}
+              selected={searchEngine}
+              onChange={setSearchEngine}
+              keyExtractor={(item) => item}
+              width={176}
+              renderItem={(item) => <Text variant="label1">{item}</Text>}
+            >
+              <List.Item
+                value={
+                  <Text variant="label1" color="accentPrimary">
+                    {searchEngine}
+                  </Text>
+                }
+                title={t('settings_search_engine')}
+              />
+            </PopupSelect>
+            <List.Item
+              onPress={handleSwitchLanguage}
+              value={
+                <Text variant="label1" color="accentPrimary">
+                  {t('language.list_item.value')}
+                </Text>
+              }
+              title={t('language.list_item.title')}
+            />
             {wallet && !wallet.isWatchOnly && flags.address_style_settings ? (
               <List.Item
                 value={
