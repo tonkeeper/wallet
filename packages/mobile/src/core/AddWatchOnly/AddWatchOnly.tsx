@@ -17,7 +17,7 @@ import {
   useReanimatedKeyboardHeight,
 } from '@tonkeeper/uikit';
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 let dnsAbortController: null | AbortController = null;

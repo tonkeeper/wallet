@@ -19,7 +19,7 @@ import {
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const COLORS_LIST = Object.values(WalletColor);
