@@ -4,14 +4,14 @@ import { SendAmount, TokenType } from '$core/Send/Send.interface';
 import { useFiatValue } from '$hooks/useFiatValue';
 import { useInstance } from '$hooks/useInstance';
 import { usePoolInfo } from '$hooks/usePoolInfo';
-import { useWallet } from '$hooks/useWallet';
 import { Ton } from '$libs/Ton';
 import { AppStackRouteNames } from '$navigation';
 import { AppStackParamList } from '$navigation/AppStack';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
-import { getStakingPoolByAddress, Toast, useStakingStore } from '$store';
-import { walletSelector } from '$store/wallet';
+import { Toast } from '$store';
+import { getStakingPoolByAddress } from '@tonkeeper/shared/utils/staking';
+import { walletSelector, walletWalletSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
 import { calculateMessageTransferAmount, delay, parseLocaleNumber } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
@@ -21,7 +21,6 @@ import BigNumber from 'bignumber.js';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { shallow } from 'zustand/shallow';
 import { AmountStep, ConfirmStep } from './steps';
 import { StakingSendSteps, StakingTransactionType } from './types';
 import { getStakeSignRawMessage, getWithdrawalAlertFee, getWithdrawalFee } from './utils';
@@ -35,8 +34,9 @@ import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { t } from '@tonkeeper/shared/i18n';
 import { MessageConsequences, PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
-import { tonapi } from '@tonkeeper/shared/tonkeeper';
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
+import { useStakingState } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
@@ -68,8 +68,14 @@ export const StakingSend: FC<Props> = (props) => {
 
   const unlockVault = useUnlockVault();
 
-  const pool = useStakingStore((s) => getStakingPoolByAddress(s, poolAddress), shallow);
-  const poolStakingInfo = useStakingStore((s) => s.stakingInfo[pool.address], shallow);
+  const pool = useStakingState(
+    (s) => getStakingPoolByAddress(s, poolAddress),
+    [poolAddress],
+  );
+  const poolStakingInfo = useStakingState(
+    (s) => s.stakingInfo[pool.address],
+    [pool.address],
+  );
 
   const poolInfo = usePoolInfo(pool, poolStakingInfo);
 
@@ -113,8 +119,8 @@ export const StakingSend: FC<Props> = (props) => {
 
   const { address } = useSelector(walletSelector);
   const walletAddress = address?.ton || '';
-  const wallet = useWallet();
-  const operations = useInstance(() => new NFTOperations(wallet));
+  const walletLegacy = useSelector(walletWalletSelector)!;
+  const operations = useInstance(() => new NFTOperations(walletLegacy));
 
   const [amount, setAmount] = useState<SendAmount>({
     value: isWithdrawalConfrim
@@ -216,7 +222,7 @@ export const StakingSend: FC<Props> = (props) => {
       actionRef.current = action;
 
       const boc = await action.getBoc();
-      const response = await tonapi.wallet.emulateMessageToWallet({ boc });
+      const response = await tk.wallet.tonapi.wallet.emulateMessageToWallet({ boc });
 
       setConsequences(response);
 

@@ -85,24 +85,30 @@ export class Address {
 
   static async fromPubkey(
     pubkey: string | null,
-    options: FormatOptions = defaultFormatOptions,
+    isTestnet: boolean,
   ): Promise<AddressesByVersion | null> {
     if (!pubkey) return null;
 
     const tonweb = new TonWeb();
     const addresses = {} as AddressesByVersion;
+
+    const publicKey = Uint8Array.from(Buffer.from(pubkey, 'hex'));
     for (let contractVersion of ContractVersions) {
       const wallet = new tonweb.wallet.all[contractVersion](tonweb.provider, {
-        publicKey: pubkey as any,
+        publicKey,
         wc: 0,
       });
 
       const address = await wallet.getAddress();
-      const friendly = address.toString(true, true, options.bounceable, options.testOnly);
-      const raw = address.toString(false, false, options.bounceable, options.testOnly);
+      const raw = address.toString(false, false);
+      const friendly = address.toString(true, true, false, isTestnet);
       const short = Address.toShort(friendly);
 
-      addresses[contractVersion] = { friendly, raw, short };
+      addresses[contractVersion] = {
+        friendly,
+        raw,
+        short,
+      };
     }
 
     return addresses;

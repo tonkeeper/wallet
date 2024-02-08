@@ -1,16 +1,15 @@
 import React from 'react';
-import { openJetton, openJettonsList } from '$navigation';
+import { openJetton } from '$navigation';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { walletActions } from '$store/wallet';
-import { Steezy } from '$styles';
 import { t } from '@tonkeeper/shared/i18n';
-import { Button, View } from '$uikit';
+import { View } from '$uikit';
 import { List } from '$uikit';
 import { TonIcon } from '@tonkeeper/uikit';
 import { memo, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { ListItemRate } from './ListItemRate';
-import { openWallet } from '$core/Wallet/Wallet';
+import { openWallet } from '$core/Wallet';
 
 interface TokenListProps {
   tokens: any; // TODO: add types
@@ -97,25 +96,6 @@ export const TokenList = memo<TokenListProps>(({ tokens, balance, rates }) => {
           />
         ))}
       </List>
-      {tokens.canEdit && (
-        <View style={styles.tonkensEdit}>
-          <Button
-            onPress={() => openJettonsList()}
-            size="medium_rounded"
-            mode="secondary"
-          >
-            {t('wallet.edit_tokens_btn')}
-          </Button>
-        </View>
-      )}
     </View>
   );
-});
-
-const styles = Steezy.create({
-  tonkensEdit: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
 });

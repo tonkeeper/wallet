@@ -9,12 +9,15 @@ import {
 import { AddressListItem } from '../components/AddressListItem';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
-import { ActionItem, ActionType } from '@tonkeeper/core';
+import {
+  ActionItem,
+  ActionType,
+} from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 import { t } from '../../../i18n';
 import { memo } from 'react';
 import { JettonVerificationType } from '@tonkeeper/core/src/TonAPI';
 import { EncryptedComment, EncryptedCommentLayout } from '../../../components';
-import { config } from '../../../config';
+import { config } from '@tonkeeper/mobile/src/config';
 import { openUnverifiedTokenDetailsModal } from '../../UnverifiedTokenDetailsModal';
 
 interface JettonTransferContentProps {

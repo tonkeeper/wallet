@@ -1,37 +1,22 @@
-import { getServerConfig } from '$shared/constants';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
 import { network } from '$libs/network';
-import { Address } from '@tonkeeper/core';
+import { config } from '../../config';
 
 const prepareHeaders = (restHeaders?: { [key: string]: string }) => {
   return {
-    Authorization: `Bearer ${getServerConfig('tonApiKey')}`,
+    Authorization: `Bearer ${config.get('tonApiKey')}`,
     Build: DeviceInfo.getBuildNumber(),
     ...(restHeaders ?? {}),
   };
 };
 
-async function getWalletInfo(address: string) {
-  try {
-    const endpoint = getServerConfig('tonapiV2Endpoint');
-    const response: any = await axios.get(`${endpoint}/v2/accounts/${address}`, {
-      headers: prepareHeaders({
-        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
-      }),
-    });
-    return response.data;
-  } catch (e) {
-    console.log(e);
-  }
-}
-
 async function resolveDns(domain: string, signal?: AbortSignal) {
   try {
-    const endpoint = getServerConfig('tonapiV2Endpoint');
+    const endpoint = config.get('tonapiV2Endpoint');
     const response: any = await axios.get(`${endpoint}/v2/dns/${domain}/resolve`, {
       headers: prepareHeaders({
-        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+        Authorization: `Bearer ${config.get('tonApiV2Key')}`,
       }),
       signal,
     });
@@ -41,24 +26,6 @@ async function resolveDns(domain: string, signal?: AbortSignal) {
       return 'aborted';
     }
     return false;
-  }
-}
-
-async function getJettonBalances(address: string) {
-  try {
-    if (!Address.isValid(address)) {
-      throw new Error('Wrong address');
-    }
-    const endpoint = getServerConfig('tonapiV2Endpoint');
-
-    const resp: any = await axios.get(`${endpoint}/v2/accounts/${address}/jettons`, {
-      headers: prepareHeaders({
-        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
-      }),
-    });
-    return resp.data;
-  } catch (e) {
-    console.log(e);
   }
 }
 
@@ -75,7 +42,7 @@ async function subscribeToNotifications(
   request: SubscribeToNotificationsRequest,
 ) {
   try {
-    const endpoint = getServerConfig('tonapiIOEndpoint');
+    const endpoint = config.get('tonapiIOEndpoint');
     const response: any = await axios.post(
       `${endpoint}/v1/internal/pushes/tonconnect`,
       request,
@@ -101,7 +68,7 @@ async function unsubscribeFromNotifications(
   params: UnsubscribeToNotificationsParams,
 ) {
   try {
-    const endpoint = getServerConfig('tonapiIOEndpoint');
+    const endpoint = config.get('tonapiIOEndpoint');
     const response: any = await axios.delete(
       `${endpoint}/v1/internal/pushes/tonconnect`,
       {
@@ -127,7 +94,7 @@ const getExpiringDNS = async (params: GetExpiringDNSParams) => {
     `https://tonapi.io/v2/accounts/${params.account_id}/dns/expiring`,
     {
       headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+        Authorization: `Bearer ${config.get('tonApiV2Key')}`,
       },
       params: {
         period: params.period,
@@ -136,25 +103,9 @@ const getExpiringDNS = async (params: GetExpiringDNSParams) => {
   );
 };
 
-const getDNSLastFillTime = async (domainAddress: string): Promise<number> => {
-  const { data } = await network.get(
-    `https://tonapi.io/v2/blockchain/accounts/${domainAddress}/methods/get_last_fill_up_time`,
-    {
-      headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
-      },
-    },
-  );
-
-  return data?.decoded.last_fill_up_time || 0;
-};
-
 export const Tonapi = {
-  getJettonBalances,
-  getWalletInfo,
   subscribeToNotifications,
   unsubscribeFromNotifications,
   resolveDns,
   getExpiringDNS,
-  getDNSLastFillTime,
 };

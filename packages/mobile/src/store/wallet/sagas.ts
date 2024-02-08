@@ -1,20 +1,11 @@
-import {
-  all,
-  call,
-  delay,
-  fork,
-  put,
-  select,
-  take,
-  takeLatest,
-} from 'redux-saga/effects';
+import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { Alert, Keyboard } from 'react-native';
 import BigNumber from 'bignumber.js';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 
-import { walletActions, walletSelector, walletWalletSelector } from '$store/wallet/index';
-import { EncryptedVault, UnlockedVault, Vault, Wallet } from '$blockchain';
+import { walletActions, walletSelector } from '$store/wallet/index';
+import { EncryptedVault, UnlockedVault, Vault, VaultJSON } from '$blockchain';
 import { mainActions } from '$store/main';
 import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
 import {
@@ -24,6 +15,7 @@ import {
   openMigration,
   openSetupBiometryAfterMigration,
   openSetupWalletDone,
+  TabsStackRouteNames,
 } from '$navigation';
 import {
   ChangeBalanceAndReloadAction,
@@ -33,7 +25,6 @@ import {
   DeployWalletAction,
   MigrateAction,
   OpenMigrationAction,
-  RefreshBalancesPageAction,
   ReloadBalanceTwiceAction,
   RestoreWalletAction,
   SendCoinsAction,
@@ -42,66 +33,35 @@ import {
   WalletGetUnlockedVaultAction,
 } from '$store/wallet/interface';
 
-import {
-  clearHiddenNotification,
-  clearPrimaryFiatCurrency,
-  getMigrationState,
-  MainDB,
-  saveAddedCurrencies,
-  saveBalancesToDB,
-  saveBalancesUpdatedAtToDB,
-  saveFavorites,
-  saveHiddenRecentAddresses,
-  saveOldBalancesToDB,
-  saveSubscriptions,
-  setIntroShown,
-  setIsTestnet,
-  setLastRefreshedAt,
-  setMigrationState,
-} from '$database';
-import {
-  batchActions,
-  Toast,
-  useAddressUpdateStore,
-  useConnectedAppsStore,
-  useNotificationsStore,
-  useStakingStore,
-} from '$store';
-import { subscriptionsActions } from '$store/subscriptions';
+import { getMigrationState, MainDB, setMigrationState } from '$database';
+import { Toast, useAddressUpdateStore, useConnectedAppsStore } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
-import { initHandler } from '$store/main/sagas';
-import { getChainName, getWalletName } from '$shared/dynamicConfig';
-import { withRetryCtx } from '$store/retry';
+import { getChainName } from '$shared/dynamicConfig';
 import { detectBiometryType, toNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
-import { Api } from '$api';
-import { nftsActions } from '$store/nfts';
-import { jettonsActions } from '$store/jettons';
 import { Ton } from '$libs/Ton';
-import { Cache as JettonsCache } from '$store/jettons/manager/cache';
-import { Tonapi } from '$libs/Tonapi';
 import { clearSubscribeStatus } from '$utils/messaging';
-import { useRatesStore } from '$store/zustand/rates';
 import { Cell } from '@ton/core';
 import nacl from 'tweetnacl';
 import { BASE_FORWARD_AMOUNT, encryptMessageComment } from '@tonkeeper/core';
-import { goBack } from '$navigation/imperative';
+import { goBack, navigate } from '$navigation/imperative';
 import { trackEvent } from '$utils/stats';
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '$wallet';
 import { getFlag } from '$utils/flags';
 import { Address } from '@tonkeeper/shared/Address';
 import { InscriptionAdditionalParams, TokenType } from '$core/Send/Send.interface';
-
-function* loadRatesAfterJettons() {
-  try {
-    yield take(jettonsActions.setIsLoading);
-    useRatesStore.getState().actions.fetchRates();
-  } catch (e) {}
-}
+import {
+  WalletColor,
+  WalletConfig,
+  WalletContractVersion,
+  WalletNetwork,
+  WalletType,
+} from '$wallet/WalletTypes';
+import { v4 as uuidv4 } from 'uuid';
 
 function* generateVaultWorker() {
   try {
-    const vault = yield call(Vault.generate, getWalletName());
+    const vault = yield call(Vault.generate, uuidv4());
     yield put(walletActions.setGeneratedVault(vault));
     yield call(trackEvent, 'generate_wallet');
     // Dismiss addressUpdate banner for new wallets. It's not necessary to show it for newcomers
@@ -116,13 +76,7 @@ function* restoreWalletWorker(action: RestoreWalletAction) {
   try {
     const { mnemonics, onDone, config } = action.payload;
 
-    const vault = yield call(
-      Vault.restore,
-      getWalletName(),
-      mnemonics,
-      undefined,
-      config,
-    );
+    const vault = yield call(Vault.restore, uuidv4(), mnemonics, undefined, config);
     yield put(walletActions.loadCurrentVersion(vault.getVersion()));
     yield put(walletActions.setGeneratedVault(vault));
     onDone();
@@ -136,50 +90,31 @@ function* restoreWalletWorker(action: RestoreWalletAction) {
 }
 
 function* createWalletWorker(action: CreateWalletAction) {
-  const { onDone, onFail, pin, isBiometryEnabled } = action.payload;
+  const { onDone, onFail, pin, isTestnet, isBiometryEnabled } = action.payload;
   try {
-    const { generatedVault } = yield select(walletSelector);
+    const generatedVault = (yield select(walletSelector)).generatedVault as UnlockedVault;
 
-    yield call(MainDB.enableNewSecurityFlow);
+    // yield call(MainDB.enableNewSecurityFlow);
 
-    const encryptedVault = yield call([generatedVault, 'encrypt'], pin);
-    const vault = yield call([encryptedVault, 'lock']);
+    const vaultJson = (yield call([generatedVault, 'toJSON'])) as VaultJSON;
+
+    const walletConfig: Omit<WalletConfig, 'pubkey'> = {
+      name: 'Wallet',
+      color: WalletColor.Midnight,
+      network: isTestnet ? WalletNetwork.testnet : WalletNetwork.mainnet,
+      type: WalletType.Regular,
+      workchain: vaultJson.workchain ?? 0,
+      configPubKey: vaultJson.configPubKey,
+      version: vaultJson.version as WalletContractVersion,
+      allowedDestinations: vaultJson.allowedDestinations,
+    };
+
+    yield call([tk, 'importWallet'], generatedVault.mnemonic, pin!, walletConfig);
     if (isBiometryEnabled) {
-      yield call([generatedVault, 'lock']);
-      yield call(MainDB.setBiometryEnabled, true);
-    } else {
-      yield call(MainDB.setBiometryEnabled, false);
+      yield call([tk, 'enableBiometry'], pin!);
     }
 
-    const wallet = new Wallet(getWalletName(), vault);
-    yield call([wallet, 'save']);
-
-    yield put(
-      batchActions(
-        mainActions.setHasWallet(true),
-        mainActions.setUnlocked(true),
-        walletActions.setWallet(wallet),
-      ),
-    );
-
-    yield call(useStakingStore.getState().actions.fetchPools, true);
-    yield put(walletActions.loadBalances());
-    // yield put(eventsActions.loadEvents({ isReplace: true }));
-    yield put(nftsActions.loadNFTs({ isReplace: true }));
-    yield put(jettonsActions.loadJettons());
-    yield fork(loadRatesAfterJettons);
-    const addr = yield call([wallet.ton, 'getAddress']);
-    const data = yield call([tk, 'load']);
-    const stateInit = yield call([wallet.ton, 'createStateInitBase64']);
-    yield call(
-      [tk, 'init'],
-      addr,
-      getChainName() === 'testnet',
-      data.tronAddress,
-      data.tonProof,
-      stateInit,
-      !getFlag('address_style_nobounce'),
-    );
+    yield put(mainActions.setUnlocked(true));
     onDone();
 
     yield call(trackEvent, 'create_wallet');
@@ -194,148 +129,6 @@ function* createWalletWorker(action: CreateWalletAction) {
       yield call(Toast.fail, e.message);
     }
     onFail && onFail();
-  }
-}
-
-function* loadBalancesWorker() {
-  try {
-    const { wallet } = yield select(walletSelector);
-    if (!wallet) {
-      yield put(
-        batchActions(walletActions.endLoading(), walletActions.endRefreshBalancesPage()),
-      );
-      return;
-    }
-
-    const [tonAddress] = yield all([call([wallet.ton, 'getAddress'])]);
-
-    const addresses: { [index: string]: string } = {
-      [CryptoCurrencies.Ton]: tonAddress,
-    };
-
-    const tokenBalanceLoaders: any[] = [];
-    const loadTokenNames: string[] = [];
-
-    yield put(walletActions.setAddress(addresses));
-
-    const [tonBalance, ...otherTokens] = yield all([
-      withRetryCtx('tonBalances', [
-        wallet.ton,
-        wallet.ton.isLockup() ? 'getLockupBalances' : 'getBalance',
-      ]),
-      ...tokenBalanceLoaders,
-    ]);
-
-    const tokenBalances: { [index: string]: string } = {};
-    for (let i = 0; i < otherTokens.length; i++) {
-      tokenBalances[loadTokenNames[i]] = otherTokens[i];
-    }
-
-    const balances: any = {
-      ...tokenBalances,
-    };
-
-    if (wallet.ton.isLockup()) {
-      balances[CryptoCurrencies.Ton] = tonBalance[0];
-      balances[CryptoCurrencies.TonRestricted] = tonBalance[1];
-      balances[CryptoCurrencies.TonLocked] = tonBalance[2];
-    } else {
-      balances[CryptoCurrencies.Ton] = tonBalance;
-    }
-
-    yield put(
-      batchActions(
-        walletActions.setBalances(balances),
-        walletActions.endLoading(),
-        mainActions.dismissBadHosts(),
-      ),
-    );
-
-    yield call(saveBalances, balances);
-
-    yield fork(checkLegacyBalances);
-  } catch (e) {
-    console.log('loadBalancesTask ERR', e);
-    e && debugLog(e.message);
-
-    yield delay(3000);
-    yield put(walletActions.loadBalances());
-  }
-}
-
-function* checkLegacyBalances() {
-  try {
-    const balances: any = [];
-    const wallet = yield select(walletWalletSelector);
-    const wallets = yield call([wallet.ton, 'getAllAddresses']);
-    delete wallets.v4R2;
-
-    for (let address of Object.entries(wallets)) {
-      const balance = yield withRetryCtx(
-        `checkLegacyBalance_${address[0]}`,
-        [Tonapi, 'getWalletInfo'],
-        address[1] as any,
-      );
-      if (balance.balance > 0) {
-        balances.push({
-          balance: balance.balance,
-          version: address[0],
-        });
-      }
-    }
-
-    yield put(walletActions.setOldWalletBalance(balances));
-
-    yield call(saveOldBalancesToDB, balances);
-  } catch (e) {}
-}
-
-function* switchVersionWorker() {
-  const { wallet, version } = yield select(walletSelector);
-  if (!wallet) {
-    return;
-  }
-  wallet.vault.setVersion(version);
-  const walletName = getWalletName();
-  const newWallet = new Wallet(walletName, wallet.vault);
-  yield call([newWallet, 'save']);
-  yield put(walletActions.setWallet(newWallet));
-
-  const addr = yield call([newWallet.ton, 'getAddress']);
-  yield call([tk, 'destroy']);
-  const data = yield call([tk, 'load']);
-  const stateInit = yield call([newWallet.ton, 'createStateInitBase64']);
-
-  yield call(
-    [tk, 'init'],
-    addr,
-    getChainName() === 'testnet',
-    data.tronAddress,
-    data.tonProof,
-    stateInit,
-    !getFlag('address_style_nobounce'),
-  );
-
-  yield call(JettonsCache.clearAll, walletName);
-  yield put(walletActions.refreshBalancesPage());
-}
-
-function* refreshBalancesPageWorker(action: RefreshBalancesPageAction) {
-  const isRefreshing = action.payload ?? true;
-  try {
-    yield put(walletActions.loadBalances());
-    yield put(nftsActions.loadNFTs({ isReplace: true }));
-    // yield put(jettonsActions.getIsFeatureEnabled());
-    yield put(jettonsActions.loadJettons());
-    yield fork(loadRatesAfterJettons);
-    yield put(mainActions.loadNotifications());
-    yield call(useStakingStore.getState().actions.fetchPools, !isRefreshing);
-    yield call(setLastRefreshedAt, Date.now());
-    yield put(subscriptionsActions.loadSubscriptions());
-    yield call([tk.wallet.tonInscriptions, 'getInscriptions']);
-    yield call([tk.wallet.battery, 'fetchBalance']);
-  } catch (e) {
-    yield put(walletActions.endRefreshBalancesPage());
   }
 }
 
@@ -457,8 +250,8 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
           tokenType === TokenType.Jetton
             ? new BigNumber(toNano(fee)).plus(BASE_FORWARD_AMOUNT.toString()).toString()
             : new BigNumber(toNano(fee)).plus(toNano(amount)).toString();
-        const address = yield call([wallet.ton, 'getAddress']);
-        const { balance } = yield call(Tonapi.getWalletInfo, address);
+        yield call(tk.wallet.balances.load);
+        const balance = tk.wallet.balances.state.data.ton;
         if (new BigNumber(amountNano).gt(new BigNumber(balance))) {
           return onInsufficientFunds({ totalAmount: amountNano, balance });
         } else {
@@ -668,58 +461,19 @@ function* backupWalletWorker() {
 function* cleanWalletWorker() {
   try {
     const { wallet } = yield select(walletSelector);
-    const isNewFlow = yield call(MainDB.isNewSecurityFlow);
 
-    const walletName = getWalletName();
     yield call(clearSubscribeStatus);
-    yield call(JettonsCache.clearAll, walletName);
     yield call(
       useConnectedAppsStore.getState().actions.unsubscribeFromAllNotifications,
       getChainName(),
       wallet.address.friendlyAddress,
     );
-    if (isNewFlow) {
-      try {
-        yield call([wallet.vault, 'clean']);
-        yield call([wallet.vault, 'cleanBiometry']);
-      } catch (e) {}
-    } else {
-      try {
-        yield call([wallet.vault, 'clean']);
-      } catch (e) {}
-    }
 
-    yield call([wallet, 'clean']);
-    yield call(saveSubscriptions, []);
-    yield call(saveAddedCurrencies, []);
-    yield call(setIntroShown, false);
-    yield call(setIsTestnet, false);
-    yield call(clearPrimaryFiatCurrency);
-    yield call(clearHiddenNotification);
-    yield call(saveBalancesToDB, {});
-    yield call(MainDB.setBiometryEnabled, false);
-    yield call(MainDB.setExcludedJettons, {});
-    yield call(saveFavorites, []);
-    yield call(saveHiddenRecentAddresses, []);
-    yield call(useStakingStore.getState().actions.reset);
-    yield call(useNotificationsStore.getState().actions.reset);
-    yield call(SecureStore.deleteItemAsync, 'proof_token');
-    yield call([tk, 'destroy']);
-
-    yield put(
-      batchActions(
-        mainActions.resetMain(),
-        walletActions.reset(),
-        walletActions.resetVersion(),
-        nftsActions.resetNFTs(),
-        jettonsActions.resetJettons(),
-        subscriptionsActions.reset(),
-      ),
-    );
-
-    yield call(initHandler, false);
+    yield call([tk, 'removeWallet'], tk.wallet.pubkey);
 
     yield call(trackEvent, 'reset_wallet');
+
+    navigate(TabsStackRouteNames.Balances);
   } catch (e) {
     e && debugLog(e.message);
     yield put(Toast.fail, e.message);
@@ -768,43 +522,26 @@ export class UnlockVaultError extends Error {}
 
 export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
   try {
-    const isNewFlow = yield call(MainDB.isNewSecurityFlow);
     const isBiometryEnabled = yield call(MainDB.isBiometryEnabled);
 
-    const { wallet } = yield select(walletSelector);
+    const { wallet, generatedVault } = yield select(walletSelector);
 
-    if (isNewFlow) {
-      let withoutBiometryOnOpen = false;
+    let withoutBiometryOnOpen = generatedVault;
 
-      if (isBiometryEnabled) {
-        try {
-          const unlockedVault = yield call([wallet.vault, 'unlock']);
+    if (isBiometryEnabled && !generatedVault) {
+      try {
+        const unlockedVault = yield call([wallet.vault, 'unlock']);
 
-          action?.payload?.onDone?.(unlockedVault);
-          return unlockedVault;
-        } catch {
-          withoutBiometryOnOpen = true;
-        }
-      }
-
-      const vault = yield call(
-        waitAccessConfirmation,
-        wallet.vault,
-        withoutBiometryOnOpen,
-      );
-      action?.payload?.onDone?.(vault);
-      return vault;
-    } else {
-      const vault = yield call([wallet.vault, 'unlock']);
-      if (vault.needsDecrypt) {
-        const decryptedVault = yield call(waitAccessConfirmation, vault);
-        action?.payload?.onDone?.(decryptedVault);
-        return decryptedVault;
-      } else {
-        action?.payload?.onDone?.(vault);
-        return vault;
+        action?.payload?.onDone?.(unlockedVault);
+        return unlockedVault;
+      } catch {
+        withoutBiometryOnOpen = true;
       }
     }
+
+    const vault = yield call(waitAccessConfirmation, wallet.vault, withoutBiometryOnOpen);
+    action?.payload?.onDone?.(vault);
+    return vault;
   } catch (e) {
     e && debugLog(e.message);
 
@@ -823,12 +560,9 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
 
 function* saveBalances(balances: { [index: string]: string }) {
   try {
-    yield call(saveBalancesToDB, balances);
-
     const updatedAt = Date.now();
 
     yield put(walletActions.setUpdatedAt(updatedAt));
-    yield call(saveBalancesUpdatedAtToDB, updatedAt);
   } catch (e) {}
 }
 
@@ -878,15 +612,6 @@ function* migrateWorker(action: MigrateAction) {
   try {
     const { oldAddress, newAddress, fromVersion } = action.payload;
 
-    const featureEnabled = yield call(Api.get, '/feature/enabled', {
-      params: {
-        feature: 'migration',
-      },
-    });
-    if (!featureEnabled.enabled) {
-      throw new Error(featureEnabled.message);
-    }
-
     const { wallet } = yield select(walletSelector);
     const oldInfo = yield call([wallet.ton, 'getWalletInfo'], oldAddress);
     const newInfo = yield call([wallet.ton, 'getWalletInfo'], newAddress);
@@ -919,7 +644,7 @@ function* migrateWorker(action: MigrateAction) {
         }),
       );
     } else {
-      yield call(doMigration, wallet, newAddress);
+      yield call(doMigration);
       action.payload.onDone();
     }
   } catch (e) {
@@ -930,39 +655,9 @@ function* migrateWorker(action: MigrateAction) {
   }
 }
 
-function* doMigration(wallet: Wallet, newAddress: string) {
+function* doMigration() {
   try {
-    wallet.vault.setVersion('v4R2');
-    const walletName = getWalletName();
-    const newWallet = new Wallet(walletName, wallet.vault);
-    yield call([newWallet, 'getReadableAddress']);
-    yield call([newWallet, 'save']);
-    yield put(walletActions.setWallet(newWallet));
-    const addr = yield call([newWallet.ton, 'getAddress']);
-    yield call([tk, 'destroy']);
-    const data = yield call([tk, 'load']);
-    const stateInit = yield call([newWallet.ton, 'createStateInitBase64']);
-    yield call(
-      [tk, 'init'],
-      addr,
-      getChainName() === 'testnet',
-      data.tronAddress,
-      data.tonProof,
-      stateInit,
-      !getFlag('address_style_nobounce'),
-    );
-
-    yield put(
-      batchActions(
-        walletActions.setAddress({
-          [CryptoCurrencies.Ton]: newAddress,
-        }),
-        nftsActions.resetNFTs(),
-        jettonsActions.setJettonBalances({ jettonBalances: [] }),
-      ),
-    );
-    yield call(JettonsCache.clearAll, walletName);
-    yield put(walletActions.refreshBalancesPage());
+    tk.updateWallet({ version: WalletContractVersion.v4R2 });
     yield call(setMigrationState, null);
   } catch (e) {
     e && debugLog(e.message);
@@ -998,7 +693,7 @@ function* waitMigrationWorker(action: WaitMigrationAction) {
       yield delay(3000);
     }
 
-    yield call(doMigration, wallet, state.newAddress);
+    yield call(doMigration);
     action.payload.onDone();
   } catch (e) {
     e && debugLog(e.message);
@@ -1026,15 +721,15 @@ function* toggleBiometryWorker(action: ToggleBiometryAction) {
 
   try {
     if (isEnabled) {
-      const vault = yield call(walletGetUnlockedVault);
-      yield call([vault, 'lock']);
+      yield call(walletGetUnlockedVault);
+      yield call([tk, 'enableBiometry'], getLastEnteredPasscode());
     } else {
-      const { wallet } = yield select(walletSelector);
-      yield call([wallet.vault, 'cleanBiometry']);
+      yield call([tk, 'disableBiometry']);
     }
-    yield call(MainDB.setBiometryEnabled, isEnabled);
   } catch (e) {
-    yield call(Toast.fail, e.message);
+    if (e.message) {
+      yield call(Toast.fail, e.message);
+    }
     onFail();
   }
 }
@@ -1045,8 +740,6 @@ function* changePinWorker(action: ChangePinAction) {
 
     const encrypted = yield call([vault, 'encrypt'], pin);
     yield call([encrypted, 'lock']);
-    yield call(Toast.success, t('passcode_changed'));
-    yield call(goBack);
   } catch (e) {
     yield call(Toast.fail, e.message);
     yield call(goBack);
@@ -1091,10 +784,7 @@ export function* walletSaga() {
   yield all([
     takeLatest(walletActions.generateVault, generateVaultWorker),
     takeLatest(walletActions.createWallet, createWalletWorker),
-    takeLatest(walletActions.loadBalances, loadBalancesWorker),
     takeLatest(walletActions.restoreWallet, restoreWalletWorker),
-    takeLatest(walletActions.switchVersion, switchVersionWorker),
-    takeLatest(walletActions.refreshBalancesPage, refreshBalancesPageWorker),
     takeLatest(walletActions.confirmSendCoins, confirmSendCoinsWorker),
     takeLatest(walletActions.sendCoins, sendCoinsWorker),
     takeLatest(walletActions.changeBalanceAndReload, changeBalanceAndReloadWorker),

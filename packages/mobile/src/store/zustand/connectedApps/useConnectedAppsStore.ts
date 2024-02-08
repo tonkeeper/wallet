@@ -9,6 +9,7 @@ import * as SecureStore from 'expo-secure-store';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { getSubscribeStatus, SUBSCRIBE_STATUS } from '$utils/messaging';
 import { Toast } from '@tonkeeper/uikit';
+import { Address } from '@tonkeeper/shared/Address';
 
 const initialState: Omit<IConnectedAppsStore, 'actions'> = {
   connectedApps: {

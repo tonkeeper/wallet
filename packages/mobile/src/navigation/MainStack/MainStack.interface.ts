@@ -11,7 +11,9 @@ export type MainStackParamList = {
     type: string;
     ticker: string;
   };
-  [MainStackRouteNames.ImportWallet]: {};
+  [MainStackRouteNames.ImportWallet]: {
+    testnet?: boolean;
+  };
   [MainStackRouteNames.Subscriptions]: {};
   [MainStackRouteNames.BackupWords]: {
     mnemonic: string;
@@ -27,9 +29,7 @@ export type MainStackParamList = {
   [MainStackRouteNames.Jetton]: {
     jettonAddress: string;
   };
-  [MainStackRouteNames.JettonsList]: {};
   [MainStackRouteNames.DeleteAccountDone]: {};
-  [MainStackRouteNames.EditConfig]: {};
   [MainStackRouteNames.Staking]: {};
   [MainStackRouteNames.StakingPools]: {
     providerId: string;
@@ -39,4 +39,5 @@ export type MainStackParamList = {
   };
   [MainStackRouteNames.ManageTokens]: {};
   [MainStackRouteNames.AddressUpdateInfo]: {};
+  [MainStackRouteNames.AddWatchOnly]: {};
 };

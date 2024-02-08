@@ -14,7 +14,6 @@ import {
 } from '$core';
 import { SettingsStackParamList } from '$navigation/SettingsStack/SettingsStack.interface';
 import { Notifications } from '$core/Notifications/Notifications';
-import { JettonsList } from '$core/JettonsList/JettonsList';
 import { ChooseCurrencyScreen } from '$core/ChooseCurrencyScreen';
 import { DevConfigScreen } from '$core/DevMenu/DevConfigScreen';
 import { RefillBattery } from '$core/RefillBattery/RefillBattery';
@@ -65,7 +64,6 @@ export const SettingsStack: FC = () => {
         name={SettingsStackRouteNames.Notifications}
         component={Notifications}
       />
-      <Stack.Screen name={SettingsStackRouteNames.JettonsList} component={JettonsList} />
       <Stack.Screen
         name={SettingsStackRouteNames.ChooseCurrency}
         component={ChooseCurrencyScreen}

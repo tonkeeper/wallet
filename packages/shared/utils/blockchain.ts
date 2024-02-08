@@ -1,5 +1,5 @@
-import { config } from '../config';
-import { tk, tonapi } from '../tonkeeper';
+import { config } from '@tonkeeper/mobile/src/config';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 import { ContentType } from '@tonkeeper/core/src/TonAPI';
 
 export async function sendBocWithBattery(boc) {
@@ -15,7 +15,7 @@ export async function sendBocWithBattery(boc) {
     }
     return await tk.wallet.battery.sendMessage(boc);
   } catch (err) {
-    return await tonapi.blockchain.sendBlockchainMessage(
+    return await tk.wallet.tonapi.blockchain.sendBlockchainMessage(
       {
         boc,
       },
@@ -38,7 +38,7 @@ export async function emulateWithBattery(boc, params?) {
     const emulateResult = await tk.wallet.battery.emulate(boc);
     return { emulateResult, battery: true };
   } catch (err) {
-    const emulateResult = await tonapi.wallet.emulateMessageToWallet({
+    const emulateResult = await tk.wallet.tonapi.wallet.emulateMessageToWallet({
       boc,
       params,
     });

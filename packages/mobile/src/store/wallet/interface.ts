@@ -80,10 +80,10 @@ export type CreateWalletAction = PayloadAction<{
   onDone: () => void;
   onFail?: () => void;
   pin?: string | null;
+  isTestnet?: boolean;
   fromRestore?: boolean;
   isBiometryEnabled?: boolean;
 }>;
-export type RefreshBalancesPageAction = PayloadAction<boolean | undefined>;
 export type ReloadBalanceTwiceAction = PayloadAction<CryptoCurrency>;
 export type MigrateAction = PayloadAction<{
   onDone: () => void;

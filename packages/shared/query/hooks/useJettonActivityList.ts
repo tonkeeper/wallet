@@ -1,6 +1,6 @@
 import { useExternalState } from '../../hooks/useExternalState';
 import { State } from '@tonkeeper/core';
-import { tk } from '../../tonkeeper';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 import { useEffect } from 'react';
 
 export const useJettonActivityList = (jettonId: string) => {

@@ -1,43 +1,30 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { Modal } from '@tonkeeper/uikit';
 
 import { Button, Icon, Text } from '$uikit';
 import * as S from './AddressMismatch.style';
-import { useWallet } from '$hooks/useWallet';
 import { useNavigation, SheetActions } from '@tonkeeper/router';
 import { delay } from '$utils';
-import { walletActions } from '$store/wallet';
-import { useDispatch } from 'react-redux';
-import { SelectableVersion } from '$shared/constants';
 import { push } from '$navigation/imperative';
 import { Address } from '@tonkeeper/shared/Address';
+import { useWallet } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
 
 export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () => void }>(
   (props) => {
-    const [allVersions, setAllVersions] = useState<null | { [key: string]: string }>(
-      null,
-    );
     const wallet = useWallet();
     const nav = useNavigation();
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-      wallet.ton.getAllAddresses().then((allAddresses) => setAllVersions(allAddresses));
-    }, [wallet.ton]);
 
     const foundVersion = useMemo(() => {
-      if (!allVersions) {
-        return false;
-      }
-      let found = Object.entries(allVersions).find(([_, address]) =>
-        Address.compare(address, props.source),
+      let found = Object.values(wallet.tonAllAddresses).find((address) =>
+        Address.compare(address.raw, props.source),
       );
       if (!found) {
         return false;
       }
       return found[0];
-    }, [allVersions, props.source]);
+    }, [props.source, wallet]);
 
     const handleCloseModal = useCallback(() => nav.goBack(), [nav]);
     const handleSwitchVersion = useCallback(async () => {
@@ -45,15 +32,10 @@ export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () =
         return;
       }
       nav.goBack();
-      dispatch(walletActions.switchVersion(foundVersion as SelectableVersion));
+      tk.updateWallet({ version: foundVersion });
       await delay(100);
       props.onSwitchAddress();
-    }, [dispatch, foundVersion, nav, props]);
-
-    // Wait to get all versions
-    if (!allVersions) {
-      return null;
-    }
+    }, [foundVersion, nav, props]);
 
     return (
       <Modal>

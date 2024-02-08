@@ -2,28 +2,27 @@ import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
 import { useNavigation } from '@tonkeeper/router';
 import { MainStackRouteNames, openDAppBrowser } from '$navigation';
 import { StakingListCell } from '$shared/components';
-import { StakingProvider, useStakingStore } from '$store';
+import { useStakingUIStore } from '$store';
 import { Button, Icon, ScrollHandler, Spacer, Text } from '$uikit';
 import { List } from '$uikit/List/old/List';
-import { calculatePoolBalance, getImplementationIcon, getPoolIcon } from '$utils/staking';
+import { getImplementationIcon, getPoolIcon } from '$utils/staking';
 import { formatter } from '$utils/formatter';
 import BigNumber from 'bignumber.js';
 import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import { RefreshControl } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { shallow } from 'zustand/shallow';
 import * as S from './Staking.style';
-import { jettonsBalancesSelector } from '$store/jettons';
-import { useSelector } from 'react-redux';
 import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/shared/Address';
 import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
-import { walletSelector } from '$store/wallet';
-import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
+import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { Flash } from '@tonkeeper/uikit';
 import { Ton } from '$libs/Ton';
+import { useBalancesState, useJettons, useStakingState } from '@tonkeeper/shared/hooks';
+import { StakingManager, StakingProvider } from '$wallet/managers/StakingManager';
+import { config } from '$config';
 
 interface Props {}
 
@@ -32,15 +31,15 @@ export const Staking: FC<Props> = () => {
 
   const { bottom: bottomInset } = useSafeAreaInsets();
 
-  const providers = useStakingStore((s) => s.providers, shallow);
-  const pools = useStakingStore((s) => s.pools, shallow);
-  const stakingInfo = useStakingStore((s) => s.stakingInfo, shallow);
-  const highestApyPool = useStakingStore((s) => s.highestApyPool, shallow);
-  const flashShownCount = useStakingStore((s) => s.stakingFlashShownCount);
+  const providers = useStakingState((s) => s.providers);
+  const pools = useStakingState((s) => s.pools);
+  const stakingInfo = useStakingState((s) => s.stakingInfo);
+  const highestApyPool = useStakingState((s) => s.highestApyPool);
 
-  const jettonBalances = useSelector(jettonsBalancesSelector);
-  const { balances } = useSelector(walletSelector);
-  const tonBalance = balances[CryptoCurrencies.Ton];
+  const flashShownCount = useStakingUIStore((s) => s.stakingFlashShownCount);
+
+  const { jettonBalances } = useJettons();
+  const tonBalance = useBalancesState((s) => s.ton);
 
   const poolsList = useMemo(() => {
     return pools.map((pool) => {
@@ -50,7 +49,7 @@ export const Staking: FC<Props> = () => {
 
       const balance = stakingJetton
         ? new BigNumber(stakingJetton.balance)
-        : calculatePoolBalance(pool, stakingInfo);
+        : StakingManager.calculatePoolBalance(pool, stakingInfo);
 
       const pendingWithdrawal = stakingInfo[pool.address]?.pending_withdraw;
 
@@ -139,7 +138,7 @@ export const Staking: FC<Props> = () => {
   );
 
   const handleLearnMorePress = useCallback(() => {
-    openDAppBrowser(getServerConfig('stakingInfoUrl'));
+    openDAppBrowser(config.get('stakingInfoUrl'));
   }, []);
 
   const otherPoolsEstimation = useMemo(() => {
@@ -198,7 +197,7 @@ export const Staking: FC<Props> = () => {
 
   useEffect(() => {
     const timerId = setTimeout(
-      () => useStakingStore.getState().actions.increaseStakingFlashShownCount(),
+      () => useStakingUIStore.getState().actions.increaseStakingFlashShownCount(),
       1000,
     );
 

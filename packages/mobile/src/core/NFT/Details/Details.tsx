@@ -5,12 +5,13 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Highlight, Separator, Text } from '$uikit';
 import Clipboard from '@react-native-community/clipboard';
 import { getLocale } from '$utils';
-import { getServerConfig } from '$shared/constants';
 import { openDAppBrowser } from '$navigation';
 import { Toast } from '$store';
 import { format } from 'date-fns';
 import { Address } from '@tonkeeper/core';
 import { getFlag } from '$utils/flags';
+import { config } from '$config';
+import { tk } from '$wallet';
 
 export const Details: React.FC<DetailsProps> = ({
   tokenId,
@@ -21,7 +22,9 @@ export const Details: React.FC<DetailsProps> = ({
   expiringAt,
 }) => {
   const handleOpenExplorer = useCallback(() => {
-    openDAppBrowser(getServerConfig('NFTOnExplorerUrl').replace('%s', contractAddress));
+    openDAppBrowser(
+      config.get('NFTOnExplorerUrl', tk.wallet.isTestnet).replace('%s', contractAddress),
+    );
   }, [contractAddress]);
 
   const handlePress = useCallback(

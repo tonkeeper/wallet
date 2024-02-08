@@ -1,8 +1,8 @@
 import React from 'react';
-import { getServerConfig } from '$shared/constants';
+import { config } from '$config';
 
 export function getFlag(key?: string) {
-  const flags = getServerConfig('flags');
+  const flags = config.get('flags');
   if (key) {
     const flag = flags[key];
     if (__DEV__ && flags[key] === undefined) {

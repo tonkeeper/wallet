@@ -2,15 +2,15 @@ import React, { useMemo, useState } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { formatter } from '$utils/formatter';
 import { openApproveTokenModal } from '$core/ModalContainer/ApproveToken/ApproveToken';
+import { tk } from '$wallet';
 import {
   TokenApprovalStatus,
   TokenApprovalType,
 } from '$store/zustand/tokenApproval/types';
 import { ListButton, Spacer } from '$uikit';
 import { CellItem, Content, ContentType } from '$core/ManageTokens/ManageTokens.types';
-import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { useJettonBalances } from '$hooks/useJettonBalances';
-import { config } from '@tonkeeper/shared/config';
+import { config } from '$config';
 import { JettonVerification } from '$store/models';
 import { Text } from '@tonkeeper/uikit';
 
@@ -44,9 +44,6 @@ const baseJettonCellData = (jettonBalance) => ({
 export function useJettonData() {
   const [isExtendedEnabled, setIsExtendedEnabled] = useState(false);
   const [isExtendedDisabled, setIsExtendedDisabled] = useState(false);
-  const updateTokenStatus = useTokenApprovalStore(
-    (state) => state.actions.updateTokenStatus,
-  );
   const { enabled, disabled } = useJettonBalances();
   const data = useMemo(() => {
     const content: Content[] = [];
@@ -68,7 +65,7 @@ export function useJettonData() {
                   <ListButton
                     type="remove"
                     onPress={() =>
-                      updateTokenStatus(
+                      tk.wallet.tokenApproval.updateTokenStatus(
                         jettonBalance.jettonAddress,
                         TokenApprovalStatus.Declined,
                         TokenApprovalType.Token,
@@ -114,7 +111,7 @@ export function useJettonData() {
                   <ListButton
                     type="add"
                     onPress={() =>
-                      updateTokenStatus(
+                      tk.wallet.tokenApproval.updateTokenStatus(
                         jettonBalance.jettonAddress,
                         TokenApprovalStatus.Approved,
                         TokenApprovalType.Token,
@@ -142,7 +139,7 @@ export function useJettonData() {
     }
 
     return content;
-  }, [disabled, enabled, isExtendedDisabled, isExtendedEnabled, updateTokenStatus]);
+  }, [disabled, enabled, isExtendedDisabled, isExtendedEnabled]);
   return data;
 }
 

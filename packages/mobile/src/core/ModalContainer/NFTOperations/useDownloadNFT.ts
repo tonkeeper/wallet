@@ -1,8 +1,9 @@
 import { debugLog } from '$utils/debugLog';
 import axios from 'axios';
 import React from 'react';
-import { getServerConfig } from '$shared/constants';
 import { proxyMedia } from '$utils/proxyMedia';
+import { config } from '$config';
+import { tk } from '$wallet';
 
 export type NFTItemMeta = {
   name: string;
@@ -17,7 +18,7 @@ export function useDownloadNFT(addr?: string) {
 
   const download = React.useCallback(async (address: string) => {
     try {
-      const endpoint = getServerConfig('tonapiV2Endpoint');
+      const endpoint = config.get('tonapiV2Endpoint', tk.wallet.isTestnet);
 
       const response: any = await axios.post(
         `${endpoint}/v2/nfts/_bulk`,
@@ -26,7 +27,7 @@ export function useDownloadNFT(addr?: string) {
         },
         {
           headers: {
-            Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+            Authorization: `Bearer ${config.get('tonApiV2Key', tk.wallet.isTestnet)}`,
           },
         },
       );

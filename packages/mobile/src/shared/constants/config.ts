@@ -1,7 +1,3 @@
-import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
-
-export const ServerConfigVersion = 8;
-
 export const GOOGLE_PACKAGE_NAME = 'com.ton_keeper';
 export const APPLE_STORE_ID = '1587742107';
 
@@ -25,7 +21,7 @@ export enum CryptoCurrencies {
 
 export type CryptoCurrency = (typeof CryptoCurrencies)[keyof typeof CryptoCurrencies];
 
-export enum FiatCurrencies {
+export enum WalletCurrency {
   Ton = 'ton',
   Usd = 'usd',
   Eur = 'eur',
@@ -56,7 +52,7 @@ export enum FiatCurrencies {
   Gel = 'gel',
 }
 
-export type FiatCurrency = (typeof FiatCurrencies)[keyof typeof FiatCurrencies];
+export type FiatCurrency = (typeof WalletCurrency)[keyof typeof WalletCurrency];
 
 export enum SelectableVersions {
   V4R2 = 'v4R2',
@@ -132,107 +128,107 @@ export const Decimals = {
 };
 
 export const FiatCurrencySymbolsConfig = {
-  [FiatCurrencies.Ton]: {
+  [WalletCurrency.Ton]: {
     symbol: 'TON',
     side: 'end',
   },
-  [FiatCurrencies.Usd]: {
+  [WalletCurrency.Usd]: {
     symbol: '$',
     side: 'start',
   },
-  [FiatCurrencies.Eur]: {
+  [WalletCurrency.Eur]: {
     symbol: '€',
     side: 'start',
   },
-  [FiatCurrencies.Rub]: {
+  [WalletCurrency.Rub]: {
     symbol: '₽',
     side: 'end',
   },
-  [FiatCurrencies.Idr]: {
+  [WalletCurrency.Idr]: {
     symbol: 'Rp',
     side: 'end',
   },
-  [FiatCurrencies.Uah]: {
+  [WalletCurrency.Uah]: {
     symbol: '₴',
     side: 'end',
   },
-  [FiatCurrencies.Uzs]: {
+  [WalletCurrency.Uzs]: {
     symbol: 'Sum',
     side: 'end',
   },
-  [FiatCurrencies.Inr]: {
+  [WalletCurrency.Inr]: {
     symbol: '₹',
     side: 'start',
   },
-  [FiatCurrencies.Gbp]: {
+  [WalletCurrency.Gbp]: {
     symbol: '£',
     side: 'start',
   },
-  [FiatCurrencies.Aed]: {
+  [WalletCurrency.Aed]: {
     symbol: 'DH',
     side: 'end',
   },
-  [FiatCurrencies.Cny]: {
+  [WalletCurrency.Cny]: {
     symbol: '¥',
     side: 'start',
   },
-  [FiatCurrencies.Irr]: {
+  [WalletCurrency.Irr]: {
     symbol: 'IRR',
     side: 'end',
   },
-  [FiatCurrencies.Byn]: {
+  [WalletCurrency.Byn]: {
     symbol: 'Br',
     side: 'end',
   },
-  [FiatCurrencies.Brl]: {
+  [WalletCurrency.Brl]: {
     symbol: 'R$',
     side: 'start',
   },
-  [FiatCurrencies.Try]: {
+  [WalletCurrency.Try]: {
     symbol: '₺',
     side: 'end',
   },
-  [FiatCurrencies.Kzt]: {
+  [WalletCurrency.Kzt]: {
     symbol: '₸',
     side: 'end',
   },
-  [FiatCurrencies.Ngn]: {
+  [WalletCurrency.Ngn]: {
     symbol: '₦',
     side: 'end',
   },
-  [FiatCurrencies.Krw]: {
+  [WalletCurrency.Krw]: {
     symbol: '₩',
     side: 'start',
   },
-  [FiatCurrencies.Thb]: {
+  [WalletCurrency.Thb]: {
     symbol: '฿',
     side: 'end',
   },
-  [FiatCurrencies.Bdt]: {
+  [WalletCurrency.Bdt]: {
     symbol: '৳',
     side: 'end',
   },
-  [FiatCurrencies.Chf]: {
+  [WalletCurrency.Chf]: {
     symbol: '₣',
     side: 'start',
   },
-  [FiatCurrencies.Jpy]: {
+  [WalletCurrency.Jpy]: {
     symbol: '¥',
     side: 'start',
   },
-  [FiatCurrencies.Cad]: {
+  [WalletCurrency.Cad]: {
     symbol: '$',
     side: 'end',
   },
-  [FiatCurrencies.Ils]: {
+  [WalletCurrency.Ils]: {
     symbol: '₪',
     side: 'end',
   },
-  [FiatCurrencies.Gel]: {
+  [WalletCurrency.Gel]: {
     symbol: '₾',
     side: 'end',
   },
-  [FiatCurrencies.Vnd]: {
+  [WalletCurrency.Vnd]: {
     symbol: '₫',
     side: 'end',
   },
@@ -320,9 +316,3 @@ export const telegramNumbersAddress = {
   mainnet: 'EQAOQdwdw8kGftJCSFgOErM1mBjYPe4DBPq8-AhF6vr9si5N',
   testnet: 'EQAOQdwdw8kGftJCSFgOErM1mBjYPe4DBPq8-AhF6vr9si5N',
 };
-
-export const KNOWN_STAKING_IMPLEMENTATIONS = [
-  PoolImplementationType.Whales,
-  PoolImplementationType.Tf,
-  PoolImplementationType.LiquidTF,
-];

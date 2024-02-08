@@ -38,7 +38,6 @@ export const useTonkens = (): {
   total: {
     fiat: number;
   };
-  canEdit: boolean;
 } => {
   const { enabled: jettonBalances } = useJettonBalances();
   const getTokenPrice = useGetTokenPrice();

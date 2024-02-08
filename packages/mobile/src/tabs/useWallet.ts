@@ -1,5 +1,5 @@
-import { WalletAddress } from '@tonkeeper/core/src/Wallet';
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { WalletAddress } from '$wallet/WalletTypes';
+import { tk } from '$wallet';
 
 export const useWallet = (): { address: WalletAddress } => {
   if (tk.wallet?.address) {

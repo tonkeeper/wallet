@@ -2,7 +2,7 @@ import { TransitionOpacity, SegmentedControl, TonIcon, Modal } from '@tonkeeper/
 import { ReceiveTokenContent } from '../components/ReceiveTokenContent';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { tk } from '../tonkeeper';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 import { t } from '../i18n';
 
 enum Segments {

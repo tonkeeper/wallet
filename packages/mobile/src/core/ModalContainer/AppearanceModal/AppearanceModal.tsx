@@ -1,8 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDimensions } from '$hooks/useDimensions';
-import { mainActions, accentSelector, accentTonIconSelector } from '$store/main';
+import { accentSelector } from '$store/main';
 import { NFTModel, TonDiamondMetadata } from '$store/models';
-import { nftsSelector } from '$store/nfts';
 import {
   AccentKey,
   AccentModel,
@@ -10,10 +9,9 @@ import {
   AppearanceAccents,
   getAccentIdByDiamondsNFT,
 } from '$styled';
-import { checkIsTonDiamondsNFT, ns } from '$utils';
+import { checkIsTonDiamondsNFT, delay, ns } from '$utils';
 import { ListRenderItem } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import { useDispatch, useSelector } from 'react-redux';
 import { AccentItem, ACCENT_ITEM_WIDTH } from './AccentItem/AccentItem';
 import { AppearanceModalProps } from './AppearanceModal.interface';
 import * as S from './AppearanceModal.style';
@@ -22,7 +20,11 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Modal, View } from '@tonkeeper/uikit';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { push } from '$navigation/imperative';
-import { openMarketplaces } from '../Marketplaces/Marketplaces';
+import { useNftsState, useWallet } from '@tonkeeper/shared/hooks';
+import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
+import { BrowserStackRouteNames, TabsStackRouteNames } from '$navigation';
+import { tk } from '$wallet';
+import { Address } from '@tonkeeper/shared/Address';
 
 const AppearanceModal = memo<AppearanceModalProps>((props) => {
   const { selectedAccentNFTAddress } = props;
@@ -34,15 +36,15 @@ const AppearanceModal = memo<AppearanceModalProps>((props) => {
     window: { width: windowWidth },
   } = useDimensions();
 
-  const dispatch = useDispatch();
-
-  const { myNfts } = useSelector(nftsSelector);
-  const currentAccent = useSelector(accentSelector);
-  const accentTonIcon = useSelector(accentTonIconSelector);
+  const { accountNfts, selectedDiamond } = useNftsState();
+  const wallet = useWallet();
 
   const diamondNFTs = useMemo(
-    () => Object.values(myNfts).filter(checkIsTonDiamondsNFT),
-    [myNfts],
+    () =>
+      Object.values(accountNfts)
+        .map((item) => mapNewNftToOldNftData(item, wallet.address.ton.friendly))
+        .filter(checkIsTonDiamondsNFT),
+    [accountNfts, wallet],
   );
 
   const getNFTIcon = useCallback((nft: NFTModel<TonDiamondMetadata>) => {
@@ -60,6 +62,7 @@ const AppearanceModal = memo<AppearanceModalProps>((props) => {
       ...AppearanceAccents[getAccentIdByDiamondsNFT(nft)],
       available: true,
       nftIcon: getNFTIcon(nft),
+      nft,
     }));
 
     const otherAccents = Object.values(AppearanceAccents)
@@ -97,11 +100,11 @@ const AppearanceModal = memo<AppearanceModalProps>((props) => {
     }
 
     const index = accents.findIndex((item) => {
-      if (accentTonIcon) {
-        return item.nftIcon?.uri === accentTonIcon.uri;
+      if (selectedDiamond && item.nft) {
+        return Address.compare(item.nft.address, selectedDiamond.address);
       }
 
-      return item.id === currentAccent;
+      return false;
     });
 
     return index !== -1 ? index : 0;
@@ -130,17 +133,19 @@ const AppearanceModal = memo<AppearanceModalProps>((props) => {
     : t('nft_open_in_marketplace');
 
   const changeAccent = useCallback(() => {
-    dispatch(mainActions.setAccent(selectedAccent.id));
-    dispatch(mainActions.setTonCustomIcon(selectedAccent?.nftIcon || null));
+    tk.wallet.nfts.setSelectedDiamond(selectedAccent.nft?.address ?? null);
 
     nav.goBack();
-  }, [dispatch, nav, selectedAccent.id, selectedAccent?.nftIcon]);
+  }, [nav, selectedAccent]);
 
-  const openDiamondsNFTCollection = useCallback(() => {
+  const openDiamondsNFTCollection = useCallback(async () => {
     if (selectedAccent) {
-      openMarketplaces({ accentKey: selectedAccent.id });
+      nav.goBack();
+      await delay(300);
+      nav.navigate(TabsStackRouteNames.BrowserStack);
+      nav.push(BrowserStackRouteNames.Category, { categoryId: 'nft' });
     }
-  }, [selectedAccent]);
+  }, [nav, selectedAccent]);
 
   useEffect(() => {
     setTimeout(() => {

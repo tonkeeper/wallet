@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '../../hooks/useInfiniteQuery';
-import { tk } from '../../tonkeeper';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 
 export const useTronTransactions = () => {
   return useInfiniteQuery({

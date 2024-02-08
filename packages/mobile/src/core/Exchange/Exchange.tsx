@@ -3,20 +3,20 @@ import React, { FC, useCallback } from 'react';
 import { InlineHeader, Loader } from '$uikit';
 import * as S from './Exchange.style';
 import { ExchangeItem } from './ExchangeItem/ExchangeItem';
-import { getServerConfig, getServerConfigSafe } from '$shared/constants';
 import { Linking } from 'react-native';
 import { Modal } from '@tonkeeper/uikit';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { t } from '@tonkeeper/shared/i18n';
+import { config } from '$config';
 
 export const OldExchange: FC = () => {
   const categories = useMethodsToBuyStore((state) => state.categories);
 
-  const otherWaysAvailable = getServerConfigSafe('exchangePostUrl') !== 'none';
+  const otherWaysAvailable = !!config.get('exchangePostUrl');
 
   const openOtherWays = useCallback(() => {
     try {
-      const url = getServerConfig('exchangePostUrl');
+      const url = config.get('exchangePostUrl');
 
       Linking.openURL(url);
     } catch {}

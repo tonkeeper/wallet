@@ -9,7 +9,6 @@ export type SettingsStackParamList = {
   [SettingsStackRouteNames.LegalDocuments]: {};
   [SettingsStackRouteNames.FontLicense]: {};
   [SettingsStackRouteNames.Notifications]: {};
-  [SettingsStackRouteNames.JettonsList]: {};
   [SettingsStackRouteNames.ChooseCurrency]: {};
   [SettingsStackRouteNames.RefillBattery]: {};
 };

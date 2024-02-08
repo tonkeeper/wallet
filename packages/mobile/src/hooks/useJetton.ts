@@ -1,13 +1,13 @@
 import { JettonBalanceModel } from '$store/models';
-import { useSelector } from 'react-redux';
-import { jettonsSelector } from '$store/jettons';
+import { Address } from '@tonkeeper/shared/Address';
+import { useJettons } from '@tonkeeper/shared/hooks';
 
 export function useJetton(
   address: JettonBalanceModel['jettonAddress'],
 ): JettonBalanceModel {
-  const { jettonBalances } = useSelector(jettonsSelector);
+  const { jettonBalances } = useJettons();
 
-  return jettonBalances.find(
-    (jetton) => jetton.jettonAddress === address,
+  return jettonBalances.find((jetton) =>
+    Address.compare(jetton.jettonAddress, address),
   ) as JettonBalanceModel;
 }

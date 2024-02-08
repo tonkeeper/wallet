@@ -1,16 +1,13 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '$store/rootReducer';
-import { FiatCurrencies } from '$shared/constants';
+import { WalletCurrency } from '$shared/constants';
 import {
   AddLogAction,
   EndInitiatingAction,
   HideNotificationAction,
   MainState,
   SetAccentAction,
-  SetChartPeriodAction,
-  SetFiatCurrencyAction,
-  SetHasWalletAction,
   SetLogsAction,
   SetNotificationsAction,
   SetShowV4R1,
@@ -24,16 +21,15 @@ import {
   UpdateBadHostsAction,
 } from '$store/main/interface';
 import { AccentKey } from '$styled';
-import { walletOldBalancesSelector, walletWalletSelector } from '$store/wallet';
+import { walletWalletSelector } from '$store/wallet';
 
 const initialState: MainState = {
   isInitiating: true,
-  isHasWallet: false,
   isIntroShown: true,
   isTestnet: false,
   isTimeSynced: true,
   timeSyncedDismissedTimestamp: false,
-  fiatCurrency: FiatCurrencies.Usd,
+  fiatCurrency: WalletCurrency.Usd,
   badHosts: [],
   isBadHostsDismissed: false,
   internalNotifications: [],
@@ -52,19 +48,14 @@ export const { actions, reducer } = createSlice({
     init() {},
 
     endInitiating(state, action: EndInitiatingAction) {
-      const { isHasWallet, fiatCurrency } = action.payload;
+      const { fiatCurrency } = action.payload;
 
       state.isInitiating = false;
-      state.isHasWallet = isHasWallet;
       state.fiatCurrency = fiatCurrency;
     },
 
     setShowV4R1(state, action: SetShowV4R1) {
       state.alwaysShowV4R1 = action.payload;
-    },
-
-    setHasWallet(state, action: SetHasWalletAction) {
-      state.isHasWallet = action.payload;
     },
 
     setUnlocked(state, action: SetUnlockedAction) {
@@ -78,17 +69,9 @@ export const { actions, reducer } = createSlice({
     toggleIntro(state, action: ToggleIntroAction) {
       state.isIntroShown = action.payload;
     },
-
-    toggleTestnet(_, __: ToggleTestnetAction) {},
-    setTestnet(state, action: SetTestnetAction) {
-      state.isTestnet = action.payload;
-    },
     getTimeSynced() {},
     setTimeSynced(state, action: SetTimeSyncedAction) {
       state.isTimeSynced = action.payload;
-    },
-    setFiatCurrency(state, action: SetFiatCurrencyAction) {
-      state.fiatCurrency = action.payload;
     },
 
     updateBadHosts(state, action: UpdateBadHostsAction) {
@@ -164,11 +147,6 @@ export const isInitiatingSelector = createSelector(
   (state) => state.isInitiating,
 );
 
-export const fiatCurrencySelector = createSelector(
-  mainSelector,
-  (state) => state.fiatCurrency,
-);
-
 export const customIconSelector = createSelector(
   mainSelector,
   (state) => state.tonCustomIcon,
@@ -191,18 +169,6 @@ export const accentTonIconSelector = createSelector(
 export const alwaysShowV4R1Selector = createSelector(
   mainSelector,
   (state) => state.alwaysShowV4R1,
-);
-
-export const isTestnetSelector = createSelector(mainSelector, (state) => state.isTestnet);
-
-export const showV4R1Selector = createSelector(
-  mainSelector,
-  walletOldBalancesSelector,
-  (state, walletOldBalances) =>
-    state.alwaysShowV4R1 ||
-    walletOldBalances.find(
-      (oldBalance) => oldBalance.version === 'v4R1' && oldBalance.balance,
-    ),
 );
 
 export const isTimeSyncedSelector = createSelector(

@@ -1,9 +1,9 @@
 import { List, ListSeparator, Text, copyText } from '@tonkeeper/uikit';
 import { AccountAddress } from '@tonkeeper/core/src/TonAPI';
-import { ActionDestination } from '@tonkeeper/core';
 import { Address } from '@tonkeeper/shared/Address';
 import { t } from '../../../i18n';
 import { memo } from 'react';
+import { ActionDestination } from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 
 interface AddressListItemProps {
   destination?: ActionDestination;

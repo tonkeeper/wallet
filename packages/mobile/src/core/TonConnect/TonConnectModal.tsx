@@ -5,7 +5,7 @@ import TonWeb from 'tonweb';
 import { useSelector } from 'react-redux';
 import { Linking, StyleSheet } from 'react-native';
 import { useTheme } from '$hooks/useTheme';
-import { getServerConfig, SelectableVersionsConfig } from '$shared/constants';
+import { SelectableVersionsConfig } from '$shared/constants';
 import { walletSelector } from '$store/wallet';
 import { Button, Icon, List, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
@@ -32,13 +32,14 @@ import { store, Toast, useNotificationsStore } from '$store';
 import { push } from '$navigation/imperative';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
-import { mainSelector } from '$store/main';
 import { createTonProofForTonkeeper } from '$utils/proof';
 import { WalletApi, Configuration } from '@tonkeeper/core/src/legacy';
 import * as SecureStore from 'expo-secure-store';
 import { Address } from '@tonkeeper/core';
 import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
 import { replaceString } from '@tonkeeper/shared/utils/replaceString';
+import { tk } from '$wallet';
+import { config } from '$config';
 
 export const TonConnectModal = (props: TonConnectModalProps) => {
   const animation = useTonConnectAnimation();
@@ -49,7 +50,6 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   const [withNotifications, setWithNotifications] = React.useState(showNotifications);
 
   const { version } = useSelector(walletSelector);
-  const { isTestnet } = useSelector(mainSelector);
   const maskedAddress = Address.toShort(animation.address);
 
   const handleSwitchNotifications = useCallback(() => {
@@ -57,7 +57,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
     setWithNotifications((prev) => !prev);
   }, []);
 
-  const closeModal = () => nav.goBack();
+  const closeModal = useCallback(() => nav.goBack(), [nav]);
 
   const isTonapi = props.protocolVersion === 1 ? props?.hostname === 'tonapi.io' : false;
 
@@ -110,7 +110,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
 
       const vault = await unlockVault();
 
-      const address = await vault.getTonAddress(isTestnet);
+      const address = await vault.getTonAddress(tk.wallet.isTestnet);
       const privateKey = await vault.getTonPrivateKey();
       const walletSeed = TonWeb.utils.bytesToBase64(privateKey);
 
@@ -179,9 +179,9 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
           );
           const walletApi = new WalletApi(
             new Configuration({
-              basePath: getServerConfig('tonapiV2Endpoint'),
+              basePath: config.get('tonapiV2Endpoint', tk.wallet.isTestnet),
               headers: {
-                Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+                Authorization: `Bearer ${config.get('tonApiV2Key', tk.wallet.isTestnet)}`,
               },
             }),
           );
@@ -221,15 +221,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
       debugLog('[TonLogin]:', error);
       Toast.fail(message);
     }
-  }, [
-    animation,
-    closeModal,
-    isTestnet,
-    props,
-    sendToCallbackUrl,
-    unlockVault,
-    withNotifications,
-  ]);
+  }, [animation, closeModal, props, sendToCallbackUrl, unlockVault, withNotifications]);
 
   const handleBackToService = React.useCallback(async () => {
     if (props.protocolVersion !== 1) {

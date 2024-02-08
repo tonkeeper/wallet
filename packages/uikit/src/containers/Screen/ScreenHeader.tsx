@@ -196,7 +196,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
                     )}
                   </View>
                 ) : (
-                  <View style={styles.title}>{title}</View>
+                  <View style={styles.titleContainer}>{title}</View>
                 )}
               </>
             )}

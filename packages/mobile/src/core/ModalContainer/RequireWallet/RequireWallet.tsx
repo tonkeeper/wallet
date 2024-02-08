@@ -7,10 +7,10 @@ import { Text, Button, Modal, View } from '@tonkeeper/uikit';
 
 import { openImportWallet } from '$navigation/helper';
 import { walletActions } from '$store/wallet';
-import { SheetActions, useNavigation } from '@tonkeeper/router';
+import { SheetActions, navigation, useNavigation } from '@tonkeeper/router';
 import { t } from '@tonkeeper/shared/i18n';
 import { openCreateWallet } from '$core/CreateWallet/CreateWallet';
-import { push } from '$navigation/imperative';
+import { AddWalletModal } from '@tonkeeper/shared/modals/AddWalletModal';
 
 export const RequireWallet: FC = () => {
   const iconRef = useRef<LottieView>(null);
@@ -85,10 +85,10 @@ export const RequireWallet: FC = () => {
 };
 
 export function openRequireWalletModal() {
-  push('SheetsProvider', {
+  navigation.navigate('SheetsProvider', {
     $$action: SheetActions.ADD,
-    component: RequireWallet,
+    component: AddWalletModal,
     params: {},
-    path: 'RequireWallet',
+    path: '/add-wallet',
   });
 }

@@ -1,6 +1,6 @@
 import { State } from '@tonkeeper/core';
 import { useExternalState } from '../../hooks/useExternalState';
-import { tk } from '../../tonkeeper';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 import { useEffect } from 'react';
 
 export const useActivityList = () => {
@@ -26,6 +26,6 @@ export const useActivityList = () => {
     isLoading: state.isLoading,
     sections: state.sections,
     hasMore: state.hasMore,
-    error: state.error
+    error: state.error,
   };
 };

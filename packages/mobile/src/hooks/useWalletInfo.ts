@@ -1,19 +1,18 @@
-import { useSelector } from 'react-redux';
 import { useMemo } from 'react';
 
-import { CryptoCurrency, Decimals } from '$shared/constants';
-import { walletBalancesSelector } from '$store/wallet';
+import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { formatAmount } from '$utils';
 import { useTokenPrice } from './useTokenPrice';
+import { useBalancesState } from '@tonkeeper/shared/hooks';
 
-export function useWalletInfo(currency: CryptoCurrency) {
-  const balances = useSelector(walletBalancesSelector);
+export function useWalletInfo() {
+  const balances = useBalancesState();
 
   const amount = useMemo(() => {
-    return formatAmount(balances[currency], Decimals[currency]);
-  }, [balances, currency]);
+    return formatAmount(balances.ton, Decimals[CryptoCurrencies.Ton]);
+  }, [balances]);
 
-  const tokenPrice = useTokenPrice(currency, amount);
+  const tokenPrice = useTokenPrice(CryptoCurrencies.Ton, amount);
 
   return {
     amount,

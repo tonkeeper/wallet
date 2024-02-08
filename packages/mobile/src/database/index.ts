@@ -4,5 +4,4 @@ export * from './wallet';
 export * from './subscriptions';
 export * from './main';
 export * from './nfts';
-export * from './jettons';
 export * from './suggests';

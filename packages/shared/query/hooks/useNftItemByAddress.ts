@@ -1,6 +1,6 @@
 import { NftItem } from '@tonkeeper/core/src/TonAPI/TonAPIGenerated';
 import { useQuery } from 'react-query';
-import { tk } from '../../tonkeeper';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 
 type UseNftItemByAddressOptions = {
   existingNft?: NftItem;

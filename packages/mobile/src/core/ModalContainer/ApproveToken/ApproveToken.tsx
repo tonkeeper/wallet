@@ -1,12 +1,6 @@
 import { Modal } from '@tonkeeper/uikit';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import React, { memo, useCallback, useMemo } from 'react';
-import {
-  TokenApprovalStatus,
-  TokenApprovalType,
-} from '$store/zustand/tokenApproval/types';
-import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
-import { getTokenStatus } from '$store/zustand/tokenApproval/selectors';
 import { JettonVerification } from '$store/models';
 import { Button, Icon, Spacer, View, List } from '$uikit';
 import { Steezy } from '$styles';
@@ -19,6 +13,12 @@ import Clipboard from '@react-native-community/clipboard';
 import { TranslateOptions } from 'i18n-js';
 import { push } from '$navigation/imperative';
 import { Address } from '@tonkeeper/core';
+import { useTokenApproval } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
+import {
+  TokenApprovalType,
+  TokenApprovalStatus,
+} from '$wallet/managers/TokenApprovalManager';
 
 export enum ImageType {
   ROUND = 'round',
@@ -34,19 +34,21 @@ export interface ApproveTokenModalParams {
 }
 export const ApproveToken = memo((props: ApproveTokenModalParams) => {
   const nav = useNavigation();
-  const currentStatus = useTokenApprovalStore((state) =>
-    getTokenStatus(state, props.tokenAddress),
-  );
-  const updateTokenStatus = useTokenApprovalStore(
-    (state) => state.actions.updateTokenStatus,
-  );
+  const currentStatus = useTokenApproval((state) => {
+    const rawAddress = Address.parse(props.tokenAddress).toRaw();
+    return state.tokens[rawAddress];
+  });
 
   const handleUpdateStatus = useCallback(
     (approvalStatus: TokenApprovalStatus) => () => {
-      updateTokenStatus(props.tokenAddress, approvalStatus, props.type);
+      tk.wallet.tokenApproval.updateTokenStatus(
+        props.tokenAddress,
+        approvalStatus,
+        props.type,
+      );
       nav.goBack();
     },
-    [nav, props.tokenAddress, props.type, updateTokenStatus],
+    [nav, props.tokenAddress, props.type],
   );
 
   const handleCopyAddress = useCallback(() => {

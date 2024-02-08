@@ -1,30 +1,32 @@
 import React, { FC, useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
 
 import { NavBar } from '$uikit';
 import { CreatePinForm } from '$shared/components';
-import { UnlockedVault } from '$blockchain';
-import { walletActions } from '$store/wallet';
+import { Toast } from '$store';
+import { t } from '@tonkeeper/shared/i18n';
+import { goBack } from '$navigation/imperative';
+import { vault } from '$wallet';
 
 export const ChangePin: FC = () => {
-  const dispatch = useDispatch();
-  const [vault, setVault] = useState<UnlockedVault | null>(null);
+  const [oldPin, setOldPin] = useState<string | null>(null);
 
   const handleCreated = useCallback(
-    (pin: string) => {
-      dispatch(
-        walletActions.changePin({
-          pin,
-          vault: vault!,
-        }),
-      );
-    },
-    [dispatch, vault],
-  );
+    async (pin: string) => {
+      if (!oldPin) {
+        return;
+      }
 
-  const handleVaultUnlock = useCallback((unlockedVault) => {
-    setVault(unlockedVault);
-  }, []);
+      try {
+        await vault.changePasscode(oldPin, pin);
+        Toast.success(t('passcode_changed'));
+        goBack();
+      } catch (e) {
+        Toast.fail(e.message);
+        goBack();
+      }
+    },
+    [oldPin],
+  );
 
   return (
     <>
@@ -32,7 +34,7 @@ export const ChangePin: FC = () => {
       <CreatePinForm
         validateOldPin
         onPinCreated={handleCreated}
-        onVaultUnlocked={handleVaultUnlock}
+        onOldPinValidated={setOldPin}
       />
     </>
   );

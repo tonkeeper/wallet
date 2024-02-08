@@ -1,5 +1,5 @@
 import { useExternalState } from '../../hooks/useExternalState';
-import { tk } from '../../tonkeeper';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 import { useMemo } from 'react';
 
 export interface UseTonInscriptionParams {

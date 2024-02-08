@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, Icon, Screen, Spacer, Text } from '$uikit';
 import * as S from '$core/SetupNotifications/SetupNotifications.style';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useDispatch } from 'react-redux';
 import { t } from '@tonkeeper/shared/i18n';
 import { openSetupWalletDone } from '$navigation';
 import { ns } from '$utils';
@@ -15,7 +14,6 @@ export const SetupNotifications: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
   const notifications = useNotifications();
   const safeArea = useSafeAreaInsets();
-  const dispatch = useDispatch();
 
   React.useEffect(() => {
     saveDontShowReminderNotifications();
@@ -31,14 +29,14 @@ export const SetupNotifications: React.FC = () => {
       Toast.fail(err?.massage);
       debugLog('[SetupNotifications]:', err);
     }
-  }, []);
+  }, [notifications]);
 
   return (
     <Screen>
-      <Screen.Header 
+      <Screen.Header
         rightContent={
-          <Button 
-            size="navbar_small" 
+          <Button
+            size="navbar_small"
             mode="secondary"
             style={{ marginRight: ns(16) }}
             onPress={() => openSetupWalletDone()}
@@ -61,10 +59,7 @@ export const SetupNotifications: React.FC = () => {
           </Text>
         </S.Content>
         <S.Footer style={{ paddingBottom: safeArea.bottom }}>
-          <Button 
-            isLoading={loading}
-            onPress={handleEnableNotifications}
-          >
+          <Button isLoading={loading} onPress={handleEnableNotifications}>
             {t('setup_notifications_enable_button')}
           </Button>
         </S.Footer>

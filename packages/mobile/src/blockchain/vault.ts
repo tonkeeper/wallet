@@ -3,15 +3,14 @@ import { Buffer } from 'buffer';
 import { generateSecureRandom } from 'react-native-securerandom';
 import scrypt from 'react-native-scrypt';
 import BN from 'bn.js';
-import { getServerConfig } from '$shared/constants';
 import { MainDB } from '$database';
 import { debugLog } from '$utils/debugLog';
 import * as SecureStore from 'expo-secure-store';
 import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 import { wordlist } from '$libs/Ton/mnemonic/wordlist';
-import { Tonapi } from '$libs/Tonapi';
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { createTonApiInstance } from '$wallet/utils';
+import { config } from '$config';
 
 const { nacl } = require('react-native-tweetnacl');
 
@@ -89,7 +88,7 @@ export class Vault {
     name: string,
     phrase: string,
     version?: string,
-    config?: any,
+    lockupConfig?: any,
   ): Promise<UnlockedVault> {
     //if (!bip39.validateMnemonic(phrase, bip39.DEFAULT_WORDLIST)) {
     // TON uses custom mnemonic format with BIP39 words, but bruteforced so that first byte indicates
@@ -101,26 +100,23 @@ export class Vault {
     const tonKeyPair = await Ton.mnemonic.mnemonicToKeyPair(phrase.split(' '));
     const tonPubkey = tonKeyPair.publicKey;
 
-    // await tk.generateTronAddress(tonKeyPair.secretKey);
-    await tk.obtainProofToken(tonKeyPair);
-
     const info: VaultInfo = {
       name: name,
       tonPubkey,
       workchain: 0,
     };
 
-    if (config) {
-      version = config.wallet_type;
-      info.workchain = config.workchain;
-      info.configPubKey = config.config_pubkey;
-      info.allowedDestinations = config.allowed_destinations;
+    if (lockupConfig) {
+      version = lockupConfig.wallet_type;
+      info.workchain = lockupConfig.workchain;
+      info.configPubKey = lockupConfig.config_pubkey;
+      info.allowedDestinations = lockupConfig.allowed_destinations;
       console.log('lockup wallet detected');
     } else {
       if (!version) {
         try {
-          const provider = new TonWeb.HttpProvider(getServerConfig('tonEndpoint'), {
-            apiKey: getServerConfig('tonEndpointAPIKey'),
+          const provider = new TonWeb.HttpProvider(config.get('tonEndpoint'), {
+            apiKey: config.get('tonEndpointAPIKey'),
           });
           const ton = new TonWeb(provider);
 
@@ -131,7 +127,8 @@ export class Vault {
               wc: 0,
             });
             const walletAddress = (await wallet.getAddress()).toString(true, true, true);
-            const walletInfo = await Tonapi.getWalletInfo(walletAddress);
+            const tonapi = createTonApiInstance();
+            const walletInfo = await tonapi.accounts.getAccount(walletAddress);
             const walletBalance = new BN(walletInfo.balance);
             if (walletBalance.gt(new BN(0))) {
               hasBalance.push({ balance: walletBalance, version: wallet.getName() });
@@ -310,8 +307,8 @@ export class Vault {
   // TON wallet instance.
   get tonWallet(): any {
     const tonweb = new TonWeb(
-      new TonWeb.HttpProvider(getServerConfig('tonEndpoint'), {
-        apiKey: getServerConfig('tonEndpointAPIKey'),
+      new TonWeb.HttpProvider(config.get('tonEndpoint'), {
+        apiKey: config.get('tonEndpointAPIKey'),
       }),
     );
 
@@ -335,8 +332,8 @@ export class Vault {
 
   tonWalletByVersion(version: string) {
     const tonweb = new TonWeb(
-      new TonWeb.HttpProvider(getServerConfig('tonEndpoint'), {
-        apiKey: getServerConfig('tonEndpointAPIKey'),
+      new TonWeb.HttpProvider(config.get('tonEndpoint'), {
+        apiKey: config.get('tonEndpointAPIKey'),
       }),
     );
 
@@ -378,6 +375,7 @@ export class EncryptedVault extends Vault {
   // Private constructor.
   // Use `Vault.generate` to create a new vault and `Vault.fromJSON` to load one from disk.
   constructor(info: VaultInfo, state: EncryptedSecret) {
+    console.log('EncryptedVault state', state);
     super(info);
     this.state = state;
   }
@@ -456,6 +454,7 @@ export class UnlockedVault extends Vault {
   }
 
   async saveBiometry() {
+    console.log('saveBiometry');
     let jsonstr = JSON.stringify({
       kind: 'decrypted',
       mnemonic: this.mnemonic,
@@ -518,11 +517,11 @@ export class UnlockedVault extends Vault {
     return await Ton.mnemonic.mnemonicToKeyPair(this.mnemonic.split(' '));
   }
 
-  public setConfig(config: any) {
-    this.info.version = config.wallet_type;
-    this.info.workchain = config.workchain;
-    this.info.configPubKey = config.config_pubkey;
-    this.info.allowedDestinations = config.allowed_destinations;
+  public setConfig(lockupConfig: any) {
+    this.info.version = lockupConfig.wallet_type;
+    this.info.workchain = lockupConfig.workchain;
+    this.info.configPubKey = lockupConfig.config_pubkey;
+    this.info.allowedDestinations = lockupConfig.allowed_destinations;
   }
 }
 

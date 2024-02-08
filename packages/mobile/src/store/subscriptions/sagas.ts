@@ -3,21 +3,21 @@ import { all, takeLatest, call, put, select, fork } from 'redux-saga/effects';
 import { subscriptionsActions } from '$store/subscriptions/index';
 import { SubscribeAction, UnsubscribeAction } from '$store/subscriptions/interface';
 import { walletSelector } from '$store/wallet';
-import { Api } from '$api';
 import { walletGetUnlockedVault } from '$store/wallet/sagas';
 import { getSubscriptions, saveSubscriptions } from '$database';
 import { SubscriptionModel } from '$store/models';
-import { CryptoCurrencies, getServerConfig } from '$shared/constants';
+import { CryptoCurrencies } from '$shared/constants';
 import { store, Toast } from '$store';
 import { fuzzifyNumber } from '$utils';
 import { Ton } from '$libs/Ton';
 import { network } from '$libs/network';
 import { trackEvent } from '$utils/stats';
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '$wallet';
+import { config } from '$config';
 
 export async function reloadSubscriptionsFromServer(address: string) {
   try {
-    const host = getServerConfig('subscriptionsHost');
+    const host = config.get('subscriptionsHost');
     const resp = await network.get(`${host}/v1/subscriptions`, {
       params: { address },
     });
@@ -31,12 +31,11 @@ export async function reloadSubscriptionsFromServer(address: string) {
 
 function* loadSubscriptionsWorker() {
   try {
-    const { wallet } = yield select(walletSelector);
-    if (!wallet) {
+    if (!tk.wallet) {
       return;
     }
 
-    if (!wallet.ton.isV4()) {
+    if (!tk.wallet.isV4()) {
       return;
     }
 
@@ -65,15 +64,6 @@ function* subscribeWorker(action: SubscribeAction) {
   const { subscription, onDone, onFail } = action.payload;
 
   try {
-    const featureEnabled = yield call(Api.get, '/feature/enabled', {
-      params: {
-        feature: 'subscription',
-      },
-    });
-    if (!featureEnabled.enabled) {
-      throw new Error(featureEnabled.message);
-    }
-
     const { wallet } = yield select(walletSelector);
     const unlockedVault = yield call(walletGetUnlockedVault);
     const prepared = yield call(
@@ -87,7 +77,7 @@ function* subscribeWorker(action: SubscribeAction) {
 
     const currency = CryptoCurrencies.Ton;
 
-    const host = getServerConfig('subscriptionsHost');
+    const host = config.get('subscriptionsHost');
     yield call(network.post, `${host}/v1/subscribe/confirm/${subscription.id}`, {
       params: {
         signed_tx: prepared.signedTx,
@@ -123,7 +113,7 @@ function* unsubscribeWorker(action: UnsubscribeAction) {
       subscription.subscriptionAddress,
     );
 
-    const host = getServerConfig('subscriptionsHost');
+    const host = config.get('subscriptionsHost');
     yield call(network.post, `${host}/v1/subscribe/cancel/${subscription.id}`, {
       params: { signed_tx: signedTx },
     });

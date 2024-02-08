@@ -19,11 +19,11 @@ import { deviceWidth } from '$utils';
 import { CreatePinFormProps } from './CreatePinForm.interface';
 import { walletWalletSelector } from '$store/wallet';
 import { t } from '@tonkeeper/shared/i18n';
+import { tk, vault } from '$wallet';
 
 export const CreatePinForm: FC<CreatePinFormProps> = (props) => {
-  const { onPinCreated, validateOldPin = false, onVaultUnlocked } = props;
+  const { onPinCreated, validateOldPin = false, onOldPinValidated } = props;
 
-  
   const wallet = useSelector(walletWalletSelector);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const pinRef = useRef<PinCodeRef>(null);
@@ -86,29 +86,21 @@ export const CreatePinForm: FC<CreatePinFormProps> = (props) => {
       if (step === 0) {
         setValue0(pin);
         if (pin.length === 4) {
-          setTimeout(() => {
-            wallet!.vault
-              .getEncrypted()
-              .then((encryptedVault) => {
-                encryptedVault
-                  .decrypt(pin)
-                  .then((unlockedVault) => {
-                    oldPinRef.current?.triggerSuccess();
-                    onVaultUnlocked && onVaultUnlocked(unlockedVault);
+          setTimeout(async () => {
+            try {
+              const pubkey = tk.walletForUnlock.pubkey;
+              await vault.exportWithPasscode(pubkey, pin);
 
-                    setTimeout(() => {
-                      setStep(1);
-                    }, 500);
-                  })
-                  .catch(() => {
-                    oldPinRef.current?.triggerError();
-                    setValue0('');
-                  });
-              })
-              .catch(() => {
-                oldPinRef.current?.triggerError();
-                setValue0('');
-              });
+              oldPinRef.current?.triggerSuccess();
+              onOldPinValidated && onOldPinValidated(pin);
+
+              setTimeout(() => {
+                setStep(1);
+              }, 500);
+            } catch {
+              oldPinRef.current?.triggerError();
+              setValue0('');
+            }
           }, 300);
         }
       } else if (step === 1) {
@@ -141,7 +133,7 @@ export const CreatePinForm: FC<CreatePinFormProps> = (props) => {
         }
       }
     },
-    [onPinCreated, onVaultUnlocked, step, value1, wallet],
+    [onOldPinValidated, onPinCreated, step, value1],
   );
 
   const stepsStyle = useAnimatedStyle(() => {

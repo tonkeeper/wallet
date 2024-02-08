@@ -15,28 +15,29 @@ import {
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { formatter } from '$utils/formatter';
-import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '$wallet';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
 import {
-  ActionAmountType,
-  ActionSource,
-  ActionType,
-  ActivityModel,
   Address,
-  AnyActionItem,
   ContractService,
   contractVersionsMap,
   TransactionService,
 } from '@tonkeeper/core';
 import { ActionListItemByType } from '@tonkeeper/shared/components/ActivityList/ActionListItemByType';
-import { useSelector } from 'react-redux';
-import { fiatCurrencySelector } from '$store/main';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
 import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
 import { Buffer } from 'buffer';
 import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
+import { useWalletCurrency } from '@tonkeeper/shared/hooks';
+import {
+  ActionAmountType,
+  ActionSource,
+  ActionType,
+  ActivityModel,
+  AnyActionItem,
+} from '$wallet/models/ActivityModel';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -61,7 +62,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const unlockVault = useUnlockVault();
 
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const fiatCurrency = useWalletCurrency();
   const getTokenPrice = useGetTokenPrice();
 
   const handleConfirm = onConfirm(async ({ startLoading }) => {
@@ -82,7 +83,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       secretKey: Buffer.from(privateKey),
     });
 
-    await tonapi.blockchain.sendBlockchainMessage(
+    await tk.wallet.tonapi.blockchain.sendBlockchainMessage(
       {
         boc,
       },
@@ -119,16 +120,18 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
             sender: {
               address: message.address,
               is_scam: false,
+              is_wallet: true,
             },
             recipient: {
               address: message.address,
               is_scam: false,
+              is_wallet: true,
             },
           },
         });
       });
     }
-  }, [consequences]);
+  }, [consequences, params.messages]);
 
   const extra = useMemo(() => {
     if (consequences) {
@@ -269,7 +272,7 @@ export const openSignRawModal = async (
         seqno: await getWalletSeqno(),
         secretKey: Buffer.alloc(64),
       });
-      consequences = await tonapi.wallet.emulateMessageToWallet({
+      consequences = await tk.wallet.tonapi.wallet.emulateMessageToWallet({
         boc,
       });
 

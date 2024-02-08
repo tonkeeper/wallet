@@ -10,23 +10,22 @@ import { ns } from '$utils';
 import { PinCodeRef } from '$uikit/PinCode/PinCode.interface';
 import {
   confirmationVaultReset,
-  getCurrentConfirmationVaultInst,
   getCurrentConfirmationVaultPromise,
   setLastEnteredPasscode,
 } from '$store/wallet/sagas';
-import { EncryptedVault } from '$blockchain';
-import { AppStackRouteNames, openResetPin } from '$navigation';
-import { walletActions, walletWalletSelector } from '$store/wallet';
+import { UnlockedVault } from '$blockchain';
+import { AppStackRouteNames } from '$navigation';
+import { walletGeneratedVaultSelector } from '$store/wallet';
 import { mainActions } from '$store/main';
-import { MainDB } from '$database';
 import { useNotifications } from '$hooks/useNotifications';
 import { Toast, ToastSize } from '$store';
 import { goBack, useParams } from '$navigation/imperative';
 import { t } from '@tonkeeper/shared/i18n';
 
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { tk, vault } from '$wallet';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import nacl from 'tweetnacl';
+import { useBiometrySettings, useWallet } from '@tonkeeper/shared/hooks';
 
 export const AccessConfirmation: FC = () => {
   const route = useRoute();
@@ -38,9 +37,12 @@ export const AccessConfirmation: FC = () => {
 
   const [isBiometryFailed, setBiometryFailed] = useState(false);
 
+  const { biometryEnabled, enableBiometry } = useBiometrySettings();
+
   const pinRef = useRef<PinCodeRef>(null);
   const isUnlock = route.name === AppStackRouteNames.MainAccessConfirmation;
-  const wallet = useSelector(walletWalletSelector);
+  const wallet = useWallet();
+  const generatedVault = useSelector(walletGeneratedVaultSelector);
 
   useEffect(() => {
     return () => {
@@ -57,151 +59,116 @@ export const AccessConfirmation: FC = () => {
     setValue('');
   }, []);
 
-  const createTronAddress = useCallback(async (privateKey: Uint8Array) => {
-    try {
-      // Note: create tron address
-      if (!tk.wallet.address.tron) {
-        const addresses = await tk.generateTronAddress(privateKey);
-        if (addresses) {
-          tk.wallet.setTronAddress(addresses);
+  const obtainTonProof = useCallback(
+    async (keyPair: nacl.SignKeyPair) => {
+      try {
+        // Obtain tonProof
+        if (!wallet.tonProof) {
+          await wallet.obtainProofToken(keyPair);
         }
-      } else {
-        console.log('skip create tron address');
+      } catch (err) {
+        console.error('[obtain tonProof]', err);
       }
-    } catch (err) {
-      console.error('[generate tron address]', err);
-    }
-  }, []);
-
-  const obtainTonProof = useCallback(async (keyPair: nacl.SignKeyPair) => {
-    try {
-      // Obtain tonProof
-      if (!tk.wallet.identity.tonProof) {
-        const tonProof = await tk.obtainProofToken(keyPair);
-        if (tonProof) {
-          tk.wallet.setTonProof(tonProof);
-        }
-      }
-    } catch (err) {
-      console.error('[obtain tonProof]', err);
-    }
-  }, []);
+    },
+    [wallet],
+  );
 
   const handleKeyboard = useCallback(
     (newValue) => {
       const pin = newValue.substr(0, 4);
       setValue(pin);
       if (pin.length === 4) {
-        const vault = isUnlock ? wallet!.vault : getCurrentConfirmationVaultInst();
-        const promise = getCurrentConfirmationVaultPromise();
-        // old flow
-        if (vault instanceof EncryptedVault) {
-          setTimeout(() => {
-            vault
-              .decrypt(pin)
-              .then((unlockedVault) => {
-                pinRef.current?.triggerSuccess();
+        setTimeout(async () => {
+          try {
+            const promise = getCurrentConfirmationVaultPromise();
+            const pubkey = isUnlock ? tk.walletForUnlock.pubkey : wallet.pubkey;
+            const mnemonic = await vault.exportWithPasscode(pubkey, pin);
+            const unlockedVault = new UnlockedVault(
+              {
+                ...wallet.config,
+                tonPubkey: Uint8Array.from(Buffer.from(pubkey, 'hex')),
+              },
+              mnemonic,
+            );
+            pinRef.current?.triggerSuccess();
 
-                setTimeout(() => {
-                  setLastEnteredPasscode(pin);
-                  goBack();
-                  promise.resolve(unlockedVault);
+            setTimeout(async () => {
+              setLastEnteredPasscode(pin);
 
-                  if (isBiometryFailed) {
-                    unlockedVault.saveBiometry();
-                  }
-                }, 500);
-              })
-              .catch(() => {
-                triggerError();
-              });
-          }, 300);
-        } else {
-          // wait animation completion
-          setTimeout(() => {
-            vault
-              .getEncrypted()
-              .then((encrypted) => {
-                encrypted
-                  .decrypt(pin)
-                  .then((unlockedVault) => {
-                    setLastEnteredPasscode(pin);
+              if (isUnlock) {
+                const keyPair = await (unlockedVault as any).getKeyPair();
+                obtainTonProof(keyPair);
 
-                    setTimeout(() => {
-                      pinRef.current?.triggerSuccess();
+                dispatch(mainActions.setUnlocked(true));
+              } else {
+                goBack();
+                promise.resolve(unlockedVault);
+              }
 
-                      setTimeout(async () => {
-                        if (isUnlock) {
-                          const keyPair = await (unlockedVault as any).getKeyPair();
-                          // createTronAddress(privateKey);
-                          obtainTonProof(keyPair);
-
-                          dispatch(mainActions.setUnlocked(true));
-                        } else {
-                          goBack();
-                          promise.resolve(unlockedVault);
-                        }
-
-                        if (isBiometryFailed) {
-                          unlockedVault.saveBiometry();
-                        }
-                      }, 500);
-                    }, 500);
-                  })
-                  .catch(() => {
-                    triggerError();
-                  });
-              })
-              .catch((err) => {
-                Toast.fail(err.message);
-                triggerError();
-              });
-          }, 300);
-        }
+              if (isBiometryFailed) {
+                enableBiometry(pin).catch(null);
+              }
+            }, 500);
+          } catch (e) {
+            console.log(e);
+            triggerError();
+          }
+        }, 300);
       }
     },
-    [dispatch, isBiometryFailed, isUnlock, obtainTonProof, triggerError, wallet],
+    [
+      dispatch,
+      enableBiometry,
+      isBiometryFailed,
+      isUnlock,
+      obtainTonProof,
+      triggerError,
+      wallet.config,
+      wallet.pubkey,
+    ],
   );
 
-  const handleBiometry = useCallback(() => {
-    const vault = isUnlock ? wallet!.vault : getCurrentConfirmationVaultInst();
-    const promise = getCurrentConfirmationVaultPromise();
+  const handleBiometry = useCallback(async () => {
+    try {
+      const promise = getCurrentConfirmationVaultPromise();
 
-    vault
-      .unlock()
-      .then(async (unlockedVault) => {
-        pinRef.current?.triggerSuccess();
+      const pubkey = isUnlock ? tk.walletForUnlock.pubkey : wallet.pubkey;
+      const mnemonic = await vault.exportWithBiometry(pubkey);
+      const unlockedVault = new UnlockedVault(
+        {
+          ...wallet.config,
+          tonPubkey: Uint8Array.from(Buffer.from(pubkey, 'hex')),
+        },
+        mnemonic,
+      );
 
-        setTimeout(async () => {
-          // Lock screen
-          if (isUnlock) {
-            const keyPair = await (unlockedVault as any).getKeyPair();
-            // createTronAddress(privateKey);
-            obtainTonProof(keyPair);
-            dispatch(mainActions.setUnlocked(true));
-          } else {
-            goBack();
-            promise.resolve(unlockedVault);
-          }
-        }, 500);
-      })
-      .catch((e) => {
-        Toast.fail(e.message, { size: ToastSize.Small });
-        setBiometryFailed(true);
-        triggerError();
-      });
-  }, [dispatch, isUnlock, obtainTonProof, triggerError, wallet]);
+      pinRef.current?.triggerSuccess();
+
+      setTimeout(async () => {
+        // Lock screen
+        if (isUnlock) {
+          const keyPair = await (unlockedVault as any).getKeyPair();
+          obtainTonProof(keyPair);
+
+          dispatch(mainActions.setUnlocked(true));
+        } else {
+          goBack();
+          promise.resolve(unlockedVault);
+        }
+      }, 500);
+    } catch (e) {
+      Toast.fail(e.message, { size: ToastSize.Small });
+      setBiometryFailed(true);
+      triggerError();
+    }
+  }, [dispatch, isUnlock, obtainTonProof, triggerError, wallet.config, wallet.pubkey]);
 
   useEffect(() => {
-    if (params.withoutBiometryOnOpen) {
+    if (params.withoutBiometryOnOpen || !biometryEnabled) {
       return;
     }
 
-    MainDB.isBiometryEnabled().then((isEnabled) => {
-      if (isEnabled) {
-        handleBiometry();
-      }
-    });
+    handleBiometry();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -215,18 +182,18 @@ export const AccessConfirmation: FC = () => {
         text: t('settings_reset_alert_button'),
         style: 'destructive',
         onPress: () => {
-          dispatch(walletActions.cleanWallet());
+          tk.removeAllWallets();
           notifications.unsubscribe();
         },
       },
     ]);
-  }, [dispatch, t]);
-
-  const handleReset = useCallback(() => {
-    openResetPin();
-  }, []);
+  }, [notifications]);
 
   function renderRightButton() {
+    if (generatedVault) {
+      return null;
+    }
+
     if (isUnlock) {
       return (
         <Button
@@ -238,18 +205,9 @@ export const AccessConfirmation: FC = () => {
           {t('access_confirmation_logout')}
         </Button>
       );
-    } else {
-      return (
-        <Button
-          size="navbar_small"
-          mode="secondary"
-          style={{ marginRight: ns(16) }}
-          onPress={handleReset}
-        >
-          {t('access_confirmation_reset')}
-        </Button>
-      );
     }
+
+    return null;
   }
 
   return (
@@ -271,7 +229,7 @@ export const AccessConfirmation: FC = () => {
           disabled={value.length === 4}
           onChange={handleKeyboard}
           value={value}
-          biometryEnabled={!isBiometryFailed}
+          biometryEnabled={biometryEnabled && !isBiometryFailed && !generatedVault}
           onBiometryPress={handleBiometry}
         />
       </S.Content>

@@ -34,3 +34,4 @@ export { StakingPoolDetails } from './StakingPoolDetails/StakingPoolDetails';
 export { StakingSend } from './StakingSend/StakingSend';
 export { AddressUpdateInfo } from './AddressUpdateInfo/AddressUpdateInfo';
 export { DAppsCategory } from './DAppsCategory/DAppsCategory';
+export { AddWatchOnly } from './AddWatchOnly/AddWatchOnly';

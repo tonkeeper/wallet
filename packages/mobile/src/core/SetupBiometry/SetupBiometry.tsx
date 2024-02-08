@@ -15,12 +15,13 @@ import {
   openSetupWalletDone,
   ResetPinStackRouteNames,
   SetupWalletStackRouteNames,
+  TabsStackRouteNames,
 } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { t } from '@tonkeeper/shared/i18n';
 import { getPermission } from '$utils/messaging';
 import { Toast } from '$store';
-import { goBack, popToTop } from '$navigation/imperative';
+import { navigate } from '$navigation/imperative';
 import { Steezy } from '@tonkeeper/uikit';
 
 const LottieFaceId = require('$assets/lottie/faceid.json');
@@ -54,9 +55,8 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
           pin,
           onDone: async () => {
             if (routeNode.name === ResetPinStackRouteNames.SetupBiometry) {
-              popToTop();
+              navigate(TabsStackRouteNames.Balances);
               Toast.success();
-              setTimeout(() => goBack(), 20);
             } else {
               const hasNotificationPermission = await getPermission();
               if (hasNotificationPermission) {
@@ -76,20 +76,20 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
         }),
       );
     },
-    [dispatch, pin],
+    [dispatch, pin, routeNode.name],
   );
 
   const biometryNameGenitive = useMemo(() => {
     return isTouchId
       ? t(`platform.${platform}.fingerprint_genitive`)
       : t(`platform.${platform}.face_recognition_genitive`);
-  }, [t, isTouchId]);
+  }, [isTouchId]);
 
   const biometryName = useMemo(() => {
     return isTouchId
       ? t(`platform.${platform}.fingerprint`)
       : t(`platform.${platform}.face_recognition`);
-  }, [t, isTouchId]);
+  }, [isTouchId]);
 
   const handleEnable = useCallback(() => {
     setLoading(true);

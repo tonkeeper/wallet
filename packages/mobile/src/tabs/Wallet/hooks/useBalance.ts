@@ -1,21 +1,18 @@
 import { CryptoCurrencies, Decimals } from '$shared/constants';
-import { useSelector } from 'react-redux';
-import { fiatCurrencySelector } from '$store/main';
 import { useGetTokenPrice, useTokenPrice } from '$hooks/useTokenPrice';
 import { useCallback, useMemo } from 'react';
-import {
-  isLockupWalletSelector,
-  walletBalancesSelector,
-  walletOldBalancesSelector,
-  walletVersionSelector,
-} from '$store/wallet';
 import { Ton } from '$libs/Ton';
 import BigNumber from 'bignumber.js';
 import { formatter } from '$utils/formatter';
-import { getStakingJettons, useStakingStore } from '$store';
-import { shallow } from 'zustand/shallow';
-import { jettonsBalancesSelector } from '$store/jettons';
+import { getStakingJettons } from '@tonkeeper/shared/utils/staking';
 import { Address } from '@tonkeeper/core';
+import {
+  useBalancesState,
+  useJettons,
+  useStakingState,
+  useWallet,
+  useWalletCurrency,
+} from '@tonkeeper/shared/hooks';
 
 export type Rate = {
   percent: string;
@@ -26,7 +23,7 @@ export type Rate = {
 // TODO: rewrite
 const useAmountToFiat = () => {
   const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const fiatCurrency = useWalletCurrency();
 
   const amountToFiat = useCallback(
     (amount: string, fiatAmountToSum?: number) => {
@@ -46,9 +43,9 @@ const useAmountToFiat = () => {
 };
 
 const useStakingBalance = () => {
-  const _stakingBalance = useStakingStore((s) => s.stakingBalance, shallow);
-  const stakingJettons = useStakingStore(getStakingJettons, shallow);
-  const jettonBalances = useSelector(jettonsBalancesSelector);
+  const _stakingBalance = useStakingState((s) => s.stakingBalance);
+  const stakingJettons = useStakingState(getStakingJettons);
+  const { jettonBalances } = useJettons();
   const amountToFiat = useAmountToFiat();
   const getTokenPrice = useGetTokenPrice();
 
@@ -79,81 +76,68 @@ const useStakingBalance = () => {
 };
 
 export const useBalance = (tokensTotal: number) => {
-  const balances = useSelector(walletBalancesSelector);
-  const walletVersion = useSelector(walletVersionSelector);
-  const oldWalletBalances = useSelector(walletOldBalancesSelector);
-  const isLockup = useSelector(isLockupWalletSelector);
+  const balances = useBalancesState();
+  const wallet = useWallet();
   const amountToFiat = useAmountToFiat();
-  const getTokenPrice = useGetTokenPrice();
 
   const stakingBalance = useStakingBalance();
 
   const oldVersions = useMemo(() => {
-    if (isLockup) {
+    if (wallet?.isLockup) {
       return [];
     }
 
-    return oldWalletBalances.reduce((acc, item) => {
-      if (walletVersion && walletVersion <= item.version) {
-        return acc;
-      }
-
-      const balance = Ton.fromNano(item.balance);
-
-      acc.push({
-        version: item.version,
-        amount: {
-          value: balance,
-          formatted: formatter.format(balance),
-          fiat: amountToFiat(balance),
-        },
-      });
-
-      return acc;
-    }, [] as any);
-  }, [isLockup, oldWalletBalances, walletVersion, amountToFiat]);
+    return balances.tonOldBalances.map((item) => ({
+      version: item.version,
+      amount: {
+        value: item.balance,
+        formatted: formatter.format(item.balance),
+        fiat: amountToFiat(item.balance),
+      },
+    }));
+  }, [wallet, balances.tonOldBalances, amountToFiat]);
 
   const lockup = useMemo(() => {
-    const lockupList: { type: CryptoCurrencies; amount: string }[] = [];
-    const restricted = balances[CryptoCurrencies.TonRestricted];
-    const locked = balances[CryptoCurrencies.TonLocked];
+    return [];
+    // MULTIWALLET TODO
+    // const lockupList: { type: CryptoCurrencies; amount: string }[] = [];
+    // const restricted = balances[CryptoCurrencies.TonRestricted];
+    // const locked = balances[CryptoCurrencies.TonLocked];
 
-    if (restricted) {
-      lockupList.push({
-        type: CryptoCurrencies.TonRestricted,
-        amount: restricted,
-      });
-    }
+    // if (restricted) {
+    //   lockupList.push({
+    //     type: CryptoCurrencies.TonRestricted,
+    //     amount: restricted,
+    //   });
+    // }
 
-    if (locked) {
-      lockupList.push({
-        type: CryptoCurrencies.TonLocked,
-        amount: locked,
-      });
-    }
+    // if (locked) {
+    //   lockupList.push({
+    //     type: CryptoCurrencies.TonLocked,
+    //     amount: locked,
+    //   });
+    // }
 
-    return lockupList.map((item) => {
-      const amount = balances[item.type];
+    // return lockupList.map((item) => {
+    //   const amount = balances[item.type];
 
-      return {
-        type: item.type,
-        amount: {
-          nano: item.amount,
-          formatted: formatter.format(amount),
-          fiat: amountToFiat(amount),
-        },
-      };
-    });
-  }, [balances, getTokenPrice]);
+    //   return {
+    //     type: item.type,
+    //     amount: {
+    //       nano: item.amount,
+    //       formatted: formatter.format(amount),
+    //       fiat: amountToFiat(amount),
+    //     },
+    //   };
+    // });
+  }, []);
 
   const ton = useMemo(() => {
-    const balance = balances[CryptoCurrencies.Ton] ?? '0';
-
-    const formatted = formatter.format(balance);
+    const formatted = formatter.format(balances.ton);
     return {
       amount: {
-        nano: balance,
-        fiat: amountToFiat(balance),
+        nano: balances.ton,
+        fiat: amountToFiat(balances.ton),
         formatted,
       },
     };

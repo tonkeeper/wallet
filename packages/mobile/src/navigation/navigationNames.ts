@@ -28,6 +28,7 @@ export enum AppStackRouteNames {
   StakingSend = 'StakingSend',
   Swap = 'Swap',
   ReceiveInscription = 'ReceiveInscription',
+  CustomizeWallet = 'CustomizeWallet',
 }
 
 export enum MainStackRouteNames {
@@ -46,11 +47,10 @@ export enum MainStackRouteNames {
   DevStack = 'DevStack',
   SetupNotifications = 'ImportSetupNotifications',
   Jetton = 'Jetton',
-  JettonsList = 'JettonsList',
-  EditConfig = 'EditConfig',
   ManageTokens = 'ManageTokens',
   AddressUpdateInfo = 'AddressUpdateInfo',
   Inscription = 'Inscription',
+  AddWatchOnly = 'AddWatchOnly',
 }
 
 export enum TabsStackRouteNames {
@@ -81,7 +81,6 @@ export enum SettingsStackRouteNames {
   DevMenu = 'DevMenu',
   Logs = 'Logs',
   Security = 'Security',
-  JettonsList = 'JettonsList',
   SecurityMigration = 'SettingsSecurityMigration',
   LegalDocuments = 'LegalDocuments',
   FontLicense = 'FontLicense',

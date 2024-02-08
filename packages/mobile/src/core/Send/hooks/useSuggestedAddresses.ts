@@ -4,11 +4,10 @@ import uniqBy from 'lodash/uniqBy';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SuggestedAddress, SuggestedAddressType } from '../Send.interface';
-import { walletAddressSelector } from '$store/wallet';
-import { CryptoCurrencies } from '$shared/constants';
-import { Tonapi } from '$libs/Tonapi';
-import { ActionItem, ActionType, Address } from '@tonkeeper/core';
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { Address } from '@tonkeeper/core';
+import { tk } from '$wallet';
+import { useWallet } from '@tonkeeper/shared/hooks';
+import { ActionItem, ActionType } from '$wallet/models/ActivityModel';
 
 export const DOMAIN_ADDRESS_NOT_FOUND = 'DOMAIN_ADDRESS_NOT_FOUND';
 
@@ -19,7 +18,7 @@ export const useSuggestedAddresses = () => {
   const dispatch = useDispatch();
   const { favorites, hiddenRecentAddresses, updatedDnsAddresses } =
     useSelector(favoritesSelector);
-  const address = useSelector(walletAddressSelector);
+  const wallet = useWallet();
 
   const favoriteAddresses = useMemo(
     (): SuggestedAddress[] =>
@@ -45,7 +44,7 @@ export const useSuggestedAddresses = () => {
       ActionType.TonTransfer,
     ] as const;
 
-    const walletAddress = address[CryptoCurrencies.Ton];
+    const walletAddress = wallet.address.ton.raw;
     const addresses = (
       actions.filter((action) => {
         if (
@@ -97,7 +96,7 @@ export const useSuggestedAddresses = () => {
     );
 
     return uniqBy(addresses, (item) => item.address).slice(0, 8);
-  }, [address, favoriteAddresses, hiddenRecentAddresses]);
+  }, [favoriteAddresses, hiddenRecentAddresses, wallet]);
 
   const suggestedAddresses = useMemo(
     () => [...favoriteAddresses, ...recentAddresses],
@@ -117,7 +116,7 @@ export const useSuggestedAddresses = () => {
     }
 
     for (const favorite of dnsFavorites) {
-      const resolved = await Tonapi.resolveDns(favorite.domain!);
+      const resolved = await tk.wallet.tonapi.dns.dnsResolve(favorite.domain!);
       const fetchedAddress = resolved?.wallet?.address;
 
       if (fetchedAddress && !Address.compare(favorite.address, fetchedAddress)) {

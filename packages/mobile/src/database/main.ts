@@ -1,10 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { FiatCurrency, ServerConfig, ServerConfigVersion } from '$shared/constants';
 import { getWalletName } from '$shared/dynamicConfig';
 import { LogItem } from '$store/main/interface';
-import { AccentKey, AccentNFTIcon } from '$styled';
-import { config } from '@tonkeeper/shared/config';
 
 export class MainDB {
   static async isJettonsEnabled(): Promise<boolean> {
@@ -92,60 +89,6 @@ export class MainDB {
   static async setKeychainService(keychainService: string) {
     await AsyncStorage.setItem('keychainService', keychainService);
   }
-
-  static async setAccent(key: AccentKey) {
-    await AsyncStorage.setItem('accent', key);
-  }
-
-  static async setDevConfig(config: string) {
-    await AsyncStorage.setItem('dev_config', config);
-  }
-
-  static async removeDevConfig() {
-    await AsyncStorage.removeItem('dev_config');
-  }
-
-  static async getDevConfig() {
-    return await AsyncStorage.getItem('dev_config');
-  }
-
-  static async getAccent(): Promise<AccentKey> {
-    const accent = await AsyncStorage.getItem('accent');
-    return (accent as AccentKey) || AccentKey.default;
-  }
-
-  static async setTonCustomIcon(data: AccentNFTIcon | null) {
-    await AsyncStorage.setItem('ton_custom_icon', JSON.stringify(data));
-  }
-
-  static async getTonCustomIcon(): Promise<AccentNFTIcon | null> {
-    try {
-      const data = await AsyncStorage.getItem('ton_custom_icon');
-      if (!data) {
-        return null;
-      }
-      return await JSON.parse(data);
-    } catch (e) {
-      return null;
-    }
-  }
-}
-
-export async function getPrimaryFiatCurrency(): Promise<FiatCurrency | null> {
-  const res = await AsyncStorage.getItem(`${getWalletName()}_primary_currency`);
-  if (res) {
-    return res as FiatCurrency;
-  } else {
-    return null;
-  }
-}
-
-export async function setPrimaryFiatCurrency(currency: FiatCurrency) {
-  await AsyncStorage.setItem(`${getWalletName()}_primary_currency`, currency);
-}
-
-export async function clearPrimaryFiatCurrency() {
-  await AsyncStorage.removeItem(`${getWalletName()}_primary_currency`);
 }
 
 export async function getHiddenNotifications(): Promise<string[]> {
@@ -185,38 +128,6 @@ export async function getLastRefreshedAt() {
 
 export async function setLastRefreshedAt(ts: number) {
   await AsyncStorage.setItem('last_refresh_at', `${ts}`);
-}
-
-export async function getSavedServerConfig(
-  isTestnet: boolean,
-): Promise<ServerConfig | null> {
-  await config.load();
-
-  let key = `${getWalletName()}_server_config`;
-  if (isTestnet) {
-    key += '_testnet';
-  }
-
-  const raw = await AsyncStorage.getItem(key);
-  if (!raw) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(raw);
-  } catch (e) {
-    return null;
-  }
-}
-
-export async function setSavedServerConfig(config: ServerConfig, isTestnet: boolean) {
-  let key = `${getWalletName()}_server_config`;
-  if (isTestnet) {
-    key += '_testnet';
-  }
-
-  config._version = ServerConfigVersion;
-  await AsyncStorage.setItem(key, JSON.stringify(config));
 }
 
 export async function getSavedLogs(): Promise<LogItem[]> {

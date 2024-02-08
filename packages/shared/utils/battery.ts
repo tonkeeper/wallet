@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { config } from '../config';
+import { config } from '@tonkeeper/mobile/src/config';
 
 export enum BatteryState {
   Full = 'FULL',

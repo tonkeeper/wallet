@@ -8,6 +8,7 @@ import {
   SecurityMigrationStackRouteNames,
   SettingsStackRouteNames,
   SetupWalletStackRouteNames,
+  TabsStackRouteNames,
 } from '$navigation/navigationNames';
 import { CryptoCurrency } from '$shared/constants';
 import { SendAnalyticsFrom } from '$store/models';
@@ -15,6 +16,7 @@ import { NFTKeyPair } from '$store/nfts/interface';
 import _ from 'lodash';
 import { getCurrentRoute, navigate, push, replace } from './imperative';
 import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
+import { tk } from '$wallet';
 
 export function openExploreTab(initialCategory?: string) {
   navigate(BrowserStackRouteNames.Explore, { initialCategory });
@@ -143,21 +145,9 @@ export function openSetupBiometryAfterMigration(
 }
 
 export function openSetupWalletDone() {
-  if (
-    getCurrentRoute()?.name === SetupWalletStackRouteNames.SetupCreatePin ||
-    getCurrentRoute()?.name === SetupWalletStackRouteNames.SetupBiometry ||
-    getCurrentRoute()?.name === SetupWalletStackRouteNames.SetupNotifications
-  ) {
-    navigate(AppStackRouteNames.SetupWalletStack, {
-      screen: SetupWalletStackRouteNames.SetupWalletDone,
-    });
-  } else if (
-    getCurrentRoute()?.name === SecurityMigrationStackRouteNames.SetupBiometry ||
-    getCurrentRoute()?.name === SecurityMigrationStackRouteNames.SecurityMigration
-  ) {
-    navigate(SecurityMigrationStackRouteNames.SetupWalletDone);
-  } else {
-    navigate(MainStackRouteNames.ImportWalletDone, {});
+  navigate(TabsStackRouteNames.Balances);
+  if (tk.wallets.size > 1) {
+    navigate(AppStackRouteNames.CustomizeWallet);
   }
 }
 
@@ -240,10 +230,6 @@ export function openSecurity() {
   push(SettingsStackRouteNames.Security);
 }
 
-export function openJettonsList() {
-  push(MainStackRouteNames.JettonsList);
-}
-
 export function openRefillBattery() {
   push(SettingsStackRouteNames.RefillBattery);
 }
@@ -252,10 +238,6 @@ export function openManageTokens(initialTab?: string) {
   _.throttle(() => {
     push(MainStackRouteNames.ManageTokens, { initialTab });
   }, 1000)();
-}
-
-export function openJettonsListSettingsStack() {
-  push(SettingsStackRouteNames.JettonsList);
 }
 
 export function openChangePin() {

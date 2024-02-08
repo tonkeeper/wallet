@@ -10,7 +10,7 @@ import { Icon, IconNames, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
 import { navigation, SheetActions } from '@tonkeeper/router';
 import { RefillBatteryIAP } from './RefillBatteryIAP';
 import { t } from '@tonkeeper/shared/i18n';
-import { config } from '../../config';
+import { config } from '@tonkeeper/mobile/src/config';
 import { RechargeByPromoButton } from './RechargeByPromoButton';
 
 const iconNames: { [key: string]: IconNames } = {

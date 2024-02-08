@@ -11,6 +11,8 @@ import { debugLog } from '$utils/debugLog';
 import { openSetupBiometry, openSetupWalletDone } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { CreatePinForm } from '$shared/components';
+import { tk } from '$wallet';
+import { popToTop } from '$navigation/imperative';
 
 export const CreatePin: FC<CreatePinProps> = () => {
   const dispatch = useDispatch();
@@ -55,7 +57,7 @@ export const CreatePin: FC<CreatePinProps> = () => {
 
   return (
     <S.Wrap>
-      <NavBar isForceBackIcon />
+      <NavBar isForceBackIcon isClosedButton={!!tk.wallet} onClosePress={popToTop} />
       <CreatePinForm onPinCreated={handlePinCreated} />
     </S.Wrap>
   );

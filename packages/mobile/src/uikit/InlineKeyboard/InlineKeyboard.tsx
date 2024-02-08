@@ -12,8 +12,6 @@ import { InlineKeyboardProps, KeyProps } from './InlineKeyboard.interface';
 import * as S from './InlineKeyboard.style';
 import { detectBiometryType, triggerSelection } from '$utils';
 import { Icon } from '../Icon/Icon';
-import { useTheme } from '$hooks/useTheme';
-import { MainDB } from '$database';
 
 const Key: FC<KeyProps> = (props) => {
   const { onPress, children, disabled } = props;
@@ -67,20 +65,14 @@ export const InlineKeyboard: FC<InlineKeyboardProps> = (props) => {
     biometryEnabled = false,
     onBiometryPress,
   } = props;
-  const theme = useTheme();
   const [biometryType, setBiometryType] = useState(-1);
 
   useEffect(() => {
     if (biometryEnabled) {
-      Promise.all([
-        MainDB.isBiometryEnabled(),
-        LocalAuthentication.supportedAuthenticationTypesAsync(),
-      ]).then(([isEnabled, types]) => {
-        if (isEnabled) {
-          const type = detectBiometryType(types);
-          if (type) {
-            setBiometryType(type);
-          }
+      LocalAuthentication.supportedAuthenticationTypesAsync().then((types) => {
+        const type = detectBiometryType(types);
+        if (type) {
+          setBiometryType(type);
         }
       });
     } else {
@@ -122,10 +114,7 @@ export const InlineKeyboard: FC<InlineKeyboardProps> = (props) => {
     if (biometryType === LocalAuthentication.AuthenticationType.FINGERPRINT) {
       biometryButton = (
         <Key disabled={disabled} onPress={onBiometryPress}>
-          <Icon
-            name="ic-fingerprint-36"
-            color="foregroundPrimary"
-          />
+          <Icon name="ic-fingerprint-36" color="foregroundPrimary" />
         </Key>
       );
     } else if (
@@ -133,10 +122,7 @@ export const InlineKeyboard: FC<InlineKeyboardProps> = (props) => {
     ) {
       biometryButton = (
         <Key disabled={disabled} onPress={onBiometryPress}>
-          <Icon
-            name="ic-faceid-36"
-            color="foregroundPrimary"
-          />
+          <Icon name="ic-faceid-36" color="foregroundPrimary" />
         </Key>
       );
     }
@@ -148,16 +134,13 @@ export const InlineKeyboard: FC<InlineKeyboardProps> = (props) => {
           <S.KeyLabel>0</S.KeyLabel>
         </Key>
         <Key onPress={handleBackspace} disabled={disabled}>
-          <Icon
-            name="ic-delete-36"
-            color="foregroundPrimary"
-          />
+          <Icon name="ic-delete-36" color="foregroundPrimary" />
         </Key>
       </S.Line>,
     );
 
     return result;
-  }, [biometryType, disabled, handleBackspace, onBiometryPress, handlePress, theme]);
+  }, [biometryType, disabled, handleBackspace, onBiometryPress, handlePress]);
 
   return <S.Wrap>{nums}</S.Wrap>;
 };

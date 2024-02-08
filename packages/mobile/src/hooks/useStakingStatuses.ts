@@ -1,13 +1,10 @@
-import { useStakingStore } from '$store';
-import { jettonsBalancesSelector } from '$store/jettons';
 import { Address } from '@tonkeeper/shared/Address';
-import { useSelector } from 'react-redux';
-import { shallow } from 'zustand/shallow';
+import { useJettons, useStakingState } from '@tonkeeper/shared/hooks';
 
 export const useStakingStatuses = () => {
-  const jettonBalances = useSelector(jettonsBalancesSelector);
+  const { jettonBalances } = useJettons();
 
-  const stakingInfo = useStakingStore(
+  const stakingInfo = useStakingState(
     (s) =>
       s.pools
         .map((pool) => ({ info: s.stakingInfo[pool.address], pool }))
@@ -20,7 +17,7 @@ export const useStakingStatuses = () => {
 
           return !!item.info || (!!jettonBalance && jettonBalance.balance !== '0');
         }),
-    shallow,
+    [jettonBalances],
   );
 
   return stakingInfo;

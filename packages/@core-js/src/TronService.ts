@@ -1,12 +1,12 @@
-import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { WalletContext } from './Wallet';
 import { AmountFormatter } from './utils/AmountFormatter';
 import { hashRequest, tonPKToTronPK } from './utils/tronUtils';
 import { EstimatePayload, RequestData } from './TronAPI/TronAPIGenerated';
+import { WalletAddress } from '@tonkeeper/mobile/src/wallet/WalletTypes';
+import { TronAPI } from './TronAPI';
 
 export class TronService {
-  constructor(private ctx: WalletContext) {}
+  constructor(private address: WalletAddress, private tronapi: TronAPI) {}
 
   public async estimate(params: {
     to: string;
@@ -26,8 +26,7 @@ export class TronService {
     tokenAddress: string;
   }) {
     const response = await fetch(
-      `https://tron.tonkeeper.com/api/v2/wallet/${this.ctx.address.tron
-        ?.owner!}/estimate`,
+      `https://tron.tonkeeper.com/api/v2/wallet/${this.address.tron?.owner!}/estimate`,
       {
         method: 'POST',
         headers: {
@@ -47,8 +46,8 @@ export class TronService {
     );
     const result = await response.json();
 
-    // const data = await this.ctx.tronapi.wallet.getEstimation(
-    //   this.ctx.address.tron?.owner!,
+    // const data = await this.tronapi.wallet.getEstimation(
+    //   this.address.tron?.owner!,
     //   {
     //     lifeTime: Math.floor(Date.now() / 1000) + 600,
     //     messages: [
@@ -64,13 +63,13 @@ export class TronService {
   }
 
   public async send(privateKey: Uint8Array, request: RequestData) {
-    const settings = await this.ctx.tronapi.settings.getSettings();
+    const settings = await this.tronapi.settings.getSettings();
     const hash = hashRequest(request, settings.walletImplementation, settings.chainId);
 
     const signingKey = new ethers.SigningKey('0x' + (await tonPKToTronPK(privateKey)));
     const signature = signingKey.sign(hash).serialized;
 
-    const ownerAddress = this.ctx.address.tron?.owner!;
+    const ownerAddress = this.address.tron?.owner!;
 
     const response = await fetch(
       `https://tron.tonkeeper.com/api/v2/wallet/${ownerAddress}/publish`,

@@ -2,8 +2,10 @@ import { usePoolInfo } from '$hooks/usePoolInfo';
 import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
 import { MainStackRouteNames, openDAppBrowser, openJetton } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
-import { getServerConfig, KNOWN_STAKING_IMPLEMENTATIONS } from '$shared/constants';
-import { getStakingPoolByAddress, getStakingProviderById, useStakingStore } from '$store';
+import {
+  getStakingPoolByAddress,
+  getStakingProviderById,
+} from '@tonkeeper/shared/utils/staking';
 import {
   Button,
   Highlight,
@@ -19,14 +21,11 @@ import { RouteProp } from '@react-navigation/native';
 import React, { FC, useCallback, useMemo } from 'react';
 import { RefreshControl } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import { shallow } from 'zustand/shallow';
 import * as S from './StakingPoolDetails.style';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { t } from '@tonkeeper/shared/i18n';
 import { useFlag } from '$utils/flags';
 import { formatter } from '@tonkeeper/shared/formatter';
-import { fiatCurrencySelector } from '$store/main';
-import { useSelector } from 'react-redux';
 import { IStakingLink, StakingLinkType } from './types';
 import { Icon, List, Steezy } from '@tonkeeper/uikit';
 import { getLinkIcon, getLinkTitle, getSocialLinkType } from './utils';
@@ -35,6 +34,10 @@ import { Linking } from 'react-native';
 import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 import BigNumber from 'bignumber.js';
 import { ListItemRate } from '../../tabs/Wallet/components/ListItemRate';
+import { useStakingState, useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
+import { StakingManager } from '$wallet/managers/StakingManager';
+import { config } from '$config';
+import { tk } from '$wallet';
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPoolDetails>;
@@ -47,15 +50,21 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     },
   } = props;
 
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const fiatCurrency = useWalletCurrency();
 
   const tonstakersBeta = useFlag('tonstakers_beta');
 
-  const pool = useStakingStore((s) => getStakingPoolByAddress(s, poolAddress), shallow);
-  const poolStakingInfo = useStakingStore((s) => s.stakingInfo[pool.address], shallow);
-  const provider = useStakingStore(
+  const pool = useStakingState(
+    (s) => getStakingPoolByAddress(s, poolAddress),
+    [poolAddress],
+  );
+  const poolStakingInfo = useStakingState(
+    (s) => s.stakingInfo[pool.address],
+    [pool.address],
+  );
+  const provider = useStakingState(
     (s) => getStakingProviderById(s, pool.implementation),
-    shallow,
+    [pool.implementation],
   );
 
   const refreshControl = useStakingRefreshControl();
@@ -108,7 +117,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     }
 
     list.push({
-      url: getServerConfig('accountExplorer').replace('%s', pool.address),
+      url: config.get('accountExplorer', tk.wallet.isTestnet).replace('%s', pool.address),
       type: StakingLinkType.Explorer,
       icon: getLinkIcon(StakingLinkType.Explorer),
     });
@@ -139,7 +148,9 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     openJetton(stakingJetton.jettonAddress);
   }, [stakingJetton]);
 
-  const isImplemeted = KNOWN_STAKING_IMPLEMENTATIONS.includes(pool.implementation);
+  const isImplemeted = StakingManager.KNOWN_STAKING_IMPLEMENTATIONS.includes(
+    pool.implementation,
+  );
 
   const isLiquidTF = pool.implementation === PoolImplementationType.LiquidTF;
 
@@ -206,6 +217,9 @@ export const StakingPoolDetails: FC<Props> = (props) => {
     [fiatCurrency, handlePressJetton, pool.name, stakingJetton, stakingJettonMetadata],
   );
 
+  const wallet = useWallet();
+  const isWatchOnly = wallet && wallet.isWatchOnly;
+
   return (
     <S.Wrap>
       <ScrollHandler
@@ -236,22 +250,26 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                 <StakedTonIcon size="medium" pool={pool} />
               </S.FlexRow>
               <S.Divider />
-              <Spacer y={16} />
-              <S.ActionsContainer>
-                <IconButton
-                  onPress={handleTopUpPress}
-                  iconName="ic-plus-28"
-                  title={t('staking.top_up')}
-                  disabled={!isImplemeted}
-                />
-                <IconButton
-                  onPress={handleWithdrawalPress}
-                  iconName="ic-minus-28"
-                  title={t('staking.withdraw')}
-                  disabled={!isImplemeted || isWithdrawDisabled}
-                />
-              </S.ActionsContainer>
-              <S.Divider />
+              {!isWatchOnly ? (
+                <>
+                  <Spacer y={16} />
+                  <S.ActionsContainer>
+                    <IconButton
+                      onPress={handleTopUpPress}
+                      iconName="ic-plus-28"
+                      title={t('staking.top_up')}
+                      disabled={!isImplemeted}
+                    />
+                    <IconButton
+                      onPress={handleWithdrawalPress}
+                      iconName="ic-minus-28"
+                      title={t('staking.withdraw')}
+                      disabled={!isImplemeted || isWithdrawDisabled}
+                    />
+                  </S.ActionsContainer>
+                  <S.Divider />
+                </>
+              ) : null}
             </S.HeaderWrap>
             {hasPendingDeposit ? (
               <>

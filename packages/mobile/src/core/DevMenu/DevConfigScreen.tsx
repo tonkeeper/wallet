@@ -1,4 +1,4 @@
-import { AppConfigVars, config } from '@tonkeeper/shared/config';
+import { AppConfigVars, config } from '$config';
 import { useNavigation } from '@tonkeeper/router';
 import { memo, useRef, useState } from 'react';
 import RNRestart from 'react-native-restart';

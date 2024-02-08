@@ -23,7 +23,6 @@ import {
   ToggleBiometryAction,
   ChangePinAction,
   WalletGetUnlockedVaultAction,
-  RefreshBalancesPageAction,
   SetReadableAddress,
   SetUpdatedAtAction,
 } from '$store/wallet/interface';
@@ -57,12 +56,6 @@ export const { actions, reducer } = createSlice({
       state.isLoaded = false;
     },
     loadBalances() {},
-    refreshBalancesPage(state, action: RefreshBalancesPageAction) {
-      state.isRefreshing = action.payload ?? true;
-    },
-    endRefreshBalancesPage(state) {
-      state.isRefreshing = false;
-    },
     setWallet(state, action: SetWalletAction) {
       state.wallet = action.payload;
     },
@@ -138,47 +131,13 @@ export const { actions, reducer } = createSlice({
 export { reducer as walletReducer, actions as walletActions };
 
 export const walletSelector = (state: RootState) => state.wallet;
-export const walletVersionSelector = createSelector(
-  walletSelector,
-  (walletState) => walletState.version,
-);
 
 export const walletWalletSelector = createSelector(
   walletSelector,
   (walletState) => walletState.wallet,
 );
 
-export const walletAddressSelector = createSelector(
-  walletSelector,
-  (walletState) => walletState.address,
-);
-
-export const walletBalancesSelector = createSelector(
-  walletSelector,
-  (walletState) => walletState.balances,
-);
-
 export const walletGeneratedVaultSelector = createSelector(
   walletSelector,
   (walletState) => walletState.generatedVault,
-);
-
-export const walletOldBalancesSelector = createSelector(
-  walletSelector,
-  (walletState) => walletState.oldWalletBalances,
-);
-
-export const walletIsRefreshingSelector = createSelector(
-  walletSelector,
-  (walletState) => walletState.isRefreshing,
-);
-
-export const isLockupWalletSelector = createSelector(
-  walletSelector,
-  (walletState) => !!walletState.wallet?.ton.isLockup(),
-);
-
-export const walletUpdatedAtSelector = createSelector(
-  walletSelector,
-  (walletState) => walletState.updatedAt,
 );

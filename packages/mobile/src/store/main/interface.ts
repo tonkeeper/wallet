@@ -2,7 +2,6 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { FiatCurrency, SelectableVersion } from '$shared/constants';
 import { InternalNotificationModel } from '$store/models';
 import { AccentKey, AccentNFTIcon } from '$styled';
-import { ChartPeriod } from '$uikit/Chart/Chart.types';
 
 export interface LogItem {
   ts: number;
@@ -13,9 +12,7 @@ export interface LogItem {
 
 export interface MainState {
   isInitiating: boolean;
-  isHasWallet: boolean;
   isIntroShown: boolean;
-  isTestnet: boolean;
   isTimeSynced: boolean;
   timeSyncedDismissedTimestamp: false | number;
   fiatCurrency: FiatCurrency;
@@ -31,16 +28,13 @@ export interface MainState {
 }
 
 export type EndInitiatingAction = PayloadAction<{
-  isHasWallet: boolean;
   fiatCurrency: FiatCurrency;
 }>;
-export type SetHasWalletAction = PayloadAction<boolean>;
 export type ToggleIntroAction = PayloadAction<boolean>;
 export type SetTestnetAction = PayloadAction<boolean>;
 export type SetTimeSyncedAction = PayloadAction<boolean>;
 export type SetTimeSyncedDismissedAction = PayloadAction<false | number>;
 export type ToggleTestnetAction = PayloadAction<{ isTestnet: boolean }>;
-export type SetFiatCurrencyAction = PayloadAction<FiatCurrency>;
 export type SwitchVersionAction = PayloadAction<SelectableVersion>;
 export type UpdateBadHostsAction = PayloadAction<string[]>;
 export type SetNotificationsAction = PayloadAction<InternalNotificationModel[]>;

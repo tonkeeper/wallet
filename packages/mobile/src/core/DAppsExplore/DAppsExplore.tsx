@@ -19,19 +19,10 @@ import {
   AppsCategory,
 } from './components';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import {
-  Button,
-  Screen,
-  SegmentedControl,
-  Steezy,
-  View,
-  isAndroid,
-  ns,
-} from '@tonkeeper/uikit';
+import { Screen, SegmentedControl, Steezy, View } from '@tonkeeper/uikit';
 import { shallow } from 'zustand/shallow';
 import { BrowserStackParamList } from '$navigation/BrowserStack/BrowserStack.interface';
 import { t } from '@tonkeeper/shared/i18n';
-import { Text as RNText } from 'react-native';
 import { ScrollPositionContext } from '$uikit';
 import { useFocusEffect, useTabPress } from '@tonkeeper/router';
 import { useSelectedCountry } from '$store/zustand/methodsToBuy/useSelectedCountry';
@@ -42,46 +33,9 @@ export type DAppsExploreProps = NativeStackScreenProps<
   BrowserStackRouteNames.Explore
 >;
 
-const getSelectedCountryStyle = (selectedCountry: string) => {
-  if (selectedCountry === '*') {
-    return {
-      icon: (
-        <View
-          style={{
-            marginTop: isAndroid ? ns(-1) : ns(1),
-            marginLeft: isAndroid ? 0 : ns(2),
-          }}
-        >
-          <RNText style={{ fontSize: ns(16) }}>🌍</RNText>
-        </View>
-      ),
-      type: 'emoji',
-    };
-  }
-  if (selectedCountry === 'NOKYC') {
-    return {
-      icon: (
-        <View
-          style={{
-            marginTop: isAndroid ? ns(-1) : ns(0.5),
-            marginLeft: isAndroid ? ns(-1) : ns(1),
-          }}
-        >
-          <RNText style={{ fontSize: ns(14) }}>☠️</RNText>
-        </View>
-      ),
-      type: 'emoji',
-    };
-  }
-
-  return { title: selectedCountry, type: 'text' };
-};
-
-const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
+const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
   const flags = useFlags(['disable_dapps']);
   const tabBarHeight = useBottomTabBarHeight();
-
-  const { navigation } = props;
 
   const { changeEnd } = useContext(ScrollPositionContext);
 
@@ -133,8 +87,6 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = (props) => {
   const handleSearchPress = useCallback(() => {
     openDAppsSearch();
   }, []);
-
-  const selectedCountryStyle = getSelectedCountryStyle(selectedCountry);
 
   const [segmentIndex, setSegmentIndex] = useState(0);
 

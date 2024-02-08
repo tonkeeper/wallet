@@ -36,6 +36,7 @@ import { EditAppConfigModal } from '$core/DevMenu/DevConfigScreen';
 import { RefillBatteryModal } from '../../../shared/modals/RefillBatteryModal';
 import { NFTSend } from '$core/NFTSend/NFTSend';
 import { ReceiveInscriptionModal } from '@tonkeeper/shared/modals/ReceiveInscriptionModal';
+import { CustomizeWallet } from '$core/CustomizeWallet/CustomizeWallet';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -67,6 +68,10 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NFTSend} path={AppStackRouteNames.NFTSend} />
       <Stack.Modal component={ScanQR} path={AppStackRouteNames.ScanQR} />
       <Stack.Modal component={Swap} path={AppStackRouteNames.Swap} />
+      <Stack.Modal
+        component={CustomizeWallet}
+        path={AppStackRouteNames.CustomizeWallet}
+      />
     </Stack.Group>
     <Stack.Group behavior="fullScreenModal">
       <Stack.Modal

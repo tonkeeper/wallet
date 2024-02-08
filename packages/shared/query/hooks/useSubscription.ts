@@ -1,4 +1,4 @@
-import { tk } from '../../tonkeeper';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 
 export const useSubscription = (address?: string) => {
   if (address) {

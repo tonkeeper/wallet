@@ -6,16 +6,14 @@ import { t } from '../../../i18n';
 // TODO: move to manager
 import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 
-// TODO: move to shared
-import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
-import { useSelector } from 'react-redux';
+import { useWalletCurrency } from '../../../hooks';
 
 interface ExtraListItemProps {
   extra?: number;
 }
 
 export const ExtraListItem = memo<ExtraListItemProps>((props) => {
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const fiatCurrency = useWalletCurrency();
   const tokenPrice = useTokenPrice('ton');
 
   const extra = useMemo(() => {

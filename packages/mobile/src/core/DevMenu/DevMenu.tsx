@@ -1,6 +1,6 @@
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
-import { alwaysShowV4R1Selector, isTestnetSelector, mainActions } from '$store/main';
-import { JettonsDB, MainDB, NFTsDB } from '$database';
+import { alwaysShowV4R1Selector, mainActions } from '$store/main';
+import { MainDB } from '$database';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { DevFeature, useDevFeaturesToggle } from '$store';
 import { List, Screen, copyText } from '@tonkeeper/uikit';
@@ -8,42 +8,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Switch } from 'react-native-gesture-handler';
 import DeviceInfo from 'react-native-device-info';
 import { useNavigation } from '@tonkeeper/router';
-import { config } from '@tonkeeper/shared/config';
-import { jettonsActions } from '$store/jettons';
+import { config } from '$config';
 import RNRestart from 'react-native-restart';
-import { t } from '@tonkeeper/shared/i18n';
-import { nftsActions } from '$store/nfts';
 import { FC, useCallback } from 'react';
 import { openLogs } from '$navigation';
-import { Alert } from 'react-native';
-import { Icon } from '$uikit';
-import { tk } from '@tonkeeper/shared/tonkeeper';
 import Clipboard from '@react-native-community/clipboard';
 import { getToken } from '$utils/messaging';
+import { tk } from '$wallet';
 
 export const DevMenu: FC = () => {
   const nav = useNavigation();
   const dispatch = useDispatch();
-  const isTestnet = useSelector(isTestnetSelector);
   const alwaysShowV4R1 = useSelector(alwaysShowV4R1Selector);
   const addNotification = useNotificationsStore((state) => state.actions.addNotification);
-
-  const handleToggleTestnet = useCallback(() => {
-    Alert.alert(t('settings_network_alert_title'), '', [
-      {
-        text: 'Testnet',
-        onPress: () => {
-          dispatch(mainActions.toggleTestnet({ isTestnet: true }));
-        },
-      },
-      {
-        text: 'Mainnet',
-        onPress: () => {
-          dispatch(mainActions.toggleTestnet({ isTestnet: false }));
-        },
-      },
-    ]);
-  }, [dispatch, t]);
 
   const handleLogs = useCallback(() => {
     openLogs();
@@ -59,14 +36,14 @@ export const DevMenu: FC = () => {
   }, [alwaysShowV4R1, dispatch]);
 
   const handleClearNFTsCache = useCallback(() => {
-    NFTsDB.clearAll();
-    dispatch(nftsActions.resetNFTs());
-  }, [dispatch]);
+    tk.wallet.nfts.reset();
+  }, []);
 
   const handleClearJettonsCache = useCallback(() => {
-    JettonsDB.clearAll();
-    dispatch(jettonsActions.resetJettons());
-  }, [dispatch]);
+    if (tk.wallet) {
+      tk.wallet.jettons.reset();
+    }
+  }, []);
 
   const handleTestJsCrash = useCallback(() => {
     throw new Error('Test js crash');
@@ -87,8 +64,7 @@ export const DevMenu: FC = () => {
 
   const {
     devFeatures,
-    devLanguage,
-    actions: { toggleFeature, setDevLanguage },
+    actions: { toggleFeature },
   } = useDevFeaturesToggle();
 
   const handleCopyFCMToken = useCallback(async () => {
@@ -98,6 +74,10 @@ export const DevMenu: FC = () => {
 
   const toggleHttpProtocol = useCallback(() => {
     toggleFeature(DevFeature.UseHttpProtocol);
+  }, [toggleFeature]);
+
+  const toggleDevMode = useCallback(() => {
+    toggleFeature(DevFeature.ShowTestnet);
   }, [toggleFeature]);
 
   const handleClearActivityCache = useCallback(() => {
@@ -117,15 +97,19 @@ export const DevMenu: FC = () => {
       <Screen.ScrollView>
         <List>
           <List.Item
+            title="Dev mode"
+            rightContent={
+              <Switch
+                value={devFeatures[DevFeature.ShowTestnet]}
+                onChange={toggleDevMode}
+              />
+            }
+          />
+          <List.Item
             title={`Version ${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`}
             onPress={copyText(
               `${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`,
             )}
-          />
-          <List.Item
-            title={t(isTestnet ? 'settings_to_mainnet' : 'settings_to_testnet')}
-            rightContent={<Icon name="ic-reset-24" color="accentPrimary" />}
-            onPress={handleToggleTestnet}
           />
           <List.Item onPress={handleLogs} title="Logs" />
           <List.Item title="App config" onPress={() => nav.navigate('/dev/config')} />
