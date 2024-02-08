@@ -1,5 +1,13 @@
 import { useWallet } from '@tonkeeper/shared/hooks';
-import { Icon, Spacer, Steezy, Text, TouchableOpacity, View } from '@tonkeeper/uikit';
+import {
+  Icon,
+  Spacer,
+  Steezy,
+  Text,
+  TouchableOpacity,
+  View,
+  deviceWidth,
+} from '@tonkeeper/uikit';
 import React, { FC, memo, useCallback } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { useDispatch } from 'react-redux';
@@ -21,7 +29,11 @@ const WalletSelectorComponent: FC = () => {
         <View
           style={[styles.selectorContainer, { backgroundColor: wallet.config.color }]}
         >
-          <Text type="label2">{wallet.config.name}</Text>
+          <View style={styles.nameContainer}>
+            <Text type="label2" numberOfLines={1}>
+              {wallet.config.name}
+            </Text>
+          </View>
           <Spacer x={6} />
           <Icon name="ic-chevron-down-16" style={styles.icon.static} />
         </View>
@@ -41,6 +53,9 @@ const styles = Steezy.create({
     paddingLeft: 16,
     paddingRight: 12,
     borderRadius: 20,
+  },
+  nameContainer: {
+    maxWidth: deviceWidth - 180,
   },
   icon: {
     opacity: 0.64,

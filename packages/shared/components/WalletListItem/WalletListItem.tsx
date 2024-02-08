@@ -1,6 +1,6 @@
 import { Tag } from '@tonkeeper/mobile/src/uikit';
 import { Wallet } from '@tonkeeper/mobile/src/wallet/Wallet';
-import { Icon, List, Steezy, Text, View } from '@tonkeeper/uikit';
+import { Icon, List, Steezy, Text, View, deviceWidth } from '@tonkeeper/uikit';
 import { ListItemProps } from '@tonkeeper/uikit/src/components/List/ListItem';
 import { FC, memo } from 'react';
 import { t } from '../../i18n';
@@ -45,6 +45,7 @@ const styles = Steezy.create(({ colors }) => ({
     justifyContent: 'center',
   },
   titleContainer: {
+    maxWidth: deviceWidth - 240,
     flexDirection: 'row',
     alignItems: 'center',
   },
