@@ -76,7 +76,7 @@ export class WalletContent extends WalletBase {
       this.storage,
     );
     this.nfts = new NftsManager(
-      this.pubkey,
+      tonRawAddress,
       this.tonAllAddresses,
       this.tonapi,
       this.storage,

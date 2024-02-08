@@ -14,6 +14,7 @@ import {
 import { createTonApiInstance } from './utils';
 import { Vault } from '@tonkeeper/core';
 import BigNumber from 'bignumber.js';
+import { v4 as uuidv4 } from 'uuid';
 
 class PermissionsManager {
   public notifications = true;
@@ -27,7 +28,7 @@ type TonkeeperOptions = {
 
 export interface WalletsStoreState {
   wallets: WalletConfig[];
-  selectedPubkey: string;
+  selectedIdentifier: string;
   biometryEnabled: boolean;
 }
 
@@ -49,7 +50,7 @@ export class Tonkeeper {
 
   public walletsStore = new State<WalletsStoreState>({
     wallets: [],
-    selectedPubkey: '',
+    selectedIdentifier: '',
     biometryEnabled: false,
   });
 
@@ -71,7 +72,7 @@ export class Tonkeeper {
   }
 
   public get wallet() {
-    return this.wallets.get(this.walletsStore.data.selectedPubkey)!;
+    return this.wallets.get(this.walletsStore.data.selectedIdentifier)!;
   }
 
   public get walletForUnlock() {
@@ -85,6 +86,8 @@ export class Tonkeeper {
       this.tonPrice.load();
 
       await this.migrate();
+
+      console.log('this.walletsStore.data.wallets', this.walletsStore.data.wallets);
 
       await Promise.all(
         this.walletsStore.data.wallets.map((walletConfig) =>
@@ -112,6 +115,7 @@ export class Tonkeeper {
       const json = JSON.parse(data);
 
       const walletConfig: WalletConfig = {
+        identifier: uuidv4(),
         type: WalletType.Regular,
         name: 'Wallet',
         color: WalletColor.Midnight,
@@ -124,7 +128,7 @@ export class Tonkeeper {
 
       this.walletsStore.set(({ wallets }) => ({
         wallets: [...wallets, walletConfig],
-        selectedPubkey: walletConfig.pubkey,
+        selectedIdentifier: walletConfig.identifier,
       }));
 
       // MULTIWALLET TODO
@@ -161,11 +165,13 @@ export class Tonkeeper {
   public async importWallet(
     mnemonic: string,
     passcode: string,
-    walletConfig: Omit<WalletConfig, 'pubkey'>,
+    walletConfig: Omit<WalletConfig, 'pubkey' | 'identifier'>,
   ) {
-    const pubkey = await this.vault.import(mnemonic, passcode);
+    const identifier = uuidv4();
 
-    const config = { ...walletConfig, pubkey };
+    const pubkey = await this.vault.import(identifier, mnemonic, passcode);
+
+    const config = { ...walletConfig, pubkey, identifier };
 
     this.walletsStore.set(({ wallets }) => ({ wallets: [...wallets, config] }));
     const wallet = await this.createWalletInstance(config);
@@ -214,6 +220,7 @@ export class Tonkeeper {
     }
 
     const config: WalletConfig = {
+      identifier: uuidv4(),
       network: WalletNetwork.mainnet,
       type: WalletType.WatchOnly,
       pubkey,
@@ -228,18 +235,18 @@ export class Tonkeeper {
     this.setWallet(wallet);
   }
 
-  public async removeWallet(pubkey: string) {
+  public async removeWallet(identifier: string) {
     try {
       const wallet =
         this.wallets.get(
-          Array.from(this.wallets.keys()).find((item) => item !== pubkey) ?? '',
+          Array.from(this.wallets.keys()).find((item) => item !== identifier) ?? '',
         ) ?? null;
 
       this.walletsStore.set(({ wallets }) => ({
-        wallets: wallets.filter((w) => w.pubkey !== pubkey),
-        selectedPubkey: wallet?.pubkey ?? '',
+        wallets: wallets.filter((w) => w.identifier !== identifier),
+        selectedIdentifier: wallet?.identifier ?? '',
       }));
-      this.wallets.delete(pubkey);
+      this.wallets.delete(identifier);
 
       if (this.wallets.size === 0) {
         this.walletsStore.set({ biometryEnabled: false });
@@ -252,7 +259,11 @@ export class Tonkeeper {
   }
 
   public async removeAllWallets() {
-    this.walletsStore.set({ wallets: [], selectedPubkey: '', biometryEnabled: false });
+    this.walletsStore.set({
+      wallets: [],
+      selectedIdentifier: '',
+      biometryEnabled: false,
+    });
     this.wallets.clear();
     this.emitChangeWallet();
   }
@@ -265,13 +276,13 @@ export class Tonkeeper {
     await wallet.rehydrate();
     wallet.preload();
 
-    const existedWallet = this.wallets.get(wallet.pubkey);
+    const existedWallet = this.wallets.get(wallet.identifier);
 
     if (existedWallet) {
       existedWallet.destroy();
     }
 
-    this.wallets.set(wallet.pubkey, wallet);
+    this.wallets.set(wallet.identifier, wallet);
 
     return wallet;
   }
@@ -285,7 +296,7 @@ export class Tonkeeper {
       }
 
       const storedIndex = this.walletsStore.data.wallets.findIndex(
-        (item) => item.pubkey === this.wallet.pubkey,
+        (item) => item.identifier === this.wallet.identifier,
       );
       const currentConfig = this.walletsStore.data.wallets[storedIndex];
 
@@ -322,13 +333,13 @@ export class Tonkeeper {
     this.walletSubscribers.forEach((subscriber) => subscriber(this.wallet));
   }
 
-  public switchWallet(pubkey: string) {
-    const wallet = this.wallets.get(pubkey);
+  public switchWallet(identifier: string) {
+    const wallet = this.wallets.get(identifier);
     this.setWallet(wallet!);
   }
 
   public setWallet(wallet: Wallet | null) {
-    this.walletsStore.set({ selectedPubkey: wallet?.pubkey ?? '' });
+    this.walletsStore.set({ selectedIdentifier: wallet?.identifier ?? '' });
     this.emitChangeWallet();
   }
 

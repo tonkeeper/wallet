@@ -87,9 +87,7 @@ export class Wallet {
   public async getReadableAddress() {
     if (this.vault) {
       const rawAddress = await this.vault.getRawTonAddress();
-      const tkWallet = tk.wallets.get(
-        Buffer.from(this.vault.tonPublicKey).toString('hex'),
-      )!;
+      const tkWallet = tk.wallets.get(this.name)!;
       const friendlyAddress = await this.vault.getTonAddress(
         tkWallet.config.network === WalletNetwork.testnet,
       );
@@ -104,7 +102,7 @@ export class Wallet {
   }
 
   async clean() {
-    await tk.removeWallet(Buffer.from(this.vault.tonPublicKey).toString('hex'));
+    await tk.removeWallet(this.vault.name);
   }
 }
 

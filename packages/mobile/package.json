@@ -49,6 +49,7 @@
     "@tonkeeper/router": "*",
     "@tonkeeper/shared": "*",
     "@tonkeeper/uikit": "*",
+    "@types/uuid": "^9.0.8",
     "@vkontakte/vk-qr": "^2.0.13",
     "axios": "^0.27.2",
     "bignumber.js": "^9.0.1",

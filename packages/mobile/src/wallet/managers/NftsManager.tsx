@@ -3,6 +3,7 @@ import { Address, AddressesByVersion } from '@tonkeeper/core/src/formatters/Addr
 import { NftItem, TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
+import { TonRawAddress } from '$wallet/WalletTypes';
 
 export type NftsState = {
   nfts: Record<NftItem['address'], NftItem>;
@@ -24,7 +25,7 @@ export class NftsManager {
   public state = new State<NftsState>(NftsManager.INITIAL_STATE);
 
   constructor(
-    private pubkey: string,
+    private tonRawAddress: TonRawAddress,
     private tonAllAddresses: AddressesByVersion,
     private tonapi: TonAPI,
     private storage: Storage,
@@ -35,7 +36,7 @@ export class NftsManager {
         selectedDiamond,
       }),
       storage: this.storage,
-      key: `${this.pubkey}/nfts`,
+      key: `${this.tonRawAddress}/nfts`,
     });
   }
 

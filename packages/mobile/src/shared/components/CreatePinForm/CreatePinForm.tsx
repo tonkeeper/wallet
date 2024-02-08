@@ -88,8 +88,7 @@ export const CreatePinForm: FC<CreatePinFormProps> = (props) => {
         if (pin.length === 4) {
           setTimeout(async () => {
             try {
-              const pubkey = tk.walletForUnlock.pubkey;
-              await vault.exportWithPasscode(pubkey, pin);
+              await vault.exportWithPasscode(tk.walletForUnlock.identifier, pin);
 
               oldPinRef.current?.triggerSuccess();
               onOldPinValidated && onOldPinValidated(pin);

@@ -22,15 +22,15 @@ export const SwitchWalletModal = memo(() => {
           <List>
             {wallets.map((wallet) => (
               <WalletListItem
-                key={wallet.pubkey}
+                key={wallet.identifier}
                 wallet={wallet}
                 onPress={() => {
-                  tk.switchWallet(wallet.pubkey);
+                  tk.switchWallet(wallet.identifier);
                   nav.goBack();
                 }}
                 subtitle={formatter.format(wallet.totalFiat, { currency })}
                 rightContent={
-                  currentWallet.pubkey === wallet.pubkey && (
+                  currentWallet.identifier === wallet.identifier && (
                     <View style={styles.checkmark}>
                       <Icon
                         style={styles.checkmarkIcon.static}

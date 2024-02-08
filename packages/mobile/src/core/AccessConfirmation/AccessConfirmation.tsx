@@ -81,13 +81,16 @@ export const AccessConfirmation: FC = () => {
         setTimeout(async () => {
           try {
             const promise = getCurrentConfirmationVaultPromise();
-            const pubkey =
-              isUnlock || wallet.isWatchOnly ? tk.walletForUnlock.pubkey : wallet.pubkey;
-            const mnemonic = await vault.exportWithPasscode(pubkey, pin);
+            const walletForUnlock =
+              isUnlock || wallet.isWatchOnly ? tk.walletForUnlock : wallet;
+            const mnemonic = await vault.exportWithPasscode(
+              walletForUnlock.identifier,
+              pin,
+            );
             const unlockedVault = new UnlockedVault(
               {
                 ...wallet.config,
-                tonPubkey: Uint8Array.from(Buffer.from(pubkey, 'hex')),
+                tonPubkey: Uint8Array.from(Buffer.from(walletForUnlock.pubkey, 'hex')),
               },
               mnemonic,
             );
@@ -124,8 +127,7 @@ export const AccessConfirmation: FC = () => {
       isUnlock,
       obtainTonProof,
       triggerError,
-      wallet.config,
-      wallet.pubkey,
+      wallet,
     ],
   );
 
@@ -133,12 +135,12 @@ export const AccessConfirmation: FC = () => {
     try {
       const promise = getCurrentConfirmationVaultPromise();
 
-      const pubkey = isUnlock ? tk.walletForUnlock.pubkey : wallet.pubkey;
-      const mnemonic = await vault.exportWithBiometry(pubkey);
+      const walletForUnlock = isUnlock ? tk.walletForUnlock : wallet;
+      const mnemonic = await vault.exportWithBiometry(walletForUnlock.identifier);
       const unlockedVault = new UnlockedVault(
         {
           ...wallet.config,
-          tonPubkey: Uint8Array.from(Buffer.from(pubkey, 'hex')),
+          tonPubkey: Uint8Array.from(Buffer.from(walletForUnlock.pubkey, 'hex')),
         },
         mnemonic,
       );

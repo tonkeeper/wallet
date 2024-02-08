@@ -28,6 +28,7 @@ import { beginCell } from '@ton/core';
 import { TronService } from '@tonkeeper/core/src/TronService';
 
 export class WalletBase {
+  public identifier: string;
   public pubkey: string;
   public address: WalletAddress;
   public tonProof = '';
@@ -46,6 +47,7 @@ export class WalletBase {
     public tonAllAddresses: AddressesByVersion,
     protected storage: Storage,
   ) {
+    this.identifier = config.identifier;
     this.pubkey = config.pubkey;
 
     const tonAddress = Address.parse(this.tonAllAddresses[config.version].raw, {
@@ -92,8 +94,8 @@ export class WalletBase {
   public getLockupConfig() {
     return {
       wallet_type: this.config.version,
-      workchain: 0,
-      config_pubkey: this.pubkey,
+      workchain: this.config.workchain,
+      config_pubkey: this.config.configPubKey,
       allowed_destinations: this.config.allowedDestinations,
     };
   }

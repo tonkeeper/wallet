@@ -15,13 +15,16 @@ export const startApp = async () => {
   tk.onChangeWallet(() => {
     if (tk.wallet) {
       const vault = Vault.fromJSON({
-        name: '',
+        name: tk.wallet.identifier,
         tonPubkey: tk.wallet.pubkey,
         version: tk.wallet.config.version,
+        workchain: tk.wallet.config.workchain,
+        configPubKey: tk.wallet.config.configPubKey,
+        allowedDestinations: tk.wallet.config.allowedDestinations,
       });
       const ton = TonWallet.fromJSON(null, vault);
 
-      const wallet = new Wallet('', vault, ton);
+      const wallet = new Wallet(tk.wallet.identifier, vault, ton);
 
       store.dispatch(
         walletActions.setAddress({

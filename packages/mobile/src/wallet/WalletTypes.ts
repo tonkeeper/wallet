@@ -59,6 +59,7 @@ export interface TokenRate {
 }
 
 export interface WalletConfig {
+  identifier: string;
   name: string;
   color: WalletColor;
   pubkey: string;

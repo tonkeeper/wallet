@@ -8,11 +8,11 @@ import * as SecureStore from 'expo-secure-store';
 const { nacl } = require('react-native-tweetnacl');
 
 interface DecryptedData {
-  pubkey: string;
+  identifier: string;
   mnemonic: string;
 }
 
-type VaultState = Record<DecryptedData['pubkey'], DecryptedData>;
+type VaultState = Record<DecryptedData['identifier'], DecryptedData>;
 
 export class AppVault implements Vault {
   constructor() {}
@@ -34,7 +34,7 @@ export class AppVault implements Vault {
     await this.getDecryptedVaultState(passcode);
   }
 
-  public async import(mnemonic: string, passcode: string) {
+  public async import(identifier: string, mnemonic: string, passcode: string) {
     /** check passcode */
     if (Object.keys(this.decryptedVaultState).length > 0) {
       await this.verifyPasscode(passcode);
@@ -48,15 +48,15 @@ export class AppVault implements Vault {
 
     const pubkey = Buffer.from(keyPair.publicKey).toString('hex');
 
-    this.decryptedVaultState[pubkey] = { pubkey, mnemonic };
+    this.decryptedVaultState[identifier] = { identifier, mnemonic };
 
     await this.saveVaultState(passcode);
 
     return pubkey;
   }
 
-  public async remove(pubkey: string, passcode: string) {
-    delete this.decryptedVaultState[pubkey];
+  public async remove(identifier: string, passcode: string) {
+    delete this.decryptedVaultState[identifier];
 
     await this.saveVaultState(passcode);
   }
@@ -81,13 +81,13 @@ export class AppVault implements Vault {
     return JSON.parse(stateJson) as VaultState;
   }
 
-  public async exportWithPasscode(pubkey: string, passcode: string) {
+  public async exportWithPasscode(identifier: string, passcode: string) {
     this.decryptedVaultState = await this.getDecryptedVaultState(passcode);
 
-    const data = this.decryptedVaultState[pubkey];
+    const data = this.decryptedVaultState[identifier];
 
     if (!data) {
-      throw new Error(`Mnemonic doesn't exist, pubkey: ${pubkey}`);
+      throw new Error(`Mnemonic doesn't exist, identifier: ${identifier}`);
     }
 
     return data.mnemonic;
@@ -99,7 +99,7 @@ export class AppVault implements Vault {
     await this.saveVaultState(newPasscode);
   }
 
-  public async exportWithBiometry(pubkey: string) {
+  public async exportWithBiometry(identifier: string) {
     const passcode = await SecureStore.getItemAsync(this.biometryKey, {
       keychainService: this.keychainService,
     });
@@ -108,7 +108,7 @@ export class AppVault implements Vault {
       throw new Error('Biometry data is not found');
     }
 
-    return this.exportWithPasscode(pubkey, passcode);
+    return this.exportWithPasscode(identifier, passcode);
   }
 
   public async setupBiometry(passcode: string) {

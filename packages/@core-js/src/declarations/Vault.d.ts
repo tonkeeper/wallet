@@ -11,10 +11,10 @@ export interface PasscodeController {
 export declare class Vault {
   public setupBiometry(passcode: string): Promise<void>;
   public removeBiometry(): Promise<void>;
-  public exportWithBiometry(pubkey: string): Promise<string>;
-  public exportWithPasscode(pubkey: string, passcode: string): Promise<string>;
+  public exportWithBiometry(identifier: string): Promise<string>;
+  public exportWithPasscode(identifier: string, passcode: string): Promise<string>;
   public changePasscode(passcode: string, newPasscode: string): Promise<void>;
-  public remove(pubkey: string, passcode: string): Promise<void>;
-  public import(mnemonic: string, passcode: string): Promise<string>;
+  public remove(identifier: string, passcode: string): Promise<void>;
+  public import(identifier: string, mnemonic: string, passcode: string): Promise<string>;
   public destroy(): Promise<void>;
 }

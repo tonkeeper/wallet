@@ -93,7 +93,7 @@ function* createWalletWorker(action: CreateWalletAction) {
 
     const vaultJson = (yield call([generatedVault, 'toJSON'])) as VaultJSON;
 
-    const walletConfig: Omit<WalletConfig, 'pubkey'> = {
+    const walletConfig: Omit<WalletConfig, 'pubkey' | 'identifier'> = {
       name: 'Wallet',
       color: WalletColor.Midnight,
       network: isTestnet ? WalletNetwork.testnet : WalletNetwork.mainnet,
@@ -464,7 +464,7 @@ function* cleanWalletWorker() {
       wallet.address.friendlyAddress,
     );
 
-    yield call([tk, 'removeWallet'], tk.wallet.pubkey);
+    yield call([tk, 'removeWallet'], tk.wallet.identifier);
 
     yield call(trackEvent, 'reset_wallet');
 
