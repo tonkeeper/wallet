@@ -1,6 +1,14 @@
 import { Tag } from '@tonkeeper/mobile/src/uikit';
 import { Wallet } from '@tonkeeper/mobile/src/wallet/Wallet';
-import { Icon, List, Steezy, Text, View, deviceWidth } from '@tonkeeper/uikit';
+import {
+  Icon,
+  List,
+  Steezy,
+  Text,
+  View,
+  deviceWidth,
+  getWalletColorHex,
+} from '@tonkeeper/uikit';
 import { ListItemProps } from '@tonkeeper/uikit/src/components/List/ListItem';
 import { FC, memo } from 'react';
 import { t } from '../../i18n';
@@ -24,7 +32,12 @@ const WalletListItemComponent: FC<Props> = (props) => {
         </View>
       }
       leftContent={
-        <View style={[styles.iconContainer, { backgroundColor: wallet.config.color }]}>
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: getWalletColorHex(wallet.config.color) },
+          ]}
+        >
           <Icon name="ic-wallet-28" />
         </View>
       }

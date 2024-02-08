@@ -12,7 +12,7 @@ import { CryptoCurrency } from '$shared/constants';
 import { SendAnalyticsFrom } from '$store/models';
 import { NFTKeyPair } from '$store/nfts/interface';
 import _ from 'lodash';
-import { getCurrentRoute, navigate, popToTop, push, replace, reset } from './imperative';
+import { getCurrentRoute, navigate, push, replace, reset } from './imperative';
 import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
 import { tk } from '$wallet';
 

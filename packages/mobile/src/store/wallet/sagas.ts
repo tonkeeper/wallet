@@ -46,13 +46,13 @@ import { getFlag } from '$utils/flags';
 import { Address } from '@tonkeeper/shared/Address';
 import { InscriptionAdditionalParams, TokenType } from '$core/Send/Send.interface';
 import {
-  WalletColor,
   WalletConfig,
   WalletContractVersion,
   WalletNetwork,
   WalletType,
 } from '$wallet/WalletTypes';
 import { v4 as uuidv4 } from 'uuid';
+import { WalletColor } from '@tonkeeper/uikit';
 
 function* generateVaultWorker() {
   try {
@@ -95,7 +95,7 @@ function* createWalletWorker(action: CreateWalletAction) {
 
     const walletConfig: Omit<WalletConfig, 'pubkey' | 'identifier'> = {
       name: 'Wallet',
-      color: WalletColor.Midnight,
+      color: WalletColor.SteelGray,
       network: isTestnet ? WalletNetwork.testnet : WalletNetwork.mainnet,
       type: WalletType.Regular,
       workchain: vaultJson.workchain ?? 0,

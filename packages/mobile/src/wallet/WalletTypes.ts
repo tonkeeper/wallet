@@ -1,5 +1,6 @@
 import { AddressFormats } from '@tonkeeper/core/src/formatters/Address';
 import { WalletCurrency } from '@tonkeeper/core/src/utils/AmountFormatter/FiatCurrencyConfig';
+import { WalletColor } from '@tonkeeper/uikit';
 
 export type TonFriendlyAddress = string;
 export type TonRawAddress = string;
@@ -70,33 +71,4 @@ export interface WalletConfig {
   /** lockup */
   allowedDestinations?: string;
   configPubKey?: string;
-}
-
-export enum WalletColor {
-  Midnight = '#2E3847',
-  Charcoal = '#424C5C',
-  SilverChalice = '#9DA2A4',
-  Iron = '#BABFC2',
-  RadicalRed = '#FF4785',
-  CarnationPink = '#FF85AD',
-  SunsetOrange = '#FF4747',
-  Salmon = '#FF8585',
-  DarkOrange = '#FF781F',
-  MacaroniAndCheese = '#FF9D5C',
-  SelectiveYellow = '#FFAA00',
-  Buff = '#FFCC66',
-  AppleGreen = '#5EB851',
-  Zucchini = '#85B87D',
-  BlueRibbon = '#4785FF',
-  Malibu = '#85ADFF',
-  VividSkyBlue = '#33C2FF',
-  FrenchSkyBlue = '#70D4FF',
-  ElectricViolet = '#7E3DFF',
-  LightWisteria = '#A77AFF',
-  HollywoodCerise = '#FF47FF',
-  Mauve = '#FF85FF',
-  SteelPink = '#FF3392',
-  LightOrchid = '#FF70B3',
-  Bittersweet = '#FF4754',
-  LightCoral = '#FF858D',
 }

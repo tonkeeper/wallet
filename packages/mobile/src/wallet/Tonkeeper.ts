@@ -5,7 +5,6 @@ import { TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { TonPriceManager } from './managers/TonPriceManager';
 import { State } from '@tonkeeper/core/src/utils/State';
 import {
-  WalletColor,
   WalletConfig,
   WalletContractVersion,
   WalletNetwork,
@@ -15,6 +14,7 @@ import { createTonApiInstance } from './utils';
 import { Vault } from '@tonkeeper/core';
 import BigNumber from 'bignumber.js';
 import { v4 as uuidv4 } from 'uuid';
+import { WalletColor } from '@tonkeeper/uikit';
 
 class PermissionsManager {
   public notifications = true;
@@ -87,8 +87,6 @@ export class Tonkeeper {
 
       await this.migrate();
 
-      console.log('this.walletsStore.data.wallets', this.walletsStore.data.wallets);
-
       await Promise.all(
         this.walletsStore.data.wallets.map((walletConfig) =>
           this.createWalletInstance(walletConfig),
@@ -118,7 +116,7 @@ export class Tonkeeper {
         identifier: uuidv4(),
         type: WalletType.Regular,
         name: 'Wallet',
-        color: WalletColor.Midnight,
+        color: WalletColor.SteelGray,
         workchain: json.vault.workchain,
         pubkey: json.vault.tonPubkey,
         configPubKey: json.vault.configPubKey,
@@ -227,7 +225,7 @@ export class Tonkeeper {
       workchain,
       version,
       name: 'Wallet',
-      color: WalletColor.Midnight,
+      color: WalletColor.SteelGray,
     };
 
     this.walletsStore.set(({ wallets }) => ({ wallets: [...wallets, config] }));

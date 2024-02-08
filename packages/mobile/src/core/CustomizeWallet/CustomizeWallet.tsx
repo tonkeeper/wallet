@@ -1,6 +1,5 @@
 import { NavBar } from '$uikit';
 import { tk } from '$wallet';
-import { WalletColor } from '$wallet/WalletTypes';
 import { useNavigation } from '@tonkeeper/router';
 import { useWallet } from '@tonkeeper/shared/hooks';
 import { t } from '@tonkeeper/shared/i18n';
@@ -13,6 +12,8 @@ import {
   Text,
   TouchableOpacity,
   View,
+  WalletColor,
+  getWalletColorHex,
   ns,
   useReanimatedKeyboardHeight,
 } from '@tonkeeper/uikit';
@@ -99,7 +100,12 @@ export const CustomizeWallet = memo(() => {
             <React.Fragment key={color}>
               {index > 0 ? <Spacer x={12} /> : null}
               <TouchableOpacity onPress={() => setSelectedColor(color)}>
-                <View style={[styles.colorContainer, { backgroundColor: color }]}>
+                <View
+                  style={[
+                    styles.colorContainer,
+                    { backgroundColor: getWalletColorHex(color) },
+                  ]}
+                >
                   {color === selectedColor ? (
                     <View style={styles.selectedColorIndicator} />
                   ) : null}

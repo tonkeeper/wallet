@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   deviceWidth,
+  getWalletColorHex,
 } from '@tonkeeper/uikit';
 import React, { FC, memo, useCallback } from 'react';
 import { useNavigation } from '@tonkeeper/router';
@@ -27,7 +28,10 @@ const WalletSelectorComponent: FC = () => {
     <View style={styles.container}>
       <TouchableOpacity onPress={handlePress}>
         <View
-          style={[styles.selectorContainer, { backgroundColor: wallet.config.color }]}
+          style={[
+            styles.selectorContainer,
+            { backgroundColor: getWalletColorHex(wallet.config.color) },
+          ]}
         >
           <View style={styles.nameContainer}>
             <Text type="label2" numberOfLines={1}>
