@@ -1156,11 +1156,11 @@
   },
   "watch_only": "Только просмотр",
   "stop_watch": "Удалить аккаунт",
-  "customize": "Edit name and color",
+  "customize": "Редактировать имя и цвет",
   "customize_modal": {
-    "title": "Name your Wallet",
-    "subtitle": "Wallet name is stored locally on your device. It will only be visible to you.",
-    "wallet_name": "Wallet Name",
+    "title": "Назовите ваш кошелёк",
+    "subtitle": "Имя кошелька хранится локально на вашем устройстве. Оно будет видно только вам.",
+    "wallet_name": "Имя кошелька",
     "save": "Сохранить"
   },
   "start_screen": {
