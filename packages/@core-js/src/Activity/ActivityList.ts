@@ -22,7 +22,7 @@ export class ActivityList {
   private readonly refetchTime = 15000;
 
   private cursors: Cursors = { ton: null, tron: null };
-  private groups = {};
+  private groups: { [key in string]: ActivitySection } = {};
 
   public state = new State<ActivityListState>({
     isReloading: false,

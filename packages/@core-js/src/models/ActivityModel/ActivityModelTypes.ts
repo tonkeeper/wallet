@@ -87,6 +87,8 @@ export enum ActionType {
   Unknown = 'Unknown',
 }
 
+export type UnknownAction = undefined;
+
 export type ActionPayload = {
   [ActionType.TonTransfer]: TonTransferAction;
   [ActionType.JettonTransfer]: JettonTransferAction;
@@ -107,7 +109,7 @@ export type ActionPayload = {
   [ActionType.WithdrawStakeRequest]: WithdrawStakeRequestAction;
   [ActionType.ElectionsRecoverStake]: ElectionsRecoverStakeAction;
   [ActionType.ElectionsDepositStake]: ElectionsDepositStakeAction;
-  [ActionType.Unknown]: undefined;
+  [ActionType.Unknown]: UnknownAction;
 };
 
 export type AnyActionPayload = ActionPayload[keyof ActionPayload];
@@ -141,6 +143,7 @@ export type AnyActionItem<T extends ActionType = ActionType> = T extends T
   : never;
 
 export type ActivitySection = {
+  isFirst: boolean;
   timestamp: number;
   data: ActionItem[];
 };

@@ -57,26 +57,27 @@ export const tonPKToTronPK = async (tonPrivateKey: Uint8Array): Promise<string> 
   return account.privateKey.slice(2); // note: this is hex-encoded, remove 0x
 };
 
-export const createTronOwnerAddress = async (tonPrivateKey: Uint8Array): Promise<string> => {
+export const createTronOwnerAddress = async (
+  tonPrivateKey: Uint8Array,
+): Promise<string> => {
   const wallet = new ethers.Wallet(await tonPKToTronPK(tonPrivateKey));
   return TronAddress.hexToBase58(wallet.address);
 };
 
 export const seeIfValidTronAddress = (address: string): boolean => {
   try {
-      const decoded = decodeBase58(address).toString(16);
-      if (decoded.length !== 50 || !decoded.startsWith('41')) {
-          return false;
-      }
-      const payload = decoded.slice(0, 42);
-      const tail = decoded.slice(42);
-      const checkSumTail = sha256(sha256('0x' + payload)).slice(2, 10);
-      return tail === checkSumTail;
-  } catch (e) {
+    const decoded = decodeBase58(address).toString(16);
+    if (decoded.length !== 50 || !decoded.startsWith('41')) {
       return false;
+    }
+    const payload = decoded.slice(0, 42);
+    const tail = decoded.slice(42);
+    const checkSumTail = sha256(sha256('0x' + payload)).slice(2, 10);
+    return tail === checkSumTail;
+  } catch (e) {
+    return false;
   }
 };
-
 
 //
 //
@@ -84,33 +85,33 @@ export const seeIfValidTronAddress = (address: string): boolean => {
 
 const DomainAbi = ['bytes32', 'bytes32', 'bytes32', 'uint256', 'address', 'bytes32'];
 const RequestAbi = [
-    'bytes32',
-    'address',
-    'address',
-    'uint256',
-    'uint256',
-    'uint32',
-    'tuple(address,uint256,bytes)[]'
+  'bytes32',
+  'address',
+  'address',
+  'uint256',
+  'uint256',
+  'uint32',
+  'tuple(address,uint256,bytes)[]',
 ];
 
 export function hashRequest(request: any, contractAddress: string, chainId: string) {
   const REQUEST_TYPEHASH = keccak256(
-      'Request(address feeReceiver,address feeToken,uint256 fee,uint256 deadline,uint32 nonce,Message[] messages)'
+    'Request(address feeReceiver,address feeToken,uint256 fee,uint256 deadline,uint32 nonce,Message[] messages)',
   );
   const structHash = keccak256(
-      encodeTronParams(RequestAbi, [
-          REQUEST_TYPEHASH,
-          request.feeReceiver,
-          request.feeToken,
-          request.fee,
-          request.deadline,
-          request.nonce,
-          request.messages.map(m => [
-              '0x' + TronAddress.base58Tohex(m.to).slice(2),
-              m.value,
-              m.data
-          ])
-      ])
+    encodeTronParams(RequestAbi, [
+      REQUEST_TYPEHASH,
+      request.feeReceiver,
+      request.feeToken,
+      request.fee,
+      request.deadline,
+      request.nonce,
+      request.messages.map((m: any) => [
+        '0x' + TronAddress.base58Tohex(m.to).slice(2),
+        m.value,
+        m.data,
+      ]),
+    ]),
   );
 
   const domain = domainHash(contractAddress, chainId);
@@ -118,22 +119,21 @@ export function hashRequest(request: any, contractAddress: string, chainId: stri
   return keccak256(encodePackedBytes(['0x1901', domain, structHash]));
 }
 
-
 function domainHash(contractAddress: string, chainId: string) {
   const TIP712_DOMAIN_TYPEHASH = keccak256(
-      'EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)'
+    'EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)',
   );
   const NAME = keccak256('TONKEEPER');
   const VERSION = keccak256('1');
   const SALT = keccak256('TRON_WALLET');
   return keccak256(
-      encodeTronParams(DomainAbi, [
-          TIP712_DOMAIN_TYPEHASH,
-          NAME,
-          VERSION,
-          chainId,
-          contractAddress,
-          SALT
-      ])
+    encodeTronParams(DomainAbi, [
+      TIP712_DOMAIN_TYPEHASH,
+      NAME,
+      VERSION,
+      chainId,
+      contractAddress,
+      SALT,
+    ]),
   );
 }

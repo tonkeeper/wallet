@@ -1,4 +1,9 @@
 {
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+  },
   "extends": "../../tsconfig.json",
-  "include": ["./src"],
+  "include": ["./src"]
 }

@@ -2049,7 +2049,7 @@ const array = [
   'zoo',
 ];
 
-const map = {};
+const map: { [key in string]: boolean } = {};
 for (let item of array) {
   map[item] = true;
 }

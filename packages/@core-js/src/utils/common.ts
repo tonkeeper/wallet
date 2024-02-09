@@ -31,7 +31,10 @@ export function throttle<Args extends unknown[]>(
 export function excludeUndefinedValues<T extends object>(obj: T): T {
   return Object.keys(obj).reduce((acc, key) => {
     const _acc = acc;
-    if (obj[key] !== undefined) _acc[key] = obj[key];
+    const tKey = key as keyof T;
+    if (obj[tKey] !== undefined) {
+      _acc[tKey] = obj[tKey];
+    }
     return _acc;
   }, {} as T);
 }

@@ -15,7 +15,7 @@ type TonActivityListState = {
 
 export class TonActivityList {
   private cursor: number | null = null;
-  private groups = {};
+  private groups: { [key in string]: ActivitySection } = {};
 
   public state = new State<TonActivityListState>({
     isReloading: false,
