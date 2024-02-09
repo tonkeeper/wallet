@@ -45,14 +45,8 @@ import { tk } from '$wallet';
 import { getFlag } from '$utils/flags';
 import { Address } from '@tonkeeper/shared/Address';
 import { InscriptionAdditionalParams, TokenType } from '$core/Send/Send.interface';
-import {
-  WalletConfig,
-  WalletContractVersion,
-  WalletNetwork,
-  WalletType,
-} from '$wallet/WalletTypes';
+import { WalletConfig, WalletContractVersion, WalletNetwork } from '$wallet/WalletTypes';
 import { v4 as uuidv4 } from 'uuid';
-import { WalletColor } from '@tonkeeper/uikit';
 
 function* generateVaultWorker() {
   try {
@@ -69,10 +63,9 @@ function* generateVaultWorker() {
 
 function* restoreWalletWorker(action: RestoreWalletAction) {
   try {
-    const { mnemonics, onDone, config } = action.payload;
+    const { mnemonic, onDone, config, versions } = action.payload;
 
-    const vault = yield call(Vault.restore, uuidv4(), mnemonics, undefined, config);
-    yield put(walletActions.loadCurrentVersion(vault.getVersion()));
+    const vault = yield call(Vault.restore, uuidv4(), mnemonic, versions, config);
     yield put(walletActions.setGeneratedVault(vault));
     onDone();
 
@@ -89,22 +82,27 @@ function* createWalletWorker(action: CreateWalletAction) {
   try {
     const generatedVault = (yield select(walletSelector)).generatedVault as UnlockedVault;
 
-    // yield call(MainDB.enableNewSecurityFlow);
-
     const vaultJson = (yield call([generatedVault, 'toJSON'])) as VaultJSON;
 
-    const walletConfig: Omit<WalletConfig, 'pubkey' | 'identifier'> = {
-      name: 'Wallet',
-      color: WalletColor.SteelGray,
+    const versions = generatedVault.versions as WalletContractVersion[];
+
+    const walletConfig: Pick<
+      WalletConfig,
+      'network' | 'workchain' | 'configPubKey' | 'allowedDestinations'
+    > = {
       network: isTestnet ? WalletNetwork.testnet : WalletNetwork.mainnet,
-      type: WalletType.Regular,
       workchain: vaultJson.workchain ?? 0,
       configPubKey: vaultJson.configPubKey,
-      version: vaultJson.version as WalletContractVersion,
       allowedDestinations: vaultJson.allowedDestinations,
     };
 
-    yield call([tk, 'importWallet'], generatedVault.mnemonic, pin!, walletConfig);
+    yield call(
+      [tk, 'importWallet'],
+      generatedVault.mnemonic,
+      pin!,
+      versions,
+      walletConfig,
+    );
     if (isBiometryEnabled) {
       yield call([tk, 'enableBiometry'], pin!);
     }
@@ -652,7 +650,6 @@ function* migrateWorker(action: MigrateAction) {
 
 function* doMigration() {
   try {
-    tk.updateWallet({ version: WalletContractVersion.v4R2 });
     yield call(setMigrationState, null);
   } catch (e) {
     e && debugLog(e.message);

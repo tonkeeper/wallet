@@ -5,6 +5,7 @@ import { TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { TonPriceManager } from './managers/TonPriceManager';
 import { State } from '@tonkeeper/core/src/utils/State';
 import {
+  ImportWalletInfo,
   WalletConfig,
   WalletContractVersion,
   WalletNetwork,
@@ -15,6 +16,7 @@ import { Vault } from '@tonkeeper/core';
 import BigNumber from 'bignumber.js';
 import { v4 as uuidv4 } from 'uuid';
 import { WalletColor } from '@tonkeeper/uikit';
+import { Mnemonic } from '@tonkeeper/core/src/utils/mnemonic';
 
 class PermissionsManager {
   public notifications = true;
@@ -163,17 +165,96 @@ export class Tonkeeper {
   public async importWallet(
     mnemonic: string,
     passcode: string,
-    walletConfig: Omit<WalletConfig, 'pubkey' | 'identifier'>,
+    versions: WalletContractVersion[],
+    walletConfig: Pick<
+      WalletConfig,
+      'network' | 'workchain' | 'configPubKey' | 'allowedDestinations'
+    >,
   ) {
-    const identifier = uuidv4();
+    const newWallets: WalletConfig[] = [];
+    for (const version of versions) {
+      const identifier = uuidv4();
 
-    const pubkey = await this.vault.import(identifier, mnemonic, passcode);
+      const pubkey = await this.vault.import(identifier, mnemonic, passcode);
 
-    const config = { ...walletConfig, pubkey, identifier };
+      newWallets.push({
+        ...walletConfig,
+        name: versions.length > 1 ? `Wallet ${version}` : 'Wallet',
+        version,
+        color: WalletColor.SteelGray,
+        type: WalletType.Regular,
+        pubkey,
+        identifier,
+      });
+    }
+    const versionsOrder = Object.values(WalletContractVersion);
 
-    this.walletsStore.set(({ wallets }) => ({ wallets: [...wallets, config] }));
-    const wallet = await this.createWalletInstance(config);
-    this.setWallet(wallet);
+    const sortedWallets = newWallets.sort((a, b) => {
+      const indexA = versionsOrder.indexOf(a.version);
+      const indexB = versionsOrder.indexOf(b.version);
+      return indexA - indexB;
+    });
+
+    this.walletsStore.set(({ wallets }) => ({ wallets: [...wallets, ...sortedWallets] }));
+    const walletsInstances = await Promise.all(
+      sortedWallets.map((wallet) => this.createWalletInstance(wallet)),
+    );
+
+    this.setWallet(walletsInstances[0]);
+  }
+
+  public async getWalletsInfo(mnemonic: string, isTestnet: boolean) {
+    const keyPair = await Mnemonic.mnemonicToKeyPair(mnemonic.split(' '));
+
+    const pubkey = Buffer.from(keyPair.publicKey).toString('hex');
+
+    const tonapi = isTestnet ? this.tonapi.testnet : this.tonapi.mainnet;
+
+    const [{ accounts }, addresses] = await Promise.all([
+      tonapi.pubkeys.getWalletsByPublicKey(pubkey),
+      Address.fromPubkey(pubkey, false),
+    ]);
+
+    if (!addresses) {
+      throw new Error("Can't parse pubkey");
+    }
+
+    const accountsJettons = await Promise.all(
+      accounts.map((account) =>
+        tonapi.accounts.getAccountJettonsBalances({ accountId: account.address }),
+      ),
+    );
+
+    const versionByAddress = Object.keys(addresses).reduce(
+      (acc, version) => ({ ...acc, [addresses[version].raw]: version }),
+      {},
+    );
+
+    const wallets = accounts.map(
+      (account, index): ImportWalletInfo => ({
+        version: versionByAddress[account.address],
+        address: account.address,
+        balance: account.balance,
+        tokens: accountsJettons[index].balances.length > 0,
+      }),
+    );
+
+    if (!wallets.some((wallet) => wallet.version === WalletContractVersion.v4R2)) {
+      wallets.push({
+        version: WalletContractVersion.v4R2,
+        address: addresses.v4R2.raw,
+        balance: 0,
+        tokens: false,
+      });
+    }
+
+    const versions = Object.values(WalletContractVersion);
+
+    return wallets.sort((a, b) => {
+      const indexA = versions.indexOf(a.version);
+      const indexB = versions.indexOf(b.version);
+      return indexA - indexB;
+    });
   }
 
   public async addWatchOnlyWallet(address: string) {
@@ -286,37 +367,48 @@ export class Tonkeeper {
   }
 
   public async updateWallet(
-    config: Pick<Partial<WalletConfig>, 'name' | 'version' | 'color'>,
+    config: Pick<Partial<WalletConfig>, 'name' | 'color'>,
+    allVersions?: boolean,
   ) {
     try {
       if (!this.wallet) {
         return;
       }
 
-      const storedIndex = this.walletsStore.data.wallets.findIndex(
-        (item) => item.identifier === this.wallet.identifier,
+      const identifiers = allVersions
+        ? this.walletsStore.data.wallets
+            .filter((item) => item.pubkey === this.wallet.pubkey)
+            .map((item) => item.identifier)
+        : [this.wallet.identifier];
+
+      const updatedWallets = this.walletsStore.data.wallets.map(
+        (wallet): WalletConfig => {
+          if (identifiers.includes(wallet.identifier)) {
+            return {
+              ...wallet,
+              ...config,
+              name: allVersions
+                ? `${config.name} ${wallet.version}`
+                : config.name ?? wallet.name,
+            };
+          }
+          return wallet;
+        },
       );
-      const currentConfig = this.walletsStore.data.wallets[storedIndex];
 
-      const updatedWalletConfig: WalletConfig = {
-        ...currentConfig,
-        ...config,
-      };
+      this.walletsStore.set({ wallets: updatedWallets });
 
-      this.walletsStore.set(({ wallets }) => {
-        wallets[storedIndex] = updatedWalletConfig;
-        return { wallets };
+      identifiers.forEach((identifier) => {
+        const currentConfig = updatedWallets.find(
+          (item) => item.identifier === identifier,
+        );
+        const wallet = this.wallets.get(identifier);
+        if (wallet && currentConfig) {
+          wallet.setConfig(currentConfig);
+        }
       });
 
-      this.wallet.setConfig(updatedWalletConfig);
-
       this.emitChangeWallet();
-
-      // recreate wallet only if version has been changed
-      if (currentConfig.version !== updatedWalletConfig.version) {
-        await this.createWalletInstance(updatedWalletConfig);
-        this.emitChangeWallet();
-      }
     } catch {}
   }
 

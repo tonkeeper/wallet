@@ -1,10 +1,7 @@
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
-import { alwaysShowV4R1Selector, mainActions } from '$store/main';
-import { MainDB } from '$database';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { DevFeature, useDevFeaturesToggle } from '$store';
 import { List, Screen, copyText } from '@tonkeeper/uikit';
-import { useDispatch, useSelector } from 'react-redux';
 import { Switch } from 'react-native-gesture-handler';
 import DeviceInfo from 'react-native-device-info';
 import { useNavigation } from '@tonkeeper/router';
@@ -18,8 +15,6 @@ import { tk } from '$wallet';
 
 export const DevMenu: FC = () => {
   const nav = useNavigation();
-  const dispatch = useDispatch();
-  const alwaysShowV4R1 = useSelector(alwaysShowV4R1Selector);
   const addNotification = useNotificationsStore((state) => state.actions.addNotification);
 
   const handleLogs = useCallback(() => {
@@ -29,11 +24,6 @@ export const DevMenu: FC = () => {
   const handleTestCrash = useCallback(() => {
     crashlytics().crash();
   }, []);
-
-  const handleShowV4R1 = useCallback(() => {
-    dispatch(mainActions.setShowV4R1(!alwaysShowV4R1));
-    MainDB.setShowV4R1(!alwaysShowV4R1);
-  }, [alwaysShowV4R1, dispatch]);
 
   const handleClearNFTsCache = useCallback(() => {
     tk.wallet.nfts.reset();
@@ -149,12 +139,6 @@ export const DevMenu: FC = () => {
               <List.Item onPress={handleComponents} title="Components" />
             </>
           )}
-          <List.Item
-            title=" Force show v4r1"
-            rightContent={
-              <Switch value={alwaysShowV4R1} onValueChange={handleShowV4R1} />
-            }
-          />
         </List>
         {/* <CellSection>
             <PopupSelect

@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { CryptoCurrencies, SelectableVersion } from '$shared/constants';
 import { getWalletName } from '$shared/dynamicConfig';
 
 export interface MigrationState {

@@ -3,6 +3,7 @@ import { UnlockedVault, Wallet } from '$blockchain';
 import { CryptoCurrency, SelectableVersion } from '$shared/constants';
 import { InsufficientFundsParams } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
+import { WalletContractVersion } from '$wallet/WalletTypes';
 
 export type OldWalletBalanceItem = {
   version: string;
@@ -16,7 +17,6 @@ export type Address = {
 };
 
 export interface WalletState {
-  isLoaded: boolean;
   isRefreshing: boolean;
   generatedVault: UnlockedVault | null;
   version: SelectableVersion;
@@ -34,7 +34,8 @@ export type SetWalletAction = PayloadAction<Wallet>;
 export type SetReadableAddress = PayloadAction<Address | null>;
 
 export type RestoreWalletAction = PayloadAction<{
-  mnemonics: string;
+  mnemonic: string;
+  versions: WalletContractVersion[];
   config: any;
   onDone: () => void;
   onFail: () => void;

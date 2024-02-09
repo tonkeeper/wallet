@@ -69,7 +69,6 @@ export const WalletScreen = memo(({ navigation }) => {
 
   const { isReloading: isRefreshing, updatedAt: walletUpdatedAt } = useWalletStatus();
 
-  const { isLoaded } = useSelector(walletSelector);
   const isFocused = useIsFocused();
 
   const tronBalances = undefined;
@@ -299,7 +298,7 @@ export const WalletScreen = memo(({ navigation }) => {
             />
           </List>
         </Screen.ScrollView>
-        {isLoaded && !wallet && (
+        {!wallet && (
           <View style={[styles.createWalletContainerOuter, { bottom: tabBarHeight }]}>
             <View style={styles.createWalletContainerInner}>
               <Button onPress={handleCreateWallet} title={t('balances_setup_wallet')} />

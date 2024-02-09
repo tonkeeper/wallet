@@ -2,11 +2,8 @@ import React, { useCallback } from 'react';
 import axios from 'axios';
 import queryString from 'query-string';
 import TonWeb from 'tonweb';
-import { useSelector } from 'react-redux';
 import { Linking, StyleSheet } from 'react-native';
 import { useTheme } from '$hooks/useTheme';
-import { SelectableVersionsConfig } from '$shared/constants';
-import { walletSelector } from '$store/wallet';
 import { Button, Icon, List, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
   delay,
@@ -49,7 +46,6 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   const showNotifications = useNotificationsStore(shouldShowNotifications);
   const [withNotifications, setWithNotifications] = React.useState(showNotifications);
 
-  const { version } = useSelector(walletSelector);
   const maskedAddress = Address.toShort(animation.address);
 
   const handleSwitchNotifications = useCallback(() => {
@@ -327,9 +323,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
               <Text color="foregroundTertiary" variant="body1" textAlign="center">
                 {maskedAddress}{' '}
               </Text>
-              {SelectableVersionsConfig[version]
-                ? SelectableVersionsConfig[version].label
-                : null}
+              {tk.wallet.config.version}
             </Text>
           </S.Content>
           {isTonConnectV2 && showNotifications ? (

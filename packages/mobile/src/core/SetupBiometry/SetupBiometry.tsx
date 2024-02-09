@@ -3,23 +3,15 @@ import LottieView from 'lottie-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useDispatch } from 'react-redux';
-import { useRoute } from '@react-navigation/native';
 
 import { SetupBiometryProps } from './SetupBiometry.interface';
 import * as S from './SetupBiometry.style';
 import { Button, NavBar, Text } from '$uikit';
 import { ns, platform } from '$utils';
-import {
-  openSetupNotifications,
-  openSetupWalletDone,
-  ResetPinStackRouteNames,
-  TabsStackRouteNames,
-} from '$navigation';
+import { openSetupNotifications, openSetupWalletDone } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { t } from '@tonkeeper/shared/i18n';
 import { getPermission } from '$utils/messaging';
-import { Toast } from '$store';
-import { navigate } from '$navigation/imperative';
 import { Steezy } from '@tonkeeper/uikit';
 
 const LottieFaceId = require('$assets/lottie/faceid.json');
@@ -28,7 +20,6 @@ const LottieTouchId = require('$assets/lottie/touchid.json');
 export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
   const { pin, biometryType } = route.params;
 
-  const routeNode = useRoute();
   const dispatch = useDispatch();
 
   const { bottom: bottomInset } = useSafeAreaInsets();
@@ -52,16 +43,11 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
           isBiometryEnabled,
           pin,
           onDone: async () => {
-            if (routeNode.name === ResetPinStackRouteNames.SetupBiometry) {
-              navigate(TabsStackRouteNames.Balances);
-              Toast.success();
+            const hasNotificationPermission = await getPermission();
+            if (hasNotificationPermission) {
+              openSetupWalletDone();
             } else {
-              const hasNotificationPermission = await getPermission();
-              if (hasNotificationPermission) {
-                openSetupWalletDone();
-              } else {
-                openSetupNotifications();
-              }
+              openSetupNotifications();
             }
           },
           onFail: () => {
@@ -70,7 +56,7 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
         }),
       );
     },
-    [dispatch, pin, routeNode.name],
+    [dispatch, pin],
   );
 
   const biometryNameGenitive = useMemo(() => {

@@ -4,19 +4,6 @@ import { getWalletName } from '$shared/dynamicConfig';
 import { LogItem } from '$store/main/interface';
 
 export class MainDB {
-  static async setShowV4R1(show: boolean) {
-    if (show) {
-      await AsyncStorage.setItem('show_v4r1', 'true');
-    } else {
-      await AsyncStorage.setItem('show_v4r1', 'false');
-    }
-  }
-
-  static async getShowV4R1() {
-    let show = await AsyncStorage.getItem('show_v4r1');
-    return show === 'true';
-  }
-
   static async timeSyncedDismissedTimestamp(): Promise<false | number> {
     const timeSyncedDismissed = await AsyncStorage.getItem('timeSyncedDismissed');
     return (

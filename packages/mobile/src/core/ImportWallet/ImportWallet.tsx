@@ -1,63 +1,53 @@
 import React, { FC, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import * as S from './ImportWallet.style';
 import { NavBar } from '$uikit';
 import { useKeyboardHeight } from '$hooks/useKeyboardHeight';
-import { walletActions } from '$store/wallet';
-import { openCreatePin, openSetupWalletDone } from '$navigation';
 import { ImportWalletForm } from '$shared/components';
-import { tk } from '$wallet';
-import { getLastEnteredPasscode } from '$store/wallet/sagas';
-import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { RouteProp } from '@react-navigation/native';
 import {
   ImportWalletStackParamList,
   ImportWalletStackRouteNames,
 } from '$navigation/ImportWalletStack/types';
+import { useNavigation } from '@tonkeeper/router';
+import { useImportWallet } from '$hooks/useImportWallet';
+import { tk } from '$wallet';
 
 export const ImportWallet: FC<{
   route: RouteProp<ImportWalletStackParamList, ImportWalletStackRouteNames.ImportWallet>;
 }> = (props) => {
-  const dispatch = useDispatch();
   const keyboardHeight = useKeyboardHeight();
-  const unlockVault = useUnlockVault();
+  const nav = useNavigation();
+  const doImportWallet = useImportWallet();
 
   const isTestnet = !!props.route.params?.testnet;
 
   const handleWordsFilled = useCallback(
-    (mnemonics: string, config: any, onEnd: () => void) => {
-      dispatch(
-        walletActions.restoreWallet({
-          mnemonics,
-          config,
-          onDone: async () => {
-            if (tk.walletForUnlock) {
-              try {
-                await unlockVault();
-                const pin = getLastEnteredPasscode();
+    async (mnemonic: string, lockupConfig: any, onEnd: () => void) => {
+      try {
+        const walletsInfo = await tk.getWalletsInfo(mnemonic, isTestnet);
 
-                dispatch(
-                  walletActions.createWallet({
-                    pin,
-                    isTestnet,
-                    onDone: () => {
-                      openSetupWalletDone();
-                      onEnd();
-                    },
-                    onFail: () => {},
-                  }),
-                );
-              } catch {}
-            } else {
-              openCreatePin();
-              onEnd();
-            }
-          },
-          onFail: () => onEnd(),
-        }),
-      );
+        const shouldChooseWallets = !lockupConfig && walletsInfo.length > 1;
+
+        if (shouldChooseWallets) {
+          nav.navigate(ImportWalletStackRouteNames.ChooseWallets, {
+            walletsInfo,
+            mnemonic,
+            lockupConfig,
+            isTestnet,
+          });
+          onEnd();
+          return;
+        }
+
+        const versions = walletsInfo.map((item) => item.version);
+
+        await doImportWallet(mnemonic, lockupConfig, versions, isTestnet);
+        onEnd();
+      } catch {
+        onEnd();
+      }
     },
-    [dispatch, isTestnet, unlockVault],
+    [doImportWallet, isTestnet, nav],
   );
 
   return (

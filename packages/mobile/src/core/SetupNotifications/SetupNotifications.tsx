@@ -9,27 +9,37 @@ import { debugLog } from '$utils/debugLog';
 import { useNotifications } from '$hooks/useNotifications';
 import { saveDontShowReminderNotifications } from '$utils/messaging';
 import { Toast } from '$store';
+import { useWallets } from '@tonkeeper/shared/hooks';
+import { walletGeneratedVaultSelector } from '$store/wallet';
+import { useSelector } from 'react-redux';
 
 export const SetupNotifications: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
   const notifications = useNotifications();
   const safeArea = useSafeAreaInsets();
+  const wallets = useWallets();
+
+  const generatedVault = useSelector(walletGeneratedVaultSelector);
 
   React.useEffect(() => {
     saveDontShowReminderNotifications();
   }, []);
 
+  const versions = generatedVault?.versions ?? [];
+
+  const withoutCustomize = wallets.length === versions.length;
+
   const handleEnableNotifications = React.useCallback(async () => {
     try {
       setLoading(true);
       await notifications.subscribe();
-      openSetupWalletDone();
+      openSetupWalletDone(withoutCustomize);
     } catch (err) {
       setLoading(false);
       Toast.fail(err?.massage);
       debugLog('[SetupNotifications]:', err);
     }
-  }, [notifications]);
+  }, [notifications, withoutCustomize]);
 
   return (
     <Screen>
@@ -39,7 +49,7 @@ export const SetupNotifications: React.FC = () => {
             size="navbar_small"
             mode="secondary"
             style={{ marginRight: ns(16) }}
-            onPress={() => openSetupWalletDone()}
+            onPress={() => openSetupWalletDone(withoutCustomize)}
           >
             {t('later')}
           </Button>

@@ -16,7 +16,6 @@ export enum AppStackRouteNames {
   AccessConfirmation = 'AccessConfirmation',
   MainAccessConfirmation = 'MainAccessConfirmation',
   ChangePin = 'ChangePin',
-  ResetPin = 'AppResetPin',
   NFT = 'NFT',
   WebView = 'WebView',
   DevStack = 'DevStack',
@@ -79,11 +78,6 @@ export enum ActivityStackRouteNames {
   Notifications = 'Notifications',
 }
 
-export enum ResetPinStackRouteNames {
-  ResetPin = 'ResetPin',
-  SetupBiometry = 'ResetPinSetupBiometry',
-}
-
 export enum DevComponents {
   DevComponentList = 'DevComponentList',
   DevDeeplinking = 'DevDeeplinking',
@@ -99,7 +93,6 @@ type ScreenNames =
   | `${MainStackRouteNames}`
   | `${TabsStackRouteNames}`
   | `${SettingsStackRouteNames}`
-  | `${ResetPinStackRouteNames}`
   | `${DevComponents}`;
 
 type ScreenProps = { [key in ScreenNames]: any };

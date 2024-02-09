@@ -72,3 +72,10 @@ export interface WalletConfig {
   allowedDestinations?: string;
   configPubKey?: string;
 }
+
+export interface ImportWalletInfo {
+  version: WalletContractVersion;
+  address: string;
+  balance: number;
+  tokens: boolean;
+}

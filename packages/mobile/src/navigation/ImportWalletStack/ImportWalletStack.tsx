@@ -5,6 +5,7 @@ import { ImportWalletStackParamList, ImportWalletStackRouteNames } from './types
 import { CreatePin, ImportWallet, SetupBiometry } from '$core';
 import { SetupNotifications } from '$core/SetupNotifications/SetupNotifications';
 import { RouteProp } from '@react-navigation/native';
+import { ChooseWallets } from '../../screens';
 
 const Stack = createNativeStackNavigator<ImportWalletStackParamList>();
 
@@ -26,6 +27,10 @@ export const ImportWalletStack = memo(() => {
       <Stack.Screen
         name={ImportWalletStackRouteNames.ImportWallet}
         component={ImportWallet}
+      />
+      <Stack.Screen
+        name={ImportWalletStackRouteNames.ChooseWallets}
+        component={ChooseWallets}
       />
       <Stack.Screen
         name={ImportWalletStackRouteNames.CreatePasscode}

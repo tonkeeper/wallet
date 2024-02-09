@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { Modal } from '@tonkeeper/uikit';
 
@@ -8,31 +8,21 @@ import { useNavigation, SheetActions } from '@tonkeeper/router';
 import { delay } from '$utils';
 import { push } from '$navigation/imperative';
 import { Address } from '@tonkeeper/shared/Address';
-import { useWallet } from '@tonkeeper/shared/hooks';
-import { tk } from '$wallet';
 
 export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () => void }>(
   (props) => {
-    const wallet = useWallet();
     const nav = useNavigation();
 
-    const foundVersion = useMemo(() => {
-      let found = Object.values(wallet.tonAllAddresses).find((address) =>
-        Address.compare(address.raw, props.source),
-      );
-      if (!found) {
-        return false;
-      }
-      return found[0];
-    }, [props.source, wallet]);
+    // MULTIWALLET TODO
+    const foundVersion = false;
 
     const handleCloseModal = useCallback(() => nav.goBack(), [nav]);
-    const handleSwitchVersion = useCallback(async () => {
+    const handleSwitchWallet = useCallback(async () => {
       if (!foundVersion) {
         return;
       }
       nav.goBack();
-      tk.updateWallet({ version: foundVersion });
+      // tk.updateWallet({ version: foundVersion });
       await delay(100);
       props.onSwitchAddress();
     }, [foundVersion, nav, props]);
@@ -65,7 +55,7 @@ export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () =
               <Button
                 style={{ marginBottom: 16 }}
                 mode="primary"
-                onPress={handleSwitchVersion}
+                onPress={handleSwitchWallet}
               >
                 {t('txActions.signRaw.addressMismatch.wrongVersion.switch')}
               </Button>

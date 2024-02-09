@@ -1,11 +1,10 @@
 import React from 'react';
-import { walletSelector } from '$store/wallet';
-import { useSelector } from 'react-redux';
 import { useNotifications } from './useNotifications';
 import { getPermission, getSubscribeStatus, SUBSCRIBE_STATUS } from '$utils/messaging';
+import { useWallet } from '@tonkeeper/shared/hooks';
 
 export const useNotificationsSubscribe = () => {
-  const { wallet } = useSelector(walletSelector);
+  const wallet = useWallet();
   const notifications = useNotifications();
 
   const isSubscribe = React.useRef(false);
@@ -13,7 +12,8 @@ export const useNotificationsSubscribe = () => {
     async function tryToSubscribe() {
       const subscribeStatus = await getSubscribeStatus();
       if (
-        (wallet && !isSubscribe.current) &&
+        wallet &&
+        !isSubscribe.current &&
         subscribeStatus !== SUBSCRIBE_STATUS.UNSUBSCRIBED
       ) {
         const hasPermission = await getPermission();

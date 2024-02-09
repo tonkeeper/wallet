@@ -26,11 +26,9 @@ import {
   SetReadableAddress,
   SetUpdatedAtAction,
 } from '$store/wallet/interface';
-import { SwitchVersionAction } from '$store/main/interface';
 import { SelectableVersions } from '$shared/constants';
 
 const initialState: WalletState = {
-  isLoaded: false,
   isRefreshing: false,
   generatedVault: null,
   wallet: null,
@@ -52,9 +50,7 @@ export const { actions, reducer } = createSlice({
     setGeneratedVault(state, action: SetGeneratedVaultAction) {
       state.generatedVault = action.payload;
     },
-    createWallet(state, __: CreateWalletAction) {
-      state.isLoaded = false;
-    },
+    createWallet(_, __: CreateWalletAction) {},
     loadBalances() {},
     setWallet(state, action: SetWalletAction) {
       state.wallet = action.payload;
@@ -72,23 +68,11 @@ export const { actions, reducer } = createSlice({
     setUpdatedAt(state, action: SetUpdatedAtAction) {
       state.updatedAt = action.payload;
     },
-    endLoading(state) {
-      state.isLoaded = true;
-    },
     setAddress(state, action: SetAddressesAction) {
       state.address = {
         ...state.address,
         ...action.payload,
       };
-    },
-    switchVersion(state, action: SwitchVersionAction) {
-      state.version = action.payload;
-    },
-    loadCurrentVersion(state, action: SwitchVersionAction) {
-      state.version = action.payload;
-    },
-    resetVersion(state) {
-      state.version = SelectableVersions.V4R2;
     },
     confirmSendCoins(_, __: ConfirmSendCoinsAction) {},
     sendCoins(_, __: SendCoinsAction) {},

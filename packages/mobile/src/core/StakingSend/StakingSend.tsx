@@ -11,7 +11,7 @@ import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { Toast } from '$store';
 import { getStakingPoolByAddress } from '@tonkeeper/shared/utils/staking';
-import { walletSelector, walletWalletSelector } from '$store/wallet';
+import { walletWalletSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
 import { calculateMessageTransferAmount, delay, parseLocaleNumber } from '$utils';
 import { getTimeSec } from '$utils/getTimeSec';
@@ -35,7 +35,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { MessageConsequences, PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
-import { useStakingState } from '@tonkeeper/shared/hooks';
+import { useStakingState, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 
 interface Props {
@@ -117,8 +117,8 @@ export const StakingSend: FC<Props> = (props) => {
     () => stepsScrollTop.value[currentStep.id] || 0,
   );
 
-  const { address } = useSelector(walletSelector);
-  const walletAddress = address?.ton || '';
+  const wallet = useWallet();
+  const walletAddress = wallet.address.ton.raw;
   const walletLegacy = useSelector(walletWalletSelector)!;
   const operations = useInstance(() => new NFTOperations(walletLegacy));
 

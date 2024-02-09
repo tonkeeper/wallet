@@ -8,7 +8,7 @@ import { mainActions, mainSelector } from './index';
 import { batchActions } from '$store';
 import { walletActions } from '$store/wallet';
 import * as SplashScreen from 'expo-splash-screen';
-import { WalletCurrency, SelectableVersion } from '$shared/constants';
+import { WalletCurrency } from '$shared/constants';
 import {
   getHiddenNotifications,
   getIntroShown,
@@ -41,7 +41,6 @@ function* initWorker() {
 }
 
 export function* initHandler() {
-  const showV4R1 = yield call(MainDB.getShowV4R1);
   const isIntroShown = yield call(getIntroShown);
   const timeSyncedDismissed = yield call(MainDB.timeSyncedDismissedTimestamp);
 
@@ -57,7 +56,6 @@ export function* initHandler() {
       mainActions.endInitiating({
         fiatCurrency: WalletCurrency.Usd,
       }),
-      mainActions.setShowV4R1(showV4R1),
       mainActions.toggleIntro(!isIntroShown),
       mainActions.setTimeSyncedDismissed(timeSyncedDismissed),
     ),
@@ -67,11 +65,6 @@ export function* initHandler() {
   yield put(mainActions.setLogs(logs));
 
   if (tk.wallet) {
-    yield put(
-      walletActions.loadCurrentVersion(
-        tk.wallet.config.version as unknown as SelectableVersion,
-      ),
-    );
     useSwapStore.getState().actions.fetchAssets();
   }
 
@@ -79,7 +72,6 @@ export function* initHandler() {
 
   yield put(favoritesActions.loadSuggests());
   yield put(mainActions.getTimeSynced());
-  yield put(walletActions.endLoading());
   SplashScreen.hideAsync();
 
   yield delay(1000);

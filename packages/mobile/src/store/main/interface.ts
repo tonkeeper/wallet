@@ -1,5 +1,5 @@
 import { PayloadAction } from '@reduxjs/toolkit';
-import { FiatCurrency, SelectableVersion } from '$shared/constants';
+import { FiatCurrency } from '$shared/constants';
 import { InternalNotificationModel } from '$store/models';
 import { AccentKey, AccentNFTIcon } from '$styled';
 
@@ -24,18 +24,14 @@ export interface MainState {
   isUnlocked: boolean;
   accent: AccentKey;
   tonCustomIcon: AccentNFTIcon | null;
-  alwaysShowV4R1: boolean;
 }
 
 export type EndInitiatingAction = PayloadAction<{
   fiatCurrency: FiatCurrency;
 }>;
 export type ToggleIntroAction = PayloadAction<boolean>;
-export type SetTestnetAction = PayloadAction<boolean>;
 export type SetTimeSyncedAction = PayloadAction<boolean>;
 export type SetTimeSyncedDismissedAction = PayloadAction<false | number>;
-export type ToggleTestnetAction = PayloadAction<{ isTestnet: boolean }>;
-export type SwitchVersionAction = PayloadAction<SelectableVersion>;
 export type UpdateBadHostsAction = PayloadAction<string[]>;
 export type SetNotificationsAction = PayloadAction<InternalNotificationModel[]>;
 export type HideNotificationAction = PayloadAction<InternalNotificationModel>;
@@ -48,4 +44,3 @@ export type AddLogAction = PayloadAction<{
 }>;
 export type SetLogsAction = PayloadAction<LogItem[]>;
 export type SetUnlockedAction = PayloadAction<boolean>;
-export type SetShowV4R1 = PayloadAction<boolean>;

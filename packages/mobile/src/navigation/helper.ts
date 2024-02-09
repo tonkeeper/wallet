@@ -4,7 +4,6 @@ import {
   AppStackRouteNames,
   BrowserStackRouteNames,
   MainStackRouteNames,
-  ResetPinStackRouteNames,
   SettingsStackRouteNames,
 } from '$navigation/navigationNames';
 import { CryptoCurrency } from '$shared/constants';
@@ -101,19 +100,9 @@ export function openSetupNotifications() {
   }
 }
 
-export function openSetupBiometryAfterRestore(
-  pin: string,
-  biometryType: LocalAuthentication.AuthenticationType,
-) {
-  push(ResetPinStackRouteNames.SetupBiometry, {
-    pin,
-    biometryType,
-  });
-}
-
-export function openSetupWalletDone() {
+export function openSetupWalletDone(withoutCustomize?: boolean) {
   replace(MainStackRouteNames.Tabs);
-  if (tk.wallets.size > 1) {
+  if (!withoutCustomize && tk.wallets.size > 1) {
     navigate(AppStackRouteNames.CustomizeWallet);
   }
 }
@@ -197,10 +186,6 @@ export function openManageTokens(initialTab?: string) {
 
 export function openChangePin() {
   push(AppStackRouteNames.ChangePin);
-}
-
-export function openResetPin() {
-  push(AppStackRouteNames.ResetPin);
 }
 
 export function openNFT(keyPair: NFTKeyPair) {

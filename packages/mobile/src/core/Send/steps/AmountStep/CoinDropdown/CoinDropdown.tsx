@@ -1,12 +1,10 @@
 import { useJettonBalances } from '$hooks/useJettonBalances';
-import { CryptoCurrencies, Decimals, SecondaryCryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { JettonBalanceModel } from '$store/models';
-import { walletSelector } from '$store/wallet';
 import { Steezy } from '$styles';
 import { Highlight, Icon, PopupSelect, Spacer, Text, View } from '$uikit';
 import { ns } from '$utils';
 import React, { FC, memo, useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
 import { DEFAULT_TOKEN_LOGO, JettonIcon, TonIcon } from '@tonkeeper/uikit';
 import {

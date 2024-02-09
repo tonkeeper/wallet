@@ -80,14 +80,14 @@ export class Vault {
     // whether the password is required or not. We use password only for on-device storage,
     // and keep *this* password empty.
     const phrase = (await Ton.mnemonic.generateMnemonic(24)).join(' ');
-    return await Vault.restore(name, phrase, DEFAULT_VERSION);
+    return await Vault.restore(name, phrase, [DEFAULT_VERSION]);
   }
 
   // Restores the wallet from the mnemonic phrase.
   static async restore(
     name: string,
     phrase: string,
-    version?: string,
+    versions: string[],
     lockupConfig?: any,
   ): Promise<UnlockedVault> {
     //if (!bip39.validateMnemonic(phrase, bip39.DEFAULT_WORDLIST)) {
@@ -107,54 +107,16 @@ export class Vault {
     };
 
     if (lockupConfig) {
-      version = lockupConfig.wallet_type;
+      versions = [lockupConfig.wallet_type];
       info.workchain = lockupConfig.workchain;
       info.configPubKey = lockupConfig.config_pubkey;
       info.allowedDestinations = lockupConfig.allowed_destinations;
       console.log('lockup wallet detected');
-    } else {
-      if (!version) {
-        try {
-          const provider = new TonWeb.HttpProvider(config.get('tonEndpoint'), {
-            apiKey: config.get('tonEndpointAPIKey'),
-          });
-          const ton = new TonWeb(provider);
-
-          let hasBalance: { balance: BN; version: string }[] = [];
-          for (let WalletClass of ton.wallet.list) {
-            const wallet = new WalletClass(ton.provider, {
-              publicKey: info.tonPubkey,
-              wc: 0,
-            });
-            const walletAddress = (await wallet.getAddress()).toString(true, true, true);
-            const tonapi = createTonApiInstance();
-            const walletInfo = await tonapi.accounts.getAccount(walletAddress);
-            const walletBalance = new BN(walletInfo.balance);
-            if (walletBalance.gt(new BN(0))) {
-              hasBalance.push({ balance: walletBalance, version: wallet.getName() });
-            }
-          }
-
-          if (hasBalance.length > 0) {
-            hasBalance.sort((a, b) => {
-              return a.balance.cmp(b.balance);
-            });
-            version = hasBalance[hasBalance.length - 1].version;
-          } else {
-            version = DEFAULT_VERSION;
-          }
-          console.log('version detected', version);
-        } catch (e) {
-          throw new Error('Failed to get addresses balances');
-        }
-      } else {
-        console.log('version passed', version);
-      }
     }
 
-    info.version = version;
+    info.version = versions[0];
 
-    return new UnlockedVault(info, phrase);
+    return new UnlockedVault(info, phrase, versions);
   }
 
   // Returns true if the device has a passcode/biometric protection.
@@ -429,12 +391,14 @@ export class EncryptedVault extends Vault {
 export class UnlockedVault extends Vault {
   // Mnemonic phrase string that represents the root for all the keys.
   public mnemonic: string;
+  public versions?: string[];
 
   // Private constructor.
   // Use `Vault.generate` to create a new vault and `Vault.fromJSON` to load one from disk.
-  constructor(info: VaultInfo, mnemonic: string) {
+  constructor(info: VaultInfo, mnemonic: string, versions?: string[]) {
     super(info);
     this.mnemonic = mnemonic;
+    this.versions = versions;
   }
 
   // Returns true if the vault is currently locked.

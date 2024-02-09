@@ -1,3 +1,4 @@
+import { walletActions, walletGeneratedVaultSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
 import { tk } from '$wallet';
 import { useNavigation } from '@tonkeeper/router';
@@ -22,14 +23,20 @@ import { LayoutChangeEvent } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useDispatch, useSelector } from 'react-redux';
 
 const COLORS_LIST = Object.values(WalletColor);
 
 const COLOR_ITEM_WIDTH = ns(36) + ns(12);
 
 export const CustomizeWallet = memo(() => {
+  const generatedVault = useSelector(walletGeneratedVaultSelector);
+  const versions = generatedVault?.versions ?? [];
+  const allAddedVersions = versions.length > 1;
+  const dispatch = useDispatch();
+
   const wallet = useWallet();
-  const [name, setName] = useState(wallet.config.name);
+  const [name, setName] = useState(allAddedVersions ? 'Wallet' : wallet.config.name);
   const [selectedColor, setSelectedColor] = useState(wallet.config.color);
   const nav = useNavigation();
 
@@ -55,12 +62,19 @@ export const CustomizeWallet = memo(() => {
   }, [containerWidth]);
 
   const handleSave = useCallback(() => {
-    tk.updateWallet({ name, color: selectedColor });
+    tk.updateWallet({ name: name.trim(), color: selectedColor }, allAddedVersions);
     nav.goBack();
-  }, [name, nav, selectedColor]);
+  }, [allAddedVersions, name, nav, selectedColor]);
 
   const handleLayout = useCallback((event: LayoutChangeEvent) => {
     setContainerWidth(event.nativeEvent.layout.width);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      dispatch(walletActions.clearGeneratedVault());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

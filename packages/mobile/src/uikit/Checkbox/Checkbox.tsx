@@ -102,5 +102,6 @@ const styles = Steezy.create(({ colors }) => ({
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
+    margin: 3,
   },
 }));

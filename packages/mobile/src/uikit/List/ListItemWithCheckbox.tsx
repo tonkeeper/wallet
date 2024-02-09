@@ -19,13 +19,11 @@ export const ListItemWithCheckbox = memo<ListItemWithCheckboxProps>((props) => {
       {...props}
       onPress={onPress || onChange}
       value={
-        <View style={{ marginRight: 3 }}>
-          <Checkbox
-            isPressedListItem={isPressedListItem}
-            checked={checked}
-            onChange={onChange}
-          />
-        </View>
+        <Checkbox
+          isPressedListItem={isPressedListItem}
+          checked={checked}
+          onChange={onChange}
+        />
       }
     />
   );

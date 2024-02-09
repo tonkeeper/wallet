@@ -12,7 +12,6 @@ import { Icon, PopupSelect, ScrollHandler, Spacer, Text } from '$uikit';
 import { Icon as NewIcon } from '@tonkeeper/uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
-import { alwaysShowV4R1Selector } from '$store/main';
 import { List } from '@tonkeeper/uikit';
 import {
   AppStackRouteNames,
@@ -48,14 +47,12 @@ import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 import { config } from '$config';
 import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
 import {
-  useBalancesState,
   useNftsState,
   useWallet,
   useWalletCurrency,
   useWallets,
 } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
-import { WalletContractVersion } from '$wallet/WalletTypes';
 import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
 import { WalletListItem } from '@tonkeeper/shared/components';
 import { useSubscriptions } from '@tonkeeper/shared/hooks/useSubscriptions';
@@ -83,13 +80,6 @@ export const Settings: FC = () => {
     (state) => Object.values(state.subscriptions).length > 0,
   );
   const wallet = useWallet();
-  const balances = useBalancesState();
-  const alwaysShowV4R1 = useSelector(alwaysShowV4R1Selector);
-  const showV4R1 =
-    alwaysShowV4R1 ||
-    balances.tonOldBalances.some(
-      (oldBalance) => oldBalance.version === 'v4R1' && oldBalance.balance,
-    );
   const shouldShowTokensButton = useShouldShowTokensButton();
   const showNotifications = useNotificationsStore(shouldShowNotifications);
 
@@ -169,25 +159,7 @@ export const Settings: FC = () => {
     openNotifications();
   }, []);
 
-  const versions = useMemo(() => {
-    return Object.values(WalletContractVersion)
-      .reverse()
-      .filter((key) => {
-        if (key === WalletContractVersion.v4R1) {
-          return showV4R1;
-        }
-        if (key === WalletContractVersion.LockupV1) {
-          return false;
-        }
-        return true;
-      });
-  }, [showV4R1]);
-
   const searchEngineVariants = Object.values(SearchEngine);
-
-  const handleChangeVersion = useCallback((version: WalletContractVersion) => {
-    tk.updateWallet({ version });
-  }, []);
 
   const handleSwitchLanguage = useCallback(() => {
     Alert.alert(t('language.language_alert.title'), undefined, [
@@ -380,42 +352,6 @@ export const Settings: FC = () => {
               title={t('settings_primary_currency')}
               onPress={() => nav.navigate('ChooseCurrency')}
             />
-
-            {!!wallet && (
-              <PopupSelect
-                items={versions}
-                selected={wallet.config.version}
-                onChange={handleChangeVersion}
-                keyExtractor={(item) => item}
-                width={220}
-                renderItem={(version) => (
-                  <S.WalletVersion>
-                    <Text variant="label1" style={{ marginRight: ns(8) }}>
-                      {version}
-                    </Text>
-                    <Text variant="body1" color="foregroundSecondary">
-                      {
-                        wallet.tonAllAddresses[
-                          version as Exclude<
-                            WalletContractVersion,
-                            WalletContractVersion.LockupV1
-                          >
-                        ].short
-                      }
-                    </Text>
-                  </S.WalletVersion>
-                )}
-              >
-                <List.Item
-                  value={
-                    <Text variant="label1" color="accentPrimary">
-                      {wallet.config.version}
-                    </Text>
-                  }
-                  title={t('settings_wallet_version')}
-                />
-              </PopupSelect>
-            )}
             {isBatteryVisible && (
               <List.Item
                 value={

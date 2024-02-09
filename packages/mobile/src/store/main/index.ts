@@ -10,7 +10,6 @@ import {
   SetAccentAction,
   SetLogsAction,
   SetNotificationsAction,
-  SetShowV4R1,
   SetTimeSyncedAction,
   SetTimeSyncedDismissedAction,
   SetTonCustomIcon,
@@ -35,7 +34,6 @@ const initialState: MainState = {
   isUnlocked: false,
   accent: AccentKey.default,
   tonCustomIcon: null,
-  alwaysShowV4R1: false,
 };
 
 export const { actions, reducer } = createSlice({
@@ -49,10 +47,6 @@ export const { actions, reducer } = createSlice({
 
       state.isInitiating = false;
       state.fiatCurrency = fiatCurrency;
-    },
-
-    setShowV4R1(state, action: SetShowV4R1) {
-      state.alwaysShowV4R1 = action.payload;
     },
 
     setUnlocked(state, action: SetUnlockedAction) {
@@ -161,11 +155,6 @@ export const accentTonIconSelector = createSelector(
   walletWalletSelector,
   customIconSelector,
   (wallet, tonCustomIcon) => (wallet ? tonCustomIcon : null),
-);
-
-export const alwaysShowV4R1Selector = createSelector(
-  mainSelector,
-  (state) => state.alwaysShowV4R1,
 );
 
 export const isTimeSyncedSelector = createSelector(

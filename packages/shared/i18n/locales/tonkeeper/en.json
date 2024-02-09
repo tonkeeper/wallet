@@ -682,7 +682,6 @@
   "settings_to_mainnet": "Switch to Mainnet",
   "settings_to_testnet": "Switch to Testnet",
   "settings_version": "Version",
-  "settings_wallet_version": "Active address",
   "setup_biometry_caption": "%{biometryType} allows you to open your wallet faster without having\nto enter your password.",
   "setup_biometry_enable_button": "Enable %{biometryType}",
   "setup_biometry_title": "Quick sign-in with %{biometryType}",
@@ -1113,5 +1112,10 @@
     "caption": "Create a new wallet or add \nan existing one",
     "create_wallet_button": "Create New Wallet",
     "import_wallet_button": "Import Existing Wallet"
+  },
+  "choose_wallets": {
+    "title": "Choose Wallets",
+    "subtitle": "Choose wallets you want to add.",
+    "tokens": "tokens"
   }
 }
