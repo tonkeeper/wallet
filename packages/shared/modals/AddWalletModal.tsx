@@ -67,8 +67,8 @@ export const AddWalletModal = memo<AddWalletModalProps>((props) => {
               }}
               leftContentStyle={styles.iconContainer}
               leftContent={<Icon name="ic-magnifying-glass-28" color="accentBlue" />}
-              title="Watch Account"
-              subtitle="For monitor wallet activity without recovery phrase"
+              title={t('add_wallet_modal.watch_only.title')}
+              subtitle={t('add_wallet_modal.watch_only.subtitle')}
               subtitleNumberOfLines={2}
               chevron
             />

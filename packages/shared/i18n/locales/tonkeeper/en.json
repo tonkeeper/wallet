@@ -1076,6 +1076,10 @@
       "title": "Import Wallet",
       "subtitle": "Import wallet with a 24 secret recovery words"
     },
+    "watch_only": {
+      "title": "Watch Account",
+      "subtitle": "For monitor wallet activity without recovery phrase"
+    },
     "testnet": {
       "title": "Testnet Account",
       "subtitle": "Import wallet with a 24 secret recovery words to Testnet"
