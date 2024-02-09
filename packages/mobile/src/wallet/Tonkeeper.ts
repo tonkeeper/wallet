@@ -1,6 +1,6 @@
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { Wallet } from '$wallet/Wallet';
-import { Address, AddressFormats } from '@tonkeeper/core/src/formatters/Address';
+import { Address } from '@tonkeeper/core/src/formatters/Address';
 import { TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { TonPriceManager } from './managers/TonPriceManager';
 import { State } from '@tonkeeper/core/src/utils/State';
@@ -13,7 +13,6 @@ import {
 } from './WalletTypes';
 import { createTonApiInstance } from './utils';
 import { Vault } from '@tonkeeper/core';
-import BigNumber from 'bignumber.js';
 import { v4 as uuidv4 } from 'uuid';
 import { WalletColor } from '@tonkeeper/uikit';
 import { Mnemonic } from '@tonkeeper/core/src/utils/mnemonic';
@@ -269,34 +268,14 @@ export class Tonkeeper {
       throw new Error("Can't parse pubkey");
     }
 
-    const workchain = Number(address.split(':')[0]);
+    const versionByAddress = Object.keys(addresses).reduce(
+      (acc, version) => ({ ...acc, [addresses[version].raw]: version }),
+      {},
+    );
 
-    let version = WalletContractVersion.v4R2;
+    const workchain = Number(rawAddress.split(':')[0]);
 
-    const hasBalance: { balance: BigNumber; version: WalletContractVersion }[] = [];
-
-    for (const currentVersion of Object.keys(addresses)) {
-      const currentAddress = addresses[currentVersion] as AddressFormats;
-      const walletInfo = await this.tonapi.mainnet.accounts.getAccount(
-        currentAddress.raw,
-      );
-      const walletBalance = new BigNumber(walletInfo.balance);
-
-      if (walletBalance.isGreaterThan(0)) {
-        hasBalance.push({
-          balance: walletBalance,
-          version: currentVersion as WalletContractVersion,
-        });
-      }
-    }
-
-    if (hasBalance.length > 0) {
-      const maxBalanceAccount = hasBalance.reduce((prev, current) => {
-        return prev.balance.isGreaterThan(current.balance) ? prev : current;
-      });
-
-      version = maxBalanceAccount.version;
-    }
+    const version = versionByAddress[rawAddress] as WalletContractVersion;
 
     const config: WalletConfig = {
       identifier: uuidv4(),
