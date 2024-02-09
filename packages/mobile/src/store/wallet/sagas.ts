@@ -9,7 +9,6 @@ import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
 import {
   openAccessConfirmation,
   openBackupWords,
-  openMigration,
   TabsStackRouteNames,
 } from '$navigation';
 import {
@@ -18,17 +17,14 @@ import {
   ConfirmSendCoinsAction,
   CreateWalletAction,
   DeployWalletAction,
-  MigrateAction,
-  OpenMigrationAction,
   ReloadBalanceTwiceAction,
   RestoreWalletAction,
   SendCoinsAction,
   ToggleBiometryAction,
-  WaitMigrationAction,
   WalletGetUnlockedVaultAction,
 } from '$store/wallet/interface';
 
-import { getMigrationState, MainDB, setMigrationState } from '$database';
+import { MainDB } from '$database';
 import { Toast, useAddressUpdateStore, useConnectedAppsStore } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
 import { getChainName } from '$shared/dynamicConfig';
@@ -559,141 +555,6 @@ function* saveBalances(balances: { [index: string]: string }) {
   } catch (e) {}
 }
 
-function* openMigrationWorker(action: OpenMigrationAction) {
-  try {
-    const { wallet } = yield select(walletSelector);
-    const fromVersion =
-      action.payload && action.payload.fromVersion
-        ? action.payload.fromVersion
-        : wallet.vault.getVersion() ?? 'v3R2';
-
-    yield call(Toast.loading);
-
-    const tonweb = wallet.ton.getTonWeb();
-    const [oldAddress, newAddress] = yield all([
-      call([wallet.ton, 'getAddressByWalletVersion'], fromVersion),
-      call([wallet.ton, 'getAddressByWalletVersion'], 'v4R2'),
-    ]);
-
-    const [oldInfo, newInfo] = yield all([
-      call([tonweb.provider, 'getWalletInfo'], oldAddress),
-      call([tonweb.provider, 'getWalletInfo'], newAddress),
-    ]);
-
-    const migrationState = yield call(getMigrationState);
-    yield call(Toast.hide);
-    openMigration(
-      fromVersion,
-      Address.parse(oldAddress).toFriendly({
-        bounceable: !getFlag('address_style_nobounce'),
-      }),
-      Address.parse(newAddress).toFriendly({
-        bounceable: !getFlag('address_style_nobounce'),
-      }),
-      !!migrationState,
-      Ton.fromNano(oldInfo.balance),
-      Ton.fromNano(newInfo.balance),
-      action.payload ? !!action.payload.isTransfer : false,
-    );
-  } catch (e) {
-    e && debugLog(e.message);
-    yield call(Toast.fail, e.message);
-  }
-}
-
-function* migrateWorker(action: MigrateAction) {
-  try {
-    const { oldAddress, newAddress, fromVersion } = action.payload;
-
-    const { wallet } = yield select(walletSelector);
-    const oldInfo = yield call([wallet.ton, 'getWalletInfo'], oldAddress);
-    const newInfo = yield call([wallet.ton, 'getWalletInfo'], newAddress);
-    yield call(setMigrationState, null);
-
-    if (oldInfo.balance > 0) {
-      const unlockedVault = yield call(walletGetUnlockedVault);
-      const walletVersion = fromVersion ?? wallet.vault.getVersion() ?? 'v3R2';
-
-      yield call(
-        [wallet.ton, 'transfer'],
-        newAddress,
-        Ton.fromNano(oldInfo.balance),
-        unlockedVault,
-        '',
-        128,
-        walletVersion,
-      );
-
-      yield call(setMigrationState, {
-        checkBalance: newInfo.balance,
-        startAt: Date.now(),
-        newAddress,
-      });
-
-      yield put(
-        walletActions.waitMigration({
-          onDone: action.payload.onDone,
-          onFail: action.payload.onFail,
-        }),
-      );
-    } else {
-      yield call(doMigration);
-      action.payload.onDone();
-    }
-  } catch (e) {
-    e && debugLog(e.message);
-    action.payload.onFail();
-    yield call(Toast.fail, e.message);
-    yield call(setMigrationState, null);
-  }
-}
-
-function* doMigration() {
-  try {
-    yield call(setMigrationState, null);
-  } catch (e) {
-    e && debugLog(e.message);
-    yield call(Toast.fail, e.message);
-  }
-}
-
-function* waitMigrationWorker(action: WaitMigrationAction) {
-  try {
-    const state = yield call(getMigrationState);
-    if (!state) {
-      action.payload.onFail();
-      return;
-    }
-
-    const { wallet } = yield select(walletSelector);
-
-    while (true) {
-      try {
-        const info = yield call([wallet.ton, 'getWalletInfo'], state.newAddress);
-        if (new BigNumber(info.balance).isGreaterThan(state.checkBalance)) {
-          break;
-        }
-      } catch (e) {}
-
-      if (Date.now() - state.startAt > 70 * 1000) {
-        action.payload.onFail();
-        yield call(Toast.fail, t('migration_failed'));
-        yield call(setMigrationState, null);
-        return;
-      }
-
-      yield delay(3000);
-    }
-
-    yield call(doMigration);
-    action.payload.onDone();
-  } catch (e) {
-    e && debugLog(e.message);
-    action.payload.onFail();
-    yield call(setMigrationState, null);
-  }
-}
-
 function* deployWalletWorker(action: DeployWalletAction) {
   try {
     const unlockedVault = yield call(walletGetUnlockedVault);
@@ -704,7 +565,6 @@ function* deployWalletWorker(action: DeployWalletAction) {
   } catch (e) {
     e && debugLog(e.message);
     action.payload.onFail();
-    yield call(setMigrationState, null);
   }
 }
 
@@ -750,9 +610,6 @@ export function* walletSaga() {
     takeLatest(walletActions.reloadBalanceTwice, reloadBalanceTwiceWorker),
     takeLatest(walletActions.backupWallet, backupWalletWorker),
     takeLatest(walletActions.cleanWallet, cleanWalletWorker),
-    takeLatest(walletActions.openMigration, openMigrationWorker),
-    takeLatest(walletActions.migrate, migrateWorker),
-    takeLatest(walletActions.waitMigration, waitMigrationWorker),
     takeLatest(walletActions.deployWallet, deployWalletWorker),
     takeLatest(walletActions.toggleBiometry, toggleBiometryWorker),
     takeLatest(walletActions.changePin, changePinWorker),

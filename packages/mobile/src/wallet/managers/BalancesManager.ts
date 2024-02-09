@@ -14,7 +14,6 @@ export interface BalancesState {
   isReloading: boolean;
   isLoading: boolean;
   ton: string;
-  tonOldBalances: OldWalletBalance[];
 }
 
 export class BalancesManager {
@@ -22,20 +21,18 @@ export class BalancesManager {
     isReloading: false,
     isLoading: false,
     ton: '0',
-    tonOldBalances: [],
   };
 
   public state = new State<BalancesState>(BalancesManager.INITIAL_STATE);
 
   constructor(
     private tonRawAddress: TonRawAddress,
-    private tonAllAddresses: AddressesByVersion,
     private isLockup: boolean,
     private tonapi: TonAPI,
     private storage: Storage,
   ) {
     this.state.persist({
-      partialize: ({ ton, tonOldBalances }) => ({ ton, tonOldBalances }),
+      partialize: ({ ton }) => ({ ton }),
       storage: this.storage,
       key: `${this.tonRawAddress}/balances`,
     });
@@ -54,38 +51,12 @@ export class BalancesManager {
         isLoading: false,
         ton: AmountFormatter.fromNanoStatic(account.balance),
       });
-
-      this.loadOldBalances();
     } catch (e) {
       this.state.set(({ ton }) => ({
         isLoading: false,
         ton: e?.response?.status === 404 ? AmountFormatter.fromNanoStatic(0) : ton,
       }));
     }
-  }
-
-  private async loadOldBalances() {
-    const currentIndex = Object.values(this.tonAllAddresses)
-      .reverse()
-      .findIndex((address) => address.raw === this.tonRawAddress);
-    const versions = Object.keys(this.tonAllAddresses)
-      .reverse()
-      .slice(currentIndex + 1);
-
-    const accounts = await Promise.all(
-      versions.map((version) =>
-        this.tonapi.accounts.getAccount(this.tonAllAddresses[version].raw),
-      ),
-    );
-
-    const tonOldBalances = accounts
-      .map((account, index) => ({
-        balance: AmountFormatter.fromNanoStatic(account.balance),
-        version: versions[index],
-      }))
-      .filter((item) => item.balance !== '0');
-
-    this.state.set({ tonOldBalances });
   }
 
   public async reload() {

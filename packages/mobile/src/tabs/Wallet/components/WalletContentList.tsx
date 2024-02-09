@@ -184,7 +184,6 @@ export const WalletContentList = memo<BalancesListProps>(
     isRefreshing,
     isFocused,
     ListHeaderComponent,
-    tronBalances,
   }) => {
     const theme = useTheme();
     const dispatch = useDispatch();
@@ -195,18 +194,6 @@ export const WalletContentList = memo<BalancesListProps>(
 
     const wallet = useWallet();
     const isWatchOnly = wallet && wallet.isWatchOnly;
-
-    const handleMigrate = useCallback(
-      (fromVersion: string) => () => {
-        dispatch(
-          walletActions.openMigration({
-            isTransfer: true,
-            fromVersion,
-          }),
-        );
-      },
-      [dispatch],
-    );
 
     const data = useMemo(() => {
       const content: Content[] = [];
@@ -225,26 +212,8 @@ export const WalletContentList = memo<BalancesListProps>(
           price: tonPrice.formatted.fiat ?? '-',
           trend: tonPrice.fiatDiff.trend,
         },
-        isLast: isWatchOnly && balance.oldVersions.length === 0,
+        isLast: isWatchOnly,
       });
-
-      content.push(
-        ...balance.oldVersions.map((item, index) => ({
-          type: ContentType.Token,
-          key: 'old_' + item.version,
-          onPress: isWatchOnly ? null : handleMigrate(item.version),
-          title: t('wallet.old_wallet_title'),
-          tonIcon: { transparent: true },
-          value: item.amount.formatted,
-          subvalue: item.amount.fiat,
-          rate: {
-            percent: shouldShowTonDiff ? tonPrice.fiatDiff.percent : '',
-            price: tonPrice.formatted.fiat ?? '-',
-            trend: tonPrice.fiatDiff.trend,
-          },
-          isLast: isWatchOnly && index === balance.oldVersions.length - 1,
-        })),
-      );
 
       if (balance.lockup.length > 0) {
         content.push(
@@ -389,7 +358,6 @@ export const WalletContentList = memo<BalancesListProps>(
       tokens.list,
       inscriptions.items,
       nfts,
-      handleMigrate,
     ]);
 
     const ListComponent = nfts ? Screen.FlashList : PagerView.FlatList;

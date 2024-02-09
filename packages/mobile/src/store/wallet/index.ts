@@ -15,11 +15,8 @@ import {
   CreateWalletAction,
   ReloadBalanceTwiceAction,
   ConfirmSendCoinsAction,
-  MigrateAction,
-  WaitMigrationAction,
   DeployWalletAction,
   SetOldWalletBalanceAction,
-  OpenMigrationAction,
   ToggleBiometryAction,
   ChangePinAction,
   WalletGetUnlockedVaultAction,
@@ -98,9 +95,6 @@ export const { actions, reducer } = createSlice({
     clearGeneratedVault(state) {
       state.generatedVault = null;
     },
-    openMigration(_, __: OpenMigrationAction) {},
-    migrate(_, __: MigrateAction) {},
-    waitMigration(_, __: WaitMigrationAction) {},
     deployWallet(_, __: DeployWalletAction) {},
     setOldWalletBalance(state, action: SetOldWalletBalanceAction) {
       state.oldWalletBalances = action.payload;

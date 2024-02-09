@@ -12,7 +12,6 @@ export enum AppStackRouteNames {
   BuyFiat = 'BuyFiat',
   ModalContainer = 'ModalContainer',
   Invoice = 'Invoice',
-  Migration = 'Migration',
   AccessConfirmation = 'AccessConfirmation',
   MainAccessConfirmation = 'MainAccessConfirmation',
   ChangePin = 'ChangePin',

@@ -86,18 +86,6 @@ export type CreateWalletAction = PayloadAction<{
   isBiometryEnabled?: boolean;
 }>;
 export type ReloadBalanceTwiceAction = PayloadAction<CryptoCurrency>;
-export type MigrateAction = PayloadAction<{
-  onDone: () => void;
-  onFail: () => void;
-  oldAddress: string;
-  newAddress: string;
-  fromVersion?: string;
-}>;
-
-export type WaitMigrationAction = PayloadAction<{
-  onDone: () => void;
-  onFail: () => void;
-}>;
 export type SetBalancesAction = PayloadAction<any>;
 export type SetUpdatedAtAction = PayloadAction<number | null>;
 export type DeployWalletAction = PayloadAction<{
@@ -105,9 +93,6 @@ export type DeployWalletAction = PayloadAction<{
   onFail: () => void;
 }>;
 export type SetOldWalletBalanceAction = PayloadAction<OldWalletBalanceItem[]>;
-export type OpenMigrationAction = PayloadAction<
-  { isTransfer?: boolean; fromVersion?: string } | undefined
->;
 export type ToggleBiometryAction = PayloadAction<{
   isEnabled: boolean;
   onFail: () => void;

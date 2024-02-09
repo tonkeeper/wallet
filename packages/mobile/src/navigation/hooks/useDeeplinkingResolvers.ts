@@ -129,7 +129,7 @@ export function useDeeplinkingResolvers() {
 
   deeplinking.add('/subscribe/:invoiceId', ({ params }) => {
     if (!tk.wallet.isV4()) {
-      dispatch(walletActions.openMigration());
+      Toast.fail(t('old_wallet_error'));
     } else {
       openCreateSubscription(params.invoiceId);
     }

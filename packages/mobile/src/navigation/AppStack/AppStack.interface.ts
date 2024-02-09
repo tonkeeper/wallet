@@ -46,15 +46,6 @@ export type AppStackParamList = {
     amount: number;
     currency: CryptoCurrency;
   };
-  [AppStackRouteNames.Migration]: {
-    fromVersion?: string;
-    oldAddress: string;
-    newAddress: string;
-    migrationInProgress: boolean;
-    oldBalance: string;
-    newBalance: string;
-    isTransfer: boolean;
-  };
   [AppStackRouteNames.AccessConfirmation]: {};
   [AppStackRouteNames.MainAccessConfirmation]: {};
   [AppStackRouteNames.ChangePin]: {};

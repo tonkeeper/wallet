@@ -128,26 +128,6 @@ export function openSubscriptions() {
   navigate(MainStackRouteNames.Subscriptions);
 }
 
-export function openMigration(
-  fromVersion: string,
-  oldAddress: string,
-  newAddress: string,
-  migrationInProgress: boolean,
-  oldBalance: string,
-  newBalance: string,
-  isTransfer: boolean,
-) {
-  navigate(AppStackRouteNames.Migration, {
-    fromVersion,
-    oldAddress,
-    newAddress,
-    migrationInProgress,
-    oldBalance,
-    newBalance,
-    isTransfer,
-  });
-}
-
 export function openDevMenu() {
   push(SettingsStackRouteNames.DevMenu);
 }

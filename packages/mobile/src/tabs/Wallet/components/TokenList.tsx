@@ -1,13 +1,10 @@
 import React from 'react';
 import { openJetton } from '$navigation';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
-import { walletActions } from '$store/wallet';
-import { t } from '@tonkeeper/shared/i18n';
 import { View } from '$uikit';
 import { List } from '$uikit';
 import { TonIcon } from '@tonkeeper/uikit';
-import { memo, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { memo } from 'react';
 import { ListItemRate } from './ListItemRate';
 import { openWallet } from '$core/Wallet';
 
@@ -18,20 +15,6 @@ interface TokenListProps {
 }
 
 export const TokenList = memo<TokenListProps>(({ tokens, balance, rates }) => {
-  const dispatch = useDispatch();
-
-  const handleMigrate = useCallback(
-    (fromVersion: string) => () => {
-      dispatch(
-        walletActions.openMigration({
-          isTransfer: true,
-          fromVersion,
-        }),
-      );
-    },
-    [],
-  );
-
   return (
     <View>
       <List>
@@ -57,23 +40,6 @@ export const TokenList = memo<TokenListProps>(({ tokens, balance, rates }) => {
             subvalue={item.amount.fiat}
             leftContent={<TonIcon locked />}
             subtitle={rates.price}
-          />
-        ))}
-        {balance.oldVersions.map((item, key) => (
-          <List.Item
-            key={`old-balance-${key}`}
-            onPress={handleMigrate(item.version)}
-            title={t('wallet.old_wallet_title')}
-            leftContent={<TonIcon transparent />}
-            value={item.amount.formatted}
-            subvalue={item.amount.fiat}
-            subtitle={
-              <ListItemRate
-                percent={rates.percent}
-                price={rates.price}
-                trend={rates.trend}
-              />
-            }
           />
         ))}
         {tokens.list.map((item) => (

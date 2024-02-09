@@ -12,7 +12,6 @@ export { CreatePin } from './CreatePin/CreatePin';
 export { Fiat } from './Fiat/Fiat';
 export { BuyFiat } from './BuyFiat/BuyFiat';
 export { OldExchange } from './Exchange/Exchange';
-export { Migration } from './Migration/Migration';
 export { DevMenu } from './DevMenu/DevMenu';
 export { Logs } from './Logs/Logs';
 export { AccessConfirmation } from './AccessConfirmation/AccessConfirmation';

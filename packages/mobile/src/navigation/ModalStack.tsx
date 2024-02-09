@@ -10,7 +10,6 @@ import {
   DAppBrowser,
   DAppsSearch,
   OldExchange,
-  Migration,
   ScanQR,
   Send,
   StakingSend,
@@ -84,7 +83,6 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={DAppBrowser} path={AppStackRouteNames.DAppBrowser} />
     </Stack.Group>
     <Stack.Group behavior="fullScreenModal" animation="fade">
-      <Stack.Modal component={Migration} path={AppStackRouteNames.Migration} />
       <Stack.Modal
         component={AccessConfirmation}
         path={AppStackRouteNames.AccessConfirmation}

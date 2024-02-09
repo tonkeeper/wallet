@@ -401,15 +401,6 @@
   "link_copied": "Link copied",
   "loading": "Loading",
   "manage_other_coins": "Manage my crypto",
-  "migration_cancel_btn": "Upgrade later",
-  "migration_caption": "Tonkeeper introduces new wallet format that supports subscription payments. Your balance will be transferred to a new address. Your recovery phrase will remain the same.",
-  "migration_failed": "Migration failed. Unable to transfer your balance.",
-  "migration_fee_info": "Network fee ≈%{tonFee} TON (%{fiatFee})",
-  "migration_in_progress": "Migration to Wallet v4 in progress",
-  "migration_migrate_btn": "Upgrade wallet",
-  "migration_new_wallet": "New address",
-  "migration_old_wallet": "Old address",
-  "migration_title": "Upgrade your wallet",
   "nft_about_collection": "About collection",
   "nft_about_dns": "TON DNS is a service that allows users to assign a human-readable name to crypto wallets, smart contracts, and websites. \n\nWith TON DNS, access to decentralized services is analogous to access to websites on the internet.",
   "nft_browse_markets": "Browse Markets",
@@ -569,10 +560,6 @@
   "secret_words_caption": "Write down these 24 words in the order given below and store them in a secret, safe place.",
   "secret_words_title": "Your recovery phrase",
   "security_change_passcode": "Change passcode",
-  "security_migration_caption": "Now your balance and any operations are secured by a passcode. You can also speed up with biometric check.",
-  "security_migration_skip_button": "Do not update now",
-  "security_migration_submit_button": "Update security settings",
-  "security_migration_title": "Update wallet security",
   "security_reset_passcode": "Reset passcode",
   "security_title": "Security",
   "security_use_biometry_switch": "Use %{biometryType}",
@@ -1117,5 +1104,6 @@
     "title": "Choose Wallets",
     "subtitle": "Choose wallets you want to add.",
     "tokens": "tokens"
-  }
+  },
+  "old_wallet_error": "Use wallet with v4R2 version"
 }

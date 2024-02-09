@@ -70,7 +70,6 @@ export class WalletContent extends WalletBase {
     this.tonInscriptions = new TonInscriptions(tonRawAddress, this.tonapi, this.storage);
     this.balances = new BalancesManager(
       tonRawAddress,
-      this.tonAllAddresses,
       this.isLockup,
       this.tonapi,
       this.storage,

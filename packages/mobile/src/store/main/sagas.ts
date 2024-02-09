@@ -12,7 +12,6 @@ import { WalletCurrency } from '$shared/constants';
 import {
   getHiddenNotifications,
   getIntroShown,
-  getMigrationState,
   getSavedLogs,
   hideNotification,
   MainDB,
@@ -75,10 +74,6 @@ export function* initHandler() {
   SplashScreen.hideAsync();
 
   yield delay(1000);
-  const walletMigrationState = yield call(getMigrationState);
-  if (walletMigrationState) {
-    yield put(walletActions.openMigration());
-  }
 }
 
 function* completeIntroWorker() {

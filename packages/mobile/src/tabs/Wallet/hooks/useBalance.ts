@@ -82,21 +82,6 @@ export const useBalance = (tokensTotal: number) => {
 
   const stakingBalance = useStakingBalance();
 
-  const oldVersions = useMemo(() => {
-    if (wallet?.isLockup) {
-      return [];
-    }
-
-    return balances.tonOldBalances.map((item) => ({
-      version: item.version,
-      amount: {
-        value: item.balance,
-        formatted: formatter.format(item.balance),
-        fiat: amountToFiat(item.balance),
-      },
-    }));
-  }, [wallet, balances.tonOldBalances, amountToFiat]);
-
   const lockup = useMemo(() => {
     return [];
     // MULTIWALLET TODO
@@ -163,11 +148,10 @@ export const useBalance = (tokensTotal: number) => {
 
   return useMemo(
     () => ({
-      oldVersions,
       lockup,
       total,
       ton,
     }),
-    [oldVersions, lockup, total, ton],
+    [lockup, total, ton],
   );
 };
