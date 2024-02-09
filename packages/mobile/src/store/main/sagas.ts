@@ -72,8 +72,6 @@ export function* initHandler() {
   yield put(favoritesActions.loadSuggests());
   yield put(mainActions.getTimeSynced());
   SplashScreen.hideAsync();
-
-  yield delay(1000);
 }
 
 function* completeIntroWorker() {
