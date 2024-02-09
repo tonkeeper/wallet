@@ -11,6 +11,7 @@ import {
   PagerView,
   Spacer,
   copyText,
+  Haptics,
 } from '@tonkeeper/uikit';
 import { InternalNotification, Tag } from '$uikit';
 import { useNavigation } from '@tonkeeper/router';
@@ -19,7 +20,7 @@ import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { ns } from '$utils';
-import { walletSelector } from '$store/wallet';
+import { walletActions, walletSelector } from '$store/wallet';
 import { useIsFocused } from '@react-navigation/native';
 import { useBalance } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
@@ -52,7 +53,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useWallet, useWalletStatus } from '@tonkeeper/shared/hooks';
 import { WalletSelector } from './components/WalletSelector';
 
-export const WalletScreen = memo(() => {
+export const WalletScreen = memo(({ navigation }) => {
   const flags = useFlags(['disable_swap']);
   const tabBarHeight = useBottomTabBarHeight();
   const dispatch = useDispatch();
@@ -127,6 +128,16 @@ export const WalletScreen = memo(() => {
 
     wallet.reload();
   }, [wallet]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('tabLongPress', () => {
+      Haptics.impactLight();
+      dispatch(walletActions.clearGeneratedVault());
+      nav.openModal('/switch-wallet');
+    });
+
+    return unsubscribe;
+  }, [dispatch, nav, navigation]);
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
 
