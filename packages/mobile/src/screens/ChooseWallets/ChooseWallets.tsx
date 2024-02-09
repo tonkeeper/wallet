@@ -66,7 +66,10 @@ export const ChooseWallets: FC<{
           {walletsInfo.map((walletInfo) => (
             <List.Item
               key={walletInfo.version}
-              title={Address.parse(walletInfo.address, { bounceable: false }).toShort()}
+              title={Address.parse(walletInfo.address, {
+                bounceable: false,
+                testOnly: isTestnet,
+              }).toShort()}
               subtitle={`${walletInfo.version} · ${formatter.formatNano(
                 walletInfo.balance,
               )} TON${walletInfo.tokens ? tokensText : ''}`}
