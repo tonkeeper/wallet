@@ -10,11 +10,9 @@ import * as S from './SetupBiometry.style';
 import { Button, NavBar, Text } from '$uikit';
 import { ns, platform } from '$utils';
 import {
-  openImportSetupNotifications,
   openSetupNotifications,
   openSetupWalletDone,
   ResetPinStackRouteNames,
-  SetupWalletStackRouteNames,
   TabsStackRouteNames,
 } from '$navigation';
 import { walletActions } from '$store/wallet';
@@ -62,11 +60,7 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
               if (hasNotificationPermission) {
                 openSetupWalletDone();
               } else {
-                if (routeNode.name === SetupWalletStackRouteNames.SetupBiometry) {
-                  openSetupNotifications();
-                } else {
-                  openImportSetupNotifications();
-                }
+                openSetupNotifications();
               }
             }
           },

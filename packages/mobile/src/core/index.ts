@@ -1,4 +1,3 @@
-export { Intro } from './Intro/Intro';
 export { CreateWallet } from './CreateWallet/CreateWallet';
 export { Settings } from './Settings/Settings';
 export { Send } from './Send/Send';
@@ -10,7 +9,6 @@ export { ImportWallet } from './ImportWallet/ImportWallet';
 export { Subscription } from './Subscription/Subscription';
 export { Subscriptions } from './Subscriptions/Subscriptions';
 export { CreatePin } from './CreatePin/CreatePin';
-export { SetupWalletDone } from './SetupWalletDone/SetupWalletDone';
 export { Fiat } from './Fiat/Fiat';
 export { BuyFiat } from './BuyFiat/BuyFiat';
 export { OldExchange } from './Exchange/Exchange';

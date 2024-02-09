@@ -1,7 +1,6 @@
 import { NavigationProp } from '@react-navigation/native';
 
 export enum AppStackRouteNames {
-  Intro = 'Intro',
   MainStack = 'MainStack',
   Receive = 'Receive',
   Send = 'Send',
@@ -10,7 +9,6 @@ export enum AppStackRouteNames {
   RequireWalletModal = 'RequireWalletModal',
   NFTSend = 'NFTSend',
   Subscription = 'Subscription',
-  SetupWalletStack = 'SetupWalletStack',
   BuyFiat = 'BuyFiat',
   ModalContainer = 'ModalContainer',
   Invoice = 'Invoice',
@@ -31,25 +29,23 @@ export enum AppStackRouteNames {
 }
 
 export enum MainStackRouteNames {
+  Start = 'Start',
+  CreateWalletStack = 'CreateWalletStack',
+  ImportWalletStack = 'ImportWalletStack',
+  AddWatchOnly = 'AddWatchOnly',
   Tabs = 'Tabs',
   Wallet = 'Wallet',
   Staking = 'Staking',
   StakingPools = 'StakingPools',
   StakingPoolDetails = 'StakingPoolDetails',
-  ImportWallet = 'ImportWallet',
   Subscriptions = 'Subscriptions',
   BackupWords = 'BackupWords',
-  CreatePin = 'CreatePin',
-  SetupBiometry = 'ImportSetupBiometry',
-  ImportWalletDone = 'ImportWalletDone',
   DeleteAccountDone = 'DeleteAccountDone',
   DevStack = 'DevStack',
-  SetupNotifications = 'ImportSetupNotifications',
   Jetton = 'Jetton',
   ManageTokens = 'ManageTokens',
   AddressUpdateInfo = 'AddressUpdateInfo',
   Inscription = 'Inscription',
-  AddWatchOnly = 'AddWatchOnly',
 }
 
 export enum TabsStackRouteNames {
@@ -58,16 +54,6 @@ export enum TabsStackRouteNames {
   BrowserStack = 'BrowserStack',
   SettingsStack = 'SettingsStack',
   Activity = 'Activity',
-}
-
-export enum SetupWalletStackRouteNames {
-  CreateWallet = 'CreateWallet',
-  SecretWords = 'SecretWords',
-  CheckSecretWords = 'CheckSecretWords',
-  SetupCreatePin = 'SetupCreatePin',
-  SetupBiometry = 'SetupBiometry',
-  SetupWalletDone = 'SetupWalletDone',
-  SetupNotifications = 'SetupNotifications',
 }
 
 export enum BrowserStackRouteNames {
@@ -112,7 +98,6 @@ type ScreenNames =
   | `${AppStackRouteNames}`
   | `${MainStackRouteNames}`
   | `${TabsStackRouteNames}`
-  | `${SetupWalletStackRouteNames}`
   | `${SettingsStackRouteNames}`
   | `${ResetPinStackRouteNames}`
   | `${DevComponents}`;

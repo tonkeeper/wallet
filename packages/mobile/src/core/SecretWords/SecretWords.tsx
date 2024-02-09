@@ -10,7 +10,6 @@ import { walletSelector } from '$store/wallet';
 import * as S from './SecretWords.style';
 import { t } from '@tonkeeper/shared/i18n';
 import { openCheckSecretWords } from '$navigation';
-import { WordsItemNumberWrapper } from './SecretWords.style';
 import { tk } from '$wallet';
 import { popToTop } from '$navigation/imperative';
 

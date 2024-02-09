@@ -18,14 +18,8 @@ import { Text } from '$uikit/Text/Text';
 import { Button } from '$uikit/Button/Button';
 import { NavBar } from '$uikit/NavBar/NavBar';
 import { deviceWidth, ns, triggerNotificationSuccess } from '$utils';
-import {
-  AppStackRouteNames,
-  SetupWalletStackRouteNames,
-  openSecretWords,
-} from '$navigation';
-import { navigate } from '$navigation/imperative';
+import { openSecretWords } from '$navigation';
 import { t } from '@tonkeeper/shared/i18n';
-import { tk } from '$wallet';
 
 export const CreateWallet: FC = () => {
   const dispatch = useDispatch();
@@ -143,7 +137,7 @@ export const CreateWallet: FC = () => {
 
   return (
     <S.Wrap>
-      <NavBar hideBackButton isClosedButton={!!tk.wallet} />
+      <NavBar />
       <S.Step style={step1Style}>
         <S.Content>
           <S.LottieIcon
@@ -202,9 +196,3 @@ export const CreateWallet: FC = () => {
     </S.Wrap>
   );
 };
-
-export function openCreateWallet() {
-  navigate(AppStackRouteNames.SetupWalletStack, {
-    screen: SetupWalletStackRouteNames.CreateWallet,
-  });
-}

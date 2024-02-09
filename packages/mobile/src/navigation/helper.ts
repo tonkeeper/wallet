@@ -6,15 +6,16 @@ import {
   MainStackRouteNames,
   ResetPinStackRouteNames,
   SettingsStackRouteNames,
-  SetupWalletStackRouteNames,
 } from '$navigation/navigationNames';
 import { CryptoCurrency } from '$shared/constants';
 import { SendAnalyticsFrom } from '$store/models';
 import { NFTKeyPair } from '$store/nfts/interface';
 import _ from 'lodash';
-import { getCurrentRoute, navigate, push, replace, reset } from './imperative';
+import { getCurrentRoute, navigate, push, replace } from './imperative';
 import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
 import { tk } from '$wallet';
+import { CreateWalletStackRouteNames } from './CreateWalletStack/types';
+import { ImportWalletStackRouteNames } from './ImportWalletStack/types';
 
 export function openExploreTab(initialCategory?: string) {
   navigate(BrowserStackRouteNames.Explore, { initialCategory });
@@ -60,24 +61,18 @@ export function openScanQR(onScan: (url: string) => void) {
 }
 
 export function openSecretWords() {
-  navigate(AppStackRouteNames.SetupWalletStack, {
-    screen: SetupWalletStackRouteNames.SecretWords,
-  });
+  navigate(CreateWalletStackRouteNames.SecretWords);
 }
 
 export function openCheckSecretWords() {
-  navigate(AppStackRouteNames.SetupWalletStack, {
-    screen: SetupWalletStackRouteNames.CheckSecretWords,
-  });
+  navigate(CreateWalletStackRouteNames.CheckSecretWords);
 }
 
 export function openCreatePin() {
-  if (getCurrentRoute()?.name === SetupWalletStackRouteNames.CheckSecretWords) {
-    navigate(AppStackRouteNames.SetupWalletStack, {
-      screen: SetupWalletStackRouteNames.SetupCreatePin,
-    });
+  if (getCurrentRoute()?.name === CreateWalletStackRouteNames.CheckSecretWords) {
+    navigate(CreateWalletStackRouteNames.CreatePasscode);
   } else {
-    navigate(MainStackRouteNames.CreatePin, {});
+    navigate(ImportWalletStackRouteNames.CreatePasscode);
   }
 }
 
@@ -85,16 +80,13 @@ export function openSetupBiometry(
   pin: string,
   biometryType: LocalAuthentication.AuthenticationType,
 ) {
-  if (getCurrentRoute()?.name === SetupWalletStackRouteNames.SetupCreatePin) {
-    navigate(AppStackRouteNames.SetupWalletStack, {
-      screen: SetupWalletStackRouteNames.SetupBiometry,
-      params: {
-        pin,
-        biometryType,
-      },
+  if (getCurrentRoute()?.name === CreateWalletStackRouteNames.CreatePasscode) {
+    navigate(CreateWalletStackRouteNames.Biometry, {
+      pin,
+      biometryType,
     });
   } else {
-    navigate(MainStackRouteNames.SetupBiometry, {
+    navigate(ImportWalletStackRouteNames.Biometry, {
       pin,
       biometryType,
     });
@@ -102,11 +94,11 @@ export function openSetupBiometry(
 }
 
 export function openSetupNotifications() {
-  reset(SetupWalletStackRouteNames.SetupNotifications);
-}
-
-export function openImportSetupNotifications() {
-  navigate(MainStackRouteNames.SetupNotifications);
+  if (getCurrentRoute()?.name === CreateWalletStackRouteNames.Biometry) {
+    navigate(CreateWalletStackRouteNames.Notifications);
+  } else {
+    navigate(ImportWalletStackRouteNames.Notifications);
+  }
 }
 
 export function openSetupBiometryAfterRestore(
@@ -120,22 +112,14 @@ export function openSetupBiometryAfterRestore(
 }
 
 export function openSetupWalletDone() {
-  navigate(MainStackRouteNames.Tabs);
+  replace(MainStackRouteNames.Tabs);
   if (tk.wallets.size > 1) {
     navigate(AppStackRouteNames.CustomizeWallet);
   }
 }
 
-export function openImportWalletDone() {
-  navigate(MainStackRouteNames.ImportWalletDone);
-}
-
 export function openDeleteAccountDone() {
   navigate(MainStackRouteNames.DeleteAccountDone);
-}
-
-export function openImportWallet() {
-  navigate(MainStackRouteNames.ImportWallet);
 }
 
 export function openBackupWords(mnemonic: string) {

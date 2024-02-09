@@ -4,7 +4,6 @@ import { createModalStackNavigator } from '@tonkeeper/router';
 import { NFT } from '$core/NFT/NFT';
 import { SignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 import { AppStackRouteNames } from './navigationNames';
-import { SetupWalletStack } from './SetupWalletStack/SetupWalletStack';
 import {
   AccessConfirmation,
   BuyFiat,
@@ -73,10 +72,6 @@ export const ModalStack = React.memo(() => (
       />
     </Stack.Group>
     <Stack.Group behavior="fullScreenModal">
-      <Stack.Modal
-        component={SetupWalletStack}
-        path={AppStackRouteNames.SetupWalletStack}
-      />
       <Stack.Modal
         options={{ gestureEnabled: false }}
         component={WebView}

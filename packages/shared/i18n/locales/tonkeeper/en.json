@@ -54,7 +54,6 @@
     "why_change": "Why change?",
     "your_wallet": "Your wallet"
   },
-  "all_regions": "All Regions",
   "appearance_accent_name": {
     "andromeda": "Andromeda",
     "arctic": "Arctic",
@@ -472,7 +471,6 @@
   "nft_unlink_domain_button": "Linked with {{address}}",
   "nft_unnamed_collection": "Unnamed collection",
   "nft_view_in_explorer": "View in explorer",
-  "nokyc": "no KYC",
   "notifications": {
     "alert": {
       "cancel": "Cancel",
@@ -555,7 +553,6 @@
   "receive_title": "Receive %{currency}",
   "receive_ton_and_jettons": "Receive TON and other tokens",
   "refresh_app": "Restart",
-  "region_nokyc": "Neutral Waters",
   "reminder_notifications_caption": "Get notifications when you receive TON, tokens and NFTs.",
   "reminder_notifications_enable_button": "Enable notifications",
   "reminder_notifications_later_button": "Later",
@@ -1111,5 +1108,10 @@
     "subtitle": "Wallet name is stored locally on your device. It will only be visible to you.",
     "wallet_name": "Wallet Name",
     "save": "Save"
+  },
+  "start_screen": {
+    "caption": "Create a new wallet or add \nan existing one",
+    "create_wallet_button": "Create New Wallet",
+    "import_wallet_button": "Import Existing Wallet"
   }
 }

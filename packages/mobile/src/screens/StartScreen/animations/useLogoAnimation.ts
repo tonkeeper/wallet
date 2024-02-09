@@ -31,9 +31,9 @@ export const useLogoAnimation = () => {
     transform: [
       {
         translateY: interpolate(pos.value, [0, 1], [-15, 0]),
-      }
-    ]
-  }))
+      },
+    ],
+  }));
 
   // useEffect(() => {
   //   pos.value = withTiming(1, { duration: 400 });

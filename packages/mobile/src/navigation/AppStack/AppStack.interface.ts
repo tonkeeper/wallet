@@ -6,7 +6,6 @@ import { NFTKeyPair } from '$store/nfts/interface';
 import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
 
 export type AppStackParamList = {
-  [AppStackRouteNames.Intro]: {};
   [AppStackRouteNames.MainStack]: {};
   [AppStackRouteNames.Receive]: {
     currency: CryptoCurrency;
@@ -37,7 +36,6 @@ export type AppStackParamList = {
   [AppStackRouteNames.Subscription]: {
     subscription: SubscriptionModel;
   };
-  [AppStackRouteNames.SetupWalletStack]: {};
   [AppStackRouteNames.BuyFiat]: {
     currency: CryptoCurrency;
     methodId: string;

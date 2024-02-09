@@ -4,18 +4,19 @@ import * as S from './ImportWallet.style';
 import { NavBar } from '$uikit';
 import { useKeyboardHeight } from '$hooks/useKeyboardHeight';
 import { walletActions } from '$store/wallet';
-import { AppStackRouteNames, TabsStackRouteNames, openCreatePin } from '$navigation';
+import { openCreatePin, openSetupWalletDone } from '$navigation';
 import { ImportWalletForm } from '$shared/components';
 import { tk } from '$wallet';
 import { getLastEnteredPasscode } from '$store/wallet/sagas';
-import { navigate, popToTop } from '$navigation/imperative';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { RouteProp } from '@react-navigation/native';
-import { MainStackParamList } from '$navigation/MainStack';
-import { MainStackRouteNames } from '$navigation';
+import {
+  ImportWalletStackParamList,
+  ImportWalletStackRouteNames,
+} from '$navigation/ImportWalletStack/types';
 
 export const ImportWallet: FC<{
-  route: RouteProp<MainStackParamList, MainStackRouteNames.ImportWallet>;
+  route: RouteProp<ImportWalletStackParamList, ImportWalletStackRouteNames.ImportWallet>;
 }> = (props) => {
   const dispatch = useDispatch();
   const keyboardHeight = useKeyboardHeight();
@@ -30,7 +31,6 @@ export const ImportWallet: FC<{
           mnemonics,
           config,
           onDone: async () => {
-            onEnd();
             if (tk.walletForUnlock) {
               try {
                 await unlockVault();
@@ -41,8 +41,8 @@ export const ImportWallet: FC<{
                     pin,
                     isTestnet,
                     onDone: () => {
-                      popToTop();
-                      navigate(AppStackRouteNames.CustomizeWallet);
+                      openSetupWalletDone();
+                      onEnd();
                     },
                     onFail: () => {},
                   }),
@@ -50,6 +50,7 @@ export const ImportWallet: FC<{
               } catch {}
             } else {
               openCreatePin();
+              onEnd();
             }
           },
           onFail: () => onEnd(),

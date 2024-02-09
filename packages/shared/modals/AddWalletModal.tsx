@@ -30,7 +30,7 @@ export const AddWalletModal = memo<AddWalletModalProps>((props) => {
               onPress={() => {
                 nav.goBack();
                 setTimeout(() => {
-                  nav.navigate('SetupWalletStack', { screen: 'CreateWallet' });
+                  nav.navigate('CreateWalletStack');
                 }, 700);
               }}
               leftContentStyle={styles.iconContainer}
@@ -46,7 +46,7 @@ export const AddWalletModal = memo<AddWalletModalProps>((props) => {
               onPress={() => {
                 nav.goBack();
                 setTimeout(() => {
-                  nav.navigate('ImportWallet');
+                  nav.navigate('ImportWalletStack');
                 }, 700);
               }}
               leftContentStyle={styles.iconContainer}
@@ -79,7 +79,10 @@ export const AddWalletModal = memo<AddWalletModalProps>((props) => {
                 onPress={() => {
                   nav.goBack();
                   setTimeout(() => {
-                    nav.navigate('ImportWallet', { testnet: true });
+                    nav.navigate('ImportWalletStack', {
+                      screen: 'ImportWallet',
+                      params: { testnet: true },
+                    });
                   }, 700);
                 }}
                 leftContentStyle={styles.iconContainer}

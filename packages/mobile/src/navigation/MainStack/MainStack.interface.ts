@@ -1,8 +1,10 @@
-import { AppStackRouteNames, MainStackRouteNames } from '../navigationNames';
+import { MainStackRouteNames } from '../navigationNames';
 import { CryptoCurrency } from '$shared/constants';
-import * as LocalAuthentication from 'expo-local-authentication';
 
 export type MainStackParamList = {
+  [MainStackRouteNames.Start]: {};
+  [MainStackRouteNames.CreateWalletStack]: {};
+  [MainStackRouteNames.ImportWalletStack]: {};
   [MainStackRouteNames.Tabs]: {};
   [MainStackRouteNames.Wallet]: {
     currency: CryptoCurrency;
@@ -11,21 +13,11 @@ export type MainStackParamList = {
     type: string;
     ticker: string;
   };
-  [MainStackRouteNames.ImportWallet]: {
-    testnet?: boolean;
-  };
   [MainStackRouteNames.Subscriptions]: {};
   [MainStackRouteNames.BackupWords]: {
     mnemonic: string;
   };
-  [MainStackRouteNames.CreatePin]: {};
-  [MainStackRouteNames.SetupBiometry]: {
-    pin: string;
-    biometryType: LocalAuthentication.AuthenticationType;
-  };
-  [MainStackRouteNames.ImportWalletDone]: {};
   [MainStackRouteNames.DevStack]: {};
-  [MainStackRouteNames.SetupNotifications]: {};
   [MainStackRouteNames.Jetton]: {
     jettonAddress: string;
   };
