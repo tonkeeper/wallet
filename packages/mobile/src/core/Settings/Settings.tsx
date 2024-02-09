@@ -13,7 +13,6 @@ import { Icon as NewIcon } from '@tonkeeper/uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
 import { alwaysShowV4R1Selector } from '$store/main';
-import { hasSubscriptionsSelector } from '$store/subscriptions';
 import { List } from '@tonkeeper/uikit';
 import {
   AppStackRouteNames,
@@ -59,6 +58,7 @@ import { tk } from '$wallet';
 import { WalletContractVersion } from '$wallet/WalletTypes';
 import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
 import { WalletListItem } from '@tonkeeper/shared/components';
+import { useSubscriptions } from '@tonkeeper/shared/hooks/useSubscriptions';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -79,7 +79,9 @@ export const Settings: FC = () => {
 
   const fiatCurrency = useWalletCurrency();
   const dispatch = useDispatch();
-  const hasSubscriptions = useSelector(hasSubscriptionsSelector);
+  const hasSubscriptions = useSubscriptions(
+    (state) => Object.values(state.subscriptions).length > 0,
+  );
   const wallet = useWallet();
   const balances = useBalancesState();
   const alwaysShowV4R1 = useSelector(alwaysShowV4R1Selector);

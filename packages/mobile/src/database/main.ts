@@ -4,18 +4,6 @@ import { getWalletName } from '$shared/dynamicConfig';
 import { LogItem } from '$store/main/interface';
 
 export class MainDB {
-  static async isJettonsEnabled(): Promise<boolean> {
-    return (await AsyncStorage.getItem('jettons')) !== 'false';
-  }
-
-  static async setJettonsEnabled(isEnabled: boolean) {
-    if (isEnabled) {
-      await AsyncStorage.setItem('jettons', 'true');
-    } else {
-      await AsyncStorage.setItem('jettons', 'false');
-    }
-  }
-
   static async setShowV4R1(show: boolean) {
     if (show) {
       await AsyncStorage.setItem('show_v4r1', 'true');
@@ -46,40 +34,12 @@ export class MainDB {
     }
   }
 
-  static async setExcludedJettons(excludedJettons: any) {
-    await AsyncStorage.setItem('excludedJettons', JSON.stringify(excludedJettons));
-  }
-
-  static async getExcludedJettons() {
-    try {
-      const excludedJettons = await AsyncStorage.getItem('excludedJettons');
-      if (!excludedJettons) {
-        return {};
-      }
-      return await JSON.parse(excludedJettons);
-    } catch (e) {
-      return {};
-    }
-  }
-
   static async isNewSecurityFlow(): Promise<boolean> {
     return (await AsyncStorage.getItem('new_security_flow')) === 'yes';
   }
 
-  static async enableNewSecurityFlow() {
-    await AsyncStorage.setItem('new_security_flow', 'yes');
-  }
-
   static async isBiometryEnabled(): Promise<boolean> {
     return (await AsyncStorage.getItem('biometry_enabled')) === 'yes';
-  }
-
-  static async setBiometryEnabled(isEnabled: boolean) {
-    if (isEnabled) {
-      await AsyncStorage.setItem('biometry_enabled', 'yes');
-    } else {
-      await AsyncStorage.removeItem('biometry_enabled');
-    }
   }
 
   static async getKeychainService() {
@@ -115,19 +75,6 @@ export async function hideNotification(id: string) {
     `${getWalletName()}_hidden_internal_notifications`,
     JSON.stringify(hidden.slice(-20)),
   );
-}
-
-export async function clearHiddenNotification() {
-  await AsyncStorage.removeItem(`${getWalletName()}_hidden_internal_notifications`);
-}
-
-export async function getLastRefreshedAt() {
-  const stored = (await AsyncStorage.getItem('last_refresh_at')) || 0;
-  return +stored;
-}
-
-export async function setLastRefreshedAt(ts: number) {
-  await AsyncStorage.setItem('last_refresh_at', `${ts}`);
 }
 
 export async function getSavedLogs(): Promise<LogItem[]> {

@@ -1,64 +1,17 @@
-import { all, takeLatest, call, put, select, fork } from 'redux-saga/effects';
+import { all, takeLatest, call, select } from 'redux-saga/effects';
 
-import { subscriptionsActions } from '$store/subscriptions/index';
+import { actions as subscriptionsActions } from '$store/subscriptions/index';
 import { SubscribeAction, UnsubscribeAction } from '$store/subscriptions/interface';
 import { walletSelector } from '$store/wallet';
 import { walletGetUnlockedVault } from '$store/wallet/sagas';
-import { getSubscriptions, saveSubscriptions } from '$database';
-import { SubscriptionModel } from '$store/models';
 import { CryptoCurrencies } from '$shared/constants';
-import { store, Toast } from '$store';
+import { Toast } from '$store';
 import { fuzzifyNumber } from '$utils';
 import { Ton } from '$libs/Ton';
 import { network } from '$libs/network';
 import { trackEvent } from '$utils/stats';
 import { tk } from '$wallet';
 import { config } from '$config';
-
-export async function reloadSubscriptionsFromServer(address: string) {
-  try {
-    const host = config.get('subscriptionsHost');
-    const resp = await network.get(`${host}/v1/subscriptions`, {
-      params: { address },
-    });
-    if (!resp.data.data) {
-      return;
-    }
-    store.dispatch(subscriptionsActions.setSubscriptionsInfo(resp.data.data));
-    await saveSubscriptions(Object.values(resp.data.data));
-  } catch {}
-}
-
-function* loadSubscriptionsWorker() {
-  try {
-    if (!tk.wallet) {
-      return;
-    }
-
-    if (!tk.wallet.isV4()) {
-      return;
-    }
-
-    yield fork(setSubscriptionsFromCache);
-    //
-    // const address = yield call([wallet.ton, 'getAddress']);
-    // const resp = yield withRetry('loadSubscriptionsFromApi', Api.get, '/subscriptions', {
-    //   params: { address },
-    // });
-    // yield put(subscriptionsActions.setSubscriptionsInfo(resp));
-    // yield call(saveSubscriptions, Object.values(resp));
-  } catch (e) {}
-}
-
-function* setSubscriptionsFromCache() {
-  const subscriptions = yield call(getSubscriptions);
-  const map: { [index: string]: SubscriptionModel } = {};
-  for (let subscription of subscriptions) {
-    map[subscription.subscriptionAddress] = subscription;
-  }
-
-  yield put(subscriptionsActions.setSubscriptionsInfo(map));
-}
 
 function* subscribeWorker(action: SubscribeAction) {
   const { subscription, onDone, onFail } = action.payload;
@@ -129,7 +82,6 @@ function* unsubscribeWorker(action: UnsubscribeAction) {
 
 export function* subscriptionsSaga() {
   yield all([
-    takeLatest(subscriptionsActions.loadSubscriptions, loadSubscriptionsWorker),
     takeLatest(subscriptionsActions.subscribe, subscribeWorker),
     takeLatest(subscriptionsActions.unsubscribe, unsubscribeWorker),
   ]);

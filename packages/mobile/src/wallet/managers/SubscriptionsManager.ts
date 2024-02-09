@@ -1,81 +1,76 @@
 import { network } from '@tonkeeper/core/src/utils/network';
 import { TonRawAddress } from '../WalletTypes';
+import { State, Storage } from '@tonkeeper/core';
+import { config } from '$config';
+
+export interface Subscription {
+  id?: string;
+  productName: string;
+  channelTgId: string;
+  amountNano: string;
+  intervalSec: number;
+  address: string;
+  status: string;
+  merchantName: string;
+  merchantPhoto: string;
+  returnUrl: string;
+  subscriptionId: number;
+  subscriptionAddress: string;
+  isActive?: boolean;
+  chargedAt: number;
+  fee: string;
+  userReturnUrl: string;
+}
+
+export type Subscriptions = { [k: string]: Subscription };
+
+export interface SubscriptionsState {
+  subscriptions: Subscriptions;
+  isLoading: boolean;
+}
+
+export interface SubscriptionsResponse {
+  data: Subscriptions;
+}
 
 export class SubscriptionsManager {
-  constructor(private tonRawAddress: TonRawAddress) {}
-
-  public get cacheKey() {
-    return ['subscriptions', this.tonRawAddress];
+  constructor(private tonRawAddress: TonRawAddress, private storage: Storage) {
+    this.state.persist({
+      partialize: ({ subscriptions }) => ({
+        subscriptions,
+      }),
+      storage: this.storage,
+      key: `${this.tonRawAddress}/subscriptions`,
+    });
   }
 
-  public async fetch() {
-    const { data: subscriptions } = await network.get<Subscriptions>(
-      'https://api.tonkeeper.com/v1/subscriptions',
+  static readonly INITIAL_STATE: SubscriptionsState = {
+    subscriptions: {},
+    isLoading: false,
+  };
+
+  public state = new State<SubscriptionsState>(SubscriptionsManager.INITIAL_STATE);
+
+  public async load() {
+    this.state.set({ isLoading: true });
+    const { data: subscriptions } = await network.get<SubscriptionsResponse>(
+      `${config.get('subscriptionsHost')}/v1/subscriptions`,
       {
         params: { address: this.tonRawAddress },
       },
     );
-
-    // MULTIWALLET TODO
-    // Object.values(subscriptions.data).map((subscription) => {
-    //   this.ctx.queryClient.setQueryData(
-    //     ['subscription', subscription.subscriptionAddress],
-    //     subscription,
-    //   );
-    // });
-
-    return subscriptions.data;
+    this.state.set({ isLoading: false, subscriptions: subscriptions.data });
   }
 
-  public async preload() {}
-
-  public getCachedByAddress(subscriptionAddress: string) {
-    // MULTIWALLET TODO
-    // const subscription = this.ctx.queryClient.getQueryData<Subscription>([
-    //   'subscription',
-    //   subscriptionAddress,
-    // ]);
-
-    // if (subscription) {
-    //   return subscription;
-    // }
-
-    return null;
+  public async reload() {
+    await this.load();
   }
 
-  public async prefetch() {
-    // MULTIWALLET TODO
-    // return this.ctx.queryClient.fetchQuery({
-    //   queryFn: () => this.fetch(),
-    //   queryKey: this.cacheKey,
-    //   staleTime: Infinity,
-    // });
+  public reset() {
+    this.state.set(SubscriptionsManager.INITIAL_STATE);
   }
 
-  public async refetch() {
-    // MULTIWALLET TODO
-    // return this.ctx.queryClient.refetchQueries({
-    //   queryKey: this.cacheKey,
-    // });
+  public async rehydrate() {
+    return this.state.rehydrate();
   }
 }
-
-export type Subscriptions = { data: { [key: string]: Subscription } };
-
-export type Subscription = {
-  address: string;
-  amountNano: string;
-  chargedAt: number;
-  fee: string;
-  id: string;
-  intervalSec: number;
-  isActive: boolean;
-  merchantName: string;
-  merchantPhoto: string;
-  productName: string;
-  returnUrl: string;
-  status: string;
-  subscriptionAddress: string;
-  subscriptionId: number;
-  userReturnUrl: string;
-};

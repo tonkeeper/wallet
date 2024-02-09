@@ -11,13 +11,11 @@ import {
   SetLogsAction,
   SetNotificationsAction,
   SetShowV4R1,
-  SetTestnetAction,
   SetTimeSyncedAction,
   SetTimeSyncedDismissedAction,
   SetTonCustomIcon,
   SetUnlockedAction,
   ToggleIntroAction,
-  ToggleTestnetAction,
   UpdateBadHostsAction,
 } from '$store/main/interface';
 import { AccentKey } from '$styled';
@@ -26,7 +24,6 @@ import { walletWalletSelector } from '$store/wallet';
 const initialState: MainState = {
   isInitiating: true,
   isIntroShown: true,
-  isTestnet: false,
   isTimeSynced: true,
   timeSyncedDismissedTimestamp: false,
   fiatCurrency: WalletCurrency.Usd,
@@ -174,9 +171,4 @@ export const alwaysShowV4R1Selector = createSelector(
 export const isTimeSyncedSelector = createSelector(
   mainSelector,
   (state) => state.isTimeSynced,
-);
-
-export const chartPeriodSelector = createSelector(
-  mainSelector,
-  (state) => state.chartPeriod,
 );

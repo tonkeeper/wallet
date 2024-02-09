@@ -24,7 +24,6 @@ import { AccessConfirmation, AddWatchOnly, AddressUpdateInfo } from '$core';
 import { ModalStack } from '$navigation/ModalStack';
 import { withModalStack } from '@tonkeeper/router';
 import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
-import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 import { InscriptionScreen } from '$core/InscriptionScreen';
 import { useDiamondsChecker } from '$hooks/useDiamondsChecker';
 import { useWallet } from '@tonkeeper/shared/hooks';
@@ -42,12 +41,6 @@ export const MainStack: FC = () => {
   const wallet = useWallet();
   useNotificationsResolver();
   useDiamondsChecker();
-
-  useEffect(() => {
-    if (wallet) {
-      reloadSubscriptionsFromServer(wallet.address.ton.friendly);
-    }
-  }, [wallet]);
 
   const initialRouteName = !attachedScreen.pathname
     ? MainStackRouteNames.Tabs

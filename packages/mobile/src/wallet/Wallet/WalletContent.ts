@@ -49,7 +49,7 @@ export class WalletContent extends WalletBase {
 
     const tonRawAddress = this.address.ton.raw;
 
-    this.subscriptions = new SubscriptionsManager(tonRawAddress);
+    this.subscriptions = new SubscriptionsManager(tonRawAddress, this.storage);
 
     this.activityLoader = new ActivityLoader(tonRawAddress, this.tonapi, this.tronapi);
     this.jettonActivityList = new JettonActivityList(
@@ -109,6 +109,7 @@ export class WalletContent extends WalletBase {
     this.jettons.rehydrate();
     this.staking.rehydrate();
     this.nfts.rehydrate();
+    this.subscriptions.rehydrate();
   }
 
   protected async preload() {
@@ -117,7 +118,7 @@ export class WalletContent extends WalletBase {
       this.jettons.load(),
       this.activityList.load(),
       this.tonInscriptions.load(),
-      this.subscriptions.prefetch(),
+      this.subscriptions.load(),
       this.nfts.load(),
       this.staking.load(),
     ]);
@@ -127,6 +128,7 @@ export class WalletContent extends WalletBase {
     await Promise.all([
       this.balances.load(),
       this.jettons.reload(),
+      this.subscriptions.reload(),
       this.nfts.reload(),
       this.staking.reload(),
       this.activityList.reload(),

@@ -20,7 +20,6 @@ import {
   setSavedLogs,
 } from '$database';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
-import { subscriptionsActions } from '$store/subscriptions';
 import { HideNotificationAction } from '$store/main/interface';
 import { withRetry } from '$store/retry';
 import { InternalNotificationModel } from '$store/models';
@@ -60,7 +59,6 @@ export function* initHandler() {
       }),
       mainActions.setShowV4R1(showV4R1),
       mainActions.toggleIntro(!isIntroShown),
-      subscriptionsActions.reset(),
       mainActions.setTimeSyncedDismissed(timeSyncedDismissed),
     ),
   );
@@ -74,7 +72,6 @@ export function* initHandler() {
         tk.wallet.config.version as unknown as SelectableVersion,
       ),
     );
-    yield put(subscriptionsActions.loadSubscriptions());
     useSwapStore.getState().actions.fetchAssets();
   }
 
