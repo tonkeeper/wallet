@@ -1,7 +1,7 @@
 import { FlashList } from '@shopify/flash-list';
 import { Steezy, View, ns } from '@tonkeeper/uikit';
 import React, { memo, useCallback } from 'react';
-import { FlatList, Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 interface Emoji {
