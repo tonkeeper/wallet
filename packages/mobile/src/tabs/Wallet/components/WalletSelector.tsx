@@ -10,6 +10,7 @@ import {
   getWalletColorHex,
 } from '@tonkeeper/uikit';
 import React, { FC, memo, useCallback } from 'react';
+import { Text as RNText } from 'react-native';
 import { useNavigation } from '@tonkeeper/router';
 import { useDispatch } from 'react-redux';
 import { walletActions } from '$store/wallet';
@@ -33,6 +34,8 @@ const WalletSelectorComponent: FC = () => {
             { backgroundColor: getWalletColorHex(wallet.config.color) },
           ]}
         >
+          <RNText style={styles.emoji.static}>{wallet.config.emoji}</RNText>
+          <Spacer x={4} />
           <View style={styles.nameContainer}>
             <Text type="label2" numberOfLines={1}>
               {wallet.config.name}
@@ -54,7 +57,7 @@ const styles = Steezy.create({
     height: 40,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 16,
+    paddingLeft: 10,
     paddingRight: 12,
     borderRadius: 20,
   },
@@ -63,5 +66,9 @@ const styles = Steezy.create({
   },
   icon: {
     opacity: 0.64,
+  },
+  emoji: {
+    fontSize: 20,
+    marginTop: 1,
   },
 });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Button, Icon, Screen, Spacer, Text } from '$uikit';
 import * as S from '$core/SetupNotifications/SetupNotifications.style';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,14 +10,16 @@ import { useNotifications } from '$hooks/useNotifications';
 import { saveDontShowReminderNotifications } from '$utils/messaging';
 import { Toast } from '$store';
 import { useWallets } from '@tonkeeper/shared/hooks';
-import { walletGeneratedVaultSelector } from '$store/wallet';
-import { useSelector } from 'react-redux';
+import { walletActions, walletGeneratedVaultSelector } from '$store/wallet';
+import { useDispatch, useSelector } from 'react-redux';
 
 export const SetupNotifications: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
   const notifications = useNotifications();
   const safeArea = useSafeAreaInsets();
   const wallets = useWallets();
+
+  const dispatch = useDispatch();
 
   const generatedVault = useSelector(walletGeneratedVaultSelector);
 
@@ -29,17 +31,24 @@ export const SetupNotifications: React.FC = () => {
 
   const withoutCustomize = wallets.length === versions.length;
 
+  const handleDone = useCallback(() => {
+    openSetupWalletDone(withoutCustomize);
+    if (withoutCustomize) {
+      dispatch(walletActions.clearGeneratedVault());
+    }
+  }, [dispatch, withoutCustomize]);
+
   const handleEnableNotifications = React.useCallback(async () => {
     try {
       setLoading(true);
       await notifications.subscribe();
-      openSetupWalletDone(withoutCustomize);
+      handleDone();
     } catch (err) {
       setLoading(false);
       Toast.fail(err?.massage);
       debugLog('[SetupNotifications]:', err);
     }
-  }, [notifications, withoutCustomize]);
+  }, [handleDone, notifications]);
 
   return (
     <Screen>
@@ -49,7 +58,7 @@ export const SetupNotifications: React.FC = () => {
             size="navbar_small"
             mode="secondary"
             style={{ marginRight: ns(16) }}
-            onPress={() => openSetupWalletDone(withoutCustomize)}
+            onPress={handleDone}
           >
             {t('later')}
           </Button>

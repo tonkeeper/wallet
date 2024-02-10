@@ -59,10 +59,14 @@ export interface TokenRate {
   diff_24h: string;
 }
 
-export interface WalletConfig {
-  identifier: string;
+export interface WalletStyleConfig {
   name: string;
   color: WalletColor;
+  emoji: string;
+}
+
+export interface WalletConfig extends WalletStyleConfig {
+  identifier: string;
   pubkey: string;
   network: WalletNetwork;
   type: WalletType;

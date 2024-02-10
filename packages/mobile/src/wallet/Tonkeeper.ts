@@ -9,6 +9,7 @@ import {
   WalletConfig,
   WalletContractVersion,
   WalletNetwork,
+  WalletStyleConfig,
   WalletType,
 } from './WalletTypes';
 import { createTonApiInstance } from './utils';
@@ -118,6 +119,7 @@ export class Tonkeeper {
         type: WalletType.Regular,
         name: 'Wallet',
         color: WalletColor.SteelGray,
+        emoji: '😀',
         workchain: json.vault.workchain,
         pubkey: json.vault.tonPubkey,
         configPubKey: json.vault.configPubKey,
@@ -181,6 +183,7 @@ export class Tonkeeper {
         name: versions.length > 1 ? `Wallet ${version}` : 'Wallet',
         version,
         color: WalletColor.SteelGray,
+        emoji: '😀',
         type: WalletType.Regular,
         pubkey,
         identifier,
@@ -286,6 +289,7 @@ export class Tonkeeper {
       version,
       name: 'Wallet',
       color: WalletColor.SteelGray,
+      emoji: '😀',
     };
 
     this.walletsStore.set(({ wallets }) => ({ wallets: [...wallets, config] }));
@@ -345,10 +349,7 @@ export class Tonkeeper {
     return wallet;
   }
 
-  public async updateWallet(
-    config: Pick<Partial<WalletConfig>, 'name' | 'color'>,
-    allVersions?: boolean,
-  ) {
+  public async updateWallet(config: Partial<WalletStyleConfig>, allVersions?: boolean) {
     try {
       if (!this.wallet) {
         return;

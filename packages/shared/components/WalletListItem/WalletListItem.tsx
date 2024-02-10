@@ -1,7 +1,6 @@
 import { Tag } from '@tonkeeper/mobile/src/uikit';
 import { Wallet } from '@tonkeeper/mobile/src/wallet/Wallet';
 import {
-  Icon,
   List,
   Steezy,
   Text,
@@ -11,6 +10,7 @@ import {
 } from '@tonkeeper/uikit';
 import { ListItemProps } from '@tonkeeper/uikit/src/components/List/ListItem';
 import { FC, memo } from 'react';
+import { Text as RNText } from 'react-native';
 import { t } from '../../i18n';
 
 interface Props extends ListItemProps {
@@ -38,7 +38,7 @@ const WalletListItemComponent: FC<Props> = (props) => {
             { backgroundColor: getWalletColorHex(wallet.config.color) },
           ]}
         >
-          <Icon name="ic-wallet-28" />
+          <RNText style={styles.emoji.static}>{wallet.config.emoji}</RNText>
         </View>
       }
       {...listItemProps}
@@ -61,5 +61,9 @@ const styles = Steezy.create(({ colors }) => ({
     maxWidth: deviceWidth - 240,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  emoji: {
+    fontSize: 24,
+    marginTop: 2,
   },
 }));
