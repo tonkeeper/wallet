@@ -74,12 +74,7 @@ export class WalletContent extends WalletBase {
       this.tonapi,
       this.storage,
     );
-    this.nfts = new NftsManager(
-      tonRawAddress,
-      this.tonAllAddresses,
-      this.tonapi,
-      this.storage,
-    );
+    this.nfts = new NftsManager(tonRawAddress, this.tonapi, this.storage);
     this.tokenApproval = new TokenApprovalManager(tonRawAddress, this.storage);
     this.jettons = new JettonsManager(
       tonRawAddress,

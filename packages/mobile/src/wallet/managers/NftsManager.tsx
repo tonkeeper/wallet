@@ -1,5 +1,5 @@
 import { CustomNftItem, NftImage } from '@tonkeeper/core/src/TonAPI/CustomNftItems';
-import { Address, AddressesByVersion } from '@tonkeeper/core/src/formatters/Address';
+import { Address } from '@tonkeeper/core/src/formatters/Address';
 import { NftItem, TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
@@ -26,7 +26,6 @@ export class NftsManager {
 
   constructor(
     private tonRawAddress: TonRawAddress,
-    private tonAllAddresses: AddressesByVersion,
     private tonapi: TonAPI,
     private storage: Storage,
   ) {
@@ -50,25 +49,20 @@ export class NftsManager {
     try {
       this.state.set({ isLoading: true });
 
-      const responses = await Promise.all(
-        Object.values(this.tonAllAddresses)
-          .reverse()
-          .map((address) =>
-            this.tonapi.accounts.getAccountNftItems({
-              accountId: address.raw,
-              indirect_ownership: true,
-            }),
-          ),
-      );
+      const response = await this.tonapi.accounts.getAccountNftItems({
+        accountId: this.tonRawAddress,
+        indirect_ownership: true,
+      });
 
-      const accountNfts = responses.reduce((acc, response) => {
-        response.nft_items.forEach((item) => {
+      const accountNfts = response.nft_items.reduce<Record<string, NftItem>>(
+        (acc, item) => {
           if (item.metadata?.render_type !== 'hidden') {
             acc[item.address] = item;
           }
-        });
-        return acc;
-      }, {});
+          return acc;
+        },
+        {},
+      );
 
       this.state.set({ accountNfts });
 
