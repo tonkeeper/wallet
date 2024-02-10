@@ -17,6 +17,7 @@ import { Vault } from '@tonkeeper/core';
 import { v4 as uuidv4 } from 'uuid';
 import { WalletColor } from '@tonkeeper/uikit';
 import { Mnemonic } from '@tonkeeper/core/src/utils/mnemonic';
+import { DEFAULT_WALLET_STYLE_CONFIG } from './constants';
 
 class PermissionsManager {
   public notifications = true;
@@ -115,11 +116,9 @@ export class Tonkeeper {
       const json = JSON.parse(data);
 
       const walletConfig: WalletConfig = {
+        ...DEFAULT_WALLET_STYLE_CONFIG,
         identifier: uuidv4(),
         type: WalletType.Regular,
-        name: 'Wallet',
-        color: WalletColor.SteelGray,
-        emoji: '😀',
         workchain: json.vault.workchain,
         pubkey: json.vault.tonPubkey,
         configPubKey: json.vault.configPubKey,
@@ -179,11 +178,10 @@ export class Tonkeeper {
       const pubkey = await this.vault.import(identifier, mnemonic, passcode);
 
       newWallets.push({
+        ...DEFAULT_WALLET_STYLE_CONFIG,
         ...walletConfig,
         name: versions.length > 1 ? `Wallet ${version}` : 'Wallet',
         version,
-        color: WalletColor.SteelGray,
-        emoji: '😀',
         type: WalletType.Regular,
         pubkey,
         identifier,
@@ -281,15 +279,13 @@ export class Tonkeeper {
     const version = versionByAddress[rawAddress] as WalletContractVersion;
 
     const config: WalletConfig = {
+      ...DEFAULT_WALLET_STYLE_CONFIG,
       identifier: uuidv4(),
       network: WalletNetwork.mainnet,
       type: WalletType.WatchOnly,
       pubkey,
       workchain,
       version,
-      name: 'Wallet',
-      color: WalletColor.SteelGray,
-      emoji: '😀',
     };
 
     this.walletsStore.set(({ wallets }) => ({ wallets: [...wallets, config] }));
