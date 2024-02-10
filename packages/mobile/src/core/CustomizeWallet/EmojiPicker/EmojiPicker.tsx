@@ -1,4 +1,5 @@
-import { Steezy, View } from '@tonkeeper/uikit';
+import { FlashList } from '@shopify/flash-list';
+import { Steezy, View, ns } from '@tonkeeper/uikit';
 import React, { memo, useCallback } from 'react';
 import { FlatList, Text, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -30,14 +31,14 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = memo(({ onChange }) => {
 
   return (
     <View style={styles.container}>
-      <FlatList
+      <FlashList
         data={emojis}
         numColumns={7}
         keyExtractor={(item) => item.name}
         renderItem={renderEmoji}
-        style={styles.flatList.static}
         contentContainerStyle={styles.flatListContent.static}
         showsVerticalScrollIndicator={false}
+        estimatedItemSize={ns(48)}
       />
       <LinearGradient
         pointerEvents="none"
@@ -93,13 +94,10 @@ const styles = Steezy.create(({ colors }) => ({
     flex: 1,
     position: 'relative',
   },
-  flatList: {
-    flex: 1,
-    paddingHorizontal: 27,
-  },
   flatListContent: {
     paddingTop: 16,
     paddingBottom: 32,
+    paddingHorizontal: 27,
   },
   emojiContainer: {
     width: 48,

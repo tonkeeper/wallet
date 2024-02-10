@@ -1092,10 +1092,10 @@
   },
   "watch_only": "Watch only",
   "stop_watch": "Delete Watch Account",
-  "customize": "Edit name and color",
+  "customize": "Customize",
   "customize_modal": {
-    "title": "Name your Wallet",
-    "subtitle": "Wallet name is stored locally on your device. It will only be visible to you.",
+    "title": "Customize your Wallet",
+    "subtitle": "Wallet name and icon are stored locally on your device.",
     "wallet_name": "Wallet Name",
     "save": "Save"
   },
