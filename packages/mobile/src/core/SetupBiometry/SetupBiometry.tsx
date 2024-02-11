@@ -11,8 +11,8 @@ import { ns, platform } from '$utils';
 import { openSetupNotifications, openSetupWalletDone } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { t } from '@tonkeeper/shared/i18n';
-import { getPermission } from '$utils/messaging';
 import { Steezy } from '@tonkeeper/uikit';
+import { tk } from '$wallet';
 
 const LottieFaceId = require('$assets/lottie/faceid.json');
 const LottieTouchId = require('$assets/lottie/touchid.json');
@@ -43,8 +43,8 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
           isBiometryEnabled,
           pin,
           onDone: async () => {
-            const hasNotificationPermission = await getPermission();
-            if (hasNotificationPermission) {
+            const isNotificationsDenied = await tk.wallet.notifications.getIsDenied();
+            if (isNotificationsDenied) {
               openSetupWalletDone();
             } else {
               openSetupNotifications();

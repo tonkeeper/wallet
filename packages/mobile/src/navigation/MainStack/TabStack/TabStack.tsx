@@ -12,7 +12,6 @@ import { isAndroid, nfs, ns } from '$utils';
 import { t } from '@tonkeeper/shared/i18n';
 import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
 import { TabBarBadgeIndicator } from './TabBarBadgeIndicator';
-import { useNotificationsSubscribe } from '$hooks/useNotificationsSubscribe';
 import { WalletScreen } from '../../../tabs/Wallet/WalletScreen';
 import Animated from 'react-native-reanimated';
 import { FONT } from '$styled';
@@ -39,7 +38,6 @@ export const TabStack: FC = () => {
   useRemoteBridge();
   useLoadExpiringDomains();
   useFetchMethodsToBuy();
-  useNotificationsSubscribe();
   usePreloadChart();
   useCheckForUpdates();
 

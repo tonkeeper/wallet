@@ -35,7 +35,6 @@ import {
 import { checkIsTonDiamondsNFT, hNs, ns, throttle } from '$utils';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { CellSectionItem } from '$shared/components';
-import { useNotifications } from '$hooks/useNotifications';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
 import { useFlags } from '$utils/flags';
 import { SearchEngine, useBrowserStore, useNotificationsStore } from '$store';
@@ -72,7 +71,6 @@ export const Settings: FC = () => {
   const nav = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
   const notificationsBadge = useNotificationsBadge();
-  const notifications = useNotifications();
 
   const fiatCurrency = useWalletCurrency();
   const dispatch = useDispatch();
@@ -135,21 +133,15 @@ export const Settings: FC = () => {
         text: t('settings_reset_alert_button'),
         style: 'destructive',
         onPress: () => {
-          if (showNotifications) {
-            notifications.unsubscribe();
-          }
           dispatch(walletActions.cleanWallet());
         },
       },
     ]);
-  }, [dispatch, notifications, showNotifications]);
+  }, [dispatch]);
 
   const handleStopWatchWallet = useCallback(() => {
-    if (showNotifications) {
-      notifications.unsubscribe();
-    }
     dispatch(walletActions.cleanWallet());
-  }, [dispatch, notifications, showNotifications]);
+  }, [dispatch]);
 
   const handleSubscriptions = useCallback(() => {
     openSubscriptions();
@@ -211,12 +203,11 @@ export const Settings: FC = () => {
         style: 'destructive',
         onPress: () => {
           trackEvent('delete_wallet');
-          notifications.unsubscribe();
           openDeleteAccountDone();
         },
       },
     ]);
-  }, [notifications]);
+  }, []);
 
   const handleCustomizePress = useCallback(
     () => nav.navigate(AppStackRouteNames.CustomizeWallet),

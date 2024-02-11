@@ -12,7 +12,7 @@ import { walletActions, walletGeneratedVaultSelector } from '$store/wallet';
 import * as S from './CheckSecretWords.style';
 import { css } from '$styled';
 import { NavBarHeight } from '$shared/constants';
-import { openCreatePin, openSetupWalletDone } from '$navigation';
+import { openCreatePin, openSetupNotifications, openSetupWalletDone } from '$navigation';
 import { Toast } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
 import { tk } from '$wallet';
@@ -154,10 +154,12 @@ export const CheckSecretWords: FC = () => {
         await unlockVault();
         const pin = getLastEnteredPasscode();
 
+        const isNotificationsDenied = await tk.wallet.notifications.getIsDenied();
+
         dispatch(
           walletActions.createWallet({
             pin,
-            onDone: openSetupWalletDone,
+            onDone: isNotificationsDenied ? openSetupWalletDone : openSetupNotifications,
             onFail: () => {},
           }),
         );

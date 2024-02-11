@@ -4,7 +4,6 @@ import { useNavigation } from '@tonkeeper/router';
 import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { useDeeplinking } from '$libs/deeplinking';
-import { getToken } from '$utils/messaging';
 import { openDAppBrowser } from '$navigation';
 import { getDomainFromURL } from '$utils';
 import { Alert } from 'react-native';
@@ -60,7 +59,7 @@ export const useNotificationsResolver = () => {
   }
 
   useEffect(() => {
-    getToken();
+    messaging().getToken().catch(null);
   }, []);
 
   React.useEffect(() => {

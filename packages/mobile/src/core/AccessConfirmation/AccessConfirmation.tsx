@@ -17,7 +17,6 @@ import { UnlockedVault } from '$blockchain';
 import { AppStackRouteNames } from '$navigation';
 import { walletGeneratedVaultSelector } from '$store/wallet';
 import { mainActions } from '$store/main';
-import { useNotifications } from '$hooks/useNotifications';
 import { Toast, ToastSize } from '$store';
 import { goBack, useParams } from '$navigation/imperative';
 import { t } from '@tonkeeper/shared/i18n';
@@ -30,7 +29,6 @@ import { useBiometrySettings, useWallet } from '@tonkeeper/shared/hooks';
 export const AccessConfirmation: FC = () => {
   const route = useRoute();
   const dispatch = useDispatch();
-  const notifications = useNotifications();
   const { bottom: bottomInset } = useSafeAreaInsets();
   const params = useParams<{ onGoBack: () => void; withoutBiometryOnOpen: boolean }>();
   const [value, setValue] = useState('');
@@ -186,11 +184,10 @@ export const AccessConfirmation: FC = () => {
         style: 'destructive',
         onPress: () => {
           tk.removeAllWallets();
-          notifications.unsubscribe();
         },
       },
     ]);
-  }, [notifications]);
+  }, []);
 
   function renderRightButton() {
     if (generatedVault) {

@@ -13,11 +13,6 @@ import { config } from '$config';
 import BigNumber from 'bignumber.js';
 import { LockupWalletV1 } from 'tonweb/dist/types/contract/lockup/lockup-wallet-v1';
 
-export interface OldWalletBalance {
-  version: string;
-  balance: string;
-}
-
 export interface BalancesState {
   isReloading: boolean;
   isLoading: boolean;

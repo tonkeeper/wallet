@@ -93,7 +93,10 @@ export function openSetupBiometry(
 }
 
 export function openSetupNotifications() {
-  if (getCurrentRoute()?.name === CreateWalletStackRouteNames.Biometry) {
+  if (
+    getCurrentRoute()?.name === CreateWalletStackRouteNames.Biometry ||
+    getCurrentRoute()?.name === CreateWalletStackRouteNames.CheckSecretWords
+  ) {
     navigate(CreateWalletStackRouteNames.Notifications);
   } else {
     navigate(ImportWalletStackRouteNames.Notifications);

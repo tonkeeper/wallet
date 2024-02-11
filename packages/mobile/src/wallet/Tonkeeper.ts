@@ -294,16 +294,18 @@ export class Tonkeeper {
 
   public async removeWallet(identifier: string) {
     try {
-      const wallet =
+      const nextWallet =
         this.wallets.get(
           Array.from(this.wallets.keys()).find((item) => item !== identifier) ?? '',
         ) ?? null;
 
       this.walletsStore.set(({ wallets }) => ({
         wallets: wallets.filter((w) => w.identifier !== identifier),
-        selectedIdentifier: wallet?.identifier ?? '',
+        selectedIdentifier: nextWallet?.identifier ?? '',
       }));
-      this.wallets.get(identifier)?.destroy();
+      const wallet = this.wallets.get(identifier);
+      wallet?.notifications.unsubscribe().catch(null);
+      wallet?.destroy();
       this.wallets.delete(identifier);
 
       if (this.wallets.size === 0) {
@@ -322,7 +324,10 @@ export class Tonkeeper {
       selectedIdentifier: '',
       biometryEnabled: false,
     });
-    this.wallets.forEach((wallet) => wallet.destroy());
+    this.wallets.forEach((wallet) => {
+      wallet.notifications.unsubscribe().catch(null);
+      wallet.destroy();
+    });
     this.wallets.clear();
     this.vault.destroy();
     this.emitChangeWallet();
@@ -410,8 +415,23 @@ export class Tonkeeper {
     this.setWallet(wallet!);
   }
 
-  public setWallet(wallet: Wallet | null) {
+  private setWallet(wallet: Wallet | null) {
     this.walletsStore.set({ selectedIdentifier: wallet?.identifier ?? '' });
     this.emitChangeWallet();
+  }
+
+  public async enableNotificationsForAll() {
+    const identifiers = this.walletsStore.data.wallets
+      .filter((item) => item.pubkey === this.wallet.pubkey)
+      .map((item) => item.identifier);
+
+    await Promise.all(
+      identifiers.map(async (identifier) => {
+        const wallet = this.wallets.get(identifier);
+        if (wallet) {
+          await wallet.notifications.subscribe();
+        }
+      }),
+    );
   }
 }

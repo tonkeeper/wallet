@@ -7,8 +7,8 @@ import { Tonapi } from '$libs/Tonapi';
 import messaging from '@react-native-firebase/messaging';
 import * as SecureStore from 'expo-secure-store';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
-import { getSubscribeStatus, SUBSCRIBE_STATUS } from '$utils/messaging';
 import { Toast } from '@tonkeeper/uikit';
+import { tk } from '$wallet';
 
 const initialState: Omit<IConnectedAppsStore, 'actions'> = {
   connectedApps: {
@@ -142,14 +142,12 @@ export const useConnectedAppsStore = create(
                 return;
               }
 
-              const subscribeStatus = await getSubscribeStatus();
-
               await Tonapi.subscribeToNotifications(token, {
                 app_url: fixedUrl,
                 session_id: session_id,
                 account: walletAddress,
                 commercial: true,
-                silent: subscribeStatus !== SUBSCRIBE_STATUS.SUBSCRIBED,
+                silent: !tk.wallet.notifications.state.data.isSubscribed,
                 firebase_token,
               });
 

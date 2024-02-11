@@ -31,7 +31,6 @@ import { getChainName } from '$shared/dynamicConfig';
 import { toNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { Ton } from '$libs/Ton';
-import { clearSubscribeStatus } from '$utils/messaging';
 import { Cell } from '@ton/core';
 import nacl from 'tweetnacl';
 import { BASE_FORWARD_AMOUNT, encryptMessageComment } from '@tonkeeper/core';
@@ -451,7 +450,6 @@ function* cleanWalletWorker() {
   try {
     const { wallet } = yield select(walletSelector);
 
-    yield call(clearSubscribeStatus);
     yield call(
       useConnectedAppsStore.getState().actions.unsubscribeFromAllNotifications,
       getChainName(),

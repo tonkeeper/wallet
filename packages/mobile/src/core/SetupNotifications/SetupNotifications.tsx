@@ -6,26 +6,20 @@ import { t } from '@tonkeeper/shared/i18n';
 import { openSetupWalletDone } from '$navigation';
 import { ns } from '$utils';
 import { debugLog } from '$utils/debugLog';
-import { useNotifications } from '$hooks/useNotifications';
-import { saveDontShowReminderNotifications } from '$utils/messaging';
 import { Toast } from '$store';
 import { useWallets } from '@tonkeeper/shared/hooks';
 import { walletActions, walletGeneratedVaultSelector } from '$store/wallet';
 import { useDispatch, useSelector } from 'react-redux';
+import { tk } from '$wallet';
 
 export const SetupNotifications: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
-  const notifications = useNotifications();
   const safeArea = useSafeAreaInsets();
   const wallets = useWallets();
 
   const dispatch = useDispatch();
 
   const generatedVault = useSelector(walletGeneratedVaultSelector);
-
-  React.useEffect(() => {
-    saveDontShowReminderNotifications();
-  }, []);
 
   const versions = generatedVault?.versions ?? [];
 
@@ -41,14 +35,20 @@ export const SetupNotifications: React.FC = () => {
   const handleEnableNotifications = React.useCallback(async () => {
     try {
       setLoading(true);
-      await notifications.subscribe();
+
+      if (versions.length > 1) {
+        await tk.enableNotificationsForAll();
+      } else {
+        await tk.wallet.notifications.subscribe();
+      }
+
       handleDone();
     } catch (err) {
       setLoading(false);
       Toast.fail(err?.massage);
       debugLog('[SetupNotifications]:', err);
     }
-  }, [handleDone, notifications]);
+  }, [handleDone, versions.length]);
 
   return (
     <Screen>

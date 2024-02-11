@@ -10,8 +10,8 @@ import RNRestart from 'react-native-restart';
 import { FC, useCallback } from 'react';
 import { openLogs } from '$navigation';
 import Clipboard from '@react-native-community/clipboard';
-import { getToken } from '$utils/messaging';
 import { tk } from '$wallet';
+import messaging from '@react-native-firebase/messaging';
 
 export const DevMenu: FC = () => {
   const nav = useNavigation();
@@ -58,8 +58,10 @@ export const DevMenu: FC = () => {
   } = useDevFeaturesToggle();
 
   const handleCopyFCMToken = useCallback(async () => {
-    const token = await getToken();
-    Clipboard.setString(String(token));
+    try {
+      const token = await messaging().getToken();
+      Clipboard.setString(String(token));
+    } catch {}
   }, []);
 
   const toggleHttpProtocol = useCallback(() => {

@@ -13,7 +13,6 @@ import { debugLog } from '$utils/debugLog';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Linking } from 'react-native';
 import { CellSection } from '$shared/components';
-import { getSubscribeStatus, SUBSCRIBE_STATUS } from '$utils/messaging';
 import { NotificationsStatus, useNotificationStatus } from '$hooks/useNotificationStatus';
 import messaging from '@react-native-firebase/messaging';
 import { useNotifications } from '$hooks/useNotifications';
@@ -41,18 +40,17 @@ export const Notifications: React.FC = () => {
 
   React.useEffect(() => {
     const init = async () => {
-      const subscribeStatus = await getSubscribeStatus();
       const status = await messaging().hasPermission();
 
-      const isGratend =
+      const isGranted =
         status === NotificationsStatus.AUTHORIZED ||
         status === NotificationsStatus.PROVISIONAL;
 
-      const initialValue = isGratend && subscribeStatus === SUBSCRIBE_STATUS.SUBSCRIBED;
-      setIsSubscribeNotifications(initialValue);
+      setIsSubscribeNotifications(isGranted && notifications.isSubscribed);
     };
 
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {

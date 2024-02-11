@@ -1,5 +1,5 @@
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
-import { openCreatePin, openSetupWalletDone } from '$navigation';
+import { openCreatePin, openSetupNotifications, openSetupWalletDone } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { getLastEnteredPasscode } from '$store/wallet/sagas';
 import { tk } from '$wallet';
@@ -30,15 +30,22 @@ export const useImportWallet = () => {
                   await unlockVault();
                   const pin = getLastEnteredPasscode();
 
+                  const isNotificationsDenied =
+                    await tk.wallet.notifications.getIsDenied();
+
                   dispatch(
                     walletActions.createWallet({
                       pin,
                       isTestnet,
                       onDone: () => {
-                        const withoutCustomize = tk.wallets.size === versions.length;
-                        openSetupWalletDone(withoutCustomize);
-                        if (withoutCustomize) {
-                          dispatch(walletActions.clearGeneratedVault());
+                        if (isNotificationsDenied) {
+                          const withoutCustomize = tk.wallets.size === versions.length;
+                          openSetupWalletDone(withoutCustomize);
+                          if (withoutCustomize) {
+                            dispatch(walletActions.clearGeneratedVault());
+                          }
+                        } else {
+                          openSetupNotifications();
                         }
                         resolve();
                       },

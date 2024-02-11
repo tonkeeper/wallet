@@ -18,6 +18,7 @@ import { WalletConfig } from '../WalletTypes';
 import { WalletBase } from './WalletBase';
 import BigNumber from 'bignumber.js';
 import { BatteryManager } from '../managers/BatteryManager';
+import { NotificationsManager } from '$wallet/managers/NotificationsManager';
 
 export interface WalletStatusState {
   isReloading: boolean;
@@ -38,6 +39,7 @@ export class WalletContent extends WalletBase {
   public tonActivityList: TonActivityList;
   public activityList: ActivityList;
   public tonInscriptions: TonInscriptions;
+  public notifications: NotificationsManager;
 
   constructor(
     public config: WalletConfig,
@@ -90,6 +92,11 @@ export class WalletContent extends WalletBase {
       this.storage,
     );
     this.battery = new BatteryManager(this.batteryapi, this.tonProof, this.storage);
+    this.notifications = new NotificationsManager(
+      tonRawAddress,
+      this.isTestnet,
+      this.storage,
+    );
   }
 
   protected async rehydrate() {
