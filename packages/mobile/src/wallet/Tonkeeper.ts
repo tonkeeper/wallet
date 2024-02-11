@@ -15,7 +15,6 @@ import {
 import { createTonApiInstance } from './utils';
 import { Vault } from '@tonkeeper/core';
 import { v4 as uuidv4 } from 'uuid';
-import { WalletColor } from '@tonkeeper/uikit';
 import { Mnemonic } from '@tonkeeper/core/src/utils/mnemonic';
 import { DEFAULT_WALLET_STYLE_CONFIG } from './constants';
 
@@ -88,7 +87,7 @@ export class Tonkeeper {
 
       this.tonPrice.load();
 
-      await this.migrate();
+      // await this.migrate();
 
       await Promise.all(
         this.walletsStore.data.wallets.map((walletConfig) =>
@@ -212,7 +211,7 @@ export class Tonkeeper {
 
     const [{ accounts }, addresses] = await Promise.all([
       tonapi.pubkeys.getWalletsByPublicKey(pubkey),
-      Address.fromPubkey(pubkey, false),
+      Address.fromPubkey(pubkey, isTestnet),
     ]);
 
     if (!addresses) {
@@ -330,7 +329,11 @@ export class Tonkeeper {
   }
 
   private async createWalletInstance(walletConfig: WalletConfig) {
-    const addresses = await Address.fromPubkey(walletConfig.pubkey, false);
+    const addresses = await Address.fromPubkey(
+      walletConfig.pubkey,
+      walletConfig.network === WalletNetwork.testnet,
+      walletConfig.version === WalletContractVersion.LockupV1 ? walletConfig : undefined,
+    );
 
     const wallet = new Wallet(walletConfig, addresses!, this.storage, this.tonPrice);
 
@@ -410,16 +413,5 @@ export class Tonkeeper {
   public setWallet(wallet: Wallet | null) {
     this.walletsStore.set({ selectedIdentifier: wallet?.identifier ?? '' });
     this.emitChangeWallet();
-  }
-
-  public destroy() {
-    try {
-      this.wallet?.destroy();
-      // MULTIWALLET TODO
-      // this.queryClient.clear();
-      // this.setWallet(null);
-
-      this.emitChangeWallet();
-    } catch {}
   }
 }

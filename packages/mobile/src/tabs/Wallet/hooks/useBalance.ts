@@ -83,39 +83,39 @@ export const useBalance = (tokensTotal: number) => {
   const stakingBalance = useStakingBalance();
 
   const lockup = useMemo(() => {
-    return [];
-    // MULTIWALLET TODO
-    // const lockupList: { type: CryptoCurrencies; amount: string }[] = [];
-    // const restricted = balances[CryptoCurrencies.TonRestricted];
-    // const locked = balances[CryptoCurrencies.TonLocked];
+    const lockupList: {
+      type: CryptoCurrencies;
+      amount: {
+        nano: string;
+        fiat: string;
+        formatted: string;
+      };
+    }[] = [];
 
-    // if (restricted) {
-    //   lockupList.push({
-    //     type: CryptoCurrencies.TonRestricted,
-    //     amount: restricted,
-    //   });
-    // }
+    if (!wallet.isLockup) {
+      return lockupList;
+    }
 
-    // if (locked) {
-    //   lockupList.push({
-    //     type: CryptoCurrencies.TonLocked,
-    //     amount: locked,
-    //   });
-    // }
+    lockupList.push({
+      type: CryptoCurrencies.TonRestricted,
+      amount: {
+        nano: balances.tonRestricted,
+        formatted: formatter.format(balances.tonRestricted),
+        fiat: amountToFiat(balances.tonRestricted),
+      },
+    });
 
-    // return lockupList.map((item) => {
-    //   const amount = balances[item.type];
+    lockupList.push({
+      type: CryptoCurrencies.TonLocked,
+      amount: {
+        nano: balances.tonLocked,
+        formatted: formatter.format(balances.tonLocked),
+        fiat: amountToFiat(balances.tonLocked),
+      },
+    });
 
-    //   return {
-    //     type: item.type,
-    //     amount: {
-    //       nano: item.amount,
-    //       formatted: formatter.format(amount),
-    //       fiat: amountToFiat(amount),
-    //     },
-    //   };
-    // });
-  }, []);
+    return lockupList;
+  }, [amountToFiat, balances, wallet.isLockup]);
 
   const ton = useMemo(() => {
     const formatted = formatter.format(balances.ton);

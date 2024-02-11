@@ -80,8 +80,9 @@ export class Wallet {
 
     this.getReadableAddress();
 
-    // MULTIWALLET TODO
-    this.tonapi = createTonApiInstance();
+    this.tonapi = createTonApiInstance(
+      tk.wallet.config.network === WalletNetwork.testnet,
+    );
   }
 
   public async getReadableAddress() {
@@ -131,7 +132,9 @@ export class TonWallet {
     });
     this.blockchainApi = new BlockchainApi(tonApiConfiguration);
     this.accountsApi = new AccountsApi(tonApiConfiguration);
-    this.tonapi = createTonApiInstance();
+    this.tonapi = createTonApiInstance(
+      tk.wallet.config.network === WalletNetwork.testnet,
+    );
   }
 
   static fromJSON(json: any, vault: Vault): TonWallet {
@@ -147,7 +150,6 @@ export class TonWallet {
     return this.tonweb;
   }
 
-  // MULTIWALLET TODO
   get isTestnet(): boolean {
     return tk.wallet.isTestnet;
   }

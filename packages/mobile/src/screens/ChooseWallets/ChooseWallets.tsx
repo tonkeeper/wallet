@@ -40,6 +40,7 @@ export const ChooseWallets: FC<{
     try {
       setLoading(true);
       await doImportWallet(mnemonic, lockupConfig, selectedVersions, isTestnet);
+    } catch {
     } finally {
       setLoading(false);
     }

@@ -45,7 +45,9 @@ export const useImportWallet = () => {
                       onFail: () => {},
                     }),
                   );
-                } catch {}
+                } catch {
+                  reject();
+                }
               } else {
                 openCreatePin();
                 resolve();
