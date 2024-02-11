@@ -304,6 +304,7 @@ export class Tonkeeper {
         wallets: wallets.filter((w) => w.identifier !== identifier),
         selectedIdentifier: wallet?.identifier ?? '',
       }));
+      this.wallets.get(identifier)?.destroy();
       this.wallets.delete(identifier);
 
       if (this.wallets.size === 0) {
@@ -322,7 +323,9 @@ export class Tonkeeper {
       selectedIdentifier: '',
       biometryEnabled: false,
     });
+    this.wallets.forEach((wallet) => wallet.destroy());
     this.wallets.clear();
+    this.vault.destroy();
     this.emitChangeWallet();
   }
 
