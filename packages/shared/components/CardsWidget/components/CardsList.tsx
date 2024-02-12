@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { AccountState, CardKind } from '@tonkeeper/core/src/managers/CardsManager';
 import { Icon, List, Steezy, View } from '@tonkeeper/uikit';
 import { formatter } from '../../../formatter';
@@ -7,6 +7,13 @@ import { useNavigation } from '@tonkeeper/router';
 import { Platform, Text } from 'react-native';
 import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
 import { capitalizeFirstLetter } from '../../../utils/date';
+import { useFiatValue } from '@tonkeeper/mobile/src/hooks/useFiatValue';
+import { CryptoCurrencies } from '@tonkeeper/mobile/src/shared/constants';
+import { formatAmount } from '@tonkeeper/mobile/src/utils';
+import {
+  useGetTokenPrice,
+  useTokenPrice,
+} from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 
 export interface CardsListProps {
   accounts: AccountState[];
@@ -41,6 +48,11 @@ export const CardsList = memo<CardsListProps>((props) => {
   const openWebView = useCallback(() => {
     nav.push(MainStackRouteNames.HoldersWebView);
   }, [nav]);
+  const getTokenPrice = useGetTokenPrice();
+
+  const getPrice = useCallback((amount) => {
+    return getTokenPrice(CryptoCurrencies.Ton, amount);
+  }, []);
 
   return (
     <List indent={false}>
@@ -62,7 +74,7 @@ export const CardsList = memo<CardsListProps>((props) => {
             }
             onPress={openWebView}
             value={`${formatter.fromNano(account.balance)} TON`}
-            subvalue={`22.92 €`}
+            subvalue={getPrice(formatter.fromNano(account.balance)).formatted.totalFiat}
             subtitle={capitalizeFirstLetter(card.kind)}
             title={`Card *${card.lastFourDigits}`}
           />
