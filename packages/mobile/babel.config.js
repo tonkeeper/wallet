@@ -1,5 +1,3 @@
-const isProd = process.env.NODE_ENV === 'production';
-
 const plugins = [
   ['@babel/plugin-transform-flow-strip-types'],
   ['@babel/plugin-transform-private-methods', { loose: true }],
@@ -26,6 +24,7 @@ const plugins = [
         $navigation: './src/navigation',
         $translation: './src/translation',
         $wallet: './src/wallet',
+        $logger: './src/logger',
         $blockchain: './src/blockchain',
         $database: './src/database',
         $tonconnect: './src/tonconnect',
@@ -34,10 +33,6 @@ const plugins = [
     },
   ],
 ];
-
-// if (isProd) {
-//   plugins.push('transform-remove-console');
-// }
 
 plugins.push([
   'react-native-reanimated/plugin',
@@ -48,5 +43,10 @@ plugins.push([
 
 module.exports = {
   presets: ['module:metro-react-native-babel-preset'],
+  env: {
+    production: {
+      plugins: ['transform-remove-console'], //removing consoles.log from app during release (production) versions
+    },
+  },
   plugins,
 };

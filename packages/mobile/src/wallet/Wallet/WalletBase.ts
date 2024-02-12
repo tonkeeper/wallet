@@ -26,6 +26,7 @@ import { storeStateInit } from '@ton/ton';
 import nacl from 'tweetnacl';
 import { beginCell } from '@ton/core';
 import { TronService } from '@tonkeeper/core/src/TronService';
+import { NamespacedLogger, logger } from '$logger';
 
 export class WalletBase {
   public identifier: string;
@@ -41,6 +42,8 @@ export class WalletBase {
   protected sse: ServerSentEvents;
 
   private tonProofStorageKey: string;
+
+  protected logger: NamespacedLogger;
 
   constructor(
     public config: WalletConfig,
@@ -60,6 +63,8 @@ export class WalletBase {
       tron: { proxy: '', owner: '' },
       ton: tonAddress,
     };
+
+    this.logger = logger.extend(`Wallet ${this.address.ton.short}`);
 
     this.tonapi = createTonApiInstance(this.isTestnet);
     this.batteryapi = createBatteryApiInstance(this.isTestnet);

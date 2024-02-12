@@ -76,19 +76,19 @@ export class Wallet extends WalletContent {
       accounts: this.address.ton.raw,
     });
     this.listener.addEventListener('open', () => {
-      console.log('[Wallet]: start listen transactions for', this.address.ton.short);
+      this.logger.info('start listen transactions');
     });
     this.listener.addEventListener('error', (err) => {
-      console.log('[Wallet]: error listen transactions', err);
+      this.logger.error('error listen transactions', err);
     });
     this.listener.addEventListener('message', () => {
-      console.log('[Wallet]: message receive');
+      this.logger.info('message receive');
       this.preload();
     });
   }
 
   public destroy() {
     this.listener?.close();
-    console.log('[Wallet]: stop listen transactions for', this.address.ton.short);
+    this.logger.info('stop listen transactions');
   }
 }

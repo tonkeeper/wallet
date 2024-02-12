@@ -6,6 +6,7 @@ import { i18n } from '@tonkeeper/shared/i18n';
 import { isAndroid } from '$utils';
 import { PermissionsAndroid, Platform } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
+import { NamespacedLogger } from '$logger';
 
 export interface NotificationsState {
   isSubscribed: boolean;
@@ -22,6 +23,7 @@ export class NotificationsManager {
     private tonRawAddress: TonRawAddress,
     private isTestnet: boolean,
     private storage: Storage,
+    private logger: NamespacedLogger,
   ) {
     this.state.persist({
       partialize: ({ isSubscribed }) => ({ isSubscribed }),
@@ -35,7 +37,7 @@ export class NotificationsManager {
   }
 
   public async subscribe() {
-    console.log('[Notifications]: subscribe');
+    this.logger.info('NotificationsManager.subscribe call');
 
     const token = await this.requestUserPermissionAndGetToken();
 
@@ -64,7 +66,7 @@ export class NotificationsManager {
   }
 
   public async unsubscribe() {
-    console.log('[Notifications]: unsubscribe');
+    this.logger.info('NotificationsManager.unsubscribe call');
 
     if (!this.state.data.isSubscribed) {
       return false;

@@ -96,6 +96,7 @@ export class WalletContent extends WalletBase {
       tonRawAddress,
       this.isTestnet,
       this.storage,
+      this.logger,
     );
   }
 
