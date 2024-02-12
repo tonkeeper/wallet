@@ -36,15 +36,15 @@ import { useDAppBridge } from '@tonkeeper/mobile/src/core/DAppBrowser/hooks/useD
 import { i18n } from '../../i18n';
 import { useSelector } from 'react-redux';
 import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
+import { config } from '../../config';
 
-const endpoint = 'https://tonkeeper-dev.holders.io/';
+const endpoint = config.get('holdersAppEndpoint');
 
 export interface HoldersWebViewProps {
   path?: string;
 }
 
 export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
-  const containerStyle = Steezy.useStyle(styles.container);
   const navigation = useNavigation();
   const safeAreaInsets = useSafeAreaInsets();
   const [mainButton, dispatchMainButton] = useReducer(reduceMainButton(), {

@@ -2,6 +2,7 @@ import { WalletContext, WalletIdentity, WalletNetwork } from '../Wallet';
 import { Storage } from '../declarations/Storage';
 import { State } from '../utils/State';
 import { Address } from '../formatters/Address';
+import { config } from '@tonkeeper/shared/config';
 
 export enum CardKind {
   VIRTUAL = 'virtual',
@@ -60,7 +61,7 @@ export class CardsManager {
 
   public async fetchAccount() {
     this.state.set({ accounts: [], accountsLoading: true });
-    const resp = await fetch('https://card-dev.whales-api.com/v2/public/accounts', {
+    const resp = await fetch(`${config.get('holdersService')}/v2/public/accounts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
