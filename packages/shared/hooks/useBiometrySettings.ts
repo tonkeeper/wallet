@@ -7,7 +7,9 @@ export const useBiometrySettings = () => {
     (state) => state.biometryEnabled,
   );
 
-  const { enableBiometry, disableBiometry } = tk;
-
-  return { biometryEnabled, enableBiometry, disableBiometry };
+  return {
+    biometryEnabled,
+    enableBiometry: (passcode: string) => tk.enableBiometry(passcode),
+    disableBiometry: () => tk.disableBiometry(),
+  };
 };

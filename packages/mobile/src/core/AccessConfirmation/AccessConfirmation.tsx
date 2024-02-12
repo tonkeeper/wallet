@@ -158,8 +158,10 @@ export const AccessConfirmation: FC = () => {
         }
       }, 500);
     } catch (e) {
-      Toast.fail(e.message, { size: ToastSize.Small });
-      setBiometryFailed(true);
+      if (!e.message.includes('User canceled the authentication')) {
+        Toast.fail(e.message, { size: ToastSize.Small });
+        setBiometryFailed(true);
+      }
       triggerError();
     }
   }, [dispatch, isUnlock, obtainTonProof, triggerError, wallet.config, wallet.pubkey]);
