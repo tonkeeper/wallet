@@ -1,4 +1,3 @@
-import { walletActions, walletGeneratedVaultSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
 import { tk } from '$wallet';
 import { useNavigation } from '@tonkeeper/router';
@@ -32,7 +31,6 @@ import React, {
 import { LayoutChangeEvent, Text as RNText } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { useDispatch, useSelector } from 'react-redux';
 import { EmojiPicker } from './EmojiPicker';
 import { BottomButtonWrapHelper } from '$shared/components';
 import LinearGradient from 'react-native-linear-gradient';
@@ -50,8 +48,8 @@ interface Props {
 
 export const CustomizeWallet: FC<Props> = memo((props) => {
   const identifiers = useMemo(
-    () => props.route.params.identifiers ?? [tk.wallet.identifier],
-    [props.route.params.identifiers],
+    () => props.route?.params?.identifiers ?? [tk.wallet.identifier],
+    [props],
   );
 
   const wallet = useWallet();
