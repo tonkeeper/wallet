@@ -7,37 +7,33 @@ import { openSetupWalletDone } from '$navigation';
 import { ns } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { Toast } from '$store';
-import { useWallets } from '@tonkeeper/shared/hooks';
-import { walletActions, walletGeneratedVaultSelector } from '$store/wallet';
-import { useDispatch, useSelector } from 'react-redux';
 import { tk } from '$wallet';
+import { RouteProp } from '@react-navigation/native';
+import {
+  ImportWalletStackParamList,
+  ImportWalletStackRouteNames,
+} from '$navigation/ImportWalletStack/types';
 
-export const SetupNotifications: React.FC = () => {
+interface Props {
+  route: RouteProp<ImportWalletStackParamList, ImportWalletStackRouteNames.Notifications>;
+}
+
+export const SetupNotifications: React.FC<Props> = (props) => {
+  const { identifiers } = props.route.params;
+
   const [loading, setLoading] = React.useState(false);
   const safeArea = useSafeAreaInsets();
-  const wallets = useWallets();
-
-  const dispatch = useDispatch();
-
-  const generatedVault = useSelector(walletGeneratedVaultSelector);
-
-  const versions = generatedVault?.versions ?? [];
-
-  const withoutCustomize = wallets.length === versions.length;
 
   const handleDone = useCallback(() => {
-    openSetupWalletDone(withoutCustomize);
-    if (withoutCustomize) {
-      dispatch(walletActions.clearGeneratedVault());
-    }
-  }, [dispatch, withoutCustomize]);
+    openSetupWalletDone(identifiers);
+  }, [identifiers]);
 
   const handleEnableNotifications = React.useCallback(async () => {
     try {
       setLoading(true);
 
-      if (versions.length > 1) {
-        await tk.enableNotificationsForAll();
+      if (identifiers.length > 1) {
+        await tk.enableNotificationsForAll(identifiers);
       } else {
         await tk.wallet.notifications.subscribe();
       }
@@ -48,7 +44,7 @@ export const SetupNotifications: React.FC = () => {
       Toast.fail(err?.massage);
       debugLog('[SetupNotifications]:', err);
     }
-  }, [handleDone, versions.length]);
+  }, [handleDone, identifiers]);
 
   return (
     <Screen>

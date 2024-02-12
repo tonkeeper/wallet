@@ -22,8 +22,8 @@ export const CreatePin: FC<CreatePinProps> = () => {
       dispatch(
         walletActions.createWallet({
           pin,
-          onDone: () => {
-            openSetupWalletDone();
+          onDone: (identifiers) => {
+            openSetupWalletDone(identifiers);
           },
           onFail: () => {},
         }),

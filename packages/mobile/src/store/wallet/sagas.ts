@@ -92,7 +92,7 @@ function* createWalletWorker(action: CreateWalletAction) {
       allowedDestinations: vaultJson.allowedDestinations,
     };
 
-    yield call(
+    const identifiers = yield call(
       [tk, 'importWallet'],
       generatedVault.mnemonic,
       pin!,
@@ -104,7 +104,7 @@ function* createWalletWorker(action: CreateWalletAction) {
     }
 
     yield put(mainActions.setUnlocked(true));
-    onDone();
+    onDone(identifiers);
 
     yield call(trackEvent, 'create_wallet');
   } catch (e) {

@@ -129,10 +129,10 @@ export const AddWatchOnly: FC = () => {
     setLoading(true);
 
     try {
-      await tk.addWatchOnlyWallet(account.address);
+      const identifiers = await tk.addWatchOnlyWallet(account.address);
 
       setTimeout(() => {
-        openSetupWalletDone();
+        openSetupWalletDone(identifiers);
       }, 300);
     } catch (e) {
       if (e.error) {

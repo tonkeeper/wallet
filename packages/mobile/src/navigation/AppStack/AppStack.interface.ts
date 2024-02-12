@@ -59,4 +59,7 @@ export type AppStackParamList = {
     poolAddress: string;
     transactionType: StakingTransactionType;
   };
+  [AppStackRouteNames.CustomizeWallet]: {
+    identifiers?: string[];
+  };
 };

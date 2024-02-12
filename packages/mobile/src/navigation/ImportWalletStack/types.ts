@@ -24,5 +24,7 @@ export type ImportWalletStackParamList = {
     pin: string;
     biometryType: AuthenticationType;
   };
-  [ImportWalletStackRouteNames.Notifications]: {};
+  [ImportWalletStackRouteNames.Notifications]: {
+    identifiers: string[];
+  };
 };

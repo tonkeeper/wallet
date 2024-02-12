@@ -78,7 +78,7 @@ export type ChangeBalanceAndReloadAction = PayloadAction<{
 }>;
 export type SetCurrenciesAction = PayloadAction<CryptoCurrency[]>;
 export type CreateWalletAction = PayloadAction<{
-  onDone: () => void;
+  onDone: (identifiers: string[]) => void;
   onFail?: () => void;
   pin?: string | null;
   isTestnet?: boolean;

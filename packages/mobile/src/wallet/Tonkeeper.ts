@@ -173,7 +173,7 @@ export class Tonkeeper {
       WalletConfig,
       'network' | 'workchain' | 'configPubKey' | 'allowedDestinations'
     >,
-  ) {
+  ): Promise<string[]> {
     const newWallets: WalletConfig[] = [];
     for (const version of versions) {
       const identifier = uuidv4();
@@ -204,6 +204,8 @@ export class Tonkeeper {
     );
 
     this.setWallet(walletsInstances[0]);
+
+    return walletsInstances.map((item) => item.identifier);
   }
 
   public async getWalletsInfo(mnemonic: string, isTestnet: boolean) {
@@ -294,6 +296,8 @@ export class Tonkeeper {
     this.walletsStore.set(({ wallets }) => ({ wallets: [...wallets, config] }));
     const wallet = await this.createWalletInstance(config);
     this.setWallet(wallet);
+
+    return [wallet.identifier];
   }
 
   public async removeWallet(identifier: string) {
@@ -360,17 +364,16 @@ export class Tonkeeper {
     return wallet;
   }
 
-  public async updateWallet(config: Partial<WalletStyleConfig>, allVersions?: boolean) {
+  public async updateWallet(
+    config: Partial<WalletStyleConfig>,
+    passedIdentifiers?: string[],
+  ) {
     try {
       if (!this.wallet) {
         return;
       }
 
-      const identifiers = allVersions
-        ? this.walletsStore.data.wallets
-            .filter((item) => item.pubkey === this.wallet.pubkey)
-            .map((item) => item.identifier)
-        : [this.wallet.identifier];
+      const identifiers = passedIdentifiers ?? [this.wallet.identifier];
 
       const updatedWallets = this.walletsStore.data.wallets.map(
         (wallet): WalletConfig => {
@@ -378,9 +381,10 @@ export class Tonkeeper {
             return {
               ...wallet,
               ...config,
-              name: allVersions
-                ? `${config.name} ${wallet.version}`
-                : config.name ?? wallet.name,
+              name:
+                identifiers.length > 1
+                  ? `${config.name} ${wallet.version}`
+                  : config.name ?? wallet.name,
             };
           }
           return wallet;
@@ -424,11 +428,7 @@ export class Tonkeeper {
     this.emitChangeWallet();
   }
 
-  public async enableNotificationsForAll() {
-    const identifiers = this.walletsStore.data.wallets
-      .filter((item) => item.pubkey === this.wallet.pubkey)
-      .map((item) => item.identifier);
-
+  public async enableNotificationsForAll(identifiers: string[]) {
     await Promise.all(
       identifiers.map(async (identifier) => {
         const wallet = this.wallets.get(identifier);

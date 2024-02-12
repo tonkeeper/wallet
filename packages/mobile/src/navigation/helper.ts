@@ -92,21 +92,21 @@ export function openSetupBiometry(
   }
 }
 
-export function openSetupNotifications() {
+export function openSetupNotifications(identifiers: string[]) {
   if (
     getCurrentRoute()?.name === CreateWalletStackRouteNames.Biometry ||
     getCurrentRoute()?.name === CreateWalletStackRouteNames.CheckSecretWords
   ) {
-    navigate(CreateWalletStackRouteNames.Notifications);
+    navigate(CreateWalletStackRouteNames.Notifications, { identifiers });
   } else {
-    navigate(ImportWalletStackRouteNames.Notifications);
+    navigate(ImportWalletStackRouteNames.Notifications, { identifiers });
   }
 }
 
-export function openSetupWalletDone(withoutCustomize?: boolean) {
+export function openSetupWalletDone(identifiers: string[]) {
   replace(MainStackRouteNames.Tabs);
-  if (!withoutCustomize && tk.wallets.size > 1) {
-    navigate(AppStackRouteNames.CustomizeWallet);
+  if (tk.wallets.size > 1 && tk.wallets.size !== identifiers?.length) {
+    navigate(AppStackRouteNames.CustomizeWallet, { identifiers });
   }
 }
 

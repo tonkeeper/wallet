@@ -37,15 +37,11 @@ export const useImportWallet = () => {
                     walletActions.createWallet({
                       pin,
                       isTestnet,
-                      onDone: () => {
+                      onDone: (identifiers) => {
                         if (isNotificationsDenied) {
-                          const withoutCustomize = tk.wallets.size === versions.length;
-                          openSetupWalletDone(withoutCustomize);
-                          if (withoutCustomize) {
-                            dispatch(walletActions.clearGeneratedVault());
-                          }
+                          openSetupWalletDone(identifiers);
                         } else {
-                          openSetupNotifications();
+                          openSetupNotifications(identifiers);
                         }
                         resolve();
                       },

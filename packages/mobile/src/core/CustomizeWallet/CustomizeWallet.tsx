@@ -20,7 +20,15 @@ import {
   useReanimatedKeyboardHeight,
   useTheme,
 } from '@tonkeeper/uikit';
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  FC,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { LayoutChangeEvent, Text as RNText } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
@@ -28,62 +36,47 @@ import { useDispatch, useSelector } from 'react-redux';
 import { EmojiPicker } from './EmojiPicker';
 import { BottomButtonWrapHelper } from '$shared/components';
 import LinearGradient from 'react-native-linear-gradient';
+import { RouteProp } from '@react-navigation/native';
+import { AppStackParamList } from '$navigation/AppStack';
+import { AppStackRouteNames } from '$navigation';
 
 const COLORS_LIST = Object.values(WalletColor);
 
 const COLOR_ITEM_WIDTH = ns(36) + ns(12);
 
-export const CustomizeWallet = memo(() => {
-  const generatedVault = useSelector(walletGeneratedVaultSelector);
-  const versions = generatedVault?.versions ?? [];
-  const allAddedVersions = versions.length > 1;
-  const dispatch = useDispatch();
+interface Props {
+  route: RouteProp<AppStackParamList, AppStackRouteNames.CustomizeWallet>;
+}
+
+export const CustomizeWallet: FC<Props> = memo((props) => {
+  const identifiers = useMemo(
+    () => props.route.params.identifiers ?? [tk.wallet.identifier],
+    [props.route.params.identifiers],
+  );
 
   const wallet = useWallet();
-  const [name, setName] = useState(allAddedVersions ? 'Wallet' : wallet.config.name);
-  const [selectedColor, setSelectedColor] = useState(wallet.config.color);
-  const [emoji, setEmoji] = useState(wallet.config.emoji);
-
-  const [focused, setFocused] = useState(false);
-
   const nav = useNavigation();
   const theme = useTheme();
+
+  const [name, setName] = useState(
+    identifiers.length > 1 ? 'Wallet' : wallet.config.name,
+  );
+  const [selectedColor, setSelectedColor] = useState(wallet.config.color);
+  const [emoji, setEmoji] = useState(wallet.config.emoji);
+  const [focused, setFocused] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(0);
 
   const colorsScrollViewRef = useRef<ScrollView>(null);
 
   const { spacerStyle } = useReanimatedKeyboardHeight();
 
-  const [containerWidth, setContainerWidth] = useState(0);
-
-  useEffect(() => {
-    if (containerWidth === 0) {
-      return;
-    }
-
-    const selectedColorIndex = COLORS_LIST.indexOf(selectedColor);
-
-    colorsScrollViewRef.current?.scrollTo({
-      x: (selectedColorIndex - 3) * COLOR_ITEM_WIDTH,
-      animated: false,
-    });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [containerWidth]);
-
   const handleSave = useCallback(() => {
-    tk.updateWallet({ name: name.trim(), color: selectedColor, emoji }, allAddedVersions);
+    tk.updateWallet({ name: name.trim(), color: selectedColor, emoji }, identifiers);
     nav.goBack();
-  }, [allAddedVersions, emoji, name, nav, selectedColor]);
+  }, [emoji, identifiers, name, nav, selectedColor]);
 
   const handleLayout = useCallback((event: LayoutChangeEvent) => {
     setContainerWidth(event.nativeEvent.layout.width);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      dispatch(walletActions.clearGeneratedVault());
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleEmojiChange = useCallback((value: string) => {
@@ -102,6 +95,21 @@ export const CustomizeWallet = memo(() => {
     }),
     [focused],
   );
+
+  useEffect(() => {
+    if (containerWidth === 0) {
+      return;
+    }
+
+    const selectedColorIndex = COLORS_LIST.indexOf(selectedColor);
+
+    colorsScrollViewRef.current?.scrollTo({
+      x: (selectedColorIndex - 3) * COLOR_ITEM_WIDTH,
+      animated: false,
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerWidth]);
 
   return (
     <Modal>
