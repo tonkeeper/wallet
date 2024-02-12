@@ -81,6 +81,10 @@ export class Tonkeeper {
     return Array.from(this.wallets.values()).find((wallet) => !wallet.isWatchOnly)!;
   }
 
+  public get biometryEnabled() {
+    return this.walletsStore.data.biometryEnabled;
+  }
+
   public async init() {
     try {
       await Promise.all([this.walletsStore.rehydrate(), this.tonPrice.rehydrate()]);

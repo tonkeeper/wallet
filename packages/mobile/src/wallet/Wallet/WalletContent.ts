@@ -111,6 +111,7 @@ export class WalletContent extends WalletBase {
     this.staking.rehydrate();
     this.nfts.rehydrate();
     this.subscriptions.rehydrate();
+    this.notifications.rehydrate();
   }
 
   protected async preload() {

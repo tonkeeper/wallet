@@ -29,9 +29,7 @@ export const AddWalletModal = memo<AddWalletModalProps>((props) => {
             <List.Item
               onPress={() => {
                 nav.goBack();
-                setTimeout(() => {
-                  nav.navigate('CreateWalletStack');
-                }, 700);
+                nav.navigate('CreateWalletStack');
               }}
               leftContentStyle={styles.iconContainer}
               leftContent={<Icon name="ic-plus-circle-28" color="accentBlue" />}
@@ -45,9 +43,7 @@ export const AddWalletModal = memo<AddWalletModalProps>((props) => {
             <List.Item
               onPress={() => {
                 nav.goBack();
-                setTimeout(() => {
-                  nav.navigate('ImportWalletStack');
-                }, 700);
+                nav.navigate('ImportWalletStack');
               }}
               leftContentStyle={styles.iconContainer}
               leftContent={<Icon name="ic-key-28" color="accentBlue" />}
@@ -61,9 +57,7 @@ export const AddWalletModal = memo<AddWalletModalProps>((props) => {
             <List.Item
               onPress={() => {
                 nav.goBack();
-                setTimeout(() => {
-                  nav.navigate('AddWatchOnly');
-                }, 700);
+                nav.navigate('AddWatchOnly');
               }}
               leftContentStyle={styles.iconContainer}
               leftContent={<Icon name="ic-magnifying-glass-28" color="accentBlue" />}

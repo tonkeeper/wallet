@@ -42,6 +42,7 @@ import { Address } from '@tonkeeper/shared/Address';
 import { InscriptionAdditionalParams, TokenType } from '$core/Send/Send.interface';
 import { WalletConfig, WalletContractVersion, WalletNetwork } from '$wallet/WalletTypes';
 import { v4 as uuidv4 } from 'uuid';
+import { vault as multiWalletVault } from '$wallet';
 
 function* generateVaultWorker() {
   try {
@@ -509,15 +510,23 @@ export class UnlockVaultError extends Error {}
 
 export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
   try {
-    const isBiometryEnabled = yield call(MainDB.isBiometryEnabled);
-
     const { wallet, generatedVault } = yield select(walletSelector);
 
-    let withoutBiometryOnOpen = generatedVault;
+    let withoutBiometryOnOpen = !!generatedVault;
 
-    if (isBiometryEnabled && !generatedVault) {
+    if (tk.biometryEnabled && !generatedVault) {
       try {
-        const unlockedVault = yield call([wallet.vault, 'unlock']);
+        const mnemonic = yield call(
+          [multiWalletVault, 'exportWithBiometry'],
+          tk.wallet.identifier,
+        );
+        const unlockedVault = new UnlockedVault(
+          {
+            ...wallet.config,
+            tonPubkey: Uint8Array.from(Buffer.from(tk.wallet.pubkey, 'hex')),
+          },
+          mnemonic,
+        );
 
         action?.payload?.onDone?.(unlockedVault);
         return unlockedVault;

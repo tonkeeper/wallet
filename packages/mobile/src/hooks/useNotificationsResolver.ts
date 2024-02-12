@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import messaging from '@react-native-firebase/messaging';
 import { useNavigation } from '@tonkeeper/router';
 import { useSelector } from 'react-redux';
@@ -57,10 +57,6 @@ export const useNotificationsResolver = () => {
       }
     } catch (e) {}
   }
-
-  useEffect(() => {
-    messaging().getToken().catch(null);
-  }, []);
 
   React.useEffect(() => {
     if (!isMainStackInited) {

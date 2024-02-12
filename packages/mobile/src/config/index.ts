@@ -2,6 +2,7 @@ import { AppStorage } from '@tonkeeper/shared/modules/AppStorage';
 import DeviceInfo from 'react-native-device-info';
 import { AppConfig } from '@tonkeeper/mobile/src/config/AppConfig';
 import { Platform } from 'react-native';
+import { i18n } from '@tonkeeper/shared/i18n';
 
 export type AppConfigVars = {
   tonkeeperEndpoint: string;
@@ -84,6 +85,7 @@ export const config = new AppConfig<AppConfigVars>({
     params: () => ({
       build: DeviceInfo.getVersion(),
       platform: Platform.OS,
+      lang: i18n.locale,
     }),
   },
 });

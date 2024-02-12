@@ -8,12 +8,14 @@ export const useUnlockVault = () => {
 
   const unlockVault = React.useCallback(async () => {
     return new Promise<UnlockedVault>((resolve, reject) => {
-      dispatch(walletActions.walletGetUnlockedVault({
-        onDone: (vault) => resolve(vault),
-        onFail: (err) => reject(err)
-      }));
+      dispatch(
+        walletActions.walletGetUnlockedVault({
+          onDone: (vault) => resolve(vault),
+          onFail: (err) => reject(err),
+        }),
+      );
     });
-  }, []);
+  }, [dispatch]);
 
   return unlockVault;
 };
