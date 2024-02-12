@@ -78,6 +78,7 @@ export const ChooseWallets: FC<{
                 <Checkbox
                   checked={selectedVersions.includes(walletInfo.version)}
                   onChange={() => {}}
+                  disabled
                 />
               }
               onPress={() => toggleVersion(walletInfo.version)}

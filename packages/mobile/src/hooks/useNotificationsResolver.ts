@@ -9,6 +9,7 @@ import { getDomainFromURL } from '$utils';
 import { Alert } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
 import { useNotificationsStore } from '$store';
+import { tk } from '$wallet';
 
 export const useNotificationsResolver = () => {
   const { isMainStackInited } = useSelector(mainSelector);
@@ -24,9 +25,18 @@ export const useNotificationsResolver = () => {
 
       useNotificationsStore.getState().actions.removeRedDot();
 
+      const account = remoteMessage.data?.account;
       const deeplink = remoteMessage.data?.deeplink;
       const link = remoteMessage.data?.link;
       const dapp_url = remoteMessage.data?.dapp_url;
+
+      if (account) {
+        const wallet = tk.getWalletByAddress(account);
+
+        if (wallet) {
+          tk.switchWallet(wallet.identifier);
+        }
+      }
 
       if (deeplink) {
         deeplinking.resolve(deeplink);

@@ -439,4 +439,10 @@ export class Tonkeeper {
       }),
     );
   }
+
+  public getWalletByAddress(address: string) {
+    return Array.from(this.wallets.values()).find(
+      (wallet) => !wallet.isTestnet && Address.compare(wallet.address.ton.raw, address),
+    );
+  }
 }

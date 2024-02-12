@@ -1,7 +1,7 @@
 import DeviceInfo from 'react-native-device-info';
 import { config } from '$config';
 import { TonRawAddress } from '../WalletTypes';
-import { State, Storage, network } from '@tonkeeper/core';
+import { Address, State, Storage, network } from '@tonkeeper/core';
 import { i18n } from '@tonkeeper/shared/i18n';
 import { isAndroid } from '$utils';
 import { PermissionsAndroid, Platform } from 'react-native';
@@ -55,12 +55,16 @@ export class NotificationsManager {
       params: {
         locale: i18n.locale,
         device: deviceId,
-        accounts: [this.tonRawAddress],
+        accounts: [
+          { address: Address.parse(this.tonRawAddress).toFriendly({ bounceable: true }) },
+        ],
         token,
       },
     });
 
     this.state.set({ isSubscribed: true });
+
+    this.logger.info('NotificationsManager.subscribe done');
 
     return true;
   }
@@ -78,10 +82,15 @@ export class NotificationsManager {
     await network.post(endpoint, {
       params: {
         device: deviceId,
+        accounts: [
+          { address: Address.parse(this.tonRawAddress).toFriendly({ bounceable: true }) },
+        ],
       },
     });
 
     this.state.set({ isSubscribed: false });
+
+    this.logger.info('NotificationsManager.unsubscribe done');
 
     return true;
   }
