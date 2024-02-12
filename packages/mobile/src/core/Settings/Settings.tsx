@@ -270,7 +270,7 @@ export const Settings: FC = () => {
             </>
           ) : null}
           <List>
-            {!!wallet && tk.walletForUnlock && (
+            {!!wallet && !wallet.isWatchOnly && (
               <List.Item
                 value={
                   <Icon
