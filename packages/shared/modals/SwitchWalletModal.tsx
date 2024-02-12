@@ -47,10 +47,7 @@ export const SwitchWalletModal = memo(() => {
             <Button
               // navigate="/add-wallet"
               onPress={() => {
-                nav.goBack();
-                setTimeout(() => {
-                  nav.navigate('/add-wallet');
-                }, 500);
+                nav.replaceModal('/add-wallet');
               }}
               color="secondary"
               title={t('add_wallet')}
