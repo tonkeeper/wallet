@@ -1095,7 +1095,7 @@
   "customize": "Customize",
   "customize_modal": {
     "title": "Customize your Wallet",
-    "subtitle": "Wallet name and icon are stored locally on your device.",
+    "subtitle": "Wallet name and icon are stored locally on your device.",
     "wallet_name": "Wallet Name",
     "save": "Save"
   },
