@@ -231,11 +231,17 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
   const handlePastePress = useCallback(async () => {
     try {
       const str = await Clipboard.getString();
+      if (onChangeText) {
+        onChangeText(str);
+      }
       setInputValue(str);
     } catch {}
   }, []);
 
   const handlePressClear = useCallback(() => {
+    if (onChangeText) {
+      onChangeText('');
+    }
     setInputValue('');
   }, []);
 

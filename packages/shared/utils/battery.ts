@@ -47,5 +47,5 @@ export function calculateAvailableNumOfTransactions(batteryBalance: string) {
     .div(10)
     .decimalPlaces(0, BigNumber.ROUND_DOWN)
     .times(10)
-    .toString();
+    .toNumber();
 }
