@@ -1,3 +1,4 @@
+import { isAndroid } from '$utils';
 import { FlashList } from '@shopify/flash-list';
 import { Steezy, View, ns } from '@tonkeeper/uikit';
 import React, { memo, useCallback } from 'react';
@@ -106,7 +107,8 @@ const styles = Steezy.create(({ colors }) => ({
     justifyContent: 'center',
   },
   emoji: {
-    fontSize: 36,
+    fontSize: isAndroid ? 30 : 36,
+    marginLeft: isAndroid ? -4 : 0,
   },
   topGradient: {
     height: 16,

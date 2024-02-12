@@ -7,6 +7,7 @@ import {
   View,
   deviceWidth,
   getWalletColorHex,
+  isAndroid,
 } from '@tonkeeper/uikit';
 import { ListItemProps } from '@tonkeeper/uikit/src/components/List/ListItem';
 import { FC, memo } from 'react';
@@ -68,7 +69,7 @@ const styles = Steezy.create(({ colors }) => ({
     maxWidth: deviceWidth - 240,
   },
   emoji: {
-    fontSize: 24,
-    marginTop: 2,
+    fontSize: isAndroid ? 21 : 24,
+    marginTop: isAndroid ? -2 : 2,
   },
 }));

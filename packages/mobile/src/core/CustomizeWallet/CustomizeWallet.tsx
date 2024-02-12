@@ -15,6 +15,7 @@ import {
   View,
   WalletColor,
   getWalletColorHex,
+  isAndroid,
   ns,
   useReanimatedKeyboardHeight,
   useTheme,
@@ -28,7 +29,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { LayoutChangeEvent, Text as RNText } from 'react-native';
+import { Keyboard, LayoutChangeEvent, Text as RNText } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { EmojiPicker } from './EmojiPicker';
@@ -61,7 +62,7 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
   );
   const [selectedColor, setSelectedColor] = useState(wallet.config.color);
   const [emoji, setEmoji] = useState(wallet.config.emoji);
-  const [focused, setFocused] = useState(false);
+  const [keyboardShown, setKeyboardShown] = useState(false);
   const [containerWidth, setContainerWidth] = useState(0);
 
   const colorsScrollViewRef = useRef<ScrollView>(null);
@@ -89,9 +90,9 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
 
   const pickersAnimatedStyles = useAnimatedStyle(
     () => ({
-      opacity: withTiming(focused ? 0.32 : 1, { duration: 200 }),
+      opacity: withTiming(keyboardShown ? 0.32 : 1, { duration: 200 }),
     }),
-    [focused],
+    [keyboardShown],
   );
 
   useEffect(() => {
@@ -108,6 +109,27 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerWidth]);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      isAndroid ? 'keyboardDidShow' : 'keyboardWillShow',
+      () => {
+        setKeyboardShown(true);
+      },
+    );
+
+    const keyboardDidHideListener = Keyboard.addListener(
+      isAndroid ? 'keyboardDidHide' : 'keyboardWillHide',
+      () => {
+        setKeyboardShown(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   return (
     <Modal>
@@ -131,8 +153,6 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
               textContentType="none"
               autoCorrect={false}
               spellCheck={false}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
               style={styles.inputStyle.static}
             />
             <View style={styles.rightContent} pointerEvents="none">
@@ -228,9 +248,9 @@ const styles = Steezy.create(({ colors, safeArea, corners }) => ({
     justifyContent: 'center',
   },
   emoji: {
-    fontSize: 28,
-    marginLeft: 2,
-    marginTop: 1,
+    fontSize: isAndroid ? 26 : 28,
+    marginLeft: isAndroid ? 0 : 2,
+    marginTop: isAndroid ? -1 : 1,
   },
   pickersContainer: { flex: 1 },
   colorsContentContainer: {

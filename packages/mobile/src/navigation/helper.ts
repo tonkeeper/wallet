@@ -109,7 +109,7 @@ export function openSetupNotifications(identifiers: string[]) {
 
 export function openSetupWalletDone(identifiers: string[]) {
   replace(MainStackRouteNames.Tabs);
-  if (tk.wallets.size > 1 && tk.wallets.size !== identifiers?.length) {
+  if (tk.wallets.size > 1 && tk.wallets.size !== identifiers.length) {
     navigate(AppStackRouteNames.CustomizeWallet, { identifiers });
   }
 }

@@ -8,6 +8,7 @@ import {
   View,
   deviceWidth,
   getWalletColorHex,
+  isAndroid,
 } from '@tonkeeper/uikit';
 import React, { FC, memo, useCallback } from 'react';
 import { Text as RNText } from 'react-native';
@@ -68,7 +69,7 @@ const styles = Steezy.create({
     opacity: 0.64,
   },
   emoji: {
-    fontSize: 20,
-    marginTop: 1,
+    fontSize: isAndroid ? 17 : 20,
+    marginTop: isAndroid ? -1 : 1,
   },
 });
