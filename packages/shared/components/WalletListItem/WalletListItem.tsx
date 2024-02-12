@@ -20,10 +20,12 @@ interface Props extends ListItemProps {
 const WalletListItemComponent: FC<Props> = (props) => {
   const { wallet, ...listItemProps } = props;
 
+  const titleWithTag = wallet.isTestnet || wallet.isWatchOnly;
+
   return (
     <List.Item
       title={
-        <View style={styles.titleContainer}>
+        <View style={[styles.titleContainer, titleWithTag && styles.titleWithTag]}>
           <Text type="label1" ellipsizeMode="tail" numberOfLines={1}>
             {wallet.config.name}
           </Text>
@@ -58,9 +60,12 @@ const styles = Steezy.create(({ colors }) => ({
     justifyContent: 'center',
   },
   titleContainer: {
-    maxWidth: deviceWidth - 240,
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  titleWithTag: {
+    maxWidth: deviceWidth - 240,
   },
   emoji: {
     fontSize: 24,

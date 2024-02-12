@@ -133,8 +133,9 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
               spellCheck={false}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
+              style={styles.inputStyle.static}
             />
-            <View style={styles.rightContent}>
+            <View style={styles.rightContent} pointerEvents="none">
               <View
                 style={[
                   styles.emojiContainer,
@@ -208,6 +209,9 @@ const styles = Steezy.create(({ colors, safeArea, corners }) => ({
   },
   inputContainer: {
     position: 'relative',
+  },
+  inputStyle: {
+    marginRight: 48,
   },
   rightContent: {
     position: 'absolute',
