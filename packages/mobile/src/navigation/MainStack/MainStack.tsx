@@ -20,7 +20,7 @@ import { Subscriptions } from '$core/Subscriptions/Subscriptions';
 import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { useNotificationsResolver } from '$hooks/useNotificationsResolver';
-import { AccessConfirmation, AddWatchOnly, AddressUpdateInfo } from '$core';
+import { AccessConfirmation, AddressUpdateInfo } from '$core';
 import { ModalStack } from '$navigation/ModalStack';
 import { withModalStack } from '@tonkeeper/router';
 import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
@@ -30,6 +30,7 @@ import { useWallet } from '@tonkeeper/shared/hooks';
 import { StartScreen } from '../../screens/StartScreen';
 import { CreateWalletStack } from '../CreateWalletStack';
 import { ImportWalletStack } from '$navigation/ImportWalletStack';
+import { AddWatchOnlyStack } from '$navigation/AddWatchOnlyStack';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -88,7 +89,10 @@ export const MainStack: FC = () => {
         name={MainStackRouteNames.ImportWalletStack}
         component={ImportWalletStack}
       />
-      <Stack.Screen name={MainStackRouteNames.AddWatchOnly} component={AddWatchOnly} />
+      <Stack.Screen
+        name={MainStackRouteNames.AddWatchOnlyStack}
+        component={AddWatchOnlyStack}
+      />
       <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />
       <Stack.Screen name={MainStackRouteNames.StakingPools} component={StakingPools} />

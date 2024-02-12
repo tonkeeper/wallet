@@ -15,6 +15,7 @@ import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
 import { tk } from '$wallet';
 import { CreateWalletStackRouteNames } from './CreateWalletStack/types';
 import { ImportWalletStackRouteNames } from './ImportWalletStack/types';
+import { AddWatchOnlyStackRouteNames } from './AddWatchOnlyStack/types';
 
 export function openExploreTab(initialCategory?: string) {
   navigate(BrowserStackRouteNames.Explore, { initialCategory });
@@ -97,9 +98,12 @@ export function openSetupNotifications(identifiers: string[]) {
     getCurrentRoute()?.name === CreateWalletStackRouteNames.Biometry ||
     getCurrentRoute()?.name === CreateWalletStackRouteNames.CheckSecretWords
   ) {
-    navigate(CreateWalletStackRouteNames.Notifications, { identifiers });
+    replace(CreateWalletStackRouteNames.Notifications, { identifiers });
+  } else if (getCurrentRoute()?.name === AddWatchOnlyStackRouteNames.AddWatchOnly) {
+    console.log('sadasdasdasd');
+    replace(AddWatchOnlyStackRouteNames.Notifications, { identifiers });
   } else {
-    navigate(ImportWalletStackRouteNames.Notifications, { identifiers });
+    replace(ImportWalletStackRouteNames.Notifications, { identifiers });
   }
 }
 

@@ -1,7 +1,7 @@
 import { SendRecipient } from '$core/Send/Send.interface';
 import { AddressInput } from '$core/Send/steps/AddressStep/components';
 import { Tonapi } from '$libs/Tonapi';
-import { openSetupWalletDone } from '$navigation';
+import { openSetupNotifications, openSetupWalletDone } from '$navigation';
 import { asyncDebounce, isTransferOp, parseTonLink } from '$utils';
 import { tk } from '$wallet';
 import { Address } from '@tonkeeper/core';
@@ -130,10 +130,13 @@ export const AddWatchOnly: FC = () => {
 
     try {
       const identifiers = await tk.addWatchOnlyWallet(account.address);
+      const isNotificationsDenied = await tk.wallet.notifications.getIsDenied();
 
-      setTimeout(() => {
+      if (isNotificationsDenied) {
         openSetupWalletDone(identifiers);
-      }, 300);
+      } else {
+        openSetupNotifications(identifiers);
+      }
     } catch (e) {
       if (e.error) {
         Toast.fail(t('add_watch_only.wallet_not_found'));

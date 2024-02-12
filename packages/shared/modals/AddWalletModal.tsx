@@ -57,7 +57,7 @@ export const AddWalletModal = memo<AddWalletModalProps>((props) => {
             <List.Item
               onPress={() => {
                 nav.goBack();
-                nav.navigate('AddWatchOnly');
+                nav.navigate('AddWatchOnlyStack');
               }}
               leftContentStyle={styles.iconContainer}
               leftContent={<Icon name="ic-magnifying-glass-28" color="accentBlue" />}

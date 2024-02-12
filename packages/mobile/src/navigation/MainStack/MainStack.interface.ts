@@ -5,6 +5,7 @@ export type MainStackParamList = {
   [MainStackRouteNames.Start]: {};
   [MainStackRouteNames.CreateWalletStack]: {};
   [MainStackRouteNames.ImportWalletStack]: {};
+  [MainStackRouteNames.AddWatchOnlyStack]: {};
   [MainStackRouteNames.Tabs]: {};
   [MainStackRouteNames.Wallet]: {
     currency: CryptoCurrency;
@@ -31,5 +32,5 @@ export type MainStackParamList = {
   };
   [MainStackRouteNames.ManageTokens]: {};
   [MainStackRouteNames.AddressUpdateInfo]: {};
-  [MainStackRouteNames.AddWatchOnly]: {};
+  [MainStackRouteNames.AddWatchOnlyStack]: {};
 };

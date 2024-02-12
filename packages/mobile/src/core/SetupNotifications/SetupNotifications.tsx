@@ -49,6 +49,7 @@ export const SetupNotifications: React.FC<Props> = (props) => {
   return (
     <Screen>
       <Screen.Header
+        backButton={false}
         rightContent={
           <Button
             size="navbar_small"
