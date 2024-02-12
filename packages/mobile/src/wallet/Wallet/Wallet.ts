@@ -7,6 +7,7 @@ import { TonPriceManager } from '../managers/TonPriceManager';
 import { State } from '@tonkeeper/core/src/utils/State';
 import { WalletConfig } from '../WalletTypes';
 import { WalletContent } from './WalletContent';
+import { AppState, AppStateStatus, NativeEventSubscription } from 'react-native';
 
 export interface WalletStatusState {
   isReloading: boolean;
@@ -22,6 +23,9 @@ export class Wallet extends WalletContent {
   };
 
   public listener: EventSourceListener | null = null;
+  private appStateListener: NativeEventSubscription | null = null;
+  private prevAppState: AppStateStatus = 'active';
+  private lastTimeAppActive = Date.now();
 
   public status = new State<WalletStatusState>(Wallet.INITIAL_STATUS_STATE);
 
@@ -42,6 +46,7 @@ export class Wallet extends WalletContent {
     });
 
     this.listenTransactions();
+    this.listenAppState();
   }
 
   public async rehydrate() {
@@ -87,8 +92,34 @@ export class Wallet extends WalletContent {
     });
   }
 
-  public destroy() {
+  private stopListenTransactions() {
     this.listener?.close();
     this.logger.info('stop listen transactions');
+  }
+
+  private listenAppState() {
+    this.appStateListener = AppState.addEventListener('change', (nextAppState) => {
+      // close transactions listener if app was in background
+      if (nextAppState === 'background') {
+        this.lastTimeAppActive = Date.now();
+        this.stopListenTransactions();
+      }
+      // reload data if app was in background more than 5 minutes
+      if (nextAppState === 'active' && this.prevAppState === 'background') {
+        if (Date.now() - this.lastTimeAppActive > 1000 * 60 * 5) {
+          this.preload();
+        }
+
+        // start listen transactions if app in foreground
+        this.listenTransactions();
+      }
+
+      this.prevAppState = nextAppState;
+    });
+  }
+
+  public destroy() {
+    this.appStateListener?.remove();
+    this.stopListenTransactions();
   }
 }
