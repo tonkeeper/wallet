@@ -8,13 +8,11 @@ export interface BatteryState {
   balance?: string;
 }
 
-export const batteryState = new State<BatteryState>({
-  isLoading: false,
-  balance: undefined,
-});
-
 export class BatteryManager {
-  public state = batteryState;
+  public state = new State<BatteryState>({
+    isLoading: false,
+    balance: undefined,
+  });
 
   constructor(
     private batteryapi: BatteryAPI,

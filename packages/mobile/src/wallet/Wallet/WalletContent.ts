@@ -113,6 +113,7 @@ export class WalletContent extends WalletBase {
     this.nfts.rehydrate();
     this.subscriptions.rehydrate();
     this.notifications.rehydrate();
+    this.tonInscriptions.rehydrate();
   }
 
   protected async preload() {

@@ -14,22 +14,26 @@ export class TonInscriptions {
   });
 
   constructor(
-    private tonAddress: string,
+    private tonRawAddress: string,
     private tonapi: TonAPI,
     private storage: Storage,
   ) {
     this.state.persist({
       partialize: ({ items }) => ({ items }),
       storage: this.storage,
-      key: 'inscriptions',
+      key: `${this.tonRawAddress}/inscriptions`,
     });
+  }
+
+  public async rehydrate() {
+    return this.state.rehydrate();
   }
 
   public async load() {
     try {
       this.state.set({ isLoading: true });
       const data = await this.tonapi.experimental.getAccountInscriptions({
-        accountId: this.tonAddress,
+        accountId: this.tonRawAddress,
       });
       this.state.set({
         items: data.inscriptions.filter((inscription) => inscription.balance !== '0'),
