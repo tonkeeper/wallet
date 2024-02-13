@@ -1,3 +1,5 @@
+import nacl from 'tweetnacl';
+
 export type PasscodeShowOptions = {
   onLogout?: () => void;
   onPressBiometry?: () => void;
@@ -15,6 +17,10 @@ export declare class Vault {
   public exportWithPasscode(identifier: string, passcode: string): Promise<string>;
   public changePasscode(passcode: string, newPasscode: string): Promise<void>;
   public remove(identifier: string, passcode: string): Promise<void>;
-  public import(identifier: string, mnemonic: string, passcode: string): Promise<string>;
+  public import(
+    identifier: string,
+    mnemonic: string,
+    passcode: string,
+  ): Promise<nacl.SignKeyPair>;
   public destroy(): Promise<void>;
 }

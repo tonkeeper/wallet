@@ -72,6 +72,7 @@ export interface WalletConfig extends WalletStyleConfig {
   type: WalletType;
   version: WalletContractVersion;
   workchain: number;
+  proofToken: string | null;
   /** lockup */
   allowedDestinations?: string;
   configPubKey?: string;

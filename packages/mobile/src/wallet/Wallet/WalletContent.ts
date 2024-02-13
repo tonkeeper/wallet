@@ -91,7 +91,11 @@ export class WalletContent extends WalletBase {
       this.tonapi,
       this.storage,
     );
-    this.battery = new BatteryManager(this.batteryapi, this.tonProof, this.storage);
+    this.battery = new BatteryManager(
+      this.config.proofToken,
+      this.batteryapi,
+      this.storage,
+    );
     this.notifications = new NotificationsManager(
       tonRawAddress,
       this.isTestnet,

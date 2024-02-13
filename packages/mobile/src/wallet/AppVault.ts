@@ -46,13 +46,11 @@ export class AppVault implements Vault {
 
     const keyPair = await Mnemonic.mnemonicToKeyPair(mnemonic.split(' '));
 
-    const pubkey = Buffer.from(keyPair.publicKey).toString('hex');
-
     this.decryptedVaultState[identifier] = { identifier, mnemonic };
 
     await this.saveVaultState(passcode);
 
-    return pubkey;
+    return keyPair;
   }
 
   public async remove(identifier: string, passcode: string) {

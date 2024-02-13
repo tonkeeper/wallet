@@ -13,11 +13,16 @@ import {
   WalletType,
 } from './WalletTypes';
 import { createTonApiInstance } from './utils';
-import { Vault } from '@tonkeeper/core';
+import { ContractService, Vault, WalletVersion } from '@tonkeeper/core';
 import { v4 as uuidv4 } from 'uuid';
 import { Mnemonic } from '@tonkeeper/core/src/utils/mnemonic';
 import { DEFAULT_WALLET_STYLE_CONFIG } from './constants';
 import { t } from '@tonkeeper/shared/i18n';
+import { Buffer } from 'buffer';
+import nacl from 'tweetnacl';
+import { beginCell } from '@ton/core';
+import { storeStateInit } from '@ton/ton';
+import { signProofForTonkeeper } from '@tonkeeper/core/src/utils/tonProof';
 
 class PermissionsManager {
   public notifications = true;
@@ -179,6 +184,31 @@ export class Tonkeeper {
     this.walletsStore.set({ biometryEnabled: false });
   }
 
+  public async obtainProofToken(keyPair: nacl.SignKeyPair): Promise<string | null> {
+    const contract = ContractService.getWalletContract(
+      WalletVersion.v4R2,
+      Buffer.from(keyPair.publicKey),
+      0,
+    );
+    const stateInitCell = beginCell().store(storeStateInit(contract.init)).endCell();
+    const rawAddress = contract.address.toRawString();
+
+    try {
+      const { payload } = await this.tonapi.mainnet.tonconnect.getTonConnectPayload();
+      const proof = await signProofForTonkeeper(
+        rawAddress,
+        keyPair.secretKey,
+        payload,
+        stateInitCell.toBoc({ idx: false }).toString('base64'),
+      );
+      const { token } = await this.tonapi.mainnet.wallet.tonConnectProof(proof);
+
+      return token;
+    } catch (err) {
+      return null;
+    }
+  }
+
   public async importWallet(
     mnemonic: string,
     passcode: string,
@@ -192,7 +222,8 @@ export class Tonkeeper {
     for (const version of versions) {
       const identifier = uuidv4();
 
-      const pubkey = await this.vault.import(identifier, mnemonic, passcode);
+      const keyPair = await this.vault.import(identifier, mnemonic, passcode);
+      const proofToken = await this.obtainProofToken(keyPair);
 
       newWallets.push({
         ...DEFAULT_WALLET_STYLE_CONFIG,
@@ -200,7 +231,8 @@ export class Tonkeeper {
         name: versions.length > 1 ? `${t('wallet_title')} ${version}` : t('wallet_title'),
         version,
         type: WalletType.Regular,
-        pubkey,
+        pubkey: Buffer.from(keyPair.publicKey).toString('hex'),
+        proofToken,
         identifier,
       });
     }
@@ -305,6 +337,7 @@ export class Tonkeeper {
       pubkey,
       workchain,
       version,
+      proofToken: null,
     };
 
     this.walletsStore.set(({ wallets }) => ({ wallets: [...wallets, config] }));
