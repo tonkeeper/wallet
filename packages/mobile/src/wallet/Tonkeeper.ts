@@ -17,6 +17,7 @@ import { Vault } from '@tonkeeper/core';
 import { v4 as uuidv4 } from 'uuid';
 import { Mnemonic } from '@tonkeeper/core/src/utils/mnemonic';
 import { DEFAULT_WALLET_STYLE_CONFIG } from './constants';
+import { t } from '@tonkeeper/shared/i18n';
 
 class PermissionsManager {
   public notifications = true;
@@ -196,7 +197,7 @@ export class Tonkeeper {
       newWallets.push({
         ...DEFAULT_WALLET_STYLE_CONFIG,
         ...walletConfig,
-        name: versions.length > 1 ? `Wallet ${version}` : 'Wallet',
+        name: versions.length > 1 ? `${t('wallet_title')} ${version}` : t('wallet_title'),
         version,
         type: WalletType.Regular,
         pubkey,
