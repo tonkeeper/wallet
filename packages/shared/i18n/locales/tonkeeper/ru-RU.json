@@ -968,15 +968,15 @@
     "signRaw" : {
       "addressMismatch": {
         "switchWallet": {
-          "close": "Cancel",
-          "description": "Switch wallet to confirm the action.",
-          "switch": "Switch and continue",
-          "title": "Action for your wallet %{value}"
+          "close": "Отмена",
+          "description": "Переключите кошелёк, чтобы подтвердить действие.",
+          "switch": "Переключить и продолжить",
+          "title": "Действие для вашего кошелька %{value}"
         },
         "wrongWallet": {
-          "close": "OK",
-          "description": "Log in to another wallet %{address} and try again.",
-          "title": "Action for another wallet"
+          "close" : "Хорошо",
+          "description" : "Войдите в другой кошелёк %{address} и повторите попытку.",
+          "title" : "Действие для другого кошелька"
         }
       },
       "comment" : "Комментарий",
