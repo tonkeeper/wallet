@@ -29,7 +29,7 @@ export interface WalletStatusState {
 
 export class WalletContent extends WalletBase {
   public activityLoader: ActivityLoader;
-
+  public tonProof: TonProofManager;
   public tokenApproval: TokenApprovalManager;
   public balances: BalancesManager;
   public nfts: NftsManager;
@@ -39,7 +39,6 @@ export class WalletContent extends WalletBase {
   public subscriptions: SubscriptionsManager;
   public battery: BatteryManager;
   public notifications: NotificationsManager;
-  public tonProof: TonProofManager;
   public activityList: ActivityList;
   public tonActivityList: TonActivityList;
   public jettonActivityList: JettonActivityList;
@@ -55,25 +54,8 @@ export class WalletContent extends WalletBase {
     const tonRawAddress = this.address.ton.raw;
 
     this.activityLoader = new ActivityLoader(tonRawAddress, this.tonapi, this.tronapi);
-    this.tonProof = new TonProofManager(this.identifier, this.tonapi);
-    this.jettonActivityList = new JettonActivityList(
-      tonRawAddress,
-      this.activityLoader,
-      this.storage,
-    );
-    this.tonActivityList = new TonActivityList(
-      tonRawAddress,
-      this.activityLoader,
-      this.storage,
-    );
-    this.activityList = new ActivityList(
-      tonRawAddress,
-      this.activityLoader,
-      this.storage,
-    );
-    this.tonInscriptions = new TonInscriptions(tonRawAddress, this.tonapi, this.storage);
 
-    // wallet state
+    this.tonProof = new TonProofManager(this.identifier, this.tonapi);
     this.tokenApproval = new TokenApprovalManager(tonRawAddress, this.storage);
     this.balances = new BalancesManager(
       tonRawAddress,
@@ -96,7 +78,6 @@ export class WalletContent extends WalletBase {
       this.tonapi,
       this.storage,
     );
-    this.battery = new BatteryManager(this.tonProof, this.batteryapi, this.storage);
     this.subscriptions = new SubscriptionsManager(tonRawAddress, this.storage);
     this.battery = new BatteryManager(this.tonProof, this.batteryapi, this.storage);
     this.notifications = new NotificationsManager(
@@ -125,13 +106,12 @@ export class WalletContent extends WalletBase {
   protected async rehydrate() {
     await super.rehydrate();
 
+    this.tonProof.rehydrate();
     this.tokenApproval.rehydrate();
     this.balances.rehydrate();
     this.nfts.rehydrate();
     this.jettons.rehydrate();
     this.tonInscriptions.rehydrate();
-    this.battery.rehydrate();
-    this.tonProof.rehydrate();
     this.staking.rehydrate();
     this.subscriptions.rehydrate();
     this.battery.rehydrate();
@@ -148,9 +128,8 @@ export class WalletContent extends WalletBase {
       this.jettons.load(),
       this.tonInscriptions.load(),
       this.staking.load(),
-      this.battery.load(),
       this.subscriptions.load(),
-      this.battery.fetchBalance(),
+      this.battery.load(),
       this.activityList.load(),
     ]);
   }
@@ -161,9 +140,9 @@ export class WalletContent extends WalletBase {
       this.nfts.reload(),
       this.jettons.reload(),
       this.tonInscriptions.load(),
-      this.battery.load(),
       this.staking.reload(),
       this.subscriptions.reload(),
+      this.battery.load(),
       this.activityList.reload(),
     ]);
   }

@@ -373,12 +373,6 @@ export class Tonkeeper {
     await wallet.rehydrate();
     wallet.preload();
 
-    const existedWallet = this.wallets.get(wallet.identifier);
-
-    if (existedWallet) {
-      existedWallet.destroy();
-    }
-
     this.wallets.set(wallet.identifier, wallet);
 
     return wallet;
