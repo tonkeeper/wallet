@@ -2,6 +2,7 @@ import { BatteryAPI } from '@tonkeeper/core/src/BatteryAPI';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
+import { TonProofManager } from '$wallet/managers/TonProofManager';
 
 export interface BatteryState {
   isLoading: boolean;
@@ -15,7 +16,7 @@ export class BatteryManager {
   });
 
   constructor(
-    private proofToken: string | null,
+    private tonProof: TonProofManager,
     private batteryapi: BatteryAPI,
     private storage: Storage,
   ) {
@@ -28,14 +29,14 @@ export class BatteryManager {
 
   public async fetchBalance() {
     try {
-      if (!this.proofToken) {
+      if (!this.tonProof.tonProofToken) {
         throw new Error('No proof token');
       }
 
       this.state.set({ isLoading: true });
       const data = await this.batteryapi.getBalance({
         headers: {
-          'X-TonConnect-Auth': this.proofToken,
+          'X-TonConnect-Auth': this.tonProof.tonProofToken,
         },
       });
       this.state.set({ isLoading: false, balance: data.balance });
@@ -46,13 +47,13 @@ export class BatteryManager {
 
   public async getExcessesAccount() {
     try {
-      if (!this.proofToken) {
+      if (!this.tonProof.tonProofToken) {
         throw new Error('No proof token');
       }
 
       const data = await this.batteryapi.getConfig({
         headers: {
-          'X-TonConnect-Auth': this.proofToken,
+          'X-TonConnect-Auth': this.tonProof.tonProofToken,
         },
       });
 
@@ -64,7 +65,7 @@ export class BatteryManager {
 
   public async applyPromo(promoCode: string) {
     try {
-      if (!this.proofToken) {
+      if (!this.tonProof.tonProofToken) {
         throw new Error('No proof token');
       }
 
@@ -72,7 +73,7 @@ export class BatteryManager {
         { promo_code: promoCode },
         {
           headers: {
-            'X-TonConnect-Auth': this.proofToken,
+            'X-TonConnect-Auth': this.tonProof.tonProofToken,
           },
         },
       );
@@ -89,7 +90,7 @@ export class BatteryManager {
 
   public async makeIosPurchase(transactions: { id: string }[]) {
     try {
-      if (!this.proofToken) {
+      if (!this.tonProof.tonProofToken) {
         throw new Error('No proof token');
       }
 
@@ -97,7 +98,7 @@ export class BatteryManager {
         { transactions: transactions },
         {
           headers: {
-            'X-TonConnect-Auth': this.proofToken,
+            'X-TonConnect-Auth': this.tonProof.tonProofToken,
           },
         },
       );
@@ -112,7 +113,7 @@ export class BatteryManager {
 
   public async makeAndroidPurchase(purchases: { token: string; product_id: string }[]) {
     try {
-      if (!this.proofToken) {
+      if (!this.tonProof.tonProofToken) {
         throw new Error('No proof token');
       }
 
@@ -120,7 +121,7 @@ export class BatteryManager {
         { purchases },
         {
           headers: {
-            'X-TonConnect-Auth': this.proofToken,
+            'X-TonConnect-Auth': this.tonProof.tonProofToken,
           },
         },
       );
@@ -135,7 +136,7 @@ export class BatteryManager {
 
   public async sendMessage(boc: string) {
     try {
-      if (!this.proofToken) {
+      if (!this.tonProof.tonProofToken) {
         throw new Error('No proof token');
       }
 
@@ -143,7 +144,7 @@ export class BatteryManager {
         { boc },
         {
           headers: {
-            'X-TonConnect-Auth': this.proofToken,
+            'X-TonConnect-Auth': this.tonProof.tonProofToken,
           },
           format: 'text',
         },
@@ -157,7 +158,7 @@ export class BatteryManager {
 
   public async emulate(boc: string): Promise<MessageConsequences> {
     try {
-      if (!this.proofToken) {
+      if (!this.tonProof.tonProofToken) {
         throw new Error('No proof token');
       }
 
@@ -165,13 +166,17 @@ export class BatteryManager {
         { boc },
         {
           headers: {
-            'X-TonConnect-Auth': this.proofToken,
+            'X-TonConnect-Auth': this.tonProof.tonProofToken,
           },
         },
       );
     } catch (err) {
       throw new Error(err);
     }
+  }
+
+  public async load() {
+    return this.fetchBalance();
   }
 
   public async rehydrate() {

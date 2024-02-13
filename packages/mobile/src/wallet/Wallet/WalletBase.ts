@@ -32,7 +32,6 @@ export class WalletBase {
   public identifier: string;
   public pubkey: string;
   public address: WalletAddress;
-  public tonProof = '';
 
   public tronService: TronService;
 
@@ -109,36 +108,5 @@ export class WalletBase {
     return await this.tonapi.accounts.getAccount(this.address.ton.raw);
   }
 
-  protected async rehydrate() {
-    try {
-      const tonProof = await this.storage.getItem(this.tonProofStorageKey);
-      this.tonProof = tonProof ? JSON.parse(tonProof) : '';
-    } catch {}
-  }
-
-  public async obtainProofToken(keyPair: nacl.SignKeyPair) {
-    const contract = ContractService.getWalletContract(
-      WalletVersion.v4R2,
-      Buffer.from(keyPair.publicKey),
-      0,
-    );
-    const stateInitCell = beginCell().store(storeStateInit(contract.init)).endCell();
-    const rawAddress = contract.address.toRawString();
-
-    try {
-      const { payload } = await this.tonapi.tonconnect.getTonConnectPayload();
-      const proof = await signProofForTonkeeper(
-        rawAddress,
-        keyPair.secretKey,
-        payload,
-        stateInitCell.toBoc({ idx: false }).toString('base64'),
-      );
-      const { token } = await this.tonapi.wallet.tonConnectProof(proof);
-
-      await this.storage.setItem(this.tonProofStorageKey, JSON.stringify(token));
-      this.tonProof = token;
-    } catch (err) {
-      await this.storage.removeItem(this.tonProofStorageKey);
-    }
-  }
+  protected async rehydrate() {}
 }

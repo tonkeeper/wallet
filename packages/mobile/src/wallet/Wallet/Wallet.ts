@@ -119,6 +119,7 @@ export class Wallet extends WalletContent {
   }
 
   public destroy() {
+    this.tonProof.destroy();
     this.appStateListener?.remove();
     this.stopListenTransactions();
   }

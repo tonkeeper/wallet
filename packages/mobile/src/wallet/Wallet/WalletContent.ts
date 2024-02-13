@@ -19,6 +19,7 @@ import { WalletBase } from './WalletBase';
 import BigNumber from 'bignumber.js';
 import { BatteryManager } from '../managers/BatteryManager';
 import { NotificationsManager } from '$wallet/managers/NotificationsManager';
+import { TonProofManager } from '$wallet/managers/TonProofManager';
 
 export interface WalletStatusState {
   isReloading: boolean;
@@ -40,6 +41,7 @@ export class WalletContent extends WalletBase {
   public activityList: ActivityList;
   public tonInscriptions: TonInscriptions;
   public notifications: NotificationsManager;
+  public tonProof: TonProofManager;
 
   constructor(
     public config: WalletConfig,
@@ -54,6 +56,7 @@ export class WalletContent extends WalletBase {
     this.subscriptions = new SubscriptionsManager(tonRawAddress, this.storage);
 
     this.activityLoader = new ActivityLoader(tonRawAddress, this.tonapi, this.tronapi);
+    this.tonProof = new TonProofManager(this.identifier, this.tonapi);
     this.jettonActivityList = new JettonActivityList(
       tonRawAddress,
       this.activityLoader,
@@ -91,11 +94,7 @@ export class WalletContent extends WalletBase {
       this.tonapi,
       this.storage,
     );
-    this.battery = new BatteryManager(
-      this.config.proofToken,
-      this.batteryapi,
-      this.storage,
-    );
+    this.battery = new BatteryManager(this.tonProof, this.batteryapi, this.storage);
     this.notifications = new NotificationsManager(
       tonRawAddress,
       this.isTestnet,
@@ -118,6 +117,8 @@ export class WalletContent extends WalletBase {
     this.subscriptions.rehydrate();
     this.notifications.rehydrate();
     this.tonInscriptions.rehydrate();
+    this.battery.rehydrate();
+    this.tonProof.rehydrate();
   }
 
   protected async preload() {
@@ -129,6 +130,7 @@ export class WalletContent extends WalletBase {
       this.subscriptions.load(),
       this.nfts.load(),
       this.staking.load(),
+      this.battery.load(),
     ]);
   }
 
@@ -141,6 +143,7 @@ export class WalletContent extends WalletBase {
       this.staking.reload(),
       this.activityList.reload(),
       this.tonInscriptions.load(),
+      this.battery.load(),
     ]);
   }
 

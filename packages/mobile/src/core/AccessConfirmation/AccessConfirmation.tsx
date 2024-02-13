@@ -94,6 +94,10 @@ export const AccessConfirmation: FC = () => {
             );
             pinRef.current?.triggerSuccess();
 
+            if (!tk.wallet.tonProof.tonProofToken) {
+              await tk.wallet.tonProof.obtainProof(await unlockedVault.getKeyPair());
+            }
+
             setTimeout(async () => {
               setLastEnteredPasscode(pin);
 
@@ -143,6 +147,10 @@ export const AccessConfirmation: FC = () => {
         mnemonic,
       );
 
+      if (!tk.wallet.tonProof.tonProofToken) {
+        await tk.wallet.tonProof.obtainProof(await unlockedVault.getKeyPair());
+      }
+
       pinRef.current?.triggerSuccess();
 
       setTimeout(async () => {
@@ -164,7 +172,7 @@ export const AccessConfirmation: FC = () => {
       }
       triggerError();
     }
-  }, [dispatch, isUnlock, obtainTonProof, triggerError, wallet.config, wallet.pubkey]);
+  }, [dispatch, isUnlock, obtainTonProof, triggerError, wallet]);
 
   useEffect(() => {
     if (params.withoutBiometryOnOpen || !biometryEnabled) {
