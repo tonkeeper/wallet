@@ -153,6 +153,7 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
               textContentType="none"
               autoCorrect={false}
               spellCheck={false}
+              maxLength={24}
               style={styles.inputStyle.static}
             />
             <View style={styles.rightContent} pointerEvents="none">

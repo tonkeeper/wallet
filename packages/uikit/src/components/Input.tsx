@@ -74,7 +74,7 @@ enum InputState {
 
 const LABEL_SCALE_RATIO = 0.8;
 const ANIM_DURATION = 100;
-const LABEL_TRANSLATE_X_TO = isIOS ? -32 : -30;
+const LABEL_TRANSLATE_X_TO = -30;
 
 export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
   const {
