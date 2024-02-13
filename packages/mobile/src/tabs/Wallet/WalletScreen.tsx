@@ -229,7 +229,7 @@ export const WalletScreen = memo(({ navigation }) => {
             />
           )}
         </IconButtonList>
-        {wallet && (
+        {wallet && !wallet.isWatchOnly && (
           <>
             <ExpiringDomainCell />
           </>

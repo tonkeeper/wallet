@@ -56,6 +56,7 @@ export class Wallet extends WalletContent {
   }
 
   public async preload() {
+    this.logger.info('preload wallet data');
     try {
       this.status.set({ isLoading: true });
       await super.preload();
@@ -66,6 +67,7 @@ export class Wallet extends WalletContent {
   }
 
   public async reload() {
+    this.logger.info('reload wallet data');
     try {
       this.status.set({ isReloading: true });
       this.tonPrice.load();
@@ -102,16 +104,14 @@ export class Wallet extends WalletContent {
       // close transactions listener if app was in background
       if (nextAppState === 'background') {
         this.lastTimeAppActive = Date.now();
-        this.stopListenTransactions();
       }
       // reload data if app was in background more than 5 minutes
       if (nextAppState === 'active' && this.prevAppState === 'background') {
         if (Date.now() - this.lastTimeAppActive > 1000 * 60 * 5) {
           this.preload();
+          this.stopListenTransactions();
+          this.listenTransactions();
         }
-
-        // start listen transactions if app in foreground
-        this.listenTransactions();
       }
 
       this.prevAppState = nextAppState;

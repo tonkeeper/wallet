@@ -28,20 +28,21 @@ export interface WalletStatusState {
 }
 
 export class WalletContent extends WalletBase {
-  public subscriptions: SubscriptionsManager;
+  public activityLoader: ActivityLoader;
+
+  public tokenApproval: TokenApprovalManager;
   public balances: BalancesManager;
-  public battery: BatteryManager;
   public nfts: NftsManager;
   public jettons: JettonsManager;
-  public tokenApproval: TokenApprovalManager;
-  public staking: StakingManager;
-  public activityLoader: ActivityLoader;
-  public jettonActivityList: JettonActivityList;
-  public tonActivityList: TonActivityList;
-  public activityList: ActivityList;
   public tonInscriptions: TonInscriptions;
+  public staking: StakingManager;
+  public subscriptions: SubscriptionsManager;
+  public battery: BatteryManager;
   public notifications: NotificationsManager;
   public tonProof: TonProofManager;
+  public activityList: ActivityList;
+  public tonActivityList: TonActivityList;
+  public jettonActivityList: JettonActivityList;
 
   constructor(
     public config: WalletConfig,
@@ -52,8 +53,6 @@ export class WalletContent extends WalletBase {
     super(config, tonAllAddresses, storage);
 
     const tonRawAddress = this.address.ton.raw;
-
-    this.subscriptions = new SubscriptionsManager(tonRawAddress, this.storage);
 
     this.activityLoader = new ActivityLoader(tonRawAddress, this.tonapi, this.tronapi);
     this.tonProof = new TonProofManager(this.identifier, this.tonapi);
@@ -73,6 +72,9 @@ export class WalletContent extends WalletBase {
       this.storage,
     );
     this.tonInscriptions = new TonInscriptions(tonRawAddress, this.tonapi, this.storage);
+
+    // wallet state
+    this.tokenApproval = new TokenApprovalManager(tonRawAddress, this.storage);
     this.balances = new BalancesManager(
       tonRawAddress,
       this.config,
@@ -80,7 +82,6 @@ export class WalletContent extends WalletBase {
       this.storage,
     );
     this.nfts = new NftsManager(tonRawAddress, this.tonapi, this.storage);
-    this.tokenApproval = new TokenApprovalManager(tonRawAddress, this.storage);
     this.jettons = new JettonsManager(
       tonRawAddress,
       this.tonPrice,
@@ -88,6 +89,7 @@ export class WalletContent extends WalletBase {
       this.tonapi,
       this.storage,
     );
+    this.tonInscriptions = new TonInscriptions(tonRawAddress, this.tonapi, this.storage);
     this.staking = new StakingManager(
       tonRawAddress,
       this.jettons,
@@ -95,55 +97,74 @@ export class WalletContent extends WalletBase {
       this.storage,
     );
     this.battery = new BatteryManager(this.tonProof, this.batteryapi, this.storage);
+    this.subscriptions = new SubscriptionsManager(tonRawAddress, this.storage);
+    this.battery = new BatteryManager(this.tonProof, this.batteryapi, this.storage);
     this.notifications = new NotificationsManager(
       tonRawAddress,
       this.isTestnet,
       this.storage,
       this.logger,
     );
+    this.activityList = new ActivityList(
+      tonRawAddress,
+      this.activityLoader,
+      this.storage,
+    );
+    this.tonActivityList = new TonActivityList(
+      tonRawAddress,
+      this.activityLoader,
+      this.storage,
+    );
+    this.jettonActivityList = new JettonActivityList(
+      tonRawAddress,
+      this.activityLoader,
+      this.storage,
+    );
   }
 
   protected async rehydrate() {
     await super.rehydrate();
 
-    this.jettonActivityList.rehydrate();
-    this.tonActivityList.rehydrate();
-    this.activityList.rehydrate();
     this.tokenApproval.rehydrate();
     this.balances.rehydrate();
-    this.jettons.rehydrate();
-    this.staking.rehydrate();
     this.nfts.rehydrate();
-    this.subscriptions.rehydrate();
-    this.notifications.rehydrate();
+    this.jettons.rehydrate();
     this.tonInscriptions.rehydrate();
     this.battery.rehydrate();
     this.tonProof.rehydrate();
+    this.staking.rehydrate();
+    this.subscriptions.rehydrate();
+    this.battery.rehydrate();
+    this.notifications.rehydrate();
+    this.activityList.rehydrate();
+    this.tonActivityList.rehydrate();
+    this.jettonActivityList.rehydrate();
   }
 
   protected async preload() {
     await Promise.all([
       this.balances.load(),
-      this.jettons.load(),
-      this.activityList.load(),
-      this.tonInscriptions.load(),
-      this.subscriptions.load(),
       this.nfts.load(),
+      this.jettons.load(),
+      this.tonInscriptions.load(),
       this.staking.load(),
       this.battery.load(),
+      this.subscriptions.load(),
+      this.battery.fetchBalance(),
+      this.activityList.load(),
     ]);
   }
 
   public async reload() {
     await Promise.all([
-      this.balances.load(),
-      this.jettons.reload(),
-      this.subscriptions.reload(),
+      this.balances.reload(),
       this.nfts.reload(),
-      this.staking.reload(),
-      this.activityList.reload(),
+      this.jettons.reload(),
       this.tonInscriptions.load(),
       this.battery.load(),
+      this.staking.reload(),
+      this.subscriptions.reload(),
+      this.activityList.reload(),
     ]);
   }
 

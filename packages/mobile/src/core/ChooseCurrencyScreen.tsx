@@ -6,22 +6,26 @@ import { t } from '@tonkeeper/shared/i18n';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { FiatCurrencySymbolsConfig, WalletCurrency } from '@tonkeeper/core';
 import { tk } from '$wallet';
-import { useWalletCurrency } from '@tonkeeper/shared/hooks';
+import { useWalletCurrency, useWallets } from '@tonkeeper/shared/hooks';
 
 export const ChooseCurrencyScreen: React.FC = () => {
   const fiatCurrency = useWalletCurrency();
   const currencies = React.useMemo(() => {
     return Object.keys(FiatCurrencySymbolsConfig) as WalletCurrency[];
   }, []);
+  const wallets = useWallets();
 
-  const handleChangeCurrency = React.useCallback((currency: WalletCurrency) => {
-    tk.tonPrice.setFiatCurrency(currency);
-    tk.tonPrice.load();
+  const handleChangeCurrency = React.useCallback(
+    (currency: WalletCurrency) => {
+      tk.tonPrice.setFiatCurrency(currency);
+      tk.tonPrice.load();
 
-    if (tk.wallet) {
-      tk.wallet.jettons.reload();
-    }
-  }, []);
+      wallets.forEach((wallet) => {
+        wallet.jettons.reload();
+      });
+    },
+    [wallets],
+  );
 
   return (
     <Screen>

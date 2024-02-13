@@ -90,6 +90,10 @@ function* createWalletWorker(action: CreateWalletAction) {
       allowedDestinations: vaultJson.allowedDestinations,
     };
 
+    if (isBiometryEnabled) {
+      yield call([tk, 'enableBiometry'], pin!);
+    }
+
     const identifiers = yield call(
       [tk, 'importWallet'],
       generatedVault.mnemonic,
@@ -97,9 +101,6 @@ function* createWalletWorker(action: CreateWalletAction) {
       versions,
       walletConfig,
     );
-    if (isBiometryEnabled) {
-      yield call([tk, 'enableBiometry'], pin!);
-    }
 
     yield put(mainActions.setUnlocked(true));
     onDone(identifiers);

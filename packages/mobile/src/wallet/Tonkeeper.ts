@@ -440,7 +440,6 @@ export class Tonkeeper {
 
   public switchWallet(identifier: string) {
     const wallet = this.wallets.get(identifier);
-    this.wallet.preload();
     this.setWallet(wallet!);
   }
 
