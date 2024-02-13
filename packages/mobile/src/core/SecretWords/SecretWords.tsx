@@ -4,17 +4,17 @@ import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as CreateWalletStyle from '../CreateWallet/CreateWallet.style';
-import {Button, NavBar, NavBarHelper, Text} from '$uikit';
+import { Button, NavBar, NavBarHelper, Text } from '$uikit';
 import { ns } from '$utils';
-import { walletSelector } from '$store/wallet';
+import { walletGeneratedVaultSelector } from '$store/wallet';
 import * as S from './SecretWords.style';
 import { t } from '@tonkeeper/shared/i18n';
 import { openCheckSecretWords } from '$navigation';
-import {WordsItemNumberWrapper} from "./SecretWords.style";
+import { tk } from '$wallet';
+import { popToTop } from '$navigation/imperative';
 
 export const SecretWords: FC = () => {
-  
-  const { generatedVault } = useSelector(walletSelector);
+  const generatedVault = useSelector(walletGeneratedVaultSelector);
   const { bottom: bottomInset } = useSafeAreaInsets();
 
   const data = useMemo(() => {
@@ -52,10 +52,10 @@ export const SecretWords: FC = () => {
 
   return (
     <View style={{ flex: 1, paddingBottom: bottomInset }}>
-      <NavBar isTransparent />
+      <NavBar isTransparent isClosedButton={!!tk.wallet} onClosePress={popToTop} />
       <ScrollView
         contentContainerStyle={{
-          paddingHorizontal: ns(32)
+          paddingHorizontal: ns(32),
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -75,12 +75,13 @@ export const SecretWords: FC = () => {
           </S.Words>
         </S.Content>
       </ScrollView>
-      <View 
-        style={{ 
-          paddingHorizontal: ns(32), 
+      <View
+        style={{
+          paddingHorizontal: ns(32),
           paddingBottom: ns(32),
-          paddingTop: 16
-        }}>
+          paddingTop: 16,
+        }}
+      >
         <Button onPress={handleContinue}>{t('continue')}</Button>
       </View>
     </View>

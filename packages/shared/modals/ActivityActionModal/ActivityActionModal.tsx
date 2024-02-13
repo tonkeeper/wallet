@@ -1,9 +1,13 @@
-import { ActionItem, ActionSource, AnyActionItem } from '@tonkeeper/core';
 import { SheetActions, navigation } from '@tonkeeper/router';
 import { renderActionModalContent } from './renderActionModalContent';
 import { Modal, Toast } from '@tonkeeper/uikit';
-import { tk } from '../../tonkeeper';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 import { memo } from 'react';
+import {
+  ActionItem,
+  ActionSource,
+  AnyActionItem,
+} from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 
 type ActivityActionModalProps = {
   action: AnyActionItem;

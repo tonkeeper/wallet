@@ -17,14 +17,14 @@ import { ScaleDecorator } from '$uikit/DraggableFlashList';
 import { NestableDraggableFlatList } from '$uikit/DraggableFlashList/components/NestableDraggableFlatList';
 import { NestableScrollContainer } from '$uikit/DraggableFlashList/components/NestableScrollContainer';
 import { Haptics } from '$utils';
-import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
 import { useParams } from '$navigation/imperative';
 import { Address } from '@tonkeeper/shared/Address';
-
+import { useTokenApproval } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
 
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 
@@ -115,11 +115,8 @@ export const ManageTokens: FC = () => {
   const [tab, setTab] = useState<string>(params?.initialTab || 'tokens');
   const jettonData = useJettonData();
   const nftData = useNftData();
-  const hasWatchedCollectiblesTab = useTokenApprovalStore(
+  const hasWatchedCollectiblesTab = useTokenApproval(
     (state) => state.hasWatchedCollectiblesTab,
-  );
-  const setHasWatchedCollectiblesTab = useTokenApprovalStore(
-    (state) => state.actions.setHasWatchedCollectiblesTab,
   );
   const scrollY = useSharedValue(0);
   const scrollHandler = useAnimatedScrollHandler({
@@ -210,7 +207,7 @@ export const ManageTokens: FC = () => {
                 onChange={({ value }) => {
                   setTab(value);
                   if (value === 'collectibles') {
-                    setHasWatchedCollectiblesTab(true);
+                    tk.wallet.tokenApproval.setHasWatchedCollectiblesTab(true);
                   }
                 }}
                 value={tab}
@@ -251,7 +248,6 @@ export const ManageTokens: FC = () => {
     renderJettonList,
     scrollHandler,
     scrollY,
-    setHasWatchedCollectiblesTab,
     tab,
     withCollectibleDot,
   ]);

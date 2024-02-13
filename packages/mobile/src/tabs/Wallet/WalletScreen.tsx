@@ -11,15 +11,16 @@ import {
   PagerView,
   Spacer,
   copyText,
+  Haptics,
 } from '@tonkeeper/uikit';
-import { InternalNotification } from '$uikit';
+import { InternalNotification, Tag } from '$uikit';
 import { useNavigation } from '@tonkeeper/router';
 import { ScanQRButton } from '../../components/ScanQRButton';
 import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { ns } from '$utils';
-import { walletActions, walletSelector, walletUpdatedAtSelector } from '$store/wallet';
+import { walletActions } from '$store/wallet';
 import { useIsFocused } from '@react-navigation/native';
 import { useBalance } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
@@ -29,7 +30,6 @@ import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
 import { useTonkens } from './hooks/useTokens';
-import { useWallet } from './hooks/useWallet';
 import { useApprovedNfts } from '$hooks/useApprovedNfts';
 import { useTheme } from '$hooks/useTheme';
 import { useTokenPrice } from '$hooks/useTokenPrice';
@@ -44,16 +44,16 @@ import { Events, SendAnalyticsFrom } from '$store/models';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { trackEvent } from '$utils/stats';
-import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
-import { tk } from '@tonkeeper/shared/tonkeeper';
 import { ExpiringDomainCell } from './components/ExpiringDomainCell';
 import { BatteryIcon } from '@tonkeeper/shared/components/BatteryIcon/BatteryIcon';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { format } from 'date-fns';
 import { getLocale } from '$utils/date';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useWallet, useWalletStatus } from '@tonkeeper/shared/hooks';
+import { WalletSelector } from './components/WalletSelector';
 
-export const WalletScreen = memo(() => {
+export const WalletScreen = memo(({ navigation }) => {
   const flags = useFlags(['disable_swap']);
   const tabBarHeight = useBottomTabBarHeight();
   const dispatch = useDispatch();
@@ -67,16 +67,15 @@ export const WalletScreen = memo(() => {
   const balance = useBalance(tokens.total.fiat);
   const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
 
-  const { isRefreshing, isLoaded } = useSelector(walletSelector);
+  const { isReloading: isRefreshing, updatedAt: walletUpdatedAt } = useWalletStatus();
+
   const isFocused = useIsFocused();
 
-  const { data: tronBalances } = useTronBalances();
+  const tronBalances = undefined;
 
   const notifications = useInternalNotifications();
 
   const { isConnected } = useNetInfo();
-
-  const walletUpdatedAt = useSelector(walletUpdatedAtSelector);
 
   // TODO: rewrite
   useEffect(() => {
@@ -119,11 +118,27 @@ export const WalletScreen = memo(() => {
     }
   }, [nav, wallet]);
 
-  const handleCreateWallet = () => openRequireWalletModal();
+  const handleCreateWallet = () => nav.navigate('/add-wallet');
 
   const handleRefresh = useCallback(() => {
-    dispatch(walletActions.refreshBalancesPage(true));
-  }, [dispatch]);
+    if (!wallet) {
+      return;
+    }
+
+    wallet.reload();
+  }, [wallet]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('tabLongPress', () => {
+      Haptics.impactLight();
+      dispatch(walletActions.clearGeneratedVault());
+      nav.openModal('/switch-wallet');
+    });
+
+    return unsubscribe;
+  }, [dispatch, nav, navigation]);
+
+  const isWatchOnly = wallet && wallet.isWatchOnly;
 
   const ListHeader = useMemo(
     () => (
@@ -146,50 +161,67 @@ export const WalletScreen = memo(() => {
             <Spacer x={4} />
             <BatteryIcon />
           </View>
-          {wallet && tk.wallet && isConnected !== false ? (
-            <TouchableOpacity
-              hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
-              style={{ zIndex: 3, marginVertical: 8 }}
-              onPress={copyText(tk.wallet.address.ton.friendly)}
-              activeOpacity={0.6}
-            >
-              <Text color="textSecondary" type="body2">
-                {tk.wallet.address.ton.short}
-              </Text>
-            </TouchableOpacity>
-          ) : null}
-          {wallet && tk.wallet && isConnected === false && walletUpdatedAt ? (
-            <View style={{ zIndex: 3, marginVertical: 8 }}>
-              <Text color="textSecondary" type="body2">
-                {t('wallet.updated_at', {
-                  value: format(walletUpdatedAt, 'd MMM, HH:mm', {
-                    locale: getLocale(),
-                  }).replace('.', ''),
-                })}
-              </Text>
-            </View>
-          ) : null}
+          <View style={styles.addressContainer}>
+            {wallet && isConnected !== false ? (
+              <TouchableOpacity
+                hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
+                style={{ zIndex: 3, marginVertical: 8 }}
+                onPress={copyText(wallet.address.ton.friendly)}
+                activeOpacity={0.6}
+              >
+                <Text color="textSecondary" type="body2">
+                  {wallet.address.ton.short}
+                </Text>
+              </TouchableOpacity>
+            ) : null}
+            {wallet && isConnected === false && walletUpdatedAt ? (
+              <View style={{ zIndex: 3, marginVertical: 8 }}>
+                <Text color="textSecondary" type="body2">
+                  {t('wallet.updated_at', {
+                    value: format(walletUpdatedAt, 'd MMM, HH:mm', {
+                      locale: getLocale(),
+                    }).replace('.', ''),
+                  })}
+                </Text>
+              </View>
+            ) : null}
+
+            {wallet && wallet.isTestnet ? (
+              <>
+                <Tag type="warning">Testnet</Tag>
+              </>
+            ) : null}
+            {isWatchOnly ? (
+              <>
+                <Tag type="warning">{t('watch_only')}</Tag>
+              </>
+            ) : null}
+          </View>
         </View>
         <IconButtonList
           horizontalIndent={i18n.locale === 'ru' ? 'large' : 'small'}
           style={styles.actionButtons}
         >
-          <IconButton
-            onPress={handlePressSend}
-            iconName="ic-arrow-up-28"
-            title={t('wallet.send_btn')}
-          />
+          {!isWatchOnly ? (
+            <IconButton
+              onPress={handlePressSend}
+              iconName="ic-arrow-up-28"
+              title={t('wallet.send_btn')}
+            />
+          ) : null}
           <IconButton
             onPress={handlePressRecevie}
             iconName="ic-arrow-down-28"
             title={t('wallet.receive_btn')}
           />
-          <IconButton
-            onPress={handlePressBuy}
-            iconName="ic-usd-28"
-            title={t('wallet.buy_btn')}
-          />
-          {!flags.disable_swap && (
+          {!isWatchOnly ? (
+            <IconButton
+              onPress={handlePressBuy}
+              iconName="ic-usd-28"
+              title={t('wallet.buy_btn')}
+            />
+          ) : null}
+          {!flags.disable_swap && !isWatchOnly && (
             <IconButton
               onPress={handlePressSwap}
               iconName="ic-swap-horizontal-28"
@@ -197,7 +229,7 @@ export const WalletScreen = memo(() => {
             />
           )}
         </IconButtonList>
-        {wallet && (
+        {wallet && !wallet.isWatchOnly && (
           <>
             <ExpiringDomainCell />
           </>
@@ -211,9 +243,12 @@ export const WalletScreen = memo(() => {
       handlePressRecevie,
       handlePressSend,
       handlePressSwap,
+      isConnected,
+      isWatchOnly,
       notifications,
       shouldUpdate,
       wallet,
+      walletUpdatedAt,
     ],
   );
 
@@ -263,7 +298,7 @@ export const WalletScreen = memo(() => {
             />
           </List>
         </Screen.ScrollView>
-        {isLoaded && !wallet && (
+        {!wallet && (
           <View style={[styles.createWalletContainerOuter, { bottom: tabBarHeight }]}>
             <View style={styles.createWalletContainerInner}>
               <Button onPress={handleCreateWallet} title={t('balances_setup_wallet')} />
@@ -277,8 +312,8 @@ export const WalletScreen = memo(() => {
   return (
     <Screen>
       <Screen.Header
-        title={t('wallet.screen_title')}
-        rightContent={<ScanQRButton />}
+        title={<WalletSelector />}
+        rightContent={!isWatchOnly ? <ScanQRButton /> : null}
         hideBackButton
       />
       {isPagerView ? (
@@ -376,6 +411,10 @@ const styles = Steezy.create(({ isTablet }) => ({
     },
   },
   balanceWithBattery: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  addressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },

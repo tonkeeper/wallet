@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import {
   Screen,
@@ -11,29 +11,27 @@ import {
 } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 import { openJetton, openTonInscription } from '$navigation';
-import { walletActions } from '$store/wallet';
 import { Rate } from '../hooks/useBalance';
 import { ListItemRate } from './ListItemRate';
 import { TonIcon, TonIconProps } from '@tonkeeper/uikit';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { NFTsList } from './NFTsList';
-import { TokenPrice, useTokenPrice } from '$hooks/useTokenPrice';
+import { TokenPrice } from '$hooks/useTokenPrice';
 import { useTheme } from '$hooks/useTheme';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StakingWidget } from './StakingWidget';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { TronBalance } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
-import { fiatCurrencySelector } from '$store/main';
-import { FiatCurrencies } from '@tonkeeper/core';
+import { WalletCurrency } from '@tonkeeper/core';
 import { useTonInscriptions } from '@tonkeeper/shared/query/hooks/useTonInscriptions';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { Text } from '@tonkeeper/uikit';
 import { JettonVerification } from '$store/models';
 import { ListItemProps } from '$uikit/List/ListItem';
-import { config } from '@tonkeeper/shared/config';
+import { config } from '$config';
+import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
 
 enum ContentType {
   Token,
@@ -184,26 +182,15 @@ export const WalletContentList = memo<BalancesListProps>(
     isRefreshing,
     isFocused,
     ListHeaderComponent,
-    tronBalances,
   }) => {
     const theme = useTheme();
-    const dispatch = useDispatch();
 
-    const fiatCurrency = useSelector(fiatCurrencySelector);
-    const shouldShowTonDiff = fiatCurrency !== FiatCurrencies.Ton;
+    const fiatCurrency = useWalletCurrency();
+    const shouldShowTonDiff = fiatCurrency !== WalletCurrency.TON;
     const inscriptions = useTonInscriptions();
 
-    const handleMigrate = useCallback(
-      (fromVersion: string) => () => {
-        dispatch(
-          walletActions.openMigration({
-            isTransfer: true,
-            fromVersion,
-          }),
-        );
-      },
-      [dispatch],
-    );
+    const wallet = useWallet();
+    const isWatchOnly = wallet && wallet.isWatchOnly;
 
     const data = useMemo(() => {
       const content: Content[] = [];
@@ -222,24 +209,8 @@ export const WalletContentList = memo<BalancesListProps>(
           price: tonPrice.formatted.fiat ?? '-',
           trend: tonPrice.fiatDiff.trend,
         },
+        isLast: isWatchOnly,
       });
-
-      content.push(
-        ...balance.oldVersions.map((item) => ({
-          type: ContentType.Token,
-          key: 'old_' + item.version,
-          onPress: handleMigrate(item.version),
-          title: t('wallet.old_wallet_title'),
-          tonIcon: { transparent: true },
-          value: item.amount.formatted,
-          subvalue: item.amount.fiat,
-          rate: {
-            percent: shouldShowTonDiff ? tonPrice.fiatDiff.percent : '',
-            price: tonPrice.formatted.fiat ?? '-',
-            trend: tonPrice.fiatDiff.trend,
-          },
-        })),
-      );
 
       if (balance.lockup.length > 0) {
         content.push(
@@ -287,10 +258,12 @@ export const WalletContentList = memo<BalancesListProps>(
       //   );
       // }
 
-      content.push({
-        key: 'staking',
-        type: ContentType.Staking,
-      });
+      if (!isWatchOnly) {
+        content.push({
+          key: 'staking',
+          type: ContentType.Staking,
+        });
+      }
 
       content.push({
         key: 'spacer_staking',
@@ -374,7 +347,15 @@ export const WalletContentList = memo<BalancesListProps>(
       });
 
       return content;
-    }, [balance, handleMigrate, nfts, tokens.list, tonPrice, tronBalances]);
+    }, [
+      balance,
+      shouldShowTonDiff,
+      tonPrice,
+      isWatchOnly,
+      tokens.list,
+      inscriptions.items,
+      nfts,
+    ]);
 
     const ListComponent = nfts ? Screen.FlashList : PagerView.FlatList;
 

@@ -1,8 +1,9 @@
 import { ActionListItem, ActionListItemProps } from '../ActionListItem';
 import { useSubscription } from '../../../query/hooks/useSubscription';
-import { ActionType } from '@tonkeeper/core';
+
 import { t } from '../../../i18n';
 import { memo } from 'react';
+import { ActionType } from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 
 type UnSubscribeActionListItemProps = ActionListItemProps<ActionType.UnSubscribe>;
 

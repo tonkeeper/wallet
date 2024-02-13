@@ -16,7 +16,7 @@ import {
   CanceledActionError,
   DismissedActionError,
 } from '$core/Send/steps/ConfirmStep/ActionErrors';
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '$wallet';
 import { TabsStackRouteNames } from '$navigation';
 
 enum States {

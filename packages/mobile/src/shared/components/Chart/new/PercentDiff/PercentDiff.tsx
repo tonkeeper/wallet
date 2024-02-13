@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { Text } from '$uikit/Text/Text';
 import { TonThemeColor } from '$styled';
-import { FiatCurrencies } from '$shared/constants';
-import { useTheme } from '$hooks/useTheme';
+import { WalletCurrency } from '$shared/constants';
 import { toLocaleNumber } from '$utils';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
@@ -13,7 +12,7 @@ export interface PercentDiffProps {
   latestPoint: number;
   firstPoint: number;
   fiatRate: number;
-  fiatCurrency: FiatCurrencies;
+  fiatCurrency: WalletCurrency;
 }
 
 const fontFamily = Platform.select({
@@ -45,7 +44,9 @@ const PercentDiffComponent: React.FC<PercentDiffProps> = (props) => {
     let amountResult: string;
 
     const diffInFiat = formatFiatCurrencyAmount(
-      Math.abs(((props.firstPoint * parseFloat(priceDiff)) / 100) * props.fiatRate).toFixed(2),
+      Math.abs(
+        ((props.firstPoint * parseFloat(priceDiff)) / 100) * props.fiatRate,
+      ).toFixed(2),
       props.fiatCurrency,
       true,
     );

@@ -2,7 +2,7 @@ import { InputContentSize } from '$uikit/Input/Input.interface';
 import { LayoutChangeEvent } from 'react-native';
 
 export interface ImportWalletFormProps {
-  onWordsFilled: (mnemonics: string, config: any, onEnd: () => void) => void;
+  onWordsFilled: (mnemonic: string, config: any, onEnd: () => void) => void;
 }
 
 export interface InputItemRef {

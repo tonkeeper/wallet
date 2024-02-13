@@ -1,17 +1,21 @@
 import { getChainName } from '$shared/dynamicConfig';
-import { walletSelector } from '$store/wallet';
 import { useCallback } from 'react';
-import { useSelector } from 'react-redux';
 import { IConnectedApp } from './types';
 import { useConnectedAppsStore } from './useConnectedAppsStore';
+import { useWallet } from '@tonkeeper/shared/hooks';
+import { Address } from '@tonkeeper/shared/Address';
 
 export const useConnectedAppsList = (): IConnectedApp[] => {
-  const { address } = useSelector(walletSelector);
+  const wallet = useWallet();
+
+  const address = wallet
+    ? Address.parse(wallet.address.ton.raw).toFriendly({ bounceable: true })
+    : '';
 
   return useConnectedAppsStore(
     useCallback(
-      (s) => Object.values(s.connectedApps[getChainName()][address.ton] ?? {}),
-      [address.ton],
+      (s) => Object.values(s.connectedApps[getChainName()][address] ?? {}),
+      [address],
     ),
   );
 };

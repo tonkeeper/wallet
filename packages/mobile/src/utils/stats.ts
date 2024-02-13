@@ -1,10 +1,10 @@
-import { getServerConfig } from '$shared/constants';
+import { config } from '$config';
 import { init, logEvent } from '@amplitude/analytics-browser';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let TrakingEnabled = false;
 export function initStats() {
-  init(getServerConfig('amplitudeKey'), '-', {
+  init(config.get('amplitudeKey'), '-', {
     minIdLength: 1,
     deviceId: '-',
     trackingOptions: {
@@ -16,9 +16,9 @@ export function initStats() {
       platform: true,
       adid: false,
       carrier: false,
-    }
+    },
   });
-  TrakingEnabled = true; 
+  TrakingEnabled = true;
 }
 
 export function trackEvent(name: string, params: any = {}) {
@@ -27,7 +27,6 @@ export function trackEvent(name: string, params: any = {}) {
   }
   logEvent(name, params);
 }
-
 
 export async function trackFirstLaunch() {
   const isFirstLaunch = !(await AsyncStorage.getItem('launched_before'));

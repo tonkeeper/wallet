@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Alert } from 'react-native';
 import BigNumber from 'bignumber.js';
 
@@ -7,9 +7,8 @@ import { ConfirmSendingProps } from './ConfirmSending.interface';
 import * as S from './ConfirmSending.style';
 import { useExchangeMethodInfo } from '$hooks/useExchangeMethodInfo';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
-import { walletActions, walletSelector } from '$store/wallet';
+import { walletActions } from '$store/wallet';
 import { formatCryptoCurrency } from '$utils/currency';
-import { getTokenConfig } from '$shared/dynamicConfig';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { Modal } from '@tonkeeper/uikit';
 import {
@@ -18,7 +17,7 @@ import {
 } from '../NFTOperations/NFTOperationFooter';
 import { Separator } from '$uikit';
 import { t } from '@tonkeeper/shared/i18n';
-import { TokenType } from '$core/Send/Send.interface';
+import { useBalancesState, useWallet } from '@tonkeeper/shared/hooks';
 
 export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
   const { currency, address, amount, comment, fee, tokenType, methodId } = props;
@@ -29,7 +28,8 @@ export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
 
   const { footerRef, onConfirm } = useNFTOperationState();
 
-  const { balances, wallet } = useSelector(walletSelector);
+  const wallet = useWallet();
+  const balances = useBalancesState();
 
   const { decimals, jettonWalletAddress, currencyTitle } = useCurrencyToSend(
     currency,
@@ -61,8 +61,8 @@ export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
     if (
       currency === CryptoCurrencies.Ton &&
       wallet &&
-      wallet.ton.isLockup() &&
-      new BigNumber(balances[currency]).isLessThan(amountWithFee)
+      wallet.isLockup &&
+      new BigNumber(balances.ton).isLessThan(amountWithFee)
     ) {
       Alert.alert(t('send_lockup_warning_title'), t('send_lockup_warning_caption'), [
         {
@@ -80,16 +80,7 @@ export const NewConfirmSending: FC<ConfirmSendingProps> = (props) => {
     }
   }, [amount, fee, currency, wallet, balances, doSend]);
 
-  const feeCurrency = useMemo(() => {
-    const tokenConfig = getTokenConfig(currency);
-    if (tokenConfig && tokenConfig.blockchain === 'ethereum') {
-      return CryptoCurrencies.Eth;
-    } else if (tokenType === TokenType.Jetton) {
-      return CryptoCurrencies.Ton;
-    } else {
-      return currency;
-    }
-  }, [currency, tokenType]);
+  const feeCurrency = CryptoCurrencies.Ton;
 
   const feeValue = React.useMemo(() => {
     if (fee === '0') {

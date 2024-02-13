@@ -1,13 +1,9 @@
-import { jettonsBalancesSelector, sortedJettonsSelector } from '$store/jettons';
 import { JettonBalanceModel, JettonVerification } from '$store/models';
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { walletWalletSelector } from '$store/wallet';
 import { Address } from '@tonkeeper/shared/Address';
-import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
-import { TokenApprovalStatus } from '$store/zustand/tokenApproval/types';
-import { getStakingJettons, useStakingStore } from '$store';
-import { shallow } from 'zustand/shallow';
+import { useJettons, useStakingState, useTokenApproval } from '@tonkeeper/shared/hooks';
+import { getStakingJettons } from '@tonkeeper/shared/utils/staking';
+import { TokenApprovalStatus } from '$wallet/managers/TokenApprovalManager';
 
 export interface IBalances {
   enabled: JettonBalanceModel[];
@@ -17,12 +13,9 @@ export const useJettonBalances = (
   withZeroBalances?: boolean,
   showStakingJettons = false,
 ) => {
-  const jettonBalances = useSelector(jettonsBalancesSelector);
-  const wallet = useSelector(walletWalletSelector);
-  const sortedJettons =
-    useSelector(sortedJettonsSelector)[wallet?.vault?.getVersion?.() || ''];
-  const approvalStatuses = useTokenApprovalStore();
-  const stakingJettons = useStakingStore(getStakingJettons, shallow);
+  const { jettonBalances } = useJettons();
+  const approvalStatuses = useTokenApproval();
+  const stakingJettons = useStakingState(getStakingJettons);
 
   const jettons = useMemo(() => {
     const balances: IBalances = {
@@ -56,20 +49,11 @@ export const useJettonBalances = (
       }
     });
 
-    if (sortedJettons) {
-      balances.enabled = balances.enabled.sort(
-        (a, b) =>
-          sortedJettons.indexOf(Address.parse(a.jettonAddress).toRaw()) -
-          sortedJettons.indexOf(Address.parse(b.jettonAddress).toRaw()),
-      );
-    }
-
     return balances;
   }, [
     approvalStatuses.tokens,
     jettonBalances,
     showStakingJettons,
-    sortedJettons,
     stakingJettons,
     withZeroBalances,
   ]);

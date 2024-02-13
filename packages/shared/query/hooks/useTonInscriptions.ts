@@ -1,10 +1,11 @@
 import { useExternalState } from '../../hooks/useExternalState';
 import { State } from '@tonkeeper/core';
-import { tk } from '../../tonkeeper';
+import { useWallet } from '../../hooks';
 
 export const useTonInscriptions = () => {
+  const wallet = useWallet();
   const state = useExternalState(
-    tk.wallet?.tonInscriptions.state ??
+    wallet?.tonInscriptions.state ??
       new State({
         isLoading: false,
         items: [],
@@ -12,7 +13,7 @@ export const useTonInscriptions = () => {
   );
 
   return {
-    reload: () => tk.wallet?.tonInscriptions.getInscriptions(),
+    reload: () => wallet?.tonInscriptions.load(),
     isLoading: state.isLoading,
     items: state.items,
   };

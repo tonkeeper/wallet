@@ -2,12 +2,7 @@ import { useInstance } from '$hooks/useInstance';
 import { useTokenPrice } from '$hooks/useTokenPrice';
 import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
-import {
-  CryptoCurrencies,
-  CryptoCurrency,
-  Decimals,
-  getServerConfig,
-} from '$shared/constants';
+import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { NavBar, Text } from '$uikit';
 import { parseLocaleNumber } from '$utils';
@@ -46,7 +41,7 @@ import { Events } from '$store/models';
 import { trackEvent } from '$utils/stats';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '$wallet';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { useValueRef } from '@tonkeeper/uikit';
 import { RequestData } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
@@ -56,6 +51,7 @@ import {
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { getTimeSec } from '$utils/getTimeSec';
 import { Toast } from '$store';
+import { config } from '$config';
 
 const tokensWithAllowedEncryption = [TokenType.TON, TokenType.Jetton];
 
@@ -89,9 +85,9 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   const accountsApi = useInstance(() => {
     const tonApiConfiguration = new Configuration({
-      basePath: getServerConfig('tonapiV2Endpoint'),
+      basePath: config.get('tonapiV2Endpoint', tk.wallet.isTestnet),
       headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+        Authorization: `Bearer ${config.get('tonApiV2Key', tk.wallet.isTestnet)}`,
       },
     });
 

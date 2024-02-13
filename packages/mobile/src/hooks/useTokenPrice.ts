@@ -1,13 +1,11 @@
 import { CryptoCurrencies } from '$shared/constants';
-import { fiatCurrencySelector } from '$store/main';
-import { useRatesStore } from '$store/zustand/rates';
 import { TonThemeColor } from '$styled';
 import { toLocaleNumber } from '$utils';
 import { formatter } from '$utils/formatter';
+import { Address } from '@tonkeeper/shared/Address';
+import { useRates, useWalletCurrency } from '@tonkeeper/shared/hooks';
 import BigNumber from 'bignumber.js';
 import { useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { shallow } from 'zustand/shallow';
 
 export interface TokenPrice {
   amount: string;
@@ -31,8 +29,8 @@ export interface TokenPrice {
 }
 
 export const useGetTokenPrice = () => {
-  const rates = useRatesStore((s) => s.rates, shallow);
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const rates = useRates();
+  const fiatCurrency = useWalletCurrency();
 
   return useCallback(
     (currency: string, amount = '0'): TokenPrice => {
@@ -44,14 +42,14 @@ export const useGetTokenPrice = () => {
         currency = CryptoCurrencies.Ton;
       }
 
-      const prices = rates[currency === CryptoCurrencies.Ton ? 'TON' : currency]?.prices;
-      const diffs = rates[currency === CryptoCurrencies.Ton ? 'TON' : currency]?.diff_24h;
+      const rate =
+        rates[Address.isValid(currency) ? Address.parse(currency).toRaw() : currency];
 
-      const ton = prices?.TON ?? 0;
-      const fiat = (prices?.[fiatCurrency.toUpperCase()] as number) ?? 0;
-      const usd = (prices?.USD as number) ?? 0;
+      const ton = rate?.ton ?? 0;
+      const fiat = rate?.fiat ?? 0;
+      const usd = rate?.usd ?? 0;
 
-      const priceDiff = (diffs?.[fiatCurrency.toUpperCase()] as string) ?? null;
+      const priceDiff = rate?.diff_24h ?? null;
 
       const totalTon =
         new BigNumber(ton).multipliedBy(new BigNumber(amount)).toNumber() ?? 0;

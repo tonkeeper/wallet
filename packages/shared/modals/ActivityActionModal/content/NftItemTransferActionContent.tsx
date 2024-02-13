@@ -3,7 +3,10 @@ import { NftItemPayload } from '../components/NftItemPayload';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
-import { ActionItem, ActionType } from '@tonkeeper/core';
+import {
+  ActionItem,
+  ActionType,
+} from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 import { copyText, List, Text } from '@tonkeeper/uikit';
 import { memo } from 'react';
 import { t } from '../../../i18n';

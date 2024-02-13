@@ -6,10 +6,7 @@ import { ns } from '$utils';
 import { useJetton } from '$hooks/useJetton';
 import { useTokenPrice } from '$hooks/useTokenPrice';
 import { openDAppBrowser, openSend } from '$navigation';
-import { getServerConfig } from '$shared/constants';
-import { useSelector } from 'react-redux';
 
-import { walletAddressSelector } from '$store/wallet';
 import { formatter } from '$utils/formatter';
 import { useNavigation } from '@tonkeeper/router';
 import { useSwapStore } from '$store/zustand/swap';
@@ -26,8 +23,10 @@ import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonAc
 import { ActivityList } from '@tonkeeper/shared/components';
 import { openReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
 import { TokenType } from '$core/Send/Send.interface';
-import { config } from '@tonkeeper/shared/config';
+import { config } from '$config';
 import { openUnverifiedTokenDetailsModal } from '@tonkeeper/shared/modals/UnverifiedTokenDetailsModal';
+import { useWallet } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
 
 const unverifiedTokenHitSlop = { top: 4, left: 4, bottom: 4, right: 4 };
 
@@ -35,8 +34,10 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const flags = useFlags(['disable_swap']);
   const jetton = useJetton(route.params.jettonAddress);
   const jettonActivityList = useJettonActivityList(jetton.jettonAddress);
-  const address = useSelector(walletAddressSelector);
   const jettonPrice = useTokenPrice(jetton.jettonAddress, jetton.balance);
+  const wallet = useWallet();
+
+  const isWatchOnly = wallet && wallet.isWatchOnly;
 
   const nav = useNavigation();
 
@@ -61,10 +62,11 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
 
   const handleOpenExplorer = useCallback(async () => {
     openDAppBrowser(
-      getServerConfig('accountExplorer').replace('%s', address.ton) +
-        `/jetton/${jetton.jettonAddress}`,
+      config
+        .get('accountExplorer', tk.wallet.isTestnet)
+        .replace('%s', wallet.address.ton.friendly) + `/jetton/${jetton.jettonAddress}`,
     );
-  }, [address.ton, jetton.jettonAddress]);
+  }, [jetton.jettonAddress, wallet]);
 
   const renderHeader = useMemo(() => {
     if (!jetton) {
@@ -100,17 +102,19 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         </S.FlexRow>
         <S.Divider style={{ marginBottom: ns(16) }} />
         <S.ActionsContainer>
-          <IconButton
-            onPress={handleSend}
-            iconName="ic-arrow-up-28"
-            title={t('wallet.send_btn')}
-          />
+          {!isWatchOnly ? (
+            <IconButton
+              onPress={handleSend}
+              iconName="ic-arrow-up-28"
+              title={t('wallet.send_btn')}
+            />
+          ) : null}
           <IconButton
             onPress={handleReceive}
             iconName="ic-arrow-down-28"
             title={t('wallet.receive_btn')}
           />
-          {showSwap && !flags.disable_swap ? (
+          {!isWatchOnly && showSwap && !flags.disable_swap ? (
             <IconButton
               onPress={handlePressSwap}
               icon={<SwapIcon />}
@@ -123,8 +127,8 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     );
   }, [
     jetton,
-    t,
     jettonPrice,
+    isWatchOnly,
     handleSend,
     handleReceive,
     showSwap,

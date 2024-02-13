@@ -1,11 +1,11 @@
 import { State } from '@tonkeeper/core';
 import { useExternalState } from '../../hooks/useExternalState';
-import { tk } from '../../tonkeeper';
-import { useEffect } from 'react';
+import { useWallet } from '../../hooks';
 
 export const useActivityList = () => {
+  const wallet = useWallet();
   const state = useExternalState(
-    tk.wallet?.activityList.state ??
+    wallet?.activityList.state ??
       new State({
         isReloading: false,
         isLoading: false,
@@ -15,17 +15,13 @@ export const useActivityList = () => {
       }),
   );
 
-  useEffect(() => {
-    tk.wallet?.activityList.load();
-  }, []);
-
   return {
-    loadMore: () => tk.wallet?.activityList.loadMore(),
-    reload: () => tk.wallet?.activityList.reload(),
+    loadMore: () => wallet?.activityList.loadMore(),
+    reload: () => wallet?.activityList.reload(),
     isReloading: state.isReloading,
     isLoading: state.isLoading,
     sections: state.sections,
     hasMore: state.hasMore,
-    error: state.error
+    error: state.error,
   };
 };

@@ -1,7 +1,6 @@
 import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useNavigation, useRouter } from '@tonkeeper/router';
-import { useWallet } from '@tonkeeper/core';
 import { t } from '../../i18n';
 import {
   usePagerViewSteps,

@@ -1,13 +1,10 @@
-import { useAllAddresses } from '$hooks/useAllAddresses';
-import { walletVersionSelector } from '$store/wallet';
 import { t } from '@tonkeeper/shared/i18n';
 import { Button, Text } from '$uikit';
 import { debugLog } from '$utils/debugLog';
 import { getTimeSec } from '$utils/getTimeSec';
 import * as React from 'react';
 import { View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { Tonapi } from '$libs/Tonapi';
+import { useDispatch } from 'react-redux';
 import { favoritesActions } from '$store/favorites';
 import { DOMAIN_ADDRESS_NOT_FOUND } from '$core/Send/hooks/useSuggestedAddresses';
 import {
@@ -21,6 +18,8 @@ import {
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { Address } from '@tonkeeper/core';
 import { useFlags } from '$utils/flags';
+import { useWallet } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
 
 const TonWeb = require('tonweb'); // Fix ts types;
 
@@ -73,8 +72,7 @@ interface LinkingDomainButtonProps {
 export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) => {
   const flags = useFlags(['address_style_nobounce']);
 
-  const version = useSelector(walletVersionSelector);
-  const allAddesses = useAllAddresses();
+  const wallet = useWallet();
   const dispatch = useDispatch();
   const [loading, setLoading] = React.useState(false);
   const [record, setRecord] = React.useState<DNSRecord>({
@@ -89,16 +87,18 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
   );
 
   const getDNSRecord = React.useCallback(async (domain) => {
-    const dnsRecord = await Tonapi.resolveDns(domain);
+    try {
+      const dnsRecord = await tk.wallet.tonapi.dns.dnsResolve(domain);
 
-    if (dnsRecord?.wallet?.address) {
-      const walletAddress = new TonWeb.Address(dnsRecord.wallet.address).toString(
-        true,
-        true,
-        true,
-      );
-      return { walletAddress };
-    }
+      if (dnsRecord?.wallet?.address) {
+        const walletAddress = new TonWeb.Address(dnsRecord.wallet.address).toString(
+          true,
+          true,
+          true,
+        );
+        return { walletAddress };
+      }
+    } catch {}
 
     return { walletAddress: null };
   }, []);
@@ -138,9 +138,9 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
 
   const isLinkedOtherAddress = React.useMemo(() => {
     if (Boolean(record.walletAddress) && Boolean(record.ownerAddress)) {
-      if (Object.values(allAddesses).length > 0) {
-        const linked = Object.values(allAddesses).find((address) => {
-          return Address.compare(address, record.walletAddress);
+      if (Object.values(wallet.tonAllAddresses).length > 0) {
+        const linked = Object.values(wallet.tonAllAddresses).find((address) => {
+          return Address.compare(address.raw, record.walletAddress);
         });
 
         return !linked;
@@ -148,13 +148,11 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
     }
 
     return false;
-  }, [allAddesses, record.walletAddress, record.ownerAddress]);
+  }, [wallet, record.walletAddress, record.ownerAddress]);
 
   const handlePressButton = React.useCallback(async () => {
     Toast.loading();
-    const currentWalletAddress = Address.parse(allAddesses[version], {
-      bounceable: !flags.address_style_nobounce,
-    }).toFriendly();
+    const currentWalletAddress = wallet.tonAllAddresses[wallet.config.version].friendly;
     const linkingActions = new LinkingDomainActions(
       props.domainAddress,
       isLinked ? undefined : currentWalletAddress,
@@ -200,7 +198,7 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
         });
       },
     });
-  }, [isLinked, allAddesses, version]);
+  }, [wallet.tonAllAddresses, wallet.config.version, props, isLinked, dispatch]);
 
   const buttonTitle = React.useMemo(() => {
     if (record.walletAddress) {

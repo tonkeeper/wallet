@@ -1,3 +1,2 @@
-export * from './useStakingStore';
+export * from './useStakingUIStore';
 export * from './types';
-export * from './selectors';

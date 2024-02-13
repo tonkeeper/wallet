@@ -1,39 +1,26 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '$store/rootReducer';
-import { FiatCurrencies } from '$shared/constants';
 import {
   AddLogAction,
-  EndInitiatingAction,
   HideNotificationAction,
   MainState,
   SetAccentAction,
-  SetChartPeriodAction,
-  SetFiatCurrencyAction,
-  SetHasWalletAction,
   SetLogsAction,
   SetNotificationsAction,
-  SetShowV4R1,
-  SetTestnetAction,
   SetTimeSyncedAction,
   SetTimeSyncedDismissedAction,
   SetTonCustomIcon,
   SetUnlockedAction,
-  ToggleIntroAction,
-  ToggleTestnetAction,
   UpdateBadHostsAction,
 } from '$store/main/interface';
 import { AccentKey } from '$styled';
-import { walletOldBalancesSelector, walletWalletSelector } from '$store/wallet';
+import { walletWalletSelector } from '$store/wallet';
 
 const initialState: MainState = {
   isInitiating: true,
-  isHasWallet: false,
-  isIntroShown: true,
-  isTestnet: false,
   isTimeSynced: true,
   timeSyncedDismissedTimestamp: false,
-  fiatCurrency: FiatCurrencies.Usd,
   badHosts: [],
   isBadHostsDismissed: false,
   internalNotifications: [],
@@ -42,7 +29,6 @@ const initialState: MainState = {
   isUnlocked: false,
   accent: AccentKey.default,
   tonCustomIcon: null,
-  alwaysShowV4R1: false,
 };
 
 export const { actions, reducer } = createSlice({
@@ -51,44 +37,17 @@ export const { actions, reducer } = createSlice({
   reducers: {
     init() {},
 
-    endInitiating(state, action: EndInitiatingAction) {
-      const { isHasWallet, fiatCurrency } = action.payload;
-
+    endInitiating(state) {
       state.isInitiating = false;
-      state.isHasWallet = isHasWallet;
-      state.fiatCurrency = fiatCurrency;
-    },
-
-    setShowV4R1(state, action: SetShowV4R1) {
-      state.alwaysShowV4R1 = action.payload;
-    },
-
-    setHasWallet(state, action: SetHasWalletAction) {
-      state.isHasWallet = action.payload;
     },
 
     setUnlocked(state, action: SetUnlockedAction) {
       state.isUnlocked = action.payload;
     },
 
-    completeIntro(state) {
-      state.isIntroShown = false;
-    },
-
-    toggleIntro(state, action: ToggleIntroAction) {
-      state.isIntroShown = action.payload;
-    },
-
-    toggleTestnet(_, __: ToggleTestnetAction) {},
-    setTestnet(state, action: SetTestnetAction) {
-      state.isTestnet = action.payload;
-    },
     getTimeSynced() {},
     setTimeSynced(state, action: SetTimeSyncedAction) {
       state.isTimeSynced = action.payload;
-    },
-    setFiatCurrency(state, action: SetFiatCurrencyAction) {
-      state.fiatCurrency = action.payload;
     },
 
     updateBadHosts(state, action: UpdateBadHostsAction) {
@@ -135,10 +94,6 @@ export const { actions, reducer } = createSlice({
       state.isMainStackInited = true;
     },
 
-    resetMain() {
-      return initialState;
-    },
-
     addLog(state, action: AddLogAction) {
       state.logs.unshift({
         ts: Date.now(),
@@ -164,11 +119,6 @@ export const isInitiatingSelector = createSelector(
   (state) => state.isInitiating,
 );
 
-export const fiatCurrencySelector = createSelector(
-  mainSelector,
-  (state) => state.fiatCurrency,
-);
-
 export const customIconSelector = createSelector(
   mainSelector,
   (state) => state.tonCustomIcon,
@@ -188,29 +138,7 @@ export const accentTonIconSelector = createSelector(
   (wallet, tonCustomIcon) => (wallet ? tonCustomIcon : null),
 );
 
-export const alwaysShowV4R1Selector = createSelector(
-  mainSelector,
-  (state) => state.alwaysShowV4R1,
-);
-
-export const isTestnetSelector = createSelector(mainSelector, (state) => state.isTestnet);
-
-export const showV4R1Selector = createSelector(
-  mainSelector,
-  walletOldBalancesSelector,
-  (state, walletOldBalances) =>
-    state.alwaysShowV4R1 ||
-    walletOldBalances.find(
-      (oldBalance) => oldBalance.version === 'v4R1' && oldBalance.balance,
-    ),
-);
-
 export const isTimeSyncedSelector = createSelector(
   mainSelector,
   (state) => state.isTimeSynced,
-);
-
-export const chartPeriodSelector = createSelector(
-  mainSelector,
-  (state) => state.chartPeriod,
 );

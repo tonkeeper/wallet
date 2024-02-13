@@ -1,4 +1,12 @@
-import { forwardRef, memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import {
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import DefaultBottomSheet, {
   BottomSheetModal,
   BottomSheetBackdropProps,
@@ -41,15 +49,16 @@ export const SheetModal = memo(
     const safeArea = useSafeAreaInsets();
     const theme = useTheme();
     const reduceMotion = useReducedMotion();
-
     const {
       delegateMethods,
       removeFromStack,
+      id,
       contentHeight,
       handleHeight,
       initialState,
       snapPoints,
     } = useSheetInternal();
+    const [ignoreOnClose, setIgnoreOnClose] = useState(initialState === 'closed');
 
     const index = useMemo(() => {
       return initialState === 'closed' ? -1 : 0;
@@ -64,12 +73,24 @@ export const SheetModal = memo(
 
     const topInset = !isAndroid ? StatusBarHeight + safeArea.top : 0;
 
+    const handleIndexChange = useCallback(
+      (index: number) => {
+        if (ignoreOnClose && index === 0) {
+          setIgnoreOnClose(false);
+        }
+      },
+      [ignoreOnClose],
+    );
+
     const handleClose = useCallback(async () => {
+      if (ignoreOnClose) {
+        return;
+      }
       removeFromStack();
       if (props.onClose) {
         props.onClose();
       }
-    }, [props.onClose]);
+    }, [props.onClose, ignoreOnClose]);
 
     return (
       <DefaultBottomSheet
@@ -79,6 +100,7 @@ export const SheetModal = memo(
         handleHeight={handleHeight}
         enablePanDownToClose={true}
         onClose={handleClose}
+        onChange={handleIndexChange}
         // Have to override default animation Configs due to bug with reduced motion
         animationConfigs={ANIMATION_CONFIGS}
         snapPoints={snapPoints}

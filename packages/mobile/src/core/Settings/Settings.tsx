@@ -12,10 +12,9 @@ import { Icon, PopupSelect, ScrollHandler, Spacer, Text } from '$uikit';
 import { Icon as NewIcon } from '@tonkeeper/uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
-import { fiatCurrencySelector, showV4R1Selector } from '$store/main';
-import { hasSubscriptionsSelector } from '$store/subscriptions';
 import { List } from '@tonkeeper/uikit';
 import {
+  AppStackRouteNames,
   MainStackRouteNames,
   openDeleteAccountDone,
   openDevMenu,
@@ -24,31 +23,19 @@ import {
   openNotifications,
   openRefillBattery,
   openSecurity,
-  openSecurityMigration,
   openSubscriptions,
 } from '$navigation';
-import {
-  walletActions,
-  walletVersionSelector,
-  walletWalletSelector,
-} from '$store/wallet';
+import { walletActions } from '$store/wallet';
 import {
   APPLE_STORE_ID,
-  getServerConfig,
   GOOGLE_PACKAGE_NAME,
   LargeNavBarHeight,
-  SelectableVersion,
-  SelectableVersionsConfig,
   IsTablet,
-  SelectableVersions,
 } from '$shared/constants';
-import { hNs, ns, throttle, useHasDiamondsOnBalance } from '$utils';
+import { checkIsTonDiamondsNFT, hNs, ns, throttle } from '$utils';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { CellSectionItem } from '$shared/components';
-import { MainDB } from '$database';
-import { useNotifications } from '$hooks/useNotifications';
 import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
-import { useAllAddresses } from '$hooks/useAllAddresses';
 import { useFlags } from '$utils/flags';
 import { SearchEngine, useBrowserStore, useNotificationsStore } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
@@ -56,9 +43,18 @@ import { Steezy } from '$styles';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { openAppearance } from '$core/ModalContainer/AppearanceModal';
-import { Address } from '@tonkeeper/core';
+import { config } from '$config';
 import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
-import { config } from '@tonkeeper/shared/config';
+import {
+  useNftsState,
+  useWallet,
+  useWalletCurrency,
+  useWallets,
+} from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
+import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
+import { WalletListItem } from '@tonkeeper/shared/components';
+import { useSubscriptions } from '@tonkeeper/shared/hooks/useSubscriptions';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -75,15 +71,13 @@ export const Settings: FC = () => {
   const nav = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
   const notificationsBadge = useNotificationsBadge();
-  const notifications = useNotifications();
 
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const fiatCurrency = useWalletCurrency();
   const dispatch = useDispatch();
-  const hasSubscriptions = useSelector(hasSubscriptionsSelector);
-  const wallet = useSelector(walletWalletSelector);
-  const version = useSelector(walletVersionSelector);
-  const allTonAddesses = useAllAddresses();
-  const showV4R1 = useSelector(showV4R1Selector);
+  const hasSubscriptions = useSubscriptions(
+    (state) => Object.values(state.subscriptions).length > 0,
+  );
+  const wallet = useWallet();
   const shouldShowTokensButton = useShouldShowTokensButton();
   const showNotifications = useNotificationsStore(shouldShowNotifications);
 
@@ -114,7 +108,7 @@ export const Settings: FC = () => {
   }, []);
 
   const handleFeedback = useCallback(() => {
-    Linking.openURL(getServerConfig('supportLink')).catch((err) => console.log(err));
+    Linking.openURL(config.get('supportLink')).catch((err) => console.log(err));
   }, []);
 
   const handleLegal = useCallback(() => {
@@ -122,11 +116,11 @@ export const Settings: FC = () => {
   }, []);
 
   const handleNews = useCallback(() => {
-    Linking.openURL(getServerConfig('tonkeeperNewsUrl')).catch((err) => console.log(err));
+    Linking.openURL(config.get('tonkeeperNewsUrl')).catch((err) => console.log(err));
   }, []);
 
   const handleSupport = useCallback(() => {
-    Linking.openURL(getServerConfig('directSupportUrl')).catch((err) => console.log(err));
+    Linking.openURL(config.get('directSupportUrl')).catch((err) => console.log(err));
   }, []);
 
   const handleResetWallet = useCallback(() => {
@@ -139,14 +133,15 @@ export const Settings: FC = () => {
         text: t('settings_reset_alert_button'),
         style: 'destructive',
         onPress: () => {
-          if (showNotifications) {
-            notifications.unsubscribe();
-          }
           dispatch(walletActions.cleanWallet());
         },
       },
     ]);
-  }, [dispatch, t]);
+  }, [dispatch]);
+
+  const handleStopWatchWallet = useCallback(() => {
+    dispatch(walletActions.cleanWallet());
+  }, [dispatch]);
 
   const handleSubscriptions = useCallback(() => {
     openSubscriptions();
@@ -156,23 +151,7 @@ export const Settings: FC = () => {
     openNotifications();
   }, []);
 
-  const versions = useMemo(() => {
-    return Object.keys(SelectableVersionsConfig).filter((key) => {
-      if (key === SelectableVersions.V4R1) {
-        return showV4R1;
-      }
-      return true;
-    }) as SelectableVersion[];
-  }, [showV4R1]);
-
   const searchEngineVariants = Object.values(SearchEngine);
-
-  const handleChangeVersion = useCallback(
-    (version: SelectableVersion) => {
-      dispatch(walletActions.switchVersion(version));
-    },
-    [dispatch],
-  );
 
   const handleSwitchLanguage = useCallback(() => {
     Alert.alert(t('language.language_alert.title'), undefined, [
@@ -194,14 +173,12 @@ export const Settings: FC = () => {
   }, []);
 
   const handleSecurity = useCallback(() => {
-    MainDB.isNewSecurityFlow().then((isNew) => {
-      if (isNew) {
-        openSecurity();
-      } else {
-        openSecurityMigration();
-      }
-    });
+    openSecurity();
   }, []);
+
+  const handleBackupSettings = useCallback(() => {
+    dispatch(walletActions.backupWallet());
+  }, [dispatch]);
 
   const handleAppearance = useCallback(() => {
     openAppearance();
@@ -226,12 +203,16 @@ export const Settings: FC = () => {
         style: 'destructive',
         onPress: () => {
           trackEvent('delete_wallet');
-          notifications.unsubscribe();
           openDeleteAccountDone();
         },
       },
     ]);
   }, []);
+
+  const handleCustomizePress = useCallback(
+    () => nav.navigate(AppStackRouteNames.CustomizeWallet),
+    [nav],
+  );
 
   const notificationIndicator = React.useMemo(() => {
     if (notificationsBadge.isVisible) {
@@ -245,10 +226,23 @@ export const Settings: FC = () => {
     return null;
   }, [notificationsBadge.isVisible]);
 
-  const hasDiamods = useHasDiamondsOnBalance();
+  const accountNfts = useNftsState((s) => s.accountNfts);
+
+  const hasDiamods = useMemo(() => {
+    if (!wallet || wallet.isWatchOnly) {
+      return false;
+    }
+
+    return Object.values(accountNfts).find((nft) =>
+      checkIsTonDiamondsNFT(mapNewNftToOldNftData(nft, wallet.address.ton.friendly)),
+    );
+  }, [wallet, accountNfts]);
+
   const isAppearanceVisible = React.useMemo(() => {
     return hasDiamods && !flags.disable_apperance;
   }, [hasDiamods, flags.disable_apperance]);
+
+  const wallets = useWallets();
 
   return (
     <S.Wrap>
@@ -262,8 +256,21 @@ export const Settings: FC = () => {
           }}
           scrollEventThrottle={16}
         >
+          {wallet ? (
+            <>
+              <List>
+                <WalletListItem
+                  onPress={handleCustomizePress}
+                  wallet={wallet}
+                  subtitle={t('customize')}
+                  rightContent={<Icon name="ic-chevron-right-16" />}
+                />
+              </List>
+              <Spacer y={16} />
+            </>
+          ) : null}
           <List>
-            {!!wallet && (
+            {!!wallet && !wallet.isWatchOnly && (
               <List.Item
                 value={
                   <Icon
@@ -272,8 +279,8 @@ export const Settings: FC = () => {
                     name={'ic-key-28'}
                   />
                 }
-                title={t('settings_security')}
-                onPress={handleSecurity}
+                title={t('settings_backup_seed')}
+                onPress={handleBackupSettings}
               />
             )}
             {shouldShowTokensButton && (
@@ -302,6 +309,20 @@ export const Settings: FC = () => {
                 onPress={handleSubscriptions}
               />
             )}
+            {!!wallet && showNotifications && (
+              <List.Item
+                value={<Icon color="accentPrimary" name={'ic-notification-28'} />}
+                title={
+                  <View style={styles.notificationsTextContainer.static}>
+                    <Text variant="label1" numberOfLines={1} ellipsizeMode="tail">
+                      {t('settings_notifications')}
+                    </Text>
+                    {notificationIndicator}
+                  </View>
+                }
+                onPress={handleNotifications}
+              />
+            )}
             {isAppearanceVisible && (
               <List.Item
                 value={
@@ -315,6 +336,13 @@ export const Settings: FC = () => {
                 onPress={handleAppearance}
               />
             )}
+            <List.Item
+              value={
+                <S.SelectedCurrency>{fiatCurrency.toUpperCase()}</S.SelectedCurrency>
+              }
+              title={t('settings_primary_currency')}
+              onPress={() => nav.navigate('ChooseCurrency')}
+            />
             {isBatteryVisible && (
               <List.Item
                 value={
@@ -331,27 +359,19 @@ export const Settings: FC = () => {
           </List>
           <Spacer y={16} />
           <List>
-            {!!wallet && showNotifications && (
+            {!!wallet && tk.walletForUnlock && (
               <List.Item
-                value={<Icon color="accentPrimary" name={'ic-notification-28'} />}
-                title={
-                  <View style={styles.notificationsTextContainer.static}>
-                    <Text variant="label1" numberOfLines={1} ellipsizeMode="tail">
-                      {t('settings_notifications')}
-                    </Text>
-                    {notificationIndicator}
-                  </View>
+                value={
+                  <Icon
+                    style={styles.icon.static}
+                    color="accentPrimary"
+                    name="ic-lock-28"
+                  />
                 }
-                onPress={handleNotifications}
+                title={t('settings_security')}
+                onPress={handleSecurity}
               />
             )}
-            <List.Item
-              value={
-                <S.SelectedCurrency>{fiatCurrency.toUpperCase()}</S.SelectedCurrency>
-              }
-              title={t('settings_primary_currency')}
-              onPress={() => nav.navigate('ChooseCurrency')}
-            />
             <PopupSelect
               items={searchEngineVariants}
               selected={searchEngine}
@@ -378,38 +398,7 @@ export const Settings: FC = () => {
               }
               title={t('language.list_item.title')}
             />
-            {!!wallet && (
-              <PopupSelect
-                items={versions}
-                selected={version}
-                onChange={handleChangeVersion}
-                keyExtractor={(item) => item}
-                width={220}
-                renderItem={(version) => (
-                  <S.WalletVersion>
-                    <Text variant="label1" style={{ marginRight: ns(8) }}>
-                      {SelectableVersionsConfig[version]?.label}
-                    </Text>
-                    <Text variant="body1" color="foregroundSecondary">
-                      {Address.parse(
-                        allTonAddesses[SelectableVersionsConfig[version]?.label],
-                        { bounceable: !flags.address_style_nobounce },
-                      ).toShort()}
-                    </Text>
-                  </S.WalletVersion>
-                )}
-              >
-                <List.Item
-                  value={
-                    <Text variant="label1" color="accentPrimary">
-                      {SelectableVersionsConfig[version]?.label}
-                    </Text>
-                  }
-                  title={t('settings_wallet_version')}
-                />
-              </PopupSelect>
-            )}
-            {wallet && flags.address_style_settings ? (
+            {wallet && !wallet.isWatchOnly && flags.address_style_settings ? (
               <List.Item
                 value={
                   <Text variant="label1" color="accentPrimary">
@@ -471,7 +460,7 @@ export const Settings: FC = () => {
               }
               title={t('settings_rate')}
             />
-            {!!wallet && (
+            {!!wallet && !wallet.isWatchOnly && (
               <List.Item
                 onPress={handleDeleteAccount}
                 value={
@@ -500,9 +489,15 @@ export const Settings: FC = () => {
           {!!wallet && (
             <>
               <List>
-                <CellSectionItem onPress={handleResetWallet} icon="ic-door-28">
-                  {t('settings_reset')}
-                </CellSectionItem>
+                {wallet.isWatchOnly ? (
+                  <CellSectionItem onPress={handleStopWatchWallet} icon="ic-trash-bin-28">
+                    {t('stop_watch')}
+                  </CellSectionItem>
+                ) : (
+                  <CellSectionItem onPress={handleResetWallet} icon="ic-door-28">
+                    {t('settings_reset')}
+                  </CellSectionItem>
+                )}
               </List>
               <Spacer y={16} />
             </>

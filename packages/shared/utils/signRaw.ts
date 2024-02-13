@@ -1,6 +1,9 @@
 import { t } from '../i18n';
-import { ActionItem, ActionType } from '@tonkeeper/core';
 import { formatter } from '../formatter';
+import {
+  ActionItem,
+  ActionType,
+} from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 
 export function getActionTitle(action: ActionItem) {
   switch (action.type) {

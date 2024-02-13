@@ -4,9 +4,9 @@ import { navigation } from '@tonkeeper/router';
 import { memo, useMemo } from 'react';
 import { t } from '../i18n';
 
-import { jettonsSelector } from '@tonkeeper/mobile/src/store/jettons';
-import { useSelector } from 'react-redux';
-import { tk } from '../tonkeeper';
+import { tk } from '@tonkeeper/mobile/src/wallet';
+import { useJettons } from '../hooks';
+import { Address } from '../Address';
 
 interface ReceiveJettonModalProps {
   jettonAddress: string;
@@ -15,10 +15,11 @@ interface ReceiveJettonModalProps {
 export const ReceiveJettonModal = memo<ReceiveJettonModalProps>((props) => {
   const { jettonAddress } = props;
 
-  // TODO: Replace with new jetton manager
-  const { jettonBalances } = useSelector(jettonsSelector);
+  const { jettonBalances } = useJettons();
   const jetton = useMemo(() => {
-    return jettonBalances.find((item) => item.jettonAddress === jettonAddress)!;
+    return jettonBalances.find((item) =>
+      Address.compare(item.jettonAddress, jettonAddress),
+    )!;
   }, []);
 
   const link = useMemo(() => {

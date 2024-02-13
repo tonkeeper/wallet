@@ -3,12 +3,6 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Button, Icon, Text } from '$uikit';
 import * as S from './ReminderEnableNotificationsModal.styles';
 import { useNotifications } from '$hooks/useNotifications';
-import {
-  removeReminderNotifications,
-  saveDontShowReminderNotifications,
-  saveReminderNotifications,
-  shouldOpenReminderNotifications,
-} from '$utils/messaging';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { Modal, View } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
@@ -17,20 +11,14 @@ export const ReminderEnableNotificationsModal = () => {
   const nav = useNavigation();
   const notifications = useNotifications();
 
-  React.useEffect(() => {
-    saveDontShowReminderNotifications();
-  }, []);
-
   const handleEnable = React.useCallback(async () => {
     const isSubscribe = await notifications.subscribe();
     if (isSubscribe) {
-      removeReminderNotifications();
       nav.goBack();
     }
   }, []);
 
   const handleLater = React.useCallback(async () => {
-    saveReminderNotifications();
     nav.goBack();
   }, []);
 
@@ -76,13 +64,10 @@ export const ReminderEnableNotificationsModal = () => {
 };
 
 export async function openReminderEnableNotificationsModal() {
-  const shouldOpen = await shouldOpenReminderNotifications();
-  if (shouldOpen) {
-    push('SheetsProvider', {
-      $$action: SheetActions.ADD,
-      component: ReminderEnableNotificationsModal,
-      params: {},
-      path: 'MARKETPLACES',
-    });
-  }
+  push('SheetsProvider', {
+    $$action: SheetActions.ADD,
+    component: ReminderEnableNotificationsModal,
+    params: {},
+    path: 'MARKETPLACES',
+  });
 }

@@ -11,7 +11,7 @@ import {
 } from '@tonkeeper/uikit';
 import { navigation, SheetActions, useNavigation } from '@tonkeeper/router';
 import { t } from '@tonkeeper/shared/i18n';
-import { tk } from '../../tonkeeper';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 
 export const RechargeByPromoModal = memo(() => {
   const [code, setCode] = useState<string>('');

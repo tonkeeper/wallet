@@ -11,6 +11,8 @@ import { debugLog } from '$utils/debugLog';
 import { openSetupBiometry, openSetupWalletDone } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { CreatePinForm } from '$shared/components';
+import { tk } from '$wallet';
+import { popToTop } from '$navigation/imperative';
 
 export const CreatePin: FC<CreatePinProps> = () => {
   const dispatch = useDispatch();
@@ -20,8 +22,8 @@ export const CreatePin: FC<CreatePinProps> = () => {
       dispatch(
         walletActions.createWallet({
           pin,
-          onDone: () => {
-            openSetupWalletDone();
+          onDone: (identifiers) => {
+            openSetupWalletDone(identifiers);
           },
           onFail: () => {},
         }),
@@ -31,31 +33,31 @@ export const CreatePin: FC<CreatePinProps> = () => {
   );
 
   const handlePinCreated = useCallback(
-    (pin: string) => {
-      Promise.all([
-        LocalAuthentication.supportedAuthenticationTypesAsync(),
-        SecureStore.isAvailableAsync(),
-      ])
-        .then(([types, isProtected]) => {
-          const biometryType = detectBiometryType(types);
-          if (biometryType && isProtected) {
-            openSetupBiometry(pin, biometryType);
-          } else {
-            doCreateWallet(pin);
-          }
-        })
-        .catch((err) => {
-          console.log('ERR1', err);
-          debugLog('supportedAuthenticationTypesAsync', err.message);
+    async (pin: string) => {
+      try {
+        const [types, isProtected] = await Promise.all([
+          LocalAuthentication.supportedAuthenticationTypesAsync(),
+          SecureStore.isAvailableAsync(),
+        ]);
+
+        const biometryType = detectBiometryType(types);
+        if (biometryType && isProtected) {
+          openSetupBiometry(pin, biometryType);
+        } else {
           doCreateWallet(pin);
-        });
+        }
+      } catch (err) {
+        console.log('ERR1', err);
+        debugLog('supportedAuthenticationTypesAsync', err.message);
+        doCreateWallet(pin);
+      }
     },
     [doCreateWallet],
   );
 
   return (
     <S.Wrap>
-      <NavBar isForceBackIcon />
+      <NavBar isForceBackIcon isClosedButton={!!tk.wallet} onClosePress={popToTop} />
       <CreatePinForm onPinCreated={handlePinCreated} />
     </S.Wrap>
   );

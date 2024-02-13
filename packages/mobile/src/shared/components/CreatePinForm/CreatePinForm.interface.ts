@@ -1,7 +1,5 @@
-import { UnlockedVault } from '$blockchain';
-
 export interface CreatePinFormProps {
-  onPinCreated: (pin: string) => void;
+  onPinCreated: (pin: string) => Promise<void>;
   validateOldPin?: boolean;
-  onVaultUnlocked?: (_: UnlockedVault) => void;
+  onOldPinValidated?: (_: string) => void;
 }

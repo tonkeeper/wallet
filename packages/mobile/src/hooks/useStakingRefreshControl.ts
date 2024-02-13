@@ -1,14 +1,16 @@
-import { StakingApiStatus, useStakingStore } from '$store';
 import { useCallback, useMemo } from 'react';
 import { useTheme } from './useTheme';
+import { useStakingState } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
+import { StakingApiStatus } from '$wallet/managers/StakingManager';
 
 export const useStakingRefreshControl = () => {
   const theme = useTheme();
 
-  const isRefreshing = useStakingStore((s) => s.status === StakingApiStatus.Refreshing);
+  const isRefreshing = useStakingState((s) => s.status === StakingApiStatus.Refreshing);
 
   const handleRefresh = useCallback(() => {
-    useStakingStore.getState().actions.fetchPools();
+    tk.wallet.staking.load();
   }, []);
 
   const refreshControl = useMemo(

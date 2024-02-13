@@ -1,7 +1,10 @@
 import { useSubscription } from '../../../query/hooks/useSubscription';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
-import { ActionItem, ActionType } from '@tonkeeper/core';
+import {
+  ActionItem,
+  ActionType,
+} from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 import { Button, List, Steezy, Text, View, copyText } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import { memo } from 'react';
@@ -49,7 +52,7 @@ export const UnSubscribeActionContent = memo<UnSubscribeActionContentProps>((pro
 
 const styles = Steezy.create({
   buttonContainer: {
-    marginHorizontal: 16, 
+    marginHorizontal: 16,
     marginBottom: 16,
-  }
+  },
 });

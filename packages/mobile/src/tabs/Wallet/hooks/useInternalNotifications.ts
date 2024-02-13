@@ -1,11 +1,9 @@
 import { usePrevious } from '$hooks/usePrevious';
-import { isServerConfigLoaded } from '$shared/constants';
 import { mainActions, mainSelector } from '$store/main';
-import { walletActions, walletWalletSelector } from '$store/wallet';
 import { InternalNotificationProps } from '$uikit/InternalNotification/InternalNotification.interface';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { MainDB } from '$database';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Linking } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { t } from '@tonkeeper/shared/i18n';
@@ -13,27 +11,25 @@ import { useAddressUpdateStore } from '$store';
 import { useFlag } from '$utils/flags';
 import { useNavigation } from '@tonkeeper/router';
 import { MainStackRouteNames } from '$navigation';
+import { config } from '$config';
+import { useWallet } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
 
 export const useInternalNotifications = () => {
   const dispatch = useDispatch();
-  const isConfigError = !isServerConfigLoaded();
   const [isNoSignalDismissed, setNoSignalDismissed] = useState(false);
   const netInfo = useNetInfo();
   const prevNetInfo = usePrevious(netInfo);
-  const wallet = useSelector(walletWalletSelector);
+  const wallet = useWallet();
 
   const nav = useNavigation();
-
-  const handleRefresh = useCallback(() => {
-    dispatch(walletActions.refreshBalancesPage(true));
-  }, [dispatch]);
 
   useEffect(() => {
     if (netInfo.isConnected && prevNetInfo.isConnected === false) {
       dispatch(mainActions.dismissBadHosts());
-      handleRefresh();
+      tk.wallets.forEach((item) => item.reload());
     }
-  }, [netInfo.isConnected, prevNetInfo.isConnected, handleRefresh, dispatch]);
+  }, [netInfo.isConnected, prevNetInfo.isConnected, dispatch]);
 
   const {
     badHosts,
@@ -50,7 +46,7 @@ export const useInternalNotifications = () => {
   const notifications = useMemo(() => {
     const result: InternalNotificationProps[] = [];
 
-    if (isConfigError) {
+    if (!config.isLoaded) {
       result.push({
         title: t('notify_no_signal_title'),
         caption: t('notify_no_signal_caption'),
@@ -140,7 +136,6 @@ export const useInternalNotifications = () => {
 
     return result;
   }, [
-    isConfigError,
     netInfo.isConnected,
     badHosts,
     isBadHostsDismissed,

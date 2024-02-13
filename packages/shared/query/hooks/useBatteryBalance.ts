@@ -1,12 +1,12 @@
-import { tk } from '../../tonkeeper';
 import { useExternalState } from '../../hooks/useExternalState';
-import { batteryState } from '@tonkeeper/core/src/managers/BatteryManager';
+import { useWallet } from '../../hooks';
 
 export const useBatteryBalance = () => {
-  const state = useExternalState(batteryState);
+  const wallet = useWallet();
+  const state = useExternalState(wallet.battery.state);
 
   return {
-    reload: () => tk.wallet?.battery.fetchBalance(),
+    reload: () => wallet?.battery.fetchBalance(),
     isLoading: state.isLoading,
     balance: state.balance,
   };

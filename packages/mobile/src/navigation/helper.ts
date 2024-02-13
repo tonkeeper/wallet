@@ -4,17 +4,18 @@ import {
   AppStackRouteNames,
   BrowserStackRouteNames,
   MainStackRouteNames,
-  ResetPinStackRouteNames,
-  SecurityMigrationStackRouteNames,
   SettingsStackRouteNames,
-  SetupWalletStackRouteNames,
 } from '$navigation/navigationNames';
 import { CryptoCurrency } from '$shared/constants';
 import { SendAnalyticsFrom } from '$store/models';
 import { NFTKeyPair } from '$store/nfts/interface';
 import _ from 'lodash';
-import { getCurrentRoute, navigate, push, replace } from './imperative';
+import { getCurrentRoute, navigate, push, replace, reset } from './imperative';
 import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
+import { tk } from '$wallet';
+import { CreateWalletStackRouteNames } from './CreateWalletStack/types';
+import { ImportWalletStackRouteNames } from './ImportWalletStack/types';
+import { AddWatchOnlyStackRouteNames } from './AddWatchOnlyStack/types';
 
 export function openExploreTab(initialCategory?: string) {
   navigate(BrowserStackRouteNames.Explore, { initialCategory });
@@ -60,29 +61,18 @@ export function openScanQR(onScan: (url: string) => void) {
 }
 
 export function openSecretWords() {
-  navigate(AppStackRouteNames.SetupWalletStack, {
-    screen: SetupWalletStackRouteNames.SecretWords,
-  });
+  navigate(CreateWalletStackRouteNames.SecretWords);
 }
 
 export function openCheckSecretWords() {
-  navigate(AppStackRouteNames.SetupWalletStack, {
-    screen: SetupWalletStackRouteNames.CheckSecretWords,
-  });
+  navigate(CreateWalletStackRouteNames.CheckSecretWords);
 }
 
 export function openCreatePin() {
-  if (getCurrentRoute()?.name === SetupWalletStackRouteNames.CheckSecretWords) {
-    navigate(AppStackRouteNames.SetupWalletStack, {
-      screen: SetupWalletStackRouteNames.SetupCreatePin,
-    });
-  } else if (
-    getCurrentRoute()?.name === SecurityMigrationStackRouteNames.SecurityMigration ||
-    getCurrentRoute()?.name === SecurityMigrationStackRouteNames.AccessConfirmation
-  ) {
-    navigate(SecurityMigrationStackRouteNames.CreatePin);
+  if (getCurrentRoute()?.name === CreateWalletStackRouteNames.CheckSecretWords) {
+    navigate(CreateWalletStackRouteNames.CreatePasscode);
   } else {
-    navigate(MainStackRouteNames.CreatePin, {});
+    navigate(ImportWalletStackRouteNames.CreatePasscode);
   }
 }
 
@@ -90,87 +80,42 @@ export function openSetupBiometry(
   pin: string,
   biometryType: LocalAuthentication.AuthenticationType,
 ) {
-  if (getCurrentRoute()?.name === SetupWalletStackRouteNames.SetupCreatePin) {
-    navigate(AppStackRouteNames.SetupWalletStack, {
-      screen: SetupWalletStackRouteNames.SetupBiometry,
-      params: {
-        pin,
-        biometryType,
-      },
-    });
-  } else if (
-    getCurrentRoute()?.name === SecurityMigrationStackRouteNames.CreatePin ||
-    getCurrentRoute()?.name === SecurityMigrationStackRouteNames.SecurityMigration
-  ) {
-    navigate(SecurityMigrationStackRouteNames.SetupBiometry, {
+  if (getCurrentRoute()?.name === CreateWalletStackRouteNames.CreatePasscode) {
+    navigate(CreateWalletStackRouteNames.Biometry, {
       pin,
       biometryType,
     });
   } else {
-    navigate(MainStackRouteNames.SetupBiometry, {
+    navigate(ImportWalletStackRouteNames.Biometry, {
       pin,
       biometryType,
     });
   }
 }
 
-export function openSetupNotifications() {
-  navigate(SetupWalletStackRouteNames.SetupNotifications);
-}
-
-export function openImportSetupNotifications() {
-  navigate(MainStackRouteNames.SetupNotifications);
-}
-
-export function openSetupBiometryAfterRestore(
-  pin: string,
-  biometryType: LocalAuthentication.AuthenticationType,
-) {
-  push(ResetPinStackRouteNames.SetupBiometry, {
-    pin,
-    biometryType,
-  });
-}
-
-export function openSetupBiometryAfterMigration(
-  pin: string,
-  biometryType: LocalAuthentication.AuthenticationType,
-) {
-  push(SecurityMigrationStackRouteNames.SetupBiometry, {
-    pin,
-    biometryType,
-  });
-}
-
-export function openSetupWalletDone() {
+export function openSetupNotifications(identifiers: string[]) {
   if (
-    getCurrentRoute()?.name === SetupWalletStackRouteNames.SetupCreatePin ||
-    getCurrentRoute()?.name === SetupWalletStackRouteNames.SetupBiometry ||
-    getCurrentRoute()?.name === SetupWalletStackRouteNames.SetupNotifications
+    getCurrentRoute()?.name === CreateWalletStackRouteNames.Biometry ||
+    getCurrentRoute()?.name === CreateWalletStackRouteNames.CheckSecretWords
   ) {
-    navigate(AppStackRouteNames.SetupWalletStack, {
-      screen: SetupWalletStackRouteNames.SetupWalletDone,
-    });
-  } else if (
-    getCurrentRoute()?.name === SecurityMigrationStackRouteNames.SetupBiometry ||
-    getCurrentRoute()?.name === SecurityMigrationStackRouteNames.SecurityMigration
-  ) {
-    navigate(SecurityMigrationStackRouteNames.SetupWalletDone);
+    replace(CreateWalletStackRouteNames.Notifications, { identifiers });
+  } else if (getCurrentRoute()?.name === AddWatchOnlyStackRouteNames.AddWatchOnly) {
+    replace(AddWatchOnlyStackRouteNames.Notifications, { identifiers });
   } else {
-    navigate(MainStackRouteNames.ImportWalletDone, {});
+    replace(ImportWalletStackRouteNames.Notifications, { identifiers });
   }
 }
 
-export function openImportWalletDone() {
-  navigate(MainStackRouteNames.ImportWalletDone);
+export function openSetupWalletDone(identifiers: string[]) {
+  reset(MainStackRouteNames.Tabs);
+
+  if (tk.wallets.size > 1 && tk.wallets.size !== identifiers.length) {
+    navigate(AppStackRouteNames.CustomizeWallet, { identifiers });
+  }
 }
 
 export function openDeleteAccountDone() {
   navigate(MainStackRouteNames.DeleteAccountDone);
-}
-
-export function openImportWallet() {
-  navigate(MainStackRouteNames.ImportWallet);
 }
 
 export function openBackupWords(mnemonic: string) {
@@ -190,26 +135,6 @@ export function openSubscriptions() {
   navigate(MainStackRouteNames.Subscriptions);
 }
 
-export function openMigration(
-  fromVersion: string,
-  oldAddress: string,
-  newAddress: string,
-  migrationInProgress: boolean,
-  oldBalance: string,
-  newBalance: string,
-  isTransfer: boolean,
-) {
-  navigate(AppStackRouteNames.Migration, {
-    fromVersion,
-    oldAddress,
-    newAddress,
-    migrationInProgress,
-    oldBalance,
-    newBalance,
-    isTransfer,
-  });
-}
-
 export function openDevMenu() {
   push(SettingsStackRouteNames.DevMenu);
 }
@@ -227,21 +152,13 @@ export function openFontLicense() {
 }
 
 export function openAccessConfirmation(withoutBiometryOnOpen?: boolean) {
-  if (getCurrentRoute()?.name === SecurityMigrationStackRouteNames.SecurityMigration) {
-    navigate(SecurityMigrationStackRouteNames.AccessConfirmation);
-  } else {
-    navigate(AppStackRouteNames.AccessConfirmation, {
-      withoutBiometryOnOpen,
-    });
-  }
+  navigate(AppStackRouteNames.AccessConfirmation, {
+    withoutBiometryOnOpen,
+  });
 }
 
 export function openSecurity() {
   push(SettingsStackRouteNames.Security);
-}
-
-export function openJettonsList() {
-  push(MainStackRouteNames.JettonsList);
 }
 
 export function openRefillBattery() {
@@ -254,20 +171,8 @@ export function openManageTokens(initialTab?: string) {
   }, 1000)();
 }
 
-export function openJettonsListSettingsStack() {
-  push(SettingsStackRouteNames.JettonsList);
-}
-
 export function openChangePin() {
   push(AppStackRouteNames.ChangePin);
-}
-
-export function openResetPin() {
-  push(AppStackRouteNames.ResetPin);
-}
-
-export function openSecurityMigration() {
-  navigate(SecurityMigrationStackRouteNames.SecurityMigration);
 }
 
 export function openNFT(keyPair: NFTKeyPair) {

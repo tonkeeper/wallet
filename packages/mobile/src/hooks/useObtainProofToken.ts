@@ -5,14 +5,13 @@ import TonWeb from 'tonweb';
 import { createTonProofForTonkeeper } from '$utils/proof';
 import * as SecureStore from 'expo-secure-store';
 import { Configuration, WalletApi } from '@tonkeeper/core/src/legacy';
-import { getServerConfig } from '$shared/constants';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
-import { isTestnetSelector } from '$store/main';
+import { tk } from '$wallet';
+import { config } from '$config';
 
 export function useObtainProofToken() {
   const wallet = useSelector(walletWalletSelector);
   const unlockVault = useUnlockVault();
-  const isTestnet = useSelector(isTestnetSelector);
 
   return useCallback(async () => {
     try {
@@ -21,7 +20,7 @@ export function useObtainProofToken() {
         return true;
       }
       const vault = await unlockVault();
-      const address = await vault.getTonAddress(isTestnet);
+      const address = await vault.getTonAddress(tk.wallet.isTestnet);
       let walletStateInit = '';
       if (wallet) {
         const tonWallet = wallet.vault.tonWallet;
@@ -36,9 +35,9 @@ export function useObtainProofToken() {
       );
       const walletApi = new WalletApi(
         new Configuration({
-          basePath: getServerConfig('tonapiV2Endpoint'),
+          basePath: config.get('tonapiV2Endpoint', tk.wallet.isTestnet),
           headers: {
-            Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+            Authorization: `Bearer ${config.get('tonApiV2Key', tk.wallet.isTestnet)}`,
           },
         }),
       );
@@ -53,5 +52,5 @@ export function useObtainProofToken() {
       console.log(e);
       return false;
     }
-  }, [isTestnet, unlockVault, wallet]);
+  }, [unlockVault, wallet]);
 }

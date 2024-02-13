@@ -7,30 +7,29 @@ import {
   SText as Text,
   View,
 } from '@tonkeeper/uikit';
-import {
-  ActionAmountType,
-  ActionType,
-  AmountFormatter,
-  AnyActionItem,
-  isJettonTransferAction,
-} from '@tonkeeper/core';
 import { formatTransactionDetailsTime } from '../../utils/date';
 import { ActionStatusEnum, JettonVerificationType } from '@tonkeeper/core/src/TonAPI';
 import React, { memo, useCallback, useMemo } from 'react';
 import { formatter } from '../../formatter';
-import { config } from '../../config';
+import { config } from '@tonkeeper/mobile/src/config';
 import { t } from '../../i18n';
+import { useWalletCurrency } from '../../hooks';
 
 // TODO: move to manager
 import { useGetTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 
 // TODO: move to shared
-import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
-import { useSelector } from 'react-redux';
 import { ExtraListItem } from './components/ExtraListItem';
 import { Linking } from 'react-native';
 import { Address } from '../../Address';
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
+import {
+  ActionAmountType,
+  ActionType,
+  AnyActionItem,
+  isJettonTransferAction,
+} from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
+import { AmountFormatter } from '@tonkeeper/core';
 
 interface ActionModalContentProps {
   children?: React.ReactNode;
@@ -93,7 +92,7 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
     return time;
   }, [action.event.timestamp, action.destination, label]);
 
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const fiatCurrency = useWalletCurrency();
   const getTokenPrice = useGetTokenPrice();
 
   const amount = useMemo(() => {

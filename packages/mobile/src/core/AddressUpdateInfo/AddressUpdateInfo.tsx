@@ -2,7 +2,7 @@ import { copyText } from '$hooks/useCopyText';
 import { Spacer } from '$uikit';
 import { Address } from '@tonkeeper/core';
 import { t } from '@tonkeeper/shared/i18n';
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '$wallet';
 import { Pressable, Screen, Steezy, Text, View } from '@tonkeeper/uikit';
 import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
 import React, { FC } from 'react';

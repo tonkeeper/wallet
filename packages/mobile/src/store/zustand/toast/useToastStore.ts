@@ -42,8 +42,7 @@ export const useToastStore = create(
           currentToast: {
             message: message ?? t('error_occurred'),
             size: options?.size ?? ToastSize.Large,
-            isLoading: options?.isLoading,
-            duration,
+            ...options,
           },
           shouldHide: false,
           toastTimeout,
@@ -55,6 +54,10 @@ export const useToastStore = create(
       },
       success: (message, options) => {
         get().actions.show(message, options);
+        Haptics.notificationSuccess();
+      },
+      warning: (message, options) => {
+        get().actions.show(message, { ...options, warning: true });
         Haptics.notificationSuccess();
       },
       loading: () => {

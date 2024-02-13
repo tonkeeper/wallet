@@ -3,7 +3,6 @@ import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom
 import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet } from 'react-native';
-import { DAppsExplore } from '$core';
 import { TabsStackRouteNames } from '$navigation';
 import { TabStackParamList } from './TabStack.interface';
 import { Icon, ScrollPositionContext, View } from '$uikit';
@@ -13,7 +12,6 @@ import { isAndroid, nfs, ns } from '$utils';
 import { t } from '@tonkeeper/shared/i18n';
 import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
 import { TabBarBadgeIndicator } from './TabBarBadgeIndicator';
-import { useNotificationsSubscribe } from '$hooks/useNotificationsSubscribe';
 import { WalletScreen } from '../../../tabs/Wallet/WalletScreen';
 import Animated from 'react-native-reanimated';
 import { FONT } from '$styled';
@@ -25,8 +23,8 @@ import { NotificationsIndicator } from '$navigation/MainStack/TabStack/Notificat
 import { useFetchMethodsToBuy } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { trackEvent } from '$utils/stats';
 import { useRemoteBridge } from '$tonconnect';
-import { useBalanceUpdater } from '$hooks/useBalanceUpdater';
 import { BrowserStack } from '$navigation/BrowserStack/BrowserStack';
+import { useWallet } from '@tonkeeper/shared/hooks';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -40,16 +38,18 @@ export const TabStack: FC = () => {
   useRemoteBridge();
   useLoadExpiringDomains();
   useFetchMethodsToBuy();
-  useNotificationsSubscribe();
   usePreloadChart();
   useCheckForUpdates();
-  useBalanceUpdater();
 
   const tabBarStyle = { height: ns(64) + (safeArea.bottom > 0 ? ns(20) : 0) };
   const containerTabStyle = useMemo(
     () => [tabBarStyle, styles.tabBarContainer, bottomSeparatorStyle],
     [safeArea.bottom, bottomSeparatorStyle, tabBarStyle],
   );
+
+  const wallet = useWallet();
+
+  const isWatchOnly = wallet && wallet.isWatchOnly;
 
   return (
     <Tab.Navigator
@@ -117,19 +117,21 @@ export const TabStack: FC = () => {
           ),
         }}
       />
-      <Tab.Screen
-        component={BrowserStack}
-        name={TabsStackRouteNames.BrowserStack}
-        options={{
-          tabBarLabel: t('tab_browser'),
-          tabBarIcon: ({ color }) => <Icon colorHex={color} name="ic-explore-28" />,
-        }}
-        listeners={{
-          tabPress: (e) => {
-            trackEvent('browser_open');
-          },
-        }}
-      />
+      {!isWatchOnly ? (
+        <Tab.Screen
+          component={BrowserStack}
+          name={TabsStackRouteNames.BrowserStack}
+          options={{
+            tabBarLabel: t('tab_browser'),
+            tabBarIcon: ({ color }) => <Icon colorHex={color} name="ic-explore-28" />,
+          }}
+          listeners={{
+            tabPress: (e) => {
+              trackEvent('browser_open');
+            },
+          }}
+        />
+      ) : null}
       <Tab.Screen
         component={SettingsStack}
         name={TabsStackRouteNames.SettingsStack}

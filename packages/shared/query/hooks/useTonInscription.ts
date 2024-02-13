@@ -1,6 +1,6 @@
 import { useExternalState } from '../../hooks/useExternalState';
-import { tk } from '../../tonkeeper';
 import { useMemo } from 'react';
+import { useWallet } from '../../hooks';
 
 export interface UseTonInscriptionParams {
   ticker: string;
@@ -8,7 +8,8 @@ export interface UseTonInscriptionParams {
 }
 
 export const useTonInscription = (params: UseTonInscriptionParams) => {
-  const state = useExternalState(tk.wallet.tonInscriptions.state);
+  const wallet = useWallet();
+  const state = useExternalState(wallet.tonInscriptions.state);
 
   return useMemo(() => {
     return state.items.find(

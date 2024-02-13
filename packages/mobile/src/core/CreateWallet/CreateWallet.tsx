@@ -13,19 +13,18 @@ import {
 import LottieView from 'lottie-react-native';
 
 import * as S from './CreateWallet.style';
-import { walletActions, walletSelector } from '$store/wallet';
+import { walletActions, walletGeneratedVaultSelector } from '$store/wallet';
 import { Text } from '$uikit/Text/Text';
-import { Button, } from '$uikit/Button/Button';
+import { Button } from '$uikit/Button/Button';
 import { NavBar } from '$uikit/NavBar/NavBar';
 import { deviceWidth, ns, triggerNotificationSuccess } from '$utils';
-import { AppStackRouteNames, SetupWalletStackRouteNames, openSecretWords } from '$navigation';
-import { navigate } from '$navigation/imperative';
+import { openSecretWords } from '$navigation';
 import { t } from '@tonkeeper/shared/i18n';
 
 export const CreateWallet: FC = () => {
   const dispatch = useDispatch();
   const { bottom } = useSafeAreaInsets();
-  const { generatedVault } = useSelector(walletSelector);
+  const generatedVault = useSelector(walletGeneratedVaultSelector);
   const [step, setStep] = useState(1);
   const iconRef = useRef<LottieView>(null);
   const checkIconRef = useRef<LottieView>(null);
@@ -138,7 +137,7 @@ export const CreateWallet: FC = () => {
 
   return (
     <S.Wrap>
-      <NavBar hideBackButton />
+      <NavBar />
       <S.Step style={step1Style}>
         <S.Content>
           <S.LottieIcon
@@ -197,9 +196,3 @@ export const CreateWallet: FC = () => {
     </S.Wrap>
   );
 };
-
-export function openCreateWallet() {
-  navigate(AppStackRouteNames.SetupWalletStack, {
-    screen: SetupWalletStackRouteNames.CreateWallet,
-  });
-}

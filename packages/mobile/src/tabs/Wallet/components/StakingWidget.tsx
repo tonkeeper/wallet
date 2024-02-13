@@ -6,17 +6,18 @@ import { List } from '$uikit/List/old/List';
 import React, { FC, memo, useCallback, useEffect } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { Steezy } from '$styles';
-import { useStakingStore } from '$store';
+import { useStakingUIStore } from '$store';
 import { StakingWidgetStatus } from './StakingWidgetStatus';
 import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
 import { Flash } from '@tonkeeper/uikit';
+import { useStakingState } from '@tonkeeper/shared/hooks';
 
 const StakingWidgetComponent: FC = () => {
   const nav = useNavigation();
 
-  const highestApyPool = useStakingStore((s) => s.highestApyPool);
-  const flashShownCount = useStakingStore((s) => s.mainFlashShownCount);
+  const highestApyPool = useStakingState((s) => s.highestApyPool);
+  const flashShownCount = useStakingUIStore((s) => s.mainFlashShownCount);
 
   const stakingInfo = useStakingStatuses();
 
@@ -27,7 +28,7 @@ const StakingWidgetComponent: FC = () => {
 
   useEffect(() => {
     const timerId = setTimeout(
-      () => useStakingStore.getState().actions.increaseMainFlashShownCount(),
+      () => useStakingUIStore.getState().actions.increaseMainFlashShownCount(),
       1000,
     );
 
@@ -54,6 +55,7 @@ const StakingWidgetComponent: FC = () => {
             pool={item.pool}
           />
         ))}
+        {}
         <Flash disabled={flashShownCount >= 2}>
           <StakingListCell
             isWidget={!staked}

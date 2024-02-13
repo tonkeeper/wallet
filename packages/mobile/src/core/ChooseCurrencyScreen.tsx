@@ -2,24 +2,29 @@ import React from 'react';
 import { Icon, Screen, Text } from '$uikit';
 import { StyleSheet, View } from 'react-native';
 import { ns } from '$utils';
-import { useDispatch, useSelector } from 'react-redux';
-import { mainActions, mainSelector } from '$store/main';
 import { t } from '@tonkeeper/shared/i18n';
 import { CellSection, CellSectionItem } from '$shared/components';
-import { FiatCurrencySymbolsConfig, FiatCurrencies } from '@tonkeeper/core';
+import { FiatCurrencySymbolsConfig, WalletCurrency } from '@tonkeeper/core';
+import { tk } from '$wallet';
+import { useWalletCurrency, useWallets } from '@tonkeeper/shared/hooks';
 
 export const ChooseCurrencyScreen: React.FC = () => {
-  const { fiatCurrency } = useSelector(mainSelector);
-  const dispatch = useDispatch();
+  const fiatCurrency = useWalletCurrency();
   const currencies = React.useMemo(() => {
-    return Object.keys(FiatCurrencySymbolsConfig) as FiatCurrencies[];
+    return Object.keys(FiatCurrencySymbolsConfig) as WalletCurrency[];
   }, []);
+  const wallets = useWallets();
 
   const handleChangeCurrency = React.useCallback(
-    (currency: FiatCurrencies) => {
-      dispatch(mainActions.setFiatCurrency(currency));
+    (currency: WalletCurrency) => {
+      tk.tonPrice.setFiatCurrency(currency);
+      tk.tonPrice.load();
+
+      wallets.forEach((wallet) => {
+        wallet.jettons.reload();
+      });
     },
-    [dispatch],
+    [wallets],
   );
 
   return (

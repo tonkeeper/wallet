@@ -8,13 +8,17 @@ import { TapGestureHandler, TextInput } from 'react-native-gesture-handler';
 import * as CreateWalletStyle from '../CreateWallet/CreateWallet.style';
 import { Button, Input, NavBar, NavBarHelper, Text } from '$uikit';
 import { ns, parseLockupConfig } from '$utils';
-import { walletGeneratedVaultSelector } from '$store/wallet';
+import { walletActions, walletGeneratedVaultSelector } from '$store/wallet';
 import * as S from './CheckSecretWords.style';
 import { css } from '$styled';
 import { NavBarHeight } from '$shared/constants';
-import { openCreatePin } from '$navigation';
+import { openCreatePin, openSetupNotifications, openSetupWalletDone } from '$navigation';
 import { Toast } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
+import { tk } from '$wallet';
+import { popToTop } from '$navigation/imperative';
+import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
+import { getLastEnteredPasscode } from '$store/wallet/sagas';
 
 export const CheckSecretWords: FC = () => {
   const dispatch = useDispatch();
@@ -29,6 +33,8 @@ export const CheckSecretWords: FC = () => {
   const [failed, setFailed] = useState<{ [index: number]: boolean }>({});
   const [isConfigInputShown, setConfigInputShown] = useState(false);
   const [config, setConfig] = useState('');
+
+  const unlockVault = useUnlockVault();
 
   const words = useMemo(() => {
     return generatedVault!.mnemonic.split(' ');
@@ -115,7 +121,7 @@ export const CheckSecretWords: FC = () => {
     [setWord3, validateInputWord, failed],
   );
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (!isCanSend) {
       return;
     }
@@ -143,7 +149,24 @@ export const CheckSecretWords: FC = () => {
       generatedVault!.setConfig(configParsed);
     }
 
-    openCreatePin();
+    if (tk.walletForUnlock) {
+      try {
+        await unlockVault();
+        const pin = getLastEnteredPasscode();
+
+        const isNotificationsDenied = await tk.wallet.notifications.getIsDenied();
+
+        dispatch(
+          walletActions.createWallet({
+            pin,
+            onDone: isNotificationsDenied ? openSetupWalletDone : openSetupNotifications,
+            onFail: () => {},
+          }),
+        );
+      } catch {}
+    } else {
+      openCreatePin();
+    }
   }, [
     isCanSend,
     failed,
@@ -153,9 +176,9 @@ export const CheckSecretWords: FC = () => {
     word3,
     isConfigInputShown,
     config,
-    dispatch,
-    t,
     generatedVault,
+    unlockVault,
+    dispatch,
   ]);
 
   const handleBlur = useCallback(
@@ -278,7 +301,7 @@ export const CheckSecretWords: FC = () => {
 
   return (
     <>
-      <NavBar isTransparent />
+      <NavBar isTransparent isClosedButton={!!tk.wallet} onClosePress={popToTop} />
       {renderContent()}
     </>
   );

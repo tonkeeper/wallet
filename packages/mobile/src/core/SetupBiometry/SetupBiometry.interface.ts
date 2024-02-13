@@ -1,8 +1,9 @@
 import { RouteProp } from '@react-navigation/native';
-import { MainStackParamList } from '$navigation/MainStack';
-
-import { MainStackRouteNames } from '$navigation';
+import {
+  CreateWalletStackParamList,
+  CreateWalletStackRouteNames,
+} from '$navigation/CreateWalletStack/types';
 
 export interface SetupBiometryProps {
-  route: RouteProp<MainStackParamList, MainStackRouteNames.SetupBiometry>;
+  route: RouteProp<CreateWalletStackParamList, CreateWalletStackRouteNames.Biometry>;
 }

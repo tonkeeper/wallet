@@ -3,25 +3,16 @@ import LottieView from 'lottie-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useDispatch } from 'react-redux';
-import { useRoute } from '@react-navigation/native';
 
 import { SetupBiometryProps } from './SetupBiometry.interface';
 import * as S from './SetupBiometry.style';
 import { Button, NavBar, Text } from '$uikit';
 import { ns, platform } from '$utils';
-import {
-  openImportSetupNotifications,
-  openSetupNotifications,
-  openSetupWalletDone,
-  ResetPinStackRouteNames,
-  SetupWalletStackRouteNames,
-} from '$navigation';
+import { openSetupNotifications, openSetupWalletDone } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { t } from '@tonkeeper/shared/i18n';
-import { getPermission } from '$utils/messaging';
-import { Toast } from '$store';
-import { goBack, popToTop } from '$navigation/imperative';
 import { Steezy } from '@tonkeeper/uikit';
+import { tk } from '$wallet';
 
 const LottieFaceId = require('$assets/lottie/faceid.json');
 const LottieTouchId = require('$assets/lottie/touchid.json');
@@ -29,7 +20,6 @@ const LottieTouchId = require('$assets/lottie/touchid.json');
 export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
   const { pin, biometryType } = route.params;
 
-  const routeNode = useRoute();
   const dispatch = useDispatch();
 
   const { bottom: bottomInset } = useSafeAreaInsets();
@@ -52,22 +42,12 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
         walletActions.createWallet({
           isBiometryEnabled,
           pin,
-          onDone: async () => {
-            if (routeNode.name === ResetPinStackRouteNames.SetupBiometry) {
-              popToTop();
-              Toast.success();
-              setTimeout(() => goBack(), 20);
+          onDone: async (identifiers) => {
+            const isNotificationsDenied = await tk.wallet.notifications.getIsDenied();
+            if (isNotificationsDenied) {
+              openSetupWalletDone(identifiers);
             } else {
-              const hasNotificationPermission = await getPermission();
-              if (hasNotificationPermission) {
-                openSetupWalletDone();
-              } else {
-                if (routeNode.name === SetupWalletStackRouteNames.SetupBiometry) {
-                  openSetupNotifications();
-                } else {
-                  openImportSetupNotifications();
-                }
-              }
+              openSetupNotifications(identifiers);
             }
           },
           onFail: () => {
@@ -83,13 +63,13 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
     return isTouchId
       ? t(`platform.${platform}.fingerprint_genitive`)
       : t(`platform.${platform}.face_recognition_genitive`);
-  }, [t, isTouchId]);
+  }, [isTouchId]);
 
   const biometryName = useMemo(() => {
     return isTouchId
       ? t(`platform.${platform}.fingerprint`)
       : t(`platform.${platform}.face_recognition`);
-  }, [t, isTouchId]);
+  }, [isTouchId]);
 
   const handleEnable = useCallback(() => {
     setLoading(true);

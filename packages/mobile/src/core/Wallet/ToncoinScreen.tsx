@@ -1,19 +1,14 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import * as S from './Wallet.style';
 import { useWalletInfo } from '$hooks/useWalletInfo';
 import { Button, PopupMenu, PopupMenuItem } from '$uikit';
 import { MainStackRouteNames, openDAppBrowser, openSend } from '$navigation';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
-import { walletActions, walletWalletSelector } from '$store/wallet';
+import { walletActions } from '$store/wallet';
 import { Linking, View } from 'react-native';
 import { delay, ns } from '$utils';
-import {
-  CryptoCurrencies,
-  CryptoCurrency,
-  Decimals,
-  getServerConfig,
-} from '$shared/constants';
+import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { i18n, t } from '@tonkeeper/shared/i18n';
 import { useNavigation } from '@tonkeeper/router';
 import { Chart } from '$shared/components/Chart/new/Chart';
@@ -25,11 +20,11 @@ import { Icon, Screen, TonIcon, IconButton, IconButtonList } from '@tonkeeper/ui
 
 import { ActivityList } from '@tonkeeper/shared/components';
 import { useTonActivityList } from '@tonkeeper/shared/query/hooks/useTonActivityList';
-import { useWallet } from '../../tabs/useWallet';
 import _ from 'lodash';
 import { navigate } from '$navigation/imperative';
-import { fiatCurrencySelector } from '$store/main';
-import { FiatCurrencies } from '@tonkeeper/core';
+import { WalletCurrency } from '@tonkeeper/core';
+import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
+import { config } from '$config';
 
 export const ToncoinScreen = memo(() => {
   const activityList = useTonActivityList();
@@ -37,11 +32,13 @@ export const ToncoinScreen = memo(() => {
 
   const handleOpenExplorer = useCallback(async () => {
     openDAppBrowser(
-      wallet.address.ton.raw
-        ? getServerConfig('accountExplorer').replace('%s', wallet.address.ton.raw)
-        : getServerConfig('explorerUrl'),
+      wallet
+        ? config
+            .get('accountExplorer', wallet.isTestnet)
+            .replace('%s', wallet.address.ton.raw)
+        : config.get('explorerUrl'),
     );
-  }, [wallet.address.ton.raw]);
+  }, [wallet]);
 
   // Temp hack for slow navigation
   const [render, setRender] = useState(false);
@@ -92,22 +89,20 @@ export const ToncoinScreen = memo(() => {
 });
 
 const HeaderList = memo(() => {
-  const walletAddr = useWallet();
+  const wallet = useWallet();
   const flags = useFlags(['disable_swap']);
-  const fiatCurrency = useSelector(fiatCurrencySelector);
-  const shouldShowChart = fiatCurrency !== FiatCurrencies.Ton;
-
-  const wallet = useSelector(walletWalletSelector);
+  const fiatCurrency = useWalletCurrency();
+  const shouldShowChart = fiatCurrency !== WalletCurrency.TON;
 
   const dispatch = useDispatch();
   const [lockupDeploy, setLockupDeploy] = useState('loading');
   const nav = useNavigation();
 
   useEffect(() => {
-    if (wallet && wallet.ton.isLockup()) {
-      wallet.ton
-        .getWalletInfo(walletAddr.address.ton.friendly)
-        .then((info: any) => {
+    if (wallet && wallet.isLockup) {
+      wallet
+        .getWalletInfo()
+        .then((info) => {
           setLockupDeploy(
             ['empty', 'uninit', 'nonexist'].includes(info.status) ? 'deploy' : 'deployed',
           );
@@ -135,7 +130,7 @@ const HeaderList = memo(() => {
     }
   }, []);
 
-  const { amount, tokenPrice } = useWalletInfo(CryptoCurrencies.Ton);
+  const { amount, tokenPrice } = useWalletInfo();
 
   const handleReceive = useCallback(() => {
     if (!wallet) {
@@ -143,7 +138,7 @@ const HeaderList = memo(() => {
     }
 
     nav.go('ReceiveModal');
-  }, [wallet]);
+  }, [nav, wallet]);
 
   const handleSend = useCallback(() => {
     if (!wallet) {
@@ -177,6 +172,8 @@ const HeaderList = memo(() => {
     );
   }, [dispatch]);
 
+  const isWatchOnly = wallet && wallet.isWatchOnly;
+
   return (
     <>
       <S.TokenInfoWrap>
@@ -202,22 +199,26 @@ const HeaderList = memo(() => {
         <S.Divider style={{ marginBottom: ns(16) }} />
         <S.ActionsContainer>
           <IconButtonList horizontalIndent={i18n.locale === 'ru' ? 'large' : 'small'}>
-            <IconButton
-              onPress={handleSend}
-              iconName="ic-arrow-up-28"
-              title={t('wallet.send_btn')}
-            />
+            {!isWatchOnly ? (
+              <IconButton
+                onPress={handleSend}
+                iconName="ic-arrow-up-28"
+                title={t('wallet.send_btn')}
+              />
+            ) : null}
             <IconButton
               onPress={handleReceive}
               iconName="ic-arrow-down-28"
               title={t('wallet.receive_btn')}
             />
-            <IconButton
-              onPress={handleOpenExchange}
-              iconName="ic-usd-28"
-              title={t('wallet.buy_btn')}
-            />
-            {!flags.disable_swap && (
+            {!isWatchOnly ? (
+              <IconButton
+                onPress={handleOpenExchange}
+                iconName="ic-usd-28"
+                title={t('wallet.buy_btn')}
+              />
+            ) : null}
+            {!flags.disable_swap && !isWatchOnly && (
               <IconButton
                 onPress={handlePressSwap}
                 iconName="ic-swap-horizontal-28"
@@ -236,7 +237,7 @@ const HeaderList = memo(() => {
           <S.Divider style={{ marginBottom: 0 }} />
         </>
       )}
-      {wallet && wallet.ton.isLockup() && (
+      {wallet && wallet.isLockup && (
         <View style={{ padding: ns(16) }}>
           <Button
             onPress={handleDeploy}

@@ -1,5 +1,6 @@
 export enum DevFeature {
   UseHttpProtocol = 'UseHttpProtocol',
+  ShowTestnet = 'ShowTestnet',
 }
 
 export interface IDevFeaturesToggleStore {

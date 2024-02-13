@@ -1,22 +1,18 @@
 import React, { FC, useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-const TonWeb = require('tonweb');
 import { getUnixTime } from 'date-fns';
 
 import * as S from './Subscriptions.style';
-import {Icon, NavBar, RoundedSectionList, ScrollHandler, Text} from '$uikit';
-import { subscriptionsSelector } from '$store/subscriptions';
+import { Icon, RoundedSectionList, ScrollHandler, Text } from '$uikit';
 import { format, ns } from '$utils';
 import { SubscriptionModel } from '$store/models';
-import { useTheme } from '$hooks/useTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {Ton} from "$libs/Ton";
+import { Ton } from '$libs/Ton';
 import { t } from '@tonkeeper/shared/i18n';
 import { openSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
+import { useSubscriptions } from '@tonkeeper/shared/hooks/useSubscriptions';
 
 export const Subscriptions: FC = () => {
-  const theme = useTheme();
-  const { subscriptionsInfo } = useSelector(subscriptionsSelector);
+  const subscriptionsInfo = useSubscriptions((state) => state.subscriptions);
   const { bottom: bottomInset } = useSafeAreaInsets();
 
   const sections = useMemo(() => {
@@ -90,10 +86,7 @@ export const Subscriptions: FC = () => {
                     </Text>
                   </S.SubscriptionInfoWrapper>
                 </S.SubscriptionCont>
-                <Icon
-                  name="ic-chevron-right-16"
-                  color="foregroundSecondary"
-                />
+                <Icon name="ic-chevron-right-16" color="foregroundSecondary" />
               </S.SubscriptionInner>
             );
           }}

@@ -1,5 +1,5 @@
+import { config } from '$config';
 import { openDAppBrowser } from '$navigation';
-import { getServerConfig } from '$shared/constants';
 import { IAppMetadata } from '$store';
 import { getRandomInt } from '$utils';
 import { trackEvent } from '$utils/stats';
@@ -75,7 +75,7 @@ const FeaturedAppsComponent: FC<Props> = (props) => {
       autoPlay={true}
       data={items}
       defaultIndex={initialIndex}
-      autoPlayInterval={getServerConfig('featured_play_interval') ?? 3000}
+      autoPlayInterval={config.get('featured_play_interval') ?? 3000}
       panGestureHandlerProps={{
         activeOffsetX: [-10, 10],
       }}

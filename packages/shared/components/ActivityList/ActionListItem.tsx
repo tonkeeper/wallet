@@ -18,17 +18,17 @@ import { memo, useCallback, useMemo } from 'react';
 import { ImageRequireSource } from 'react-native';
 import { Address } from '../../Address';
 import { t } from '../../i18n';
-import {
-  ActionSource,
-  ActionType,
-  AmountFormatter,
-  AnyActionItem,
-  isJettonTransferAction,
-} from '@tonkeeper/core';
 
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 import { useFlags } from '@tonkeeper/mobile/src/utils/flags';
-import { config } from '../../config';
+import { config } from '@tonkeeper/mobile/src/config';
+import { AmountFormatter } from '@tonkeeper/core';
+import {
+  ActionType,
+  AnyActionItem,
+  isJettonTransferAction,
+  ActionSource,
+} from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 
 export interface ActionListItemProps<TActionType extends ActionType = ActionType> {
   onPress?: () => void;

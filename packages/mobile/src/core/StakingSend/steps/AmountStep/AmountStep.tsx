@@ -5,10 +5,8 @@ import { Button, Spacer, Text } from '$uikit';
 import React, { FC, memo, useEffect, useMemo, useRef } from 'react';
 import * as S from './AmountStep.style';
 import { parseLocaleNumber } from '$utils';
-import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { TextInput } from 'react-native-gesture-handler';
-import { walletWalletSelector } from '$store/wallet';
 import {
   AmountInput,
   BottomButtonWrap,
@@ -26,6 +24,7 @@ import { Ton } from '$libs/Ton';
 import { stakingFormatter } from '$utils/formatter';
 import { t } from '@tonkeeper/shared/i18n';
 import { PoolInfo, PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
+import { useWallet } from '@tonkeeper/shared/hooks';
 
 interface Props extends StepComponentProps {
   pool: PoolInfo;
@@ -88,9 +87,9 @@ const AmountStepComponent: FC<Props> = (props) => {
       ? stakingBalance
       : walletBalance;
 
-  const wallet = useSelector(walletWalletSelector);
+  const wallet = useWallet();
 
-  const isLockup = !!wallet?.ton.isLockup();
+  const isLockup = wallet.isLockup;
 
   const { isReadyToContinue } = useMemo(() => {
     const bigNum = new BigNumber(parseLocaleNumber(amount.value));

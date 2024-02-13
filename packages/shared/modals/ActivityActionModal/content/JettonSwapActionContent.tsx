@@ -1,18 +1,21 @@
 import { TonIconBackgroundColor } from '@tonkeeper/uikit/src/components/TonIcon';
 import { Steezy, View, SText as Text, Picture, TonIcon, List } from '@tonkeeper/uikit';
 import { useGetTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
-import { ActionItem, ActionType, AmountFormatter } from '@tonkeeper/core';
-import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
+import { AmountFormatter } from '@tonkeeper/core';
 import { AddressListItem } from '../components/AddressListItem';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
 import { formatter } from '../../../formatter';
 import { Address } from '../../../Address';
-import { useSelector } from 'react-redux';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
 
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
+import { useWalletCurrency } from '../../../hooks';
+import {
+  ActionItem,
+  ActionType,
+} from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 
 interface JettonSwapActionContentProps {
   action: ActionItem<ActionType.JettonSwap>;
@@ -23,7 +26,7 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
   const { payload } = action;
   const { format, formatNano } = useHideableFormatter();
 
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const fiatCurrency = useWalletCurrency();
   const getTokenPrice = useGetTokenPrice();
 
   const amountInFiat = useMemo(() => {

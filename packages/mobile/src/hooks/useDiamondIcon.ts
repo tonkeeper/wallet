@@ -1,6 +1,6 @@
-import { accentSelector, accentTonIconSelector } from "$store/main";
-import { AccentKey } from "$styled";
-import { useSelector } from "react-redux";
+import { accentSelector, accentTonIconSelector } from '$store/main';
+import { AccentKey } from '$styled';
+import { useSelector } from 'react-redux';
 
 export const useDiamondIcon = () => {
   const accentTonIcon = useSelector(accentTonIconSelector);
@@ -11,5 +11,5 @@ export const useDiamondIcon = () => {
     hasDiamond: shouldShowCustomTonIcon && accentTonIcon,
     accentTonIcon,
     accent,
-  }
-}
+  };
+};

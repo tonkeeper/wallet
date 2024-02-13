@@ -1,14 +1,13 @@
 import { ActionListItem, ActionListItemProps } from '../ActionListItem';
-import { Address, ActionType, AmountFormatter } from '@tonkeeper/core';
+import { Address, AmountFormatter } from '@tonkeeper/core';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { formatTransactionTime } from '../../../utils/date';
 import { View, StyleSheet } from 'react-native';
 import { Text } from '@tonkeeper/uikit';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
-
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
-import { getFlag } from '@tonkeeper/mobile/src/utils/flags';
+import { ActionType } from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 
 type JettonSwapActionListItemProps = ActionListItemProps<ActionType.JettonSwap>;
 

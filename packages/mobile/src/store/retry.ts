@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { store } from '$store/index';
 import { mainActions } from '$store/main';
 import { TonWallet } from '$blockchain';
-import { getServerConfig } from '$shared/constants';
+import { config } from '$config';
 
 const Timers: { [index: string]: any } = {};
 const Promises: { [index: string]: any } = {};
@@ -102,7 +102,7 @@ function detectHostByFn(fn: any, args: any[]): string | null {
     let calledUrl = '';
     if (fn.inst) {
       if (fn.inst instanceof TonWallet) {
-        calledUrl = getServerConfig('tonEndpoint');
+        calledUrl = config.get('tonEndpoint');
       }
     }
 

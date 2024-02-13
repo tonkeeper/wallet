@@ -9,7 +9,6 @@ import * as S from './ExchangeMethod.style';
 import { openBuyFiat } from '$navigation';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { CryptoCurrencies } from '$shared/constants';
-import { walletSelector } from '$store/wallet';
 import { CheckmarkItem } from '$uikit/CheckmarkItem';
 import { t } from '@tonkeeper/shared/i18n';
 import { ExchangeDB } from './ExchangeDB';
@@ -17,10 +16,11 @@ import { trackEvent } from '$utils/stats';
 import { push } from '$navigation/imperative';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { Modal, View } from '@tonkeeper/uikit';
+import { useWallet } from '@tonkeeper/shared/hooks';
 
 export const ExchangeMethod: FC<ExchangeMethodProps> = ({ methodId, onContinue }) => {
   const method = useExchangeMethodInfo(methodId);
-  const { wallet } = useSelector(walletSelector);
+  const wallet = useWallet();
   const [isDontShow, setIsDontShow] = React.useState(false);
   const nav = useNavigation();
 

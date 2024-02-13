@@ -5,8 +5,8 @@ import nacl from 'tweetnacl';
 import naclUtils from 'tweetnacl-util';
 const { createHash } = require('react-native-crypto');
 import { ConnectApi, Configuration } from '@tonkeeper/core/src/legacy';
-import { getServerConfigSafe } from '$shared/constants';
 import { Address } from '@tonkeeper/core';
+import { config } from '$config';
 
 export interface TonProofArgs {
   address: string;
@@ -27,9 +27,9 @@ export async function createTonProof({
     const address = Address.parse(_addr).toRaw();
     const connectApi = new ConnectApi(
       new Configuration({
-        basePath: getServerConfigSafe('tonapiV2Endpoint'),
+        basePath: config.get('tonapiV2Endpoint'),
         headers: {
-          Authorization: `Bearer ${getServerConfigSafe('tonApiV2Key')}`,
+          Authorization: `Bearer ${config.get('tonApiV2Key')}`,
         },
       }),
     );

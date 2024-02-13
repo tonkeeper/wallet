@@ -1,33 +1,27 @@
 import { formatAmount } from '$utils';
 import React, { useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { walletSelector } from '$store/wallet';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
-import { jettonsSelector } from '$store/jettons';
 import { JettonBalanceModel } from '$store/models';
-import { useStakingStore } from '$store';
-import { shallow } from 'zustand/shallow';
 import { Address } from '@tonkeeper/shared/Address';
-import { useTronBalances } from '@tonkeeper/shared/query/hooks/useTronBalances';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { useGetTokenPrice } from './useTokenPrice';
 import { JettonIcon, TonIcon } from '@tonkeeper/uikit';
 import { TokenType } from '$core/Send/Send.interface';
 import { useTonInscriptions } from '@tonkeeper/shared/query/hooks/useTonInscriptions';
+import { useBalancesState, useJettons, useStakingState } from '@tonkeeper/shared/hooks';
 
 export function useCurrencyToSend(
   currency: CryptoCurrency | string,
   tokenType: TokenType = TokenType.TON,
 ) {
-  const { balances } = useSelector(walletSelector);
-  const { jettonBalances } = useSelector(jettonsSelector);
-  const tronBalances = useTronBalances();
+  const balances = useBalancesState();
+  const { jettonBalances } = useJettons();
   const inscriptions = useTonInscriptions();
-  const stakingPools = useStakingStore((s) => s.pools, shallow);
+  const stakingPools = useStakingState((s) => s.pools);
 
   const jetton = useMemo(() => {
     return (tokenType === TokenType.Jetton &&
-      jettonBalances.find((item) => item.jettonAddress === currency)) as
+      jettonBalances.find((item) => Address.compare(item.jettonAddress, currency))) as
       | JettonBalanceModel
       | undefined;
   }, [currency, tokenType, jettonBalances]);
@@ -82,23 +76,23 @@ export function useCurrencyToSend(
           jettonWalletAddress: jetton?.walletAddress,
           isLiquidJetton: !!liquidJettonPool,
         };
-      case TokenType.USDT:
-        const usdt = tronBalances.data?.[0];
+      // case TokenType.USDT:
+      //   const usdt = tronBalances.data?.[0];
 
-        console.log(usdt);
-        return {
-          trcToken: usdt!.token.address,
-          decimals: usdt!.token.decimals ?? 6,
-          balance: formatter.fromNano(usdt!.weiAmount, usdt!.token.decimals),
-          currencyTitle: usdt!.token.symbol,
-          jettonWalletAddress: undefined,
-          isLiquidJetton: false,
-          Logo: null,
-        };
+      //   console.log(usdt);
+      //   return {
+      //     trcToken: usdt!.token.address,
+      //     decimals: usdt!.token.decimals ?? 6,
+      //     balance: formatter.fromNano(usdt!.weiAmount, usdt!.token.decimals),
+      //     currencyTitle: usdt!.token.symbol,
+      //     jettonWalletAddress: undefined,
+      //     isLiquidJetton: false,
+      //     Logo: null,
+      //   };
       case TokenType.TON:
         return {
           decimals: Decimals[currency],
-          balance: formatAmount(balances[currency], decimals),
+          balance: formatAmount(balances.ton, decimals),
           currencyTitle: currency.toUpperCase(),
           Logo,
           jettonWalletAddress: undefined,
@@ -119,11 +113,11 @@ export function useCurrencyToSend(
     getTokenPrice,
     currency,
     jetton,
-    liquidJettonPool,
     decimals,
     Logo,
-    tronBalances.data,
+    liquidJettonPool,
     balances,
+    inscriptions.items,
   ]);
 
   return currencyToSend;

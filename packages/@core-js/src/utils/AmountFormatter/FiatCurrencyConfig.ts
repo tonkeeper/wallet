@@ -1,136 +1,136 @@
-export enum FiatCurrencies {
-  Ton = 'ton',
-  Usd = 'usd',
-  Eur = 'eur',
-  Rub = 'rub',
-  Aed = 'aed',
-  Gbp = 'gbp',
-  Chf = 'chf',
-  Cny = 'cny',
-  Krw = 'krw',
-  Idr = 'idr',
-  Inr = 'inr',
-  Jpy = 'jpy',
-  Uah = 'uah',
-  Kzt = 'kzt',
-  Uzs = 'uzs',
-  Irr = 'irr',
-  Brl = 'brl',
-  Cad = 'cad',
-  Byn = 'byn',
-  Sgd = 'sgd',
-  Thb = 'thb',
-  Vnd = 'vnd',
-  Ngn = 'ngn',
-  Bdt = 'bdt',
-  Try = 'try',
-  Ils = 'ils',
-  Dkk = 'dkk',
-  Gel = 'gel',
+export enum WalletCurrency {
+  TON = 'ton',
+  USD = 'usd',
+  EUR = 'eur',
+  RUB = 'rub',
+  AED = 'aed',
+  GBP = 'gbp',
+  CHF = 'chf',
+  CNY = 'cny',
+  KRW = 'krw',
+  IDR = 'idr',
+  INR = 'inr',
+  JPY = 'jpy',
+  UAH = 'uah',
+  KZT = 'kzt',
+  UZS = 'uzs',
+  IRR = 'irr',
+  BRL = 'brl',
+  CAD = 'cad',
+  BYN = 'byn',
+  SGD = 'sgd',
+  THB = 'thb',
+  VND = 'vnd',
+  NGN = 'ngn',
+  BDT = 'bdt',
+  TRY = 'try',
+  ILS = 'ils',
+  DKK = 'dkk',
+  GEL = 'gel',
 }
 
 export const FiatCurrencySymbolsConfig = {
-  [FiatCurrencies.Ton]: {
+  [WalletCurrency.TON]: {
     symbol: 'TON',
     side: 'end',
   },
-  [FiatCurrencies.Usd]: {
+  [WalletCurrency.USD]: {
     symbol: '$',
     side: 'start',
   },
-  [FiatCurrencies.Eur]: {
+  [WalletCurrency.EUR]: {
     symbol: '€',
     side: 'start',
   },
-  [FiatCurrencies.Rub]: {
+  [WalletCurrency.RUB]: {
     symbol: '₽',
     side: 'end',
   },
-  [FiatCurrencies.Idr]: {
+  [WalletCurrency.IDR]: {
     symbol: 'Rp',
     side: 'end',
   },
-  [FiatCurrencies.Uah]: {
+  [WalletCurrency.UAH]: {
     symbol: '₴',
     side: 'end',
   },
-  [FiatCurrencies.Uzs]: {
+  [WalletCurrency.UZS]: {
     symbol: 'Sum',
     side: 'end',
   },
-  [FiatCurrencies.Inr]: {
+  [WalletCurrency.INR]: {
     symbol: '₹',
     side: 'start',
   },
-  [FiatCurrencies.Gbp]: {
+  [WalletCurrency.GBP]: {
     symbol: '£',
     side: 'start',
   },
-  [FiatCurrencies.Aed]: {
+  [WalletCurrency.AED]: {
     symbol: 'DH',
     side: 'end',
   },
-  [FiatCurrencies.Cny]: {
+  [WalletCurrency.CNY]: {
     symbol: '¥',
     side: 'start',
   },
-  /*  [FiatCurrencies.Irr]: {
-    symbol: '₸',
-    side: 'end',
-  },*/
-  [FiatCurrencies.Byn]: {
+  // [WalletCurrency.IRR]: {
+  //   symbol: '₸',
+  //   side: 'end',
+  // },
+  [WalletCurrency.BYN]: {
     symbol: 'Br',
     side: 'end',
   },
-  [FiatCurrencies.Brl]: {
+  [WalletCurrency.BRL]: {
     symbol: 'R$',
     side: 'start',
   },
-  [FiatCurrencies.Try]: {
+  [WalletCurrency.TRY]: {
     symbol: '₺',
     side: 'end',
   },
-  [FiatCurrencies.Kzt]: {
+  [WalletCurrency.KZT]: {
     symbol: '₸',
     side: 'end',
   },
-  [FiatCurrencies.Ngn]: {
+  [WalletCurrency.NGN]: {
     symbol: '₦',
     side: 'end',
   },
-  [FiatCurrencies.Krw]: {
+  [WalletCurrency.KRW]: {
     symbol: '₩',
     side: 'start',
   },
-  [FiatCurrencies.Thb]: {
+  [WalletCurrency.THB]: {
     symbol: '฿',
     side: 'end',
   },
-  [FiatCurrencies.Bdt]: {
+  [WalletCurrency.BDT]: {
     symbol: '৳',
     side: 'end',
   },
-  [FiatCurrencies.Chf]: {
+  [WalletCurrency.CHF]: {
     symbol: '₣',
     side: 'start',
   },
-  [FiatCurrencies.Jpy]: {
+  [WalletCurrency.JPY]: {
     symbol: '¥',
     side: 'start',
   },
-  [FiatCurrencies.Cad]: {
+  [WalletCurrency.CAD]: {
     symbol: '$',
     side: 'end',
   },
-  [FiatCurrencies.Ils]: {
+  [WalletCurrency.ILS]: {
     symbol: '₪',
     side: 'end',
   },
-  [FiatCurrencies.Gel]: {
+  [WalletCurrency.GEL]: {
     symbol: '₾',
     side: 'end',
   },
-  [FiatCurrencies.Vnd]: {
+  [WalletCurrency.VND]: {
     symbol: '₫',
     side: 'end',
   },

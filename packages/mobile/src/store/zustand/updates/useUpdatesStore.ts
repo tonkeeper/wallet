@@ -1,4 +1,3 @@
-import { getServerConfig } from '$shared/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -6,6 +5,7 @@ import { IUpdatesStore, UpdateState } from './types';
 import DeviceInfo from 'react-native-device-info';
 import RNFS from 'react-native-fs';
 import { getUpdatePath } from '$store/zustand/updates/helpers';
+import { config } from '$config';
 
 const initialState: Omit<IUpdatesStore, 'actions'> = {
   isLoading: false,
@@ -24,9 +24,7 @@ export const useUpdatesStore = create(
         fetchMeta: async () => {
           set({ isLoading: true });
           const oldMeta = getState().meta;
-          const res = await fetch(
-            `${getServerConfig('tonkeeperEndpoint')}/check-for-updates`,
-          );
+          const res = await fetch(`${config.get('tonkeeperEndpoint')}/check-for-updates`);
           const data = await res.json();
           set({ meta: data, isLoading: false });
           if (oldMeta?.version !== data?.version) {
@@ -62,7 +60,7 @@ export const useUpdatesStore = create(
           });
           const res = await download.promise;
 
-          if (200 <= res.statusCode && res.statusCode < 300) {
+          if (res.statusCode >= 200 && res.statusCode < 300) {
             set({ update: { state: UpdateState.DOWNLOADED, progress: 100 } });
             return;
           }

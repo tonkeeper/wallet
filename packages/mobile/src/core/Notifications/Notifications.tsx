@@ -13,8 +13,6 @@ import { debugLog } from '$utils/debugLog';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Linking } from 'react-native';
 import { CellSection } from '$shared/components';
-import { getSubscribeStatus, SUBSCRIBE_STATUS } from '$utils/messaging';
-import { useSelector } from 'react-redux';
 import { NotificationsStatus, useNotificationStatus } from '$hooks/useNotificationStatus';
 import messaging from '@react-native-firebase/messaging';
 import { useNotifications } from '$hooks/useNotifications';
@@ -23,11 +21,11 @@ import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
 import { Toast, ToastSize, useConnectedAppsList, useConnectedAppsStore } from '$store';
 import { Steezy } from '$styles';
 import { getChainName } from '$shared/dynamicConfig';
-import { walletAddressSelector } from '$store/wallet';
 import { SwitchDAppNotifications } from '$core/Notifications/SwitchDAppNotifications';
+import { useWallet } from '@tonkeeper/shared/hooks';
 
 export const Notifications: React.FC = () => {
-  const address = useSelector(walletAddressSelector);
+  const wallet = useWallet();
   const handleOpenSettings = useCallback(() => Linking.openSettings(), []);
   const notifications = useNotifications();
   const tabBarHeight = useBottomTabBarHeight();
@@ -42,18 +40,17 @@ export const Notifications: React.FC = () => {
 
   React.useEffect(() => {
     const init = async () => {
-      const subscribeStatus = await getSubscribeStatus();
       const status = await messaging().hasPermission();
 
-      const isGratend =
+      const isGranted =
         status === NotificationsStatus.AUTHORIZED ||
         status === NotificationsStatus.PROVISIONAL;
 
-      const initialValue = isGratend && subscribeStatus === SUBSCRIBE_STATUS.SUBSCRIBED;
-      setIsSubscribeNotifications(initialValue);
+      setIsSubscribeNotifications(isGranted && notifications.isSubscribed);
     };
 
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {
@@ -76,7 +73,7 @@ export const Notifications: React.FC = () => {
           ? await notifications.subscribe()
           : await notifications.unsubscribe();
 
-        updateNotificationsSubscription(getChainName(), address.ton);
+        updateNotificationsSubscription(getChainName(), wallet.address.ton.friendly);
 
         if (!isSuccess) {
           // Revert
@@ -90,7 +87,7 @@ export const Notifications: React.FC = () => {
         isSwitchFrozen.current = false;
       }
     },
-    [address.ton, notifications, updateNotificationsSubscription],
+    [notifications, updateNotificationsSubscription, wallet],
   );
 
   const connectedApps = useConnectedAppsList();

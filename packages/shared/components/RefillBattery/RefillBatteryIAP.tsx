@@ -1,7 +1,7 @@
 import { Button, List, Spacer, Steezy, Text, Toast, View } from '@tonkeeper/uikit';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
-import { tk } from '../../tonkeeper';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 import { Platform } from 'react-native';
 import { goBack } from '@tonkeeper/mobile/src/navigation/imperative';
 import { useIAP } from 'react-native-iap';

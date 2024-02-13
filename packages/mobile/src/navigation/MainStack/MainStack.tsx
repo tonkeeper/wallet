@@ -1,40 +1,39 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useMemo } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { MainStackParamList } from './MainStack.interface';
 import { AppStackRouteNames, MainStackRouteNames } from '$navigation';
 import { TabStack } from './TabStack/TabStack';
 
-import { useStaking } from '$hooks/useStaking';
 import { useTheme } from '$hooks/useTheme';
 import { DevStack } from '../DevStack/DevStack';
 import { useAttachScreen } from '../AttachScreen';
-import { SetupNotifications } from '$core/SetupNotifications/SetupNotifications';
 import { Jetton } from '$core/Jetton/Jetton';
-import { JettonsList } from '$core/JettonsList/JettonsList';
 import { DeleteAccountDone } from '$core/DeleteAccountDone/DeleteAccountDone';
-import { EditConfig } from '$core/EditConfig/EditConfig';
 import { ManageTokens } from '$core/ManageTokens/ManageTokens';
 import { Staking } from '$core/Staking/Staking';
 import { StakingPools } from '$core/StakingPools/StakingPools';
 import { StakingPoolDetails } from '$core/StakingPoolDetails/StakingPoolDetails';
 import { BackupWords } from '$core/BackupWords/BackupWords';
-import { ImportWallet } from '$core/ImportWallet/ImportWallet';
 import { Subscriptions } from '$core/Subscriptions/Subscriptions';
-import { CreatePin } from '$core/CreatePin/CreatePin';
-import { SetupBiometry } from '$core/SetupBiometry/SetupBiometry';
-import { SetupWalletDone } from '$core/SetupWalletDone/SetupWalletDone';
 import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
-import { walletWalletSelector } from '$store/wallet';
 import { useNotificationsResolver } from '$hooks/useNotificationsResolver';
-import { AccessConfirmation, AddressUpdateInfo, Intro } from '$core';
+import { AccessConfirmation, AddressUpdateInfo } from '$core';
 import { ModalStack } from '$navigation/ModalStack';
 import { withModalStack } from '@tonkeeper/router';
 import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
-import { TronTokenScreen } from '../../tabs/Wallet/TronTokenScreen';
-import { reloadSubscriptionsFromServer } from '$store/subscriptions/sagas';
 import { InscriptionScreen } from '$core/InscriptionScreen';
+import { useDiamondsChecker } from '$hooks/useDiamondsChecker';
+import { useWallet } from '@tonkeeper/shared/hooks';
+import { StartScreen } from '../../screens/StartScreen';
+import { CreateWalletStack } from '../CreateWalletStack';
+import { ImportWalletStack } from '$navigation/ImportWalletStack';
+import { AddWatchOnlyStack } from '$navigation/AddWatchOnlyStack';
+import { useExternalState } from '@tonkeeper/shared/hooks/useExternalState';
+import { tk } from '$wallet';
+import { MigrationStack } from '$navigation/MigrationStack';
+import { useTonPriceUpdater } from '$hooks/useTonPriceUpdater';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -42,44 +41,47 @@ export const MainStack: FC = () => {
   const attachedScreen = useAttachScreen();
   const theme = useTheme();
 
-  const { isIntroShown, isUnlocked } = useSelector(mainSelector);
-  const wallet = useSelector(walletWalletSelector);
+  const { isUnlocked } = useSelector(mainSelector);
+  const wallet = useWallet();
   useNotificationsResolver();
-
-  useEffect(() => {
-    if (wallet?.address) {
-      reloadSubscriptionsFromServer(wallet.address.friendlyAddress);
-    }
-  }, [wallet?.address]);
-
-  useStaking();
+  useDiamondsChecker();
+  useTonPriceUpdater();
 
   const initialRouteName = !attachedScreen.pathname
     ? MainStackRouteNames.Tabs
     : MainStackRouteNames.DevStack;
 
-  function renderRoot() {
-    if (isIntroShown) {
-      return (
-        <Stack.Screen
-          name={AppStackRouteNames.Intro}
-          component={Intro}
-          options={{
-            contentStyle: { backgroundColor: theme.colors.backgroundPrimary },
-          }}
-        />
-      );
-    } else if (!isUnlocked && wallet && !attachedScreen.pathname) {
-      return (
-        <Stack.Screen
-          name={AppStackRouteNames.MainAccessConfirmation}
-          component={AccessConfirmation}
-        />
-      );
-    } else {
+  const hasWallet = !!wallet;
+
+  const showLockScreen = !isUnlocked && hasWallet && !attachedScreen.pathname;
+
+  const isMigrated = useExternalState(tk.walletsStore, (state) => state.isMigrated);
+
+  const root = useMemo(() => {
+    if (hasWallet) {
+      if (showLockScreen) {
+        return (
+          <Stack.Screen
+            name={AppStackRouteNames.MainAccessConfirmation}
+            component={AccessConfirmation}
+          />
+        );
+      }
+
       return <Stack.Screen name={MainStackRouteNames.Tabs} component={TabStack} />;
     }
-  }
+
+    if (!isMigrated && tk.migrationData) {
+      return (
+        <Stack.Screen
+          name={MainStackRouteNames.MigrationStack}
+          component={MigrationStack}
+        />
+      );
+    }
+
+    return <Stack.Screen name={MainStackRouteNames.Start} component={StartScreen} />;
+  }, [hasWallet, isMigrated, showLockScreen]);
 
   return (
     <Stack.Navigator
@@ -93,9 +95,20 @@ export const MainStack: FC = () => {
         fullScreenGestureEnabled: true,
       }}
     >
-      {renderRoot()}
+      {root}
+      <Stack.Screen
+        name={MainStackRouteNames.CreateWalletStack}
+        component={CreateWalletStack}
+      />
+      <Stack.Screen
+        name={MainStackRouteNames.ImportWalletStack}
+        component={ImportWalletStack}
+      />
+      <Stack.Screen
+        name={MainStackRouteNames.AddWatchOnlyStack}
+        component={AddWatchOnlyStack}
+      />
       <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
-      <Stack.Screen name={'TronTokenScreen'} component={TronTokenScreen} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />
       <Stack.Screen name={MainStackRouteNames.StakingPools} component={StakingPools} />
       <Stack.Screen
@@ -103,23 +116,7 @@ export const MainStack: FC = () => {
         component={StakingPoolDetails}
       />
       <Stack.Screen name={MainStackRouteNames.BackupWords} component={BackupWords} />
-      <Stack.Screen name={MainStackRouteNames.ImportWallet} component={ImportWallet} />
       <Stack.Screen name={MainStackRouteNames.Subscriptions} component={Subscriptions} />
-      <Stack.Screen name={MainStackRouteNames.CreatePin} component={CreatePin} />
-      <Stack.Screen name={MainStackRouteNames.SetupBiometry} component={SetupBiometry} />
-      <Stack.Screen
-        name={MainStackRouteNames.SetupNotifications}
-        component={SetupNotifications}
-        options={{ gestureEnabled: false }}
-      />
-      <Stack.Screen
-        name={MainStackRouteNames.ImportWalletDone}
-        component={SetupWalletDone}
-        options={{
-          gestureEnabled: false,
-          animation: 'fade',
-        }}
-      />
       <Stack.Screen
         name={MainStackRouteNames.DeleteAccountDone}
         component={DeleteAccountDone}
@@ -129,13 +126,11 @@ export const MainStack: FC = () => {
         }}
       />
       <Stack.Screen name={MainStackRouteNames.DevStack} component={DevStack} />
-      <Stack.Screen name={MainStackRouteNames.EditConfig} component={EditConfig} />
       <Stack.Screen name={MainStackRouteNames.Jetton} component={Jetton} />
       <Stack.Screen
         name={MainStackRouteNames.Inscription}
         component={InscriptionScreen}
       />
-      <Stack.Screen name={MainStackRouteNames.JettonsList} component={JettonsList} />
       <Stack.Screen name={MainStackRouteNames.ManageTokens} component={ManageTokens} />
       <Stack.Screen
         name={MainStackRouteNames.AddressUpdateInfo}

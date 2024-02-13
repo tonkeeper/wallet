@@ -1,9 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import BigNumber from 'bignumber.js';
 import { getUnixTime } from 'date-fns';
 
 import { store } from '$store';
-import { getServerConfig } from '$shared/constants';
 import { UnlockedVault, Vault } from './vault';
 import {
   Address as AddressFormatter,
@@ -15,11 +13,9 @@ import {
   TransactionService,
 } from '@tonkeeper/core';
 import { debugLog } from '$utils/debugLog';
-import { getChainName, getWalletName } from '$shared/dynamicConfig';
 import { t } from '@tonkeeper/shared/i18n';
 import { Ton } from '$libs/Ton';
 
-import { Tonapi } from '$libs/Tonapi';
 import { Address as TAddress } from '$store/wallet/interface';
 import {
   Account,
@@ -28,15 +24,17 @@ import {
   Configuration,
 } from '@tonkeeper/core/src/legacy';
 
-import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '$wallet';
 import { Address, Cell, internal, toNano } from '@ton/core';
-import { config } from '@tonkeeper/shared/config';
 import {
   emulateWithBattery,
   sendBocWithBattery,
 } from '@tonkeeper/shared/utils/blockchain';
-import { OperationEnum, TypeEnum } from '@tonkeeper/core/src/TonAPI';
+import { OperationEnum, TonAPI, TypeEnum } from '@tonkeeper/core/src/TonAPI';
 import { setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
+import { WalletNetwork } from '$wallet/WalletTypes';
+import { createTonApiInstance } from '$wallet/utils';
+import { config } from '$config';
 
 const TonWeb = require('tonweb');
 
@@ -73,21 +71,28 @@ export class Wallet {
 
   readonly ton: TonWallet;
 
+  tonapi: TonAPI;
+
   constructor(name: string, vault: Vault, ton: TonWallet = new TonWallet(vault)) {
     this.name = name;
     this.vault = vault;
     this.ton = ton;
 
     this.getReadableAddress();
+
+    this.tonapi = createTonApiInstance(
+      tk.wallet.config.network === WalletNetwork.testnet,
+    );
   }
 
   public async getReadableAddress() {
     if (this.vault) {
       const rawAddress = await this.vault.getRawTonAddress();
+      const tkWallet = tk.wallets.get(this.name)!;
       const friendlyAddress = await this.vault.getTonAddress(
-        !(getChainName() === 'mainnet'),
+        tkWallet.config.network === WalletNetwork.testnet,
       );
-      const version = this.vault.getVersion();
+      const version = this.vault.getVersion()!;
 
       this.address = {
         rawAddress: rawAddress.toString(false),
@@ -97,37 +102,8 @@ export class Wallet {
     }
   }
 
-  // Loads wallet from the disk storage
-  static async load(name: string = getWalletName()): Promise<Wallet | null> {
-    const data = await AsyncStorage.getItem(`${name}_wallet`);
-
-    if (!data) {
-      return null;
-    }
-
-    try {
-      const json = JSON.parse(data);
-      const vault = Vault.fromJSON(json.vault);
-      const ton = TonWallet.fromJSON(json.ton, vault);
-
-      return new Wallet(name, vault, ton);
-    } catch (e) {}
-
-    return null;
-  }
-  // Saves the wallet on disk
-  async save(): Promise<void> {
-    await AsyncStorage.setItem(
-      `${this.name}_wallet`,
-      JSON.stringify({
-        vault: this.vault.toJSON(),
-        ton: this.ton.toJSON(),
-      }),
-    );
-  }
-
   async clean() {
-    await AsyncStorage.removeItem(`${this.name}_wallet`);
+    await tk.removeWallet(this.vault.name);
   }
 }
 
@@ -137,23 +113,28 @@ export class TonWallet {
   private blockchainApi: BlockchainApi;
   private accountsApi: AccountsApi;
 
+  private tonapi: TonAPI;
+
   constructor(vault: Vault, provider: any = null) {
     if (!provider) {
-      provider = new TonWeb.HttpProvider(getServerConfig('tonEndpoint'), {
-        apiKey: getServerConfig('tonEndpointAPIKey'),
+      provider = new TonWeb.HttpProvider(config.get('tonEndpoint'), {
+        apiKey: config.get('tonEndpointAPIKey'),
       });
     }
     this.vault = vault;
     this.tonweb = new TonWeb(provider);
 
     const tonApiConfiguration = new Configuration({
-      basePath: getServerConfig('tonapiV2Endpoint'),
+      basePath: config.get('tonapiV2Endpoint'),
       headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+        Authorization: `Bearer ${config.get('tonApiV2Key')}`,
       },
     });
     this.blockchainApi = new BlockchainApi(tonApiConfiguration);
     this.accountsApi = new AccountsApi(tonApiConfiguration);
+    this.tonapi = createTonApiInstance(
+      tk.wallet.config.network === WalletNetwork.testnet,
+    );
   }
 
   static fromJSON(json: any, vault: Vault): TonWallet {
@@ -161,16 +142,12 @@ export class TonWallet {
     return new TonWallet(vault);
   }
 
-  toJSON(): any {
-    return {};
-  }
-
   getTonWeb() {
     return this.tonweb;
   }
 
   get isTestnet(): boolean {
-    return store.getState().main.isTestnet;
+    return tk.wallet.isTestnet;
   }
 
   get version(): string | undefined {
@@ -217,7 +194,7 @@ export class TonWallet {
 
   async getSeqno(address: string): Promise<number> {
     try {
-      const seqno = (await tonapi.wallet.getAccountSeqno(address)).seqno;
+      const seqno = (await this.tonapi.wallet.getAccountSeqno(address)).seqno;
 
       return seqno;
     } catch (err) {
@@ -467,13 +444,15 @@ export class TonWallet {
 
     const secretKey = await unlockedVault.getTonPrivateKey();
 
-    const { balances } = await Tonapi.getJettonBalances(sender.address);
+    await tk.wallet.jettons.load();
+
+    const balances = tk.wallet.jettons.state.data.jettonBalances;
 
     const balance = balances.find((jettonBalance) =>
-      AddressFormatter.compare(jettonBalance.wallet_address.address, jettonWalletAddress),
+      AddressFormatter.compare(jettonBalance.walletAddress, jettonWalletAddress),
     );
 
-    if (new BigNumber(balance.balance).lt(new BigNumber(amountNano))) {
+    if (!balance || new BigNumber(balance.balance).lt(new BigNumber(amountNano))) {
       throw new Error(t('send_insufficient_funds'));
     }
 
@@ -578,7 +557,7 @@ export class TonWallet {
     vault: Vault,
     payload: string = '',
   ) {
-    const opTemplate = await tonapi.experimental.getInscriptionOpTemplate({
+    const opTemplate = await this.tonapi.experimental.getInscriptionOpTemplate({
       destination: address,
       amount,
       who: tk.wallet.address.ton.raw,
@@ -649,7 +628,7 @@ export class TonWallet {
     vault: UnlockedVault,
     payload: string = '',
   ) {
-    const opTemplate = await tonapi.experimental.getInscriptionOpTemplate({
+    const opTemplate = await this.tonapi.experimental.getInscriptionOpTemplate({
       destination: address,
       amount,
       who: tk.wallet.address.ton.raw,

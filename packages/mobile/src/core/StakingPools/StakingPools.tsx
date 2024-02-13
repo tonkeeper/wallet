@@ -7,24 +7,22 @@ import { StakingListCell } from '$shared/components';
 import {
   getStakingPoolsByProvider,
   getStakingProviderById,
-  useStakingStore,
-} from '$store';
+} from '@tonkeeper/shared/utils/staking';
 import { ScrollHandler } from '$uikit';
 import { List } from '$uikit/List/old/List';
-import { calculatePoolBalance, getPoolIcon } from '$utils/staking';
+import { getPoolIcon } from '$utils/staking';
 import { RouteProp } from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
 import React, { FC, useCallback, useMemo } from 'react';
 import { RefreshControl } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { shallow } from 'zustand/shallow';
 import * as S from './StakingPools.style';
 import { logEvent } from '@amplitude/analytics-browser';
-import { useSelector } from 'react-redux';
-import { jettonsBalancesSelector } from '$store/jettons';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/shared/Address';
+import { useJettons, useStakingState } from '@tonkeeper/shared/hooks';
+import { StakingManager } from '$wallet/managers/StakingManager';
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPools>;
@@ -37,11 +35,17 @@ export const StakingPools: FC<Props> = (props) => {
     },
   } = props;
 
-  const provider = useStakingStore((s) => getStakingProviderById(s, providerId), shallow);
-  const pools = useStakingStore((s) => getStakingPoolsByProvider(s, providerId), shallow);
-  const stakingInfo = useStakingStore((s) => s.stakingInfo, shallow);
+  const provider = useStakingState(
+    (s) => getStakingProviderById(s, providerId),
+    [providerId],
+  );
+  const pools = useStakingState(
+    (s) => getStakingPoolsByProvider(s, providerId),
+    [providerId],
+  );
+  const stakingInfo = useStakingState((s) => s.stakingInfo);
 
-  const jettonBalances = useSelector(jettonsBalancesSelector);
+  const { jettonBalances } = useJettons();
 
   const nav = useNavigation();
   const { bottom: bottomInset } = useSafeAreaInsets();
@@ -56,7 +60,7 @@ export const StakingPools: FC<Props> = (props) => {
 
       const balance = stakingJetton
         ? new BigNumber(stakingJetton.balance)
-        : calculatePoolBalance(pool, stakingInfo);
+        : StakingManager.calculatePoolBalance(pool, stakingInfo);
 
       const pendingWithdrawal = stakingInfo[pool.address]?.pending_withdraw;
 

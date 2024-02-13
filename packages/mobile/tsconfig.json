@@ -21,7 +21,8 @@
       "$shared": ["shared"],
       "$assets": ["assets"],
       "$navigation": ["navigation"],
-      "$services": ["services"],
+      "$wallet": ["wallet"],
+      "$logger": ["logger"],
       "$translation": ["translation"],
       "$tonconnect": ["tonconnect"],
       "$api/*": ["api/*"],
@@ -37,13 +38,15 @@
       "$shared/*": ["shared/*"],
       "$assets/*": ["assets/*"],
       "$navigation/*": ["navigation/*"],
-      "$services/*": ["services/*"],
+      "$wallet/*": ["wallet/*"],
+      "$logger/*": ["logger/*"],
       "$translation/*": ["translation/"],
       "$blockchain": ["blockchain/"],
       "$database": ["database/"],
-      "$tonconnect/*": ["tonconnect/*"]
+      "$tonconnect/*": ["tonconnect/*"],
+      "$config": ["config/"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "src/wallet/managers", "src/wallet/Wallet"],
   "exclude": ["node_modules"]
 }

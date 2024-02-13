@@ -1,4 +1,3 @@
-import { getServerConfig } from '$shared/constants';
 import { i18n } from '$translation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -7,6 +6,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { IAppCategory, IAppsListStore } from './types';
 import DeviceInfo from 'react-native-device-info';
+import { config } from '$config';
 
 const initialState: Omit<IAppsListStore, 'actions'> = {
   fetching: true,
@@ -24,12 +24,15 @@ export const useAppsListStore = create(
         fetchPopularApps: async () => {
           set({ fetching: true });
           try {
-            const response = await axios.get(`${getServerConfig('tonkeeperEndpoint')}/apps/popular`, {
-              params: {
-                lang: i18n.locale,
-                build: DeviceInfo.getReadableVersion(),
-              }
-            });
+            const response = await axios.get(
+              `${config.get('tonkeeperEndpoint')}/apps/popular`,
+              {
+                params: {
+                  lang: i18n.locale,
+                  build: DeviceInfo.getVersion(),
+                },
+              },
+            );
 
             const { categories, moreEnabled, moreUrl } = response.data.data as {
               categories: IAppCategory[];

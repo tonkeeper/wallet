@@ -17,7 +17,6 @@ export const BottomButtonWrapHelper: FC<{ safeArea?: boolean }> = (props) => {
   );
 };
 
-
 export const BottomButtonWrap: FC<{ children: ReactNode }> = ({ children }) => {
   const { bottom } = useSafeAreaInsets();
   const theme = useTheme();

@@ -1,6 +1,6 @@
-import { getServerConfig } from '$shared/constants';
+import { config } from '$config';
 
 export const loadChartData = (period) =>
-  fetch(`${getServerConfig('tonkeeperEndpoint')}/stock/chart-new?period=${period}`).then(
+  fetch(`${config.get('tonkeeperEndpoint')}/stock/chart-new?period=${period}`).then(
     (res) => res.json(),
   );

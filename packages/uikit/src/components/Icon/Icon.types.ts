@@ -77,12 +77,14 @@ export type IconNames =
   | 'ic-key-28'
   | 'ic-link-28'
   | 'ic-lock-28'
+  | 'ic-magnifying-glass-28'
   | 'ic-message-bubble-28'
   | 'ic-minus-28'
   | 'ic-money-28'
   | 'ic-nft-collection-28'
   | 'ic-notification-28'
   | 'ic-plus-28'
+  | 'ic-plus-circle-28'
   | 'ic-reorder-28'
   | 'ic-return-28'
   | 'ic-secure-28'
@@ -97,6 +99,7 @@ export type IconNames =
   | 'ic-swap-horizontal-28'
   | 'ic-swap-horizontal-alternative-28'
   | 'ic-telegram-28'
+  | 'ic-testnet-28'
   | 'ic-ticket-28'
   | 'ic-ton-28'
   | 'ic-tonkeeper-28'
@@ -210,12 +213,14 @@ export const AllIcons = [
   'ic-key-28',
   'ic-link-28',
   'ic-lock-28',
+  'ic-magnifying-glass-28',
   'ic-message-bubble-28',
   'ic-minus-28',
   'ic-money-28',
   'ic-nft-collection-28',
   'ic-notification-28',
   'ic-plus-28',
+  'ic-plus-circle-28',
   'ic-reorder-28',
   'ic-return-28',
   'ic-secure-28',
@@ -230,6 +235,7 @@ export const AllIcons = [
   'ic-swap-horizontal-28',
   'ic-swap-horizontal-alternative-28',
   'ic-telegram-28',
+  'ic-testnet-28',
   'ic-ticket-28',
   'ic-ton-28',
   'ic-tonkeeper-28',
@@ -344,12 +350,14 @@ export const IconSizes = {
   'ic-key-28': 28,
   'ic-link-28': 28,
   'ic-lock-28': 28,
+  'ic-magnifying-glass-28': 28,
   'ic-message-bubble-28': 28,
   'ic-minus-28': 28,
   'ic-money-28': 28,
   'ic-nft-collection-28': 28,
   'ic-notification-28': 28,
   'ic-plus-28': 28,
+  'ic-plus-circle-28': 28,
   'ic-reorder-28': 28,
   'ic-return-28': 28,
   'ic-secure-28': 28,
@@ -364,6 +372,7 @@ export const IconSizes = {
   'ic-swap-horizontal-28': 28,
   'ic-swap-horizontal-alternative-28': 28,
   'ic-telegram-28': 28,
+  'ic-testnet-28': 28,
   'ic-ticket-28': 28,
   'ic-ton-28': 28,
   'ic-tonkeeper-28': 28,

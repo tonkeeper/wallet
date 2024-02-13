@@ -1,13 +1,16 @@
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
-import { ActionItem, ActionType } from '@tonkeeper/core';
 import { copyText, List, ListItem } from '@tonkeeper/uikit';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
 import {
   isTelegramUsername,
   domainToUsername,
-} from '@tonkeeper/core/src/managers/NftsManager';
+} from '@tonkeeper/mobile/src/wallet/managers/NftsManager';
+import {
+  ActionItem,
+  ActionType,
+} from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 
 interface AuctionBidActionContentProps {
   action: ActionItem<ActionType.AuctionBid>;

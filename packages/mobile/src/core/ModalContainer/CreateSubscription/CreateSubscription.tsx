@@ -15,7 +15,7 @@ import {
   triggerNotificationSuccess,
 } from '$utils';
 import { subscriptionsActions } from '$store/subscriptions';
-import { CryptoCurrencies, Decimals, getServerConfig } from '$shared/constants';
+import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { formatCryptoCurrency } from '$utils/currency';
 import { useWalletInfo } from '$hooks/useWalletInfo';
 import { walletWalletSelector } from '$store/wallet';
@@ -27,6 +27,8 @@ import { t } from '@tonkeeper/shared/i18n';
 import { push } from '$navigation/imperative';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { Modal, View } from '@tonkeeper/uikit';
+import { config } from '$config';
+import { tk } from '$wallet';
 
 export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   invoiceId = null,
@@ -38,7 +40,7 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
 
   const nav = useNavigation();
   const wallet = useSelector(walletWalletSelector);
-  const { amount: balance } = useWalletInfo(CryptoCurrencies.Ton);
+  const { amount: balance } = useWalletInfo();
 
   const [isLoading, setLoading] = useState(!isEdit);
   const [failed, setFailed] = useState(0);
@@ -93,7 +95,7 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   }, [isSuccess]);
 
   const loadInfo = useCallback(() => {
-    const host = getServerConfig('subscriptionsHost');
+    const host = config.get('subscriptionsHost', tk.wallet.isTestnet);
     network
       .get(`${host}/v1/subscribe/invoice/${invoiceId}`, {
         params: {
