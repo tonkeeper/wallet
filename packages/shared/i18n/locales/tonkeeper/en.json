@@ -632,7 +632,7 @@
   "send_sending_wrong_time_title": "Error occurred",
   "send_title": "Send %{currency}",
   "settings_appearance": "Theme",
-  "settings_backup_seed": "Backup",
+  "settings_backup_seed": "Recovery Phrase",
   "settings_contact_support": "Contact us",
   "settings_delete_account": "Delete account",
   "settings_delete_alert_button": "Delete account and data",

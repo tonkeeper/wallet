@@ -622,7 +622,7 @@
   "send_sending_wrong_time_title" : "Произошла ошибка",
   "send_title" : "Отправить %{currency}",
   "settings_appearance" : "Тема",
-  "settings_backup_seed" : "Показать секретный ключ",
+  "settings_backup_seed" : "Секретный ключ",
   "settings_contact_support" : "Написать команде",
   "settings_delete_account" : "Удалить аккаунт",
   "settings_delete_alert_button" : "Удалить аккаунт и данные",
@@ -1131,7 +1131,7 @@
   "add_wallet": "Добавить кошелёк",
   "add_wallet_modal": {
     "title": "Добавить кошелёк",
-    "subtitle": "Создать новый кошелёк или добавить существующий.",
+    "subtitle": "Создайте новый кошелёк или добавьте существующий.",
     "create": {
       "title": "Новый кошелёк",
       "subtitle": "Создать новый кошелёк"
