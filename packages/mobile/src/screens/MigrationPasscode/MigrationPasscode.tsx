@@ -19,6 +19,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import { ScryptBox } from '$wallet/AppVault';
 import { Alert } from 'react-native';
 import { Toast } from '@tonkeeper/uikit';
+import { setLastEnteredPasscode } from '$store/wallet/sagas';
 
 export const MigrationPasscode: FC<{
   route: RouteProp<MigrationStackParamList, MigrationStackRouteNames.Passcode>;
@@ -69,6 +70,8 @@ export const MigrationPasscode: FC<{
             console.log('start migration');
             Toast.loading();
             const mnemonic = await getMnemonic(pin);
+
+            setLastEnteredPasscode(pin);
 
             pinRef.current?.triggerSuccess();
 

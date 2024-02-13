@@ -57,6 +57,19 @@ export const MainStack: FC = () => {
   const isMigrated = useExternalState(tk.walletsStore, (state) => state.isMigrated);
 
   const root = useMemo(() => {
+    if (hasWallet) {
+      if (showLockScreen) {
+        return (
+          <Stack.Screen
+            name={AppStackRouteNames.MainAccessConfirmation}
+            component={AccessConfirmation}
+          />
+        );
+      }
+
+      return <Stack.Screen name={MainStackRouteNames.Tabs} component={TabStack} />;
+    }
+
     if (!isMigrated && tk.migrationData) {
       return (
         <Stack.Screen
@@ -66,21 +79,8 @@ export const MainStack: FC = () => {
       );
     }
 
-    if (!hasWallet) {
-      return <Stack.Screen name={MainStackRouteNames.Start} component={StartScreen} />;
-    }
-
-    if (showLockScreen) {
-      return (
-        <Stack.Screen
-          name={AppStackRouteNames.MainAccessConfirmation}
-          component={AccessConfirmation}
-        />
-      );
-    }
-
-    return <Stack.Screen name={MainStackRouteNames.Tabs} component={TabStack} />;
-  }, [hasWallet, showLockScreen]);
+    return <Stack.Screen name={MainStackRouteNames.Start} component={StartScreen} />;
+  }, [hasWallet, isMigrated, showLockScreen]);
 
   return (
     <Stack.Navigator

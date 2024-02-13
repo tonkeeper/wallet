@@ -33,24 +33,24 @@ export const CreatePin: FC<CreatePinProps> = () => {
   );
 
   const handlePinCreated = useCallback(
-    (pin: string) => {
-      Promise.all([
-        LocalAuthentication.supportedAuthenticationTypesAsync(),
-        SecureStore.isAvailableAsync(),
-      ])
-        .then(([types, isProtected]) => {
-          const biometryType = detectBiometryType(types);
-          if (biometryType && isProtected) {
-            openSetupBiometry(pin, biometryType);
-          } else {
-            doCreateWallet(pin);
-          }
-        })
-        .catch((err) => {
-          console.log('ERR1', err);
-          debugLog('supportedAuthenticationTypesAsync', err.message);
+    async (pin: string) => {
+      try {
+        const [types, isProtected] = await Promise.all([
+          LocalAuthentication.supportedAuthenticationTypesAsync(),
+          SecureStore.isAvailableAsync(),
+        ]);
+
+        const biometryType = detectBiometryType(types);
+        if (biometryType && isProtected) {
+          openSetupBiometry(pin, biometryType);
+        } else {
           doCreateWallet(pin);
-        });
+        }
+      } catch (err) {
+        console.log('ERR1', err);
+        debugLog('supportedAuthenticationTypesAsync', err.message);
+        doCreateWallet(pin);
+      }
     },
     [doCreateWallet],
   );

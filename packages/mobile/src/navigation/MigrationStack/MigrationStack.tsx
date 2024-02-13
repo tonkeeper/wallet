@@ -1,9 +1,8 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from '$hooks/useTheme';
 import { memo } from 'react';
-import { AddWatchOnly } from '$core';
 import { MigrationStackParamList, MigrationStackRouteNames } from './types';
-import { ChooseWallets } from '../../screens';
+import { MigrationPasscode, ChooseWallets } from '../../screens';
 
 const Stack = createNativeStackNavigator<MigrationStackParamList>();
 
@@ -22,7 +21,10 @@ export const MigrationStack = memo(() => {
         fullScreenGestureEnabled: true,
       }}
     >
-      <Stack.Screen name={MigrationStackRouteNames.Passcode} component={AddWatchOnly} />
+      <Stack.Screen
+        name={MigrationStackRouteNames.Passcode}
+        component={MigrationPasscode}
+      />
       <Stack.Screen
         name={MigrationStackRouteNames.ChooseWallets}
         component={ChooseWallets}

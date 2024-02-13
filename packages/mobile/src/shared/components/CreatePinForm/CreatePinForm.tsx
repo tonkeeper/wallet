@@ -10,21 +10,18 @@ import {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
-import { useSelector } from 'react-redux';
 
 import * as S from './CreatePinForm.style';
 import { InlineKeyboard, PinCode } from '$uikit';
 import { PinCodeRef } from '$uikit/PinCode/PinCode.interface';
 import { deviceWidth } from '$utils';
 import { CreatePinFormProps } from './CreatePinForm.interface';
-import { walletWalletSelector } from '$store/wallet';
 import { t } from '@tonkeeper/shared/i18n';
 import { tk, vault } from '$wallet';
 
 export const CreatePinForm: FC<CreatePinFormProps> = (props) => {
   const { onPinCreated, validateOldPin = false, onOldPinValidated } = props;
 
-  const wallet = useSelector(walletWalletSelector);
   const { bottom: bottomInset } = useSafeAreaInsets();
   const pinRef = useRef<PinCodeRef>(null);
   const oldPinRef = useRef<PinCodeRef>(null);
@@ -79,6 +76,32 @@ export const CreatePinForm: FC<CreatePinFormProps> = (props) => {
     );
   }, [onStepAnimationCompleted, step, stepsValue]);
 
+  const isProcessingPinCreated = useRef(false);
+  const handlePinCreated = useCallback(
+    (pin: string) => {
+      if (isProcessingPinCreated.current) {
+        return;
+      }
+      isProcessingPinCreated.current = true;
+      setTimeout(() => {
+        pinRef.current?.triggerSuccess();
+
+        // wait pulse animation completion
+        setTimeout(async () => {
+          try {
+            await onPinCreated(pin);
+          } catch {
+          } finally {
+            setTimeout(() => {
+              isProcessingPinCreated.current = false;
+            }, 500);
+          }
+        }, 350);
+      }, 500);
+    },
+    [onPinCreated],
+  );
+
   const handleKeyboard = useCallback(
     (newValue) => {
       const pin = newValue.substr(0, 4);
@@ -111,14 +134,7 @@ export const CreatePinForm: FC<CreatePinFormProps> = (props) => {
         setValue2(pin);
         if (pin.length === 4) {
           if (value1 === pin) {
-            setTimeout(() => {
-              pinRef.current?.triggerSuccess();
-
-              // wait pulse animation completion
-              setTimeout(() => {
-                onPinCreated(pin);
-              }, 350);
-            }, 500);
+            handlePinCreated(pin);
           } else {
             setTimeout(() => {
               setValue1('');
@@ -132,7 +148,7 @@ export const CreatePinForm: FC<CreatePinFormProps> = (props) => {
         }
       }
     },
-    [onOldPinValidated, onPinCreated, step, value1],
+    [onOldPinValidated, handlePinCreated, step, value1],
   );
 
   const stepsStyle = useAnimatedStyle(() => {

@@ -1,5 +1,5 @@
 export interface CreatePinFormProps {
-  onPinCreated: (pin: string) => void;
+  onPinCreated: (pin: string) => Promise<void>;
   validateOldPin?: boolean;
   onOldPinValidated?: (_: string) => void;
 }
