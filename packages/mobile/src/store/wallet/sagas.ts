@@ -2,22 +2,23 @@ import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { Alert, Keyboard } from 'react-native';
 import BigNumber from 'bignumber.js';
 
-import { walletActions, walletSelector } from '$store/wallet/index';
-import { EncryptedVault, UnlockedVault, Vault, VaultJSON } from '$blockchain';
+import {
+  walletActions,
+  walletGeneratedVaultSelector,
+  walletWalletSelector,
+} from '$store/wallet/index';
+import { UnlockedVault, Vault, VaultJSON } from '$blockchain';
 import { mainActions } from '$store/main';
-import { CryptoCurrencies, PrimaryCryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies } from '$shared/constants';
 import {
   openAccessConfirmation,
   openBackupWords,
   TabsStackRouteNames,
 } from '$navigation';
 import {
-  ChangeBalanceAndReloadAction,
-  ChangePinAction,
   ConfirmSendCoinsAction,
   CreateWalletAction,
   DeployWalletAction,
-  ReloadBalanceTwiceAction,
   RestoreWalletAction,
   SendCoinsAction,
   ToggleBiometryAction,
@@ -30,15 +31,12 @@ import { t } from '@tonkeeper/shared/i18n';
 import { getChainName } from '$shared/dynamicConfig';
 import { toNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
-import { Ton } from '$libs/Ton';
 import { Cell } from '@ton/core';
 import nacl from 'tweetnacl';
 import { BASE_FORWARD_AMOUNT, encryptMessageComment } from '@tonkeeper/core';
-import { goBack, navigate } from '$navigation/imperative';
+import { navigate } from '$navigation/imperative';
 import { trackEvent } from '$utils/stats';
 import { tk } from '$wallet';
-import { getFlag } from '$utils/flags';
-import { Address } from '@tonkeeper/shared/Address';
 import { InscriptionAdditionalParams, TokenType } from '$core/Send/Send.interface';
 import { WalletConfig, WalletContractVersion, WalletNetwork } from '$wallet/WalletTypes';
 import { v4 as uuidv4 } from 'uuid';
@@ -76,7 +74,7 @@ function* restoreWalletWorker(action: RestoreWalletAction) {
 function* createWalletWorker(action: CreateWalletAction) {
   const { onDone, onFail, pin, isTestnet, isBiometryEnabled } = action.payload;
   try {
-    const generatedVault = (yield select(walletSelector)).generatedVault as UnlockedVault;
+    const generatedVault = (yield select(walletGeneratedVaultSelector)) as UnlockedVault;
 
     const vaultJson = (yield call([generatedVault, 'toJSON'])) as VaultJSON;
 
@@ -143,7 +141,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
       yield call(Toast.loading);
     }
 
-    const { wallet } = yield select(walletSelector);
+    const wallet = yield select(walletWalletSelector);
 
     const walletAddress = wallet.address.rawAddress;
 
@@ -283,7 +281,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       currencyAdditionalParams,
     } = action.payload;
 
-    const { wallet } = yield select(walletSelector);
+    const wallet = yield select(walletWalletSelector);
 
     const unlockedVault = yield call(walletGetUnlockedVault);
 
@@ -347,13 +345,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
 
     yield call([tk.wallet.activityList, 'reload']);
 
-    yield put(
-      walletActions.changeBalanceAndReload({
-        currency,
-        amount: `-${amount}`,
-      }),
-    );
-
     onDone();
   } catch (e) {
     action.payload.onFail();
@@ -373,67 +364,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
   }
 }
 
-function* reloadBalance(currency: CryptoCurrencies) {
-  try {
-    const { wallet } = yield select(walletSelector);
-
-    let amount: string = '0';
-
-    if (currency === CryptoCurrencies.Ton && wallet.ton.isLockup()) {
-      const balances = yield call([wallet.ton, 'getLockupBalances']);
-
-      yield put(
-        walletActions.setBalances({
-          [CryptoCurrencies.Ton]: balances[0],
-          [CryptoCurrencies.TonRestricted]: balances[1],
-          [CryptoCurrencies.TonLocked]: balances[2],
-        }),
-      );
-
-      yield call(saveBalances, {
-        [CryptoCurrencies.Ton]: balances[0],
-        [CryptoCurrencies.TonRestricted]: balances[1],
-        [CryptoCurrencies.TonLocked]: balances[2],
-      });
-    } else {
-      if (PrimaryCryptoCurrencies.indexOf(currency) > -1) {
-        amount = yield call([wallet[currency], 'getBalance']);
-      }
-
-      const balances = {
-        [currency]: amount,
-      };
-
-      yield put(walletActions.setBalances(balances));
-
-      yield call(saveBalances, balances);
-    }
-  } catch {}
-}
-
-function* changeBalanceAndReloadWorker(action: ChangeBalanceAndReloadAction) {
-  try {
-    const { currency } = action.payload;
-    yield call(reloadBalance, currency);
-  } catch (e) {}
-}
-
-function* reloadBalanceWorker(action: ReloadBalanceTwiceAction) {
-  try {
-    const currency = action.payload;
-    yield call(reloadBalance, currency);
-  } catch (e) {}
-}
-
-function* reloadBalanceTwiceWorker(action: ReloadBalanceTwiceAction) {
-  try {
-    const currency = action.payload;
-    yield call(reloadBalance, currency);
-    yield delay(3000);
-    yield call(reloadBalance, currency);
-  } catch (e) {}
-}
-
 function* backupWalletWorker() {
   try {
     const unlockedVault = yield call(walletGetUnlockedVault);
@@ -449,7 +379,7 @@ function* backupWalletWorker() {
 
 function* cleanWalletWorker() {
   try {
-    const { wallet } = yield select(walletSelector);
+    const wallet = yield select(walletWalletSelector);
 
     yield call(
       useConnectedAppsStore.getState().actions.unsubscribeFromAllNotifications,
@@ -472,20 +402,11 @@ let WaitAccessConfirmationPromise: {
   resolve: (_: UnlockedVault) => void;
   reject: () => void;
 } | null = null;
-let ConfirmationVaultInst: EncryptedVault | UnlockedVault | null = null;
-export function waitAccessConfirmation(
-  vault: EncryptedVault | UnlockedVault,
-  withoutBiometryOnOpen?: boolean,
-) {
+export function waitAccessConfirmation(withoutBiometryOnOpen?: boolean) {
   return new Promise<UnlockedVault>((resolve, reject) => {
-    ConfirmationVaultInst = vault; // can't pass as navigation prop, because vault is non-serializable
     WaitAccessConfirmationPromise = { resolve, reject };
     openAccessConfirmation(withoutBiometryOnOpen);
   });
-}
-
-export function getCurrentConfirmationVaultInst(): EncryptedVault | UnlockedVault {
-  return ConfirmationVaultInst!;
 }
 
 export function getCurrentConfirmationVaultPromise(): any {
@@ -493,7 +414,6 @@ export function getCurrentConfirmationVaultPromise(): any {
 }
 
 export function confirmationVaultReset() {
-  ConfirmationVaultInst = null;
   WaitAccessConfirmationPromise = null;
 }
 
@@ -510,7 +430,7 @@ export class UnlockVaultError extends Error {}
 
 export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
   try {
-    const { wallet, generatedVault } = yield select(walletSelector);
+    const generatedVault = yield select(walletGeneratedVaultSelector);
 
     let withoutBiometryOnOpen = !!generatedVault;
 
@@ -522,7 +442,7 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
         );
         const unlockedVault = new UnlockedVault(
           {
-            ...wallet.config,
+            ...tk.wallet.config,
             tonPubkey: Uint8Array.from(Buffer.from(tk.wallet.pubkey, 'hex')),
           },
           mnemonic,
@@ -535,7 +455,7 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
       }
     }
 
-    const vault = yield call(waitAccessConfirmation, wallet.vault, withoutBiometryOnOpen);
+    const vault = yield call(waitAccessConfirmation, withoutBiometryOnOpen);
     action?.payload?.onDone?.(vault);
     return vault;
   } catch (e) {
@@ -554,18 +474,10 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
   }
 }
 
-function* saveBalances(balances: { [index: string]: string }) {
-  try {
-    const updatedAt = Date.now();
-
-    yield put(walletActions.setUpdatedAt(updatedAt));
-  } catch (e) {}
-}
-
 function* deployWalletWorker(action: DeployWalletAction) {
   try {
     const unlockedVault = yield call(walletGetUnlockedVault);
-    const { wallet } = yield select(walletSelector);
+    const wallet = yield select(walletWalletSelector);
 
     yield call([wallet.ton, 'deploy'], unlockedVault);
     action.payload.onDone();
@@ -593,18 +505,6 @@ function* toggleBiometryWorker(action: ToggleBiometryAction) {
   }
 }
 
-function* changePinWorker(action: ChangePinAction) {
-  try {
-    const { pin, vault } = action.payload;
-
-    const encrypted = yield call([vault, 'encrypt'], pin);
-    yield call([encrypted, 'lock']);
-  } catch (e) {
-    yield call(Toast.fail, e.message);
-    yield call(goBack);
-  }
-}
-
 export function* walletSaga() {
   yield all([
     takeLatest(walletActions.generateVault, generateVaultWorker),
@@ -612,14 +512,10 @@ export function* walletSaga() {
     takeLatest(walletActions.restoreWallet, restoreWalletWorker),
     takeLatest(walletActions.confirmSendCoins, confirmSendCoinsWorker),
     takeLatest(walletActions.sendCoins, sendCoinsWorker),
-    takeLatest(walletActions.changeBalanceAndReload, changeBalanceAndReloadWorker),
-    takeLatest(walletActions.reloadBalance, reloadBalanceWorker),
-    takeLatest(walletActions.reloadBalanceTwice, reloadBalanceTwiceWorker),
     takeLatest(walletActions.backupWallet, backupWalletWorker),
     takeLatest(walletActions.cleanWallet, cleanWalletWorker),
     takeLatest(walletActions.deployWallet, deployWalletWorker),
     takeLatest(walletActions.toggleBiometry, toggleBiometryWorker),
-    takeLatest(walletActions.changePin, changePinWorker),
     takeLatest(walletActions.walletGetUnlockedVault, walletGetUnlockedVault),
   ]);
 }

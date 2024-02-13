@@ -1,5 +1,4 @@
 import { PayloadAction } from '@reduxjs/toolkit';
-import { FiatCurrency } from '$shared/constants';
 import { InternalNotificationModel } from '$store/models';
 import { AccentKey, AccentNFTIcon } from '$styled';
 
@@ -12,10 +11,8 @@ export interface LogItem {
 
 export interface MainState {
   isInitiating: boolean;
-  isIntroShown: boolean;
   isTimeSynced: boolean;
   timeSyncedDismissedTimestamp: false | number;
-  fiatCurrency: FiatCurrency;
   badHosts: string[];
   isBadHostsDismissed: boolean;
   internalNotifications: InternalNotificationModel[];
@@ -26,10 +23,6 @@ export interface MainState {
   tonCustomIcon: AccentNFTIcon | null;
 }
 
-export type EndInitiatingAction = PayloadAction<{
-  fiatCurrency: FiatCurrency;
-}>;
-export type ToggleIntroAction = PayloadAction<boolean>;
 export type SetTimeSyncedAction = PayloadAction<boolean>;
 export type SetTimeSyncedDismissedAction = PayloadAction<false | number>;
 export type UpdateBadHostsAction = PayloadAction<string[]>;

@@ -1,37 +1,18 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { UnlockedVault, Wallet } from '$blockchain';
-import { CryptoCurrency, SelectableVersion } from '$shared/constants';
+import { CryptoCurrency } from '$shared/constants';
 import { InsufficientFundsParams } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
 import { WalletContractVersion } from '$wallet/WalletTypes';
 
-export type OldWalletBalanceItem = {
-  version: string;
-  balance: string;
-};
-
-export type Address = {
-  friendlyAddress: string;
-  rawAddress: string;
-  version: string;
-};
-
 export interface WalletState {
-  isRefreshing: boolean;
   generatedVault: UnlockedVault | null;
-  version: SelectableVersion;
   wallet: Wallet | null;
-  readableAddress: Address | null;
-  currencies: CryptoCurrency[];
-  balances: { [index: string]: string };
-  updatedAt: number | null;
   address: { [index: string]: string };
-  oldWalletBalances: OldWalletBalanceItem[];
 }
 
 export type SetGeneratedVaultAction = PayloadAction<UnlockedVault>;
 export type SetWalletAction = PayloadAction<Wallet>;
-export type SetReadableAddress = PayloadAction<Address | null>;
 
 export type RestoreWalletAction = PayloadAction<{
   mnemonic: string;
@@ -72,11 +53,6 @@ export type SendCoinsAction = PayloadAction<{
   sendWithBattery?: boolean;
   currencyAdditionalParams?: CurrencyAdditionalParams;
 }>;
-export type ChangeBalanceAndReloadAction = PayloadAction<{
-  currency: CryptoCurrency;
-  amount: string;
-}>;
-export type SetCurrenciesAction = PayloadAction<CryptoCurrency[]>;
 export type CreateWalletAction = PayloadAction<{
   onDone: (identifiers: string[]) => void;
   onFail?: () => void;
@@ -85,21 +61,13 @@ export type CreateWalletAction = PayloadAction<{
   fromRestore?: boolean;
   isBiometryEnabled?: boolean;
 }>;
-export type ReloadBalanceTwiceAction = PayloadAction<CryptoCurrency>;
-export type SetBalancesAction = PayloadAction<any>;
-export type SetUpdatedAtAction = PayloadAction<number | null>;
 export type DeployWalletAction = PayloadAction<{
   onDone: () => void;
   onFail: () => void;
 }>;
-export type SetOldWalletBalanceAction = PayloadAction<OldWalletBalanceItem[]>;
 export type ToggleBiometryAction = PayloadAction<{
   isEnabled: boolean;
   onFail: () => void;
-}>;
-export type ChangePinAction = PayloadAction<{
-  vault: UnlockedVault;
-  pin: string;
 }>;
 
 export type WalletGetUnlockedVaultAction = PayloadAction<

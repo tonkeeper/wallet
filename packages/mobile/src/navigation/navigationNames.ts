@@ -31,6 +31,7 @@ export enum MainStackRouteNames {
   CreateWalletStack = 'CreateWalletStack',
   ImportWalletStack = 'ImportWalletStack',
   AddWatchOnlyStack = 'AddWatchOnlyStack',
+  MigrationStack = 'MigrationStack',
   Tabs = 'Tabs',
   Wallet = 'Wallet',
   Staking = 'Staking',

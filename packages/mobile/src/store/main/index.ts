@@ -1,10 +1,8 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '$store/rootReducer';
-import { WalletCurrency } from '$shared/constants';
 import {
   AddLogAction,
-  EndInitiatingAction,
   HideNotificationAction,
   MainState,
   SetAccentAction,
@@ -14,7 +12,6 @@ import {
   SetTimeSyncedDismissedAction,
   SetTonCustomIcon,
   SetUnlockedAction,
-  ToggleIntroAction,
   UpdateBadHostsAction,
 } from '$store/main/interface';
 import { AccentKey } from '$styled';
@@ -22,10 +19,8 @@ import { walletWalletSelector } from '$store/wallet';
 
 const initialState: MainState = {
   isInitiating: true,
-  isIntroShown: true,
   isTimeSynced: true,
   timeSyncedDismissedTimestamp: false,
-  fiatCurrency: WalletCurrency.Usd,
   badHosts: [],
   isBadHostsDismissed: false,
   internalNotifications: [],
@@ -42,24 +37,14 @@ export const { actions, reducer } = createSlice({
   reducers: {
     init() {},
 
-    endInitiating(state, action: EndInitiatingAction) {
-      const { fiatCurrency } = action.payload;
-
+    endInitiating(state) {
       state.isInitiating = false;
-      state.fiatCurrency = fiatCurrency;
     },
 
     setUnlocked(state, action: SetUnlockedAction) {
       state.isUnlocked = action.payload;
     },
 
-    completeIntro(state) {
-      state.isIntroShown = false;
-    },
-
-    toggleIntro(state, action: ToggleIntroAction) {
-      state.isIntroShown = action.payload;
-    },
     getTimeSynced() {},
     setTimeSynced(state, action: SetTimeSyncedAction) {
       state.isTimeSynced = action.payload;
@@ -107,10 +92,6 @@ export const { actions, reducer } = createSlice({
 
     mainStackInited(state) {
       state.isMainStackInited = true;
-    },
-
-    resetMain() {
-      return initialState;
     },
 
     addLog(state, action: AddLogAction) {

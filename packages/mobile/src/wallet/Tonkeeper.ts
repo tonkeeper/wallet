@@ -28,16 +28,30 @@ type TonkeeperOptions = {
   vault: Vault;
 };
 
+export interface MultiWalletMigrationData {
+  pubkey: string;
+  keychainItemName: string;
+  lockupConfig?: {
+    wallet_type: WalletContractVersion.LockupV1;
+    workchain: number;
+    config_pubkey: string;
+    allowed_destinations: string[];
+  };
+}
+
 export interface WalletsStoreState {
   wallets: WalletConfig[];
   selectedIdentifier: string;
   biometryEnabled: boolean;
+  isMigrated: boolean;
 }
 
 export class Tonkeeper {
   public permissions: PermissionsManager;
   public wallets: Map<string, Wallet> = new Map();
   public tonPrice: TonPriceManager;
+
+  public migrationData: MultiWalletMigrationData | null = null;
 
   public walletSubscribers = new Set<(wallet: Wallet) => void>();
 
@@ -54,6 +68,7 @@ export class Tonkeeper {
     wallets: [],
     selectedIdentifier: '',
     biometryEnabled: false,
+    isMigrated: false,
   });
 
   constructor(options: TonkeeperOptions) {
@@ -91,7 +106,9 @@ export class Tonkeeper {
 
       this.tonPrice.load();
 
-      // await this.migrate();
+      if (!this.walletsStore.data.isMigrated) {
+        this.migrationData = await this.getMigrationData();
+      }
 
       await Promise.all(
         this.walletsStore.data.wallets.map((walletConfig) =>
@@ -105,38 +122,34 @@ export class Tonkeeper {
     }
   }
 
-  private async migrate() {
+  private async getMigrationData(): Promise<MultiWalletMigrationData | null> {
     const keychainName = 'mainnet_default';
 
-    const data = await this.storage.getItem(`${keychainName}_wallet`);
-    const isTestnet = !!(await this.storage.getItem('is_testnet'));
-
-    if (!data) {
-      return null;
-    }
-
     try {
+      const data = await this.storage.getItem(`${keychainName}_wallet`);
+
+      if (!data) {
+        return null;
+      }
+
       const json = JSON.parse(data);
 
-      const walletConfig: WalletConfig = {
-        ...DEFAULT_WALLET_STYLE_CONFIG,
-        identifier: uuidv4(),
-        type: WalletType.Regular,
-        workchain: json.vault.workchain,
+      return {
         pubkey: json.vault.tonPubkey,
-        configPubKey: json.vault.configPubKey,
-        network: isTestnet ? WalletNetwork.testnet : WalletNetwork.mainnet,
-        version: json.vault.version,
+        keychainItemName: json.vault.name,
+        lockupConfig:
+          json.vault.version === WalletContractVersion.LockupV1
+            ? {
+                wallet_type: WalletContractVersion.LockupV1,
+                workchain: json.vault.workchain ?? 0,
+                config_pubkey: json.vault.configPubKey,
+                allowed_destinations: json.vault.allowedDestinations,
+              }
+            : undefined,
       };
-
-      this.walletsStore.set(({ wallets }) => ({
-        wallets: [...wallets, walletConfig],
-        selectedIdentifier: walletConfig.identifier,
-      }));
-
-      // MULTIWALLET TODO
-      // this.storage.removeItem(`${keychainName}_wallet`);
-    } catch {}
+    } catch {
+      return null;
+    }
   }
 
   public tronStorageKey = 'temp-tron-address';
@@ -318,6 +331,7 @@ export class Tonkeeper {
 
       if (this.wallets.size === 0) {
         this.walletsStore.set({ biometryEnabled: false });
+        this.vault.destroy();
       }
 
       this.emitChangeWallet();
@@ -444,5 +458,10 @@ export class Tonkeeper {
     return Array.from(this.wallets.values()).find(
       (wallet) => !wallet.isTestnet && Address.compare(wallet.address.ton.raw, address),
     );
+  }
+
+  public setMigrated() {
+    console.log('migrated');
+    this.walletsStore.set({ isMigrated: true });
   }
 }

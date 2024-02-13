@@ -62,10 +62,13 @@ export class AppVault implements Vault {
   }
 
   public async destroy() {
-    await SecureStore.deleteItemAsync(this.walletsKey);
-    await SecureStore.deleteItemAsync(this.biometryKey, {
-      keychainService: this.keychainService,
-    });
+    try {
+      this.decryptedVaultState = {};
+      await SecureStore.deleteItemAsync(this.walletsKey);
+      await SecureStore.deleteItemAsync(this.biometryKey, {
+        keychainService: this.keychainService,
+      });
+    } catch {}
   }
 
   private async getDecryptedVaultState(passcode: string) {
@@ -126,7 +129,7 @@ export class AppVault implements Vault {
   }
 }
 
-const ScryptBox = {
+export const ScryptBox = {
   async encrypt(passcode: string, value: string) {
     // default parameters
     const N = 16384; // 16K*128*8 = 16 Mb of memory

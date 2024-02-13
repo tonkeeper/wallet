@@ -13,7 +13,7 @@ import {
 import LottieView from 'lottie-react-native';
 
 import * as S from './CreateWallet.style';
-import { walletActions, walletSelector } from '$store/wallet';
+import { walletActions, walletGeneratedVaultSelector } from '$store/wallet';
 import { Text } from '$uikit/Text/Text';
 import { Button } from '$uikit/Button/Button';
 import { NavBar } from '$uikit/NavBar/NavBar';
@@ -24,7 +24,7 @@ import { t } from '@tonkeeper/shared/i18n';
 export const CreateWallet: FC = () => {
   const dispatch = useDispatch();
   const { bottom } = useSafeAreaInsets();
-  const { generatedVault } = useSelector(walletSelector);
+  const generatedVault = useSelector(walletGeneratedVaultSelector);
   const [step, setStep] = useState(1);
   const iconRef = useRef<LottieView>(null);
   const checkIconRef = useRef<LottieView>(null);

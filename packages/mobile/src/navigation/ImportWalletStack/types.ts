@@ -18,6 +18,7 @@ export type ImportWalletStackParamList = {
     mnemonic: string;
     isTestnet: boolean;
     lockupConfig: {};
+    isMigration?: boolean;
   };
   [ImportWalletStackRouteNames.CreatePasscode]: {};
   [ImportWalletStackRouteNames.Biometry]: {

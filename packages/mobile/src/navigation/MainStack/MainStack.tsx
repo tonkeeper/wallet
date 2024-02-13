@@ -31,6 +31,9 @@ import { StartScreen } from '../../screens/StartScreen';
 import { CreateWalletStack } from '../CreateWalletStack';
 import { ImportWalletStack } from '$navigation/ImportWalletStack';
 import { AddWatchOnlyStack } from '$navigation/AddWatchOnlyStack';
+import { useExternalState } from '@tonkeeper/shared/hooks/useExternalState';
+import { tk } from '$wallet';
+import { MigrationStack } from '$navigation/MigrationStack';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -51,7 +54,18 @@ export const MainStack: FC = () => {
 
   const showLockScreen = !isUnlocked && hasWallet && !attachedScreen.pathname;
 
+  const isMigrated = useExternalState(tk.walletsStore, (state) => state.isMigrated);
+
   const root = useMemo(() => {
+    if (!isMigrated && tk.migrationData) {
+      return (
+        <Stack.Screen
+          name={MainStackRouteNames.MigrationStack}
+          component={MigrationStack}
+        />
+      );
+    }
+
     if (!hasWallet) {
       return <Stack.Screen name={MainStackRouteNames.Start} component={StartScreen} />;
     }

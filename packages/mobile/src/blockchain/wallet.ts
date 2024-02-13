@@ -142,10 +142,6 @@ export class TonWallet {
     return new TonWallet(vault);
   }
 
-  toJSON(): any {
-    return {};
-  }
-
   getTonWeb() {
     return this.tonweb;
   }

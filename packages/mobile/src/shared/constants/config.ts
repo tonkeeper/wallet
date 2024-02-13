@@ -1,12 +1,6 @@
 export const GOOGLE_PACKAGE_NAME = 'com.ton_keeper';
 export const APPLE_STORE_ID = '1587742107';
 
-export enum DomainsForDeepLinking {
-  TON = 'ton://',
-}
-
-export const API_SECRET = 'wZE12R1QxsJcWzZaBHXVYKpbjYYv9UxREmAKEc4';
-
 export enum CryptoCurrencies {
   Ton = 'ton',
   TonLocked = 'ton_locked',

@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import {
   Screen,
@@ -11,9 +11,7 @@ import {
 } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
-import { useDispatch } from 'react-redux';
 import { openJetton, openTonInscription } from '$navigation';
-import { walletActions } from '$store/wallet';
 import { Rate } from '../hooks/useBalance';
 import { ListItemRate } from './ListItemRate';
 import { TonIcon, TonIconProps } from '@tonkeeper/uikit';
@@ -186,7 +184,6 @@ export const WalletContentList = memo<BalancesListProps>(
     ListHeaderComponent,
   }) => {
     const theme = useTheme();
-    const dispatch = useDispatch();
 
     const fiatCurrency = useWalletCurrency();
     const shouldShowTonDiff = fiatCurrency !== WalletCurrency.TON;

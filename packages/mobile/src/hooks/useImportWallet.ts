@@ -4,6 +4,7 @@ import { walletActions } from '$store/wallet';
 import { getLastEnteredPasscode } from '$store/wallet/sagas';
 import { tk } from '$wallet';
 import { WalletContractVersion } from '$wallet/WalletTypes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -14,9 +15,10 @@ export const useImportWallet = () => {
   const restore = useCallback(
     (
       mnemonic: string,
-      lockupConfig: {},
+      lockupConfig: any,
       versions: WalletContractVersion[],
       isTestnet: boolean,
+      isMigration?: boolean,
     ) => {
       return new Promise<void>((resolve, reject) => {
         dispatch(
@@ -25,6 +27,47 @@ export const useImportWallet = () => {
             versions,
             config: lockupConfig,
             onDone: async () => {
+              if (isMigration) {
+                const pin = getLastEnteredPasscode();
+
+                dispatch(
+                  walletActions.createWallet({
+                    pin,
+                    isTestnet,
+                    onDone: async (identifiers) => {
+                      tk.setMigrated();
+
+                      // Enable notifications if it was enabled before migration
+                      try {
+                        const [isNotificationsDenied, status] = await Promise.all([
+                          tk.wallet.notifications.getIsDenied(),
+                          AsyncStorage.getItem('isSubscribeNotifications'),
+                        ]);
+
+                        if (!isNotificationsDenied && status === 'true') {
+                          tk.enableNotificationsForAll(identifiers).catch(null);
+                        }
+                      } catch {}
+                      // Enable biometry if it was enabled before migration
+                      try {
+                        const isBiometryEnabled =
+                          (await AsyncStorage.getItem('biometry_enabled')) === 'yes';
+
+                        if (isBiometryEnabled) {
+                          tk.enableBiometry(pin).catch(null);
+                        }
+                      } catch {}
+
+                      openSetupWalletDone(identifiers);
+
+                      resolve();
+                    },
+                    onFail: reject,
+                  }),
+                );
+                return;
+              }
+
               if (tk.walletForUnlock) {
                 try {
                   await unlockVault();
@@ -45,7 +88,7 @@ export const useImportWallet = () => {
                         }
                         resolve();
                       },
-                      onFail: () => {},
+                      onFail: reject,
                     }),
                   );
                 } catch {

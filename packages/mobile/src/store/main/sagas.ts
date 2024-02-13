@@ -1,4 +1,4 @@
-import { all, takeLatest, put, call, delay, select } from 'redux-saga/effects';
+import { all, takeLatest, put, call, select } from 'redux-saga/effects';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
 import { i18n } from '$translation';
@@ -6,19 +6,14 @@ import { Platform } from 'react-native';
 
 import { mainActions, mainSelector } from './index';
 import { batchActions } from '$store';
-import { walletActions } from '$store/wallet';
 import * as SplashScreen from 'expo-splash-screen';
-import { WalletCurrency } from '$shared/constants';
 import {
   getHiddenNotifications,
-  getIntroShown,
   getSavedLogs,
   hideNotification,
   MainDB,
-  setIntroShown,
   setSavedLogs,
 } from '$database';
-import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { HideNotificationAction } from '$store/main/interface';
 import { withRetry } from '$store/retry';
 import { InternalNotificationModel } from '$store/models';
@@ -40,7 +35,6 @@ function* initWorker() {
 }
 
 export function* initHandler() {
-  const isIntroShown = yield call(getIntroShown);
   const timeSyncedDismissed = yield call(MainDB.timeSyncedDismissedTimestamp);
 
   initStats();
@@ -52,10 +46,7 @@ export function* initHandler() {
 
   yield put(
     batchActions(
-      mainActions.endInitiating({
-        fiatCurrency: WalletCurrency.Usd,
-      }),
-      mainActions.toggleIntro(!isIntroShown),
+      mainActions.endInitiating(),
       mainActions.setTimeSyncedDismissed(timeSyncedDismissed),
     ),
   );
@@ -72,14 +63,6 @@ export function* initHandler() {
   yield put(favoritesActions.loadSuggests());
   yield put(mainActions.getTimeSynced());
   SplashScreen.hideAsync();
-}
-
-function* completeIntroWorker() {
-  try {
-    yield call(setIntroShown, true);
-    yield delay(300);
-    yield call(openRequireWalletModal);
-  } catch (e) {}
 }
 
 function* loadNotificationsWorker() {
@@ -148,7 +131,6 @@ export function* mainSaga() {
   yield all([
     takeLatest(mainActions.init, initWorker),
     takeLatest(mainActions.getTimeSynced, getTimeSyncedWorker),
-    takeLatest(mainActions.completeIntro, completeIntroWorker),
     takeLatest(mainActions.loadNotifications, loadNotificationsWorker),
     takeLatest(mainActions.hideNotification, hideNotificationWorker),
     takeLatest(mainActions.addLog, addLogWorker),

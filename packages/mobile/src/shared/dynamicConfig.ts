@@ -1,9 +1,5 @@
-import { store } from '$store';
-
-export function getWalletName(): string {
-  return `${getChainName()}_default`;
-}
+import { tk } from '$wallet';
 
 export function getChainName(): 'mainnet' | 'testnet' {
-  return store.getState().main.isTestnet ? 'testnet' : 'mainnet';
+  return tk.wallet?.isTestnet ? 'testnet' : 'mainnet';
 }

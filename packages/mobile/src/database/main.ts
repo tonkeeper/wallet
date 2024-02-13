@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { getWalletName } from '$shared/dynamicConfig';
 import { LogItem } from '$store/main/interface';
 
 export class MainDB {
@@ -20,28 +19,10 @@ export class MainDB {
       await AsyncStorage.setItem('timeSyncedDismissed', 'false');
     }
   }
-
-  static async isNewSecurityFlow(): Promise<boolean> {
-    return (await AsyncStorage.getItem('new_security_flow')) === 'yes';
-  }
-
-  static async isBiometryEnabled(): Promise<boolean> {
-    return (await AsyncStorage.getItem('biometry_enabled')) === 'yes';
-  }
-
-  static async getKeychainService() {
-    return await AsyncStorage.getItem('keychainService');
-  }
-
-  static async setKeychainService(keychainService: string) {
-    await AsyncStorage.setItem('keychainService', keychainService);
-  }
 }
 
 export async function getHiddenNotifications(): Promise<string[]> {
-  const raw = await AsyncStorage.getItem(
-    `${getWalletName()}_hidden_internal_notifications`,
-  );
+  const raw = await AsyncStorage.getItem('mainnet_default_hidden_internal_notifications');
 
   if (!raw) {
     return [];
@@ -59,7 +40,7 @@ export async function hideNotification(id: string) {
   hidden.push(id);
 
   await AsyncStorage.setItem(
-    `${getWalletName()}_hidden_internal_notifications`,
+    'mainnet_default_hidden_internal_notifications',
     JSON.stringify(hidden.slice(-20)),
   );
 }
