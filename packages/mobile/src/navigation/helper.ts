@@ -10,7 +10,7 @@ import { CryptoCurrency } from '$shared/constants';
 import { SendAnalyticsFrom } from '$store/models';
 import { NFTKeyPair } from '$store/nfts/interface';
 import _ from 'lodash';
-import { getCurrentRoute, navigate, push, replace } from './imperative';
+import { getCurrentRoute, navigate, push, replace, reset } from './imperative';
 import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
 import { tk } from '$wallet';
 import { CreateWalletStackRouteNames } from './CreateWalletStack/types';
@@ -100,7 +100,6 @@ export function openSetupNotifications(identifiers: string[]) {
   ) {
     replace(CreateWalletStackRouteNames.Notifications, { identifiers });
   } else if (getCurrentRoute()?.name === AddWatchOnlyStackRouteNames.AddWatchOnly) {
-    console.log('sadasdasdasd');
     replace(AddWatchOnlyStackRouteNames.Notifications, { identifiers });
   } else {
     replace(ImportWalletStackRouteNames.Notifications, { identifiers });
@@ -108,7 +107,8 @@ export function openSetupNotifications(identifiers: string[]) {
 }
 
 export function openSetupWalletDone(identifiers: string[]) {
-  replace(MainStackRouteNames.Tabs);
+  reset(MainStackRouteNames.Tabs);
+
   if (tk.wallets.size > 1 && tk.wallets.size !== identifiers.length) {
     navigate(AppStackRouteNames.CustomizeWallet, { identifiers });
   }
