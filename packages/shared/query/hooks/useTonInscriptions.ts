@@ -1,6 +1,5 @@
 import { useExternalState } from '../../hooks/useExternalState';
 import { State } from '@tonkeeper/core';
-import { tk } from '@tonkeeper/mobile/src/wallet';
 import { useWallet } from '../../hooks';
 
 export const useTonInscriptions = () => {
@@ -14,7 +13,7 @@ export const useTonInscriptions = () => {
   );
 
   return {
-    reload: () => tk.wallet?.tonInscriptions.load(),
+    reload: () => wallet?.tonInscriptions.load(),
     isLoading: state.isLoading,
     items: state.items,
   };
