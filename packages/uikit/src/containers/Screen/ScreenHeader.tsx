@@ -148,7 +148,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
 
   return (
     <React.Fragment>
-      <View style={{ paddingTop: headerHeight }} />
+      {!gradient && <View style={{ paddingTop: headerHeight }} />}
       <Animated.View
         style={[
           { height: headerHeight },
@@ -166,7 +166,9 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
             locations={[0, 1]}
           />
         )}
-        <Animated.View style={[styles.innerContainer, ejectionOpacityStyle, borderStyle]}>
+        <Animated.View
+          style={[styles.innerContainer, ejectionOpacityStyle, !gradient && borderStyle]}
+        >
           <View style={styles.content}>
             {children ?? (
               <>

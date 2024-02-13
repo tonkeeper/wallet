@@ -6,18 +6,31 @@ import { BottomButtonWrap, BottomButtonWrapHelper } from '$shared/components';
 import { Checkbox } from '$uikit';
 import { WalletContractVersion } from '$wallet/WalletTypes';
 import { t } from '@tonkeeper/shared/i18n';
-import { Button, List, Screen, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
+import {
+  Button,
+  List,
+  Screen,
+  Spacer,
+  Steezy,
+  Text,
+  View,
+  isAndroid,
+} from '@tonkeeper/uikit';
 import { FC, useCallback, useState } from 'react';
 import { RouteProp } from '@react-navigation/native';
 import { Address } from '@tonkeeper/shared/Address';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { useImportWallet } from '$hooks/useImportWallet';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenHeaderHeight } from '@tonkeeper/uikit/src/containers/Screen/utils/constants';
 
 export const ChooseWallets: FC<{
   route: RouteProp<ImportWalletStackParamList, ImportWalletStackRouteNames.ChooseWallets>;
 }> = (props) => {
   const { mnemonic, lockupConfig, isTestnet, walletsInfo, isMigration } =
     props.route.params;
+
+  const safeArea = useSafeAreaInsets();
 
   const doImportWallet = useImportWallet();
 
@@ -55,10 +68,13 @@ export const ChooseWallets: FC<{
 
   const tokensText = `, ${t('choose_wallets.tokens')}`;
 
+  const headerHeight = ScreenHeaderHeight + safeArea.top;
+
   return (
     <Screen>
-      <Screen.Header />
+      <Screen.Header gradient />
       <Screen.ScrollView contentContainerStyle={styles.contentContainer.static}>
+        <View style={{ paddingTop: headerHeight }} />
         <Spacer y={24} />
         <View style={styles.container}>
           <Text type="h2" textAlign="center">
@@ -85,7 +101,7 @@ export const ChooseWallets: FC<{
                 <Checkbox
                   checked={selectedVersions.includes(walletInfo.version)}
                   onChange={() => {}}
-                  disabled
+                  disabled={isAndroid}
                 />
               }
               onPress={() => toggleVersion(walletInfo.version)}
@@ -115,6 +131,7 @@ const styles = Steezy.create(() => ({
   },
   container: {
     paddingHorizontal: 16,
+    paddingBottom: 16,
   },
   buttonContainer: {
     paddingHorizontal: 32,

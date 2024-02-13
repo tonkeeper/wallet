@@ -35,7 +35,7 @@ export const AddWalletModal = memo<AddWalletModalProps>((props) => {
               leftContent={<Icon name="ic-plus-circle-28" color="accentBlue" />}
               title={t('add_wallet_modal.create.title')}
               subtitle={t('add_wallet_modal.create.subtitle')}
-              subtitleNumberOfLines={2}
+              subtitleNumberOfLines={3}
               chevron
             />
           </List>
@@ -49,7 +49,7 @@ export const AddWalletModal = memo<AddWalletModalProps>((props) => {
               leftContent={<Icon name="ic-key-28" color="accentBlue" />}
               title={t('add_wallet_modal.import.title')}
               subtitle={t('add_wallet_modal.import.subtitle')}
-              subtitleNumberOfLines={2}
+              subtitleNumberOfLines={3}
               chevron
             />
           </List>
@@ -63,7 +63,7 @@ export const AddWalletModal = memo<AddWalletModalProps>((props) => {
               leftContent={<Icon name="ic-magnifying-glass-28" color="accentBlue" />}
               title={t('add_wallet_modal.watch_only.title')}
               subtitle={t('add_wallet_modal.watch_only.subtitle')}
-              subtitleNumberOfLines={2}
+              subtitleNumberOfLines={3}
               chevron
             />
           </List>
@@ -83,7 +83,7 @@ export const AddWalletModal = memo<AddWalletModalProps>((props) => {
                 leftContent={<Icon name="ic-testnet-28" color="accentBlue" />}
                 title={t('add_wallet_modal.testnet.title')}
                 subtitle={t('add_wallet_modal.testnet.subtitle')}
-                subtitleNumberOfLines={2}
+                subtitleNumberOfLines={3}
                 chevron
               />
             </List>
