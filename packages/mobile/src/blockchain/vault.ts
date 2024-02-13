@@ -234,6 +234,13 @@ export class UnlockedVault extends Vault {
     this.versions = versions;
   }
 
+  public setConfig(lockupConfig: any) {
+    this.info.version = lockupConfig.wallet_type;
+    this.info.workchain = lockupConfig.workchain;
+    this.info.configPubKey = lockupConfig.config_pubkey;
+    this.info.allowedDestinations = lockupConfig.allowed_destinations;
+  }
+
   // Ton private key. Throws an error if the vault is not unlocked.
   // Check if the vault is locked via `.locked` and unlock via `.unlock()`
   async getTonPrivateKey(): Promise<Uint8Array> {

@@ -3,9 +3,11 @@ import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
 import { TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { TokenRate } from '../WalletTypes';
+import { NamespacedLogger, logger } from '$logger';
 
 export type PricesState = {
   ton: TokenRate;
+  updatedAt: number;
   currency: WalletCurrency;
 };
 
@@ -17,8 +19,11 @@ export class TonPriceManager {
       ton: 0,
       diff_24h: '',
     },
+    updatedAt: Date.now(),
     currency: WalletCurrency.USD,
   });
+
+  private logger: NamespacedLogger;
 
   constructor(private tonapi: TonAPI, private storage: Storage) {
     this.state.persist({
@@ -26,16 +31,20 @@ export class TonPriceManager {
       key: 'ton_price',
     });
 
+    this.logger = logger.extend('TonPriceManager');
+
     this.migrate();
   }
 
   setFiatCurrency(currency: WalletCurrency) {
+    this.logger.info('Setting fiat currency', currency);
     this.state.clear();
     this.state.clearPersist();
     this.state.set({ currency });
   }
 
   public async load() {
+    this.logger.info('Loading TON price');
     try {
       const currency = this.state.data.currency.toUpperCase();
       const token = 'TON';
@@ -51,6 +60,7 @@ export class TonPriceManager {
           ton: data.rates[token].prices!.TON,
           diff_24h: data.rates[token].diff_24h![currency],
         },
+        updatedAt: Date.now(),
       });
     } catch {}
   }

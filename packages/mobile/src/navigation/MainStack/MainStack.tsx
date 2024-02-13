@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { MainStackParamList } from './MainStack.interface';
@@ -8,7 +8,6 @@ import { TabStack } from './TabStack/TabStack';
 import { useTheme } from '$hooks/useTheme';
 import { DevStack } from '../DevStack/DevStack';
 import { useAttachScreen } from '../AttachScreen';
-import { SetupNotifications } from '$core/SetupNotifications/SetupNotifications';
 import { Jetton } from '$core/Jetton/Jetton';
 import { DeleteAccountDone } from '$core/DeleteAccountDone/DeleteAccountDone';
 import { ManageTokens } from '$core/ManageTokens/ManageTokens';
@@ -34,6 +33,7 @@ import { AddWatchOnlyStack } from '$navigation/AddWatchOnlyStack';
 import { useExternalState } from '@tonkeeper/shared/hooks/useExternalState';
 import { tk } from '$wallet';
 import { MigrationStack } from '$navigation/MigrationStack';
+import { useTonPriceUpdater } from '$hooks/useTonPriceUpdater';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -45,6 +45,7 @@ export const MainStack: FC = () => {
   const wallet = useWallet();
   useNotificationsResolver();
   useDiamondsChecker();
+  useTonPriceUpdater();
 
   const initialRouteName = !attachedScreen.pathname
     ? MainStackRouteNames.Tabs

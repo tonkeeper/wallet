@@ -52,14 +52,18 @@ export class SubscriptionsManager {
   public state = new State<SubscriptionsState>(SubscriptionsManager.INITIAL_STATE);
 
   public async load() {
-    this.state.set({ isLoading: true });
-    const { data: subscriptions } = await network.get<SubscriptionsResponse>(
-      `${config.get('subscriptionsHost')}/v1/subscriptions`,
-      {
-        params: { address: this.tonRawAddress },
-      },
-    );
-    this.state.set({ isLoading: false, subscriptions: subscriptions.data });
+    try {
+      this.state.set({ isLoading: true });
+      const { data: subscriptions } = await network.get<SubscriptionsResponse>(
+        `${config.get('subscriptionsHost')}/v1/subscriptions`,
+        {
+          params: { address: this.tonRawAddress },
+        },
+      );
+      this.state.set({ isLoading: false, subscriptions: subscriptions.data });
+    } catch {
+      this.state.set({ isLoading: false });
+    }
   }
 
   public async reload() {

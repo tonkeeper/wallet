@@ -223,7 +223,8 @@ export class Tonkeeper {
       const identifier = uuidv4();
 
       const keyPair = await this.vault.import(identifier, mnemonic, passcode);
-      const proofToken = await this.obtainProofToken(keyPair);
+      // const proofToken = await this.obtainProofToken(keyPair);
+      const proofToken = null;
 
       newWallets.push({
         ...DEFAULT_WALLET_STYLE_CONFIG,
@@ -468,7 +469,6 @@ export class Tonkeeper {
 
   public switchWallet(identifier: string) {
     const wallet = this.wallets.get(identifier);
-    this.wallet.preload();
     this.setWallet(wallet!);
   }
 

@@ -111,10 +111,11 @@ export class BalancesManager {
         ton: AmountFormatter.fromNanoStatic(account.balance),
       });
     } catch (e) {
-      this.state.set(({ ton }) => ({
+      this.state.set({
         isLoading: false,
-        ton: e?.response?.status === 404 ? AmountFormatter.fromNanoStatic(0) : ton,
-      }));
+      });
+
+      throw e;
     }
   }
 
