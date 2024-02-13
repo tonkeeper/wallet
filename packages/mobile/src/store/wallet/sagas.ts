@@ -391,7 +391,9 @@ function* cleanWalletWorker() {
 
     yield call(trackEvent, 'reset_wallet');
 
-    navigate(TabsStackRouteNames.Balances);
+    if (tk.wallets.size > 0) {
+      navigate(TabsStackRouteNames.Balances);
+    }
   } catch (e) {
     e && debugLog(e.message);
     yield put(Toast.fail, e.message);
