@@ -36,8 +36,15 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
     return () => clearTimeout(timer);
   }, []);
 
+  const [isCreatingWallet, setCreatingWallet] = useState(false);
+
   const doCreateWallet = useCallback(
     (isBiometryEnabled: boolean) => () => {
+      if (isCreatingWallet) {
+        return;
+      }
+
+      setCreatingWallet(true);
       dispatch(
         walletActions.createWallet({
           isBiometryEnabled,
@@ -49,14 +56,16 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
             } else {
               openSetupNotifications(identifiers);
             }
+            setCreatingWallet(false);
           },
           onFail: () => {
+            setCreatingWallet(false);
             setLoading(false);
           },
         }),
       );
     },
-    [dispatch, pin],
+    [isCreatingWallet, dispatch, pin],
   );
 
   const biometryNameGenitive = useMemo(() => {
@@ -85,6 +94,7 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
             mode="secondary"
             style={{ marginRight: ns(16) }}
             onPress={doCreateWallet(false)}
+            disabled={isCreatingWallet}
           >
             {t('later')}
           </Button>
@@ -113,7 +123,11 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
           </S.CaptionWrapper>
         </S.Content>
         <S.Footer style={{ paddingBottom: bottomInset }}>
-          <Button onPress={handleEnable} isLoading={isLoading}>
+          <Button
+            onPress={handleEnable}
+            isLoading={isLoading}
+            disabled={isCreatingWallet}
+          >
             {t('setup_biometry_enable_button', {
               biometryType: biometryName,
             })}

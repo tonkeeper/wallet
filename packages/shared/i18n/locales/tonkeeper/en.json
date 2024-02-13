@@ -944,11 +944,11 @@
     "refund": "Refund",
     "signRaw": {
       "addressMismatch": {
-        "wrongVersion": {
+        "switchWallet": {
           "close": "Cancel",
-          "description": "Switch your active address to %{version} to confirm the action.",
-          "switch": "Switch and continue",
-          "title": "Action for another address of your wallet"
+          "description": "Switch wallet to confirm the action.",
+          "switch": "Switch and Continue",
+          "title": "Action for your wallet %{value}"
         },
         "wrongWallet": {
           "close": "OK",

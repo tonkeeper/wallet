@@ -37,14 +37,14 @@ export class TonPriceManager {
   }
 
   setFiatCurrency(currency: WalletCurrency) {
-    this.logger.info('Setting fiat currency', currency);
+    this.logger.debug('Setting fiat currency', currency);
     this.state.clear();
     this.state.clearPersist();
     this.state.set({ currency });
   }
 
   public async load() {
-    this.logger.info('Loading TON price');
+    this.logger.debug('Loading TON price');
     try {
       const currency = this.state.data.currency.toUpperCase();
       const token = 'TON';

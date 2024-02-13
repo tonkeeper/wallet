@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useMemo, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Rate, { AndroidMarket } from 'react-native-rate';
 import { Alert, Linking, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
@@ -45,12 +45,7 @@ import { trackEvent } from '$utils/stats';
 import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 import { config } from '$config';
 import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
-import {
-  useNftsState,
-  useWallet,
-  useWalletCurrency,
-  useWallets,
-} from '@tonkeeper/shared/hooks';
+import { useNftsState, useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
 import { WalletListItem } from '@tonkeeper/shared/components';
@@ -241,8 +236,6 @@ export const Settings: FC = () => {
   const isAppearanceVisible = React.useMemo(() => {
     return hasDiamods && !flags.disable_apperance;
   }, [hasDiamods, flags.disable_apperance]);
-
-  const wallets = useWallets();
 
   return (
     <S.Wrap>

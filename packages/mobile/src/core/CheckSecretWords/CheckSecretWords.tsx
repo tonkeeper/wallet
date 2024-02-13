@@ -33,6 +33,7 @@ export const CheckSecretWords: FC = () => {
   const [failed, setFailed] = useState<{ [index: number]: boolean }>({});
   const [isConfigInputShown, setConfigInputShown] = useState(false);
   const [config, setConfig] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const unlockVault = useUnlockVault();
 
@@ -122,7 +123,7 @@ export const CheckSecretWords: FC = () => {
   );
 
   const handleSubmit = useCallback(async () => {
-    if (!isCanSend) {
+    if (!isCanSend || loading) {
       return;
     }
 
@@ -150,6 +151,7 @@ export const CheckSecretWords: FC = () => {
     }
 
     if (tk.walletForUnlock) {
+      setLoading(true);
       try {
         await unlockVault();
         const pin = getLastEnteredPasscode();
@@ -159,15 +161,27 @@ export const CheckSecretWords: FC = () => {
         dispatch(
           walletActions.createWallet({
             pin,
-            onDone: isNotificationsDenied ? openSetupWalletDone : openSetupNotifications,
-            onFail: () => {},
+            onDone: (identifiers) => {
+              if (isNotificationsDenied) {
+                openSetupWalletDone(identifiers);
+              } else {
+                openSetupNotifications(identifiers);
+              }
+              setLoading(false);
+            },
+            onFail: () => {
+              setLoading(false);
+            },
           }),
         );
-      } catch {}
+      } catch {
+        setLoading(false);
+      }
     } else {
       openCreatePin();
     }
   }, [
+    loading,
     isCanSend,
     failed,
     validateInputWord,
@@ -292,7 +306,7 @@ export const CheckSecretWords: FC = () => {
             />
           </S.InputWrap>
         </S.Inputs>
-        <Button disabled={!isCanSend} onPress={handleSubmit}>
+        <Button disabled={!isCanSend} isLoading={loading} onPress={handleSubmit}>
           {t('continue')}
         </Button>
       </KeyboardAwareScrollView>

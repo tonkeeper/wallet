@@ -14,17 +14,7 @@ import {
   createTronApiInstance,
 } from '../utils';
 import { BatteryAPI } from '@tonkeeper/core/src/BatteryAPI';
-import {
-  ContractService,
-  ServerSentEvents,
-  Storage,
-  TronAPI,
-  WalletVersion,
-} from '@tonkeeper/core';
-import { signProofForTonkeeper } from '@tonkeeper/core/src/utils/tonProof';
-import { storeStateInit } from '@ton/ton';
-import nacl from 'tweetnacl';
-import { beginCell } from '@ton/core';
+import { ServerSentEvents, Storage, TronAPI } from '@tonkeeper/core';
 import { TronService } from '@tonkeeper/core/src/TronService';
 import { NamespacedLogger, logger } from '$logger';
 
@@ -39,8 +29,6 @@ export class WalletBase {
   protected batteryapi: BatteryAPI;
   protected tronapi: TronAPI;
   protected sse: ServerSentEvents;
-
-  private tonProofStorageKey: string;
 
   protected logger: NamespacedLogger;
 
@@ -71,8 +59,6 @@ export class WalletBase {
     this.sse = createSseInstance(this.isTestnet);
 
     this.tronService = new TronService(this.address, this.tronapi);
-
-    this.tonProofStorageKey = `${this.address.ton.raw}/tonProof`;
   }
 
   public setConfig(config: WalletConfig) {

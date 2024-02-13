@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { Modal } from '@tonkeeper/uikit';
 
@@ -8,40 +8,54 @@ import { useNavigation, SheetActions } from '@tonkeeper/router';
 import { delay } from '$utils';
 import { push } from '$navigation/imperative';
 import { Address } from '@tonkeeper/shared/Address';
+import { useWallets } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
 
 export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () => void }>(
   (props) => {
     const nav = useNavigation();
+    const wallets = useWallets();
 
-    // MULTIWALLET TODO
-    const foundVersion = false;
+    const foundWallet = useMemo(() => {
+      return wallets.find((wallet) => {
+        return Address.compare(wallet.address.ton.raw, props.source);
+      });
+    }, [props.source, wallets]);
 
     const handleCloseModal = useCallback(() => nav.goBack(), [nav]);
     const handleSwitchWallet = useCallback(async () => {
-      if (!foundVersion) {
+      if (!foundWallet) {
         return;
       }
       nav.goBack();
-      // tk.updateWallet({ version: foundVersion });
+      tk.switchWallet(foundWallet.identifier);
       await delay(100);
       props.onSwitchAddress();
-    }, [foundVersion, nav, props]);
+    }, [foundWallet, nav, props]);
 
     return (
       <Modal>
         <Modal.Header />
         <Modal.Content>
           <S.Wrap>
-            <Icon style={{ marginBottom: 12 }} name={'ic-exclamationmark-circle-84'} />
+            <Icon
+              style={{ marginBottom: 12 }}
+              name={'ic-exclamationmark-circle-84'}
+              color="iconSecondary"
+            />
             <Text textAlign="center" variant="h2" style={{ marginBottom: 4 }}>
-              {foundVersion
-                ? t('txActions.signRaw.addressMismatch.wrongVersion.title')
+              {foundWallet
+                ? t('txActions.signRaw.addressMismatch.switchWallet.title', {
+                    value: `${
+                      foundWallet.config.emoji
+                    } ${foundWallet.config.name.replaceAll(' ', ' ')}`,
+                  })
                 : t('txActions.signRaw.addressMismatch.wrongWallet.title')}
             </Text>
             <Text variant="body1" color="foregroundSecondary" textAlign="center">
-              {foundVersion
-                ? t('txActions.signRaw.addressMismatch.wrongVersion.description', {
-                    version: foundVersion,
+              {foundWallet
+                ? t('txActions.signRaw.addressMismatch.switchWallet.description', {
+                    version: foundWallet,
                   })
                 : t('txActions.signRaw.addressMismatch.wrongWallet.description', {
                     address: Address.parse(props.source).toShort(),
@@ -51,18 +65,18 @@ export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () =
         </Modal.Content>
         <Modal.Footer>
           <S.FooterWrap>
-            {foundVersion ? (
+            {foundWallet ? (
               <Button
                 style={{ marginBottom: 16 }}
                 mode="primary"
                 onPress={handleSwitchWallet}
               >
-                {t('txActions.signRaw.addressMismatch.wrongVersion.switch')}
+                {t('txActions.signRaw.addressMismatch.switchWallet.switch')}
               </Button>
             ) : null}
             <Button mode="secondary" onPress={handleCloseModal}>
-              {foundVersion
-                ? t('txActions.signRaw.addressMismatch.wrongVersion.close')
+              {foundWallet
+                ? t('txActions.signRaw.addressMismatch.switchWallet.close')
                 : t('txActions.signRaw.addressMismatch.wrongWallet.close')}
             </Button>
           </S.FooterWrap>

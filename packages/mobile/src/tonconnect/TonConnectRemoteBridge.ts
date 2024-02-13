@@ -28,9 +28,10 @@ import { TCEventID } from './EventID';
 import { AppStackRouteNames } from '$navigation';
 import { getCurrentRoute, goBack } from '$navigation/imperative';
 import { delay } from '$utils';
+import { Address } from '@tonkeeper/core';
 
 class TonConnectRemoteBridgeService {
-  private readonly storeKey = 'ton-connect-http-bridge-lastEventId';
+  private storeKey = '';
 
   private readonly bridgeUrl = 'https://bridge.tonapi.io/bridge';
 
@@ -56,8 +57,12 @@ class TonConnectRemoteBridgeService {
     }
   }
 
-  async open(connections: IConnectedAppConnection[]) {
+  async open(connections: IConnectedAppConnection[], walletAddress: string) {
     this.close();
+
+    this.storeKey = `${Address.parse(
+      walletAddress,
+    ).toRaw()}/ton-connect-http-bridge-lastEventId`;
 
     this.connections = connections.filter(
       (item) => item.type === TonConnectBridgeType.Remote,

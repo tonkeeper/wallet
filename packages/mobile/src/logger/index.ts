@@ -9,4 +9,20 @@ export const logger = RNLogs.logger.createLogger<'debug' | 'info' | 'warn' | 'er
     warn: 2,
     error: 3,
   },
+  severity: 'debug',
+  transport: RNLogs.consoleTransport,
+  transportOptions: {
+    colors: {
+      debug: 'grey',
+      info: 'greenBright',
+      warn: 'yellowBright',
+      error: 'redBright',
+    },
+  },
+  async: true,
+  dateFormat: 'time',
+  printLevel: false,
+  printDate: true,
+  fixedExtLvlLength: true,
+  enabled: true,
 });
