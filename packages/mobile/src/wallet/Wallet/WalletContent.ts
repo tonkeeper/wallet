@@ -11,15 +11,19 @@ import { JettonActivityList } from '../Activity/JettonActivityList';
 import { TonInscriptions } from '../managers/TonInscriptions';
 import { JettonsManager } from '../managers/JettonsManager';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
-import { TokenApprovalManager } from '../managers/TokenApprovalManager';
+import {
+  TokenApprovalManager,
+  TokenApprovalStatus,
+} from '../managers/TokenApprovalManager';
 import { TonPriceManager } from '../managers/TonPriceManager';
 import { StakingManager } from '../managers/StakingManager';
 import { WalletConfig } from '../WalletTypes';
 import { WalletBase } from './WalletBase';
 import BigNumber from 'bignumber.js';
 import { BatteryManager } from '../managers/BatteryManager';
-import { NotificationsManager } from '$wallet/managers/NotificationsManager';
-import { TonProofManager } from '$wallet/managers/TonProofManager';
+import { NotificationsManager } from '../managers/NotificationsManager';
+import { TonProofManager } from '../managers/TonProofManager';
+import { JettonVerification } from '../models/JettonBalanceModel';
 
 export interface WalletStatusState {
   isReloading: boolean;
@@ -161,6 +165,15 @@ export class WalletContent extends WalletBase {
       this.tonPrice.state.data.ton.fiat,
     );
     const jettons = this.jettons.state.data.jettonBalances.reduce((total, jetton) => {
+      const isBlacklisted = jetton.verification === JettonVerification.BLACKLIST;
+      const approvalStatus =
+        this.tokenApproval.state.data.tokens[Address.parse(jetton.jettonAddress).toRaw()];
+      if (
+        (isBlacklisted && !approvalStatus) ||
+        approvalStatus?.current === TokenApprovalStatus.Declined
+      ) {
+        return total;
+      }
       const rate =
         this.jettons.state.data.jettonRates[Address.parse(jetton.jettonAddress).toRaw()];
       return rate

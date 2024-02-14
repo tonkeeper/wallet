@@ -72,12 +72,10 @@ export const AddWalletModal = memo<AddWalletModalProps>((props) => {
               <List.Item
                 onPress={() => {
                   nav.goBack();
-                  setTimeout(() => {
-                    nav.navigate('ImportWalletStack', {
-                      screen: 'ImportWallet',
-                      params: { testnet: true },
-                    });
-                  }, 700);
+                  nav.navigate('ImportWalletStack', {
+                    screen: 'ImportWallet',
+                    params: { testnet: true },
+                  });
                 }}
                 leftContentStyle={styles.iconContainer}
                 leftContent={<Icon name="ic-testnet-28" color="accentBlue" />}
