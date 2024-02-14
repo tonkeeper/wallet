@@ -122,9 +122,9 @@ export class AppConfig<TConfig = {}> {
 
   public set(config: Partial<TConfig>, isTestnet = false) {
     if (isTestnet) {
-      this.clientConfig.testnet = Object.assign(this.clientConfig, config);
+      this.clientConfig.testnet = Object.assign(this.clientConfig.testnet, config);
     } else {
-      this.clientConfig.mainnet = Object.assign(this.clientConfig, config);
+      this.clientConfig.mainnet = Object.assign(this.clientConfig.mainnet, config);
     }
     return this.storage.setItem(
       this.clientConfigStorageKey,
