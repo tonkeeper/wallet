@@ -79,7 +79,12 @@ export class WalletContent extends WalletBase {
       this.storage,
     );
     this.subscriptions = new SubscriptionsManager(tonRawAddress, this.storage);
-    this.battery = new BatteryManager(this.tonProof, this.batteryapi, this.storage);
+    this.battery = new BatteryManager(
+      tonRawAddress,
+      this.tonProof,
+      this.batteryapi,
+      this.storage,
+    );
     this.notifications = new NotificationsManager(
       tonRawAddress,
       this.isTestnet,
@@ -106,7 +111,11 @@ export class WalletContent extends WalletBase {
   protected async rehydrate() {
     await super.rehydrate();
 
-    this.tonProof.rehydrate();
+    /*
+      Tonproof token must exist when we call preload,
+      so we have to resolve promise here
+     */
+    await this.tonProof.rehydrate();
     this.tokenApproval.rehydrate();
     this.balances.rehydrate();
     this.nfts.rehydrate();
