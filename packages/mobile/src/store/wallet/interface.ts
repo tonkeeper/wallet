@@ -77,3 +77,5 @@ export type WalletGetUnlockedVaultAction = PayloadAction<
     }
   | undefined
 >;
+
+export type CleanWalletAction = PayloadAction<{ cleanAll: boolean } | undefined>;

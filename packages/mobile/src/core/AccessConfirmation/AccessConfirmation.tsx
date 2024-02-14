@@ -15,7 +15,7 @@ import {
 } from '$store/wallet/sagas';
 import { UnlockedVault } from '$blockchain';
 import { AppStackRouteNames } from '$navigation';
-import { walletGeneratedVaultSelector } from '$store/wallet';
+import { walletActions, walletGeneratedVaultSelector } from '$store/wallet';
 import { mainActions } from '$store/main';
 import { Toast, ToastSize } from '$store';
 import { goBack, useParams } from '$navigation/imperative';
@@ -166,11 +166,11 @@ export const AccessConfirmation: FC = () => {
         text: t('settings_reset_alert_button'),
         style: 'destructive',
         onPress: () => {
-          tk.removeAllWallets();
+          dispatch(walletActions.cleanWallet({ cleanAll: isUnlock }));
         },
       },
     ]);
-  }, []);
+  }, [dispatch, isUnlock]);
 
   function renderRightButton() {
     if (generatedVault) {
