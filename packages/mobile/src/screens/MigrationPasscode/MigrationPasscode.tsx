@@ -96,6 +96,7 @@ export const MigrationPasscode: FC<{
             }
 
             setTimeout(() => {
+              setValue('');
               pinRef.current?.clearState();
             }, 1000);
           } catch {

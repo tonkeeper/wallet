@@ -339,9 +339,11 @@ export const WalletScreen = memo(({ navigation }) => {
             </PagerView.Page>
             <PagerView.Page index={1}>
               <PagerView.FlatList
+                key={wallet.identifier}
                 contentContainerStyle={styles.scrollContainer}
                 numColumns={3}
                 data={nfts}
+                initialNumToRender={1}
                 renderItem={({ item }) => (
                   <View style={nftCardSize}>
                     <NFTCardItem item={item} />

@@ -15,6 +15,7 @@ import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/A
 import { Base64 } from '$utils';
 import { Address } from '@tonkeeper/core';
 import { useWallet } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
 
 export type RenewDomainButtonRef = {
   renewUpdated: () => void;
@@ -54,7 +55,7 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
 
       openSignRawModal(
         {
-          source: wallet.address.ton.raw,
+          source: tk.wallet.address.ton.raw,
           valid_until,
           messages: [
             {
@@ -82,7 +83,7 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
         return;
       }
 
-      if (!Address.compare(wallet.address.ton.raw, ownerAddress)) {
+      if (!Address.compare(tk.wallet.address.ton.raw, ownerAddress)) {
         return openAddressMismatchModal(openRenew, ownerAddress!);
       } else {
         openRenew();

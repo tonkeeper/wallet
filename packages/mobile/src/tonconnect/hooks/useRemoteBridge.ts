@@ -22,12 +22,12 @@ export const useRemoteBridge = () => {
       address,
     );
 
-    TonConnectRemoteBridge.open(initialConnections);
+    TonConnectRemoteBridge.open(initialConnections, address);
 
     const unsubscribe = useConnectedAppsStore.subscribe(
       (s) => getAllConnections(s, address),
       (connections) => {
-        TonConnectRemoteBridge.open(connections);
+        TonConnectRemoteBridge.open(connections, address);
       },
     );
 

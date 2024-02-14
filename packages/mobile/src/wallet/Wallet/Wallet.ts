@@ -56,7 +56,7 @@ export class Wallet extends WalletContent {
   }
 
   public async preload() {
-    this.logger.info('preload wallet data');
+    this.logger.debug('preload wallet data');
     try {
       this.status.set({ isLoading: true });
       await super.preload();
@@ -67,7 +67,7 @@ export class Wallet extends WalletContent {
   }
 
   public async reload() {
-    this.logger.info('reload wallet data');
+    this.logger.debug('reload wallet data');
     try {
       this.status.set({ isReloading: true });
       this.tonPrice.load();
@@ -83,7 +83,7 @@ export class Wallet extends WalletContent {
       accounts: this.address.ton.raw,
     });
     this.listener.addEventListener('open', () => {
-      this.logger.info('start listen transactions');
+      this.logger.debug('start listen transactions');
     });
     this.listener.addEventListener('error', (err) => {
       this.logger.error('error listen transactions', err);
@@ -96,7 +96,7 @@ export class Wallet extends WalletContent {
 
   private stopListenTransactions() {
     this.listener?.close();
-    this.logger.info('stop listen transactions');
+    this.logger.warn('stop listen transactions');
   }
 
   private listenAppState() {
@@ -119,6 +119,7 @@ export class Wallet extends WalletContent {
   }
 
   public destroy() {
+    this.logger.warn('destroy wallet');
     this.tonProof.destroy();
     this.appStateListener?.remove();
     this.stopListenTransactions();

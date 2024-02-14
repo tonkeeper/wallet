@@ -8,7 +8,7 @@ type Cursors = {
   ton: number | null;
 };
 
-type ActivityListState = {
+export type ActivityListState = {
   sections: ActivitySection[];
   error?: string | null;
   isReloading: boolean;

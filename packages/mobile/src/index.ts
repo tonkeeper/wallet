@@ -42,6 +42,5 @@ export const startApp = async () => {
     }
   });
 
-  // MULTIWALLET TODO
   store.dispatch(mainActions.init());
 };

@@ -37,7 +37,7 @@ export class NotificationsManager {
   }
 
   public async subscribe() {
-    this.logger.info('NotificationsManager.subscribe call');
+    this.logger.debug('NotificationsManager.subscribe call');
 
     const token = await this.requestUserPermissionAndGetToken();
 
@@ -64,13 +64,13 @@ export class NotificationsManager {
 
     this.state.set({ isSubscribed: true });
 
-    this.logger.info('NotificationsManager.subscribe done');
+    this.logger.debug('NotificationsManager.subscribe done');
 
     return true;
   }
 
   public async unsubscribe() {
-    this.logger.info('NotificationsManager.unsubscribe call');
+    this.logger.debug('NotificationsManager.unsubscribe call');
 
     if (!this.state.data.isSubscribed) {
       return false;
@@ -90,7 +90,7 @@ export class NotificationsManager {
 
     this.state.set({ isSubscribed: false });
 
-    this.logger.info('NotificationsManager.unsubscribe done');
+    this.logger.debug('NotificationsManager.unsubscribe done');
 
     return true;
   }

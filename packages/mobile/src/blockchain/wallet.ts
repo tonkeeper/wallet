@@ -452,7 +452,10 @@ export class TonWallet {
       AddressFormatter.compare(jettonBalance.walletAddress, jettonWalletAddress),
     );
 
-    if (!balance || new BigNumber(balance.balance).lt(new BigNumber(amountNano))) {
+    if (
+      !balance ||
+      new BigNumber(Ton.toNano(balance.balance)).lt(new BigNumber(amountNano))
+    ) {
       throw new Error(t('send_insufficient_funds'));
     }
 

@@ -89,10 +89,10 @@ export class JettonsManager {
         });
 
       // Move Token to pending if name or symbol changed
-      this.state.data.jettonBalances.forEach((balance: JettonBalanceModel) => {
-        const newBalance = jettonBalances.find((b) =>
-          Address.compare(b.jettonAddress, balance.jettonAddress),
-        );
+      const jettonBalancesMap = new Map(jettonBalances.map((b) => [b.jettonAddress, b]));
+
+      this.state.data.jettonBalances.forEach((balance) => {
+        const newBalance = jettonBalancesMap.get(balance.jettonAddress);
         if (
           newBalance &&
           (balance.metadata.name !== newBalance.metadata.name ||

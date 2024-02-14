@@ -3,10 +3,62 @@ import { AttachScreenButton } from '$navigation/AttachScreen';
 import { Button, DevSeparator, Screen, Text } from '$uikit';
 import { useDeeplinking } from '$libs/deeplinking';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getTimeSec } from '$utils/getTimeSec';
+import { Base64 } from '$utils';
+
+const getExpiresSec = () => {
+  return getTimeSec() + 10 * 60;
+};
 
 export const DevDeeplinking: React.FC = () => {
   const deeplinking = useDeeplinking();
   const { bottom: paddingBottom } = useSafeAreaInsets();
+
+  const handleTwoTransfers = () => {
+    const data = Base64.encodeObj({
+      version: '0',
+      body: {
+        type: 'sign-raw-payload',
+        default: {
+          source: 'EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n',
+          valid_until: getExpiresSec(),
+          messages: [
+            {
+              address: 'EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n',
+              amount: '100000000',
+            },
+            {
+              address: 'EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n',
+              amount: '10000000',
+              payload: 'te6ccsEBAQEADgAAABgAAAAAQ29tbWVudCE07Pl9',
+            },
+          ],
+        },
+        params: {
+          source: 'EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n',
+          valid_until: getExpiresSec(),
+          messages: [
+            {
+              address: 'EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n',
+              amount: '100000000',
+            },
+            {
+              address: 'EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n',
+              amount: '10000000',
+              payload: 'te6ccsEBAQEADgAAABgAAAAAQ29tbWVudCE07Pl9',
+            },
+          ],
+        },
+        response_options: {
+          callback_url: 'https://txrequest.testtonlogin.xyz/api/complete',
+          return_url: 'https://txrequest.testtonlogin.xyz/api/complete',
+          broadcast: true,
+        },
+        expires_sec: getExpiresSec(),
+      },
+    });
+    deeplinking.resolve(`https://app.tonkeeper.com/v1/txrequest-inline/${data}`);
+  };
 
   return (
     <Screen>
@@ -37,15 +89,7 @@ export const DevDeeplinking: React.FC = () => {
         </Button>
 
         <DevSeparator />
-        <Button
-          onPress={() => {
-            deeplinking.resolve(
-              'https://app.tonkeeper.com/v1/txrequest-inline/eyJ2ZXJzaW9uIjoiMCIsImJvZHkiOnsidHlwZSI6InNpZ24tcmF3LXBheWxvYWQiLCJkZWZhdWx0Ijp7InNvdXJjZSI6IkVRRDJObURfbEg1ZjV1MUtqM0tmR3lUdmhaU1gwRWc2cXAyYTVJUVVLWHhPRzIxbiIsInZhbGlkX3VudGlsIjoxNjYyMzQ3MzgwLCJtZXNzYWdlcyI6W3siYWRkcmVzcyI6IkVRRDJObURfbEg1ZjV1MUtqM0tmR3lUdmhaU1gwRWc2cXAyYTVJUVVLWHhPRzIxbiIsImFtb3VudCI6IjEwMDAwMDAwMCJ9LHsiYWRkcmVzcyI6IkVRRDJObURfbEg1ZjV1MUtqM0tmR3lUdmhaU1gwRWc2cXAyYTVJUVVLWHhPRzIxbiIsImFtb3VudCI6IjEwMDAwMDAwIiwicGF5bG9hZCI6InRlNmNjc0VCQVFFQURnQUFBQmdBQUFBQVEyOXRiV1Z1ZENFMDdQbDkifV19LCJwYXJhbXMiOnsic291cmNlIjoiRVFEMk5tRF9sSDVmNXUxS2ozS2ZHeVR2aFpTWDBFZzZxcDJhNUlRVUtYeE9HMjFuIiwidmFsaWRfdW50aWwiOjE2NjIzNDczNzksIm1lc3NhZ2VzIjpbeyJhZGRyZXNzIjoiRVFEMk5tRF9sSDVmNXUxS2ozS2ZHeVR2aFpTWDBFZzZxcDJhNUlRVUtYeE9HMjFuIiwiYW1vdW50IjoiMTAwMDAwMDAwIn0seyJhZGRyZXNzIjoiRVFEMk5tRF9sSDVmNXUxS2ozS2ZHeVR2aFpTWDBFZzZxcDJhNUlRVUtYeE9HMjFuIiwiYW1vdW50IjoiMTAwMDAwMDAiLCJwYXlsb2FkIjoidGU2Y2NzRUJBUUVBRGdBQUFCZ0FBQUFBUTI5dGJXVnVkQ0UwN1BsOSJ9XX0sInJlc3BvbnNlX29wdGlvbnMiOnsiY2FsbGJhY2tfdXJsIjoiaHR0cHM6Ly90eHJlcXVlc3QudGVzdHRvbmxvZ2luLnh5ei9hcGkvY29tcGxldGUiLCJyZXR1cm5fdXJsIjoiaHR0cHM6Ly90eHJlcXVlc3QudGVzdHRvbmxvZ2luLnh5ei9hcGkvY29tcGxldGUiLCJicm9hZGNhc3QiOnRydWV9LCJleHBpcmVzX3NlYyI6MTY2MjM0NDY3OX19',
-            );
-          }}
-        >
-          Two transfers (txrequest-inline)
-        </Button>
+        <Button onPress={handleTwoTransfers}>Two transfers (txrequest-inline)</Button>
 
         <DevSeparator />
 
@@ -183,7 +227,7 @@ export const DevDeeplinking: React.FC = () => {
         <Button
           onPress={() => {
             deeplinking.resolve(
-              'https://app.tonkeeper.com/transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n?amount=2000000000000000&jetton=EQDlBqGI2r44jpnhYfEiJahU8b7Zoo3no13l6Q9H-AIJbAgo&text=test'
+              'https://app.tonkeeper.com/transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n?amount=2000000000000000&jetton=EQDlBqGI2r44jpnhYfEiJahU8b7Zoo3no13l6Q9H-AIJbAgo&text=test',
             );
           }}
         >
