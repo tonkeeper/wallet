@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { InjectEngine } from './InjectEngine';
 import { Cell, Slice } from '@ton/core';
-import { useDeeplinking } from '@tonkeeper/mobile/src/libs/deeplinking';
-import { openSignRawModal } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/Modals/SignRawModal';
+import { useDeeplinking } from '$libs/deeplinking';
+import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 
 function parseString(slice: Slice) {
   let res = slice.loadBuffer(Math.floor(slice.remainingBits / 8)).toString();

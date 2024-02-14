@@ -1,5 +1,4 @@
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
-import { TonRawAddress } from '../WalletTypes';
 import { State } from '@tonkeeper/core/src/utils/State';
 import { Address } from '@tonkeeper/core/src/formatters/Address';
 
@@ -33,10 +32,10 @@ export class TokenApprovalManager {
 
   public state = new State<TokenApprovalState>(TokenApprovalManager.INITIAL_STATE);
 
-  constructor(private tonRawAddress: TonRawAddress, private storage: Storage) {
+  constructor(private persistPath: string, private storage: Storage) {
     this.state.persist({
       storage: this.storage,
-      key: `${this.tonRawAddress}/tokenApproval`,
+      key: `${this.persistPath}/tokenApproval`,
     });
     this.migrate();
   }

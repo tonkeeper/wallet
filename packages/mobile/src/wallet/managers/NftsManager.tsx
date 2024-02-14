@@ -25,6 +25,7 @@ export class NftsManager {
   public state = new State<NftsState>(NftsManager.INITIAL_STATE);
 
   constructor(
+    private persistPath: string,
     private tonRawAddress: TonRawAddress,
     private tonapi: TonAPI,
     private storage: Storage,
@@ -35,7 +36,7 @@ export class NftsManager {
         selectedDiamond,
       }),
       storage: this.storage,
-      key: `${this.tonRawAddress}/nfts`,
+      key: `${this.persistPath}/nfts`,
     });
   }
 

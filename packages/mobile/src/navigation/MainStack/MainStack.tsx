@@ -26,7 +26,7 @@ import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
 import { InscriptionScreen } from '$core/InscriptionScreen';
 import { useDiamondsChecker } from '$hooks/useDiamondsChecker';
 import { useWallet } from '@tonkeeper/shared/hooks';
-import { StartScreen } from '../../screens/StartScreen';
+import { StartScreen, HoldersWebView } from '../../screens';
 import { CreateWalletStack } from '../CreateWalletStack';
 import { ImportWalletStack } from '$navigation/ImportWalletStack';
 import { AddWatchOnlyStack } from '$navigation/AddWatchOnlyStack';
@@ -34,7 +34,6 @@ import { useExternalState } from '@tonkeeper/shared/hooks/useExternalState';
 import { tk } from '$wallet';
 import { MigrationStack } from '$navigation/MigrationStack';
 import { useTonPriceUpdater } from '$hooks/useTonPriceUpdater';
-import { HoldersWebView } from '@tonkeeper/shared/components/HoldersWebView/HoldersWebView';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 

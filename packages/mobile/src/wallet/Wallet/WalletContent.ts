@@ -63,7 +63,7 @@ export class WalletContent extends WalletBase {
     this.activityLoader = new ActivityLoader(tonRawAddress, this.tonapi, this.tronapi);
 
     this.tonProof = new TonProofManager(this.identifier, this.tonapi);
-    this.tokenApproval = new TokenApprovalManager(tonRawAddress, this.storage);
+    this.tokenApproval = new TokenApprovalManager(persistPath, this.storage);
     this.balances = new BalancesManager(
       persistPath,
       tonRawAddress,
@@ -71,7 +71,7 @@ export class WalletContent extends WalletBase {
       this.tonapi,
       this.storage,
     );
-    this.nfts = new NftsManager(tonRawAddress, this.tonapi, this.storage);
+    this.nfts = new NftsManager(persistPath, tonRawAddress, this.tonapi, this.storage);
     this.jettons = new JettonsManager(
       persistPath,
       tonRawAddress,
@@ -100,7 +100,6 @@ export class WalletContent extends WalletBase {
     );
     this.battery = new BatteryManager(
       persistPath,
-      tonRawAddress,
       this.tonProof,
       this.batteryapi,
       this.storage,

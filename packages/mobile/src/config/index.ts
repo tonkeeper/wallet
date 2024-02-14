@@ -1,6 +1,6 @@
 import { AppStorage } from '@tonkeeper/shared/modules/AppStorage';
 import DeviceInfo from 'react-native-device-info';
-import { AppConfig } from '@tonkeeper/mobile/src/config/AppConfig';
+import { AppConfig } from './AppConfig';
 import { Platform } from 'react-native';
 import { i18n } from '@tonkeeper/shared/i18n';
 

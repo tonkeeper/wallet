@@ -1,6 +1,6 @@
 import WebView from 'react-native-webview';
 import { EdgeInsets } from 'react-native-safe-area-context';
-import { tonConnectDeviceInfo } from '@tonkeeper/mobile/src/tonconnect';
+import { tonConnectDeviceInfo } from '$tonconnect';
 
 export const mainButtonAPI = `
 window['main-button'] = (() => {
@@ -192,7 +192,7 @@ export function createInjectSource(sourceProps: InjectSourceProps) {
 }
 
 export function dispatchMainButtonResponse(webRef: React.RefObject<WebView>) {
-  let injectedMessage = `window['main-button'].__response(); true;`;
+  let injectedMessage = "window['main-button'].__response(); true;";
   webRef.current?.injectJavaScript(injectedMessage);
 }
 

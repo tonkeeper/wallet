@@ -32,7 +32,7 @@ import { JettonVerification } from '$store/models';
 import { ListItemProps } from '$uikit/List/ListItem';
 import { config } from '$config';
 import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
-import { CardsWidget } from '@tonkeeper/shared/components/CardsWidget/CardsWidget';
+import { CardsWidget } from '$components';
 
 enum ContentType {
   Token,
@@ -283,7 +283,7 @@ export const WalletContentList = memo<BalancesListProps>(
         bottom: 32,
       });
 
-      if (!config.get('disable_holders_cards')) {
+      if (!config.get('disable_holders_cards') && !isWatchOnly) {
         content.push({
           key: 'cards',
           type: ContentType.Cards,

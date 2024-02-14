@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
 import { OnboardBanner } from './components/OnboardBanner';
-import { tk } from '@tonkeeper/mobile/src/wallet';
 import { Spacer, Steezy, View } from '@tonkeeper/uikit';
-import { useCardsState } from '../../query/hooks/useCardsState';
 import { CardsList } from './components/CardsList';
+import { tk } from '$wallet';
+import { useCardsState } from '$wallet/hooks';
 
 export const CardsWidget = memo(() => {
   const state = useCardsState();

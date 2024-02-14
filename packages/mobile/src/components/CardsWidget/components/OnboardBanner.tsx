@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback } from 'react';
 import {
   Button,
   Icon,
@@ -10,7 +10,7 @@ import {
 } from '@tonkeeper/uikit';
 import { LayoutAnimation, Animated } from 'react-native';
 import { useNavigation } from '@tonkeeper/router';
-import { MainStackRouteNames } from '@tonkeeper/mobile/src/navigation';
+import { MainStackRouteNames } from '$navigation';
 
 const closeButtonHitSlop = {
   top: 8,

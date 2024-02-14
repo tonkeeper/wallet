@@ -58,29 +58,29 @@ export class CardsManager {
   }
 
   public async fetchAccount() {
-    this.state.set({ accountsLoading: true });
-    const resp = await fetch(`${config.get('holdersService')}/v2/public/accounts`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        walletKind: 'tonkeeper',
-        network: this.isTestnet ? 'ton-testnet' : 'ton-mainnet',
-        // Holder's API works only with user-friendly bounceable address
-        address: new Address(this.tonRawAddress).toString({
-          urlSafe: true,
-          testOnly: this.isTestnet,
-          bounceable: true,
+    try {
+      this.state.set({ accountsLoading: true });
+      const resp = await fetch(`${config.get('holdersService')}/v2/public/accounts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          walletKind: 'tonkeeper',
+          network: this.isTestnet ? 'ton-testnet' : 'ton-mainnet',
+          // Holder's API works only with user-friendly bounceable address
+          address: new Address(this.tonRawAddress).toString({
+            urlSafe: true,
+            testOnly: this.isTestnet,
+            bounceable: true,
+          }),
         }),
-      }),
-    });
-    const data = await resp.json();
-    this.state.set({ accountsLoading: false, accounts: data.accounts });
-  }
-
-  public async prefetch() {
-    return await this.fetchAccount();
+      });
+      const data = await resp.json();
+      this.state.set({ accountsLoading: false, accounts: data.accounts });
+    } catch {
+      this.state.set({ accountsLoading: false });
+    }
   }
 
   public async load() {

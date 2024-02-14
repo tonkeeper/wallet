@@ -24,18 +24,18 @@ import {
   WebViewMessageEvent,
   WebViewNavigation,
 } from 'react-native-webview/lib/WebViewTypes';
-import { getDomainFromURL } from '@tonkeeper/mobile/src/utils';
+import { getDomainFromURL } from '$utils';
 import Animated, { FadeInDown, FadeOutDown, FadeIn } from 'react-native-reanimated';
 import { useNavigation } from '@tonkeeper/router';
 import { useInjectEngine } from './hooks/useInjectEngine';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { tk } from '@tonkeeper/mobile/src/wallet';
+import { tk } from '$wallet';
 import { processStatusBarMessage } from './helpers/processStatusBarMessage';
 import { extractWebViewQueryAPIParams } from './utils/extractWebViewQueryAPIParams';
-import { useDAppBridge } from '@tonkeeper/mobile/src/core/DAppBrowser/hooks/useDAppBridge';
-import { i18n } from '../../i18n';
-import { config } from '@tonkeeper/mobile/src/config';
-import { useWalletCurrency } from '../../hooks';
+import { useDAppBridge } from '$core/DAppBrowser/hooks/useDAppBridge';
+import { i18n } from '@tonkeeper/shared/i18n';
+import { config } from '$config';
+import { useWalletCurrency } from '@tonkeeper/shared/hooks';
 
 export interface HoldersWebViewProps {
   path?: string;
@@ -198,9 +198,9 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
         version: 1,
         platform: Platform.OS,
         platformVersion: Platform.Version,
-        network: tk.wallet.identity.network,
+        network: tk.wallet.isTestnet ? 'testnet' : 'mainnet',
         address: tk.wallet.address.ton.raw,
-        publicKey: Buffer.from(tk.wallet.identity.pubKey).toString('base64'),
+        publicKey: Buffer.from(tk.wallet.pubkey, 'hex').toString('base64'),
       },
       safeArea: safeAreaInsets,
       additionalInjections: injectedJavaScriptBeforeContentLoaded,
