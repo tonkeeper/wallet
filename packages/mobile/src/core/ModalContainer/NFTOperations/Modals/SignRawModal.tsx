@@ -30,7 +30,7 @@ import { Buffer } from 'buffer';
 import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
-import { useWalletCurrency } from '@tonkeeper/shared/hooks';
+import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
 import {
   ActionAmountType,
   ActionSource,
@@ -61,6 +61,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   } = props;
   const { footerRef, onConfirm } = useNFTOperationState(options);
   const unlockVault = useUnlockVault();
+  const wallet = useWallet();
 
   const fiatCurrency = useWalletCurrency();
   const getTokenPrice = useGetTokenPrice();
@@ -188,7 +189,16 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 
   return (
     <Modal>
-      <Modal.Header title={t('confirmSendModal.title')} />
+      <Modal.Header
+        numberOfLines={1}
+        title={
+          tk.wallets.size > 1
+            ? t('confirmSendModal.title_multiwallets', {
+                walletName: `${wallet.config.emoji} ${wallet.config.name}`,
+              })
+            : t('confirmSendModal.title')
+        }
+      />
       <Modal.ScrollView>
         <List style={styles.actionsList}>
           {actions.map((action) => (
