@@ -1,9 +1,8 @@
 import React from 'react';
 import { Text } from '$uikit/Text/Text';
 import { TextProps } from '$uikit/Text/Text';
-import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { Steezy } from '@tonkeeper/uikit';
-import { useHideableAmount } from '$core/HideableAmount/HideableAmountProvider';
+import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 
 export enum AnimationDirection {
   Left = -1,
@@ -13,56 +12,21 @@ export enum AnimationDirection {
 
 const HideableAmountComponent: React.FC<
   TextProps & { stars?: string; animationDirection?: AnimationDirection }
-> = ({
-  children,
-  style,
-  animationDirection = AnimationDirection.Right,
-  stars = '* * *',
-  ...rest
-}) => {
-  const animationProgress = useHideableAmount();
+> = ({ children, style, stars = '* * *', ...rest }) => {
+  const isHidden = usePrivacyStore((state) => state.hiddenAmounts);
 
-  const translateXTo = 10 * animationDirection;
-
-  const amountStyle = useAnimatedStyle(() => {
-    return {
-      display: animationProgress.value < 0.5 ? 'flex' : 'none',
-      opacity: interpolate(animationProgress.value, [0, 0.5], [1, 0]),
-      transform: [
-        {
-          translateX: interpolate(animationProgress.value, [0, 0.5], [0, translateXTo]),
-        },
-        {
-          scale: interpolate(animationProgress.value, [0, 0.5], [1, 0.85]),
-        },
-      ],
-    };
-  });
-
-  const starsStyle = useAnimatedStyle(() => {
-    return {
-      display: animationProgress.value > 0.5 ? 'flex' : 'none',
-      opacity: interpolate(animationProgress.value, [1, 0.5], [1, 0]),
-      transform: [
-        {
-          translateX: interpolate(animationProgress.value, [1, 0.5], [0, translateXTo]),
-        },
-        {
-          scale: interpolate(animationProgress.value, [1, 0.5], [1, 0.85]),
-        },
-      ],
-    };
-  });
-
-  return (
-    <Animated.View>
-      <Text style={[amountStyle, style]} {...rest} reanimated>
-        {children}
-      </Text>
-      <Text style={[starsStyle, styles.stars.static, style]} {...rest} reanimated>
+  if (isHidden) {
+    return (
+      <Text style={[styles.stars.static, style]} {...rest}>
         {stars}
       </Text>
-    </Animated.View>
+    );
+  }
+
+  return (
+    <Text style={style} {...rest}>
+      {children}
+    </Text>
   );
 };
 

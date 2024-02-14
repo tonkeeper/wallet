@@ -108,7 +108,7 @@ export const ActivityList = memo<ActivityListProps>((props) => {
       onEndReachedThreshold={0.02}
       updateCellsBatchingPeriod={60}
       maxToRenderPerBatch={10}
-      initialNumToRender={20}
+      initialNumToRender={1}
       stickySectionHeadersEnabled={false}
       windowSize={16}
       sections={sections}

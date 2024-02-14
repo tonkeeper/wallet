@@ -1,27 +1,10 @@
-import { State } from '@tonkeeper/core';
 import { useExternalState } from '../../hooks/useExternalState';
 import { useWallet } from '../../hooks';
+import { ActivityListState } from '@tonkeeper/mobile/src/wallet/Activity/ActivityList';
 
-export const useActivityList = () => {
+export const useActivityList = (): ActivityListState => {
   const wallet = useWallet();
-  const state = useExternalState(
-    wallet?.activityList.state ??
-      new State({
-        isReloading: false,
-        isLoading: false,
-        hasMore: true,
-        sections: [],
-        error: null,
-      }),
-  );
+  const state = useExternalState<ActivityListState>(wallet.activityList.state);
 
-  return {
-    loadMore: () => wallet?.activityList.loadMore(),
-    reload: () => wallet?.activityList.reload(),
-    isReloading: state.isReloading,
-    isLoading: state.isLoading,
-    sections: state.sections,
-    hasMore: state.hasMore,
-    error: state.error,
-  };
+  return state;
 };

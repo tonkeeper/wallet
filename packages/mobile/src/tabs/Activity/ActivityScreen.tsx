@@ -12,6 +12,7 @@ import { useNavigation } from '@tonkeeper/router';
 import { LayoutAnimation } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
 import { useWallet } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
 
 export const ActivityScreen = memo(() => {
   const activityList = useActivityList();
@@ -58,6 +59,14 @@ export const ActivityScreen = memo(() => {
   }, []);
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
+
+  const handleLoadMore = useCallback(() => {
+    tk.wallet.activityList.loadMore();
+  }, []);
+
+  const handleReload = useCallback(() => {
+    tk.wallet.activityList.reload();
+  }, []);
 
   if (
     !wallet ||
@@ -136,13 +145,14 @@ export const ActivityScreen = memo(() => {
     <Screen>
       <Screen.LargeHeader title={t('activity.screen_title')} />
       <ActivityList
+        key={wallet.identifier}
         ListHeaderComponent={renderNotificationsHeader}
         isReloading={activityList.isReloading}
         isLoading={activityList.isLoading}
         sections={activityList.sections}
         hasMore={activityList.hasMore}
-        onLoadMore={activityList.loadMore}
-        onReload={activityList.reload}
+        onLoadMore={handleLoadMore}
+        onReload={handleReload}
         error={activityList.error}
       />
     </Screen>
