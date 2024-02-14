@@ -10,7 +10,7 @@ jobs:
       matrix:
         os: [macos-13]
         node-version: [18.18.0]
-        ruby-version: [3.2]
+        ruby-version: [2.7]
         xcode: [15.0.1]
 
     runs-on: ${{ matrix.os }}
@@ -32,15 +32,24 @@ jobs:
           max_attempts: 3
           command: yarn
 
-      - name: Install pods dependencies
-        run: yarn pods
-
       - name: Set up Ruby and Gemfile dependencies
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
           working-directory: './packages/mobile'
+
+      - name: Cache Pods directory
+        uses: actions/cache@v3
+        with:
+          path: ./packages/mobile/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Install pods dependencies
+        working-directory: './packages/mobile/ios'
+        run: bundle exec pod install
 
       - name: Decode signing certificate into a file
         working-directory: './packages/mobile/ios'
@@ -83,7 +92,7 @@ jobs:
       matrix:
         os: [macos-13]
         node-version: [18.18.0]
-        ruby-version: [3.2]
+        ruby-version: [2.7]
         java-version: [11.0.12]
 
     runs-on: ${{ matrix.os }}
@@ -159,7 +168,7 @@ jobs:
       matrix:
         os: [macos-13]
         node-version: [18.18.0]
-        ruby-version: [3.2]
+        ruby-version: [2.7]
         java-version: [11.0.12]
 
     runs-on: ${{ matrix.os }}
