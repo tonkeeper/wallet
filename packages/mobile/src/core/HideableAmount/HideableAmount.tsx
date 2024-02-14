@@ -1,7 +1,6 @@
 import React from 'react';
 import { Text } from '$uikit/Text/Text';
 import { TextProps } from '$uikit/Text/Text';
-import { Steezy } from '@tonkeeper/uikit';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 
 export enum AnimationDirection {
@@ -15,23 +14,11 @@ const HideableAmountComponent: React.FC<
 > = ({ children, style, stars = '* * *', ...rest }) => {
   const isHidden = usePrivacyStore((state) => state.hiddenAmounts);
 
-  if (isHidden) {
-    return (
-      <Text style={[styles.stars.static, style]} {...rest}>
-        {stars}
-      </Text>
-    );
-  }
-
   return (
     <Text style={style} {...rest}>
-      {children}
+      {isHidden ? stars : children}
     </Text>
   );
 };
 
 export const HideableAmount = React.memo(HideableAmountComponent);
-
-const styles = Steezy.create({
-  stars: {},
-});

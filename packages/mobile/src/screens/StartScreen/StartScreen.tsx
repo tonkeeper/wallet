@@ -1,17 +1,25 @@
-import { Screen, View, Steezy, Text, Spacer, Button, Icon } from '@tonkeeper/uikit';
+import {
+  Screen,
+  View,
+  Steezy,
+  Text,
+  Spacer,
+  Button,
+  deviceHeight,
+} from '@tonkeeper/uikit';
 import Svg, { Path, Defs, LinearGradient, Stop, G, ClipPath } from 'react-native-svg';
-import { useLogoAnimation } from './animations/useLogoAnimation';
 import { useWindowDimensions } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { memo, useCallback, useEffect } from 'react';
+import { memo, useCallback } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { MainStackRouteNames } from '$navigation';
 import { useNavigation } from '@tonkeeper/router';
 import { useDispatch } from 'react-redux';
 import { walletActions } from '$store/wallet';
 
+const HEIGHT_RATIO = deviceHeight / 844;
+
 export const StartScreen = memo(() => {
-  const { logoPosStyle, shapesOpacityStyle } = useLogoAnimation();
   const dimensions = useWindowDimensions();
 
   const nav = useNavigation();
@@ -32,17 +40,11 @@ export const StartScreen = memo(() => {
   return (
     <Screen>
       <View style={{ flex: 1 }}>
-        <View style={{ height: origShapesHeight - logoShapesPosY }}>
-          <View style={styles.logo}>
-            <Animated.View style={logoPosStyle}>
-              {/* <Icon
-                style={styles.logoIcon.static}
-                name="ic-logo-48"
-                color="accentBlue"
-                size={144}
-              /> */}
-            </Animated.View>
-          </View>
+        <View
+          style={{
+            height: 494 * HEIGHT_RATIO,
+          }}
+        >
           <Animated.View
             style={[
               styles.absolute.static,
@@ -50,6 +52,7 @@ export const StartScreen = memo(() => {
                 transform: [
                   { translateX: -logoShapesPosX },
                   { translateY: -logoShapesPosY },
+                  { scale: HEIGHT_RATIO },
                 ],
               },
             ]}

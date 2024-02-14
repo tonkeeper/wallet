@@ -129,7 +129,7 @@ const styles = Steezy.create(({ colors }) => ({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 16,
+    height: 17,
     backgroundColor: colors.backgroundPage,
   },
 }));
