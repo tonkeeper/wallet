@@ -45,6 +45,7 @@ export enum MainStackRouteNames {
   ManageTokens = 'ManageTokens',
   AddressUpdateInfo = 'AddressUpdateInfo',
   Inscription = 'Inscription',
+  HoldersWebView = 'HoldersWebView',
 }
 
 export enum TabsStackRouteNames {

@@ -2,7 +2,6 @@ import { ActivityModel, ActivitySection } from '../models/ActivityModel';
 import { Logger, State, Storage } from '@tonkeeper/core';
 import { ActivityLoader } from './ActivityLoader';
 
-import { TonRawAddress } from '../WalletTypes';
 import { AccountEvent, ActionTypeEnum } from '@tonkeeper/core/src/TonAPI';
 
 type TonActivityListState = {
@@ -26,14 +25,14 @@ export class TonActivityList {
   });
 
   constructor(
-    private tonRawAddress: TonRawAddress,
+    private persistPath: string,
     private activityLoader: ActivityLoader,
     private storage: Storage,
   ) {
     this.state.persist({
       partialize: ({ sections }) => ({ sections }),
       storage: this.storage,
-      key: `${this.tonRawAddress}/TonActivityList`,
+      key: `${this.persistPath}/TonActivityList`,
     });
   }
 

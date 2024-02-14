@@ -26,7 +26,7 @@ import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
 import { InscriptionScreen } from '$core/InscriptionScreen';
 import { useDiamondsChecker } from '$hooks/useDiamondsChecker';
 import { useWallet } from '@tonkeeper/shared/hooks';
-import { StartScreen } from '../../screens/StartScreen';
+import { StartScreen, HoldersWebView } from '../../screens';
 import { CreateWalletStack } from '../CreateWalletStack';
 import { ImportWalletStack } from '$navigation/ImportWalletStack';
 import { AddWatchOnlyStack } from '$navigation/AddWatchOnlyStack';
@@ -135,6 +135,11 @@ export const MainStack: FC = () => {
       <Stack.Screen
         name={MainStackRouteNames.AddressUpdateInfo}
         component={AddressUpdateInfo}
+      />
+      <Stack.Screen
+        name={MainStackRouteNames.HoldersWebView}
+        component={HoldersWebView}
+        options={{ gestureEnabled: false }}
       />
     </Stack.Navigator>
   );

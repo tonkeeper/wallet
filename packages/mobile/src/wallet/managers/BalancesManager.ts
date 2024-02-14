@@ -33,6 +33,7 @@ export class BalancesManager {
   public state = new State<BalancesState>(BalancesManager.INITIAL_STATE);
 
   constructor(
+    private persistPath: string,
     private tonRawAddress: TonRawAddress,
     private walletConfig: WalletConfig,
     private tonapi: TonAPI,
@@ -45,7 +46,7 @@ export class BalancesManager {
         tonRestricted,
       }),
       storage: this.storage,
-      key: `${this.tonRawAddress}/balances`,
+      key: `${this.persistPath}/balances`,
     });
   }
 

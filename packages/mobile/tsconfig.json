@@ -44,7 +44,8 @@
       "$blockchain": ["blockchain/"],
       "$database": ["database/"],
       "$tonconnect/*": ["tonconnect/*"],
-      "$config": ["config/"]
+      "$config": ["config"],
+      "$components": ["components"],
     }
   },
   "include": ["src", "src/wallet/managers", "src/wallet/Wallet"],

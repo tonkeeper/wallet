@@ -76,7 +76,8 @@ export const Settings: FC = () => {
   const shouldShowTokensButton = useShouldShowTokensButton();
   const showNotifications = useNotificationsStore(shouldShowNotifications);
 
-  const isBatteryVisible = !!wallet && !config.get('disable_battery');
+  const isBatteryVisible =
+    !!wallet && !wallet.isWatchOnly && !config.get('disable_battery');
 
   const searchEngine = useBrowserStore((state) => state.searchEngine);
   const setSearchEngine = useBrowserStore((state) => state.actions.setSearchEngine);
@@ -347,6 +348,19 @@ export const Settings: FC = () => {
                 }
                 title={t('battery.settings')}
                 onPress={handleBattery}
+              />
+            )}
+            {!config.get('disable_holders_cards') && !!wallet && !wallet.isWatchOnly && (
+              <List.Item
+                value={
+                  <NewIcon
+                    style={styles.icon.static}
+                    color="accentBlue"
+                    name={'ic-creditcard-28'}
+                  />
+                }
+                title={t('settings_bank_card')}
+                onPress={() => nav.navigate(MainStackRouteNames.HoldersWebView)}
               />
             )}
           </List>

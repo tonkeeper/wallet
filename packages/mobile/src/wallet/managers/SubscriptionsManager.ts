@@ -34,13 +34,17 @@ export interface SubscriptionsResponse {
 }
 
 export class SubscriptionsManager {
-  constructor(private tonRawAddress: TonRawAddress, private storage: Storage) {
+  constructor(
+    private persistPath: string,
+    private tonRawAddress: TonRawAddress,
+    private storage: Storage,
+  ) {
     this.state.persist({
       partialize: ({ subscriptions }) => ({
         subscriptions,
       }),
       storage: this.storage,
-      key: `${this.tonRawAddress}/subscriptions`,
+      key: `${this.persistPath}/subscriptions`,
     });
   }
 

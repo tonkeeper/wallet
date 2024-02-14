@@ -28,6 +28,7 @@ export class JettonsManager {
   public state = new State<JettonsState>(JettonsManager.INITIAL_STATE);
 
   constructor(
+    private persistPath: string,
     private tonRawAddress: TonRawAddress,
     private tonPrice: TonPriceManager,
     private tokenApproval: TokenApprovalManager,
@@ -37,7 +38,7 @@ export class JettonsManager {
     this.state.persist({
       partialize: ({ jettonBalances, jettonRates }) => ({ jettonBalances, jettonRates }),
       storage: this.storage,
-      key: `${this.tonRawAddress}/jettons`,
+      key: `${this.persistPath}/jettons`,
     });
   }
 

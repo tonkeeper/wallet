@@ -1,0 +1,29 @@
+<svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_24107_1679)">
+        <g clip-path="url(#clip1_24107_1679)">
+            <rect opacity="0.32" y="13.001" width="25" height="31" fill="#8994A3"/>
+        </g>
+        <g clip-path="url(#clip2_24107_1679)">
+            <rect opacity="0.32" x="6" y="6.00098" width="25" height="38" fill="#8994A3"/>
+            <rect opacity="0.32" x="6" y="6.00098" width="25" height="7" fill="#8994A3"/>
+        </g>
+        <g clip-path="url(#clip3_24107_1679)">
+            <rect x="14" y="0.000976562" width="30" height="44" fill="#8994A3"/>
+            <rect opacity="0.44" x="22" y="34.001" width="5" height="6" rx="1" fill="white"/>
+        </g>
+    </g>
+    <defs>
+        <clipPath id="clip0_24107_1679">
+            <rect width="44" height="44" fill="white" transform="translate(0 0.000976562)"/>
+        </clipPath>
+        <clipPath id="clip1_24107_1679">
+            <rect y="13.001" width="25" height="31" rx="4" fill="white"/>
+        </clipPath>
+        <clipPath id="clip2_24107_1679">
+            <rect x="6" y="6.00098" width="25" height="38" rx="4" fill="white"/>
+        </clipPath>
+        <clipPath id="clip3_24107_1679">
+            <rect x="14" y="0.000976562" width="30" height="44" rx="4" fill="white"/>
+        </clipPath>
+    </defs>
+</svg>

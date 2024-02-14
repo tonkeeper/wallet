@@ -86,6 +86,7 @@ export class StakingManager {
   public state = new State<StakingState>(StakingManager.INITIAL_STATE);
 
   constructor(
+    private persistPath: string,
     private tonRawAddress: TonRawAddress,
     private jettons: JettonsManager,
     private tonapi: TonAPI,
@@ -94,7 +95,7 @@ export class StakingManager {
     this.state.persist({
       partialize: ({ status: _status, ...state }) => state,
       storage: this.storage,
-      key: `${this.tonRawAddress}/staking`,
+      key: `${this.persistPath}/staking`,
     });
   }
 

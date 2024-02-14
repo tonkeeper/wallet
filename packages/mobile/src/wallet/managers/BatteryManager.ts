@@ -3,7 +3,6 @@ import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
 import { TonProofManager } from '$wallet/managers/TonProofManager';
-import { TonRawAddress } from '$wallet/WalletTypes';
 
 export interface BatteryState {
   isLoading: boolean;
@@ -17,7 +16,7 @@ export class BatteryManager {
   });
 
   constructor(
-    private tonRawAddress: TonRawAddress,
+    private persistPath: string,
     private tonProof: TonProofManager,
     private batteryapi: BatteryAPI,
     private storage: Storage,
@@ -25,7 +24,7 @@ export class BatteryManager {
     this.state.persist({
       partialize: ({ balance }) => ({ balance }),
       storage: this.storage,
-      key: `${this.tonRawAddress}/battery`,
+      key: `${this.persistPath}/battery`,
     });
   }
 

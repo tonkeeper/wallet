@@ -29,6 +29,7 @@ const plugins = [
         $database: './src/database',
         $tonconnect: './src/tonconnect',
         $config: './src/config',
+        $components: './src/components',
       },
     },
   ],

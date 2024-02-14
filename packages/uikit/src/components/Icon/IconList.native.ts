@@ -1,5 +1,6 @@
 export const IconList = {
   'ic-chevron-right-12': require('../../../assets/icons/png/ic-chevron-right-12.png'),
+  'ic-cloud-12': require('../../../assets/icons/png/ic-cloud-12.png'),
   'ic-dot-12': require('../../../assets/icons/png/ic-dot-12.png'),
   'ic-down-12': require('../../../assets/icons/png/ic-down-12.png'),
   'ic-dropdown-12': require('../../../assets/icons/png/ic-dropdown-12.png'),
@@ -58,6 +59,7 @@ export const IconList = {
   'ic-arrow-up-28': require('../../../assets/icons/png/ic-arrow-up-28.png'),
   'ic-battery-28': require('../../../assets/icons/png/ic-battery-28.png'),
   'ic-bell-28': require('../../../assets/icons/png/ic-bell-28.png'),
+  'ic-creditcard-28': require('../../../assets/icons/png/ic-creditcard-28.png'),
   'ic-doc-28': require('../../../assets/icons/png/ic-doc-28.png'),
   'ic-done-28': require('../../../assets/icons/png/ic-done-28.png'),
   'ic-donemark-28': require('../../../assets/icons/png/ic-donemark-28.png'),
@@ -117,6 +119,7 @@ export const IconList = {
   'ic-exclamationmark-triangle-36': require('../../../assets/icons/png/ic-exclamationmark-triangle-36.png'),
   'ic-faceid-36': require('../../../assets/icons/png/ic-faceid-36.png'),
   'ic-fingerprint-36': require('../../../assets/icons/png/ic-fingerprint-36.png'),
+  'ic-cards-stack-44': require('../../../assets/icons/png/ic-cards-stack-44.png'),
   'ic-ton-old-wallets-44': require('../../../assets/icons/png/ic-ton-old-wallets-44.png'),
   'ic-logo-48': require('../../../assets/icons/png/ic-logo-48.png'),
   'ic-flashlight-off-56': require('../../../assets/icons/png/ic-flashlight-off-56.png'),
