@@ -58,12 +58,14 @@ export class WalletContent extends WalletBase {
     super(config, tonAllAddresses, storage);
 
     const tonRawAddress = this.address.ton.raw;
+    const persistPath = `${this.address.ton.raw}-${this.isTestnet}`;
 
     this.activityLoader = new ActivityLoader(tonRawAddress, this.tonapi, this.tronapi);
 
     this.tonProof = new TonProofManager(this.identifier, this.tonapi);
     this.tokenApproval = new TokenApprovalManager(tonRawAddress, this.storage);
     this.balances = new BalancesManager(
+      persistPath,
       tonRawAddress,
       this.config,
       this.tonapi,
@@ -71,45 +73,59 @@ export class WalletContent extends WalletBase {
     );
     this.nfts = new NftsManager(tonRawAddress, this.tonapi, this.storage);
     this.jettons = new JettonsManager(
+      persistPath,
       tonRawAddress,
       this.tonPrice,
       this.tokenApproval,
       this.tonapi,
       this.storage,
     );
-    this.tonInscriptions = new TonInscriptions(tonRawAddress, this.tonapi, this.storage);
+    this.tonInscriptions = new TonInscriptions(
+      persistPath,
+      tonRawAddress,
+      this.tonapi,
+      this.storage,
+    );
     this.staking = new StakingManager(
+      persistPath,
       tonRawAddress,
       this.jettons,
       this.tonapi,
       this.storage,
     );
-    this.subscriptions = new SubscriptionsManager(tonRawAddress, this.storage);
+    this.subscriptions = new SubscriptionsManager(
+      persistPath,
+      tonRawAddress,
+      this.storage,
+    );
     this.battery = new BatteryManager(
+      persistPath,
       tonRawAddress,
       this.tonProof,
       this.batteryapi,
       this.storage,
     );
-    this.cards = new CardsManager(tonRawAddress, this.storage);
+    this.cards = new CardsManager(
+      persistPath,
+      tonRawAddress,
+      this.isTestnet,
+      this.storage,
+    );
     this.notifications = new NotificationsManager(
+      persistPath,
       tonRawAddress,
       this.isTestnet,
       this.storage,
       this.logger,
     );
-    this.activityList = new ActivityList(
-      tonRawAddress,
-      this.activityLoader,
-      this.storage,
-    );
+    this.activityList = new ActivityList(persistPath, this.activityLoader, this.storage);
     this.tonActivityList = new TonActivityList(
-      tonRawAddress,
+      persistPath,
       this.activityLoader,
       this.storage,
     );
     this.jettonActivityList = new JettonActivityList(
-      tonRawAddress,
+      persistPath,
       this.activityLoader,
       this.storage,
     );

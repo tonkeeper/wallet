@@ -1,5 +1,8 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { AccountState, CardKind } from '@tonkeeper/core/src/managers/CardsManager';
+import {
+  AccountState,
+  CardKind,
+} from '@tonkeeper/mobile/src/wallet/managers/CardsManager';
 import { Icon, List, Steezy, View } from '@tonkeeper/uikit';
 import { formatter } from '../../../formatter';
 import { MainStackRouteNames } from '@tonkeeper/mobile/src/navigation';
@@ -7,13 +10,8 @@ import { useNavigation } from '@tonkeeper/router';
 import { Platform, Text } from 'react-native';
 import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
 import { capitalizeFirstLetter } from '../../../utils/date';
-import { useFiatValue } from '@tonkeeper/mobile/src/hooks/useFiatValue';
 import { CryptoCurrencies } from '@tonkeeper/mobile/src/shared/constants';
-import { formatAmount } from '@tonkeeper/mobile/src/utils';
-import {
-  useGetTokenPrice,
-  useTokenPrice,
-} from '@tonkeeper/mobile/src/hooks/useTokenPrice';
+import { useGetTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 
 export interface CardsListProps {
   accounts: AccountState[];

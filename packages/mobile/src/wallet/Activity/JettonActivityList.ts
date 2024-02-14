@@ -2,7 +2,6 @@ import { ActivityModel, ActivitySection } from '../models/ActivityModel';
 
 import { ActivityLoader } from './ActivityLoader';
 
-import { TonRawAddress } from '../WalletTypes';
 import { Logger, State, Storage } from '@tonkeeper/core';
 
 type JettonActivityListState = {
@@ -26,14 +25,14 @@ export class JettonActivityList {
   });
 
   constructor(
-    private tonRawAddress: TonRawAddress,
+    private persistPath: string,
     private activityLoader: ActivityLoader,
     private storage: Storage,
   ) {
     this.state.persist({
       partialize: ({ sections }) => ({ sections }),
       storage: this.storage,
-      key: `${this.tonRawAddress}/JettonActivityList`,
+      key: `${this.persistPath}/JettonActivityList`,
     });
   }
 

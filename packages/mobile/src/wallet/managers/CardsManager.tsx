@@ -1,8 +1,6 @@
-import { WalletContext, WalletIdentity, WalletNetwork } from '../Wallet';
-import { Storage } from '../declarations/Storage';
-import { State } from '../utils/State';
-import { Address } from '../formatters/Address';
-import { config } from '@tonkeeper/shared/config';
+import { Storage, State, Address } from '@tonkeeper/core';
+import { config } from '$config';
+import { TonRawAddress } from '$wallet/WalletTypes';
 
 export enum CardKind {
   VIRTUAL = 'virtual',
@@ -35,18 +33,18 @@ export interface CardsState {
   accountsLoading: boolean;
 }
 
-export const cardsState = new State<CardsState>({
-  onboardBannerDismissed: false,
-  accounts: [],
-  accountsLoading: false,
-});
-
 export class CardsManager {
-  public state = cardsState;
+  static readonly INITIAL_STATE: CardsState = {
+    onboardBannerDismissed: false,
+    accounts: [],
+    accountsLoading: false,
+  };
+  public state = new State<CardsState>(CardsManager.INITIAL_STATE);
 
   constructor(
-    private ctx: WalletContext,
-    private identity: WalletIdentity,
+    private persistPath: string,
+    private tonRawAddress: TonRawAddress,
+    private isTestnet: boolean,
     private storage: Storage,
   ) {
     this.state.persist({
@@ -55,12 +53,12 @@ export class CardsManager {
         accounts,
       }),
       storage: this.storage,
-      key: `cards`,
+      key: `${this.persistPath}/cards`,
     });
   }
 
   public async fetchAccount() {
-    this.state.set({ accounts: [], accountsLoading: true });
+    this.state.set({ accountsLoading: true });
     const resp = await fetch(`${config.get('holdersService')}/v2/public/accounts`, {
       method: 'POST',
       headers: {
@@ -68,12 +66,11 @@ export class CardsManager {
       },
       body: JSON.stringify({
         walletKind: 'tonkeeper',
-        network:
-          this.identity.network === WalletNetwork.mainnet ? 'ton-mainnet' : 'ton-testnet',
+        network: this.isTestnet ? 'ton-testnet' : 'ton-mainnet',
         // Holder's API works only with user-friendly bounceable address
-        address: new Address(this.ctx.address.ton.raw).toString({
+        address: new Address(this.tonRawAddress).toString({
           urlSafe: true,
-          testOnly: this.identity.network === WalletNetwork.testnet,
+          testOnly: this.isTestnet,
           bounceable: true,
         }),
       }),
@@ -83,6 +80,10 @@ export class CardsManager {
   }
 
   public async prefetch() {
+    return await this.fetchAccount();
+  }
+
+  public async load() {
     return await this.fetchAccount();
   }
 

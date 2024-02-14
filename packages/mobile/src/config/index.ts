@@ -44,6 +44,8 @@ export type AppConfigVars = {
   batteryHost: string;
   batteryTestnetHost: string;
   batteryMeanFees: string;
+  holdersAppEndpoint: string;
+  holdersService: string;
   disable_battery: boolean;
   disable_battery_iap_module: boolean;
   disable_battery_send: boolean;
@@ -66,6 +68,8 @@ const defaultConfig: Partial<AppConfigVars> = {
   NFTOnExplorerUrl: 'https://tonscan.org/nft/%s',
   transactionExplorer: 'https://tonviewer.com/transaction/%s',
   flags: {},
+  holdersAppEndpoint: 'https://tonkeeper-dev.holders.io/',
+  holdersService: 'https://card-dev.whales-api.com',
   tronapiHost: 'https://tron.tonkeeper.com',
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
   batteryHost: 'https://battery.tonkeeper.com',

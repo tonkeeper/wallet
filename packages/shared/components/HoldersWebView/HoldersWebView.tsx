@@ -34,11 +34,8 @@ import { processStatusBarMessage } from './helpers/processStatusBarMessage';
 import { extractWebViewQueryAPIParams } from './utils/extractWebViewQueryAPIParams';
 import { useDAppBridge } from '@tonkeeper/mobile/src/core/DAppBrowser/hooks/useDAppBridge';
 import { i18n } from '../../i18n';
-import { useSelector } from 'react-redux';
-import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
-import { config } from '../../config';
-
-const endpoint = config.get('holdersAppEndpoint');
+import { config } from '@tonkeeper/mobile/src/config';
+import { useWalletCurrency } from '../../hooks';
 
 export interface HoldersWebViewProps {
   path?: string;
@@ -57,7 +54,8 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
     isProgressVisible: false,
     onPress: undefined,
   });
-  const currency = useSelector(fiatCurrencySelector);
+  const currency = useWalletCurrency();
+  const endpoint = config.get('holdersAppEndpoint', tk.wallet.isTestnet);
 
   const queryParams = new URLSearchParams({
     lang: i18n.locale,

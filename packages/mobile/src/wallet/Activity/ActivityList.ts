@@ -1,6 +1,5 @@
 import { ActivitySection, ActionItem, ActivityModel } from '../models/ActivityModel';
 import { ActivityLoader } from './ActivityLoader';
-import { TonRawAddress } from '../WalletTypes';
 import { State, Storage, Logger } from '@tonkeeper/core';
 
 type Cursors = {
@@ -32,13 +31,13 @@ export class ActivityList {
   });
 
   constructor(
-    private tonRawAddress: TonRawAddress,
+    private persistPath: string,
     private activityLoader: ActivityLoader,
     private storage: Storage,
   ) {
     this.state.persist({
       storage: this.storage,
-      key: `${this.tonRawAddress}/ActivityList`,
+      key: `${this.persistPath}/ActivityList`,
       partialize: ({ sections }) => ({
         sections: sections.map((section) => ({
           ...section,

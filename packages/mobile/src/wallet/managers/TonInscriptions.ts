@@ -14,6 +14,7 @@ export class TonInscriptions {
   });
 
   constructor(
+    private persistPath: string,
     private tonRawAddress: string,
     private tonapi: TonAPI,
     private storage: Storage,
@@ -21,7 +22,7 @@ export class TonInscriptions {
     this.state.persist({
       partialize: ({ items }) => ({ items }),
       storage: this.storage,
-      key: `${this.tonRawAddress}/inscriptions`,
+      key: `${this.persistPath}/inscriptions`,
     });
   }
 

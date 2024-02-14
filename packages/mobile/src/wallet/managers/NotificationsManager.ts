@@ -20,6 +20,7 @@ export class NotificationsManager {
   public state = new State(NotificationsManager.INITIAL_STATE);
 
   constructor(
+    private persistPath: string,
     private tonRawAddress: TonRawAddress,
     private isTestnet: boolean,
     private storage: Storage,
@@ -28,7 +29,7 @@ export class NotificationsManager {
     this.state.persist({
       partialize: ({ isSubscribed }) => ({ isSubscribed }),
       storage: this.storage,
-      key: `${this.tonRawAddress}/notifications`,
+      key: `${this.persistPath}/notifications`,
     });
   }
 

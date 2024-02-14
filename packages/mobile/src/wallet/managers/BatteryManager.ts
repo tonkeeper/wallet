@@ -17,6 +17,7 @@ export class BatteryManager {
   });
 
   constructor(
+    private persistPath: string,
     private tonRawAddress: TonRawAddress,
     private tonProof: TonProofManager,
     private batteryapi: BatteryAPI,
@@ -25,7 +26,7 @@ export class BatteryManager {
     this.state.persist({
       partialize: ({ balance }) => ({ balance }),
       storage: this.storage,
-      key: `${this.tonRawAddress}/battery`,
+      key: `${this.persistPath}/battery`,
     });
   }
 
