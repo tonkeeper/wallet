@@ -73,6 +73,7 @@ type NFTCardsRowItem = {
 type StakingItem = {
   key: string;
   type: ContentType.Staking;
+  isWatchOnly: boolean;
 };
 
 type Content = TokenItem | SpacerItem | NFTCardsRowItem | StakingItem;
@@ -156,7 +157,7 @@ const RenderItem = ({ item }: { item: Content }) => {
     case ContentType.NFTCardsRow:
       return <NFTsList nfts={item.items} />;
     case ContentType.Staking:
-      return <StakingWidget />;
+      return <StakingWidget isWatchOnly={item.isWatchOnly} />;
   }
 };
 
@@ -191,6 +192,7 @@ export const WalletContentList = memo<BalancesListProps>(
 
     const wallet = useWallet();
     const isWatchOnly = wallet && wallet.isWatchOnly;
+    const showStaking = isWatchOnly ? balance.staking.amount.nano !== '0' : true;
 
     const data = useMemo(() => {
       const content: Content[] = [];
@@ -209,7 +211,7 @@ export const WalletContentList = memo<BalancesListProps>(
           price: tonPrice.formatted.fiat ?? '-',
           trend: tonPrice.fiatDiff.trend,
         },
-        isLast: isWatchOnly,
+        isLast: !showStaking,
       });
 
       if (balance.lockup.length > 0) {
@@ -258,10 +260,11 @@ export const WalletContentList = memo<BalancesListProps>(
       //   );
       // }
 
-      if (!isWatchOnly) {
+      if (showStaking) {
         content.push({
           key: 'staking',
           type: ContentType.Staking,
+          isWatchOnly,
         });
       }
 
@@ -349,6 +352,7 @@ export const WalletContentList = memo<BalancesListProps>(
       return content;
     }, [
       balance,
+      showStaking,
       shouldShowTonDiff,
       tonPrice,
       isWatchOnly,
