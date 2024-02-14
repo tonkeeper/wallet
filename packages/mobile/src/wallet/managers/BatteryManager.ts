@@ -3,6 +3,7 @@ import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
 import { TonProofManager } from '$wallet/managers/TonProofManager';
+import { TonRawAddress } from '$wallet/WalletTypes';
 
 export interface BatteryState {
   isLoading: boolean;
@@ -16,6 +17,7 @@ export class BatteryManager {
   });
 
   constructor(
+    private tonRawAddress: TonRawAddress,
     private tonProof: TonProofManager,
     private batteryapi: BatteryAPI,
     private storage: Storage,
@@ -23,7 +25,7 @@ export class BatteryManager {
     this.state.persist({
       partialize: ({ balance }) => ({ balance }),
       storage: this.storage,
-      key: 'battery',
+      key: `${this.tonRawAddress}/battery`,
     });
   }
 
@@ -32,7 +34,6 @@ export class BatteryManager {
       if (!this.tonProof.tonProofToken) {
         throw new Error('No proof token');
       }
-
       this.state.set({ isLoading: true });
       const data = await this.batteryapi.getBalance({
         headers: {
@@ -41,6 +42,7 @@ export class BatteryManager {
       });
       this.state.set({ isLoading: false, balance: data.balance });
     } catch (err) {
+      this.state.set({ isLoading: false, balance: '0' });
       return null;
     }
   }
