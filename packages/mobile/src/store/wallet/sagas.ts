@@ -16,6 +16,7 @@ import {
   TabsStackRouteNames,
 } from '$navigation';
 import {
+  CleanWalletAction,
   ConfirmSendCoinsAction,
   CreateWalletAction,
   DeployWalletAction,
@@ -33,7 +34,7 @@ import { toNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { Cell } from '@ton/core';
 import nacl from 'tweetnacl';
-import { BASE_FORWARD_AMOUNT, encryptMessageComment } from '@tonkeeper/core';
+import { Address, BASE_FORWARD_AMOUNT, encryptMessageComment } from '@tonkeeper/core';
 import { navigate } from '$navigation/imperative';
 import { trackEvent } from '$utils/stats';
 import { tk } from '$wallet';
@@ -378,23 +379,35 @@ function* backupWalletWorker() {
   }
 }
 
-function* cleanWalletWorker() {
+function* cleanWalletWorker(action: CleanWalletAction) {
+  const cleanAll = !!action.payload?.cleanAll;
   try {
-    const wallet = yield select(walletWalletSelector);
+    if (cleanAll) {
+      tk.wallets.forEach((wallet) => {
+        useConnectedAppsStore
+          .getState()
+          .actions.unsubscribeFromAllNotifications(
+            wallet.isTestnet ? 'testnet' : 'mainnet',
+            Address.parse(wallet.address.ton.raw).toFriendly({ bounceable: true }),
+          );
+      });
 
-    yield call(
-      useConnectedAppsStore.getState().actions.unsubscribeFromAllNotifications,
-      getChainName(),
-      wallet.address.friendlyAddress,
-    );
+      yield call([tk, 'removeAllWallets']);
+    } else {
+      yield call(
+        useConnectedAppsStore.getState().actions.unsubscribeFromAllNotifications,
+        getChainName(),
+        Address.parse(tk.wallet.address.ton.raw).toFriendly({ bounceable: true }),
+      );
 
-    yield call([tk, 'removeWallet'], tk.wallet.identifier);
+      yield call([tk, 'removeWallet'], tk.wallet.identifier);
+
+      if (tk.wallets.size > 0) {
+        navigate(TabsStackRouteNames.Balances);
+      }
+    }
 
     yield call(trackEvent, 'reset_wallet');
-
-    if (tk.wallets.size > 0) {
-      navigate(TabsStackRouteNames.Balances);
-    }
   } catch (e) {
     e && debugLog(e.message);
     yield put(Toast.fail, e.message);

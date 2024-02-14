@@ -13,6 +13,7 @@ import {
   DeployWalletAction,
   ToggleBiometryAction,
   WalletGetUnlockedVaultAction,
+  CleanWalletAction,
 } from '$store/wallet/interface';
 
 const initialState: WalletState = {
@@ -43,7 +44,7 @@ export const { actions, reducer } = createSlice({
     confirmSendCoins(_, __: ConfirmSendCoinsAction) {},
     sendCoins(_, __: SendCoinsAction) {},
     backupWallet() {},
-    cleanWallet() {},
+    cleanWallet(_, __: CleanWalletAction) {},
     clearGeneratedVault(state) {
       state.generatedVault = null;
     },
