@@ -13,7 +13,13 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Flash } from '@tonkeeper/uikit';
 import { useStakingState } from '@tonkeeper/shared/hooks';
 
-const StakingWidgetComponent: FC = () => {
+interface Props {
+  isWatchOnly: boolean;
+}
+
+const StakingWidgetComponent: FC<Props> = (props) => {
+  const { isWatchOnly } = props;
+
   const nav = useNavigation();
 
   const highestApyPool = useStakingState((s) => s.highestApyPool);
@@ -55,16 +61,17 @@ const StakingWidgetComponent: FC = () => {
             pool={item.pool}
           />
         ))}
-        {}
-        <Flash disabled={flashShownCount >= 2}>
-          <StakingListCell
-            isWidget={!staked}
-            id="staking"
-            name={t('staking.widget_title')}
-            description={staked ? t('staking.widget_staking_options') : apyDescription}
-            onPress={handleStakingPress}
-          />
-        </Flash>
+        {!isWatchOnly && (
+          <Flash disabled={flashShownCount >= 2}>
+            <StakingListCell
+              isWidget={!staked}
+              id="staking"
+              name={t('staking.widget_title')}
+              description={staked ? t('staking.widget_staking_options') : apyDescription}
+              onPress={handleStakingPress}
+            />
+          </Flash>
+        )}
       </List>
     </View>
   );

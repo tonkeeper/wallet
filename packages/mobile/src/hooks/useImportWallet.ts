@@ -7,6 +7,9 @@ import { WalletContractVersion } from '$wallet/WalletTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import DeviceInfo from 'react-native-device-info';
+import { network } from '@tonkeeper/core';
+import { config } from '$config';
 
 export const useImportWallet = () => {
   const dispatch = useDispatch();
@@ -43,6 +46,17 @@ export const useImportWallet = () => {
                         ]);
 
                         if (!isNotificationsDenied && status === 'true') {
+                          // unsubscribe from all wallet versions
+                          await network.post(
+                            `${config.get('tonapiIOEndpoint')}/unsubscribe`,
+                            {
+                              params: {
+                                device: DeviceInfo.getUniqueId(),
+                              },
+                            },
+                          );
+
+                          // subscribe to selected wallet versions
                           tk.enableNotificationsForAll(identifiers).catch(null);
                         }
                       } catch {}

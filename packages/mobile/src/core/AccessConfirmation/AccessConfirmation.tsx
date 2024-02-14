@@ -23,7 +23,6 @@ import { t } from '@tonkeeper/shared/i18n';
 
 import { tk, vault } from '$wallet';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
-import nacl from 'tweetnacl';
 import { useBiometrySettings, useWallet } from '@tonkeeper/shared/hooks';
 
 export const AccessConfirmation: FC = () => {
@@ -57,20 +56,6 @@ export const AccessConfirmation: FC = () => {
     setValue('');
   }, []);
 
-  const obtainTonProof = useCallback(
-    async (keyPair: nacl.SignKeyPair) => {
-      try {
-        // Obtain tonProof
-        if (!wallet.tonProof) {
-          await wallet.obtainProofToken(keyPair);
-        }
-      } catch (err) {
-        console.error('[obtain tonProof]', err);
-      }
-    },
-    [wallet],
-  );
-
   const handleKeyboard = useCallback(
     (newValue) => {
       const pin = newValue.substr(0, 4);
@@ -94,16 +79,15 @@ export const AccessConfirmation: FC = () => {
             );
             pinRef.current?.triggerSuccess();
 
-            if (!tk.wallet.tonProof.tonProofToken) {
-              await tk.wallet.tonProof.obtainProof(await unlockedVault.getKeyPair());
-            }
-
             setTimeout(async () => {
               setLastEnteredPasscode(pin);
 
               if (isUnlock) {
-                const keyPair = await (unlockedVault as any).getKeyPair();
-                obtainTonProof(keyPair);
+                if (!walletForUnlock.tonProof.tonProofToken) {
+                  await walletForUnlock.tonProof.obtainProof(
+                    await unlockedVault.getKeyPair(),
+                  );
+                }
 
                 dispatch(mainActions.setUnlocked(true));
               } else {
@@ -122,15 +106,7 @@ export const AccessConfirmation: FC = () => {
         }, 300);
       }
     },
-    [
-      dispatch,
-      enableBiometry,
-      isBiometryFailed,
-      isUnlock,
-      obtainTonProof,
-      triggerError,
-      wallet,
-    ],
+    [dispatch, enableBiometry, isBiometryFailed, isUnlock, triggerError, wallet],
   );
 
   const handleBiometry = useCallback(async () => {
@@ -147,17 +123,14 @@ export const AccessConfirmation: FC = () => {
         mnemonic,
       );
 
-      if (!tk.wallet.tonProof.tonProofToken) {
-        await tk.wallet.tonProof.obtainProof(await unlockedVault.getKeyPair());
-      }
-
       pinRef.current?.triggerSuccess();
 
       setTimeout(async () => {
         // Lock screen
         if (isUnlock) {
-          const keyPair = await (unlockedVault as any).getKeyPair();
-          obtainTonProof(keyPair);
+          if (!walletForUnlock.tonProof.tonProofToken) {
+            await walletForUnlock.tonProof.obtainProof(await unlockedVault.getKeyPair());
+          }
 
           dispatch(mainActions.setUnlocked(true));
         } else {
@@ -172,7 +145,7 @@ export const AccessConfirmation: FC = () => {
       }
       triggerError();
     }
-  }, [dispatch, isUnlock, obtainTonProof, triggerError, wallet]);
+  }, [dispatch, isUnlock, triggerError, wallet]);
 
   useEffect(() => {
     if (params.withoutBiometryOnOpen || !biometryEnabled) {

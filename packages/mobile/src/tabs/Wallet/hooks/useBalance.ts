@@ -151,7 +151,8 @@ export const useBalance = (tokensTotal: number) => {
       lockup,
       total,
       ton,
+      staking: stakingBalance,
     }),
-    [lockup, total, ton],
+    [lockup, total, ton, stakingBalance],
   );
 };
