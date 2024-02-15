@@ -10,16 +10,10 @@ import { ns } from '$utils';
 import { t } from '@tonkeeper/shared/i18n';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PinCodeRef } from '$uikit/PinCode/PinCode.interface';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@tonkeeper/router';
 import { tk } from '$wallet';
-import { useImportWallet } from '$hooks/useImportWallet';
-import * as SecureStore from 'expo-secure-store';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import { ScryptBox } from '$wallet/AppVault';
 import { Alert } from 'react-native';
 import { Toast } from '@tonkeeper/uikit';
-import { setLastEnteredPasscode } from '$store/wallet/sagas';
+import { useMigration } from '$hooks/useMigration';
 
 export const MigrationPasscode: FC<{
   route: RouteProp<MigrationStackParamList, MigrationStackRouteNames.Passcode>;
@@ -28,36 +22,12 @@ export const MigrationPasscode: FC<{
 
   const { bottom: bottomInset } = useSafeAreaInsets();
   const pinRef = useRef<PinCodeRef>(null);
-  const nav = useNavigation();
 
-  const doImportWallet = useImportWallet();
+  const { getMnemonicWithPasscode, doMigration } = useMigration();
 
   const triggerError = useCallback(() => {
     pinRef.current?.triggerError();
     setValue('');
-  }, []);
-
-  const getMnemonic = useCallback(async (passcode: string) => {
-    const { keychainItemName } = tk.migrationData!;
-    const isNewSecurityFlow = (await AsyncStorage.getItem('new_security_flow')) === 'yes';
-
-    let jsonstr: any;
-    if (isNewSecurityFlow) {
-      jsonstr = await SecureStore.getItemAsync(keychainItemName);
-    } else {
-      jsonstr = await EncryptedStorage.getItem(keychainItemName);
-    }
-
-    if (jsonstr == null) {
-      throw new Error('Failed to unlock the vault');
-    }
-
-    const state = JSON.parse(jsonstr);
-    if (state.kind === 'decrypted') {
-      return state.mnemonic;
-    } else {
-      return ScryptBox.decrypt(passcode, state);
-    }
   }, []);
 
   const handleKeyboard = useCallback(
@@ -68,46 +38,35 @@ export const MigrationPasscode: FC<{
         setTimeout(async () => {
           try {
             console.log('start migration');
-            Toast.loading();
-            const mnemonic = await getMnemonic(pin);
+            const mnemonic = await getMnemonicWithPasscode(pin);
 
-            setLastEnteredPasscode(pin);
+            Toast.loading();
 
             pinRef.current?.triggerSuccess();
 
-            const { lockupConfig } = tk.migrationData!;
-
-            const walletsInfo = await tk.getWalletsInfo(mnemonic, false);
-
-            const shouldChooseWallets = !lockupConfig && walletsInfo.length > 1;
-
-            if (shouldChooseWallets) {
-              nav.navigate(MigrationStackRouteNames.ChooseWallets, {
-                walletsInfo,
-                mnemonic,
-                lockupConfig,
-                isTestnet: false,
-                isMigration: true,
-              });
-            } else {
-              const versions = walletsInfo.map((item) => item.version);
-
-              await doImportWallet(mnemonic, lockupConfig, versions, false, true);
-            }
+            await doMigration(mnemonic, pin);
 
             setTimeout(() => {
               setValue('');
               pinRef.current?.clearState();
             }, 1000);
-          } catch {
-            triggerError();
-          } finally {
+
             Toast.hide();
+          } catch (error) {
+            if (error instanceof TypeError) {
+              Toast.fail(t('error_network'));
+            } else {
+              Toast.hide();
+            }
+
+            setValue('');
+            pinRef.current?.clearState();
+            triggerError();
           }
         }, 300);
       }
     },
-    [doImportWallet, getMnemonic, nav, triggerError],
+    [doMigration, getMnemonicWithPasscode, triggerError],
   );
 
   const handleLogout = useCallback(() => {
@@ -129,7 +88,7 @@ export const MigrationPasscode: FC<{
   return (
     <S.Wrap>
       <NavBar
-        hideBackButton
+        hideBackButton={!tk.migrationData?.biometry.enabled}
         rightContent={
           <Button
             size="navbar_small"

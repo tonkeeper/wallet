@@ -13,6 +13,7 @@ export type IconNames =
   | 'ic-almost-empty-battery-128'
   | 'ic-empty-battery-128'
   | 'ic-full-battery-128'
+  | 'ic-gear-128'
   | 'ic-lock-128'
   | 'ic-notification-128'
   | 'ic-appearance-16'
@@ -152,6 +153,7 @@ export const AllIcons = [
   'ic-almost-empty-battery-128',
   'ic-empty-battery-128',
   'ic-full-battery-128',
+  'ic-gear-128',
   'ic-lock-128',
   'ic-notification-128',
   'ic-appearance-16',
@@ -292,6 +294,7 @@ export const IconSizes = {
   'ic-almost-empty-battery-128': 128,
   'ic-empty-battery-128': 128,
   'ic-full-battery-128': 128,
+  'ic-gear-128': 128,
   'ic-lock-128': 128,
   'ic-notification-128': 128,
   'ic-appearance-16': 16,

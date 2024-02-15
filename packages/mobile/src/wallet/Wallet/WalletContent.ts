@@ -58,22 +58,26 @@ export class WalletContent extends WalletBase {
     super(config, tonAllAddresses, storage);
 
     const tonRawAddress = this.address.ton.raw;
-    const persistPath = `${this.address.ton.raw}-${this.isTestnet}`;
 
     this.activityLoader = new ActivityLoader(tonRawAddress, this.tonapi, this.tronapi);
 
     this.tonProof = new TonProofManager(this.identifier, this.tonapi);
-    this.tokenApproval = new TokenApprovalManager(persistPath, this.storage);
+    this.tokenApproval = new TokenApprovalManager(this.persistPath, this.storage);
     this.balances = new BalancesManager(
-      persistPath,
+      this.persistPath,
       tonRawAddress,
       this.config,
       this.tonapi,
       this.storage,
     );
-    this.nfts = new NftsManager(persistPath, tonRawAddress, this.tonapi, this.storage);
+    this.nfts = new NftsManager(
+      this.persistPath,
+      tonRawAddress,
+      this.tonapi,
+      this.storage,
+    );
     this.jettons = new JettonsManager(
-      persistPath,
+      this.persistPath,
       tonRawAddress,
       this.tonPrice,
       this.tokenApproval,
@@ -81,50 +85,54 @@ export class WalletContent extends WalletBase {
       this.storage,
     );
     this.tonInscriptions = new TonInscriptions(
-      persistPath,
+      this.persistPath,
       tonRawAddress,
       this.tonapi,
       this.storage,
     );
     this.staking = new StakingManager(
-      persistPath,
+      this.persistPath,
       tonRawAddress,
       this.jettons,
       this.tonapi,
       this.storage,
     );
     this.subscriptions = new SubscriptionsManager(
-      persistPath,
+      this.persistPath,
       tonRawAddress,
       this.storage,
     );
     this.battery = new BatteryManager(
-      persistPath,
+      this.persistPath,
       this.tonProof,
       this.batteryapi,
       this.storage,
     );
     this.cards = new CardsManager(
-      persistPath,
+      this.persistPath,
       tonRawAddress,
       this.isTestnet,
       this.storage,
     );
     this.notifications = new NotificationsManager(
-      persistPath,
+      this.persistPath,
       tonRawAddress,
       this.isTestnet,
       this.storage,
       this.logger,
     );
-    this.activityList = new ActivityList(persistPath, this.activityLoader, this.storage);
+    this.activityList = new ActivityList(
+      this.persistPath,
+      this.activityLoader,
+      this.storage,
+    );
     this.tonActivityList = new TonActivityList(
-      persistPath,
+      this.persistPath,
       this.activityLoader,
       this.storage,
     );
     this.jettonActivityList = new JettonActivityList(
-      persistPath,
+      this.persistPath,
       this.activityLoader,
       this.storage,
     );

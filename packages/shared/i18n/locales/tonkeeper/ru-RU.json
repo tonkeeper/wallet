@@ -243,7 +243,8 @@
     "refund": "Возврат",
     "network_fee" : "Комиссия сети",
     "will_be_paid_with_battery": "Будет оплачена батарейкой",
-    "title" : "Подтвердить действие",
+    "title_multiwallets": "Действия для %{walletName}",
+    "title": "Подтвердить действие",
     "to_your_address" : "На ваш адрес",
     "transaction_type" : {
       "burn" : "Сжечь",
@@ -591,6 +592,7 @@
       "title" : "Сумма"
     },
     "comfirm" : {
+      "wallet": "Кошелёк",
       "action" : "Отправка %{coin}",
       "comment_decrypt" : "Расшифровать",
       "comment_description" : "Будет виден всем.",
@@ -1174,5 +1176,11 @@
     "subtitle": "Выберите кошельки, которые вы хотите добавить.",
     "tokens": "токены"
   },
-  "old_wallet_error": "Используйте кошелёк версии v4R2"
+  "old_wallet_error": "Используйте кошелёк версии v4R2",
+  "migration": {
+    "title": "Перенесите свой кошелёк в новую версию Tonkeeper",
+    "subtitle": "Разблокируйте кошелёк, чтобы продолжить.",
+    "with_passcode": "Ввести пароль",
+    "with_biometry": "Продолжить с %{type}"
+  }
 }

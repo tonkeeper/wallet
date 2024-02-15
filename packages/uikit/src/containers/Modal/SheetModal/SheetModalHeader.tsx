@@ -16,6 +16,7 @@ export interface SheetModalHeaderProps {
   gradient?: boolean;
   title?: string | React.ReactNode;
   center?: boolean;
+  numberOfLines?: number;
 }
 
 export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
@@ -73,9 +74,19 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
         )}
 
         {hasTitle && (
-          <View style={[styles.headerTitle, center && styles.titleByCenter]}>
+          <View
+            style={[
+              styles.headerTitle,
+              styles.headerTitleWithClose,
+              center && styles.titleByCenter,
+            ]}
+          >
             {typeof title === 'string' ? (
-              <Text type="h3" textAlign={center ? 'center' : 'left'}>
+              <Text
+                numberOfLines={props.numberOfLines}
+                type="h3"
+                textAlign={center ? 'center' : 'left'}
+              >
                 {title}
               </Text>
             ) : (
@@ -129,6 +140,9 @@ const styles = StyleSheet.create({
     height: 46,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
+  },
+  headerTitleWithClose: {
+    paddingRight: 64,
   },
   closeButton: {
     width: 64,

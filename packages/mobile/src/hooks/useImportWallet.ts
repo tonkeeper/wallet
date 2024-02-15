@@ -38,6 +38,10 @@ export const useImportWallet = () => {
                     pin,
                     isTestnet,
                     onDone: async (identifiers) => {
+                      tk.setMigrated();
+
+                      dispatch(walletActions.clearGeneratedVault());
+
                       // Enable notifications if it was enabled before migration
                       try {
                         const [isNotificationsDenied, status] = await Promise.all([
@@ -69,10 +73,6 @@ export const useImportWallet = () => {
                           tk.enableBiometry(pin).catch(null);
                         }
                       } catch {}
-
-                      tk.setMigrated();
-
-                      dispatch(walletActions.clearGeneratedVault());
 
                       resolve();
                     },

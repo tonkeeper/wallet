@@ -58,7 +58,7 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
   const theme = useTheme();
 
   const [name, setName] = useState(
-    identifiers.length > 1 ? t('wallet_title') : wallet.config.name,
+    identifiers.length > 1 ? wallet.config.name.slice(0, -5) : wallet.config.name,
   );
   const [selectedColor, setSelectedColor] = useState(wallet.config.color);
   const [emoji, setEmoji] = useState(wallet.config.emoji);

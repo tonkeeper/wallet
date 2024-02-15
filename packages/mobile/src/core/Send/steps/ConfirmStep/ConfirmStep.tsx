@@ -24,6 +24,7 @@ import { useBatteryState } from '@tonkeeper/shared/query/hooks/useBatteryState';
 import { BatteryState } from '@tonkeeper/shared/utils/battery';
 import { TokenType } from '$core/Send/Send.interface';
 import { useBalancesState, useWallet } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -220,6 +221,16 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
           </S.Center>
           <Spacer y={32} />
           <S.Table>
+            {tk.wallets.size > 1 && (
+              <S.Item>
+                <S.ItemLabel>{t('send_screen_steps.comfirm.wallet')}</S.ItemLabel>
+                <S.ItemContent>
+                  <S.ItemValue numberOfLines={1}>
+                    {tk.wallet.config.emoji} {tk.wallet.config.name}
+                  </S.ItemValue>
+                </S.ItemContent>
+              </S.Item>
+            )}
             {recipientName ? (
               <S.Item>
                 <S.ItemLabel>{t('confirm_sending_recipient')}</S.ItemLabel>

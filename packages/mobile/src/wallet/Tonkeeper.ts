@@ -17,14 +17,10 @@ import { Vault } from '@tonkeeper/core';
 import { v4 as uuidv4 } from 'uuid';
 import { Mnemonic } from '@tonkeeper/core/src/utils/mnemonic';
 import { DEFAULT_WALLET_STYLE_CONFIG } from './constants';
-import { t } from '@tonkeeper/shared/i18n';
 import { Buffer } from 'buffer';
 import nacl from 'tweetnacl';
-
-class PermissionsManager {
-  public notifications = true;
-  public biometry = true;
-}
+import * as LocalAuthentication from 'expo-local-authentication';
+import { detectBiometryType } from '$utils';
 
 type TonkeeperOptions = {
   storage: Storage;
@@ -34,6 +30,10 @@ type TonkeeperOptions = {
 export interface MultiWalletMigrationData {
   pubkey: string;
   keychainItemName: string;
+  biometry: {
+    enabled: boolean;
+    type: LocalAuthentication.AuthenticationType | null;
+  };
   lockupConfig?: {
     wallet_type: WalletContractVersion.LockupV1;
     workchain: number;
@@ -50,7 +50,6 @@ export interface WalletsStoreState {
 }
 
 export class Tonkeeper {
-  public permissions: PermissionsManager;
   public wallets: Map<string, Wallet> = new Map();
   public tonPrice: TonPriceManager;
 
@@ -82,7 +81,6 @@ export class Tonkeeper {
       testnet: createTonApiInstance(true),
     };
 
-    this.permissions = new PermissionsManager();
     this.tonPrice = new TonPriceManager(this.tonapi.mainnet, this.storage);
 
     this.walletsStore.persist({
@@ -130,6 +128,13 @@ export class Tonkeeper {
 
     try {
       const data = await this.storage.getItem(`${keychainName}_wallet`);
+      let biometry: MultiWalletMigrationData['biometry'] = { enabled: false, type: null };
+
+      try {
+        biometry.enabled = (await this.storage.getItem('biometry_enabled')) === 'yes';
+        const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
+        biometry.type = detectBiometryType(types);
+      } catch {}
 
       if (!data) {
         return null;
@@ -140,6 +145,7 @@ export class Tonkeeper {
       return {
         pubkey: json.vault.tonPubkey,
         keychainItemName: json.vault.name,
+        biometry,
         lockupConfig:
           json.vault.version === WalletContractVersion.LockupV1
             ? {
@@ -155,20 +161,6 @@ export class Tonkeeper {
     }
   }
 
-  public tronStorageKey = 'temp-tron-address';
-
-  public async load() {
-    try {
-      const tronAddress = await this.storage.getItem(this.tronStorageKey);
-      return {
-        tronAddress: tronAddress ? JSON.parse(tronAddress) : null,
-      };
-    } catch (err) {
-      console.error('[tk:load]', err);
-      return { tronAddress: null, tonProof: null };
-    }
-  }
-
   public async enableBiometry(passcode: string) {
     await this.vault.setupBiometry(passcode);
 
@@ -179,6 +171,18 @@ export class Tonkeeper {
     await this.vault.removeBiometry();
 
     this.walletsStore.set({ biometryEnabled: false });
+  }
+
+  private getNewWalletName() {
+    const regex = new RegExp(`${DEFAULT_WALLET_STYLE_CONFIG.name} (\\d+)`);
+    const lastNumber = [...this.wallets.values()].reduce((maxNumber, wallet) => {
+      const match = wallet.config.name.match(regex);
+      return match ? Math.max(maxNumber, Number(match[1])) : maxNumber;
+    }, 1);
+
+    return this.wallets.size > 0
+      ? `${DEFAULT_WALLET_STYLE_CONFIG.name} ${lastNumber + 1}`
+      : DEFAULT_WALLET_STYLE_CONFIG.name;
   }
 
   public async importWallet(
@@ -201,7 +205,10 @@ export class Tonkeeper {
       newWallets.push({
         ...DEFAULT_WALLET_STYLE_CONFIG,
         ...walletConfig,
-        name: versions.length > 1 ? `${t('wallet_title')} ${version}` : t('wallet_title'),
+        name:
+          versions.length > 1
+            ? `${this.getNewWalletName()} ${version}`
+            : this.getNewWalletName(),
         version,
         type: WalletType.Regular,
         pubkey: Buffer.from(keyPair.publicKey).toString('hex'),
@@ -304,6 +311,7 @@ export class Tonkeeper {
 
     const config: WalletConfig = {
       ...DEFAULT_WALLET_STYLE_CONFIG,
+      name: this.getNewWalletName(),
       identifier: uuidv4(),
       network: WalletNetwork.mainnet,
       type: WalletType.WatchOnly,
@@ -453,6 +461,7 @@ export class Tonkeeper {
     );
   }
 
+  // TODO: should parse given address for isTestnet flag
   public getWalletByAddress(address: string) {
     return Array.from(this.wallets.values()).find(
       (wallet) => !wallet.isTestnet && Address.compare(wallet.address.ton.raw, address),

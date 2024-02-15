@@ -20,6 +20,7 @@ import { Address } from '@tonkeeper/core';
 import { truncateDecimal } from '$utils';
 import { BatteryState } from '@tonkeeper/shared/utils/battery';
 import { useBatteryState } from '@tonkeeper/shared/query/hooks/useBatteryState';
+import { tk } from '$wallet';
 
 interface Props extends StepComponentProps {
   recipient: SendRecipient | null;
@@ -100,6 +101,16 @@ const ConfirmStepComponent: FC<Props> = (props) => {
           </S.Center>
           <Spacer y={32} />
           <S.Table>
+            {tk.wallets.size > 1 && (
+              <S.Item>
+                <S.ItemLabel>{t('send_screen_steps.comfirm.wallet')}</S.ItemLabel>
+                <S.ItemContent>
+                  <S.ItemValue numberOfLines={1}>
+                    {tk.wallet.config.emoji} {tk.wallet.config.name}
+                  </S.ItemValue>
+                </S.ItemContent>
+              </S.Item>
+            )}
             {recipientName ? (
               <S.Item>
                 <S.ItemLabel>{t('confirm_sending_recipient')}</S.ItemLabel>

@@ -10,20 +10,14 @@ import {
 import Svg, { Path, Defs, LinearGradient, Stop, G, ClipPath } from 'react-native-svg';
 import { useWindowDimensions } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { memo, useCallback } from 'react';
+import { memo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { MainStackRouteNames } from '$navigation';
-import { useNavigation } from '@tonkeeper/router';
-import { useDispatch } from 'react-redux';
-import { walletActions } from '$store/wallet';
 
 const HEIGHT_RATIO = deviceHeight / 844;
 
 export const StartScreen = memo(() => {
   const dimensions = useWindowDimensions();
-
-  const nav = useNavigation();
-  const dispatch = useDispatch();
 
   const origShapesWidth = 560;
   const origShapesHeight = 494;
@@ -31,11 +25,6 @@ export const StartScreen = memo(() => {
   const ratioHeight = dimensions.height / origShapesScreenHeight;
   const logoShapesPosX = origShapesWidth / 2 - dimensions.width / 2;
   const logoShapesPosY = origShapesHeight / 2 - (origShapesHeight * ratioHeight) / 2;
-
-  const handleCreatePress = useCallback(() => {
-    dispatch(walletActions.clearGeneratedVault());
-    nav.navigate(MainStackRouteNames.CreateWalletStack);
-  }, [dispatch, nav]);
 
   return (
     <Screen>
@@ -74,7 +63,7 @@ export const StartScreen = memo(() => {
         <View style={styles.buttons}>
           <Button
             title={t('start_screen.create_wallet_button')}
-            onPress={handleCreatePress}
+            navigate={MainStackRouteNames.CreateWalletStack}
           />
           <Spacer y={16} />
           <Button
