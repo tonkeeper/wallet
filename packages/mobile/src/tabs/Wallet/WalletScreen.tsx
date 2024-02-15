@@ -20,7 +20,6 @@ import { RefreshControl, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from './NFTCardItem';
 import { useDispatch } from 'react-redux';
 import { ns } from '$utils';
-import { walletActions } from '$store/wallet';
 import { useIsFocused } from '@react-navigation/native';
 import { useBalance } from './hooks/useBalance';
 import { ListItemRate } from './components/ListItemRate';
@@ -131,12 +130,11 @@ export const WalletScreen = memo(({ navigation }) => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('tabLongPress', () => {
       Haptics.impactLight();
-      dispatch(walletActions.clearGeneratedVault());
       nav.openModal('/switch-wallet');
     });
 
     return unsubscribe;
-  }, [dispatch, nav, navigation]);
+  }, [nav, navigation]);
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
 
