@@ -1111,5 +1111,11 @@
     "subtitle": "Choose wallets you want to add.",
     "tokens": "tokens"
   },
-  "old_wallet_error": "Use wallet with v4R2 version"
+  "old_wallet_error": "Use wallet with v4R2 version",
+  "migration": {
+    "title": "Migrate your wallet to the new version of Tonkeeper",
+    "subtitle": "Unlock wallet to continue.",
+    "with_passcode": "Enter Passcode",
+    "with_biometry": "Continue with %{type}"
+  }
 }

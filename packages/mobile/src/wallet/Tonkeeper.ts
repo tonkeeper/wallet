@@ -20,11 +20,8 @@ import { DEFAULT_WALLET_STYLE_CONFIG } from './constants';
 import { t } from '@tonkeeper/shared/i18n';
 import { Buffer } from 'buffer';
 import nacl from 'tweetnacl';
-
-class PermissionsManager {
-  public notifications = true;
-  public biometry = true;
-}
+import * as LocalAuthentication from 'expo-local-authentication';
+import { detectBiometryType } from '$utils';
 
 type TonkeeperOptions = {
   storage: Storage;
@@ -34,6 +31,10 @@ type TonkeeperOptions = {
 export interface MultiWalletMigrationData {
   pubkey: string;
   keychainItemName: string;
+  biometry: {
+    enabled: boolean;
+    type: LocalAuthentication.AuthenticationType | null;
+  };
   lockupConfig?: {
     wallet_type: WalletContractVersion.LockupV1;
     workchain: number;
@@ -50,7 +51,6 @@ export interface WalletsStoreState {
 }
 
 export class Tonkeeper {
-  public permissions: PermissionsManager;
   public wallets: Map<string, Wallet> = new Map();
   public tonPrice: TonPriceManager;
 
@@ -82,7 +82,6 @@ export class Tonkeeper {
       testnet: createTonApiInstance(true),
     };
 
-    this.permissions = new PermissionsManager();
     this.tonPrice = new TonPriceManager(this.tonapi.mainnet, this.storage);
 
     this.walletsStore.persist({
@@ -130,6 +129,13 @@ export class Tonkeeper {
 
     try {
       const data = await this.storage.getItem(`${keychainName}_wallet`);
+      let biometry: MultiWalletMigrationData['biometry'] = { enabled: false, type: null };
+
+      try {
+        biometry.enabled = (await this.storage.getItem('biometry_enabled')) === 'yes';
+        const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
+        biometry.type = detectBiometryType(types);
+      } catch {}
 
       if (!data) {
         return null;
@@ -140,6 +146,7 @@ export class Tonkeeper {
       return {
         pubkey: json.vault.tonPubkey,
         keychainItemName: json.vault.name,
+        biometry,
         lockupConfig:
           json.vault.version === WalletContractVersion.LockupV1
             ? {
@@ -152,20 +159,6 @@ export class Tonkeeper {
       };
     } catch {
       return null;
-    }
-  }
-
-  public tronStorageKey = 'temp-tron-address';
-
-  public async load() {
-    try {
-      const tronAddress = await this.storage.getItem(this.tronStorageKey);
-      return {
-        tronAddress: tronAddress ? JSON.parse(tronAddress) : null,
-      };
-    } catch (err) {
-      console.error('[tk:load]', err);
-      return { tronAddress: null, tonProof: null };
     }
   }
 

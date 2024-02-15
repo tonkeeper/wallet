@@ -1,16 +1,26 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from '$hooks/useTheme';
-import { FC, memo } from 'react';
+import { FC, memo, useEffect } from 'react';
 import { ImportWalletStackParamList, ImportWalletStackRouteNames } from './types';
 import { CreatePin, ImportWallet, SetupBiometry } from '$core';
 import { SetupNotifications } from '$core/SetupNotifications/SetupNotifications';
 import { RouteProp } from '@react-navigation/native';
 import { ChooseWallets } from '../../screens';
+import { useDispatch } from 'react-redux';
+import { walletActions } from '$store/wallet';
 
 const Stack = createNativeStackNavigator<ImportWalletStackParamList>();
 
 export const ImportWalletStack = memo(() => {
   const theme = useTheme();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    return () => {
+      dispatch(walletActions.clearGeneratedVault());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Stack.Navigator

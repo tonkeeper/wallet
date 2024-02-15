@@ -13,18 +13,14 @@ import {
 import React, { FC, memo, useCallback } from 'react';
 import { Text as RNText } from 'react-native';
 import { useNavigation } from '@tonkeeper/router';
-import { useDispatch } from 'react-redux';
-import { walletActions } from '$store/wallet';
 
 const WalletSelectorComponent: FC = () => {
   const wallet = useWallet();
   const nav = useNavigation();
-  const dispatch = useDispatch();
 
   const handlePress = useCallback(() => {
-    dispatch(walletActions.clearGeneratedVault());
     nav.openModal('/switch-wallet');
-  }, [dispatch, nav]);
+  }, [nav]);
 
   return (
     <View style={styles.container}>

@@ -22,6 +22,7 @@ export class WalletBase {
   public identifier: string;
   public pubkey: string;
   public address: WalletAddress;
+  protected persistPath: string;
 
   public tronService: TronService;
 
@@ -50,6 +51,10 @@ export class WalletBase {
       tron: { proxy: '', owner: '' },
       ton: tonAddress,
     };
+
+    this.persistPath = `${this.isTestnet ? 'testnet' : 'mainnet'}/${
+      this.address.ton.raw
+    }`;
 
     this.logger = logger.extend(`Wallet ${this.address.ton.short}`);
 
