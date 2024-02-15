@@ -529,10 +529,15 @@ export function useDeeplinkingResolvers() {
       !Address.compare(txBody.params.source, await wallet.ton.getAddress())
     ) {
       Toast.hide();
-      return openAddressMismatchModal(
-        () => resolveTxType(txRequest, resolveParams),
-        txBody.params.source,
-      );
+      const foundWallet = tk.getWalletByAddress(txBody.params.source);
+      if (!foundWallet)
+        return openAddressMismatchModal(
+          () => resolveTxType(txRequest, resolveParams),
+          txBody.params.source,
+        );
+
+      tk.switchWallet(foundWallet.identifier);
+      await delay(1000);
     }
 
     const props = { ...txBody, ...resolveParams };

@@ -274,6 +274,7 @@
     "network_fee": "Network fee",
     "will_be_paid_with_battery": "Will be paid with Battery",
     "title": "Confirm action",
+    "title_multiwallets": "Action for %{walletName}",
     "to_your_address": "To your address",
     "transaction_type": {
       "burn": "Burn",
@@ -601,6 +602,7 @@
       "title": "Amount"
     },
     "comfirm": {
+      "wallet": "Wallet",
       "action": "%{coin} transfer",
       "comment_decrypt": "Decrypt",
       "comment_description": "Will be visible to everyone.",

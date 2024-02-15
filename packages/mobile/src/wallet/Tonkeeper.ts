@@ -453,6 +453,7 @@ export class Tonkeeper {
     );
   }
 
+  // TODO: should parse given address for isTestnet flag
   public getWalletByAddress(address: string) {
     return Array.from(this.wallets.values()).find(
       (wallet) => !wallet.isTestnet && Address.compare(wallet.address.ton.raw, address),

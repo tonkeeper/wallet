@@ -188,7 +188,16 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 
   return (
     <Modal>
-      <Modal.Header title={t('confirmSendModal.title')} />
+      <Modal.Header
+        numberOfLines={1}
+        title={
+          tk.wallets.size > 1
+            ? t('confirmSendModal.title_multiwallets', {
+                walletName: `${tk.wallet.config.emoji} ${tk.wallet.config.name}`,
+              })
+            : t('confirmSendModal.title')
+        }
+      />
       <Modal.ScrollView>
         <List style={styles.actionsList}>
           {actions.map((action) => (
