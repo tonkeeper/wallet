@@ -27,6 +27,7 @@
   "dependencies": {
     "@alexzunik/rn-native-portals-reborn": "^1.0.5",
     "@amplitude/analytics-browser": "^1.6.7",
+    "@aptabase/react-native": "^0.3.9",
     "@bogoslavskiy/react-native-steezy": "^1.0.4",
     "@craftzdog/react-native-buffer": "^6.0.5",
     "@expo/react-native-action-sheet": "^4.0.1",

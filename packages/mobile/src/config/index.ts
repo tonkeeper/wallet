@@ -46,6 +46,8 @@ export type AppConfigVars = {
   batteryMeanFees: string;
   holdersAppEndpoint: string;
   holdersService: string;
+  aptabaseEndpoint: string;
+  aptabaseAppKey: string;
   disable_battery: boolean;
   disable_battery_iap_module: boolean;
   disable_battery_send: boolean;
@@ -74,6 +76,8 @@ const defaultConfig: Partial<AppConfigVars> = {
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
   batteryHost: 'https://battery.tonkeeper.com',
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
+  aptabaseEndpoint: undefined,
+  aptabaseAppKey: 'A-EU-4740763652',
   batteryMeanFees: '0.08',
   disable_battery: true,
   disable_battery_iap_module: true,

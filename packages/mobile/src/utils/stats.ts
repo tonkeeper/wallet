@@ -1,6 +1,23 @@
 import { config } from '$config';
 import { init, logEvent } from '@amplitude/analytics-browser';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Aptabase from '@aptabase/react-native';
+import DeviceInfo from 'react-native-device-info';
+import { firebase } from '@react-native-firebase/analytics';
+
+const appKey = config.get('aptabaseAppKey');
+
+firebase
+  .analytics()
+  .setUserId(DeviceInfo.getUniqueId())
+  .catch(() => null);
+
+if (appKey) {
+  Aptabase.init(appKey, {
+    host: config.get('aptabaseEndpoint'),
+    appVersion: DeviceInfo.getVersion(),
+  });
+}
 
 let TrakingEnabled = false;
 export function initStats() {
@@ -21,11 +38,19 @@ export function initStats() {
   TrakingEnabled = true;
 }
 
-export function trackEvent(name: string, params: any = {}) {
-  if (!TrakingEnabled) {
-    return;
-  }
-  logEvent(name, params);
+export async function trackEvent(name: string, params: any = {}) {
+  try {
+    if (!TrakingEnabled) {
+      return;
+    }
+    if (appKey) {
+      Aptabase.trackEvent(
+        name,
+        Object.assign(params, { firebase_user_id: DeviceInfo.getUniqueId() }),
+      );
+    }
+    logEvent(name, params);
+  } catch (e) {}
 }
 
 export async function trackFirstLaunch() {
