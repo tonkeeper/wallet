@@ -194,13 +194,16 @@ export class Tonkeeper {
       'network' | 'workchain' | 'configPubKey' | 'allowedDestinations'
     >,
   ): Promise<string[]> {
+    console.log('importWallet');
     const newWallets: WalletConfig[] = [];
 
     let keyPair: nacl.SignKeyPair;
     for (const version of versions) {
       const identifier = uuidv4();
 
+      console.log('vault.import start');
       keyPair = await this.vault.import(identifier, mnemonic, passcode);
+      console.log('vault.import end');
 
       newWallets.push({
         ...DEFAULT_WALLET_STYLE_CONFIG,
@@ -224,12 +227,16 @@ export class Tonkeeper {
     });
 
     this.walletsStore.set(({ wallets }) => ({ wallets: [...wallets, ...sortedWallets] }));
+    console.log('wallets added to walletsStore');
     const walletsInstances = await Promise.all(
       sortedWallets.map((wallet) => this.createWalletInstance(wallet)),
     );
     walletsInstances.map((instance) => instance.tonProof.obtainProof(keyPair));
+    console.log('obtainProof done');
 
     this.setWallet(walletsInstances[0]);
+
+    console.log('setWallet done');
 
     return walletsInstances.map((item) => item.identifier);
   }
@@ -370,18 +377,28 @@ export class Tonkeeper {
   }
 
   private async createWalletInstance(walletConfig: WalletConfig) {
+    console.log('createWalletInstance start');
     const addresses = await Address.fromPubkey(
       walletConfig.pubkey,
       walletConfig.network === WalletNetwork.testnet,
       walletConfig.version === WalletContractVersion.LockupV1 ? walletConfig : undefined,
     );
 
+    console.log('got addresses');
+
     const wallet = new Wallet(walletConfig, addresses!, this.storage, this.tonPrice);
 
+    console.log('wallet instance created');
+
     await wallet.rehydrate();
+
+    console.log('rehydrate done');
     wallet.preload();
+    console.log('preload started');
 
     this.wallets.set(wallet.identifier, wallet);
+
+    console.log('createWalletInstance end');
 
     return wallet;
   }
