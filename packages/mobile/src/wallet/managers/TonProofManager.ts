@@ -38,7 +38,9 @@ export class TonProofManager {
   }
 
   public async rehydrate() {
-    this.tonProofToken = await SecureStore.getItemAsync(`proof-${this.identifier}`);
+    try {
+      this.tonProofToken = await SecureStore.getItemAsync(`proof-${this.identifier}`);
+    } catch {}
   }
 
   public destroy() {
