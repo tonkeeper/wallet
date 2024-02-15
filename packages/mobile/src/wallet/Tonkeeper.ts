@@ -17,7 +17,6 @@ import { Vault } from '@tonkeeper/core';
 import { v4 as uuidv4 } from 'uuid';
 import { Mnemonic } from '@tonkeeper/core/src/utils/mnemonic';
 import { DEFAULT_WALLET_STYLE_CONFIG } from './constants';
-import { t } from '@tonkeeper/shared/i18n';
 import { Buffer } from 'buffer';
 import nacl from 'tweetnacl';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -174,6 +173,18 @@ export class Tonkeeper {
     this.walletsStore.set({ biometryEnabled: false });
   }
 
+  private getNewWalletName() {
+    const regex = new RegExp(`${DEFAULT_WALLET_STYLE_CONFIG.name} (\\d+)`);
+    const lastNumber = [...this.wallets.values()].reduce((maxNumber, wallet) => {
+      const match = wallet.config.name.match(regex);
+      return match ? Math.max(maxNumber, Number(match[1])) : maxNumber;
+    }, 1);
+
+    return this.wallets.size > 0
+      ? `${DEFAULT_WALLET_STYLE_CONFIG.name} ${lastNumber + 1}`
+      : DEFAULT_WALLET_STYLE_CONFIG.name;
+  }
+
   public async importWallet(
     mnemonic: string,
     passcode: string,
@@ -194,7 +205,10 @@ export class Tonkeeper {
       newWallets.push({
         ...DEFAULT_WALLET_STYLE_CONFIG,
         ...walletConfig,
-        name: versions.length > 1 ? `${t('wallet_title')} ${version}` : t('wallet_title'),
+        name:
+          versions.length > 1
+            ? `${this.getNewWalletName()} ${version}`
+            : this.getNewWalletName(),
         version,
         type: WalletType.Regular,
         pubkey: Buffer.from(keyPair.publicKey).toString('hex'),
@@ -297,6 +311,7 @@ export class Tonkeeper {
 
     const config: WalletConfig = {
       ...DEFAULT_WALLET_STYLE_CONFIG,
+      name: this.getNewWalletName(),
       identifier: uuidv4(),
       network: WalletNetwork.mainnet,
       type: WalletType.WatchOnly,
