@@ -13,6 +13,7 @@ export const IconList = {
   'ic-almost-empty-battery-128': require('../../../assets/icons/png/ic-almost-empty-battery-128.png'),
   'ic-empty-battery-128': require('../../../assets/icons/png/ic-empty-battery-128.png'),
   'ic-full-battery-128': require('../../../assets/icons/png/ic-full-battery-128.png'),
+  'ic-gear-128': require('../../../assets/icons/png/ic-gear-128.png'),
   'ic-lock-128': require('../../../assets/icons/png/ic-lock-128.png'),
   'ic-notification-128': require('../../../assets/icons/png/ic-notification-128.png'),
   'ic-appearance-16': require('../../../assets/icons/png/ic-appearance-16.png'),

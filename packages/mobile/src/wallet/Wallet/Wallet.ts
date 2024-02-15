@@ -37,12 +37,10 @@ export class Wallet extends WalletContent {
   ) {
     super(config, tonAllAddresses, storage, tonPrice);
 
-    const tonRawAddress = this.address.ton.raw;
-
     this.status.persist({
       partialize: ({ updatedAt }) => ({ updatedAt }),
       storage: this.storage,
-      key: `${tonRawAddress}/status`,
+      key: `${this.persistPath}/status`,
     });
 
     this.listenTransactions();
