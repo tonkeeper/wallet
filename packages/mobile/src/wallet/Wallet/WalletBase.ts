@@ -52,7 +52,9 @@ export class WalletBase {
       ton: tonAddress,
     };
 
-    this.persistPath = `${config.network}/${this.address.ton.raw}`;
+    this.persistPath = `${this.isTestnet ? 'testnet' : 'mainnet'}/${
+      this.address.ton.raw
+    }`;
 
     this.logger = logger.extend(`Wallet ${this.address.ton.short}`);
 
