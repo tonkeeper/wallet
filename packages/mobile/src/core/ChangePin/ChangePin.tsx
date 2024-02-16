@@ -6,9 +6,11 @@ import { Toast } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
 import { goBack } from '$navigation/imperative';
 import { vault } from '$wallet';
+import { useBiometrySettings } from '@tonkeeper/shared/hooks';
 
 export const ChangePin: FC = () => {
   const [oldPin, setOldPin] = useState<string | null>(null);
+  const { biometryEnabled, enableBiometry, disableBiometry } = useBiometrySettings();
 
   const handleCreated = useCallback(
     async (pin: string) => {
@@ -18,6 +20,15 @@ export const ChangePin: FC = () => {
 
       try {
         await vault.changePasscode(oldPin, pin);
+
+        if (biometryEnabled) {
+          await disableBiometry();
+
+          try {
+            await enableBiometry(pin);
+          } catch {}
+        }
+
         Toast.success(t('passcode_changed'));
         goBack();
       } catch (e) {
@@ -25,7 +36,7 @@ export const ChangePin: FC = () => {
         goBack();
       }
     },
-    [oldPin],
+    [biometryEnabled, disableBiometry, enableBiometry, oldPin],
   );
 
   return (

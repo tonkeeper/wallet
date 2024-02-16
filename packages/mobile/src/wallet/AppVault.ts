@@ -100,7 +100,7 @@ export class AppVault implements Vault {
     await this.saveVaultState(newPasscode);
   }
 
-  public async exportWithBiometry(identifier: string) {
+  public async exportPasscodeWithBiometry() {
     const passcode = await SecureStore.getItemAsync(this.biometryKey, {
       keychainService: this.keychainService,
     });
@@ -109,7 +109,7 @@ export class AppVault implements Vault {
       throw new Error('Biometry data is not found');
     }
 
-    return this.exportWithPasscode(identifier, passcode);
+    return passcode;
   }
 
   public async setupBiometry(passcode: string) {
