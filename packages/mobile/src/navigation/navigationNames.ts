@@ -15,6 +15,7 @@ export enum AppStackRouteNames {
   AccessConfirmation = 'AccessConfirmation',
   MainAccessConfirmation = 'MainAccessConfirmation',
   ChangePin = 'ChangePin',
+  ResetPin = 'ResetPin',
   NFT = 'NFT',
   WebView = 'WebView',
   DevStack = 'DevStack',

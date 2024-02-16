@@ -15,11 +15,14 @@ import { detectBiometryType, ns, platform, triggerImpactLight } from '$utils';
 import { Toast } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
 import { useBiometrySettings, useWallet } from '@tonkeeper/shared/hooks';
+import { useNavigation } from '@tonkeeper/router';
+import { vault } from '$wallet';
 
 export const Security: FC = () => {
   const dispatch = useDispatch();
   const tabBarHeight = useBottomTabBarHeight();
   const wallet = useWallet();
+  const nav = useNavigation();
 
   const { biometryEnabled } = useBiometrySettings();
 
@@ -69,6 +72,17 @@ export const Security: FC = () => {
   const handleChangePasscode = useCallback(() => {
     openChangePin();
   }, []);
+
+  const handleResetPasscode = useCallback(async () => {
+    if (!biometryEnabled) {
+      return;
+    }
+
+    try {
+      const passcode = await vault.exportPasscodeWithBiometry();
+      nav.navigate('ResetPin', { passcode });
+    } catch {}
+  }, [biometryEnabled, nav]);
 
   function renderBiometryToggler() {
     if (biometryAvail === -1) {
@@ -121,6 +135,14 @@ export const Security: FC = () => {
             <CellSectionItem onPress={handleChangePasscode} icon="ic-lock-28">
               {t('security_change_passcode')}
             </CellSectionItem>
+            {biometryEnabled ? (
+              <CellSectionItem
+                onPress={handleResetPasscode}
+                icon="ic-arrow-2-circlepath-28"
+              >
+                {t('security_reset_passcode')}
+              </CellSectionItem>
+            ) : null}
           </CellSection>
           <CellSection>
             {!!wallet && wallet.isLockup && (
