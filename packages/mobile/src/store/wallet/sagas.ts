@@ -448,13 +448,15 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
   try {
     const generatedVault = yield select(walletGeneratedVaultSelector);
 
-    let withoutBiometryOnOpen = !!generatedVault;
+    let withoutBiometryOnOpen = false;
 
-    if (tk.biometryEnabled && !generatedVault) {
+    if (tk.biometryEnabled) {
       try {
+        const passcode = yield call([multiWalletVault, 'exportPasscodeWithBiometry']);
         const mnemonic = yield call(
-          [multiWalletVault, 'exportWithBiometry'],
+          [multiWalletVault, 'exportWithPasscode'],
           tk.wallet.identifier,
+          passcode,
         );
         const unlockedVault = new UnlockedVault(
           {
@@ -463,6 +465,10 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
           },
           mnemonic,
         );
+
+        if (generatedVault) {
+          setLastEnteredPasscode(passcode);
+        }
 
         action?.payload?.onDone?.(unlockedVault);
         return unlockedVault;

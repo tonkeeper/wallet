@@ -114,7 +114,11 @@ export const AccessConfirmation: FC = () => {
       const promise = getCurrentConfirmationVaultPromise();
 
       const walletForUnlock = isUnlock ? tk.walletForUnlock : wallet;
-      const mnemonic = await vault.exportWithBiometry(walletForUnlock.identifier);
+      const passcode = await vault.exportPasscodeWithBiometry();
+      const mnemonic = await vault.exportWithPasscode(
+        walletForUnlock.identifier,
+        passcode,
+      );
       const unlockedVault = new UnlockedVault(
         {
           ...wallet.config,
@@ -126,6 +130,10 @@ export const AccessConfirmation: FC = () => {
       pinRef.current?.triggerSuccess();
 
       setTimeout(async () => {
+        if (generatedVault) {
+          setLastEnteredPasscode(passcode);
+        }
+
         // Lock screen
         if (isUnlock) {
           if (!walletForUnlock.tonProof.tonProofToken) {
@@ -139,13 +147,13 @@ export const AccessConfirmation: FC = () => {
         }
       }, 500);
     } catch (e) {
-      if (!e.message.includes('User canceled the authentication')) {
+      if (!e.message.includes('User canceled')) {
         Toast.fail(e.message, { size: ToastSize.Small });
         setBiometryFailed(true);
       }
       triggerError();
     }
-  }, [dispatch, isUnlock, triggerError, wallet]);
+  }, [dispatch, generatedVault, isUnlock, triggerError, wallet]);
 
   useEffect(() => {
     if (params.withoutBiometryOnOpen || !biometryEnabled) {

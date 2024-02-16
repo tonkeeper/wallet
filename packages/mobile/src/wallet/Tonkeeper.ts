@@ -178,7 +178,9 @@ export class Tonkeeper {
   }
 
   public async disableBiometry() {
-    await this.vault.removeBiometry();
+    try {
+      await this.vault.removeBiometry();
+    } catch {}
 
     this.walletsStore.set({ biometryEnabled: false });
   }
