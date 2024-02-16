@@ -2,7 +2,6 @@ import { TronAPI } from '@tonkeeper/core';
 import { BatteryAPI } from '@tonkeeper/core/src/BatteryAPI';
 import { TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { config } from '$config';
-import { AppServerSentEvents } from './AppServerSentEvents';
 import { i18n } from '@tonkeeper/shared/i18n';
 
 export const createTonApiInstance = (isTestnet = false) => {
@@ -38,12 +37,5 @@ export const createTronApiInstance = (isTestnet = false) => {
 
       return config.get('tronapiHost');
     },
-  });
-};
-
-export const createSseInstance = (isTestnet = false) => {
-  return new AppServerSentEvents({
-    baseUrl: () => config.get('tonapiIOEndpoint', isTestnet),
-    token: () => config.get('tonApiV2Key', isTestnet),
   });
 };

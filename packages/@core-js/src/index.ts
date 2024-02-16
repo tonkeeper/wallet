@@ -14,6 +14,5 @@ export * from './utils/State';
 export * from './utils/Logger';
 export * from './utils/network';
 
-export * from './declarations/ServerSentEvents.d';
 export * from './declarations/Storage.d';
 export * from './declarations/Vault.d';

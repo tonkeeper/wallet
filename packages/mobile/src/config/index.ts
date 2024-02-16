@@ -33,6 +33,8 @@ export type AppConfigVars = {
   stonfiUrl: string;
   explorerUrl: string;
   featured_play_interval: number;
+  tonapiWsEndpoint: string;
+  tonapiTestnetWsEndpoint: string;
   tonapiIOEndpoint: string;
   tonapiV2Endpoint: string;
   tonApiV2Key: string;
@@ -60,6 +62,8 @@ const defaultConfig: Partial<AppConfigVars> = {
   supportLink: 'mailto:support@tonkeeper.com',
   explorerUrl: 'https://tonviewer.com',
   accountExplorer: 'https://tonviewer.com/%s',
+  tonapiWsEndpoint: 'wss://tonapi.io/v2/websocket',
+  tonapiTestnetWsEndpoint: 'wss://testnet.tonapi.io/v2/websocket',
   tonapiIOEndpoint: 'https://keeper.tonapi.io',
   tonapiV2Endpoint: 'https://tonapi.io',
   subscriptionsHost: 'https://api.tonkeeper.com',

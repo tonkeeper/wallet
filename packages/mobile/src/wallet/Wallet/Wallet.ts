@@ -1,13 +1,12 @@
 import { AddressesByVersion } from '@tonkeeper/core/src/formatters/Address';
 
-import { EventSourceListener } from '@tonkeeper/core/src/declarations/ServerSentEvents';
-
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { TonPriceManager } from '../managers/TonPriceManager';
 import { State } from '@tonkeeper/core/src/utils/State';
 import { WalletConfig } from '../WalletTypes';
 import { WalletContent } from './WalletContent';
 import { AppState, AppStateStatus, NativeEventSubscription } from 'react-native';
+import { AccountsStream } from '../streaming';
 
 export interface WalletStatusState {
   isReloading: boolean;
@@ -22,7 +21,7 @@ export class Wallet extends WalletContent {
     updatedAt: Date.now(),
   };
 
-  public listener: EventSourceListener | null = null;
+  private stopListenTransactions: Function | null = null;
   private appStateListener: NativeEventSubscription | null = null;
   private prevAppState: AppStateStatus = 'active';
   private lastTimeAppActive = Date.now();
@@ -34,6 +33,7 @@ export class Wallet extends WalletContent {
     public tonAllAddresses: AddressesByVersion,
     protected storage: Storage,
     protected tonPrice: TonPriceManager,
+    private accountStream: AccountsStream,
   ) {
     super(config, tonAllAddresses, storage, tonPrice);
 
@@ -54,6 +54,9 @@ export class Wallet extends WalletContent {
   }
 
   public async preload() {
+    if (this.status.data.isLoading) {
+      return;
+    }
     this.logger.debug('preload wallet data');
     try {
       this.status.set({ isLoading: true });
@@ -65,6 +68,9 @@ export class Wallet extends WalletContent {
   }
 
   public async reload() {
+    if (this.status.data.isReloading) {
+      return;
+    }
     this.logger.debug('reload wallet data');
     try {
       this.status.set({ isReloading: true });
@@ -77,24 +83,15 @@ export class Wallet extends WalletContent {
   }
 
   private listenTransactions() {
-    this.listener = this.sse.listen('/v2/sse/accounts/transactions', {
-      accounts: this.address.ton.raw,
-    });
-    this.listener.addEventListener('open', () => {
-      this.logger.debug('start listen transactions');
-    });
-    this.listener.addEventListener('error', (err) => {
-      this.logger.error('error listen transactions', err);
-    });
-    this.listener.addEventListener('message', () => {
-      this.logger.info('message receive');
-      this.preload();
-    });
-  }
-
-  private stopListenTransactions() {
-    this.listener?.close();
-    this.logger.warn('stop listen transactions');
+    this.stopListenTransactions = this.accountStream.subscribe(
+      this.address.ton.raw,
+      (event) => {
+        this.logger.debug('transaction event', event.params.tx_hash);
+        setTimeout(() => {
+          this.preload();
+        }, 300);
+      },
+    );
   }
 
   private listenAppState() {
@@ -107,8 +104,6 @@ export class Wallet extends WalletContent {
       if (nextAppState === 'active' && this.prevAppState === 'background') {
         if (Date.now() - this.lastTimeAppActive > 1000 * 60 * 5) {
           this.preload();
-          this.stopListenTransactions();
-          this.listenTransactions();
         }
       }
 
@@ -120,6 +115,6 @@ export class Wallet extends WalletContent {
     this.logger.warn('destroy wallet');
     this.tonProof.destroy();
     this.appStateListener?.remove();
-    this.stopListenTransactions();
+    this.stopListenTransactions?.();
   }
 }

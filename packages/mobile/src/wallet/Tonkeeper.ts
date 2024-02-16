@@ -21,6 +21,7 @@ import { Buffer } from 'buffer';
 import nacl from 'tweetnacl';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { detectBiometryType } from '$utils';
+import { AccountsStream } from './streaming';
 
 type TonkeeperOptions = {
   storage: Storage;
@@ -62,6 +63,11 @@ export class Tonkeeper {
     testnet: TonAPI;
   };
 
+  private accountsStream: {
+    mainnet: AccountsStream;
+    testnet: AccountsStream;
+  };
+
   private vault: Vault;
 
   private storage: Storage;
@@ -79,6 +85,10 @@ export class Tonkeeper {
     this.tonapi = {
       mainnet: createTonApiInstance(),
       testnet: createTonApiInstance(true),
+    };
+    this.accountsStream = {
+      mainnet: new AccountsStream(false),
+      testnet: new AccountsStream(true),
     };
 
     this.tonPrice = new TonPriceManager(this.tonapi.mainnet, this.storage);
@@ -376,7 +386,18 @@ export class Tonkeeper {
       walletConfig.version === WalletContractVersion.LockupV1 ? walletConfig : undefined,
     );
 
-    const wallet = new Wallet(walletConfig, addresses!, this.storage, this.tonPrice);
+    const accountStream =
+      walletConfig.network === WalletNetwork.testnet
+        ? this.accountsStream.testnet
+        : this.accountsStream.mainnet;
+
+    const wallet = new Wallet(
+      walletConfig,
+      addresses!,
+      this.storage,
+      this.tonPrice,
+      accountStream,
+    );
 
     await wallet.rehydrate();
     wallet.preload();
