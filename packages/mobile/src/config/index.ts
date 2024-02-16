@@ -76,8 +76,6 @@ const defaultConfig: Partial<AppConfigVars> = {
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
   batteryHost: 'https://battery.tonkeeper.com',
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
-  aptabaseEndpoint: undefined,
-  aptabaseAppKey: undefined,
   batteryMeanFees: '0.08',
   disable_battery: true,
   disable_battery_iap_module: true,
