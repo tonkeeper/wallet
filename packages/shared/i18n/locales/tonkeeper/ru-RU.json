@@ -240,10 +240,10 @@
   "confirm_sending_submit" : "Подтвердить и отправить",
   "confirm_sending_title" : "Перевод",
   "confirmSendModal" : {
+    "wallet": "Кошелёк:",
     "refund": "Возврат",
     "network_fee" : "Комиссия сети",
     "will_be_paid_with_battery": "Будет оплачена батарейкой",
-    "title_multiwallets": "Действия для %{walletName}",
     "title": "Подтвердить действие",
     "to_your_address" : "На ваш адрес",
     "transaction_type" : {

@@ -190,12 +190,21 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     <Modal>
       <Modal.Header
         numberOfLines={1}
-        title={
-          tk.wallets.size > 1
-            ? t('confirmSendModal.title_multiwallets', {
-                walletName: `${tk.wallet.config.emoji} ${tk.wallet.config.name}`,
-              })
-            : t('confirmSendModal.title')
+        title={t('confirmSendModal.title')}
+        subtitle={
+          tk.wallets.size > 1 && (
+            <View style={styles.subtitleContainer}>
+              <Text type="body2" color="textSecondary">
+                {t('confirmSendModal.wallet')}
+              </Text>
+              <Text type="body2" color="textSecondary">
+                {tk.wallet.config.emoji}
+              </Text>
+              <Text type="body2" color="textSecondary">
+                {tk.wallet.config.name}
+              </Text>
+            </View>
+          )
         }
       />
       <Modal.ScrollView>
@@ -339,6 +348,10 @@ const styles = Steezy.create({
     paddingTop: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  subtitleContainer: {
+    flexDirection: 'row',
+    gap: 4,
   },
   withBatteryContainer: {
     paddingHorizontal: 32,
