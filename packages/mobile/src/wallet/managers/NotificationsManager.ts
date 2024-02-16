@@ -12,12 +12,16 @@ export interface NotificationsState {
   isSubscribed: boolean;
 }
 
+const hasGms = DeviceInfo.hasGmsSync();
+
 export class NotificationsManager {
   static readonly INITIAL_STATE: NotificationsState = {
     isSubscribed: false,
   };
 
   public state = new State(NotificationsManager.INITIAL_STATE);
+
+  public isAvailable = hasGms;
 
   constructor(
     private persistPath: string,
@@ -98,6 +102,10 @@ export class NotificationsManager {
 
   public async getIsDenied() {
     try {
+      if (!this.isAvailable) {
+        return true;
+      }
+
       const authStatus = await messaging().hasPermission();
       return authStatus === messaging.AuthorizationStatus.DENIED;
     } catch {

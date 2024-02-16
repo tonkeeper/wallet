@@ -50,11 +50,10 @@ export const SetupBiometry: FC<SetupBiometryProps> = ({ route }) => {
           isBiometryEnabled,
           pin,
           onDone: async (identifiers) => {
-            const isNotificationsDenied = await tk.wallet.notifications.getIsDenied();
-            if (isNotificationsDenied) {
-              openSetupWalletDone(identifiers);
-            } else {
+            if (tk.wallet.notifications.isAvailable) {
               openSetupNotifications(identifiers);
+            } else {
+              openSetupWalletDone(identifiers);
             }
             setCreatingWallet(false);
           },
