@@ -15,17 +15,27 @@ export interface SheetModalHeaderProps {
   leftContent?: React.ReactNode;
   gradient?: boolean;
   title?: string | React.ReactNode;
+  subtitle?: string | React.ReactNode;
   center?: boolean;
   numberOfLines?: number;
 }
 
 export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
-  const { gradient, title, onClose, iconLeft, onIconLeftPress, leftContent, center } =
-    props;
+  const {
+    gradient,
+    title,
+    subtitle,
+    onClose,
+    iconLeft,
+    onIconLeftPress,
+    leftContent,
+    center,
+  } = props;
   const { measureHeader, close, scrollY } = useSheetInternal();
   const theme = useTheme();
 
   const hasTitle = !!title;
+  const hasSubtitle = !!subtitle;
 
   const borderAnimatedStyle = useAnimatedStyle(
     () => ({
@@ -47,7 +57,12 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
 
   return (
     <Animated.View
-      style={[styles.container, borderAnimatedStyle, !hasTitle && styles.absolute]}
+      style={[
+        styles.container,
+        hasSubtitle && styles.containerWithSubtitle,
+        borderAnimatedStyle,
+        !hasTitle && styles.absolute,
+      ]}
     >
       {gradient && (
         <LinearGradient
@@ -92,6 +107,14 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
             ) : (
               title
             )}
+            {hasSubtitle &&
+              (typeof subtitle === 'string' ? (
+                <Text type="body2" color="textSecondary">
+                  {subtitle}
+                </Text>
+              ) : (
+                subtitle
+              ))}
           </View>
         )}
 
@@ -116,6 +139,9 @@ const styles = StyleSheet.create({
   container: {
     height: 64,
     borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  containerWithSubtitle: {
+    height: 84,
   },
   absolute: {
     position: 'absolute',
