@@ -9,12 +9,11 @@ import {
 import { Address, AddressesByVersion } from '@tonkeeper/core/src/formatters/Address';
 import {
   createBatteryApiInstance,
-  createSseInstance,
   createTonApiInstance,
   createTronApiInstance,
 } from '../utils';
 import { BatteryAPI } from '@tonkeeper/core/src/BatteryAPI';
-import { ServerSentEvents, Storage, TronAPI } from '@tonkeeper/core';
+import { Storage, TronAPI } from '@tonkeeper/core';
 import { TronService } from '@tonkeeper/core/src/TronService';
 import { NamespacedLogger, logger } from '$logger';
 
@@ -29,7 +28,6 @@ export class WalletBase {
   public tonapi: TonAPI;
   protected batteryapi: BatteryAPI;
   protected tronapi: TronAPI;
-  protected sse: ServerSentEvents;
 
   protected logger: NamespacedLogger;
 
@@ -61,7 +59,6 @@ export class WalletBase {
     this.tonapi = createTonApiInstance(this.isTestnet);
     this.batteryapi = createBatteryApiInstance(this.isTestnet);
     this.tronapi = createTronApiInstance(this.isTestnet);
-    this.sse = createSseInstance(this.isTestnet);
 
     this.tronService = new TronService(this.address, this.tronapi);
   }

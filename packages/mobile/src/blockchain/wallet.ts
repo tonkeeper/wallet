@@ -125,9 +125,15 @@ export class TonWallet {
     this.tonweb = new TonWeb(provider);
 
     const tonApiConfiguration = new Configuration({
-      basePath: config.get('tonapiV2Endpoint'),
+      basePath: config.get(
+        'tonapiV2Endpoint',
+        tk.wallet.config.network === WalletNetwork.testnet,
+      ),
       headers: {
-        Authorization: `Bearer ${config.get('tonApiV2Key')}`,
+        Authorization: `Bearer ${config.get(
+          'tonApiV2Key',
+          tk.wallet.config.network === WalletNetwork.testnet,
+        )}`,
       },
     });
     this.blockchainApi = new BlockchainApi(tonApiConfiguration);
