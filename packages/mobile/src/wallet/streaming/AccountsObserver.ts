@@ -21,7 +21,7 @@ interface Subscriber {
 }
 
 export class AccountsStream {
-  private subscribers: Map<string, Subscriber> = new Map();
+  private subscribers: Set<Subscriber> = new Set();
   private socket: WebSocket | null = null;
   private lastId = 0;
   private isOpened = false;
@@ -104,15 +104,12 @@ export class AccountsStream {
     } catch {}
   }
 
-  public subscribe(
-    identifier: string,
-    accountId: string,
-    callback: AccountsStreamCallback,
-  ) {
-    this.subscribers.set(identifier, { accountId, callback });
+  public subscribe(accountId: string, callback: AccountsStreamCallback) {
+    const subscriber = { accountId, callback };
+    this.subscribers.add(subscriber);
 
     const accountSubscribers = [...this.subscribers.values()].filter(
-      (subscriber) => subscriber.accountId === accountId,
+      (item) => item.accountId === accountId,
     );
 
     if (accountSubscribers.length === 1) {
@@ -124,13 +121,13 @@ export class AccountsStream {
     }
 
     return () => {
-      this.subscribers.delete(identifier);
+      this.subscribers.delete(subscriber);
 
       if (this.subscribers.size === 0) {
         this.socket?.close();
       } else {
         const subscribersAfter = [...this.subscribers.values()].filter(
-          (subscriber) => subscriber.accountId === accountId,
+          (item) => item.accountId === accountId,
         );
 
         if (subscribersAfter.length === 0) {
