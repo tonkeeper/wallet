@@ -422,10 +422,13 @@ let WaitAccessConfirmationPromise: {
   resolve: (_: UnlockedVault) => void;
   reject: () => void;
 } | null = null;
-export function waitAccessConfirmation(withoutBiometryOnOpen?: boolean) {
+export function waitAccessConfirmation(
+  withoutBiometryOnOpen?: boolean,
+  walletIdentifier?: string,
+) {
   return new Promise<UnlockedVault>((resolve, reject) => {
     WaitAccessConfirmationPromise = { resolve, reject };
-    openAccessConfirmation(withoutBiometryOnOpen);
+    openAccessConfirmation(withoutBiometryOnOpen, walletIdentifier);
   });
 }
 
@@ -450,6 +453,10 @@ export class UnlockVaultError extends Error {}
 
 export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
   try {
+    const wallet = action?.payload?.walletIdentifier
+      ? tk.wallets.get(action.payload.walletIdentifier)!
+      : tk.wallet;
+
     const generatedVault = yield select(walletGeneratedVaultSelector);
 
     let withoutBiometryOnOpen = false;
@@ -459,13 +466,13 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
         const passcode = yield call([multiWalletVault, 'exportPasscodeWithBiometry']);
         const mnemonic = yield call(
           [multiWalletVault, 'exportWithPasscode'],
-          tk.wallet.identifier,
+          wallet.identifier,
           passcode,
         );
         const unlockedVault = new UnlockedVault(
           {
-            ...tk.wallet.config,
-            tonPubkey: Uint8Array.from(Buffer.from(tk.wallet.pubkey, 'hex')),
+            ...wallet.config,
+            tonPubkey: Uint8Array.from(Buffer.from(wallet.pubkey, 'hex')),
           },
           mnemonic,
         );
@@ -481,7 +488,11 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
       }
     }
 
-    const vault = yield call(waitAccessConfirmation, withoutBiometryOnOpen);
+    const vault = yield call(
+      waitAccessConfirmation,
+      withoutBiometryOnOpen,
+      wallet.identifier,
+    );
     action?.payload?.onDone?.(vault);
     return vault;
   } catch (e) {

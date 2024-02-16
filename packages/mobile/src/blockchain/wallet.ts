@@ -109,7 +109,7 @@ export class Wallet {
 
 export class TonWallet {
   private tonweb: any;
-  private vault: Vault;
+  public vault: Vault;
   private blockchainApi: BlockchainApi;
   private accountsApi: AccountsApi;
 

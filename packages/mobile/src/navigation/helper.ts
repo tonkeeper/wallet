@@ -5,6 +5,7 @@ import {
   BrowserStackRouteNames,
   MainStackRouteNames,
   SettingsStackRouteNames,
+  TabsStackRouteNames,
 } from '$navigation/navigationNames';
 import { CryptoCurrency } from '$shared/constants';
 import { SendAnalyticsFrom } from '$store/models';
@@ -106,6 +107,10 @@ export function openSetupNotifications(identifiers: string[]) {
   }
 }
 
+export function resetToWalletTab() {
+  navigate(TabsStackRouteNames.Balances);
+}
+
 export function openSetupWalletDone(identifiers: string[]) {
   reset(MainStackRouteNames.Tabs);
 
@@ -151,9 +156,13 @@ export function openFontLicense() {
   push(SettingsStackRouteNames.FontLicense);
 }
 
-export function openAccessConfirmation(withoutBiometryOnOpen?: boolean) {
+export function openAccessConfirmation(
+  withoutBiometryOnOpen?: boolean,
+  walletIdentifier?: string,
+) {
   navigate(AppStackRouteNames.AccessConfirmation, {
     withoutBiometryOnOpen,
+    walletIdentifier,
   });
 }
 

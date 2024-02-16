@@ -28,9 +28,10 @@ import { TCEventID } from './EventID';
 import { AppStackRouteNames } from '$navigation';
 import { getCurrentRoute, goBack } from '$navigation/imperative';
 import { delay } from '$utils';
+import { WithWalletIdentifier } from '$wallet/WalletTypes';
 
 class TonConnectRemoteBridgeService {
-  private storeKey = '';
+  private readonly storeKey = 'ton-connect-http-bridge-lastEventId';
 
   private readonly bridgeUrl = 'https://bridge.tonapi.io/bridge';
 
@@ -38,7 +39,7 @@ class TonConnectRemoteBridgeService {
 
   private eventSource: EventSource | null = null;
 
-  private connections: IConnectedAppConnectionRemote[] = [];
+  private connections: WithWalletIdentifier<IConnectedAppConnectionRemote>[] = [];
 
   private activeRequests: { [from: string]: AppRequest<RpcMethod> } = {};
 
@@ -56,14 +57,12 @@ class TonConnectRemoteBridgeService {
     }
   }
 
-  async open(connections: IConnectedAppConnection[], walletIdentifier: string) {
+  async open(connections: WithWalletIdentifier<IConnectedAppConnection>[]) {
     this.close();
-
-    this.storeKey = `${walletIdentifier}/ton-connect-http-bridge-lastEventId`;
 
     this.connections = connections.filter(
       (item) => item.type === TonConnectBridgeType.Remote,
-    ) as IConnectedAppConnectionRemote[];
+    ) as WithWalletIdentifier<IConnectedAppConnectionRemote>[];
 
     if (this.connections.length === 0) {
       return;
@@ -195,7 +194,11 @@ class TonConnectRemoteBridgeService {
 
       console.log('handleMessage request', request);
 
-      const response = await TonConnect.handleRequestFromRemoteBridge(request, from);
+      const response = await TonConnect.handleRequestFromRemoteBridge(
+        request,
+        from,
+        connection.walletIdentifier,
+      );
 
       delete this.activeRequests[from];
 

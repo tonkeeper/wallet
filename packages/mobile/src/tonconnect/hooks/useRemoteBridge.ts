@@ -2,16 +2,11 @@ import { useAppState } from '$hooks/useAppState';
 import { getAllConnections, useConnectedAppsStore } from '$store';
 import { useEffect } from 'react';
 import { TonConnectRemoteBridge } from '../TonConnectRemoteBridge';
-import { useWallet } from '@tonkeeper/shared/hooks';
-import { Address } from '@tonkeeper/core';
+import { useWallets } from '@tonkeeper/shared/hooks';
 
 export const useRemoteBridge = () => {
-  const wallet = useWallet();
-
-  const address = Address.parse(wallet.address.ton.raw).toFriendly({
-    bounceable: true,
-    testOnly: wallet.isTestnet,
-  });
+  const wallets = useWallets();
+  const walletIdentifiers = wallets.map((wallet) => wallet.identifier).join(',');
 
   const appState = useAppState();
 
@@ -20,17 +15,14 @@ export const useRemoteBridge = () => {
       return;
     }
 
-    const initialConnections = getAllConnections(
-      useConnectedAppsStore.getState(),
-      address,
-    );
+    const initialConnections = getAllConnections(useConnectedAppsStore.getState());
 
-    TonConnectRemoteBridge.open(initialConnections, wallet.identifier);
+    TonConnectRemoteBridge.open(initialConnections);
 
     const unsubscribe = useConnectedAppsStore.subscribe(
-      (s) => getAllConnections(s, address),
+      (s) => getAllConnections(s),
       (connections) => {
-        TonConnectRemoteBridge.open(connections, address);
+        TonConnectRemoteBridge.open(connections);
       },
     );
 
@@ -38,5 +30,5 @@ export const useRemoteBridge = () => {
       unsubscribe();
       TonConnectRemoteBridge.close();
     };
-  }, [address, appState]);
+  }, [walletIdentifiers, appState]);
 };

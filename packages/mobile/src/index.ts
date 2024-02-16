@@ -3,7 +3,7 @@ import { mainActions } from '$store/main';
 import { walletActions } from '$store/wallet';
 import { tk } from '$wallet';
 import { Address } from '@tonkeeper/core';
-import { TonWallet, Vault, Wallet } from '$blockchain';
+import { createLegacyWallet } from '$blockchain';
 import { config } from '$config';
 import BigNumber from 'bignumber.js';
 
@@ -14,17 +14,7 @@ export const startApp = async () => {
 
   tk.onChangeWallet(() => {
     if (tk.wallet) {
-      const vault = Vault.fromJSON({
-        name: tk.wallet.identifier,
-        tonPubkey: tk.wallet.pubkey,
-        version: tk.wallet.config.version,
-        workchain: tk.wallet.config.workchain,
-        configPubKey: tk.wallet.config.configPubKey,
-        allowedDestinations: tk.wallet.config.allowedDestinations,
-      });
-      const ton = TonWallet.fromJSON(null, vault);
-
-      const wallet = new Wallet(tk.wallet.identifier, vault, ton);
+      const legacyWallet = createLegacyWallet(tk.wallet);
 
       store.dispatch(
         walletActions.setAddress({
@@ -34,7 +24,7 @@ export const startApp = async () => {
           }),
         }),
       );
-      store.dispatch(walletActions.setWallet(wallet));
+      store.dispatch(walletActions.setWallet(legacyWallet));
 
       if (!tk.walletForUnlock) {
         store.dispatch(mainActions.setUnlocked(true));

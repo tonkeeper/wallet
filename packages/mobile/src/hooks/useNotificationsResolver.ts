@@ -4,8 +4,8 @@ import { useNavigation } from '@tonkeeper/router';
 import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { useDeeplinking } from '$libs/deeplinking';
-import { openDAppBrowser } from '$navigation';
-import { getDomainFromURL } from '$utils';
+import { openDAppBrowser, resetToWalletTab } from '$navigation';
+import { delay, getDomainFromURL } from '$utils';
 import { Alert } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
 import { useNotificationsStore } from '$store';
@@ -16,7 +16,7 @@ export const useNotificationsResolver = () => {
   const nav = useNavigation();
   const deeplinking = useDeeplinking();
 
-  function handleNotification(remoteMessage) {
+  async function handleNotification(remoteMessage) {
     try {
       console.log(
         'Notification caused app to open from background state:',
@@ -33,7 +33,8 @@ export const useNotificationsResolver = () => {
       if (account) {
         const wallet = tk.getWalletByAddress(account);
 
-        if (wallet) {
+        if (wallet && tk.wallet.identifier !== wallet.identifier) {
+          resetToWalletTab();
           tk.switchWallet(wallet.identifier);
         }
       }
