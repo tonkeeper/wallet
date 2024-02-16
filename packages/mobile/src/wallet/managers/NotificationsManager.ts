@@ -7,6 +7,7 @@ import { isAndroid } from '$utils';
 import { PermissionsAndroid, Platform } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import { NamespacedLogger } from '$logger';
+import { isIOS } from '@tonkeeper/uikit';
 
 export interface NotificationsState {
   isSubscribed: boolean;
@@ -21,7 +22,7 @@ export class NotificationsManager {
 
   public state = new State(NotificationsManager.INITIAL_STATE);
 
-  public isAvailable = hasGms;
+  public isAvailable = hasGms || isIOS;
 
   constructor(
     private persistPath: string,
