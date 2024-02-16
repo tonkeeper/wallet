@@ -165,7 +165,13 @@ export const AccessConfirmation: FC = () => {
   }, []);
 
   const handleLogout = useCallback(() => {
-    Alert.alert(t('settings_reset_alert_title'), t('settings_reset_alert_caption'), [
+    const title = isUnlock
+      ? t('settings_reset_alert_title_all')
+      : t('settings_reset_alert_title');
+    const caption = isUnlock
+      ? t('settings_reset_alert_caption_all')
+      : t('settings_reset_alert_caption');
+    Alert.alert(title, caption, [
       {
         text: t('cancel'),
         style: 'cancel',

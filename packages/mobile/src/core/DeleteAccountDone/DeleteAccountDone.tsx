@@ -24,8 +24,8 @@ export const DeleteAccountDone: React.FC = () => {
   }, []);
 
   const handleAnimationEnd = useCallback(() => {
-    dispatch(walletActions.cleanWallet());
-  }, []);
+    dispatch(walletActions.cleanWallet({ cleanAll: true }));
+  }, [dispatch]);
 
   return (
     <CreateWalletStyle.Content style={{ marginTop: -ns(16) }}>
