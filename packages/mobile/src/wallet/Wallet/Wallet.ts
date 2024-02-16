@@ -84,6 +84,7 @@ export class Wallet extends WalletContent {
 
   private listenTransactions() {
     this.stopListenTransactions = this.accountStream.subscribe(
+      this.identifier,
       this.address.ton.raw,
       (event) => {
         this.logger.debug('transaction event', event.params.tx_hash);

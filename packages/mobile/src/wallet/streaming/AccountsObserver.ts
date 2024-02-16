@@ -104,8 +104,11 @@ export class AccountsStream {
     } catch {}
   }
 
-  public subscribe(accountId: string, callback: AccountsStreamCallback) {
-    const identifier = `${accountId}_${Date.now()}`;
+  public subscribe(
+    identifier: string,
+    accountId: string,
+    callback: AccountsStreamCallback,
+  ) {
     this.subscribers.set(identifier, { accountId, callback });
 
     const accountSubscribers = [...this.subscribers.values()].filter(
