@@ -77,7 +77,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   batteryHost: 'https://battery.tonkeeper.com',
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
   aptabaseEndpoint: undefined,
-  aptabaseAppKey: 'A-EU-4740763652',
+  aptabaseAppKey: undefined,
   batteryMeanFees: '0.08',
   disable_battery: true,
   disable_battery_iap_module: true,
