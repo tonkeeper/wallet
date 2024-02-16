@@ -1,25 +1,28 @@
 import { Steezy } from '$styles';
 import React, { FC, memo } from 'react';
 import { View } from '../StyledNativeComponents';
-import { Text } from '../Text/Text';
 import { StyleSheet } from 'react-native';
 import { TonThemeColor } from '$styled';
+import { Text } from '@tonkeeper/uikit';
+import { TextColors } from '@tonkeeper/uikit/src/components/Text/Text';
 
-export type TagType = 'default' | 'accent' | 'warning' | 'positive';
+export type TagType = 'default' | 'accent' | 'warning' | 'warningLight' | 'positive';
 
 interface Props {
   type?: TagType;
   children: string;
 }
 
-const getTextColor = (type: TagType): TonThemeColor => {
+const getTextColor = (type: TagType): TextColors => {
   switch (type) {
     case 'accent':
-      return 'accentPrimary';
+      return 'accentBlue';
     case 'warning':
       return 'accentOrange';
+    case 'warningLight':
+      return 'constantBlack';
     case 'positive':
-      return 'accentPositive';
+      return 'accentGreen';
     case 'default':
     default:
       return 'textSecondary';
@@ -34,7 +37,7 @@ const TagComponent: FC<Props> = (props) => {
   return (
     <View style={styles.container}>
       <View style={[styles.background, styles[type]]} />
-      <Text variant="body4Caps" color={textColor}>
+      <Text type="body4" color={textColor} style={styles.text.static}>
         {children}
       </Text>
     </View>
@@ -67,7 +70,14 @@ const styles = Steezy.create(({ colors }) => ({
   warning: {
     backgroundColor: colors.accentOrange,
   },
+  warningLight: {
+    backgroundColor: colors.accentOrange,
+    opacity: 1,
+  },
   positive: {
     backgroundColor: colors.accentGreen,
+  },
+  text: {
+    textTransform: 'uppercase',
   },
 }));
