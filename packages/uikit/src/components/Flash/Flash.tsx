@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, memo, useEffect } from 'react';
 import { Steezy } from '../../styles';
-import { StyleSheet, useWindowDimensions } from 'react-native';
+import { StyleSheet, ViewProps, useWindowDimensions } from 'react-native';
 import { View } from '../View';
 import Animated, {
   useAnimatedStyle,
@@ -8,16 +8,17 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
+import { WithStyleProp } from '@bogoslavskiy/react-native-steezy';
 
 const FlashSource = require('../../../assets/flash.png');
 
-interface Props {
+interface Props extends WithStyleProp<ViewProps> {
   children: ReactNode;
   disabled?: boolean;
 }
 
 const FlashComponent: FC<Props> = (props) => {
-  const { children, disabled } = props;
+  const { children, disabled, style, ...viewProps } = props;
 
   const shouldAnimate = useSharedValue(false);
 
@@ -45,7 +46,7 @@ const FlashComponent: FC<Props> = (props) => {
   }, [disabled]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]} {...viewProps}>
       {children}
       <View style={styles.flash} pointerEvents="none">
         <Animated.Image style={animatedStyle} source={FlashSource} resizeMode="repeat" />
