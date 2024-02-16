@@ -4,6 +4,7 @@ import {
   ChartPath,
   ChartPathProvider,
   CurrentPositionVerticalLine,
+  stepInterpolation,
 } from '@rainbow-me/animated-charts';
 import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks/useTheme';
@@ -17,7 +18,7 @@ import { loadChartData } from './Chart.api';
 import { ChartYLabels } from './ChartYLabels/ChartYLabels';
 import { changeAlphaValue, convertHexToRGBA, ns } from '$utils';
 import { ChartXLabels } from './ChartXLabels/ChartXLabels';
-import { useChartStore } from '$store/zustand/chart';
+import { ChartPeriod, useChartStore } from '$store/zustand/chart';
 import { Fallback } from './Fallback/Fallback';
 import { isIOS } from '@tonkeeper/uikit';
 import { WalletCurrency } from '$shared/constants';
@@ -77,7 +78,10 @@ const ChartComponent: React.FC<ChartProps> = (props) => {
       <View>
         <ChartPathProvider
           data={{
-            points,
+            points:
+              selectedPeriod === ChartPeriod.ONE_HOUR
+                ? stepInterpolation(points)
+                : points,
           }}
         >
           <View style={{ paddingHorizontal: 28 }}>
