@@ -20,7 +20,7 @@ import { ChartXLabels } from './ChartXLabels/ChartXLabels';
 import { useChartStore } from '$store/zustand/chart';
 import { Fallback } from './Fallback/Fallback';
 import { isIOS } from '@tonkeeper/uikit';
-import { WalletCurrency } from '@tonkeeper/core';
+import { WalletCurrency } from '$shared/constants';
 
 export const { width: SIZE } = Dimensions.get('window');
 

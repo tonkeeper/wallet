@@ -13,13 +13,17 @@ const fontFamily = Platform.select({
 
 const RateComponent: React.FC<{
   latestPoint: number;
-  fiatRate: number;
   fiatCurrency: WalletCurrency;
 }> = (props) => {
   const chartData = useChartData();
   const [activePoint, setActivePoint] = useState(props.latestPoint);
   const formattedLatestPrice = useMemo(
-    () => formatFiatCurrencyAmount(activePoint.toFixed(4), props.fiatCurrency, true),
+    () =>
+      formatFiatCurrencyAmount(
+        activePoint.toFixed(activePoint > 0.0001 ? 4 : 8),
+        props.fiatCurrency,
+        true,
+      ),
     [props.fiatCurrency, activePoint],
   );
 

@@ -11,7 +11,6 @@ import { Platform } from 'react-native';
 export interface PercentDiffProps {
   latestPoint: number;
   firstPoint: number;
-  fiatRate: number;
   fiatCurrency: WalletCurrency;
 }
 

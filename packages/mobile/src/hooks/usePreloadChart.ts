@@ -2,11 +2,10 @@ import { useChartStore } from '$store/zustand/chart';
 import { loadChartData } from '$shared/components/Chart/new/Chart.api';
 import { useEffect } from 'react';
 import { useQueryClient } from 'react-query';
-import { useSelector } from 'react-redux';
-import { fiatCurrencySelector } from '$store/main';
+import { useWalletCurrency } from '@tonkeeper/shared/hooks';
 
 export function usePreloadChart() {
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const fiatCurrency = useWalletCurrency();
   const selectedPeriod = useChartStore(
     (state) => state.selectedPeriod,
     () => true,
