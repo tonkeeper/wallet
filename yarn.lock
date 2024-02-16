@@ -95,6 +95,11 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@aptabase/react-native@^0.3.9":
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/@aptabase/react-native/-/react-native-0.3.9.tgz#cc56babb43432c17d5074591072cafce3cf59304"
+  integrity sha512-yvNmWAbqrhNj3iiZdx8rntGD2wvRf2zfcbkAaG+vZjDPuJWkCWHb4QvIJPO+UTD5r7KC1vkMwi/yWtQ0yAsSPQ==
+
 "@aws-crypto/sha256-js@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@aws-crypto/sha256-js/-/sha256-js-3.0.0.tgz#f06b84d550d25521e60d2a0e2a90139341e007c2"

@@ -48,6 +48,8 @@ export type AppConfigVars = {
   batteryMeanFees: string;
   holdersAppEndpoint: string;
   holdersService: string;
+  aptabaseEndpoint: string;
+  aptabaseAppKey: string;
   disable_battery: boolean;
   disable_jetton_charts: boolean;
   disable_battery_iap_module: boolean;
