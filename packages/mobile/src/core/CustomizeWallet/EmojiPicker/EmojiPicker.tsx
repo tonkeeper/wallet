@@ -63,6 +63,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = memo(({ onChange }) => {
         ]}
         style={styles.topGradient.static}
       />
+      <View style={styles.bottomCover} pointerEvents="none" />
       <LinearGradient
         pointerEvents="none"
         colors={[
@@ -85,7 +86,6 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = memo(({ onChange }) => {
         ]}
         style={styles.bottomGradient.static}
       />
-      <View style={styles.bottomCover} pointerEvents="none" />
     </View>
   );
 });
@@ -129,7 +129,7 @@ const styles = Steezy.create(({ colors }) => ({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 17,
+    height: 20,
     backgroundColor: colors.backgroundPage,
   },
 }));
