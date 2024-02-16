@@ -14,6 +14,8 @@ import {
   Text,
   Icon,
 } from '@tonkeeper/uikit';
+import { Tag } from '@tonkeeper/mobile/src/uikit';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 
 interface ReceiveTokenContentProps {
   address: string;
@@ -23,6 +25,7 @@ interface ReceiveTokenContentProps {
   title: string;
   description: string;
   qrCodeScale: number;
+  isWatchOnly?: boolean;
 }
 
 export const ReceiveTokenContent = memo<ReceiveTokenContentProps>((props) => {
@@ -34,6 +37,7 @@ export const ReceiveTokenContent = memo<ReceiveTokenContentProps>((props) => {
     description,
     title,
     qrCodeScale,
+    isWatchOnly,
   } = props;
 
   const [render, setRender] = useState(renderDelay > 0 ? false : true);
@@ -78,11 +82,19 @@ export const ReceiveTokenContent = memo<ReceiveTokenContentProps>((props) => {
         ) : (
           <View style={styles.emptyQrArea} />
         )}
-        <TouchableOpacity onPress={copyText(address, t('address_copied'))}>
-          <NativeText style={styles.addressText} allowFontScaling={false}>
-            {address}
-          </NativeText>
-        </TouchableOpacity>
+        <View style={styles.addressContainer}>
+          <TouchableOpacity onPress={copyText(address, t('address_copied'))}>
+            <NativeText style={styles.addressText} allowFontScaling={false}>
+              {address}
+            </NativeText>
+          </TouchableOpacity>
+          {tk.wallet.isWatchOnly ? (
+            <>
+              <Spacer y={8} />
+              <Tag type="warningLight">{t('watch_only')}</Tag>
+            </>
+          ) : null}
+        </View>
       </View>
       <View style={styles.buttons}>
         <Button
@@ -92,7 +104,7 @@ export const ReceiveTokenContent = memo<ReceiveTokenContentProps>((props) => {
           title={t('receiveModal.copy')}
           size="medium"
         />
-        <Spacer x={12} />
+        <Spacer x={10} />
         <Pressable style={steezyStyles.shareButton} onPress={share(address)}>
           <Icon name="ic-share-16" />
         </Pressable>
@@ -137,10 +149,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  addressText: {
+  addressContainer: {
     paddingHorizontal: 28,
     paddingTop: 21,
     paddingBottom: 24,
+    alignItems: 'center',
+  },
+  addressText: {
     fontFamily: 'SFMono-Medium',
     fontSize: 16,
     lineHeight: 22,

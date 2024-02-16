@@ -63,11 +63,5 @@ export const textVariants = StyleSheet.create({
     lineHeight: nfs(16),
     fontFamily: FONT.regular,
   },
-  body4Caps: {
-    fontSize: nfs(10),
-    lineHeight: nfs(14),
-    fontFamily: FONT.medium,
-    textTransform: 'uppercase',
-  },
 });
 export type TTextVariants = keyof typeof textVariants;
