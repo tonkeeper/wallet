@@ -22,7 +22,7 @@ export const PriceLabel: React.FC<{ selectedPeriod: ChartPeriod }> = (props) => 
     [props.selectedPeriod],
   );
   const chartData = useChartData();
-  const [state, setState] = useState('');
+  const [state, setState] = useState(t('chart.price'));
 
   const formatDateWrapper = useCallback(
     (text: string) => {

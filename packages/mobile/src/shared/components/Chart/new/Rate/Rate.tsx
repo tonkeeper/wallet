@@ -13,7 +13,6 @@ const fontFamily = Platform.select({
 
 const RateComponent: React.FC<{
   latestPoint: number;
-  fiatRate: number;
   fiatCurrency: WalletCurrency;
 }> = (props) => {
   const chartData = useChartData();
@@ -21,11 +20,11 @@ const RateComponent: React.FC<{
   const formattedLatestPrice = useMemo(
     () =>
       formatFiatCurrencyAmount(
-        (activePoint * props.fiatRate).toFixed(4),
+        activePoint.toFixed(activePoint > 0.0001 ? 4 : 8),
         props.fiatCurrency,
         true,
       ),
-    [props.fiatCurrency, props.fiatRate, activePoint],
+    [props.fiatCurrency, activePoint],
   );
 
   const formatPriceWrapper = useCallback(
@@ -49,7 +48,7 @@ const RateComponent: React.FC<{
     },
     (result, previous) => {
       if (result !== previous) {
-        runOnJS(formatPriceWrapper)(result);
+        runOnJS(formatPriceWrapper)(parseFloat(result));
       }
     },
     [formatPriceWrapper],

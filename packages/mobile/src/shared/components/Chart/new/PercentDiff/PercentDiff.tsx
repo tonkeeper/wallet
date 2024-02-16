@@ -11,7 +11,6 @@ import { Platform } from 'react-native';
 export interface PercentDiffProps {
   latestPoint: number;
   firstPoint: number;
-  fiatRate: number;
   fiatCurrency: WalletCurrency;
 }
 
@@ -41,12 +40,9 @@ const PercentDiffComponent: React.FC<PercentDiffProps> = (props) => {
   const fiatInfo = React.useMemo(() => {
     let percent = '0 %';
     let color: TonThemeColor = 'foregroundSecondary';
-    let amountResult: string;
 
     const diffInFiat = formatFiatCurrencyAmount(
-      Math.abs(
-        ((props.firstPoint * parseFloat(priceDiff)) / 100) * props.fiatRate,
-      ).toFixed(2),
+      Math.abs((props.firstPoint * parseFloat(priceDiff)) / 100).toFixed(2),
       props.fiatCurrency,
       true,
     );
@@ -74,7 +70,7 @@ const PercentDiffComponent: React.FC<PercentDiffProps> = (props) => {
       diffInFiat,
       color,
     };
-  }, [activePoint, priceDiff, props.fiatRate, props.fiatCurrency, priceDiffNumber]);
+  }, [props.firstPoint, props.fiatCurrency, priceDiff, priceDiffNumber]);
 
   const formatPriceWrapper = (point: number) => {
     if (!point) {

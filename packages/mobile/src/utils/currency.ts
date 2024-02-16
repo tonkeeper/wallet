@@ -8,10 +8,11 @@ import {
   truncateDecimal,
 } from './number';
 import { getNumberFormatSettings } from 'react-native-localize';
+import { WalletCurrency } from '$shared/constants';
 
 export function formatFiatCurrencyAmount(
   amount: any,
-  currency: FiatCurrency,
+  currency: FiatCurrency | WalletCurrency,
   hasThinSpace?: boolean,
   hasNegative?: boolean,
 ): string {
