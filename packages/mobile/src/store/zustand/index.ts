@@ -3,7 +3,7 @@ export * from './connectedApps';
 export * from './appsList';
 export * from './devFeaturesToggle';
 export * from './browser';
-export * from './staking';
+export * from './flash';
 export * from './notifications';
 export * from './encryptedComments';
 export * from './addressUpdate';

@@ -25,7 +25,6 @@ const ChartComponent: React.FC<Props> = (props) => {
   const { stakingJetton } = props;
 
   const theme = useTheme();
-  // const chart = useStakingUIStore((s) => s.chart, shallow);
   const chart = [];
 
   const selectedPeriod = useMemo(() => {
@@ -56,12 +55,6 @@ const ChartComponent: React.FC<Props> = (props) => {
     const first = chart[0].y;
     return [first, latest];
   }, [chart]);
-
-  // useEffect(() => {
-  //   if (stakingJetton) {
-  //     useStakingUIStore.getState().actions.fetchChart(stakingJetton);
-  //   }
-  // }, [stakingJetton]);
 
   if (!chart) {
     return null;

@@ -3,10 +3,10 @@ import { MainStackRouteNames } from '$navigation';
 import { StakingListCell } from '$shared/components';
 import { View } from '$uikit';
 import { List } from '$uikit/List/old/List';
-import React, { FC, memo, useCallback, useEffect } from 'react';
+import React, { FC, memo, useCallback } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { Steezy } from '$styles';
-import { useStakingUIStore } from '$store';
+import { FlashCountKeys, useFlashCount } from '$store';
 import { StakingWidgetStatus } from './StakingWidgetStatus';
 import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
@@ -23,7 +23,7 @@ const StakingWidgetComponent: FC<Props> = (props) => {
   const nav = useNavigation();
 
   const highestApyPool = useStakingState((s) => s.highestApyPool);
-  const flashShownCount = useStakingUIStore((s) => s.mainFlashShownCount);
+  const [flashShownCount] = useFlashCount(FlashCountKeys.StakingWidget);
 
   const stakingInfo = useStakingStatuses();
 
@@ -31,17 +31,6 @@ const StakingWidgetComponent: FC<Props> = (props) => {
     logEvent('staking_open');
     nav.push(MainStackRouteNames.Staking);
   }, [nav]);
-
-  useEffect(() => {
-    const timerId = setTimeout(
-      () => useStakingUIStore.getState().actions.increaseMainFlashShownCount(),
-      1000,
-    );
-
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, []);
 
   const staked = stakingInfo.length > 0;
 

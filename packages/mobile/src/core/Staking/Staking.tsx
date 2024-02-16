@@ -2,13 +2,13 @@ import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
 import { useNavigation } from '@tonkeeper/router';
 import { MainStackRouteNames, openDAppBrowser } from '$navigation';
 import { StakingListCell } from '$shared/components';
-import { useStakingUIStore } from '$store';
+import { FlashCountKeys, useFlashCount } from '$store';
 import { Button, Icon, ScrollHandler, Spacer, Text } from '$uikit';
 import { List } from '$uikit/List/old/List';
 import { getImplementationIcon, getPoolIcon } from '$utils/staking';
 import { formatter } from '$utils/formatter';
 import BigNumber from 'bignumber.js';
-import React, { FC, useCallback, useEffect, useMemo } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { RefreshControl } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -36,7 +36,7 @@ export const Staking: FC<Props> = () => {
   const stakingInfo = useStakingState((s) => s.stakingInfo);
   const highestApyPool = useStakingState((s) => s.highestApyPool);
 
-  const flashShownCount = useStakingUIStore((s) => s.stakingFlashShownCount);
+  const [flashShownCount] = useFlashCount(FlashCountKeys.Staking);
 
   const { jettonBalances } = useJettons();
   const tonBalance = useBalancesState((s) => s.ton);
@@ -194,17 +194,6 @@ export const Staking: FC<Props> = () => {
     },
     [otherPoolsEstimation, tonBalance],
   );
-
-  useEffect(() => {
-    const timerId = setTimeout(
-      () => useStakingUIStore.getState().actions.increaseStakingFlashShownCount(),
-      1000,
-    );
-
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, []);
 
   return (
     <S.Wrap>

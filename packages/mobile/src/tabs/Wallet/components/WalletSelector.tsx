@@ -1,5 +1,6 @@
 import { useWallet } from '@tonkeeper/shared/hooks';
 import {
+  Flash,
   Icon,
   Spacer,
   Steezy,
@@ -13,23 +14,28 @@ import {
 import React, { FC, memo, useCallback } from 'react';
 import { Text as RNText } from 'react-native';
 import { useNavigation } from '@tonkeeper/router';
+import { FlashCountKeys, useFlashCount } from '$store';
+import { tk } from '$wallet';
 
 const WalletSelectorComponent: FC = () => {
   const wallet = useWallet();
   const nav = useNavigation();
+  const [flashShownCount, disableFlash] = useFlashCount(FlashCountKeys.MultiWallet);
 
   const handlePress = useCallback(() => {
+    disableFlash();
     nav.openModal('/switch-wallet');
-  }, [nav]);
+  }, [disableFlash, nav]);
 
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={handlePress}>
-        <View
+        <Flash
           style={[
-            styles.selectorContainer,
+            styles.selectorContainer.static,
             { backgroundColor: getWalletColorHex(wallet.config.color) },
           ]}
+          disabled={!tk.migrationData || flashShownCount >= 3}
         >
           <RNText style={styles.emoji.static}>{wallet.config.emoji}</RNText>
           <Spacer x={4} />
@@ -40,7 +46,7 @@ const WalletSelectorComponent: FC = () => {
           </View>
           <Spacer x={6} />
           <Icon name="ic-chevron-down-16" style={styles.icon.static} />
-        </View>
+        </Flash>
       </TouchableOpacity>
     </View>
   );
@@ -57,6 +63,7 @@ const styles = Steezy.create({
     paddingLeft: 10,
     paddingRight: 12,
     borderRadius: 20,
+    overflow: 'hidden',
   },
   nameContainer: {
     maxWidth: deviceWidth - 180,
