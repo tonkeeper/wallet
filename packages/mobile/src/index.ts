@@ -28,7 +28,10 @@ export const startApp = async () => {
 
       store.dispatch(
         walletActions.setAddress({
-          ton: Address.parse(tk.wallet.address.ton.raw).toFriendly({ bounceable: true }),
+          ton: Address.parse(tk.wallet.address.ton.raw).toFriendly({
+            bounceable: true,
+            testOnly: tk.wallet.isTestnet,
+          }),
         }),
       );
       store.dispatch(walletActions.setWallet(wallet));

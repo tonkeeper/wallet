@@ -25,9 +25,11 @@ const splitAddress = (address: string) => {
 export const AddressUpdateInfo: FC = () => {
   const oldAddress = Address.parse(tk.wallet.address.ton.raw).toFriendly({
     bounceable: true,
+    testOnly: tk.wallet.isTestnet,
   });
   const newAddress = Address.parse(tk.wallet.address.ton.raw).toFriendly({
     bounceable: false,
+    testOnly: tk.wallet.isTestnet,
   });
   const oldStyle = splitAddress(oldAddress);
   const newStyle = splitAddress(newAddress);

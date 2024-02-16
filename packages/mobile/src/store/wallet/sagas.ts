@@ -384,12 +384,13 @@ function* cleanWalletWorker(action: CleanWalletAction) {
   try {
     if (cleanAll) {
       tk.wallets.forEach((wallet) => {
-        useConnectedAppsStore
-          .getState()
-          .actions.unsubscribeFromAllNotifications(
-            wallet.isTestnet ? 'testnet' : 'mainnet',
-            Address.parse(wallet.address.ton.raw).toFriendly({ bounceable: true }),
-          );
+        useConnectedAppsStore.getState().actions.unsubscribeFromAllNotifications(
+          wallet.isTestnet ? 'testnet' : 'mainnet',
+          Address.parse(wallet.address.ton.raw).toFriendly({
+            bounceable: true,
+            testOnly: wallet.isTestnet,
+          }),
+        );
       });
 
       yield call([tk, 'removeAllWallets']);
@@ -397,7 +398,10 @@ function* cleanWalletWorker(action: CleanWalletAction) {
       yield call(
         useConnectedAppsStore.getState().actions.unsubscribeFromAllNotifications,
         getChainName(),
-        Address.parse(tk.wallet.address.ton.raw).toFriendly({ bounceable: true }),
+        Address.parse(tk.wallet.address.ton.raw).toFriendly({
+          bounceable: true,
+          testOnly: tk.wallet.isTestnet,
+        }),
       );
 
       yield call([tk, 'removeWallet'], tk.wallet.identifier);
