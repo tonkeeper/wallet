@@ -8,7 +8,10 @@ import { Address } from '@tonkeeper/core';
 export const useRemoteBridge = () => {
   const wallet = useWallet();
 
-  const address = Address.parse(wallet.address.ton.raw).toFriendly({ bounceable: true });
+  const address = Address.parse(wallet.address.ton.raw).toFriendly({
+    bounceable: true,
+    testOnly: wallet.isTestnet,
+  });
 
   const appState = useAppState();
 
@@ -22,7 +25,7 @@ export const useRemoteBridge = () => {
       address,
     );
 
-    TonConnectRemoteBridge.open(initialConnections, address);
+    TonConnectRemoteBridge.open(initialConnections, wallet.identifier);
 
     const unsubscribe = useConnectedAppsStore.subscribe(
       (s) => getAllConnections(s, address),
