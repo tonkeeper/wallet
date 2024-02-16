@@ -8,6 +8,15 @@ import {
   IConnectedAppConnectionRemote,
 } from './types';
 import { useConnectedAppsStore } from './useConnectedAppsStore';
+import { Address } from '@tonkeeper/core';
+import { tk } from '$wallet';
+
+const getWalletAddress = () => {
+  return Address.parse(tk.wallet.address.ton.raw).toString({
+    bounceable: true, // TODO: for compatibility we are working with bounceable address format in connectedAppsStore. Should migrate to raw in future
+    testOnly: tk.wallet.isTestnet,
+  });
+};
 
 export const saveAppConnection = (
   walletAddress: string,
@@ -47,7 +56,7 @@ export const disableNotifications = async (
 };
 
 export const removeConnectedApp = (url: string) => {
-  const currentWalletAddress = store.getState().wallet.address.ton;
+  const currentWalletAddress = getWalletAddress();
 
   useConnectedAppsStore
     .getState()
@@ -55,7 +64,7 @@ export const removeConnectedApp = (url: string) => {
 };
 
 export const removeInjectedConnection = (url: string) => {
-  const currentWalletAddress = store.getState().wallet.address.ton;
+  const currentWalletAddress = getWalletAddress();
 
   useConnectedAppsStore
     .getState()
@@ -66,7 +75,7 @@ export const removeRemoteConnection = (
   connectedApp: IConnectedApp,
   connection: IConnectedAppConnectionRemote,
 ) => {
-  const currentWalletAddress = store.getState().wallet.address.ton;
+  const currentWalletAddress = getWalletAddress();
 
   useConnectedAppsStore
     .getState()
@@ -79,7 +88,7 @@ export const removeRemoteConnection = (
 };
 
 export const findConnectedAppByUrl = (url: string): IConnectedApp | null => {
-  const currentWalletAddress = store.getState().wallet?.address?.ton;
+  const currentWalletAddress = getWalletAddress();
 
   return getConnectedAppByUrl(
     currentWalletAddress,
@@ -91,7 +100,7 @@ export const findConnectedAppByUrl = (url: string): IConnectedApp | null => {
 export const findConnectedAppByClientSessionId = (
   clientSessionId: string,
 ): { connectedApp: IConnectedApp | null; connection: IConnectedAppConnection | null } => {
-  const currentWalletAddress = store.getState().wallet?.address?.ton;
+  const currentWalletAddress = getWalletAddress();
 
   const connectedAppsList = Object.values(
     useConnectedAppsStore.getState().connectedApps[getChainName()][
