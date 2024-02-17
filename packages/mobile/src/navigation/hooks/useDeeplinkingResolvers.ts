@@ -11,7 +11,7 @@ import {
   SignRawMessage,
   TxRequest,
 } from '$core/ModalContainer/NFTOperations/TXRequest.types';
-import { openBuyFiat, openSend } from '../helper';
+import { openBuyFiat, openSend, resetToWalletTab } from '../helper';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 
 import { t } from '@tonkeeper/shared/i18n';
@@ -74,13 +74,23 @@ export function useDeeplinkingResolvers() {
     'https://ton.app',
   ]);
 
-  deeplinking.addMiddleware(async (next) => {
-    if (!getWallet()) {
+  deeplinking.addMiddleware(async (next, { prefix, pathname }) => {
+    if (!getWallet() || !tk.wallet) {
       return openRequireWalletModal();
     }
 
-    if (tk.wallet && tk.wallet.isWatchOnly) {
+    const isTonConnect =
+      prefix === 'tc://' ||
+      pathname.startsWith('/ton-connect') ||
+      // legacy tonconnect
+      pathname.startsWith('/ton-login');
+
+    if (tk.wallet.isWatchOnly && !isTonConnect) {
       return;
+    }
+
+    if (isTonConnect && !tk.walletForUnlock) {
+      return openRequireWalletModal();
     }
 
     const currentRouteName = getCurrentRoute()?.name;
@@ -530,14 +540,15 @@ export function useDeeplinkingResolvers() {
     ) {
       Toast.hide();
       const foundWallet = tk.getWalletByAddress(txBody.params.source);
-      if (!foundWallet)
+      if (!foundWallet) {
         return openAddressMismatchModal(
           () => resolveTxType(txRequest, resolveParams),
           txBody.params.source,
         );
+      }
 
+      resetToWalletTab();
       tk.switchWallet(foundWallet.identifier);
-      await delay(1000);
     }
 
     const props = { ...txBody, ...resolveParams };

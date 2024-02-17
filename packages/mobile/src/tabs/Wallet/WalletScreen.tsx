@@ -129,7 +129,7 @@ export const WalletScreen = memo(({ navigation }) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('tabLongPress', () => {
-      Haptics.impactLight();
+      Haptics.notificationSuccess();
       nav.openModal('/switch-wallet');
     });
 

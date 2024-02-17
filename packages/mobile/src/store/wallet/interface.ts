@@ -74,6 +74,7 @@ export type WalletGetUnlockedVaultAction = PayloadAction<
   | {
       onDone?: (vault: UnlockedVault) => void;
       onFail?: (err: any) => void;
+      walletIdentifier?: string;
     }
   | undefined
 >;

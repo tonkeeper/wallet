@@ -861,7 +861,7 @@
   "tab_wallet" : "Кошелёк",
   "today" : "Сегодня",
   "ton_login_back_to_button" : "Вернуться в %{name}",
-  "ton_login_caption" : "%{name} запрашивает доступ к адресу вашего кошелька\n",
+  "ton_login_caption" : "%{name} запрашивает доступ к адресу вашего кошелька",
   "ton_login_connect_button" : "Подключить кошелёк",
   "ton_login_notice" : "Обязательно проверьте адрес сервиса перед подключением кошелька.",
   "ton_login_success" : "Готово",

@@ -39,8 +39,9 @@ import { ConnectReplyBuilder } from './ConnectReplyBuilder';
 import { TCEventID } from './EventID';
 import { DAppManifest } from './models';
 import { SendTransactionError } from './SendTransactionError';
+import { tk } from '$wallet';
 import { TonConnectRemoteBridge } from './TonConnectRemoteBridge';
-import messaging from '@react-native-firebase/messaging';
+import { WithWalletIdentifier } from '$wallet/WalletTypes';
 
 class TonConnectService {
   checkProtocolVersionCapability(protocolVersion: number) {
@@ -120,7 +121,7 @@ class TonConnectService {
               manifest,
               replyBuilder: new ConnectReplyBuilder(request, manifest),
               requestPromise: { resolve, reject },
-              hideImmediately: !!webViewUrl,
+              isInternalBrowser: !!webViewUrl,
             }),
           );
 
@@ -274,7 +275,7 @@ class TonConnectService {
 
   async sendTransaction(
     request: AppRequest<'sendTransaction'>,
-    connection: IConnectedAppConnection,
+    connection: WithWalletIdentifier<IConnectedAppConnection>,
   ): Promise<WalletResponse<'sendTransaction'>> {
     try {
       const params = JSON.parse(request.params[0]) as SignRawParams;
@@ -339,7 +340,9 @@ class TonConnectService {
               ),
             ),
           true,
-          connection.type === TonConnectBridgeType.Remote,
+          connection.type === TonConnectBridgeType.Remote &&
+            connection.walletIdentifier === tk.wallet.identifier,
+          connection.walletIdentifier,
         );
 
         if (!openModalResult) {
@@ -375,7 +378,7 @@ class TonConnectService {
   private async handleRequest<T extends RpcMethod>(
     request: AppRequest<T>,
     connectedApp: IConnectedApp | null,
-    connection: IConnectedAppConnection | null,
+    connection: WithWalletIdentifier<IConnectedAppConnection> | null,
   ): Promise<WalletResponse<T>> {
     if (!connectedApp || !connection) {
       return {
@@ -387,12 +390,12 @@ class TonConnectService {
       };
     }
 
-    if (request.method === 'sendTransaction') {
-      return this.sendTransaction(request, connection);
-    }
-
     if (request.method === 'disconnect') {
       return this.handleDisconnectRequest(request, connectedApp, connection);
+    }
+
+    if (request.method === 'sendTransaction') {
+      return this.sendTransaction(request, connection);
     }
 
     return {
@@ -415,17 +418,28 @@ class TonConnectService {
     const connection =
       allConnections.find((item) => item.type === TonConnectBridgeType.Injected) || null;
 
-    return this.handleRequest(request, connectedApp, connection);
+    return this.handleRequest(
+      request,
+      connectedApp,
+      connection ? { ...connection, walletIdentifier: tk.wallet.identifier } : null,
+    );
   }
 
   async handleRequestFromRemoteBridge<T extends RpcMethod>(
     request: AppRequest<T>,
     clientSessionId: string,
+    walletIdentifier: string,
   ): Promise<WalletResponse<T>> {
-    const { connectedApp, connection } =
-      findConnectedAppByClientSessionId(clientSessionId);
+    const { connectedApp, connection } = findConnectedAppByClientSessionId(
+      clientSessionId,
+      walletIdentifier,
+    );
 
-    return this.handleRequest(request, connectedApp, connection);
+    return this.handleRequest(
+      request,
+      connectedApp,
+      connection ? { ...connection, walletIdentifier } : null,
+    );
   }
 
   async disconnect(url: string) {

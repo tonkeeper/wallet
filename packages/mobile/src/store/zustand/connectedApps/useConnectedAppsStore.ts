@@ -5,7 +5,6 @@ import { createJSONStorage, persist, subscribeWithSelector } from 'zustand/middl
 import { IConnectedAppsStore, TonConnectBridgeType } from './types';
 import { Tonapi } from '$libs/Tonapi';
 import messaging from '@react-native-firebase/messaging';
-import * as SecureStore from 'expo-secure-store';
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { Toast } from '@tonkeeper/uikit';
 import { tk } from '$wallet';
@@ -135,7 +134,7 @@ export const useConnectedAppsStore = create(
           enableNotifications: async (chainName, walletAddress, url, session_id) => {
             try {
               const fixedUrl = getFixedLastSlashUrl(url);
-              const token = await SecureStore.getItemAsync('proof_token');
+              const token = tk.getWalletByAddress(walletAddress)!.tonProof.tonProofToken;
               const firebase_token = await messaging().getToken();
 
               if (!token) {
@@ -192,7 +191,7 @@ export const useConnectedAppsStore = create(
           disableNotifications: async (chainName, walletAddress, url) => {
             try {
               const fixedUrl = getFixedLastSlashUrl(url);
-              const token = await SecureStore.getItemAsync('proof_token');
+              const token = tk.getWalletByAddress(walletAddress)!.tonProof.tonProofToken;
               const firebase_token = await messaging().getToken();
               if (!token) {
                 return;
@@ -233,7 +232,7 @@ export const useConnectedAppsStore = create(
           unsubscribeFromNotifications: async (chainName, walletAddress, url) => {
             try {
               const fixedUrl = getFixedLastSlashUrl(url);
-              const token = await SecureStore.getItemAsync('proof_token');
+              const token = tk.getWalletByAddress(walletAddress)!.tonProof.tonProofToken;
               const firebase_token = await messaging().getToken();
               if (!token) {
                 return;

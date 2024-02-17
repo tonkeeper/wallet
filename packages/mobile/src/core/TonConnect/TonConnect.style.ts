@@ -81,7 +81,7 @@ export const Container = styled(Animated.View)`
 
 export const Content = styled.View`
   padding-horizontal: ${ns(16)}px;
-  margin-bottom: ${ns(32)}px;
+  margin-bottom: ${ns(24)}px;
 `;
 
 export const TitleWrapper = styled.View`

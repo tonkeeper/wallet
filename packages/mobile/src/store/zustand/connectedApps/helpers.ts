@@ -1,5 +1,4 @@
 import { getChainName } from '$shared/dynamicConfig';
-import { store } from '$store';
 import { getConnectedAppByUrl } from './selectors';
 import {
   IConnectedAppConnection,
@@ -99,13 +98,23 @@ export const findConnectedAppByUrl = (url: string): IConnectedApp | null => {
 
 export const findConnectedAppByClientSessionId = (
   clientSessionId: string,
+  walletIdentifier: string,
 ): { connectedApp: IConnectedApp | null; connection: IConnectedAppConnection | null } => {
-  const currentWalletAddress = getWalletAddress();
+  const wallet = tk.wallets.get(walletIdentifier);
+
+  if (!wallet) {
+    return { connectedApp: null, connection: null };
+  }
+
+  const currentWalletAddress = Address.parse(wallet.address.ton.raw).toString({
+    bounceable: true,
+    testOnly: wallet.isTestnet,
+  });
 
   const connectedAppsList = Object.values(
-    useConnectedAppsStore.getState().connectedApps[getChainName()][
-      currentWalletAddress
-    ] || {},
+    useConnectedAppsStore.getState().connectedApps[
+      wallet.isTestnet ? 'testnet' : 'mainnet'
+    ][currentWalletAddress] || {},
   );
 
   let connection: IConnectedAppConnection | null = null;

@@ -18,8 +18,6 @@ export const useTonConnectAnimation = () => {
   const [state, setState] = React.useState(States.INITIAL);
   const ticker = useTickerAnimation();
 
-  const address = tk.wallet.address.ton.friendly;
-
   React.useEffect(() => {
     ticker.start({
       targetWidth: ADDRESS_CELL_WIDTH,
@@ -57,6 +55,5 @@ export const useTonConnectAnimation = () => {
     revert,
     ticker,
     state,
-    address,
   };
 };

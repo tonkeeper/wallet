@@ -1,9 +1,12 @@
 import { tk } from '@tonkeeper/mobile/src/wallet';
+import { Wallet } from '@tonkeeper/mobile/src/wallet/Wallet';
 
-export async function getWalletSeqno() {
+export async function getWalletSeqno(wallet?: Wallet) {
   try {
     const seqno = (
-      await tk.wallet.tonapi.wallet.getAccountSeqno(tk.wallet.address.ton.raw)
+      await (wallet ?? tk.wallet).tonapi.wallet.getAccountSeqno(
+        (wallet ?? tk.wallet).address.ton.raw,
+      )
     ).seqno;
     return seqno;
   } catch (e) {

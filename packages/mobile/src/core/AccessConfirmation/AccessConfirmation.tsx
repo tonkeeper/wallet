@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -29,7 +29,11 @@ export const AccessConfirmation: FC = () => {
   const route = useRoute();
   const dispatch = useDispatch();
   const { bottom: bottomInset } = useSafeAreaInsets();
-  const params = useParams<{ onGoBack: () => void; withoutBiometryOnOpen: boolean }>();
+  const params = useParams<{
+    onGoBack: () => void;
+    withoutBiometryOnOpen: boolean;
+    walletIdentifier?: string;
+  }>();
   const [value, setValue] = useState('');
 
   const [isBiometryFailed, setBiometryFailed] = useState(false);
@@ -38,7 +42,12 @@ export const AccessConfirmation: FC = () => {
 
   const pinRef = useRef<PinCodeRef>(null);
   const isUnlock = route.name === AppStackRouteNames.MainAccessConfirmation;
-  const wallet = useWallet();
+  const currentWallet = useWallet();
+  const wallet = useMemo(
+    () =>
+      params.walletIdentifier ? tk.wallets.get(params.walletIdentifier)! : currentWallet,
+    [currentWallet, params.walletIdentifier],
+  );
   const generatedVault = useSelector(walletGeneratedVaultSelector);
 
   useEffect(() => {

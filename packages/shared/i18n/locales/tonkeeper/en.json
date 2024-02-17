@@ -840,7 +840,7 @@
   "tab_wallet": "Wallet",
   "today": "Today",
   "ton_login_back_to_button": "Back to %{name}",
-  "ton_login_caption": "%{name} is requesting access to your wallet address ",
+  "ton_login_caption": "%{name} is requesting access to your wallet address",
   "ton_login_connect_button": "Connect wallet",
   "ton_login_notice": "Be sure to check the service address before connecting the wallet.",
   "ton_login_success": "Done",
