@@ -1,6 +1,7 @@
 import { useWallet } from '@tonkeeper/shared/hooks';
 import {
   Flash,
+  Haptics,
   Icon,
   Spacer,
   Steezy,
@@ -24,6 +25,7 @@ const WalletSelectorComponent: FC = () => {
 
   const handlePress = useCallback(() => {
     disableFlash();
+    Haptics.selection();
     nav.openModal('/switch-wallet');
   }, [disableFlash, nav]);
 

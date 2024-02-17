@@ -40,9 +40,7 @@ import { TCEventID } from './EventID';
 import { DAppManifest } from './models';
 import { SendTransactionError } from './SendTransactionError';
 import { tk } from '$wallet';
-import { delay } from '$utils';
 import { TonConnectRemoteBridge } from './TonConnectRemoteBridge';
-import { resetToWalletTab } from '$navigation';
 import { WithWalletIdentifier } from '$wallet/WalletTypes';
 
 class TonConnectService {
@@ -123,7 +121,7 @@ class TonConnectService {
               manifest,
               replyBuilder: new ConnectReplyBuilder(request, manifest),
               requestPromise: { resolve, reject },
-              hideImmediately: !!webViewUrl,
+              isInternalBrowser: !!webViewUrl,
             }),
           );
 

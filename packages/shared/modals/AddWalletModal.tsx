@@ -4,9 +4,11 @@ import { memo } from 'react';
 import { t } from '../i18n';
 import { DevFeature, useDevFeaturesToggle } from '@tonkeeper/mobile/src/store';
 
-interface AddWalletModalProps {}
+interface AddWalletModalProps {
+  isTonConnect?: boolean;
+}
 
-export const AddWalletModal = memo<AddWalletModalProps>((props) => {
+export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect }) => {
   const nav = useNavigation();
 
   const { devFeatures } = useDevFeaturesToggle();
@@ -53,20 +55,22 @@ export const AddWalletModal = memo<AddWalletModalProps>((props) => {
               chevron
             />
           </List>
-          <List>
-            <List.Item
-              onPress={() => {
-                nav.goBack();
-                nav.navigate('AddWatchOnlyStack');
-              }}
-              leftContentStyle={styles.iconContainer}
-              leftContent={<Icon name="ic-magnifying-glass-28" color="accentBlue" />}
-              title={t('add_wallet_modal.watch_only.title')}
-              subtitle={t('add_wallet_modal.watch_only.subtitle')}
-              subtitleNumberOfLines={3}
-              chevron
-            />
-          </List>
+          {!isTonConnect ? (
+            <List>
+              <List.Item
+                onPress={() => {
+                  nav.goBack();
+                  nav.navigate('AddWatchOnlyStack');
+                }}
+                leftContentStyle={styles.iconContainer}
+                leftContent={<Icon name="ic-magnifying-glass-28" color="accentBlue" />}
+                title={t('add_wallet_modal.watch_only.title')}
+                subtitle={t('add_wallet_modal.watch_only.subtitle')}
+                subtitleNumberOfLines={3}
+                chevron
+              />
+            </List>
+          ) : null}
           {devFeatures[DevFeature.ShowTestnet] ? (
             <List>
               <List.Item

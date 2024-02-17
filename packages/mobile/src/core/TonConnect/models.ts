@@ -24,5 +24,5 @@ export type TonConnectModalProps =
         resolve: (response: TonConnectModalResponse) => void;
         reject: () => void;
       };
-      hideImmediately: boolean;
+      isInternalBrowser: boolean;
     };

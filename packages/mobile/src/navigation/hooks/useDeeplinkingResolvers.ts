@@ -79,7 +79,11 @@ export function useDeeplinkingResolvers() {
       return openRequireWalletModal();
     }
 
-    const isTonConnect = prefix === 'tc://' || pathname.startsWith('/ton-connect');
+    const isTonConnect =
+      prefix === 'tc://' ||
+      pathname.startsWith('/ton-connect') ||
+      // legacy tonconnect
+      pathname.startsWith('/ton-login');
 
     if (tk.wallet.isWatchOnly && !isTonConnect) {
       return;
@@ -106,11 +110,6 @@ export function useDeeplinkingResolvers() {
   const tonConnectResolver: DeeplinkingResolver = useCallback(
     async ({ query, origin }) => {
       try {
-        if (tk.wallet.isWatchOnly) {
-          resetToWalletTab();
-          tk.switchWallet(tk.walletForUnlock.identifier);
-        }
-
         TonConnectRemoteBridge.setOrigin(origin);
         TonConnectRemoteBridge.setReturnStrategy(query.ret);
 

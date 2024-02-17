@@ -13,5 +13,6 @@ export const Haptics = {
   notificationSuccess: () => triggerHapticFeedback('notificationSuccess'),
   notificationError: () => triggerHapticFeedback('notificationError'),
   impactLight: () => triggerHapticFeedback('impactLight'),
+  impactMedium: () => triggerHapticFeedback('impactMedium'),
   selection: () => triggerHapticFeedback('selection'),
 };

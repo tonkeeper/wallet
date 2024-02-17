@@ -1,18 +1,40 @@
 import { useNavigation } from '@tonkeeper/router';
-import { Button, Icon, List, Modal, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
-import { memo } from 'react';
-import { useWallet, useWalletCurrency, useWallets } from '../hooks';
+import { Button, Haptics, Icon, List, Modal, Steezy, View } from '@tonkeeper/uikit';
+import { FC, memo, useCallback, useMemo } from 'react';
+import { useWalletCurrency, useWallets } from '../hooks';
 import { tk } from '@tonkeeper/mobile/src/wallet';
 import { t } from '../i18n';
 import { formatter } from '../formatter';
-import { Tag } from '@tonkeeper/mobile/src/uikit';
 import { WalletListItem } from '../components';
 
-export const SwitchWalletModal = memo(() => {
+interface Props {
+  selected?: string;
+  onSelect?: (identifier: string) => void;
+}
+
+export const SwitchWalletModal: FC<Props> = memo((props) => {
   const nav = useNavigation();
-  const currentWallet = useWallet();
-  const wallets = useWallets();
+  const selectedIdentifier = props.selected ?? tk.wallet.identifier;
+  const allWallets = useWallets();
+  const selectableWallets = useMemo(
+    () =>
+      props.onSelect ? allWallets.filter((wallet) => !wallet.isWatchOnly) : allWallets,
+    [allWallets, props.onSelect],
+  );
   const currency = useWalletCurrency();
+
+  const handlePress = useCallback(
+    (identifier: string) => () => {
+      if (props.onSelect) {
+        Haptics.selection();
+        props.onSelect(identifier);
+      } else {
+        tk.switchWallet(identifier);
+      }
+      nav.goBack();
+    },
+    [],
+  );
 
   return (
     <Modal>
@@ -20,17 +42,14 @@ export const SwitchWalletModal = memo(() => {
       <Modal.ScrollView>
         <Modal.Content safeArea>
           <List>
-            {wallets.map((wallet) => (
+            {selectableWallets.map((wallet) => (
               <WalletListItem
                 key={wallet.identifier}
                 wallet={wallet}
-                onPress={() => {
-                  tk.switchWallet(wallet.identifier);
-                  nav.goBack();
-                }}
+                onPress={handlePress(wallet.identifier)}
                 subtitle={formatter.format(wallet.totalFiat, { currency })}
                 rightContent={
-                  currentWallet.identifier === wallet.identifier && (
+                  selectedIdentifier === wallet.identifier && (
                     <View style={styles.checkmark}>
                       <Icon
                         style={styles.checkmarkIcon.static}
