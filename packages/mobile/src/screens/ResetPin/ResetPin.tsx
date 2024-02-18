@@ -7,10 +7,13 @@ import { useParams } from '@tonkeeper/router/src/imperative';
 import { useBiometrySettings } from '@tonkeeper/shared/hooks';
 import { vault } from '$wallet';
 import { useNavigation } from '@tonkeeper/router';
+import * as LocalAuthentication from 'expo-local-authentication';
+import { detectBiometryType } from '$utils';
+import { MainStackRouteNames } from '$navigation';
 
 export const ResetPin: FC = () => {
   const { passcode: oldPasscode } = useParams<{ passcode: string }>();
-  const { biometryEnabled, enableBiometry, disableBiometry } = useBiometrySettings();
+  const { biometryEnabled, disableBiometry } = useBiometrySettings();
   const nav = useNavigation();
 
   const handlePinCreated = useCallback(
@@ -22,22 +25,23 @@ export const ResetPin: FC = () => {
       try {
         await vault.changePasscode(oldPasscode, passcode);
 
+        Toast.success(t('passcode_changed'));
+
         if (biometryEnabled) {
           await disableBiometry();
+          const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
+          const biometryType = detectBiometryType(types);
 
-          try {
-            await enableBiometry(passcode);
-          } catch {}
+          nav.replace(MainStackRouteNames.ChangePinBiometry, { biometryType, passcode });
+        } else {
+          nav.goBack();
         }
-
-        Toast.success(t('passcode_changed'));
-        nav.goBack();
       } catch (e) {
         Toast.fail(e.message);
         nav.goBack();
       }
     },
-    [biometryEnabled, disableBiometry, enableBiometry, nav, oldPasscode],
+    [biometryEnabled, disableBiometry, nav, oldPasscode],
   );
 
   return (

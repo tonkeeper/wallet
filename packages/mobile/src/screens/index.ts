@@ -5,3 +5,4 @@ export * from './HoldersWebView';
 export * from './MigrationStartScreen';
 export * from './MigrationCreatePasscode';
 export * from './ResetPin';
+export * from './ChangePinBiometry';

@@ -181,7 +181,7 @@ export function openManageTokens(initialTab?: string) {
 }
 
 export function openChangePin() {
-  push(AppStackRouteNames.ChangePin);
+  push(MainStackRouteNames.ChangePin);
 }
 
 export function openNFT(keyPair: NFTKeyPair) {

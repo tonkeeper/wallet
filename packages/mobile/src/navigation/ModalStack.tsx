@@ -6,7 +6,6 @@ import { AppStackRouteNames } from './navigationNames';
 import {
   AccessConfirmation,
   BuyFiat,
-  ChangePin,
   DAppBrowser,
   DAppsSearch,
   OldExchange,
@@ -33,7 +32,6 @@ import { RefillBatteryModal } from '../../../shared/modals/RefillBatteryModal';
 import { NFTSend } from '$core/NFTSend/NFTSend';
 import { ReceiveInscriptionModal } from '@tonkeeper/shared/modals/ReceiveInscriptionModal';
 import { CustomizeWallet } from '$core/CustomizeWallet/CustomizeWallet';
-import { ResetPin } from '../screens';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -88,8 +86,6 @@ export const ModalStack = React.memo(() => (
         component={AccessConfirmation}
         path={AppStackRouteNames.AccessConfirmation}
       />
-      <Stack.Modal component={ChangePin} path={AppStackRouteNames.ChangePin} />
-      <Stack.Modal component={ResetPin} path={AppStackRouteNames.ResetPin} />
       <Stack.Modal component={DAppsSearch} path={AppStackRouteNames.DAppsSearch} />
     </Stack.Group>
   </Stack.Navigator>
