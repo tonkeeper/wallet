@@ -6,6 +6,6 @@ export const Wrap = styled.View`
 `;
 
 export const BiometryTip = styled.View`
-  margin-top: ${-ns(16)}px;
+  margin-top: ${-ns(20)}px;
   padding: 0 0 ${ns(32)}px;
 `;
