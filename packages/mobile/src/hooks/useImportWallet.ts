@@ -39,7 +39,6 @@ export const useImportWallet = () => {
                     isTestnet,
                     onDone: async (identifiers) => {
                       tk.setMigrated();
-                      tk.enableLock();
 
                       dispatch(walletActions.clearGeneratedVault());
 
