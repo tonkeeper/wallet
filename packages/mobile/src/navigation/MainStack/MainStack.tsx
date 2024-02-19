@@ -19,14 +19,14 @@ import { Subscriptions } from '$core/Subscriptions/Subscriptions';
 import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { useNotificationsResolver } from '$hooks/useNotificationsResolver';
-import { AccessConfirmation, AddressUpdateInfo } from '$core';
+import { AccessConfirmation, AddressUpdateInfo, ChangePin } from '$core';
 import { ModalStack } from '$navigation/ModalStack';
 import { withModalStack } from '@tonkeeper/router';
 import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
 import { InscriptionScreen } from '$core/InscriptionScreen';
 import { useDiamondsChecker } from '$hooks/useDiamondsChecker';
 import { useWallet } from '@tonkeeper/shared/hooks';
-import { StartScreen, HoldersWebView } from '../../screens';
+import { StartScreen, HoldersWebView, ChangePinBiometry, ResetPin } from '../../screens';
 import { CreateWalletStack } from '../CreateWalletStack';
 import { ImportWalletStack } from '$navigation/ImportWalletStack';
 import { AddWatchOnlyStack } from '$navigation/AddWatchOnlyStack';
@@ -53,7 +53,8 @@ export const MainStack: FC = () => {
 
   const hasWallet = !!wallet;
 
-  const showLockScreen = !isUnlocked && hasWallet && !attachedScreen.pathname;
+  const showLockScreen =
+    tk.lockEnabled && !isUnlocked && hasWallet && !attachedScreen.pathname;
 
   const isMigrated = useExternalState(tk.walletsStore, (state) => state.isMigrated);
 
@@ -140,6 +141,12 @@ export const MainStack: FC = () => {
         name={MainStackRouteNames.HoldersWebView}
         component={HoldersWebView}
         options={{ gestureEnabled: false }}
+      />
+      <Stack.Screen name={MainStackRouteNames.ChangePin} component={ChangePin} />
+      <Stack.Screen name={MainStackRouteNames.ResetPin} component={ResetPin} />
+      <Stack.Screen
+        name={MainStackRouteNames.ChangePinBiometry}
+        component={ChangePinBiometry}
       />
     </Stack.Navigator>
   );

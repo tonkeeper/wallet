@@ -10,7 +10,7 @@ import * as S from './Security.style';
 import { NavBar, ScrollHandler, Text } from '$uikit';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { walletActions } from '$store/wallet';
-import { openChangePin } from '$navigation';
+import { MainStackRouteNames, openChangePin } from '$navigation';
 import { detectBiometryType, ns, platform, triggerImpactLight } from '$utils';
 import { Toast } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
@@ -80,7 +80,7 @@ export const Security: FC = () => {
 
     try {
       const passcode = await vault.exportPasscodeWithBiometry();
-      nav.navigate('ResetPin', { passcode });
+      nav.navigate(MainStackRouteNames.ResetPin, { passcode });
     } catch {}
   }, [biometryEnabled, nav]);
 

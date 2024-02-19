@@ -22,6 +22,7 @@ import nacl from 'tweetnacl';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { detectBiometryType } from '$utils';
 import { AccountsStream } from './streaming';
+import { InteractionManager } from 'react-native';
 
 type TonkeeperOptions = {
   storage: Storage;
@@ -47,6 +48,7 @@ export interface WalletsStoreState {
   wallets: WalletConfig[];
   selectedIdentifier: string;
   biometryEnabled: boolean;
+  lockEnabled: boolean;
   isMigrated: boolean;
 }
 
@@ -76,6 +78,7 @@ export class Tonkeeper {
     wallets: [],
     selectedIdentifier: '',
     biometryEnabled: false,
+    lockEnabled: false,
     isMigrated: false,
   });
 
@@ -109,6 +112,10 @@ export class Tonkeeper {
 
   public get biometryEnabled() {
     return this.walletsStore.data.biometryEnabled;
+  }
+
+  public get lockEnabled() {
+    return this.walletsStore.data.lockEnabled;
   }
 
   public async init() {
@@ -169,20 +176,6 @@ export class Tonkeeper {
     } catch {
       return null;
     }
-  }
-
-  public async enableBiometry(passcode: string) {
-    await this.vault.setupBiometry(passcode);
-
-    this.walletsStore.set({ biometryEnabled: true });
-  }
-
-  public async disableBiometry() {
-    try {
-      await this.vault.removeBiometry();
-    } catch {}
-
-    this.walletsStore.set({ biometryEnabled: false });
   }
 
   private getNewWalletName() {
@@ -402,7 +395,10 @@ export class Tonkeeper {
     );
 
     await wallet.rehydrate();
-    wallet.preload();
+
+    InteractionManager.runAfterInteractions(() => {
+      wallet.preload();
+    });
 
     this.wallets.set(wallet.identifier, wallet);
 
@@ -494,5 +490,27 @@ export class Tonkeeper {
   public setMigrated() {
     console.log('migrated');
     this.walletsStore.set({ isMigrated: true });
+  }
+
+  public async enableBiometry(passcode: string) {
+    await this.vault.setupBiometry(passcode);
+
+    this.walletsStore.set({ biometryEnabled: true });
+  }
+
+  public async disableBiometry() {
+    try {
+      await this.vault.removeBiometry();
+    } catch {}
+
+    this.walletsStore.set({ biometryEnabled: false });
+  }
+
+  public async enableLock() {
+    this.walletsStore.set({ lockEnabled: true });
+  }
+
+  public async disableLock() {
+    this.walletsStore.set({ lockEnabled: false });
   }
 }

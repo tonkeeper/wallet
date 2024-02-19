@@ -35,4 +35,7 @@ export type MainStackParamList = {
   [MainStackRouteNames.AddressUpdateInfo]: {};
   [MainStackRouteNames.AddWatchOnlyStack]: {};
   [MainStackRouteNames.HoldersWebView]: {};
+  [MainStackRouteNames.ChangePin]: {};
+  [MainStackRouteNames.ResetPin]: {};
+  [MainStackRouteNames.ChangePinBiometry]: {};
 };

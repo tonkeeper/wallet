@@ -14,8 +14,6 @@ export enum AppStackRouteNames {
   Invoice = 'Invoice',
   AccessConfirmation = 'AccessConfirmation',
   MainAccessConfirmation = 'MainAccessConfirmation',
-  ChangePin = 'ChangePin',
-  ResetPin = 'ResetPin',
   NFT = 'NFT',
   WebView = 'WebView',
   DevStack = 'DevStack',
@@ -47,6 +45,9 @@ export enum MainStackRouteNames {
   AddressUpdateInfo = 'AddressUpdateInfo',
   Inscription = 'Inscription',
   HoldersWebView = 'HoldersWebView',
+  ChangePin = 'ChangePin',
+  ResetPin = 'ResetPin',
+  ChangePinBiometry = 'ChangePinBiometry',
 }
 
 export enum TabsStackRouteNames {

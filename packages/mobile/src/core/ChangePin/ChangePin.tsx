@@ -7,36 +7,42 @@ import { t } from '@tonkeeper/shared/i18n';
 import { goBack } from '$navigation/imperative';
 import { vault } from '$wallet';
 import { useBiometrySettings } from '@tonkeeper/shared/hooks';
+import * as LocalAuthentication from 'expo-local-authentication';
+import { detectBiometryType } from '$utils';
+import { MainStackRouteNames } from '$navigation';
+import { useNavigation } from '@tonkeeper/router';
 
 export const ChangePin: FC = () => {
-  const [oldPin, setOldPin] = useState<string | null>(null);
-  const { biometryEnabled, enableBiometry, disableBiometry } = useBiometrySettings();
+  const [oldPasscode, setOldPasscode] = useState<string | null>(null);
+  const { biometryEnabled, disableBiometry } = useBiometrySettings();
+  const nav = useNavigation();
 
   const handleCreated = useCallback(
-    async (pin: string) => {
-      if (!oldPin) {
+    async (passcode: string) => {
+      if (!oldPasscode) {
         return;
       }
 
       try {
-        await vault.changePasscode(oldPin, pin);
+        await vault.changePasscode(oldPasscode, passcode);
+
+        Toast.success(t('passcode_changed'));
 
         if (biometryEnabled) {
           await disableBiometry();
+          const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
+          const biometryType = detectBiometryType(types);
 
-          try {
-            await enableBiometry(pin);
-          } catch {}
+          nav.replace(MainStackRouteNames.ChangePinBiometry, { biometryType, passcode });
+        } else {
+          nav.goBack();
         }
-
-        Toast.success(t('passcode_changed'));
-        goBack();
       } catch (e) {
         Toast.fail(e.message);
         goBack();
       }
     },
-    [biometryEnabled, disableBiometry, enableBiometry, oldPin],
+    [biometryEnabled, disableBiometry, nav, oldPasscode],
   );
 
   return (
@@ -45,7 +51,7 @@ export const ChangePin: FC = () => {
       <CreatePinForm
         validateOldPin
         onPinCreated={handleCreated}
-        onOldPinValidated={setOldPin}
+        onOldPinValidated={setOldPasscode}
       />
     </>
   );
