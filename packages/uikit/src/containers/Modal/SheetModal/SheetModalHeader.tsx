@@ -1,10 +1,10 @@
-import { LayoutChangeEvent, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSheetInternal } from '@tonkeeper/router';
 import { IconNames } from '../../../components/Icon';
 import { Text } from '../../../components/Text';
 import { Icon } from '../../../components/Icon';
-import { memo, useCallback, useLayoutEffect } from 'react';
+import { memo, useLayoutEffect } from 'react';
 import { useTheme } from '../../../styles';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
@@ -45,9 +45,24 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
     [hasTitle],
   );
 
-  const handleLayout = useCallback((event: LayoutChangeEvent) => {
-    measureHeader(event);
-  }, []);
+  useLayoutEffect(() => {
+    if (hasSubtitle) {
+      measureHeader({
+        nativeEvent: {
+          layout: { height: 84 },
+        },
+      });
+
+      return;
+    }
+    if (hasTitle) {
+      measureHeader({
+        nativeEvent: {
+          layout: { height: 64 },
+        },
+      });
+    }
+  }, [hasTitle]);
 
   return (
     <Animated.View
@@ -57,7 +72,6 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
         borderAnimatedStyle,
         !hasTitle && styles.absolute,
       ]}
-      onLayout={handleLayout}
     >
       {gradient && (
         <LinearGradient
