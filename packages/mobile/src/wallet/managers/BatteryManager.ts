@@ -3,6 +3,7 @@ import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
 import { TonProofManager } from '$wallet/managers/TonProofManager';
+import { NamespacedLogger, logger } from '$logger';
 
 export interface BatteryState {
   isLoading: boolean;
@@ -15,6 +16,8 @@ export class BatteryManager {
     balance: undefined,
   });
 
+  private logger: NamespacedLogger;
+
   constructor(
     private persistPath: string,
     private tonProof: TonProofManager,
@@ -26,6 +29,7 @@ export class BatteryManager {
       storage: this.storage,
       key: `${this.persistPath}/battery`,
     });
+    this.logger = logger.extend('TonPriceManager');
   }
 
   public async fetchBalance() {
@@ -108,7 +112,7 @@ export class BatteryManager {
 
       return data.transactions;
     } catch (err) {
-      console.log('[ios battery in-app purchase]', err);
+      this.logger.error(err);
     }
   }
 

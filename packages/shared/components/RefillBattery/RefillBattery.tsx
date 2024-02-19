@@ -12,6 +12,7 @@ import { RefillBatteryIAP } from './RefillBatteryIAP';
 import { t } from '@tonkeeper/shared/i18n';
 import { config } from '@tonkeeper/mobile/src/config';
 import { RechargeByPromoButton } from './RechargeByPromoButton';
+import { RestorePurchases } from './RestorePurchases';
 
 const iconNames: { [key: string]: IconNames } = {
   [BatteryState.Empty]: 'ic-empty-battery-128',
@@ -59,9 +60,7 @@ export const RefillBattery = memo(() => {
         {!isInAppPurchasesDisabled ? <RefillBatteryIAP /> : null}
         <RechargeByPromoButton />
         <Spacer y={16} />
-        <Text type="label2" textAlign="center" color="textTertiary">
-          {t('battery.packages.disclaimer')}
-        </Text>
+        <RestorePurchases />
       </View>
     </>
   );

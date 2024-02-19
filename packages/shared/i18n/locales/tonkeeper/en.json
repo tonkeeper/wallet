@@ -124,6 +124,7 @@
   "auth_failed": "Authentication failed",
   "balances_setup_wallet": "Set up wallet",
   "battery": {
+    "refilled": "Battery refilled",
     "screen_title": "Battery",
     "settings": "Battery",
     "ok": "OK",
@@ -152,7 +153,8 @@
         "medium": "Medium pack",
         "small": "Small pack"
       },
-      "disclaimer": "This is approximate transactions number. Some your transactions may cost more.",
+      "disclaimer": "This is an approximate number of transactions. Some of your transactions may cost more.",
+      "restore": "Restore Purchases.",
       "buy": "Buy",
       "ok": "OK",
       "refilled": "Your battery is charged"
