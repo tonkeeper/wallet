@@ -78,7 +78,7 @@ export class Tonkeeper {
     wallets: [],
     selectedIdentifier: '',
     biometryEnabled: false,
-    lockEnabled: false,
+    lockEnabled: true,
     isMigrated: false,
   });
 
