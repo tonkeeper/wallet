@@ -6,6 +6,7 @@ import {
   LockupContractV1AdditionalParams,
 } from '../legacy';
 import { WalletContractV3R1, WalletContractV3R2, WalletContractV4 } from '@ton/ton';
+import nacl from 'tweetnacl';
 
 export enum WalletVersion {
   v3R1 = 0,
@@ -37,6 +38,7 @@ export interface CreateNftTransferBodyParams {
   /* Address of new owner's address */
   newOwnerAddress: AnyAddress;
   forwardBody?: Cell | string;
+  /* Query id. Defaults to Tonkeeper signature query id with 32 random bits */
   queryId?: number;
 }
 
@@ -47,6 +49,7 @@ export interface CreateJettonTransferBodyParams {
   receiverAddress: AnyAddress;
   jettonAmount: number | bigint;
   forwardBody?: Cell | string;
+  /* Query id. Defaults to Tonkeeper signature query id with 32 random bits */
   queryId?: number;
 }
 
@@ -71,6 +74,15 @@ export class ContractService {
     }
   }
 
+  private static getWalletQueryId() {
+    const tonkeeperSignature = (0x546de4ef).toString(16);
+    const value = Buffer.concat([
+      Buffer.from(tonkeeperSignature, 'hex'),
+      nacl.randomBytes(4),
+    ]);
+    return BigInt('0x' + value.toString('hex'));
+  }
+
   static prepareForwardBody(body?: Cell | string) {
     return typeof body === 'string' ? comment(body) : body;
   }
@@ -78,7 +90,10 @@ export class ContractService {
   static createNftTransferBody(createNftTransferBodyParams: CreateNftTransferBodyParams) {
     return beginCell()
       .storeUint(0x5fcc3d14, 32)
-      .storeUint(createNftTransferBodyParams.queryId || 0, 64)
+      .storeUint(
+        createNftTransferBodyParams.queryId || ContractService.getWalletQueryId(),
+        64,
+      )
       .storeAddress(tonAddress(createNftTransferBodyParams.newOwnerAddress))
       .storeAddress(tonAddress(createNftTransferBodyParams.excessesAddress))
       .storeBit(false)
@@ -92,7 +107,10 @@ export class ContractService {
   ) {
     return beginCell()
       .storeUint(0xf8a7ea5, 32) // request_transfer op
-      .storeUint(createJettonTransferBodyParams.queryId || 0, 64)
+      .storeUint(
+        createJettonTransferBodyParams.queryId || ContractService.getWalletQueryId(),
+        64,
+      )
       .storeCoins(createJettonTransferBodyParams.jettonAmount)
       .storeAddress(tonAddress(createJettonTransferBodyParams.receiverAddress))
       .storeAddress(tonAddress(createJettonTransferBodyParams.excessesAddress))

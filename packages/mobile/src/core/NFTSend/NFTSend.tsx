@@ -135,7 +135,6 @@ export const NFTSend: FC<Props> = (props) => {
           to: nftAddress,
           value: ONE_TON,
           body: ContractService.createNftTransferBody({
-            queryId: Date.now(),
             newOwnerAddress: recipient!.address,
             excessesAddress: wallet.address.ton.raw,
             forwardBody: commentValue,
@@ -279,7 +278,6 @@ export const NFTSend: FC<Props> = (props) => {
           to: nftAddress,
           value: totalAmount,
           body: ContractService.createNftTransferBody({
-            queryId: Date.now(),
             newOwnerAddress: recipient!.address,
             excessesAddress: excessesAccount || wallet.address.ton.raw,
             forwardBody: commentValue,
