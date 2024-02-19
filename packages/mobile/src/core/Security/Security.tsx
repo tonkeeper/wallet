@@ -14,7 +14,7 @@ import { MainStackRouteNames, openChangePin } from '$navigation';
 import { detectBiometryType, ns, platform, triggerImpactLight } from '$utils';
 import { Toast } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
-import { useBiometrySettings, useLockSettings, useWallet } from '@tonkeeper/shared/hooks';
+import { useBiometrySettings, useWallet } from '@tonkeeper/shared/hooks';
 import { useNavigation } from '@tonkeeper/router';
 import { vault } from '$wallet';
 
@@ -25,7 +25,6 @@ export const Security: FC = () => {
   const nav = useNavigation();
 
   const { biometryEnabled } = useBiometrySettings();
-  const { lockEnabled, toggleLock } = useLockSettings();
 
   const [isBiometryEnabled, setBiometryEnabled] = useState(biometryEnabled);
   const [biometryAvail, setBiometryAvail] = useState(-1);
@@ -64,17 +63,6 @@ export const Security: FC = () => {
       );
     },
     [dispatch, isBiometryEnabled],
-  );
-
-  const handleLockSwitch = useCallback(
-    (triggerHaptic: boolean) => () => {
-      if (triggerHaptic) {
-        triggerImpactLight();
-      }
-
-      toggleLock();
-    },
-    [toggleLock],
   );
 
   useEffect(() => {
@@ -143,21 +131,6 @@ export const Security: FC = () => {
           scrollEventThrottle={16}
         >
           {renderBiometryToggler()}
-          <CellSection>
-            <CellSectionItem
-              onPress={handleLockSwitch(true)}
-              indicator={
-                <Switch value={lockEnabled} onChange={handleLockSwitch(false)} />
-              }
-            >
-              {t('security_lock_screen_switch')}
-            </CellSectionItem>
-          </CellSection>
-          <S.BiometryTip>
-            <Text variant="body2" color="foregroundSecondary">
-              {t('security_lock_screen_tip')}
-            </Text>
-          </S.BiometryTip>
           <CellSection>
             <CellSectionItem onPress={handleChangePasscode} icon="ic-lock-28">
               {t('security_change_passcode')}
