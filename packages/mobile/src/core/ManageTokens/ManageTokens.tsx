@@ -1,39 +1,24 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 
-import { Icon, Screen, Spacer, SText, View, List, Button } from '$uikit';
+import { Screen, Spacer, SText, View, List, Button } from '$uikit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { JettonBalanceModel } from '$store/models';
 import { Tabs } from '../../tabs/Wallet/components/Tabs';
 import { Steezy } from '$styles';
 import { FlashList } from '@shopify/flash-list';
 import { t } from '@tonkeeper/shared/i18n';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StyleSheet } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { ContentType, Content } from '$core/ManageTokens/ManageTokens.types';
 import { useJettonData } from '$core/ManageTokens/hooks/useJettonData';
 import { useNftData } from '$core/ManageTokens/hooks/useNftData';
-import { ScaleDecorator } from '$uikit/DraggableFlashList';
-import { NestableDraggableFlatList } from '$uikit/DraggableFlashList/components/NestableDraggableFlatList';
-import { NestableScrollContainer } from '$uikit/DraggableFlashList/components/NestableScrollContainer';
-import { Haptics } from '$utils';
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
 import { useParams } from '$navigation/imperative';
-import { Address } from '@tonkeeper/shared/Address';
-import { useTokenApproval } from '@tonkeeper/shared/hooks';
-import { tk } from '$wallet';
+import { useInscriptionData } from '$core/ManageTokens/hooks/useInscriptionData';
 
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
-
-export function reorderJettons(newOrder: JettonBalanceModel[]) {
-  return newOrder.map((jettonBalance) => {
-    const rawAddress = Address.parse(jettonBalance.jettonAddress).toRaw();
-    return rawAddress;
-  });
-}
 
 const FLashListItem = ({
   item,
@@ -88,36 +73,13 @@ const FLashListItem = ({
   }
 };
 
-const DraggableFLashListItem = ({ item, drag, isActive }: { item: Content }) => {
-  const handleDrag = useCallback(() => {
-    drag?.();
-    Haptics.impactMedium();
-  }, [drag]);
-
-  const renderDragButton = useCallback(() => {
-    return (
-      <TouchableOpacity disabled={isActive} onLongPress={handleDrag}>
-        <Icon name="ic-reorder-28" color="iconSecondary" />
-      </TouchableOpacity>
-    );
-  }, [handleDrag, isActive]);
-
-  return (
-    <ScaleDecorator>
-      <FLashListItem item={item} renderDragButton={renderDragButton} />
-    </ScaleDecorator>
-  );
-};
-
 export const ManageTokens: FC = () => {
   const params = useParams<{ initialTab?: string }>();
   const { bottom: bottomInset } = useSafeAreaInsets();
   const [tab, setTab] = useState<string>(params?.initialTab || 'tokens');
   const jettonData = useJettonData();
   const nftData = useNftData();
-  const hasWatchedCollectiblesTab = useTokenApproval(
-    (state) => state.hasWatchedCollectiblesTab,
-  );
+  const inscriptionData = useInscriptionData();
   const scrollY = useSharedValue(0);
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -125,134 +87,80 @@ export const ManageTokens: FC = () => {
     },
   });
 
-  const withCollectibleDot = React.useMemo(() => {
-    return !hasWatchedCollectiblesTab;
-  }, [hasWatchedCollectiblesTab]);
+  const tabsContent = useMemo(() => {
+    return [
+      {
+        label: t('wallet.tonkens_tab_lable'),
+        id: 'tokens',
+        items: jettonData,
+      },
+      {
+        label: t('wallet.nft_tab_lable'),
+        id: 'collectibles',
+        items: nftData,
+      },
+      {
+        label: t('wallet.inscriptions_tab_label'),
+        id: 'inscriptions',
+        items: inscriptionData,
+      },
+    ].filter((content) => content.items.length);
+  }, [inscriptionData, jettonData, nftData]);
 
-  const renderJettonList = useCallback(() => {
-    return (
-      <AnimatedFlashList
-        estimatedItemSize={76}
-        contentContainerStyle={StyleSheet.flatten([
-          styles.flashList.static,
-          { paddingBottom: bottomInset },
-        ])}
-        onScroll={scrollHandler}
-        scrollEventThrottle={16}
-        data={jettonData}
-        renderItem={FLashListItem}
-      />
-    );
-    // TODO: draggable flashlist
-    return (
-      <NestableScrollContainer>
-        {jettonData.pending.length > 0 && (
-          <>
-            <SText style={styles.flashListTitle} variant="h3" color="textPrimary">
-              {t('approval.pending')}
-            </SText>
-            <NestableDraggableFlatList
-              keyExtractor={(item) => item?.id}
-              contentContainerStyle={StyleSheet.flatten([styles.flashList.static])}
-              data={jettonData.pending}
-              renderItem={DraggableFLashListItem}
-            />
-            <Spacer y={16} />
-          </>
-        )}
-        {jettonData.enabled.length > 0 && (
-          <>
-            <SText style={styles.flashListTitle} variant="h3" color="textPrimary">
-              {t('approval.accepted')}
-            </SText>
-            <NestableDraggableFlatList
-              keyExtractor={(item) => item?.id}
-              contentContainerStyle={StyleSheet.flatten([styles.flashList.static])}
-              data={jettonData.enabled}
-              renderItem={DraggableFLashListItem}
-            />
-            <Spacer y={16} />
-          </>
-        )}
-        {jettonData.disabled.length > 0 && (
-          <>
-            <SText style={styles.flashListTitle} variant="h3" color="textPrimary">
-              {t('approval.declined')}
-            </SText>
-            <NestableDraggableFlatList
-              keyExtractor={(item) => item?.id}
-              contentContainerStyle={StyleSheet.flatten([styles.flashList.static])}
-              data={jettonData.disabled}
-              renderItem={DraggableFLashListItem}
-            />
-            <Spacer y={16} />
-          </>
-        )}
-      </NestableScrollContainer>
-    );
-  }, [bottomInset, jettonData, scrollHandler]);
+  const renderList = useCallback(
+    (data) => {
+      return (
+        <AnimatedFlashList
+          estimatedItemSize={76}
+          contentContainerStyle={StyleSheet.flatten([
+            styles.flashList.static,
+            { paddingBottom: bottomInset },
+          ])}
+          onScroll={scrollHandler}
+          scrollEventThrottle={16}
+          data={data}
+          renderItem={FLashListItem}
+        />
+      );
+    },
+    [bottomInset, scrollHandler],
+  );
 
   const renderTabs = useCallback(() => {
     return (
       <Screen>
         <Tabs>
-          <View style={{ flex: 1 }}>
-            <Tabs.Header withBackButton style={styles.tabsHeader}>
-              <Tabs.Bar
-                // TODO: Remove hardcoded inline styles
-                containerStyle={{ paddingBottom: 16 }}
-                indicatorStyle={{ bottom: 0 }}
-                itemStyle={{ paddingTop: 16, paddingBottom: 8 }}
+          <View style={styles.flex}>
+            <Tabs.Header leftContentGradient withBackButton style={styles.tabsHeader}>
+              <Tabs.ScrollableBar
+                contentContainerStyle={styles.contentContainer.static}
+                indent={false}
+                containerStyle={styles.tabsContainer.static}
+                itemStyle={styles.tabsItem.static}
+                indicatorStyle={styles.tabsIndicator.static}
                 scrollY={scrollY}
-                onChange={({ value }) => {
-                  setTab(value);
-                  if (value === 'collectibles') {
-                    tk.wallet.tokenApproval.setHasWatchedCollectiblesTab(true);
-                  }
-                }}
+                onChange={({ value }) => setTab(value)}
                 value={tab}
-                items={[
-                  { label: t('wallet.tonkens_tab_lable'), value: 'tokens' },
-                  {
-                    label: t('wallet.nft_tab_lable'),
-                    value: 'collectibles',
-                    withDot: withCollectibleDot,
-                  },
-                ]}
+                items={tabsContent.map((content) => ({
+                  label: content.label,
+                  value: content.id,
+                }))}
               />
             </Tabs.Header>
             <Tabs.PagerView initialPage={tab === 'collectibles' ? 1 : 0}>
-              <Tabs.Section index={0}>{renderJettonList()}</Tabs.Section>
-              <Tabs.Section index={1}>
-                <AnimatedFlashList
-                  keyExtractor={(item) => item?.id}
-                  estimatedItemSize={76}
-                  contentContainerStyle={StyleSheet.flatten([
-                    styles.flashList.static,
-                    { paddingBottom: bottomInset },
-                  ])}
-                  onScroll={scrollHandler}
-                  scrollEventThrottle={16}
-                  data={nftData}
-                  renderItem={FLashListItem}
-                />
-              </Tabs.Section>
+              {tabsContent.map((content, idx) => (
+                <Tabs.Section key={content.id} index={idx}>
+                  {renderList(content.items)}
+                </Tabs.Section>
+              ))}
             </Tabs.PagerView>
           </View>
         </Tabs>
       </Screen>
     );
-  }, [
-    bottomInset,
-    nftData,
-    renderJettonList,
-    scrollHandler,
-    scrollY,
-    tab,
-    withCollectibleDot,
-  ]);
+  }, [renderList, scrollY, tab, tabsContent]);
 
-  if (nftData.length && jettonData.length) {
+  if (tabsContent.length > 1) {
     return renderTabs();
   } else {
     return (
@@ -266,7 +174,7 @@ export const ManageTokens: FC = () => {
             styles.flashList.static,
             { paddingBottom: bottomInset },
           ])}
-          data={nftData.length ? nftData : jettonData}
+          data={tabsContent[0].items}
         />
       </Screen>
     );
@@ -277,6 +185,9 @@ const styles = Steezy.create(({ safeArea, corners, colors }) => ({
   tabsHeader: {
     position: 'relative',
     paddingTop: safeArea.top,
+  },
+  flex: {
+    flex: 1,
   },
   flashList: {
     paddingHorizontal: 16,
@@ -307,5 +218,11 @@ const styles = Steezy.create(({ safeArea, corners, colors }) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  tabsContainer: { paddingBottom: 16 },
+  tabsItem: { paddingTop: 16, paddingBottom: 8 },
+  tabsIndicator: { bottom: 0 },
+  contentContainer: {
+    paddingLeft: 65,
   },
 }));
