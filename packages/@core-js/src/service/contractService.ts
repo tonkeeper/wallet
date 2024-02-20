@@ -74,7 +74,7 @@ export class ContractService {
     }
   }
 
-  private static getWalletQueryId() {
+  public static getWalletQueryId() {
     const tonkeeperSignature = (0x546de4ef).toString(16);
     const value = Buffer.concat([
       Buffer.from(tonkeeperSignature, 'hex'),
