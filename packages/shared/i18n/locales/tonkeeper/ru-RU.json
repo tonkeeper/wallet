@@ -358,17 +358,6 @@
   "jettons_list_title" : "Токены",
   "jettons_manage_tokens" : "Настроить токены",
   "jetton_token" : "Токен",
-  "language" : {
-    "language_alert" : {
-      "cancel" : "Отмена",
-      "open" : "Настройки",
-      "title" : "Чтобы изменить язык приложения, перейдите в настройки устройства"
-    },
-    "list_item" : {
-      "title" : "Язык",
-      "value" : "Русский"
-    }
-  },
   "later" : "Позже",
   "legal_font_license" : "Шрифт Montserrat",
   "legal_header_title" : "Документы",
@@ -635,14 +624,18 @@
   "settings_jettons_list" : "Токены",
   "settings_legal_documents" : "Юридические документы",
   "language": {
-    "list_item": {
-      "title": "Язык",
-      "value": "Русский"
-    },
+    "title" : "Язык",
     "language_alert" : {
-      "title": "Чтобы изменить язык приложения, перейдите в настройки устройства",
-      "cancel": "Отмена",
-      "open": "Настройки"
+      "cancel" : "Отмена",
+      "open" : "Настройки",
+      "title" : "Чтобы изменить язык приложения, перейдите в настройки устройства"
+    },
+    "languagesList": {
+      "system": "Системный",
+      "ru": "Русский",
+      "en": "Английский",
+      "tr": "Турецкий",
+      "zh-Hans": "Китайский"
     }
   },
   "settings_network_alert_title" : "Выберите сеть",

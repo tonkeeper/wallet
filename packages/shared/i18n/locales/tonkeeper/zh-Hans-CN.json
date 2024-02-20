@@ -262,11 +262,6 @@
   "jettons_manage_tokens" : "管理代币",
   "jettons_show_jettons" : "在钱包中显示代币",
   "jetton_token" : "代币",
-  "language" : {
-    "list_item" : {
-      "value" : "中文"
-    }
-  },
   "later" : "稍后",
   "legal_font_license" : "Montserrat字体",
   "legal_header_title" : "法律",
@@ -508,11 +503,6 @@
   "settings_delete_alert_title" : "您确定要删除您的账户吗？",
   "settings_jettons_list" : "代币",
   "settings_legal_documents" : "法律文件",
-  "language": {
-    "list_item": {
-      "value": "中文"
-    }
-  },
   "settings_network_alert_title" : "选择网络",
   "settings_news" : "Tonkeeper新闻",
   "settings_news_url" : "https://t.me/tonkeeper",

@@ -170,6 +170,10 @@ export function openSecurity() {
   push(SettingsStackRouteNames.Security);
 }
 
+export function openSelectLanguage() {
+  push(SettingsStackRouteNames.Language);
+}
+
 export function openRefillBattery() {
   push(SettingsStackRouteNames.RefillBattery);
 }

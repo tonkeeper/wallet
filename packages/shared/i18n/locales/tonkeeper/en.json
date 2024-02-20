@@ -381,17 +381,6 @@
   "jettons_manage_tokens": "Manage tokens",
   "jettons_show_jettons": "Show tokens in wallet",
   "jetton_token": "Token",
-  "language": {
-    "language_alert": {
-      "cancel": "Cancel",
-      "open": "Settings",
-      "title": "To change the language of the app, go to device Settings"
-    },
-    "list_item": {
-      "title": "Language",
-      "value": "English"
-    }
-  },
   "later": "Later",
   "legal_font_license": "Montserrat font",
   "legal_header_title": "Legal",
@@ -644,20 +633,25 @@
   "settings_jettons_list": "Tokens",
   "settings_legal_documents": "Legal",
   "language": {
-    "list_item": {
-      "title": "Language",
-      "value": "English"
-    },
+    "title": "Language",
     "language_alert": {
-      "title": "To change the language of the app, go to device Settings",
       "cancel": "Cancel",
-      "open": "Settings"
+      "open": "Settings",
+      "title": "To change the language of the app, go to device Settings"
+    },
+    "languagesList": {
+      "system": "System",
+      "ru": "Russian",
+      "en": "English",
+      "tr": "Turkish",
+      "zh-Hans": "Chinese"
     }
   },
   "settings_network_alert_title": "Select network",
   "settings_news": "Tonkeeper news",
   "settings_notifications": "Notifications",
   "settings_primary_currency": "Currency",
+  "settings_bank_card": "Bank card",
   "settings_rate": "Rate Tonkeeper",
   "settings_recovery_phrase": "Recovery phrase",
   "settings_reset": "Sign Out",

@@ -284,11 +284,6 @@
   "jettons_manage_tokens" : "Token'ları yönetin",
   "jettons_show_jettons" : "Cüzdandaki token'ları göster",
   "jetton_token" : "Token",
-  "language" : {
-    "list_item" : {
-      "value" : "Türkçe"
-    }
-  },
   "later" : "Daha sonra",
   "legal_font_license" : "Montserrat yazı tipi",
   "legal_header_title" : "Hukuki açıklama",
@@ -544,11 +539,6 @@
   "settings_delete_alert_title" : "Hesabınızı silmek istediğinize emin misiniz?",
   "settings_jettons_list" : "Token'lar",
   "settings_legal_documents" : "Hukuki açıklama",
-  "language": {
-    "list_item": {
-      "value": "Türkçe"
-    }
-  },
   "settings_network_alert_title" : "Ağ seçin",
   "settings_news" : "Tonkeeper Haberleri",
   "settings_notifications" : "Bildirimler",
