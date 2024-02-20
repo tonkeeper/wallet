@@ -25,7 +25,6 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { TronBalance } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
 import { WalletCurrency } from '@tonkeeper/core';
-import { useTonInscriptions } from '@tonkeeper/shared/query/hooks/useTonInscriptions';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { Text } from '@tonkeeper/uikit';
 import { JettonVerification } from '$store/models';
@@ -33,6 +32,7 @@ import { ListItemProps } from '$uikit/List/ListItem';
 import { config } from '$config';
 import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
 import { CardsWidget } from '$components';
+import { useInscriptionBalances } from '$hooks/useInscriptionBalances';
 
 enum ContentType {
   Token,
@@ -171,6 +171,7 @@ const RenderItem = ({ item }: { item: Content }) => {
 };
 
 interface BalancesListProps {
+  currency: WalletCurrency;
   tokens: any; // TODO:
   balance: any; // TODO:
   tonPrice: TokenPrice;
@@ -184,6 +185,7 @@ interface BalancesListProps {
 
 export const WalletContentList = memo<BalancesListProps>(
   ({
+    currency,
     tokens,
     balance,
     tonPrice,
@@ -197,7 +199,7 @@ export const WalletContentList = memo<BalancesListProps>(
 
     const fiatCurrency = useWalletCurrency();
     const shouldShowTonDiff = fiatCurrency !== WalletCurrency.TON;
-    const inscriptions = useTonInscriptions();
+    const { enabled: inscriptions } = useInscriptionBalances();
 
     const wallet = useWallet();
     const isWatchOnly = wallet && wallet.isWatchOnly;
@@ -319,9 +321,9 @@ export const WalletContentList = memo<BalancesListProps>(
         })),
       );
 
-      if (inscriptions?.items?.length > 0) {
+      if (inscriptions?.length > 0) {
         content.push(
-          ...inscriptions.items.map((item) => ({
+          ...inscriptions.map((item) => ({
             key: 'inscriptions' + item.ticker,
             onPress: () => openTonInscription({ ticker: item.ticker, type: item.type }),
             type: ContentType.Token,
@@ -329,6 +331,10 @@ export const WalletContentList = memo<BalancesListProps>(
             picture: DEFAULT_TOKEN_LOGO,
             title: item.ticker,
             value: formatter.formatNano(item.balance, { decimals: item.decimals }),
+            subvalue: formatter.format('0', { currency, currencySeparator: 'wide' }),
+            rate: {
+              price: formatter.format('0', { currency, currencySeparator: 'wide' }),
+            },
           })),
         );
       }

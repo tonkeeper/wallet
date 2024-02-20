@@ -49,7 +49,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { format } from 'date-fns';
 import { getLocale } from '$utils/date';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useWallet, useWalletStatus } from '@tonkeeper/shared/hooks';
+import { useWallet, useWalletCurrency, useWalletStatus } from '@tonkeeper/shared/hooks';
 import { WalletSelector } from './components/WalletSelector';
 
 export const WalletScreen = memo(({ navigation }) => {
@@ -65,6 +65,7 @@ export const WalletScreen = memo(({ navigation }) => {
     useUpdatesStore((state) => state.update.state) !== UpdateState.NOT_STARTED;
   const balance = useBalance(tokens.total.fiat);
   const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
+  const currency = useWalletCurrency();
 
   const { isReloading: isRefreshing, updatedAt: walletUpdatedAt } = useWalletStatus();
 
@@ -326,6 +327,7 @@ export const WalletScreen = memo(({ navigation }) => {
           <PagerView.Pages>
             <PagerView.Page index={0}>
               <WalletContentList
+                currency={currency}
                 balance={balance}
                 tronBalances={tronBalances}
                 tokens={tokens}
@@ -361,6 +363,7 @@ export const WalletScreen = memo(({ navigation }) => {
         </PagerView>
       ) : (
         <WalletContentList
+          currency={currency}
           tronBalances={tronBalances}
           ListHeaderComponent={ListHeader}
           handleRefresh={handleRefresh}
