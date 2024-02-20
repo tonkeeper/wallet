@@ -31,13 +31,12 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect }) => {
       try {
         await unlockVault();
 
+        nav.goBack();
         BlockingLoader.show();
 
         const passcode = getLastEnteredPasscode();
         const identifiers = await tk.createWallet(passcode);
         const isNotificationsDenied = await tk.wallet.notifications.getIsDenied();
-
-        nav.goBack();
 
         if (!isNotificationsDenied) {
           nav.navigate('CreateWalletStack', {
