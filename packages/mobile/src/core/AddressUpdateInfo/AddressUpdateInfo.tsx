@@ -40,6 +40,10 @@ export const AddressUpdateInfo: FC = () => {
       <Screen.ScrollView>
         <View style={styles.content}>
           <Text type="body2" color="textSecondary">
+            {t('address_update.post_published_date')}
+          </Text>
+          <Spacer y={12} />
+          <Text type="body2" color="textSecondary">
             {t('address_update.post_top')}
           </Text>
           <Spacer y={16} />
