@@ -131,8 +131,9 @@ export const ManageTokens: FC = () => {
       <Screen>
         <Tabs>
           <View style={styles.flex}>
-            <Tabs.Header withBackButton style={styles.tabsHeader}>
+            <Tabs.Header leftContentGradient withBackButton style={styles.tabsHeader}>
               <Tabs.ScrollableBar
+                contentContainerStyle={styles.contentContainer.static}
                 indent={false}
                 containerStyle={styles.tabsContainer.static}
                 itemStyle={styles.tabsItem.static}
@@ -218,7 +219,10 @@ const styles = Steezy.create(({ safeArea, corners, colors }) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  tabsContainer: { paddingBottom: 16, paddingLeft: 48 },
+  tabsContainer: { paddingBottom: 16 },
   tabsItem: { paddingTop: 16, paddingBottom: 8 },
   tabsIndicator: { bottom: 0 },
+  contentContainer: {
+    paddingLeft: 65,
+  },
 }));

@@ -7,7 +7,7 @@ import {
   TokenApprovalStatus,
   TokenApprovalType,
 } from '$store/zustand/tokenApproval/types';
-import { ListButton, Spacer } from '$uikit';
+import { ListButton } from '$uikit';
 import { CellItem, Content, ContentType } from '$core/ManageTokens/ManageTokens.types';
 import { InscriptionBalance } from '@tonkeeper/core/src/TonAPI';
 import { useInscriptionBalances } from '$hooks/useInscriptionBalances';
@@ -51,19 +51,16 @@ export function useInscriptionData() {
               ...baseInscriptionCellData(inscriptionBalance),
               isFirst: index === 0,
               leftContent: (
-                <>
-                  <ListButton
-                    type="remove"
-                    onPress={() =>
-                      tk.wallet.tokenApproval.updateTokenStatus(
-                        `${inscriptionBalance.ticker}_${inscriptionBalance.type}`,
-                        TokenApprovalStatus.Declined,
-                        TokenApprovalType.Inscription,
-                      )
-                    }
-                  />
-                  <Spacer x={16} />
-                </>
+                <ListButton
+                  type="remove"
+                  onPress={() =>
+                    tk.wallet.tokenApproval.updateTokenStatus(
+                      `${inscriptionBalance.ticker}_${inscriptionBalance.type}`,
+                      TokenApprovalStatus.Declined,
+                      TokenApprovalType.Inscription,
+                    )
+                  }
+                />
               ),
               isLast: index === array.length - 1,
             } as CellItem),
@@ -97,19 +94,16 @@ export function useInscriptionData() {
               isFirst: index === 0,
               isLast: index === array.length - 1,
               leftContent: (
-                <>
-                  <ListButton
-                    type="add"
-                    onPress={() =>
-                      tk.wallet.tokenApproval.updateTokenStatus(
-                        `${inscriptionBalance.ticker}_${inscriptionBalance.type}`,
-                        TokenApprovalStatus.Approved,
-                        TokenApprovalType.Inscription,
-                      )
-                    }
-                  />
-                  <Spacer x={16} />
-                </>
+                <ListButton
+                  type="add"
+                  onPress={() =>
+                    tk.wallet.tokenApproval.updateTokenStatus(
+                      `${inscriptionBalance.ticker}_${inscriptionBalance.type}`,
+                      TokenApprovalStatus.Approved,
+                      TokenApprovalType.Inscription,
+                    )
+                  }
+                />
               ),
             } as CellItem),
         ),

@@ -34,6 +34,7 @@ interface ScrollableTabsBarProps {
   sticky?: any;
   scrollY?: Animated.SharedValue<number>;
   children?: React.ReactNode;
+  contentContainerStyle?: StyleProp<ViewStyle>;
 }
 
 const INDICATOR_WIDTH = ns(24);
@@ -63,7 +64,8 @@ export const ScrollableTabsBarComponent = (props: ScrollableTabsBarProps) => {
           layouts.length - 1,
           Math.max(0, Math.round(cur)),
         );
-        scrollTo(scrollRef, layouts[nearestLayoutIndex].x, 0, true);
+        const initialX = layouts[0].x;
+        scrollTo(scrollRef, layouts[nearestLayoutIndex].x - initialX, 0, true);
       }
     },
     [tabsLayouts],
@@ -141,7 +143,7 @@ export const ScrollableTabsBarComponent = (props: ScrollableTabsBarProps) => {
         ref={scrollRef}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[styles.container.static]}
+        contentContainerStyle={[styles.container.static, props.contentContainerStyle]}
         pointerEvents="box-none"
       >
         {props.items.map((item, index) => (
