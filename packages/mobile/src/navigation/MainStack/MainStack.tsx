@@ -132,7 +132,11 @@ export const MainStack: FC = () => {
         name={MainStackRouteNames.Inscription}
         component={InscriptionScreen}
       />
-      <Stack.Screen name={MainStackRouteNames.ManageTokens} component={ManageTokens} />
+      <Stack.Screen
+        name={MainStackRouteNames.ManageTokens}
+        options={{ gestureEnabled: false }}
+        component={ManageTokens}
+      />
       <Stack.Screen
         name={MainStackRouteNames.AddressUpdateInfo}
         component={AddressUpdateInfo}
