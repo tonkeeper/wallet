@@ -1,8 +1,20 @@
 import { useNavigation } from '@tonkeeper/router';
-import { Icon, List, Modal, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
-import { memo } from 'react';
+import {
+  BlockingLoader,
+  Icon,
+  List,
+  Modal,
+  Spacer,
+  Steezy,
+  Text,
+  View,
+} from '@tonkeeper/uikit';
+import { memo, useCallback } from 'react';
 import { t } from '../i18n';
 import { DevFeature, useDevFeaturesToggle } from '@tonkeeper/mobile/src/store';
+import { tk } from '@tonkeeper/mobile/src/wallet';
+import { useUnlockVault } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/useUnlockVault';
+import { getLastEnteredPasscode } from '@tonkeeper/mobile/src/store/wallet/sagas';
 
 interface AddWalletModalProps {
   isTonConnect?: boolean;
@@ -10,8 +22,43 @@ interface AddWalletModalProps {
 
 export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect }) => {
   const nav = useNavigation();
+  const unlockVault = useUnlockVault();
 
   const { devFeatures } = useDevFeaturesToggle();
+
+  const handleCreatePress = useCallback(async () => {
+    if (tk.walletForUnlock) {
+      try {
+        await unlockVault();
+
+        BlockingLoader.show();
+
+        const passcode = getLastEnteredPasscode();
+        const identifiers = await tk.createWallet(passcode);
+        const isNotificationsDenied = await tk.wallet.notifications.getIsDenied();
+
+        nav.goBack();
+
+        if (!isNotificationsDenied) {
+          nav.navigate('CreateWalletStack', {
+            screen: 'CreateWalletNotifications',
+            params: { identifiers: [] },
+          });
+          return;
+        }
+
+        if (tk.wallets.size > 1 && tk.wallets.size !== identifiers.length) {
+          nav.navigate('CustomizeWallet', { identifiers });
+        }
+      } catch {
+      } finally {
+        BlockingLoader.hide();
+      }
+    } else {
+      nav.goBack();
+      nav.navigate('CreateWalletStack');
+    }
+  }, [nav]);
 
   return (
     <Modal>
@@ -29,10 +76,7 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect }) => {
         <View style={styles.listContainer}>
           <List>
             <List.Item
-              onPress={() => {
-                nav.goBack();
-                nav.navigate('CreateWalletStack');
-              }}
+              onPress={handleCreatePress}
               leftContentStyle={styles.iconContainer}
               leftContent={<Icon name="ic-plus-circle-28" color="accentBlue" />}
               title={t('add_wallet_modal.create.title')}

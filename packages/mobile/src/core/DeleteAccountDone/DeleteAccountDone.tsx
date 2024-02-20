@@ -2,13 +2,11 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import LottieView from 'lottie-react-native';
 
 import { Text } from '$uikit';
-import * as CreateWalletStyle from '$core/CreateWallet/CreateWallet.style';
-import { goBack, popToTop } from '$navigation/imperative';
 import * as S from './DeleteAccountDone.style';
-import { ns } from '$utils';
 import { t } from '@tonkeeper/shared/i18n';
 import { useDispatch } from 'react-redux';
 import { walletActions } from '$store/wallet';
+import { Steezy, View } from '@tonkeeper/uikit';
 
 export const DeleteAccountDone: React.FC = () => {
   const dispatch = useDispatch();
@@ -28,7 +26,7 @@ export const DeleteAccountDone: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <CreateWalletStyle.Content style={{ marginTop: -ns(16) }}>
+    <View style={styles.container}>
       <S.LottieIcon
         ref={checkIconRef}
         onAnimationFinish={handleAnimationEnd}
@@ -42,6 +40,16 @@ export const DeleteAccountDone: React.FC = () => {
           {t('account_deleted')}
         </Text>
       </S.TitleWrapper>
-    </CreateWalletStyle.Content>
+    </View>
   );
 };
+
+const styles = Steezy.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+    marginTop: -16,
+  },
+});

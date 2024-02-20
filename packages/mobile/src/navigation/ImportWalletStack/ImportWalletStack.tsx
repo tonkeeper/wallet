@@ -1,10 +1,9 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from '$hooks/useTheme';
-import { FC, memo, useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { ImportWalletStackParamList, ImportWalletStackRouteNames } from './types';
-import { CreatePin, ImportWallet, SetupBiometry } from '$core';
+import { CreatePin, ImportWallet } from '$core';
 import { SetupNotifications } from '$core/SetupNotifications/SetupNotifications';
-import { RouteProp } from '@react-navigation/native';
 import { ChooseWallets } from '../../screens';
 import { useDispatch } from 'react-redux';
 import { walletActions } from '$store/wallet';
@@ -45,18 +44,6 @@ export const ImportWalletStack = memo(() => {
       <Stack.Screen
         name={ImportWalletStackRouteNames.CreatePasscode}
         component={CreatePin}
-      />
-      <Stack.Screen
-        name={ImportWalletStackRouteNames.Biometry}
-        component={
-          // TODO fix navigation typing
-          SetupBiometry as unknown as FC<{
-            route: RouteProp<
-              ImportWalletStackParamList,
-              ImportWalletStackRouteNames.Biometry
-            >;
-          }>
-        }
       />
       <Stack.Screen
         name={ImportWalletStackRouteNames.Notifications}

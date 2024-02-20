@@ -4,28 +4,44 @@ import { Text } from '../Text';
 import { View } from '../View';
 import { useMemo } from 'react';
 import { Spacer, SpacerSizes } from '../Spacer';
+import { TTextTypes } from '../Text/TextStyles';
 
 interface ListHeaderProps {
   rightContent?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   indentTop?: boolean;
-  spacerY?: number;
+  indent?: boolean;
+  spacerY?: SpacerSizes;
   title: string;
+  titleTextType?: TTextTypes;
 }
 
 export const ListHeader = (props: ListHeaderProps) => {
-  const { title, indentTop, rightContent, spacerY, style } = props;
+  const {
+    title,
+    titleTextType = 'h3',
+    indentTop,
+    indent,
+    rightContent,
+    spacerY,
+    style,
+  } = props;
 
   const containerStyle = useMemo(
-    () => [styles.container, indentTop && styles.indentTop, style],
+    () => [
+      styles.container,
+      indentTop && styles.indentTop,
+      indent && styles.indentHorizontal,
+      style,
+    ],
     [indentTop, style],
   );
 
   return (
     <>
-      {spacerY !== 0 && <Spacer y={spacerY} />}
+      {!!spacerY && <Spacer y={spacerY} />}
       <View style={containerStyle}>
-        <Text type="h3">{title}</Text>
+        <Text type={titleTextType}>{title}</Text>
         {rightContent}
       </View>
     </>
@@ -41,5 +57,8 @@ const styles = Steezy.create({
   },
   indentTop: {
     marginTop: 16,
+  },
+  indentHorizontal: {
+    marginHorizontal: 16,
   },
 });

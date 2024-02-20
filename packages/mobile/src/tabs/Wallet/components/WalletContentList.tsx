@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import {
   Screen,
-  Spacer,
+  Spacer as SpacerView,
   SpacerSizes,
   View,
   List,
@@ -28,11 +28,12 @@ import { WalletCurrency } from '@tonkeeper/core';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { Text } from '@tonkeeper/uikit';
 import { JettonVerification } from '$store/models';
-import { ListItemProps } from '$uikit/List/ListItem';
 import { config } from '$config';
 import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
 import { CardsWidget } from '$components';
 import { InscriptionBalance } from '@tonkeeper/core/src/TonAPI';
+import { ListItemProps } from '@tonkeeper/uikit/src/components/List/ListItem';
+import { FinishSetupList } from './FinishSetupList';
 
 enum ContentType {
   Token,
@@ -41,6 +42,7 @@ enum ContentType {
   NFTCardsRow,
   Staking,
   Cards,
+  Setup,
 }
 
 type TokenItem = {
@@ -83,7 +85,18 @@ type CardsItem = {
   type: ContentType.Cards;
 };
 
-type Content = TokenItem | SpacerItem | NFTCardsRowItem | StakingItem | CardsItem;
+type SetupItem = {
+  key: string;
+  type: ContentType.Setup;
+};
+
+type Content =
+  | TokenItem
+  | SpacerItem
+  | NFTCardsRowItem
+  | StakingItem
+  | CardsItem
+  | SetupItem;
 
 const RenderItem = ({ item }: { item: Content }) => {
   switch (item.type) {
@@ -160,13 +173,15 @@ const RenderItem = ({ item }: { item: Content }) => {
         </View>
       );
     case ContentType.Spacer:
-      return <Spacer y={item.bottom} />;
+      return <SpacerView y={item.bottom} />;
     case ContentType.NFTCardsRow:
       return <NFTsList nfts={item.items} />;
     case ContentType.Staking:
       return <StakingWidget isWatchOnly={item.isWatchOnly} />;
     case ContentType.Cards:
       return <CardsWidget />;
+    case ContentType.Setup:
+      return <FinishSetupList key={item.key} />;
   }
 };
 
@@ -204,6 +219,7 @@ export const WalletContentList = memo<BalancesListProps>(
 
     const wallet = useWallet();
     const isWatchOnly = wallet && wallet.isWatchOnly;
+    const identifier = wallet.identifier;
     const showStaking = isWatchOnly ? balance.staking.amount.nano !== '0' : true;
 
     const data = useMemo(() => {
@@ -229,6 +245,7 @@ export const WalletContentList = memo<BalancesListProps>(
       if (balance.lockup.length > 0) {
         content.push(
           ...balance.lockup.map((item) => ({
+            key: item.type,
             type: ContentType.Token,
             tonIcon: { locked: true },
             title: LockupNames[item.type],
@@ -239,39 +256,6 @@ export const WalletContentList = memo<BalancesListProps>(
         );
       }
 
-      // if (tronBalances && tronBalances.length > 0) {
-      //   content.push(
-      //     ...(tronBalances as any).map((item) => {
-      //       const amount = formatter.fromNano(item.weiAmount, item.token.decimals);
-      //       const fiatAmount = formatter.format(usdtRate.fiat * parseFloat(amount), {
-      //         currency: fiatCurrency
-      //       });
-      //       const fiatPrice = formatter.format(usdtRate.fiat, {
-      //         currency: fiatCurrency
-      //       });
-
-      //       return {
-      //         onPress: () => openTronToken(item),
-      //         type: ContentType.Token,
-      //         picture: item.token.image,
-      //         title: (
-      //           <View style={styles.trcTitle}>
-      //             <Text type="label1">{item.token.symbol}</Text>
-      //             <View style={styles.trcLabel}>
-      //               <Text type="body4" color="textSecondary">
-      //                 TRC20
-      //               </Text>
-      //             </View>
-      //           </View>
-      //         ),
-      //         value: amount,
-      //         subvalue: fiatAmount,
-      //         subtitle: fiatPrice,
-      //       };
-      //     }),
-      //   );
-      // }
-
       if (showStaking) {
         content.push({
           key: 'staking',
@@ -281,7 +265,12 @@ export const WalletContentList = memo<BalancesListProps>(
       }
 
       content.push({
-        key: 'spacer_staking',
+        key: `setup_${identifier}`,
+        type: ContentType.Setup,
+      });
+
+      content.push({
+        key: 'ton_section_spacer',
         type: ContentType.Spacer,
         bottom: 32,
       });
@@ -379,6 +368,7 @@ export const WalletContentList = memo<BalancesListProps>(
       shouldShowTonDiff,
       tonPrice,
       isWatchOnly,
+      identifier,
       tokens.list,
       inscriptions.items,
       nfts,

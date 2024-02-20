@@ -10,6 +10,7 @@ import { ChooseCurrencyScreen } from '$core/ChooseCurrencyScreen';
 import { DevConfigScreen } from '$core/DevMenu/DevConfigScreen';
 import { RefillBattery } from '$core/RefillBattery/RefillBattery';
 import { SelectLanguage } from '../../components/Language/SelectLanguage';
+import { BackupScreen } from '../../screens';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
@@ -51,6 +52,7 @@ export const SettingsStack: FC = () => {
         name={SettingsStackRouteNames.ChooseCurrency}
         component={ChooseCurrencyScreen}
       />
+      <Stack.Screen name={SettingsStackRouteNames.Backup} component={BackupScreen} />
     </Stack.Navigator>
   );
 };

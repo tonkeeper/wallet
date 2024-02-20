@@ -1,25 +1,30 @@
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LayoutChangeEvent } from 'react-native';
 import { useCallback, useRef } from 'react';
-import { bip39 } from '@tonkeeper/core/src/bip39';
 import {
   useReanimatedKeyboardHeight,
   ScreenScrollViewRef,
   InputRef,
 } from '@tonkeeper/uikit';
+import { bip39 } from '@tonkeeper/core/src/utils/mnemonic/bip39';
 
-export function useRecoveryPhraseInputs() {
+export function useRecoveryPhraseInputs(shiftScroll?: number) {
   const positions = useRef<{ [key in string]: number }>({});
   const refs = useRef<{ [key in string]: InputRef }>({});
   const scrollViewRef = useRef<ScreenScrollViewRef>(null);
+  const safeArea = useSafeAreaInsets();
+  const focusedIndex = useRef<number>(-1);
 
   const deferredScrollToInput = useRef<(() => void) | null>(null);
   const keyboard = useReanimatedKeyboardHeight({
     enableOnAndroid: true,
-    onWillShow: () => {
-      if (deferredScrollToInput.current) {
-        deferredScrollToInput.current();
-        deferredScrollToInput.current = null;
-      }
+    onWillShow: ({ duration }) => {
+      setTimeout(() => {
+        if (deferredScrollToInput.current) {
+          deferredScrollToInput.current();
+          deferredScrollToInput.current = null;
+        }
+      }, duration + 30);
     },
   });
 
@@ -65,15 +70,18 @@ export function useRecoveryPhraseInputs() {
     }
   }, []);
 
-  const scrollToInput = useCallback((index: number) => {
-    const inputPos = getPosition(index);
-    if (inputPos !== undefined) {
-      scrollViewRef.current?.scrollTo({
-        y: inputPos - 24,
-        animated: true,
-      });
-    }
-  }, []);
+  const scrollToInput = useCallback(
+    (index: number) => {
+      const inputPos = getPosition(index);
+      if (inputPos !== undefined) {
+        scrollViewRef.current?.scrollTo({
+          y: inputPos + (shiftScroll ?? 24),
+          animated: true,
+        });
+      }
+    },
+    [shiftScroll],
+  );
 
   const onFocus = useCallback(
     (index: number) => () => {
@@ -84,6 +92,8 @@ export function useRecoveryPhraseInputs() {
       } else {
         scrollToInput(index);
       }
+
+      focusedIndex.current = index;
     },
     [scrollToInput],
   );
@@ -92,9 +102,11 @@ export function useRecoveryPhraseInputs() {
     (index: number) => () => {
       const input = getRef(index);
       const value = input?.getValue();
-      if (value && value.length > 0 && !bip39.map.has(value)) {
+      if (value && value.length > 0 && !bip39.map[value]) {
         input.markAsInvalid();
       }
+
+      focusedIndex.current = -1;
     },
     [],
   );
@@ -114,8 +126,8 @@ export function useRecoveryPhraseInputs() {
           // newText = newText.substr(0, 20);
           // input?.setValue(newText);
           if (input.isInvalid()) {
-            if (newText.length === 0 || bip39.map.has(newText)) {
-              input.markAsValid();
+            if (newText.length === 0 || bip39.map[newText]) {
+              // input.markAsValid();
             }
           }
         }
@@ -125,7 +137,7 @@ export function useRecoveryPhraseInputs() {
   );
 
   return {
-    keyboardSpacerStyle: keyboard.spacerStyle,
+    currentIndex: focusedIndex,
     refs: refs.current,
     scrollViewRef,
     setRef,

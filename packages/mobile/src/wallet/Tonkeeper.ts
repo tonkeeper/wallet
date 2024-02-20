@@ -190,6 +190,14 @@ export class Tonkeeper {
       : DEFAULT_WALLET_STYLE_CONFIG.name;
   }
 
+  public async createWallet(passcode: string) {
+    const mnemonic = (await Mnemonic.generateMnemonic(24)).join(' ');
+    return await this.importWallet(mnemonic, passcode, [WalletContractVersion.v4R2], {
+      workchain: 0,
+      network: WalletNetwork.mainnet,
+    });
+  }
+
   public async importWallet(
     mnemonic: string,
     passcode: string,
@@ -490,6 +498,13 @@ export class Tonkeeper {
   public setMigrated() {
     console.log('migrated');
     this.walletsStore.set({ isMigrated: true });
+  }
+
+  public saveLastBackupTimestampAll(identifiers: string[]) {
+    identifiers.forEach((identifier) => {
+      const wallet = this.wallets.get(identifier);
+      wallet?.saveLastBackupTimestamp();
+    });
   }
 
   public async enableBiometry(passcode: string) {

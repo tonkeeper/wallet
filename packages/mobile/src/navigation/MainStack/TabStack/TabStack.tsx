@@ -19,7 +19,7 @@ import { useCheckForUpdates } from '$hooks/useCheckForUpdates';
 import { useLoadExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { ActivityStack } from '$navigation/ActivityStack/ActivityStack';
 import { useNotificationsStore } from '$store';
-import { NotificationsIndicator } from '$navigation/MainStack/TabStack/NotificationsIndicator';
+import { BackupIndicator } from '$navigation/MainStack/TabStack/BackupIndicator';
 import { useFetchMethodsToBuy } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { trackEvent } from '$utils/stats';
 import { useRemoteBridge } from '$tonconnect';
@@ -140,7 +140,7 @@ export const TabStack: FC = () => {
           tabBarIcon: ({ color }) => (
             <View style={styles.settingsIcon}>
               <Icon colorHex={color} name="ic-settings-28" />
-              <NotificationsIndicator />
+              <BackupIndicator />
             </View>
           ),
         }}

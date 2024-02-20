@@ -26,6 +26,8 @@ export { Picture } from './components/Picture';
 export { SegmentedControl } from './components/SegmentedControl';
 export { TransitionOpacity } from './components/TransitionOpacity';
 export * from './components/Flash';
+export * from './components/BlockingLoader';
+export { Switch } from './components/Switch';
 
 // Containers
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';
