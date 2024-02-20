@@ -1,26 +1,14 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import PagerView from 'react-native-pager-view';
-import Animated, {
-  Extrapolate,
-  interpolate,
-  runOnJS,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useEvent,
-  useHandler,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { useEvent, useHandler } from 'react-native-reanimated';
 import { useTabCtx } from './TabsContainer';
-import funny from '$assets/funny.json';
-import { Haptics, ns } from '$utils';
-import { useBottomTabBarHeight } from '$hooks/useBottomTabBarHeight';
 import { useTabPress } from '@tonkeeper/router';
 
 interface TabsPagerViewProps {
   initialPage?: number;
   children: React.ReactNode;
+  onActiveIndexChange?: (activeIndex: number) => void;
 }
 
 const AnimatedPagerView = Animated.createAnimatedComponent(PagerView);
@@ -43,16 +31,19 @@ function usePageScrollHandler(handlers: any, dependencies?: any) {
 }
 
 export const TabsPagerView: React.FC<TabsPagerViewProps> = (props) => {
-  const { setPageFN, pageOffset, setNativeActiveIndex, scrollY } = useTabCtx();
+  const { setPageFN, pageOffset, setNativeActiveIndex, activeIndex, scrollY } =
+    useTabCtx();
   const refPagerView = useRef<PagerView>(null);
-  const tabBarHeight = useBottomTabBarHeight();
-  const numOfTabs = useMemo(() => React.Children.count(props.children), [props.children]);
 
   useTabPress(() => {
     if (scrollY.value === 0 && pageOffset.value !== 0) {
       refPagerView.current?.setPage(0);
     }
   });
+
+  useEffect(() => {
+    props.onActiveIndexChange?.(activeIndex);
+  }, [activeIndex, props]);
 
   React.useEffect(() => {
     const setPage = (index: number) => {
@@ -72,43 +63,8 @@ export const TabsPagerView: React.FC<TabsPagerViewProps> = (props) => {
     },
   });
 
-  useAnimatedReaction(
-    () => pageOffset.value,
-    () => {
-      if (pageOffset.value > 1.8 && pageOffset.value < 2) {
-        runOnJS(Haptics.notificationSuccess)();
-      }
-    },
-  );
-
-  const funnyStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateX:
-            pageOffset.value > numOfTabs
-              ? 50
-              : interpolate(
-                  pageOffset.value,
-                  [numOfTabs - 0.2, numOfTabs - 0.1],
-                  [50, -80],
-                  Extrapolate.CLAMP,
-                ),
-        },
-      ],
-    };
-  });
-
   return (
     <View style={styles.pagerView}>
-      <Animated.View
-        style={[styles.funny, funnyStyle, { bottom: ns(16) + tabBarHeight }]}
-      >
-        <FastImage
-          source={{ uri: funny.image }}
-          style={{ width: ns(132), height: ns(132) }}
-        />
-      </Animated.View>
       <AnimatedPagerView
         onPageScroll={pageScrollHandler}
         ref={refPagerView}
