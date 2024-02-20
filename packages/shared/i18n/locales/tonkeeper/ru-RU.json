@@ -625,7 +625,6 @@
   "settings_legal_documents" : "Юридические документы",
   "language": {
     "title" : "Язык",
-    "current" : "Русский",
     "language_alert" : {
       "cancel" : "Отмена",
       "open" : "Настройки",

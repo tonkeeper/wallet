@@ -41,7 +41,7 @@ import { useFlags } from '$utils/flags';
 import { SearchEngine, useBrowserStore, useNotificationsStore } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
 import { Steezy } from '$styles';
-import { t } from '@tonkeeper/shared/i18n';
+import { i18n, t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 import { config } from '$config';
@@ -51,6 +51,7 @@ import { tk } from '$wallet';
 import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
 import { WalletListItem } from '@tonkeeper/shared/components';
 import { useSubscriptions } from '@tonkeeper/shared/hooks/useSubscriptions';
+import { nativeLocaleNames } from '@tonkeeper/shared/i18n/translations';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -405,7 +406,7 @@ export const Settings: FC = () => {
               onPress={handleSwitchLanguage}
               value={
                 <Text variant="label1" color="accentPrimary">
-                  {t('language.current')}
+                  {nativeLocaleNames[i18n.locale]}
                 </Text>
               }
               title={t('language.title')}

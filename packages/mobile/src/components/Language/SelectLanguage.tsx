@@ -8,7 +8,7 @@ import {
   SupportedLocales,
 } from '@tonkeeper/shared/i18n/translations';
 import { Icon } from '$uikit';
-import { t } from '@tonkeeper/shared/i18n';
+import { i18n, t } from '@tonkeeper/shared/i18n';
 
 export const SelectLanguage = memo(() => {
   const setSelectedLanguage = useSelectedLanguageStore(

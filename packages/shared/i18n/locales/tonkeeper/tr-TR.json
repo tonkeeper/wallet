@@ -539,9 +539,6 @@
   "settings_delete_alert_title" : "Hesabınızı silmek istediğinize emin misiniz?",
   "settings_jettons_list" : "Token'lar",
   "settings_legal_documents" : "Hukuki açıklama",
-  "language": {
-    "current": "Türkçe"
-  },
   "settings_network_alert_title" : "Ağ seçin",
   "settings_news" : "Tonkeeper Haberleri",
   "settings_notifications" : "Bildirimler",
