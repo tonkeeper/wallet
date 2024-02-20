@@ -380,7 +380,6 @@ export class TonWallet {
           bounce: true,
           value: jettonTransferAmount,
           body: ContractService.createJettonTransferBody({
-            queryId: Date.now(),
             jettonAmount,
             receiverAddress: recipient.address,
             excessesAddress: excessesAccount ?? tk.wallet.address.ton.raw,

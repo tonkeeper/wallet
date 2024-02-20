@@ -475,7 +475,6 @@ export function useDeeplinkingResolvers() {
               amount: AmountFormatter.toNano(1),
               address: query.nft,
               payload: ContractService.createNftTransferBody({
-                queryId: Date.now(),
                 newOwnerAddress: address,
                 excessesAddress: excessesAccount || tk.wallet.address.ton.raw,
               })
