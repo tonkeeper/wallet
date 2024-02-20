@@ -1052,6 +1052,7 @@
     "send_btn" : "Отправить",
     "swap_btn" : "Обменять",
     "tonkens_tab_lable" : "Токены",
+    "inscriptions_tab_label": "Инскрипции",
     "updated_at" : "Обновлён %{value}"
   },
   "wallet_chat" : "Чат",

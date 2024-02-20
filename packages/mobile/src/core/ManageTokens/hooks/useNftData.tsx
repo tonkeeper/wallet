@@ -13,6 +13,7 @@ import {
   TokenApprovalType,
   TokenApprovalStatus,
 } from '$wallet/managers/TokenApprovalManager';
+import { Address } from '@tonkeeper/core';
 
 const baseNftCellData = (nft: NFTModel) => ({
   type: ContentType.Cell,
@@ -33,7 +34,7 @@ const baseNftCellData = (nft: NFTModel) => ({
       verification: nft.isApproved
         ? JettonVerification.WHITELIST
         : JettonVerification.NONE,
-      tokenAddress: nft.collection?.address || nft.address,
+      tokenIdentifier: Address.parse(nft.collection?.address || nft.address).toRaw(),
       image: nft.content.image.baseUrl,
       name: nft.collection?.name,
     }),
@@ -84,7 +85,7 @@ export function useNftData() {
                     type="remove"
                     onPress={() =>
                       tk.wallet.tokenApproval.updateTokenStatus(
-                        nft.collection?.address || nft.address,
+                        Address.parse(nft.collection?.address || nft.address).toRaw(),
                         TokenApprovalStatus.Declined,
                         nft.collection?.address
                           ? TokenApprovalType.Collection
@@ -135,7 +136,7 @@ export function useNftData() {
                     type="add"
                     onPress={() =>
                       tk.wallet.tokenApproval.updateTokenStatus(
-                        nft.collection?.address || nft.address,
+                        Address.parse(nft.collection?.address || nft.address).toRaw(),
                         TokenApprovalStatus.Approved,
                         nft.collection?.address
                           ? TokenApprovalType.Collection

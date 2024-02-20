@@ -5,7 +5,11 @@ import Animated, {
   Extrapolate,
   interpolate,
   interpolateColor,
+  scrollTo,
+  useAnimatedReaction,
+  useAnimatedRef,
   useAnimatedStyle,
+  useDerivedValue,
   withTiming,
 } from 'react-native-reanimated';
 import { useTheme } from '$hooks/useTheme';
@@ -19,7 +23,7 @@ type TabItem = {
   withDot?: boolean;
 };
 
-interface TabsBarProps {
+interface ScrollableTabsBarProps {
   items: TabItem[];
   onChange: (item: TabItem, index: number) => void;
   itemStyle?: StyleProp<ViewStyle>;
@@ -34,14 +38,35 @@ interface TabsBarProps {
 
 const INDICATOR_WIDTH = ns(24);
 
-export const TabsBarComponent = (props: TabsBarProps) => {
+export const ScrollableTabsBarComponent = (props: ScrollableTabsBarProps) => {
   const { value, indent = true } = props;
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const { setActiveIndex, pageOffset, scrollY, headerHeight, isScrollInMomentum } =
     useTabCtx();
   const theme = useTheme();
 
   const [tabsLayouts, setTabsBarLayouts] = useState<{ [key: string]: LayoutRectangle }>(
     {},
+  );
+
+  const roundedPageOffset = useDerivedValue(() => Math.round(pageOffset?.value));
+
+  useAnimatedReaction(
+    () => roundedPageOffset?.value,
+    (cur, prev) => {
+      if (cur !== prev) {
+        const layouts = Object.values(tabsLayouts);
+        if (!layouts.length) {
+          return;
+        }
+        const nearestLayoutIndex = Math.min(
+          layouts.length - 1,
+          Math.max(0, Math.round(cur)),
+        );
+        scrollTo(scrollRef, layouts[nearestLayoutIndex].x, 0, true);
+      }
+    },
+    [tabsLayouts],
   );
 
   const handleLayout = useCallback((index: number, event: LayoutChangeEvent) => {
@@ -112,7 +137,13 @@ export const TabsBarComponent = (props: TabsBarProps) => {
         props.containerStyle,
       ]}
     >
-      <Animated.View style={[styles.container.static]} pointerEvents="box-none">
+      <Animated.ScrollView
+        ref={scrollRef}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={[styles.container.static]}
+        pointerEvents="box-none"
+      >
         {props.items.map((item, index) => (
           <TouchableOpacity
             onLayout={(event) => handleLayout(index, event)}
@@ -146,7 +177,7 @@ export const TabsBarComponent = (props: TabsBarProps) => {
             props.indicatorStyle,
           ]}
         />
-      </Animated.View>
+      </Animated.ScrollView>
     </Animated.View>
   );
 };
@@ -183,11 +214,10 @@ const WrapText = ({
   );
 };
 
-export const TabsBar = memo(TabsBarComponent);
+export const ScrollableTabsBar = memo(ScrollableTabsBarComponent);
 
 const styles = Steezy.create(({ colors }) => ({
   container: {
-    flexDirection: 'row',
     zIndex: 3,
   },
   wrap: {

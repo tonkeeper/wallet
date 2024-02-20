@@ -2,7 +2,7 @@ import { Modal } from '@tonkeeper/uikit';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import React, { memo, useCallback, useMemo } from 'react';
 import { JettonVerification } from '$store/models';
-import { Button, Icon, Spacer, View, List } from '$uikit';
+import { Button, Icon, List, Spacer, View } from '$uikit';
 import { Steezy } from '$styles';
 import { t } from '@tonkeeper/shared/i18n';
 import { triggerImpactLight } from '$utils';
@@ -12,20 +12,20 @@ import Clipboard from '@react-native-community/clipboard';
 
 import { TranslateOptions } from 'i18n-js';
 import { push } from '$navigation/imperative';
-import { Address } from '@tonkeeper/core';
 import { useTokenApproval } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import {
-  TokenApprovalType,
   TokenApprovalStatus,
+  TokenApprovalType,
 } from '$wallet/managers/TokenApprovalManager';
+import { Address } from '@tonkeeper/core';
 
 export enum ImageType {
   ROUND = 'round',
   SQUARE = 'square',
 }
 export interface ApproveTokenModalParams {
-  tokenAddress: string;
+  tokenIdentifier: string;
   type: TokenApprovalType;
   verification?: JettonVerification;
   imageType?: ImageType;
@@ -35,27 +35,26 @@ export interface ApproveTokenModalParams {
 export const ApproveToken = memo((props: ApproveTokenModalParams) => {
   const nav = useNavigation();
   const currentStatus = useTokenApproval((state) => {
-    const rawAddress = Address.parse(props.tokenAddress).toRaw();
-    return state.tokens[rawAddress];
+    return state.tokens[props.tokenIdentifier];
   });
 
   const handleUpdateStatus = useCallback(
     (approvalStatus: TokenApprovalStatus) => () => {
       tk.wallet.tokenApproval.updateTokenStatus(
-        props.tokenAddress,
+        props.tokenIdentifier,
         approvalStatus,
         props.type,
       );
       nav.goBack();
     },
-    [nav, props.tokenAddress, props.type],
+    [nav, props.tokenIdentifier, props.type],
   );
 
   const handleCopyAddress = useCallback(() => {
-    Clipboard.setString(props.tokenAddress);
+    Clipboard.setString(props.tokenIdentifier);
     triggerImpactLight();
     Toast.show(t('approval.token_copied'));
-  }, [props.tokenAddress]);
+  }, [props.tokenIdentifier]);
 
   const modalState = useMemo(() => {
     if (
@@ -73,10 +72,13 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
   }, [currentStatus, props.verification]);
 
   const translationPrefix = useMemo(() => {
-    if (props.type === TokenApprovalType.Token) {
-      return 'token';
-    } else {
-      return 'collection';
+    switch (props.type) {
+      case TokenApprovalType.Token:
+        return 'token';
+      case TokenApprovalType.Collection:
+        return 'collection';
+      case TokenApprovalType.Inscription:
+        return 'token';
     }
   }, [props.type]);
 
@@ -134,7 +136,11 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
             <List.Item
               onPress={handleCopyAddress}
               title={translateWithPrefix('id')}
-              subtitle={Address.parse(props.tokenAddress).toShort(6)}
+              subtitle={
+                props.type === TokenApprovalType.Inscription
+                  ? props.tokenIdentifier
+                  : Address.parse(props.tokenIdentifier).toShort(6)
+              }
               value={
                 <View style={styles.copyIconContainer}>
                   <Icon name={'ic-copy-16'} />
