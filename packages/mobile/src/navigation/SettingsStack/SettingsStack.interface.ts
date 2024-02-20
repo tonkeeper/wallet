@@ -10,4 +10,5 @@ export type SettingsStackParamList = {
   [SettingsStackRouteNames.Notifications]: {};
   [SettingsStackRouteNames.ChooseCurrency]: {};
   [SettingsStackRouteNames.RefillBattery]: {};
+  [SettingsStackRouteNames.Language]: {};
 };

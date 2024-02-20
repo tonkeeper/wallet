@@ -9,6 +9,7 @@ import { Notifications } from '$core/Notifications/Notifications';
 import { ChooseCurrencyScreen } from '$core/ChooseCurrencyScreen';
 import { DevConfigScreen } from '$core/DevMenu/DevConfigScreen';
 import { RefillBattery } from '$core/RefillBattery/RefillBattery';
+import { SelectLanguage } from '../../components/Language/SelectLanguage';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
@@ -32,6 +33,7 @@ export const SettingsStack: FC = () => {
       <Stack.Screen name="/dev/config" component={DevConfigScreen} />
       <Stack.Screen name={SettingsStackRouteNames.Logs} component={Logs} />
       <Stack.Screen name={SettingsStackRouteNames.Security} component={Security} />
+      <Stack.Screen name={SettingsStackRouteNames.Language} component={SelectLanguage} />
       <Stack.Screen
         name={SettingsStackRouteNames.LegalDocuments}
         component={LegalDocuments}

@@ -73,6 +73,7 @@ export enum SettingsStackRouteNames {
   Notifications = 'Notifications',
   ChooseCurrency = 'ChooseCurrency',
   RefillBattery = 'RefillBattery',
+  Language = 'Language',
 }
 
 export enum ActivityStackRouteNames {

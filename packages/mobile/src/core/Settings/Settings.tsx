@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useMemo, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import Rate, { AndroidMarket } from 'react-native-rate';
-import { Alert, Linking, View } from 'react-native';
+import { Alert, Linking, Platform, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Animated from 'react-native-reanimated';
@@ -23,6 +23,7 @@ import {
   openNotifications,
   openRefillBattery,
   openSecurity,
+  openSelectLanguage,
   openSubscriptions,
 } from '$navigation';
 import { walletActions } from '$store/wallet';
@@ -150,6 +151,10 @@ export const Settings: FC = () => {
   const searchEngineVariants = Object.values(SearchEngine);
 
   const handleSwitchLanguage = useCallback(() => {
+    if (Platform.OS === 'android' && Platform.Version < 33) {
+      return openSelectLanguage();
+    }
+
     Alert.alert(t('language.language_alert.title'), undefined, [
       {
         text: t('language.language_alert.cancel'),
@@ -400,10 +405,10 @@ export const Settings: FC = () => {
               onPress={handleSwitchLanguage}
               value={
                 <Text variant="label1" color="accentPrimary">
-                  {t('language.list_item.value')}
+                  {t('language.current')}
                 </Text>
               }
-              title={t('language.list_item.title')}
+              title={t('language.title')}
             />
             {wallet && !wallet.isWatchOnly && flags.address_style_settings ? (
               <List.Item
