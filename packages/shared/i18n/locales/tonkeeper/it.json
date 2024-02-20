@@ -682,8 +682,7 @@
     "screen_title" : "Wallet",
     "sell_btn" : "Vendi",
     "send_btn" : "Invia",
-    "tonkens_tab_lable" : "Token",
-    "inscriptions_tab_label": "Inscriptions"
+    "tonkens_tab_lable" : "Token"
   },
   "wallet_chat" : "Chat",
   "wallet_community" : "Community",

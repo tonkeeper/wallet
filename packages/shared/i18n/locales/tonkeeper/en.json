@@ -1016,7 +1016,8 @@
     "send_btn": "Send",
     "swap_btn": "Swap",
     "tonkens_tab_lable": "Tokens",
-    "updated_at": "Updated on %{value}"
+    "updated_at": "Updated on %{value}",
+    "inscriptions_tab_label": "Inscriptions"
   },
   "wallet_chat": "Chat",
   "wallet_community": "Community",

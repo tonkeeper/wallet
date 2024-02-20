@@ -1,6 +1,7 @@
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
-import { Screen, Spacer, SText, View, List, Button } from '$uikit';
+import { Screen, Spacer, SText, View, Button } from '$uikit';
+import { List } from '@tonkeeper/uikit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Tabs } from '../../tabs/Wallet/components/Tabs';
 import { Steezy } from '$styles';
@@ -111,6 +112,7 @@ export const ManageTokens: FC = () => {
     (data) => {
       return (
         <AnimatedFlashList
+          showsVerticalScrollIndicator={false}
           estimatedItemSize={76}
           contentContainerStyle={StyleSheet.flatten([
             styles.flashList.static,
