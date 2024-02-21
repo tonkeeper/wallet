@@ -1,7 +1,7 @@
 import { useFiatValue } from '$hooks/useFiatValue';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { Steezy } from '$styles';
-import { Icon, Spacer, Tag, Text, View } from '$uikit';
+import { Spacer, Tag, Text, View } from '$uikit';
 import { stakingFormatter } from '$utils/formatter';
 import React, { FC, ReactNode, memo, useCallback } from 'react';
 import { ImageRequireSource, TouchableHighlight } from 'react-native';
@@ -10,7 +10,7 @@ import * as S from './StakingListCell.style';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { JettonBalanceModel } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
-import { ListSeparator, Pressable, isAndroid, useTheme } from '@tonkeeper/uikit';
+import { Icon, ListSeparator, Pressable, isAndroid, useTheme } from '@tonkeeper/uikit';
 import { useBackgroundHighlighted } from '@tonkeeper/shared/hooks/useBackgroundHighlighted';
 import Animated from 'react-native-reanimated';
 
@@ -46,6 +46,7 @@ const StakingListCellComponent: FC<Props> = (props) => {
     id,
     isWidget,
     isWidgetAccent,
+    isBuyTon,
     numberOfLines,
     highestApy,
     message,
@@ -96,8 +97,8 @@ const StakingListCellComponent: FC<Props> = (props) => {
                   <S.Icon source={iconSource} />
                 ) : (
                   <Icon
-                    name="ic-staking-28"
-                    color={isWidget ? 'foregroundPrimary' : 'iconSecondary'}
+                    name={isBuyTon ? 'ic-creditcard-28' : 'ic-staking-28'}
+                    color={isWidget ? 'iconPrimary' : 'iconSecondary'}
                   />
                 )}
               </View>

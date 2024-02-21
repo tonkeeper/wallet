@@ -73,6 +73,7 @@ const StakingWidgetComponent: FC<Props> = (props) => {
         {shouldShowBuyButton ? (
           <StakingListCell
             isWidget
+            isBuyTon
             id="buy_ton"
             name={t('buy_ton.title')}
             description={t('buy_ton.subtitle')}
