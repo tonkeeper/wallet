@@ -32,7 +32,7 @@ import { ListItemProps } from '$uikit/List/ListItem';
 import { config } from '$config';
 import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
 import { CardsWidget } from '$components';
-import { useInscriptionBalances } from '$hooks/useInscriptionBalances';
+import { InscriptionBalance } from '@tonkeeper/core/src/TonAPI';
 
 enum ContentType {
   Token,
@@ -176,6 +176,7 @@ interface BalancesListProps {
   balance: any; // TODO:
   tonPrice: TokenPrice;
   nfts?: any; // TODO:
+  inscriptions: InscriptionBalance[];
   tronBalances?: TronBalance[];
   handleRefresh: () => void;
   isRefreshing: boolean;
@@ -192,6 +193,7 @@ export const WalletContentList = memo<BalancesListProps>(
     nfts,
     handleRefresh,
     isRefreshing,
+    inscriptions,
     isFocused,
     ListHeaderComponent,
   }) => {
@@ -199,7 +201,6 @@ export const WalletContentList = memo<BalancesListProps>(
 
     const fiatCurrency = useWalletCurrency();
     const shouldShowTonDiff = fiatCurrency !== WalletCurrency.TON;
-    const { enabled: inscriptions } = useInscriptionBalances();
 
     const wallet = useWallet();
     const isWatchOnly = wallet && wallet.isWatchOnly;
