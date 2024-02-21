@@ -1120,5 +1120,15 @@
     "subtitle": "Unlock wallet to continue.",
     "with_passcode": "Enter Passcode",
     "with_biometry": "Continue with %{type}"
+  },
+  "restake_banner": {
+    "title": "Earn more TON with %apy in Tonstakers liquid staking",
+    "unstake_action_all": "Unstake %{amount}",
+    "unstake_action_manual": "Enter manually",
+    "unstake_step": "Unstake your TON from current staking.",
+    "wait_step": "Wait until your TON become available and collect them.",
+    "wait_step_pending": "Your TON will be available in %{duration}. After this time you can сollect them.",
+    "stake_into_tonstakers_action": "Stake into Tonstakers",
+    "stake_into_step": "Stake collected TON into Tonstakers."
   }
 }

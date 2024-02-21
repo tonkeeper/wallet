@@ -23,6 +23,7 @@ import { Ton } from '$libs/Ton';
 import { useBalancesState, useJettons, useStakingState } from '@tonkeeper/shared/hooks';
 import { StakingManager, StakingProvider } from '$wallet/managers/StakingManager';
 import { config } from '$config';
+import { RestakeBanner } from '../../components/RestakeBanner/RestakeBanner';
 
 interface Props {}
 
@@ -35,6 +36,10 @@ export const Staking: FC<Props> = () => {
   const pools = useStakingState((s) => s.pools);
   const stakingInfo = useStakingState((s) => s.stakingInfo);
   const highestApyPool = useStakingState((s) => s.highestApyPool);
+  const showRestakeBanner = useStakingState((s) => s.showRestakeBanner);
+  const stakingAddressToMigrateFrom = useStakingState(
+    (s) => s.stakingAddressToMigrateFrom,
+  );
 
   const [flashShownCount] = useFlashCount(FlashCountKeys.Staking);
 
@@ -216,6 +221,12 @@ export const Staking: FC<Props> = () => {
           showsVerticalScrollIndicator={false}
         >
           <S.Content bottomInset={bottomInset}>
+            {showRestakeBanner && stakingAddressToMigrateFrom && (
+              <RestakeBanner
+                migrateFrom={stakingAddressToMigrateFrom}
+                poolsList={poolsList}
+              />
+            )}
             {!hasActivePools ? (
               <S.LargeTitleContainer>
                 <Text variant="h2">{t('staking.title_large')}</Text>

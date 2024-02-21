@@ -57,7 +57,7 @@ const getTitle = (transactionType: StakingTransactionType) => {
 export const StakingSend: FC<Props> = (props) => {
   const {
     route: {
-      params: { poolAddress, transactionType },
+      params: { poolAddress, transactionType, amount: initialAmount },
     },
   } = props;
 
@@ -127,7 +127,7 @@ export const StakingSend: FC<Props> = (props) => {
       ? formatter.format(isWhalesPool ? readyWithdraw : poolInfo.balance.amount, {
           decimals,
         })
-      : '0',
+      : initialAmount ?? '0',
     all: false,
   });
 
@@ -367,7 +367,9 @@ export const StakingSend: FC<Props> = (props) => {
         backDisabled={isSending || isPreparing || isWithdrawalConfrim}
         onChangeStep={handleChangeStep}
         initialStepId={
-          isWithdrawalConfrim ? StakingSendSteps.CONFIRM : StakingSendSteps.AMOUNT
+          isWithdrawalConfrim || initialAmount
+            ? StakingSendSteps.CONFIRM
+            : StakingSendSteps.AMOUNT
         }
         useBackHandler
       >

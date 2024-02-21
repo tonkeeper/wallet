@@ -14,6 +14,7 @@ import { TonConnect } from '$tonconnect';
 import { openDAppBrowser } from '$navigation';
 import { Alert, Animated } from 'react-native';
 import { useWallet } from '@tonkeeper/shared/hooks';
+import { useDeeplinking } from '$libs/deeplinking';
 
 interface NotificationProps {
   notification: INotification;
@@ -134,10 +135,15 @@ export const Notification: React.FC<NotificationProps> = (props) => {
     },
     [app, handleDelete, handleOpenSettings],
   );
+  const deeplinking = useDeeplinking();
 
   const handleOpenInWebView = useCallback(() => {
-    if (!props.notification.link) {
+    if (!props.notification.link && !props.notification.deeplink) {
       return;
+    }
+
+    if (props.notification.deeplink) {
+      return deeplinking.resolve(props.notification.deeplink);
     }
 
     if (
@@ -186,7 +192,7 @@ export const Notification: React.FC<NotificationProps> = (props) => {
       >
         <List style={styles.listStyle.static}>
           <List.Item
-            disabled={!props.notification.link}
+            disabled={!props.notification.link && !props.notification.deeplink}
             onPress={handleOpenInWebView}
             pictureStyle={styles.imageStyle.static}
             leftContentStyle={styles.leftContentStyle.static}

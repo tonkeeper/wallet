@@ -5,6 +5,7 @@ export interface INotification {
   icon_url?: string;
   name?: string;
   link?: string;
+  deeplink?: string;
 }
 
 export interface INotificationsStore {

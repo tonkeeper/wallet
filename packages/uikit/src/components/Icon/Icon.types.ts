@@ -115,6 +115,7 @@ export type IconNames =
   | 'ic-wallet-28'
   | 'ic-warning-28'
   | 'ic-xmark-28'
+  | 'ic-xmark-outline-28'
   | 'ic-checkmark-circle-32'
   | 'ic-exclamationmark-circle-32'
   | 'ic-delete-36'
@@ -256,6 +257,7 @@ export const AllIcons = [
   'ic-wallet-28',
   'ic-warning-28',
   'ic-xmark-28',
+  'ic-xmark-outline-28',
   'ic-checkmark-circle-32',
   'ic-exclamationmark-circle-32',
   'ic-delete-36',
@@ -398,6 +400,7 @@ export const IconSizes = {
   'ic-wallet-28': 28,
   'ic-warning-28': 28,
   'ic-xmark-28': 28,
+  'ic-xmark-outline-28': 28,
   'ic-checkmark-circle-32': 32,
   'ic-exclamationmark-circle-32': 32,
   'ic-delete-36': 36,

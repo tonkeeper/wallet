@@ -52,6 +52,20 @@ export const DevMenu: FC = () => {
     });
   }, [addNotification]);
 
+  const handleShowRestakeBanner = useCallback(() => {
+    addNotification({
+      name: 'Tonkeeper',
+      icon_url: 'https://tonkeeper.com/assets/apps/tonkeeper.png',
+      message: 'Withdraw from Queue #2 please 🥺',
+      received_at: Date.now(),
+      deeplink: 'ton://staking',
+    });
+    tk.wallet.staking.toggleRestakeBanner(
+      true,
+      '0:efbc198fdf051c8e85cf6358c77d3e3e7e06f6f788a65581f910774b9c029e7a',
+    );
+  }, [addNotification]);
+
   const {
     devFeatures,
     actions: { toggleFeature },
@@ -173,6 +187,9 @@ export const DevMenu: FC = () => {
         <List>
           <List.Item onPress={handleCopyFCMToken} title="Copy FCM token" />
           <List.Item onPress={handlePushNotification} title="Push notification" />
+        </List>
+        <List>
+          <List.Item onPress={handleShowRestakeBanner} title="Show restake banner" />
         </List>
       </Screen.ScrollView>
     </Screen>
