@@ -11,7 +11,6 @@ import {
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { useBiometrySettings, useWallet, useWalletStatus } from '@tonkeeper/shared/hooks';
-import { MainStackRouteNames } from '$navigation';
 import { useNavigation } from '@tonkeeper/router';
 import { useNotificationsSwitch } from '$hooks/useNotificationsSwitch';
 import { LayoutAnimation, Linking } from 'react-native';
@@ -103,7 +102,7 @@ export const FinishSetupList = memo(() => {
         iconName: 'ic-key-28',
         title: t('finish_setup.backup'),
         switch: null,
-        onPress: () => nav.navigate(MainStackRouteNames.Backup),
+        onPress: () => nav.navigate('/backup-warning'),
       });
     }
 
