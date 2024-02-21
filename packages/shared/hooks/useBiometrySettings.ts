@@ -16,14 +16,14 @@ export const useBiometrySettings = () => {
   const prevAppState = useRef(AppState.currentState);
   const isProcessing = useRef(false);
 
-  const [isEnrolled, setIsEnrolled] = useState(tk.biometry.isEnrolled);
+  const [isAvailable, setIsAvailable] = useState(tk.biometry.isAvailable);
   const [isEnabledSwitch, setIsEnabledSwitch] = useState(biometryEnabled);
 
   useEffect(() => {
     const listener = AppState.addEventListener('change', (nextAppState) => {
       if (prevAppState.current === 'background' && nextAppState === 'active') {
         tk.biometry.detectTypes().then((biometry) => {
-          setIsEnrolled(biometry.isEnrolled);
+          setIsAvailable(biometry.isAvailable);
         });
       }
       prevAppState.current = nextAppState;
@@ -69,7 +69,7 @@ export const useBiometrySettings = () => {
   }, [biometryEnabled, unlockVault]);
 
   return {
-    isEnrolled,
+    isAvailable,
     isEnabled: biometryEnabled,
     isEnabledSwitch,
     type: tk.biometry.type,

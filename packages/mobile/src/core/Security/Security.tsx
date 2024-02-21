@@ -7,13 +7,13 @@ import * as S from './Security.style';
 import { NavBar, ScrollHandler, Text } from '$uikit';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { MainStackRouteNames, openChangePin } from '$navigation';
-import { getBiometryName, ns, triggerImpactLight } from '$utils';
+import { getBiometryName, ns } from '$utils';
 import { Toast } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
 import { useBiometrySettings, useWallet } from '@tonkeeper/shared/hooks';
 import { useNavigation } from '@tonkeeper/router';
 import { vault } from '$wallet';
-import { Switch } from '@tonkeeper/uikit';
+import { Haptics, Switch } from '@tonkeeper/uikit';
 
 export const Security: FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
@@ -34,7 +34,7 @@ export const Security: FC = () => {
   const handleBiometry = useCallback(
     (triggerHaptic: boolean) => () => {
       if (triggerHaptic) {
-        triggerImpactLight();
+        Haptics.impactLight();
       }
 
       biometry.toggleBiometry();
@@ -58,7 +58,7 @@ export const Security: FC = () => {
   }, [biometry.isEnabled, nav]);
 
   function renderBiometryToggler() {
-    if (!biometry.isEnrolled) {
+    if (!biometry.isAvailable) {
       return null;
     }
 

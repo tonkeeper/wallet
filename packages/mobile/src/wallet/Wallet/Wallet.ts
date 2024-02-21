@@ -42,9 +42,13 @@ export class Wallet extends WalletContent {
     super(config, tonAllAddresses, storage, tonPrice);
 
     this.status.persist({
-      partialize: ({ updatedAt }) => ({ updatedAt }),
+      partialize: ({ updatedAt, lastBackupAt, setupDismissed }) => ({
+        updatedAt,
+        lastBackupAt,
+        setupDismissed,
+      }),
       storage: this.storage,
-      key: `${this.persistPath}/status`,
+      key: `${this.identifier}/status`,
     });
 
     this.listenTransactions();

@@ -6,11 +6,10 @@ import {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import * as LocalAuthentication from 'expo-local-authentication';
 
 import { InlineKeyboardProps, KeyProps } from './InlineKeyboard.interface';
 import * as S from './InlineKeyboard.style';
-import { detectBiometryType, triggerSelection } from '$utils';
+import { triggerSelection } from '$utils';
 import { Icon } from '../Icon/Icon';
 import { tk } from '$wallet';
 import { BiometryType } from '$wallet/Biometry';

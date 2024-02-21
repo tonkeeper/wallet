@@ -1,4 +1,13 @@
-import { Button, Icon, IconNames, List, Steezy, Switch, View } from '@tonkeeper/uikit';
+import {
+  Button,
+  Haptics,
+  Icon,
+  IconNames,
+  List,
+  Steezy,
+  Switch,
+  View,
+} from '@tonkeeper/uikit';
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { useBiometrySettings, useWallet, useWalletStatus } from '@tonkeeper/shared/hooks';
@@ -6,7 +15,7 @@ import { MainStackRouteNames } from '$navigation';
 import { useNavigation } from '@tonkeeper/router';
 import { useNotificationsSwitch } from '$hooks/useNotificationsSwitch';
 import { LayoutAnimation, Linking } from 'react-native';
-import { getBiometryName } from '$utils';
+import { getBiometryIcon, getBiometryName } from '$utils';
 
 enum SetupItemType {
   Backup = 'Backup',
@@ -36,7 +45,7 @@ export const FinishSetupList = memo(() => {
   const initialItems = useMemo(() => {
     const list: SetupItemType[] = [];
 
-    if (biometry.isEnrolled && !biometry.isEnabled) {
+    if (biometry.isAvailable && !biometry.isEnabled) {
       list.push(SetupItemType.Biometry);
     }
 
@@ -46,7 +55,7 @@ export const FinishSetupList = memo(() => {
 
     return list;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [identifier]);
+  }, [biometry.isAvailable, identifier]);
 
   const handleDone = useCallback(() => {
     wallet.dismissSetup();
@@ -79,7 +88,7 @@ export const FinishSetupList = memo(() => {
     if (initialItems.includes(SetupItemType.Biometry)) {
       list.push({
         type: SetupItemType.Biometry,
-        iconName: 'ic-full-battery-28',
+        iconName: getBiometryIcon(biometry.type),
         title: t('finish_setup.use_biometry', {
           name: getBiometryName(biometry.type, { accusative: true }),
         }),
@@ -103,7 +112,7 @@ export const FinishSetupList = memo(() => {
 
   useEffect(() => {
     const notificationsEnabled = !notifications.isAvailable || notifications.isSubscribed;
-    const biometryEnabled = !biometry.isEnrolled || biometry.isEnabled;
+    const biometryEnabled = !biometry.isAvailable || biometry.isEnabled;
     if (
       !setupDismissed &&
       biometryEnabled &&
@@ -114,7 +123,7 @@ export const FinishSetupList = memo(() => {
     }
   }, [
     biometry.isEnabled,
-    biometry.isEnrolled,
+    biometry.isAvailable,
     handleDone,
     lastBackupAt,
     notifications.isAvailable,
@@ -149,9 +158,14 @@ export const FinishSetupList = memo(() => {
           <List.Item
             key={item.type}
             chevron={item.switch === null}
-            onPress={item.onPress}
+            onPress={() => {
+              if (item.switch !== null) {
+                Haptics.impactLight();
+              }
+              item.onPress();
+            }}
             title={item.title}
-            titleNumberOfLines={2}
+            titleNumberOfLines={3}
             titleTextType="body2"
             leftContent={
               <View style={styles.iconContainer}>

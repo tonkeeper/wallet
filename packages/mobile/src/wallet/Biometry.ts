@@ -9,12 +9,16 @@ export enum BiometryType {
 
 export class Biometry {
   public type = BiometryType.None;
-  public isEnrolled = false;
+  public isAvailable = false;
 
   public async detectTypes() {
     try {
-      const authTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
-      this.isEnrolled = await LocalAuthentication.isEnrolledAsync();
+      const [authTypes, isEnrolled] = await Promise.all([
+        LocalAuthentication.supportedAuthenticationTypesAsync(),
+        LocalAuthentication.isEnrolledAsync(),
+      ]);
+
+      this.isAvailable = isEnrolled;
 
       const hasFingerprint = authTypes.includes(
         LocalAuthentication.AuthenticationType.FINGERPRINT,

@@ -163,7 +163,7 @@ export const AccessConfirmation: FC = () => {
   }, [dispatch, isUnlock, triggerError, wallet]);
 
   useEffect(() => {
-    if (params.withoutBiometryOnOpen || !biometry.isEnabled || !biometry.isEnrolled) {
+    if (params.withoutBiometryOnOpen || !biometry.isEnabled || !biometry.isAvailable) {
       return;
     }
 
@@ -233,7 +233,9 @@ export const AccessConfirmation: FC = () => {
           disabled={value.length === 4}
           onChange={handleKeyboard}
           value={value}
-          biometryEnabled={biometry.isEnrolled && biometry.isEnabled && !isBiometryFailed}
+          biometryEnabled={
+            biometry.isAvailable && biometry.isEnabled && !isBiometryFailed
+          }
           onBiometryPress={handleBiometry}
         />
       </S.Content>

@@ -29,7 +29,7 @@ export const ChangePin: FC = () => {
         if (biometry.isEnabled) {
           await biometry.disableBiometry();
 
-          if (biometry.isEnrolled) {
+          if (biometry.isAvailable) {
             nav.replace(MainStackRouteNames.ChangePinBiometry, { passcode });
           } else {
             nav.goBack();

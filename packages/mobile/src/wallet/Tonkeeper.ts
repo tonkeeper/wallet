@@ -16,11 +16,9 @@ import { createTonApiInstance } from './utils';
 import { Vault } from '@tonkeeper/core';
 import { v4 as uuidv4 } from 'uuid';
 import { Mnemonic } from '@tonkeeper/core/src/utils/mnemonic';
-import { DEFAULT_WALLET_STYLE_CONFIG } from './constants';
+import { DEFAULT_WALLET_STYLE_CONFIG, DEFAULT_WALLET_VERSION } from './constants';
 import { Buffer } from 'buffer';
 import nacl from 'tweetnacl';
-import * as LocalAuthentication from 'expo-local-authentication';
-import { detectBiometryType } from '$utils';
 import { AccountsStream } from './streaming';
 import { InteractionManager } from 'react-native';
 import { Biometry } from './Biometry';
@@ -33,10 +31,7 @@ type TonkeeperOptions = {
 export interface MultiWalletMigrationData {
   pubkey: string;
   keychainItemName: string;
-  biometry: {
-    enabled: boolean;
-    type: LocalAuthentication.AuthenticationType | null;
-  };
+  biometryEnabled: boolean;
   lockupConfig?: {
     wallet_type: WalletContractVersion.LockupV1;
     workchain: number;
@@ -153,24 +148,22 @@ export class Tonkeeper {
 
     try {
       const data = await this.storage.getItem(`${keychainName}_wallet`);
-      let biometry: MultiWalletMigrationData['biometry'] = { enabled: false, type: null };
-
-      try {
-        biometry.enabled = (await this.storage.getItem('biometry_enabled')) === 'yes';
-        const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
-        biometry.type = detectBiometryType(types);
-      } catch {}
 
       if (!data) {
         return null;
       }
+
+      let biometryEnabled = false;
+      try {
+        biometryEnabled = (await this.storage.getItem('biometry_enabled')) === 'yes';
+      } catch {}
 
       const json = JSON.parse(data);
 
       return {
         pubkey: json.vault.tonPubkey,
         keychainItemName: json.vault.name,
-        biometry,
+        biometryEnabled,
         lockupConfig:
           json.vault.version === WalletContractVersion.LockupV1
             ? {
@@ -200,7 +193,7 @@ export class Tonkeeper {
 
   public async createWallet(passcode: string) {
     const mnemonic = (await Mnemonic.generateMnemonic(24)).join(' ');
-    return await this.importWallet(mnemonic, passcode, [WalletContractVersion.v4R2], {
+    return await this.importWallet(mnemonic, passcode, [DEFAULT_WALLET_VERSION], {
       workchain: 0,
       network: WalletNetwork.mainnet,
     });
@@ -291,10 +284,10 @@ export class Tonkeeper {
       }),
     );
 
-    if (!wallets.some((wallet) => wallet.version === WalletContractVersion.v4R2)) {
+    if (!wallets.some((wallet) => wallet.version === DEFAULT_WALLET_VERSION)) {
       wallets.push({
-        version: WalletContractVersion.v4R2,
-        address: addresses.v4R2.raw,
+        version: DEFAULT_WALLET_VERSION,
+        address: addresses[DEFAULT_WALLET_VERSION].raw,
         balance: 0,
         tokens: false,
       });

@@ -86,7 +86,7 @@ export const MigrationPasscode: FC<{
   return (
     <S.Wrap>
       <NavBar
-        hideBackButton={!tk.migrationData?.biometry.enabled}
+        hideBackButton={!tk.migrationData?.biometryEnabled}
         rightContent={
           <Button
             size="navbar_small"

@@ -1,31 +1,8 @@
 import { BiometryType } from '$wallet/Biometry';
-import * as LocalAuthentication from 'expo-local-authentication';
 import { t } from '@tonkeeper/shared/i18n';
-import { platform } from './device';
+import { isIOS, platform } from './device';
 import { capitalizeFirstLetter } from './string';
-
-export function detectBiometryType(types: LocalAuthentication.AuthenticationType[]) {
-  let found = false;
-  for (let type of types) {
-    if (
-      [
-        LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION,
-        LocalAuthentication.AuthenticationType.FINGERPRINT,
-      ].indexOf(type) > -1
-    ) {
-      found = true;
-      break;
-    }
-  }
-
-  if (found) {
-    return types.indexOf(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION) > -1
-      ? LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION
-      : LocalAuthentication.AuthenticationType.FINGERPRINT;
-  } else {
-    return null;
-  }
-}
+import { IconNames } from '@tonkeeper/uikit';
 
 export const getBiometryName = (
   type: BiometryType,
@@ -68,4 +45,14 @@ export const getBiometryName = (
     text = t('biometry.default_instrumental');
   }
   return params?.capitalized ? capitalizeFirstLetter(text) : text;
+};
+
+export const getBiometryIcon = (type: BiometryType): IconNames => {
+  if (type === BiometryType.Fingerprint) {
+    return isIOS ? 'ic-fingerprint-28' : 'ic-fingerprint-android-28';
+  }
+  if (type === BiometryType.FaceRecognition) {
+    return isIOS ? 'ic-faceid-28' : 'ic-faceid-android-28';
+  }
+  return 'ic-fingerprint-android-28';
 };

@@ -71,6 +71,10 @@ export type IconNames =
   | 'ic-envelope-28'
   | 'ic-exclamationmark-circle-28'
   | 'ic-explore-28'
+  | 'ic-faceid-28'
+  | 'ic-faceid-android-28'
+  | 'ic-fingerprint-28'
+  | 'ic-fingerprint-android-28'
   | 'ic-fire-28'
   | 'ic-flash-28'
   | 'ic-full-battery-28'
@@ -212,6 +216,10 @@ export const AllIcons = [
   'ic-envelope-28',
   'ic-exclamationmark-circle-28',
   'ic-explore-28',
+  'ic-faceid-28',
+  'ic-faceid-android-28',
+  'ic-fingerprint-28',
+  'ic-fingerprint-android-28',
   'ic-fire-28',
   'ic-flash-28',
   'ic-full-battery-28',
@@ -354,6 +362,10 @@ export const IconSizes = {
   'ic-envelope-28': 28,
   'ic-exclamationmark-circle-28': 28,
   'ic-explore-28': 28,
+  'ic-faceid-28': 28,
+  'ic-faceid-android-28': 28,
+  'ic-fingerprint-28': 28,
+  'ic-fingerprint-android-28': 28,
   'ic-fire-28': 28,
   'ic-flash-28': 28,
   'ic-full-battery-28': 28,
