@@ -69,5 +69,7 @@ export const useNotificationsSwitch = () => {
 
   const openSettings = useCallback(() => Linking.openSettings(), []);
 
-  return { isSubscribed, isDenied, toggleNotifications, openSettings };
+  const isAvailable = wallet.notifications.isAvailable;
+
+  return { isAvailable, isSubscribed, isDenied, toggleNotifications, openSettings };
 };

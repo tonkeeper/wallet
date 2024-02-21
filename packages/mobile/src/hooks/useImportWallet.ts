@@ -42,8 +42,7 @@ export const useImportWallet = () => {
                     isTestnet,
                     onDone: async (identifiers) => {
                       tk.setMigrated();
-                      tk.saveLastBackupTimestampAll(identifiers);
-                      tk.wallet.dismissSetup();
+                      tk.saveLastBackupTimestampAll(identifiers, true);
 
                       dispatch(walletActions.clearGeneratedVault());
 

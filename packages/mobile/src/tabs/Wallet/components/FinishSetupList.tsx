@@ -1,13 +1,12 @@
 import { Button, Icon, IconNames, List, Steezy, Switch, View } from '@tonkeeper/uikit';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { useBiometrySettings, useWallet, useWalletStatus } from '@tonkeeper/shared/hooks';
 import { MainStackRouteNames } from '$navigation';
 import { useNavigation } from '@tonkeeper/router';
-import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
-import { getLastEnteredPasscode } from '$store/wallet/sagas';
 import { useNotificationsSwitch } from '$hooks/useNotificationsSwitch';
-import { LayoutAnimation } from 'react-native';
+import { LayoutAnimation, Linking } from 'react-native';
+import { getBiometryName } from '$utils';
 
 enum SetupItemType {
   Backup = 'Backup',
@@ -28,49 +27,26 @@ export const FinishSetupList = memo(() => {
   const wallet = useWallet();
   const nav = useNavigation();
 
-  const { biometryEnabled, enableBiometry, disableBiometry } = useBiometrySettings();
-  const unlockVault = useUnlockVault();
+  const biometry = useBiometrySettings();
 
   const notifications = useNotificationsSwitch();
 
   const identifier = wallet.identifier;
 
-  const [biometrySwitch, setBiometrySwtich] = useState(biometryEnabled);
-
   const initialItems = useMemo(() => {
     const list: SetupItemType[] = [];
 
-    if (!biometryEnabled) {
+    if (biometry.isEnrolled && !biometry.isEnabled) {
       list.push(SetupItemType.Biometry);
     }
 
-    if (!notifications.isSubscribed) {
+    if (notifications.isAvailable && !notifications.isSubscribed) {
       list.push(SetupItemType.Notifications);
     }
 
     return list;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [identifier]);
-
-  useEffect(() => {
-    setBiometrySwtich(biometryEnabled);
-  }, [biometryEnabled]);
-
-  const toggleBiometry = useCallback(async () => {
-    try {
-      setBiometrySwtich((s) => !s);
-      if (biometryEnabled) {
-        await disableBiometry();
-      } else {
-        await unlockVault();
-
-        const passcode = getLastEnteredPasscode();
-        await enableBiometry(passcode);
-      }
-    } catch {
-      setBiometrySwtich((s) => !s);
-    }
-  }, [biometryEnabled, disableBiometry, enableBiometry, unlockVault]);
 
   const handleDone = useCallback(() => {
     wallet.dismissSetup();
@@ -90,7 +66,13 @@ export const FinishSetupList = memo(() => {
         iconName: 'ic-bell-28',
         title: t('finish_setup.enable_notifications'),
         switch: notifications.isSubscribed,
-        onPress: () => notifications.toggleNotifications(!notifications.isSubscribed),
+        onPress: () => {
+          if (notifications.isDenied) {
+            Linking.openSettings();
+          } else {
+            notifications.toggleNotifications(!notifications.isSubscribed);
+          }
+        },
       });
     }
 
@@ -98,9 +80,11 @@ export const FinishSetupList = memo(() => {
       list.push({
         type: SetupItemType.Biometry,
         iconName: 'ic-full-battery-28',
-        title: t('finish_setup.use_biometry', { name: 'Face ID' }),
-        switch: biometrySwitch,
-        onPress: toggleBiometry,
+        title: t('finish_setup.use_biometry', {
+          name: getBiometryName(biometry.type, { accusative: true }),
+        }),
+        switch: biometry.isEnabledSwitch,
+        onPress: biometry.toggleBiometry,
       });
     }
 
@@ -115,21 +99,25 @@ export const FinishSetupList = memo(() => {
     }
 
     return list;
-  }, [biometrySwitch, initialItems, lastBackupAt, nav, notifications, toggleBiometry]);
+  }, [biometry, initialItems, lastBackupAt, nav, notifications]);
 
   useEffect(() => {
+    const notificationsEnabled = !notifications.isAvailable || notifications.isSubscribed;
+    const biometryEnabled = !biometry.isEnrolled || biometry.isEnabled;
     if (
       !setupDismissed &&
       biometryEnabled &&
-      notifications.isSubscribed &&
+      notificationsEnabled &&
       lastBackupAt !== null
     ) {
       setTimeout(() => handleDone(), 300);
     }
   }, [
-    biometryEnabled,
+    biometry.isEnabled,
+    biometry.isEnrolled,
     handleDone,
     lastBackupAt,
+    notifications.isAvailable,
     notifications.isSubscribed,
     setupDismissed,
   ]);

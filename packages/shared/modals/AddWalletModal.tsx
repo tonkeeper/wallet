@@ -41,7 +41,7 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect }) => {
         if (!isNotificationsDenied) {
           nav.navigate('CreateWalletStack', {
             screen: 'CreateWalletNotifications',
-            params: { identifiers: [] },
+            params: { identifiers },
           });
           return;
         }

@@ -1,19 +1,14 @@
 import { Screen, View, Steezy, Spacer, Button, Icon, Text, ns } from '@tonkeeper/uikit';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { Alert } from 'react-native';
 import { tk } from '$wallet';
-import { platform } from '$utils';
+import { getBiometryName } from '$utils';
 import { useNavigation } from '@tonkeeper/router';
 import { MigrationStackRouteNames } from '$navigation/MigrationStack/types';
-import * as LocalAuthentication from 'expo-local-authentication';
 import { useMigration } from '$hooks/useMigration';
 
 export const MigrationStartScreen = memo(() => {
-  const { biometry } = tk.migrationData!;
-  const isTouchId =
-    biometry.type !== LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION;
-
   const nav = useNavigation();
   const { getMnemonicWithBiometry } = useMigration();
 
@@ -32,12 +27,6 @@ export const MigrationStartScreen = memo(() => {
       },
     ]);
   }, []);
-
-  const biometryName = useMemo(() => {
-    return isTouchId
-      ? t(`platform.${platform}.fingerprint`)
-      : t(`platform.${platform}.face_recognition`);
-  }, [isTouchId]);
 
   const handlePasscodePress = useCallback(() => {
     nav.navigate(MigrationStackRouteNames.Passcode);
@@ -84,7 +73,7 @@ export const MigrationStartScreen = memo(() => {
           <Spacer y={16} />
           <Button
             title={t('migration.with_biometry', {
-              type: biometryName,
+              type: getBiometryName(tk.biometry.type),
             })}
             color="secondary"
             onPress={handleBiometryPress}

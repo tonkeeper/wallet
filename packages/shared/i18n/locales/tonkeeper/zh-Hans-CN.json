@@ -423,18 +423,14 @@
   "paste" : "粘贴",
   "pin_enter_faceid_err" : "生物特征检查失败",
   "pin_enter_skip_faceid_err" : "需要生物特征",
-  "platform" : {
+  "biometry" : {
     "android" : {
-      "capitalized_face_recognition" : "面部识别",
-      "capitalized_fingerprint" : "指纹",
       "face_recognition" : "面部识别",
       "face_recognition_genitive" : "面部识别",
       "fingerprint" : "指纹",
       "fingerprint_genitive" : "指纹"
     },
     "ios" : {
-      "capitalized_face_recognition" : "Face ID",
-      "capitalized_fingerprint" : "Touch ID",
       "face_recognition" : "Face ID",
       "face_recognition_genitive" : "Face ID",
       "fingerprint" : "Touch ID",

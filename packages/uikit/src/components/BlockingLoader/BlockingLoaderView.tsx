@@ -60,8 +60,6 @@ export const BlockingLoaderView: FC = memo(() => {
     };
   }, [isShown]);
 
-  console.log('isShown', isShown);
-
   return (
     <FullWindowOverlay>
       <View style={styles.container} pointerEvents={isShown ? 'auto' : 'none'}>

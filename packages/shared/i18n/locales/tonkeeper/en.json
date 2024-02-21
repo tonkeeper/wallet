@@ -485,23 +485,27 @@
   "paste": "Paste",
   "pin_enter_faceid_err": " Biometrics check failed",
   "pin_enter_skip_faceid_err": "Biometrics is required",
-  "platform": {
+  "biometry": {
     "android": {
-      "capitalized_face_recognition": "Face recognition",
-      "capitalized_fingerprint": "Fingerprint",
       "face_recognition": "face recognition",
       "face_recognition_genitive": "face recognition",
+      "face_recognition_instrumental": "face recognition",
       "fingerprint": "fingerprint",
-      "fingerprint_genitive": "fingerprint"
+      "fingerprint_genitive": "fingerprint",
+      "fingerprint_instrumental": "fingerprint"
     },
     "ios": {
-      "capitalized_face_recognition": "Face ID",
-      "capitalized_fingerprint": "Touch ID",
       "face_recognition": "Face ID",
       "face_recognition_genitive": "Face ID",
+      "face_recognition_instrumental": "Face ID",
       "fingerprint": "Touch ID",
-      "fingerprint_genitive": "Touch ID"
-    }
+      "fingerprint_genitive": "Touch ID",
+      "fingerprint_instrumental": "Touch ID"
+    },
+    "default": "biometric",
+    "default_accusative": "biometric",
+    "default_instrumental": "biometric",
+    "default_genitive": "biometric"
   },
   "programmable_nfts": {
     "alert": {

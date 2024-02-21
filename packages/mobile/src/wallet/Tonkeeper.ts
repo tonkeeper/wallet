@@ -23,6 +23,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import { detectBiometryType } from '$utils';
 import { AccountsStream } from './streaming';
 import { InteractionManager } from 'react-native';
+import { Biometry } from './Biometry';
 
 type TonkeeperOptions = {
   storage: Storage;
@@ -74,6 +75,8 @@ export class Tonkeeper {
 
   private storage: Storage;
 
+  public biometry: Biometry;
+
   public walletsStore = new State<WalletsStoreState>({
     wallets: [],
     selectedIdentifier: '',
@@ -85,6 +88,7 @@ export class Tonkeeper {
   constructor(options: TonkeeperOptions) {
     this.storage = options.storage;
     this.vault = options.vault;
+    this.biometry = new Biometry();
     this.tonapi = {
       mainnet: createTonApiInstance(),
       testnet: createTonApiInstance(true),
@@ -120,7 +124,11 @@ export class Tonkeeper {
 
   public async init() {
     try {
-      await Promise.all([this.walletsStore.rehydrate(), this.tonPrice.rehydrate()]);
+      await Promise.all([
+        this.walletsStore.rehydrate(),
+        this.tonPrice.rehydrate(),
+        this.biometry.detectTypes(),
+      ]);
 
       this.tonPrice.load();
 
@@ -500,10 +508,13 @@ export class Tonkeeper {
     this.walletsStore.set({ isMigrated: true });
   }
 
-  public saveLastBackupTimestampAll(identifiers: string[]) {
+  public saveLastBackupTimestampAll(identifiers: string[], dismissSetup = false) {
     identifiers.forEach((identifier) => {
       const wallet = this.wallets.get(identifier);
       wallet?.saveLastBackupTimestamp();
+      if (dismissSetup) {
+        wallet?.dismissSetup();
+      }
     });
   }
 
