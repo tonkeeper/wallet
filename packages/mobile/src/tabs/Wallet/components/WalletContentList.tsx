@@ -264,10 +264,12 @@ export const WalletContentList = memo<BalancesListProps>(
         });
       }
 
-      content.push({
-        key: `setup_${identifier}`,
-        type: ContentType.Setup,
-      });
+      if (!isWatchOnly) {
+        content.push({
+          key: `setup_${identifier}`,
+          type: ContentType.Setup,
+        });
+      }
 
       content.push({
         key: 'ton_section_spacer',
