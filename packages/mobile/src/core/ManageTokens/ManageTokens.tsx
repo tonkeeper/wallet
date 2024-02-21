@@ -58,6 +58,7 @@ const FLashListItem = ({
       return (
         <View style={containerStyle}>
           <List.Item
+            gestureHandler
             pictureStyle={item.imageStyle}
             chevron={item.chevron}
             chevronColor={item.chevronColor}
