@@ -116,7 +116,6 @@ export class ContractService {
       .storeAddress(tonAddress(createJettonTransferBodyParams.excessesAddress))
       .storeBit(false) // null custom_payload
       .storeCoins(createJettonTransferBodyParams.forwardAmount ?? 1n)
-      .storeBit(createJettonTransferBodyParams.forwardBody != null) // forward_payload in this slice - false, separate cell - true
       .storeMaybeRef(this.prepareForwardBody(createJettonTransferBodyParams.forwardBody))
       .endCell();
   }
