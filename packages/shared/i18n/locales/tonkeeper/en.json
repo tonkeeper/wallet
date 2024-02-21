@@ -1142,5 +1142,9 @@
     "enable_notifications": "Enable transaction notifications",
     "backup": "Back up the wallet recovery phrase",
     "done_button": "Done"
+  },
+  "buy_ton": {
+    "title": "Buy TON",
+    "subtitle": "Instantly with a bank card"
   }
 }

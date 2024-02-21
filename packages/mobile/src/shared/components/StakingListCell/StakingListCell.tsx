@@ -24,6 +24,8 @@ interface Props {
   iconSource?: Source | ImageRequireSource | null;
   separator?: boolean;
   isWidget?: boolean;
+  isWidgetAccent?: boolean;
+  isBuyTon?: boolean;
   numberOfLines?: number;
   isWithdrawal?: boolean;
   highestApy?: boolean | null;
@@ -43,6 +45,7 @@ const StakingListCellComponent: FC<Props> = (props) => {
     separator,
     id,
     isWidget,
+    isWidgetAccent,
     numberOfLines,
     highestApy,
     message,
@@ -83,7 +86,11 @@ const StakingListCellComponent: FC<Props> = (props) => {
             {icon}
             {!icon ? (
               <View
-                style={[styles.iconContainer, isWidget && styles.widgetIconContainer]}
+                style={[
+                  styles.iconContainer,
+                  isWidget && styles.widgetIconContainer,
+                  isWidgetAccent && styles.widgetAccentIconContainer,
+                ]}
               >
                 {iconSource ? (
                   <S.Icon source={iconSource} />
@@ -162,6 +169,9 @@ const styles = Steezy.create(({ colors }) => ({
   },
   widgetIconContainer: {
     backgroundColor: colors.accentGreen,
+  },
+  widgetAccentIconContainer: {
+    backgroundColor: colors.accentBlue,
   },
   messageContainer: {
     alignItems: 'flex-start',

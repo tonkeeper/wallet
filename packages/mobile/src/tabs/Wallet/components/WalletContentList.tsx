@@ -34,6 +34,7 @@ import { CardsWidget } from '$components';
 import { InscriptionBalance } from '@tonkeeper/core/src/TonAPI';
 import { ListItemProps } from '@tonkeeper/uikit/src/components/List/ListItem';
 import { FinishSetupList } from './FinishSetupList';
+import BigNumber from 'bignumber.js';
 
 enum ContentType {
   Token,
@@ -78,6 +79,7 @@ type StakingItem = {
   key: string;
   type: ContentType.Staking;
   isWatchOnly: boolean;
+  showBuyButton: boolean;
 };
 
 type CardsItem = {
@@ -177,7 +179,12 @@ const RenderItem = ({ item }: { item: Content }) => {
     case ContentType.NFTCardsRow:
       return <NFTsList nfts={item.items} />;
     case ContentType.Staking:
-      return <StakingWidget isWatchOnly={item.isWatchOnly} />;
+      return (
+        <StakingWidget
+          isWatchOnly={item.isWatchOnly}
+          showBuyButton={item.showBuyButton}
+        />
+      );
     case ContentType.Cards:
       return <CardsWidget />;
     case ContentType.Setup:
@@ -219,8 +226,11 @@ export const WalletContentList = memo<BalancesListProps>(
 
     const wallet = useWallet();
     const isWatchOnly = wallet && wallet.isWatchOnly;
+    const isLockup = wallet && wallet.isLockup;
     const identifier = wallet.identifier;
     const showStaking = isWatchOnly ? balance.staking.amount.nano !== '0' : true;
+    const showBuyButton =
+      !isLockup && new BigNumber(balance.ton.amount.nano).isLessThan(50);
 
     const data = useMemo(() => {
       const content: Content[] = [];
@@ -261,6 +271,7 @@ export const WalletContentList = memo<BalancesListProps>(
           key: 'staking',
           type: ContentType.Staking,
           isWatchOnly,
+          showBuyButton,
         });
       }
 
@@ -366,14 +377,16 @@ export const WalletContentList = memo<BalancesListProps>(
       return content;
     }, [
       balance,
-      showStaking,
       shouldShowTonDiff,
       tonPrice,
+      showStaking,
       isWatchOnly,
-      identifier,
       tokens.list,
-      inscriptions.items,
+      inscriptions,
       nfts,
+      showBuyButton,
+      identifier,
+      currency,
     ]);
 
     const ListComponent = nfts ? Screen.FlashList : PagerView.FlatList;
