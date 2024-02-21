@@ -1,5 +1,5 @@
 import React, { FC, memo, useEffect, useRef, useSyncExternalStore } from 'react';
-import { BackHandler, StyleSheet } from 'react-native';
+import { BackHandler } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { BlockingLoader } from './BlockingLoader';
 import { View } from '../View';
@@ -11,6 +11,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { FullWindowOverlay } from 'react-native-screens';
+import { isIOS } from '../../utils';
 
 export const BlockingLoaderView: FC = memo(() => {
   const isShown = useSyncExternalStore(
@@ -60,8 +61,15 @@ export const BlockingLoaderView: FC = memo(() => {
     };
   }, [isShown]);
 
+  const Container = isIOS ? FullWindowOverlay : View;
+
   return (
-    <FullWindowOverlay>
+    <Container
+      {...(!isIOS && {
+        style: styles.androidContainer,
+        pointerEvents: isShown ? 'auto' : 'none',
+      })}
+    >
       <View style={styles.container} pointerEvents={isShown ? 'auto' : 'none'}>
         <Animated.View style={animatedBackgroundStyle}>
           <View style={styles.background} />
@@ -76,11 +84,18 @@ export const BlockingLoaderView: FC = memo(() => {
           />
         </Animated.View>
       </View>
-    </FullWindowOverlay>
+    </Container>
   );
 });
 
 const styles = Steezy.create(({ colors }) => ({
+  androidContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
   container: {
     flex: 1,
     position: 'relative',
