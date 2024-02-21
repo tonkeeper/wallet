@@ -21,7 +21,7 @@ export const BackupWarningModal = memo<BackupWarningModalProps>((props) => {
       const unlocked = await unlock();
 
       nav.goBack();
-      await delay(400);
+      await delay(600);
 
       nav.navigate(MainStackRouteNames.BackupPhrase, {
         mnemonic: unlocked.mnemonic,
