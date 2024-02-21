@@ -559,6 +559,7 @@
   "tab_swap" : "Swap",
   "tab_wallet" : "Wallet",
   "today" : "Oggi",
+  "tonkeeper_pro" : "Tonkeeper Pro",
   "ton_login_back_to_button" : "Torna a %{name}",
   "ton_login_caption" : "%{name} sta richiedendo l'accesso all'indirizzo del tuo wallet",
   "ton_login_connect_button" : "Collega wallet",

@@ -88,6 +88,40 @@
   },
   "auth_failed" : "认证失败",
   "balances_setup_wallet" : "注册钱包",
+  "battery" : {
+    "description" : {
+      "empty" : "发送代币和 NFT，用空的主账户支付质押操作费用。",
+      "other" : "您已有足够的电量以进行 %{cnt} 次交易"
+    },
+    "ok" : "确定",
+    "packages" : {
+      "buy" : "购买",
+      "disclaimer" : "这是估计的转账数量。您的某些交易可能会花费更多。",
+      "ok" : "确定",
+      "refilled" : "电池已充电",
+      "subtitle" : {
+        "large" : "大杯",
+        "medium" : "中杯",
+        "small" : "小杯"
+      },
+      "title" : "{{cnt}} 笔交易，总共 {{price}}"
+    },
+    "promocode" : {
+      "apply" : "应用",
+      "button" : "使用优惠码充值",
+      "placeholder" : "优惠码",
+      "success" : "电池已充电",
+      "title" : "优惠码"
+    },
+    "screen_title" : "电池",
+    "settings" : "电池",
+    "title" : {
+      "almost_empty" : "电池即将耗尽",
+      "empty" : "为你的电池充电",
+      "full" : "电池已充满",
+      "medium" : "电池已经充满一半"
+    }
+  },
   "browser" : {
     "about_dapps_caption" : "探索可以使用Tonkeeper进行登录和支付的应用和服务。",
     "about_dapps_learn_more" : "了解更多",
@@ -182,6 +216,9 @@
   "confirm_sending_sent_title" : "已发送币种",
   "confirm_sending_submit" : "确认并发送",
   "confirm_sending_title" : "确认发送",
+  "confirmSendModal" : {
+    "will_be_paid_with_battery" : "将使用电池进行支付"
+  },
   "continue" : "继续",
   "copied" : "复制",
   "copy_error_log" : "复制错误指令",
@@ -262,6 +299,11 @@
   "jettons_manage_tokens" : "管理代币",
   "jettons_show_jettons" : "在钱包中显示代币",
   "jetton_token" : "代币",
+  "language" : {
+    "list_item" : {
+      "value" : "中文"
+    }
+  },
   "later" : "稍后",
   "legal_font_license" : "Montserrat字体",
   "legal_header_title" : "法律",
@@ -476,7 +518,8 @@
       "comment_required_text" : "你必须包含交换的备注进行转账。否则你的资金将会丢失。",
       "details_label" : "详情",
       "details_max_balance_label" : "发送全部余额 %{currency}",
-      "title" : "确认交易"
+      "title" : "确认交易",
+      "will_be_paid_with_battery" : "将使用电池进行支付"
     },
     "done" : {
       "add_favorite" : "将地址保存到收藏",
@@ -658,6 +701,7 @@
   "tab_swap" : "交换",
   "tab_wallet" : "钱包",
   "today" : "今天",
+  "tonkeeper_pro" : "Tonkeeper Pro",
   "ton_login_back_to_button" : "返回到%{name}",
   "ton_login_caption" : "%{name}正在请求访问您的钱包地址",
   "ton_login_connect_button" : "连接钱包",
@@ -773,6 +817,7 @@
       },
       "comment" : "评论",
       "insufficientFunds" : {
+        "rechargeBattery" : "给电池充电",
         "rechargeWallet" : "充值钱包",
         "title" : "资金不足",
         "toBePaid" : "支付金额: %{amount} %{currency}\n",
