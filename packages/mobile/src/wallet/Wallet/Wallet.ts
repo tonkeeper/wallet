@@ -48,7 +48,7 @@ export class Wallet extends WalletContent {
         setupDismissed,
       }),
       storage: this.storage,
-      key: `${this.identifier}/status`,
+      key: `${this.persistPath}/status`,
     });
 
     this.listenTransactions();

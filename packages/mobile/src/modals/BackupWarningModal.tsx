@@ -4,6 +4,7 @@ import { Button, Modal, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
 import { memo, useCallback } from 'react';
 import { MainStackRouteNames } from '$navigation';
 import { t } from '@tonkeeper/shared/i18n';
+import { delay } from '$utils';
 
 interface BackupWarningModalProps {
   isBackupAgain?: boolean;
@@ -20,6 +21,7 @@ export const BackupWarningModal = memo<BackupWarningModalProps>((props) => {
       const unlocked = await unlock();
 
       nav.goBack();
+      await delay(400);
 
       nav.navigate(MainStackRouteNames.BackupPhrase, {
         mnemonic: unlocked.mnemonic,

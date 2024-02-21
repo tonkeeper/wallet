@@ -31,6 +31,10 @@ export const useNotificationsSwitch = () => {
     }
   }, [appState]);
 
+  useEffect(() => {
+    setIsSubscribed(isWalletSubscribed);
+  }, [isWalletSubscribed]);
+
   const toggleNotifications = useCallback(
     async (value: boolean) => {
       if (isSwitchFrozen.current) {

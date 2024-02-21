@@ -16,7 +16,7 @@ export const Switch = memo<SwitchProps>((props) => {
   return (
     <NativeSwitch
       {...(isAndroid && { thumbColor: theme.constantWhite })}
-      trackColor={{ true: theme.accentBlue }}
+      trackColor={{ true: theme.accentBlue, false: theme.buttonTertiaryBackground }}
       onValueChange={onChange}
       disabled={disabled}
       value={value}
