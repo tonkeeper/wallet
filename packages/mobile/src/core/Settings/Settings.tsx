@@ -152,7 +152,7 @@ export const Settings: FC = () => {
   const searchEngineVariants = Object.values(SearchEngine);
 
   const handleSwitchLanguage = useCallback(() => {
-    if (Platform.OS === 'android' && Platform.Version < 33) {
+    if (Platform.OS === 'android') {
       return openSelectLanguage();
     }
 

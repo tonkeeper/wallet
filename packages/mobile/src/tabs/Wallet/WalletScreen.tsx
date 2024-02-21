@@ -51,6 +51,7 @@ import { getLocale } from '$utils/date';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useWallet, useWalletCurrency, useWalletStatus } from '@tonkeeper/shared/hooks';
 import { WalletSelector } from './components/WalletSelector';
+import { useInscriptionBalances } from '$hooks/useInscriptionBalances';
 
 export const WalletScreen = memo(({ navigation }) => {
   const flags = useFlags(['disable_swap']);
@@ -59,6 +60,7 @@ export const WalletScreen = memo(({ navigation }) => {
   const theme = useTheme();
   const nav = useNavigation();
   const tokens = useTonkens();
+  const { enabled: inscriptions } = useInscriptionBalances();
   const { enabled: nfts } = useApprovedNfts();
   const wallet = useWallet();
   const shouldUpdate =
@@ -270,7 +272,9 @@ export const WalletScreen = memo(({ navigation }) => {
   }, [dimensions.width]);
 
   const isPagerView =
-    nfts.length && tokens.list.length >= 2 && tokens.list.length + nfts.length + 1 > 10;
+    nfts.length &&
+    tokens.list.length + inscriptions.length >= 2 &&
+    inscriptions.length + tokens.list.length + nfts.length + 1 > 10;
 
   if (!wallet) {
     return (
@@ -327,6 +331,7 @@ export const WalletScreen = memo(({ navigation }) => {
           <PagerView.Pages>
             <PagerView.Page index={0}>
               <WalletContentList
+                inscriptions={inscriptions}
                 currency={currency}
                 balance={balance}
                 tronBalances={tronBalances}
@@ -363,6 +368,7 @@ export const WalletScreen = memo(({ navigation }) => {
         </PagerView>
       ) : (
         <WalletContentList
+          inscriptions={inscriptions}
           currency={currency}
           tronBalances={tronBalances}
           ListHeaderComponent={ListHeader}
