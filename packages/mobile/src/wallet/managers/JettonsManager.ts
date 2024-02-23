@@ -1,4 +1,4 @@
-import { TonAPI } from '@tonkeeper/core/src/TonAPI';
+import { JettonVerificationType, TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { TokenRate, TonRawAddress } from '../WalletTypes';
 import { Logger } from '@tonkeeper/core/src/utils/Logger';
@@ -7,6 +7,8 @@ import { JettonBalanceModel } from '../models/JettonBalanceModel';
 import { Address } from '@tonkeeper/core/src/formatters/Address';
 import { TokenApprovalManager } from './TokenApprovalManager';
 import { TonPriceManager } from './TonPriceManager';
+import BigNumber from 'bignumber.js';
+import { AmountFormatter } from '@tonkeeper/core';
 
 export type JettonsState = {
   jettonBalances: JettonBalanceModel[];
@@ -84,6 +86,32 @@ export class JettonsManager {
           }
 
           return true;
+        })
+        .sort((a, b) => {
+          // Unverified or blacklisted tokens have to be at the end of array
+          if (
+            [JettonVerificationType.None, JettonVerificationType.Blacklist].includes(
+              a.jetton.verification,
+            )
+          ) {
+            return 1;
+          }
+
+          if (!a.price?.prices) {
+            return 1;
+          }
+
+          if (!b.price?.prices) {
+            return -1;
+          }
+
+          const aTotal = BigNumber(a.price?.prices!.TON).multipliedBy(
+            AmountFormatter.fromNanoStatic(a.balance, a.jetton.decimals),
+          );
+          const bTotal = BigNumber(b.price?.prices!.TON).multipliedBy(
+            AmountFormatter.fromNanoStatic(b.balance, b.jetton.decimals),
+          );
+          return bTotal.gt(aTotal) ? 1 : -1;
         })
         .map((item) => {
           return new JettonBalanceModel(item);
