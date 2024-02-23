@@ -5,22 +5,20 @@ import Aptabase from '@aptabase/react-native';
 import DeviceInfo from 'react-native-device-info';
 import { firebase } from '@react-native-firebase/analytics';
 
-const appKey = config.get('aptabaseAppKey');
-
 firebase
   .analytics()
   .setUserId(DeviceInfo.getUniqueId())
   .catch(() => null);
 
-if (appKey) {
-  Aptabase.init(appKey, {
-    host: config.get('aptabaseEndpoint'),
-    appVersion: DeviceInfo.getVersion(),
-  });
-}
-
 let TrakingEnabled = false;
 export function initStats() {
+  const appKey = config.get('aptabaseAppKey');
+  if (appKey) {
+    Aptabase.init(appKey, {
+      host: config.get('aptabaseEndpoint'),
+      appVersion: DeviceInfo.getVersion(),
+    });
+  }
   init(config.get('amplitudeKey'), '-', {
     minIdLength: 1,
     deviceId: '-',
@@ -40,6 +38,7 @@ export function initStats() {
 
 export async function trackEvent(name: string, params: any = {}) {
   try {
+    const appKey = config.get('aptabaseAppKey');
     if (!TrakingEnabled) {
       return;
     }
