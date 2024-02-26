@@ -90,8 +90,7 @@
   "balances_setup_wallet" : "注册钱包",
   "battery" : {
     "description" : {
-      "empty" : "发送代币和 NFT，用空的主账户支付质押操作费用。",
-      "other" : "您已有足够的电量以进行 %{cnt} 次交易"
+      "empty" : "发送代币和 NFT，用空的主账户支付质押操作费用。"
     },
     "ok" : "确定",
     "packages" : {
@@ -103,8 +102,7 @@
         "large" : "大杯",
         "medium" : "中杯",
         "small" : "小杯"
-      },
-      "title" : "{{cnt}} 笔交易，总共 {{price}}"
+      }
     },
     "promocode" : {
       "apply" : "应用",
@@ -114,13 +112,7 @@
       "title" : "优惠码"
     },
     "screen_title" : "电池",
-    "settings" : "电池",
-    "title" : {
-      "almost_empty" : "电池即将耗尽",
-      "empty" : "为你的电池充电",
-      "full" : "电池已充满",
-      "medium" : "电池已经充满一半"
-    }
+    "settings" : "电池"
   },
   "browser" : {
     "about_dapps_caption" : "探索可以使用Tonkeeper进行登录和支付的应用和服务。",

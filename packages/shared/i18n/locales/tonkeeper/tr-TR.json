@@ -126,8 +126,7 @@
   "balances_setup_wallet" : "Cüzdanı ayarlayın",
   "battery" : {
     "description" : {
-      "empty" : "Ana bakiyeniz boş olsa bile token ve NFT gönderin, staking işlemleri gerçekleştirin.",
-      "other" : "%{cnt} işlem için bataryanızda yeterli şarj seviyesi mevcut."
+      "empty" : "Ana bakiyeniz boş olsa bile token ve NFT gönderin, staking işlemleri gerçekleştirin."
     },
     "ok" : "TAMAM",
     "packages" : {
@@ -139,8 +138,7 @@
         "large" : "Büyük paket",
         "medium" : "Orta paket",
         "small" : "Küçük paket"
-      },
-      "title" : "{{price}} karşılığı {{cnt}} işlem"
+      }
     },
     "promocode" : {
       "apply" : "Uygula",
@@ -150,13 +148,7 @@
       "title" : "Promosyon Kodu"
     },
     "screen_title" : "Batarya",
-    "settings" : "Batarya",
-    "title" : {
-      "almost_empty" : "Gas ücretleri için batarya neredeyse boş",
-      "empty" : "Gaz ücretleri için bataryanızı şarj edin",
-      "full" : "Gas ücretleri için batarya dolu",
-      "medium" : "Gas ücretleri için bataryanın yarısı dolu"
-    }
+    "settings" : "Batarya"
   },
   "browser" : {
     "about_dapps_caption" : "Oturum açma ve ödemeler için Tonkeeper'ı kullanabileceğiniz uygulamaları ve hizmetleri keşfedin.",
