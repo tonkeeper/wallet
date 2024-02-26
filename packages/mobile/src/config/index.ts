@@ -83,7 +83,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
   batteryMeanFees: '0.08',
   disable_battery: true,
-  disable_battery_iap_module: true,
+  disable_battery_iap_module: Platform.OS !== 'android', // Enable for iOS, disable for Android
   disable_battery_send: true,
   disable_show_unverified_token: false,
   disable_tonstakers: false,
