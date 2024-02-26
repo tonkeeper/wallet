@@ -37,20 +37,16 @@ export const RefillBattery = memo(() => {
         <Icon colorless name={iconName} />
         <Spacer y={24} />
         <Text textAlign="center" type="h2">
-          {t(`battery.title.${batteryState.toLowerCase()}`)}
+          {t(`battery.title`)}
         </Text>
         <Spacer y={4} />
         <Text textAlign="center" type="body2" color="textSecondary">
           {t(
             `battery.description.${
-              batteryState === BatteryState.Empty
-                ? 'empty'
-                : availableNumOfTransactionsCount
-                ? 'other'
-                : 'less_10'
+              batteryState === BatteryState.Empty ? 'empty' : 'other'
             }`,
             {
-              cnt: availableNumOfTransactionsCount,
+              count: availableNumOfTransactionsCount.toNumber(),
             },
           )}
         </Text>

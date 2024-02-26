@@ -128,16 +128,15 @@
     "screen_title": "Battery",
     "settings": "Battery",
     "ok": "OK",
-    "title": {
-      "empty": "Recharge your battery for gas fees",
-      "almost_empty": "Battery for gas fees is almost empty",
-      "medium": "Battery for gas fees is half full",
-      "full": "Battery for gas fees is full"
-    },
+    "title": "Tonkeeper Battery",
     "description": {
       "empty": "Send tokens and NFTs, pay for staking actions with empty main balance.",
-      "other": "You have enough charge battery for more than %{cnt} transactions.",
-      "less_10": "You have enough charge battery for less than 10 transactions."
+      "other": {
+        "few": "Your battery has %{count} charges",
+        "many": "Your battery has %{count} charges",
+        "one": "Your battery has %{count} charge",
+        "other": "Your battery has %{count} charges"
+      }
     },
     "promocode": {
       "button": "Recharge by Promo Code",
@@ -147,13 +146,13 @@
       "success": "Your battery is charged"
     },
     "packages": {
-      "title": "{{cnt}} transactions for {{price}}",
+      "title": "Charges for {{price}}",
       "subtitle": {
-        "large": "Large pack",
-        "medium": "Medium pack",
-        "small": "Small pack"
+        "large": "Large Pack",
+        "medium": "Medium Pack",
+        "small": "Small Pack"
       },
-      "disclaimer": "This is an approximate number of transactions. Some of your transactions may cost more.",
+      "disclaimer": "One charge covers the average transaction fee. Some transactions may cost more.",
       "restore": "Restore Purchases.",
       "buy": "Buy",
       "ok": "OK",
