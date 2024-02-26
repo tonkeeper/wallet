@@ -1,0 +1,152 @@
+// this script is intended to be runed with bun.sh
+// it will generate a json file with all the translations using chatgpt
+//
+// Usage:
+//  bun translate.js
+import { readdir } from "node:fs/promises";
+
+const translateTo = Bun.argv[2]
+let translated = 0
+let total = 0
+
+
+async function query(prompt, message) {
+  const resp = await fetch("https://api.datafield.io/gpt/prompt", {
+    method: "POST",
+    body: JSON.stringify({
+        prompt: prompt,
+        message: message
+    }),
+    headers: { "Content-Type": "application/json" },
+  });
+  let jsonResponse = await resp.json()
+  return jsonResponse['json'];
+}
+
+function appendResult(result, value, lang) {
+  if (!result) result = {};
+  if (typeof value === 'string') {
+    result[lang] = value;
+  }
+  if (typeof value === 'object') {
+    for (let k in value) {
+      result[k] = appendResult(result[k], value[k], lang);
+    }
+  }
+  return result
+}
+
+
+async function scanDirectory() {
+  let result = {}
+  // Read the current directory
+  const files = await readdir(".");
+  // Filter for JSON files
+  let promises = files.filter(file => file.endsWith(".json")).map(async file => {
+    let lang = file.split('.')[0];
+
+    console.log(`–– `, lang);
+    let langFile = Bun.file(file)
+    let json = await langFile.json()
+    for (let k in json) {
+      result[k] = appendResult(result[k], json[k], lang);
+    }
+  });
+  await Promise.all(promises)
+  // console.log('result', result)
+  return result
+}
+
+async function findOutSetup(langIdentifyer) {
+  let prompt = `You will get an message with an language identifyer, eather in form of language name, or short code of it,
+I will ask you to response with an valid JSON of following structure:
+just json object with fields: code - short code of language, name - name of language, nativeName - native name of language, rtl - boolean if language is right to left.
+example:
+{"code": "en", "name": "English", "nativeName": "English", "rtl": false}`
+  let response = JSON.parse(await query(prompt, langIdentifyer))
+  return response
+}
+
+function countKeysRecursive(obj) {
+  let total = 0;
+  for (let k in obj) {
+    if (typeof obj[k] === 'string') { // we found a lang key
+      return 1
+    }
+    if (typeof obj[k] === 'object') {
+      total += countKeysRecursive(obj[k]);
+    }
+  }
+  return total;
+}
+
+function clearTranslation(obj, langCode) {
+  let cleared = {}
+  for (let k in obj) {
+    if (typeof obj[k] === 'string') { // we found a lang key
+      return obj[langCode] // replace it with final lang code
+    }
+    if (typeof obj[k] === 'object') {
+      let value = clearTranslation(obj[k], langCode);
+      if (value && JSON.stringify(value) !== '{}') {
+        cleared[k] = value
+      }
+    }
+  }
+  return cleared
+}
+
+
+async function doTranslate(obj, setup) {
+  let prompt = `You are an translator bot. You are helping to translate JSON lang file for an javascript application to a ${setup.name} lanuage. You will get an message with an json object of following structure – each key is a lang identifyer (example: "en"), and value is the translation in that language. Using this info please translate same phrase to ${setup.name} language and return only translation string without quotes.
+Never reply with anything except translation. Never ask for help or anything else, make sure to return only translation.`
+
+  let response = await query(prompt, JSON.stringify(obj))
+  response = response.replace(/^"|"$/gm,'');
+  console.log(`\nTanslating \x1B[31m${translated} \x1b[37mfrom \x1B[31m${total}\x1b[37m:`)
+  let p = `en: `+obj["en"]+ "\n\x1B[32m"+setup.code+': '+response+'\x1b[37m'
+  console.log(p)
+  translated++
+  return response
+}
+
+async function translate(obj, setup, cb) {
+  for (let k in obj) {
+    if (typeof obj[k] === 'string') { // we found a lang key
+      obj[setup.code] = await doTranslate(obj, setup)
+      await cb() // write file here
+      return obj
+    }
+    if (typeof obj[k] === 'object') {
+      obj[k] = await translate(obj[k], setup, cb);
+    }
+  }
+  return obj
+}
+
+async function main() {
+  console.log('Hello, we are about to generate lang files, but first we going to read all the translation files and build an translations map.')
+
+  let langs = await scanDirectory();
+  
+
+  let setup = await findOutSetup(translateTo)
+
+  let fileName = './'+setup.code+'.json'
+  console.log('We are going to create new tranlslation for', translateTo, 'language and write it to', fileName)
+  
+  const output = Bun.file(fileName);
+  if (output.size !== 0) {
+    console.log('File already exists, please remove it first.')
+    process.exit(1)
+  }
+
+  console.log('setup', setup)
+  total = countKeysRecursive(langs)
+  console.log('\n')
+  await translate(langs, setup, async () => {
+    let translatedLang = clearTranslation(langs, setup.code)
+    await Bun.write(fileName, JSON.stringify(translatedLang, null, 2));
+  })
+}
+main()
