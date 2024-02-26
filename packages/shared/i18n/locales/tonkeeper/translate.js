@@ -2,7 +2,10 @@
 // it will generate a json file with all the translations using chatgpt
 //
 // Usage:
-//  bun translate.js
+//  bun translate.js indonesian
+//
+//  third param is an language you are translating to
+//
 import { readdir } from "node:fs/promises";
 
 const translateTo = Bun.argv[2]
