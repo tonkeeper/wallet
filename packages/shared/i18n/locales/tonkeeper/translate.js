@@ -67,17 +67,20 @@ example:
   return response
 }
 
-function countKeysRecursive(obj) {
-  let total = 0;
+function countKeysRecursive(obj, langCode) {
   for (let k in obj) {
     if (typeof obj[k] === 'string') { // we found a lang key
-      return 1
+      if (obj[langCode]) {
+        translated++
+      } else {
+        total++
+      }
+      return
     }
     if (typeof obj[k] === 'object') {
-      total += countKeysRecursive(obj[k]);
+      countKeysRecursive(obj[k], langCode);
     }
   }
-  return total;
 }
 
 function clearTranslation(obj, langCode) {
@@ -97,28 +100,49 @@ function clearTranslation(obj, langCode) {
 }
 
 
-async function doTranslate(obj, setup) {
+async function doTranslate(obj, setup, keyChain) {
+  let key = keyChain.join('.')
   let prompt = `You are an translator bot. You are helping to translate JSON lang file for an javascript application to a ${setup.name} lanuage. You will get an message with an json object of following structure – each key is a lang identifyer (example: "en"), and value is the translation in that language. Using this info please translate same phrase to ${setup.name} language and return only translation string without quotes.
-Never reply with anything except translation. Never ask for help or anything else, make sure to return only translation.`
+Never reply with anything except translation. Never ask for help or anything else, make sure to return only translation.
+If you see any unordinary symbols like quotes or anything else – try to preserve the same symbols in the translation.
+Some hint for the translation – you are translating an language key stored in ${key} field.`
 
-  let response = await query(prompt, JSON.stringify(obj))
+  let description = obj['description']
+  let langs = Object.assign({}, obj)
+  delete langs['description']
+
+  if (description) {
+    prompt += `\nIts also an additional description provided for this field, wich may help you with translation: ${description}`
+    console.log("DESC", prompt)
+  }
+
+  let response = await query(prompt, JSON.stringify(langs))
   response = response.replace(/^"|"$/gm,'');
   console.log(`\nTanslating \x1B[31m${translated} \x1b[37mfrom \x1B[31m${total}\x1b[37m:`)
-  let p = `en: `+obj["en"]+ "\n\x1B[32m"+setup.code+': '+response+'\x1b[37m'
+  let p = `\x1B[34m${key}\x1b[37m\n`
+  if (obj["en"]) {
+    p += `en: `+obj["en"]
+  } else if (obj["ru-RU"]) {
+    p += `ru: `+obj["ru-RU"]
+  }
+  p += "\n\x1B[32m"+setup.code+': '+response+'\x1b[37m'
   console.log(p)
   translated++
   return response
 }
 
-async function translate(obj, setup, cb) {
+async function translate(obj, setup, cb, keyChain) {
   for (let k in obj) {
     if (typeof obj[k] === 'string') { // we found a lang key
-      obj[setup.code] = await doTranslate(obj, setup)
+      if (obj[setup.code]) {
+        return obj // skip translation for that one
+      }
+      obj[setup.code] = await doTranslate(obj, setup, keyChain)
       await cb() // write file here
       return obj
     }
     if (typeof obj[k] === 'object') {
-      obj[k] = await translate(obj[k], setup, cb);
+      obj[k] = await translate(obj[k], setup, cb, [...keyChain, k]);
     }
   }
   return obj
@@ -137,16 +161,14 @@ async function main() {
   
   const output = Bun.file(fileName);
   if (output.size !== 0) {
-    console.log('File already exists, please remove it first.')
-    process.exit(1)
+    console.log('File already exists, so we going to update it.')
   }
 
   console.log('setup', setup)
-  total = countKeysRecursive(langs)
-  console.log('\n')
+  countKeysRecursive(langs, setup.code)
   await translate(langs, setup, async () => {
     let translatedLang = clearTranslation(langs, setup.code)
     await Bun.write(fileName, JSON.stringify(translatedLang, null, 2));
-  })
+  }, [])
 }
 main()
