@@ -40,12 +40,6 @@ export function getBatteryState(batteryBalance: string) {
 export function calculateAvailableNumOfTransactions(batteryBalance: string) {
   const balance = new BigNumber(batteryBalance);
 
-  // return balance divided by mean fees rounded down to nearest 10
-  return balance
-    .div(MEAN_FEES)
-    .decimalPlaces(0, BigNumber.ROUND_DOWN)
-    .div(10)
-    .decimalPlaces(0, BigNumber.ROUND_DOWN)
-    .times(10)
-    .toNumber();
+  // return balance divided by mean fees rounded down
+  return balance.div(MEAN_FEES).decimalPlaces(0, BigNumber.ROUND_DOWN);
 }
