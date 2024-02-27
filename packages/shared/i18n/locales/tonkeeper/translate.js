@@ -117,7 +117,7 @@ Some hint for the translation – you are translating an language key stored in
 
   if (description) {
     prompt += `\nIts also an additional description provided for this field, wich may help you with translation: ${description}`
-    console.log("DESC", prompt)
+    console.log("DESC:", description)
   }
 
   let response = await query(prompt, JSON.stringify(langs))
