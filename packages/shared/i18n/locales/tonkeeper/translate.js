@@ -75,9 +75,8 @@ function countKeysRecursive(obj, langCode) {
     if (typeof obj[k] === 'string') { // we found a lang key
       if (obj[langCode]) {
         translated++
-      } else {
-        total++
       }
+      total++
       return
     }
     if (typeof obj[k] === 'object') {
@@ -108,6 +107,8 @@ async function doTranslate(obj, setup, keyChain) {
   let prompt = `You are an translator bot. You are helping to translate JSON lang file for an javascript application to a ${setup.name} lanuage. You will get an message with an json object of following structure – each key is a lang identifyer (example: "en"), and value is the translation in that language. Using this info please translate same phrase to ${setup.name} language and return only translation string without quotes.
 Never reply with anything except translation. Never ask for help or anything else, make sure to return only translation.
 If you see any unordinary symbols like quotes or anything else – try to preserve the same symbols in the translation.
+You all languages from json you get for translation to generate most sutable language key in return. Do not add any new symbols like "\\n", wich wasnt presented in original string.  
+Try to generate translation not much longer or much shorter than it is in other languages.
 Some hint for the translation – you are translating an language key stored in ${key} field.`
 
   let description = obj['description']
