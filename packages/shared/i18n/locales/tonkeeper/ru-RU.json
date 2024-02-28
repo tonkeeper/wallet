@@ -182,9 +182,6 @@
     },
     "price" : "Цена"
   },
-  "check_words_caption" : "Чтобы убедиться, что вы записали секретный ключ правильно, введите слова %{wordNum1}, %{wordNum2} и %{wordNum3}.",
-  "check_words_success" : "Поздравляем! Ваш кошелёк готов",
-  "check_words_title" : "Давайте проверим",
   "choose_country" : {
     "auto" : "Автоматически",
     "cancel" : "Отмена",
@@ -259,11 +256,6 @@
   "create_pin_current_title" : "Введите текущий пин-код",
   "create_pin_new_title" : "Задайте новый пин-код",
   "create_pin_repeat_title" : "Введите пин-код ещё раз",
-  "create_wallet_caption" : "Мы настоятельно рекомендуем вам записать секретный ключ. Это единственный способ вернуть доступ к кошельку, если потеряете устройство. Не отправляйте ключ себе по почте и не делайте скриншот. Безопаснее всего вообще не хранить ключ на устройстве.",
-  "create_wallet_continue_button" : "Понятно",
-  "create_wallet_generated" : "Кошелёк создан!",
-  "create_wallet_generating" : "Создаём кошелёк...",
-  "create_wallet_title" : "Возьмите ручку\nи лист бумаги",
   "decryption_error" : "Ошибка расшифровки",
   "deploy_contract_button" : "Подтвердить и разместить",
   "deploy_contract_title" : "Разместить контракт",
@@ -480,23 +472,27 @@
   "paste" : "Вставить",
   "pin_enter_faceid_err" : "Ошибка сканирования биометрии",
   "pin_enter_skip_faceid_err" : "Ошибка сканирования биометрии",
-  "platform" : {
+  "biometry" : {
     "android" : {
-      "capitalized_face_recognition" : "Распознавание лица",
-      "capitalized_fingerprint" : "Отпечаток пальца",
       "face_recognition" : "распознавание лица",
       "face_recognition_genitive" : "распознавания лица",
+      "face_recognition_instrumental" : "распознаванием лица",
       "fingerprint" : "отпечаток пальца",
-      "fingerprint_genitive" : "отпечатка пальца"
+      "fingerprint_genitive" : "отпечатка пальца",
+      "fingerprint_instrumental" : "отпечатком пальца"
     },
     "ios" : {
-      "capitalized_face_recognition" : "Face ID",
-      "capitalized_fingerprint" : "Touch ID",
       "face_recognition" : "Face ID",
       "face_recognition_genitive" : "Face ID",
+      "face_recognition_instrumental" : "Face ID",
       "fingerprint" : "Touch ID",
-      "fingerprint_genitive" : "Touch ID"
-    }
+      "fingerprint_genitive" : "Touch ID",
+      "fingerprint_instrumental" : "Touch ID"
+    },
+    "default": "биометрия",
+    "default_accusative": "биометрию",
+    "default_instrumental": "биометрией",
+    "default_genitive": "биометрии"
   },
   "programmable_nfts" : {
     "alert" : {
@@ -528,15 +524,9 @@
   "reminder_notifications_title" : "Получайте мгновенные уведомления",
   "renew_in_progress" : "Выполняется продление…",
   "renew_progress_of" : "%{current} из %{count}",
-  "require_create_wallet_modal_caption" : "Чтобы использовать Tonkeeper, нужен кошелёк. Создайте новый или подключите существующий.",
-  "require_create_wallet_modal_create_new" : "Создать новый кошелёк",
-  "require_create_wallet_modal_import" : "Подключить существующий",
-  "require_create_wallet_modal_title" : "Сперва подключим кошелёк",
   "scan_qr_open_settings" : "Открыть настройки",
   "scan_qr_permission_error" : "Разрешите доступ к камере, чтобы сканировать QR-коды",
   "scan_qr_title" : "Отсканируйте QR-код",
-  "secret_words_caption" : "Запишите эти 24 слова ровно в таком же порядке и сохраните их в секретном, надёжном месте.",
-  "secret_words_title" : "Ваш секретный ключ",
   "security_change_passcode" : "Поменять пин-код",
   "security_migration_caption" : "Пин-код теперь защищает весь кошелёк, в дополнение к подтверждению платежей. Включите %{faceRecognition} для быстрого доступа.",
   "security_migration_skip_button" : "Не обновлять сейчас",
@@ -616,7 +606,7 @@
   "send_sending_wrong_time_title" : "Произошла ошибка",
   "send_title" : "Отправить %{currency}",
   "settings_appearance" : "Тема",
-  "settings_backup_seed" : "Секретный ключ",
+  "settings_backup_seed" : "Резервная копия",
   "settings_contact_support" : "Написать команде",
   "settings_delete_account" : "Удалить аккаунт",
   "settings_delete_alert_button" : "Удалить аккаунт и данные",
@@ -1181,5 +1171,45 @@
     "subtitle": "Разблокируйте кошелёк, чтобы продолжить.",
     "with_passcode": "Ввести пароль",
     "with_biometry": "Продолжить с %{type}"
+  },
+  "backup_screen": {
+    "title": "Резервная копия",
+    "manual_title": "Вручную",
+    "manual_caption": "Создайте резервную копию своего кошелька вручную, записав секретный ключ.",
+    "manual_button": "Сделать копию вручную",
+    "manual_backup_on": "Резервная копия сделана",
+    "last_backup_time": "Последняя %{time}",
+    "show_recovery_phrase": "Показать секретный ключ"
+  },
+  "backup_warning": {
+    "title": "Внимание",
+    "caption": "Пожалуйста, внимательно прочитайте перед просмотром секретного ключа.",
+    "p1": "Никогда и нигде не вводите свой секретный ключ для доступа к кошельку, кроме Tonkeeper.",
+    "p2": "Поддержка Tonkeeper никогда не запрашивает секретный ключ.",
+    "p3": "Любой, кто знает ваш секретный ключ, сможет получить доступ к вашему кошельку.",
+    "continue_button": "Продолжить",
+    "cancel_button": "Отмена"
+  },
+  "recovery_phrase": {
+    "title": "Секретный ключ",
+    "caption": "Запишите эти слова с их номерами и сохраните их в надежном месте.",
+    "check_button": "Проверить резервную копию",
+    "copy_button": "Скопировать"
+  },
+  "backup_check": {
+    "title": "Проверка резервной копии",
+    "caption": "Давайте проверим, все ли вы записали правильно. Введите слова %{one}, %{two}, и %{three}.",
+    "done_button": "Готово"
+  },
+  "finish_setup": {
+    "header_title": "Завершить установку",
+    "use_biometry": "Включите %{name} для подтверждения транзакций",
+    "enable_notifications": "Включите уведомления о транзакциях",
+    "backup": "Создайте резервную копию секретного ключа кошелька",
+    "done_buttom": "Done"
+  },
+  "buy_ton": {
+    "title": "Купить TON",
+    "subtitle": "Моментально с банковской картой"
   }
 }

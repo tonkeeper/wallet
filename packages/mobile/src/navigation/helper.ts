@@ -1,4 +1,3 @@
-import * as LocalAuthentication from 'expo-local-authentication';
 import {
   ActivityStackRouteNames,
   AppStackRouteNames,
@@ -61,44 +60,8 @@ export function openScanQR(onScan: (url: string) => void) {
   navigate(AppStackRouteNames.ScanQR, { onScan });
 }
 
-export function openSecretWords() {
-  navigate(CreateWalletStackRouteNames.SecretWords);
-}
-
-export function openCheckSecretWords() {
-  navigate(CreateWalletStackRouteNames.CheckSecretWords);
-}
-
-export function openCreatePin() {
-  if (getCurrentRoute()?.name === CreateWalletStackRouteNames.CheckSecretWords) {
-    navigate(CreateWalletStackRouteNames.CreatePasscode);
-  } else {
-    navigate(ImportWalletStackRouteNames.CreatePasscode);
-  }
-}
-
-export function openSetupBiometry(
-  pin: string,
-  biometryType: LocalAuthentication.AuthenticationType,
-) {
-  if (getCurrentRoute()?.name === CreateWalletStackRouteNames.CreatePasscode) {
-    navigate(CreateWalletStackRouteNames.Biometry, {
-      pin,
-      biometryType,
-    });
-  } else {
-    navigate(ImportWalletStackRouteNames.Biometry, {
-      pin,
-      biometryType,
-    });
-  }
-}
-
 export function openSetupNotifications(identifiers: string[]) {
-  if (
-    getCurrentRoute()?.name === CreateWalletStackRouteNames.Biometry ||
-    getCurrentRoute()?.name === CreateWalletStackRouteNames.CheckSecretWords
-  ) {
+  if (getCurrentRoute()?.name === CreateWalletStackRouteNames.CreatePasscode) {
     replace(CreateWalletStackRouteNames.Notifications, { identifiers });
   } else if (getCurrentRoute()?.name === AddWatchOnlyStackRouteNames.AddWatchOnly) {
     replace(AddWatchOnlyStackRouteNames.Notifications, { identifiers });
@@ -121,12 +84,6 @@ export function openSetupWalletDone(identifiers: string[]) {
 
 export function openDeleteAccountDone() {
   navigate(MainStackRouteNames.DeleteAccountDone);
-}
-
-export function openBackupWords(mnemonic: string) {
-  navigate(MainStackRouteNames.BackupWords, {
-    mnemonic,
-  });
 }
 
 export function openBuyFiat(currency: CryptoCurrency, methodId: string) {

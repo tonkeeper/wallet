@@ -11,6 +11,8 @@ import {
 import { useNavigation } from '@tonkeeper/router';
 import { useImportWallet } from '$hooks/useImportWallet';
 import { tk } from '$wallet';
+import { ImportWalletInfo } from '$wallet/WalletTypes';
+import { DEFAULT_WALLET_VERSION } from '$wallet/constants';
 
 export const ImportWallet: FC<{
   route: RouteProp<ImportWalletStackParamList, ImportWalletStackRouteNames.ImportWallet>;
@@ -24,9 +26,14 @@ export const ImportWallet: FC<{
   const handleWordsFilled = useCallback(
     async (mnemonic: string, lockupConfig: any, onEnd: () => void) => {
       try {
-        const walletsInfo = await tk.getWalletsInfo(mnemonic, isTestnet);
+        let walletsInfo: ImportWalletInfo[] | null = null;
 
-        const shouldChooseWallets = !lockupConfig && walletsInfo.length > 1;
+        try {
+          walletsInfo = await tk.getWalletsInfo(mnemonic, isTestnet);
+        } catch {}
+
+        const shouldChooseWallets =
+          !lockupConfig && walletsInfo && walletsInfo.length > 1;
 
         if (shouldChooseWallets) {
           nav.navigate(ImportWalletStackRouteNames.ChooseWallets, {
@@ -39,7 +46,9 @@ export const ImportWallet: FC<{
           return;
         }
 
-        const versions = walletsInfo.map((item) => item.version);
+        const versions = walletsInfo
+          ? walletsInfo.map((item) => item.version)
+          : [DEFAULT_WALLET_VERSION];
 
         await doImportWallet(mnemonic, lockupConfig, versions, isTestnet);
         onEnd();
