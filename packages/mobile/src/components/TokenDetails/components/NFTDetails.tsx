@@ -2,9 +2,10 @@ import React, { memo } from 'react';
 import { NftItem } from 'tonapi-sdk-js';
 import { List } from '$uikit';
 import FastImage from 'react-native-fast-image';
-import { Steezy } from '@tonkeeper/uikit';
+import { Steezy, copyText, View, Icon } from '@tonkeeper/uikit';
 import { Address } from '@tonkeeper/core';
 import { useNftItemByAddress } from '@tonkeeper/shared/query/hooks/useNftItemByAddress';
+import { t } from '@tonkeeper/shared/i18n';
 
 export interface NFTDetailsProps {
   nft: NftItem | string;
@@ -25,7 +26,8 @@ export const NFTDetails = memo<NFTDetailsProps>((props) => {
   return (
     <List compact={false}>
       <List.Item
-        title="Name"
+        onPress={copyText(nft?.name)}
+        title={t('tokenDetails.name')}
         subtitle={nft?.name}
         value={
           <FastImage
@@ -34,7 +36,16 @@ export const NFTDetails = memo<NFTDetailsProps>((props) => {
           />
         }
       />
-      <List.Item title="Token ID" subtitle={Address.parse(nft?.address).toShort(4)} />
+      <List.Item
+        onPress={copyText(nft?.address)}
+        title={t('tokenDetails.token_id')}
+        subtitle={Address.parse(nft?.address).toShort(4)}
+        value={
+          <View style={styles.copyIconContainer}>
+            <Icon color="iconSecondary" name={'ic-copy-16'} />
+          </View>
+        }
+      />
     </List>
   );
 });
@@ -44,5 +55,8 @@ export const styles = Steezy.create({
     width: 40,
     height: 40,
     borderRadius: 8,
+  },
+  copyIconContainer: {
+    margin: 4,
   },
 });

@@ -232,6 +232,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
                 value={formatValue(action)}
                 subvalue={amountToFiat(action)}
                 title={getActionTitle(action)}
+                disableNftPreview={true}
                 disablePressable={
                   !(
                     (action.payload as any as JettonTransferAction)?.jetton ||

@@ -3,7 +3,10 @@ import { Jetton, NftItem } from 'tonapi-sdk-js';
 
 export type ModalStackParamList = {
   [ModalStackRouteNames.TokenDetails]: {
-    nft?: NftItem;
-    jetton?: Jetton;
+    // TODO: fix for SheetsProvider bottomsheets
+    params: {
+      nft?: NftItem | string;
+      jetton?: Jetton;
+    };
   };
 };
