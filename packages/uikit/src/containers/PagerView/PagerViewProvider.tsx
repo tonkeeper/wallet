@@ -11,7 +11,7 @@ interface PagerViewProviderProps {
 
 export const PagerViewProvider = memo<PagerViewProviderProps>((props) => {
   const { pageOffset } = props;
-  const pager = usePagerViewHandler(pageOffset);
+  const pager = usePagerViewHandler(pageOffset, 288);
 
   return (
     <PagerViewContext.Provider value={pager}>

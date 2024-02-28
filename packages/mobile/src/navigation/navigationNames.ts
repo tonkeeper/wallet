@@ -1,5 +1,9 @@
 import { NavigationProp } from '@react-navigation/native';
 
+export enum ModalStackRouteNames {
+  TokenDetails = 'TokenDetails',
+}
+
 export enum AppStackRouteNames {
   MainStack = 'MainStack',
   Receive = 'Receive',
