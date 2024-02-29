@@ -17,7 +17,7 @@ import { Events, JettonVerification, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
-import { Screen, Steezy, View, Icon, Spacer, TouchableOpacity } from '@tonkeeper/uikit';
+import { Icon, Screen, Spacer, Steezy, TouchableOpacity, View } from '@tonkeeper/uikit';
 
 import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonActivityList';
 import { ActivityList } from '@tonkeeper/shared/components';
@@ -28,6 +28,7 @@ import { openUnverifiedTokenDetailsModal } from '@tonkeeper/shared/modals/Unveri
 import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { Chart } from '$shared/components/Chart/new/Chart';
+import { ChartPeriod } from '$store/zustand/chart';
 
 const unverifiedTokenHitSlop = { top: 4, left: 4, bottom: 4, right: 4 };
 
@@ -40,7 +41,8 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
   const fiatCurrency = useWalletCurrency();
-  const shouldShowChart = !config.get('disable_jetton_charts') && jettonPrice.fiat !== 0;
+  const shouldShowChart = jettonPrice.fiat !== 0;
+  const shouldExcludeChartPeriods = config.get('exclude_jetton_chart_periods');
 
   const nav = useNavigation();
 
@@ -125,13 +127,21 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             />
           ) : null}
         </S.ActionsContainer>
-        <S.Divider style={{ marginBottom: 10 }} />
+        <S.Divider style={styles.mb10.static} />
         {shouldShowChart && (
           <>
             <S.ChartWrap>
-              <Chart currency={fiatCurrency} token={route.params.jettonAddress} />
+              <Chart
+                excludedPeriods={
+                  shouldExcludeChartPeriods
+                    ? [ChartPeriod.ONE_YEAR, ChartPeriod.SIX_MONTHS]
+                    : undefined
+                }
+                currency={fiatCurrency}
+                token={route.params.jettonAddress}
+              />
             </S.ChartWrap>
-            <S.Divider style={{ marginBottom: 0 }} />
+            <S.Divider style={styles.mb0.static} />
           </>
         )}
       </S.HeaderWrap>
@@ -216,5 +226,11 @@ const styles = Steezy.create({
   },
   iconContainer: {
     marginTop: 2,
+  },
+  mb10: {
+    marginBottom: 10,
+  },
+  mb0: {
+    marginBottom: 0,
   },
 });
