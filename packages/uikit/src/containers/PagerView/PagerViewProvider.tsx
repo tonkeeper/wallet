@@ -6,12 +6,15 @@ import { memo } from 'react';
 
 interface PagerViewProviderProps {
   pageOffset?: SharedValue<number>;
+  /** Real header height is measuring asynchronously.
+   *  Provide estimatedHeaderHeight for smooth layout */
+  estimatedHeaderHeight?: number;
   children?: React.ReactNode;
 }
 
 export const PagerViewProvider = memo<PagerViewProviderProps>((props) => {
   const { pageOffset } = props;
-  const pager = usePagerViewHandler(pageOffset, 288);
+  const pager = usePagerViewHandler(pageOffset, props.estimatedHeaderHeight);
 
   return (
     <PagerViewContext.Provider value={pager}>
