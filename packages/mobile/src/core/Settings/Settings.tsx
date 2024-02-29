@@ -322,7 +322,7 @@ export const Settings: FC = () => {
                 onPress={handleSubscriptions}
               />
             )}
-            {!!wallet && showNotifications && (
+            {!!wallet && showNotifications && !wallet.isTestnet && (
               <List.Item
                 value={<Icon color="accentPrimary" name={'ic-notification-28'} />}
                 title={t('settings_notifications')}
