@@ -9,8 +9,9 @@ import {
   SheetModalScrollViewRef,
 } from './SheetModal/SheetModalScrollView';
 import { ScreenModalHeaderProps } from './ScreenModal/ScreenModalHeader';
+import { ScreenModalProps } from './ScreenModal/ScreenModal';
 
-export type ModalProps = SheetModalProps;
+export type ModalProps = SheetModalProps | ScreenModalProps;
 export type ModalRef = SheetModalRef;
 
 export type ModalHeaderProps = SheetModalHeaderProps & ScreenModalHeaderProps;
