@@ -944,6 +944,7 @@
   "transaction_view_in_explorer" : "Подробнее",
   "transaction_wallet_initialized_date" : "%{date}",
   "transaction_your_bid" : "Ваша ставка",
+  "transfer_deeplink_unknown_jetton_error" : "Неизвестный токен",
   "transfer_deeplink_address_error" : "Неверный адрес получателя",
   "transfer_deeplink_amount_error" : "Некорректный запрос суммы",
   "transfer_deeplink_expired_error" : "Срок действия ссылки истёк",

@@ -918,6 +918,7 @@
   "transaction_view_in_explorer": "View in explorer",
   "transaction_wallet_initialized_date": "%{date}",
   "transaction_your_bid": "Your bid",
+  "transfer_deeplink_unknown_jetton_error" : "Unknown token",
   "transfer_deeplink_address_error": "Incorrect recipient address",
   "transfer_deeplink_unknown_token": "Unknown token",
   "transfer_deeplink_wrong_params": "Wrong parameters",
