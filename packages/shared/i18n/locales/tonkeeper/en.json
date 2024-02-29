@@ -2,7 +2,7 @@
   "about_ton": "TON is a fully decentralized layer-1 blockchain designed by Telegram to onboard billions of users. It boasts ultra-fast transactions, tiny fees, easy-to-use apps, and is environmentally friendly.",
   "access_confirmation_logout": "Sign Out",
   "access_confirmation_title": "Enter passcode",
-  "access_confirmation_update_biometry": "Enter passcode to use biometric auth data",
+  "access_confirmation_update_biometry": "Enter passcode to use biometrics auth data",
   "access_denied": "Access denied",
   "account_deleted": "Account deleted",
   "activityActionModal": {
@@ -502,10 +502,10 @@
       "fingerprint_genitive": "Touch ID",
       "fingerprint_instrumental": "Touch ID"
     },
-    "default": "biometric",
-    "default_accusative": "biometric",
-    "default_instrumental": "biometric",
-    "default_genitive": "biometric"
+    "default": "biometrics",
+    "default_accusative": "biometrics",
+    "default_instrumental": "biometrics",
+    "default_genitive": "biometrics"
   },
   "programmable_nfts": {
     "alert": {
@@ -1064,7 +1064,7 @@
       "subtitle": "Create new wallet"
     },
     "import": {
-      "title": "Import Wallet",
+      "title": "Existing Wallet",
       "subtitle": "Import wallet with a 24 secret recovery words"
     },
     "watch_only": {

@@ -73,7 +73,7 @@ export const MigrationStartScreen = memo(() => {
           <Spacer y={16} />
           <Button
             title={t('migration.with_biometry', {
-              type: getBiometryName(tk.biometry.type),
+              type: getBiometryName(tk.biometry.type, { instrumental: true }),
             })}
             color="secondary"
             onPress={handleBiometryPress}
