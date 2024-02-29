@@ -64,6 +64,11 @@ export class Address {
     return !addr.isUserFriendly || addr.isBounceable;
   }
 
+  static isTestnet(address: string) {
+    const addr = new TonWeb.Address(address);
+    return addr.isTestOnly;
+  }
+
   static compare(adr1?: string, adr2?: string) {
     if (adr1 === undefined || adr2 === undefined) {
       return false;
