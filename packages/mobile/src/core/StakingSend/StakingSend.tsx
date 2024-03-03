@@ -341,11 +341,11 @@ export const StakingSend: FC<Props> = (props) => {
   }, [isDeposit, pool, totalFee, unlockVault]);
 
   useEffect(() => {
-    if (isWithdrawalConfrim) {
+    if (isWithdrawalConfrim || initialAmount) {
       prepareConfirmSending();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isWithdrawalConfrim]);
+  }, [isWithdrawalConfrim, initialAmount]);
 
   const title = getTitle(transactionType);
 

@@ -222,10 +222,13 @@ export const Staking: FC<Props> = () => {
         >
           <S.Content bottomInset={bottomInset}>
             {showRestakeBanner && stakingAddressToMigrateFrom && (
-              <RestakeBanner
-                migrateFrom={stakingAddressToMigrateFrom}
-                poolsList={poolsList}
-              />
+              <>
+                <RestakeBanner
+                  migrateFrom={stakingAddressToMigrateFrom}
+                  poolsList={poolsList}
+                />
+                <Spacer y={16} />
+              </>
             )}
             {!hasActivePools ? (
               <S.LargeTitleContainer>

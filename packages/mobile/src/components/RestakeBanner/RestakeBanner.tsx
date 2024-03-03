@@ -131,7 +131,7 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
           completed={currentStepId > RestakeSteps.UNSTAKE}
           actions={
             poolToWithdrawal &&
-            !toWithdrawalStakingInfo?.pending_withdraw && [
+            currentStepId > RestakeSteps.UNSTAKE && [
               <Button
                 color="primary"
                 size="small"
