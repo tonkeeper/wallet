@@ -7,7 +7,7 @@ export const useDAppsNotifications = () => {
   const wallet = useWallet();
 
   const rawAddress = wallet?.address.ton.raw ?? '';
-  const isTestnet = wallet?.isTestnet ?? false;
+  const shouldHide = !!wallet?.isTestnet || !!wallet.isWatchOnly;
 
   const data = useNotificationsStore((state) => state.wallets[rawAddress], shallow);
 
@@ -47,8 +47,8 @@ export const useDAppsNotifications = () => {
 
   return useMemo(() => {
     return {
-      notifications: data && !isTestnet ? data.notifications ?? [] : [],
-      shouldShowRedDot: data && !isTestnet ? !!data.should_show_red_dot : false,
+      notifications: data && !shouldHide ? data.notifications ?? [] : [],
+      shouldShowRedDot: data && !shouldHide ? !!data.should_show_red_dot : false,
       lastSeenAt: data?.last_seen ?? 0,
       lastSeenActivityScreenAt: data?.last_seen_activity_screen ?? 0,
       updateLastSeen,
@@ -59,7 +59,7 @@ export const useDAppsNotifications = () => {
     };
   }, [
     data,
-    isTestnet,
+    shouldHide,
     updateLastSeen,
     updateLastSeenActivityScreen,
     removeRedDot,
