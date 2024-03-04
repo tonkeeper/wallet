@@ -140,7 +140,7 @@ export const TabStack: FC = () => {
           tabBarIcon: ({ color }) => (
             <View style={styles.settingsIcon}>
               <Icon colorHex={color} name="ic-settings-28" />
-              <BackupIndicator />
+              {!isWatchOnly ? <BackupIndicator /> : null}
             </View>
           ),
         }}
