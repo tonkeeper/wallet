@@ -15,6 +15,8 @@ import { useBatteryBalance } from '@tonkeeper/shared/query/hooks/useBatteryBalan
 import { config } from '$config';
 import { openRefillBatteryModal } from '@tonkeeper/shared/modals/RefillBatteryModal';
 import { tk } from '$wallet';
+import { Wallet } from '$wallet/Wallet';
+import { AmountFormatter } from '@tonkeeper/core';
 
 export interface InsufficientFundsParams {
   /**
@@ -160,11 +162,10 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
   );
 });
 
-export async function checkIsInsufficient(amount: string | number) {
+export async function checkIsInsufficient(amount: string | number, wallet: Wallet) {
   try {
-    const wallet = store.getState().wallet.wallet;
-    const address = await wallet.ton.getAddress();
-    const { balance } = await tk.wallet.tonapi.accounts.getAccount(address);
+    const balances = await wallet.balances.load();
+    const balance = AmountFormatter.toNano(balances.ton);
     return { insufficient: new BigNumber(amount).gt(new BigNumber(balance)), balance };
   } catch (e) {
     debugLog('[checkIsInsufficient]: error', e);

@@ -6,6 +6,7 @@ export interface TonConnectModalResponse {
   address: string;
   replyItems: ConnectItemReply[];
   notificationsEnabled: boolean;
+  walletIdentifier: string;
 }
 
 export type TonConnectModalProps =

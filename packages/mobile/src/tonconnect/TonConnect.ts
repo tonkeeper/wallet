@@ -114,7 +114,7 @@ class TonConnectService {
       const manifest = await this.getManifest(request);
 
       try {
-        const { address, replyItems, notificationsEnabled } =
+        const { address, replyItems, notificationsEnabled, walletIdentifier } =
           await new Promise<TonConnectModalResponse>((resolve, reject) =>
             openTonConnect({
               protocolVersion: protocolVersion as 2,
@@ -125,7 +125,10 @@ class TonConnectService {
             }),
           );
 
+        const wallet = tk.wallets.get(walletIdentifier)!;
+
         saveAppConnection(
+          wallet.isTestnet,
           address,
           {
             name: manifest.name,
@@ -144,7 +147,7 @@ class TonConnectService {
         );
 
         if (notificationsEnabled) {
-          enableNotifications(address, manifest.url, clientSessionId);
+          enableNotifications(wallet.isTestnet, address, manifest.url, clientSessionId);
         }
 
         return {
@@ -223,6 +226,7 @@ class TonConnectService {
         )
       ) {
         saveAppConnection(
+          tk.wallet.isTestnet,
           currentWalletAddress,
           {
             name: connectedApp.name,
@@ -259,12 +263,16 @@ class TonConnectService {
   async handleDisconnectRequest(
     request: AppRequest<'disconnect'>,
     connectedApp: IConnectedApp,
-    connection: IConnectedAppConnection,
+    connection: WithWalletIdentifier<IConnectedAppConnection>,
   ): Promise<WalletResponse<'disconnect'>> {
     if (connection.type === TonConnectBridgeType.Injected) {
       removeInjectedConnection(connectedApp.url);
     } else {
-      removeRemoteConnection(connectedApp, connection);
+      removeRemoteConnection(
+        tk.wallets.get(connection.walletIdentifier)!.isTestnet,
+        connectedApp,
+        connection,
+      );
     }
 
     return {

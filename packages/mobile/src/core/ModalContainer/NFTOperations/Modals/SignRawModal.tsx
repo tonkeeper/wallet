@@ -306,7 +306,7 @@ export const openSignRawModal = async (
 
       if (!isBattery) {
         const totalAmount = calculateMessageTransferAmount(params.messages);
-        const checkResult = await checkIsInsufficient(totalAmount);
+        const checkResult = await checkIsInsufficient(totalAmount, wallet);
         if (checkResult.insufficient) {
           Toast.hide();
           onDismiss?.();

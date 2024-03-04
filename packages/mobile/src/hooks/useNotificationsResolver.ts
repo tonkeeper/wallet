@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { useDeeplinking } from '$libs/deeplinking';
 import { openDAppBrowser, resetToWalletTab } from '$navigation';
-import { delay, getDomainFromURL } from '$utils';
+import { getDomainFromURL } from '$utils';
 import { Alert } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
 import { useNotificationsStore } from '$store';
@@ -23,8 +23,6 @@ export const useNotificationsResolver = () => {
         remoteMessage,
       );
 
-      useNotificationsStore.getState().actions.removeRedDot();
-
       const account = remoteMessage.data?.account;
       const deeplink = remoteMessage.data?.deeplink;
       const link = remoteMessage.data?.link;
@@ -37,6 +35,8 @@ export const useNotificationsResolver = () => {
           resetToWalletTab();
           tk.switchWallet(wallet.identifier);
         }
+
+        useNotificationsStore.getState().actions.removeRedDot(tk.wallet.address.ton.raw);
       }
 
       if (deeplink) {

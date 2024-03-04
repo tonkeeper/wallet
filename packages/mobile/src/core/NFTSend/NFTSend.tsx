@@ -260,7 +260,7 @@ export const NFTSend: FC<Props> = (props) => {
         ? BASE_FORWARD_AMOUNT
         : BigInt(Math.abs(consequences?.event.extra!)) + BASE_FORWARD_AMOUNT;
 
-      const checkResult = await checkIsInsufficient(totalAmount.toString());
+      const checkResult = await checkIsInsufficient(totalAmount.toString(), tk.wallet);
       if (!isBattery && checkResult.insufficient) {
         openInsufficientFundsModal({
           totalAmount: totalAmount.toString(),

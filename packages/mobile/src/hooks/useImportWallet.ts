@@ -100,7 +100,7 @@ export const useImportWallet = () => {
                       isTestnet,
                       onDone: (identifiers) => {
                         tk.saveLastBackupTimestampAll(identifiers);
-                        if (isNotificationsDenied) {
+                        if (isNotificationsDenied || isTestnet) {
                           openSetupWalletDone(identifiers);
                         } else {
                           openSetupNotifications(identifiers);

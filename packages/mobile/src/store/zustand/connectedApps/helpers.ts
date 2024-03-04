@@ -18,16 +18,23 @@ const getWalletAddress = () => {
 };
 
 export const saveAppConnection = (
+  isTestnet: boolean,
   walletAddress: string,
   appData: Omit<IConnectedApp, 'connections'>,
   connection: IConnectedAppConnection,
 ) => {
   useConnectedAppsStore
     .getState()
-    .actions.saveAppConnection(getChainName(), walletAddress, appData, connection);
+    .actions.saveAppConnection(
+      isTestnet ? 'testnet' : 'mainnet',
+      walletAddress,
+      appData,
+      connection,
+    );
 };
 
 export const enableNotifications = async (
+  isTestnet: boolean,
   walletAddress: string,
   url: IConnectedApp['url'],
   sessionId: string | undefined,
@@ -35,7 +42,12 @@ export const enableNotifications = async (
   try {
     useConnectedAppsStore
       .getState()
-      .actions.enableNotifications(getChainName(), walletAddress, url, sessionId);
+      .actions.enableNotifications(
+        isTestnet ? 'testnet' : 'mainnet',
+        walletAddress,
+        url,
+        sessionId,
+      );
   } catch (e) {
     console.log(e);
   }
@@ -71,6 +83,7 @@ export const removeInjectedConnection = (url: string) => {
 };
 
 export const removeRemoteConnection = (
+  isTestnet: boolean,
   connectedApp: IConnectedApp,
   connection: IConnectedAppConnectionRemote,
 ) => {
@@ -79,7 +92,7 @@ export const removeRemoteConnection = (
   useConnectedAppsStore
     .getState()
     .actions.removeRemoteConnection(
-      getChainName(),
+      isTestnet ? 'testnet' : 'mainnet',
       currentWalletAddress,
       connectedApp.url,
       connection.clientSessionId,

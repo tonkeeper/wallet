@@ -132,7 +132,7 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
   }, []);
 
   return (
-    <Modal>
+    <Modal blurOnBackgroundPress>
       <NavBar isModal isClosedButton isForceBackIcon hideBackButton />
       <View style={styles.container}>
         <View style={styles.topContainer} onLayout={handleLayout}>

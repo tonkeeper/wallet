@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Button, Icon, Screen, Spacer, Text, View } from '$uikit';
-import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { Notification } from '$core/Notifications/Notification';
 import { Steezy } from '$styles';
 import { openNotifications } from '$navigation';
 import { t } from '@tonkeeper/shared/i18n';
-import { INotification } from '$store';
+import { INotification, useDAppsNotifications } from '$store';
 import { FlashList } from '@shopify/flash-list';
 import { LayoutAnimation } from 'react-native';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
@@ -48,9 +47,7 @@ export const ListEmpty: React.FC = () => {
 };
 
 export const NotificationsActivity: React.FC = () => {
-  const notifications = useNotificationsStore((state) => state.notifications);
-  const lastSeenAt = useNotificationsStore((state) => state.last_seen);
-  const updateLastSeen = useNotificationsStore((state) => state.actions.updateLastSeen);
+  const { notifications, lastSeenAt, updateLastSeen } = useDAppsNotifications();
   const list = useRef<FlashList<Element | null> | null>(null);
   const closeOtherSwipeable = useRef<null | (() => void)>(null);
   const lastSwipeableId = useRef<null | number>(null);

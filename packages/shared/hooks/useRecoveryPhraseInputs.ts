@@ -72,6 +72,9 @@ export function useRecoveryPhraseInputs(shiftScroll?: number) {
 
   const scrollToInput = useCallback(
     (index: number) => {
+      if (index === 0) {
+        return;
+      }
       const inputPos = getPosition(index);
       if (inputPos !== undefined) {
         scrollViewRef.current?.scrollTo({
