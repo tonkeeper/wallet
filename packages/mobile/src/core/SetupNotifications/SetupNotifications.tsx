@@ -30,7 +30,7 @@ export const SetupNotifications: React.FC<Props> = (props) => {
       setLoading(true);
 
       if (identifiers.length > 1) {
-        await tk.enableNotificationsForAll(identifiers);
+        tk.enableNotificationsForAll(identifiers).catch(null);
       } else {
         await tk.wallet.notifications.subscribe();
       }

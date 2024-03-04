@@ -38,14 +38,13 @@ import { checkIsTonDiamondsNFT, hNs, ns, throttle } from '$utils';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { CellSectionItem } from '$shared/components';
 import { useFlags } from '$utils/flags';
-import { SearchEngine, useBrowserStore, useNotificationsStore } from '$store';
+import { SearchEngine, useBrowserStore } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
 import { Steezy } from '$styles';
 import { i18n, t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 import { config } from '$config';
-import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
 import {
   useNftsState,
   useWallet,
@@ -80,7 +79,6 @@ export const Settings: FC = () => {
   );
   const wallet = useWallet();
   const shouldShowTokensButton = useShouldShowTokensButton();
-  const showNotifications = useNotificationsStore(shouldShowNotifications);
 
   const { lastBackupAt } = useWalletStatus();
 
@@ -322,7 +320,7 @@ export const Settings: FC = () => {
                 onPress={handleSubscriptions}
               />
             )}
-            {!!wallet && showNotifications && !wallet.isTestnet && (
+            {!!wallet && wallet.notifications.isAvailable && !wallet.isTestnet && (
               <List.Item
                 value={<Icon color="accentPrimary" name={'ic-notification-28'} />}
                 title={t('settings_notifications')}

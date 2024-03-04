@@ -18,13 +18,13 @@ import { FONT } from '$styled';
 import { useCheckForUpdates } from '$hooks/useCheckForUpdates';
 import { useLoadExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { ActivityStack } from '$navigation/ActivityStack/ActivityStack';
-import { useNotificationsStore } from '$store';
 import { BackupIndicator } from '$navigation/MainStack/TabStack/BackupIndicator';
 import { useFetchMethodsToBuy } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { trackEvent } from '$utils/stats';
 import { useRemoteBridge } from '$tonconnect';
 import { BrowserStack } from '$navigation/BrowserStack/BrowserStack';
 import { useWallet } from '@tonkeeper/shared/hooks';
+import { useDAppsNotifications } from '$store';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -32,8 +32,7 @@ export const TabStack: FC = () => {
   const { bottomSeparatorStyle } = useContext(ScrollPositionContext);
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
-  const shouldShowRedDot = useNotificationsStore((state) => state.should_show_red_dot);
-  const removeRedDot = useNotificationsStore((state) => state.actions.removeRedDot);
+  const { shouldShowRedDot, removeRedDot } = useDAppsNotifications();
 
   useRemoteBridge();
   useLoadExpiringDomains();

@@ -25,12 +25,11 @@ import { t } from '@tonkeeper/shared/i18n';
 import { TonConnectModalProps } from './models';
 import { useEffect } from 'react';
 import { Haptics, Icon, Modal } from '@tonkeeper/uikit';
-import { Toast, useNotificationsStore } from '$store';
+import { Toast } from '$store';
 import { push } from '$navigation/imperative';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { Address } from '@tonkeeper/core';
-import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
 import { replaceString } from '@tonkeeper/shared/utils/replaceString';
 import { tk } from '$wallet';
 import { WalletListItem } from '@tonkeeper/shared/components';
@@ -41,8 +40,6 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   const unlockVault = useUnlockVault();
   const theme = useTheme();
   const nav = useNavigation();
-  const showNotifications = useNotificationsStore(shouldShowNotifications);
-  const [withNotifications, setWithNotifications] = React.useState(showNotifications);
   const [selectedWalletIdentifier, setSelectedWalletIdentifier] = React.useState<string>(
     tk.wallet.isWatchOnly ? tk.walletForUnlock.identifier : tk.wallet.identifier,
   );
@@ -55,6 +52,8 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
     () => tk.wallets.get(selectedWalletIdentifier)!,
     [selectedWalletIdentifier],
   );
+  const showNotifications = wallet.notifications.isAvailable;
+  const [withNotifications, setWithNotifications] = React.useState(showNotifications);
   const friendlyAddress = wallet.address.ton.friendly;
   const maskedAddress = Address.toShort(friendlyAddress);
 
