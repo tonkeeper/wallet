@@ -3,7 +3,7 @@ import { ScreenLargeHeaderHeight } from '../Screen/utils/constants';
 import { StyleSheet, useWindowDimensions } from 'react-native';
 import { usePagerView } from './hooks/usePagerView';
 import { useScreenScroll } from '../Screen/hooks';
-import { PropsWithChildren, memo } from 'react';
+import { PropsWithChildren, memo, useEffect } from 'react';
 import { isAndroid } from '../../utils';
 import { useTheme } from '../../styles';
 

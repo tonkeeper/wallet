@@ -8,7 +8,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Toast } from '$store';
 import { List, Modal, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
-import { SheetActions } from '@tonkeeper/router';
+import { SheetActions, useNavigation } from '@tonkeeper/router';
 import {
   checkIsInsufficient,
   openInsufficientFundsModal,
@@ -38,6 +38,12 @@ import {
   ActivityModel,
   AnyActionItem,
 } from '$wallet/models/ActivityModel';
+import { JettonTransferAction, NftItemTransferAction } from 'tonapi-sdk-js';
+import {
+  TokenDetailsParams,
+  TokenDetailsProps,
+} from '../../../../components/TokenDetails/TokenDetails';
+import { ModalStackRouteNames } from '$navigation';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -62,6 +68,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     walletIdentifier,
   } = props;
   const wallet = useMemo(() => tk.wallets.get(walletIdentifier), [walletIdentifier]);
+  const nav = useNavigation();
 
   if (!wallet) {
     throw new Error('wallet is not found');
@@ -73,6 +80,8 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   const fiatCurrency = useWalletCurrency();
   const getTokenPrice = useGetTokenPrice();
 
+  const handleOpenTokenDetails = (tokenDetailsParams: TokenDetailsParams) => () =>
+    nav.navigate(ModalStackRouteNames.TokenDetails, tokenDetailsParams);
   const handleConfirm = onConfirm(async ({ startLoading }) => {
     const vault = await unlockVault(wallet.identifier);
     const privateKey = await vault.getTonPrivateKey();
@@ -223,7 +232,17 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
                 value={formatValue(action)}
                 subvalue={amountToFiat(action)}
                 title={getActionTitle(action)}
-                disablePressable
+                disableNftPreview={true}
+                disablePressable={
+                  !(
+                    (action.payload as any as JettonTransferAction)?.jetton ||
+                    (action.payload as any as NftItemTransferAction)?.nft
+                  )
+                }
+                onPress={handleOpenTokenDetails({
+                  jetton: (action.payload as any as JettonTransferAction)?.jetton,
+                  nft: (action.payload as any as NftItemTransferAction)?.nft,
+                })}
                 action={action}
                 subtitle={
                   action.destination === 'in'

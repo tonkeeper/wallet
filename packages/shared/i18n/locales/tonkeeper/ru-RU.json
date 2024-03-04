@@ -1175,6 +1175,12 @@
     "with_passcode": "Ввести пароль",
     "with_biometry": "Продолжить с %{type}"
   },
+  "tokenDetails": {
+    "title": "Подробнее о токене",
+    "tonviewer_button": "Открыть в Tonviewer",
+    "name": "Имя",
+    "token_id": "ID токена"
+  },
   "backup_screen": {
     "title": "Резервная копия",
     "manual_title": "Вручную",

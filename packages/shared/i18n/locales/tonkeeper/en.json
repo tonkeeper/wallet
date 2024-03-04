@@ -1110,6 +1110,12 @@
     "with_passcode": "Enter Passcode",
     "with_biometry": "Continue with %{type}"
   },
+  "tokenDetails": {
+    "title": "Token Details",
+    "tonviewer_button": "View on Tonviewer",
+    "name": "Name",
+    "token_id": "Token ID"
+  },
   "backup_screen": {
     "title": "Backup",
     "manual_title": "Manual",

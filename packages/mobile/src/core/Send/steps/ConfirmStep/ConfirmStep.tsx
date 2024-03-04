@@ -222,24 +222,29 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
           <Spacer y={32} />
           <S.Table>
             {tk.wallets.size > 1 && (
-              <S.Item>
-                <S.ItemLabel>{t('send_screen_steps.comfirm.wallet')}</S.ItemLabel>
-                <S.ItemContent>
-                  <S.ItemValue numberOfLines={1}>
-                    {tk.wallet.config.emoji} {tk.wallet.config.name}
-                  </S.ItemValue>
-                </S.ItemContent>
-              </S.Item>
+              <>
+                <S.Item>
+                  <S.ItemLabel>{t('send_screen_steps.comfirm.wallet')}</S.ItemLabel>
+                  <S.ItemContent>
+                    <S.ItemValue numberOfLines={1}>
+                      {tk.wallet.config.emoji} {tk.wallet.config.name}
+                    </S.ItemValue>
+                  </S.ItemContent>
+                </S.Item>
+                <Separator />
+              </>
             )}
             {recipientName ? (
-              <S.Item>
-                <S.ItemLabel>{t('confirm_sending_recipient')}</S.ItemLabel>
-                <S.ItemContent>
-                  <S.ItemValue numberOfLines={1}>{recipientName}</S.ItemValue>
-                </S.ItemContent>
-              </S.Item>
+              <>
+                <S.Item>
+                  <S.ItemLabel>{t('confirm_sending_recipient')}</S.ItemLabel>
+                  <S.ItemContent>
+                    <S.ItemValue numberOfLines={1}>{recipientName}</S.ItemValue>
+                  </S.ItemContent>
+                </S.Item>
+                <Separator />
+              </>
             ) : null}
-            <Separator />
             <Highlight onPress={handleCopy(recipient.address, t('address_copied'))}>
               <S.Item>
                 <S.ItemLabel>

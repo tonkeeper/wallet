@@ -320,7 +320,7 @@ export const WalletScreen = memo(({ navigation }) => {
         hideBackButton
       />
       {isPagerView ? (
-        <PagerView>
+        <PagerView estimatedHeaderHeight={288}>
           <PagerView.Header>
             {ListHeader}
             <PagerView.TabBar centered>
