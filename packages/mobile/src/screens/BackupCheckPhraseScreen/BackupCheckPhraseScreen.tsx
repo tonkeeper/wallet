@@ -95,14 +95,13 @@ export const BackupCheckPhraseScreen = memo(() => {
         <Spacer y={16} />
         <View style={styles.inputsContainer}>
           {words.map((item, index) => (
-            <View key={`${item.word}-${index}`}>
+            <View key={`${item.word}-${index}`} onLayout={inputs.setPosition(index)}>
               <Input
                 key={`input-${index}`}
                 renderToHardwareTextureAndroid
                 leftContent={<InputNumberPrefix index={item.index} />}
                 returnKeyType={index === 2 ? 'done' : 'next'}
                 onChangeText={handleChange(index)}
-                onLayout={inputs.setPosition(index)}
                 onSubmitEditing={handleSubmitEditing(index)}
                 onFocus={inputs.onFocus(index)}
                 onBlur={onBlur(index)}
