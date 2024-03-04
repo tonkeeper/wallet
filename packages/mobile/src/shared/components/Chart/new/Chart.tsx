@@ -11,7 +11,7 @@ import { useTheme } from '$hooks/useTheme';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { PriceLabel } from './PriceLabel/PriceLabel';
 import { PercentDiff } from './PercentDiff/PercentDiff';
-import { PeriodSelector } from './PeriodSelector/PeriodSelector';
+import { PeriodSelector, PeriodSelectorProps } from './PeriodSelector/PeriodSelector';
 import { Rate } from './Rate/Rate';
 import { useQuery } from 'react-query';
 import { loadChartData } from './Chart.api';
@@ -28,6 +28,7 @@ export const { width: SIZE } = Dimensions.get('window');
 export interface ChartProps {
   token: string;
   currency: WalletCurrency;
+  excludedPeriods?: PeriodSelectorProps['excludedPeriods'];
 }
 
 const ChartComponent: React.FC<ChartProps> = (props) => {
@@ -146,6 +147,7 @@ const ChartComponent: React.FC<ChartProps> = (props) => {
         </ChartPathProvider>
       </View>
       <PeriodSelector
+        excludedPeriods={props.excludedPeriods}
         disabled={isLoading || isFetching}
         selectedPeriod={selectedPeriod}
         onSelect={setChartPeriod}
