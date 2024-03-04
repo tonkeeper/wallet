@@ -651,6 +651,8 @@
   "settings_reset_alert_title": "Sign Out?",
   "settings_reset_alert_caption_all": "This will erase keys to all wallets. Make sure you have backed up your recovery phrases.",
   "settings_reset_alert_title_all": "Sign Out of All Wallets?",
+  "settings_delete_watch_account": "Delete Watch Account?",
+  "settings_delete_watch_account_button": "Delete",
   "settings_search_engine": "Search",
   "settings_security": "Security",
   "settings_subscriptions": "Subscriptions",

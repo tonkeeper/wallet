@@ -142,7 +142,19 @@ export const Settings: FC = () => {
   }, [dispatch]);
 
   const handleStopWatchWallet = useCallback(() => {
-    dispatch(walletActions.cleanWallet());
+    Alert.alert(t('settings_delete_watch_account'), undefined, [
+      {
+        text: t('cancel'),
+        style: 'cancel',
+      },
+      {
+        text: t('settings_delete_watch_account_button'),
+        style: 'destructive',
+        onPress: () => {
+          dispatch(walletActions.cleanWallet());
+        },
+      },
+    ]);
   }, [dispatch]);
 
   const handleSubscriptions = useCallback(() => {
