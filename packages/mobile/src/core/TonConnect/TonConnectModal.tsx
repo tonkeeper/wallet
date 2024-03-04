@@ -189,6 +189,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
           address,
           replyItems,
           notificationsEnabled: withNotifications,
+          walletIdentifier: wallet.identifier,
         });
       }
 

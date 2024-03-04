@@ -24,7 +24,10 @@ export const useConnectedAppsStore = create(
         ...initialState,
         actions: {
           saveAppConnection: (chainName, address, appData, connection) => {
-            const walletAddress = Address.parse(address).toFriendly({ bounceable: true });
+            const walletAddress = Address.parse(address).toFriendly({
+              bounceable: true,
+              testOnly: chainName === 'testnet',
+            });
             set(({ connectedApps }) => {
               if (!connectedApps[chainName][walletAddress]) {
                 connectedApps[chainName][walletAddress] = {};
@@ -57,7 +60,10 @@ export const useConnectedAppsStore = create(
             });
           },
           removeInjectedConnection: async (chainName, address, url) => {
-            const walletAddress = Address.parse(address).toFriendly({ bounceable: true });
+            const walletAddress = Address.parse(address).toFriendly({
+              bounceable: true,
+              testOnly: chainName === 'testnet',
+            });
             const fixedUrl = getFixedLastSlashUrl(url);
 
             get().actions.unsubscribeFromNotifications(chainName, walletAddress, url);
@@ -93,7 +99,10 @@ export const useConnectedAppsStore = create(
             });
           },
           removeRemoteConnection: async (chainName, address, url, clientSessionId) => {
-            const walletAddress = Address.parse(address).toFriendly({ bounceable: true });
+            const walletAddress = Address.parse(address).toFriendly({
+              bounceable: true,
+              testOnly: chainName === 'testnet',
+            });
             const fixedUrl = getFixedLastSlashUrl(url);
 
             get().actions.unsubscribeFromNotifications(chainName, walletAddress, url);
@@ -131,7 +140,10 @@ export const useConnectedAppsStore = create(
             });
           },
           enableNotifications: async (chainName, address, url, session_id) => {
-            const walletAddress = Address.parse(address).toFriendly({ bounceable: true });
+            const walletAddress = Address.parse(address).toFriendly({
+              bounceable: true,
+              testOnly: chainName === 'testnet',
+            });
             try {
               const fixedUrl = getFixedLastSlashUrl(url);
               const token = tk.getWalletByAddress(walletAddress)!.tonProof.tonProofToken;
@@ -173,7 +185,10 @@ export const useConnectedAppsStore = create(
             }
           },
           updateNotificationsSubscription: async (chainName, address) => {
-            const walletAddress = Address.parse(address).toFriendly({ bounceable: true });
+            const walletAddress = Address.parse(address).toFriendly({
+              bounceable: true,
+              testOnly: chainName === 'testnet',
+            });
             const apps = get().connectedApps[chainName][walletAddress] || {};
             const appsWithEnabledNotifications = Object.values(apps).filter(
               (app) => app.notificationsEnabled,
@@ -190,7 +205,10 @@ export const useConnectedAppsStore = create(
             );
           },
           disableNotifications: async (chainName, address, url) => {
-            const walletAddress = Address.parse(address).toFriendly({ bounceable: true });
+            const walletAddress = Address.parse(address).toFriendly({
+              bounceable: true,
+              testOnly: chainName === 'testnet',
+            });
             try {
               const fixedUrl = getFixedLastSlashUrl(url);
               const token = tk.getWalletByAddress(walletAddress)!.tonProof.tonProofToken;
@@ -237,7 +255,10 @@ export const useConnectedAppsStore = create(
             }
           },
           unsubscribeFromNotifications: async (chainName, address, url) => {
-            const walletAddress = Address.parse(address).toFriendly({ bounceable: true });
+            const walletAddress = Address.parse(address).toFriendly({
+              bounceable: true,
+              testOnly: chainName === 'testnet',
+            });
             try {
               const fixedUrl = getFixedLastSlashUrl(url);
               const token = tk.getWalletByAddress(walletAddress)!.tonProof.tonProofToken;
@@ -281,7 +302,10 @@ export const useConnectedAppsStore = create(
             }
           },
           unsubscribeFromAllNotifications: async (chainName, address) => {
-            const walletAddress = Address.parse(address).toFriendly({ bounceable: true });
+            const walletAddress = Address.parse(address).toFriendly({
+              bounceable: true,
+              testOnly: chainName === 'testnet',
+            });
             const apps = get().connectedApps[chainName][walletAddress] || {};
             const appsWithEnabledNotifications = Object.values(apps).filter(
               (app) => app.notificationsEnabled,
@@ -295,7 +319,10 @@ export const useConnectedAppsStore = create(
             );
           },
           removeApp: async (chainName, address, url) => {
-            const walletAddress = Address.parse(address).toFriendly({ bounceable: true });
+            const walletAddress = Address.parse(address).toFriendly({
+              bounceable: true,
+              testOnly: chainName === 'testnet',
+            });
             const fixedUrl = getFixedLastSlashUrl(url);
 
             get().actions.unsubscribeFromNotifications(chainName, walletAddress, url);
