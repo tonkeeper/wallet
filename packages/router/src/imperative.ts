@@ -64,7 +64,7 @@ export const navigation = {
   reset,
 };
 
-export const useParams = <T>(): Partial<T> => {
+export const useParams = <T>(): T => {
   const route = useRoute();
-  return route.params ?? {};
+  return (route.params as T) ?? ({} as T);
 };

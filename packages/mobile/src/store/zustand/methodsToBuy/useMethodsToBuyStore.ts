@@ -10,6 +10,7 @@ import DeviceInfo from 'react-native-device-info';
 import { flatMap, uniqBy } from 'lodash';
 import { tk } from '$wallet';
 import { config } from '$config';
+import { Platform } from 'react-native';
 
 const initialState: Omit<IMethodsToBuyStore, 'actions'> = {
   selectedCountry: 'AUTO',
@@ -44,6 +45,7 @@ export const useMethodsToBuyStore = create(
             `${config.get('tonkeeperEndpoint')}/fiat/methods`,
             {
               params: {
+                platform: Platform.OS,
                 lang: i18n.locale,
                 build: DeviceInfo.getVersion(),
                 chainName: 'mainnet',

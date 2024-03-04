@@ -45,9 +45,12 @@ export const CardsList = memo<CardsListProps>((props) => {
   }, [nav]);
   const getTokenPrice = useGetTokenPrice();
 
-  const getPrice = useCallback((amount) => {
-    return getTokenPrice(CryptoCurrencies.Ton, amount);
-  }, []);
+  const getPrice = useCallback(
+    (amount) => {
+      return getTokenPrice(CryptoCurrencies.Ton, amount);
+    },
+    [getTokenPrice],
+  );
 
   return (
     <List indent={false}>

@@ -19,6 +19,7 @@ import { HideableAmountProvider } from '$core/HideableAmount/HideableAmountProvi
 
 import { queryClient } from '@tonkeeper/shared/queryClient';
 import { WalletProvider } from '../context';
+import { BlockingLoaderView } from '@tonkeeper/uikit';
 
 const TonThemeProvider = ({ children }) => {
   const accent = useSelector(accentSelector);
@@ -56,6 +57,7 @@ export function App() {
                 </ScrollPositionProvider>
                 {/* <MobilePasscodeScreen locked={tonkeeper.securitySettings.locked} /> */}
                 <ToastComponent />
+                <BlockingLoaderView />
                 {isAndroid ? (
                   <View
                     style={{

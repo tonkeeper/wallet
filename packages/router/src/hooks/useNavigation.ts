@@ -93,6 +93,10 @@ export const useNavigation = () => {
     }
   };
 
+  const pop = (level: number) => {
+    nav.dispatch(StackActions.pop(level));
+  };
+
   const openModal = (path: string, params?: any) => {
     const find = sheetRoutes.find((el) => el.path === path);
     if (find) {
@@ -116,6 +120,7 @@ export const useNavigation = () => {
     setParams,
     navigate,
     goBack,
+    pop,
     reset,
     closeModal,
     push,

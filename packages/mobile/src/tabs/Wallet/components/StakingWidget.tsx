@@ -15,10 +15,11 @@ import { useStakingState } from '@tonkeeper/shared/hooks';
 
 interface Props {
   isWatchOnly: boolean;
+  showBuyButton: boolean;
 }
 
 const StakingWidgetComponent: FC<Props> = (props) => {
-  const { isWatchOnly } = props;
+  const { isWatchOnly, showBuyButton } = props;
 
   const nav = useNavigation();
 
@@ -32,6 +33,10 @@ const StakingWidgetComponent: FC<Props> = (props) => {
     nav.push(MainStackRouteNames.Staking);
   }, [nav]);
 
+  const handleBuyPress = useCallback(() => {
+    nav.openModal('Exchange');
+  }, [nav]);
+
   const staked = stakingInfo.length > 0;
 
   const apyDescription = highestApyPool
@@ -39,6 +44,8 @@ const StakingWidgetComponent: FC<Props> = (props) => {
         apy: highestApyPool.apy.toFixed(2),
       })
     : '';
+
+  const shouldShowBuyButton = showBuyButton && !isWatchOnly && !staked;
 
   return (
     <View style={styles.container}>
@@ -54,13 +61,25 @@ const StakingWidgetComponent: FC<Props> = (props) => {
           <Flash disabled={flashShownCount >= 2}>
             <StakingListCell
               isWidget={!staked}
+              isWidgetAccent={shouldShowBuyButton}
               id="staking"
               name={t('staking.widget_title')}
               description={staked ? t('staking.widget_staking_options') : apyDescription}
               onPress={handleStakingPress}
+              separator={shouldShowBuyButton}
             />
           </Flash>
         )}
+        {shouldShowBuyButton ? (
+          <StakingListCell
+            isWidget
+            isBuyTon
+            id="buy_ton"
+            name={t('buy_ton.title')}
+            description={t('buy_ton.subtitle')}
+            onPress={handleBuyPress}
+          />
+        ) : null}
       </List>
     </View>
   );

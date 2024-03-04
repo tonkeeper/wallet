@@ -448,7 +448,7 @@ const styles = Steezy.create(({ colors, corners }) => ({
   leftContent: {
     paddingTop: 16 - InputBorderWidth,
     position: 'absolute',
-    top: 0,
+    top: isAndroid ? 1 : 0,
   },
   invalidBg: {
     position: 'absolute',

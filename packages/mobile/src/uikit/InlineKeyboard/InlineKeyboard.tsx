@@ -6,12 +6,13 @@ import {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import * as LocalAuthentication from 'expo-local-authentication';
 
 import { InlineKeyboardProps, KeyProps } from './InlineKeyboard.interface';
 import * as S from './InlineKeyboard.style';
-import { detectBiometryType, triggerSelection } from '$utils';
+import { triggerSelection } from '$utils';
 import { Icon } from '../Icon/Icon';
+import { tk } from '$wallet';
+import { BiometryType } from '$wallet/Biometry';
 
 const Key: FC<KeyProps> = (props) => {
   const { onPress, children, disabled } = props;
@@ -65,20 +66,6 @@ export const InlineKeyboard: FC<InlineKeyboardProps> = (props) => {
     biometryEnabled = false,
     onBiometryPress,
   } = props;
-  const [biometryType, setBiometryType] = useState(-1);
-
-  useEffect(() => {
-    if (biometryEnabled) {
-      LocalAuthentication.supportedAuthenticationTypesAsync().then((types) => {
-        const type = detectBiometryType(types);
-        if (type) {
-          setBiometryType(type);
-        }
-      });
-    } else {
-      setBiometryType(-1);
-    }
-  }, [biometryEnabled]);
 
   const handlePress = useCallback(
     (num: number) => () => {
@@ -111,18 +98,18 @@ export const InlineKeyboard: FC<InlineKeyboardProps> = (props) => {
     }
 
     let biometryButton = <Key disabled />;
-    if (biometryType === LocalAuthentication.AuthenticationType.FINGERPRINT) {
+
+    if (biometryEnabled) {
       biometryButton = (
         <Key disabled={disabled} onPress={onBiometryPress}>
-          <Icon name="ic-fingerprint-36" color="foregroundPrimary" />
-        </Key>
-      );
-    } else if (
-      biometryType === LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION
-    ) {
-      biometryButton = (
-        <Key disabled={disabled} onPress={onBiometryPress}>
-          <Icon name="ic-faceid-36" color="foregroundPrimary" />
+          <Icon
+            name={
+              tk.biometry.type === BiometryType.FaceRecognition
+                ? 'ic-faceid-36'
+                : 'ic-fingerprint-36'
+            }
+            color="foregroundPrimary"
+          />
         </Key>
       );
     }
@@ -140,7 +127,7 @@ export const InlineKeyboard: FC<InlineKeyboardProps> = (props) => {
     );
 
     return result;
-  }, [biometryType, disabled, handleBackspace, onBiometryPress, handlePress]);
+  }, [biometryEnabled, handlePress, disabled, handleBackspace, onBiometryPress]);
 
   return <S.Wrap>{nums}</S.Wrap>;
 };

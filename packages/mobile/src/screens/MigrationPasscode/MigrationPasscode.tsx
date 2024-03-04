@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PinCodeRef } from '$uikit/PinCode/PinCode.interface';
 import { tk } from '$wallet';
 import { Alert } from 'react-native';
-import { Toast } from '@tonkeeper/uikit';
+import { BlockingLoader, Toast } from '@tonkeeper/uikit';
 import { useMigration } from '$hooks/useMigration';
 
 export const MigrationPasscode: FC<{
@@ -40,7 +40,7 @@ export const MigrationPasscode: FC<{
             console.log('start migration');
             const mnemonic = await getMnemonicWithPasscode(pin);
 
-            Toast.loading();
+            BlockingLoader.show();
 
             pinRef.current?.triggerSuccess();
 
@@ -50,18 +50,16 @@ export const MigrationPasscode: FC<{
               setValue('');
               pinRef.current?.clearState();
             }, 1000);
-
-            Toast.hide();
           } catch (error) {
             if (error instanceof TypeError) {
               Toast.fail(t('error_network'));
-            } else {
-              Toast.hide();
             }
 
             setValue('');
             pinRef.current?.clearState();
             triggerError();
+          } finally {
+            BlockingLoader.hide();
           }
         }, 300);
       }
@@ -88,7 +86,7 @@ export const MigrationPasscode: FC<{
   return (
     <S.Wrap>
       <NavBar
-        hideBackButton={!tk.migrationData?.biometry.enabled}
+        hideBackButton={!tk.migrationData?.biometryEnabled}
         rightContent={
           <Button
             size="navbar_small"

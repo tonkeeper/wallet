@@ -16,6 +16,7 @@ import { List } from '@tonkeeper/uikit';
 import {
   AppStackRouteNames,
   MainStackRouteNames,
+  SettingsStackRouteNames,
   openDeleteAccountDone,
   openDevMenu,
   openLegalDocuments,
@@ -36,17 +37,20 @@ import {
 import { checkIsTonDiamondsNFT, hNs, ns, throttle } from '$utils';
 import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
 import { CellSectionItem } from '$shared/components';
-import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
 import { useFlags } from '$utils/flags';
-import { SearchEngine, useBrowserStore, useNotificationsStore } from '$store';
+import { SearchEngine, useBrowserStore } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
 import { Steezy } from '$styles';
 import { i18n, t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 import { config } from '$config';
-import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
-import { useNftsState, useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
+import {
+  useNftsState,
+  useWallet,
+  useWalletCurrency,
+  useWalletStatus,
+} from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
 import { WalletListItem } from '@tonkeeper/shared/components';
@@ -67,7 +71,6 @@ export const Settings: FC = () => {
 
   const nav = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
-  const notificationsBadge = useNotificationsBadge();
 
   const fiatCurrency = useWalletCurrency();
   const dispatch = useDispatch();
@@ -76,7 +79,8 @@ export const Settings: FC = () => {
   );
   const wallet = useWallet();
   const shouldShowTokensButton = useShouldShowTokensButton();
-  const showNotifications = useNotificationsStore(shouldShowNotifications);
+
+  const { lastBackupAt } = useWalletStatus();
 
   const isBatteryVisible =
     !!wallet && !wallet.isWatchOnly && !config.get('disable_battery');
@@ -138,7 +142,19 @@ export const Settings: FC = () => {
   }, [dispatch]);
 
   const handleStopWatchWallet = useCallback(() => {
-    dispatch(walletActions.cleanWallet());
+    Alert.alert(t('settings_delete_watch_account'), undefined, [
+      {
+        text: t('cancel'),
+        style: 'cancel',
+      },
+      {
+        text: t('settings_delete_watch_account_button'),
+        style: 'destructive',
+        onPress: () => {
+          dispatch(walletActions.cleanWallet());
+        },
+      },
+    ]);
   }, [dispatch]);
 
   const handleSubscriptions = useCallback(() => {
@@ -179,8 +195,8 @@ export const Settings: FC = () => {
   }, []);
 
   const handleBackupSettings = useCallback(() => {
-    dispatch(walletActions.backupWallet());
-  }, [dispatch]);
+    nav.navigate(SettingsStackRouteNames.Backup);
+  }, [nav]);
 
   const handleAppearance = useCallback(() => {
     openAppearance();
@@ -216,17 +232,17 @@ export const Settings: FC = () => {
     [nav],
   );
 
-  const notificationIndicator = React.useMemo(() => {
-    if (notificationsBadge.isVisible) {
-      return (
-        <View style={styles.notificationIndicatorContainer.static}>
-          <S.NotificationDeniedIndicator />
-        </View>
-      );
+  const backupIndicator = React.useMemo(() => {
+    if (lastBackupAt !== null) {
+      return null;
     }
 
-    return null;
-  }, [notificationsBadge.isVisible]);
+    return (
+      <View style={styles.backupIndicatorContainer.static}>
+        <S.BackupIndicator />
+      </View>
+    );
+  }, [lastBackupAt]);
 
   const accountNfts = useNftsState((s) => s.accountNfts);
 
@@ -279,7 +295,14 @@ export const Settings: FC = () => {
                     name={'ic-key-28'}
                   />
                 }
-                title={t('settings_backup_seed')}
+                title={
+                  <View style={styles.backupTextContainer.static}>
+                    <Text variant="label1" numberOfLines={1} ellipsizeMode="tail">
+                      {t('settings_backup_seed')}
+                    </Text>
+                    {backupIndicator}
+                  </View>
+                }
                 onPress={handleBackupSettings}
               />
             )}
@@ -309,17 +332,10 @@ export const Settings: FC = () => {
                 onPress={handleSubscriptions}
               />
             )}
-            {!!wallet && showNotifications && (
+            {!!wallet && wallet.notifications.isAvailable && !wallet.isTestnet && (
               <List.Item
                 value={<Icon color="accentPrimary" name={'ic-notification-28'} />}
-                title={
-                  <View style={styles.notificationsTextContainer.static}>
-                    <Text variant="label1" numberOfLines={1} ellipsizeMode="tail">
-                      {t('settings_notifications')}
-                    </Text>
-                    {notificationIndicator}
-                  </View>
-                }
+                title={t('settings_notifications')}
                 onPress={handleNotifications}
               />
             )}
@@ -559,11 +575,11 @@ const styles = Steezy.create({
     marginTop: -2,
     marginBottom: -2,
   },
-  notificationsTextContainer: {
+  backupTextContainer: {
     alignItems: 'center',
     flexDirection: 'row',
   },
-  notificationIndicatorContainer: {
+  backupIndicatorContainer: {
     height: 24,
     paddingTop: 9.5,
     paddingBottom: 6.5,

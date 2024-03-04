@@ -41,7 +41,6 @@ export enum MainStackRouteNames {
   StakingPools = 'StakingPools',
   StakingPoolDetails = 'StakingPoolDetails',
   Subscriptions = 'Subscriptions',
-  BackupWords = 'BackupWords',
   DeleteAccountDone = 'DeleteAccountDone',
   DevStack = 'DevStack',
   Jetton = 'Jetton',
@@ -52,6 +51,9 @@ export enum MainStackRouteNames {
   ChangePin = 'ChangePin',
   ResetPin = 'ResetPin',
   ChangePinBiometry = 'ChangePinBiometry',
+  Backup = 'Backup',
+  BackupPhrase = 'BackupPhrase',
+  BackupCheckPhrase = 'BackupCheckPhrase',
 }
 
 export enum TabsStackRouteNames {
@@ -78,6 +80,7 @@ export enum SettingsStackRouteNames {
   ChooseCurrency = 'ChooseCurrency',
   RefillBattery = 'RefillBattery',
   Language = 'Language',
+  Backup = 'Backup',
 }
 
 export enum ActivityStackRouteNames {

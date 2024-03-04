@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React from 'react';
 import {
   InternalNotification,
   Screen,
@@ -9,88 +9,19 @@ import {
   View,
 } from '$uikit';
 import { ns } from '$utils';
-import { debugLog } from '$utils/debugLog';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { Linking } from 'react-native';
 import { CellSection } from '$shared/components';
-import { NotificationsStatus, useNotificationStatus } from '$hooks/useNotificationStatus';
-import messaging from '@react-native-firebase/messaging';
-import { useNotifications } from '$hooks/useNotifications';
 import { t } from '@tonkeeper/shared/i18n';
-import { useNotificationsBadge } from '$hooks/useNotificationsBadge';
-import { Toast, ToastSize, useConnectedAppsList, useConnectedAppsStore } from '$store';
+import { useConnectedAppsList } from '$store';
 import { Steezy } from '$styles';
-import { getChainName } from '$shared/dynamicConfig';
 import { SwitchDAppNotifications } from '$core/Notifications/SwitchDAppNotifications';
-import { useWallet } from '@tonkeeper/shared/hooks';
+import { useNotificationsSwitch } from '$hooks/useNotificationsSwitch';
 
 export const Notifications: React.FC = () => {
-  const wallet = useWallet();
-  const handleOpenSettings = useCallback(() => Linking.openSettings(), []);
-  const notifications = useNotifications();
   const tabBarHeight = useBottomTabBarHeight();
-  const isSwitchFrozen = useRef(false);
-  const notificationStatus = useNotificationStatus();
-  const notificationsBadge = useNotificationsBadge();
-  const shouldEnableNotifications = notificationStatus === NotificationsStatus.DENIED;
-  const updateNotificationsSubscription = useConnectedAppsStore(
-    (state) => state.actions.updateNotificationsSubscription,
-  );
-  const [isSubscribeNotifications, setIsSubscribeNotifications] = React.useState(false);
-
-  React.useEffect(() => {
-    const init = async () => {
-      const status = await messaging().hasPermission();
-
-      const isGranted =
-        status === NotificationsStatus.AUTHORIZED ||
-        status === NotificationsStatus.PROVISIONAL;
-
-      setIsSubscribeNotifications(isGranted && notifications.isSubscribed);
-    };
-
-    init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  React.useEffect(() => {
-    if (notificationsBadge.isVisible) {
-      notificationsBadge.hide();
-    }
-  }, [notificationsBadge, notificationsBadge.isVisible]);
-
-  const handleToggleNotifications = React.useCallback(
-    async (value: boolean) => {
-      if (isSwitchFrozen.current) {
-        return;
-      }
-
-      try {
-        isSwitchFrozen.current = true;
-        setIsSubscribeNotifications(value);
-
-        const isSuccess = value
-          ? await notifications.subscribe()
-          : await notifications.unsubscribe();
-
-        updateNotificationsSubscription(getChainName(), wallet.address.ton.friendly);
-
-        if (!isSuccess) {
-          // Revert
-          setIsSubscribeNotifications(!value);
-        }
-      } catch (err) {
-        Toast.fail(t('notifications_not_supported'), { size: ToastSize.Small });
-        debugLog('[NotificationsSettings]', err);
-        setIsSubscribeNotifications(!value); // Revert
-      } finally {
-        isSwitchFrozen.current = false;
-      }
-    },
-    [notifications, updateNotificationsSubscription, wallet],
-  );
-
   const connectedApps = useConnectedAppsList();
+  const { isSubscribed, isDenied, openSettings, toggleNotifications } =
+    useNotificationsSwitch();
 
   return (
     <Screen>
@@ -101,14 +32,14 @@ export const Notifications: React.FC = () => {
           paddingBottom: tabBarHeight,
         }}
       >
-        {shouldEnableNotifications && (
+        {isDenied && (
           <View style={{ marginBottom: 16 }}>
             <InternalNotification
               title={t('notifications_disabled_title')}
               caption={t('notifications_disabled_description')}
               action={t('notifications_disabled_action')}
               mode={'warning'}
-              onPress={handleOpenSettings}
+              onPress={openSettings}
             />
           </View>
         )}
@@ -116,9 +47,9 @@ export const Notifications: React.FC = () => {
           <SwitchItem
             title={t('notifications_switch_title')}
             subtitle={t('notification_switch_description')}
-            disabled={shouldEnableNotifications}
-            onChange={handleToggleNotifications}
-            value={isSubscribeNotifications}
+            disabled={isDenied}
+            onChange={toggleNotifications}
+            value={isSubscribed}
           />
         </CellSection>
         {connectedApps.length ? (

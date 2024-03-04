@@ -43,7 +43,6 @@ export const { actions, reducer } = createSlice({
     },
     confirmSendCoins(_, __: ConfirmSendCoinsAction) {},
     sendCoins(_, __: SendCoinsAction) {},
-    backupWallet() {},
     cleanWallet(_, __: CleanWalletAction) {},
     clearGeneratedVault(state) {
       state.generatedVault = null;

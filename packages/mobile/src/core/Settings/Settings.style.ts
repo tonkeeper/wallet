@@ -49,7 +49,7 @@ export const SelectedCurrency = styled.Text`
   line-height: 24px;
 `;
 
-export const NotificationDeniedIndicator = styled.View`
+export const BackupIndicator = styled.View`
   background-color: ${({ theme }) => theme.colors.accentNegative};
   width: ${ns(8)}px;
   height: ${ns(8)}px;

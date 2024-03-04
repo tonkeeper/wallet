@@ -6,11 +6,8 @@ import { getDomainFromURL } from '$utils';
 import { hasGmsSync } from 'react-native-device-info';
 
 const initialState: Omit<INotificationsStore, 'actions'> = {
-  last_seen: Date.now(),
-  last_seen_activity_screen: Date.now(),
   has_gms: hasGmsSync(),
-  should_show_red_dot: false,
-  notifications: [],
+  wallets: {},
 };
 
 export const useNotificationsStore = create(
@@ -18,58 +15,108 @@ export const useNotificationsStore = create(
     (set) => ({
       ...initialState,
       actions: {
-        updateLastSeen: () => set({ last_seen: new Date().getTime() }),
-        updateLastSeenActivityScreen: () =>
-          set({ last_seen_activity_screen: new Date().getTime() }),
-        addNotification: (notification: INotification) =>
-          set((state) => ({
-            notifications: [notification, ...state.notifications],
-            should_show_red_dot: true,
-          })),
-        removeRedDot: () => set({ should_show_red_dot: false }),
-        deleteNotificationByReceivedAt: (receivedAt) =>
-          set((state) => ({
-            should_show_red_dot: false,
-            notifications: state.notifications.filter(
-              (notification) => notification.received_at !== receivedAt,
-            ),
-          })),
-        removeNotificationsByDappUrl: (dapp_url) => {
-          set((state) => ({
-            should_show_red_dot: false,
-            notifications: state.notifications.filter(
-              (notification) =>
-                notification.dapp_url &&
-                getDomainFromURL(notification.dapp_url) !== getDomainFromURL(dapp_url),
-            ),
-          }));
+        updateLastSeen: (rawAddress) => {
+          set((state) => {
+            const wallet = state.wallets[rawAddress];
+            return {
+              wallets: {
+                ...state.wallets,
+                [rawAddress]: {
+                  ...wallet,
+                  last_seen: new Date().getTime(),
+                },
+              },
+            };
+          });
         },
-        reset: () => set({ last_seen: 0, notifications: [] }),
+        updateLastSeenActivityScreen: (rawAddress) => {
+          set((state) => {
+            const wallet = state.wallets[rawAddress];
+            return {
+              wallets: {
+                ...state.wallets,
+                [rawAddress]: {
+                  ...wallet,
+                  last_seen_activity_screen: new Date().getTime(),
+                },
+              },
+            };
+          });
+        },
+        addNotification: (notification: INotification, rawAddress) =>
+          set((state) => {
+            const wallet = state.wallets[rawAddress];
+            const notifications = wallet?.notifications ?? [];
+            return {
+              wallets: {
+                ...state.wallets,
+                [rawAddress]: {
+                  ...wallet,
+                  notifications: [...notifications, notification],
+                  should_show_red_dot: true,
+                },
+              },
+            };
+          }),
+        removeRedDot: (rawAddress) => {
+          set((state) => {
+            const wallet = state.wallets[rawAddress];
+            return {
+              wallets: {
+                ...state.wallets,
+                [rawAddress]: {
+                  ...wallet,
+                  should_show_red_dot: false,
+                },
+              },
+            };
+          });
+        },
+        deleteNotificationByReceivedAt: (receivedAt, rawAddress) =>
+          set((state) => {
+            const wallet = state.wallets[rawAddress];
+            const notifications = wallet?.notifications ?? [];
+            return {
+              wallets: {
+                ...state.wallets,
+                [rawAddress]: {
+                  ...wallet,
+                  should_show_red_dot: false,
+                  notifications: notifications.filter(
+                    (notification) => notification.received_at !== receivedAt,
+                  ),
+                },
+              },
+            };
+          }),
+        removeNotificationsByDappUrl: (dapp_url, rawAddress) => {
+          set((state) => {
+            const wallet = state.wallets[rawAddress];
+            const notifications = wallet?.notifications ?? [];
+            return {
+              wallets: {
+                ...state.wallets,
+                [rawAddress]: {
+                  ...wallet,
+                  should_show_red_dot: false,
+                  notifications: notifications.filter(
+                    (notification) =>
+                      notification.dapp_url &&
+                      getDomainFromURL(notification.dapp_url) !==
+                        getDomainFromURL(dapp_url),
+                  ),
+                },
+              },
+            };
+          });
+        },
+        reset: () => set(initialState),
       },
     }),
     {
-      name: 'notifications',
+      name: 'notificationsMultiwallet',
       storage: createJSONStorage(() => AsyncStorage),
-      version: 1,
-      migrate: (persistedState: INotificationsStore, version) => {
-        if (version === 1) {
-          persistedState.has_gms = hasGmsSync();
-        }
-
-        return persistedState;
-      },
-      partialize: ({
-        notifications,
-        last_seen,
-        should_show_red_dot,
-        last_seen_activity_screen,
-      }) =>
-        ({
-          notifications,
-          last_seen,
-          should_show_red_dot,
-          last_seen_activity_screen,
-        } as INotificationsStore),
+      partialize: ({ wallets }) => ({ wallets } as INotificationsStore),
     },
   ),
 );

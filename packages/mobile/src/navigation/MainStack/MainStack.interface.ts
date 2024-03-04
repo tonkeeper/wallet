@@ -16,9 +16,6 @@ export type MainStackParamList = {
     ticker: string;
   };
   [MainStackRouteNames.Subscriptions]: {};
-  [MainStackRouteNames.BackupWords]: {
-    mnemonic: string;
-  };
   [MainStackRouteNames.DevStack]: {};
   [MainStackRouteNames.Jetton]: {
     jettonAddress: string;
@@ -34,8 +31,11 @@ export type MainStackParamList = {
   [MainStackRouteNames.ManageTokens]: {};
   [MainStackRouteNames.AddressUpdateInfo]: {};
   [MainStackRouteNames.AddWatchOnlyStack]: {};
-  [MainStackRouteNames.HoldersWebView]: {};
+  [MainStackRouteNames.HoldersWebView]: { path?: string };
   [MainStackRouteNames.ChangePin]: {};
   [MainStackRouteNames.ResetPin]: {};
   [MainStackRouteNames.ChangePinBiometry]: {};
+  [MainStackRouteNames.Backup]: {};
+  [MainStackRouteNames.BackupPhrase]: {};
+  [MainStackRouteNames.BackupCheckPhrase]: {};
 };

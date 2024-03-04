@@ -31,8 +31,11 @@ export class TonProofManager {
       );
       const { token } = await this.tonapi.wallet.tonConnectProof(proof);
 
+      this.tonProofToken = token;
+
       await SecureStore.setItemAsync(`proof-${this.identifier}`, token);
     } catch (err) {
+      console.log('TonProofManager.obtainProof', err);
       return null;
     }
   }

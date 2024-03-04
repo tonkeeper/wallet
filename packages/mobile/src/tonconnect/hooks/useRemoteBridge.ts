@@ -10,8 +10,10 @@ export const useRemoteBridge = () => {
 
   const appState = useAppState();
 
+  const shouldClose = appState === 'background';
+
   useEffect(() => {
-    if (appState !== 'active') {
+    if (shouldClose) {
       return;
     }
 
@@ -30,5 +32,5 @@ export const useRemoteBridge = () => {
       unsubscribe();
       TonConnectRemoteBridge.close();
     };
-  }, [walletIdentifiers, appState]);
+  }, [walletIdentifiers, shouldClose]);
 };

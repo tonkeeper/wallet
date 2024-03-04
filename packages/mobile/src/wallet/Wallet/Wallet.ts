@@ -12,6 +12,8 @@ export interface WalletStatusState {
   isReloading: boolean;
   isLoading: boolean;
   updatedAt: number;
+  lastBackupAt: number | null;
+  setupDismissed: boolean;
 }
 
 export class Wallet extends WalletContent {
@@ -19,6 +21,8 @@ export class Wallet extends WalletContent {
     isReloading: false,
     isLoading: false,
     updatedAt: Date.now(),
+    lastBackupAt: null,
+    setupDismissed: false,
   };
 
   private stopListenTransactions: Function | null = null;
@@ -38,13 +42,25 @@ export class Wallet extends WalletContent {
     super(config, tonAllAddresses, storage, tonPrice);
 
     this.status.persist({
-      partialize: ({ updatedAt }) => ({ updatedAt }),
+      partialize: ({ updatedAt, lastBackupAt, setupDismissed }) => ({
+        updatedAt,
+        lastBackupAt,
+        setupDismissed,
+      }),
       storage: this.storage,
       key: `${this.persistPath}/status`,
     });
 
     this.listenTransactions();
     this.listenAppState();
+  }
+
+  public saveLastBackupTimestamp() {
+    this.status.set({ lastBackupAt: Date.now() });
+  }
+
+  public dismissSetup() {
+    this.status.set({ setupDismissed: true });
   }
 
   public async rehydrate() {

@@ -10,11 +10,7 @@ import {
 import { UnlockedVault, Vault, VaultJSON } from '$blockchain';
 import { mainActions } from '$store/main';
 import { CryptoCurrencies } from '$shared/constants';
-import {
-  openAccessConfirmation,
-  openBackupWords,
-  TabsStackRouteNames,
-} from '$navigation';
+import { openAccessConfirmation, TabsStackRouteNames } from '$navigation';
 import {
   CleanWalletAction,
   ConfirmSendCoinsAction,
@@ -366,19 +362,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
   }
 }
 
-function* backupWalletWorker() {
-  try {
-    const unlockedVault = yield call(walletGetUnlockedVault);
-    yield call(openBackupWords, unlockedVault.mnemonic);
-  } catch (e) {
-    e && debugLog(e.message);
-    if (!e?.message) {
-      return;
-    }
-    yield call(Toast.fail, e ? e.message : t('auth_failed'));
-  }
-}
-
 function* cleanWalletWorker(action: CleanWalletAction) {
   const cleanAll = !!action.payload?.cleanAll;
   try {
@@ -549,7 +532,6 @@ export function* walletSaga() {
     takeLatest(walletActions.restoreWallet, restoreWalletWorker),
     takeLatest(walletActions.confirmSendCoins, confirmSendCoinsWorker),
     takeLatest(walletActions.sendCoins, sendCoinsWorker),
-    takeLatest(walletActions.backupWallet, backupWalletWorker),
     takeLatest(walletActions.cleanWallet, cleanWalletWorker),
     takeLatest(walletActions.deployWallet, deployWalletWorker),
     takeLatest(walletActions.toggleBiometry, toggleBiometryWorker),
