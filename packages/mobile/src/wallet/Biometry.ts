@@ -13,12 +13,13 @@ export class Biometry {
 
   public async detectTypes() {
     try {
-      const [authTypes, isEnrolled] = await Promise.all([
+      const [authTypes, enrolledLevel] = await Promise.all([
         LocalAuthentication.supportedAuthenticationTypesAsync(),
-        LocalAuthentication.isEnrolledAsync(),
+        LocalAuthentication.getEnrolledLevelAsync(),
       ]);
 
-      this.isAvailable = isEnrolled;
+      this.isAvailable =
+        enrolledLevel === LocalAuthentication.SecurityLevel.BIOMETRIC_STRONG;
 
       const hasFingerprint = authTypes.includes(
         LocalAuthentication.AuthenticationType.FINGERPRINT,

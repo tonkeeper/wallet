@@ -6929,10 +6929,10 @@ expo-linear-gradient@^12.1.2:
   resolved "https://registry.yarnpkg.com/expo-linear-gradient/-/expo-linear-gradient-12.3.0.tgz#7abd8fedbf0138c86805aebbdfbbf5e5fa865f19"
   integrity sha512-f9e+Oxe5z7fNQarTBZXilMyswlkbYWQHONVfq8MqmiEnW3h9XsxxmVJLG8uVQSQPUsbW+x1UUT/tnU6mkMWeLg==
 
-expo-local-authentication@~13.6.0:
-  version "13.6.0"
-  resolved "https://registry.yarnpkg.com/expo-local-authentication/-/expo-local-authentication-13.6.0.tgz#8f2567563ae64ab23d523af00230bb4888e0c736"
-  integrity sha512-kvM3oZc+K0xHMBFdNAVEVUbynaq0A2coqxk8kECx25hJ3vxgIY1Dktx+UD6Y+H9zMyQwYtcGhRPW4BOK1cqRuA==
+expo-local-authentication@0.0.1-canary-20240228-7cee619:
+  version "0.0.1-canary-20240228-7cee619"
+  resolved "https://registry.yarnpkg.com/expo-local-authentication/-/expo-local-authentication-0.0.1-canary-20240228-7cee619.tgz#0437524b13295308436ff02ebbee21a2f77e0bd6"
+  integrity sha512-n/2gYxnbEuQRaNmEzs+4xs5MEkzJQ4KtybNNmGrvUEoov17LITyJlILMsgm+AphuyFZtzPwQQkxAVBI5CWDTig==
   dependencies:
     invariant "^2.2.4"
 
