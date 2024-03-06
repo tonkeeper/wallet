@@ -11,6 +11,7 @@ import {
   ImportWalletStackRouteNames,
 } from '$navigation/ImportWalletStack/types';
 import { Button, Icon, Screen, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
+import { delay } from '@tonkeeper/core';
 
 interface Props {
   route: RouteProp<ImportWalletStackParamList, ImportWalletStackRouteNames.Notifications>;
@@ -30,9 +31,9 @@ export const SetupNotifications: React.FC<Props> = (props) => {
       setLoading(true);
 
       if (identifiers.length > 1) {
-        tk.enableNotificationsForAll(identifiers).catch(null);
+        await Promise.race([tk.enableNotificationsForAll(identifiers), delay(5000)]);
       } else {
-        await tk.wallet.notifications.subscribe();
+        await Promise.race([tk.wallet.notifications.subscribe(), delay(5000)]);
       }
 
       handleDone();
