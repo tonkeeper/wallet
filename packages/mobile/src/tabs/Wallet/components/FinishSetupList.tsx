@@ -40,6 +40,7 @@ export const FinishSetupList = memo(() => {
   const notifications = useNotificationsSwitch();
 
   const identifier = wallet.identifier;
+  const isTestnet = wallet.isTestnet;
 
   const initialItems = useMemo(() => {
     const list: SetupItemType[] = [];
@@ -48,13 +49,13 @@ export const FinishSetupList = memo(() => {
       list.push(SetupItemType.Biometry);
     }
 
-    if (notifications.isAvailable && !notifications.isSubscribed) {
+    if (!isTestnet && notifications.isAvailable && !notifications.isSubscribed) {
       list.push(SetupItemType.Notifications);
     }
 
     return list;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [biometry.isAvailable, identifier]);
+  }, [biometry.isAvailable, identifier, isTestnet]);
 
   const handleDone = useCallback(() => {
     wallet.dismissSetup();
