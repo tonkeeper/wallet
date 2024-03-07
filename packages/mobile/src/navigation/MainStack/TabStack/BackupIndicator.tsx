@@ -1,9 +1,9 @@
 import React from 'react';
 import { TabBarBadgeIndicator } from '$navigation/MainStack/TabStack/TabBarBadgeIndicator';
-import { useWalletStatus } from '@tonkeeper/shared/hooks';
+import { useWalletSetup } from '@tonkeeper/shared/hooks';
 
 export const BackupIndicator: React.FC = () => {
-  const { lastBackupAt } = useWalletStatus();
+  const { lastBackupAt } = useWalletSetup();
 
   const isVisible = lastBackupAt === null;
 

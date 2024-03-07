@@ -4,10 +4,10 @@ import { memo } from 'react';
 import { format } from 'date-fns';
 import { getLocale } from '$utils/date';
 import { i18n, t } from '@tonkeeper/shared/i18n';
-import { useWalletStatus } from '@tonkeeper/shared/hooks';
+import { useWalletSetup } from '@tonkeeper/shared/hooks';
 
 export const BackupScreen = memo(() => {
-  const { lastBackupAt } = useWalletStatus();
+  const { lastBackupAt } = useWalletSetup();
   const nav = useNavigation();
 
   return (

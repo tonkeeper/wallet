@@ -10,7 +10,7 @@ import {
 } from '@tonkeeper/uikit';
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
-import { useBiometrySettings, useWallet, useWalletStatus } from '@tonkeeper/shared/hooks';
+import { useBiometrySettings, useWallet, useWalletSetup } from '@tonkeeper/shared/hooks';
 import { useNavigation } from '@tonkeeper/router';
 import { useNotificationsSwitch } from '$hooks/useNotificationsSwitch';
 import { LayoutAnimation, Linking } from 'react-native';
@@ -31,7 +31,7 @@ interface SetupItem {
 }
 
 export const FinishSetupList = memo(() => {
-  const { lastBackupAt, setupDismissed } = useWalletStatus();
+  const { lastBackupAt, setupDismissed } = useWalletSetup();
   const wallet = useWallet();
   const nav = useNavigation();
 
