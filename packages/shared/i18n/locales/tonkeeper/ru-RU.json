@@ -479,7 +479,7 @@
       "face_recognition_instrumental" : "распознаванием лица",
       "fingerprint" : "отпечаток пальца",
       "fingerprint_genitive" : "отпечатка пальца",
-      "fingerprint_instrumental" : "отпечатком пальца"
+      "fingerprint_instrumental" : "отпечатком"
     },
     "ios" : {
       "face_recognition" : "Face ID",
@@ -1215,7 +1215,7 @@
     "use_biometry": "Включите %{name} для подтверждения транзакций",
     "enable_notifications": "Включите уведомления о транзакциях",
     "backup": "Создайте резервную копию секретного ключа кошелька",
-    "done_buttom": "Done"
+    "done_buttom": "Готово"
   },
   "buy_ton": {
     "title": "Купить TON",

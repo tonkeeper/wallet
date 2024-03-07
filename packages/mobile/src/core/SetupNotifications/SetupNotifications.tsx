@@ -31,9 +31,9 @@ export const SetupNotifications: React.FC<Props> = (props) => {
       setLoading(true);
 
       if (identifiers.length > 1) {
-        await Promise.race([tk.enableNotificationsForAll(identifiers), delay(5000)]);
+        await Promise.race([tk.enableNotificationsForAll(identifiers), delay(10000)]);
       } else {
-        await Promise.race([tk.wallet.notifications.subscribe(), delay(5000)]);
+        await Promise.race([tk.wallet.notifications.subscribe(), delay(10000)]);
       }
 
       handleDone();
