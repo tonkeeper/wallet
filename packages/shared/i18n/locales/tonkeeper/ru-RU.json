@@ -479,7 +479,7 @@
       "face_recognition_instrumental" : "распознаванием лица",
       "fingerprint" : "отпечаток пальца",
       "fingerprint_genitive" : "отпечатка пальца",
-      "fingerprint_instrumental" : "отпечатком пальца"
+      "fingerprint_instrumental" : "отпечатком"
     },
     "ios" : {
       "face_recognition" : "Face ID",
