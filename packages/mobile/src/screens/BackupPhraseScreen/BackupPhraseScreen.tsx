@@ -5,7 +5,7 @@ import { View, StyleSheet } from 'react-native';
 import { memo, useCallback, useMemo } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { t } from '@tonkeeper/shared/i18n';
-import { useWalletStatus } from '@tonkeeper/shared/hooks';
+import { useWalletSetup } from '@tonkeeper/shared/hooks';
 import { MainStackRouteNames } from '$navigation';
 
 function getRandIndexes(length: number, indexes: number[] = []) {
@@ -28,7 +28,7 @@ export const BackupPhraseScreen = memo(() => {
 
   const mnemonic = params.mnemonic!;
 
-  const { lastBackupAt } = useWalletStatus();
+  const { lastBackupAt } = useWalletSetup();
 
   const phrase = useMemo(() => mnemonic.split(' '), [mnemonic]);
   const leftColumn = useMemo(() => phrase.slice(0, 12), [phrase]);

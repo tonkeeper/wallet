@@ -49,7 +49,7 @@ import {
   useNftsState,
   useWallet,
   useWalletCurrency,
-  useWalletStatus,
+  useWalletSetup,
 } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
@@ -80,7 +80,7 @@ export const Settings: FC = () => {
   const wallet = useWallet();
   const shouldShowTokensButton = useShouldShowTokensButton();
 
-  const { lastBackupAt } = useWalletStatus();
+  const { lastBackupAt } = useWalletSetup();
 
   const isBatteryVisible =
     !!wallet && !wallet.isWatchOnly && !config.get('disable_battery');

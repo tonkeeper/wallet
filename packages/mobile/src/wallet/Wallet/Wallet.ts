@@ -12,6 +12,9 @@ export interface WalletStatusState {
   isReloading: boolean;
   isLoading: boolean;
   updatedAt: number;
+}
+
+export interface WalletSetupState {
   lastBackupAt: number | null;
   setupDismissed: boolean;
 }
@@ -21,6 +24,9 @@ export class Wallet extends WalletContent {
     isReloading: false,
     isLoading: false,
     updatedAt: Date.now(),
+  };
+
+  static readonly INITIAL_SETUP_STATE: WalletSetupState = {
     lastBackupAt: null,
     setupDismissed: false,
   };
@@ -32,6 +38,8 @@ export class Wallet extends WalletContent {
 
   public status = new State<WalletStatusState>(Wallet.INITIAL_STATUS_STATE);
 
+  public setup = new State<WalletSetupState>(Wallet.INITIAL_SETUP_STATE);
+
   constructor(
     public config: WalletConfig,
     public tonAllAddresses: AddressesByVersion,
@@ -42,13 +50,14 @@ export class Wallet extends WalletContent {
     super(config, tonAllAddresses, storage, tonPrice);
 
     this.status.persist({
-      partialize: ({ updatedAt, lastBackupAt, setupDismissed }) => ({
-        updatedAt,
-        lastBackupAt,
-        setupDismissed,
-      }),
+      partialize: ({ updatedAt }) => ({ updatedAt }),
       storage: this.storage,
       key: `${this.persistPath}/status`,
+    });
+
+    this.setup.persist({
+      storage: this.storage,
+      key: `${this.persistPath}/setup`,
     });
 
     this.listenTransactions();
@@ -56,11 +65,11 @@ export class Wallet extends WalletContent {
   }
 
   public saveLastBackupTimestamp() {
-    this.status.set({ lastBackupAt: Date.now() });
+    this.setup.set({ lastBackupAt: Date.now() });
   }
 
   public dismissSetup() {
-    this.status.set({ setupDismissed: true });
+    this.setup.set({ setupDismissed: true });
   }
 
   public async rehydrate() {

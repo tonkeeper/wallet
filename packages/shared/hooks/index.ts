@@ -10,3 +10,4 @@ export * from './useNftsState';
 export * from './useBalancesState';
 export * from './useBiometrySettings';
 export * from './useLockSettings';
+export * from './useWalletSetup';
