@@ -75,6 +75,7 @@ export class Wallet extends WalletContent {
   public async rehydrate() {
     await super.rehydrate();
 
+    await this.setup.rehydrate();
     this.status.rehydrate();
   }
 
