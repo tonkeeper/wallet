@@ -479,14 +479,10 @@ export class Tonkeeper {
   }
 
   public async enableNotificationsForAll(identifiers: string[]) {
-    await Promise.all(
-      identifiers.map(async (identifier) => {
-        const wallet = this.wallets.get(identifier);
-        if (wallet) {
-          await wallet.notifications.subscribe();
-        }
-      }),
-    );
+    for (const identifier of identifiers) {
+      const wallet = this.wallets.get(identifier)!;
+      await wallet.notifications.subscribe();
+    }
   }
 
   public getWalletByAddress(address: string) {
