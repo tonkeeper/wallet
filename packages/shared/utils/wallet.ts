@@ -14,6 +14,6 @@ export async function getWalletSeqno(wallet?: Wallet) {
   }
 }
 
-export function setBalanceForEmulation(balance: bigint) {
+export function setBalanceForEmulation(balance: bigint | number | string) {
   return { balance: Number(balance), address: tk.wallet.address.ton.raw };
 }
