@@ -275,6 +275,7 @@ export const useConnectedAppsStore = create(
                 );
 
               await Tonapi.unsubscribeFromNotifications(token, {
+                account: walletAddress,
                 app_url: fixedUrl,
                 firebase_token,
               });
