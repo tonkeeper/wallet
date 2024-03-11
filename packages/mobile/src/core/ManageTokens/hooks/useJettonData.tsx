@@ -13,6 +13,7 @@ import { useJettonBalances } from '$hooks/useJettonBalances';
 import { config } from '$config';
 import { JettonVerification } from '$store/models';
 import { Text } from '@tonkeeper/uikit';
+import { Address } from '@tonkeeper/core';
 
 const baseJettonCellData = (jettonBalance) => ({
   type: ContentType.Cell,
@@ -34,7 +35,7 @@ const baseJettonCellData = (jettonBalance) => ({
   onPress: () =>
     openApproveTokenModal({
       type: TokenApprovalType.Token,
-      tokenAddress: jettonBalance.jettonAddress,
+      tokenIdentifier: Address.parse(jettonBalance.jettonAddress).toRaw(),
       verification: jettonBalance.verification,
       image: jettonBalance.metadata?.image,
       name: jettonBalance.metadata?.name,
@@ -66,7 +67,7 @@ export function useJettonData() {
                     type="remove"
                     onPress={() =>
                       tk.wallet.tokenApproval.updateTokenStatus(
-                        jettonBalance.jettonAddress,
+                        Address.parse(jettonBalance.jettonAddress).toRaw(),
                         TokenApprovalStatus.Declined,
                         TokenApprovalType.Token,
                       )
@@ -112,7 +113,7 @@ export function useJettonData() {
                     type="add"
                     onPress={() =>
                       tk.wallet.tokenApproval.updateTokenStatus(
-                        jettonBalance.jettonAddress,
+                        Address.parse(jettonBalance.jettonAddress).toRaw(),
                         TokenApprovalStatus.Approved,
                         TokenApprovalType.Token,
                       )

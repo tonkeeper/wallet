@@ -115,14 +115,17 @@ const ConfirmStepComponent: FC<Props> = (props) => {
           <Spacer y={32} />
           <S.Table>
             {tk.wallets.size > 1 && (
-              <S.Item>
-                <S.ItemLabel>{t('send_screen_steps.comfirm.wallet')}</S.ItemLabel>
-                <S.ItemContent>
-                  <S.ItemValue numberOfLines={1}>
-                    {tk.wallet.config.emoji} {tk.wallet.config.name}
-                  </S.ItemValue>
-                </S.ItemContent>
-              </S.Item>
+              <>
+                <S.Item>
+                  <S.ItemLabel>{t('send_screen_steps.comfirm.wallet')}</S.ItemLabel>
+                  <S.ItemContent>
+                    <S.ItemValue numberOfLines={1}>
+                      {tk.wallet.config.emoji} {tk.wallet.config.name}
+                    </S.ItemValue>
+                  </S.ItemContent>
+                </S.Item>
+                <Separator />
+              </>
             )}
             <Highlight onPress={handleCopyPoolName}>
               <S.Item>

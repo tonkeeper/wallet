@@ -2,7 +2,7 @@ import { Steezy } from '../../styles';
 import { View } from '../View';
 import { memo } from 'react';
 
-interface ListSeparatorProps {
+export interface ListSeparatorProps {
   absolute?: boolean;
   toTop?: boolean;
   leftOffset?: number;

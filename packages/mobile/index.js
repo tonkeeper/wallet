@@ -56,10 +56,13 @@ async function handleDappMessage(remoteMessage) {
   }
 
   await useNotificationsStore.persist.rehydrate();
-  useNotificationsStore.getState().actions.addNotification({
-    ...remoteMessage.data,
-    received_at: parseInt(remoteMessage.data.sent_at) || Date.now(),
-  });
+  useNotificationsStore.getState().actions.addNotification(
+    {
+      ...remoteMessage.data,
+      received_at: parseInt(remoteMessage.data.sent_at) || Date.now(),
+    },
+    remoteMessage.data.account,
+  );
   await useNotificationsStore.persist.rehydrate();
   return;
 }

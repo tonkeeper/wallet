@@ -7,11 +7,13 @@ import { useWindowDimensions } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { useTabCtx } from './TabsContainer';
 import { goBack } from '$navigation/imperative';
+import LinearGradient from 'react-native-linear-gradient';
 
 interface TabsHeaderProps {
   style?: Style;
   withBackButton?: boolean;
   children?: React.ReactNode;
+  leftContentGradient?: boolean;
 }
 
 export const TabsHeader: React.FC<TabsHeaderProps> = (props) => {
@@ -37,7 +39,19 @@ export const TabsHeader: React.FC<TabsHeaderProps> = (props) => {
   function renderLeftContent() {
     if (shouldRenderGoBackButton) {
       return (
-        <View style={styles.leftContent}>
+        <View style={[styles.leftContent]}>
+          {props.leftContentGradient && (
+            <>
+              <View style={styles.background} />
+              <LinearGradient
+                style={styles.leftContentGradient.static}
+                start={{ x: 0, y: 1 }}
+                end={{ x: 1, y: 1 }}
+                colors={['rgba(16, 22, 31, 1)', 'rgba(16, 22, 31, 0)']}
+                pointerEvents="none"
+              />
+            </>
+          )}
           <View style={styles.backButtonContainer}>
             <TouchableOpacity
               activeOpacity={0.6}
@@ -98,5 +112,20 @@ const styles = Steezy.create(({ colors, safeArea }) => ({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  leftContentGradient: {
+    height: 64,
+    width: 24,
+    position: 'absolute',
+    right: -22,
+    bottom: 0,
+  },
+  background: {
+    backgroundColor: colors.backgroundPage,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    left: -16,
+    bottom: 0,
   },
 }));

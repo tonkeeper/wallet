@@ -10,6 +10,7 @@ export enum TokenApprovalStatus {
 export enum TokenApprovalType {
   Collection = 'collection',
   Token = 'token',
+  Inscription = 'inscription',
 }
 
 export interface ApprovalStatus {
@@ -54,24 +55,23 @@ export class TokenApprovalManager {
   }
 
   updateTokenStatus(
-    address: string,
+    identifier: string,
     status: TokenApprovalStatus,
     type: TokenApprovalType,
   ) {
     const { tokens } = this.state.data;
-    const rawAddress = Address.parse(address).toRaw();
-    const token = { ...tokens[rawAddress] };
+    const token = { ...tokens[identifier] };
 
     if (token) {
       token.current = status;
       token.updated_at = Date.now();
 
-      this.state.set({ tokens: { ...tokens, [rawAddress]: token } });
+      this.state.set({ tokens: { ...tokens, [identifier]: token } });
     } else {
       this.state.set({
         tokens: {
           ...tokens,
-          [rawAddress]: {
+          [identifier]: {
             type,
             current: status,
             updated_at: Date.now(),

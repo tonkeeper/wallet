@@ -61,6 +61,7 @@ async function subscribeToNotifications(
 export interface UnsubscribeToNotificationsParams {
   app_url: string;
   firebase_token: string;
+  account: string;
 }
 
 async function unsubscribeFromNotifications(

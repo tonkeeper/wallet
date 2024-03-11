@@ -102,7 +102,7 @@ export class BalancesManager {
         const [ton, tonLocked, tonRestricted] = await this.getLockupBalances();
 
         this.state.set({ isLoading: false, ton, tonLocked, tonRestricted });
-        return;
+        return this.state.data;
       }
 
       const account = await this.tonapi.accounts.getAccount(this.tonRawAddress);
@@ -111,6 +111,8 @@ export class BalancesManager {
         isLoading: false,
         ton: AmountFormatter.fromNanoStatic(account.balance),
       });
+
+      return this.state.data;
     } catch (e) {
       this.state.set({
         isLoading: false,

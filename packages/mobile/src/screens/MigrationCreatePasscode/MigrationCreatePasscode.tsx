@@ -6,7 +6,7 @@ import {
 } from '$navigation/MigrationStack/types';
 import * as S from '../../core/AccessConfirmation/AccessConfirmation.style';
 import { NavBar } from '$uikit';
-import { Toast } from '@tonkeeper/uikit';
+import { BlockingLoader, Toast } from '@tonkeeper/uikit';
 import { useMigration } from '$hooks/useMigration';
 import { CreatePinForm } from '$shared/components';
 import { t } from '@tonkeeper/shared/i18n';
@@ -23,21 +23,18 @@ export const MigrationCreatePasscode: FC<{
   const handlePinCreated = useCallback(
     async (passcode: string) => {
       try {
-        Toast.loading();
+        BlockingLoader.show();
 
         await doMigration(mnemonic, passcode);
-
-        Toast.hide();
       } catch (error) {
         if (error instanceof TypeError) {
           Toast.fail(t('error_network'));
-        } else {
-          Toast.hide();
         }
       } finally {
         setTimeout(() => {
           setAttempt((prev) => prev + 1);
         }, 300);
+        BlockingLoader.hide();
       }
     },
     [doMigration, mnemonic],

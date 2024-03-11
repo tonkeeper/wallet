@@ -16,13 +16,12 @@ import { createTonApiInstance } from './utils';
 import { Vault } from '@tonkeeper/core';
 import { v4 as uuidv4 } from 'uuid';
 import { Mnemonic } from '@tonkeeper/core/src/utils/mnemonic';
-import { DEFAULT_WALLET_STYLE_CONFIG } from './constants';
+import { DEFAULT_WALLET_STYLE_CONFIG, DEFAULT_WALLET_VERSION } from './constants';
 import { Buffer } from 'buffer';
 import nacl from 'tweetnacl';
-import * as LocalAuthentication from 'expo-local-authentication';
-import { detectBiometryType } from '$utils';
 import { AccountsStream } from './streaming';
 import { InteractionManager } from 'react-native';
+import { Biometry } from './Biometry';
 
 type TonkeeperOptions = {
   storage: Storage;
@@ -32,10 +31,7 @@ type TonkeeperOptions = {
 export interface MultiWalletMigrationData {
   pubkey: string;
   keychainItemName: string;
-  biometry: {
-    enabled: boolean;
-    type: LocalAuthentication.AuthenticationType | null;
-  };
+  biometryEnabled: boolean;
   lockupConfig?: {
     wallet_type: WalletContractVersion.LockupV1;
     workchain: number;
@@ -74,17 +70,20 @@ export class Tonkeeper {
 
   private storage: Storage;
 
+  public biometry: Biometry;
+
   public walletsStore = new State<WalletsStoreState>({
     wallets: [],
     selectedIdentifier: '',
     biometryEnabled: false,
-    lockEnabled: false,
+    lockEnabled: true,
     isMigrated: false,
   });
 
   constructor(options: TonkeeperOptions) {
     this.storage = options.storage;
     this.vault = options.vault;
+    this.biometry = new Biometry();
     this.tonapi = {
       mainnet: createTonApiInstance(),
       testnet: createTonApiInstance(true),
@@ -120,7 +119,11 @@ export class Tonkeeper {
 
   public async init() {
     try {
-      await Promise.all([this.walletsStore.rehydrate(), this.tonPrice.rehydrate()]);
+      await Promise.all([
+        this.walletsStore.rehydrate(),
+        this.tonPrice.rehydrate(),
+        this.biometry.detectTypes(),
+      ]);
 
       this.tonPrice.load();
 
@@ -145,24 +148,22 @@ export class Tonkeeper {
 
     try {
       const data = await this.storage.getItem(`${keychainName}_wallet`);
-      let biometry: MultiWalletMigrationData['biometry'] = { enabled: false, type: null };
-
-      try {
-        biometry.enabled = (await this.storage.getItem('biometry_enabled')) === 'yes';
-        const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
-        biometry.type = detectBiometryType(types);
-      } catch {}
 
       if (!data) {
         return null;
       }
+
+      let biometryEnabled = false;
+      try {
+        biometryEnabled = (await this.storage.getItem('biometry_enabled')) === 'yes';
+      } catch {}
 
       const json = JSON.parse(data);
 
       return {
         pubkey: json.vault.tonPubkey,
         keychainItemName: json.vault.name,
-        biometry,
+        biometryEnabled,
         lockupConfig:
           json.vault.version === WalletContractVersion.LockupV1
             ? {
@@ -188,6 +189,14 @@ export class Tonkeeper {
     return this.wallets.size > 0
       ? `${DEFAULT_WALLET_STYLE_CONFIG.name} ${lastNumber + 1}`
       : DEFAULT_WALLET_STYLE_CONFIG.name;
+  }
+
+  public async createWallet(passcode: string) {
+    const mnemonic = (await Mnemonic.generateMnemonic(24)).join(' ');
+    return await this.importWallet(mnemonic, passcode, [DEFAULT_WALLET_VERSION], {
+      workchain: 0,
+      network: WalletNetwork.mainnet,
+    });
   }
 
   public async importWallet(
@@ -275,10 +284,10 @@ export class Tonkeeper {
       }),
     );
 
-    if (!wallets.some((wallet) => wallet.version === WalletContractVersion.v4R2)) {
+    if (!wallets.some((wallet) => wallet.version === DEFAULT_WALLET_VERSION)) {
       wallets.push({
-        version: WalletContractVersion.v4R2,
-        address: addresses.v4R2.raw,
+        version: DEFAULT_WALLET_VERSION,
+        address: addresses[DEFAULT_WALLET_VERSION].raw,
         balance: 0,
         tokens: false,
       });
@@ -470,26 +479,34 @@ export class Tonkeeper {
   }
 
   public async enableNotificationsForAll(identifiers: string[]) {
-    await Promise.all(
-      identifiers.map(async (identifier) => {
-        const wallet = this.wallets.get(identifier);
-        if (wallet) {
-          await wallet.notifications.subscribe();
-        }
-      }),
-    );
+    for (const identifier of identifiers) {
+      const wallet = this.wallets.get(identifier)!;
+      await wallet.notifications.subscribe();
+    }
   }
 
-  // TODO: should parse given address for isTestnet flag
   public getWalletByAddress(address: string) {
+    const isTestnet = Address.isTestnet(address);
     return Array.from(this.wallets.values()).find(
-      (wallet) => !wallet.isTestnet && Address.compare(wallet.address.ton.raw, address),
+      (wallet) =>
+        wallet.isTestnet === isTestnet &&
+        Address.compare(wallet.address.ton.raw, address),
     );
   }
 
   public setMigrated() {
     console.log('migrated');
     this.walletsStore.set({ isMigrated: true });
+  }
+
+  public saveLastBackupTimestampAll(identifiers: string[], dismissSetup = false) {
+    identifiers.forEach((identifier) => {
+      const wallet = this.wallets.get(identifier);
+      wallet?.saveLastBackupTimestamp();
+      if (dismissSetup) {
+        wallet?.dismissSetup();
+      }
+    });
   }
 
   public async enableBiometry(passcode: string) {

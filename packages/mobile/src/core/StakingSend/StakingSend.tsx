@@ -276,7 +276,7 @@ export const StakingSend: FC<Props> = (props) => {
       setSending(true);
 
       const totalAmount = calculateMessageTransferAmount(messages.current);
-      const checkResult = await checkIsInsufficient(totalAmount);
+      const checkResult = await checkIsInsufficient(totalAmount, tk.wallet);
       if (checkResult.insufficient) {
         const stakingFee = Ton.fromNano(getWithdrawalFee(pool));
 

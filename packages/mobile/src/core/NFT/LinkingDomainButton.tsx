@@ -161,7 +161,10 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
 
     // compare balance and transfer amount, because transfer will fail
     if (fee === '0') {
-      const checkResult = await checkIsInsufficient(linkingActions.transferAmount);
+      const checkResult = await checkIsInsufficient(
+        linkingActions.transferAmount,
+        tk.wallet,
+      );
       if (checkResult.insufficient) {
         Toast.hide();
         return openInsufficientFundsModal({

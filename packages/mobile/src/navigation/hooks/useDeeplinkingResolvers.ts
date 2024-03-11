@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { DeeplinkingResolver, useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
-import { Base64, delay, fromNano } from '$utils';
+import { Base64, delay, fromNano, toNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { store, Toast } from '$store';
 import {
@@ -372,13 +372,17 @@ export function useDeeplinkingResolvers() {
         const jettonBalance = tk.wallet.jettons.getLoadedJetton(query.jetton);
 
         if (!jettonBalance) {
-          return Toast.fail(t('transfer_deeplink_address_error'));
+          return Toast.fail(t('transfer_deeplink_unknown_jetton_error'));
         }
 
         let decimals = jettonBalance.metadata.decimals ?? 9;
         const amount = fromNano(query.amount.toString(), decimals);
 
-        if (new BigNumber(jettonBalance.balance ?? 0).lt(query.amount)) {
+        if (
+          new BigNumber(
+            toNano(jettonBalance.balance, jettonBalance.metadata.decimals ?? 9) ?? 0,
+          ).lt(query.amount)
+        ) {
           openInsufficientFundsModal({
             balance: jettonBalance.balance ?? 0,
             totalAmount: query.amount,
@@ -476,7 +480,6 @@ export function useDeeplinkingResolvers() {
               amount: AmountFormatter.toNano(1),
               address: query.nft,
               payload: ContractService.createNftTransferBody({
-                queryId: Date.now(),
                 newOwnerAddress: address,
                 excessesAddress: excessesAccount || tk.wallet.address.ton.raw,
               })

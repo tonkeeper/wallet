@@ -14,7 +14,6 @@ import { ManageTokens } from '$core/ManageTokens/ManageTokens';
 import { Staking } from '$core/Staking/Staking';
 import { StakingPools } from '$core/StakingPools/StakingPools';
 import { StakingPoolDetails } from '$core/StakingPoolDetails/StakingPoolDetails';
-import { BackupWords } from '$core/BackupWords/BackupWords';
 import { Subscriptions } from '$core/Subscriptions/Subscriptions';
 import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
@@ -26,7 +25,15 @@ import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
 import { InscriptionScreen } from '$core/InscriptionScreen';
 import { useDiamondsChecker } from '$hooks/useDiamondsChecker';
 import { useWallet } from '@tonkeeper/shared/hooks';
-import { StartScreen, HoldersWebView, ChangePinBiometry, ResetPin } from '../../screens';
+import {
+  StartScreen,
+  HoldersWebView,
+  ChangePinBiometry,
+  ResetPin,
+  BackupPhraseScreen,
+  BackupScreen,
+  BackupCheckPhraseScreen,
+} from '../../screens';
 import { CreateWalletStack } from '../CreateWalletStack';
 import { ImportWalletStack } from '$navigation/ImportWalletStack';
 import { AddWatchOnlyStack } from '$navigation/AddWatchOnlyStack';
@@ -116,7 +123,6 @@ export const MainStack: FC = () => {
         name={MainStackRouteNames.StakingPoolDetails}
         component={StakingPoolDetails}
       />
-      <Stack.Screen name={MainStackRouteNames.BackupWords} component={BackupWords} />
       <Stack.Screen name={MainStackRouteNames.Subscriptions} component={Subscriptions} />
       <Stack.Screen
         name={MainStackRouteNames.DeleteAccountDone}
@@ -132,7 +138,11 @@ export const MainStack: FC = () => {
         name={MainStackRouteNames.Inscription}
         component={InscriptionScreen}
       />
-      <Stack.Screen name={MainStackRouteNames.ManageTokens} component={ManageTokens} />
+      <Stack.Screen
+        name={MainStackRouteNames.ManageTokens}
+        options={{ gestureEnabled: false }}
+        component={ManageTokens}
+      />
       <Stack.Screen
         name={MainStackRouteNames.AddressUpdateInfo}
         component={AddressUpdateInfo}
@@ -147,6 +157,15 @@ export const MainStack: FC = () => {
       <Stack.Screen
         name={MainStackRouteNames.ChangePinBiometry}
         component={ChangePinBiometry}
+      />
+      <Stack.Screen name={MainStackRouteNames.Backup} component={BackupScreen} />
+      <Stack.Screen
+        name={MainStackRouteNames.BackupPhrase}
+        component={BackupPhraseScreen}
+      />
+      <Stack.Screen
+        name={MainStackRouteNames.BackupCheckPhrase}
+        component={BackupCheckPhraseScreen}
       />
     </Stack.Navigator>
   );

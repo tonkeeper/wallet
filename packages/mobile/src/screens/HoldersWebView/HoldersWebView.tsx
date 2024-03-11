@@ -36,9 +36,14 @@ import { useDAppBridge } from '$core/DAppBrowser/hooks/useDAppBridge';
 import { i18n } from '@tonkeeper/shared/i18n';
 import { config } from '$config';
 import { useWalletCurrency } from '@tonkeeper/shared/hooks';
+import { Address } from '@tonkeeper/core';
+import { RouteProp } from '@react-navigation/native';
+import { MainStackRouteNames } from '$navigation';
+import { MainStackParamList } from '$navigation/MainStack';
 
 export interface HoldersWebViewProps {
   path?: string;
+  route: RouteProp<MainStackParamList, MainStackRouteNames.HoldersWebView>;
 }
 
 export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
@@ -64,19 +69,22 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
     'theme-style': 'dark',
   });
 
-  const url = `${endpoint}${props.path ?? ''}?${queryParams.toString()}`;
+  const url = `${endpoint}${props.route.params?.path ?? ''}?${queryParams.toString()}`;
 
   const [holdersParams, setHoldersParams] = useState({
     backPolicy: 'back',
     showKeyboardAccessoryView: false,
-    lockScroll: true,
+    lockScroll: false,
   });
 
   const injectionEngine = useInjectEngine(getDomainFromURL(url), 'Title', true);
 
   const { injectedJavaScriptBeforeContentLoaded, ref, onMessage } = useDAppBridge(
-    tk.wallet.address.ton.raw,
-    url,
+    Address.parse(tk.wallet.address.ton.raw).toString({
+      testOnly: tk.wallet.isTestnet,
+      bounceable: true,
+    }),
+    config.get('holdersAppEndpoint', false),
   );
 
   const handleWebViewMessage = useCallback((event: WebViewMessageEvent) => {
@@ -165,7 +173,7 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
         return newValue;
       });
     },
-    [setHoldersParams],
+    [onCloseApp],
   );
 
   const onHardwareBackPress = useCallback(() => {
@@ -183,7 +191,7 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
       return true;
     }
     return false;
-  }, [holdersParams.backPolicy]);
+  }, [holdersParams.backPolicy, navigation, ref]);
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', onHardwareBackPress);
@@ -199,7 +207,10 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
         platform: Platform.OS,
         platformVersion: Platform.Version,
         network: tk.wallet.isTestnet ? 'testnet' : 'mainnet',
-        address: tk.wallet.address.ton.raw,
+        address: Address.parse(tk.wallet.address.ton.raw).toString({
+          bounceable: true,
+          testOnly: tk.wallet.isTestnet,
+        }),
         publicKey: Buffer.from(tk.wallet.pubkey, 'hex').toString('base64'),
       },
       safeArea: safeAreaInsets,
@@ -207,8 +218,7 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
       useMainButtonAPI: true,
       useStatusBarAPI: true,
     });
-  }, [injectedJavaScriptBeforeContentLoaded]);
-
+  }, [injectedJavaScriptBeforeContentLoaded, safeAreaInsets]);
   return (
     <Animated.View style={styles.container.static} entering={FadeIn}>
       <WebView

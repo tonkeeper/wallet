@@ -1,5 +1,5 @@
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
-import { openCreatePin, openSetupNotifications, openSetupWalletDone } from '$navigation';
+import { openSetupNotifications, openSetupWalletDone } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { getLastEnteredPasscode } from '$store/wallet/sagas';
 import { tk } from '$wallet';
@@ -10,10 +10,13 @@ import { useDispatch } from 'react-redux';
 import DeviceInfo from 'react-native-device-info';
 import { network } from '@tonkeeper/core';
 import { config } from '$config';
+import { useNavigation } from '@tonkeeper/router';
+import { ImportWalletStackRouteNames } from '$navigation/ImportWalletStack/types';
 
 export const useImportWallet = () => {
   const dispatch = useDispatch();
   const unlockVault = useUnlockVault();
+  const nav = useNavigation();
 
   const restore = useCallback(
     (
@@ -39,7 +42,7 @@ export const useImportWallet = () => {
                     isTestnet,
                     onDone: async (identifiers) => {
                       tk.setMigrated();
-                      tk.enableLock();
+                      tk.saveLastBackupTimestampAll(identifiers, true);
 
                       dispatch(walletActions.clearGeneratedVault());
 
@@ -96,7 +99,8 @@ export const useImportWallet = () => {
                       pin,
                       isTestnet,
                       onDone: (identifiers) => {
-                        if (isNotificationsDenied) {
+                        tk.saveLastBackupTimestampAll(identifiers);
+                        if (isNotificationsDenied || isTestnet) {
                           openSetupWalletDone(identifiers);
                         } else {
                           openSetupNotifications(identifiers);
@@ -110,7 +114,9 @@ export const useImportWallet = () => {
                   reject();
                 }
               } else {
-                openCreatePin();
+                nav.navigate(ImportWalletStackRouteNames.CreatePasscode, {
+                  isImport: true,
+                });
                 resolve();
               }
             },
@@ -119,7 +125,7 @@ export const useImportWallet = () => {
         );
       });
     },
-    [dispatch, unlockVault],
+    [dispatch, nav, unlockVault],
   );
 
   return restore;

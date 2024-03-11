@@ -1,4 +1,4 @@
-import { FlatList, FlatListProps, useWindowDimensions } from 'react-native';
+import { FlatList, FlatListProps, useWindowDimensions, View } from 'react-native';
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { ScreenLargeHeaderDistance } from '../Screen/utils/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -143,16 +143,9 @@ function PagerViewFlatListComponent<TItem>(props: StyledFlatListProps<TItem>) {
     };
   }, [hasSpace.value, dimensions.height, dimensions.width]);
 
-  const headerOffsetStyle = useAnimatedStyle(
-    () => ({
-      height: headerHeight,
-    }),
-    [headerHeight],
-  );
-
   const ListHeaderComponent = useMemo(
-    () => <Animated.View style={headerOffsetStyle} />,
-    [headerOffsetStyle],
+    () => <View style={{ height: headerHeight }} />,
+    [headerHeight],
   );
   const ListFooterComponent = useMemo(
     () => <Animated.View style={heightOffsetStyle} />,

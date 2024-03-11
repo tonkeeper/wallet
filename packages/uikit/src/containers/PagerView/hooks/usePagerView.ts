@@ -1,5 +1,4 @@
 import { SharedValue, useSharedValue } from 'react-native-reanimated';
-import { ScreenHeaderHeight } from '../../Screen/utils/constants';
 import { usePagerScrollHandler } from './usePagerScrollHandler';
 import { useScreenScroll } from '../../Screen/hooks';
 import { LayoutChangeEvent } from 'react-native';
@@ -17,14 +16,17 @@ export const tabIndicatorWidth = 32;
 
 type ScrollTo = (y: number, animated?: boolean) => void;
 
-export const usePagerViewHandler = (externalPageOffset?: SharedValue<number>) => {
+export const usePagerViewHandler = (
+  externalPageOffset?: SharedValue<number>,
+  estimatedHeaderHeight?: number,
+) => {
   const { headerEjectionPoint, headerType } = useScreenScroll();
   const isScrollInMomentum = useSharedValue(false);
   const pagerViewRef = useRef<PagerView>(null);
 
   const contentOffset = useSharedValue(0);
 
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(estimatedHeaderHeight ?? 0);
   const activeIndex = useSharedValue(0);
 
   const pageOffset = useSharedValue(0);
@@ -32,7 +34,6 @@ export const usePagerViewHandler = (externalPageOffset?: SharedValue<number>) =>
 
   const measureHeader = (event: LayoutChangeEvent) => {
     const height = event.nativeEvent.layout.height;
-    const headerOffset = headerType === 'large' ? ScreenHeaderHeight : 0;
     headerEjectionPoint.value =
       event.nativeEvent.layout.height - (headerType === 'large' ? 64 : 0);
     setHeaderHeight(height);

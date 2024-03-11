@@ -2,7 +2,7 @@
   "about_ton": "TON is a fully decentralized layer-1 blockchain designed by Telegram to onboard billions of users. It boasts ultra-fast transactions, tiny fees, easy-to-use apps, and is environmentally friendly.",
   "access_confirmation_logout": "Sign Out",
   "access_confirmation_title": "Enter passcode",
-  "access_confirmation_update_biometry": "Enter passcode to use biometric auth data",
+  "access_confirmation_update_biometry": "Enter passcode to use biometrics auth data",
   "access_denied": "Access denied",
   "account_deleted": "Account deleted",
   "activityActionModal": {
@@ -42,9 +42,10 @@
     "first_option": "Most likely the destination wallet is already actively used and you won’t notice any difference.",
     "learn_more": "Learn more",
     "new_style": "New address",
-    "notification_desc_did_change": "On October 5 your wallet address did update to the UQ format which is just better. The old address will also work. You don’t need to do anything.",
+    "notification_desc_did_change": "Your wallet address has been updated to the UQ format. The old address also continues to work.",
     "notification_desc_will_change": "On October 5 your wallet address will update to the UQ format which is just better. The old address will also work. You don’t need to do anything.",
     "old_style": "Old address",
+    "post_published_date": "Published: September 27, 2023",
     "post_dates": "\nOctober 5, 2023: all addresses switch to the UQ format in Tonkeeper.\n\nJanuary 1, 2024: Tonkeeper stops checking the contract status and uses the “bounceable” flag in the address. Coins sent to non-published contracts with an EQ address will bounce back to the sender.",
     "post_rest": "There are two address styles on the TON blockchain and until now only one was used for apps and wallets.\n\nThe EQ format is best for smart contracts that process incoming funds. If a smart contract isn’t published yet — i.e., the code isn’t on the blockchain — then the TONs sent to that address will bounce back to the sender. And this is a safety feature: if there is any error, TONs bounce back.\n\nThe UQ format is best for wallets. Coins never bounce because wallets are designed to simply store funds. Each wallet starts as a plain address without a code on the blockchain. So, it would make no sense for coins to bounce back.\n\nThis year we are switching wallets to the more suitable UQ format. And if you continue sending funds to an old EQ address someone gave you, there will be two options:\n",
     "post_top": "By the end of this year the entire TON network will display wallet addresses differently. The new address will start with UQ instead of EQ. And the last four letters will change too. The old address will also work and direct to the same wallet. It doesn't effect the safety of funds stored in your wallet anyhow.",
@@ -208,9 +209,6 @@
     },
     "price": "Price"
   },
-  "check_words_caption": "To check whether you’ve written down your recovery phrase correctly, please enter the %{wordNum1}th, %{wordNum2}th, and  %{wordNum3}st words.",
-  "check_words_success": "Congratulations! You’ve set up your wallet",
-  "check_words_title": "So, let’s check",
   "choose_country": {
     "auto": "Auto",
     "cancel": "Cancel",
@@ -287,11 +285,6 @@
   "create_pin_current_title": "Enter current passcode",
   "create_pin_new_title": "Create new passcode",
   "create_pin_repeat_title": "Re-enter passcode",
-  "create_wallet_caption": "We strongly recommend you write down the recovery phrase because it’s the only way to have access to and recover your wallet in case of losing your device. Do not send it to yourself via email or take a screenshot. It’s safer when kept offline.",
-  "create_wallet_continue_button": "Continue",
-  "create_wallet_generated": "Your wallet has\njust been created!",
-  "create_wallet_generating": "Generating wallet...",
-  "create_wallet_title": "Grab a pen and a piece of paper",
   "decryption_error": "Decryption error",
   "deploy_contract_button": "Confirm and deploy",
   "deploy_contract_title": "Deploy contract",
@@ -381,17 +374,6 @@
   "jettons_manage_tokens": "Manage tokens",
   "jettons_show_jettons": "Show tokens in wallet",
   "jetton_token": "Token",
-  "language": {
-    "language_alert": {
-      "cancel": "Cancel",
-      "open": "Settings",
-      "title": "To change the language of the app, go to device Settings"
-    },
-    "list_item": {
-      "title": "Language",
-      "value": "English"
-    }
-  },
   "later": "Later",
   "legal_font_license": "Montserrat font",
   "legal_header_title": "Legal",
@@ -503,23 +485,27 @@
   "paste": "Paste",
   "pin_enter_faceid_err": " Biometrics check failed",
   "pin_enter_skip_faceid_err": "Biometrics is required",
-  "platform": {
+  "biometry": {
     "android": {
-      "capitalized_face_recognition": "Face recognition",
-      "capitalized_fingerprint": "Fingerprint",
       "face_recognition": "face recognition",
       "face_recognition_genitive": "face recognition",
+      "face_recognition_instrumental": "face recognition",
       "fingerprint": "fingerprint",
-      "fingerprint_genitive": "fingerprint"
+      "fingerprint_genitive": "fingerprint",
+      "fingerprint_instrumental": "fingerprint"
     },
     "ios": {
-      "capitalized_face_recognition": "Face ID",
-      "capitalized_fingerprint": "Touch ID",
       "face_recognition": "Face ID",
       "face_recognition_genitive": "Face ID",
+      "face_recognition_instrumental": "Face ID",
       "fingerprint": "Touch ID",
-      "fingerprint_genitive": "Touch ID"
-    }
+      "fingerprint_genitive": "Touch ID",
+      "fingerprint_instrumental": "Touch ID"
+    },
+    "default": "biometrics",
+    "default_accusative": "biometrics",
+    "default_instrumental": "biometrics",
+    "default_genitive": "biometrics"
   },
   "programmable_nfts": {
     "alert": {
@@ -550,15 +536,9 @@
   "reminder_notifications_title": "Get instant notifications",
   "renew_in_progress": "Renew in progress…",
   "renew_progress_of": "%{current} of %{count}",
-  "require_create_wallet_modal_caption": "You need a connected wallet to use\nTonkeeper. Either create a new wallet or import an existing one.",
-  "require_create_wallet_modal_create_new": "Create new wallet",
-  "require_create_wallet_modal_import": "Import existing wallet",
-  "require_create_wallet_modal_title": "Let’s set up your wallet",
   "scan_qr_open_settings": "Open settings",
   "scan_qr_permission_error": "Allow camera access to scan QR codes",
   "scan_qr_title": "Scan QR code",
-  "secret_words_caption": "Write down these 24 words in the order given below and store them in a secret, safe place.",
-  "secret_words_title": "Your recovery phrase",
   "security_change_passcode": "Change passcode",
   "security_reset_passcode": "Reset passcode",
   "security_title": "Security",
@@ -635,7 +615,7 @@
   "send_sending_wrong_time_title": "Error occurred",
   "send_title": "Send %{currency}",
   "settings_appearance": "Theme",
-  "settings_backup_seed": "Recovery Phrase",
+  "settings_backup_seed": "Backup",
   "settings_contact_support": "Contact us",
   "settings_delete_account": "Delete account",
   "settings_delete_alert_button": "Delete account and data",
@@ -644,20 +624,25 @@
   "settings_jettons_list": "Tokens",
   "settings_legal_documents": "Legal",
   "language": {
-    "list_item": {
-      "title": "Language",
-      "value": "English"
-    },
+    "title": "Language",
     "language_alert": {
-      "title": "To change the language of the app, go to device Settings",
       "cancel": "Cancel",
-      "open": "Settings"
+      "open": "Settings",
+      "title": "To change the language of the app, go to device Settings"
+    },
+    "languagesList": {
+      "system": "System",
+      "ru": "Russian",
+      "en": "English",
+      "tr": "Turkish",
+      "zh-Hans": "Chinese"
     }
   },
   "settings_network_alert_title": "Select network",
   "settings_news": "Tonkeeper news",
   "settings_notifications": "Notifications",
   "settings_primary_currency": "Currency",
+  "settings_bank_card": "Bank card",
   "settings_rate": "Rate Tonkeeper",
   "settings_recovery_phrase": "Recovery phrase",
   "settings_reset": "Sign Out",
@@ -666,6 +651,8 @@
   "settings_reset_alert_title": "Sign Out?",
   "settings_reset_alert_caption_all": "This will erase keys to all wallets. Make sure you have backed up your recovery phrases.",
   "settings_reset_alert_title_all": "Sign Out of All Wallets?",
+  "settings_delete_watch_account": "Delete Watch Account?",
+  "settings_delete_watch_account_button": "Delete",
   "settings_search_engine": "Search",
   "settings_security": "Security",
   "settings_subscriptions": "Subscriptions",
@@ -677,9 +664,9 @@
   "setup_biometry_caption": "%{biometryType} allows you to open your wallet faster without having\nto enter your password.",
   "setup_biometry_enable_button": "Enable %{biometryType}",
   "setup_biometry_title": "Quick sign-in with %{biometryType}",
-  "setup_notifications_caption": "Get notifications when you \n receive TON, tokens and NFTs.",
+  "setup_notifications_caption": "Get notified when you receive\nTON, tokens and NFTs",
   "setup_notifications_enable_button": "Enable notifications",
-  "setup_notifications_title": "Get instant notifications",
+  "setup_notifications_title": "Get instant\nnotifications",
   "skip": "Skip",
   "spam_action": "Spam",
   "staking": {
@@ -933,6 +920,7 @@
   "transaction_view_in_explorer": "View in explorer",
   "transaction_wallet_initialized_date": "%{date}",
   "transaction_your_bid": "Your bid",
+  "transfer_deeplink_unknown_jetton_error" : "Unknown token",
   "transfer_deeplink_address_error": "Incorrect recipient address",
   "transfer_deeplink_unknown_token": "Unknown token",
   "transfer_deeplink_wrong_params": "Wrong parameters",
@@ -1021,7 +1009,8 @@
     "send_btn": "Send",
     "swap_btn": "Swap",
     "tonkens_tab_lable": "Tokens",
-    "updated_at": "Updated on %{value}"
+    "updated_at": "Updated on %{value}",
+    "inscriptions_tab_label": "Inscriptions"
   },
   "wallet_chat": "Chat",
   "wallet_community": "Community",
@@ -1078,7 +1067,7 @@
       "subtitle": "Create new wallet"
     },
     "import": {
-      "title": "Import Wallet",
+      "title": "Existing Wallet",
       "subtitle": "Import wallet with a 24 secret recovery words"
     },
     "watch_only": {
@@ -1130,5 +1119,51 @@
     "wait_step_pending": "Your TON will be available in %{duration}. After this time you can сollect them.",
     "stake_into_tonstakers_action": "Stake into Tonstakers",
     "stake_into_step": "Stake collected TON into Tonstakers."
+  },
+  "tokenDetails": {
+    "title": "Token Details",
+    "tonviewer_button": "View on Tonviewer",
+    "name": "Name",
+    "token_id": "Token ID"
+  },
+  "backup_screen": {
+    "title": "Backup",
+    "manual_title": "Manual",
+    "manual_caption": "Back up your wallet manually by writing down the recovery phrase.",
+    "manual_button": "Back Up Manually",
+    "manual_backup_on": "Manual Backup On",
+    "last_backup_time": "Last backup %{time}",
+    "show_recovery_phrase": "Show Recovery Phrase"
+  },
+  "backup_warning": {
+    "title": "Attention",
+    "caption": "Please read the following carefully before viewing your recovery phrase.",
+    "p1": "Never enter your recovery phrase any other place than Tonkeeper to access your wallet.",
+    "p2": "Tonkeeper Support never asks for a recovery phrase.",
+    "p3": "Everybody with your recovery phrase can access your wallet.",
+    "continue_button": "Continue",
+    "cancel_button": "Cancel"
+  },
+  "recovery_phrase": {
+    "title": "Recovery Phrase",
+    "caption": "Write down these words with their numbers and store them in a safe place.",
+    "check_button": "Check Backup",
+    "copy_button": "Copy"
+  },
+  "backup_check": {
+    "title": "Backup Check",
+    "caption": "Let's see if you've got everything right. Enter words %{one}, %{two}, and %{three}.",
+    "done_button": "Done"
+  },
+  "finish_setup": {
+    "header_title": "Finish setting up",
+    "use_biometry": "Use %{name} to approve transaction",
+    "enable_notifications": "Enable transaction notifications",
+    "backup": "Back up the wallet recovery phrase",
+    "done_button": "Done"
+  },
+  "buy_ton": {
+    "title": "Buy TON",
+    "subtitle": "Instantly with a bank card"
   }
 }

@@ -135,7 +135,6 @@ export const NFTSend: FC<Props> = (props) => {
           to: nftAddress,
           value: ONE_TON,
           body: ContractService.createNftTransferBody({
-            queryId: Date.now(),
             newOwnerAddress: recipient!.address,
             excessesAddress: wallet.address.ton.raw,
             forwardBody: commentValue,
@@ -261,7 +260,7 @@ export const NFTSend: FC<Props> = (props) => {
         ? BASE_FORWARD_AMOUNT
         : BigInt(Math.abs(consequences?.event.extra!)) + BASE_FORWARD_AMOUNT;
 
-      const checkResult = await checkIsInsufficient(totalAmount.toString());
+      const checkResult = await checkIsInsufficient(totalAmount.toString(), tk.wallet);
       if (!isBattery && checkResult.insufficient) {
         openInsufficientFundsModal({
           totalAmount: totalAmount.toString(),
@@ -279,7 +278,6 @@ export const NFTSend: FC<Props> = (props) => {
           to: nftAddress,
           value: totalAmount,
           body: ContractService.createNftTransferBody({
-            queryId: Date.now(),
             newOwnerAddress: recipient!.address,
             excessesAddress: excessesAccount || wallet.address.ton.raw,
             forwardBody: commentValue,

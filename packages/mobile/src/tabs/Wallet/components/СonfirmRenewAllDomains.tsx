@@ -58,7 +58,7 @@ export const СonfirmRenewAllDomains = memo((props) => {
     const totalAmount = new BigNumber(amount)
       .multipliedBy(new BigNumber(domains.length))
       .toString();
-    const checkResult = await checkIsInsufficient(totalAmount);
+    const checkResult = await checkIsInsufficient(totalAmount, tk.wallet);
     if (checkResult.insufficient) {
       return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
     }

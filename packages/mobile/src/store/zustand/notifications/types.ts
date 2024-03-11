@@ -8,19 +8,25 @@ export interface INotification {
   deeplink?: string;
 }
 
-export interface INotificationsStore {
+export interface INotificationsState {
   notifications: INotification[];
   last_seen: number;
-  has_gms: boolean;
   last_seen_activity_screen: number;
   should_show_red_dot: boolean;
+}
+
+export interface INotificationsStore {
+  has_gms: boolean;
+  wallets: {
+    [walletAddress: string]: INotificationsState;
+  };
   actions: {
-    updateLastSeenActivityScreen: () => void;
-    updateLastSeen: () => void;
-    addNotification: (notification: INotification) => void;
+    updateLastSeenActivityScreen: (rawAddress: string) => void;
+    updateLastSeen: (rawAddress: string) => void;
+    addNotification: (notification: INotification, rawAddress: string) => void;
     reset: () => void;
-    deleteNotificationByReceivedAt: (receivedAt: number) => void;
-    removeNotificationsByDappUrl: (dapp_url: string) => void;
-    removeRedDot: () => void;
+    deleteNotificationByReceivedAt: (receivedAt: number, rawAddress: string) => void;
+    removeNotificationsByDappUrl: (dapp_url: string, rawAddress: string) => void;
+    removeRedDot: (rawAddress: string) => void;
   };
 }

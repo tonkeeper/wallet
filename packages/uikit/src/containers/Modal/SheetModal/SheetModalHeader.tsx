@@ -46,6 +46,15 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
   );
 
   useLayoutEffect(() => {
+    if (hasSubtitle) {
+      measureHeader({
+        nativeEvent: {
+          layout: { height: 84 },
+        },
+      });
+
+      return;
+    }
     if (hasTitle) {
       measureHeader({
         nativeEvent: {
@@ -89,13 +98,7 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
         )}
 
         {hasTitle && (
-          <View
-            style={[
-              styles.headerTitle,
-              styles.headerTitleWithClose,
-              center && styles.titleByCenter,
-            ]}
-          >
+          <View style={[styles.headerTitle, center && styles.titleByCenter]}>
             {typeof title === 'string' ? (
               <Text
                 numberOfLines={props.numberOfLines}
@@ -166,9 +169,6 @@ const styles = StyleSheet.create({
     height: 46,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-  },
-  headerTitleWithClose: {
-    paddingRight: 64,
   },
   closeButton: {
     width: 64,

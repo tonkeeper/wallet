@@ -27,7 +27,6 @@ interface TabsBarProps {
   containerStyle?: StyleProp<ViewStyle>;
   value: string;
   indent?: boolean;
-  center?: boolean;
   sticky?: any;
   scrollY?: Animated.SharedValue<number>;
   children?: React.ReactNode;
@@ -36,7 +35,7 @@ interface TabsBarProps {
 const INDICATOR_WIDTH = ns(24);
 
 export const TabsBarComponent = (props: TabsBarProps) => {
-  const { value, indent = true, center } = props;
+  const { value, indent = true } = props;
   const { setActiveIndex, pageOffset, scrollY, headerHeight, isScrollInMomentum } =
     useTabCtx();
   const theme = useTheme();

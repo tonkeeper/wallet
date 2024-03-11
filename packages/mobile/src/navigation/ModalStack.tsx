@@ -2,7 +2,7 @@ import React from 'react';
 import { createModalStackNavigator } from '@tonkeeper/router';
 import { NFT } from '$core/NFT/NFT';
 import { SignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
-import { AppStackRouteNames } from './navigationNames';
+import { AppStackRouteNames, ModalStackRouteNames } from './navigationNames';
 import {
   AccessConfirmation,
   BuyFiat,
@@ -18,7 +18,6 @@ import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewCon
 import { RenewAllDomainModal } from '../tabs/Wallet/RenewAllDomainModal';
 import { СonfirmRenewAllDomains } from '../tabs/Wallet/components/СonfirmRenewAllDomains';
 
-import { ExchangeModal } from '$modals/ExchangeModal';
 import { Swap } from '$core/Swap/Swap';
 import { ChooseCountry } from '$core/ChooseCountry/ChooseCountry';
 
@@ -32,6 +31,8 @@ import { RefillBatteryModal } from '../../../shared/modals/RefillBatteryModal';
 import { NFTSend } from '$core/NFTSend/NFTSend';
 import { ReceiveInscriptionModal } from '@tonkeeper/shared/modals/ReceiveInscriptionModal';
 import { CustomizeWallet } from '$core/CustomizeWallet/CustomizeWallet';
+import { TokenDetails } from '../components/TokenDetails/TokenDetails';
+import { BackupWarningModal, ExchangeModal } from '$modals';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -46,7 +47,9 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NewConfirmSending} path="NewConfirmSending" />
       <Stack.Modal component={SwitchWalletModal} path="/switch-wallet" />
       <Stack.Modal component={AddWalletModal} path="/add-wallet" />
+      <Stack.Modal component={TokenDetails} path={ModalStackRouteNames.TokenDetails} />
       <Stack.Modal component={RefillBatteryModal} path="/refill-battery" />
+      <Stack.Modal component={BackupWarningModal} path="/backup-warning" />
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />

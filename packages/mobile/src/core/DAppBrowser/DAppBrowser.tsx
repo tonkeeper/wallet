@@ -37,7 +37,10 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
 
   const wallet = useWallet();
   const walletAddress = wallet
-    ? Address.parse(wallet.address.ton.raw).toFriendly({ bounceable: true })
+    ? Address.parse(wallet.address.ton.raw).toFriendly({
+        bounceable: true,
+        testOnly: wallet.isTestnet,
+      })
     : '';
 
   const deeplinking = useDeeplinking();

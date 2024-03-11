@@ -49,8 +49,9 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { format } from 'date-fns';
 import { getLocale } from '$utils/date';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useWallet, useWalletStatus } from '@tonkeeper/shared/hooks';
+import { useWallet, useWalletCurrency, useWalletStatus } from '@tonkeeper/shared/hooks';
 import { WalletSelector } from './components/WalletSelector';
+import { useInscriptionBalances } from '$hooks/useInscriptionBalances';
 
 export const WalletScreen = memo(({ navigation }) => {
   const flags = useFlags(['disable_swap']);
@@ -59,12 +60,14 @@ export const WalletScreen = memo(({ navigation }) => {
   const theme = useTheme();
   const nav = useNavigation();
   const tokens = useTonkens();
+  const { enabled: inscriptions } = useInscriptionBalances();
   const { enabled: nfts } = useApprovedNfts();
   const wallet = useWallet();
   const shouldUpdate =
     useUpdatesStore((state) => state.update.state) !== UpdateState.NOT_STARTED;
   const balance = useBalance(tokens.total.fiat);
   const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
+  const currency = useWalletCurrency();
 
   const { isReloading: isRefreshing, updatedAt: walletUpdatedAt } = useWalletStatus();
 
@@ -269,7 +272,9 @@ export const WalletScreen = memo(({ navigation }) => {
   }, [dimensions.width]);
 
   const isPagerView =
-    nfts.length && tokens.list.length >= 2 && tokens.list.length + nfts.length + 1 > 10;
+    nfts.length &&
+    tokens.list.length + inscriptions.length >= 2 &&
+    inscriptions.length + tokens.list.length + nfts.length + 1 > 10;
 
   if (!wallet) {
     return (
@@ -315,7 +320,7 @@ export const WalletScreen = memo(({ navigation }) => {
         hideBackButton
       />
       {isPagerView ? (
-        <PagerView>
+        <PagerView estimatedHeaderHeight={288}>
           <PagerView.Header>
             {ListHeader}
             <PagerView.TabBar centered>
@@ -326,6 +331,8 @@ export const WalletScreen = memo(({ navigation }) => {
           <PagerView.Pages>
             <PagerView.Page index={0}>
               <WalletContentList
+                inscriptions={inscriptions}
+                currency={currency}
                 balance={balance}
                 tronBalances={tronBalances}
                 tokens={tokens}
@@ -361,6 +368,8 @@ export const WalletScreen = memo(({ navigation }) => {
         </PagerView>
       ) : (
         <WalletContentList
+          inscriptions={inscriptions}
+          currency={currency}
           tronBalances={tronBalances}
           ListHeaderComponent={ListHeader}
           handleRefresh={handleRefresh}
