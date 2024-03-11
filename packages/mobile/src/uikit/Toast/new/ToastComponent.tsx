@@ -101,7 +101,11 @@ export const ToastComponent = memo(() => {
             styles.toast,
             animatedStyle,
             toast.size === 'small' && styles.toastSmall,
-            { backgroundColor: theme.colors.backgroundTertiary },
+            {
+              backgroundColor: toast.warning
+                ? theme.colors.accentOrange
+                : theme.colors.backgroundTertiary,
+            },
           ]}
         >
           {toast.isLoading && (

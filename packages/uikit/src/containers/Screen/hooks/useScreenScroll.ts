@@ -1,6 +1,6 @@
 import { ScreenLargeHeaderDistance, ScreenLargeHeaderHeight } from '../utils/constants';
 import { ScrollableWrapper, getScrollTo, getScrollableNode } from '../utils/scrollable';
-import { createContext, useCallback, useRef, useContext } from 'react';
+import { createContext, useCallback, useRef, useContext, useEffect } from 'react';
 import { LayoutChangeEvent, NativeScrollEvent } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import Animated, {

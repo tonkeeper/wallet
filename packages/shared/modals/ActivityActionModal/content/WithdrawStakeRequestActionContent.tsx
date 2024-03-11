@@ -1,16 +1,18 @@
 import { AddressListItem } from '../components/AddressListItem';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { ActionModalContent } from '../ActionModalContent';
-import { ActionItem, ActionType } from '@tonkeeper/core';
+import {
+  ActionItem,
+  ActionType,
+} from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 import { List, ListItem, copyText } from '@tonkeeper/uikit';
 import { t } from '../../../i18n';
 import { memo } from 'react';
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 import { StakingIcon } from '../components/StakingIcon';
-import { fiatCurrencySelector } from '@tonkeeper/mobile/src/store/main';
 import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
-import { useSelector } from 'react-redux';
 import { formatter } from '../../../formatter';
+import { useWalletCurrency } from '../../../hooks';
 
 interface WithdrawStakeRequestActionContentProps {
   action: ActionItem<ActionType.WithdrawStakeRequest>;
@@ -22,7 +24,7 @@ export const WithdrawStakeRequestActionContent =
 
     const { formatNano, format } = useHideableFormatter();
 
-    const fiatCurrency = useSelector(fiatCurrencySelector);
+    const fiatCurrency = useWalletCurrency();
     const tokenPrice = useTokenPrice(
       'ton',
       formatter.fromNano(action.amount?.value ?? '0'),

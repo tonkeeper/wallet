@@ -1,9 +1,11 @@
 export type IconNames =
   | 'ic-chevron-right-12'
+  | 'ic-cloud-12'
   | 'ic-dot-12'
   | 'ic-down-12'
   | 'ic-dropdown-12'
   | 'ic-exclamationmark-triangle-12'
+  | 'ic-information-circle-12'
   | 'ic-loader-xsmall-12'
   | 'ic-lock-12'
   | 'ic-star-12'
@@ -11,6 +13,7 @@ export type IconNames =
   | 'ic-almost-empty-battery-128'
   | 'ic-empty-battery-128'
   | 'ic-full-battery-128'
+  | 'ic-gear-128'
   | 'ic-lock-128'
   | 'ic-notification-128'
   | 'ic-appearance-16'
@@ -40,6 +43,7 @@ export type IconNames =
   | 'ic-share-16'
   | 'ic-sliders-16'
   | 'ic-swap-16'
+  | 'ic-switch-16'
   | 'ic-telegram-16'
   | 'ic-time-16'
   | 'ic-twitter-16'
@@ -57,6 +61,7 @@ export type IconNames =
   | 'ic-arrow-up-28'
   | 'ic-battery-28'
   | 'ic-bell-28'
+  | 'ic-creditcard-28'
   | 'ic-doc-28'
   | 'ic-done-28'
   | 'ic-donemark-28'
@@ -66,6 +71,10 @@ export type IconNames =
   | 'ic-envelope-28'
   | 'ic-exclamationmark-circle-28'
   | 'ic-explore-28'
+  | 'ic-faceid-28'
+  | 'ic-faceid-android-28'
+  | 'ic-fingerprint-28'
+  | 'ic-fingerprint-android-28'
   | 'ic-fire-28'
   | 'ic-flash-28'
   | 'ic-full-battery-28'
@@ -76,12 +85,14 @@ export type IconNames =
   | 'ic-key-28'
   | 'ic-link-28'
   | 'ic-lock-28'
+  | 'ic-magnifying-glass-28'
   | 'ic-message-bubble-28'
   | 'ic-minus-28'
   | 'ic-money-28'
   | 'ic-nft-collection-28'
   | 'ic-notification-28'
   | 'ic-plus-28'
+  | 'ic-plus-circle-28'
   | 'ic-reorder-28'
   | 'ic-return-28'
   | 'ic-secure-28'
@@ -96,6 +107,7 @@ export type IconNames =
   | 'ic-swap-horizontal-28'
   | 'ic-swap-horizontal-alternative-28'
   | 'ic-telegram-28'
+  | 'ic-testnet-28'
   | 'ic-ticket-28'
   | 'ic-ton-28'
   | 'ic-tonkeeper-28'
@@ -113,6 +125,7 @@ export type IconNames =
   | 'ic-exclamationmark-triangle-36'
   | 'ic-faceid-36'
   | 'ic-fingerprint-36'
+  | 'ic-cards-stack-44'
   | 'ic-ton-old-wallets-44'
   | 'ic-logo-48'
   | 'ic-flashlight-off-56'
@@ -132,10 +145,12 @@ export type IconNames =
 
 export const AllIcons = [
   'ic-chevron-right-12',
+  'ic-cloud-12',
   'ic-dot-12',
   'ic-down-12',
   'ic-dropdown-12',
   'ic-exclamationmark-triangle-12',
+  'ic-information-circle-12',
   'ic-loader-xsmall-12',
   'ic-lock-12',
   'ic-star-12',
@@ -143,6 +158,7 @@ export const AllIcons = [
   'ic-almost-empty-battery-128',
   'ic-empty-battery-128',
   'ic-full-battery-128',
+  'ic-gear-128',
   'ic-lock-128',
   'ic-notification-128',
   'ic-appearance-16',
@@ -172,6 +188,7 @@ export const AllIcons = [
   'ic-share-16',
   'ic-sliders-16',
   'ic-swap-16',
+  'ic-switch-16',
   'ic-telegram-16',
   'ic-time-16',
   'ic-twitter-16',
@@ -189,6 +206,7 @@ export const AllIcons = [
   'ic-arrow-up-28',
   'ic-battery-28',
   'ic-bell-28',
+  'ic-creditcard-28',
   'ic-doc-28',
   'ic-done-28',
   'ic-donemark-28',
@@ -198,6 +216,10 @@ export const AllIcons = [
   'ic-envelope-28',
   'ic-exclamationmark-circle-28',
   'ic-explore-28',
+  'ic-faceid-28',
+  'ic-faceid-android-28',
+  'ic-fingerprint-28',
+  'ic-fingerprint-android-28',
   'ic-fire-28',
   'ic-flash-28',
   'ic-full-battery-28',
@@ -208,12 +230,14 @@ export const AllIcons = [
   'ic-key-28',
   'ic-link-28',
   'ic-lock-28',
+  'ic-magnifying-glass-28',
   'ic-message-bubble-28',
   'ic-minus-28',
   'ic-money-28',
   'ic-nft-collection-28',
   'ic-notification-28',
   'ic-plus-28',
+  'ic-plus-circle-28',
   'ic-reorder-28',
   'ic-return-28',
   'ic-secure-28',
@@ -228,6 +252,7 @@ export const AllIcons = [
   'ic-swap-horizontal-28',
   'ic-swap-horizontal-alternative-28',
   'ic-telegram-28',
+  'ic-testnet-28',
   'ic-ticket-28',
   'ic-ton-28',
   'ic-tonkeeper-28',
@@ -245,6 +270,7 @@ export const AllIcons = [
   'ic-exclamationmark-triangle-36',
   'ic-faceid-36',
   'ic-fingerprint-36',
+  'ic-cards-stack-44',
   'ic-ton-old-wallets-44',
   'ic-logo-48',
   'ic-flashlight-off-56',
@@ -265,10 +291,12 @@ export const AllIcons = [
 
 export const IconSizes = {
   'ic-chevron-right-12': 12,
+  'ic-cloud-12': 12,
   'ic-dot-12': 12,
   'ic-down-12': 12,
   'ic-dropdown-12': 12,
   'ic-exclamationmark-triangle-12': 12,
+  'ic-information-circle-12': 12,
   'ic-loader-xsmall-12': 12,
   'ic-lock-12': 12,
   'ic-star-12': 12,
@@ -276,6 +304,7 @@ export const IconSizes = {
   'ic-almost-empty-battery-128': 128,
   'ic-empty-battery-128': 128,
   'ic-full-battery-128': 128,
+  'ic-gear-128': 128,
   'ic-lock-128': 128,
   'ic-notification-128': 128,
   'ic-appearance-16': 16,
@@ -305,6 +334,7 @@ export const IconSizes = {
   'ic-share-16': 16,
   'ic-sliders-16': 16,
   'ic-swap-16': 16,
+  'ic-switch-16': 16,
   'ic-telegram-16': 16,
   'ic-time-16': 16,
   'ic-twitter-16': 16,
@@ -322,6 +352,7 @@ export const IconSizes = {
   'ic-arrow-up-28': 28,
   'ic-battery-28': 28,
   'ic-bell-28': 28,
+  'ic-creditcard-28': 28,
   'ic-doc-28': 28,
   'ic-done-28': 28,
   'ic-donemark-28': 28,
@@ -331,6 +362,10 @@ export const IconSizes = {
   'ic-envelope-28': 28,
   'ic-exclamationmark-circle-28': 28,
   'ic-explore-28': 28,
+  'ic-faceid-28': 28,
+  'ic-faceid-android-28': 28,
+  'ic-fingerprint-28': 28,
+  'ic-fingerprint-android-28': 28,
   'ic-fire-28': 28,
   'ic-flash-28': 28,
   'ic-full-battery-28': 28,
@@ -341,12 +376,14 @@ export const IconSizes = {
   'ic-key-28': 28,
   'ic-link-28': 28,
   'ic-lock-28': 28,
+  'ic-magnifying-glass-28': 28,
   'ic-message-bubble-28': 28,
   'ic-minus-28': 28,
   'ic-money-28': 28,
   'ic-nft-collection-28': 28,
   'ic-notification-28': 28,
   'ic-plus-28': 28,
+  'ic-plus-circle-28': 28,
   'ic-reorder-28': 28,
   'ic-return-28': 28,
   'ic-secure-28': 28,
@@ -361,6 +398,7 @@ export const IconSizes = {
   'ic-swap-horizontal-28': 28,
   'ic-swap-horizontal-alternative-28': 28,
   'ic-telegram-28': 28,
+  'ic-testnet-28': 28,
   'ic-ticket-28': 28,
   'ic-ton-28': 28,
   'ic-tonkeeper-28': 28,
@@ -378,6 +416,7 @@ export const IconSizes = {
   'ic-exclamationmark-triangle-36': 36,
   'ic-faceid-36': 36,
   'ic-fingerprint-36': 36,
+  'ic-cards-stack-44': 44,
   'ic-ton-old-wallets-44': 44,
   'ic-logo-48': 48,
   'ic-flashlight-off-56': 56,

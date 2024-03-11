@@ -1,13 +1,10 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import axios from 'axios';
 import queryString from 'query-string';
 import TonWeb from 'tonweb';
-import { useSelector } from 'react-redux';
 import { Linking, StyleSheet } from 'react-native';
 import { useTheme } from '$hooks/useTheme';
-import { getServerConfig, SelectableVersionsConfig } from '$shared/constants';
-import { walletSelector } from '$store/wallet';
-import { Button, Icon, List, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
+import { Button, List, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
   delay,
   getDomainFromURL,
@@ -27,37 +24,49 @@ import * as S from './TonConnect.style';
 import { t } from '@tonkeeper/shared/i18n';
 import { TonConnectModalProps } from './models';
 import { useEffect } from 'react';
-import { Modal } from '@tonkeeper/uikit';
-import { store, Toast, useNotificationsStore } from '$store';
+import { Haptics, Icon, Modal } from '@tonkeeper/uikit';
+import { Toast } from '$store';
 import { push } from '$navigation/imperative';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
-import { mainSelector } from '$store/main';
-import { createTonProofForTonkeeper } from '$utils/proof';
-import { WalletApi, Configuration } from '@tonkeeper/core/src/legacy';
-import * as SecureStore from 'expo-secure-store';
 import { Address } from '@tonkeeper/core';
-import { shouldShowNotifications } from '$store/zustand/notifications/selectors';
 import { replaceString } from '@tonkeeper/shared/utils/replaceString';
+import { tk } from '$wallet';
+import { WalletListItem } from '@tonkeeper/shared/components';
+import { useWallets } from '@tonkeeper/shared/hooks';
 
 export const TonConnectModal = (props: TonConnectModalProps) => {
   const animation = useTonConnectAnimation();
   const unlockVault = useUnlockVault();
   const theme = useTheme();
   const nav = useNavigation();
-  const showNotifications = useNotificationsStore(shouldShowNotifications);
+  const [selectedWalletIdentifier, setSelectedWalletIdentifier] = React.useState<string>(
+    tk.wallet.isWatchOnly ? tk.walletForUnlock.identifier : tk.wallet.identifier,
+  );
+  const allWallets = useWallets();
+  const selectableWallets = useMemo(
+    () => allWallets.filter((wallet) => !wallet.isWatchOnly),
+    [allWallets],
+  );
+  const wallet = useMemo(
+    () => tk.wallets.get(selectedWalletIdentifier)!,
+    [selectedWalletIdentifier],
+  );
+  const showNotifications = wallet.notifications.isAvailable;
   const [withNotifications, setWithNotifications] = React.useState(showNotifications);
+  const friendlyAddress = wallet.address.ton.friendly;
+  const maskedAddress = Address.toShort(friendlyAddress);
 
-  const { version } = useSelector(walletSelector);
-  const { isTestnet } = useSelector(mainSelector);
-  const maskedAddress = Address.toShort(animation.address);
+  const isInternalBrowser = props.protocolVersion !== 1 && props.isInternalBrowser;
+
+  const showWalletSelector = selectableWallets.length > 1 && !isInternalBrowser;
 
   const handleSwitchNotifications = useCallback(() => {
     triggerSelection();
     setWithNotifications((prev) => !prev);
   }, []);
 
-  const closeModal = () => nav.goBack();
+  const closeModal = useCallback(() => nav.goBack(), [nav]);
 
   const isTonapi = props.protocolVersion === 1 ? props?.hostname === 'tonapi.io' : false;
 
@@ -108,9 +117,9 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
     try {
       animation.startLoading();
 
-      const vault = await unlockVault();
+      const vault = await unlockVault(wallet.identifier);
 
-      const address = await vault.getTonAddress(isTestnet);
+      const address = await vault.getTonAddress(wallet.isTestnet);
       const privateKey = await vault.getTonPrivateKey();
       const walletSeed = TonWeb.utils.bytesToBase64(privateKey);
 
@@ -151,7 +160,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
         }
       }
 
-      const withDelay = props.protocolVersion === 1 || !props.hideImmediately;
+      const withDelay = props.protocolVersion === 1 || !props.isInternalBrowser;
 
       await animation.showSuccess(() => {
         triggerNotificationSuccess();
@@ -169,37 +178,18 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
           privateKey,
           publicKey,
           walletStateInit,
+          wallet.isTestnet,
         );
 
-        if (withNotifications) {
-          const proof = await createTonProofForTonkeeper(
-            address,
-            privateKey,
-            walletStateInit,
-          );
-          const walletApi = new WalletApi(
-            new Configuration({
-              basePath: getServerConfig('tonapiV2Endpoint'),
-              headers: {
-                Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
-              },
-            }),
-          );
-          if (proof.error) {
-            return;
-          }
-          const token = await walletApi.tonConnectProof({
-            tonConnectProofRequest: proof,
-          });
-          SecureStore.setItemAsync('proof_token', token.token, {
-            requireAuthentication: false,
-          });
+        if (withNotifications && !wallet.tonProof.tonProofToken) {
+          await wallet.tonProof.obtainProof(await vault.getKeyPair());
         }
 
         requestPromise.resolve({
           address,
           replyItems,
           notificationsEnabled: withNotifications,
+          walletIdentifier: wallet.identifier,
         });
       }
 
@@ -224,10 +214,10 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   }, [
     animation,
     closeModal,
-    isTestnet,
     props,
     sendToCallbackUrl,
     unlockVault,
+    wallet,
     withNotifications,
   ]);
 
@@ -262,7 +252,15 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
         debugLog(err);
       }
     }
-  }, [props]);
+  }, [closeModal, props]);
+
+  const handleWalletPress = useCallback(() => {
+    Haptics.selection();
+    nav.openModal('/switch-wallet', {
+      onSelect: setSelectedWalletIdentifier,
+      selected: selectedWalletIdentifier,
+    });
+  }, [nav, selectedWalletIdentifier]);
 
   useEffect(
     () => () => {
@@ -282,7 +280,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
           <S.Logos>
             <S.Logo>
               <S.TonLogo>
-                <Icon name="ic-logo-48" color="accentPrimary" />
+                <Icon name="ic-logo-48" color="accentBlue" />
               </S.TonLogo>
             </S.Logo>
             <S.AddressConatiner>
@@ -295,7 +293,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
                 <S.AddressText
                   style={[animation.ticker.textStyle, { width: ADDRESS_TEXT_WIDTH }]}
                 >
-                  {animation.address.repeat(ADDRESS_REPEAT_COUNT)}
+                  {friendlyAddress.repeat(ADDRESS_REPEAT_COUNT)}
                 </S.AddressText>
               </S.Address>
               <S.VerticalDivider />
@@ -306,7 +304,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
                     { paddingTop: 3, width: ADDRESS_TEXT_WIDTH },
                   ]}
                 >
-                  {'* '.repeat(animation.address.length * ADDRESS_REPEAT_COUNT)}
+                  {'* '.repeat(friendlyAddress.length * ADDRESS_REPEAT_COUNT)}
                 </S.AddressText>
               </S.Address>
               <S.AddressRightGradient
@@ -332,14 +330,35 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
             </S.TitleWrapper>
             <Text color="foregroundSecondary" variant="body1" textAlign="center">
               {t('ton_login_caption', { name: appName })}
-              <Text color="foregroundTertiary" variant="body1" textAlign="center">
-                {maskedAddress}{' '}
-              </Text>
-              {SelectableVersionsConfig[version]
-                ? SelectableVersionsConfig[version].label
-                : null}
+              {!showWalletSelector ? (
+                <>
+                  <Text color="foregroundTertiary" variant="body1" textAlign="center">
+                    {' '}
+                    {maskedAddress}{' '}
+                  </Text>
+                  {tk.wallet.config.version}
+                </>
+              ) : (
+                ':'
+              )}
             </Text>
           </S.Content>
+          {showWalletSelector ? (
+            <List indent={false}>
+              <WalletListItem
+                onPress={handleWalletPress}
+                wallet={wallet}
+                subtitle={maskedAddress}
+                rightContent={
+                  <Icon
+                    name="ic-switch-16"
+                    style={styles.walletSelectorIcon}
+                    color="iconSecondary"
+                  />
+                }
+              />
+            </List>
+          ) : null}
           {isTonConnectV2 && showNotifications ? (
             <>
               <List indent={false}>
@@ -349,9 +368,9 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
                   onChange={handleSwitchNotifications}
                 />
               </List>
-              <Spacer y={16} />
             </>
           ) : null}
+          <Spacer y={16} />
           <S.Footer isTonConnectV2={isTonConnectV2}>
             <TransitionOpacity
               style={styles.actionContainer}
@@ -387,7 +406,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
               isVisible={animation.state === States.SUCCESS}
             >
               <S.Center isTonConnectV2={isTonConnectV2}>
-                <Icon name="ic-checkmark-circle-32" color="accentPositive" />
+                <Icon name="ic-checkmark-circle-32" color="accentGreen" />
                 <S.SuccessText>{t('ton_login_success')}</S.SuccessText>
               </S.Center>
             </TransitionOpacity>
@@ -404,6 +423,9 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
+  },
+  walletSelectorIcon: {
+    marginRight: 6,
   },
   loaderContainer: {
     justifyContent: 'center',
@@ -431,7 +453,7 @@ function createCallbackLink(options: CreateAuthResponseLinkOptions) {
 }
 
 export function openTonConnect(props: TonConnectModalProps) {
-  if (store.getState().wallet.wallet) {
+  if (tk.walletForUnlock) {
     push('SheetsProvider', {
       $$action: SheetActions.ADD,
       component: TonConnectModal,

@@ -1,7 +1,6 @@
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { Screen, Text, Button, Icon, List, Spacer, Steezy, View } from '@tonkeeper/uikit';
 import { getNewNotificationsCount } from '$core/Notifications/NotificationsActivity';
-import { useNotificationsStore } from '$store/zustand/notifications';
 import { useActivityList } from '@tonkeeper/shared/query/hooks';
 import { Notification } from '$core/Notifications/Notification';
 import { openNotificationsScreen } from '$navigation/helper';
@@ -11,7 +10,9 @@ import { memo, useCallback, useEffect } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { LayoutAnimation } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
-import { useWallet } from '../useWallet';
+import { useWallet } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
+import { useDAppsNotifications } from '$store';
 
 export const ActivityScreen = memo(() => {
   const activityList = useActivityList();
@@ -19,27 +20,24 @@ export const ActivityScreen = memo(() => {
   const nav = useNavigation();
   const wallet = useWallet();
 
-  const notifications = useNotificationsStore((state) => state.notifications);
-  const lastSeenAt = useNotificationsStore((state) => state.last_seen_activity_screen);
-  const updateLastSeenActivityScreen = useNotificationsStore(
-    (state) => state.actions.updateLastSeenActivityScreen,
-  );
+  const { notifications, lastSeenActivityScreenAt, updateLastSeenActivityScreen } =
+    useDAppsNotifications();
 
   const handlePressRecevie = useCallback(() => {
-    if (!!wallet.address.ton.raw) {
+    if (wallet) {
       nav.go('ReceiveModal');
     } else {
       openRequireWalletModal();
     }
-  }, [wallet.address.ton.raw]);
+  }, [nav, wallet]);
 
   const handlePressBuy = useCallback(() => {
-    if (!!wallet.address.ton.raw) {
+    if (wallet) {
       nav.openModal('Exchange', { category: 'buy' });
     } else {
       openRequireWalletModal();
     }
-  }, [wallet.address.ton.raw]);
+  }, [nav, wallet]);
 
   const onRemoveNotification = useCallback(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -57,9 +55,21 @@ export const ActivityScreen = memo(() => {
     openNotificationsScreen();
   }, []);
 
+  const isWatchOnly = wallet && wallet.isWatchOnly;
+
+  const handleLoadMore = useCallback(() => {
+    tk.wallet.activityList.loadMore();
+  }, []);
+
+  const handleReload = useCallback(() => {
+    tk.wallet.activityList.reload();
+  }, []);
+
   if (
-    !wallet.address.ton.raw ||
-    (!activityList.isLoading && activityList.sections.length < 1) && activityList.error === null
+    !wallet ||
+    (!activityList.isLoading &&
+      activityList.sections.length < 1 &&
+      activityList.error === null)
   ) {
     return (
       <Screen>
@@ -71,27 +81,32 @@ export const ActivityScreen = memo(() => {
           <Text type="body1" color="textSecondary">
             {t('activity.empty_transaction_caption')}
           </Text>
-          <View style={styles.emptyButtons}>
-            <Button
-              title={t('activity.buy_toncoin_btn')}
-              onPress={handlePressBuy}
-              color="secondary"
-              size="small"
-            />
-            <Spacer x={12} />
-            <Button
-              title={t('activity.receive_btn')}
-              onPress={handlePressRecevie}
-              color="secondary"
-              size="small"
-            />
-          </View>
+          {!isWatchOnly ? (
+            <View style={styles.emptyButtons}>
+              <Button
+                title={t('activity.buy_toncoin_btn')}
+                onPress={handlePressBuy}
+                color="secondary"
+                size="small"
+              />
+              <Spacer x={12} />
+              <Button
+                title={t('activity.receive_btn')}
+                onPress={handlePressRecevie}
+                color="secondary"
+                size="small"
+              />
+            </View>
+          ) : null}
         </View>
       </Screen>
     );
   }
 
-  const newNotificationsCount = getNewNotificationsCount(notifications, lastSeenAt);
+  const newNotificationsCount = getNewNotificationsCount(
+    notifications,
+    lastSeenActivityScreenAt,
+  );
 
   const renderNotificationsHeader = notifications.length ? (
     <View>
@@ -130,13 +145,14 @@ export const ActivityScreen = memo(() => {
     <Screen>
       <Screen.LargeHeader title={t('activity.screen_title')} />
       <ActivityList
+        key={wallet.identifier}
         ListHeaderComponent={renderNotificationsHeader}
         isReloading={activityList.isReloading}
         isLoading={activityList.isLoading}
         sections={activityList.sections}
         hasMore={activityList.hasMore}
-        onLoadMore={activityList.loadMore}
-        onReload={activityList.reload}
+        onLoadMore={handleLoadMore}
+        onReload={handleReload}
         error={activityList.error}
       />
     </Screen>

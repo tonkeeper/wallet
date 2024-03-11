@@ -1,4 +1,4 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["./src"],
+  "include": ["./src", "../mobile/src/wallet/Tonkeeper.ts"],
 }

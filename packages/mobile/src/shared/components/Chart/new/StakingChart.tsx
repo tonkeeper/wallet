@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   ChartDot,
   ChartPath,
@@ -12,8 +12,6 @@ import { ChartYLabels } from './ChartYLabels/ChartYLabels';
 import { changeAlphaValue, convertHexToRGBA, ns } from '$utils';
 import { ChartXLabels } from './ChartXLabels/ChartXLabels';
 import { ChartPeriod } from '$store/zustand/chart';
-import { useStakingStore } from '$store';
-import { shallow } from 'zustand/shallow';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { JettonBalanceModel } from '$store/models';
 
@@ -27,7 +25,7 @@ const ChartComponent: React.FC<Props> = (props) => {
   const { stakingJetton } = props;
 
   const theme = useTheme();
-  const chart = useStakingStore((s) => s.chart, shallow);
+  const chart = [];
 
   const selectedPeriod = useMemo(() => {
     if (chart.length === 7) {
@@ -57,12 +55,6 @@ const ChartComponent: React.FC<Props> = (props) => {
     const first = chart[0].y;
     return [first, latest];
   }, [chart]);
-
-  useEffect(() => {
-    if (stakingJetton) {
-      useStakingStore.getState().actions.fetchChart(stakingJetton);
-    }
-  }, [stakingJetton]);
 
   if (!chart) {
     return null;

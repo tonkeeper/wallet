@@ -6,10 +6,7 @@ import { ns } from '$utils';
 import { useJetton } from '$hooks/useJetton';
 import { useTokenPrice } from '$hooks/useTokenPrice';
 import { openDAppBrowser, openSend } from '$navigation';
-import { getServerConfig } from '$shared/constants';
-import { useSelector } from 'react-redux';
 
-import { walletAddressSelector } from '$store/wallet';
 import { formatter } from '$utils/formatter';
 import { useNavigation } from '@tonkeeper/router';
 import { useSwapStore } from '$store/zustand/swap';
@@ -20,20 +17,32 @@ import { Events, JettonVerification, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
-import { Screen, Steezy, View, Icon, Spacer } from '@tonkeeper/uikit';
+import { Icon, Screen, Spacer, Steezy, TouchableOpacity, View } from '@tonkeeper/uikit';
 
 import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonActivityList';
 import { ActivityList } from '@tonkeeper/shared/components';
 import { openReceiveJettonModal } from '@tonkeeper/shared/modals/ReceiveJettonModal';
 import { TokenType } from '$core/Send/Send.interface';
-import { config } from '@tonkeeper/shared/config';
+import { config } from '$config';
+import { openUnverifiedTokenDetailsModal } from '@tonkeeper/shared/modals/UnverifiedTokenDetailsModal';
+import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
+import { Chart } from '$shared/components/Chart/new/Chart';
+import { ChartPeriod } from '$store/zustand/chart';
+
+const unverifiedTokenHitSlop = { top: 4, left: 4, bottom: 4, right: 4 };
 
 export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const flags = useFlags(['disable_swap']);
   const jetton = useJetton(route.params.jettonAddress);
   const jettonActivityList = useJettonActivityList(jetton.jettonAddress);
-  const address = useSelector(walletAddressSelector);
   const jettonPrice = useTokenPrice(jetton.jettonAddress, jetton.balance);
+  const wallet = useWallet();
+
+  const isWatchOnly = wallet && wallet.isWatchOnly;
+  const fiatCurrency = useWalletCurrency();
+  const shouldShowChart = jettonPrice.fiat !== 0;
+  const shouldExcludeChartPeriods = config.get('exclude_jetton_chart_periods');
 
   const nav = useNavigation();
 
@@ -58,10 +67,11 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
 
   const handleOpenExplorer = useCallback(async () => {
     openDAppBrowser(
-      getServerConfig('accountExplorer').replace('%s', address.ton) +
-        `/jetton/${jetton.jettonAddress}`,
+      config
+        .get('accountExplorer', tk.wallet.isTestnet)
+        .replace('%s', wallet.address.ton.friendly) + `/jetton/${jetton.jettonAddress}`,
     );
-  }, [address.ton, jetton.jettonAddress]);
+  }, [jetton.jettonAddress, wallet]);
 
   const renderHeader = useMemo(() => {
     if (!jetton) {
@@ -97,17 +107,19 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         </S.FlexRow>
         <S.Divider style={{ marginBottom: ns(16) }} />
         <S.ActionsContainer>
-          <IconButton
-            onPress={handleSend}
-            iconName="ic-arrow-up-28"
-            title={t('wallet.send_btn')}
-          />
+          {!isWatchOnly ? (
+            <IconButton
+              onPress={handleSend}
+              iconName="ic-arrow-up-28"
+              title={t('wallet.send_btn')}
+            />
+          ) : null}
           <IconButton
             onPress={handleReceive}
             iconName="ic-arrow-down-28"
             title={t('wallet.receive_btn')}
           />
-          {showSwap && !flags.disable_swap ? (
+          {!isWatchOnly && showSwap && !flags.disable_swap ? (
             <IconButton
               onPress={handlePressSwap}
               icon={<SwapIcon />}
@@ -115,18 +127,37 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             />
           ) : null}
         </S.ActionsContainer>
-        <S.Divider style={{ marginBottom: 10 }} />
+        <S.Divider style={styles.mb10.static} />
+        {shouldShowChart && (
+          <>
+            <S.ChartWrap>
+              <Chart
+                excludedPeriods={
+                  shouldExcludeChartPeriods
+                    ? [ChartPeriod.ONE_YEAR, ChartPeriod.SIX_MONTHS]
+                    : undefined
+                }
+                currency={fiatCurrency}
+                token={route.params.jettonAddress}
+              />
+            </S.ChartWrap>
+            <S.Divider style={styles.mb0.static} />
+          </>
+        )}
       </S.HeaderWrap>
     );
   }, [
     jetton,
-    t,
     jettonPrice,
+    isWatchOnly,
     handleSend,
     handleReceive,
     showSwap,
     flags.disable_swap,
     handlePressSwap,
+    shouldShowChart,
+    fiatCurrency,
+    route.params.jettonAddress,
   ]);
 
   if (!jetton) {
@@ -139,15 +170,19 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         subtitle={
           !config.get('disable_show_unverified_token') &&
           jetton.verification === JettonVerification.NONE && (
-            <View style={styles.subtitleContainer}>
-              <View style={styles.iconContainer}>
-                <Icon name="ic-exclamationmark-triangle-12" color="accentOrange" />
-              </View>
-              <Spacer x={4} />
+            <TouchableOpacity
+              onPress={openUnverifiedTokenDetailsModal}
+              hitSlop={unverifiedTokenHitSlop}
+              style={styles.subtitleContainer}
+            >
               <Text variant="body2" color="accentOrange">
                 {t('approval.unverified_token')}
               </Text>
-            </View>
+              <Spacer x={4} />
+              <View style={styles.iconContainer}>
+                <Icon name="ic-information-circle-12" color="accentOrange" />
+              </View>
+            </TouchableOpacity>
           )
         }
         title={jetton.metadata?.name || Address.toShort(jetton.jettonAddress)}
@@ -159,12 +194,12 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
                 shouldCloseMenu
                 onPress={handleOpenExplorer}
                 text={t('jetton_open_explorer')}
-                icon={<Icon name="ic-globe-16" color="accentPrimary" />}
+                icon={<Icon name="ic-globe-16" color="accentBlue" />}
               />,
             ]}
           >
             <S.HeaderViewDetailsButton onPress={() => null}>
-              <Icon name="ic-ellipsis-16" color="foregroundPrimary" />
+              <Icon name="ic-ellipsis-16" color="iconPrimary" />
             </S.HeaderViewDetailsButton>
           </PopupMenu>
         }
@@ -191,5 +226,11 @@ const styles = Steezy.create({
   },
   iconContainer: {
     marginTop: 2,
+  },
+  mb10: {
+    marginBottom: 10,
+  },
+  mb0: {
+    marginBottom: 0,
   },
 });

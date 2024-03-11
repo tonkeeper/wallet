@@ -3,21 +3,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { useTheme } from '$hooks/useTheme';
 import { SettingsStackRouteNames } from '$navigation';
-import {
-  DevMenu,
-  Logs,
-  Security,
-  SecurityMigration,
-  Settings,
-  LegalDocuments,
-  FontLicense,
-} from '$core';
+import { DevMenu, Logs, Security, Settings, LegalDocuments, FontLicense } from '$core';
 import { SettingsStackParamList } from '$navigation/SettingsStack/SettingsStack.interface';
 import { Notifications } from '$core/Notifications/Notifications';
-import { JettonsList } from '$core/JettonsList/JettonsList';
 import { ChooseCurrencyScreen } from '$core/ChooseCurrencyScreen';
 import { DevConfigScreen } from '$core/DevMenu/DevConfigScreen';
 import { RefillBattery } from '$core/RefillBattery/RefillBattery';
+import { SelectLanguage } from '../../components/Language/SelectLanguage';
+import { BackupScreen } from '../../screens';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
@@ -41,22 +34,12 @@ export const SettingsStack: FC = () => {
       <Stack.Screen name="/dev/config" component={DevConfigScreen} />
       <Stack.Screen name={SettingsStackRouteNames.Logs} component={Logs} />
       <Stack.Screen name={SettingsStackRouteNames.Security} component={Security} />
+      <Stack.Screen name={SettingsStackRouteNames.Language} component={SelectLanguage} />
       <Stack.Screen
         name={SettingsStackRouteNames.LegalDocuments}
         component={LegalDocuments}
       />
       <Stack.Screen name={SettingsStackRouteNames.FontLicense} component={FontLicense} />
-      <Stack.Screen
-        name={SettingsStackRouteNames.SecurityMigration}
-        component={SecurityMigration}
-        options={{
-          presentation: 'transparentModal',
-          animation: 'fade',
-          contentStyle: {
-            backgroundColor: theme.colors.backgroundPrimary,
-          },
-        }}
-      />
       <Stack.Screen
         name={SettingsStackRouteNames.RefillBattery}
         component={RefillBattery}
@@ -65,11 +48,11 @@ export const SettingsStack: FC = () => {
         name={SettingsStackRouteNames.Notifications}
         component={Notifications}
       />
-      <Stack.Screen name={SettingsStackRouteNames.JettonsList} component={JettonsList} />
       <Stack.Screen
         name={SettingsStackRouteNames.ChooseCurrency}
         component={ChooseCurrencyScreen}
       />
+      <Stack.Screen name={SettingsStackRouteNames.Backup} component={BackupScreen} />
     </Stack.Navigator>
   );
 };

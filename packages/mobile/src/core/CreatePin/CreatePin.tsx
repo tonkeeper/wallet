@@ -1,61 +1,51 @@
 import React, { FC, useCallback } from 'react';
-import * as LocalAuthentication from 'expo-local-authentication';
 import { useDispatch } from 'react-redux';
-import * as SecureStore from 'expo-secure-store';
 
-import { CreatePinProps } from './CreatePin.interface';
 import * as S from '../AccessConfirmation/AccessConfirmation.style';
 import { NavBar } from '$uikit';
-import { detectBiometryType } from '$utils';
-import { debugLog } from '$utils/debugLog';
-import { openSetupBiometry, openSetupWalletDone } from '$navigation';
+import { openSetupNotifications, openSetupWalletDone } from '$navigation';
 import { walletActions } from '$store/wallet';
 import { CreatePinForm } from '$shared/components';
+import { tk } from '$wallet';
+import { popToTop } from '$navigation/imperative';
+import { useParams } from '@tonkeeper/router/src/imperative';
+import { BlockingLoader } from '@tonkeeper/uikit';
 
-export const CreatePin: FC<CreatePinProps> = () => {
+export const CreatePin: FC = () => {
+  const params = useParams<{ isImport?: boolean }>();
   const dispatch = useDispatch();
 
-  const doCreateWallet = useCallback(
-    (pin: string) => {
+  const isImport = !!params.isImport;
+
+  const handlePinCreated = useCallback(
+    async (pin: string) => {
+      BlockingLoader.show();
       dispatch(
         walletActions.createWallet({
           pin,
-          onDone: () => {
-            openSetupWalletDone();
+          onDone: (identifiers) => {
+            if (isImport) {
+              tk.saveLastBackupTimestampAll(identifiers);
+            }
+            if (tk.wallet.notifications.isAvailable) {
+              openSetupNotifications(identifiers);
+            } else {
+              openSetupWalletDone(identifiers);
+            }
+            BlockingLoader.hide();
           },
-          onFail: () => {},
+          onFail: () => {
+            BlockingLoader.hide();
+          },
         }),
       );
     },
-    [dispatch],
-  );
-
-  const handlePinCreated = useCallback(
-    (pin: string) => {
-      Promise.all([
-        LocalAuthentication.supportedAuthenticationTypesAsync(),
-        SecureStore.isAvailableAsync(),
-      ])
-        .then(([types, isProtected]) => {
-          const biometryType = detectBiometryType(types);
-          if (biometryType && isProtected) {
-            openSetupBiometry(pin, biometryType);
-          } else {
-            doCreateWallet(pin);
-          }
-        })
-        .catch((err) => {
-          console.log('ERR1', err);
-          debugLog('supportedAuthenticationTypesAsync', err.message);
-          doCreateWallet(pin);
-        });
-    },
-    [doCreateWallet],
+    [dispatch, isImport],
   );
 
   return (
     <S.Wrap>
-      <NavBar isForceBackIcon />
+      <NavBar onClosePress={popToTop} />
       <CreatePinForm onPinCreated={handlePinCreated} />
     </S.Wrap>
   );

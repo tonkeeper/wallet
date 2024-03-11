@@ -1,6 +1,5 @@
 import { useDeeplinking } from '$libs/deeplinking';
 import { openDAppsSearch } from '$navigation';
-import { walletSelector } from '$store/wallet';
 import { getCorrectUrl, getSearchQuery, getUrlWithoutTonProxy } from '$utils';
 import React, { FC, memo, useCallback, useState } from 'react';
 import { Linking, useWindowDimensions } from 'react-native';
@@ -10,11 +9,12 @@ import {
   WebViewNavigation,
   WebViewProgressEvent,
 } from 'react-native-webview/lib/WebViewTypes';
-import { useSelector } from 'react-redux';
 import { BrowserNavBar } from './components/BrowserNavBar/BrowserNavBar';
 import * as S from './DAppBrowser.style';
 import { useAppInfo } from './hooks/useAppInfo';
 import { useDAppBridge } from './hooks/useDAppBridge';
+import { useWallet } from '@tonkeeper/shared/hooks';
+import { Address } from '@tonkeeper/shared/Address';
 
 export interface DAppBrowserProps {
   url: string;
@@ -35,8 +35,13 @@ const removeUtmFromUrl = (url: string) => {
 const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
   const { url: initialUrl } = props;
 
-  const { address } = useSelector(walletSelector);
-  const walletAddress = address?.ton || '';
+  const wallet = useWallet();
+  const walletAddress = wallet
+    ? Address.parse(wallet.address.ton.raw).toFriendly({
+        bounceable: true,
+        testOnly: wallet.isTestnet,
+      })
+    : '';
 
   const deeplinking = useDeeplinking();
 

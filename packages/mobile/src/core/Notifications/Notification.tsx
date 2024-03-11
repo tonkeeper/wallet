@@ -2,20 +2,21 @@ import { Icon, List, Spacer, Text, View } from '$uikit';
 import React, { useCallback, useRef } from 'react';
 import { Steezy } from '$styles';
 import { INotification } from '$store/zustand/notifications/types';
-import { disableNotifications, useConnectedAppsList } from '$store';
+import {
+  disableNotifications,
+  useConnectedAppsList,
+  useDAppsNotifications,
+} from '$store';
 import { format, getDomainFromURL } from '$utils';
 import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
 import { IconProps } from '$uikit/Icon/Icon';
-import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { t } from '@tonkeeper/shared/i18n';
 import { isToday } from 'date-fns';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { TonConnect } from '$tonconnect';
-import messaging from '@react-native-firebase/messaging';
-import { useSelector } from 'react-redux';
-import { walletAddressSelector } from '$store/wallet';
 import { openDAppBrowser } from '$navigation';
 import { Alert, Animated } from 'react-native';
+import { useWallet } from '@tonkeeper/shared/hooks';
 
 interface NotificationProps {
   notification: INotification;
@@ -47,17 +48,15 @@ export const Notification: React.FC<NotificationProps> = (props) => {
       props.notification.dapp_url &&
       getDomainFromURL(app.url) === getDomainFromURL(props.notification.dapp_url),
   );
-  const walletAddress = useSelector(walletAddressSelector);
+  const wallet = useWallet();
   const { showActionSheetWithOptions } = useActionSheet();
-  const deleteNotification = useNotificationsStore(
-    (state) => state.actions.deleteNotificationByReceivedAt,
-  );
+  const { deleteNotificationByReceivedAt } = useDAppsNotifications();
   const listItemRef = useRef(null);
 
   const handleDelete = useCallback(() => {
-    deleteNotification(props.notification.received_at);
+    deleteNotificationByReceivedAt(props.notification.received_at);
     props.onRemove?.();
-  }, [deleteNotification, props]);
+  }, [deleteNotificationByReceivedAt, props]);
 
   const swipeableRef = useRef(null);
 
@@ -79,7 +78,7 @@ export const Notification: React.FC<NotificationProps> = (props) => {
       app?.notificationsEnabled && {
         option: t('notifications.mute_notifications'),
         action: async () => {
-          disableNotifications(walletAddress.ton, app.url);
+          disableNotifications(wallet.address.ton.friendly, app.url);
         },
       },
       app && {
@@ -111,7 +110,7 @@ export const Notification: React.FC<NotificationProps> = (props) => {
         return;
       },
     );
-  }, [app, showActionSheetWithOptions, walletAddress.ton]);
+  }, [app, showActionSheetWithOptions, wallet]);
 
   const renderRightActions = useCallback(
     (progress) => {

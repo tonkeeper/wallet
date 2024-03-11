@@ -1,8 +1,8 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import {
   Screen,
-  Spacer,
+  Spacer as SpacerView,
   SpacerSizes,
   View,
   List,
@@ -11,29 +11,30 @@ import {
 } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 import { openJetton, openTonInscription } from '$navigation';
-import { walletActions } from '$store/wallet';
 import { Rate } from '../hooks/useBalance';
 import { ListItemRate } from './ListItemRate';
 import { TonIcon, TonIconProps } from '@tonkeeper/uikit';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
 import { NFTsList } from './NFTsList';
-import { TokenPrice, useTokenPrice } from '$hooks/useTokenPrice';
+import { TokenPrice } from '$hooks/useTokenPrice';
 import { useTheme } from '$hooks/useTheme';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StakingWidget } from './StakingWidget';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { TronBalance } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
-import { fiatCurrencySelector } from '$store/main';
-import { FiatCurrencies } from '@tonkeeper/core';
-import { useTonInscriptions } from '@tonkeeper/shared/query/hooks/useTonInscriptions';
+import { WalletCurrency } from '@tonkeeper/core';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { Text } from '@tonkeeper/uikit';
 import { JettonVerification } from '$store/models';
-import { ListItemProps } from '$uikit/List/ListItem';
-import { config } from '@tonkeeper/shared/config';
+import { config } from '$config';
+import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
+import { CardsWidget } from '$components';
+import { InscriptionBalance } from '@tonkeeper/core/src/TonAPI';
+import { ListItemProps } from '@tonkeeper/uikit/src/components/List/ListItem';
+import { FinishSetupList } from './FinishSetupList';
+import BigNumber from 'bignumber.js';
 
 enum ContentType {
   Token,
@@ -41,6 +42,8 @@ enum ContentType {
   Spacer,
   NFTCardsRow,
   Staking,
+  Cards,
+  Setup,
 }
 
 type TokenItem = {
@@ -75,9 +78,27 @@ type NFTCardsRowItem = {
 type StakingItem = {
   key: string;
   type: ContentType.Staking;
+  isWatchOnly: boolean;
+  showBuyButton: boolean;
 };
 
-type Content = TokenItem | SpacerItem | NFTCardsRowItem | StakingItem;
+type CardsItem = {
+  key: string;
+  type: ContentType.Cards;
+};
+
+type SetupItem = {
+  key: string;
+  type: ContentType.Setup;
+};
+
+type Content =
+  | TokenItem
+  | SpacerItem
+  | NFTCardsRowItem
+  | StakingItem
+  | CardsItem
+  | SetupItem;
 
 const RenderItem = ({ item }: { item: Content }) => {
   switch (item.type) {
@@ -154,19 +175,30 @@ const RenderItem = ({ item }: { item: Content }) => {
         </View>
       );
     case ContentType.Spacer:
-      return <Spacer y={item.bottom} />;
+      return <SpacerView y={item.bottom} />;
     case ContentType.NFTCardsRow:
       return <NFTsList nfts={item.items} />;
     case ContentType.Staking:
-      return <StakingWidget />;
+      return (
+        <StakingWidget
+          isWatchOnly={item.isWatchOnly}
+          showBuyButton={item.showBuyButton}
+        />
+      );
+    case ContentType.Cards:
+      return <CardsWidget />;
+    case ContentType.Setup:
+      return <FinishSetupList key={item.key} />;
   }
 };
 
 interface BalancesListProps {
+  currency: WalletCurrency;
   tokens: any; // TODO:
   balance: any; // TODO:
   tonPrice: TokenPrice;
   nfts?: any; // TODO:
+  inscriptions: InscriptionBalance[];
   tronBalances?: TronBalance[];
   handleRefresh: () => void;
   isRefreshing: boolean;
@@ -176,34 +208,29 @@ interface BalancesListProps {
 
 export const WalletContentList = memo<BalancesListProps>(
   ({
+    currency,
     tokens,
     balance,
     tonPrice,
     nfts,
     handleRefresh,
     isRefreshing,
+    inscriptions,
     isFocused,
     ListHeaderComponent,
-    tronBalances,
   }) => {
     const theme = useTheme();
-    const dispatch = useDispatch();
 
-    const fiatCurrency = useSelector(fiatCurrencySelector);
-    const shouldShowTonDiff = fiatCurrency !== FiatCurrencies.Ton;
-    const inscriptions = useTonInscriptions();
+    const fiatCurrency = useWalletCurrency();
+    const shouldShowTonDiff = fiatCurrency !== WalletCurrency.TON;
 
-    const handleMigrate = useCallback(
-      (fromVersion: string) => () => {
-        dispatch(
-          walletActions.openMigration({
-            isTransfer: true,
-            fromVersion,
-          }),
-        );
-      },
-      [dispatch],
-    );
+    const wallet = useWallet();
+    const isWatchOnly = wallet && wallet.isWatchOnly;
+    const isLockup = wallet && wallet.isLockup;
+    const identifier = wallet.identifier;
+    const showStaking = isWatchOnly ? balance.staking.amount.nano !== '0' : true;
+    const showBuyButton =
+      !isLockup && new BigNumber(balance.ton.amount.nano).isLessThan(50);
 
     const data = useMemo(() => {
       const content: Content[] = [];
@@ -222,28 +249,13 @@ export const WalletContentList = memo<BalancesListProps>(
           price: tonPrice.formatted.fiat ?? '-',
           trend: tonPrice.fiatDiff.trend,
         },
+        isLast: !showStaking,
       });
-
-      content.push(
-        ...balance.oldVersions.map((item) => ({
-          type: ContentType.Token,
-          key: 'old_' + item.version,
-          onPress: handleMigrate(item.version),
-          title: t('wallet.old_wallet_title'),
-          tonIcon: { transparent: true },
-          value: item.amount.formatted,
-          subvalue: item.amount.fiat,
-          rate: {
-            percent: shouldShowTonDiff ? tonPrice.fiatDiff.percent : '',
-            price: tonPrice.formatted.fiat ?? '-',
-            trend: tonPrice.fiatDiff.trend,
-          },
-        })),
-      );
 
       if (balance.lockup.length > 0) {
         content.push(
           ...balance.lockup.map((item) => ({
+            key: item.type,
             type: ContentType.Token,
             tonIcon: { locked: true },
             title: LockupNames[item.type],
@@ -254,49 +266,34 @@ export const WalletContentList = memo<BalancesListProps>(
         );
       }
 
-      // if (tronBalances && tronBalances.length > 0) {
-      //   content.push(
-      //     ...(tronBalances as any).map((item) => {
-      //       const amount = formatter.fromNano(item.weiAmount, item.token.decimals);
-      //       const fiatAmount = formatter.format(usdtRate.fiat * parseFloat(amount), {
-      //         currency: fiatCurrency
-      //       });
-      //       const fiatPrice = formatter.format(usdtRate.fiat, {
-      //         currency: fiatCurrency
-      //       });
+      if (showStaking) {
+        content.push({
+          key: 'staking',
+          type: ContentType.Staking,
+          isWatchOnly,
+          showBuyButton,
+        });
+      }
 
-      //       return {
-      //         onPress: () => openTronToken(item),
-      //         type: ContentType.Token,
-      //         picture: item.token.image,
-      //         title: (
-      //           <View style={styles.trcTitle}>
-      //             <Text type="label1">{item.token.symbol}</Text>
-      //             <View style={styles.trcLabel}>
-      //               <Text type="body4" color="textSecondary">
-      //                 TRC20
-      //               </Text>
-      //             </View>
-      //           </View>
-      //         ),
-      //         value: amount,
-      //         subvalue: fiatAmount,
-      //         subtitle: fiatPrice,
-      //       };
-      //     }),
-      //   );
-      // }
+      if (!isWatchOnly) {
+        content.push({
+          key: `setup_${identifier}`,
+          type: ContentType.Setup,
+        });
+      }
 
       content.push({
-        key: 'staking',
-        type: ContentType.Staking,
-      });
-
-      content.push({
-        key: 'spacer_staking',
+        key: 'ton_section_spacer',
         type: ContentType.Spacer,
         bottom: 32,
       });
+
+      if (!config.get('disable_holders_cards') && !isWatchOnly) {
+        content.push({
+          key: 'cards',
+          type: ContentType.Cards,
+        });
+      }
 
       content.push(
         ...tokens.list.map((item, index) => ({
@@ -327,9 +324,9 @@ export const WalletContentList = memo<BalancesListProps>(
         })),
       );
 
-      if (inscriptions?.items?.length > 0) {
+      if (inscriptions?.length > 0) {
         content.push(
-          ...inscriptions.items.map((item) => ({
+          ...inscriptions.map((item) => ({
             key: 'inscriptions' + item.ticker,
             onPress: () => openTonInscription({ ticker: item.ticker, type: item.type }),
             type: ContentType.Token,
@@ -337,6 +334,10 @@ export const WalletContentList = memo<BalancesListProps>(
             picture: DEFAULT_TOKEN_LOGO,
             title: item.ticker,
             value: formatter.formatNano(item.balance, { decimals: item.decimals }),
+            subvalue: formatter.format('0', { currency, currencySeparator: 'wide' }),
+            rate: {
+              price: formatter.format('0', { currency, currencySeparator: 'wide' }),
+            },
           })),
         );
       }
@@ -374,7 +375,19 @@ export const WalletContentList = memo<BalancesListProps>(
       });
 
       return content;
-    }, [balance, handleMigrate, nfts, tokens.list, tonPrice, tronBalances]);
+    }, [
+      balance,
+      shouldShowTonDiff,
+      tonPrice,
+      showStaking,
+      isWatchOnly,
+      tokens.list,
+      inscriptions,
+      nfts,
+      showBuyButton,
+      identifier,
+      currency,
+    ]);
 
     const ListComponent = nfts ? Screen.FlashList : PagerView.FlatList;
 

@@ -12,9 +12,10 @@ import { SText as Text } from '../Text';
 import { Icon } from '../Icon';
 import { View } from '../View';
 
-interface ListItemProps {
+export interface ListItemProps {
   titleType?: 'primary' | 'secondary';
   title?: string | React.ReactNode;
+  titleTextType?: TTextTypes;
   subtitle?: string | React.ReactNode;
   subtitleStyle?: StyleProp<TextStyle>;
   value?: string | React.ReactNode;
@@ -29,6 +30,7 @@ interface ListItemProps {
   leftContentStyle?: StyleProp<ViewStyle>;
   leftContent?: React.ReactNode;
   navigate?: string;
+  titleNumberOfLines?: number;
   subtitleNumberOfLines?: number;
   gestureHandler?: boolean;
   children?: React.ReactNode;
@@ -47,6 +49,8 @@ export const ListItem = memo<ListItemProps>((props) => {
     navigate,
     chevronColor = 'iconTertiary',
     pictureCorner = 'full',
+    titleTextType,
+    titleNumberOfLines = 1,
     subtitleNumberOfLines = 1,
     valueMultiline,
     titleType = 'primary',
@@ -112,10 +116,15 @@ export const ListItem = memo<ListItemProps>((props) => {
               <View style={styles.titleContainer}>
                 {isString(props.title) ? (
                   <Text
-                    color={titleType === 'primary' ? 'textPrimary' : 'textSecondary'}
-                    type={titleType === 'primary' ? 'label1' : 'body1'}
+                    type={
+                      titleTextType
+                        ? titleTextType
+                        : titleType === 'primary'
+                        ? 'label1'
+                        : 'body1'
+                    }
+                    numberOfLines={titleNumberOfLines}
                     ellipsizeMode="tail"
-                    numberOfLines={1}
                   >
                     {props.title}
                   </Text>

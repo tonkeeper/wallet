@@ -5,38 +5,45 @@ import { useUnlockVault } from '../useUnlockVault';
 import { calculateMessageTransferAmount, delay } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
-import { store, Toast } from '$store';
+import { Toast } from '$store';
 import { List, Modal, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
-import { SheetActions } from '@tonkeeper/router';
+import { SheetActions, useNavigation } from '@tonkeeper/router';
 import {
   checkIsInsufficient,
   openInsufficientFundsModal,
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { formatter } from '$utils/formatter';
-import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '$wallet';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
 import {
-  ActionAmountType,
-  ActionSource,
-  ActionType,
-  ActivityModel,
   Address,
-  AnyActionItem,
   ContractService,
   contractVersionsMap,
   TransactionService,
 } from '@tonkeeper/core';
 import { ActionListItemByType } from '@tonkeeper/shared/components/ActivityList/ActionListItemByType';
-import { useSelector } from 'react-redux';
-import { fiatCurrencySelector } from '$store/main';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
 import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
 import { Buffer } from 'buffer';
 import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
+import { useWalletCurrency } from '@tonkeeper/shared/hooks';
+import {
+  ActionAmountType,
+  ActionSource,
+  ActionType,
+  ActivityModel,
+  AnyActionItem,
+} from '$wallet/models/ActivityModel';
+import { JettonTransferAction, NftItemTransferAction } from 'tonapi-sdk-js';
+import {
+  TokenDetailsParams,
+  TokenDetailsProps,
+} from '../../../../components/TokenDetails/TokenDetails';
+import { ModalStackRouteNames } from '$navigation';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -46,6 +53,7 @@ interface SignRawModalProps {
   onDismiss?: () => void;
   redirectToActivity?: boolean;
   isBattery?: boolean;
+  walletIdentifier: string;
 }
 
 export const SignRawModal = memo<SignRawModalProps>((props) => {
@@ -57,15 +65,25 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     consequences,
     isBattery,
     redirectToActivity,
+    walletIdentifier,
   } = props;
-  const { footerRef, onConfirm } = useNFTOperationState(options);
+  const wallet = useMemo(() => tk.wallets.get(walletIdentifier), [walletIdentifier]);
+  const nav = useNavigation();
+
+  if (!wallet) {
+    throw new Error('wallet is not found');
+  }
+
+  const { footerRef, onConfirm } = useNFTOperationState(options, wallet);
   const unlockVault = useUnlockVault();
 
-  const fiatCurrency = useSelector(fiatCurrencySelector);
+  const fiatCurrency = useWalletCurrency();
   const getTokenPrice = useGetTokenPrice();
 
+  const handleOpenTokenDetails = (tokenDetailsParams: TokenDetailsParams) => () =>
+    nav.navigate(ModalStackRouteNames.TokenDetails, tokenDetailsParams);
   const handleConfirm = onConfirm(async ({ startLoading }) => {
-    const vault = await unlockVault();
+    const vault = await unlockVault(wallet.identifier);
     const privateKey = await vault.getTonPrivateKey();
 
     startLoading();
@@ -77,12 +95,12 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     );
     const boc = TransactionService.createTransfer(contract, {
       messages: TransactionService.parseSignRawMessages(params.messages),
-      seqno: await getWalletSeqno(),
+      seqno: await getWalletSeqno(wallet),
       sendMode: 3,
       secretKey: Buffer.from(privateKey),
     });
 
-    await tonapi.blockchain.sendBlockchainMessage(
+    await wallet.tonapi.blockchain.sendBlockchainMessage(
       {
         boc,
       },
@@ -105,30 +123,32 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   const actions = useMemo(() => {
     if (consequences) {
       return ActivityModel.createActions({
-        ownerAddress: tk.wallet.address.ton.raw,
+        ownerAddress: wallet.address.ton.raw,
         events: [consequences.event],
         source: ActionSource.Ton,
       });
     } else {
       // convert messages to TonTransfer actions
       return params.messages.map((message) => {
-        return ActivityModel.createMockAction(tk.wallet.address.ton.raw, {
+        return ActivityModel.createMockAction(wallet.address.ton.raw, {
           type: ActionType.TonTransfer,
           payload: {
             amount: Number(message.amount),
             sender: {
               address: message.address,
               is_scam: false,
+              is_wallet: true,
             },
             recipient: {
               address: message.address,
               is_scam: false,
+              is_wallet: true,
             },
           },
         });
       });
     }
-  }, [consequences]);
+  }, [consequences, params.messages, wallet]);
 
   const extra = useMemo(() => {
     if (consequences) {
@@ -185,7 +205,25 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 
   return (
     <Modal>
-      <Modal.Header title={t('confirmSendModal.title')} />
+      <Modal.Header
+        numberOfLines={1}
+        title={t('confirmSendModal.title')}
+        subtitle={
+          tk.wallets.size > 1 && (
+            <View style={styles.subtitleContainer}>
+              <Text type="body2" color="textSecondary">
+                {t('confirmSendModal.wallet')}
+              </Text>
+              <Text type="body2" color="textSecondary">
+                {wallet.config.emoji}
+              </Text>
+              <Text type="body2" color="textSecondary">
+                {wallet.config.name}
+              </Text>
+            </View>
+          )
+        }
+      />
       <Modal.ScrollView>
         <List style={styles.actionsList}>
           {actions.map((action) => (
@@ -194,7 +232,17 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
                 value={formatValue(action)}
                 subvalue={amountToFiat(action)}
                 title={getActionTitle(action)}
-                disablePressable
+                disableNftPreview={true}
+                disablePressable={
+                  !(
+                    (action.payload as any as JettonTransferAction)?.jetton ||
+                    (action.payload as any as NftItemTransferAction)?.nft
+                  )
+                }
+                onPress={handleOpenTokenDetails({
+                  jetton: (action.payload as any as JettonTransferAction)?.jetton,
+                  nft: (action.payload as any as NftItemTransferAction)?.nft,
+                })}
                 action={action}
                 subtitle={
                   action.destination === 'in'
@@ -242,8 +290,10 @@ export const openSignRawModal = async (
   onDismiss?: () => void,
   isTonConnect?: boolean,
   redirectToActivity = true,
+  walletIdentifier?: string,
 ) => {
-  const wallet = store.getState().wallet.wallet;
+  const wallet = walletIdentifier ? tk.wallets.get(walletIdentifier) : tk.wallet;
+
   if (!wallet) {
     return false;
   }
@@ -256,9 +306,9 @@ export const openSignRawModal = async (
     }
 
     const contract = ContractService.getWalletContract(
-      contractVersionsMap[wallet.ton.version],
-      Buffer.from(wallet.ton.vault.tonPublicKey),
-      wallet.ton.vault.workchain,
+      contractVersionsMap[wallet.config.version],
+      Buffer.from(wallet.pubkey, 'hex'),
+      wallet.config.workchain,
     );
 
     let consequences: MessageConsequences | null = null;
@@ -266,16 +316,16 @@ export const openSignRawModal = async (
     try {
       const boc = TransactionService.createTransfer(contract, {
         messages: TransactionService.parseSignRawMessages(params.messages),
-        seqno: await getWalletSeqno(),
+        seqno: await getWalletSeqno(wallet),
         secretKey: Buffer.alloc(64),
       });
-      consequences = await tonapi.wallet.emulateMessageToWallet({
+      consequences = await wallet.tonapi.wallet.emulateMessageToWallet({
         boc,
       });
 
       if (!isBattery) {
         const totalAmount = calculateMessageTransferAmount(params.messages);
-        const checkResult = await checkIsInsufficient(totalAmount);
+        const checkResult = await checkIsInsufficient(totalAmount, wallet);
         if (checkResult.insufficient) {
           Toast.hide();
           onDismiss?.();
@@ -308,6 +358,7 @@ export const openSignRawModal = async (
         onDismiss,
         redirectToActivity,
         isBattery,
+        walletIdentifier: wallet.identifier,
       },
       path: 'SignRaw',
     });
@@ -327,6 +378,10 @@ const styles = Steezy.create({
     paddingTop: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  subtitleContainer: {
+    flexDirection: 'row',
+    gap: 4,
   },
   withBatteryContainer: {
     paddingHorizontal: 32,

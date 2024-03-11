@@ -1,7 +1,8 @@
 import { debugLog } from '$utils/debugLog';
 import React from 'react';
-import { getServerConfig } from '$shared/constants';
 import { NFTApi, Configuration } from '@tonkeeper/core/src/legacy';
+import { tk } from '$wallet';
+import { config } from '$config';
 
 export type NFTCollectionMeta = {
   name: string;
@@ -18,12 +19,12 @@ export function useDownloadCollectionMeta(addr?: string) {
 
   const download = React.useCallback(async (address: string) => {
     try {
-      const endpoint = getServerConfig('tonapiV2Endpoint');
+      const endpoint = config.get('tonapiV2Endpoint', tk.wallet.isTestnet);
       const nftApi = new NFTApi(
         new Configuration({
           basePath: endpoint,
           headers: {
-            Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+            Authorization: `Bearer ${config.get('tonApiV2Key', tk.wallet.isTestnet)}`,
           },
         }),
       );

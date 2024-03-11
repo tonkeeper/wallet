@@ -1,30 +1,49 @@
 import React, { FC, useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
 
 import { NavBar } from '$uikit';
 import { CreatePinForm } from '$shared/components';
-import { UnlockedVault } from '$blockchain';
-import { walletActions } from '$store/wallet';
+import { Toast } from '$store';
+import { t } from '@tonkeeper/shared/i18n';
+import { goBack } from '$navigation/imperative';
+import { vault } from '$wallet';
+import { useBiometrySettings } from '@tonkeeper/shared/hooks';
+import { MainStackRouteNames } from '$navigation';
+import { useNavigation } from '@tonkeeper/router';
 
 export const ChangePin: FC = () => {
-  const dispatch = useDispatch();
-  const [vault, setVault] = useState<UnlockedVault | null>(null);
+  const [oldPasscode, setOldPasscode] = useState<string | null>(null);
+  const biometry = useBiometrySettings();
+  const nav = useNavigation();
 
   const handleCreated = useCallback(
-    (pin: string) => {
-      dispatch(
-        walletActions.changePin({
-          pin,
-          vault: vault!,
-        }),
-      );
-    },
-    [dispatch, vault],
-  );
+    async (passcode: string) => {
+      if (!oldPasscode) {
+        return;
+      }
 
-  const handleVaultUnlock = useCallback((unlockedVault) => {
-    setVault(unlockedVault);
-  }, []);
+      try {
+        await vault.changePasscode(oldPasscode, passcode);
+
+        Toast.success(t('passcode_changed'));
+
+        if (biometry.isEnabled) {
+          await biometry.disableBiometry();
+
+          if (biometry.isAvailable) {
+            nav.replace(MainStackRouteNames.ChangePinBiometry, { passcode });
+          } else {
+            nav.goBack();
+          }
+        } else {
+          nav.goBack();
+        }
+      } catch (e) {
+        Toast.fail(e.message);
+        goBack();
+      }
+    },
+    [biometry, nav, oldPasscode],
+  );
 
   return (
     <>
@@ -32,7 +51,7 @@ export const ChangePin: FC = () => {
       <CreatePinForm
         validateOldPin
         onPinCreated={handleCreated}
-        onVaultUnlocked={handleVaultUnlock}
+        onOldPinValidated={setOldPasscode}
       />
     </>
   );

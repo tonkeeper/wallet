@@ -15,7 +15,7 @@ interface SwitchItemProps {
 export const SwitchItem: React.FC<SwitchItemProps> = (props) => {
   const { icon, title, onChange, value, disabled, subtitle } = props;
 
-  const handleToggle = React.useCallback(() => onChange(!value), [value]);
+  const handleToggle = React.useCallback(() => onChange(!value), [onChange, value]);
 
   return (
     <Highlight onPress={handleToggle} style={styles.container} isDisabled={disabled}>

@@ -1,7 +1,9 @@
 import { getChainName } from '$shared/dynamicConfig';
 import { getFixedLastSlashUrl } from '$utils';
-import concat from 'lodash/concat';
-import { IConnectedApp, IConnectedAppsStore } from './types';
+import { IConnectedApp, IConnectedAppConnection, IConnectedAppsStore } from './types';
+import { tk } from '$wallet';
+import { Address } from '@tonkeeper/core';
+import { WithWalletIdentifier } from '$wallet/WalletTypes';
 
 export const getConnectedAppByUrl = (
   walletAddress: string,
@@ -19,10 +21,28 @@ export const getConnectedAppByUrl = (
   return connectedApp ?? null;
 };
 
-export const getAllConnections = (state: IConnectedAppsStore, walletAddress: string) => {
-  const apps = Object.values(state.connectedApps[getChainName()][walletAddress] || {});
+export const getAllConnections = (state: IConnectedAppsStore) => {
+  const allConnections: WithWalletIdentifier<IConnectedAppConnection>[] = [];
 
-  const connections = concat(...apps.map((app) => app.connections));
+  tk.wallets.forEach((wallet) => {
+    const walletAddress = Address.parse(wallet.address.ton.raw).toFriendly({
+      bounceable: true,
+      testOnly: wallet.isTestnet,
+    });
 
-  return connections;
+    const apps =
+      state.connectedApps[wallet.isTestnet ? 'testnet' : 'mainnet']?.[walletAddress] ??
+      {};
+
+    const connections = Object.values(apps).flatMap((app) =>
+      app.connections.map((connection) => ({
+        ...connection,
+        walletIdentifier: wallet.identifier,
+      })),
+    );
+
+    allConnections.push(...connections);
+  });
+
+  return allConnections;
 };

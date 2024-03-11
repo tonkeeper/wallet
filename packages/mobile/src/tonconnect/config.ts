@@ -17,7 +17,7 @@ const getPlatform = (): DeviceInfo['platform'] => {
 export const tonConnectDeviceInfo: DeviceInfo = {
   platform: getPlatform(),
   appName: RNDeviceInfo.getApplicationName(),
-  appVersion: RNDeviceInfo.getReadableVersion(),
+  appVersion: RNDeviceInfo.getVersion(),
   maxProtocolVersion: CURRENT_PROTOCOL_VERSION,
   features: ['SendTransaction', { name: 'SendTransaction', maxMessages: 4 }],
 };

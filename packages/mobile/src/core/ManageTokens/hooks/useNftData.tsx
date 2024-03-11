@@ -4,15 +4,16 @@ import {
   ImageType,
   openApproveTokenModal,
 } from '$core/ModalContainer/ApproveToken/ApproveToken';
-import {
-  TokenApprovalStatus,
-  TokenApprovalType,
-} from '$store/zustand/tokenApproval/types';
 import { ListButton, Spacer } from '$uikit';
 import { CellItem, Content, ContentType } from '$core/ManageTokens/ManageTokens.types';
-import { useTokenApprovalStore } from '$store/zustand/tokenApproval/useTokenApprovalStore';
 import { useApprovedNfts } from '$hooks/useApprovedNfts';
 import { JettonVerification, NFTModel } from '$store/models';
+import { tk } from '$wallet';
+import {
+  TokenApprovalType,
+  TokenApprovalStatus,
+} from '$wallet/managers/TokenApprovalManager';
+import { Address } from '@tonkeeper/core';
 
 const baseNftCellData = (nft: NFTModel) => ({
   type: ContentType.Cell,
@@ -33,7 +34,7 @@ const baseNftCellData = (nft: NFTModel) => ({
       verification: nft.isApproved
         ? JettonVerification.WHITELIST
         : JettonVerification.NONE,
-      tokenAddress: nft.collection?.address || nft.address,
+      tokenIdentifier: Address.parse(nft.collection?.address || nft.address).toRaw(),
       image: nft.content.image.baseUrl,
       name: nft.collection?.name,
     }),
@@ -60,9 +61,6 @@ export function groupByCollection(
 export function useNftData() {
   const [isExtendedEnabled, setIsExtendedEnabled] = useState(false);
   const [isExtendedDisabled, setIsExtendedDisabled] = useState(false);
-  const updateTokenStatus = useTokenApprovalStore(
-    (state) => state.actions.updateTokenStatus,
-  );
   const { enabled, disabled } = useApprovedNfts();
   return useMemo(() => {
     const content: Content[] = [];
@@ -86,8 +84,8 @@ export function useNftData() {
                   <ListButton
                     type="remove"
                     onPress={() =>
-                      updateTokenStatus(
-                        nft.collection?.address || nft.address,
+                      tk.wallet.tokenApproval.updateTokenStatus(
+                        Address.parse(nft.collection?.address || nft.address).toRaw(),
                         TokenApprovalStatus.Declined,
                         nft.collection?.address
                           ? TokenApprovalType.Collection
@@ -137,8 +135,8 @@ export function useNftData() {
                   <ListButton
                     type="add"
                     onPress={() =>
-                      updateTokenStatus(
-                        nft.collection?.address || nft.address,
+                      tk.wallet.tokenApproval.updateTokenStatus(
+                        Address.parse(nft.collection?.address || nft.address).toRaw(),
                         TokenApprovalStatus.Approved,
                         nft.collection?.address
                           ? TokenApprovalType.Collection
@@ -167,5 +165,5 @@ export function useNftData() {
     }
 
     return content;
-  }, [disabled, enabled, isExtendedDisabled, isExtendedEnabled, updateTokenStatus]);
+  }, [disabled, enabled, isExtendedDisabled, isExtendedEnabled]);
 }

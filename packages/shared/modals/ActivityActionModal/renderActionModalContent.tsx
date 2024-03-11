@@ -1,5 +1,4 @@
 import { TonTransferActionContent } from './content/TonTransferActionContent';
-import { ActionType, AnyActionItem } from '@tonkeeper/core';
 import { ActionModalContent } from './ActionModalContent';
 
 import { JettonTransferActionContent } from './content/JettonTransferActionContent';
@@ -16,6 +15,10 @@ import { DepositStakeActionContent } from './content/DepositStakeActionContent';
 import { WithdrawStakeActionContent } from './content/WithdrawStakeActionContent';
 import { WithdrawStakeRequestActionContent } from './content/WithdrawStakeRequestActionContent';
 import { SubscribeActionContent } from './content/SubscribeActionContent';
+import {
+  ActionType,
+  AnyActionItem,
+} from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 
 export function renderActionModalContent(action: AnyActionItem) {
   switch (action.type) {

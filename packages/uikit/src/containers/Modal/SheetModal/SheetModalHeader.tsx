@@ -15,16 +15,27 @@ export interface SheetModalHeaderProps {
   leftContent?: React.ReactNode;
   gradient?: boolean;
   title?: string | React.ReactNode;
+  subtitle?: string | React.ReactNode;
   center?: boolean;
+  numberOfLines?: number;
 }
 
 export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
-  const { gradient, title, onClose, iconLeft, onIconLeftPress, leftContent, center } =
-    props;
+  const {
+    gradient,
+    title,
+    subtitle,
+    onClose,
+    iconLeft,
+    onIconLeftPress,
+    leftContent,
+    center,
+  } = props;
   const { measureHeader, close, scrollY } = useSheetInternal();
   const theme = useTheme();
 
   const hasTitle = !!title;
+  const hasSubtitle = !!subtitle;
 
   const borderAnimatedStyle = useAnimatedStyle(
     () => ({
@@ -35,6 +46,15 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
   );
 
   useLayoutEffect(() => {
+    if (hasSubtitle) {
+      measureHeader({
+        nativeEvent: {
+          layout: { height: 84 },
+        },
+      });
+
+      return;
+    }
     if (hasTitle) {
       measureHeader({
         nativeEvent: {
@@ -46,7 +66,12 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
 
   return (
     <Animated.View
-      style={[styles.container, borderAnimatedStyle, !hasTitle && styles.absolute]}
+      style={[
+        styles.container,
+        hasSubtitle && styles.containerWithSubtitle,
+        borderAnimatedStyle,
+        !hasTitle && styles.absolute,
+      ]}
     >
       {gradient && (
         <LinearGradient
@@ -75,12 +100,24 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
         {hasTitle && (
           <View style={[styles.headerTitle, center && styles.titleByCenter]}>
             {typeof title === 'string' ? (
-              <Text type="h3" textAlign={center ? 'center' : 'left'}>
+              <Text
+                numberOfLines={props.numberOfLines}
+                type="h3"
+                textAlign={center ? 'center' : 'left'}
+              >
                 {title}
               </Text>
             ) : (
               title
             )}
+            {hasSubtitle &&
+              (typeof subtitle === 'string' ? (
+                <Text type="body2" color="textSecondary">
+                  {subtitle}
+                </Text>
+              ) : (
+                subtitle
+              ))}
           </View>
         )}
 
@@ -105,6 +142,9 @@ const styles = StyleSheet.create({
   container: {
     height: 64,
     borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  containerWithSubtitle: {
+    height: 84,
   },
   absolute: {
     position: 'absolute',

@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { config } from '../config';
+import { config } from '@tonkeeper/mobile/src/config';
 
 export enum BatteryState {
   Full = 'FULL',
@@ -47,5 +47,5 @@ export function calculateAvailableNumOfTransactions(batteryBalance: string) {
     .div(10)
     .decimalPlaces(0, BigNumber.ROUND_DOWN)
     .times(10)
-    .toString();
+    .toNumber();
 }

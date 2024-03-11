@@ -22,13 +22,14 @@ import { TextInput } from 'react-native-gesture-handler';
 import { Address } from '@tonkeeper/core';
 
 interface Props {
-  wordHintsRef: RefObject<WordHintsPopupRef>;
+  wordHintsRef?: RefObject<WordHintsPopupRef>;
   shouldFocus: boolean;
   recipient: SendRecipient | null;
   dnsLoading: boolean;
   editable: boolean;
+  error?: boolean;
   updateRecipient: (value: string) => Promise<boolean>;
-  onSubmit: () => void;
+  onSubmit?: () => void;
 }
 
 const AddressInputComponent: FC<Props> = (props) => {
@@ -36,6 +37,7 @@ const AddressInputComponent: FC<Props> = (props) => {
     wordHintsRef,
     shouldFocus,
     recipient,
+    error,
     dnsLoading,
     editable,
     updateRecipient,
@@ -49,7 +51,7 @@ const AddressInputComponent: FC<Props> = (props) => {
 
   const [showFailed, setShowFailed] = useState(true);
 
-  const isFailed = showFailed && !dnsLoading && value.length > 0 && !recipient;
+  const isFailed = error || (showFailed && !dnsLoading && value.length > 0 && !recipient);
 
   const canScanQR = value.length === 0;
 
@@ -59,7 +61,7 @@ const AddressInputComponent: FC<Props> = (props) => {
     const offsetTop = S.INPUT_HEIGHT + ns(isAndroid ? 20 : 16);
     const offsetLeft = ns(-16);
 
-    wordHintsRef.current?.search({
+    wordHintsRef?.current?.search({
       input: 0,
       query: inputValue.current,
       offsetTop,
@@ -88,18 +90,18 @@ const AddressInputComponent: FC<Props> = (props) => {
   );
 
   const handleBlur = useCallback(() => {
-    wordHintsRef.current?.clear();
+    wordHintsRef?.current?.clear();
   }, [wordHintsRef]);
 
   const handleSubmit = useCallback(() => {
-    const hint = wordHintsRef.current?.getCurrentSuggests()?.[0];
+    const hint = wordHintsRef?.current?.getCurrentSuggests()?.[0];
 
     if (hint) {
       updateRecipient(hint);
       return;
     }
 
-    onSubmit();
+    onSubmit?.();
   }, [onSubmit, updateRecipient, wordHintsRef]);
 
   const contentWidth = useSharedValue(0);
@@ -185,12 +187,12 @@ const AddressInputComponent: FC<Props> = (props) => {
 
     inputValue.current = nextValue;
 
-    wordHintsRef.current?.clear();
+    wordHintsRef?.current?.clear();
   }, [recipient, wordHintsRef]);
 
   const preparedAddress =
     recipient && (recipient.name || recipient.domain)
-      ? Address.toShort(recipient.address)
+      ? Address.parse(recipient.address, { bounceable: false }).toShort()
       : '';
 
   const isFirstRender = useRef(true);

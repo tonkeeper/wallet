@@ -3,7 +3,7 @@ import { Text } from '$uikit/Text/Text';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { formatFiatCurrencyAmount } from '$utils/currency';
-import { FiatCurrencies } from '$shared/constants';
+import { WalletCurrency } from '$shared/constants';
 import { Platform } from 'react-native';
 
 const fontFamily = Platform.select({
@@ -13,19 +13,18 @@ const fontFamily = Platform.select({
 
 const RateComponent: React.FC<{
   latestPoint: number;
-  fiatRate: number;
-  fiatCurrency: FiatCurrencies;
+  fiatCurrency: WalletCurrency;
 }> = (props) => {
   const chartData = useChartData();
   const [activePoint, setActivePoint] = useState(props.latestPoint);
   const formattedLatestPrice = useMemo(
     () =>
       formatFiatCurrencyAmount(
-        (activePoint * props.fiatRate).toFixed(4),
+        activePoint.toFixed(activePoint > 0.0001 ? 4 : 8),
         props.fiatCurrency,
         true,
       ),
-    [props.fiatCurrency, props.fiatRate, activePoint],
+    [props.fiatCurrency, activePoint],
   );
 
   const formatPriceWrapper = useCallback(
@@ -49,7 +48,7 @@ const RateComponent: React.FC<{
     },
     (result, previous) => {
       if (result !== previous) {
-        runOnJS(formatPriceWrapper)(result);
+        runOnJS(formatPriceWrapper)(parseFloat(result));
       }
     },
     [formatPriceWrapper],

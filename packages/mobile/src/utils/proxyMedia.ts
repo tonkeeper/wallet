@@ -1,10 +1,9 @@
+import { config } from '$config';
 import { ns } from '$utils/style';
-import { getServerConfig } from '$shared/constants';
 
 const createHmac = require('create-hmac');
 
 const urlSafeBase64 = (string) => {
-  // eslint-disable-next-line no-undef
   return Buffer.from(string)
     .toString('base64')
     .replace(/[=]/g, '')
@@ -12,7 +11,6 @@ const urlSafeBase64 = (string) => {
     .replace(/\//g, '_');
 };
 
-// eslint-disable-next-line no-undef
 const hexDecode = (hex) => Buffer.from(hex, 'hex');
 
 const sign = (salt, target, secret) => {
@@ -32,13 +30,13 @@ const EXTENTION = 'png';
     Please provide width and height without additional normalizing
  */
 export function proxyMedia(url: string, width: number = 300, height: number = 300) {
-  const KEY = getServerConfig('cachedMediaKey');
-  const SALT = getServerConfig('cachedMediaSalt');
+  const KEY = config.get('cachedMediaKey');
+  const SALT = config.get('cachedMediaSalt');
 
   const encoded_url = urlSafeBase64(url);
   const path = `/rs:${RESIZING_TYPE}:${Math.round(ns(width))}:${Math.round(
     ns(height),
   )}:${enlarge}/g:${GRAVITY}/${encoded_url}.${EXTENTION}`;
   const signature = sign(SALT, path, KEY);
-  return `${getServerConfig('cachedMediaEndpoint')}/${signature}${path}`;
+  return `${config.get('cachedMediaEndpoint')}/${signature}${path}`;
 }

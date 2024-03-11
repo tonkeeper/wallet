@@ -1,16 +1,5 @@
-import { store } from '$store';
-import { CryptoCurrency, TokenConfig, TokenConfigTestnet } from '$shared/constants';
-
-export function getTokenConfig(token: CryptoCurrency) {
-  const isTestnet = store.getState().main.isTestnet;
-  const configs = isTestnet ? TokenConfigTestnet : TokenConfig;
-  return configs[token];
-}
-
-export function getWalletName(): string {
-  return `${getChainName()}_default`;
-}
+import { tk } from '$wallet';
 
 export function getChainName(): 'mainnet' | 'testnet' {
-  return store.getState().main.isTestnet ? 'testnet' : 'mainnet';
+  return tk.wallet?.isTestnet ? 'testnet' : 'mainnet';
 }

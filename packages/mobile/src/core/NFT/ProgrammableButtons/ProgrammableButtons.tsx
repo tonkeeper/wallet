@@ -12,9 +12,9 @@ import { createTonProof } from '$utils/proof';
 import { useSelector } from 'react-redux';
 import { walletWalletSelector } from '$store/wallet';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
-import { isTestnetSelector } from '$store/main';
 import { getDomainFromURL } from '$utils';
 import { Address } from '@tonkeeper/core';
+import { tk } from '$wallet';
 
 export interface ProgrammableButton {
   label?: string;
@@ -32,7 +32,6 @@ export interface ProgrammableButtonsProps {
 const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
   const wallet = useSelector(walletWalletSelector);
   const unlockVault = useUnlockVault();
-  const isTestnet = useSelector(isTestnetSelector);
 
   const buttons = useMemo(() => {
     if (!props.buttons || !isArray(props.buttons)) {
@@ -47,7 +46,7 @@ const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
       try {
         const nftAddress = Address.parse(props.nftAddress).toRaw();
         const vault = await unlockVault();
-        const address = await vault.getTonAddress(isTestnet);
+        const address = await vault.getTonAddress(tk.wallet.isTestnet);
         let walletStateInit = '';
         if (wallet) {
           const tonWallet = wallet.vault.tonWallet;
@@ -83,7 +82,7 @@ const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
         console.log(e);
       }
     },
-    [isTestnet, props.nftAddress, unlockVault, wallet],
+    [props.nftAddress, unlockVault, wallet],
   );
 
   const handleOpenLink = useCallback(

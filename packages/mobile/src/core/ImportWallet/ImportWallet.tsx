@@ -1,31 +1,62 @@
 import React, { FC, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import * as S from './ImportWallet.style';
 import { NavBar } from '$uikit';
 import { useKeyboardHeight } from '$hooks/useKeyboardHeight';
-import { walletActions } from '$store/wallet';
-import { openCreatePin } from '$navigation';
 import { ImportWalletForm } from '$shared/components';
+import { RouteProp } from '@react-navigation/native';
+import {
+  ImportWalletStackParamList,
+  ImportWalletStackRouteNames,
+} from '$navigation/ImportWalletStack/types';
+import { useNavigation } from '@tonkeeper/router';
+import { useImportWallet } from '$hooks/useImportWallet';
+import { tk } from '$wallet';
+import { ImportWalletInfo } from '$wallet/WalletTypes';
+import { DEFAULT_WALLET_VERSION } from '$wallet/constants';
 
-export const ImportWallet: FC = () => {
-  const dispatch = useDispatch();
+export const ImportWallet: FC<{
+  route: RouteProp<ImportWalletStackParamList, ImportWalletStackRouteNames.ImportWallet>;
+}> = (props) => {
   const keyboardHeight = useKeyboardHeight();
+  const nav = useNavigation();
+  const doImportWallet = useImportWallet();
+
+  const isTestnet = !!props.route.params?.testnet;
 
   const handleWordsFilled = useCallback(
-    (mnemonics: string, config: any, onEnd: () => void) => {
-      dispatch(
-        walletActions.restoreWallet({
-          mnemonics,
-          config,
-          onDone: () => {
-            onEnd();
-            openCreatePin();
-          },
-          onFail: () => onEnd(),
-        }),
-      );
+    async (mnemonic: string, lockupConfig: any, onEnd: () => void) => {
+      try {
+        let walletsInfo: ImportWalletInfo[] | null = null;
+
+        try {
+          walletsInfo = await tk.getWalletsInfo(mnemonic, isTestnet);
+        } catch {}
+
+        const shouldChooseWallets =
+          !lockupConfig && walletsInfo && walletsInfo.length > 1;
+
+        if (shouldChooseWallets) {
+          nav.navigate(ImportWalletStackRouteNames.ChooseWallets, {
+            walletsInfo,
+            mnemonic,
+            lockupConfig,
+            isTestnet,
+          });
+          onEnd();
+          return;
+        }
+
+        const versions = walletsInfo
+          ? walletsInfo.map((item) => item.version)
+          : [DEFAULT_WALLET_VERSION];
+
+        await doImportWallet(mnemonic, lockupConfig, versions, isTestnet);
+        onEnd();
+      } catch {
+        onEnd();
+      }
     },
-    [dispatch],
+    [doImportWallet, isTestnet, nav],
   );
 
   return (

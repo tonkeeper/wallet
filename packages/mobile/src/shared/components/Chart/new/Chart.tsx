@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   ChartDot,
   ChartPath,
@@ -8,14 +8,10 @@ import {
 } from '@rainbow-me/animated-charts';
 import { Dimensions, View } from 'react-native';
 import { useTheme } from '$hooks/useTheme';
-import { useTokenPrice } from '$hooks/useTokenPrice';
-import { useSelector } from 'react-redux';
-import { fiatCurrencySelector } from '$store/main';
-import { CryptoCurrencies, FiatCurrencies } from '$shared/constants';
 import { formatFiatCurrencyAmount } from '$utils/currency';
 import { PriceLabel } from './PriceLabel/PriceLabel';
 import { PercentDiff } from './PercentDiff/PercentDiff';
-import { PeriodSelector } from './PeriodSelector/PeriodSelector';
+import { PeriodSelector, PeriodSelectorProps } from './PeriodSelector/PeriodSelector';
 import { Rate } from './Rate/Rate';
 import { useQuery } from 'react-query';
 import { loadChartData } from './Chart.api';
@@ -24,69 +20,57 @@ import { changeAlphaValue, convertHexToRGBA, ns } from '$utils';
 import { ChartXLabels } from './ChartXLabels/ChartXLabels';
 import { ChartPeriod, useChartStore } from '$store/zustand/chart';
 import { Fallback } from './Fallback/Fallback';
-import BigNumber from 'bignumber.js';
 import { isIOS } from '@tonkeeper/uikit';
+import { WalletCurrency } from '$shared/constants';
 
 export const { width: SIZE } = Dimensions.get('window');
 
-const ChartComponent: React.FC = () => {
+export interface ChartProps {
+  token: string;
+  currency: WalletCurrency;
+  excludedPeriods?: PeriodSelectorProps['excludedPeriods'];
+}
+
+const ChartComponent: React.FC<ChartProps> = (props) => {
   const theme = useTheme();
   const selectedPeriod = useChartStore((state) => state.selectedPeriod);
   const setChartPeriod = useChartStore((state) => state.actions.setChartPeriod);
 
   const { isLoading, isFetching, data, isError } = useQuery({
-    queryKey: ['chartFetch', selectedPeriod],
-    queryFn: () => loadChartData(selectedPeriod),
+    queryKey: ['chartFetch', props.token, props.currency, selectedPeriod],
+    queryFn: () => loadChartData(selectedPeriod, props.token, props.currency),
     refetchInterval: 60 * 1000,
+    keepPreviousData: true,
     staleTime: 120 * 1000,
   });
 
-  const [cachedData, setCachedData] = useState(data?.data ?? []);
+  const points = useMemo(
+    () => (data?.points ? data.points.map(([x, y]) => ({ x, y })).reverse() : []),
+    [data],
+  );
 
-  useEffect(() => {
-    if ((data && !isFetching && !isLoading) || !cachedData) {
-      setCachedData(
-        selectedPeriod === ChartPeriod.ONE_HOUR
-          ? stepInterpolation(data.data)
-          : data.data,
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, selectedPeriod, isFetching, isLoading]);
-
-  const fiatCurrency = useSelector(fiatCurrencySelector);
-  const shouldRenderChart = !!cachedData.length;
-
-  const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
-
-  const fiatRate = useMemo(() => {
-    if (fiatCurrency === FiatCurrencies.Usd) {
-      return 1;
-    }
-
-    return new BigNumber(tonPrice.fiat).dividedBy(tonPrice.usd).toNumber();
-  }, [fiatCurrency, tonPrice.fiat, tonPrice.usd]);
+  const shouldRenderChart = !!points.length;
 
   const [maxPrice, minPrice] = React.useMemo(() => {
-    if (!cachedData.length) {
+    if (!points.length) {
       return ['0', '0'];
     }
-    const mappedPoints = cachedData.map((o) => o.y);
+    const mappedPoints = points.map((o) => o.y);
     return [Math.max(...mappedPoints), Math.min(...mappedPoints)].map((value) =>
-      formatFiatCurrencyAmount((value * fiatRate).toFixed(2), fiatCurrency, true),
+      formatFiatCurrencyAmount(value.toFixed(2), props.currency, true),
     );
-  }, [cachedData, fiatRate, fiatCurrency]);
+  }, [points, props.currency]);
 
   const [firstPoint, latestPoint] = React.useMemo(() => {
-    if (!cachedData.length) {
+    if (!points.length) {
       return [0, 0];
     }
-    const latest = cachedData[cachedData.length - 1].y;
-    const first = cachedData[0].y;
+    const latest = points[points.length - 1].y;
+    const first = points[0].y;
     return [first, latest];
-  }, [cachedData]);
+  }, [points]);
 
-  if (isLoading && !cachedData) {
+  if (isLoading && !points) {
     return null;
   }
 
@@ -95,22 +79,24 @@ const ChartComponent: React.FC = () => {
       <View>
         <ChartPathProvider
           data={{
-            points: cachedData,
+            points:
+              selectedPeriod === ChartPeriod.ONE_HOUR
+                ? stepInterpolation(points)
+                : points,
           }}
         >
           <View style={{ paddingHorizontal: 28 }}>
-            <Rate
-              fiatCurrency={fiatCurrency}
-              fiatRate={fiatRate}
-              latestPoint={latestPoint}
-            />
-            <PercentDiff
-              fiatCurrency={fiatCurrency}
-              fiatRate={fiatRate}
-              latestPoint={latestPoint}
-              firstPoint={firstPoint}
-            />
-            <PriceLabel selectedPeriod={selectedPeriod} />
+            {latestPoint ? (
+              <>
+                <Rate fiatCurrency={props.currency} latestPoint={latestPoint} />
+                <PercentDiff
+                  fiatCurrency={props.currency}
+                  latestPoint={latestPoint}
+                  firstPoint={firstPoint}
+                />
+                <PriceLabel selectedPeriod={selectedPeriod} />
+              </>
+            ) : null}
           </View>
           <View style={{ paddingVertical: 30 }}>
             <View>
@@ -161,6 +147,7 @@ const ChartComponent: React.FC = () => {
         </ChartPathProvider>
       </View>
       <PeriodSelector
+        excludedPeriods={props.excludedPeriods}
         disabled={isLoading || isFetching}
         selectedPeriod={selectedPeriod}
         onSelect={setChartPeriod}

@@ -4,14 +4,14 @@ import { useDispatch } from 'react-redux';
 import { DeeplinkingResolver, useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
-import { Base64, delay, fromNano } from '$utils';
+import { Base64, delay, fromNano, toNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
-import { store, Toast, useStakingStore } from '$store';
+import { store, Toast } from '$store';
 import {
   SignRawMessage,
   TxRequest,
 } from '$core/ModalContainer/NFTOperations/TXRequest.types';
-import { openBuyFiat, openSend } from '../helper';
+import { openBuyFiat, openSend, resetToWalletTab } from '../helper';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 
 import { t } from '@tonkeeper/shared/i18n';
@@ -28,23 +28,17 @@ import { openTonConnect } from '$core/TonConnect/TonConnectModal';
 import { useCallback, useRef } from 'react';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import BigNumber from 'bignumber.js';
-import { Tonapi } from '$libs/Tonapi';
 import { getCurrentRoute } from '$navigation/imperative';
 import { IConnectQrQuery } from '$tonconnect/models';
 import { openCreateSubscription } from '$core/ModalContainer/CreateSubscription/CreateSubscription';
-import {
-  ActionSource,
-  Address,
-  AmountFormatter,
-  ContractService,
-  DNS,
-} from '@tonkeeper/core';
+import { Address, AmountFormatter, ContractService, DNS } from '@tonkeeper/core';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { isMethodIdExists } from '$store/zustand/methodsToBuy/helpers';
 import { openActivityActionModal } from '@tonkeeper/shared/modals/ActivityActionModal';
-import { tk } from '@tonkeeper/shared/tonkeeper';
-import { config } from '@tonkeeper/shared/config';
+import { tk } from '$wallet';
+import { config } from '$config';
 import { TokenType } from '$core/Send/Send.interface';
+import { ActionSource } from '$wallet/models/ActivityModel';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -80,8 +74,22 @@ export function useDeeplinkingResolvers() {
     'https://ton.app',
   ]);
 
-  deeplinking.addMiddleware(async (next) => {
-    if (!getWallet()) {
+  deeplinking.addMiddleware(async (next, { prefix, pathname }) => {
+    if (!getWallet() || !tk.wallet) {
+      return openRequireWalletModal();
+    }
+
+    const isTonConnect =
+      prefix === 'tc://' ||
+      pathname.startsWith('/ton-connect') ||
+      // legacy tonconnect
+      pathname.startsWith('/ton-login');
+
+    if (tk.wallet.isWatchOnly && !isTonConnect) {
+      return;
+    }
+
+    if (isTonConnect && !tk.walletForUnlock) {
       return openRequireWalletModal();
     }
 
@@ -130,9 +138,8 @@ export function useDeeplinkingResolvers() {
   });
 
   deeplinking.add('/subscribe/:invoiceId', ({ params }) => {
-    const wallet = getWallet();
-    if (!wallet.ton.isV4()) {
-      dispatch(walletActions.openMigration());
+    if (!tk.wallet.isV4()) {
+      Toast.fail(t('old_wallet_error'));
     } else {
       openCreateSubscription(params.invoiceId);
     }
@@ -182,11 +189,11 @@ export function useDeeplinkingResolvers() {
   deeplinking.add('/pool/:address', async ({ params }) => {
     const poolAddress = params.address;
 
-    await useStakingStore.getState().actions.fetchPools();
+    await tk.wallet.staking.load();
 
-    const foundPool = useStakingStore
-      .getState()
-      .pools?.find((pool) => Address.compare(pool.address, poolAddress));
+    const foundPool = tk.wallet.staking.state.data.pools?.find((pool) =>
+      Address.compare(pool.address, poolAddress),
+    );
 
     if (!foundPool) {
       Toast.fail(t('staking.not_exists'));
@@ -216,8 +223,8 @@ export function useDeeplinkingResolvers() {
 
       let address = params.address;
       if (DNS.isValid(address)) {
-        const dnsRecord = await Tonapi.resolveDns(address);
-        if (dnsRecord) {
+        const dnsRecord = await tk.wallet.tonapi.dns.dnsResolve(address);
+        if (dnsRecord?.wallet?.address) {
           address = new Address(dnsRecord.wallet.address).toFriendly({
             bounceable: true,
           });
@@ -239,7 +246,7 @@ export function useDeeplinkingResolvers() {
         return Toast.fail(t('transfer_deeplink_amount_error'));
       }
 
-      await tk.wallet.tonInscriptions.getInscriptions();
+      await tk.wallet.tonInscriptions.load();
       let inscriptions = tk.wallet?.tonInscriptions.state.getSnapshot();
       const inscription = inscriptions?.items.find(
         (item) => item.ticker === ticker && item.type === type,
@@ -307,8 +314,8 @@ export function useDeeplinkingResolvers() {
     let address = params.address;
 
     if (DNS.isValid(address)) {
-      const dnsRecord = await Tonapi.resolveDns(address);
-      if (dnsRecord) {
+      const dnsRecord = await tk.wallet.tonapi.dns.dnsResolve(address);
+      if (dnsRecord?.wallet?.address) {
         address = new Address(dnsRecord.wallet.address).toFriendly({ bounceable: true });
       } else {
         return Toast.fail(t('transfer_deeplink_address_error'));
@@ -360,25 +367,26 @@ export function useDeeplinkingResolvers() {
           return Toast.fail(t('transfer_deeplink_address_error'));
         }
 
-        const currentAddress = await getWallet().ton.getAddress();
-        const { balances } = await Tonapi.getJettonBalances(currentAddress);
-        const jettonBalance = balances.find((balance) =>
-          Address.compare(balance.jetton?.address, query.jetton),
-        );
+        await tk.wallet.jettons.load();
+        const jettonBalance = tk.wallet.jettons.getLoadedJetton(query.jetton);
 
         if (!jettonBalance) {
-          return Toast.fail(t('transfer_deeplink_address_error'));
+          return Toast.fail(t('transfer_deeplink_unknown_jetton_error'));
         }
 
-        let decimals = jettonBalance.jetton?.decimals ?? 9;
+        let decimals = jettonBalance.metadata.decimals ?? 9;
         const amount = fromNano(query.amount.toString(), decimals);
 
-        if (new BigNumber(jettonBalance.balance ?? 0).lt(query.amount)) {
+        if (
+          new BigNumber(
+            toNano(jettonBalance.balance, jettonBalance.metadata.decimals ?? 9) ?? 0,
+          ).lt(query.amount)
+        ) {
           openInsufficientFundsModal({
             balance: jettonBalance.balance ?? 0,
             totalAmount: query.amount,
             decimals,
-            currency: jettonBalance.jetton?.symbol,
+            currency: jettonBalance.metadata.symbol,
           });
           return;
         }
@@ -471,7 +479,6 @@ export function useDeeplinkingResolvers() {
               amount: AmountFormatter.toNano(1),
               address: query.nft,
               payload: ContractService.createNftTransferBody({
-                queryId: Date.now(),
                 newOwnerAddress: address,
                 excessesAddress: excessesAccount || tk.wallet.address.ton.raw,
               })
@@ -535,10 +542,16 @@ export function useDeeplinkingResolvers() {
       !Address.compare(txBody.params.source, await wallet.ton.getAddress())
     ) {
       Toast.hide();
-      return openAddressMismatchModal(
-        () => resolveTxType(txRequest, resolveParams),
-        txBody.params.source,
-      );
+      const foundWallet = tk.getWalletByAddress(txBody.params.source);
+      if (!foundWallet) {
+        return openAddressMismatchModal(
+          () => resolveTxType(txRequest, resolveParams),
+          txBody.params.source,
+        );
+      }
+
+      resetToWalletTab();
+      tk.switchWallet(foundWallet.identifier);
     }
 
     const props = { ...txBody, ...resolveParams };

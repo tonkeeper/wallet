@@ -4,7 +4,6 @@ import { Button, Loader, Spacer, View } from '$uikit';
 import * as S from '../core/Exchange/Exchange.style';
 import { ExchangeItem } from '../core/Exchange/ExchangeItem/ExchangeItem';
 import { t } from '@tonkeeper/shared/i18n';
-import { getServerConfigSafe } from '$shared/constants';
 import { LayoutAnimation } from 'react-native';
 import { Modal, SegmentedControl, Text } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
@@ -13,6 +12,7 @@ import { CategoryType } from '$store/zustand/methodsToBuy/types';
 import { openChooseCountry } from '$navigation';
 import { useSelectedCountry } from '$store/zustand/methodsToBuy/useSelectedCountry';
 import { CountryButton } from '@tonkeeper/shared/components';
+import { config } from '$config';
 
 export const ExchangeModal = () => {
   const [showAll, setShowAll] = React.useState(false);
@@ -22,7 +22,7 @@ export const ExchangeModal = () => {
 
   const selectedCountry = useSelectedCountry();
 
-  const otherWaysAvailable = getServerConfigSafe('exchangePostUrl') !== 'none';
+  const otherWaysAvailable = !!config.get('exchangePostUrl');
 
   const allRegions = selectedCountry === '*';
 

@@ -2,7 +2,7 @@ import { copyText } from '$hooks/useCopyText';
 import { Spacer } from '$uikit';
 import { Address } from '@tonkeeper/core';
 import { t } from '@tonkeeper/shared/i18n';
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '$wallet';
 import { Pressable, Screen, Steezy, Text, View } from '@tonkeeper/uikit';
 import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
 import React, { FC } from 'react';
@@ -25,9 +25,11 @@ const splitAddress = (address: string) => {
 export const AddressUpdateInfo: FC = () => {
   const oldAddress = Address.parse(tk.wallet.address.ton.raw).toFriendly({
     bounceable: true,
+    testOnly: tk.wallet.isTestnet,
   });
   const newAddress = Address.parse(tk.wallet.address.ton.raw).toFriendly({
     bounceable: false,
+    testOnly: tk.wallet.isTestnet,
   });
   const oldStyle = splitAddress(oldAddress);
   const newStyle = splitAddress(newAddress);
@@ -37,6 +39,10 @@ export const AddressUpdateInfo: FC = () => {
       <Screen.Header title={t('address_update.title')} />
       <Screen.ScrollView>
         <View style={styles.content}>
+          <Text type="body2" color="textSecondary">
+            {t('address_update.post_published_date')}
+          </Text>
+          <Spacer y={12} />
           <Text type="body2" color="textSecondary">
             {t('address_update.post_top')}
           </Text>

@@ -290,18 +290,14 @@
   "passcode_changed" : "Passcode cambiato",
   "pin_enter_faceid_err" : " Controllo biometrico fallito",
   "pin_enter_skip_faceid_err" : "È richiesta la biometria",
-  "platform" : {
+  "biometry" : {
     "android" : {
-      "capitalized_face_recognition" : "Riconoscimento Facciale",
-      "capitalized_fingerprint" : "Impronta Digitale",
       "face_recognition" : "riconoscimento facciale",
       "face_recognition_genitive" : "riconoscimento facciale",
       "fingerprint" : "impronta digitale",
       "fingerprint_genitive" : "impronta digitale"
     },
     "ios" : {
-      "capitalized_face_recognition" : "Face ID",
-      "capitalized_fingerprint" : "Touch ID",
       "face_recognition" : "Face ID",
       "face_recognition_genitive" : "Face ID",
       "fingerprint" : "Touch ID",
@@ -559,6 +555,7 @@
   "tab_swap" : "Swap",
   "tab_wallet" : "Wallet",
   "today" : "Oggi",
+  "tonkeeper_pro" : "Tonkeeper Pro",
   "ton_login_back_to_button" : "Torna a %{name}",
   "ton_login_caption" : "%{name} sta richiedendo l'accesso all'indirizzo del tuo wallet",
   "ton_login_connect_button" : "Collega wallet",

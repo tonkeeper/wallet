@@ -74,7 +74,7 @@ enum InputState {
 
 const LABEL_SCALE_RATIO = 0.8;
 const ANIM_DURATION = 100;
-const LABEL_TRANSLATE_X_TO = isIOS ? -32 : -30;
+const LABEL_TRANSLATE_X_TO = -30;
 
 export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
   const {
@@ -231,11 +231,17 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
   const handlePastePress = useCallback(async () => {
     try {
       const str = await Clipboard.getString();
+      if (onChangeText) {
+        onChangeText(str);
+      }
       setInputValue(str);
     } catch {}
   }, []);
 
   const handlePressClear = useCallback(() => {
+    if (onChangeText) {
+      onChangeText('');
+    }
     setInputValue('');
   }, []);
 
@@ -440,9 +446,10 @@ const styles = Steezy.create(({ colors, corners }) => ({
     ? inputPaddings.withoutLabel.android
     : inputPaddings.withoutLabel.other,
   leftContent: {
-    paddingTop: 16 - InputBorderWidth,
-    position: 'absolute',
     top: 0,
+    left: 0,
+    bottom: 0,
+    position: 'absolute',
   },
   invalidBg: {
     position: 'absolute',

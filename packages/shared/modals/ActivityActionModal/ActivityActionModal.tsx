@@ -1,22 +1,33 @@
-import { ActionItem, ActionSource, AnyActionItem } from '@tonkeeper/core';
 import { SheetActions, navigation } from '@tonkeeper/router';
 import { renderActionModalContent } from './renderActionModalContent';
 import { Modal, Toast } from '@tonkeeper/uikit';
-import { tk } from '../../tonkeeper';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 import { memo } from 'react';
+import {
+  ActionItem,
+  ActionSource,
+  AnyActionItem,
+} from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 
 type ActivityActionModalProps = {
   action: AnyActionItem;
 };
 
+/** Payload with possibly big content to render.
+ * We should wrap content into ScrollView
+ * if action has any of these fields.
+ * TODO: should measure content size and conditionally wrap into ScrollView
+ * */
+const possiblyLargePayloadFields = ['payload', 'comment', 'encrypted_comment'];
+
 export const ActivityActionModal = memo<ActivityActionModalProps>((props) => {
   const { action } = props;
 
-  // TODO: need auto detect modal content size
-  const Content =
-    (action as any)?.payload?.comment || (action as any)?.payload?.encrypted_comment
-      ? Modal.ScrollView
-      : Modal.Content;
+  const shouldWrapIntoScrollView =
+    possiblyLargePayloadFields.findIndex((field) => (action as any)?.payload?.[field]) !==
+    -1;
+
+  const Content = shouldWrapIntoScrollView ? Modal.ScrollView : Modal.Content;
 
   return (
     <Modal>

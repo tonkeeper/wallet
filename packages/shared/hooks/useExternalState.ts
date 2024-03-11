@@ -1,7 +1,14 @@
-import { useCallback, useRef, useSyncExternalStore } from 'react';
+import {
+  DependencyList,
+  useCallback,
+  useMemo,
+  useRef,
+  useSyncExternalStore,
+} from 'react';
 import { DefaultStateData, State } from '@tonkeeper/core';
+import memoize from 'lodash/memoize';
 
-type ExternalStateSelector<TStateData, TSelectedData> = (
+export type ExternalStateSelector<TStateData, TSelectedData> = (
   state: TStateData,
 ) => TSelectedData;
 
@@ -12,22 +19,28 @@ export function useExternalState<
   TSelected = TStateData,
 >(
   state: State<TStateData>,
-  selector: ExternalStateSelector<TStateData, TSelected> = defaultStateSelector,
+  selectorFn: ExternalStateSelector<TStateData, TSelected> = defaultStateSelector,
+  deps?: DependencyList,
 ): TSelected {
+  const selector = useCallback(memoize(selectorFn), deps ?? []);
+
   let currentData = useRef(selector(state.getSnapshot()));
 
-  const getSnapshot = () => selector(state.getSnapshot());
+  const getSnapshot = useCallback(() => selector(state.getSnapshot()), [selector, state]);
 
   return useSyncExternalStore(
-    useCallback((cb) => {
-      return state.subscribe((data) => {
-        const nextState = selector(data);
-        if (currentData.current !== nextState) {
-          currentData.current = nextState;
-          cb();
-        }
-      });
-    }, []),
+    useCallback(
+      (cb) => {
+        return state.subscribe((data) => {
+          const nextState = selector(data);
+          if (currentData.current !== nextState) {
+            currentData.current = nextState;
+            cb();
+          }
+        });
+      },
+      [selector, state],
+    ),
     getSnapshot,
     getSnapshot,
   );

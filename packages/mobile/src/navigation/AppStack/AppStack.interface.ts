@@ -6,7 +6,6 @@ import { NFTKeyPair } from '$store/nfts/interface';
 import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
 
 export type AppStackParamList = {
-  [AppStackRouteNames.Intro]: {};
   [AppStackRouteNames.MainStack]: {};
   [AppStackRouteNames.Receive]: {
     currency: CryptoCurrency;
@@ -37,7 +36,6 @@ export type AppStackParamList = {
   [AppStackRouteNames.Subscription]: {
     subscription: SubscriptionModel;
   };
-  [AppStackRouteNames.SetupWalletStack]: {};
   [AppStackRouteNames.BuyFiat]: {
     currency: CryptoCurrency;
     methodId: string;
@@ -48,20 +46,8 @@ export type AppStackParamList = {
     amount: number;
     currency: CryptoCurrency;
   };
-  [AppStackRouteNames.Migration]: {
-    fromVersion?: string;
-    oldAddress: string;
-    newAddress: string;
-    migrationInProgress: boolean;
-    oldBalance: string;
-    newBalance: string;
-    isTransfer: boolean;
-  };
   [AppStackRouteNames.AccessConfirmation]: {};
   [AppStackRouteNames.MainAccessConfirmation]: {};
-  [AppStackRouteNames.ChangePin]: {};
-  [AppStackRouteNames.ResetPin]: {};
-  [AppStackRouteNames.SecurityMigration]: {};
   [AppStackRouteNames.NFT]: {
     keyPair: NFTKeyPair;
   };
@@ -71,5 +57,8 @@ export type AppStackParamList = {
   [AppStackRouteNames.StakingSend]: {
     poolAddress: string;
     transactionType: StakingTransactionType;
+  };
+  [AppStackRouteNames.CustomizeWallet]: {
+    identifiers?: string[];
   };
 };

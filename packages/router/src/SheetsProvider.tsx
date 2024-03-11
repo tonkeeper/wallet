@@ -14,8 +14,8 @@ export type SheetParams = Record<string, any>;
 
 export enum SheetActions {
   REPLACE = 'REPLACE',
-  ADD = 'ADD'
-};
+  ADD = 'ADD',
+}
 
 export type SheetInitialState = 'opened' | 'closed';
 
@@ -26,39 +26,42 @@ export type SheetStackParams = {
   component: React.ComponentType;
 };
 
-export type SheetStack = SheetStackParams & { 
+export type SheetStack = SheetStackParams & {
   id: string;
   initialState: SheetInitialState;
 };
 
 export type SheetStackList = SheetStack[];
 
-export type SheetContextValue = 
-  & BottomSheetRefs  
-  & SheetMeasurements  
-  &  {
+export type SheetContextValue = BottomSheetRefs &
+  SheetMeasurements & {
+    id: string;
+    initialState: SheetInitialState;
+    delegateMethods: (methods: SheetMethods) => void;
+    removeFromStack: () => void;
+    close: () => void;
+    onClose?: (() => void) | null;
+  };
+
+export type SheetStackDispatchAction =
+  | {
+      type: 'ADD';
       id: string;
-      initialState: SheetInitialState;
-      delegateMethods: (methods: SheetMethods) => void;
-      removeFromStack: () => void;
-      close: () => void;  
+      path: string;
+      params: SheetParams;
+      component: React.ComponentType;
+      initialState?: SheetInitialState;
+    }
+  | {
+      type: 'REMOVE';
+      id: string;
+    }
+  | {
+      type: 'REMOVE_ALL';
     };
 
-export type SheetStackDispatchAction = {
-  type: 'ADD';
-  id: string;
-  path: string;
-  params: SheetParams;
-  component: React.ComponentType;
-  initialState?: SheetInitialState;
-} | {
-  type: 'REMOVE'
-  id: string;
-} | {
-  type: 'REMOVE_ALL'
-};
-
-const SheetDispatchContext = React.createContext<React.Dispatch<SheetStackDispatchAction> | null>(null);
+const SheetDispatchContext =
+  React.createContext<React.Dispatch<SheetStackDispatchAction> | null>(null);
 const SheetContext = React.createContext<SheetContextValue | null>(null);
 
 function SheetReducer(stack: SheetStackList, action: SheetStackDispatchAction) {
@@ -66,17 +69,17 @@ function SheetReducer(stack: SheetStackList, action: SheetStackDispatchAction) {
     case 'ADD':
       return [
         ...stack,
-        { 
+        {
           initialState: action.initialState ?? 'opened',
           path: action.path,
           params: action.params,
           component: action.component,
           id: action.id,
-        }
+        },
       ];
     case 'REMOVE':
       return stack.filter((item) => item.id !== action.id);
-    case 'REMOVE_ALL': 
+    case 'REMOVE_ALL':
       return [];
   }
 }
@@ -84,9 +87,12 @@ function SheetReducer(stack: SheetStackList, action: SheetStackDispatchAction) {
 const useSheetRefs = () => {
   const refs = React.useRef(new Map<string, SheetInternalRef>());
 
-  const setRef = React.useCallback((id: string) => (el: SheetInternalRef) => {
-    refs.current.set(id, el);
-  }, []);
+  const setRef = React.useCallback(
+    (id: string) => (el: SheetInternalRef) => {
+      refs.current.set(id, el);
+    },
+    [],
+  );
 
   const removeRef = React.useCallback((id: string) => {
     refs.current.delete(id);
@@ -95,7 +101,7 @@ const useSheetRefs = () => {
   const getRef = React.useCallback((id: string) => {
     return refs.current.get(id);
   }, []);
-  
+
   const getLastRef = React.useCallback(() => {
     return Array.from(refs.current)[refs.current.size - 1]?.[1];
   }, []);
@@ -106,85 +112,89 @@ const useSheetRefs = () => {
     setRef,
     getRef,
   };
-}
+};
 
 type SheetsProviderParams = {
   component: React.ComponentType<any>;
   $$action: SheetActions;
   params: Record<string, any>;
-  path: string;  
+  path: string;
 };
 
 export type SheetsProviderRef = {
   replaceStack: (stack: SheetStackParams) => void;
   addStack: (stack: SheetStackParams) => void;
-}
+};
 
-export const SheetsProvider = React.memo(React.forwardRef<SheetsProviderRef, any>((props, ref) => {
-  const nav = useNavigation();
-  const sheetsRegistry = useSheetRefs();
-  const [stack, dispatch] = React.useReducer(SheetReducer, []);
+export const SheetsProvider = React.memo(
+  React.forwardRef<SheetsProviderRef, any>((props, ref) => {
+    const nav = useNavigation();
+    const sheetsRegistry = useSheetRefs();
+    const [stack, dispatch] = React.useReducer(SheetReducer, []);
+    const removeFromStack = React.useCallback(
+      (id: string, noGoBack?: boolean) => {
+        if (noGoBack) {
+          dispatch({ type: 'REMOVE', id });
+          sheetsRegistry.removeRef(id);
+        } else {
+          nav.goBack();
+        }
+      },
+      [stack],
+    );
 
-  const removeFromStack = React.useCallback((id: string, noGoBack?: boolean) => {
-    if (stack.length > 1) {
-      dispatch({ type: 'REMOVE', id });
-      sheetsRegistry.removeRef(id);
-    } else if (!noGoBack) {
-      nav.goBack();
-    }
-  }, [stack.length]);
+    const replaceStack = React.useCallback(async (stack: SheetStackParams) => {
+      const modalId = addStack({ ...stack, initialState: 'closed' });
+      const lastSheet = sheetsRegistry.getLastRef();
 
-  const replaceStack = React.useCallback(async (stack: SheetStackParams) => {
-    const modalId = addStack({ ...stack, initialState: 'closed' });
-    const lastSheet = sheetsRegistry.getLastRef();
-
-    if (lastSheet) {
-      if (!isAndroid) {
-        Keyboard.dismiss();
+      if (lastSheet) {
+        if (!isAndroid) {
+          Keyboard.dismiss();
+        }
+        lastSheet.close(() => {
+          sheetsRegistry.getRef(modalId)?.present();
+        });
       }
-      lastSheet.close(() => {
-        sheetsRegistry.getRef(modalId)?.present();
-      })
-    }
-  }, []);
+    }, []);
 
-  const addStack = (stack: SheetStackParams) => {
-    const id = nanoid();
-    dispatch({ 
-      initialState: stack.initialState,
-      component: stack.component,
-      params: stack.params,
-      path: stack.path,
-      type: 'ADD',
-      id
-    });
+    const addStack = (stack: SheetStackParams) => {
+      const id = nanoid();
+      dispatch({
+        initialState: stack.initialState,
+        component: stack.component,
+        params: stack.params,
+        path: stack.path,
+        type: 'ADD',
+        id,
+      });
 
-    return id;
-  };
+      return id;
+    };
 
-  React.useImperativeHandle(ref, () => ({
-    replaceStack,
-    addStack
-  }));
-  
-  return (
-    <SheetDispatchContext.Provider value={dispatch}>
-      {stack.map((item) => (
-        <SheetInternal
-          ref={sheetsRegistry.setRef(item.id)}
-          removeFromStack={removeFromStack}
-          key={`sheet-${item.id}`}
-          item={item}
-        />
-      ))}
-    </SheetDispatchContext.Provider>
-  );
-}));
+    React.useImperativeHandle(ref, () => ({
+      replaceStack,
+      addStack,
+    }));
+
+    return (
+      <SheetDispatchContext.Provider value={dispatch}>
+        {stack.map((item) => (
+          <SheetInternal
+            ref={sheetsRegistry.setRef(item.id)}
+            removeFromStack={removeFromStack}
+            key={`sheet-${item.id}`}
+            item={item}
+          />
+        ))}
+      </SheetDispatchContext.Provider>
+    );
+  }),
+);
 
 interface SheetInternalProps {
   removeFromStack: (id: string, noGoBack?: boolean) => void;
-  item: SheetStack; 
-};
+  item: SheetStack;
+}
 
 type SheetInternalRef = {
   close: (onClosed?: () => void) => void;
@@ -194,75 +204,77 @@ type SheetInternalRef = {
 type SheetMethods = {
   present: () => void;
   close: () => void;
-}
+};
 
-const SheetInternal = React.forwardRef<
-  SheetInternalRef, 
-  SheetInternalProps
->((props, ref) => {
-  const closedSheetCallback = React.useRef<(() => void) | null>(null);
-  const delegatedMethods = React.useRef<SheetMethods | null>(null);
-  const measurements = useSheetMeasurements();
-  
-  const delegateMethods = (methods: SheetMethods) => {
-    delegatedMethods.current = methods;
-  };
+const SheetInternal = React.forwardRef<SheetInternalRef, SheetInternalProps>(
+  (props, ref) => {
+    const closedSheetCallback = React.useRef<(() => void) | null>(null);
+    const delegatedMethods = React.useRef<SheetMethods | null>(null);
+    const measurements = useSheetMeasurements();
 
-  const removeFromStack = () => {
-    if (closedSheetCallback.current) {
-      closedSheetCallback.current();
-      props.removeFromStack(props.item.id, true);
-    } else {
-      props.removeFromStack(props.item.id);
-    }    
-  };
+    const delegateMethods = (methods: SheetMethods) => {
+      delegatedMethods.current = methods;
+    };
 
-  const close = () => {
-    if (!isAndroid) {
-      Keyboard.dismiss();
-    }
-
-    if (delegatedMethods.current) {
-      delegatedMethods.current.close();
-    } else {
-      removeFromStack();
-    }
-  };
-
-  React.useImperativeHandle(ref, () => ({
-    present: () => {
-      delegatedMethods.current?.present();
-    },  
-    close: (onClosed) => {
-      if (delegatedMethods.current) {
-        if (onClosed) {
-          closedSheetCallback.current = onClosed;
-        }
-
-        delegatedMethods.current.close();
+    const removeFromStack = () => {
+      if (closedSheetCallback.current) {
+        closedSheetCallback.current();
+        props.removeFromStack(props.item.id, true);
+      } else {
+        props.removeFromStack(props.item.id);
       }
-    },
-  }))
+    };
 
-  const value: SheetContextValue = {
-    ...measurements,
-    initialState: props.item.initialState,
-    id: props.item.id,
-    delegateMethods,
-    removeFromStack,
-    close,
-  };
+    const close = () => {
+      if (!isAndroid) {
+        Keyboard.dismiss();
+      }
 
-  const SheetComponent = props.item.component;
-  
-  return (
-    <ModalBehaviorContext.Provider value="sheet">
-      <SheetContext.Provider value={value}>
-        <SheetComponent {...props.item.params} />
-      </SheetContext.Provider>
-    </ModalBehaviorContext.Provider>
-  );
-});
+      if (delegatedMethods.current) {
+        delegatedMethods.current.close();
+      } else {
+        removeFromStack();
+      }
+    };
+
+    React.useImperativeHandle(
+      ref,
+      () => ({
+        present: () => {
+          delegatedMethods.current?.present();
+        },
+        close: (onClosed) => {
+          if (onClosed) {
+            closedSheetCallback.current = onClosed;
+          }
+
+          close();
+        },
+      }),
+      [close],
+    );
+
+    const value: SheetContextValue = {
+      ...measurements,
+      initialState: props.item.initialState,
+      id: props.item.id,
+      delegateMethods,
+      removeFromStack,
+      close,
+      onClose: closedSheetCallback.current,
+    };
+
+    const SheetComponent = props.item.component;
+
+    return (
+      <ModalBehaviorContext.Provider value="sheet">
+        <SheetContext.Provider value={value}>
+          <SheetComponent {...props.item.params} />
+        </SheetContext.Provider>
+      </ModalBehaviorContext.Provider>
+    );
+  },
+);
 
 export const useSheetInternal = () => {
   const sheet = React.useContext(SheetContext);

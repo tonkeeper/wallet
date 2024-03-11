@@ -4,7 +4,7 @@ import { navigation } from '@tonkeeper/router';
 import { memo, useMemo } from 'react';
 import { t } from '../i18n';
 
-import { tk } from '../tonkeeper';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 import { useTonInscription } from '../query/hooks/useTonInscription';
 import { AppStackRouteNames } from '@tonkeeper/mobile/src/navigation';
 

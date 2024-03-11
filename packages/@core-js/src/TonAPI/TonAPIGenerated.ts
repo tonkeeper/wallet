@@ -341,6 +341,11 @@ export interface ActionPhase {
    * @format int32
    * @example 5
    */
+  result_code: number;
+  /**
+   * @format int32
+   * @example 5
+   */
   total_actions: number;
   /**
    * @format int32
@@ -667,8 +672,8 @@ export interface ValidatorsSet {
   utime_until: number;
   total: number;
   main: number;
-  /** @format int64 */
-  total_weight?: number;
+  /** @example "1152921504606846800" */
+  total_weight?: string;
   list: {
     public_key: string;
     /** @format int64 */
@@ -804,8 +809,9 @@ export interface BlockchainRawAccount {
    * @example 123456789
    */
   last_transaction_lt: number;
-  /** @example "active" */
-  status: string;
+  /** @example "088b436a846d92281734236967970612f87fbd64a2cd3573107948379e8e4161" */
+  last_transaction_hash?: string;
+  status: AccountStatus;
   storage: AccountStorageInfo;
 }
 
@@ -823,8 +829,7 @@ export interface Account {
    * @example 123456789
    */
   last_activity: number;
-  /** @example "active" */
-  status: string;
+  status: AccountStatus;
   interfaces?: string[];
   /** @example "Ton foundation" */
   name?: string;
@@ -1357,6 +1362,8 @@ export interface Action {
   JettonSwap?: JettonSwapAction;
   SmartContractExec?: SmartContractAction;
   DomainRenew?: DomainRenewAction;
+  InscriptionTransfer?: InscriptionTransferAction;
+  InscriptionMint?: InscriptionMintAction;
   /** shortly describes what this action is about. */
   simple_preview: ActionSimplePreview;
 }
@@ -1400,6 +1407,42 @@ export interface DomainRenewAction {
   /** @example "0:da6b1b6663a0e4d18cc8574ccd9db5296e367dd9324706f3bbd9eb1cd2caf0bf" */
   contract_address: string;
   renewer: AccountAddress;
+}
+
+export interface InscriptionMintAction {
+  recipient: AccountAddress;
+  /**
+   * amount in minimal particles
+   * @example "123456789"
+   */
+  amount: string;
+  /** @example "ton20" */
+  type: InscriptionMintActionTypeEnum;
+  /** @example "nano" */
+  ticker: string;
+  /** @example 9 */
+  decimals: number;
+}
+
+export interface InscriptionTransferAction {
+  sender: AccountAddress;
+  recipient: AccountAddress;
+  /**
+   * amount in minimal particles
+   * @example "123456789"
+   */
+  amount: string;
+  /**
+   * @example "Hi! This is your salary.
+   * From accounting with love."
+   */
+  comment?: string;
+  /** @example "ton20" */
+  type: InscriptionTransferActionTypeEnum;
+  /** @example "nano" */
+  ticker: string;
+  /** @example 9 */
+  decimals: number;
 }
 
 export interface NftItemTransferAction {
@@ -2292,6 +2335,8 @@ export enum ActionTypeEnum {
   ElectionsRecoverStake = 'ElectionsRecoverStake',
   ElectionsDepositStake = 'ElectionsDepositStake',
   DomainRenew = 'DomainRenew',
+  InscriptionTransfer = 'InscriptionTransfer',
+  InscriptionMint = 'InscriptionMint',
   Unknown = 'Unknown',
 }
 
@@ -2299,6 +2344,18 @@ export enum ActionTypeEnum {
 export enum ActionStatusEnum {
   Ok = 'ok',
   Failed = 'failed',
+}
+
+/** @example "ton20" */
+export enum InscriptionMintActionTypeEnum {
+  Ton20 = 'ton20',
+  Gram20 = 'gram20',
+}
+
+/** @example "ton20" */
+export enum InscriptionTransferActionTypeEnum {
+  Ton20 = 'ton20',
+  Gram20 = 'gram20',
 }
 
 export enum AuctionBidActionAuctionTypeEnum {
@@ -2345,6 +2402,7 @@ export interface GetBlockchainAccountTransactionsParams {
   before_lt?: number;
   /**
    * @format int32
+   * @min 1
    * @max 1000
    * @default 100
    * @example 100
@@ -2359,7 +2417,14 @@ export interface GetBlockchainAccountTransactionsParams {
 
 export interface ExecGetMethodForBlockchainAccountParams {
   /**
-   * Supported values: NaN, Null, 10-base digits for tiny int, 0x-prefixed hex digits for int257, all forms of addresses for slice, single-root base64-encoded BOC for cell
+   * Supported values:
+   * "NaN" for NaN type,
+   * "Null" for Null type,
+   * 10-base digits for tiny int type (Example: 100500),
+   * 0x-prefixed hex digits for int257 (Example: 0xfa01d78381ae32),
+   * all forms of addresses for slice type (Example: 0:6e731f2e28b73539a7f85ac47ca104d5840b229351189977bb6151d36b5e3f5e),
+   * single-root base64-encoded BOC for cell (Example: "te6ccgEBAQEAAgAAAA=="),
+   * single-root hex-encoded BOC for slice (Example: b5ee9c72010101010002000000)
    * @example ["0:9a33970f617bcd71acf2cd28357c067aa31859c02820d8f01d74c88063a8f4d8"]
    */
   args?: string[];
@@ -2404,6 +2469,7 @@ export interface GetAccountJettonsHistoryParams {
    */
   before_lt?: number;
   /**
+   * @min 1
    * @max 1000
    * @example 100
    */
@@ -2433,6 +2499,7 @@ export interface GetAccountJettonHistoryByIdParams {
    */
   before_lt?: number;
   /**
+   * @min 1
    * @max 1000
    * @example 100
    */
@@ -2466,11 +2533,15 @@ export interface GetAccountNftItemsParams {
    */
   collection?: string;
   /**
+   * @min 1
    * @max 1000
    * @default 1000
    */
   limit?: number;
-  /** @default 0 */
+  /**
+   * @min 0
+   * @default 0
+   */
   offset?: number;
   /**
    * Selling nft items in ton implemented usually via transfer items to special selling account. This option enables including items which owned not directly.
@@ -2492,6 +2563,7 @@ export interface GetAccountNftHistoryParams {
    */
   before_lt?: number;
   /**
+   * @min 1
    * @max 1000
    * @example 100
    */
@@ -2531,6 +2603,7 @@ export interface GetAccountEventsParams {
    */
   before_lt?: number;
   /**
+   * @min 1
    * @max 1000
    * @example 100
    */
@@ -2572,6 +2645,7 @@ export interface GetAccountEventParams {
 
 export interface GetAccountTracesParams {
   /**
+   * @min 1
    * @max 1000
    * @default 100
    * @example 100
@@ -2635,6 +2709,7 @@ export interface GetAllAuctionsParams {
 export interface GetNftCollectionsParams {
   /**
    * @format int32
+   * @min 1
    * @max 1000
    * @default 100
    * @example 15
@@ -2642,6 +2717,7 @@ export interface GetNftCollectionsParams {
   limit?: number;
   /**
    * @format int32
+   * @min 0
    * @default 0
    * @example 10
    */
@@ -2650,11 +2726,15 @@ export interface GetNftCollectionsParams {
 
 export interface GetItemsFromCollectionParams {
   /**
+   * @min 1
    * @max 1000
    * @default 1000
    */
   limit?: number;
-  /** @default 0 */
+  /**
+   * @min 0
+   * @default 0
+   */
   offset?: number;
   /**
    * account ID
@@ -2671,6 +2751,7 @@ export interface GetNftHistoryByIdParams {
    */
   before_lt?: number;
   /**
+   * @min 1
    * @max 1000
    * @example 100
    */
@@ -2694,17 +2775,65 @@ export interface GetNftHistoryByIdParams {
 
 export interface GetAccountInscriptionsParams {
   /**
+   * @min 1
    * @max 1000
    * @default 1000
    */
   limit?: number;
-  /** @default 0 */
+  /**
+   * @min 0
+   * @default 0
+   */
   offset?: number;
   /**
    * account ID
    * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
    */
   accountId: string;
+}
+
+export interface GetAccountInscriptionsHistoryParams {
+  /**
+   * omit this parameter to get last events
+   * @format int64
+   * @example 25758317000002
+   */
+  before_lt?: number;
+  /**
+   * @min 1
+   * @max 1000
+   * @default 100
+   * @example 100
+   */
+  limit?: number;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  accountId: string;
+}
+
+export interface GetAccountInscriptionsHistoryByTickerParams {
+  /**
+   * omit this parameter to get last events
+   * @format int64
+   * @example 25758317000002
+   */
+  before_lt?: number;
+  /**
+   * @min 1
+   * @max 1000
+   * @default 100
+   * @example 100
+   */
+  limit?: number;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  accountId: string;
+  /** @example "nano" */
+  ticker: string;
 }
 
 export interface GetInscriptionOpTemplateParams {
@@ -2747,6 +2876,7 @@ export enum GetInscriptionOpTemplateParams1OperationEnum {
 export interface GetJettonsParams {
   /**
    * @format int32
+   * @min 1
    * @max 1000
    * @default 100
    * @example 15
@@ -2754,6 +2884,7 @@ export interface GetJettonsParams {
   limit?: number;
   /**
    * @format int32
+   * @min 0
    * @default 0
    * @example 10
    */
@@ -2762,11 +2893,15 @@ export interface GetJettonsParams {
 
 export interface GetJettonHoldersParams {
   /**
+   * @min 1
    * @max 1000
    * @default 1000
    */
   limit?: number;
-  /** @default 0 */
+  /**
+   * @min 0
+   * @default 0
+   */
   offset?: number;
   /**
    * account ID
@@ -2816,6 +2951,13 @@ export interface GetChartRatesParams {
    * @example 1668436763
    */
   end_date?: number;
+  /**
+   * @format int
+   * @min 0
+   * @max 200
+   * @default 200
+   */
+  points_count?: number;
 }
 
 export interface GetRawMasterchainInfoExtParams {
@@ -4133,25 +4275,6 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         format: 'json',
         ...params,
       }),
-
-    /**
-     * @description Get all inscriptions by owner address
-     *
-     * @tags Inscriptions
-     * @name GetAccountInscriptions
-     * @request GET:/v2/accounts/{account_id}/inscriptions
-     */
-    getAccountInscriptions: (
-      { accountId, ...query }: GetAccountInscriptionsParams,
-      params: RequestParams = {},
-    ) =>
-      this.http.request<InscriptionBalances, Error>({
-        path: `/v2/accounts/${accountId}/inscriptions`,
-        method: 'GET',
-        query: query,
-        format: 'json',
-        ...params,
-      }),
   };
   dns = {
     /**
@@ -4342,7 +4465,45 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description return comment for making operation with instrospection. please don't use it if you don't know what you are doing
+     * @description Get the transfer inscriptions history for account. It's experimental API and can be dropped in the future.
+     *
+     * @tags Inscriptions
+     * @name GetAccountInscriptionsHistory
+     * @request GET:/v2/experimental/accounts/{account_id}/inscriptions/history
+     */
+    getAccountInscriptionsHistory: (
+      { accountId, ...query }: GetAccountInscriptionsHistoryParams,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<AccountEvents, Error>({
+        path: `/v2/experimental/accounts/${accountId}/inscriptions/history`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get the transfer inscriptions history for account. It's experimental API and can be dropped in the future.
+     *
+     * @tags Inscriptions
+     * @name GetAccountInscriptionsHistoryByTicker
+     * @request GET:/v2/experimental/accounts/{account_id}/inscriptions/{ticker}/history
+     */
+    getAccountInscriptionsHistoryByTicker: (
+      { accountId, ticker, ...query }: GetAccountInscriptionsHistoryByTickerParams,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<AccountEvents, Error>({
+        path: `/v2/experimental/accounts/${accountId}/inscriptions/${ticker}/history`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description return comment for making operation with inscription. please don't use it if you don't know what you are doing
      *
      * @tags Inscriptions
      * @name GetInscriptionOpTemplate

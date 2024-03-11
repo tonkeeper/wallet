@@ -1,5 +1,4 @@
 import { SendAmount } from '$core/Send/Send.interface';
-import { mainSelector } from '$store/main';
 import { walletWalletSelector } from '$store/wallet';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TextInput } from 'react-native-gesture-handler';
@@ -23,6 +22,7 @@ import { SwapButton } from '../SwapButton';
 import { formatter } from '$utils/formatter';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
 import { t } from '@tonkeeper/shared/i18n';
+import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
 
 export type AmountInputRef = TextInput & { value: string };
 
@@ -59,10 +59,10 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const textInputRef = useRef<TextInput | null>(null);
 
-  const { fiatCurrency } = useSelector(mainSelector);
-  const wallet = useSelector(walletWalletSelector);
+  const fiatCurrency = useWalletCurrency();
+  const wallet = useWallet();
 
-  const isLockup = !!wallet?.ton.isLockup();
+  const isLockup = !!wallet?.isLockup;
 
   const { remainingBalance, balanceInputValue, isInsufficientBalance, isLessThanMin } =
     useMemo(() => {

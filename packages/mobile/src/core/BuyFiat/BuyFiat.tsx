@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import Webview from 'react-native-webview';
 import { v4 as uuidv4 } from 'uuid';
 import { sha512 } from 'js-sha512';
@@ -7,16 +6,16 @@ import { sha512 } from 'js-sha512';
 import { BuyFiatProps } from '$core/BuyFiat/BuyFiat.interface';
 import { Icon, Loader, NavBar } from '$uikit';
 import * as S from './BuyFiat.style';
-import { mainSelector } from '$store/main';
-import { walletAddressSelector } from '$store/wallet';
 import { useExchangeMethodInfo } from '$hooks/useExchangeMethodInfo';
 
-import { getServerConfig } from '$shared/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDeeplinking } from '$libs/deeplinking';
+import { debugLog } from '$utils/debugLog';
 import { goBack } from '$navigation/imperative';
 import { trackEvent } from '$utils/stats';
-import { debugLog } from '$utils/debugLog';
+import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
+import { config } from '$config';
+import { tk } from '$wallet';
 
 export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
   const currency = route.params.currency;
@@ -28,8 +27,8 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
   const [isLoading, setLoading] = useState(true);
 
   const method = useExchangeMethodInfo(methodId);
-  const { fiatCurrency } = useSelector(mainSelector);
-  const address = useSelector(walletAddressSelector);
+  const fiatCurrency = useWalletCurrency();
+  const wallet = useWallet();
 
   const deeplinking = useDeeplinking();
 
@@ -42,9 +41,10 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
   }, []);
 
   const webviewUrl = useMemo(() => {
-    const addr = address[currency];
-
-    let result = method.action_button.url.replace(/\{ADDRESS\}/g, addr);
+    let result = method.action_button.url.replace(
+      /\{ADDRESS\}/g,
+      wallet.address.ton.friendly,
+    );
 
     if (method.id === 'mercuryo_sell') {
       result = result
@@ -60,7 +60,12 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
       const txId = 'mercuryo_' + uuidv4();
       result = result.replace(/\{TX_ID\}/g, txId);
       result = result.replace(/\=TON\&/gi, '=TONCOIN&');
-      result += `&signature=${sha512(`${addr}${getServerConfig('mercuryoSecret')}`)}`;
+      result += `&signature=${sha512(
+        `${wallet.address.ton.friendly}${config.get(
+          'mercuryoSecret',
+          tk.wallet.isTestnet,
+        )}`,
+      )}`;
     }
 
     return result;

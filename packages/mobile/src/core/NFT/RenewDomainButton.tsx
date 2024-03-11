@@ -12,9 +12,10 @@ import { Ton } from '$libs/Ton';
 import TonWeb from 'tonweb';
 
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
-import { useWallet } from '$hooks/useWallet';
 import { Base64 } from '$utils';
 import { Address } from '@tonkeeper/core';
+import { useWallet } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
 
 export type RenewDomainButtonRef = {
   renewUpdated: () => void;
@@ -40,7 +41,7 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
     }));
 
     const openRenew = useCallback(async () => {
-      if (!wallet || !wallet.address?.rawAddress) {
+      if (!wallet) {
         return;
       }
 
@@ -54,7 +55,7 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
 
       openSignRawModal(
         {
-          source: wallet.address.rawAddress,
+          source: tk.wallet.address.ton.raw,
           valid_until,
           messages: [
             {
@@ -75,14 +76,14 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
           onSend();
         },
       );
-    }, [wallet, ownerAddress]);
+    }, [wallet, domainAddress, onSend]);
 
     const handlePressButton = useCallback(() => {
-      if (!wallet || !wallet.address?.rawAddress) {
+      if (!wallet) {
         return;
       }
 
-      if (!Address.compare(wallet.address.rawAddress, ownerAddress)) {
+      if (!Address.compare(tk.wallet.address.ton.raw, ownerAddress)) {
         return openAddressMismatchModal(openRenew, ownerAddress!);
       } else {
         openRenew();

@@ -4,7 +4,7 @@ import { ViewStyle } from 'react-native';
 import { TextProps } from '../Text/Text';
 
 export interface NavBarProps {
-  children: ReactNode;
+  children?: ReactNode;
   subtitle?: ReactNode;
   isModal?: boolean;
   title?: string | React.ReactNode;
@@ -16,6 +16,7 @@ export interface NavBarProps {
   isClosedButton?: boolean;
   isBottomButton?: boolean;
   onBackPress?: () => void;
+  onClosePress?: () => void;
   onGoBack?: () => void;
   isTransparent?: boolean;
   isForceBackIcon?: boolean;

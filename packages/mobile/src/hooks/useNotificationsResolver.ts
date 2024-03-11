@@ -1,33 +1,43 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import messaging from '@react-native-firebase/messaging';
 import { useNavigation } from '@tonkeeper/router';
 import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { useDeeplinking } from '$libs/deeplinking';
-import { getToken } from '$utils/messaging';
-import { openDAppBrowser } from '$navigation';
+import { openDAppBrowser, resetToWalletTab } from '$navigation';
 import { getDomainFromURL } from '$utils';
 import { Alert } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
 import { useNotificationsStore } from '$store';
+import { tk } from '$wallet';
 
 export const useNotificationsResolver = () => {
   const { isMainStackInited } = useSelector(mainSelector);
   const nav = useNavigation();
   const deeplinking = useDeeplinking();
 
-  function handleNotification(remoteMessage) {
+  async function handleNotification(remoteMessage) {
     try {
       console.log(
         'Notification caused app to open from background state:',
         remoteMessage,
       );
 
-      useNotificationsStore.getState().actions.removeRedDot();
-
+      const account = remoteMessage.data?.account;
       const deeplink = remoteMessage.data?.deeplink;
       const link = remoteMessage.data?.link;
       const dapp_url = remoteMessage.data?.dapp_url;
+
+      if (account) {
+        const wallet = tk.getWalletByAddress(account);
+
+        if (wallet && tk.wallet.identifier !== wallet.identifier) {
+          resetToWalletTab();
+          tk.switchWallet(wallet.identifier);
+        }
+
+        useNotificationsStore.getState().actions.removeRedDot(tk.wallet.address.ton.raw);
+      }
 
       if (deeplink) {
         deeplinking.resolve(deeplink);
@@ -58,10 +68,6 @@ export const useNotificationsResolver = () => {
       }
     } catch (e) {}
   }
-
-  useEffect(() => {
-    getToken();
-  }, []);
 
   React.useEffect(() => {
     if (!isMainStackInited) {

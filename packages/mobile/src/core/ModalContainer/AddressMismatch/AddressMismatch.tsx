@@ -1,75 +1,61 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { Modal } from '@tonkeeper/uikit';
 
 import { Button, Icon, Text } from '$uikit';
 import * as S from './AddressMismatch.style';
-import { useWallet } from '$hooks/useWallet';
 import { useNavigation, SheetActions } from '@tonkeeper/router';
 import { delay } from '$utils';
-import { walletActions } from '$store/wallet';
-import { useDispatch } from 'react-redux';
-import { SelectableVersion } from '$shared/constants';
 import { push } from '$navigation/imperative';
 import { Address } from '@tonkeeper/shared/Address';
+import { useWallets } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
 
 export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () => void }>(
   (props) => {
-    const [allVersions, setAllVersions] = useState<null | { [key: string]: string }>(
-      null,
-    );
-    const wallet = useWallet();
     const nav = useNavigation();
-    const dispatch = useDispatch();
+    const wallets = useWallets();
 
-    useEffect(() => {
-      wallet.ton.getAllAddresses().then((allAddresses) => setAllVersions(allAddresses));
-    }, [wallet.ton]);
-
-    const foundVersion = useMemo(() => {
-      if (!allVersions) {
-        return false;
-      }
-      let found = Object.entries(allVersions).find(([_, address]) =>
-        Address.compare(address, props.source),
-      );
-      if (!found) {
-        return false;
-      }
-      return found[0];
-    }, [allVersions, props.source]);
+    const foundWallet = useMemo(() => {
+      return wallets.find((wallet) => {
+        return Address.compare(wallet.address.ton.raw, props.source);
+      });
+    }, [props.source, wallets]);
 
     const handleCloseModal = useCallback(() => nav.goBack(), [nav]);
-    const handleSwitchVersion = useCallback(async () => {
-      if (!foundVersion) {
+    const handleSwitchWallet = useCallback(async () => {
+      if (!foundWallet) {
         return;
       }
       nav.goBack();
-      dispatch(walletActions.switchVersion(foundVersion as SelectableVersion));
+      tk.switchWallet(foundWallet.identifier);
       await delay(100);
       props.onSwitchAddress();
-    }, [dispatch, foundVersion, nav, props]);
-
-    // Wait to get all versions
-    if (!allVersions) {
-      return null;
-    }
+    }, [foundWallet, nav, props]);
 
     return (
       <Modal>
         <Modal.Header />
         <Modal.Content>
           <S.Wrap>
-            <Icon style={{ marginBottom: 12 }} name={'ic-exclamationmark-circle-84'} />
+            <Icon
+              style={{ marginBottom: 12 }}
+              name={'ic-exclamationmark-circle-84'}
+              color="iconSecondary"
+            />
             <Text textAlign="center" variant="h2" style={{ marginBottom: 4 }}>
-              {foundVersion
-                ? t('txActions.signRaw.addressMismatch.wrongVersion.title')
+              {foundWallet
+                ? t('txActions.signRaw.addressMismatch.switchWallet.title', {
+                    value: `${
+                      foundWallet.config.emoji
+                    } ${foundWallet.config.name.replaceAll(' ', ' ')}`,
+                  })
                 : t('txActions.signRaw.addressMismatch.wrongWallet.title')}
             </Text>
             <Text variant="body1" color="foregroundSecondary" textAlign="center">
-              {foundVersion
-                ? t('txActions.signRaw.addressMismatch.wrongVersion.description', {
-                    version: foundVersion,
+              {foundWallet
+                ? t('txActions.signRaw.addressMismatch.switchWallet.description', {
+                    version: foundWallet,
                   })
                 : t('txActions.signRaw.addressMismatch.wrongWallet.description', {
                     address: Address.parse(props.source).toShort(),
@@ -79,18 +65,18 @@ export const AddressMismatchModal = memo<{ source: string; onSwitchAddress: () =
         </Modal.Content>
         <Modal.Footer>
           <S.FooterWrap>
-            {foundVersion ? (
+            {foundWallet ? (
               <Button
                 style={{ marginBottom: 16 }}
                 mode="primary"
-                onPress={handleSwitchVersion}
+                onPress={handleSwitchWallet}
               >
-                {t('txActions.signRaw.addressMismatch.wrongVersion.switch')}
+                {t('txActions.signRaw.addressMismatch.switchWallet.switch')}
               </Button>
             ) : null}
             <Button mode="secondary" onPress={handleCloseModal}>
-              {foundVersion
-                ? t('txActions.signRaw.addressMismatch.wrongVersion.close')
+              {foundWallet
+                ? t('txActions.signRaw.addressMismatch.switchWallet.close')
                 : t('txActions.signRaw.addressMismatch.wrongWallet.close')}
             </Button>
           </S.FooterWrap>

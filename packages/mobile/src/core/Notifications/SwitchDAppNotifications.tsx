@@ -5,12 +5,11 @@ import { IConnectedApp, useConnectedAppsStore } from '$store';
 import { Steezy } from '$styles';
 import { getChainName } from '$shared/dynamicConfig';
 import { useObtainProofToken } from '$hooks/useObtainProofToken';
-import { useSelector } from 'react-redux';
-import { walletAddressSelector } from '$store/wallet';
 import { useIsFocused } from '@react-navigation/native';
+import { useWallet } from '@tonkeeper/shared/hooks';
 
 const SwitchDAppNotificationsComponent: React.FC<{ app: IConnectedApp }> = ({ app }) => {
-  const address = useSelector(walletAddressSelector);
+  const wallet = useWallet();
   const [switchValue, setSwitchValue] = React.useState(!!app.notificationsEnabled);
   const [isFrozen, setIsFrozen] = React.useState(false);
   const isFocused = useIsFocused();
@@ -37,9 +36,14 @@ const SwitchDAppNotificationsComponent: React.FC<{ app: IConnectedApp }> = ({ ap
           return setSwitchValue(!value);
         }
         if (value) {
-          await enableNotifications(getChainName(), address.ton, url, session_id);
+          await enableNotifications(
+            getChainName(),
+            wallet.address.ton.friendly,
+            url,
+            session_id,
+          );
         } else {
-          await disableNotifications(getChainName(), address.ton, url);
+          await disableNotifications(getChainName(), wallet.address.ton.friendly, url);
         }
         setIsFrozen(false);
       } catch (error) {
@@ -47,13 +51,7 @@ const SwitchDAppNotificationsComponent: React.FC<{ app: IConnectedApp }> = ({ ap
         setSwitchValue(!value);
       }
     },
-    [
-      setIsFrozen,
-      obtainProofToken,
-      disableNotifications,
-      address.ton,
-      enableNotifications,
-    ],
+    [obtainProofToken, enableNotifications, wallet, disableNotifications],
   );
 
   return (

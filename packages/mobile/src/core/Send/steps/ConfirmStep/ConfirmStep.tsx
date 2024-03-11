@@ -2,7 +2,6 @@ import { useCopyText } from '$hooks/useCopyText';
 import { useFiatValue } from '$hooks/useFiatValue';
 import { BottomButtonWrapHelper, StepScrollView } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
-import { getTokenConfig } from '$shared/dynamicConfig';
 import { Highlight, Icon, Separator, Spacer, StakedTonIcon, Text } from '$uikit';
 import { parseLocaleNumber } from '$utils';
 import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
@@ -17,8 +16,6 @@ import {
   useActionFooter,
 } from '$core/ModalContainer/NFTOperations/NFTOperationFooter';
 import { Alert } from 'react-native';
-import { walletBalancesSelector, walletWalletSelector } from '$store/wallet';
-import { useSelector } from 'react-redux';
 import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { t } from '@tonkeeper/shared/i18n';
 import { openInactiveInfo } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
@@ -26,6 +23,8 @@ import { Address } from '@tonkeeper/core';
 import { useBatteryState } from '@tonkeeper/shared/query/hooks/useBatteryState';
 import { BatteryState } from '@tonkeeper/shared/utils/battery';
 import { TokenType } from '$core/Send/Send.interface';
+import { useBalancesState, useWallet } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -53,8 +52,8 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
 
   const copyText = useCopyText();
 
-  const balances = useSelector(walletBalancesSelector);
-  const wallet = useSelector(walletWalletSelector);
+  const balances = useBalancesState();
+  const wallet = useWallet();
   const batteryState = useBatteryState();
 
   const { Logo, liquidJettonPool } = useCurrencyToSend(currency, tokenType);
@@ -103,9 +102,9 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
       if (
         currency === CryptoCurrencies.Ton &&
         wallet &&
-        wallet.ton.isLockup() &&
+        wallet.isLockup &&
         !amount.all &&
-        new BigNumber(balances[currency]).isLessThan(amountWithFee)
+        new BigNumber(balances.ton).isLessThan(amountWithFee)
       ) {
         await showLockupAlert();
       }
@@ -133,18 +132,7 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     sendTx,
   ]);
 
-  const feeCurrency = useMemo(() => {
-    const tokenConfig = getTokenConfig(currency as CryptoCurrency);
-    if (currency === 'usdt') {
-      return 'USDT';
-    } else if (tokenConfig && tokenConfig.blockchain === 'ethereum') {
-      return CryptoCurrencies.Eth;
-    } else if ([TokenType.Jetton, TokenType.Inscription].includes(tokenType)) {
-      return CryptoCurrencies.Ton;
-    } else {
-      return currency;
-    }
-  }, [currency, tokenType]);
+  const feeCurrency = CryptoCurrencies.Ton;
 
   const calculatedValue = useMemo(() => {
     if (amount.all && tokenType === TokenType.TON) {
@@ -233,15 +221,30 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
           </S.Center>
           <Spacer y={32} />
           <S.Table>
+            {tk.wallets.size > 1 && (
+              <>
+                <S.Item>
+                  <S.ItemLabel>{t('send_screen_steps.comfirm.wallet')}</S.ItemLabel>
+                  <S.ItemContent>
+                    <S.ItemValue numberOfLines={1}>
+                      {tk.wallet.config.emoji} {tk.wallet.config.name}
+                    </S.ItemValue>
+                  </S.ItemContent>
+                </S.Item>
+                <Separator />
+              </>
+            )}
             {recipientName ? (
-              <S.Item>
-                <S.ItemLabel>{t('confirm_sending_recipient')}</S.ItemLabel>
-                <S.ItemContent>
-                  <S.ItemValue numberOfLines={1}>{recipientName}</S.ItemValue>
-                </S.ItemContent>
-              </S.Item>
+              <>
+                <S.Item>
+                  <S.ItemLabel>{t('confirm_sending_recipient')}</S.ItemLabel>
+                  <S.ItemContent>
+                    <S.ItemValue numberOfLines={1}>{recipientName}</S.ItemValue>
+                  </S.ItemContent>
+                </S.Item>
+                <Separator />
+              </>
             ) : null}
-            <Separator />
             <Highlight onPress={handleCopy(recipient.address, t('address_copied'))}>
               <S.Item>
                 <S.ItemLabel>

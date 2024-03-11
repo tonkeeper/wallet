@@ -9,7 +9,6 @@ import * as S from '../../../core/ModalContainer/NFTOperations/NFTOperations.sty
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { formatter } from '$utils/formatter';
 import { useFiatValue } from '$hooks/useFiatValue';
-import { useWallet } from '$hooks/useWallet';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { copyText } from '$hooks/useCopyText';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
@@ -19,15 +18,15 @@ import { debugLog } from '$utils/debugLog';
 import { Toast } from '$store/zustand/toast';
 import { Ton } from '$libs/Ton';
 import TonWeb from 'tonweb';
-import { Tonapi } from '$libs/Tonapi';
-import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   checkIsInsufficient,
   openInsufficientFundsModal,
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import BigNumber from 'bignumber.js';
-import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '$wallet';
 import { Address } from '@tonkeeper/core';
+import { walletWalletSelector } from '$store/wallet';
 
 enum States {
   INITIAL,
@@ -43,8 +42,7 @@ export const СonfirmRenewAllDomains = memo((props) => {
   const remove = useExpiringDomains((state) => state.actions.remove);
   const unlock = useUnlockVault();
   const [current, setCurrent] = useState(0);
-  const wallet = useWallet();
-  const dispatch = useDispatch();
+  const wallet = useSelector(walletWalletSelector)!;
 
   const [count] = useState(domains.length);
   const [amount] = useState(0.02 * count);
@@ -60,7 +58,7 @@ export const СonfirmRenewAllDomains = memo((props) => {
     const totalAmount = new BigNumber(amount)
       .multipliedBy(new BigNumber(domains.length))
       .toString();
-    const checkResult = await checkIsInsufficient(totalAmount);
+    const checkResult = await checkIsInsufficient(totalAmount, tk.wallet);
     if (checkResult.insufficient) {
       return openInsufficientFundsModal({ totalAmount, balance: checkResult.balance });
     }
@@ -111,7 +109,10 @@ export const СonfirmRenewAllDomains = memo((props) => {
 
         const queryMsg = await tx.getQuery();
         const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
-        await tonapi.blockchain.sendBlockchainMessage({ boc }, { format: 'text' });
+        await tk.wallet.tonapi.blockchain.sendBlockchainMessage(
+          { boc },
+          { format: 'text' },
+        );
         tk.wallet.activityList.reload();
 
         await delay(15000);

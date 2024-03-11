@@ -1,6 +1,5 @@
 import { DefaultSectionT, SectionListData, StyleSheet, View } from 'react-native';
 import { formatTransactionsGroupDate } from '../../utils/date';
-import { ActivitySection } from '@tonkeeper/core';
 import { renderActionItem } from './ActionListItemByType';
 import { memo, useMemo } from 'react';
 import {
@@ -13,6 +12,7 @@ import {
   Button,
   copyText,
 } from '@tonkeeper/uikit';
+import { ActivitySection } from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 
 type ListComponentType = React.ComponentType<any> | React.ReactElement | null | undefined;
 
@@ -108,7 +108,7 @@ export const ActivityList = memo<ActivityListProps>((props) => {
       onEndReachedThreshold={0.02}
       updateCellsBatchingPeriod={60}
       maxToRenderPerBatch={10}
-      initialNumToRender={20}
+      initialNumToRender={1}
       stickySectionHeadersEnabled={false}
       windowSize={16}
       sections={sections}

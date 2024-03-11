@@ -1,10 +1,13 @@
 import { AddressListItem } from '../components/AddressListItem';
 import { ExtraListItem } from '../components/ExtraListItem';
 import { List, TonIcon, copyText } from '@tonkeeper/uikit';
-import { ActionItem, ActionType } from '@tonkeeper/core';
 import { ActionModalContent } from '../ActionModalContent';
 import { t } from '../../../i18n';
 import { EncryptedComment, EncryptedCommentLayout } from '../../../components';
+import {
+  ActionItem,
+  ActionType,
+} from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 
 interface TonTransferActionContentProps {
   action: ActionItem<ActionType.TonTransfer>;

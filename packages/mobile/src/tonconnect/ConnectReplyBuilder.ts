@@ -107,6 +107,7 @@ export class ConnectReplyBuilder {
     privateKey: Uint8Array,
     publicKey: Uint8Array,
     walletStateInit: string,
+    isTestnet: boolean,
   ): ConnectItemReply[] {
     const address = new TonWeb.utils.Address(addr).toString(false, true, true);
 
@@ -116,7 +117,7 @@ export class ConnectReplyBuilder {
           return {
             name: 'ton_addr',
             address,
-            network: ConnectReplyBuilder.getNetwork(),
+            network: isTestnet ? CHAIN.TESTNET : CHAIN.MAINNET,
             publicKey: Buffer.from(publicKey).toString('hex'),
             walletStateInit,
           };
@@ -146,7 +147,7 @@ export class ConnectReplyBuilder {
       {
         name: 'ton_addr',
         address,
-        network: ConnectReplyBuilder.getNetwork(),
+        network: getChainName() === 'mainnet' ? CHAIN.MAINNET : CHAIN.TESTNET,
         publicKey: Buffer.from(publicKey).toString('hex'),
         walletStateInit,
       },

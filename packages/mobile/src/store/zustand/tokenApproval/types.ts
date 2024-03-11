@@ -6,6 +6,7 @@ export enum TokenApprovalStatus {
 export enum TokenApprovalType {
   Collection = 'collection',
   Token = 'token',
+  Inscription = 'inscription',
 }
 
 export interface ApprovalStatus {

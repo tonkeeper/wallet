@@ -1,4 +1,4 @@
-import { createExternalRef } from "../../utils/createExternalRef";
+import { createExternalRef } from '../../utils/createExternalRef';
 
 export enum ToastSize {
   Small = 'small',
@@ -18,6 +18,7 @@ export type ToastData = ToastOptions & {
 
 type ToastActions = {
   success(message: string, options?: ToastOptions): void;
+  warning(message: string, options?: ToastOptions): void;
   fail(message: string, options?: ToastOptions): void;
   show(message: string, options?: ToastOptions): void;
   loading(): void;

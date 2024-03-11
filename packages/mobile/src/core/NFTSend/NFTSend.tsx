@@ -17,7 +17,6 @@ import { t } from '@tonkeeper/shared/i18n';
 import { AddressStep } from '$core/Send/steps/AddressStep/AddressStep';
 import { NFTSendSteps } from '$core/NFTSend/types';
 import { ConfirmStep } from '$core/NFTSend/steps/ConfirmStep/ConfirmStep';
-import { useNFT } from '$hooks/useNFT';
 import {
   BASE_FORWARD_AMOUNT,
   ContractService,
@@ -26,7 +25,6 @@ import {
   ONE_TON,
   TransactionService,
 } from '@tonkeeper/core';
-import { tk, tonapi } from '@tonkeeper/shared/tonkeeper';
 import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import { Buffer } from 'buffer';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
@@ -36,7 +34,6 @@ import { Ton } from '$libs/Ton';
 import { delay } from '$utils';
 import { Toast } from '$store';
 import axios from 'axios';
-import { useWallet } from '$hooks/useWallet';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import {
   emulateWithBattery,
@@ -51,7 +48,9 @@ import { Keyboard } from 'react-native';
 import nacl from 'tweetnacl';
 import { useInstance } from '$hooks/useInstance';
 import { AccountsApi, Configuration } from '@tonkeeper/core/src/legacy';
-import { getServerConfig } from '$shared/constants';
+import { useWallet } from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
+import { config } from '$config';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.NFTSend>;
@@ -82,7 +81,10 @@ export const NFTSend: FC<Props> = (props) => {
     ),
   );
 
-  const nft = useNFT({ currency: 'ton', address: nftAddress });
+  const nft = useMemo(
+    () => wallet.nfts.getCachedByAddress(nftAddress),
+    [nftAddress, wallet],
+  );
   const scrollTop = useDerivedValue<number>(
     () => stepsScrollTop.value[currentStep.id] || 0,
   );
@@ -124,7 +126,7 @@ export const NFTSend: FC<Props> = (props) => {
           tempKeyPair.publicKey,
           tempKeyPair.publicKey,
           tempKeyPair.secretKey,
-          tk.wallet.address.ton.raw,
+          wallet.address.ton.raw,
         );
       }
 
@@ -133,9 +135,8 @@ export const NFTSend: FC<Props> = (props) => {
           to: nftAddress,
           value: ONE_TON,
           body: ContractService.createNftTransferBody({
-            queryId: Date.now(),
             newOwnerAddress: recipient!.address,
-            excessesAddress: tk.wallet.address.ton.raw,
+            excessesAddress: wallet.address.ton.raw,
             forwardBody: commentValue,
           }),
           bounce: true,
@@ -143,9 +144,9 @@ export const NFTSend: FC<Props> = (props) => {
       ];
 
       const contract = ContractService.getWalletContract(
-        contractVersionsMap[wallet.ton.version ?? 'v4R2'],
-        Buffer.from(await wallet.ton.getTonPublicKey()),
-        wallet.ton.workchain,
+        contractVersionsMap[wallet.config.version ?? 'v4R2'],
+        Buffer.from(wallet.pubkey, 'hex'),
+        wallet.config.workchain,
       );
 
       const boc = TransactionService.createTransfer(contract, {
@@ -177,13 +178,13 @@ export const NFTSend: FC<Props> = (props) => {
     } finally {
       setPreparing(false);
     }
-  }, [comment, isCommentEncrypted, nftAddress, recipient, wallet.ton]);
+  }, [comment, isCommentEncrypted, nftAddress, recipient, wallet]);
 
   const accountsApi = useInstance(() => {
     const tonApiConfiguration = new Configuration({
-      basePath: getServerConfig('tonapiV2Endpoint'),
+      basePath: config.get('tonapiV2Endpoint', tk.wallet.isTestnet),
       headers: {
-        Authorization: `Bearer ${getServerConfig('tonApiV2Key')}`,
+        Authorization: `Bearer ${config.get('tonApiV2Key', tk.wallet.isTestnet)}`,
       },
     });
 
@@ -243,15 +244,15 @@ export const NFTSend: FC<Props> = (props) => {
       if (isCommentEncrypted && comment.length) {
         const secretKey = await vault.getTonPrivateKey();
         const recipientPubKey = (
-          await tonapi.accounts.getAccountPublicKey(recipient!.address)
+          await tk.wallet.tonapi.accounts.getAccountPublicKey(recipient!.address)
         ).public_key;
 
         commentValue = await encryptMessageComment(
           comment,
-          wallet.vault.tonPublicKey,
+          vault.tonPublicKey,
           Buffer.from(recipientPubKey!, 'hex'),
           secretKey,
-          tk.wallet.address.ton.raw,
+          wallet.address.ton.raw,
         );
       }
 
@@ -259,7 +260,7 @@ export const NFTSend: FC<Props> = (props) => {
         ? BASE_FORWARD_AMOUNT
         : BigInt(Math.abs(consequences?.event.extra!)) + BASE_FORWARD_AMOUNT;
 
-      const checkResult = await checkIsInsufficient(totalAmount.toString());
+      const checkResult = await checkIsInsufficient(totalAmount.toString(), tk.wallet);
       if (!isBattery && checkResult.insufficient) {
         openInsufficientFundsModal({
           totalAmount: totalAmount.toString(),
@@ -270,16 +271,15 @@ export const NFTSend: FC<Props> = (props) => {
         throw new CanceledActionError();
       }
 
-      const excessesAccount = isBattery && (await tk.wallet.battery.getExcessesAccount());
+      const excessesAccount = isBattery && (await wallet.battery.getExcessesAccount());
 
       const nftTransferMessages = [
         internal({
           to: nftAddress,
           value: totalAmount,
           body: ContractService.createNftTransferBody({
-            queryId: Date.now(),
             newOwnerAddress: recipient!.address,
-            excessesAddress: excessesAccount || tk.wallet.address.ton.raw,
+            excessesAddress: excessesAccount || wallet.address.ton.raw,
             forwardBody: commentValue,
           }),
           bounce: true,
@@ -287,8 +287,8 @@ export const NFTSend: FC<Props> = (props) => {
       ];
 
       const contract = ContractService.getWalletContract(
-        contractVersionsMap[wallet.ton.version ?? 'v4R2'],
-        Buffer.from(await wallet.ton.getTonPublicKey()),
+        contractVersionsMap[wallet.config.version ?? 'v4R2'],
+        Buffer.from(wallet.pubkey, 'hex'),
         vault.workchain,
       );
 
@@ -312,12 +312,14 @@ export const NFTSend: FC<Props> = (props) => {
     isCommentEncrypted,
     nftAddress,
     recipient,
-    recipientAccountInfo?.publicKey,
     total.isRefund,
     unlockVault,
-    wallet.ton,
-    wallet.vault.tonPublicKey,
+    wallet,
   ]);
+
+  if (!nft) {
+    return null;
+  }
 
   return (
     <>
@@ -368,7 +370,7 @@ export const NFTSend: FC<Props> = (props) => {
               total={total}
               nftCollection={nft.collection?.name}
               nftName={nft.name}
-              nftIcon={nft.content.image.baseUrl}
+              nftIcon={nft.image.medium!}
               stepsScrollTop={stepsScrollTop}
               isPreparing={isPreparing}
               sendTx={sendTx}

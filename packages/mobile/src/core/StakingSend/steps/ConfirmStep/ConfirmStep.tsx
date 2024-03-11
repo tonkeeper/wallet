@@ -20,6 +20,7 @@ import { stakingFormatter } from '$utils/formatter';
 import { t } from '@tonkeeper/shared/i18n';
 import { PoolInfo } from '@tonkeeper/core/src/TonAPI';
 import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
+import { tk } from '$wallet';
 
 interface Props extends StepComponentProps {
   transactionType: StakingTransactionType;
@@ -113,6 +114,19 @@ const ConfirmStepComponent: FC<Props> = (props) => {
           </S.Center>
           <Spacer y={32} />
           <S.Table>
+            {tk.wallets.size > 1 && (
+              <>
+                <S.Item>
+                  <S.ItemLabel>{t('send_screen_steps.comfirm.wallet')}</S.ItemLabel>
+                  <S.ItemContent>
+                    <S.ItemValue numberOfLines={1}>
+                      {tk.wallet.config.emoji} {tk.wallet.config.name}
+                    </S.ItemValue>
+                  </S.ItemContent>
+                </S.Item>
+                <Separator />
+              </>
+            )}
             <Highlight onPress={handleCopyPoolName}>
               <S.Item>
                 <S.ItemLabel>{t('staking.confirm.recipient.label')}</S.ItemLabel>

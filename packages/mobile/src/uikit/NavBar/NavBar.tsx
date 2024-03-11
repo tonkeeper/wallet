@@ -39,6 +39,7 @@ export const NavBar: FC<NavBarProps> = (props) => {
     forceBigTitle = false,
     isClosedButton = false,
     onBackPress = undefined,
+    onClosePress = undefined,
     onGoBack = undefined,
     isTransparent = false,
     isForceBackIcon = false,
@@ -98,7 +99,7 @@ export const NavBar: FC<NavBarProps> = (props) => {
     if (isClosedButton) {
       return (
         <S.RightContent>
-          <S.BackButtonContainer onPress={handleBack}>
+          <S.BackButtonContainer onPress={onClosePress ?? handleBack}>
             <S.BackButton>
               <Icon name="ic-close-16" color="foregroundPrimary" />
             </S.BackButton>

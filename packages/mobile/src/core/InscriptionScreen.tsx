@@ -16,6 +16,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { openSend } from '$navigation';
 import { TokenType } from '$core/Send/Send.interface';
 import { openReceiveInscriptionModal } from '@tonkeeper/shared/modals/ReceiveInscriptionModal';
+import { useWallet } from '@tonkeeper/shared/hooks';
 
 export const InscriptionScreen = memo(() => {
   const params = useParams<{ ticker: string; type: string }>();
@@ -23,6 +24,8 @@ export const InscriptionScreen = memo(() => {
   if (!params.ticker || !params.type) {
     throw Error('Wrong parameters');
   }
+
+  const wallet = useWallet();
 
   const inscription = useTonInscription({ ticker: params.ticker, type: params.type });
 
@@ -41,16 +44,8 @@ export const InscriptionScreen = memo(() => {
   return (
     <Screen>
       <Screen.Header
-        title={
-          <View>
-            <Text type="h3" textAlign="center" numberOfLines={1}>
-              {inscription.ticker}
-            </Text>
-            <Text type="body2" color="textSecondary" textAlign="center" numberOfLines={1}>
-              {inscription.type.toUpperCase()}
-            </Text>
-          </View>
-        }
+        subtitle={inscription.type.toUpperCase()}
+        title={inscription.ticker}
       />
       <Screen.ScrollView>
         <View style={styles.tokenContainer}>
@@ -69,11 +64,13 @@ export const InscriptionScreen = memo(() => {
         </View>
         <View style={styles.buttons}>
           <IconButtonList>
-            <IconButton
-              onPress={handleSend}
-              iconName="ic-arrow-up-28"
-              title={t('wallet.send_btn')}
-            />
+            {!wallet.isWatchOnly ? (
+              <IconButton
+                onPress={handleSend}
+                iconName="ic-arrow-up-28"
+                title={t('wallet.send_btn')}
+              />
+            ) : null}
             <IconButton
               onPress={handleReceive}
               iconName="ic-arrow-down-28"

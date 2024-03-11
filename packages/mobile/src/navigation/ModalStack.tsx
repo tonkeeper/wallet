@@ -1,19 +1,14 @@
 import React from 'react';
-import { SecurityMigrationStack } from './SecurityMigrationStack/SecurityMigrationStack';
-import { ResetPinStack } from './ResetPinStack/ResetPinStack';
 import { createModalStackNavigator } from '@tonkeeper/router';
 import { NFT } from '$core/NFT/NFT';
 import { SignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
-import { AppStackRouteNames } from './navigationNames';
-import { SetupWalletStack } from './SetupWalletStack/SetupWalletStack';
+import { AppStackRouteNames, ModalStackRouteNames } from './navigationNames';
 import {
   AccessConfirmation,
   BuyFiat,
-  ChangePin,
   DAppBrowser,
   DAppsSearch,
   OldExchange,
-  Migration,
   ScanQR,
   Send,
   StakingSend,
@@ -23,7 +18,6 @@ import { NewConfirmSending } from '$core/ModalContainer/NewConfirmSending/NewCon
 import { RenewAllDomainModal } from '../tabs/Wallet/RenewAllDomainModal';
 import { СonfirmRenewAllDomains } from '../tabs/Wallet/components/СonfirmRenewAllDomains';
 
-import { ExchangeModal } from '$modals/ExchangeModal';
 import { Swap } from '$core/Swap/Swap';
 import { ChooseCountry } from '$core/ChooseCountry/ChooseCountry';
 
@@ -36,6 +30,9 @@ import { EditAppConfigModal } from '$core/DevMenu/DevConfigScreen';
 import { RefillBatteryModal } from '../../../shared/modals/RefillBatteryModal';
 import { NFTSend } from '$core/NFTSend/NFTSend';
 import { ReceiveInscriptionModal } from '@tonkeeper/shared/modals/ReceiveInscriptionModal';
+import { CustomizeWallet } from '$core/CustomizeWallet/CustomizeWallet';
+import { TokenDetails } from '../components/TokenDetails/TokenDetails';
+import { BackupWarningModal, ExchangeModal } from '$modals';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -50,7 +47,9 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NewConfirmSending} path="NewConfirmSending" />
       <Stack.Modal component={SwitchWalletModal} path="/switch-wallet" />
       <Stack.Modal component={AddWalletModal} path="/add-wallet" />
+      <Stack.Modal component={TokenDetails} path={ModalStackRouteNames.TokenDetails} />
       <Stack.Modal component={RefillBatteryModal} path="/refill-battery" />
+      <Stack.Modal component={BackupWarningModal} path="/backup-warning" />
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />
@@ -68,12 +67,12 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NFTSend} path={AppStackRouteNames.NFTSend} />
       <Stack.Modal component={ScanQR} path={AppStackRouteNames.ScanQR} />
       <Stack.Modal component={Swap} path={AppStackRouteNames.Swap} />
+      <Stack.Modal
+        component={CustomizeWallet}
+        path={AppStackRouteNames.CustomizeWallet}
+      />
     </Stack.Group>
     <Stack.Group behavior="fullScreenModal">
-      <Stack.Modal
-        component={SetupWalletStack}
-        path={AppStackRouteNames.SetupWalletStack}
-      />
       <Stack.Modal
         options={{ gestureEnabled: false }}
         component={WebView}
@@ -88,16 +87,9 @@ export const ModalStack = React.memo(() => (
     </Stack.Group>
     <Stack.Group behavior="fullScreenModal" animation="fade">
       <Stack.Modal
-        component={SecurityMigrationStack}
-        path={AppStackRouteNames.SecurityMigration}
-      />
-      <Stack.Modal component={ResetPinStack} path={AppStackRouteNames.ResetPin} />
-      <Stack.Modal component={Migration} path={AppStackRouteNames.Migration} />
-      <Stack.Modal
         component={AccessConfirmation}
         path={AppStackRouteNames.AccessConfirmation}
       />
-      <Stack.Modal component={ChangePin} path={AppStackRouteNames.ChangePin} />
       <Stack.Modal component={DAppsSearch} path={AppStackRouteNames.DAppsSearch} />
     </Stack.Group>
   </Stack.Navigator>

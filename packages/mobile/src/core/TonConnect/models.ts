@@ -6,6 +6,7 @@ export interface TonConnectModalResponse {
   address: string;
   replyItems: ConnectItemReply[];
   notificationsEnabled: boolean;
+  walletIdentifier: string;
 }
 
 export type TonConnectModalProps =
@@ -24,5 +25,5 @@ export type TonConnectModalProps =
         resolve: (response: TonConnectModalResponse) => void;
         reject: () => void;
       };
-      hideImmediately: boolean;
+      isInternalBrowser: boolean;
     };

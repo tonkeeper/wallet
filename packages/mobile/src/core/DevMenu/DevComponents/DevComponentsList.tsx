@@ -2,7 +2,6 @@ import React from 'react';
 import { Screen } from '$uikit';
 import { CellSection, CellSectionItem } from '$shared/components';
 import { AttachScreenButton } from '$navigation/AttachScreen';
-import { openSetupWalletDone } from '$navigation';
 import { useNavigation } from '@tonkeeper/router';
 
 export const DevComponentList: React.FC = () => {
@@ -10,20 +9,12 @@ export const DevComponentList: React.FC = () => {
 
   return (
     <Screen>
-      <Screen.Header 
-        title="UI Kit & other" 
-        rightContent={
-          <AttachScreenButton />
-        }
-      />
-      
+      <Screen.Header title="UI Kit & other" rightContent={<AttachScreenButton />} />
+
       <Screen.ScrollView>
         <CellSection>
           <CellSectionItem onPress={() => nav.navigate('DevSignRawExamples')}>
             Sign Raw Examples
-          </CellSectionItem>
-          <CellSectionItem onPress={() => openSetupWalletDone()}>
-            Open Setup Wallet Done
           </CellSectionItem>
           <CellSectionItem onPress={() => nav.navigate('DevDeeplinking')}>
             Deeplinks
@@ -34,8 +25,12 @@ export const DevComponentList: React.FC = () => {
           <CellSectionItem onPress={() => nav.navigate('DevToast')}>
             Toast
           </CellSectionItem>
-          <CellSectionItem onPress={() => nav.navigate('DevListComponent')}>Lists</CellSectionItem>
-          <CellSectionItem onPress={() => nav.navigate('DevWalletStore')}>Wallet Store</CellSectionItem>
+          <CellSectionItem onPress={() => nav.navigate('DevListComponent')}>
+            Lists
+          </CellSectionItem>
+          <CellSectionItem onPress={() => nav.navigate('DevWalletStore')}>
+            Wallet Store
+          </CellSectionItem>
         </CellSection>
       </Screen.ScrollView>
     </Screen>

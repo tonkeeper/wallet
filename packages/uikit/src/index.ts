@@ -15,6 +15,7 @@ export { Loader } from './components/Loader';
 export { Pressable } from './components/Pressable';
 export { KeyboardSpacer } from './components/KeyboardSpacer';
 export { Input, InputRef } from './components/Input';
+export { Table } from './components/Table';
 export { SearchInput } from './components/SearchInput';
 export { TextInputRef } from './components/TextInput';
 export { StepIndicator } from './components/StepIndicator';
@@ -25,6 +26,8 @@ export { Picture } from './components/Picture';
 export { SegmentedControl } from './components/SegmentedControl';
 export { TransitionOpacity } from './components/TransitionOpacity';
 export * from './components/Flash';
+export * from './components/BlockingLoader';
+export { Switch } from './components/Switch';
 
 // Containers
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';

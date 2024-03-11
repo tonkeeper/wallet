@@ -26,6 +26,7 @@ export interface AccentModel {
   id: AccentKey;
   icon: React.ComponentType<SvgProps>;
   nftIcon?: AccentNFTIcon;
+  nft?: NFTModel<TonDiamondMetadata>;
   colors: {
     accentPrimary: string;
     accentPrimaryLight: string;

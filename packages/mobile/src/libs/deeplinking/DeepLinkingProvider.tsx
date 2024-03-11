@@ -57,14 +57,16 @@ export const DeepLinkingProvider: React.FC<DeepLinkingProviderProps> = (props) =
               middlewares.push(middleware.current);
             }
 
-            applyMiddleware(middlewares, () => {
-              return resolver({
-                prefix,
-                origin: options?.origin || DeeplinkOrigin.DEEPLINK,
-                params: matchedPath.params,
-                query: matchedPath.query,
-                resolveParams: options?.params ?? {},
-              });
+            const resolveOptions = {
+              prefix,
+              origin: options?.origin || DeeplinkOrigin.DEEPLINK,
+              params: matchedPath.params,
+              query: matchedPath.query,
+              resolveParams: options?.params ?? {},
+            };
+
+            applyMiddleware(middlewares, { ...resolveOptions, pathname }, () => {
+              return resolver(resolveOptions);
             });
           };
         }

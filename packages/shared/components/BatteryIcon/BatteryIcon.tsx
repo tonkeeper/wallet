@@ -3,7 +3,7 @@ import { useBatteryBalance } from '../../query/hooks/useBatteryBalance';
 import { Icon, IconNames, TouchableOpacity } from '@tonkeeper/uikit';
 import { BatteryState, getBatteryState } from '../../utils/battery';
 import { openRefillBatteryModal } from '../../modals/RefillBatteryModal';
-import { config } from '../../config';
+import { config } from '@tonkeeper/mobile/src/config';
 
 const iconNames: { [key: string]: IconNames } = {
   [BatteryState.Empty]: 'ic-empty-battery-28',

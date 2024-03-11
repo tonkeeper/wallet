@@ -3,20 +3,28 @@ import { MainStackRouteNames } from '$navigation';
 import { StakingListCell } from '$shared/components';
 import { View } from '$uikit';
 import { List } from '$uikit/List/old/List';
-import React, { FC, memo, useCallback, useEffect } from 'react';
+import React, { FC, memo, useCallback } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { Steezy } from '$styles';
-import { useStakingStore } from '$store';
+import { FlashCountKeys, useFlashCount } from '$store';
 import { StakingWidgetStatus } from './StakingWidgetStatus';
 import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
 import { Flash } from '@tonkeeper/uikit';
+import { useStakingState } from '@tonkeeper/shared/hooks';
 
-const StakingWidgetComponent: FC = () => {
+interface Props {
+  isWatchOnly: boolean;
+  showBuyButton: boolean;
+}
+
+const StakingWidgetComponent: FC<Props> = (props) => {
+  const { isWatchOnly, showBuyButton } = props;
+
   const nav = useNavigation();
 
-  const highestApyPool = useStakingStore((s) => s.highestApyPool);
-  const flashShownCount = useStakingStore((s) => s.mainFlashShownCount);
+  const highestApyPool = useStakingState((s) => s.highestApyPool);
+  const [flashShownCount] = useFlashCount(FlashCountKeys.StakingWidget);
 
   const stakingInfo = useStakingStatuses();
 
@@ -25,16 +33,9 @@ const StakingWidgetComponent: FC = () => {
     nav.push(MainStackRouteNames.Staking);
   }, [nav]);
 
-  useEffect(() => {
-    const timerId = setTimeout(
-      () => useStakingStore.getState().actions.increaseMainFlashShownCount(),
-      1000,
-    );
-
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, []);
+  const handleBuyPress = useCallback(() => {
+    nav.openModal('Exchange');
+  }, [nav]);
 
   const staked = stakingInfo.length > 0;
 
@@ -43,6 +44,8 @@ const StakingWidgetComponent: FC = () => {
         apy: highestApyPool.apy.toFixed(2),
       })
     : '';
+
+  const shouldShowBuyButton = showBuyButton && !isWatchOnly && !staked;
 
   return (
     <View style={styles.container}>
@@ -54,15 +57,29 @@ const StakingWidgetComponent: FC = () => {
             pool={item.pool}
           />
         ))}
-        <Flash disabled={flashShownCount >= 2}>
+        {!isWatchOnly && (
+          <Flash disabled={flashShownCount >= 2}>
+            <StakingListCell
+              isWidget={!staked}
+              isWidgetAccent={shouldShowBuyButton}
+              id="staking"
+              name={t('staking.widget_title')}
+              description={staked ? t('staking.widget_staking_options') : apyDescription}
+              onPress={handleStakingPress}
+              separator={shouldShowBuyButton}
+            />
+          </Flash>
+        )}
+        {shouldShowBuyButton ? (
           <StakingListCell
-            isWidget={!staked}
-            id="staking"
-            name={t('staking.widget_title')}
-            description={staked ? t('staking.widget_staking_options') : apyDescription}
-            onPress={handleStakingPress}
+            isWidget
+            isBuyTon
+            id="buy_ton"
+            name={t('buy_ton.title')}
+            description={t('buy_ton.subtitle')}
+            onPress={handleBuyPress}
           />
-        </Flash>
+        ) : null}
       </List>
     </View>
   );

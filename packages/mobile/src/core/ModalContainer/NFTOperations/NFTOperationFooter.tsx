@@ -16,8 +16,9 @@ import {
   CanceledActionError,
   DismissedActionError,
 } from '$core/Send/steps/ConfirmStep/ActionErrors';
-import { tk } from '@tonkeeper/shared/tonkeeper';
+import { tk } from '$wallet';
 import { TabsStackRouteNames } from '$navigation';
+import { Wallet } from '$wallet/Wallet';
 
 enum States {
   INITIAL,
@@ -31,8 +32,8 @@ type ConfirmFn = (options: { startLoading: () => void }) => Promise<void>;
 
 // Wrapper action footer for TxRequest
 // TODO: Rename NFTOperation -> Action
-export const useNFTOperationState = (txBody?: TxBodyOptions) => {
-  const { footerRef, onConfirm: invokeConfirm } = useActionFooter();
+export const useNFTOperationState = (txBody?: TxBodyOptions, wallet?: Wallet) => {
+  const { footerRef, onConfirm: invokeConfirm } = useActionFooter(wallet);
 
   const onConfirm = (confirm: ConfirmFn) => async () => {
     try {
@@ -79,7 +80,7 @@ export const useNFTOperationState = (txBody?: TxBodyOptions) => {
   return { footerRef, onConfirm };
 };
 
-export const useActionFooter = () => {
+export const useActionFooter = (wallet?: Wallet) => {
   const ref = React.useRef<ActionFooterRef>(null);
 
   const onConfirm = (confirm: ConfirmFn) => async () => {
@@ -90,7 +91,9 @@ export const useActionFooter = () => {
         },
       });
 
-      ref.current?.setState(States.SUCCESS);
+      ref.current?.setState(States.SUCCESS, () => {
+        (wallet ?? tk.wallet).activityList.reload();
+      });
     } catch (error) {
       if (error instanceof DismissedActionError) {
         ref.current?.setState(States.ERROR);
@@ -119,7 +122,7 @@ export const useActionFooter = () => {
 };
 
 type ActionFooterRef = {
-  setState: (state: States) => Promise<void>;
+  setState: (state: States, onDone?: () => void) => Promise<void>;
   setError: (msg: string) => void;
   reset: () => void;
 };
@@ -157,14 +160,14 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
     );
 
     React.useImperativeHandle(ref, () => ({
-      async setState(state) {
+      async setState(state, onDone) {
         setState(state);
         if (state === States.SUCCESS) {
           triggerNotificationSuccess();
 
           await delay(1750);
 
-          tk.wallet.activityList.reload();
+          onDone?.();
           closeModal(true);
 
           props.responseOptions?.onDone?.();

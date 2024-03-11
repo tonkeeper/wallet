@@ -1,6 +1,6 @@
 import TonWeb, { AddressType } from 'tonweb';
 
-const ContractVersions = ['v3R1', 'v3R2', 'v4R1', 'v4R2'] as const;
+const ContractVersions = ['lockup-0.1', 'v3R1', 'v3R2', 'v4R1', 'v4R2'] as const;
 
 export type AddressFormats = {
   friendly: string;
@@ -64,6 +64,11 @@ export class Address {
     return !addr.isUserFriendly || addr.isBounceable;
   }
 
+  static isTestnet(address: string) {
+    const addr = new TonWeb.Address(address);
+    return addr.isTestOnly;
+  }
+
   static compare(adr1?: string, adr2?: string) {
     if (adr1 === undefined || adr2 === undefined) {
       return false;
@@ -85,24 +90,62 @@ export class Address {
 
   static async fromPubkey(
     pubkey: string | null,
-    options: FormatOptions = defaultFormatOptions,
+    isTestnet: boolean,
+    lockupConfig?: {
+      workchain: number;
+      configPubKey?: string;
+      allowedDestinations?: string;
+    },
   ): Promise<AddressesByVersion | null> {
     if (!pubkey) return null;
 
     const tonweb = new TonWeb();
     const addresses = {} as AddressesByVersion;
+
+    const publicKey = Uint8Array.from(Buffer.from(pubkey, 'hex'));
     for (let contractVersion of ContractVersions) {
+      if (contractVersion === 'lockup-0.1') {
+        continue;
+      }
+
       const wallet = new tonweb.wallet.all[contractVersion](tonweb.provider, {
-        publicKey: pubkey as any,
+        publicKey,
         wc: 0,
       });
 
       const address = await wallet.getAddress();
-      const friendly = address.toString(true, true, options.bounceable, options.testOnly);
-      const raw = address.toString(false, false, options.bounceable, options.testOnly);
+      const raw = address.toString(false, false);
+      const friendly = address.toString(true, true, false, isTestnet);
       const short = Address.toShort(friendly);
 
-      addresses[contractVersion] = { friendly, raw, short };
+      addresses[contractVersion] = {
+        friendly,
+        raw,
+        short,
+      };
+    }
+
+    if (lockupConfig) {
+      const wallet = new tonweb.lockupWallet.all['lockup-0.1'](tonweb.provider, {
+        publicKey,
+        wc: lockupConfig.workchain,
+        config: {
+          wallet_type: 'lockup-0.1',
+          config_public_key: lockupConfig.configPubKey,
+          allowed_destinations: lockupConfig.allowedDestinations,
+        },
+      });
+
+      const address = await wallet.getAddress();
+      const raw = address.toString(false, false);
+      const friendly = address.toString(true, true, false, isTestnet);
+      const short = Address.toShort(friendly);
+
+      addresses['lockup-0.1'] = {
+        friendly,
+        raw,
+        short,
+      };
     }
 
     return addresses;

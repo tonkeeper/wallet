@@ -8,17 +8,14 @@ import { JettonBalanceModel } from '$store/models';
 import BigNumber from 'bignumber.js';
 import { Address } from '@tonkeeper/shared/Address';
 import { PoolInfo, PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
+import { ContractService } from '@tonkeeper/core';
 
 const { Cell } = TonWeb.boc;
-
-export function getRandomQueryId() {
-  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-}
 
 export const createWhalesAddStakeCommand = async () => {
   const command = new Cell();
   command.bits.writeUint(2077040623, 32);
-  command.bits.writeUint(getRandomQueryId(), 64); // Query ID
+  command.bits.writeUint(ContractService.getWalletQueryId(), 64); // Query ID
   command.bits.writeCoins(100000); // Gas
 
   return encodeBytes(await command.toBoc());
@@ -27,7 +24,7 @@ export const createWhalesAddStakeCommand = async () => {
 export const createWhalesWithdrawStakeCell = async (amount: BN) => {
   const command = new Cell();
   command.bits.writeUint(3665837821, 32);
-  command.bits.writeUint(getRandomQueryId(), 64); // Query ID
+  command.bits.writeUint(ContractService.getWalletQueryId(), 64); // Query ID
   command.bits.writeCoins(100000); // Gas
   command.bits.writeCoins(amount); // Amount
 
@@ -37,7 +34,7 @@ export const createWhalesWithdrawStakeCell = async (amount: BN) => {
 export const createLiquidTfAddStakeCommand = async () => {
   const command = new Cell();
   command.bits.writeUint(0x47d54391, 32);
-  command.bits.writeUint(getRandomQueryId(), 64); // Query ID
+  command.bits.writeUint(ContractService.getWalletQueryId(), 64); // Query ID
   command.bits.writeUint(0x000000000005b7ce, 64); // App ID
 
   return encodeBytes(await command.toBoc());
@@ -50,7 +47,7 @@ export const createLiquidTfWithdrawStakeCell = async (amount: BN, address: strin
 
   const payload = new Cell();
   payload.bits.writeUint(0x595f07bc, 32);
-  payload.bits.writeUint(getRandomQueryId(), 64); // Query ID
+  payload.bits.writeUint(ContractService.getWalletQueryId(), 64); // Query ID
   payload.bits.writeCoins(amount); // Amount
   payload.bits.writeAddress(Address.parse(address).toTonWeb());
   payload.bits.writeBit(1);

@@ -1,76 +1,78 @@
-import { useSwitchWallet, useWallet } from '@tonkeeper/core';
 import { useNavigation } from '@tonkeeper/router';
-import { Button, Icon, List, Modal, Steezy, View } from '@tonkeeper/uikit';
-import { memo, useCallback } from 'react';
+import { Button, Haptics, Icon, List, Modal, Steezy, View } from '@tonkeeper/uikit';
+import { FC, memo, useCallback, useMemo } from 'react';
+import { useWalletCurrency, useWallets } from '../hooks';
+import { tk } from '@tonkeeper/mobile/src/wallet';
+import { t } from '../i18n';
+import { formatter } from '../formatter';
+import { WalletListItem } from '../components';
 
+interface Props {
+  selected?: string;
+  onSelect?: (identifier: string) => void;
+}
 
-const useWallets = () => {
-  return [
-    {
-      identity: '123',
-      name: 'Wallet',
-    },
-    {
-      identity: '333',
-      name: 'Main',
-    },
-  ];
-};
-
-export const SwitchWalletModal = memo(() => {
+export const SwitchWalletModal: FC<Props> = memo((props) => {
   const nav = useNavigation();
-  const currentWallet = useWallet();
-  const switchWallet = useSwitchWallet();
-  const wallets = useWallets();
+  const selectedIdentifier = props.selected ?? tk.wallet.identifier;
+  const allWallets = useWallets();
+  const selectableWallets = useMemo(
+    () =>
+      props.onSelect ? allWallets.filter((wallet) => !wallet.isWatchOnly) : allWallets,
+    [allWallets, props.onSelect],
+  );
+  const currency = useWalletCurrency();
 
-  const handleSwitchWallet = useCallback(
-    (identity: string) => () => {
-      // tk.switchWalle(identity);
-
-      const wallet = wallets.find((i) => i.identity === identity);
-      switchWallet(wallet);
+  const handlePress = useCallback(
+    (identifier: string) => () => {
+      if (props.onSelect) {
+        Haptics.selection();
+        props.onSelect(identifier);
+      } else {
+        tk.switchWallet(identifier);
+      }
+      nav.goBack();
     },
     [],
   );
 
   return (
     <Modal>
-      <Modal.Header title="Switch wallet" center />
-      <Modal.Content safeArea>
-        <List>
-          {wallets.map((wallet) => (
-            <List.Item
-              onPress={handleSwitchWallet(wallet.identity)}
-              key={wallet.identity}
-              title={wallet.name}
-              rightContent={
-                currentWallet.identity === wallet.identity && (
-                  <View style={styles.checkmark}>
-                    <Icon
-                      style={styles.checkmarkIcon.static}
-                      name="ic-donemark-thin-28"
-                      color="accentBlue"
-                    />
-                  </View>
-                )
-              }
+      <Modal.Header title={t('wallets')} />
+      <Modal.ScrollView>
+        <Modal.Content safeArea>
+          <List>
+            {selectableWallets.map((wallet) => (
+              <WalletListItem
+                key={wallet.identifier}
+                wallet={wallet}
+                onPress={handlePress(wallet.identifier)}
+                subtitle={formatter.format(wallet.totalFiat, { currency })}
+                rightContent={
+                  selectedIdentifier === wallet.identifier && (
+                    <View style={styles.checkmark}>
+                      <Icon
+                        style={styles.checkmarkIcon.static}
+                        name="ic-donemark-thin-28"
+                        color="accentBlue"
+                      />
+                    </View>
+                  )
+                }
+              />
+            ))}
+          </List>
+          <View style={styles.buttons}>
+            <Button
+              // navigate="/add-wallet"
+              onPress={() => {
+                nav.replaceModal('/add-wallet');
+              }}
+              color="secondary"
+              title={t('add_wallet')}
+              size="small"
             />
-          ))}
-        </List>
-        <View style={styles.buttons}>
-          <Button
-            // navigate="/add-wallet"
-            onPress={() => {
-              nav.goBack();
-              setTimeout(() => {
-                nav.navigate('/add-wallet');
-              }, 500);
-            }}
-            color="secondary"
-            title="Add wallet"
-            size="small"
-          />
-          {wallets.length > 1 && (
+            {/* {wallets.length > 1 && (
             <Button
               style={styles.editButton.static}
               navigate="/edit-wallets"
@@ -78,14 +80,15 @@ export const SwitchWalletModal = memo(() => {
               color="secondary"
               title="Edit"
             />
-          )}
-        </View>
-      </Modal.Content>
+          )} */}
+          </View>
+        </Modal.Content>
+      </Modal.ScrollView>
     </Modal>
   );
 });
 
-const styles = Steezy.create({
+const styles = Steezy.create(({ colors }) => ({
   buttons: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -105,4 +108,16 @@ const styles = Steezy.create({
     right: 0,
     bottom: -2,
   },
-});
+  iconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 44 / 2,
+    backgroundColor: colors.backgroundHighlighted,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+}));

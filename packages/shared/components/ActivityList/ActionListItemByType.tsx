@@ -2,9 +2,8 @@ import { UnSubscribeActionListItem } from './items/UnSubscribeActionListItem';
 import { JettonSwapActionListItem } from './items/JettonSwapActionListItem';
 import { SubscribeActionListItem } from './items/SubscribeActionListItem';
 import { ListItemContainer, ListItemContentText } from '@tonkeeper/uikit';
-import { modifyNftName } from '@tonkeeper/core/src/managers/NftsManager';
 import { ActionListItem, ActionListItemProps } from './ActionListItem';
-import { ActionType, Address, AnyActionItem } from '@tonkeeper/core';
+import { Address } from '@tonkeeper/core';
 import { NftPreviewContent } from './NftPreviewContent';
 import { t } from '../../i18n';
 import { memo } from 'react';
@@ -12,6 +11,11 @@ import { memo } from 'react';
 import { getImplementationIcon } from '@tonkeeper/mobile/src/utils/staking';
 import { excludeUndefinedValues } from '@tonkeeper/core/src/utils/common';
 import { ListItemEncryptedComment } from '@tonkeeper/uikit/src/components/List/ListItemEncryptedComment';
+import { modifyNftName } from '@tonkeeper/mobile/src/wallet/managers/NftsManager';
+import {
+  ActionType,
+  AnyActionItem,
+} from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 
 export const ActionListItemByType = memo<ActionListItemProps>((props) => {
   const { action } = props;
@@ -48,7 +52,10 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
     case ActionType.NftItemTransfer:
       return (
         <ActionListItem {...pureProps} value="NFT">
-          <NftPreviewContent disabled={props.disablePressable} nftAddress={payload.nft} />
+          <NftPreviewContent
+            disabled={props.disableNftPreview || props.disablePressable}
+            nftAddress={payload.nft}
+          />
           {!!payload.comment && <ListItemContentText text={payload.comment.trim()} />}
           {!!payload.encrypted_comment && (
             <ListItemEncryptedComment
@@ -62,7 +69,10 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
     case ActionType.NftPurchase:
       return (
         <ActionListItem {...pureProps}>
-          <NftPreviewContent disabled={props.disablePressable} nftItem={payload.nft} />
+          <NftPreviewContent
+            disabled={props.disableNftPreview || props.disablePressable}
+            nftItem={payload.nft}
+          />
         </ActionListItem>
       );
     case ActionType.SmartContractExec:

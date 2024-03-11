@@ -1,29 +1,28 @@
 import { useAppState } from '$hooks/useAppState';
 import { getAllConnections, useConnectedAppsStore } from '$store';
-import { walletSelector } from '$store/wallet';
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { TonConnectRemoteBridge } from '../TonConnectRemoteBridge';
+import { useWallets } from '@tonkeeper/shared/hooks';
 
 export const useRemoteBridge = () => {
-  const { address } = useSelector(walletSelector);
+  const wallets = useWallets();
+  const walletIdentifiers = wallets.map((wallet) => wallet.identifier).join(',');
 
   const appState = useAppState();
 
+  const shouldClose = appState === 'background';
+
   useEffect(() => {
-    if (appState !== 'active') {
+    if (shouldClose) {
       return;
     }
 
-    const initialConnections = getAllConnections(
-      useConnectedAppsStore.getState(),
-      address.ton,
-    );
+    const initialConnections = getAllConnections(useConnectedAppsStore.getState());
 
     TonConnectRemoteBridge.open(initialConnections);
 
     const unsubscribe = useConnectedAppsStore.subscribe(
-      (s) => getAllConnections(s, address.ton),
+      (s) => getAllConnections(s),
       (connections) => {
         TonConnectRemoteBridge.open(connections);
       },
@@ -33,5 +32,5 @@ export const useRemoteBridge = () => {
       unsubscribe();
       TonConnectRemoteBridge.close();
     };
-  }, [address.ton, appState]);
+  }, [walletIdentifiers, shouldClose]);
 };

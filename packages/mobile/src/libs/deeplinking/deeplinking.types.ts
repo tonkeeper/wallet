@@ -1,4 +1,4 @@
-import { Middleware } from './utils';
+import type { Middleware } from './utils';
 
 export interface PathPattern<Path extends string = string> {
   path: Path;

@@ -1,12 +1,10 @@
 import { useJettonBalances } from '$hooks/useJettonBalances';
-import { CryptoCurrencies, Decimals, SecondaryCryptoCurrencies } from '$shared/constants';
+import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { JettonBalanceModel } from '$store/models';
-import { walletSelector } from '$store/wallet';
 import { Steezy } from '$styles';
 import { Highlight, Icon, PopupSelect, Spacer, Text, View } from '$uikit';
 import { ns } from '$utils';
 import React, { FC, memo, useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { useHideableFormatter } from '$core/HideableAmount/useHideableFormatter';
 import { DEFAULT_TOKEN_LOGO, JettonIcon, TonIcon } from '@tonkeeper/uikit';
 import {
@@ -16,6 +14,7 @@ import {
 } from '$core/Send/Send.interface';
 import { useTonInscriptions } from '@tonkeeper/shared/query/hooks/useTonInscriptions';
 import { formatter } from '@tonkeeper/shared/formatter';
+import { useBalancesState } from '@tonkeeper/shared/hooks';
 
 type CoinItem =
   | {
@@ -55,37 +54,20 @@ interface Props {
 const CoinDropdownComponent: FC<Props> = (props) => {
   const { currency, currencyTitle, onChangeCurrency } = props;
 
-  const { currencies, balances } = useSelector(walletSelector);
+  const balances = useBalancesState();
 
   const { enabled: jettons } = useJettonBalances(false, true);
   const inscriptions = useTonInscriptions();
   const { format } = useHideableFormatter();
 
   const coins = useMemo((): CoinItem[] => {
-    const list = [
-      CryptoCurrencies.Ton,
-      ...SecondaryCryptoCurrencies.filter((item) => {
-        if (item === CryptoCurrencies.Ton) {
-          return false;
-        }
-
-        if (+balances[item] > 0) {
-          return true;
-        }
-
-        return currencies.indexOf(item) > -1;
-      }),
-    ].map(
-      (item): CoinItem => ({
-        tokenType: TokenType.TON,
-        currency: item,
-        balance: balances[item],
-        decimals: Decimals[item],
-      }),
-    );
-
     return [
-      ...list,
+      {
+        tokenType: TokenType.TON,
+        currency: CryptoCurrencies.Ton,
+        balance: balances.ton,
+        decimals: Decimals[CryptoCurrencies.Ton],
+      },
       ...jettons.map((jetton): CoinItem => {
         return {
           tokenType: TokenType.Jetton,
@@ -107,7 +89,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
         };
       }),
     ];
-  }, [jettons, inscriptions.items, balances, currencies]);
+  }, [jettons, inscriptions.items, balances]);
 
   const selectedCoin = useMemo(
     () => coins.find((item) => item.currency === currency),

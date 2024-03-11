@@ -1,74 +1,98 @@
-import React from 'react';
-import { Button, Icon, Screen, Spacer, Text } from '$uikit';
-import * as S from '$core/SetupNotifications/SetupNotifications.style';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useDispatch } from 'react-redux';
+import React, { useCallback } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { openSetupWalletDone } from '$navigation';
 import { ns } from '$utils';
 import { debugLog } from '$utils/debugLog';
-import { useNotifications } from '$hooks/useNotifications';
-import { saveDontShowReminderNotifications } from '$utils/messaging';
 import { Toast } from '$store';
+import { tk } from '$wallet';
+import { RouteProp } from '@react-navigation/native';
+import {
+  ImportWalletStackParamList,
+  ImportWalletStackRouteNames,
+} from '$navigation/ImportWalletStack/types';
+import { Button, Icon, Screen, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
+import { delay } from '@tonkeeper/core';
 
-export const SetupNotifications: React.FC = () => {
+interface Props {
+  route: RouteProp<ImportWalletStackParamList, ImportWalletStackRouteNames.Notifications>;
+}
+
+export const SetupNotifications: React.FC<Props> = (props) => {
+  const { identifiers } = props.route.params;
+
   const [loading, setLoading] = React.useState(false);
-  const notifications = useNotifications();
-  const safeArea = useSafeAreaInsets();
-  const dispatch = useDispatch();
 
-  React.useEffect(() => {
-    saveDontShowReminderNotifications();
-  }, []);
+  const handleDone = useCallback(() => {
+    openSetupWalletDone(identifiers);
+  }, [identifiers]);
 
   const handleEnableNotifications = React.useCallback(async () => {
     try {
       setLoading(true);
-      await notifications.subscribe();
-      openSetupWalletDone();
+
+      if (identifiers.length > 1) {
+        await Promise.race([tk.enableNotificationsForAll(identifiers), delay(10000)]);
+      } else {
+        await Promise.race([tk.wallet.notifications.subscribe(), delay(10000)]);
+      }
+
+      handleDone();
     } catch (err) {
       setLoading(false);
       Toast.fail(err?.massage);
       debugLog('[SetupNotifications]:', err);
     }
-  }, []);
+  }, [handleDone, identifiers]);
 
   return (
     <Screen>
-      <Screen.Header 
+      <Screen.Header
+        hideBackButton
         rightContent={
-          <Button 
-            size="navbar_small" 
-            mode="secondary"
+          <Button
+            size="header"
+            color="secondary"
+            title={t('later')}
             style={{ marginRight: ns(16) }}
-            onPress={() => openSetupWalletDone()}
-          >
-            {t('later')}
-          </Button>
+            onPress={handleDone}
+          />
         }
       />
-      <S.Wrap>
-        <S.Content>
-          <S.IconWrap>
-            <Icon name="ic-notification-128" color="accentPrimary" />
-          </S.IconWrap>
-          <Text textAlign="center" variant="h2">
+      <Screen.Content>
+        <View style={styles.container}>
+          <View style={styles.iconContainer}>
+            <Icon name="ic-notification-128" color="accentBlue" />
+          </View>
+          <Spacer y={16} />
+          <Text textAlign="center" type="h2">
             {t('setup_notifications_title')}
           </Text>
           <Spacer y={4} />
-          <Text textAlign="center" variant="body1" color="foregroundSecondary">
+          <Text textAlign="center" color="textSecondary">
             {t('setup_notifications_caption')}
           </Text>
-        </S.Content>
-        <S.Footer style={{ paddingBottom: safeArea.bottom }}>
-          <Button 
-            isLoading={loading}
-            onPress={handleEnableNotifications}
-          >
-            {t('setup_notifications_enable_button')}
-          </Button>
-        </S.Footer>
-      </S.Wrap>
+        </View>
+        <Screen.ButtonSpacer />
+      </Screen.Content>
+      <Screen.ButtonContainer>
+        <Button
+          loading={loading}
+          onPress={handleEnableNotifications}
+          title={t('setup_notifications_enable_button')}
+        />
+      </Screen.ButtonContainer>
     </Screen>
   );
 };
+
+const styles = Steezy.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+    marginTop: -24,
+  },
+  iconContainer: {
+    alignItems: 'center',
+  },
+});

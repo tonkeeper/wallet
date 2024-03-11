@@ -1,6 +1,5 @@
 import { SpacerSizes } from '$uikit';
-import { ListSeparatorProps } from '$uikit/List/ListSeparator';
-import { ListItemProps } from '$uikit/List/ListItem';
+import { ListItemProps } from '@tonkeeper/uikit/src/components/List/ListItem';
 import { ReactNode } from 'react';
 
 export enum ContentType {
@@ -30,7 +29,6 @@ export type ShowAllButtonItem = {
 };
 
 export type CellItem = {
-  separatorVariant?: ListSeparatorProps['variant'];
   type: ContentType.Cell;
   imageStyle?: ListItemProps['pictureStyle'];
   chevronColor?: ListItemProps['chevronColor'];

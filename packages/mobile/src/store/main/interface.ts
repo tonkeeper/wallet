@@ -1,8 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
-import { FiatCurrency, SelectableVersion } from '$shared/constants';
 import { InternalNotificationModel } from '$store/models';
 import { AccentKey, AccentNFTIcon } from '$styled';
-import { ChartPeriod } from '$uikit/Chart/Chart.types';
 
 export interface LogItem {
   ts: number;
@@ -13,12 +11,8 @@ export interface LogItem {
 
 export interface MainState {
   isInitiating: boolean;
-  isHasWallet: boolean;
-  isIntroShown: boolean;
-  isTestnet: boolean;
   isTimeSynced: boolean;
   timeSyncedDismissedTimestamp: false | number;
-  fiatCurrency: FiatCurrency;
   badHosts: string[];
   isBadHostsDismissed: boolean;
   internalNotifications: InternalNotificationModel[];
@@ -27,21 +21,10 @@ export interface MainState {
   isUnlocked: boolean;
   accent: AccentKey;
   tonCustomIcon: AccentNFTIcon | null;
-  alwaysShowV4R1: boolean;
 }
 
-export type EndInitiatingAction = PayloadAction<{
-  isHasWallet: boolean;
-  fiatCurrency: FiatCurrency;
-}>;
-export type SetHasWalletAction = PayloadAction<boolean>;
-export type ToggleIntroAction = PayloadAction<boolean>;
-export type SetTestnetAction = PayloadAction<boolean>;
 export type SetTimeSyncedAction = PayloadAction<boolean>;
 export type SetTimeSyncedDismissedAction = PayloadAction<false | number>;
-export type ToggleTestnetAction = PayloadAction<{ isTestnet: boolean }>;
-export type SetFiatCurrencyAction = PayloadAction<FiatCurrency>;
-export type SwitchVersionAction = PayloadAction<SelectableVersion>;
 export type UpdateBadHostsAction = PayloadAction<string[]>;
 export type SetNotificationsAction = PayloadAction<InternalNotificationModel[]>;
 export type HideNotificationAction = PayloadAction<InternalNotificationModel>;
@@ -54,4 +37,3 @@ export type AddLogAction = PayloadAction<{
 }>;
 export type SetLogsAction = PayloadAction<LogItem[]>;
 export type SetUnlockedAction = PayloadAction<boolean>;
-export type SetShowV4R1 = PayloadAction<boolean>;

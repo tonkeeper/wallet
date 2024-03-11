@@ -5,7 +5,6 @@ import {
   getDiamondSizeRatio,
 } from '$styled';
 import React, { FC, memo } from 'react';
-import { ViewStyle } from 'react-native';
 import { IconFromUri } from './IconFromUri';
 import * as S from './TonDiamondIcon.style';
 
@@ -14,7 +13,7 @@ interface Props {
   nftIcon?: AccentNFTIcon;
   size: number;
   disabled?: boolean;
-  iconAnimatedStyle?: any;//AnimatedStyleProp<ViewStyle>;
+  iconAnimatedStyle?: any; //AnimatedStyleProp<ViewStyle>;
   rounded?: boolean;
 }
 

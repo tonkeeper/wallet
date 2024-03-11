@@ -17,6 +17,7 @@ import {
 import { SpoilerViewMock } from './components/SpoilerViewMock';
 import { useCopyText } from '@tonkeeper/mobile/src/hooks/useCopyText';
 import { openEncryptedCommentModalIfNeeded } from '../../modals/EncryptedCommentModal';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 
 export enum EncryptedCommentLayout {
   LIST_ITEM,
@@ -86,6 +87,9 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
   );
 
   const handleDecryptComment = useCallback(() => {
+    if (tk.wallet.isWatchOnly) {
+      return;
+    }
     openEncryptedCommentModalIfNeeded(() =>
       decryptComment(props.actionId, props.encryptedComment, props.sender.address),
     );
