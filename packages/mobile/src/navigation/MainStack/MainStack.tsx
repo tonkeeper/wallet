@@ -63,7 +63,7 @@ export const MainStack: FC = () => {
   const showLockScreen =
     tk.lockEnabled && !isUnlocked && hasWallet && !attachedScreen.pathname;
 
-  const isMigrated = useExternalState(tk.walletsStore, (state) => state.isMigrated);
+  const isMigrated = useExternalState(tk.migrationStore, (state) => state.isMigrated);
 
   const root = useMemo(() => {
     if (hasWallet) {

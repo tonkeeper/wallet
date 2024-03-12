@@ -45,6 +45,9 @@ export interface WalletsStoreState {
   selectedIdentifier: string;
   biometryEnabled: boolean;
   lockEnabled: boolean;
+}
+
+export interface MigrationState {
   isMigrated: boolean;
 }
 
@@ -77,6 +80,9 @@ export class Tonkeeper {
     selectedIdentifier: '',
     biometryEnabled: false,
     lockEnabled: true,
+  });
+
+  public migrationStore = new State<MigrationState>({
     isMigrated: false,
   });
 
@@ -122,12 +128,18 @@ export class Tonkeeper {
       await Promise.all([
         this.walletsStore.rehydrate(),
         this.tonPrice.rehydrate(),
+        this.migrationStore.rehydrate(),
         this.biometry.detectTypes(),
       ]);
 
+      // @ts-ignore moved to migrationStore, may be set on some clients. So we need to migrate it
+      if (this.walletsStore.data.isMigrated) {
+        this.setMigrated();
+      }
+
       this.tonPrice.load();
 
-      if (!this.walletsStore.data.isMigrated) {
+      if (!this.migrationStore.data.isMigrated) {
         this.migrationData = await this.getMigrationData();
       }
 
@@ -496,7 +508,7 @@ export class Tonkeeper {
 
   public setMigrated() {
     console.log('migrated');
-    this.walletsStore.set({ isMigrated: true });
+    this.migrationStore.set({ isMigrated: true });
   }
 
   public saveLastBackupTimestampAll(identifiers: string[], dismissSetup = false) {
