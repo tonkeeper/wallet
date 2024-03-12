@@ -17,11 +17,13 @@ export const useMigration = () => {
   const getMnemonicWithBiometry = useCallback(async () => {
     const { keychainItemName } = tk.migrationData!;
     const isNewSecurityFlow = (await AsyncStorage.getItem('new_security_flow')) === 'yes';
+    console.log('keychainItemName', keychainItemName);
 
     let jsonstr: any;
     if (isNewSecurityFlow) {
+      console.log('allKeys', await AsyncStorage.getAllKeys);
       const keychainService = await AsyncStorage.getItem('keychainService');
-
+      console.log('keychainService', keychainService);
       if (!keychainService) {
         throw new Error();
       }
@@ -32,6 +34,7 @@ export const useMigration = () => {
     } else {
       jsonstr = await EncryptedStorage.getItem(keychainItemName);
     }
+    console.log('jsonstr', jsonstr);
 
     if (jsonstr == null) {
       throw new Error();
@@ -40,6 +43,8 @@ export const useMigration = () => {
     if (state.kind !== 'decrypted') {
       throw new Error();
     }
+
+    console.log('state.mnemonic', state.mnemonic);
 
     return state.mnemonic;
   }, []);
