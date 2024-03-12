@@ -105,6 +105,11 @@ export class Tonkeeper {
       storage: this.storage,
       key: 'walletsStore',
     });
+
+    this.migrationStore.persist({
+      storage: this.storage,
+      key: 'migrationStore',
+    });
   }
 
   public get wallet() {
