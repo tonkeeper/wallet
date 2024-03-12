@@ -35,6 +35,7 @@ export const useImportWallet = () => {
             onDone: async () => {
               if (isMigration) {
                 const pin = getLastEnteredPasscode();
+                console.log('pin', pin);
 
                 dispatch(
                   walletActions.createWallet({
@@ -67,7 +68,9 @@ export const useImportWallet = () => {
                           // subscribe to selected wallet versions
                           tk.enableNotificationsForAll(identifiers).catch(null);
                         }
-                      } catch {}
+                      } catch (e) {
+                        console.log('setWalletError', e);
+                      }
                       // Enable biometry if it was enabled before migration
                       try {
                         const isBiometryEnabled =
@@ -76,7 +79,9 @@ export const useImportWallet = () => {
                         if (isBiometryEnabled) {
                           tk.enableBiometry(pin).catch(null);
                         }
-                      } catch {}
+                      } catch (e) {
+                        console.log('enableBiometryError', e);
+                      }
 
                       resolve();
                     },

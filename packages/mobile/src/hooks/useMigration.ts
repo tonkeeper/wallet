@@ -73,12 +73,14 @@ export const useMigration = () => {
   const doMigration = useCallback(
     async (mnemonic: string, passcode: string) => {
       const { lockupConfig } = tk.migrationData!;
-
+      console.log('lockupConfig', JSON.stringify(lockupConfig));
       setLastEnteredPasscode(passcode);
 
       const walletsInfo = await tk.getWalletsInfo(mnemonic, false);
+      console.log('walletsInfo', JSON.stringify(walletsInfo));
 
       const shouldChooseWallets = !lockupConfig && walletsInfo.length > 1;
+      console.log('shouldChooseWallets', shouldChooseWallets);
 
       if (shouldChooseWallets) {
         nav.navigate(MigrationStackRouteNames.ChooseWallets, {
@@ -90,6 +92,7 @@ export const useMigration = () => {
         });
       } else {
         const versions = walletsInfo.map((item) => item.version);
+        console.log('versions', versions);
 
         await doImportWallet(mnemonic, lockupConfig, versions, false, true);
       }
