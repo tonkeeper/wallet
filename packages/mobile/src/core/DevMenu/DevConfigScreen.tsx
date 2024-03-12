@@ -57,6 +57,18 @@ export const DevConfigScreen = memo(() => {
             }
           />
           <List.Item
+            title="Swap host"
+            value={config.get('stonfiUrl')}
+            valueStyle={styles.value}
+            onPress={() =>
+              nav.navigate('/dev/config/edit', {
+                configKey: 'stonfiUrl',
+                title: 'Swap host',
+                onSave: handleSave,
+              })
+            }
+          />
+          <List.Item
             title="Enable battery"
             onPress={handleBooleanSwitch('disable_battery')}
             rightContent={
