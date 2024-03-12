@@ -129,7 +129,10 @@ export const AddWatchOnly: FC = () => {
     setLoading(true);
 
     try {
-      const identifiers = await tk.addWatchOnlyWallet(account.address);
+      const identifiers = await tk.addWatchOnlyWallet(
+        account.address,
+        account.domain ? account.domain.split('.')[0] : undefined,
+      );
       const isNotificationsDenied = await tk.wallet.notifications.getIsDenied();
 
       if (isNotificationsDenied) {

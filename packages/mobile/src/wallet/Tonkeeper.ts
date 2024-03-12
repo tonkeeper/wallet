@@ -302,7 +302,7 @@ export class Tonkeeper {
     });
   }
 
-  public async addWatchOnlyWallet(address: string) {
+  public async addWatchOnlyWallet(address: string, name?: string) {
     const rawAddress = Address.parse(address).toRaw();
     const { public_key: pubkey } = await this.tonapi.mainnet.accounts.getAccountPublicKey(
       rawAddress,
@@ -325,7 +325,7 @@ export class Tonkeeper {
 
     const config: WalletConfig = {
       ...DEFAULT_WALLET_STYLE_CONFIG,
-      name: this.getNewWalletName(),
+      name: name ?? this.getNewWalletName(),
       identifier: uuidv4(),
       network: WalletNetwork.mainnet,
       type: WalletType.WatchOnly,
