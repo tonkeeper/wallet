@@ -21,15 +21,9 @@ export const useMigration = () => {
 
     let jsonstr: any;
     if (isNewSecurityFlow) {
-      console.log('allKeys', await AsyncStorage.getAllKeys);
       const keychainService = await AsyncStorage.getItem('keychainService');
-      console.log('keychainService', keychainService);
-      if (!keychainService) {
-        throw new Error();
-      }
-
       jsonstr = await SecureStore.getItemAsync('biometry_' + keychainItemName, {
-        keychainService,
+        keychainService: keychainService || 'TKProtected',
       });
     } else {
       jsonstr = await EncryptedStorage.getItem(keychainItemName);
