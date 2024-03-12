@@ -35,9 +35,11 @@ export const MigrationStartScreen = memo(() => {
   const handleBiometryPress = useCallback(async () => {
     try {
       const mnemonic = await getMnemonicWithBiometry();
-
+      console.log('biometry mnemonic', mnemonic);
       nav.navigate(MigrationStackRouteNames.CreatePasscode, { mnemonic });
-    } catch {}
+    } catch (e) {
+      console.log('biometry error', e);
+    }
   }, [getMnemonicWithBiometry, nav]);
 
   return (

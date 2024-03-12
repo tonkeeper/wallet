@@ -45,15 +45,18 @@ export const useMigration = () => {
   }, []);
 
   const getMnemonicWithPasscode = useCallback(async (passcode: string) => {
+    console.log('passcode', passcode);
     const { keychainItemName } = tk.migrationData!;
     const isNewSecurityFlow = (await AsyncStorage.getItem('new_security_flow')) === 'yes';
 
     let jsonstr: any;
+    console.log('isNewSecurityFlow', isNewSecurityFlow);
     if (isNewSecurityFlow) {
       jsonstr = await SecureStore.getItemAsync(keychainItemName);
     } else {
       jsonstr = await EncryptedStorage.getItem(keychainItemName);
     }
+    console.log(jsonstr);
 
     if (jsonstr == null) {
       throw new Error('Failed to unlock the vault');

@@ -39,7 +39,7 @@ export const MigrationPasscode: FC<{
           try {
             console.log('start migration');
             const mnemonic = await getMnemonicWithPasscode(pin);
-
+            console.log('MNEMONIC', mnemonic);
             BlockingLoader.show();
 
             pinRef.current?.triggerSuccess();
@@ -51,6 +51,7 @@ export const MigrationPasscode: FC<{
               pinRef.current?.clearState();
             }, 1000);
           } catch (error) {
+            console.log('migration with passcode error', error);
             if (error instanceof TypeError) {
               Toast.fail(t('error_network'));
             }
