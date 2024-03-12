@@ -98,6 +98,15 @@ export class State<TData extends DefaultStateData> {
     this.storeIfNeeded();
   };
 
+  public setAsync = async (
+    updater: Partial<TData> | ((data: TData) => Partial<TData>),
+  ) => {
+    const newData = typeof updater === 'function' ? updater(this.data) : updater;
+    this.data = { ...this.data, ...newData };
+    this.emit();
+    await this.storeIfNeeded();
+  };
+
   private emit() {
     this.subscribers.forEach((subscriber) => subscriber(this.data));
   }
