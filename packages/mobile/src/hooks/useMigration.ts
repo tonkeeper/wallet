@@ -22,12 +22,8 @@ export const useMigration = () => {
     if (isNewSecurityFlow) {
       const keychainService = await AsyncStorage.getItem('keychainService');
 
-      if (!keychainService) {
-        throw new Error();
-      }
-
       jsonstr = await SecureStore.getItemAsync('biometry_' + keychainItemName, {
-        keychainService,
+        keychainService: keychainService || 'TKProtected',
       });
     } else {
       jsonstr = await EncryptedStorage.getItem(keychainItemName);
