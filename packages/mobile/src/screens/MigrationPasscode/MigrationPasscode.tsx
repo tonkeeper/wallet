@@ -51,7 +51,7 @@ export const MigrationPasscode: FC<{
               pinRef.current?.clearState();
             }, 1000);
           } catch (error) {
-            console.log('migration with passcode error', error);
+            console.log('migration with passcode error', error?.message);
             if (error instanceof TypeError) {
               Toast.fail(t('error_network'));
             }
