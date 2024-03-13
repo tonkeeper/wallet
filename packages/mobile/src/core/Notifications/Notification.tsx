@@ -1,7 +1,7 @@
 import { Icon, List, Spacer, Text, View } from '$uikit';
 import React, { useCallback, useRef } from 'react';
 import { Steezy } from '$styles';
-import { INotification } from '$store/zustand/notifications/types';
+import { INotification, NotificationType } from '$store/zustand/notifications/types';
 import {
   disableNotifications,
   useConnectedAppsList,
@@ -18,6 +18,7 @@ import { openDAppBrowser } from '$navigation';
 import { Alert, Animated } from 'react-native';
 import { useWallet } from '@tonkeeper/shared/hooks';
 import { useDeeplinking } from '$libs/deeplinking';
+import { tk } from '$wallet';
 
 interface NotificationProps {
   notification: INotification;
@@ -139,6 +140,10 @@ export const Notification: React.FC<NotificationProps> = (props) => {
   const deeplinking = useDeeplinking();
 
   const handleOpenInWebView = useCallback(() => {
+    if (props.notification.type === NotificationType.BETTER_STAKE_OPTION_FOUND) {
+      tk.wallet.staking.toggleRestakeBanner(true);
+    }
+
     if (!props.notification.link && !props.notification.deeplink) {
       return;
     }

@@ -1,6 +1,6 @@
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import crashlytics from '@react-native-firebase/crashlytics';
-import { DevFeature, useDevFeaturesToggle } from '$store';
+import { DevFeature, NotificationType, useDevFeaturesToggle } from '$store';
 import { List, Screen, copyText } from '@tonkeeper/uikit';
 import { Switch } from 'react-native-gesture-handler';
 import DeviceInfo from 'react-native-device-info';
@@ -46,6 +46,7 @@ export const DevMenu: FC = () => {
   const handlePushNotification = useCallback(() => {
     addNotification(
       {
+        type: NotificationType.CONSOLE_DAPP_NOTIFICATION,
         message: 'Test notification added',
         dapp_url: 'https://getgems.io',
         received_at: Date.now(),
@@ -59,6 +60,7 @@ export const DevMenu: FC = () => {
     (address: string, name: string) => () => {
       addNotification(
         {
+          type: NotificationType.BETTER_STAKE_OPTION_FOUND,
           name: 'Tonkeeper',
           icon_url: 'https://tonkeeper.com/assets/apps/tonkeeper.png',
           message: `Withdraw from ${name} please 🥺`,

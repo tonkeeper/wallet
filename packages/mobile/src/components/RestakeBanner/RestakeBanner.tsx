@@ -107,6 +107,14 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
     isWaitingForWithdrawal,
   );
 
+  const renderFormattedDuration = useCallback(() => {
+    return (
+      <Text type="body1" color="textPrimary" style={{ fontVariant: ['tabular-nums'] }}>
+        {formattedDuration}
+      </Text>
+    );
+  }, [formattedDuration]);
+
   return (
     <View style={styles.container}>
       <IconsComposition />
@@ -159,7 +167,11 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
           text={
             currentStepId !== RestakeSteps.WAIT_FOR_WITHDRAWAL
               ? t('restake_banner.wait_step')
-              : t('restake_banner.wait_step_pending', { duration: formattedDuration })
+              : replaceString(
+                  t('restake_banner.wait_step_pending'),
+                  '%duration',
+                  renderFormattedDuration,
+                )
           }
         />
         <RestakeStep

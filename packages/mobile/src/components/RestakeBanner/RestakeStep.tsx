@@ -4,7 +4,7 @@ import { StyleProp } from '@bogoslavskiy/react-native-steezy';
 import { ViewStyle } from 'react-native';
 
 export interface RestakeStepProps {
-  text: string;
+  text: string | ReactNode;
   stepId: number;
   actions?: ReactNode[] | null | undefined | boolean;
   actionsContainerStyle?: StyleProp<ViewStyle>;

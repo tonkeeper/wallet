@@ -279,8 +279,14 @@ export class StakingManager {
     }
   }
 
-  public toggleRestakeBanner(value: boolean, stakingAddressToMigrateFrom?: string) {
-    this.state.set({ showRestakeBanner: value, stakingAddressToMigrateFrom });
+  public toggleRestakeBanner(
+    showRestakeBanner: boolean,
+    stakingAddressToMigrateFrom?: string,
+  ) {
+    if (stakingAddressToMigrateFrom) {
+      return this.state.set({ stakingAddressToMigrateFrom, showRestakeBanner });
+    }
+    this.state.set({ showRestakeBanner });
   }
 
   public async reload() {

@@ -1175,6 +1175,16 @@
     "with_passcode": "Ввести пароль",
     "with_biometry": "Продолжить с %{type}"
   },
+  "restake_banner": {
+    "title": "Зарабатывайте больше TON c %apy в ликвидном стейкинге Tonstakers.",
+    "unstake_action_all": "Вывести %{amount}",
+    "unstake_action_manual": "Ввести вручную",
+    "unstake_step": "Выведите TON из своего текущего стейкинга.",
+    "wait_step": "Дождитесь, пока ваш TON станет доступным.",
+    "wait_step_pending": "Ваш TON будет готов к выводу через %duration.",
+    "stake_into_tonstakers_action": "Внести в Tonstakers",
+    "stake_into_step": "Внесите доступный TON в Tonstakers."
+  },
   "tokenDetails": {
     "title": "Подробнее о токене",
     "tonviewer_button": "Открыть в Tonviewer",
