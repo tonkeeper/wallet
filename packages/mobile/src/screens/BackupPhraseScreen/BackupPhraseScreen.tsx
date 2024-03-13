@@ -41,43 +41,45 @@ export const BackupPhraseScreen = memo(() => {
   return (
     <Screen>
       <Screen.Header />
-      <View style={styles.container}>
-        <Text type="h2" textAlign="center">
-          {t('recovery_phrase.title')}
-        </Text>
-        <Spacer y={4} />
-        <Text type="body1" color="textSecondary" textAlign="center">
-          {t('recovery_phrase.caption')}
-        </Text>
-        <Spacer y={16} />
+      <Screen.ScrollView>
+        <View style={styles.container}>
+          <Text type="h2" textAlign="center">
+            {t('recovery_phrase.title')}
+          </Text>
+          <Spacer y={4} />
+          <Text type="body1" color="textSecondary" textAlign="center">
+            {t('recovery_phrase.caption')}
+          </Text>
+          <Spacer y={16} />
 
-        <View style={styles.centered}>
-          <View style={styles.columns}>
-            <View style={styles.leftColumn}>
-              {leftColumn.map((word, index) => (
-                <View style={styles.line} key={`${word}-${index}`}>
-                  <Text type="body2" color="textSecondary" style={styles.num}>
-                    {index + 1}.
-                  </Text>
-                  <Text type="body1">{word}</Text>
-                </View>
-              ))}
-            </View>
-            <View>
-              {rightColumn.map((word, index) => (
-                <View style={styles.line} key={`${word}-${index + 1 + 12}`}>
-                  <Text type="body2" color="textSecondary" style={styles.num}>
-                    {index + 1 + 12}.
-                  </Text>
-                  <Text type="body1">{word}</Text>
-                </View>
-              ))}
+          <View style={styles.centered}>
+            <View style={styles.columns}>
+              <View style={styles.leftColumn}>
+                {leftColumn.map((word, index) => (
+                  <View style={styles.line} key={`${word}-${index}`}>
+                    <Text type="body2" color="textSecondary" style={styles.num}>
+                      {index + 1}.
+                    </Text>
+                    <Text type="body1">{word}</Text>
+                  </View>
+                ))}
+              </View>
+              <View>
+                {rightColumn.map((word, index) => (
+                  <View style={styles.line} key={`${word}-${index + 1 + 12}`}>
+                    <Text type="body2" color="textSecondary" style={styles.num}>
+                      {index + 1 + 12}.
+                    </Text>
+                    <Text type="body1">{word}</Text>
+                  </View>
+                ))}
+              </View>
             </View>
           </View>
         </View>
-      </View>
-
-      <View style={[styles.buttonContainer, { paddingBottom: safeArea.bottom + 32 }]}>
+        <Screen.ButtonSpacer />
+      </Screen.ScrollView>
+      <Screen.ButtonContainer>
         {lastBackupAt !== null && !params.isBackupAgain ? (
           <Button
             title={t('recovery_phrase.copy_button')}
@@ -94,7 +96,7 @@ export const BackupPhraseScreen = memo(() => {
             }
           />
         )}
-      </View>
+      </Screen.ButtonContainer>
     </Screen>
   );
 });
@@ -102,7 +104,6 @@ export const BackupPhraseScreen = memo(() => {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    flex: 1,
   },
   centered: {
     justifyContent: 'center',
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
   columns: {
     flexDirection: 'row',
     maxWidth: 310,
-    paddingTop: 16,
+    paddingVertical: 16,
   },
   line: {
     width: 151,
@@ -128,9 +129,5 @@ const styles = StyleSheet.create({
     marginRight: 4,
     position: 'relative',
     top: 3,
-  },
-  buttonContainer: {
-    marginTop: 16,
-    marginHorizontal: 32,
   },
 });
