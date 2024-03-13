@@ -60,7 +60,7 @@ export class StakingManager {
     providers: [],
     highestApyPool: null,
     stakingBalance: '0',
-    showRestakeBanner: true,
+    showRestakeBanner: false,
   };
 
   static calculatePoolBalance(pool: PoolInfo, stakingInfo: StakingInfo) {
