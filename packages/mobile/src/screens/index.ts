@@ -6,3 +6,6 @@ export * from './MigrationStartScreen';
 export * from './MigrationCreatePasscode';
 export * from './ResetPin';
 export * from './ChangePinBiometry';
+export * from './BackupScreen';
+export * from './BackupPhraseScreen';
+export * from './BackupCheckPhraseScreen';

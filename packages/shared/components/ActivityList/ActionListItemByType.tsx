@@ -52,7 +52,10 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
     case ActionType.NftItemTransfer:
       return (
         <ActionListItem {...pureProps} value="NFT">
-          <NftPreviewContent disabled={props.disablePressable} nftAddress={payload.nft} />
+          <NftPreviewContent
+            disabled={props.disableNftPreview || props.disablePressable}
+            nftAddress={payload.nft}
+          />
           {!!payload.comment && <ListItemContentText text={payload.comment.trim()} />}
           {!!payload.encrypted_comment && (
             <ListItemEncryptedComment
@@ -66,7 +69,10 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
     case ActionType.NftPurchase:
       return (
         <ActionListItem {...pureProps}>
-          <NftPreviewContent disabled={props.disablePressable} nftItem={payload.nft} />
+          <NftPreviewContent
+            disabled={props.disableNftPreview || props.disablePressable}
+            nftItem={payload.nft}
+          />
         </ActionListItem>
       );
     case ActionType.SmartContractExec:

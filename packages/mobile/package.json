@@ -63,7 +63,7 @@
     "dotenv": "^16.0.3",
     "expo": "~49.0.13",
     "expo-blur": "~12.6.0",
-    "expo-local-authentication": "~13.6.0",
+    "expo-local-authentication": "0.0.1-canary-20240228-7cee619",
     "expo-modules-core": "~1.5.11",
     "expo-secure-store": "~12.5.0",
     "expo-splash-screen": "~0.22.0",

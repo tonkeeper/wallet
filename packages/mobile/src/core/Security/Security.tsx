@@ -1,41 +1,26 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { FC, useCallback } from 'react';
 import Animated from 'react-native-reanimated';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Clipboard from '@react-native-community/clipboard';
-import * as LocalAuthentication from 'expo-local-authentication';
-import { Switch } from 'react-native';
 
 import * as S from './Security.style';
 import { NavBar, ScrollHandler, Text } from '$uikit';
 import { CellSection, CellSectionItem } from '$shared/components';
-import { walletActions } from '$store/wallet';
 import { MainStackRouteNames, openChangePin } from '$navigation';
-import { detectBiometryType, ns, platform, triggerImpactLight } from '$utils';
+import { getBiometryName, ns } from '$utils';
 import { Toast } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
 import { useBiometrySettings, useWallet } from '@tonkeeper/shared/hooks';
 import { useNavigation } from '@tonkeeper/router';
 import { vault } from '$wallet';
+import { Haptics, Switch } from '@tonkeeper/uikit';
 
 export const Security: FC = () => {
-  const dispatch = useDispatch();
   const tabBarHeight = useBottomTabBarHeight();
   const wallet = useWallet();
   const nav = useNavigation();
 
-  const { biometryEnabled } = useBiometrySettings();
-
-  const [isBiometryEnabled, setBiometryEnabled] = useState(biometryEnabled);
-  const [biometryAvail, setBiometryAvail] = useState(-1);
-  const isTouchId =
-    biometryAvail !== LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION;
-
-  useEffect(() => {
-    LocalAuthentication.supportedAuthenticationTypesAsync().then((types) =>
-      setBiometryAvail(detectBiometryType(types) || -1),
-    );
-  }, []);
+  const biometry = useBiometrySettings();
 
   const handleCopyLockupConfig = useCallback(() => {
     try {
@@ -48,33 +33,21 @@ export const Security: FC = () => {
 
   const handleBiometry = useCallback(
     (triggerHaptic: boolean) => () => {
-      const newValue = !isBiometryEnabled;
-      setBiometryEnabled(newValue);
-
       if (triggerHaptic) {
-        triggerImpactLight();
+        Haptics.impactLight();
       }
 
-      dispatch(
-        walletActions.toggleBiometry({
-          isEnabled: newValue,
-          onFail: () => setBiometryEnabled(!newValue),
-        }),
-      );
+      biometry.toggleBiometry();
     },
-    [dispatch, isBiometryEnabled],
+    [biometry],
   );
-
-  useEffect(() => {
-    setBiometryEnabled(biometryEnabled);
-  }, [biometryEnabled]);
 
   const handleChangePasscode = useCallback(() => {
     openChangePin();
   }, []);
 
   const handleResetPasscode = useCallback(async () => {
-    if (!biometryEnabled) {
+    if (!biometry.isEnabled) {
       return;
     }
 
@@ -82,10 +55,10 @@ export const Security: FC = () => {
       const passcode = await vault.exportPasscodeWithBiometry();
       nav.navigate(MainStackRouteNames.ResetPin, { passcode });
     } catch {}
-  }, [biometryEnabled, nav]);
+  }, [biometry.isEnabled, nav]);
 
   function renderBiometryToggler() {
-    if (biometryAvail === -1) {
+    if (!biometry.isAvailable) {
       return null;
     }
 
@@ -95,23 +68,17 @@ export const Security: FC = () => {
           <CellSectionItem
             onPress={handleBiometry(true)}
             indicator={
-              <Switch value={isBiometryEnabled} onChange={handleBiometry(false)} />
+              <Switch value={biometry.isEnabledSwitch} onChange={handleBiometry(false)} />
             }
           >
             {t('security_use_biometry_switch', {
-              biometryType: isTouchId
-                ? t(`platform.${platform}.fingerprint`)
-                : t(`platform.${platform}.face_recognition`),
+              biometryType: getBiometryName(biometry.type, { accusative: true }),
             })}
           </CellSectionItem>
         </CellSection>
         <S.BiometryTip>
           <Text variant="body2" color="foregroundSecondary">
-            {t('security_use_biometry_tip', {
-              biometryType: isTouchId
-                ? t(`platform.${platform}.fingerprint`)
-                : t(`platform.${platform}.face_recognition`),
-            })}
+            {t('security_use_biometry_tip')}
           </Text>
         </S.BiometryTip>
       </>
@@ -135,7 +102,7 @@ export const Security: FC = () => {
             <CellSectionItem onPress={handleChangePasscode} icon="ic-lock-28">
               {t('security_change_passcode')}
             </CellSectionItem>
-            {biometryEnabled ? (
+            {biometry.isEnabled ? (
               <CellSectionItem
                 onPress={handleResetPasscode}
                 icon="ic-arrow-2-circlepath-28"

@@ -1,7 +1,6 @@
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { Screen, Text, Button, Icon, List, Spacer, Steezy, View } from '@tonkeeper/uikit';
 import { getNewNotificationsCount } from '$core/Notifications/NotificationsActivity';
-import { useNotificationsStore } from '$store/zustand/notifications';
 import { useActivityList } from '@tonkeeper/shared/query/hooks';
 import { Notification } from '$core/Notifications/Notification';
 import { openNotificationsScreen } from '$navigation/helper';
@@ -13,6 +12,7 @@ import { LayoutAnimation } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
 import { useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
+import { useDAppsNotifications } from '$store';
 
 export const ActivityScreen = memo(() => {
   const activityList = useActivityList();
@@ -20,11 +20,8 @@ export const ActivityScreen = memo(() => {
   const nav = useNavigation();
   const wallet = useWallet();
 
-  const notifications = useNotificationsStore((state) => state.notifications);
-  const lastSeenAt = useNotificationsStore((state) => state.last_seen_activity_screen);
-  const updateLastSeenActivityScreen = useNotificationsStore(
-    (state) => state.actions.updateLastSeenActivityScreen,
-  );
+  const { notifications, lastSeenActivityScreenAt, updateLastSeenActivityScreen } =
+    useDAppsNotifications();
 
   const handlePressRecevie = useCallback(() => {
     if (wallet) {
@@ -106,7 +103,10 @@ export const ActivityScreen = memo(() => {
     );
   }
 
-  const newNotificationsCount = getNewNotificationsCount(notifications, lastSeenAt);
+  const newNotificationsCount = getNewNotificationsCount(
+    notifications,
+    lastSeenActivityScreenAt,
+  );
 
   const renderNotificationsHeader = notifications.length ? (
     <View>

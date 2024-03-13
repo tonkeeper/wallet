@@ -24,10 +24,31 @@ export class AppVault implements Vault {
 
   private async saveVaultState(passcode: string) {
     const state = JSON.stringify(this.decryptedVaultState);
-
     const encrypted = await ScryptBox.encrypt(passcode, state);
+    const encryptedString = JSON.stringify(encrypted);
 
-    await SecureStore.setItemAsync(this.walletsKey, JSON.stringify(encrypted));
+    // Calculate the number of chunks required (2048 bytes per chunk)
+    const chunkSize = 2048;
+    let index = 0;
+
+    // While loop to break down the string into chunks and save each one
+    while (index < encryptedString.length) {
+      const chunk = encryptedString.substring(
+        index,
+        Math.min(index + chunkSize, encryptedString.length),
+      );
+      await SecureStore.setItemAsync(
+        `${this.walletsKey}_chunk_${index / chunkSize}`,
+        chunk,
+      );
+      index += chunkSize;
+    }
+
+    // Save an additional item that records the number of chunks
+    await SecureStore.setItemAsync(
+      `${this.walletsKey}_chunks`,
+      String(Math.ceil(encryptedString.length / chunkSize)),
+    );
   }
 
   public async verifyPasscode(passcode: string) {
@@ -62,7 +83,14 @@ export class AppVault implements Vault {
   public async destroy() {
     try {
       this.decryptedVaultState = {};
-      await SecureStore.deleteItemAsync(this.walletsKey);
+      const chunksCountStr = await SecureStore.getItemAsync(`${this.walletsKey}_chunks`);
+      if (chunksCountStr !== null) {
+        const chunksCount = parseInt(chunksCountStr, 10);
+        for (let i = 0; i < chunksCount; i++) {
+          await SecureStore.deleteItemAsync(`${this.walletsKey}_chunk_${i}`);
+        }
+        await SecureStore.deleteItemAsync(`${this.walletsKey}_chunks`);
+      }
       await SecureStore.deleteItemAsync(this.biometryKey, {
         keychainService: this.keychainService,
       });
@@ -70,13 +98,27 @@ export class AppVault implements Vault {
   }
 
   private async getDecryptedVaultState(passcode: string) {
-    const encryptedJson = await SecureStore.getItemAsync(this.walletsKey);
+    // First, get the number of chunks to expect
+    const chunksCountStr = await SecureStore.getItemAsync(`${this.walletsKey}_chunks`);
 
-    if (!encryptedJson) {
-      throw new Error('Vault is empty');
+    if (!chunksCountStr) {
+      throw new Error('Vault is empty or corrupt.');
     }
 
-    const encrypted = JSON.parse(encryptedJson);
+    const chunksCount = parseInt(chunksCountStr, 10);
+    let encryptedString = '';
+
+    // Loop through all chunks, concatenating them into a single string
+    for (let i = 0; i < chunksCount; i++) {
+      const chunk = await SecureStore.getItemAsync(`${this.walletsKey}_chunk_${i}`);
+      if (chunk) {
+        encryptedString += chunk;
+      } else {
+        throw new Error(`Missing chunk ${i}`);
+      }
+    }
+
+    const encrypted = JSON.parse(encryptedString);
     const stateJson = await ScryptBox.decrypt(passcode, encrypted);
 
     return JSON.parse(stateJson) as VaultState;

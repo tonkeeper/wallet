@@ -25,7 +25,7 @@ import {
 } from '@tonkeeper/core/src/legacy';
 
 import { tk } from '$wallet';
-import { Address, Cell, internal, toNano } from '@ton/core';
+import { Address, Cell, internal } from '@ton/core';
 import {
   emulateWithBattery,
   sendBocWithBattery,
@@ -35,6 +35,7 @@ import { setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import { WalletNetwork } from '$wallet/WalletTypes';
 import { createTonApiInstance } from '$wallet/utils';
 import { config } from '$config';
+import { toNano } from '$utils';
 
 const TonWeb = require('tonweb');
 
@@ -459,7 +460,9 @@ export class TonWallet {
 
     if (
       !balance ||
-      new BigNumber(Ton.toNano(balance.balance)).lt(new BigNumber(amountNano))
+      new BigNumber(toNano(balance.balance, balance.metadata.decimals ?? 9)).lt(
+        new BigNumber(amountNano),
+      )
     ) {
       throw new Error(t('send_insufficient_funds'));
     }

@@ -2,11 +2,14 @@ import { Icon, List, Spacer, Text, View } from '$uikit';
 import React, { useCallback, useRef } from 'react';
 import { Steezy } from '$styles';
 import { INotification } from '$store/zustand/notifications/types';
-import { disableNotifications, useConnectedAppsList } from '$store';
+import {
+  disableNotifications,
+  useConnectedAppsList,
+  useDAppsNotifications,
+} from '$store';
 import { format, getDomainFromURL } from '$utils';
 import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
 import { IconProps } from '$uikit/Icon/Icon';
-import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import { t } from '@tonkeeper/shared/i18n';
 import { isToday } from 'date-fns';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -47,15 +50,13 @@ export const Notification: React.FC<NotificationProps> = (props) => {
   );
   const wallet = useWallet();
   const { showActionSheetWithOptions } = useActionSheet();
-  const deleteNotification = useNotificationsStore(
-    (state) => state.actions.deleteNotificationByReceivedAt,
-  );
+  const { deleteNotificationByReceivedAt } = useDAppsNotifications();
   const listItemRef = useRef(null);
 
   const handleDelete = useCallback(() => {
-    deleteNotification(props.notification.received_at);
+    deleteNotificationByReceivedAt(props.notification.received_at);
     props.onRemove?.();
-  }, [deleteNotification, props]);
+  }, [deleteNotificationByReceivedAt, props]);
 
   const swipeableRef = useRef(null);
 

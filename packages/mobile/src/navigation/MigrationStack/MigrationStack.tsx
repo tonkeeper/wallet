@@ -18,7 +18,7 @@ export const MigrationStack = memo(() => {
   return (
     <Stack.Navigator
       initialRouteName={
-        tk.migrationData?.biometry.enabled
+        tk.migrationData?.biometryEnabled && tk.biometry.isAvailable
           ? MigrationStackRouteNames.Start
           : MigrationStackRouteNames.Passcode
       }

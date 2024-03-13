@@ -67,6 +67,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
     walletAddress &&
     Address.parse(walletAddress, {
       bounceable: !getFlag('address_style_nobounce'),
+      testOnly: Address.isTestnet(walletAddress),
     }).toShort();
 
   const popupItems = useMemo(() => {

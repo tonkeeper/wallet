@@ -46,6 +46,7 @@ export interface ActionListItemProps<TActionType extends ActionType = ActionType
   greenValue?: boolean;
   ignoreFailed?: boolean;
   disablePressable?: boolean;
+  disableNftPreview?: boolean;
   isSimplePreview?: boolean;
 }
 

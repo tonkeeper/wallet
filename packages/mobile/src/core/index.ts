@@ -1,10 +1,6 @@
-export { CreateWallet } from './CreateWallet/CreateWallet';
 export { Settings } from './Settings/Settings';
 export { Send } from './Send/Send';
 export { ScanQR } from './ScanQR/ScanQR';
-export { SecretWords } from './SecretWords/SecretWords';
-export { BackupWords } from './BackupWords/BackupWords';
-export { CheckSecretWords } from './CheckSecretWords/CheckSecretWords';
 export { ImportWallet } from './ImportWallet/ImportWallet';
 export { Subscription } from './Subscription/Subscription';
 export { Subscriptions } from './Subscriptions/Subscriptions';
@@ -15,7 +11,6 @@ export { OldExchange } from './Exchange/Exchange';
 export { DevMenu } from './DevMenu/DevMenu';
 export { Logs } from './Logs/Logs';
 export { AccessConfirmation } from './AccessConfirmation/AccessConfirmation';
-export { SetupBiometry } from './SetupBiometry/SetupBiometry';
 export { Security } from './Security/Security';
 export { ChangePin } from './ChangePin/ChangePin';
 export { LegalDocuments } from './LegalDocuments/LegalDocuments';

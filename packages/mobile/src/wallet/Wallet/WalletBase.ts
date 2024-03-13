@@ -37,6 +37,7 @@ export class WalletBase {
     protected storage: Storage,
   ) {
     this.identifier = config.identifier;
+    this.persistPath = this.identifier;
     this.pubkey = config.pubkey;
 
     const tonAddress = Address.parse(this.tonAllAddresses[config.version].raw, {
@@ -49,10 +50,6 @@ export class WalletBase {
       tron: { proxy: '', owner: '' },
       ton: tonAddress,
     };
-
-    this.persistPath = `${this.isTestnet ? 'testnet' : 'mainnet'}/${
-      this.address.ton.raw
-    }`;
 
     this.logger = logger.extend(`Wallet ${this.address.ton.short}`);
 

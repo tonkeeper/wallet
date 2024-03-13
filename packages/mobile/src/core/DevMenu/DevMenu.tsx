@@ -44,12 +44,15 @@ export const DevMenu: FC = () => {
   }, [nav]);
 
   const handlePushNotification = useCallback(() => {
-    addNotification({
-      message: 'Test notification added',
-      dapp_url: 'https://getgems.io',
-      received_at: Date.now(),
-      link: 'https://getgems.io',
-    });
+    addNotification(
+      {
+        message: 'Test notification added',
+        dapp_url: 'https://getgems.io',
+        received_at: Date.now(),
+        link: 'https://getgems.io',
+      },
+      tk.wallet.address.ton.raw,
+    );
   }, [addNotification]);
 
   const {

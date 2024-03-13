@@ -57,34 +57,35 @@ export const DevConfigScreen = memo(() => {
             }
           />
           <List.Item
-            title="Disable holders cards"
-            onPress={handleBooleanSwitch('disable_holders_cards')}
-            rightContent={
-              <Switch
-                trackColor={{ true: theme.accentBlue }}
-                value={config.get('disable_holders_cards')}
-                onChange={handleBooleanSwitch('disable_holders_cards')}
-              />
+            title="Swap host"
+            value={config.get('stonfiUrl')}
+            valueStyle={styles.value}
+            onPress={() =>
+              nav.navigate('/dev/config/edit', {
+                configKey: 'stonfiUrl',
+                title: 'Swap host',
+                onSave: handleSave,
+              })
             }
           />
           <List.Item
-            title="Disable battery"
+            title="Enable battery"
             onPress={handleBooleanSwitch('disable_battery')}
             rightContent={
               <Switch
                 trackColor={{ true: theme.accentBlue }}
-                value={config.get('disable_battery')}
+                value={!config.get('disable_battery')}
                 onChange={handleBooleanSwitch('disable_battery')}
               />
             }
           />
           <List.Item
-            title="Disable send using battery"
+            title="Enable send using battery"
             onPress={handleBooleanSwitch('disable_battery_send')}
             rightContent={
               <Switch
                 trackColor={{ true: theme.accentBlue }}
-                value={config.get('disable_battery_send')}
+                value={!config.get('disable_battery_send')}
                 onChange={handleBooleanSwitch('disable_battery_send')}
               />
             }

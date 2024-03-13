@@ -14,11 +14,21 @@ export interface WalletStatusState {
   updatedAt: number;
 }
 
+export interface WalletSetupState {
+  lastBackupAt: number | null;
+  setupDismissed: boolean;
+}
+
 export class Wallet extends WalletContent {
   static readonly INITIAL_STATUS_STATE: WalletStatusState = {
     isReloading: false,
     isLoading: false,
     updatedAt: Date.now(),
+  };
+
+  static readonly INITIAL_SETUP_STATE: WalletSetupState = {
+    lastBackupAt: null,
+    setupDismissed: false,
   };
 
   private stopListenTransactions: Function | null = null;
@@ -27,6 +37,8 @@ export class Wallet extends WalletContent {
   private lastTimeAppActive = Date.now();
 
   public status = new State<WalletStatusState>(Wallet.INITIAL_STATUS_STATE);
+
+  public setup = new State<WalletSetupState>(Wallet.INITIAL_SETUP_STATE);
 
   constructor(
     public config: WalletConfig,
@@ -43,13 +55,27 @@ export class Wallet extends WalletContent {
       key: `${this.persistPath}/status`,
     });
 
+    this.setup.persist({
+      storage: this.storage,
+      key: `${this.persistPath}/setup`,
+    });
+
     this.listenTransactions();
     this.listenAppState();
+  }
+
+  public saveLastBackupTimestamp() {
+    this.setup.set({ lastBackupAt: Date.now() });
+  }
+
+  public dismissSetup() {
+    this.setup.set({ setupDismissed: true });
   }
 
   public async rehydrate() {
     await super.rehydrate();
 
+    await this.setup.rehydrate();
     this.status.rehydrate();
   }
 

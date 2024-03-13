@@ -9,7 +9,10 @@ export const useConnectedAppsList = (): IConnectedApp[] => {
   const wallet = useWallet();
 
   const address = wallet
-    ? Address.parse(wallet.address.ton.raw).toFriendly({ bounceable: true })
+    ? Address.parse(wallet.address.ton.raw).toFriendly({
+        bounceable: true,
+        testOnly: wallet.isTestnet,
+      })
     : '';
 
   return useConnectedAppsStore(

@@ -527,18 +527,14 @@
   "paste" : "Yapıştır",
   "pin_enter_faceid_err" : "Biyometrik doğrulama başarısız oldu",
   "pin_enter_skip_faceid_err" : "Biyometrik kimlik doğrulama gereklidir",
-  "platform" : {
+  "biometry" : {
     "android" : {
-      "capitalized_face_recognition" : "Yüz tanıma",
-      "capitalized_fingerprint" : "Parmak izi",
       "face_recognition" : "yüz tanıma",
       "face_recognition_genitive" : "yüz tanıma",
       "fingerprint" : "Parmak izi",
       "fingerprint_genitive" : "Parmak izi"
     },
     "ios" : {
-      "capitalized_face_recognition" : "Yüz kimliği",
-      "capitalized_fingerprint" : "Touch ID",
       "face_recognition" : "Yüz kimliği",
       "face_recognition_genitive" : "Yüz kimliği",
       "fingerprint" : "Touch ID",

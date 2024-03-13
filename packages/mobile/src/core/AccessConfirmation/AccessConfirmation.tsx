@@ -38,7 +38,7 @@ export const AccessConfirmation: FC = () => {
 
   const [isBiometryFailed, setBiometryFailed] = useState(false);
 
-  const { biometryEnabled, enableBiometry } = useBiometrySettings();
+  const biometry = useBiometrySettings();
 
   const pinRef = useRef<PinCodeRef>(null);
   const isUnlock = route.name === AppStackRouteNames.MainAccessConfirmation;
@@ -105,7 +105,7 @@ export const AccessConfirmation: FC = () => {
               }
 
               if (isBiometryFailed) {
-                enableBiometry(pin).catch(null);
+                biometry.enableBiometry(pin).catch(null);
               }
             }, 500);
           } catch (e) {
@@ -115,7 +115,7 @@ export const AccessConfirmation: FC = () => {
         }, 300);
       }
     },
-    [dispatch, enableBiometry, isBiometryFailed, isUnlock, triggerError, wallet],
+    [biometry, dispatch, isBiometryFailed, isUnlock, triggerError, wallet],
   );
 
   const handleBiometry = useCallback(async () => {
@@ -139,9 +139,7 @@ export const AccessConfirmation: FC = () => {
       pinRef.current?.triggerSuccess();
 
       setTimeout(async () => {
-        if (generatedVault) {
-          setLastEnteredPasscode(passcode);
-        }
+        setLastEnteredPasscode(passcode);
 
         // Lock screen
         if (isUnlock) {
@@ -162,10 +160,10 @@ export const AccessConfirmation: FC = () => {
       }
       triggerError();
     }
-  }, [dispatch, generatedVault, isUnlock, triggerError, wallet]);
+  }, [dispatch, isUnlock, triggerError, wallet]);
 
   useEffect(() => {
-    if (params.withoutBiometryOnOpen || !biometryEnabled) {
+    if (params.withoutBiometryOnOpen || !biometry.isEnabled || !biometry.isAvailable) {
       return;
     }
 
@@ -235,7 +233,9 @@ export const AccessConfirmation: FC = () => {
           disabled={value.length === 4}
           onChange={handleKeyboard}
           value={value}
-          biometryEnabled={biometryEnabled && !isBiometryFailed && !generatedVault}
+          biometryEnabled={
+            biometry.isAvailable && biometry.isEnabled && !isBiometryFailed
+          }
           onBiometryPress={handleBiometry}
         />
       </S.Content>
