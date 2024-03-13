@@ -23,6 +23,9 @@ import { LayoutAnimation } from 'react-native';
 import { tk } from '$wallet';
 import { Address } from '@tonkeeper/core';
 import { IconsComposition } from './IconsComposition';
+import { useFiatValue } from '$hooks/useFiatValue';
+import { CryptoCurrencies } from '$shared/constants';
+import { stakingFormatter } from '$utils/formatter';
 
 export interface ExtendedPoolInfo extends PoolInfo {
   isWithdrawal: boolean;
@@ -65,6 +68,13 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
     [poolToWithdrawal],
   );
 
+  const readyWithdraw = useFiatValue(
+    CryptoCurrencies.Ton,
+    stakingFormatter.fromNano(toWithdrawalStakingInfo?.ready_withdraw ?? '0'),
+  );
+
+  const isReadyWithdraw = readyWithdraw.amount !== '0';
+
   const handleWithdrawal = useCallback(
     (pool: ExtendedPoolInfo, withdrawAll?: boolean) => () => {
       nav.push(AppStackRouteNames.StakingSend, {
@@ -79,21 +89,36 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
     [nav],
   );
 
+  const handleCollectWithdrawal = useCallback(
+    (pool: ExtendedPoolInfo) => () => {
+      nav.push(AppStackRouteNames.StakingSend, {
+        poolAddress: pool.address,
+        transactionType: StakingTransactionType.WITHDRAWAL_CONFIRM,
+      });
+    },
+    [nav],
+  );
+
   const isWaitingForWithdrawal = toWithdrawalStakingInfo?.pending_withdraw;
   const currentStepId = useMemo(() => {
     if (tonstakersPool?.balance) {
       return RestakeSteps.DONE;
     }
-    // Go to last step if pool to withdrawal is empty now
-    if (!poolToWithdrawal?.balance) {
+    // Go to last step if pool to withdrawal is empty now (or if balance so small)
+    if (Number(poolToWithdrawal?.balance) < 0.1) {
       return RestakeSteps.STAKE_INTO_TONSTAKERS;
     }
     // If user has pending withdrawal, render step with waiting
-    if (isWaitingForWithdrawal) {
+    if (isWaitingForWithdrawal || readyWithdraw.amount !== '0') {
       return RestakeSteps.WAIT_FOR_WITHDRAWAL;
     }
     return RestakeSteps.UNSTAKE;
-  }, [isWaitingForWithdrawal, poolToWithdrawal, tonstakersPool?.balance]);
+  }, [
+    isWaitingForWithdrawal,
+    poolToWithdrawal?.balance,
+    readyWithdraw.amount,
+    tonstakersPool?.balance,
+  ]);
 
   useEffect(() => {
     if (currentStepId === RestakeSteps.DONE) {
@@ -167,12 +192,24 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
           text={
             currentStepId !== RestakeSteps.WAIT_FOR_WITHDRAWAL
               ? t('restake_banner.wait_step')
+              : isReadyWithdraw
+              ? t('restake_banner.wait_step_withdraw')
               : replaceString(
                   t('restake_banner.wait_step_pending'),
                   '%duration',
                   renderFormattedDuration,
                 )
           }
+          actions={[
+            isReadyWithdraw && (
+              <Button
+                size="small"
+                color={'primary'}
+                onPress={handleCollectWithdrawal(poolToWithdrawal!)}
+                title={t('restake_banner.wait_step_collect')}
+              />
+            ),
+          ]}
         />
         <RestakeStep
           completed={currentStepId > RestakeSteps.STAKE_INTO_TONSTAKERS}
