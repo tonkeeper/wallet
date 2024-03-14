@@ -335,6 +335,7 @@ export const StakingSend: FC<Props> = (props) => {
 
       await actionRef.current.send(privateKey);
       if (
+        isWithdrawalConfrim &&
         tk.wallet.staking.state.data.stakingAddressToMigrateFrom &&
         Address.compare(
           tk.wallet.staking.state.data.stakingAddressToMigrateFrom,
@@ -348,7 +349,7 @@ export const StakingSend: FC<Props> = (props) => {
     } finally {
       setSending(false);
     }
-  }, [isDeposit, pool, totalFee, unlockVault]);
+  }, [isDeposit, isWithdrawalConfrim, pool, totalFee, unlockVault]);
 
   useEffect(() => {
     if (isWithdrawalConfrim || initialAmount) {
