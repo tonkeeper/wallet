@@ -1185,6 +1185,7 @@
     "stake_into_tonstakers_action": "Внести в Tonstakers",
     "stake_into_step": "Внесите доступный TON в Tonstakers.",
     "wait_step_withdraw": "Ваш TON готов к выводу.",
+    "wait_step_cooldown": "Ваш TON совсем скоро будет готов к выводу.",
     "wait_step_collect": "Вывести"
   },
   "tokenDetails": {

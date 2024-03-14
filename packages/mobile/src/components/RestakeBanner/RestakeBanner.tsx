@@ -126,7 +126,7 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
     }
   }, [currentStepId, handleCloseRestakeBanner]);
 
-  const { formattedDuration } = useStakingCycle(
+  const { formattedDuration, isCooldown } = useStakingCycle(
     poolToWithdrawal?.cycle_start,
     poolToWithdrawal?.cycle_end,
     isWaitingForWithdrawal,
@@ -139,6 +139,23 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
       </Text>
     );
   }, [formattedDuration]);
+
+  const waitForWithdrawalText = useMemo(() => {
+    if (currentStepId !== RestakeSteps.WAIT_FOR_WITHDRAWAL) {
+      return t('restake_banner.wait_step');
+    }
+    if (!isCooldown) {
+      return t('restake_banner.wait_step_cooldown');
+    }
+    if (isReadyWithdraw) {
+      return t('restake_banner.wait_step_withdraw');
+    }
+    return replaceString(
+      t('restake_banner.wait_step_pending'),
+      '%duration',
+      renderFormattedDuration,
+    );
+  }, [currentStepId, isCooldown, isReadyWithdraw, renderFormattedDuration]);
 
   return (
     <View style={styles.container}>
@@ -189,17 +206,7 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
         <RestakeStep
           completed={currentStepId > RestakeSteps.WAIT_FOR_WITHDRAWAL}
           stepId={RestakeSteps.WAIT_FOR_WITHDRAWAL}
-          text={
-            currentStepId !== RestakeSteps.WAIT_FOR_WITHDRAWAL
-              ? t('restake_banner.wait_step')
-              : isReadyWithdraw
-              ? t('restake_banner.wait_step_withdraw')
-              : replaceString(
-                  t('restake_banner.wait_step_pending'),
-                  '%duration',
-                  renderFormattedDuration,
-                )
-          }
+          text={waitForWithdrawalText}
           actions={[
             isReadyWithdraw && (
               <Button

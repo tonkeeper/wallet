@@ -1120,6 +1120,7 @@
     "stake_into_tonstakers_action": "Stake into Tonstakers",
     "stake_into_step": "Stake available TON into Tonstakers.",
     "wait_step_withdraw": "Collect available TON from your previous staking provider.",
+    "wait_step_cooldown": "Your TON will be available soon. You'll be able to collect them shortly.",
     "wait_step_collect": "Collect"
   },
   "tokenDetails": {
