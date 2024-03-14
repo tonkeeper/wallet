@@ -42,6 +42,7 @@ export type StakingState = {
   stakingBalance: string;
   showRestakeBanner: boolean;
   stakingAddressToMigrateFrom?: string;
+  bypassStakeStep?: boolean;
 };
 
 export class StakingManager {
@@ -61,6 +62,7 @@ export class StakingManager {
     highestApyPool: null,
     stakingBalance: '0',
     showRestakeBanner: false,
+    bypassStakeStep: false,
   };
 
   static calculatePoolBalance(pool: PoolInfo, stakingInfo: StakingInfo) {
@@ -284,9 +286,17 @@ export class StakingManager {
     stakingAddressToMigrateFrom?: string,
   ) {
     if (stakingAddressToMigrateFrom) {
-      return this.state.set({ stakingAddressToMigrateFrom, showRestakeBanner });
+      return this.state.set({
+        stakingAddressToMigrateFrom,
+        showRestakeBanner,
+        bypassStakeStep: false,
+      });
     }
-    this.state.set({ showRestakeBanner });
+    this.state.set({ showRestakeBanner, bypassStakeStep: false });
+  }
+
+  public setBypassStakeStep() {
+    this.state.set({ bypassStakeStep: true });
   }
 
   public async reload() {

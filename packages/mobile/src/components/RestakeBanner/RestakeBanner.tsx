@@ -68,6 +68,8 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
     [poolToWithdrawal],
   );
 
+  const bypassStakeStep = useStakingState((s) => s.bypassStakeStep, []);
+
   const readyWithdraw = useFiatValue(
     CryptoCurrencies.Ton,
     stakingFormatter.fromNano(toWithdrawalStakingInfo?.ready_withdraw ?? '0'),
@@ -104,8 +106,8 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
     if (tonstakersPool?.balance) {
       return RestakeSteps.DONE;
     }
-    // Go to last step if pool to withdrawal is empty now (or if balance so small)
-    if (Number(poolToWithdrawal?.balance) < 0.1) {
+    // Go to last step if pool to withdrawal is empty now (or if balance so small, or step is bypassed)
+    if (bypassStakeStep || Number(poolToWithdrawal?.balance) < 0.1) {
       return RestakeSteps.STAKE_INTO_TONSTAKERS;
     }
     // If user has pending withdrawal, render step with waiting
@@ -114,6 +116,7 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
     }
     return RestakeSteps.UNSTAKE;
   }, [
+    bypassStakeStep,
     isWaitingForWithdrawal,
     poolToWithdrawal?.balance,
     readyWithdraw.amount,

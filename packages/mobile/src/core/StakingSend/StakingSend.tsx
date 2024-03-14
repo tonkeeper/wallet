@@ -37,6 +37,7 @@ import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import { useStakingState, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
+import { Address } from '@tonkeeper/shared/Address';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
@@ -333,6 +334,15 @@ export const StakingSend: FC<Props> = (props) => {
       const privateKey = await vault.getTonPrivateKey();
 
       await actionRef.current.send(privateKey);
+      if (
+        tk.wallet.staking.state.data.stakingAddressToMigrateFrom &&
+        Address.compare(
+          tk.wallet.staking.state.data.stakingAddressToMigrateFrom,
+          pool.address,
+        )
+      ) {
+        tk.wallet.staking.setBypassStakeStep();
+      }
     } catch (e) {
       throw e;
     } finally {
