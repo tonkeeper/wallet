@@ -150,7 +150,7 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
     if (isReadyWithdraw) {
       return t('restake_banner.wait_step_withdraw');
     }
-    if (!isCooldown) {
+    if (isCooldown) {
       return t('restake_banner.wait_step_cooldown');
     }
     return replaceString(
@@ -211,6 +211,7 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
           stepId={RestakeSteps.WAIT_FOR_WITHDRAWAL}
           text={waitForWithdrawalText}
           actions={
+            currentStepId <= RestakeSteps.WAIT_FOR_WITHDRAWAL &&
             isReadyWithdraw && [
               <Button
                 size="small"
