@@ -41,7 +41,7 @@ export const ExchangeMethod: FC<ExchangeMethodProps> = ({ methodId, onContinue }
 
         openBuyFiat(CryptoCurrencies.Ton, methodId);
       }
-    }, 500);
+    }, 800);
 
     if (isDontShow) {
       ExchangeDB.dontShowDetails(methodId);
