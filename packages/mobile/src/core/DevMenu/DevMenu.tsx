@@ -7,7 +7,7 @@ import DeviceInfo from 'react-native-device-info';
 import { useNavigation } from '@tonkeeper/router';
 import { config } from '$config';
 import RNRestart from 'react-native-restart';
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { openLogs } from '$navigation';
 import Clipboard from '@react-native-community/clipboard';
 import { tk } from '$wallet';
@@ -16,6 +16,10 @@ import messaging from '@react-native-firebase/messaging';
 export const DevMenu: FC = () => {
   const nav = useNavigation();
   const addNotification = useNotificationsStore((state) => state.actions.addNotification);
+
+  const [_, rerender] = useState(0);
+
+  const handleSave = useCallback(() => rerender((c) => c + 1), []);
 
   const handleLogs = useCallback(() => {
     openLogs();
@@ -91,8 +95,9 @@ export const DevMenu: FC = () => {
   }, [toggleFeature]);
 
   const toggleDevMode = useCallback(() => {
-    toggleFeature(DevFeature.ShowTestnet);
-  }, [toggleFeature]);
+    config.set({ devmode_enabled: !config.get('devmode_enabled') });
+    handleSave();
+  }, [handleSave]);
 
   const handleClearActivityCache = useCallback(() => {
     if (tk.wallet) {
@@ -113,10 +118,7 @@ export const DevMenu: FC = () => {
           <List.Item
             title="Dev mode"
             rightContent={
-              <Switch
-                value={devFeatures[DevFeature.ShowTestnet]}
-                onChange={toggleDevMode}
-              />
+              <Switch value={config.get('devmode_enabled')} onChange={toggleDevMode} />
             }
           />
           <List.Item
