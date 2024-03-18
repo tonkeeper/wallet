@@ -1,6 +1,6 @@
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import crashlytics from '@react-native-firebase/crashlytics';
-import { DevFeature, useDevFeaturesToggle } from '$store';
+import { DevFeature, NotificationType, useDevFeaturesToggle } from '$store';
 import { List, Screen, copyText } from '@tonkeeper/uikit';
 import { Switch } from 'react-native-gesture-handler';
 import DeviceInfo from 'react-native-device-info';
@@ -46,6 +46,7 @@ export const DevMenu: FC = () => {
   const handlePushNotification = useCallback(() => {
     addNotification(
       {
+        type: NotificationType.CONSOLE_DAPP_NOTIFICATION,
         message: 'Test notification added',
         dapp_url: 'https://getgems.io',
         received_at: Date.now(),
@@ -54,6 +55,24 @@ export const DevMenu: FC = () => {
       tk.wallet.address.ton.raw,
     );
   }, [addNotification]);
+
+  const handleShowRestakeBanner = useCallback(
+    (address: string, name: string) => () => {
+      addNotification(
+        {
+          type: NotificationType.BETTER_STAKE_OPTION_FOUND,
+          name: 'Tonkeeper',
+          icon_url: 'https://tonkeeper.com/assets/apps/tonkeeper.png',
+          message: `Withdraw from ${name} please 🥺`,
+          received_at: Date.now(),
+          deeplink: 'ton://staking',
+        },
+        tk.wallet.address.ton.raw,
+      );
+      tk.wallet.staking.toggleRestakeBanner(true, address);
+    },
+    [addNotification],
+  );
 
   const {
     devFeatures,
@@ -176,6 +195,29 @@ export const DevMenu: FC = () => {
         <List>
           <List.Item onPress={handleCopyFCMToken} title="Copy FCM token" />
           <List.Item onPress={handlePushNotification} title="Push notification" />
+        </List>
+        <List>
+          <List.Item
+            onPress={handleShowRestakeBanner(
+              '0:efbc198fdf051c8e85cf6358c77d3e3e7e06f6f788a65581f910774b9c029e7a',
+              'Queue #2',
+            )}
+            title="Show restake banner (queue #2)"
+          />
+          <List.Item
+            onPress={handleShowRestakeBanner(
+              '0:00ff9fdd8b3b80d70e8ea734d262f5e1bd4c184c33535bf3190dd67408629e7a',
+              'Queue #1',
+            )}
+            title="Show restake banner (queue #1)"
+          />
+          <List.Item
+            onPress={handleShowRestakeBanner(
+              '0:98e0ce936589ce327181425aa2fe7c9e6880752de0457c680fe2e5d0d555a16a',
+              'Whales',
+            )}
+            title="Show restake banner (whales)"
+          />
         </List>
       </Screen.ScrollView>
     </Screen>
