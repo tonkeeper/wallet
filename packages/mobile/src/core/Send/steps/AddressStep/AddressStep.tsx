@@ -267,6 +267,8 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [favoriteAddresses]);
 
+  console.log({ recipient });
+
   return (
     <>
       <WordHintsPopup
@@ -304,6 +306,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           {suggestedAddresses.length > 0 ? (
             <FormItem title={suggestsLabel}>
               <AddressSuggests
+                cellsDisabled={!!recipient}
                 scrollY={scrollY}
                 addresses={suggestedAddresses}
                 onPressSuggest={handlePressSuggest}

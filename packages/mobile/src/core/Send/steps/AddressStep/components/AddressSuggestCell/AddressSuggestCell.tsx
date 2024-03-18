@@ -33,6 +33,7 @@ interface Props {
   scrollY: Animated.SharedValue<number>;
   suggest: SuggestedAddress;
   onPress?: (suggest: SuggestedAddress) => void;
+  disabled?: boolean;
 }
 
 const AddressSuggestCellComponent: FC<Props> = (props) => {
@@ -147,7 +148,7 @@ const AddressSuggestCellComponent: FC<Props> = (props) => {
 
   return (
     <>
-      <S.Cell onPress={handlePress} isDisabled={!onPress}>
+      <S.Cell onPress={handlePress} isDisabled={props.disabled || !onPress}>
         <S.Container>
           <S.Content>
             <S.TitleContainer>

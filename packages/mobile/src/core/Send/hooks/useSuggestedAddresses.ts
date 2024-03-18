@@ -63,6 +63,7 @@ export const useSuggestedAddresses = () => {
           Address.compare(walletAddress, recipientAddress) ||
           payload.sender?.is_scam ||
           payload.recipient?.is_scam ||
+          !payload.recipient?.name ||
           !payload.recipient?.is_wallet
         ) {
           return false;
