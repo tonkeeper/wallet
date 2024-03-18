@@ -162,6 +162,7 @@ export const Swap: FC<Props> = (props) => {
         keyboardDisplayRequiresUserAction={false}
         mediaPlaybackRequiresUserAction={false}
         onShouldStartLoadWithRequest={handleOpenExternalLink}
+        webviewDebuggingEnabled={config.get('devmode_enabled')}
       />
       {overlayVisible ? (
         <S.Overlay>
