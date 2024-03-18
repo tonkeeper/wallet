@@ -267,8 +267,6 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [favoriteAddresses]);
 
-  console.log({ recipient });
-
   return (
     <>
       <WordHintsPopup
